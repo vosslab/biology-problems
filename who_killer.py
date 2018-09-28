@@ -13,6 +13,7 @@ def isKiller(blood, victim, suspect):
 if __name__ == '__main__':
 	#structure
 	gel = gellib.GelClass()
+	gel.setTextColumn("Suspect 5")
 	num_suspects = 4 #min 3
 	total_bands = 12
 	min_bands = 5
@@ -62,8 +63,8 @@ if __name__ == '__main__':
 
 	gel.drawLane(allbands, "allbands")
 	gel.blankLane()
-	gel.drawLane(victim, "victim")
-	gel.drawLane(blood, "blood")
+	gel.drawLane(victim, "Victim")
+	gel.drawLane(blood, "Blood")
 	random.shuffle(suspects)
 	random.shuffle(suspects)
 	killcount = 0
@@ -73,7 +74,7 @@ if __name__ == '__main__':
 		if iskiller:
 			killcount += 1
 		print("Suspect #%d: %s"%(i+1, iskiller))
-		gel.drawLane(suspect, "suspect %d"%(i+1))
+		gel.drawLane(suspect, "Suspect %d"%(i+1))
 	if killcount != 1:
 		"wrong number of killers"
 		sys.exit(1)

@@ -31,6 +31,7 @@ def haveBaby(mother, father, num_males=3):
 
 if __name__ == '__main__':
 	gel = gellib.GelClass()
+	gel.setTextColumn("Mother")
 
 	num_males = 4 #min 3
 	total_bands = 15
@@ -80,8 +81,8 @@ if __name__ == '__main__':
 
 	gel.drawLane(allbands, "allbands")
 	gel.blankLane()
-	gel.drawLane(mother, "mother")
-	gel.drawLane(child, "child")
+	gel.drawLane(mother, "Mother")
+	gel.drawLane(child, "Child")
 	random.shuffle(males)
 	random.shuffle(males)
 	dadcount = 0
@@ -91,7 +92,7 @@ if __name__ == '__main__':
 		if isfather:
 			dadcount += 1
 		print("Male #%d: %s -- %s"%(i+1, str(sorted(male)), isfather))
-		gel.drawLane(male, "male %d"%(i+1))
+		gel.drawLane(male, "Male %d"%(i+1))
 	if dadcount != 1:
 		print("wrong number of fathers")
 		sys.exit(1)
