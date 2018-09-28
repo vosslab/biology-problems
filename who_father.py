@@ -59,7 +59,7 @@ def isFather(child, mother, male):
 		return True
 	return False
 
-def haveBaby(mother, father):
+def haveBaby(mother, father, num_males=3):
 	diffs = father - mother
 	print diffs
 	if len(diffs) < 2:
@@ -71,7 +71,7 @@ def haveBaby(mother, father):
 	for i in father:
 		if random.random() < 0.4:
 			child.add(i)
-	for i in range(2):
+	for i in range(num_males):
 		child.add(random.choice(list(diffs)))
 	return child
 
@@ -79,9 +79,9 @@ if __name__ == '__main__':
 	print("hello world")
 	#structure
 	num_males = 4 #min 3
-	total_bands = 13
-	min_bands = 5
-	max_band_percent = 0.4
+	total_bands = 15
+	min_bands = 6
+	max_band_percent = 0.65
 
 	#each lane of the gel will be represented by a row in a numpy array
 	## step 1 -- generate band library
@@ -89,15 +89,19 @@ if __name__ == '__main__':
 	subsize = random.randint(min_bands, int(total_bands*max_band_percent)) 
 	mother = getRandomSubSet(total_bands, subsize)
 	mother.add(0)
-	males = []
-	for i in range(num_males-1):
-		subsize = random.randint(min_bands, int(total_bands*max_band_percent)) 
-		male = getRandomSubSet(total_bands, subsize)
-		males.append(male)
-
 	allbands = set(range(total_bands))
-	father = random.choice(males)
-	child = haveBaby(mother, father)
+	notmother = allbands - mother
+	males = []
+	subsize = random.randint(min_bands, int(total_bands*max_band_percent)) 
+	father = getRandomSubSet(total_bands, subsize)
+	father.add(random.choice(list(notmother)))
+	father.add(random.choice(list(notmother)))
+	bothparents = father.intersection(mother)
+	if len(bothparents) > 2:
+		father.remove(random.choice(list(bothparents)))
+	males.append(father)
+
+	child = haveBaby(mother, father, num_males)
 	musthave = child - mother
 	print "mother", sorted(mother)
 	print "child ", sorted(child)
@@ -106,14 +110,19 @@ if __name__ == '__main__':
 	ignore = mother.intersection(child)
 	print "ignore", sorted(ignore)
 
-	if len(musthave) < 2:
+	if len(musthave) < num_males-1:
 		#start over
+		print("not enough band difference")
 		sys.exit(1)
 	# add a male with 1 band missing
-	male = father.copy()
-	male.remove(random.choice(list(musthave)))
-	males.append(male)
-
+	while len(males) < num_males:
+		male = father.copy()
+		male.remove(random.choice(list(musthave)))
+		if male in males:
+			musthave2 = male.intersection(musthave)
+			male.remove(random.choice(list(musthave2)))
+		if not male in males:
+			males.append(male)
 
 	img1 = Image.new("RGB", (1024,1024), (212,212,212))
 
