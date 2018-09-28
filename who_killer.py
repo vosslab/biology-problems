@@ -46,14 +46,20 @@ if __name__ == '__main__':
 	if len(canthave) < 2:
 		#start over
 		sys.exit(1)
-	# add a suspect with 1 band missing
+
+	# add a suspect with 1 band extra
 	suspect = killer.copy()
 	suspect.add(random.choice(list(canthave)))
 	suspects.append(suspect)
-	# add a suspect with 1 band extra
+
+	# add a suspect with 1 band missing
 	suspect = killer.copy()
 	suspect.remove(random.choice(list(musthave)))
 	suspects.append(suspect)
+
+	for suspect in suspects:
+		suspect.add(random.choice(list(victim)))
+
 	gel.drawLane(allbands, "allbands")
 	gel.blankLane()
 	gel.drawLane(victim, "victim")
