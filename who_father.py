@@ -12,12 +12,13 @@ from PIL import ImageFont
 def drawLane(band_tree, pil_img, row=1, text=""):
 	factor = 5
 	height = 70
+	rowgap = 15
 	draw1 = ImageDraw.Draw(pil_img, "RGB")
-	miny = (row-1)*height + 10
+	miny = (row-1)*height + rowgap
 	maxx = (row)*height
 	xshift = 150
 	fnt = ImageFont.truetype('/Users/vosslab/Library/Fonts/LiberationSansNarrow-Regular.ttf', 36)
-	draw1.text((10, miny+height/4.), text, font=fnt, fill="black")
+	draw1.text((rowgap, miny+height/4.), text, font=fnt, fill="black")
 	for band_dict in band_tree:
 		start = xshift+band_dict['start']*factor
 		end = start + band_dict['width']*factor
@@ -35,9 +36,9 @@ def indexToSubSet(mylist, indices):
 
 def createBandTree(total_bands=12):
 	min_band_width = 2
-	max_band_width = 4
-	min_gap = 3
-	max_gap = 8
+	max_band_width = 6
+	min_gap = 2
+	max_gap = 6
 	band_tree = []
 	start_point = 2
 	for i in range(total_bands):
@@ -66,7 +67,7 @@ def haveBaby(mother, father, num_males=3):
 		sys.exit(1)
 	child = set()
 	for i in mother:
-		if random.random() < 0.4:
+		if random.random() < 0.5:
 			child.add(i)
 	for i in father:
 		if random.random() < 0.4:
@@ -123,10 +124,15 @@ if __name__ == '__main__':
 			male.remove(random.choice(list(musthave2)))
 		if not male in males:
 			males.append(male)
+	for male in males:
+		male.add(random.choice(list(allbands)))
+
 
 	img1 = Image.new("RGB", (1024,1024), (212,212,212))
 
 	row = 1
+	drawLane(indexToSubSet(band_tree, allbands), img1, row, "allbands")
+	row += 1
 	drawLane(indexToSubSet(band_tree, mother), img1, row, "mother")
 	row += 1
 	drawLane(indexToSubSet(band_tree, child), img1, row, "child")
@@ -142,7 +148,7 @@ if __name__ == '__main__':
 		row += 1
 		drawLane(indexToSubSet(band_tree, male), img1, row, "male %d"%(i+1))
 	if dadcount != 1:
-		"wrong number of fathers"
+		print("wrong number of fathers")
 		sys.exit(1)
 	row += 1
 	drawLane(indexToSubSet(band_tree, musthave), img1, row, "musthave")
