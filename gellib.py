@@ -75,7 +75,7 @@ class GelClass(object):
 
 	def createBandTree(self, total_bands=12):
 		min_band_width = 3
-		max_band_width = 12
+		max_band_width = 7
 		min_gap = 3
 		max_gap = 12
 		self.band_tree = []

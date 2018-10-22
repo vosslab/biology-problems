@@ -33,9 +33,9 @@ if __name__ == '__main__':
 	gel = gellib.GelClass()
 	gel.setTextColumn("Mother")
 
-	num_males = 4 #min 3
-	total_bands = 15
-	min_bands = 6
+	num_males = 5 #min 3
+	total_bands = 18
+	min_bands = 10
 	max_band_percent = 0.65
 
 	band_tree = gel.createBandTree(total_bands)
