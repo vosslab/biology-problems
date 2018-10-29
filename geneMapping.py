@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 import copy
 import numpy
 import random
@@ -29,6 +30,14 @@ def flipGene(genotype, gene):
 		newtype += i
 	return newtype
 
+afile = "gene_order_answers.txt"
+qfile = "gene_order_questions.txt"
+if not os.path.exists(afile):
+	open(afile, 'a').close()
+f = open(afile, "r")
+qcount = len(f.readlines()) + 1
+f.close()
+
 #gene order
 print "selecting gene order"
 geneorder = random.choice(['abc', 'acb', 'bac'])
@@ -41,7 +50,11 @@ distances = [a[0], a[-1]]
 random.shuffle(distances)
 print distances
 
-print geneorder[0], '-', distances[0], '-', geneorder[1], '-', distances[1], '-', geneorder[2],
+print "------------"
+answerString = ("%d. %s - %d - %s - %d - %s"
+	%(qcount, geneorder[0],distances[0],geneorder[1],distances[1],geneorder[2]))
+print answerString
+print "------------"
 
 print "determine double crossovers"
 doublecross = distances[0]*distances[1]/100.
@@ -104,10 +117,18 @@ for t in types:
 alltypes = typemap.keys()
 alltypes.sort()
 
-
+questionString = "\nQuestion %d:\n"%(qcount)
 for t in alltypes:
-	print t, typemap[t]
-print "--- ---"
-print "TOT", progeny
-	
-	
+	questionString += ("%s %d\n"%(t, typemap[t]))
+questionString +=  "--- ---\n"
+questionString +=  "TOT %d\n\n"%(progeny)
+print questionString
+
+
+f = open(afile, "a")
+f.write(answerString+"\n")
+f.close()
+f = open(qfile, "a")
+f.write(questionString)
+f.close()
+
