@@ -8,13 +8,14 @@ import numpy
 import random
 from fractions import gcd
 
+basetype = 'def'
+
 def tetradSetToString(tetradSet):
 	mystr = ("%s\t%s\t%s\t%s\t"
 		%(tetradSet[0],tetradSet[1],tetradSet[2],tetradSet[3],))
 	return mystr
 
 def invertType(genotype):
-	basetype = 'abc'
 	newtype = ''
 	for i in range(3):
 		if genotype[i] == '+':
@@ -24,7 +25,6 @@ def invertType(genotype):
 	return newtype
 
 def flipGene(genotype, gene):
-	basetype = 'abc'
 	newlist = list(genotype)
 	for i in range(3):
 		if basetype[i] == gene:
@@ -39,7 +39,15 @@ def flipGene(genotype, gene):
 
 #gene order
 print "selecting gene order"
-geneorder = random.choice(['abc', 'acb', 'bac'])
+possible_orders = []
+possible_orders.append(basetype)
+order1 = basetype[0]+basetype[2]+basetype[1]
+possible_orders.append(order1)
+order2 = basetype[1]+basetype[0]+basetype[2]
+possible_orders.append(order2)
+print possible_orders
+
+geneorder = random.choice(possible_orders)
 print geneorder
 
 print "determine gene distances"
@@ -73,7 +81,7 @@ progeny = int(progs[argmin])
 print progeny
 
 print "determine parental type"
-types = ['+++', '++c', '+b+', '+bc']
+types = ['+++', '++'+basetype[2], '+'+basetype[1]+'+', '+'+basetype[1]+basetype[2]]
 parental = random.choice(types)
 print parental, invertType(parental)
 
