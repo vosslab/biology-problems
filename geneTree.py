@@ -29,6 +29,45 @@ def addDistances(item1, item2, distmatrix):
 
 #====================
 def printTree(origlist, distmatrix):
+	prevDist = None
+	prevLetter = None
+	for i,letter in enumerate(origlist):
+		sys.stderr.write(letter+" ")
+		if i < len(origlist)-1:
+			nextLetter = origlist[i+1]
+			key = letter+"-"+nextLetter
+			dist = distmatrix[key]*2
+		else:
+			dist = 10000
+
+		if prevDist is None or dist < prevDist:
+			for j in range(dist):
+				sys.stderr.write("_")
+			sys.stderr.write("\n  ")
+			for j in range(dist):
+				sys.stderr.write(" ")
+			sys.stderr.write("|")
+			if prevDist is not None:
+				for j in range(prevDist-dist-1):
+					sys.stderr.write("_")
+			sys.stderr.write("\n")
+		else:
+			for j in range(prevDist):
+				sys.stderr.write("_")
+			sys.stderr.write("|")
+			if dist < 100:
+				for j in range(dist-prevDist-1):
+					sys.stderr.write("_")
+			sys.stderr.write("\n  ")
+			for j in range(prevDist):
+				sys.stderr.write(" ")
+			sys.stderr.write("\n")
+		prevDist = dist
+		prevLetter = letter
+	return
+
+#====================
+def printTree2(origlist, distmatrix):
 	for i,l1 in enumerate(origlist):
 		sys.stderr.write(l1+" ")
 		if i > 0:
@@ -111,6 +150,6 @@ if __name__ == '__main__':
 	rev = copy.copy(origlist)
 	rev.reverse()
 	print "\n"
-	printTree(rev, distmatrix)
+	printTree2(rev, distmatrix)
 
 	printMatrix(origlist, distmatrix)
