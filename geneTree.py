@@ -7,6 +7,11 @@ import random
 import pprint
 #from skbio.tree import nj
 
+### TODO
+# 1. more alphabetical order of genes in tree
+# 2. add deviations to distance matrix to require averaging
+# 3. better tree construction, works with #1
+
 #====================
 def item2letters(item):
 	letters = []
@@ -127,6 +132,8 @@ if __name__ == '__main__':
 
 	itemlist = charlist[:num_items]
 	random.shuffle(itemlist)
+	if itemlist[0] > itemlist[-1]:
+		itemlist.reverse()
 	origlist = copy.copy(itemlist)
 	print itemlist
 	dist = 2
@@ -145,11 +152,8 @@ if __name__ == '__main__':
 		print itemlist
 	#pprint.pprint(distmatrix)
 
-	print "\n"
-	printTree(origlist, distmatrix)
-	rev = copy.copy(origlist)
-	rev.reverse()
-	print "\n"
-	printTree2(rev, distmatrix)
 
 	printMatrix(origlist, distmatrix)
+	print "\n"
+	printTree(origlist, distmatrix)
+
