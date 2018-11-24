@@ -119,8 +119,20 @@ def printMatrix(origlist, distmatrix):
 			sys.stderr.write("\t%d"%(d))
 		sys.stderr.write("\n")
 	sys.stderr.write("\n")
-	
-	
+
+def addItemsToBetterList(item1, item2, betterlist):
+	if item1< item2:
+		if len(item1) == 1:
+			betterlist.append(item1)
+		if len(item2) == 1:
+			betterlist.append(item2)
+	else:
+		if len(item2) == 1:
+			betterlist.append(item2)
+		if len(item1) == 1:
+			betterlist.append(item1)
+	return
+
 #====================
 if __name__ == '__main__':
 	if len(sys.argv) >= 2:
@@ -142,18 +154,22 @@ if __name__ == '__main__':
 		key = letter+"-"+letter
 		distmatrix[key] = 0
 
+	betterlist = []
 	while len(itemlist) > 1:
 		merge = random.randint(1,len(itemlist)-1)
-		print merge
 		addDistances(itemlist[merge-1], itemlist[merge], distmatrix)
+		addItemsToBetterList(itemlist[merge-1], itemlist[merge], betterlist)
 		itemlist[merge-1] = "("+itemlist[merge-1]+str(dist)+itemlist[merge]+")"
 		itemlist.pop(merge)
 		dist += random.randint(1,3)
 		print itemlist
-	#pprint.pprint(distmatrix)
+	print("\n")
+	pprint.pprint(origlist)
+	pprint.pprint(betterlist)
 
-
+	print("\n")
 	printMatrix(origlist, distmatrix)
-	print "\n"
-	printTree(origlist, distmatrix)
+
+	print("\n")
+	printTree(betterlist, distmatrix)
 
