@@ -92,8 +92,8 @@ if __name__ == '__main__':
 	answers.append( chromosome2_A + chromosome1_B )
 	answers.append( chromosome1_A + chromosome2_A[::-1] )
 	answers.append( chromosome1_B[::-1] + chromosome2_B )
-	
-	
+
+
 	#so many wrong answer to choose from, want a short answer
 	if len(chromosome1_A) < len(chromosome1_B):
 		chromosome_piece1 = chromosome1_A
@@ -120,13 +120,8 @@ if __name__ == '__main__':
 			wrong_answer = chromosome_piece2[::-1] + chromosome_piece1
 
 	answers.append(wrong_answer)
+	print "\n"
 
-	print ""
-
-
-# Two chromosomes with the gene sequences A B C D E and Q R S T U undergo a reciprocal translocation after
-# breaks in C D and R S.
-# Which one of the following is NOT a possible product of this translocation?
 
 	sys.stderr.write("\n")
 	sys.stderr.write("XXX. Two chromosomes with the gene sequences ")
@@ -139,7 +134,7 @@ if __name__ == '__main__':
 	sys.stderr.write(chromosome2_A[-1] + "|" + chromosome2_B[0])
 	sys.stderr.write(". Which one of the following is NOT a possible product of this translocation?")
 	sys.stderr.write("\n")
-	
+
 	random.shuffle(answers)
 	for i,a in enumerate(answers):
 		sys.stderr.write(charlist[i] + ". ")
@@ -147,26 +142,10 @@ if __name__ == '__main__':
 			sys.stderr.write(list2string(a, ""))
 		else:
 			sys.stderr.write(list2string(a[::-1], "") )
-		sys.stderr.write("\n")
+		sys.stderr.write("\t")
+		if a == wrong_answer:
+			correct_letter = charlist[i]
 
-	sys.stderr.write("\n")
-	sys.exit(1)
-
-	sys.stderr.write(("A total of %s genes "%(num2word[len(origlist)]))
-		+list2text(sortedlist)+" are closely linked in a single chromosome, but "
-		+"their order is unknown. ")
-	sys.stderr.write(("A total of %s deletions in the region are found "%(num2word[len(del_set)]))
-		+"to uncover recessive alleles of the genes as follows: ")
-	for i,deletion in enumerate(del_set):
-		sys.stderr.write("Deletion #%d uncovers the %s genes %s; "%(i+1, num2word[len(deletion)], list2text(deletion)))
-	sys.stderr.write("What the correct order for the %s genes? "%(num2word[len(origlist)]))
-	sys.stderr.write("Hint: the first gene on the end is gene %s.\n"%(origlist[0]))
-
-	sys.stderr.write("\n")
-	sys.stderr.write("Answer: %s\n"%(list2string(origlist)))
-	sys.stderr.write("\n")
-
-	#sys.stdout.write("Which one of the following is the correct order for the genes?")
-
-	sys.stderr.write("##########\n")
-
+	sys.stderr.write("\n\n")
+	sys.stderr.write("Answer: "+correct_letter)
+	sys.stderr.write("\n\n")
