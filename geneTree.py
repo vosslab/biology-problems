@@ -170,6 +170,8 @@ if __name__ == '__main__':
 	print("\n")
 	printMatrix(origlist, distmatrix)
 
-	print("\n")
-	printTree(betterlist, distmatrix)
+	#print("\n")
+	#printTree(betterlist, distmatrix)
 
+	print("\n")
+	printTree2(betterlist, distmatrix)
