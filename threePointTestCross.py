@@ -77,16 +77,16 @@ progenybase = 100/gcdfinal
 minprogeny =  900/progenybase
 maxprogeny = 6000/progenybase
 progs = numpy.arange(minprogeny, maxprogeny+1, 1, dtype=numpy.float64)*progenybase
-print(progs)
+#print(progs)
 numpy.random.shuffle(progs)
-print(progs)
+#print(progs)
 bases = progs * distances[0] * distances[1] / 1e4
-print(bases)
+#print(bases)
 devs = (bases - numpy.around(bases, 0))**2
-print(devs)
+#print(devs)
 argmin = numpy.argmin(devs)
 progeny = int(progs[argmin])
-print progeny
+print("total progeny: %d\n"%(progeny))
 
 print "determine parental type"
 types = ['+++', '++'+basetype[2], '+'+basetype[1]+'+', '+'+basetype[1]+basetype[2]]
