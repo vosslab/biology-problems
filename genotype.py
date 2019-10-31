@@ -19,5 +19,6 @@ if __name__ == '__main__':
 			genestr += string.uppercase[i] + string.lowercase[i]
 		else:
 			genestr += string.lowercase[i] + string.lowercase[i]
-		genestr += " "
+		genestr += "\t"
 	print genestr
+	print genestr.replace('\t', ' ')

@@ -14,10 +14,17 @@ if __name__ == '__main__':
 	#structure
 	gel = gellib.GelClass()
 	gel.setTextColumn("Suspect 5")
+
 	num_suspects = 5 #min 3
 	total_bands = 18
 	min_bands = 12
 	max_band_percent = 0.7
+	"""
+	num_suspects = 9 #min 3
+	total_bands = 24
+	min_bands = 14
+	max_band_percent = 0.6
+	"""
 
 	band_tree = gel.createBandTree(total_bands)
 	subsize = random.randint(min_bands, int(total_bands*max_band_percent)) 

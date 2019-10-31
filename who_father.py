@@ -37,6 +37,12 @@ if __name__ == '__main__':
 	total_bands = 18
 	min_bands = 10
 	max_band_percent = 0.65
+	"""
+	num_males = 9 #min 3
+	total_bands = 32
+	min_bands = 14
+	max_band_percent = 0.8
+	"""
 
 	band_tree = gel.createBandTree(total_bands)
 	subsize = random.randint(min_bands, int(total_bands*max_band_percent)) 

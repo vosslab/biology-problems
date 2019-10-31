@@ -9,6 +9,8 @@ import random
 from fractions import gcd
 
 basetype = 'def'
+if len(sys.argv) > 1:
+	basetype = sys.argv[1].strip()
 
 def tetradSetToString(tetradSet):
 	mystr = ("%s\t%s\t%s\t%s\t"

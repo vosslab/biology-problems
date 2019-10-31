@@ -85,7 +85,7 @@ if __name__ == '__main__':
 
 	print("Questions XX-XX. "
 			+"The following numbered sequences only contains half of a palindromic sequence. "
-			+"Match the correct lettered seqeuence that would finish and replace the 'N's in the sequence to make them palindromes. "
+			+"Match the correct lettered sequence that would finish and replace the 'N's in the sequence to make them palindromes. "
 			+"Letters will be used exactly once.")
 
 	random.shuffle(choices)
