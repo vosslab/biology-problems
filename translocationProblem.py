@@ -57,28 +57,30 @@ def drawChromosomeCut(chromolist, cut):
 #====================
 if __name__ == '__main__':
 	if len(sys.argv) >= 2:
-		num_items = int(sys.argv[1])
+		min_size = int(sys.argv[1])
 	else:
-		num_items = 7
-	if num_items < 4:
+		min_size = 5
+	if min_size < 4:
 		print("Sorry, you must have at least 4 genes for this program")
 		sys.exit(1)
-	if num_items > 20:
-		print("Sorry, you must have less than 20 genes for this program")
+	if min_size > 9:
+		print("Sorry, you cant have a minimum bigger than 9 genes per chromosome for this program")
 		sys.exit(1)
+
+	print("Minimum chromosome size: %d"%(min_size))
 
 	charlist = list("ABCDEFGHJKMPQRSTWXYZ")
 
-	chromosome1_size = random.randint(4, num_items)
+	chromosome1_size = random.randint(min_size, 10)
 	chromosome1 = charlist[:chromosome1_size]
 
-	chromosome2_size = random.randint(4, num_items)
+	chromosome2_size = random.randint(min_size, len(charlist)-chromosome1_size-1)
 	chromosome2_shift = random.randint(chromosome1_size+1, len(charlist)-chromosome2_size)
 	chromosome2 = charlist[chromosome2_shift:chromosome2_shift+chromosome2_size]
 
 	chromosome1_cut = random.randint(1, chromosome1_size-1)
 	chromosome2_cut = random.randint(1, chromosome2_size-1)
-	print chromosome1_cut, chromosome2_cut
+	#print chromosome1_cut, chromosome2_cut
 
 	print chromosome1, chromosome2
 	print drawChromosomeCut(chromosome1, chromosome1_cut)

@@ -21,7 +21,18 @@ def item2letters(item):
 	return letters
 
 #====================
-def addDistances(item1, item2, distmatrix):
+def distributeDistances(dist):
+	dist1 = 0
+	dist2 = 0
+	for i in range(2*dist):
+		if random.random() < 0.5:
+			dist1 += 1
+		else:
+			dist2 += 1
+	return (dist1, dist2)
+
+#====================
+def addDistances(item1, item2, distmatrix, dist):
 	letters1 = item2letters(item1)
 	letters2 = item2letters(item2)
 	for l1 in letters1:
@@ -120,6 +131,7 @@ def printMatrix(origlist, distmatrix):
 		sys.stderr.write("\n")
 	sys.stderr.write("\n")
 
+#====================
 def addItemsToBetterList(item1, item2, betterlist):
 	if item1< item2:
 		if len(item1) == 1:
@@ -157,11 +169,11 @@ if __name__ == '__main__':
 	betterlist = []
 	while len(itemlist) > 1:
 		merge = random.randint(1,len(itemlist)-1)
-		addDistances(itemlist[merge-1], itemlist[merge], distmatrix)
+		addDistances(itemlist[merge-1], itemlist[merge], distmatrix, dist)
 		addItemsToBetterList(itemlist[merge-1], itemlist[merge], betterlist)
 		itemlist[merge-1] = "("+itemlist[merge-1]+str(dist)+itemlist[merge]+")"
 		itemlist.pop(merge)
-		dist += random.randint(1,3)
+		dist += random.randint(2,6)
 		print itemlist
 	print("\n")
 	pprint.pprint(origlist)
