@@ -20,5 +20,5 @@ if __name__ == '__main__':
 		else:
 			genestr += string.lowercase[i] + string.lowercase[i]
 		genestr += "\t"
-	print genestr
-	print genestr.replace('\t', ' ')
+	print(genestr)
+	print(genestr.replace('\t', ' '))

@@ -67,7 +67,7 @@ if __name__ == '__main__':
 		print("Sorry, you cant have a minimum bigger than 9 genes per chromosome for this program")
 		sys.exit(1)
 
-	print("Minimum chromosome size: %d"%(min_size))
+	print(("Minimum chromosome size: %d"%(min_size)))
 
 	charlist = list("ABCDEFGHJKMPQRSTWXYZ")
 
@@ -82,9 +82,9 @@ if __name__ == '__main__':
 	chromosome2_cut = random.randint(1, chromosome2_size-1)
 	#print chromosome1_cut, chromosome2_cut
 
-	print chromosome1, chromosome2
-	print drawChromosomeCut(chromosome1, chromosome1_cut)
-	print drawChromosomeCut(chromosome2, chromosome2_cut)
+	print(chromosome1, chromosome2)
+	print(drawChromosomeCut(chromosome1, chromosome1_cut))
+	print(drawChromosomeCut(chromosome2, chromosome2_cut))
 
 	chromosome1_A, chromosome1_B = cutChromosome(chromosome1, chromosome1_cut)
 	chromosome2_A, chromosome2_B = cutChromosome(chromosome2, chromosome2_cut)
@@ -122,7 +122,7 @@ if __name__ == '__main__':
 			wrong_answer = chromosome_piece2[::-1] + chromosome_piece1
 
 	answers.append(wrong_answer)
-	print "\n"
+	print("\n")
 
 
 	sys.stderr.write("\n")

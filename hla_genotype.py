@@ -11,10 +11,10 @@ def createMarker(num_markers):
 	markers = []
 	for i in range(num_markers):
 		letter = charlist[i]
-		num = random.choice(range(1,10))
+		num = random.choice(list(range(1,10)))
 		marker = "%s%d"%(letter, num)
 		while used_markers.get(marker) is not None:
-			num = random.choice(range(1,10))
+			num = random.choice(list(range(1,10)))
 			marker = "%s%d"%(letter, num)
 		used_markers[marker] = True
 		markers.append(marker)
@@ -60,8 +60,8 @@ if __name__ == '__main__':
 	mom2 = createMarker(num_markers)
 	dad1 = createMarker(num_markers)
 	dad2 = createMarker(num_markers)
-	print mom1, mom2, dad1, dad2
-	print ""
+	print(mom1, mom2, dad1, dad2)
+	print("")
 
 	question = "XXX. "
 	question += ("A mother has a HLA genotype of %s on one chromosome and %s on the other. "
@@ -107,6 +107,6 @@ if __name__ == '__main__':
 	for i in range(len(stringanswers)):
 		c = charlist[i]
 		a = stringanswers[i]
-		print ("%s. %s"%(c,a))
+		print(("%s. %s"%(c,a)))
 	
 	

@@ -8,14 +8,14 @@ import gellib
 
 def isFather(child, mother, male):
 	#check if the male is the father
-	print "father check", child - mother - male
+	print("father check", child - mother - male)
 	if len(child - mother - male) == 0:
 		return True
 	return False
 
 def haveBaby(mother, father, num_males=3):
 	diffs = father - mother
-	print diffs
+	print(diffs)
 	if len(diffs) < 2:
 		sys.exit(1)
 	child = set()
@@ -62,12 +62,12 @@ if __name__ == '__main__':
 
 	child = haveBaby(mother, father, num_males)
 	musthave = child - mother
-	print "mother", sorted(mother)
-	print "child ", sorted(child)
-	print "father", sorted(father)
-	print "musthv", sorted(musthave)
+	print("mother", sorted(mother))
+	print("child ", sorted(child))
+	print("father", sorted(father))
+	print("musthv", sorted(musthave))
 	ignore = mother.intersection(child)
-	print "ignore", sorted(ignore)
+	print("ignore", sorted(ignore))
 
 	if len(musthave) < num_males-1:
 		#start over
@@ -97,7 +97,7 @@ if __name__ == '__main__':
 		isfather = isFather(child, mother, male)
 		if isfather:
 			dadcount += 1
-		print("Male #%d: %s -- %s"%(i+1, str(sorted(male)), isfather))
+		print(("Male #%d: %s -- %s"%(i+1, str(sorted(male)), isfather)))
 		gel.drawLane(male, "Male %d"%(i+1))
 	if dadcount != 1:
 		print("wrong number of fathers")

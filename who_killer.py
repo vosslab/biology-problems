@@ -35,15 +35,15 @@ if __name__ == '__main__':
 		subsize = random.randint(min_bands, int(total_bands*max_band_percent)) 
 		suspect = gel.getRandomSubSet(total_bands, subsize)
 		suspects.append(suspect)
-	print suspects
+	print(suspects)
 
 
 	allbands = set(range(total_bands))
 	killer = random.choice(suspects)
 	blood = victim.union(killer)
-	print victim
-	print blood
-	print killer
+	print(victim)
+	print(blood)
+	print(killer)
 	canthave = allbands - blood
 	musthave = blood - victim
 	ignore = victim.intersection(killer)
@@ -80,7 +80,7 @@ if __name__ == '__main__':
 		iskiller = isKiller(blood, victim, suspect)
 		if iskiller:
 			killcount += 1
-		print("Suspect #%d: %s"%(i+1, iskiller))
+		print(("Suspect #%d: %s"%(i+1, iskiller)))
 		gel.drawLane(suspect, "Suspect %d"%(i+1))
 	if killcount != 1:
 		"wrong number of killers"

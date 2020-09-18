@@ -47,32 +47,32 @@ f.close()
 qcount = 1
 
 #gene order
-print "selecting gene order"
+print("selecting gene order")
 geneorder = random.choice([basetype, basetype2, basetype3])
-print geneorder
+print(geneorder)
 
-print "determine gene distances"
+print("determine gene distances")
 a = numpy.random.poisson(lam=12, size=7)
 a.sort()
 distances = [a[0], a[-1]]
 random.shuffle(distances)
-print distances
+print(distances)
 
-print "------------"
+print("------------")
 answerString = ("%d. %s - %d - %s - %d - %s"
 	%(qcount, geneorder[0],distances[0],geneorder[1],distances[1],geneorder[2]))
-print answerString
-print "------------"
+print(answerString)
+print("------------")
 
-print "determine double crossovers"
+print("determine double crossovers")
 doublecross = distances[0]*distances[1]/100.
-print "doublecross", doublecross*10, 'per 1000'
+print("doublecross", doublecross*10, 'per 1000')
 
-print "determine progeny size"
+print("determine progeny size")
 gcd1 = gcd(distances[0], 100)
 gcd2 = gcd(distances[1], 100)
 gcdfinal = gcd(gcd1, gcd2)
-print "Final GCD", gcdfinal
+print("Final GCD", gcdfinal)
 progenybase = 100/gcdfinal
 minprogeny =  900/progenybase
 maxprogeny = 6000/progenybase
@@ -86,38 +86,38 @@ devs = (bases - numpy.around(bases, 0))**2
 #print(devs)
 argmin = numpy.argmin(devs)
 progeny = int(progs[argmin])
-print("total progeny: %d\n"%(progeny))
+print(("total progeny: %d\n"%(progeny)))
 
-print "determine parental type"
+print("determine parental type")
 types = ['+++', '++'+basetype[2], '+'+basetype[1]+'+', '+'+basetype[1]+basetype[2]]
 parental = random.choice(types)
-print parental, invertType(parental)
+print(parental, invertType(parental))
 
 typemap1 = {}
-print "determine double type"
+print("determine double type")
 doubletype = flipGene(parental, geneorder[1])
 doublecount = int(round(doublecross*progeny/100.))
-print doubletype, invertType(doubletype), doublecount
+print(doubletype, invertType(doubletype), doublecount)
 typemap1[doubletype] = doublecount
 
-print "determine first flip"
+print("determine first flip")
 firsttype = flipGene(parental, geneorder[0])
 firstcount = int(round(distances[0]*progeny/100.)) - doublecount
-print firsttype, invertType(firsttype), firstcount
+print(firsttype, invertType(firsttype), firstcount)
 typemap1[firsttype] = firstcount
 
-print "determine second flip"
+print("determine second flip")
 secondtype = flipGene(parental, geneorder[2])
 secondcount = int(round(distances[1]*progeny/100.)) - doublecount
-print secondtype, invertType(secondtype), secondcount
+print(secondtype, invertType(secondtype), secondcount)
 typemap1[secondtype] = secondcount
 
-print "determine parental type count"
+print("determine parental type count")
 parentcount = progeny - doublecount - firstcount - secondcount
-print parental, invertType(parental), parentcount
+print(parental, invertType(parental), parentcount)
 typemap1[parental] = parentcount
 
-print "\n\ngenerate table"
+print("\n\ngenerate table")
 typemap = {}
 for t in types:
 	n = invertType(t)
@@ -139,7 +139,7 @@ for t in types:
 	typemap[t] = tcount
 	typemap[n] = ncount
 sys.stderr.write("\n")
-alltypes = typemap.keys()
+alltypes = list(typemap.keys())
 alltypes.sort()
 
 questionString = "\nQuestion %d:\n"%(qcount)
@@ -147,7 +147,7 @@ for t in alltypes:
 	questionString += ("%s\t%s\t%s\t%d\n"%(t[0], t[1], t[2], typemap[t]))
 questionString +=  "\t\t\t-----\n"
 questionString +=  "\t\tTOTAL\t%d\n\n"%(progeny)
-print questionString
+print(questionString)
 
 """
 f = open(afile, "a")

@@ -35,7 +35,7 @@ for i in range(len(population_list_list)):
 	population_list = population_list_list[i]
 	label = "r = %.3f"%(growth_rates[i])
 	nums = numpy.around(population_list, 5)*population_multiplier
-	pyplot.plot(range(num_generations+1), nums, label=labels[i])
+	pyplot.plot(list(range(num_generations+1)), nums, label=labels[i])
 pyplot.xlabel("Generation Number")
 pyplot.ylabel("Population")
 pyplot.legend(bbox_to_anchor=(0.65, 0.3), loc=2, borderaxespad=0.)

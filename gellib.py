@@ -64,7 +64,7 @@ class GelClass(object):
 		self.img.save(filename, "PNG")
 
 	def getRandomSubSet(self, setsize, subsize):
-		subindex = random.sample(xrange(setsize), subsize)
+		subindex = random.sample(range(setsize), subsize)
 		return set(subindex)
 
 	def indexToSubSet(self, mylist, indices):

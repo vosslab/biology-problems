@@ -55,7 +55,7 @@ if __name__ == '__main__':
 	origlist = copy.copy(itemlist)
 	sortedlist = copy.copy(itemlist)
 	sortedlist.sort()
-	print itemlist
+	print(itemlist)
 
 	num_deletions = 5
 	min_deletion_size = 2
@@ -105,12 +105,12 @@ if __name__ == '__main__':
 		if add_value > 0 and not deletion in del_set:
 			i+=1
 			del_set.append(deletion)
-			print("Del %d: %s"%(i, str(deletion)))
+			print(("Del %d: %s"%(i, str(deletion))))
 			#print(split_gene_pairs)
 			#print i, len(used_genes), delsize, delstart, deletion
 	print("")
-	print("Total used gene pairs: %d"%(len(used_gene_pairs)))
-	print("Total split gene pairs: %d"%(len(split_gene_pairs)))
+	print(("Total used gene pairs: %d"%(len(used_gene_pairs))))
+	print(("Total split gene pairs: %d"%(len(split_gene_pairs))))
 
 	print("\n##########\n")
 

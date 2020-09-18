@@ -42,7 +42,7 @@ def fiveLetters(choice):
 if __name__ == '__main__':
 	nt1 = random.choice(('A', 'C', 'T', 'G'))
 	nt2 = complement(nt1)
-	print("letters used: %s and %s"%(nt1, nt2))
+	print(("letters used: %s and %s"%(nt1, nt2)))
 
 	choices = []
 	choices.append(nt1+nt1+nt2)
@@ -57,17 +57,17 @@ if __name__ == '__main__':
 	
 	choice = unusedchoices.pop()
 	question = oneLetter(choice)
-	print("%s -> %s"%(choice, question))
+	print(("%s -> %s"%(choice, question)))
 	questions.append(question)
 	
 	choice = unusedchoices.pop()
 	question = threeLetters(choice)
-	print("%s -> %s"%(choice, question))
+	print(("%s -> %s"%(choice, question)))
 	questions.append(question)
 
 	choice = unusedchoices.pop()
 	question = fiveLetters(choice)
-	print("%s -> %s"%(choice, question))
+	print(("%s -> %s"%(choice, question)))
 	questions.append(question)
 	
 	choice = unusedchoices.pop()
@@ -78,15 +78,15 @@ if __name__ == '__main__':
 		question = threeLetters(choice)
 	else:
 		question = fiveLetters(choice)
-	print("%s -> %s"%(choice, question))
+	print(("%s -> %s"%(choice, question)))
 	print("")
 
 	questions.append(question)
 
-	print("Questions XX-XX. "
+	print(("Questions XX-XX. "
 			+"The following numbered sequences only contains half of a palindromic sequence. "
 			+"Match the correct lettered sequence that would finish and replace the 'N's in the sequence to make them palindromes. "
-			+"Letters will be used exactly once.")
+			+"Letters will be used exactly once."))
 
 	random.shuffle(choices)
 	letters = "ABCDE"

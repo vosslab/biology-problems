@@ -159,7 +159,7 @@ if __name__ == '__main__':
 	if itemlist[0] > itemlist[-1]:
 		itemlist.reverse()
 	origlist = copy.copy(itemlist)
-	print itemlist
+	print(itemlist)
 	dist = 2
 	distmatrix = {}
 	for letter in itemlist:
@@ -174,7 +174,7 @@ if __name__ == '__main__':
 		itemlist[merge-1] = "("+itemlist[merge-1]+str(dist)+itemlist[merge]+")"
 		itemlist.pop(merge)
 		dist += random.randint(2,6)
-		print itemlist
+		print(itemlist)
 	print("\n")
 	pprint.pprint(origlist)
 	pprint.pprint(betterlist)

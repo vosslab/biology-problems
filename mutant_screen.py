@@ -17,7 +17,7 @@ if __name__ == '__main__':
 	for i in range(len(metabolites)-1):
 		sys.stderr.write(metabolites[i]+" -> ")
 	sys.stderr.write(metabolites[-1])
-	print ""
+	print("")
 
 	classes = copy.copy(ordered)
 	random.shuffle(classes)
@@ -45,7 +45,7 @@ if __name__ == '__main__':
 				sys.stderr.write('-\t')
 		sys.stderr.write('\n')
 
-	print ""
+	print("")
 
 
 

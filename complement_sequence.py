@@ -27,14 +27,14 @@ if __name__ == '__main__':
 	answers.append(seq)
 	answers.append(seq[::-1])
 
-	print("source: 5'-%s-3'"%(seq))
+	print(("source: 5'-%s-3'"%(seq)))
 	compl = complement(seq)
 	answers.append(compl)
 	half = int(seqlen//2)
 	answers.append(compl[::-1])
 	#print compl
 	if seq == compl:
-		print "oops"
+		print("oops")
 		sys.exit(1)
 
 	nube = seq[:half] + compl[half:]
@@ -45,6 +45,6 @@ if __name__ == '__main__':
 	for i in range(len(answers)):
 		a = answers[i]
 		c = charlist[i]
-		print("%s. 5'-%s-3'"%(c, a))
+		print(("%s. 5'-%s-3'"%(c, a)))
 		
 		
