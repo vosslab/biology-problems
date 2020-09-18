@@ -4,13 +4,17 @@ import sys
 import copy
 import random
 
-
 nt2name = {
 	'A':	'adenine',
 	'C':	'cytosine',
 	'G':	'guanine',
 	'T':	'thymine',
 	'U':	'uracil',
+	'Ade':	'adenine',
+	'Cyt':	'cytosine',
+	'Gua':	'guanine',
+	'Thy':	'thymine',
+	'Ura':	'uracil',
 }
 
 complement = {
@@ -18,23 +22,51 @@ complement = {
 	'T': 'A',
 	'G': 'C',
 	'C': 'G',
+	'Ade': 'Thy',
+	'Thy': 'Ade',
+	'Gua': 'Cyt',
+	'Cyt': 'Gua',
 }
 
-def printChoice(letter, nts, valuelist):
-	mystr = ("%s. %s:%d, %s:%d, %s:%d"
-		%(letter, nts[0], valuelist[0], nts[1], valuelist[1], nts[2], valuelist[2]))
+def getAnswer(nt1, percent):
+	#nt2 = complement(nt1)
+	offperc = 50 - percent
+	if nt1.startswith("A"):
+		#CGT
+		answer = [offperc, offperc, percent]
+	elif nt1.startswith("C"):
+		#AGT
+		answer = [offperc, percent, offperc]
+	elif nt1.startswith("G"):
+		#ACT
+		answer = [offperc, percent, offperc]
+	elif nt1.startswith("T"):
+		#ACG
+		answer = [percent, offperc, offperc]
+	return answer
+
+def printChoice(letter, nts, valuelist, prefix):
+	mystr = ("%s%s. %s:%d, %s:%d, %s:%d"
+		%(prefix, letter, nts[0], valuelist[0], nts[1], valuelist[1], nts[2], valuelist[2]))
 	return mystr
 
 if __name__ == '__main__':
+	if len(sys.argv) > 1:
+		percent = int(sys.argv[1])
+	else:
+		percent = random.choice((10, 15, 20, 30, 35, 40))
 
-	percent = random.choice((10, 15, 20, 30, 35, 40))
 
-	nts = ['A', 'C', 'T', 'G']
+
+	nts = ['Ade', 'Cyt', 'Thy', 'Gua']
 	random.shuffle(nts)
 	nt1 = nts.pop()
+	nts.sort()
 
-	question = "XXX. In a sample of double stranded DNA, %d%s is %s. "%(percent, '%', nt2name[nt1])
+	question = "2. In a sample of double stranded DNA, %d%s is %s. "%(percent, '%', nt2name[nt1])
 	question += "What are the percentages of the other three (3) bases?"
+
+	answer = getAnswer(nt1, percent)
 
 	print(question)
 	choices = []
@@ -57,7 +89,10 @@ if __name__ == '__main__':
 	for i in range(len(choices)):
 		valuelist = choices[i]
 		letter = letters[i]
-		mystr += printChoice(letter, nts, valuelist)
-		mystr += "\t"
+		prefix = ""
+		if valuelist == answer:
+			prefix = "*"
+		mystr += printChoice(letter, nts, valuelist, prefix)
+		mystr += "\n"
 	print(mystr)
 	
