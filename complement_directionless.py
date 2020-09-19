@@ -15,7 +15,7 @@ if __name__ == '__main__':
 	answer = seqlib.complement(seq)
 
 	#============================
-	print("1. Which one of the following DNA sequences is complimentary to the direction-less DNA sequence <span style='font-family: monospace;'>%s</span>?"%(seq))
+	print("1. Which one of the following DNA sequences is complimentary to the direction-less DNA sequence {0} ?".format(seqlib.html_monospace(seq)))
 
 	#============================
 	choices = []

@@ -66,7 +66,7 @@ def get_enzyme_list():
 		if not re.match("^[A-Z][a-z][a-z]", item):
 			#print(item)
 			continue
-		enzyme_class = getattr(Restriction, item)
+		enzyme_class = enzyme_name_to_class(item)
 		if not hasattr(enzyme_class, 'site'):
 			#print(item)
 			continue
@@ -97,11 +97,17 @@ def get_enzyme_list():
 	return enzymes
 
 #========================================
+def enzyme_name_to_class(enzyme_name):
+	enzyme_class = getattr(Restriction, enzyme_name)
+	return enzyme_class
+
+
+#========================================
 def random_enzyme(enzymes=None):
 	if enzymes is None:
 		enzymes = get_enzyme_list()
 	enzyme_name = random.choice(enzymes)
-	enzyme_class = getattr(Restriction, enzyme_name)
+	enzyme_class = enzyme_name_to_class(enzyme_name)
 	return enzyme_class
 
 #========================================
@@ -111,7 +117,7 @@ def random_enzyme_with_overhang(enzymes=None):
 	has_overhang = False
 	while has_overhang is False:
 		enzyme_name = random.choice(enzymes)
-		enzyme_class = getattr(Restriction, enzyme_name)
+		enzyme_class = enzyme_name_to_class(enzyme_name)
 		overhang = enzyme_class.overhang()
 		has_overhang = overhang.endswith('overhang')
 	return enzyme_class
@@ -126,7 +132,7 @@ def format_enzyme(enzyme_class):
 
 #========================================
 def html_monospace(txt):
-	return "<span style='font-family: monospace;'>{0}</span>".format(txt)
+	return "<span style='font-family: 'andale mono', 'courier new', courier, monospace;'>{0}</span>".format(txt)
 
 #========================================
 #========================================

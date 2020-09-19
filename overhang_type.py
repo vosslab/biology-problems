@@ -49,9 +49,7 @@ def writeQuestion(enzyme_class, overhang_type):
 		if choice_msg == answer:
 			prefix = "*"
 		print("{0}{1}. {2}".format(prefix, letter, choice_msg))
-
-
-
+	print("")
 
 if __name__ == '__main__':
 
@@ -61,9 +59,11 @@ if __name__ == '__main__':
 		#just the name
 		overhang_type = True
 
-	enzymes = restrictlib.get_enzyme_list()
-	enzyme_class = restrictlib.random_enzyme(enzymes)
-	writeQuestion(enzyme_class, overhang_type)
+	enzyme_names = restrictlib.get_enzyme_list()
+
+	for enzyme_name in enzyme_names:
+		enzyme_class = restrictlib.enzyme_name_to_class(enzyme_name)
+		writeQuestion(enzyme_class, overhang_type)
 
 
 

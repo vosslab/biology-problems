@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import sys
-import copy
 import random
 
 nt2name = {
@@ -15,6 +14,24 @@ nt2name = {
 	'Gua':	'guanine',
 	'Thy':	'thymine',
 	'Ura':	'uracil',
+}
+
+canonical = {
+	'A':	'Ade',
+	'C':	'Cyt',
+	'G':	'Gua',
+	'T':	'Thy',
+	'U':	'Ura',
+	'Ade':	'Ade',
+	'Cyt':	'Cyt',
+	'Gua':	'Gua',
+	'Thy':	'Thy',
+	'Ura':	'Ura',
+	'adenine':	'Ade',
+	'cytosine':	'Cyt',
+	'guanine':	'Gua',
+	'thymine':	'Thy',
+	'uracil':	'Ura',
 }
 
 complement = {
@@ -54,13 +71,26 @@ if __name__ == '__main__':
 	if len(sys.argv) > 1:
 		percent = int(sys.argv[1])
 	else:
-		percent = random.choice((10, 15, 20, 30, 35, 40))
+		#percent = random.choice((10, 15, 20, 30, 35, 40))
+		if random.random() < 0.5:
+			percent = random.randint(1,23)
+		else:
+			percent = random.randint(27,49)
 
+	nt1 = None
+	if len(sys.argv) > 2:
+		text = sys.argv[2].strip()
+		keys = list(canonical.keys())
+		if text in keys:
+			nt1 = canonical[text]
 
 
 	nts = ['Ade', 'Cyt', 'Thy', 'Gua']
 	random.shuffle(nts)
-	nt1 = nts.pop()
+	if nt1 is None:
+		nt1 = nts.pop()
+	else:
+		nts.remove(nt1)
 	nts.sort()
 
 	question = "2. In a sample of double stranded DNA, %d%s is %s. "%(percent, '%', nt2name[nt1])

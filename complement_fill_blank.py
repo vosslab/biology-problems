@@ -14,7 +14,7 @@ if __name__ == '__main__':
 	answer = seqlib.complement(seq)
 	
 	#============================
-	print("blank 1. What is the complimentary DNA sequence to the direction-less DNA sequence <span style='font-family: monospace;'>{0}</span>?".format(seq))
+	print("blank 1. What is the complimentary DNA sequence to the direction-less DNA sequence {0} ?".format(seqlib.html_monospace(seq)))
 
 	#============================
 	print("A. {0}".format(answer))

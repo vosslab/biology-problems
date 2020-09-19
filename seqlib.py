@@ -77,6 +77,10 @@ def makeSequence(seqlen=10):
 
 	return seq
 
+#========================================
+def html_monospace(txt):
+	return "<span style='font-family: 'andale mono', 'courier new', courier, monospace;'>{0}</span>".format(txt)
+
 #=========================
 def _makeSequence(seqlen=10):
 	seq = ""
