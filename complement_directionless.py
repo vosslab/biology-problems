@@ -34,7 +34,9 @@ if __name__ == '__main__':
 	extra_choices.append(seqlib.flip(answer[:half]) + answer[half:])
 	extra_choices.append(answer[:half] + seqlib.flip(answer[half:]))
 	extra_choices.append(answer[:half] + seqlib.flip(seq[half:]))
+	random.shuffle(extra_choices)
 	extra_choices = list(set(extra_choices))
+	random.shuffle(extra_choices)
 
 	for i in range(3):
 		choices.append(extra_choices.pop())
