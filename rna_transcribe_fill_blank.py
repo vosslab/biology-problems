@@ -14,7 +14,7 @@ if __name__ == '__main__':
 	answer = seqlib.transcribe(seqlib.complement(seq))
 	
 	#============================
-	print("blank 1. What is the RNA sequence to the template strand DNA sequence <span style='font-family: monospace;'>{0}</span>?".format(seq))
+	print("blank 1. What is the RNA sequence to the DNA template strand sequence <span style='font-family: monospace;'>{0}</span>?".format(seq))
 
 	#============================
 	print("A. {0}".format(answer))
