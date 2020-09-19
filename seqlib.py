@@ -75,7 +75,6 @@ def makeSequence(seqlen=10):
 		elif compl[-half:] == flip(seq[-half:]):
 			endloop = False
 
-
 	return seq
 
 #=========================
@@ -87,6 +86,7 @@ def _makeSequence(seqlen=10):
 
 #=========================
 def transcribe(dna):
+	#assumes dna sequence is the non-template/coding strand
 	rna = copy.copy(dna)
 	rna = rna.replace('T', 'U')
 	return rna
