@@ -101,7 +101,6 @@ def enzyme_name_to_class(enzyme_name):
 	enzyme_class = getattr(Restriction, enzyme_name)
 	return enzyme_class
 
-
 #========================================
 def random_enzyme(enzymes=None):
 	if enzymes is None:
