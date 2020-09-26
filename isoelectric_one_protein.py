@@ -29,21 +29,6 @@ def parse_protein_file():
 		print("Read data for {0} proteins".format(len(protein_tree)))
 	return protein_tree
 
-def random_select_proteins(protein_tree):
-	random.shuffle(protein_tree)
-	protein1 = protein_tree.pop()
-	if debug is True:
-		print("Selected: pI={0:.1f}, {1}".format(protein1['pI'], protein1['fullname']))
-	pI1 = protein1['pI']
-	pI2 = protein1['pI']
-	while abs(pI1 - pI2) < 1.5:
-		random.shuffle(protein_tree)
-		protein2 = protein_tree.pop()
-		pI2 = protein2['pI']
-	if debug is True:
-		print("Selected: pI={0:.1f}, {1}".format(protein2['pI'], protein2['fullname']))
-	return protein1, protein2
-
 def get_midpoint_pH(protein1, protein2):
 	pI1 = protein1['pI']
 	pI2 = protein2['pI']
@@ -83,7 +68,8 @@ def get_peak_pH(protein1, protein2):
 	return best_peak_pI,other_peak_pI
 
 def writeQuestion(protein1, protein2, pH, N=77):
-	question = "{0:d}. <h6>Isoelectric Point Problem</h6> ".format(N)
+	question = "\n"
+	question += "{0:d}. <h6>Isoelectric Point Problem</h6> ".format(N)
 	question += "<p>A mixture of two proteins are to be separated by isoelectric focusing.</p> "
 	question += ('<table cellpadding="2" cellspacing="2" style="text-align:center; border: 1px solid black; font-size: 14px;">')
 	question += ('<tr><th>Protein Name</th><th>isoelectric point (pI)</th><th>molecular weight</th></tr>')
@@ -91,11 +77,24 @@ def writeQuestion(protein1, protein2, pH, N=77):
 	question += ('<tr><td>{0} ({1})</td><td align="right">{2:.1f}</td><td align="right">{3:.1f}</td></tr>'.format(protein2['fullname'], protein2['abbr'], protein2['pI'], protein2['MW']))
 	question += "</table>"
 	question += '<p>Both protein samples are placed into a gel with a constant pH of {0:.1f}. '.format(pH)
-	question += 'The gel is then placed into an electric field. '
+	question += 'The gel is then placed into an electric field.</p> '
 	'<span style="color:darkblue">'
 	'<span style="color:darkred">'
 
-	question += "In which direction will each protein in the table migrate at pH {0:.1f}</p>".format(pH)
+	question += "<p>In which direction will each protein in the table migrate at <b>pH {0:.1f}<b></p>".format(pH)
+
+	if pH > protein1['pI'] and pH > protein2['pI']:
+		#both have negative charge; go towards positive
+		answer_number = 1
+	elif pH < protein1['pI'] and pH < protein2['pI']:
+		#both have positive charge; go towards negative
+		answer_number = 2
+	elif protein1['pI'] > pH > protein2['pI']:
+		#protein 1 is negative and protein 2 is positive; protein 1 goes positive and protein 2 goes negative
+		answer_number = 3
+	elif protein1['pI'] < pH < protein2['pI']:
+		#protein 1 is positive and protein 2 is negative; protein 1 goes negative and protein 2 goes positive
+		answer_number = 4
 
 	ab1 = protein1['abbr']
 	ab2 = protein2['abbr']
@@ -105,22 +104,35 @@ def writeQuestion(protein1, protein2, pH, N=77):
 	answer4 = '{0} will travel towards the <span style="color:darkred">negative (&ndash;)</span> and {1} will travel towards the <span style="color:darkblue">positive (+)</span> '.format(ab1, ab2)
 	answers = [answer1, answer2, answer3, answer4]
 
-	return question, answers
+	return question, answers, answer_number
 
 
-def printQuestion(question, answers):
+def printQuestion(question, answers, answer_number):
 	letters = "ABCDEFGH"
 	print(question)
 	for i in range(len(answers)):
 		answer = answers[i]
-		print("{0}. {1}".format(letters[i], answer))
+		prefix = ''
+		if i+1 == answer_number:
+			prefix = '*'
+		print("{0}{1}. {2}".format(prefix, letters[i], answer))
+
 
 if __name__ == '__main__':
+	question_count = 0
 	protein_tree = parse_protein_file()
-	protein1, protein2 = random_select_proteins(protein_tree)
-	midpoint_pH = get_midpoint_pH(protein1, protein2)
-	best_peak_pI,other_peak_pI = get_peak_pH(protein1, protein2)
-	question, answers = writeQuestion(protein1, protein2, best_peak_pI)
-	printQuestion(question, answers)
+	answer_count = {1:0, 2:0, 3:0, 4:0}
+
+	for protein_dict in protein_tree:
+	
+		pH_list = [midpoint_pH, best_peak_pI, other_peak_pI, midpoint_pH]
+		for pH in pH_list:
+			if pH < 2 or pH > 12:
+				continue
+			question_count += 1
+			question, answers, answer_number = writeQuestion(protein1, protein2, pH, question_count)
+			printQuestion(question, answers, answer_number)
+			answer_count[answer_number] += 1
+	print(answer_count)
 
 
