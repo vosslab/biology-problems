@@ -3,17 +3,17 @@
 import sys
 import csv
 import math
+#import numpy
 import random
 import proteinlib
 
-debug = False
-
 class GelMigration(object):
 	def __init__(self):
-		self.debug = True
+		self.debug = False
+		self.multiple_choice = True
 		proteinlib.debug = self.debug
-		self.slope = 1
-		self.intercept = 1
+		self.slope = 0.8
+		self.intercept = 5.5
 		self.min_mw = 13
 		self.max_mw = 70
 		self.protein_tree = proteinlib.parse_protein_file()
@@ -36,70 +36,167 @@ class GelMigration(object):
 
 	#==================================================
 	def molecular_weight_to_distance(self, mw):
-		dist = math.log(mw)*self.slope + self.intercept
+		dist = self.intercept - math.log(mw)*self.slope
 		return dist
 
 	#==================================================
-	def writeQuestion(self, protein_dict=None, N=44):
-		if protein_dict is None:
-			protein_dict = self.protein_tree[1]
-		question = "\n"
-		question += "{0:d}. <h6>Gel Migration Problem</h6> ".format(N)
-		question += ('<table cellpadding="2" cellspacing="2" style="text-align:center; border: 1px solid black; font-size: 14px;">')
-		question += ('<tr><th>Protein Name</th><th>molecular<br/>weight (kDa)</th><th>migration<br/>distance (cm)</th></tr>')
-		dist = self.molecular_weight_to_distance(protein_dict['MW'],)
-		question += ('<tr><td>{0} ({1})</td><td align="center">{2:.1f}</td><td align="center">{3:.1f}</td></tr>'.format(protein_dict['fullname'], protein_dict['abbr'], protein_dict['MW'], dist))
-		question += "</table>"
-		question += '<p>The protein in the table (above) is placed in a buffer solution with a pH of {0:.1f}.</p> '.format(0)
-		#question += '<p>Check all of the answers below that apply. </p> '
-		question += '<p>What is the correct net charge on the {0} protein at <b>pH of {1:.1f}</b>? '.format(protein_dict['abbr'], 0)
-	
-		'<span style="color:darkblue">'
-		'<span style="color:darkred">'
+	def distance_to_molecular_weight(self, dist):
+		mw = math.exp( (self.intercept - dist)/self.slope )
+		return mw
 
-		low_pH_answers = []
-		high_pH_answers = []
-		return question
+	#==================================================
+	def random_subset(self, size):
+		return random.sample(self.protein_tree, size)
+
+	#==================================================
+	def sort_by_molecular_weight(self, a, b):
+		if a['MW'] > b['MW']:
+			return True
+		return False
+
+	#==================================================
+	def get_protein_set_for_gel(self):
+		subset = self.random_subset(24)
+		subset = sorted(subset, key=lambda k: k['MW']) 
+		pull_size = 3
+
+		gel_set = []
+		#get one of the smallest
+		gel_set.append(subset[random.randint(1,pull_size)-1])
+		min_log_mw = math.log(gel_set[0]['MW'])
+		del subset[:pull_size]
+
+		#get one of the biggest
+		gel_set.append(subset[random.randint(-pull_size,-1)])
+		max_log_mw = math.log(gel_set[1]['MW'])
+		del subset[-pull_size:]
+
+		#need three more
+		log_slope = (max_log_mw - min_log_mw)/4.
+
+		prev_mw = 0
+		prev_prot_dict = None
+		index = 1
+		ideal_mw = math.exp(log_slope*index + min_log_mw)
+		if self.debug is True:
+			print("ideal_mw = {0:.1f}".format(ideal_mw))
+		for protein_dict in subset:
+			mw = protein_dict['MW']
+			if mw < ideal_mw:
+				prev_prot_dict = protein_dict
+				prev_mw = mw
+				continue
+			
+			if ideal_mw - mw < mw - prev_mw:
+				gel_set.append(protein_dict)
+			else:
+				gel_set.append(prev_prot_dict)
+			index += 1
+			ideal_mw = math.exp(log_slope*index + min_log_mw)
+			if self.debug is True:
+				print("ideal_mw = {0:.1f}".format(ideal_mw))
+			if index > 3:
+				break
+
+		gel_set = sorted(gel_set, key=lambda k: k['MW'])
+
+		if self.debug is True:
+			print("")
+			import pprint
+			pprint.pprint(gel_set)
+
+		return gel_set
+
+	#==================================================
+	def get_unknown(self, gel_set, gap=None):
+		if gap is None:
+			gap = random.randint(1,4)
+
+		low_mw = gel_set[gap-1]['MW']
+		high_mw = gel_set[gap]['MW']
+		mw_range = (high_mw - low_mw)/4.0
+
+		low_dist = self.molecular_weight_to_distance(low_mw)
+		high_dist = self.molecular_weight_to_distance(high_mw)
+		#30-70%
+		adj_rand = random.random()*0.4 + 0.3
+		
+		unknown_dist = adj_rand*(high_dist - low_dist) + low_dist
+		unknown_mw = self.distance_to_molecular_weight(unknown_dist)
+
+		dist_range = (high_dist - low_dist)/2.0
+		low_unknown_mw = self.distance_to_molecular_weight(unknown_dist-dist_range)
+		high_unknown_mw = self.distance_to_molecular_weight(unknown_dist+dist_range)
+		#mw_range = (high_unknown_mw - low_unknown_mw)/4.0
+
+
+		if self.debug is True:
+			print("Unknown: MW = {0:.1f} +/- {1:.1f}; Dist = {2:.2f} +/- {3:.2f}".format(unknown_mw, mw_range, unknown_dist, dist_range))
+		return unknown_mw, unknown_dist, mw_range, gap
 
 
 	#==================================================
-	def printQuestion(question, answers, wrongs):
-		letters = "ABCDEFGH"
-		print(question)
+	def writeProblem(self, N=44):
+		"""
+		49. <p>The standard and unknown proteins listed in the table were run using SDS–PAGE.</p> <p><b>Estimate the molecular weight of the unknown protein.</b></p>
+		A. 190 kDa	B. 320 kDa	C. 430 kDa	D. 520 kDa
+		"""
 
-		for i in range(len(answers)):
-			item_number = 2*i
-			if random.random() < 0.5:
-				print("*{0}. {1}".format(letters[2*i], answers[i]))
-				print("{0}. {1}".format(letters[2*i+1], wrongs[i]))
-			else:
-				print("{0}. {1}".format(letters[2*i], wrongs[i]))
-				print("*{0}. {1}".format(letters[2*i+1], answers[i]))
-		print("{0}. {1}".format(letters[2*i+2], wrongs[-1]))
+		gel_set = self.get_protein_set_for_gel()
+		unknown_mw, unknown_dist, mw_range, gap = self.get_unknown(gel_set)
+
+		if self.multiple_choice is True:
+			question = "{0:d}. ".format(N)
+		else:
+			question = ""
+		question += " <h6>Gel Migration Problem</h6> "
+		question += ('<p><table cellpadding="2" cellspacing="2" style="text-align:center; border: 1px solid black; font-size: 14px;">')
+		question += ('<tr><th>Protein Name</th><th>Molecular<br/>Weight (kDa)</th><th>Migration<br/>Distance (cm)</th></tr>')
+		for protein_dict in gel_set:
+			dist = self.molecular_weight_to_distance(protein_dict['MW'])
+			question += ('<tr><td>{0} ({1})</td><td align="center">{2:.1f}</td><td align="center">{3:.2f}</td></tr>'.format(protein_dict['fullname'], protein_dict['abbr'], protein_dict['MW'], dist))
+		question += ('<tr><td>{0}</td><td align="center">{1}</td><td align="center">{2:.2f}</td></tr>'.format("Unknown", "?", unknown_dist))
+		question += "</table></p>"
+		question += '<p>The standard and unknown proteins listed in the table were run using SDS&ndash;PAGE.</p>'
+		question += '<p><b>Estimate the molecular weight of the unknown protein.</b></p>'
+
+		if self.multiple_choice is True:
+			print(question)
+			choices = []
+			for i in range(4):
+				j = i+1
+				if j == gap:
+					choices.append(unknown_mw)
+					continue
+				mw, d, r, g = self.get_unknown(gel_set, j)
+				choices.append(mw)
+			letters = "ABCDEFG"
+			for i in range(4):
+				prefix = ''
+				if abs(choices[i] - unknown_mw) < 0.1:
+					prefix = '*'
+				print("{0}{1}. {2:.0f} kDa".format(prefix, letters[i], choices[i]))
+			print("")
+		else:
+			bb_format = self.format_for_blackboard(question, unknown_mw, mw_range)
+			print(bb_format)
+
+		return question
+
+	#==================================================
+	def format_for_blackboard(self, question, answer, tolerance):
+		#"NUM TAB question text TAB answer TAB [optional]tolerance"
+		return ("NUM\t{0}\t{1:.1f}\t{2:.1f}".format(question,answer,tolerance))
+
 
 
 #==================================================
 #==================================================
 if __name__ == '__main__':
-	question_count = 0
+	total_problems = 100
 	gelm = GelMigration()
-	question = gelm.writeQuestion()
-	print(question)
+	for question_count in range(total_problems):
+		problem = gelm.writeProblem(question_count+1)
 
-	sys.exit(1)
-	protein_tree = parse_protein_file()
-	answer_count = {1:0, 2:0, 3:0, 4:0}
-
-	for protein_dict in protein_tree:
-		pI = protein_dict['pI']
-		low_pH = math.floor(2*pI)/2. - 1
-		high_pH = math.ceil(2*pI)/2. + 1
-
-		for pH in (low_pH, high_pH):
-			if pH < 2 or pH > 12:
-				continue
-			question_count += 1
-			question, answers, wrongs = writeQuestion(protein_dict, pH, question_count)
-			printQuestion(question, answers, wrongs)
 
 
