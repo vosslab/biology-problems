@@ -4,6 +4,7 @@ from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 
+
 ### ugly code, but works
 
 class GelClass(object):
@@ -34,7 +35,12 @@ class GelClass(object):
 		if self.img is None:
 			self.initImage()
 		self.row += 1
+		print(".....")
+		print(self.band_tree)
+		print(subindex)
 		sub_band_tree = self.indexToSubSet(self.band_tree, subindex)
+		print(sub_band_tree)
+		print(".....")
 		height = 24 * self.factor
 		rowgap = 5 * self.factor
 		draw1 = ImageDraw.Draw(self.img, "RGB")
@@ -93,7 +99,54 @@ class GelClass(object):
 			self.band_tree.append(band_dict)
 		return self.band_tree
 
+class GelClassHtml(GelClass):
+	def setTextColumn(self, biggesttext):
+		pass
+	def initImage(self):
+		pass
+
+	def tableWidths(self):
+		space_width = 10
+		colgroup = '<table cellspacing="0" border="0"> '
+		colgroup += '<colgroup width="{0}"></colgroup> '.format(space_width)
+		colgroup += '<colgroup></colgroup> '
+		for band in self.band_tree:
+			w = int(band['width']*1.5 + 2)
+			colgroup += '<colgroup width="{0}"></colgroup> '.format(space_width)
+			colgroup += '<colgroup width="{0}"></colgroup> '.format(w)
+		colgroup += '<colgroup width="{0}"></colgroup> '.format(space_width)
+		return colgroup
 
 
+	def tdBlock(self, fill_color="#E0E0E0", border_color="#E0E0E0"):
+		return '  <td style="border-top: 1px solid {0}; border-bottom: 1px solid {0}; border-left: 1px solid {0}; border-right: 1px solid {0}" bgcolor="{1}"><br/></td> '.format(border_color, fill_color)
 
+	def blankLane(self):
+		total_bands = len(self.band_tree)
+		lane = '<tr> '
+		lane += '  <td style="border-top: 1px solid {0}; border-bottom: 1px solid {0}; border-left: 1px solid {0}; border-right: 1px solid {0}" colspan="{1:d}" bgcolor="{0}" height="10"></td> '.format("#E0E0E0", 2*total_bands+3)
+		lane += '</tr> '
+		return lane
+
+	def drawLane(self, subindex, text=""):
+		#sub_band_tree = self.indexToSubSet(self.band_tree, subindex)
+		subindex = list(subindex)
+		#print(subindex)
+		lane = '<tr> '
+		lane += self.tdBlock()
+		lane += '  <td>{0}</td> '.format(text)
+		total_bands = len(self.band_tree)
+		for i in range(total_bands):
+			if i in subindex:
+				lane += self.tdBlock()
+				lane += self.tdBlock("#6495ED")
+			else:
+				lane += self.tdBlock()
+				lane += self.tdBlock()
+		lane += self.tdBlock()
+		lane += '</tr>'
+		return lane
+
+	def saveImage(self, filename):
+		pass
 
