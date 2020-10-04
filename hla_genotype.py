@@ -63,12 +63,13 @@ if __name__ == '__main__':
 	print(mom1, mom2, dad1, dad2)
 	print("")
 
-	question = "XXX. "
-	question += ("A mother has a HLA genotype of %s on one chromosome and %s on the other. "
-			%(markersToString(mom1), markersToString(mom2)))
-	question += ("The father has a HLA genotype of %s on one chromosome and %s on the other. "
-			%(markersToString(dad1), markersToString(dad2)))
-	question += "Which one of the following is a possible genotype for one of their offspring?"
+	#question = "XXX. "
+	question = ""
+	question += ('A mother has a HLA genotype of <span style="color:FireBrick">{0}</span> on one chromosome and <span style="color:DarkGoldenRod">{1}</span> on the other. '
+			.format(markersToString(mom1), markersToString(mom2)))
+	question += ('The father has a HLA genotype of <span style="color:DarkViolet">{0}</span> on one chromosome and <span style="color:DarkBlue">{1}</span> on the other. '
+			.format(markersToString(dad1), markersToString(dad2)))
+	question += 'Which one of the following is a possible genotype for one of their offspring?'
 	print(question)
 
 #A father has a HLA genotype of A2,B1 on one chromosome and A7,B6 on the other.
@@ -77,22 +78,28 @@ if __name__ == '__main__':
 
 	answers = []
 
+	#wrong two moms
 	answer = copy.copy(mom1)
 	answer = answer.union(mom2)
 	answers.append(answer)
 	
+	#wrong two dads
 	answer = copy.copy(dad1)
 	answer = answer.union(dad2)
 	answers.append(answer)
 
+	#real correct answer
 	answer = copy.copy(random.choice((dad1, dad2)))
 	answer = answer.union(random.choice((mom1, mom2)))
 	answers.append(answer)
+	correct = answer
 
+	#jumbled 1
 	answer = splitMarkers(mom1, mom2)
 	answer = answer.union(splitMarkers(dad1, dad2))
 	answers.append(answer)
 
+	#jumbled 2
 	answer = splitMarkers(mom1, mom2)
 	answer = answer.union(splitMarkers(dad1, dad2))
 	answers.append(answer)
@@ -101,12 +108,30 @@ if __name__ == '__main__':
 	for a in answers:
 		stringanswers.append(markersToString(a))
 	stringanswers = list(set(stringanswers))
+	correct_str = markersToString(correct)
+
 
 	random.shuffle(stringanswers)
 	charlist = "ABCDE"
+	answer_str = ""
 	for i in range(len(stringanswers)):
 		c = charlist[i]
 		a = stringanswers[i]
-		print(("%s. %s"%(c,a)))
+		prefix = ''
+		answer_str += "{0}\t".format(a)
+		if a == correct_str:
+			answer_str += "Correct\t"
+			prefix = '*'
+		else:
+			answer_str += "Incorrect\t"
+		print(("{0}{1}. {2}".format(prefix,c,a)))
+
 	
-	
+	f = open("q-hla_genotypes.txt", "a")
+	f.write("MC\t")
+	f.write(question+"\t")
+	f.write(answer_str)
+	f.write('\n')
+	f.close()
+
+
