@@ -110,6 +110,18 @@ def random_enzyme(enzymes=None):
 	return enzyme_class
 
 #========================================
+def random_enzyme_one_end(enzymes=None, badletter="."):
+	if enzymes is None:
+		enzymes = get_enzyme_list()
+	enzyme_name = "x"
+	while (len(enzyme_name) != 4
+			or not enzyme_name.endswith("I")
+			or enzyme_name.startswith(badletter)):
+		enzyme_name = random.choice(enzymes)
+	enzyme_class = enzyme_name_to_class(enzyme_name)
+	return enzyme_class
+
+#========================================
 def random_enzyme_with_overhang(enzymes=None):
 	if enzymes is None:
 		enzymes = get_enzyme_list()
