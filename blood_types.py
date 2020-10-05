@@ -3,6 +3,53 @@
 import math
 import random
 
+"""
+<table style="border-collapse: collapse; border: 1px; border-color: black;">
+<tbody>
+<tr>
+<td><span style="font-size: 100px; color: red;">●</span></td>
+<td> </td>
+<td>
+<table style="border-collapse: collapse; border: 0px; border-color: white;">
+<tbody>
+<tr>
+<td style="border-color: white;"><span style="font-size: 20px; color: darkred;">●</span></td>
+<td style="border-color: white;"> </td>
+<td style="border-color: white;"> </td>
+</tr>
+<tr>
+<td style="border-color: white;"> </td>
+<td style="border-color: white;"> </td>
+<td style="border-color: white;"><span style="font-size: 20px; color: darkred;">●</span></td>
+</tr>
+<tr>
+<td style="border-color: white;"><span style="font-size: 20px; color: darkred;">●</span></td>
+<td style="border-color: white;"> </td>
+<td style="border-color: white;"> </td>
+</tr>
+<tr>
+<td style="border-color: white;"> </td>
+<td style="border-color: white;"> </td>
+<td style="border-color: white;"><span style="font-size: 20px; color: darkred;">●</span></td>
+</tr>
+</tbody>
+</table>
+</td>
+<td> </td>
+<td><span style="font-size: 100px; color: red;">●</span></td>
+<td> </td>
+</tr>
+<tr>
+<td> A antigen</td>
+<td> </td>
+<td> B antigen</td>
+<td> </td>
+<td> D antigen</td>
+</tr>
+</tbody>
+</table>
+"""
+
 code2type = {
 	'111':	'O-',
 	'011':	'A-',
