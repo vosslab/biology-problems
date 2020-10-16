@@ -1,0 +1,1 @@
+MC	How many unique gametes could be produced through independent assortment by an individual with the genotype AA Bb Cc dd EE Ff Gg ?	2<sup>2</sup> = 4	Incorrect	2<sup>3</sup> = 8	Incorrect	2<sup>4</sup> = 16	Correct	2<sup>5</sup> = 32	Incorrect	2<sup>6</sup> = 64	Incorrect	
