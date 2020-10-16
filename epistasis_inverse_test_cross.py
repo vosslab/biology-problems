@@ -81,7 +81,7 @@ if __name__ == '__main__':
 		test_ratio = epistasis_ratios[dihybrid_ratio]
 		number = '{0}. '.format(N)
 		question = ''
-		question += 'In an F<sub>1</sub> heterozygote individual from dihybrid cross is used for a test-cross. '
+		question += 'An F<sub>1</sub> heterozygote individual from dihybrid cross is used for a test-cross. '
 		question += 'The progeny from the test-cross exhibited a modified <b>ratio of {0}</b> (instead of 1:1:1:1). '.format(test_ratio)
 		question += 'What phenotypic ratio would be expected in the F<sub>2</sub> progeny if the dihybrid cross is continued? '
 
