@@ -109,7 +109,7 @@ if __name__ == '__main__':
 	full_question = "<p>Who is the killer?</p> {0} {1}".format(table, question)
 	print("complete\n\n")
 
-	f = open("killer_questions.txt", "a")
+	f = open("bbq-killer_questions.txt", "a")
 	f.write("MC\t")
 	f.write(full_question+"\t")
 	f.write(choice)

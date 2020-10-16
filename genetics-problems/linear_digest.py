@@ -187,7 +187,7 @@ if __name__ == '__main__':
 			answer_str += "Incorrect\t"
 	print(answer_str)
 	#sys.exit(1)
-	f = open("digest.txt", "a")
+	f = open("bbq-linear_digest.txt", "a")
 	f.write("MA\t")
 	f.write(header+table+details+question+"\t")
 	f.write(answer_str)

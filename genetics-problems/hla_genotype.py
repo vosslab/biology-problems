@@ -127,7 +127,7 @@ if __name__ == '__main__':
 		print(("{0}{1}. {2}".format(prefix,c,a)))
 
 	
-	f = open("q-hla_genotypes.txt", "a")
+	f = open("bbq-hla_genotypes.txt", "a")
 	f.write("MC\t")
 	f.write(question+"\t")
 	f.write(answer_str)
