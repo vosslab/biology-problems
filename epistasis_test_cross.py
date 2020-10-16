@@ -54,6 +54,10 @@ def write_question(question, choices):
 if __name__ == '__main__':
 	keys = list(epistasis_ratios.keys())
 	num_repeats = 11
+	try:
+		os.remove('bbq-epistasis_test_cross.txt')
+	except FileNotFoundError:
+		pass
 	#random.shuffle(keys)
 	for ratio in keys:
 
@@ -77,10 +81,6 @@ if __name__ == '__main__':
 
 		### BREAK
 		original_choices = choices
-		try:
-			os.remove('bbq-epistasis_test_cross.txt')
-		except FileNotFoundError:
-			pass
 		for i in range(num_repeats):
 			choices = copy.copy(original_choices)
 			random.shuffle(choices)
