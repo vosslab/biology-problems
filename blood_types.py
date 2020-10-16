@@ -111,7 +111,7 @@ if __name__ == '__main__':
 	bcodes = list(code2type.keys())
 	N = 0
 	letters = "ABCDEFG"
-	f = open("blackboard-blood_types_upload.txt", "a")
+	f = open("q-blood_types_upload.txt", "a")
 	for bcode in bcodes:
 		N += 1
 		answer = bcode+"1"
