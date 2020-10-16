@@ -8,7 +8,7 @@ if __name__ == '__main__':
 	num_genes = 7
 	num_questions = 99
 	N = 0
-
+	f = open('bbq-gametes_unique.txt', 'w')
 	for i in range(num_questions):
 		N += 1
 		number = "{0}. ".format(N)
@@ -19,7 +19,7 @@ if __name__ == '__main__':
 			geno, gamete_count = genotype.createGenotype(num_genes)
 		question += "an individual with the genotype {0}?".format(geno)
 
-		f = open('bbq-gametes_unique.txt', 'w')
+		
 		f.write("MC\t{0}\t".format(question))
 		print("{0}. {1}".format(N, question))
 
