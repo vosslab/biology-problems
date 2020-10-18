@@ -4,8 +4,7 @@
 
 ### isoelectric_one_protein.py
 
-1.
-<table cellpadding="2" cellspacing="2" style="text-align:center; border: 1px solid black; font-size: 14px;">
+1. <table cellpadding="2" cellspacing="2" style="text-align:center; border: 1px solid black; font-size: 14px;">
 <tr><th>Protein Name</th><th>isoelectric point (pI)</th><th>molecular weight</th></tr>
 <tr><td>Xylosidase (Xyl)</td><td align="center">5.0</td><td align="center">100.0</td></tr>
 </table>
@@ -18,8 +17,8 @@
 
 
 
-2.
-<p>A mixture of two proteins are to be separated by isoelectric focusing.</p> 
+2. A mixture of two proteins are to be separated by isoelectric focusing.
+
 <table cellpadding="2" cellspacing="2" style="text-align:center; border: 1px solid black; font-size: 14px;">
 <tr><th>Protein Name</th><th>isoelectric point (pI)</th><th>molecular weight</th></tr>
 <tr><td>&beta;-Galactosidase (Gal)</td><td align="right">4.6</td><td align="right">175.0</td></tr>
@@ -41,7 +40,7 @@
 
 ### gel_migration.py
 
-2. <table cellpadding="2" cellspacing="2" style="text-align:center; border: 1px solid black; font-size: 14px;">
+3. <table cellpadding="2" cellspacing="2" style="text-align:center; border: 1px solid black; font-size: 14px;">
 <tr><th>Protein Name</th><th>Molecular<br/>Weight (kDa)</th><th>Migration<br/>Distance (cm)</th></tr>
 <tr><td>Ribonuclease A (RibA)</td><td align="center">13.7</td><td align="center">3.41</td></tr>
 <tr><td>Serine Protease (Ser)</td><td align="center">22.0</td><td align="center">3.03</td></tr>
@@ -62,9 +61,19 @@
 
 ### alpha_helix_h-bonds.py
 
-12. In a long &alpha;-helix, amino acid <b>number 7</b> would form a hydrogen bond with which two other amino acids?
+4. In a long &alpha;-helix, amino acid <b>number 7</b> would form a hydrogen bond with which two other amino acids?
 - [ ] A. 1 and 13
 - [ ] B. 4 and 10
 - [ ] C. 5 and 9
 - [ ] D. 2 and 12
 - [x] E. 3 and 11
+
+## Hydrophobicity
+
+### which_phobic.py 
+
+5. Based on their molecular formula, which one of the following compounds is most likely hydrophobic
+- [ ] A. erythrose, C<sub>4</sub>H<sub>8</sub>O<sub>4</sub>
+- [ ] B. acetate, C<sub>2</sub>H<sub>3</sub>O<sub>2</sub>
+- [x] C. ethylene, CH<sub>2</sub>CH<sub>2</sub>
+- [ ] D. urea, CO(NH<sub>2</sub>)<sub>2</sub>
