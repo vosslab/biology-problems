@@ -103,8 +103,8 @@ Python Scripts for Generating Biochemistry Homework/Quiz problems
 
 <p>Using the table (<i>above</i>), calculate the value for the Michaelis-Menten constant, K<sub>M</sub>?</p>
 
-- [ ] A. K<sub>M</sub> = 0.0010
-- [ ] B. K<sub>M</sub> = 0.0020
-- [x] C. K<sub>M</sub> = 0.0050
-- [ ] D. K<sub>M</sub> = 0.0200
-- [ ] E. K<sub>M</sub> = 0.0500
+- [ ] A. K<sub>M</sub> = 0.001
+- [ ] B. K<sub>M</sub> = 0.002
+- [x] C. K<sub>M</sub> = 0.005
+- [ ] D. K<sub>M</sub> = 0.020
+- [ ] E. K<sub>M</sub> = 0.050
