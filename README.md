@@ -26,7 +26,7 @@
 <tr><td>Fumerase (Fum)</td><td align="right">7.6</td><td align="right">48.5</td></tr>
 </table>
 <p>Both protein samples are placed into a gel with a constant pH of 9.0. The gel is then placed into an electric field.</p> 
-<p>In which direction will each protein in the table migrate at <b>pH 9.0<b></p>
+<p>In which direction will each protein in the table migrate at <b>pH 9.0</b></p>
 
 - [x] A. Both Gal and Fum will travel towards the <span style="color:darkblue">positive (+)</span> terminal
 - [ ] B. Both Gal and Fum will travel towards the <span style="color:darkred">negative (&ndash;)</span> terminal

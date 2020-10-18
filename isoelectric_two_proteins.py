@@ -96,7 +96,7 @@ def writeQuestion(protein1, protein2, pH, N=77):
 	'<span style="color:darkblue">'
 	'<span style="color:darkred">'
 
-	question += "<p>In which direction will each protein in the table migrate at <b>pH {0:.1f}<b></p>".format(pH)
+	question += "<p>In which direction will each protein in the table migrate at <b>pH {0:.1f}</b></p>".format(pH)
 
 	if pH > protein1['pI'] and pH > protein2['pI']:
 		#both have negative charge; go towards positive
