@@ -101,10 +101,41 @@ Python Scripts for Generating Biochemistry Homework/Quiz problems
 <tr> <td align="right"><span style="font-family: courier, monospace;">1.000&nbsp;</span></td> <td align="right"><span style="font-family: courier, monospace;">179.2&nbsp;</span></td></tr>
 <tr> <td align="right"><span style="font-family: courier, monospace;">10.000&nbsp;</span></td> <td align="right"><span style="font-family: courier, monospace;">180.0&nbsp;</span></td></tr></table>
 
-<p>Using the table (<i>above</i>), calculate the value for the Michaelis-Menten constant, K<sub>M</sub>?</p>
+<p>Using the table (<i>above</i>), calculate the value for the Michaelis-Menten constant, K<sub>M</sub>.</p>
 
 - [ ] A. K<sub>M</sub> = 0.001
 - [ ] B. K<sub>M</sub> = 0.002
 - [x] C. K<sub>M</sub> = 0.005
 - [ ] D. K<sub>M</sub> = 0.020
 - [ ] E. K<sub>M</sub> = 0.050
+
+
+### michaelis_menten_table-inhibition.py
+
+* [Download list of questions in blackboard upload format](blackboard_upload/bbq-michaelis_menten_table-inhibition.txt)
+
+<p>7. <b>Michaelis-Menten question.</b> The following question refers to the table (<i>below</i>) of enzyme activity with and without an inhibitor.</p>
+
+<table cellpadding="2" cellspacing="2"  style="text-align:center; border-collapse: collapse; border: 1px solid black; font-size: 14px;"><colgroup width="160"></colgroup> <colgroup width="160"></colgroup> <colgroup width="160"></colgroup>
+<tr> <th align="center">substrate<br/>concentration, [S]</th> <th align="center">initial reaction<br/>velocity no inhibitor<br/>V<sub>0</sub> (&ndash;inh)</th> <th align="center">initial reaction<br/>velocity with inhibitor<br/>V<sub>0</sub> (+inh)</th></tr>
+<tr> <td align="right"><span style="font-family: courier, monospace;">0.0001&nbsp;</span></td> <td align="right"><span style="font-family: courier, monospace;">9.6&nbsp;</span></td> <td align="right"><span style="font-family: courier, monospace;">8.6&nbsp;</span></td></tr>
+<tr> <td align="right"><span style="font-family: courier, monospace;">0.0002&nbsp;</span></td> <td align="right"><span style="font-family: courier, monospace;">18.2&nbsp;</span></td> <td align="right"><span style="font-family: courier, monospace;">16.4&nbsp;</span></td></tr>
+<tr> <td align="right"><span style="font-family: courier, monospace;">0.0005&nbsp;</span></td> <td align="right"><span style="font-family: courier, monospace;">40.0&nbsp;</span></td> <td align="right"><span style="font-family: courier, monospace;">36.0&nbsp;</span></td></tr>
+<tr> <td align="right"><span style="font-family: courier, monospace;">0.0010&nbsp;</span></td> <td align="right"><span style="font-family: courier, monospace;">66.7&nbsp;</span></td> <td align="right"><span style="font-family: courier, monospace;">60.0&nbsp;</span></td></tr>
+<tr> <td align="right"><span style="font-family: courier, monospace;">0.0020&nbsp;</span></td> <td align="right"><span style="font-family: courier, monospace;">100.0&nbsp;</span></td> <td align="right"><span style="font-family: courier, monospace;">90.0&nbsp;</span></td></tr>
+<tr> <td align="right"><span style="font-family: courier, monospace;">0.0050&nbsp;</span></td> <td align="right"><span style="font-family: courier, monospace;">142.9&nbsp;</span></td> <td align="right"><span style="font-family: courier, monospace;">128.6&nbsp;</span></td></tr>
+<tr> <td align="right"><span style="font-family: courier, monospace;">0.0100&nbsp;</span></td> <td align="right"><span style="font-family: courier, monospace;">166.7&nbsp;</span></td> <td align="right"><span style="font-family: courier, monospace;">150.0&nbsp;</span></td></tr>
+<tr> <td align="right"><span style="font-family: courier, monospace;">0.0200&nbsp;</span></td> <td align="right"><span style="font-family: courier, monospace;">181.9&nbsp;</span></td> <td align="right"><span style="font-family: courier, monospace;">163.7&nbsp;</span></td></tr>
+<tr> <td align="right"><span style="font-family: courier, monospace;">0.0500&nbsp;</span></td> <td align="right"><span style="font-family: courier, monospace;">192.4&nbsp;</span></td> <td align="right"><span style="font-family: courier, monospace;">173.1&nbsp;</span></td></tr>
+<tr> <td align="right"><span style="font-family: courier, monospace;">0.1000&nbsp;</span></td> <td align="right"><span style="font-family: courier, monospace;">196.1&nbsp;</span></td> <td align="right"><span style="font-family: courier, monospace;">176.5&nbsp;</span></td></tr>
+<tr> <td align="right"><span style="font-family: courier, monospace;">1.0000&nbsp;</span></td> <td align="right"><span style="font-family: courier, monospace;">199.7&nbsp;</span></td> <td align="right"><span style="font-family: courier, monospace;">179.7&nbsp;</span></td></tr>
+<tr> <td align="right"><span style="font-family: courier, monospace;">10.0000&nbsp;</span></td> <td align="right"><span style="font-family: courier, monospace;">200.0&nbsp;</span></td> <td align="right"><span style="font-family: courier, monospace;">180.0&nbsp;</span></td></tr></table>
+
+<p>Using the table (<i>above</i>), determine the type of inhibition.</p>
+
+- [ ] A. anticompetitive
+- [ ] B. competitive
+- [x] C. noncompetitive
+- [ ] D. ultracompetitive
+- [ ] E. uncompetitive
+

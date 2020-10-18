@@ -35,7 +35,10 @@ def makeTable(xvals, yvals, Vmax):
 		x = xvals[i]
 		y = yvals[i]
 		table += '<tr>'
-		table += ' <td align="right">{1}{0:.4f}&nbsp;</span></td>'.format(x, mono_span)
+		if xvals[0] < 0.0002:
+			table += ' <td align="right">{1}{0:.4f}&nbsp;</span></td>'.format(x, mono_span)
+		else:
+			table += ' <td align="right">{1}{0:.3f}&nbsp;</span></td>'.format(x, mono_span)
 		table += ' <td align="right">{1}{0:.1f}&nbsp;</span></td>'.format(y, mono_span)
 		table += '</tr>'
 		if (Vmax - y) < 0.099:
@@ -79,8 +82,12 @@ def makeCompleteProblem(xvals, Km, Vmax, header, question):
 		else:
 			prefix = " "
 			status = "Incorrect"
-		print("- [{0}] {1}. K<sub>M</sub> = {2:.4f}".format(prefix, letters[i], choice))
-		bb_question += "\tK<sub>M</sub> = {0:.4f}\t{1}".format(choice, status)
+		if xvals[0] < 0.0002:
+			print("- [{0}] {1}. K<sub>M</sub> = {2:.4f}".format(prefix, letters[i], choice))
+			bb_question += "\tK<sub>M</sub> = {0:.4f}\t{1}".format(choice, status)
+		else:
+			print("- [{0}] {1}. K<sub>M</sub> = {2:.3f}".format(prefix, letters[i], choice))
+			bb_question += "\tK<sub>M</sub> = {0:.3f}\t{1}".format(choice, status)
 	return bb_question
 
 if __name__ == '__main__':
@@ -88,19 +95,16 @@ if __name__ == '__main__':
 	#acceptable range: >40, <200, multiple of 20
 	Vmax_choices = [40, 60, 80, 100, 120, 140, 160, 180, 200]
 
-
-
 	header = ""
 	header += "<p><u>Michaelis-Menten question.</u>"
 	header += " The following question refers to the table (<i>below</i>) of enzyme activity.</p> "
-	question = "<p>Using the table (<i>above</i>), calculate the value for the Michaelis-Menten constant, K<sub>M</sub>?</p>"
+	question = "<p>Using the table (<i>above</i>), calculate the value for the Michaelis-Menten constant, K<sub>M</sub>.</p>"
 
 	f = open('bbq-michaelis_menten_table-Km.txt', 'w')
 
 	### things that do change
 	#Vmax = random.choice(Vmax_choices)
 	#Km = random.choice(Km_choices)
-
 
 	for mode in (1,2):
 		for Vmax in Vmax_choices:
