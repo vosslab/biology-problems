@@ -1,4 +1,5 @@
 # biochem-problems
+Python Scripts for Generating Biochemistry Homework/Quiz problems
 
 ## Isoelectric Point Problems
 
@@ -77,3 +78,19 @@
 - [ ] B. acetate, C<sub>2</sub>H<sub>3</sub>O<sub>2</sub>
 - [x] C. ethylene, CH<sub>2</sub>CH<sub>2</sub>
 - [ ] D. urea, CO(NH<sub>2</sub>)<sub>2</sub>
+
+## Michaelis-Menten
+
+### michaelis_menten_table-Km.py
+
+<p>6. <u>Michaelis-Menten question.</u></p> <p>The following question refers to the table (<i>below</i>) of enzyme activity.  The units of substrate, [S], is mM; ignore the units for V<sub>0</sub>.</p>
+
+<table cellpadding="2" cellspacing="2"  style="text-align:center; border-collapse: collapse; border: 1px solid black; font-size: 14px;"><colgroup width="120"></colgroup> <colgroup width="120"></colgroup> <tr> <th align="center">substrate<br/>concentration<br/>[S]</th> <th align="center">initial<br/>reaction<br/>velocity<br/>V<sub>0</sub></th></tr><tr> <td align="right"><span style="font-family: courier, monospace;">0.0001&nbsp;</span></td> <td align="right"><span style="font-family: courier, monospace;">46.7&nbsp;</span></td></tr><tr> <td align="right"><span style="font-family: courier, monospace;">0.0002&nbsp;</span></td> <td align="right"><span style="font-family: courier, monospace;">70.0&nbsp;</span></td></tr><tr> <td align="right"><span style="font-family: courier, monospace;">0.0005&nbsp;</span></td> <td align="right"><span style="font-family: courier, monospace;">100.1&nbsp;</span></td></tr><tr> <td align="right"><span style="font-family: courier, monospace;">0.0010&nbsp;</span></td> <td align="right"><span style="font-family: courier, monospace;">116.7&nbsp;</span></td></tr><tr> <td align="right"><span style="font-family: courier, monospace;">0.0020&nbsp;</span></td> <td align="right"><span style="font-family: courier, monospace;">127.3&nbsp;</span></td></tr><tr> <td align="right"><span style="font-family: courier, monospace;">0.0050&nbsp;</span></td> <td align="right"><span style="font-family: courier, monospace;">134.7&nbsp;</span></td></tr><tr> <td align="right"><span style="font-family: courier, monospace;">0.0100&nbsp;</span></td> <td align="right"><span style="font-family: courier, monospace;">137.3&nbsp;</span></td></tr><tr> <td align="right"><span style="font-family: courier, monospace;">0.0200&nbsp;</span></td> <td align="right"><span style="font-family: courier, monospace;">138.7&nbsp;</span></td></tr><tr> <td align="right"><span style="font-family: courier, monospace;">0.0500&nbsp;</span></td> <td align="right"><span style="font-family: courier, monospace;">139.5&nbsp;</span></td></tr><tr> <td align="right"><span style="font-family: courier, monospace;">0.1000&nbsp;</span></td> <td align="right"><span style="font-family: courier, monospace;">139.8&nbsp;</span></td></tr><tr> <td align="right"><span style="font-family: courier, monospace;">1.0000&nbsp;</span></td> <td align="right"><span style="font-family: courier, monospace;">140.0&nbsp;</span></td></tr></table>
+
+<p>Using the table (<i>above</i>), calculate the value for the Michaelis-Menten constant, K<sub>M</sub>?</p>
+
+- [ ] A. 0.0001
+- [x] B. 0.0002
+- [ ] C. 0.0010
+- [ ] D. 0.0020
+- [ ] E. 0.0050
