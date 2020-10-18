@@ -1,6 +1,23 @@
 # biochem-problems
 Python Scripts for Generating Biochemistry Homework/Quiz problems
 
+Table of Contents
+=================
+
+   * [biochem-problems](#biochem-problems)
+      * [Isoelectric Point Problems](#isoelectric-point-problems)
+         * [isoelectric_one_protein.py](#isoelectric_one_proteinpy)
+         * [isoelectric_two_proteins.py](#isoelectric_two_proteinspy)
+      * [Gel Migration Problem](#gel-migration-problem)
+         * [gel_migration.py](#gel_migrationpy)
+      * [Alpha Helix Hydrogen Bonding](#alpha-helix-hydrogen-bonding)
+         * [alpha_helix_h-bonds.py](#alpha_helix_h-bondspy)
+      * [Hydrophobicity](#hydrophobicity)
+         * [which_phobic.py](#which_phobicpy)
+      * [Michaelis-Menten](#michaelis-menten)
+         * [michaelis_menten_table-Km.py](#michaelis_menten_table-kmpy)
+         * [michaelis_menten_table-inhibition.py](#michaelis_menten_table-inhibitionpy)
+
 ## Isoelectric Point Problems
 
 ### isoelectric_one_protein.py
