@@ -50,24 +50,13 @@ def michaelis_menten(substrate_conc, Km, Vmax):
 	V0 = math.ceil(V0*10.)/10.
 	return V0
 
-if __name__ == '__main__':
-	#acceptable range: >40, <200, multiple of 20
-	Vmax_choices = [40, 60, 80, 100, 120, 140, 160, 180, 200]
-	xvals = makeXvals(1)
-	Km_choices = xvals[:6]
-	Vmax = random.choice(Vmax_choices)
-	Km = random.choice(Km_choices)
+
+def makeCompleteProblem(xvals, Km, Vmax, header, question):
 	yvals = []
 	for x in xvals:
 		y = michaelis_menten(x, Km, Vmax)
 		yvals.append(y)
 	table = makeTable(xvals, yvals, Vmax)
-
-	header = ""
-	header += "<p><u>Michaelis-Menten question.</u></p> "
-	header += "<p>The following question refers to the table (<i>below</i>) of enzyme activity. "
-	header += " The units of substrate, [S], is mM; ignore the units for V<sub>0</sub>.</p> "
-	question = "<p>Using the table (<i>above</i>), calculate the value for the Michaelis-Menten constant, K<sub>M</sub>?</p>"
 
 	choices = copy.copy(xvals[:7])
 	choices.remove(Km)
@@ -76,6 +65,8 @@ if __name__ == '__main__':
 		choices.pop()
 	choices.append(Km)
 	choices.sort()
+
+	bb_question = "MC\t{0}{1}<br/>{2}".format(header, table, question)
 
 	print(header+"\n")
 	print(table+"\n")
@@ -88,4 +79,34 @@ if __name__ == '__main__':
 		else:
 			prefix = " "
 			status = "Incorrect"
-		print("- [{0}] {1}. {2:.4f}".format(prefix, letters[i], choice))
+		print("- [{0}] {1}. K<sub>M</sub> = {2:.4f}".format(prefix, letters[i], choice))
+		bb_question += "\tK<sub>M</sub> = {0:.4f}\t{1}".format(choice, status)
+	return bb_question
+
+if __name__ == '__main__':
+	### things don't change
+	#acceptable range: >40, <200, multiple of 20
+	Vmax_choices = [40, 60, 80, 100, 120, 140, 160, 180, 200]
+
+
+
+	header = ""
+	header += "<p><u>Michaelis-Menten question.</u>"
+	header += " The following question refers to the table (<i>below</i>) of enzyme activity.</p> "
+	question = "<p>Using the table (<i>above</i>), calculate the value for the Michaelis-Menten constant, K<sub>M</sub>?</p>"
+
+	f = open('bbq-michaelis_menten_table-Km.txt', 'w')
+
+	### things that do change
+	#Vmax = random.choice(Vmax_choices)
+	#Km = random.choice(Km_choices)
+
+
+	for mode in (1,2):
+		for Vmax in Vmax_choices:
+			xvals = makeXvals(mode)
+			Km_choices = xvals[:6]
+			for Km in Km_choices:
+				bb_question = makeCompleteProblem(xvals, Km, Vmax, header, question)
+				f.write("{0}\n".format(bb_question))
+	f.close()
