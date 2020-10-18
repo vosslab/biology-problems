@@ -16,6 +16,27 @@
 - [ ] B. The protein will have a net <span style="color:darkblue">positive (+)</span> charge
 - [ ] C. The protein will have a <span style="color:goldenrod">neutral (0)</span> charge
 
+
+
+2.
+<p>A mixture of two proteins are to be separated by isoelectric focusing.</p> 
+<table cellpadding="2" cellspacing="2" style="text-align:center; border: 1px solid black; font-size: 14px;">
+<tr><th>Protein Name</th><th>isoelectric point (pI)</th><th>molecular weight</th></tr>
+<tr><td>&beta;-Galactosidase (Gal)</td><td align="right">4.6</td><td align="right">175.0</td></tr>
+<tr><td>Fumerase (Fum)</td><td align="right">7.6</td><td align="right">48.5</td></tr>
+</table>
+<p>Both protein samples are placed into a gel with a constant pH of 9.0. The gel is then placed into an electric field.</p> 
+<p>In which direction will each protein in the table migrate at <b>pH 9.0<b></p>
+
+- [x] A. Both Gal and Fum will travel towards the <span style="color:darkblue">positive (+)</span> terminal
+- [ ] B. Both Gal and Fum will travel towards the <span style="color:darkred">negative (&ndash;)</span> terminal
+- [ ] C. Gal will travel towards the <span style="color:darkblue">positive (+)</span> 
+  and Fum will travel towards the <span style="color:darkred">negative (&ndash;)</span> 
+- [ ] D. Gal will travel towards the <span style="color:darkred">negative (&ndash;)</span> 
+  and Fum will travel towards the <span style="color:darkblue">positive (+)</span> 
+
+
+
 ## Gel Migration Problem
 
 ### gel_migration.py
