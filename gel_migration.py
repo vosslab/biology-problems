@@ -86,7 +86,7 @@ class GelMigration(object):
 				prev_prot_dict = protein_dict
 				prev_mw = mw
 				continue
-			
+
 			if ideal_mw - mw < mw - prev_mw:
 				gel_set.append(protein_dict)
 			else:
@@ -185,6 +185,7 @@ class GelMigration(object):
 
 	#==================================================
 	def format_for_blackboard(self, question, answer, tolerance):
+		#https://experts.missouristate.edu/plugins/servlet/mobile?contentId=63486780#content/view/63486780
 		#"NUM TAB question text TAB answer TAB [optional]tolerance"
 		return ("NUM\t{0}\t{1:.1f}\t{2:.1f}".format(question,answer,tolerance))
 
