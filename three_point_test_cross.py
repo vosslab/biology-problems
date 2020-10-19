@@ -3,9 +3,9 @@
 import os
 import sys
 import copy
+import math
 import numpy
 import random
-from fractions import gcd
 
 basetype = 'abc'
 if len(sys.argv) > 1:
@@ -69,9 +69,9 @@ doublecross = distances[0]*distances[1]/100.
 print("doublecross", doublecross*10, 'per 1000')
 
 print("determine progeny size")
-gcd1 = gcd(distances[0], 100)
-gcd2 = gcd(distances[1], 100)
-gcdfinal = gcd(gcd1, gcd2)
+gcd1 = math.gcd(distances[0], 100)
+gcd2 = math.gcd(distances[1], 100)
+gcdfinal = math.gcd(gcd1, gcd2)
 print("Final GCD", gcdfinal)
 progenybase = 100/gcdfinal
 minprogeny =  900/progenybase
