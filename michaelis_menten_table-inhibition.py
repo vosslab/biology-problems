@@ -69,22 +69,25 @@ def adjust_MM_values(Km, Vmax, inhibition, xvals):
 	Km_choices = copy.copy(xvals)
 	random.shuffle(Km_choices)
 	if inhibition == "competitive":
+		#Vmax unchanged
 		inhib_Vmax = Vmax
 		x = 1000
 		while x >= Km:
 			x = Km_choices.pop()
 		inhib_Km = x
 	elif inhibition == "uncompetitive":
+		# KM/Vmax unchanged
 		if round(math.log10(Km / 2.) % 1, 3) < 0.001:
 			## ends with a 2
 			inhib_Km = round(Km * 2.5, 5)
 		else:
 			## ends with 1 or 5
 			inhib_Km = round(Km * 2, 5)
-		# KM/Vmax unchange
+		# slope KM/Vmax unchanged
 		raw_Vmax = Vmax * Km / inhib_Km
 		inhib_Vmax = round(raw_Vmax/20.)*20
 	elif inhibition == "noncompetitive":
+		#Km unchanged
 		inhib_Km = Km
 		Vmax_choices = [20, 40, 60, 80, 100, 120, 140, 160, 180]
 		random.shuffle(Vmax_choices)
@@ -95,12 +98,15 @@ def adjust_MM_values(Km, Vmax, inhibition, xvals):
 	while abs(Km - inhib_Km) < 0.00001 and abs(Vmax - inhib_Vmax) < 0.01:
 		print("{0}: {1}, {2} and {3}, {4}".format(inhibition, Km, inhib_Km, Vmax, inhib_Vmax))
 		inhib_Km, inhib_Vmax = adjust_MM_values(Km, Vmax, inhibition, xvals)
-	if inhibition == "competitive":
-		pass
-	elif inhibition == "uncompetitive":
-		pass
-	elif inhibition == "noncompetitive":
-		pass
+	while inhibition == "competitive" and abs(Km - inhib_Km) < 0.00001:
+		#Vmax unchanged, Km is changed
+		inhib_Km, inhib_Vmax = adjust_MM_values(Km, Vmax, inhibition, xvals)
+	while inhibition == "uncompetitive" and abs(inhib_Km/inhib_Vmax - Km/Vmax) > 0.1:
+		# slope KM/Vmax unchanged
+		inhib_Km, inhib_Vmax = adjust_MM_values(Km, Vmax, inhibition, xvals)
+	while inhibition == "noncompetitive" and abs(Vmax - inhib_Vmax) < 0.01:
+		#Km unchanged, Vmax is changed
+		inhib_Km, inhib_Vmax = adjust_MM_values(Km, Vmax, inhibition, xvals)
 	return inhib_Km, inhib_Vmax
 
 #=============================
