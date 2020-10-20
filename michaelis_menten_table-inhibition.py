@@ -4,6 +4,8 @@ import math
 import copy
 import random
 
+#=============================
+#=============================
 def makeXvals(mode=1):
 	if mode == 1:
 		generators = [0.0001, 0.001, 0.01]
@@ -18,6 +20,8 @@ def makeXvals(mode=1):
 	xvals.sort()
 	return xvals
 
+#=============================
+#=============================
 def makeTable(xvals, yvals, inhibvals, Vmax, inhib_Vmax):
 	table = ''
 	table += '<table cellpadding="2" cellspacing="2" '
@@ -52,18 +56,22 @@ def makeTable(xvals, yvals, inhibvals, Vmax, inhib_Vmax):
 	table += '</table>'
 	return table
 
+#=============================
+#=============================
 def michaelis_menten(substrate_conc, Km, Vmax):
 	V0 = Vmax * substrate_conc / float(substrate_conc + Km)
 	V0 = math.ceil(V0*10.)/10.
 	return V0
 
+#=============================
+#=============================
 def adjust_MM_values(Km, Vmax, inhibition, xvals):
 	Km_choices = copy.copy(xvals)
 	random.shuffle(Km_choices)
 	if inhibition == "competitive":
 		inhib_Vmax = Vmax
 		x = 1000
-		while x > Km:
+		while x >= Km:
 			x = Km_choices.pop()
 		inhib_Km = x
 	elif inhibition == "uncompetitive":
@@ -78,14 +86,25 @@ def adjust_MM_values(Km, Vmax, inhibition, xvals):
 		inhib_Vmax = round(raw_Vmax/20.)*20
 	elif inhibition == "noncompetitive":
 		inhib_Km = Km
-		index = random.randint(2, 4)
-		Vmax_choices = [40, 60, 80, 100, 120, 140, 160, 180]
+		Vmax_choices = [20, 40, 60, 80, 100, 120, 140, 160, 180]
 		random.shuffle(Vmax_choices)
 		inhib_Vmax = 300
-		while inhib_Vmax > Vmax:
+		while inhib_Vmax >= Vmax:
 			inhib_Vmax = Vmax_choices.pop(0)
+	#double check
+	while abs(Km - inhib_Km) < 0.00001 and abs(Vmax - inhib_Vmax) < 0.01:
+		print("{0}: {1}, {2} and {3}, {4}".format(inhibition, Km, inhib_Km, Vmax, inhib_Vmax))
+		inhib_Km, inhib_Vmax = adjust_MM_values(Km, Vmax, inhibition, xvals)
+	if inhibition == "competitive":
+		pass
+	elif inhibition == "uncompetitive":
+		pass
+	elif inhibition == "noncompetitive":
+		pass
 	return inhib_Km, inhib_Vmax
 
+#=============================
+#=============================
 def makeCompleteProblem(xvals, Km, Vmax, header, question, inhibition):
 	yvals = []
 	for x in xvals:
@@ -135,6 +154,10 @@ def makeCompleteProblem(xvals, Km, Vmax, header, question, inhibition):
 		bb_question += "\t{0}\t{1}".format(choice, status)
 	return bb_question
 
+#=============================
+#=============================
+#=============================
+#=============================
 if __name__ == '__main__':
 	### things don't change
 	#acceptable range: >40, <200, multiple of 20
