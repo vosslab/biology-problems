@@ -3,6 +3,7 @@
 import os
 import sys
 import random
+from scipy.stats.distributions import chi2 
 
 ### types of errors
 # * divide by the observed instead of expected
@@ -19,6 +20,18 @@ choices = [
 	'the null hypothesis is incorrect',
 	'the degrees of freedom is wrong',
 ]
+
+#===================
+#===================
+def get_p_value(chisq, df):
+	pvalue = chi2.sf(chisq, df)
+	return pvalue
+
+#===================
+#===================
+def get_chisq_value(pvalue, df):
+	chisq = chi2.ppf(1.0 - pvalue, df)
+	return chisq
 
 #===================
 #===================
@@ -129,17 +142,55 @@ def createDataTable(stats_list):
 
 #===================
 #===================
+def chi_square_table(chisq):
+	max_df = 4
+	p_values = [0.95, 0.90, 0.75, 0.5, 0.25, 0.1, 0.05, 0.01]
+	table = '<table border=1 style="border: 1px solid darkgray; border-collapse: collapse; ">'
+	table += '<colgroup width="100"></colgroup> '
+	for p in p_values:
+		table += '<colgroup width="60"></colgroup> '
+	table += "<tr>"
+	table += " <th rowspan='2' align='center' style='background-color: gray'>Degrees of Freedom</th>"
+	table += " <th align='center' colspan='{0}' style='background-color: gray'>Probability</th>".format(len(p_values))
+	table += "</tr>"
+	table += "<tr>"
+	for p in p_values:
+		table += " <th align='center' style='background-color: lightgray'>{0:.2f}</th>".format(p)
+	table += "</tr>"
+	for df in range(1, max_df+1):
+		table += "<tr>"
+		table += " <th align='center' style='background-color: gray'>{0:d}</th>".format(df)
+		for p in p_values:
+			chisq = get_chisq_value(p, df)
+			table += " <td align='center'>{0:.2f}</td>".format(chisq)
+		table += "</tr>"
+
+	table += "</table>"
+	return table
+	
+#===================
+#===================
+def chiSquareConent(chisq):
+	pass
+
+
+#===================
+#===================
 #===================
 #===================
 if __name__ == '__main__':
 	N = 0
 	question = ""
-	question += "Your lab partner has done a chi-squared (&chi;<sup>2</sup>) test for your lab data (abovE), "
-	question += "but as usual they did something wrong. What did they do wrong? "
+	question += "Your lab partner has done a chi-squared (&chi;<sup>2</sup>) test for your lab data (above), "
+	question += "but as usual they did something wrong. Where did they do wrong? "
 	print(createObservedProgeny())
 
 	#stats_list = [[900, 900, 0, 0,], [300, 300, 0, 0,], [300, 300, 0, '0.002',], [100, 100, 0, 0,], '1.0']
 	stats_list = divideByObservedError()
-	table = createDataTable(stats_list)
-	print(table)
+	table1 = createDataTable(stats_list)
+	print(table1)
+	print("<br/>")
+	table2 = chi_square_table(stats_list[0])
+	print(table2)
+
 

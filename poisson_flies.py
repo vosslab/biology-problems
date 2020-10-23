@@ -90,7 +90,7 @@ if __name__ == '__main__':
 	female_genotype = random.choice(("++", "+w", "ww"))
 	male_genotype = random.choice(("+-", "w-"))
 	letters = "ABCDEFG"
-	progeny_size_selection = (200, 400, 800, 1000, 1600, 2000, 4000)
+	progeny_size_selection = (160, 200, 400, 600,)
 	for i in range(duplicates):
 		for progeny_size in progeny_size_selection:
 			for female_genotype in ("++", "+w", "ww"):
@@ -106,7 +106,7 @@ if __name__ == '__main__':
 
 					bad_cross = False
 					for key in distribution:
-						if distribution[key] % 10 == 0:
+						if distribution[key] % 5 == 0:
 							bad_cross = True
 					if bad_cross is True:
 						continue
