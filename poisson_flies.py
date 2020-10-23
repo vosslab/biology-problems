@@ -125,7 +125,7 @@ if __name__ == '__main__':
 							status = "Incorrect"
 						print('{0}{1}. {2}'.format(prefix, letters[j], choice))
 						choice_txt += "\t{0}\t{1}".format(choice, status)
-					f.write("MA\t{0}{1}{2}{3}\n".format(pre_question, table, post_question, choice_txt))
+					f.write("MC\t{0}{1}{2}{3}\n".format(pre_question, table, post_question, choice_txt))
 					print("")
 	f.close()
 
