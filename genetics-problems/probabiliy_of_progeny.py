@@ -257,6 +257,8 @@ if __name__ == '__main__':
 				continue
 			count += 1
 			complete_text = writeQuestion(girls, boys)
+			if total == 9 and boys == 5:
+				print(complete_text)
 			f.write("{0}\n".format(complete_text))
 	print("Wrote {0} quesitons".format(count))
 	f.close()
