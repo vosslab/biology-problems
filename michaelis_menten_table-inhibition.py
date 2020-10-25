@@ -94,19 +94,24 @@ def adjust_MM_values(Km, Vmax, inhibition, xvals):
 		inhib_Vmax = 300
 		while inhib_Vmax >= Vmax:
 			inhib_Vmax = Vmax_choices.pop(0)
-	#double check
+
+	#double-check everything
 	while abs(Km - inhib_Km) < 0.00001 and abs(Vmax - inhib_Vmax) < 0.01:
 		print("{0}: {1}, {2} and {3}, {4}".format(inhibition, Km, inhib_Km, Vmax, inhib_Vmax))
 		inhib_Km, inhib_Vmax = adjust_MM_values(Km, Vmax, inhibition, xvals)
+		#sys.exit(1)
 	while inhibition == "competitive" and abs(Km - inhib_Km) < 0.00001:
 		#Vmax unchanged, Km is changed
 		inhib_Km, inhib_Vmax = adjust_MM_values(Km, Vmax, inhibition, xvals)
+		#sys.exit(1)
 	while inhibition == "uncompetitive" and abs(inhib_Km/inhib_Vmax - Km/Vmax) > 0.1:
 		# slope KM/Vmax unchanged
 		inhib_Km, inhib_Vmax = adjust_MM_values(Km, Vmax, inhibition, xvals)
+		#sys.exit(1)
 	while inhibition == "noncompetitive" and abs(Vmax - inhib_Vmax) < 0.01:
 		#Km unchanged, Vmax is changed
 		inhib_Km, inhib_Vmax = adjust_MM_values(Km, Vmax, inhibition, xvals)
+		#sys.exit(1)
 	return inhib_Km, inhib_Vmax
 
 #=============================
