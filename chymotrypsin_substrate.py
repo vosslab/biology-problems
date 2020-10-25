@@ -41,7 +41,7 @@ def makeQuestion(length):
 	print(question)
 	choices = []
 	# cuts after large hydrophobic amino acid
-	answer = substrate[cut_location] + "&mdash;" + substrate[cut_location-1]
+	answer = substrate[cut_location] + "&mdash;" + substrate[cut_location+1]
 	choices.append(answer)
 	wrong1 =substrate[cut_location-1] + "&mdash;" + substrate[cut_location]
 	choices.append(wrong1)

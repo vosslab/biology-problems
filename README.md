@@ -165,7 +165,7 @@ Table of Contents
 <p>1. Given the following peptide sequence, <b>NH<sub>3</sub><sup>+</sup>&mdash;Gln&mdash;Ala&mdash;Ala&mdash;Tyr&mdash;Ser&mdash;Asn&mdash;Glu&mdash;Glu&mdash;Gln&mdash;Gln&mdash;COO<sup>&ndash;</sup></b>, at which peptide bond location will chymotrypsin most likely cleave first?</p>
 
 - [ ] A. Ala&mdash;Tyr
-- [x] B. Tyr&mdash;Ala
+- [x] B. Tyr&mdash;Ser
 - [ ] C. Glu&mdash;Gln
 - [ ] D. Gln&mdash;Ala
 - [ ] E. Ala&mdash;Ala
