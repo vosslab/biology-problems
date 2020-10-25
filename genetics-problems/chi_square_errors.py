@@ -359,7 +359,7 @@ def questionContent(chisq, df, alpha, flip=False):
 	question += "<p>Your lab partner has done a chi-squared (&chi;<sup>2</sup>) test for your lab data (above), "
 	question += "for the F<sub>2</sub> generation in a standard dihybid cross. They wanted to know if "
 	question += "the results confirm the expected phenotype ratios, "
-	question += "but as usual they did something wrong. <strong>Where did they do wrong?</strong></p>"
+	question += "but as usual they did something wrong. <strong>What did they do wrong?</strong></p>"
 	return question
 
 
