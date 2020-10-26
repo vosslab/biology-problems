@@ -19,7 +19,7 @@ sugar_table = {
 	'ARLDM': 'xylose',
 	'ALLDM': 'lyxose',
 	'MKRDM': 'ribulose',
-	'MKLDM': 'xylulose'
+	'MKLDM': 'xylulose',
 	'MRKDM': 'meso 3-ketopentose',
 	'MLKDM': 'D-3-ketopentose',
 	'MRKLM': 'L-3-ketopentose',
