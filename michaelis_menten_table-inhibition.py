@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import sys
 import math
 import copy
 import random
@@ -50,8 +51,8 @@ def makeTable(xvals, yvals, inhibvals, Vmax, inhib_Vmax):
 		table += ' <td align="right">{1}{0:.1f}&nbsp;</span></td>'.format(z, mono_span)
 		table += '</tr>'
 		if (Vmax - y) < 0.099:
-			print(y)
-			print(Vmax - y)
+			#print(y)
+			#print(Vmax - y)
 			break
 	table += '</table>'
 	return table
@@ -67,24 +68,26 @@ def michaelis_menten(substrate_conc, Km, Vmax):
 #=============================
 def adjust_MM_values(Km, Vmax, inhibition, xvals):
 	Km_choices = copy.copy(xvals)
+	Km_choices.pop(-1)
+	Km_choices.pop(-1)
 	random.shuffle(Km_choices)
 	if inhibition == "competitive":
 		#Vmax unchanged
 		inhib_Vmax = Vmax
-		x = 1000
-		while x >= Km:
+		x = 0
+		while x <= Km:
 			x = Km_choices.pop()
 		inhib_Km = x
 	elif inhibition == "uncompetitive":
 		# KM/Vmax unchanged
-		if round(math.log10(Km / 2.) % 1, 3) < 0.001:
-			## ends with a 2
-			inhib_Km = round(Km * 2.5, 5)
+		if round(math.log10(Km / 5.) % 1, 3) < 0.001:
+			## ends with a 5
+			inhib_Km = round(Km / 2.5, 5)
 		else:
-			## ends with 1 or 5
-			inhib_Km = round(Km * 2, 5)
+			## ends with 1 or 2
+			inhib_Km = round(Km / 2, 5)
 		# slope KM/Vmax unchanged
-		raw_Vmax = Vmax * Km / inhib_Km
+		raw_Vmax = Vmax * inhib_Km / Km
 		inhib_Vmax = round(raw_Vmax/20.)*20
 	elif inhibition == "noncompetitive":
 		#Km unchanged
@@ -96,22 +99,27 @@ def adjust_MM_values(Km, Vmax, inhibition, xvals):
 			inhib_Vmax = Vmax_choices.pop(0)
 
 	#double-check everything
+	print("{0}: Vmax={1}, Km={2} and Vmax={3}, Km={4}".format(inhibition, Vmax, Km, inhib_Vmax, inhib_Km))
 	while abs(Km - inhib_Km) < 0.00001 and abs(Vmax - inhib_Vmax) < 0.01:
-		print("{0}: {1}, {2} and {3}, {4}".format(inhibition, Km, inhib_Km, Vmax, inhib_Vmax))
-		inhib_Km, inhib_Vmax = adjust_MM_values(Km, Vmax, inhibition, xvals)
-		#sys.exit(1)
-	while inhibition == "competitive" and abs(Km - inhib_Km) < 0.00001:
-		#Vmax unchanged, Km is changed
-		inhib_Km, inhib_Vmax = adjust_MM_values(Km, Vmax, inhibition, xvals)
-		#sys.exit(1)
-	while inhibition == "uncompetitive" and abs(inhib_Km/inhib_Vmax - Km/Vmax) > 0.1:
-		# slope KM/Vmax unchanged
-		inhib_Km, inhib_Vmax = adjust_MM_values(Km, Vmax, inhibition, xvals)
-		#sys.exit(1)
-	while inhibition == "noncompetitive" and abs(Vmax - inhib_Vmax) < 0.01:
-		#Km unchanged, Vmax is changed
-		inhib_Km, inhib_Vmax = adjust_MM_values(Km, Vmax, inhibition, xvals)
-		#sys.exit(1)
+		print("{0}: Vmax={1}, Km={2} and Vmax={3}, Km={4}".format(inhibition, Vmax, Km, inhib_Vmax, inhib_Km))
+		#inhib_Km, inhib_Vmax = adjust_MM_values(Km, Vmax, inhibition, xvals)
+		sys.exit(1)
+	while inhibition == "competitive" and (inhib_Km - Km <= 1e-5 or abs(Vmax - inhib_Vmax) > 0.01):
+		#Vmax unchanged, Km goes up
+		print("{0}: Vmax={1}, Km={2} and Vmax={3}, Km={4}".format(inhibition, Vmax, Km, inhib_Vmax, inhib_Km))
+		#inhib_Km, inhib_Vmax = adjust_MM_values(Km, Vmax, inhibition, xvals)
+		sys.exit(1)
+	while inhibition == "uncompetitive" and (Km - inhib_Km <= 1e-5 or Vmax - inhib_Vmax <= 0):
+		# slope KM/Vmax mostly unchanged - not perfect
+		# Vmax goes down, Km goes down
+		print("{0}: Vmax={1}, Km={2} and Vmax={3}, Km={4}".format(inhibition, Vmax, Km, inhib_Vmax, inhib_Km))
+		#inhib_Km, inhib_Vmax = adjust_MM_values(Km, Vmax, inhibition, xvals)
+		sys.exit(1)
+	while inhibition == "noncompetitive" and ( abs(Km - inhib_Km) > 1e-6 or Vmax - inhib_Vmax <= 0.01):
+		#Km unchanged, Vmax goes down
+		print("{0}: Vmax={1}, Km={2} and Vmax={3}, Km={4}".format(inhibition, Vmax, Km, inhib_Vmax, inhib_Km))
+		#inhib_Km, inhib_Vmax = adjust_MM_values(Km, Vmax, inhibition, xvals)
+		sys.exit(1)
 	return inhib_Km, inhib_Vmax
 
 #=============================
@@ -139,7 +147,7 @@ def makeCompleteProblem(xvals, Km, Vmax, header, question, inhibition):
 	bb_question = "MC\t{0}{1}<br/>{2}".format(header, table, question)
 
 	print(header+"\n")
-	print(table+"\n")
+	#print(table+"\n")
 	print(question+"\n")
 	letters = "ABCDEF"
 	choices = ['competitive', 'uncompetitive', 'noncompetitive']
@@ -185,6 +193,11 @@ if __name__ == '__main__':
 	#Vmax = random.choice(Vmax_choices)
 	#Km = random.choice(Km_choices)
 	inhibition_types = ['competitive', 'uncompetitive', 'noncompetitive']
+	#inhibition_types = ['competitive']
+	#inhibition_types = ['uncompetitive']
+	#inhibition_types = ['noncompetitive']
+
+
 
 	mode = 1
 	for inhibition in inhibition_types:
