@@ -176,12 +176,12 @@ Table of Contents
 
 * [Download list of questions in blackboard upload format](blackboard_upload/bbq-monosaccharide_d_to_l_configuration.txt)
 
-![D-tagatose](images/D-tagatose.png)
+![D-tagatose](images/D-tagatose.png  | height=200))
 
 <p>Above is a Fischer projection of the monosaccharide D-tagatose. Which one of the following Fischer projections is of the monosaccharide L-tagatose?</p>
 
-- [ ] A. ![Fischer diagram 1](images/fischer_sugar1.png)
-- [ ] B. ![Fischer diagram 2](images/fischer_sugar2.png)
-- [ ] C. ![Fischer diagram 3](images/fischer_sugar3.png)
-- [ ] D. ![Fischer diagram 4](images/fischer_sugar4.png)
-- [x] E. ![Fischer diagram 5](images/L-tagatose.png)
+- [ ] A. ![Fischer diagram 1](images/fischer_sugar1.png | height=200))
+- [ ] B. ![Fischer diagram 2](images/fischer_sugar2.png | height=200))
+- [ ] C. ![Fischer diagram 3](images/fischer_sugar3.png | height=200))
+- [ ] D. ![Fischer diagram 4](images/fischer_sugar4.png | height=200)
+- [x] E. ![Fischer diagram 5](images/L-tagatose.png | height=200)))
