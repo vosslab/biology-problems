@@ -169,3 +169,193 @@ Table of Contents
 - [ ] C. Glu&mdash;Gln
 - [ ] D. Gln&mdash;Ala
 - [ ] E. Ala&mdash;Ala
+
+## Sugars
+
+### monosaccharide_d_to_l_configuration.py
+
+* [Download list of questions in blackboard upload format](blackboard_upload/bbq-monosaccharide_d_to_l_configuration.txt)
+
+<table border="1" style="border-collapse: collapse; border: white solid 0px;">
+<tbody>
+<tr>
+<td> </td>
+<td> </td>
+<td colspan="4" style="text-align: left;">CH<sub>2</sub>OH</td>
+</tr>
+<tr>
+<td colspan="3" style="border-right: solid black 1px;"> </td>
+<td colspan="3" style="border-left: solid black 1px;"><span style="font-size: medium;">==</span>O<span style="font-size: x-large;"> </span></td>
+</tr>
+<tr>
+<td rowspan="2" style="text-align: right;">H</td>
+<td style="border-bottom: solid black 1px;"> </td>
+<td style="border-right: solid black 1px; border-bottom: solid black 1px;"> </td>
+<td style="border-left: solid black 1px; border-bottom: solid black 1px;"> </td>
+<td style="border-bottom: solid black 1px;"> </td>
+<td rowspan="2" style="text-align: left;">OH</td>
+</tr>
+<tr>
+<td style="border-top: solid black 1px;"> </td>
+<td style="border-right: solid black 1px; border-top: solid black 1px;"> </td>
+<td style="border-left: solid black 1px; border-top: solid black 1px;"> </td>
+<td style="border-top: solid black 1px;"> </td>
+</tr>
+<tr>
+<td rowspan="2" style="text-align: right;">H</td>
+<td style="border-bottom: solid black 1px;"> </td>
+<td style="border-right: solid black 1px; border-bottom: solid black 1px;"> </td>
+<td style="border-left: solid black 1px; border-bottom: solid black 1px;"> </td>
+<td style="border-bottom: solid black 1px;"> </td>
+<td rowspan="2" style="text-align: left;">OH</td>
+</tr>
+<tr>
+<td style="border-top: solid black 1px;"> </td>
+<td style="border-right: solid black 1px; border-top: solid black 1px;"> </td>
+<td style="border-left: solid black 1px; border-top: solid black 1px;"> </td>
+<td style="border-top: solid black 1px;"> </td>
+</tr>
+<tr>
+<td rowspan="2" style="text-align: right;">H</td>
+<td style="border-bottom: solid black 1px;"> </td>
+<td style="border-right: solid black 1px; border-bottom: solid black 1px;"> </td>
+<td style="border-left: solid black 1px; border-bottom: solid black 1px;"> </td>
+<td style="border-bottom: solid black 1px;"> </td>
+<td rowspan="2" style="text-align: left;">OH</td>
+</tr>
+<tr>
+<td style="border-top: solid black 1px;"> </td>
+<td style="border-right: solid black 1px; border-top: solid black 1px;"> </td>
+<td style="border-left: solid black 1px; border-top: solid black 1px;"> </td>
+<td style="border-top: solid black 1px;"> </td>
+</tr>
+<tr>
+<td> </td>
+<td> </td>
+<td colspan="4" style="text-align: left;">CH<sub>2</sub>OH</td>
+</tr>
+</tbody>
+</table>
+
+<p>Above is a Fischer projection of the monosaccharide D-tagatose. Which one of the following Fischer projections is of the monosaccharide L-tagatose?</p>
+
+- [ ] A. <table border="1" style="border-collapse: collapse; border: white solid 0px;">
+<tbody>
+<tr>
+<td> </td>
+<td> </td>
+<td colspan="4" style="text-align: left;">CH<sub>2</sub>OH</td>
+</tr>
+<tr>
+<td colspan="3" style="border-right: solid black 1px;"> </td>
+<td colspan="3" style="border-left: solid black 1px;"><span style="font-size: medium;">==</span>O<span style="font-size: x-large;"> </span></td>
+</tr>
+<tr>
+<td rowspan="2" style="text-align: right;">H</td>
+<td style="border-bottom: solid black 1px;"> </td>
+<td style="border-right: solid black 1px; border-bottom: solid black 1px;"> </td>
+<td style="border-left: solid black 1px; border-bottom: solid black 1px;"> </td>
+<td style="border-bottom: solid black 1px;"> </td>
+<td rowspan="2" style="text-align: left;">OH</td>
+</tr>
+<tr>
+<td style="border-top: solid black 1px;"> </td>
+<td style="border-right: solid black 1px; border-top: solid black 1px;"> </td>
+<td style="border-left: solid black 1px; border-top: solid black 1px;"> </td>
+<td style="border-top: solid black 1px;"> </td>
+</tr>
+<tr>
+<td rowspan="2" style="text-align: right;">HO</td>
+<td style="border-bottom: solid black 1px;"> </td>
+<td style="border-right: solid black 1px; border-bottom: solid black 1px;"> </td>
+<td style="border-left: solid black 1px; border-bottom: solid black 1px;"> </td>
+<td style="border-bottom: solid black 1px;"> </td>
+<td rowspan="2" style="text-align: left;">H</td>
+</tr>
+<tr>
+<td style="border-top: solid black 1px;"> </td>
+<td style="border-right: solid black 1px; border-top: solid black 1px;"> </td>
+<td style="border-left: solid black 1px; border-top: solid black 1px;"> </td>
+<td style="border-top: solid black 1px;"> </td>
+</tr>
+<tr>
+<td rowspan="2" style="text-align: right;">HO</td>
+<td style="border-bottom: solid black 1px;"> </td>
+<td style="border-right: solid black 1px; border-bottom: solid black 1px;"> </td>
+<td style="border-left: solid black 1px; border-bottom: solid black 1px;"> </td>
+<td style="border-bottom: solid black 1px;"> </td>
+<td rowspan="2" style="text-align: left;">H</td>
+</tr>
+<tr>
+<td style="border-top: solid black 1px;"> </td>
+<td style="border-right: solid black 1px; border-top: solid black 1px;"> </td>
+<td style="border-left: solid black 1px; border-top: solid black 1px;"> </td>
+<td style="border-top: solid black 1px;"> </td>
+</tr>
+<tr>
+<td> </td>
+<td> </td>
+<td colspan="4" style="text-align: left;">CH<sub>2</sub>OH</td>
+</tr>
+</tbody>
+</table>
+- [x] B. <table border="1" style="border-collapse: collapse; border: white solid 0px;">
+<tbody>
+<tr>
+<td> </td>
+<td> </td>
+<td colspan="4" style="text-align: left;">CH<sub>2</sub>OH</td>
+</tr>
+<tr>
+<td colspan="3" style="border-right: solid black 1px;"> </td>
+<td colspan="3" style="border-left: solid black 1px;"><span style="font-size: medium;">==</span>O<span style="font-size: x-large;"> </span></td>
+</tr>
+<tr>
+<td rowspan="2" style="text-align: right;">HO</td>
+<td style="border-bottom: solid black 1px;"> </td>
+<td style="border-right: solid black 1px; border-bottom: solid black 1px;"> </td>
+<td style="border-left: solid black 1px; border-bottom: solid black 1px;"> </td>
+<td style="border-bottom: solid black 1px;"> </td>
+<td rowspan="2" style="text-align: left;">H</td>
+</tr>
+<tr>
+<td style="border-top: solid black 1px;"> </td>
+<td style="border-right: solid black 1px; border-top: solid black 1px;"> </td>
+<td style="border-left: solid black 1px; border-top: solid black 1px;"> </td>
+<td style="border-top: solid black 1px;"> </td>
+</tr>
+<tr>
+<td rowspan="2" style="text-align: right;">HO</td>
+<td style="border-bottom: solid black 1px;"> </td>
+<td style="border-right: solid black 1px; border-bottom: solid black 1px;"> </td>
+<td style="border-left: solid black 1px; border-bottom: solid black 1px;"> </td>
+<td style="border-bottom: solid black 1px;"> </td>
+<td rowspan="2" style="text-align: left;">H</td>
+</tr>
+<tr>
+<td style="border-top: solid black 1px;"> </td>
+<td style="border-right: solid black 1px; border-top: solid black 1px;"> </td>
+<td style="border-left: solid black 1px; border-top: solid black 1px;"> </td>
+<td style="border-top: solid black 1px;"> </td>
+</tr>
+<tr>
+<td rowspan="2" style="text-align: right;">HO</td>
+<td style="border-bottom: solid black 1px;"> </td>
+<td style="border-right: solid black 1px; border-bottom: solid black 1px;"> </td>
+<td style="border-left: solid black 1px; border-bottom: solid black 1px;"> </td>
+<td style="border-bottom: solid black 1px;"> </td>
+<td rowspan="2" style="text-align: left;">H</td>
+</tr>
+<tr>
+<td style="border-top: solid black 1px;"> </td>
+<td style="border-right: solid black 1px; border-top: solid black 1px;"> </td>
+<td style="border-left: solid black 1px; border-top: solid black 1px;"> </td>
+<td style="border-top: solid black 1px;"> </td>
+</tr>
+<tr>
+<td> </td>
+<td> </td>
+<td colspan="4" style="text-align: left;">CH<sub>2</sub>OH</td>
+</tr>
+</tbody>
+</table>
