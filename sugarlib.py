@@ -139,7 +139,7 @@ class SugarCodes(object):
 		return D_aldohexose_names
 
 	#============================
-	def get_sugar_names(self, num_carbons=None, configuration=None, type=None):
+	def get_sugar_names(self, num_carbons=None, configuration=None, types=None):
 		# num_carbons = #, e.g. 6 = hexoses
 		# type = 'aldo', 'keto', or '3-keto'
 		# configuration = 'D' or 'L'
@@ -148,11 +148,15 @@ class SugarCodes(object):
 			if num_carbons is not None and len(code) != num_carbons:
 				continue
 			if type is not None:
-				if type == 'aldo' and code[0] != 'A':
+				if isinstance(type, str):
+					type_list = [types,]
+				else:
+					type_list = types
+				if 'aldo' not in type_list and code[0] == 'A':
 					continue
-				if type == 'keto' and code[1] != 'K':
+				if 'keto' not in type_list and code[1] == 'K':
 					continue
-				if type == '3-keto' and code[2] != 'K':
+				if '3-keto' not in type_list and code[2] == 'K':
 					continue
 			if configuration is not None and code[-2] != configuration:
 				continue
@@ -480,9 +484,9 @@ class SugarStructure(object):
 			print("sorry not implemented")
 			sys.exit(1)
 		elif ring.startswith('furan'):
-			return Haworth_furanose_projection_html(anomeric)
+			return self.Haworth_furanose_projection_html(anomeric)
 		elif ring.startswith('pyran'):
-			return Haworth_pyranose_projection_html(anomeric)
+			return self.Haworth_pyranose_projection_html(anomeric)
 		elif ring.startswith('oxepin') or ring.startswith('septan'):
 			# oxepane or oxepine or oxepin, requires a heptose
 			# also called a septanose sugar
@@ -627,7 +631,7 @@ class SugarStructure(object):
 			table = table.replace(carbon_up, top)
 			table = table.replace(carbon_down, bottom)
 
-		print(code_list)
+		#print(code_list)
 		if len(code_list) == 1:
 			top = 'H'
 			bottom = 'H'
