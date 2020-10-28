@@ -12,35 +12,103 @@ import copy
 class SugarCodes(object):
 	def __init__(self):
 		self.sugar_code_to_name = {
-			'ADM': 'glyceraldehyde',
+			'ADM': 'D-glyceraldehyde',
+			'ALM': 'L-glyceraldehyde',
 			'MKM': 'dihydroxacetone',
 
-			'ARDM': 'erythrose',
-			'ALDM': 'threose',
-			'MKDM': 'erythrulose',
+			# D-aldotetroses
+			'ARDM': 'D-erythrose',
+			'ALDM': 'D-threose',
+			# L-aldotetroses
+			'ARLM': 'D-threose',
+			'ALLM': 'D-erythrose',
+			# ketotetroses
+			'MKDM': 'D-erythrulose',
+			'MKDM': 'L-erythrulose',
 
-			'ARRDM': 'ribose',
-			'ALRDM': 'arabinaose',
-			'ARLDM': 'xylose',
-			'ALLDM': 'lyxose',
-			'MKRDM': 'ribulose',
-			'MKLDM': 'xylulose',
+			# D-aldopentoses
+			'ARRDM': 'D-ribose',
+			'ALRDM': 'D-arabinaose',
+			'ARLDM': 'D-xylose',
+			'ALLDM': 'D-lyxose',
+			# L-aldopentoses
+			'ARRLM': 'L-lyxose',
+			'ALRLM': 'L-xylose',
+			'ARLLM': 'L-arabinaose',
+			'ALLLM': 'L-ribose',
+			# ketopentoses
+			'MKRDM': 'D-ribulose',
+			'MKLDM': 'D-xylulose',
+			'MKRDM': 'L-ribulose',
+			'MKLDM': 'L-xylulose',
+			# 3-ketopentoses
 			'MRKDM': 'meso 3-ketopentose',
 			'MLKDM': 'D-3-ketopentose',
 			'MRKLM': 'L-3-ketopentose',
 
-			'ARRRDM': 'allose',
-			'ALRRDM': 'altrose',
-			'ARLRDM': 'glucose',
-			'ALLRDM': 'mannose',
-			'ARRLDM': 'gulose',
-			'ALRLDM': 'idose',
-			'ARLLDM': 'galactose',
-			'ALLLDM': 'talose',
-			'MKLLDM': 'psicose',
-			'MKLRDM': 'fructose',
-			'MKRLDM': 'sorbose',
-			'MKRRDM': 'tagatose',
+			# D-aldohexoses
+			'ARRRDM': 'D-allose',
+			'ARRLDM': 'D-gulose',
+			'ARLRDM': 'D-glucose',
+			'ARLLDM': 'D-galactose',
+			'ALRRDM': 'D-altrose',
+			'ALRLDM': 'D-idose',
+			'ALLRDM': 'D-mannose',
+			'ALLLDM': 'D-talose',
+			# L-aldohexoses
+			'ARRRLM': 'L-talose',
+			'ARRLLM': 'L-mannose',
+			'ARLRLM': 'L-idose',
+			'ARLLLM': 'L-altrose',
+			'ALRRLM': 'L-galactose',
+			'ALRLLM': 'L-glucose',
+			'ALLRLM': 'L-gulose',
+			'ALLLLM': 'L-allose',
+			# D-ketohexoses
+			'MKRRDM': 'D-tagatose',
+			'MKRLDM': 'D-sorbose',
+			'MKLRDM': 'D-fructose',
+			'MKLLDM': 'D-psicose',
+			# L-ketohexoses
+			'MKRRLM': 'L-psicose',
+			'MKRLLM': 'L-fructose',
+			'MKLRLM': 'L-sorbose',
+			'MKLLLM': 'L-tagatose',
+
+			# aldoheptoses, add extra D to the name
+			'ARRRDDM': 'DD-alloheptose',
+			'ARRLDDM': 'DD-guloheptose',
+			'ARLRDDM': 'DD-glucoheptose',
+			'ARLLDDM': 'DD-galactoheptose',
+			'ALRRDDM': 'DD-altroheptose',
+			'ALRLDDM': 'DD-idoheptose',
+			'ALLRDDM': 'DD-mannoheptose',
+			'ALLLDDM': 'DD-taloheptose',
+			'ARRRLDM': 'LD-alloheptose',
+			'ARRLLDM': 'LD-guloheptose',
+			'ARLRLDM': 'LD-glucoheptose',
+			'ARLLLDM': 'LD-galactoheptose',
+			'ALRRLDM': 'LD-altroheptose',
+			'ALRLLDM': 'LD-idoheptose',
+			'ALLRLDM': 'LD-mannoheptose',
+			'ALLLLDM': 'LD-taloheptose',
+
+			# ketoheptose, i.e., heptuloses from aldohexoses
+			'MKRRRDM': 'D-alloheptulose',
+			# altroheptulose is commonly called sedoheptulose
+			'MKLRRDM': 'D-altroheptulose', #natural
+			'MKRLRDM': 'D-glucoheptulose',
+			'MKLLRDM': 'D-mannoheptulose', #natural
+			'MKRRLDM': 'D-guloheptulose',
+			'MKLRLDM': 'D-idoheptulose',
+			'MKRLLDM': 'D-galactoheptulose',
+			'MKLLLDM': 'D-taloheptulose',
+
+			# the two natural 3-ketoseptoses
+			# two natural heptuloses with K <-> L swapped
+			'MLKRRDM': 'D-altro-3-heptulose',
+			'MLKLRDM': 'D-manno-3-heptulose',
+
 		}
 		self.get_names_from_codes()
 		self.carbons_to_sugar = {
@@ -48,7 +116,10 @@ class SugarCodes(object):
 			5: 'pentose', 6: 'hexose', 7: 'heptose',
 			8: 'octose', 9: 'nonose',
 		}
-		self.ring_names = { 5: 'furanose', 6: 'pyranose', 7: 'septanose', 8: 'octanose', }
+		self.ring_names = {
+			'oxetose': 4, 'furanose': 5, 'pyranose': 6,
+			'oxepinose': 7, 'septanose': 7, 'octanose': 8,
+		}
 
 	#============================
 	def get_names_from_codes(self):
@@ -59,21 +130,35 @@ class SugarCodes(object):
 
 	#============================
 	def get_D_hexoses(self):
-		D_hexose_names = []
-		for code in self.sugar_code_to_name:
-			if len(code) == 6:
-				name = self.sugar_code_to_name[code]
-				D_hexose_names.append(name)
+		D_hexose_names = self.get_sugar_names(6, 'D')
 		return D_hexose_names
 
 	#============================
 	def get_D_aldohexoses(self):
-		D_aldohexose_names = []
-		for code in self.sugar_code_to_name:
-			if len(code) == 6 and code[0] == 'A':
-				name = self.sugar_code_to_name[code]
-				D_aldohexose_names.append(name)
+		D_aldohexose_names = self.get_sugar_names(6, 'D', 'aldo')
 		return D_aldohexose_names
+
+	#============================
+	def get_sugar_names(self, num_carbons=None, configuration=None, type=None):
+		# num_carbons = #, e.g. 6 = hexoses
+		# type = 'aldo', 'keto', or '3-keto'
+		# configuration = 'D' or 'L'
+		sugar_names = []
+		for code in self.sugar_code_to_name:
+			if num_carbons is not None and len(code) != num_carbons:
+				continue
+			if type is not None:
+				if type == 'aldo' and code[0] != 'A':
+					continue
+				if type == 'keto' and code[1] != 'K':
+					continue
+				if type == '3-keto' and code[2] != 'K':
+					continue
+			if configuration is not None and code[-2] != configuration:
+				continue
+			name = self.sugar_code_to_name[code]
+			sugar_names.append(name)
+		return sugar_names
 
 	#============================
 	def flip_position(self, sugar_code, position):
@@ -560,4 +645,3 @@ class SugarStructure(object):
 			table += line.strip()
 		f.close()
 		return table
-
