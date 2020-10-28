@@ -357,20 +357,20 @@ class SugarStructure(object):
 	def _aldose_html_header(self):
 		aldose_header = ''
 		aldose_header += '<tr>'
-		aldose_header += ' <td colspan="2" style="text-align: right;">H&nbsp;</td>'
-		aldose_header += ' <td colspan="2"></td>'
-		aldose_header += ' <td colspan="2" style="text-align: left;">&nbsp;O</td>'
+		aldose_header += ' <td colspan="2" style="border: solid white 0px; text-align: right;">H&nbsp;</td>'
+		aldose_header += ' <td colspan="2" style="border: solid white 0px;"></td>'
+		aldose_header += ' <td colspan="2" style="border: solid white 0px; text-align: left;">&nbsp;O</td>'
 		aldose_header += '</tr><tr>'
-		aldose_header += ' <td></td>'
-		aldose_header += ' <td colspan="2" style="text-align: right;">\&nbsp;</td>'
-		aldose_header += ' <td colspan="2" style="text-align: left;">&nbsp;//</td>'
-		aldose_header += ' <td></td>'
+		aldose_header += ' <td style="border: solid white 0px;"></td>'
+		aldose_header += ' <td colspan="2" style="border: solid white 0px; text-align: right;">\&nbsp;</td>'
+		aldose_header += ' <td colspan="2" style="border: solid white 0px; text-align: left;">&nbsp;//</td>'
+		aldose_header += ' <td style="border: solid white 0px;"></td>'
 		aldose_header += '</tr><tr>'
-		aldose_header += ' <td></td>'
-		aldose_header += ' <td></td>'
-		aldose_header += ' <td colspan="2" style="text-align: center;">C</td>'
-		aldose_header += ' <td></td>'
-		aldose_header += ' <td></td>'
+		aldose_header += ' <td style="border: solid white 0px;"></td>'
+		aldose_header += ' <td style="border: solid white 0px;"></td>'
+		aldose_header += ' <td colspan="2" style="border: solid white 0px; text-align: center;">C</td>'
+		aldose_header += ' <td style="border: solid white 0px;"></td>'
+		aldose_header += ' <td style="border: solid white 0px;"></td>'
 		aldose_header += '</tr>'
 		return aldose_header
 
@@ -384,11 +384,11 @@ class SugarStructure(object):
 	def _hydrogen_html_cap(self):
 		hydrogen_cap = ''
 		hydrogen_cap += '<tr>'
-		hydrogen_cap += ' <td></td>'
-		hydrogen_cap += ' <td></td>'
-		hydrogen_cap += ' <td colspan="2" style="text-align: center;">H</td>'
-		hydrogen_cap += ' <td></td>'
-		hydrogen_cap += ' <td></td>'
+		hydrogen_cap += ' <td style="border: solid white 0px;"></td>'
+		hydrogen_cap += ' <td style="border: solid white 0px;"></td>'
+		hydrogen_cap += ' <td colspan="2" style="border: solid white 0px; text-align: center;">H</td>'
+		hydrogen_cap += ' <td style="border: solid white 0px;"></td>'
+		hydrogen_cap += ' <td style="border: solid white 0px;"></td>'
 		hydrogen_cap += '</tr>'
 		return hydrogen_cap
 
@@ -396,9 +396,9 @@ class SugarStructure(object):
 	def _hydroxymethyl_html_cap(self):
 		hydroxymethyl_cap = ''
 		hydroxymethyl_cap += '<tr>'
-		hydroxymethyl_cap += ' <td></td>'
-		hydroxymethyl_cap += ' <td></td>'
-		hydroxymethyl_cap += ' <td colspan="4" style="text-align: left;">CH<sub>2</sub>OH</td>'
+		hydroxymethyl_cap += ' <td style="border: solid white 0px;"></td>'
+		hydroxymethyl_cap += ' <td style="border: solid white 0px;"></td>'
+		hydroxymethyl_cap += ' <td colspan="4" style="border: solid white 0px; text-align: left;">CH<sub>2</sub>OH</td>'
 		hydroxymethyl_cap += '</tr>'
 		return hydroxymethyl_cap
 
@@ -407,13 +407,13 @@ class SugarStructure(object):
 		top_connector = ''
 		top_connector += '<tr>'
 		if extra_columns is True:
-			top_connector += ' <td></td>'
-		top_connector += ' <td style="border-top: solid black 1px;"></td>'
-		top_connector += ' <td style="border-right: solid black 1px; border-top: solid black 1px;"></td>'
-		top_connector += ' <td style="border-left: solid black 1px; border-top: solid black 1px;"></td>'
-		top_connector += ' <td style="border-top: solid black 1px;"></td>'
+			top_connector += ' <td style="border: solid white 0px;"></td>'
+		top_connector += ' <td style="border: solid white 0px; border-top: solid black 1px;"></td>'
+		top_connector += ' <td style="border: solid white 0px; border-right: solid black 1px; border-top: solid black 1px;"></td>'
+		top_connector += ' <td style="border: solid white 0px; border-left: solid black 1px; border-top: solid black 1px;"></td>'
+		top_connector += ' <td style="border: solid white 0px; border-top: solid black 1px;"></td>'
 		if extra_columns is True:
-			top_connector += ' <td></td>'
+			top_connector += ' <td style="border: solid white 0px;"></td>'
 		top_connector += '</tr>'
 		return top_connector
 
@@ -425,12 +425,12 @@ class SugarStructure(object):
 			content = ['HO', 'H']
 		bottom_content = ''
 		bottom_content += '<tr>'
-		bottom_content += ' <td rowspan="2" style="text-align: right;">{0}</td>'.format(content[0])
-		bottom_content += ' <td style="border-bottom: solid black 1px;"></td>'
-		bottom_content += ' <td style="border-right: solid black 1px; border-bottom: solid black 1px;"></td>'
-		bottom_content += ' <td style="border-left: solid black 1px; border-bottom: solid black 1px;"></td>'
-		bottom_content += ' <td style="border-bottom: solid black 1px;"></td>'
-		bottom_content += ' <td rowspan="2" style="text-align: left;">{0}</td>'.format(content[1])
+		bottom_content += ' <td rowspan="2" style="border: solid white 0px; text-align: right;">{0}</td>'.format(content[0])
+		bottom_content += ' <td style="border: solid white 0px; border-bottom: solid black 1px;"></td>'
+		bottom_content += ' <td style="border: solid white 0px; border-right: solid black 1px; border-bottom: solid black 1px;"></td>'
+		bottom_content += ' <td style="border: solid white 0px; border-left: solid black 1px; border-bottom: solid black 1px;"></td>'
+		bottom_content += ' <td style="border: solid white 0px; border-bottom: solid black 1px;"></td>'
+		bottom_content += ' <td rowspan="2" style="border: solid white 0px; text-align: left;">{0}</td>'.format(content[1])
 		bottom_content += '</tr>'
 		return bottom_content
 
@@ -438,8 +438,8 @@ class SugarStructure(object):
 	def _html_carboxyl(self):
 		bottom_content = ''
 		bottom_content += '<tr>'
-		bottom_content += ' <td style="border-right: solid black 1px;" colspan="3"></td>'
-		bottom_content += ' <td style="border-left: solid black 1px;" colspan="3">'
+		bottom_content += ' <td style="border: solid white 0px; border-right: solid black 1px;" colspan="3"></td>'
+		bottom_content += ' <td style="border: solid white 0px; border-left: solid black 1px;" colspan="3">'
 		bottom_content += '  <span style="font-size: medium;">==</span>O<span style="font-size: x-large;">&nbsp;</span></td>'
 		bottom_content += '</tr>'
 		return bottom_content
@@ -447,7 +447,7 @@ class SugarStructure(object):
 	#============================
 	def Fischer_projection_html(self):
 		table = ''
-		table += '<table border="1" style="border-collapse: collapse; border: white solid 0px;">'
+		table += '<table border="0" style="border-collapse: collapse; border: white solid 0px;">'
 		table += '<tbody>'
 		code_list = list(self.sugar_code)
 		first_code = code_list.pop(0)
