@@ -223,7 +223,7 @@ def dextrose():
 #============================
 def glucose():
 	sugarcodes = SugarCodes()
-	sugar_code = sugarcodes.sugar_name_to_code['glucose']
+	sugar_code = sugarcodes.sugar_name_to_code['D-glucose']
 	sugar_struct = SugarStructure(sugar_code)
 	sugar_struct.sugar_summary()
 	return sugar_struct
@@ -231,7 +231,7 @@ def glucose():
 #============================
 def galactose():
 	sugarcodes = SugarCodes()
-	sugar_code = sugarcodes.sugar_name_to_code['galactose']
+	sugar_code = sugarcodes.sugar_name_to_code['D-galactose']
 	sugar_struct = SugarStructure(sugar_code)
 	sugar_struct.sugar_summary()
 	return sugar_struct
@@ -239,7 +239,7 @@ def galactose():
 #============================
 def fructose():
 	sugarcodes = SugarCodes()
-	sugar_code = sugarcodes.sugar_name_to_code['fructose']
+	sugar_code = sugarcodes.sugar_name_to_code['D-fructose']
 	sugar_struct = SugarStructure(sugar_code)
 	sugar_struct.sugar_summary()
 	return sugar_struct
@@ -491,6 +491,13 @@ class SugarStructure(object):
 
 	#============================
 	def Haworth_pyranose_projection_html(self, anomeric='alpha'):
+		if len(self.sugar_code) < 5:
+			# 5 carbons and 1 oxygen
+			print("sugar is too small for pyranose")
+			return
+		if len(self.sugar_code) == 5 and self.sugar_code[0] != 'A':
+			print("ketose sugar is too small for pyranose")
+			return
 		table = self.read_Haworth_pyranose_projection_html()
 		code_list = list(self.sugar_code)
 		first_carbon = code_list.pop(0)
@@ -569,6 +576,13 @@ class SugarStructure(object):
 
 	#============================
 	def Haworth_furanose_projection_html(self, anomeric='alpha'):
+		# 4 carbons and 1 oxygen
+		if len(self.sugar_code) < 4:
+			print("sugar is too small for furanose")
+			return
+		if len(self.sugar_code) == 4 and self.sugar_code[0] != 'A':
+			print("ketose sugar is too small for furanose")
+			return
 		table = self.read_Haworth_furanose_projection_html()
 		code_list = list(self.sugar_code)
 		first_carbon = code_list.pop(0)
