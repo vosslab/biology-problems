@@ -26,8 +26,8 @@ Table of Contents
 <tr><th>Protein Name</th><th>isoelectric point (pI)</th><th>molecular weight</th></tr>
 <tr><td>Xylosidase (Xyl)</td><td align="center">5.0</td><td align="center">100.0</td></tr>
 </table>
-<p>1. The protein in the table (above) is placed in a buffer solution with a pH of 6.0.</p> 
-<p>What is the correct net charge on the Xyl protein at <b>pH of 6.0</b>? 
+<p>1. The protein in the table (above) is placed in a buffer solution with a pH of 6.0.</p>
+<p>What is the correct net charge on the Xyl protein at <b>pH of 6.0</b>?
 
 - [x] A. The protein will have a net <span style="color:darkred">negative (&ndash;)</span> charge
 - [ ] B. The protein will have a net <span style="color:darkblue">positive (+)</span> charge
@@ -42,15 +42,15 @@ Table of Contents
 <tr><td>&beta;-Galactosidase (Gal)</td><td align="right">4.6</td><td align="right">175.0</td></tr>
 <tr><td>Fumerase (Fum)</td><td align="right">7.6</td><td align="right">48.5</td></tr>
 </table>
-<p>Both protein samples are placed into a gel with a constant pH of 9.0. The gel is then placed into an electric field.</p> 
+<p>Both protein samples are placed into a gel with a constant pH of 9.0. The gel is then placed into an electric field.</p>
 <p>In which direction will each protein in the table migrate at <b>pH 9.0</b></p>
 
 - [x] A. Both Gal and Fum will travel towards the <span style="color:darkblue">positive (+)</span> terminal
 - [ ] B. Both Gal and Fum will travel towards the <span style="color:darkred">negative (&ndash;)</span> terminal
-- [ ] C. Gal will travel towards the <span style="color:darkblue">positive (+)</span> 
-  and Fum will travel towards the <span style="color:darkred">negative (&ndash;)</span> 
-- [ ] D. Gal will travel towards the <span style="color:darkred">negative (&ndash;)</span> 
-  and Fum will travel towards the <span style="color:darkblue">positive (+)</span> 
+- [ ] C. Gal will travel towards the <span style="color:darkblue">positive (+)</span>
+  and Fum will travel towards the <span style="color:darkred">negative (&ndash;)</span>
+- [ ] D. Gal will travel towards the <span style="color:darkred">negative (&ndash;)</span>
+  and Fum will travel towards the <span style="color:darkblue">positive (+)</span>
 
 ## Gel Migration Problem
 
@@ -66,11 +66,11 @@ Table of Contents
 <tr><td>Unknown</td><td align="center">?</td><td  align="center">2.89</td></tr>
 </table>
 <p>3. The standard and unknown proteins listed in the table were run using SDS&ndash;PAGE.</p>
-<p><b>Estimate the molecular weight of the unknown protein.</b></p> 
+<p><b>Estimate the molecular weight of the unknown protein.</b></p>
 
-- [ ] A. 17 kDa 
-- [x] B. 26 kDa 
-- [ ] C. 41 kDa 
+- [ ] A. 17 kDa
+- [x] B. 26 kDa
+- [ ] C. 41 kDa
 - [ ] D. 54 kDa
 
 ## Alpha Helix Hydrogen Bonding
@@ -87,7 +87,7 @@ Table of Contents
 
 ## Hydrophobicity
 
-### which_phobic.py 
+### which_phobic.py
 
 <p>5. Based on their molecular formula, which one of the following compounds is most likely hydrophobic</p>
 
@@ -172,9 +172,9 @@ Table of Contents
 
 ## Sugars
 
-### monosaccharide_d_to_l_configuration.py
+### monosaccharide_Fischer_D_to_L_configuration.py
 
-* [Download list of questions in blackboard upload format](blackboard_upload/bbq-monosaccharide_d_to_l_configuration.txt)
+* [Download list of questions in blackboard upload format](blackboard_upload/bbq-monosaccharide_Fischer_D_to_L_configuration.txt)
 
 ![D-tagatose](images/D-tagatose.png)
 
