@@ -249,16 +249,3 @@ A women has nine (9) children, what is the probability that she has exactly five
 
 
 
-## Enzymes
-
-### chymotrypsin_substrate.py
-
-* [Download list of questions in blackboard upload format](blackboard_upload/bbq-chymotrypsin_substrate.txt)
-
-<p>1. Given the following peptide sequence, <b>NH<sub>3</sub><sup>+</sup>&mdash;Gln&mdash;Ala&mdash;Ala&mdash;Tyr&mdash;Ser&mdash;Asn&mdash;Glu&mdash;Glu&mdash;Gln&mdash;Gln&mdash;COO<sup>&ndash;</sup></b>, at which peptide bond location will chymotrypsin most likely cleave first?</p>
-
-- [ ] A. Ala&mdash;Tyr
-- [x] B. Tyr&mdash;Ala
-- [ ] C. Glu&mdash;Gln
-- [ ] D. Gln&mdash;Ala
-- [ ] E. Ala&mdash;Ala
