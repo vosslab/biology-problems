@@ -21,8 +21,8 @@ class SugarCodes(object):
 			'ARDM': 'D-erythrose',
 			'ALDM': 'D-threose',
 			# L-aldotetroses
-			'ARLM': 'D-threose',
-			'ALLM': 'D-erythrose',
+			'ARLM': 'L-threose',
+			'ALLM': 'L-erythrose',
 			# ketotetroses
 			'MKDM': 'D-erythrulose',
 			'MKLM': 'L-erythrulose',
@@ -40,10 +40,10 @@ class SugarCodes(object):
 			# ketopentoses
 			'MKRDM': 'D-ribulose',
 			'MKLDM': 'D-xylulose',
-			'MKRLM': 'L-ribulose',
-			'MKLLM': 'L-xylulose',
+			'MKRLM': 'L-xylulose',
+			'MKLLM': 'L-ribulose',
 			# 3-ketopentoses
-			'MRKDM': 'meso 3-ketopentose',
+			'MRKRM': 'meso 3-ketopentose',
 			'MLKDM': 'D-3-ketopentose',
 			'MRKLM': 'L-3-ketopentose',
 
@@ -104,6 +104,16 @@ class SugarCodes(object):
 			'MKLRLDM': 'D-idoheptulose',
 			'MKRLLDM': 'D-galactoheptulose',
 			'MKLLLDM': 'D-taloheptulose',
+
+			# ketoheptose, i.e., heptuloses from aldohexoses
+			'MKRRRLM': 'L-taloheptulose',
+			'MKLRRLM': 'L-galactoheptulose',
+			'MKRLRLM': 'L-idoheptulose',
+			'MKLLRLM': 'L-guloheptulose',
+			'MKRRLLM': 'L-mannoheptulose',
+			'MKLRLLM': 'L-glucoheptulose',
+			'MKRLLLM': 'L-altroheptulose',
+			'MKLLLLM': 'L-alloheptulose',
 
 			# the two natural 3-ketoseptoses
 			# two natural heptuloses with K <-> L swapped
