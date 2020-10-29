@@ -59,7 +59,7 @@ if __name__ == '__main__':
 	sugar_codes_class = sugarlib.SugarCodes()
 	D_hexose_names = sugar_codes_class.get_D_hexoses()
 	#D_hexose_names = sugar_codes_class.get_D_aldohexoses()
-	f = open('bbq-monosaccharide_d_to_l_configuration.txt', 'w')
+	f = open('bbq-monosaccharide_Fischer_D_to_L_configuration.txt', 'w')
 	for sugar_name in D_hexose_names:
 		#random.shuffle(D_hexose_names)
 		#sugar_name = D_hexose_names.pop()

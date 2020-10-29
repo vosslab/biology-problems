@@ -1,6 +1,7 @@
 ### Library for crateing HTML tables of Sugar molecules
 
-import copy
+import sys
+#import copy
 
 ### nomenclature for sugar code
 # A or M - aldose (A) or ketose (M) with a hydroxymethyl group
@@ -24,7 +25,7 @@ class SugarCodes(object):
 			'ALLM': 'D-erythrose',
 			# ketotetroses
 			'MKDM': 'D-erythrulose',
-			'MKDM': 'L-erythrulose',
+			'MKLM': 'L-erythrulose',
 
 			# D-aldopentoses
 			'ARRDM': 'D-ribose',
@@ -39,8 +40,8 @@ class SugarCodes(object):
 			# ketopentoses
 			'MKRDM': 'D-ribulose',
 			'MKLDM': 'D-xylulose',
-			'MKRDM': 'L-ribulose',
-			'MKLDM': 'L-xylulose',
+			'MKRLM': 'L-ribulose',
+			'MKLLM': 'L-xylulose',
 			# 3-ketopentoses
 			'MRKDM': 'meso 3-ketopentose',
 			'MLKDM': 'D-3-ketopentose',
@@ -147,8 +148,8 @@ class SugarCodes(object):
 		for code in self.sugar_code_to_name:
 			if num_carbons is not None and len(code) != num_carbons:
 				continue
-			if type is not None:
-				if isinstance(type, str):
+			if types is not None:
+				if isinstance(types, str):
 					type_list = [types,]
 				else:
 					type_list = types
@@ -189,7 +190,7 @@ class SugarCodes(object):
 	#============================
 	def get_enantiomer_code_from_name(self, sugar_name):
 		sugar_code = self.sugar_name_to_code[sugar_name]
-		return get_enantiomer_code_from_code(sugar_code)
+		return self.get_enantiomer_code_from_code(sugar_code)
 
 	#============================
 	def get_enantiomer_code_from_code(self, sugar_code):
@@ -505,7 +506,6 @@ class SugarStructure(object):
 		table = self.read_Haworth_pyranose_projection_html()
 		code_list = list(self.sugar_code)
 		first_carbon = code_list.pop(0)
-		last_carbon = self.sugar_code[-1]
 		penultimate_carbon = self.sugar_code[-2]
 
 		c1_end = 'H'
@@ -514,7 +514,7 @@ class SugarStructure(object):
 			if second_carbon == 'K':
 				c1_end = 'CH<sub>2</sub>OH'
 			else:
-				third_carbon = code_list.pop(0)
+				code_list.pop(0) # third_carbon
 				print('3-ketose error')
 				c1_end = 'CHOH<br/>|<br/>CH<sub>2</sub>OH'
 
@@ -590,7 +590,6 @@ class SugarStructure(object):
 		table = self.read_Haworth_furanose_projection_html()
 		code_list = list(self.sugar_code)
 		first_carbon = code_list.pop(0)
-		last_carbon = self.sugar_code[-1]
 		penultimate_carbon = self.sugar_code[-2]
 
 		c1_end = 'H'
@@ -599,7 +598,7 @@ class SugarStructure(object):
 			if second_carbon == 'K':
 				c1_end = 'CH<sub>2</sub>OH'
 			else:
-				third_carbon = code_list.pop(0)
+				code_list.pop(0) # third_carbon
 				print('3-ketose error')
 				c1_end = 'CHOH<br/>|<br/>CH<sub>2</sub>OH'
 
