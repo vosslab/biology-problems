@@ -76,7 +76,7 @@ def makeQuestion(sugar_name, anomeric):
 	for s,a in choice_codes:
 		my_sugar_struct = sugarlib.SugarStructure(s)
 		my_haworth = my_sugar_struct.Haworth_projection_html(ring=ring, anomeric=a)
-		content += "\t"+my_haworth+'<br/>'+a+s
+		content += "\t"+my_haworth #+'<br/>'+a+s
 		if s == answer_code and a == anomeric:
 			content += "\tCorrect"
 		else:
