@@ -301,7 +301,7 @@ def makeQuestion(error_type, desired_result):
 	"""
 
 	if desired_result == 'reject':
-		ratio = '7:2:5:2'
+		ratio = '8:2:4:2'
 	elif desired_result == 'accept':
 		ratio = '9:3:3:1'
 
@@ -312,27 +312,28 @@ def makeQuestion(error_type, desired_result):
 
 	numbers_tables = []
 	i = -1
-	print(error_type)
+	#print(error_type)
 	for method in (divideByObservedError, divideByObservedAndSquareError, noSquareError):
 		i += 1
-		print(i)
+		#print(i)
 		if i == error_type:
 			continue
-		stats_list = method(ratio)
-		wrong_table = createDataTable(stats_list)
+		wrong_stats_list = method(ratio)
+		wrong_table = createDataTable(wrong_stats_list)
 		numbers_tables.append(wrong_table)
 
 	#tabke the tables and shuffle them
 	numbers_tables.append(answer_table)
 	shuffle_map = list(range(len(numbers_tables)))
 	random.shuffle(shuffle_map)
-	print(shuffle_map)
+	#print(shuffle_map)
 	shuffled_tables = []
 	for index in shuffle_map:
 		shuffled_tables.append(numbers_tables[index])
 
 	#use the real values
 	final_chisq = float(stats_list[-1])
+	print(final_chisq)
 	df = 3
 	alpha = 0.05
 	result = getChiSquareResult(final_chisq, df, alpha)
@@ -365,6 +366,7 @@ if __name__ == '__main__':
 		for error_type in error_types:
 			for desired_result in ('accept', 'reject'):
 				print("")
+				print(desired_result)
 				complete_question, answer_num = makeQuestion(error_type, desired_result)
 				f.write("MC\t{0}".format(complete_question))
 				answer = choices[answer_num]
