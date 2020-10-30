@@ -137,8 +137,8 @@ def getRandList(size, total_length, include_ends=False):
 #============================================
 #============================================
 if __name__ == '__main__':
-	length = 10
-	fragment = False
+	length = 8
+	fragment = True
 	enzymes = restrictlib.get_enzyme_list()
 	enzyme_class1 = restrictlib.random_enzyme_one_end(enzymes)
 	enzyme_name1 = enzyme_class1.__name__
@@ -155,7 +155,7 @@ if __name__ == '__main__':
 		}
 		answers = [a[0], a[2]-a[0], length-a[2]]
 	else:
-		a = getRandList(5, length, include_ends=True)
+		a = getRandList(5, length, include_ends=False)
 		label_dict = {
 			a[0]: enzyme_name1,
 			a[1]: enzyme_name2,
@@ -193,9 +193,3 @@ if __name__ == '__main__':
 	f.write(answer_str)
 	f.write('\n')
 	f.close()
-
-
-
-
-
-	
