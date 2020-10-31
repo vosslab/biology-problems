@@ -78,10 +78,11 @@ def createObservedProgeny(N=160, ratio="9:2:4:1"):
 
 #===================
 #===================
-def divideByObservedError(ratio):
-	observed = [90]
-	while 88 <= observed[0] <= 92 or 9 <= observed[3] <= 11:
-		observed = createObservedProgeny(ratio=ratio)
+def divideByObservedError(ratio, observed=None):
+	if observed is None:
+		observed = [90]
+		while 88 <= observed[0] <= 92 or 9 <= observed[3] <= 11:
+			observed = createObservedProgeny(ratio=ratio)
 	expected = [90,30,30,10]
 	stats_list = []
 	chisq = 0.0
@@ -104,10 +105,11 @@ def divideByObservedError(ratio):
 
 #===================
 #===================
-def divideByObservedAndSquareError(ratio):
-	observed = [90]
-	while 88 <= observed[0] <= 92 or 9 <= observed[3] <= 11:
-		observed = createObservedProgeny(ratio=ratio)
+def divideByObservedAndSquareError(ratio, observed=None):
+	if observed is None:
+		observed = [90]
+		while 88 <= observed[0] <= 92 or 9 <= observed[3] <= 11:
+			observed = createObservedProgeny(ratio=ratio)
 	expected = [90,30,30,10]
 	stats_list = []
 	chisq = 0.0
@@ -130,10 +132,11 @@ def divideByObservedAndSquareError(ratio):
 
 #===================
 #===================
-def noSquareError(ratio):
-	observed = [90]
-	while 88 <= observed[0] <= 92 or 9 <= observed[3] <= 11:
-		observed = createObservedProgeny(ratio=ratio)
+def noSquareError(ratio, observed=None):
+	if observed is None:
+		observed = [90]
+		while 88 <= observed[0] <= 92 or 9 <= observed[3] <= 11:
+			observed = createObservedProgeny(ratio=ratio)
 	expected = [90,30,30,10]
 	stats_list = []
 	chisq = 0.0
@@ -156,10 +159,11 @@ def noSquareError(ratio):
 
 #===================
 #===================
-def normalGoodStats(ratio):
-	observed = [90]
-	while 88 <= observed[0] <= 92 or 9 <= observed[3] <= 11:
-		observed = createObservedProgeny(ratio=ratio)
+def normalGoodStats(ratio, observed=None):
+	if observed is None:
+		observed = [90]
+		while 88 <= observed[0] <= 92 or 9 <= observed[3] <= 11:
+			observed = createObservedProgeny(ratio=ratio)
 	expected = [90,30,30,10]
 	stats_list = []
 	chisq = 0.0
@@ -181,10 +185,9 @@ def normalGoodStats(ratio):
 	return stats_list
 
 
-
 #===================
 #===================
-def createDataTable(stats_list):
+def createDataTable(stats_list, title=None):
 	numcol = len(stats_list[0])
 	table = '<table border=1 style="border: 1px solid black; border-collapse: collapse; ">'
 	table += '<colgroup width="160"></colgroup> '
@@ -192,6 +195,10 @@ def createDataTable(stats_list):
 	table += '<colgroup width="80"></colgroup> '
 	table += '<colgroup width="100"></colgroup> '
 	table += '<colgroup width="80"></colgroup> '
+	if title is not None:
+		table += "<tr>"
+		table += " <th align='center' colspan='5' style='background-color: silver'>{0}</th> ".format(title)
+		table += "</tr>"
 	table += "<tr>"
 	table += " <th align='center' style='background-color: lightgray'>Phenotype</th> "
 	table += " <th align='center' style='background-color: lightgray'>Expected</th> "
@@ -200,25 +207,25 @@ def createDataTable(stats_list):
 	table += " <th align='center' style='background-color: lightgray'>Statistic</th> "
 	table += "</tr>"
 	table += "<tr>"
-	table += " <td>Yellow Round (Y&ndash;R&ndash;)</td>"
+	table += " <td>&nbsp;Yellow Round (Y&ndash;R&ndash;)</td>"
 	for j in range(numcol):
 		stat = stats_list[0][j]
 		table += " <td align='center'>{0}</td>".format(stat)
 	table += "</tr>"
 	table += "<tr>"
-	table += " <td>Yellow Wrinkled (Y&ndash;rr)</td>"
+	table += " <td>&nbsp;Yellow Wrinkled (Y&ndash;rr)</td>"
 	for j in range(numcol):
 		stat = stats_list[1][j]
 		table += " <td align='center'>{0}</td>".format(stat)
 	table += "</tr>"
 	table += "<tr>"
-	table += " <td>Green Round (yyR&ndash;)</td>"
+	table += " <td>&nbsp;Green Round (yyR&ndash;)</td>"
 	for j in range(numcol):
 		stat = stats_list[2][j]
 		table += " <td align='center'>{0}</td>".format(stat)
 	table += "</tr>"
 	table += "<tr>"
-	table += " <td>Green Wrinkled (yyrr)</td>"
+	table += " <td>&nbsp;Green Wrinkled (yyrr)</td>"
 	for j in range(numcol):
 		stat = stats_list[3][j]
 		table += " <td align='center'>{0}</td>".format(stat)
@@ -267,7 +274,7 @@ def make_chi_square_table():
 #===================
 def questionContent():
 	question = ''
-	question += "<p>Your lab partner is trying again and did another a chi-squared (&chi;<sup>2</sup>) test for your lab data (above).</p>"
+	question += "<p>Your lab partner is trying again and did another a chi-squared (&chi;<sup>2</sup>) test for your lab data (above) "
 	question += "for the F<sub>2</sub> generation in a standard dihybid cross. They wanted to know if "
 	question += "the results confirm the expected phenotype ratios</p>"
 
@@ -275,7 +282,7 @@ def questionContent():
 	question += "but they were so unsure about how to calculate the chi-squared (&chi;<sup>2</sup>) value "
 	question += "that they did it three (3) different ways. "
 	question += "Now they want you to tell them which table is correct and "
-	question += "whether they can accept or reject the null hypothesis."
+	question += "whether they can accept or reject the null hypothesis. "
 	question += "Before you ask your instructor for a new lab partner, please help them out. "
 	return question
 
@@ -305,12 +312,15 @@ def makeQuestion(error_type, desired_result):
 	elif desired_result == 'accept':
 		ratio = '9:3:3:1'
 
+	observed = [90, 30, 30, 10]
+	while 88 <= observed[0] <= 92 or 9 <= observed[3] <= 11 or observed[3] > 19:
+		observed = createObservedProgeny(ratio=ratio)
+
 	chi_square_table = make_chi_square_table()
 
-	stats_list = normalGoodStats(ratio)
-	answer_table = createDataTable(stats_list)
+	answer_stats = normalGoodStats(ratio, observed)
 
-	numbers_tables = []
+	number_stats = []
 	i = -1
 	#print(error_type)
 	for method in (divideByObservedError, divideByObservedAndSquareError, noSquareError):
@@ -318,22 +328,22 @@ def makeQuestion(error_type, desired_result):
 		#print(i)
 		if i == error_type:
 			continue
-		wrong_stats_list = method(ratio)
-		wrong_table = createDataTable(wrong_stats_list)
-		numbers_tables.append(wrong_table)
+		wrong_stats_list = method(ratio, observed)
+		number_stats.append(wrong_stats_list)
 
 	#tabke the tables and shuffle them
-	numbers_tables.append(answer_table)
-	shuffle_map = list(range(len(numbers_tables)))
+	number_stats.append(answer_stats)
+	shuffle_map = list(range(len(number_stats)))
 	random.shuffle(shuffle_map)
 	#print(shuffle_map)
 	shuffled_tables = []
-	for index in shuffle_map:
-		shuffled_tables.append(numbers_tables[index])
+	for i,index in enumerate(shuffle_map):
+		stats_list = number_stats[index]
+		numbers_table = createDataTable(stats_list, "Table {0}".format(i+1))
+		shuffled_tables.append(numbers_table)
 
 	#use the real values
-	final_chisq = float(stats_list[-1])
-	print(final_chisq)
+	final_chisq = float(answer_stats[-1])
 	df = 3
 	alpha = 0.05
 	result = getChiSquareResult(final_chisq, df, alpha)
