@@ -274,16 +274,18 @@ def make_chi_square_table():
 #===================
 def questionContent():
 	question = ''
-	question += "<p>Your lab partner is trying again and did another a chi-squared (&chi;<sup>2</sup>) test for your lab data (above) "
-	question += "for the F<sub>2</sub> generation in a standard dihybid cross. They wanted to know if "
-	question += "the results confirm the expected phenotype ratios</p>"
+	question += "<p>Your lab partner is trying again (eye roll) and did another a chi-squared (&chi;<sup>2</sup>) test "
+	question += "on the F<sub>2</sub> generation in a dihybid cross based on your lab data (above). "
+	question += "They wanted to know if the results confirm the expected phenotype ratios.</p>"
 
-	question += "<p>You helped them set up the null hypothesis, so you know it is correct, "
-	question += "but they were so unsure about how to calculate the chi-squared (&chi;<sup>2</sup>) value "
-	question += "that they did it three (3) different ways. "
-	question += "Now they want you to tell them which table is correct and "
-	question += "whether they can accept or reject the null hypothesis. "
-	question += "Before you ask your instructor for a new lab partner, please help them out. "
+	question += "<p>You helped them set up the null hypothesis, so you know that part is correct, "
+	question += "but they got confused and were unsure about how to calculate the "
+	question += "chi-squared (&chi;<sup>2</sup>) value. So much so that "
+	question += "they did it three (3) different ways.</p> "
+
+	question += "<p>Before you ask your instructor for a new lab partner, "
+	question += "<b>tell them which table is correct AND whether they can accept or reject "
+	question += "the null hypothesis</b> using the information provided.</p> "
 	return question
 
 #===================
@@ -369,7 +371,7 @@ def makeQuestion(error_type, desired_result):
 #===================
 #===================
 if __name__ == '__main__':
-	duplicates = 1
+	duplicates = 15
 	letters = "ABCDEFGHI"
 	f = open("bbq-chi_square_choices.txt", "w")
 	for i in range(duplicates):
