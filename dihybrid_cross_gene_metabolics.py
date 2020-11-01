@@ -44,7 +44,7 @@ def digenic_inheritance(color_set):
 	table += '</table>'
 
 	assigned_colors = crossinglib.dihybridAssignColors(0, color_set)
-	print(crossinglib.createDiHybridTable('A', 'B', assigned_colors, 'digenic_inheritance'))
+	print(crossinglib.createDiHybridTable('A', 'B', assigned_colors, 'digenic inheritance'))
 
 	description = table
 	description += 'Gene 1 when dominant expresses an enzyme that creates a {0} pigment from a {1} precursor. '.format(Ab_color, ab_color)
@@ -86,7 +86,7 @@ def recessive_epistasis(color_set):
 	table += '</table>'
 
 	assigned_colors = crossinglib.dihybridAssignColors(1, color_set)
-	print(crossinglib.createDiHybridTable('A', 'B', assigned_colors, 'recessive_epistasis'))
+	print(crossinglib.createDiHybridTable('A', 'B', assigned_colors, 'recessive epistasis'))
 
 	description = table
 	description += 'When gene 2 is homozygous recessive, the gene expresses an ezymes that prevents any pigment from being created and it remains a {0} color. '.format(ab_color)
@@ -127,7 +127,7 @@ def dominant_epistasis(color_set):
 	table += '</table>'
 
 	assigned_colors = crossinglib.dihybridAssignColors(2, color_set)
-	print(crossinglib.createDiHybridTable('A', 'B', assigned_colors, 'dominant_epistasis'))
+	print(crossinglib.createDiHybridTable('A', 'B', assigned_colors, 'dominant epistasis'))
 
 	description = table
 	description += 'When gene 1 is dominant, the gene expresses an ezymes that inhibits another enzyme that converts {0} pigment into {1} pigment. '.format(AB_color, ab_color)
@@ -150,7 +150,7 @@ def duplicate_recessive_epistasis(color_set):
 	ab_color = crossinglib.color_translate.get(ab_color_raw, ab_color_raw)
 
 	assigned_colors = crossinglib.dihybridAssignColors(3, color_set)
-	print(crossinglib.createDiHybridTable('A', 'B', assigned_colors, 'duplicate_recessive_epistasis'))
+	print(crossinglib.createDiHybridTable('A', 'B', assigned_colors, 'duplicate recessive epistasis'))
 
 	description = ''
 	description += 'A colored pigment is part of a two step metabolic pathway. '
@@ -173,10 +173,10 @@ def duplicate_interaction_epistasis(color_set):
 	ab_color = crossinglib.color_translate.get(ab_color_raw, ab_color_raw)
 
 	assigned_colors = crossinglib.dihybridAssignColors(4, color_set)
-	print(crossinglib.createDiHybridTable('A', 'B', assigned_colors, 'duplicate_recessive_epistasis'))
+	print(crossinglib.createDiHybridTable('A', 'B', assigned_colors, 'duplicate interaction epistasis'))
 
 	print("NOT DONE")
-	return description
+	return None
 
 #===================
 #===================
@@ -192,10 +192,10 @@ def duplicate_dominant_epistasis(color_set):
 	ab_color = crossinglib.color_translate.get(ab_color_raw, ab_color_raw)
 
 	assigned_colors = crossinglib.dihybridAssignColors(5, color_set)
-	print(crossinglib.createDiHybridTable('A', 'B', assigned_colors, 'duplicate_recessive_epistasis'))
+	print(crossinglib.createDiHybridTable('A', 'B', assigned_colors, 'duplicate dominant epistasis'))
 
 	print("NOT DONE")
-	return description
+	return None
 
 #===================
 #===================
@@ -225,7 +225,7 @@ def dominant_and_recessive_epistasis(color_set):
 	table += '</table>'
 
 	assigned_colors = crossinglib.dihybridAssignColors(6, color_set)
-	print(crossinglib.createDiHybridTable('A', 'B', assigned_colors, 'dominant_and_recessive_epistasis'))
+	print(crossinglib.createDiHybridTable('A', 'B', assigned_colors, 'dominant and recessive epistasis'))
 
 	description = table
 	description += 'When gene 1 is dominant, the gene expresses an ezymes that converts a {0} pigment into a {1} pigment. '.format(AB_color, aB_color)
@@ -315,7 +315,7 @@ def writeQuestion(gene_id, color_set, file_handle):
 #===================
 #===================
 if __name__ == '__main__':
-	for method in (digenic_inheritance, recessive_epistasis, dominant_epistasis, duplicate_recessive_epistasis, dominant_and_recessive_epistasis):
+	for method in (digenic_inheritance, recessive_epistasis, dominant_epistasis, duplicate_recessive_epistasis, duplicate_interaction_epistasis, duplicate_dominant_epistasis, dominant_and_recessive_epistasis):
 		print(method(crossinglib.four_color_sets[0]))
 		print('<br/><hr/><br/>')
 	sys.exit(1)
