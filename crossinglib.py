@@ -57,8 +57,8 @@ color_translate = {
 	'tomato': 'red',
 
 	'chartreuse': 'green',
-	'peru': 'light brown',
-	'goldenrod': 'light brown',
+	'peru': 'tan',
+	'goldenrod': 'tan',
 	'lightgreen': 'light green',
 	'salmon': 'pink',
 	'lightsalmon': 'pink',
@@ -67,6 +67,7 @@ color_translate = {
 	'palegreen': 'green',
 	'lightskyblue': 'light blue',
 
+	'gainsboro': 'white',
 	'snow': 'white',
 	'azure': 'white',
 	'ivory': 'white',
@@ -314,4 +315,4 @@ def createTestCrossTable(letter1, letter2, assigned_colors, title=None):
 
 
 	table += "</table>"
-	return table	
+	return table
