@@ -10,7 +10,7 @@ gene_interaction_names = {
 	1: 'recessive epistasis',
 	2: 'dominant epistasis',
 	3: 'duplicate recessive epistasis',
-	4: 'duplicate interaction',
+	4: 'duplicate interaction epistasis',
 	5: 'duplicate dominant epistasis',
 	6: 'dominant and recessive epistasis',
 }
