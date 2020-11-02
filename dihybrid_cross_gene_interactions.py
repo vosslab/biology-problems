@@ -90,7 +90,7 @@ if __name__ == '__main__':
 	file_handle = open("bbq-dihybrid_cross_gene_interactions.txt", "w")
 	for i in range(duplicates):
 		for gene_id in crossinglib.gene_interaction_names:
-			for color_set in crossinglib.four_color_sets:
+			for color_set in crossinglib.get_four_color_sets():
 				writeQuestion(gene_id, color_set, file_handle)
 			#sys.exit(1)
 	file_handle.close()

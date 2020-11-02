@@ -67,8 +67,8 @@ color_translate = {
 	'plum': 'purple',
 	'palegreen': 'green',
 	'lightskyblue': 'light blue',
-	'powderblue': 'light blue',
-	'aquamarine': 'blue-green',
+	'powderblue': 'sky blue',
+	'aquamarine': 'teal',
 
 	'gainsboro': 'white',
 	'snow': 'white',
@@ -76,27 +76,38 @@ color_translate = {
 	'ivory': 'white',
 }
 
-three_color_sets = [
-	['tomato', 'orange', 'yellow',],
-	['cornflowerblue', 'palegreen', 'yellow'],
-	['sienna', 'goldenrod', 'yellow'],
-	['tomato', 'pink', 'snow',],
-	['cornflowerblue', 'lightskyblue', 'azure',],
-	['lightsalmon', 'plum', 'cornflowerblue'],
-]
-random.shuffle(three_color_sets)
+def get_three_color_sets():
+	three_color_sets = [
+		['tomato', 'orange', 'yellow',],
+		['cornflowerblue', 'palegreen', 'yellow'],
+		['sienna', 'goldenrod', 'yellow'],
+		['tomato', 'pink', 'snow',],
+		['cornflowerblue', 'lightskyblue', 'azure',],
+		['lightsalmon', 'plum', 'cornflowerblue'],
+	]
+	tcs = copy.copy(three_color_sets)
+	for set in tcs:
+		three_color_sets.append(set[::-1])
+	random.shuffle(three_color_sets)
+	return three_color_sets
 
-four_color_sets = [
-	['tomato', 'goldenrod', 'yellow', 'snow'],
-	['cornflowerblue', 'palegreen', 'yellow', 'ivory'],
-	['sienna', 'tomato', 'goldenrod', 'yellow'],
-	['tomato', 'goldenrod', 'pink', 'snow',],
-	['cornflowerblue', 'lime', 'aquamarine', 'azure',],
-	['tomato', 'plum', 'lightsalmon', 'snow'],
-	['cornflowerblue', 'tan', 'powderblue', 'ivory'],
-	['cornflowerblue', 'salmon', 'yellow', 'gainsboro'],
-]
-random.shuffle(four_color_sets)
+def get_four_color_sets():
+	four_color_sets = [
+		['tomato', 'goldenrod', 'yellow', 'snow'],
+		['cornflowerblue', 'palegreen', 'yellow', 'ivory'],
+		['sienna', 'tomato', 'goldenrod', 'yellow'],
+		['tomato', 'goldenrod', 'pink', 'snow',],
+		['cornflowerblue', 'lime', 'aquamarine', 'azure',],
+		['tomato', 'plum', 'lightsalmon', 'snow'],
+		['cornflowerblue', 'tan', 'powderblue', 'ivory'],
+		['cornflowerblue', 'salmon', 'yellow', 'gainsboro'],
+	]
+	fcs = copy.copy(four_color_sets)
+	for set in fcs:
+		four_color_sets.append(set[::-1])
+		pass
+	random.shuffle(four_color_sets)
+	return four_color_sets
 
 #===================
 #===================

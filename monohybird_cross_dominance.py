@@ -89,6 +89,6 @@ if __name__ == '__main__':
 	file_handle = open("bbq-monohybird_cross_dominance.txt", "w")
 	for letter in crossinglib.gene_letters:
 		for gene_type in crossinglib.single_gene_types:
-			for color_set in crossinglib.three_color_sets:
+			for color_set in crossinglib.get_three_color_sets():
 				writeQuestion(letter, gene_type, color_set, file_handle)
 	file_handle.close()

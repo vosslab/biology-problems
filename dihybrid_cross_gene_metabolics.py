@@ -70,7 +70,7 @@ def digenic_inheritance(color_set):
 	#assigned_colors = crossinglib.dihybridAssignColors(0, color_set)
 	#print(crossinglib.createDiHybridTable('A', 'B', assigned_colors, 'digenic inheritance'))
 
-	description = table
+	description = table+'</br>'
 	description += 'Gene 1 when dominant expresses an enzyme that creates a {0} pigment from a {1} precursor. '.format(Ab_color, ab_color)
 	description += 'Gene 2 when dominant expresses an enzyme that creates a {0} pigment from a {1} precursor. '.format(aB_color, ab_color)
 	description += 'When both genes are dominant, the two pigments combine to form a {0} color. '.format(AB_color)
@@ -112,7 +112,7 @@ def recessive_epistasis(color_set):
 	#assigned_colors = crossinglib.dihybridAssignColors(1, color_set)
 	#print(crossinglib.createDiHybridTable('A', 'B', assigned_colors, 'recessive epistasis'))
 
-	description = table
+	description = table+'</br>'
 	description += 'A two step metabolic pathway determines the pigment color. '
 	description += 'When gene 1 is dominant, the gene expresses an ezyme that converts the {0} pigment into a pigment of {1} color. '.format(ab_color, Ab_color)
 	description += 'When gene 1 is homozygous recessive, it remains {0} in color. '.format(ab_color)
@@ -153,7 +153,7 @@ def dominant_epistasis(color_set):
 	#assigned_colors = crossinglib.dihybridAssignColors(2, color_set)
 	#print(crossinglib.createDiHybridTable('A', 'B', assigned_colors, 'dominant epistasis'))
 
-	description = table
+	description = table+'</br>'
 	description += 'A two step metabolic pathway determines the pigment color. '
 	description += 'When gene 1 is dominant, the gene expresses an ezyme that inhibits another enzyme that converts {0} pigment into {1} pigment. '.format(AB_color, ab_color)
 	description += 'When gene 2 is dominant, the gene expresses an enzyme that converts the {0} pigment into a {1} pigment. '.format(ab_color, aB_color)
@@ -195,7 +195,7 @@ def duplicate_recessive_epistasis(color_set):
 	#assigned_colors = crossinglib.dihybridAssignColors(3, color_set)
 	#print(crossinglib.createDiHybridTable('A', 'B', assigned_colors, 'duplicate recessive epistasis'))
 
-	description = table
+	description = table+'</br>'
 	description += 'A two step metabolic pathway determines the pigment color. '
 	description += 'When gene 1 is dominant, the gene expresses an ezyme that converts a {0} pigment into a a second molecue with the same {0} color. '.format(ab_color)
 	description += 'When gene 2 is dominant, the gene expresses an enzyme that converts the second {0} colored molecule from gene 1 into the {1} pigment. '.format(ab_color, AB_color)
@@ -268,7 +268,7 @@ def duplicate_interaction_epistasis(color_set):
 	#Complete dominance at both gene pairs; however, when either gene is dominant, it hides the effects of the other gene
 	#Certain phenotypic traits depend on the dominant alleles of two gene loci. When dominant is present it will show its phenotype. The ratio will be 9: 6: 1.
 
-	description = table
+	description = table+'</br>'
 	description += 'Both Gene 1 and Gene 2 when dominant expresses an enzyme that creates a {0} pigment from a {1} precursor. '.format(Ab_color, ab_color)
 	description += 'When both genes are dominant, the two enzymes combine to form a {0} color. '.format(AB_color)
 	description += 'If neither of the genes are dominant, then there is no pigment and only the {0} color remains. '.format(ab_color)
@@ -304,7 +304,7 @@ def duplicate_dominant_epistasis(color_set):
 	#assigned_colors = crossinglib.dihybridAssignColors(5, color_set)
 	#print(crossinglib.createDiHybridTable('A', 'B', assigned_colors, 'duplicate dominant epistasis'))
 
-	description = table
+	description = table+'</br>'
 	description += 'When either gene 1 or gene 2 is dominant, they express an ezyme that converts a precursor {0} pigment into the {0} color. '.format(ab_color, AB_color)
 	description += 'If both gene 1 and gene 2 are homozygous recessive, then only the {0} pigment is present'.format(ab_color)
 	return description
@@ -338,7 +338,7 @@ def dominant_and_recessive_epistasis(color_set):
 	#assigned_colors = crossinglib.dihybridAssignColors(6, color_set)
 	#print(crossinglib.createDiHybridTable('A', 'B', assigned_colors, 'dominant and recessive epistasis'))
 
-	description = table
+	description = table+'</br>'
 	description += 'When gene 2 is dominant and gene 1 is homozygous recessive, gene 2 expresses an ezyme that converts a {0} pigment into a {1} pigment. '.format(AB_color, aB_color)
 	description += 'Whenever gene 1 is dominant, then gene 1 expresses a protein that completely suppresses the activity of gene 2. '
 	description += 'When both genes are dominant, the inhibited gene 2 is unable to produce the {0} color, so it remains {1} in color. '.format(aB_color, AB_color)
@@ -351,8 +351,8 @@ def dominant_and_recessive_epistasis(color_set):
 #===================
 #===================
 def questionContent(gene_id):
-	question = ''
-	question += '<p>Above is a diagram explaining the interaction of two genes. '
+	question = '<br/>'
+	question += '<p>The diagram and description above that explain the interaction of two genes. '
 	question += ' <b>Determine the dihybird cross phenotypic ratio.</b></p>'
 	#print(question)
 	return question
@@ -395,20 +395,23 @@ def writeQuestion(gene_id, color_set, file_handle):
 	choice_letters = "ABCDEFGHI"
 	file_handle.write("MC\t{0}".format(complete_question))
 	answer = gene_id
-	gene_ids = list(crossinglib.gene_interaction_names.keys())
-	random.shuffle(gene_ids)
-	for k, sub_gene_id in enumerate(gene_ids):
+	mixed_gene_ids = list(crossinglib.gene_interaction_names.keys())
+	random.shuffle(mixed_gene_ids)
+	for k, sub_gene_id in enumerate(mixed_gene_ids):
 		if sub_gene_id == answer:
 			prefix = "*"
 			status = "Correct"
 		else:
 			prefix = ""
 			status = "Incorrect"
+		ratio = crossinglib.gene_type_ratios[sub_gene_id]
 		name = crossinglib.gene_interaction_names[sub_gene_id]
 		description = crossinglib.gene_type_description[sub_gene_id]
-		choice_text = "These two genes show <strong>{0}</strong>. {1}.".format(name, description)
+		assigned_colors = crossinglib.dihybridAssignColors(sub_gene_id, color_set)
+		data_table = crossinglib.createDiHybridTable('A', 'B', assigned_colors, name)
+		choice_text = "<p>These two would genes show a <b>{0}</b> ratio.</p> {1}".format(ratio, data_table)
 		file_handle.write("\t{0}\t{1}".format(choice_text, status))
-		print("{0}{1}. {2}".format(prefix, choice_letters[k], choice_text))
+		print("<p>{0}{1}. {2}</p>".format(prefix, choice_letters[k], ratio))
 	file_handle.write("\n")
 
 
@@ -429,10 +432,10 @@ method_list = [
 #===================
 if __name__ == '__main__':
 	duplicates = 1
-	file_handle = open("bbq-dihybrid_cross_gene_interactions.txt", "w")
+	file_handle = open("bbq-dihybrid_cross_gene_metabolics.txt", "w")
 	for i in range(duplicates):
-		for gene_id in crossinglib.gene_interaction_names:
-			for color_set in crossinglib.four_color_sets:
+		for color_set in crossinglib.get_four_color_sets():
+			for gene_id in crossinglib.gene_interaction_names:
 				writeQuestion(gene_id, color_set, file_handle)
-				sys.exit(1)
+			sys.exit(1)
 	file_handle.close()
