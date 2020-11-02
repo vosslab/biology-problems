@@ -53,9 +53,10 @@ gene_type_ratios = {
 color_translate = {
 	'cornflowerblue': 'blue',
 	'royalblue': 'blue',
-	'sienna': 'dark brown',
+	'sienna': 'brown',
 	'tomato': 'red',
 
+	'lime': 'green',
 	'chartreuse': 'green',
 	'peru': 'tan',
 	'goldenrod': 'tan',
@@ -66,6 +67,8 @@ color_translate = {
 	'plum': 'purple',
 	'palegreen': 'green',
 	'lightskyblue': 'light blue',
+	'powderblue': 'light blue',
+	'aquamarine': 'blue-green',
 
 	'gainsboro': 'white',
 	'snow': 'white',
@@ -78,8 +81,8 @@ three_color_sets = [
 	['cornflowerblue', 'palegreen', 'yellow'],
 	['sienna', 'goldenrod', 'yellow'],
 	['tomato', 'pink', 'snow',],
-	['cornflowerblue', 'lightskyblue ', 'azure',],
-	['lightsalmon ', 'plum', 'cornflowerblue'],
+	['cornflowerblue', 'lightskyblue', 'azure',],
+	['lightsalmon', 'plum', 'cornflowerblue'],
 ]
 random.shuffle(three_color_sets)
 
@@ -88,7 +91,7 @@ four_color_sets = [
 	['cornflowerblue', 'palegreen', 'yellow', 'ivory'],
 	['sienna', 'tomato', 'goldenrod', 'yellow'],
 	['tomato', 'goldenrod', 'pink', 'snow',],
-	['cornflowerblue ', 'lime', 'aquamarine', 'azure',],
+	['cornflowerblue', 'lime', 'aquamarine', 'azure',],
 	['tomato', 'plum', 'lightsalmon', 'snow'],
 	['cornflowerblue', 'tan', 'powderblue', 'ivory'],
 	['cornflowerblue', 'salmon', 'yellow', 'gainsboro'],
