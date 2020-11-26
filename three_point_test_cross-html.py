@@ -72,11 +72,37 @@ def getGeneOrder(basetype):
 	return geneorder
 
 def getDistances():
+	#integers
+	key_maps = {
+		35:	[10, 20, 30, 40, ],
+		30:	[ 5, 10, 15, 20, 25, 35,],
+		25:	[ 2,  4,  6,  8, 12, 14, 16, 18, 22,],
+		20:	[ 5, 10, 15, 25, 30, 35,],
+		15:	[10, 20, 30, 40, ],
+		10:	[ 5, 15, 20, 25, 30, 35,],
+		5:	[10, 20, 30, 40, ],
+	}
+	a = random.choice(list(key_maps.keys()))
+	b = random.choice(key_maps[a])
+	if a == b:
+		print("ERROR")
+		sys.exit(1)
+	if debug is True: print("determine gene distances")
+	distances = [a, b]
+	random.shuffle(distances)
+	distance3 = int(distances[0] + distances[1] - (distances[0] * distances[1])/50)
+	distances.append(distance3)
+	if debug is True: print(distances)
+	return distances
+
+def getDistancesOriginal():
 	if debug is True: print("determine gene distances")
 	a = numpy.random.poisson(lam=12, size=7)
 	a.sort()
 	distances = [a[0], a[-1]]
 	random.shuffle(distances)
+	distance3 = distances[0] + distances[1] - (distances[0] * distances[1])/50.
+	distances.append(distance3)
 	if debug is True: print(distances)
 	return distances
 
@@ -104,7 +130,7 @@ def getProgenySize(distances):
 
 def getPhenotype(genotype):
 	if genotype == "+++":
-		return '<I>wildtype</I>'
+		return '<i>wildtype</i>'
 	phenotype_list = []
 	for allele in genotype:
 		if allele == '+':
@@ -119,23 +145,24 @@ def makeProgenyHtmlTable(typemap, progeny_size):
 	alltypes = list(typemap.keys())
 	alltypes.sort()
 	td_extra = 'align="center" style="border: 1px solid black;"'
-	table = '<table style="border-collaspe: collaspe; border: 1px solid black;">'
+	table = '<table style="border-collapse: collapse; border: 1px solid black;">'
 	table += '<tr>'
-	table += '  <th colspan="3" {0}>Genotype</th>'.format(td_extra)
+	table += '  <th {0}>Phenotype</th>'.format(td_extra)
+	table += '  <th colspan="3" {0}>Genotypes</th>'.format(td_extra)
 	table += '  <th {0}>Progeny<br/>Count</th>'.format(td_extra)
 	table += '</tr>'
 	for type in alltypes:
 		phenotype_string = getPhenotype(type)
 		table += '<tr>'
-		table += ' <td {0}>{1}</td>'.format(td_extra, phenotype_string)
+		table += ' <td {0}>{1}</td>'.format(td_extra.replace('center', 'left'), phenotype_string)
 		table += ' <td {0}>{1}</td>'.format(td_extra, type[0])
 		table += ' <td {0}>{1}</td>'.format(td_extra, type[1])
 		table += ' <td {0}>{1}</td>'.format(td_extra, type[2])
-		table += ' <td {0}>{1:d}</td>'.format(td_extra, typemap[type])
+		table += ' <td {0}>{1:d}</td>'.format(td_extra.replace('center', 'right'), typemap[type])
 		table += '</tr>'
 	table += '<tr>'
-	table += '  <th colspan="3" align="right" style="border: 1px solid black;">TOTAL</th>'
-	table += '  <td {0}>{1:d}</td>'.format(td_extra, progeny_size)
+	table += '  <th colspan="4" {0}">TOTAL =</th>'.format(td_extra.replace('center', 'right'))
+	table += '  <td {0}>{1:d}</td>'.format(td_extra.replace('center', 'right'), progeny_size)
 	table += '</tr>'
 	table += '</table>'
 	return table
@@ -230,38 +257,51 @@ def makeQuestion(basetype, geneorder, distances, progeny_size):
 
 def questionText(basetype):
 	question_string = '  '
-	question_string += '<p>Complete these sentences: '
-	question_string += 'the distance between genes {0} and {1} is [{0}{1}]'.format(basetype[0].upper(),basetype[1].upper())
-	question_string += ', '
-	question_string += 'the distance between genes {0} and {1} is [{0}{1}]'.format(basetype[0].upper(),basetype[2].upper())
-	question_string += ', and '
-	question_string += 'the distance between genes {0} and {1} is [{0}{1}]'.format(basetype[1].upper(),basetype[2].upper())
-	question_string += '. '
-	question_string += 'From this the correct order of the genes is [gene_order].</p>'
+	question_string += '<p>Using the table above, '
+	question_string += 'calculate and fill in the following four blanks: '
+	question_string += '<br/>the distance between genes {0} and {1} is [{0}{1}] ({0}{1})'.format(basetype[0].upper(),basetype[1].upper())
+	question_string += '<br/>the distance between genes {0} and {1} is [{0}{1}] ({0}{1})'.format(basetype[0].upper(),basetype[2].upper())
+	question_string += '<br/>the distance between genes {0} and {1} is [{0}{1}] ({0}{1})'.format(basetype[1].upper(),basetype[2].upper())
+	question_string += '<br/>From this the correct order of the genes is [gene_order] (gene order).</p>'
+	question_string += '<p><i>Hint:</i> all gene distances will be whole numbers, '
+	question_string += 'do NOT enter a decimal</p>'
 	return question_string
 
 def getVariables(basetype):
 	variable_list = []
-	variable = '{0}{1}'.format(basetype[0].upper(),basetype[1].upper())
+	if basetype[0] < basetype[1]:
+		variable = '{0}{1}'.format(basetype[0].upper(),basetype[1].upper())
+	else:
+		variable = '{0}{1}'.format(basetype[1].upper(),basetype[0].upper())
 	variable_list.append(variable)
-	variable = '{0}{1}'.format(basetype[0].upper(),basetype[2].upper())
+	if basetype[1] < basetype[2]:
+		variable = '{0}{1}'.format(basetype[1].upper(),basetype[2].upper())
+	else:
+		variable = '{0}{1}'.format(basetype[2].upper(),basetype[1].upper())
 	variable_list.append(variable)
-	variable = '{0}{1}'.format(basetype[1].upper(),basetype[2].upper())
+	if basetype[0] < basetype[2]:
+		variable = '{0}{1}'.format(basetype[0].upper(),basetype[2].upper())
+	else:
+		variable = '{0}{1}'.format(basetype[2].upper(),basetype[0].upper())
 	variable_list.append(variable)
-	variable = 'gene_order'
+	variable = 'geneorder'
 	variable_list.append(variable)
 	return variable_list
 
 
 def blackboardFormat(question_string, html_table, variable_list, geneorder, distances):
-
 	#FIB_PLUS TAB question text TAB variable1 TAB answer1 TAB answer2 TAB TAB variable2 TAB answer3
 	blackboard = 'FIB_PLUS\t'
-	#blackboard += html_table
+	blackboard += html_table
 	blackboard += question_string
+	variable_to_distance = {}
 	for i in range(len(variable_list)-1):
-		blackboard += '\t{0}\t{1}\t'.format(variable_list[i], distances[i])
-	blackboard += '\tgene_order\t{0}\t{1}\n'.format(geneorder, geneorder.upper())
+		variable_to_distance[variable_list[i]] = distances[i]
+	variable_list.sort()
+	for i in range(len(variable_list)-1):
+		variable = variable_list[i]
+		blackboard += '\t{0}\t{1}\t'.format(variable, variable_to_distance[variable])
+	blackboard += '\tgene_order\t{0}\t{1}\n'.format(geneorder, geneorder[::-1])
 	return blackboard
 
 if __name__ == "__main__":
@@ -269,12 +309,15 @@ if __name__ == "__main__":
 
 	filename = "bbq-three_point_test_cross.txt"
 	f = open(filename, "w")
-	duplicates = 4
+	duplicates = 1
+	j = -1
 	for i in range(duplicates):
-		basetype = lowercase[i:i+3]
+		j += 1
+		if j + 3 == 26:
+			j = 0
+		basetype = lowercase[j:j+3]
 		geneorder = getGeneOrder(basetype)
 		distances = getDistances()
-		distances.append(0)
 		print(distances)
 		progeny_size = getProgenySize(distances)
 		typemap = makeQuestion(basetype, geneorder, distances, progeny_size)
