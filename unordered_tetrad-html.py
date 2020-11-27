@@ -184,7 +184,7 @@ def makeProgenyHtmlTable(typemap, progeny_size):
 	alltypes = list(typemap.keys())
 	alltypes.sort()
 	td_extra = 'align="center" style="border: 1px solid black;"'
-	table = '<table style="border-collapse: collapse; border: 1px solid black;">'
+	table = '<table style="border-collapse: collapse; border: 1px solid black; width: 400px; height: 200px;">'
 	table += '<tr>'
 	table += '  <th {0}>Set #</th>'.format(td_extra)
 	table += '  <th colspan="4" {0}>Tetrad Genotypes</th>'.format(td_extra)
@@ -367,14 +367,29 @@ def generateTypeCounts(parental, geneorder, distances, progeny_size, basetype):
 
 def questionText(basetype):
 	question_string = '  '
-	question_string += '<p>Using the table above, '
-	question_string += 'calculate and fill in the following four blanks: '
-	question_string += '<br/>the distance between genes {0} and {1} is [{0}{1}] ({0}{1})'.format(basetype[0].upper(),basetype[1].upper())
-	question_string += '<br/>the distance between genes {0} and {1} is [{0}{1}] ({0}{1})'.format(basetype[0].upper(),basetype[2].upper())
-	question_string += '<br/>the distance between genes {0} and {1} is [{0}{1}] ({0}{1})'.format(basetype[1].upper(),basetype[2].upper())
-	question_string += '<br/>From this the correct order of the genes is [geneorder] (gene order).</p>'
-	question_string += '<p><i>Hint:</i> all gene distances will be whole numbers, '
-	question_string += 'do NOT enter a decimal</p>'
+	question_string += '<h6>Unordered Tetrad Gene Mapping</h6>'
+	question_string += '<p>The yeast <i>Saccharomyces cerevisiae</i> has unordered tetrads. '
+	question_string += 'A cross is made to study the linkage relationships among three genes. '
+	question_string += '<p>Using the table, determine the order of the genes and the distances between them. '
+	question_string += 'Once calculated, fill in the following four blanks: <ul>'
+	question_string += '<li>The distance between genes {0} and {1} is [{0}{1}] ({0}{1})</li>'.format(basetype[0].upper(),basetype[1].upper())
+	question_string += '<li>The distance between genes {0} and {1} is [{0}{1}] ({0}{1})</li>'.format(basetype[0].upper(),basetype[2].upper())
+	question_string += '<li>The distance between genes {0} and {1} is [{0}{1}] ({0}{1})</li>'.format(basetype[1].upper(),basetype[2].upper())
+	question_string += '<li>From this the correct order of the genes is [geneorder] (gene order).</li></ul></p>'
+	question_string += '<p><i>Hint:</i> ALL gene distances will be whole numbers, '
+	question_string += 'do NOT enter a decimal; if you have a decimal your calculations are wrong.</p>'
+
+	question_string += '<ul>'
+	question_string += '<li>Step 1: Find the Row for the Parental Type for all three genes.</li>'
+	question_string += '<li>Step 2: Pick any two genes and assign PD, NPD, TT</li>'
+	question_string += '<li>Step 3: Determine if the two genes are linked.</li>'
+	question_string += '<ul><li>PD >> NPD &rarr; linked; PD &approx; NPD &rarr; unlinked</li></ul>'
+	question_string += '<li>Step 4: Determine the map distance between the two genes</li>'
+	question_string += '<ul><li>D = &half; (TT + 6 NPD)/total = (3 NPD + &half;TT)/total</li></ul>'
+	question_string += '<li>Step 5: Go to Step 2 and pick a new pair of genes until all pairs are complete.</li>'
+	question_string += '</ul>'
+
+
 	return question_string
 
 def getVariables(basetype):
@@ -438,7 +453,7 @@ if __name__ == "__main__":
 		ascii_table = makeProgenyAsciiTable(typemap, progeny_size)
 		print(ascii_table)
 		html_table = makeProgenyHtmlTable(typemap, progeny_size)
-		#print(html_table)
+		print(html_table)
 		question_string = questionText(basetype)
 		variable_list = getVariables(geneorder)
 

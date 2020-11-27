@@ -257,14 +257,18 @@ def makeQuestion(basetype, geneorder, distances, progeny_size):
 
 def questionText(basetype):
 	question_string = '  '
-	question_string += '<p>Using the table above, '
-	question_string += 'calculate and fill in the following four blanks: '
-	question_string += '<br/>the distance between genes {0} and {1} is [{0}{1}] ({0}{1})'.format(basetype[0].upper(),basetype[1].upper())
-	question_string += '<br/>the distance between genes {0} and {1} is [{0}{1}] ({0}{1})'.format(basetype[0].upper(),basetype[2].upper())
-	question_string += '<br/>the distance between genes {0} and {1} is [{0}{1}] ({0}{1})'.format(basetype[1].upper(),basetype[2].upper())
-	question_string += '<br/>From this the correct order of the genes is [gene_order] (gene order).</p>'
-	question_string += '<p><i>Hint:</i> all gene distances will be whole numbers, '
-	question_string += 'do NOT enter a decimal</p>'
+	question_string += '<h6>Three-Point Test-Cross Gene Mapping</h6>'
+	question_string += '<p>A test-cross with a heterozygote fruit fly for three genes is conducted. '
+	question_string += 'The resulting phenotypes are summarized in above table. '
+	question_string += 'Progeny are sorted by phenotype name.</p>'
+	question_string += '<p>Using the table, determine the order of the genes and the distances between them. '
+	question_string += 'Once calculated, fill in the following four blanks: <ul>'
+	question_string += '<li>The distance between genes {0} and {1} is [{0}{1}] ({0}{1})</li>'.format(basetype[0].upper(),basetype[1].upper())
+	question_string += '<li>The distance between genes {0} and {1} is [{0}{1}] ({0}{1})</li>'.format(basetype[0].upper(),basetype[2].upper())
+	question_string += '<li>The distance between genes {0} and {1} is [{0}{1}] ({0}{1})</li>'.format(basetype[1].upper(),basetype[2].upper())
+	question_string += '<li>From this the correct order of the genes is [geneorder] (gene order).</li></ul></p>'
+	question_string += '<p><i>Hint:</i> ALL gene distances will be whole numbers, '
+	question_string += 'do NOT enter a decimal; if you have a decimal your calculations are wrong.</p>'
 	return question_string
 
 def getVariables(basetype):
