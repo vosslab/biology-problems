@@ -27,6 +27,7 @@ def makeQuestion(sugar_name, anomeric):
 	fischer = sugar_struct.Fischer_projection_html()
 
 	question = ''
+	#question += 'This is a challenging questiom, so it is <b>extra credit</b>. Don&prime;t waste too much time solving it.<br/> '
 	question += 'Above is a Fischer projection of the monosaccharide {0}. '.format(sugar_name)
 	question += 'Which one of the following Haworth projections is of the monosaccharide <b>&{0};-{1}</b>? '.format(anomeric, sugar_name)
 	answer_code = sugar_code

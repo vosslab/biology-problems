@@ -66,7 +66,7 @@ def makeQuestion(sugar_name, anomeric):
 		answers['&beta;-anomer'] = True
 
 	N += 1
-	content = 'MA\t<p>Haworth classification problem &num;{0}</p> '.format(N)
+	content = 'MA\t<p>Haworth classification problem &num;B{0}</p> '.format(N)
 	content += haworth
 	content += question
 
@@ -78,11 +78,15 @@ def makeQuestion(sugar_name, anomeric):
 			content += "\tIncorrect"
 	return content
 
+#HOH2C
+#CH2OH
+#Tyson, Clarke, Harriet
+
 if __name__ == '__main__':
 	sugar_codes_class = sugarlib.SugarCodes()
 	sugars = []
-	sugars += sugar_codes_class.get_sugar_names(4, None, 'aldo')
-	sugars += sugar_codes_class.get_sugar_names(5, None, 'keto')
+	sugars += sugar_codes_class.get_sugar_names(5, None, 'aldo')
+	sugars += sugar_codes_class.get_sugar_names(6, None, 'keto')
 	#sugars += sugar_codes_class.get_sugar_names(6, None, 'aldo')
 	#print(D_sugars)
 	#D_sugars.remove('D-ribose')
