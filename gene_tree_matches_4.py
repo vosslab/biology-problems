@@ -21,7 +21,7 @@ def makeQuestion(sorted_genes, version):
 
 	wrongs = []
 	random.shuffle(perms)
-	for i in range(3):
+	for i in range(4):
 		oth = perms[i]
 		a = random.randint(1,3)
 		if a == 1:
