@@ -2,32 +2,27 @@
 
 import random
 import phylolib
-
+import itertools
 
 # make a gene tree with 3 leaves, ask students to find the similar one
 
-def makeQuestion(version):
-	if version % 3 == 0:
-		genes = [g[0],g[1],g[2]]
-		others = [[g[0],g[2],g[1]], [g[1],g[2],g[0]],]
-	elif version % 3 == 1:
-		genes = [g[0],g[2],g[1]]
-		others = [[g[0],g[1],g[2]], [g[1],g[2],g[0]],]
-	elif version % 3 == 2:
-		genes = [g[1],g[2],g[0]]
-		others = [[g[0],g[1],g[2]], [g[0],g[2],g[1]],]
-	if version // 3 == 0:
+def makeQuestion(sorted_genes, version):
+	perms = phylolib.comb_safe_permutations(sorted_genes)
+	index = version % len(sorted_genes)
+	genes = perms.pop(index)
+	print(genes)
+	if version // len(sorted_genes) == 0:
 		answer = phylolib.comb_tree_3_leaves_html(genes)
-		question = phylolib.comb_tree_3_leaves_type_2_html(genes)
+		question = phylolib.comb_tree_3_leaves_alternate_html(genes)
 	else:
 		question = phylolib.comb_tree_3_leaves_html(genes)
-		answer = phylolib.comb_tree_3_leaves_type_2_html(genes)
+		answer = phylolib.comb_tree_3_leaves_alternate_html(genes)
 
 	wrongs = []
-	for oth in others:
+	for oth in perms:
 		w1 = phylolib.comb_tree_3_leaves_html(oth)
 		wrongs.append(w1)
-		w2 = phylolib.comb_tree_3_leaves_type_2_html(oth)
+		w2 = phylolib.comb_tree_3_leaves_alternate_html(oth)
 		wrongs.append(w2)
 
 	choices = wrongs
@@ -48,19 +43,19 @@ def makeQuestion(version):
 
 
 if __name__ == "__main__":
-	lowercase = "abcdefghijklmnopqrstuvwxyz"
+	lowercase = "abcdefghjkmnpqrstuwxyz"
 
-	filename = "bbq-which_gene_tree_matches_3.txt"
+	filename = "bbq-gene_tree_matches_3.txt"
 	f = open(filename, "w")
 	duplicates = 16
 	j = -1
 	for i in range(duplicates):
 		j += 1
-		if j + 3 == 26:
+		if j + 3 == len(lowercase):
 			j = 0
 		basetype = lowercase[j:j+3]
 		g = list(basetype)
 		for version in range(6):
-			complete_question = makeQuestion(version)
+			complete_question = makeQuestion(g, version)
 			f.write(complete_question)
 	f.close()

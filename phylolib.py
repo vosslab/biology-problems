@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import itertools
+
 space = " "
 dash = '_'
 bar = '|'
@@ -12,6 +14,32 @@ black_top = 'border-bottom: 3px solid black; '
 black_left = 'border-left: 3px solid black; '
 black_right = 'border-right: 3px solid black; '
 middle = 'vertical-align: middle; '
+
+def comb_safe_permutations(genes):
+	complete_set = itertools.permutations(genes, len(genes))
+	comb_safe_set = list(complete_set)
+	for p in comb_safe_set:
+		#swap first two elements
+		q = list(p)
+		q[0], q[1] = q[1], q[0]
+		r = tuple(q)
+		comb_safe_set.remove(r)
+	#print(comb_safe_set)
+	return comb_safe_set
+
+def comb_fail_permutations(genes):
+	complete_set = list(itertools.permutations(genes, len(genes)))
+	comb_fail_set = []
+	first_two = (complete_set[0][0], complete_set[0][1])
+	for p in complete_set:
+		if p[0] not in first_two:
+			continue
+		if p[1] not in first_two:
+			continue
+		comb_fail_set.append(p)
+	#print(comb_fail_set)
+	return comb_fail_set
+
 
 def td_cell(code):
 	line = ' 3px solid black; '
@@ -112,9 +140,9 @@ def comb_tree_3_leaves_html(values, distances=None):
 	if distances[0] >= distances[1]:
 		return None
 	#row1 = "         ____ a"
-	#row2 = "    ____|     "
+	#row2 = "    ____|      "
 	#row3 = "   |    |____ b"
-	#row4 = " __|          "
+	#row4 = " __|           "
 	#row5 = "   |_________ c"
 	diffdistance = distances[1] - distances[0]
 	table = '<table style="border-collapse: collapse; border: 1px solid silver;">'
@@ -139,7 +167,7 @@ def comb_tree_3_leaves_html(values, distances=None):
 	table += '</table>'
 	return table
 
-def comb_tree_3_leaves_type_2_ascii(values, distances=None):
+def comb_tree_3_leaves_alternate_ascii(values, distances=None):
 	# values = ['a','b','c']
 	# distances = [2, 3]; 3 >2
 	# format = (a,b),c
@@ -195,7 +223,7 @@ def comb_tree_3_leaves_type_2_ascii(values, distances=None):
 	return tree
 
 
-def comb_tree_3_leaves_type_2_html(values, distances=None):
+def comb_tree_3_leaves_alternate_html(values, distances=None):
 	# values = ['a','b','c']
 	# distances = [2, 3]; 3 >2
 	# format = (a,b),c
@@ -234,17 +262,17 @@ def comb_tree_3_leaves_type_2_html(values, distances=None):
 
 def balanced_tree_3_leaves_ascii(values, distances=None):
 	# values = ['a','b','c']
-	# distances = [2, 3]; 3 >2
-	# format = (a,b),c
+	# distances = [2,];
+	# format = (a,b,c)
 	# 5 rows are needed
 	if distances is None:
 		distances = [2,]
 
 	#row1 = "    ____ a"
-	#row4 = "   |      "
-	#row1 = " --|____ b"
 	#row2 = "   |      "
-	#row3 = "   |____ c"
+	#row3 = " --|____ b"
+	#row4 = "   |      "
+	#row5 = "   |____ c"
 	row1 = ''
 	row1 += space * 4
 	row1 += dash * int(2 * distances[0])
@@ -284,17 +312,17 @@ def balanced_tree_3_leaves_ascii(values, distances=None):
 
 def balanced_tree_3_leaves_html(values, distances=None):
 	# values = ['a','b','c']
-	# distances = [2, 3]; 3 >2
-	# format = (a,b),c
+	# distances = [2,];
+	# format = (a,b,c)
 	# 5 rows are needed
 	if distances is None:
 		distances = [2,]
 
 	#row1 = "    ____ a"
-	#row4 = "   |      "
-	#row1 = " --|____ b"
 	#row2 = "   |      "
-	#row3 = "   |____ c"
+	#row3 = " --|____ b"
+	#row4 = "   |      "
+	#row5 = "   |____ c"
 	table = '<table style="border-collapse: collapse; border: 1px solid silver;">'
 	table += '<colgroup width="30"></colgroup>'
 	table += '<colgroup width="{0}"></colgroup>'.format(distances[0]*20)
@@ -351,6 +379,47 @@ def comb_tree_4_leaves_html(values, distances=None):
 	table += td_cell('_|')+td_cell('  ')+td_cell('  ')+td_cell('  ')
 	table += '</tr><tr>'
 	table += td_cell(' |')+td_cell('__')+td_cell('__')+td_cell('__')+letter_cell(values[3])
+	table += '</tr><tr>'
+	table += td_cell('  ')+td_cell('  ')+td_cell('  ')+td_cell('  ')
+	table += '</tr>'
+	table += '</table>'
+	return table
+
+def comb_tree_4_leaves_alternate_html(values, distances=None):
+	# values = ['a','b','c', 'd']
+	# distances = [2, 3, 4]; 3 > 2; 4 > 3
+	# format = ((a,b),c),d
+	# 5 rows are needed
+	if distances is None:
+		distances = [2,3,4]
+	#row6 = "   ____________ d"
+	#row6 = "  |              "
+	#row1 = "__|        ____ a"
+	#row2 = "  |   ____|      "
+	#row3 = "  |  |    |____ b"
+	#row4 = "  |__|           "
+	#row5 = "     |_________ c"
+
+	table = '<table style="border-collapse: collapse; border: 1px solid silver;">'
+	table += '<colgroup width="30"></colgroup>'
+	table += '<colgroup width="{0}"></colgroup>'.format((distances[2]-distances[1])*20)
+	table += '<colgroup width="{0}"></colgroup>'.format((distances[1]-distances[0])*20)
+	table += '<colgroup width="{0}"></colgroup>'.format(distances[0]*20)
+	table += '<colgroup width="30"></colgroup>'
+	table += '<tr>'
+	table += td_cell('  ')+td_cell('__')+td_cell('__')+td_cell('__')+letter_cell(values[3])
+	table += '</tr><tr>'
+	table += td_cell(' |')+td_cell('  ')+td_cell('  ')+td_cell('  ')
+	table += '</tr><tr>'
+	table += td_cell('_|')+td_cell('  ')+td_cell('  ')+td_cell('__')+letter_cell(values[0])
+	table += '</tr><tr>'
+	table += td_cell(' |')+td_cell('  ')+td_cell('_|')+td_cell('  ')
+	table += '</tr><tr>'
+	table += td_cell(' |')+td_cell(' |')+td_cell(' |')+td_cell('__')+letter_cell(values[1])
+	table += '</tr><tr>'
+	table += td_cell(' |')+td_cell('_|')+td_cell('  ')+td_cell('  ')
+	table += '</tr><tr>'
+	table += td_cell('  ')+td_cell(' |')+td_cell('__')+td_cell('__')+letter_cell(values[2])
 	table += '</tr><tr>'
 	table += td_cell('  ')+td_cell('  ')+td_cell('  ')+td_cell('  ')
 	table += '</tr>'

@@ -138,31 +138,32 @@ def getPhenotype(genotype):
 		phenotype = phenotype_dict.get(allele)
 		phenotype_list.append(phenotype)
 	#print(phenotype_list)
-	phenotype_string = ','.join(phenotype_list)
+	phenotype_string = ', '.join(phenotype_list)
 	return phenotype_string
 
 def makeProgenyHtmlTable(typemap, progeny_size):
 	alltypes = list(typemap.keys())
 	alltypes.sort()
 	td_extra = 'align="center" style="border: 1px solid black;"'
-	table = '<table style="border-collapse: collapse; border: 1px solid black;">'
+	span = '<span style="font-size: medium;">'
+	table = '<table style="border-collapse: collapse; border: 2px solid black; width: 460px; height: 280px">'
 	table += '<tr>'
-	table += '  <th {0}>Phenotype</th>'.format(td_extra)
-	table += '  <th colspan="3" {0}>Genotypes</th>'.format(td_extra)
-	table += '  <th {0}>Progeny<br/>Count</th>'.format(td_extra)
+	table += '  <th {0}>{1}Phenotype</span></th>'.format(td_extra, span)
+	table += '  <th colspan="3" {0}>{1}Genotypes</span></th>'.format(td_extra, span)
+	table += '  <th {0}>{1}Progeny<br/>Count</span></th>'.format(td_extra, span)
 	table += '</tr>'
 	for type in alltypes:
 		phenotype_string = getPhenotype(type)
 		table += '<tr>'
-		table += ' <td {0}>{1}</td>'.format(td_extra.replace('center', 'left'), phenotype_string)
-		table += ' <td {0}>{1}</td>'.format(td_extra, type[0])
-		table += ' <td {0}>{1}</td>'.format(td_extra, type[1])
-		table += ' <td {0}>{1}</td>'.format(td_extra, type[2])
-		table += ' <td {0}>{1:d}</td>'.format(td_extra.replace('center', 'right'), typemap[type])
+		table += ' <td {0}>&nbsp;{1}{2}</span></td>'.format(td_extra.replace('center', 'left'), span, phenotype_string)
+		table += ' <td {0}>{1}{2}</span></td>'.format(td_extra, span, type[0])
+		table += ' <td {0}>{1}{2}</span></td>'.format(td_extra, span, type[1])
+		table += ' <td {0}>{1}{2}</span></td>'.format(td_extra, span, type[2])
+		table += ' <td {0}>{1}{2:d}</span></td>'.format(td_extra.replace('center', 'right'), span, typemap[type])
 		table += '</tr>'
 	table += '<tr>'
-	table += '  <th colspan="4" {0}">TOTAL =</th>'.format(td_extra.replace('center', 'right'))
-	table += '  <td {0}>{1:d}</td>'.format(td_extra.replace('center', 'right'), progeny_size)
+	table += '  <th colspan="4" {0}">{1}TOTAL =</span></th>'.format(td_extra.replace('center', 'right'), span)
+	table += '  <td {0}>{1}{2:d}</span></td>'.format(td_extra.replace('center', 'right'), span, progeny_size)
 	table += '</tr>'
 	table += '</table>'
 	return table
@@ -256,17 +257,16 @@ def makeQuestion(basetype, geneorder, distances, progeny_size):
 	return typemap
 
 def questionText(basetype):
-	question_string = '  '
+	question_string = '<p></p>'
 	question_string += '<h6>Three-Point Test-Cross Gene Mapping</h6>'
 	question_string += '<p>A test-cross with a heterozygote fruit fly for three genes is conducted. '
-	question_string += 'The resulting phenotypes are summarized in above table. '
-	question_string += 'Progeny are sorted by phenotype name.</p>'
+	question_string += 'The resulting phenotypes are summarized in above table.</p> '
 	question_string += '<p>Using the table, determine the order of the genes and the distances between them. '
-	question_string += 'Once calculated, fill in the following four blanks: <ul>'
+	question_string += 'Once calculated, fill in the following four blanks: </p><ul>'
 	question_string += '<li>The distance between genes {0} and {1} is [{0}{1}] ({0}{1})</li>'.format(basetype[0].upper(),basetype[1].upper())
 	question_string += '<li>The distance between genes {0} and {1} is [{0}{1}] ({0}{1})</li>'.format(basetype[0].upper(),basetype[2].upper())
 	question_string += '<li>The distance between genes {0} and {1} is [{0}{1}] ({0}{1})</li>'.format(basetype[1].upper(),basetype[2].upper())
-	question_string += '<li>From this the correct order of the genes is [geneorder] (gene order).</li></ul></p>'
+	question_string += '<li>From this the correct order of the genes is [geneorder] (gene order).</li></ul>'
 	question_string += '<p><i>Hint:</i> ALL gene distances will be whole numbers, '
 	question_string += 'do NOT enter a decimal; if you have a decimal your calculations are wrong.</p>'
 	return question_string
@@ -305,19 +305,19 @@ def blackboardFormat(question_string, html_table, variable_list, geneorder, dist
 	for i in range(len(variable_list)-1):
 		variable = variable_list[i]
 		blackboard += '\t{0}\t{1}\t'.format(variable, variable_to_distance[variable])
-	blackboard += '\tgene_order\t{0}\t{1}\n'.format(geneorder, geneorder[::-1])
+	blackboard += '\tgeneorder\t{0}\t{1}\n'.format(geneorder, geneorder[::-1])
 	return blackboard
 
 if __name__ == "__main__":
-	lowercase = "abcdefghijklmnopqrstuvwxyz"
+	lowercase = "abcdefghijklmnpqrsuvwxyz"
 
 	filename = "bbq-three_point_test_cross.txt"
 	f = open(filename, "w")
-	duplicates = 1
+	duplicates = 98
 	j = -1
 	for i in range(duplicates):
 		j += 1
-		if j + 3 == 26:
+		if j + 3 == len(lowercase):
 			j = 0
 		basetype = lowercase[j:j+3]
 		geneorder = getGeneOrder(basetype)
@@ -333,7 +333,7 @@ if __name__ == "__main__":
 		variable_list = getVariables(geneorder)
 
 		final_question = blackboardFormat(question_string, html_table, variable_list, geneorder, distances)
-		print(final_question)
+		#print(final_question)
 
 		f.write(final_question)
 	f.close()

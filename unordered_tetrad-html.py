@@ -184,19 +184,20 @@ def makeProgenyHtmlTable(typemap, progeny_size):
 	alltypes = list(typemap.keys())
 	alltypes.sort()
 	td_extra = 'align="center" style="border: 1px solid black;"'
-	table = '<table style="border-collapse: collapse; border: 1px solid black; width: 400px; height: 200px;">'
+	span = '<span style="font-size: medium;">'
+	table = '<table style="border-collapse: collapse; border: 2px solid black; width: 400px; height: 220px;">'
 	table += '<tr>'
 	table += '  <th {0}>Set #</th>'.format(td_extra)
 	table += '  <th colspan="4" {0}>Tetrad Genotypes</th>'.format(td_extra)
 	table += '  <th {0}>Progeny<br/>Count</th>'.format(td_extra)
 	table += '</tr>'
 	for i,type in enumerate(alltypes):
-		interheader = '</td><td {0}>'.format(td_extra)
+		interheader = '</span></td><td {0}>{1}'.format(td_extra, span)
 		html_type = type.strip().replace('\t', interheader)
 		table += '<tr>'
-		table += ' <td {0}>{1}</td>'.format(td_extra, i+1)
-		table += ' <td {0}>{1}</td>'.format(td_extra, html_type)
-		table += ' <td {0}>{1:d}</td>'.format(td_extra.replace('center', 'right'), typemap[type])
+		table += ' <td {0}>{1}{2}</span></td>'.format(td_extra, span, i+1)
+		table += ' <td {0}>{1}{2}</span></td>'.format(td_extra, span, html_type)
+		table += ' <td {0}>{1}{2:d}</span></td>'.format(td_extra.replace('center', 'right'), span, typemap[type])
 		table += '</tr>'
 	table += '<tr>'
 	table += '  <th colspan="5" {0}">TOTAL =</th>'.format(td_extra.replace('center', 'right'))
@@ -366,16 +367,16 @@ def generateTypeCounts(parental, geneorder, distances, progeny_size, basetype):
 	return tetradCount
 
 def questionText(basetype):
-	question_string = '  '
+	question_string = '<p></p>'
 	question_string += '<h6>Unordered Tetrad Gene Mapping</h6>'
 	question_string += '<p>The yeast <i>Saccharomyces cerevisiae</i> has unordered tetrads. '
 	question_string += 'A cross is made to study the linkage relationships among three genes. '
 	question_string += '<p>Using the table, determine the order of the genes and the distances between them. '
-	question_string += 'Once calculated, fill in the following four blanks: <ul>'
+	question_string += 'Once calculated, fill in the following four blanks: </p><ul>'
 	question_string += '<li>The distance between genes {0} and {1} is [{0}{1}] ({0}{1})</li>'.format(basetype[0].upper(),basetype[1].upper())
 	question_string += '<li>The distance between genes {0} and {1} is [{0}{1}] ({0}{1})</li>'.format(basetype[0].upper(),basetype[2].upper())
 	question_string += '<li>The distance between genes {0} and {1} is [{0}{1}] ({0}{1})</li>'.format(basetype[1].upper(),basetype[2].upper())
-	question_string += '<li>From this the correct order of the genes is [geneorder] (gene order).</li></ul></p>'
+	question_string += '<li>From this the correct order of the genes is [geneorder] (gene order).</li></ul>'
 	question_string += '<p><i>Hint:</i> ALL gene distances will be whole numbers, '
 	question_string += 'do NOT enter a decimal; if you have a decimal your calculations are wrong.</p>'
 
@@ -416,7 +417,7 @@ def getVariables(basetype):
 def blackboardFormat(question_string, html_table, variable_list, geneorder, distances):
 	#FIB_PLUS TAB question text TAB variable1 TAB answer1 TAB answer2 TAB TAB variable2 TAB answer3
 	blackboard = 'FIB_PLUS\t'
-	#blackboard += html_table
+	blackboard += html_table
 	blackboard += question_string
 	variable_to_distance = {}
 	for i in range(len(variable_list)-1):
@@ -430,15 +431,15 @@ def blackboardFormat(question_string, html_table, variable_list, geneorder, dist
 
 
 if __name__ == "__main__":
-	lowercase = "abcdefghijklmnopqrstuvwxyz"
+	lowercase = "abcdefghijklmnpqrsuvwxyz"
 
 	filename = "bbq-unordered_tetrad.txt"
 	f = open(filename, "w")
-	duplicates = 2
+	duplicates = 98
 	j = -1
 	for i in range(duplicates):
 		j += 1
-		if j + 3 == 26:
+		if j + 3 == len(lowercase):
 			j = 0
 		basetype = lowercase[j:j+3]
 		geneorder = getGeneOrder(basetype)
@@ -453,12 +454,12 @@ if __name__ == "__main__":
 		ascii_table = makeProgenyAsciiTable(typemap, progeny_size)
 		print(ascii_table)
 		html_table = makeProgenyHtmlTable(typemap, progeny_size)
-		print(html_table)
+		#print(html_table)
 		question_string = questionText(basetype)
 		variable_list = getVariables(geneorder)
 
 		final_question = blackboardFormat(question_string, html_table, variable_list, geneorder, distances)
-		print(final_question)
+		#print(final_question)
 
 		f.write(final_question)
 	f.close()
