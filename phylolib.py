@@ -99,7 +99,7 @@ def comb_tree_3_leaves_ascii(values, distances=None):
 	row5 += values[2]
 	#===============
 	tree = row1 + '\n' + row2 + '\n'  + row3 + '\n' + row4 + '\n' + row5 + '\n'
-	print(tree)
+	return tree
 
 
 def comb_tree_3_leaves_html(values, distances=None):
@@ -137,7 +137,6 @@ def comb_tree_3_leaves_html(values, distances=None):
 	table += td_cell('  ')+td_cell('  ')+td_cell('  ')
 	table += '</tr>'
 	table += '</table>'
-	print(table)
 	return table
 
 def comb_tree_3_leaves_type_2_ascii(values, distances=None):
@@ -193,7 +192,7 @@ def comb_tree_3_leaves_type_2_ascii(values, distances=None):
 	row5 += values[2]
 	#===============
 	tree = row1 + '\n' + row2 + '\n'  + row3 + '\n' + row4 + '\n' + row5 + '\n'
-	print(tree)
+	return tree
 
 
 def comb_tree_3_leaves_type_2_html(values, distances=None):
@@ -206,11 +205,11 @@ def comb_tree_3_leaves_type_2_html(values, distances=None):
 	if distances[0] >= distances[1]:
 		return None
 
-	#row1 = "    _________ a"
+	#row1 = "    _________ c"
 	#row4 = "   |           "
-	#row1 = " --|     ____ b"
+	#row1 = " --|     ____ a"
 	#row2 = "   |____|      "
-	#row3 = "        |____ c"
+	#row3 = "        |____ b"
 	diffdistance = distances[1] - distances[0]
 	table = '<table style="border-collapse: collapse; border: 1px solid silver;">'
 	table += '<colgroup width="30"></colgroup>'
@@ -218,20 +217,19 @@ def comb_tree_3_leaves_type_2_html(values, distances=None):
 	table += '<colgroup width="{0}"></colgroup>'.format(distances[0]*20)
 	table += '<colgroup width="30"></colgroup>'
 	table += '<tr>'
-	table += td_cell('  ')+td_cell('__')+td_cell('__')+letter_cell(values[0])
+	table += td_cell('  ')+td_cell('__')+td_cell('__')+letter_cell(values[2])
 	table += '</tr><tr>'
 	table += td_cell('_|')+td_cell('  ')+td_cell('  ')
 	table += '</tr><tr>'
-	table += td_cell(' |')+td_cell('  ')+td_cell('__')+letter_cell(values[1])
+	table += td_cell(' |')+td_cell('  ')+td_cell('__')+letter_cell(values[0])
 	table += '</tr><tr>'
 	table += td_cell(' |')+td_cell('|_')+td_cell('  ')
 	table += '</tr><tr>'
-	table += td_cell('  ')+td_cell(' |')+td_cell('__')+letter_cell(values[2])
+	table += td_cell('  ')+td_cell(' |')+td_cell('__')+letter_cell(values[1])
 	table += '</tr><tr>'
 	table += td_cell('  ')+td_cell('  ')+td_cell('  ')
 	table += '</tr>'
 	table += '</table>'
-	print(table)
 	return table
 
 def balanced_tree_3_leaves_ascii(values, distances=None):
@@ -281,7 +279,7 @@ def balanced_tree_3_leaves_ascii(values, distances=None):
 	row5 += values[2]
 	#===============
 	tree = row1 + '\n' + row2 + '\n'  + row3 + '\n' + row4 + '\n' + row5 + '\n'
-	print(tree)
+	return tree
 
 
 def balanced_tree_3_leaves_html(values, distances=None):
@@ -315,7 +313,7 @@ def balanced_tree_3_leaves_html(values, distances=None):
 	table += td_cell('  ')+td_cell('  ')
 	table += '</tr>'
 	table += '</table>'
-	print(table)
+	return table
 
 
 
@@ -357,7 +355,7 @@ def comb_tree_4_leaves_html(values, distances=None):
 	table += td_cell('  ')+td_cell('  ')+td_cell('  ')+td_cell('  ')
 	table += '</tr>'
 	table += '</table>'
-	print(table)
+	return table
 
 
 def balanced_tree_4_leaves_html(values, distances=None):
@@ -398,7 +396,7 @@ def balanced_tree_4_leaves_html(values, distances=None):
 	table += td_cell('  ')+td_cell('  ')+td_cell('  ')+td_cell('  ')
 	table += '</tr>'
 	table += '</table>'
-	print(table)
+	return table
 
 
 def giraffe_tree_5_leaves_html(values, distances=None):
@@ -446,7 +444,7 @@ def giraffe_tree_5_leaves_html(values, distances=None):
 	table += td_cell('  ')+td_cell('  ')+td_cell('  ')+td_cell('  ')+td_cell('  ')
 	table += '</tr>'
 	table += '</table>'
-	print(table)
+	return table
 
 def comb_tree_5_leaves_html(values, distances=None):
 	# values = ['a','b','c', 'd', 'e']
@@ -493,7 +491,7 @@ def comb_tree_5_leaves_html(values, distances=None):
 	table += td_cell('  ')+td_cell('  ')+td_cell('  ')+td_cell('  ')+td_cell('  ')
 	table += '</tr>'
 	table += '</table>'
-	print(table)
+	return table
 
 def balanced_tree_5_leaves_type_1_html(values, distances=None):
 	# values = ['a','b','c', 'd', 'e']
@@ -540,7 +538,7 @@ def balanced_tree_5_leaves_type_1_html(values, distances=None):
 	table += td_cell('  ')+td_cell('  ')+td_cell('  ')+td_cell('  ')+td_cell('  ')
 	table += '</tr>'
 	table += '</table>'
-	print(table)
+	return table
 
 def balanced_tree_5_leaves_type_2_html(values, distances=None):
 	# values = ['a','b','c', 'd', 'e']
@@ -587,7 +585,7 @@ def balanced_tree_5_leaves_type_2_html(values, distances=None):
 	table += td_cell('  ')+td_cell('  ')+td_cell('  ')+td_cell('  ')+td_cell('  ')
 	table += '</tr>'
 	table += '</table>'
-	print(table)
+	return table
 
 def balanced_tree_5_leaves_type_3_html(values, distances=None):
 	# values = ['a','b','c', 'd', 'e']
@@ -634,7 +632,7 @@ def balanced_tree_5_leaves_type_3_html(values, distances=None):
 	table += td_cell('  ')+td_cell('  ')+td_cell('  ')+td_cell('  ')+td_cell('  ')
 	table += '</tr>'
 	table += '</table>'
-	print(table)
+	return table
 
 
 if __name__ == '__main__':
