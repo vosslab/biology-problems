@@ -267,8 +267,10 @@ def questionText(basetype):
 	question_string += '<li>The distance between genes {0} and {1} is [{0}{1}] ({0}{1})</li>'.format(basetype[0].upper(),basetype[2].upper())
 	question_string += '<li>The distance between genes {0} and {1} is [{0}{1}] ({0}{1})</li>'.format(basetype[1].upper(),basetype[2].upper())
 	question_string += '<li>From this the correct order of the genes is [geneorder] (gene order).</li></ul>'
-	question_string += '<p><i>Hint:</i> ALL gene distances will be whole numbers, '
+	question_string += '<p><i>Hint 1:</i> ALL gene distances will be whole numbers, '
 	question_string += 'do NOT enter a decimal; if you have a decimal your calculations are wrong.</p>'
+  	question_string += '<p><i>Hint 2:</i> enter your answer in the blank using only letters or numbers '
+	question_string += ' with no spaces or commas. Also, do NOT add units, e.g. cM or m.u.</p>''
 	return question_string
 
 def getVariables(basetype):

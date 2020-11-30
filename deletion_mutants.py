@@ -7,6 +7,15 @@ import copy
 import random
 import pprint
 
+num2word = {
+	1: 'one', 2: 'two', 3: 'three', 4: 'four', 5: 'five',
+	6: 'six', 7: 'seven', 8: 'eight', 9: 'nine', 10: 'ten',
+	11: 'eleven', 12: 'twelve', 13: 'thirteen', 14: 'fourteen',
+	15: 'fifteen', 16: 'sixteen', 17: 'seventeen', 18: 'eighteen', 19: 'nineteen',
+	20: 'twenty',
+}
+
+#====================
 def makeHtmlTable(origlist, del_set):
 	table = ''
 	table += '<table style="border-collapse: collapse; border: 2px solid black; '
@@ -17,7 +26,7 @@ def makeHtmlTable(origlist, del_set):
 	for i in range(len(origlist)):
 		table += '<th align="center">Gene {0}</th>'.format(i+1)
 	table += '</tr>'
-	colors = ['darkred', 'DarkSlateGray', 'DarkGreen', 'Indigo', 'MidnightBlue', 'DarkOliveGreen', ]
+	colors = ['DarkRed', 'DarkSlateGray', 'DarkGreen', 'Indigo', 'MidnightBlue', 'DarkOliveGreen', ]
 	for i,deletion in enumerate(del_set):
 		table += '<tr><th align="center">Del #{0}</th>'.format(i+1)
 		for gene in origlist:
@@ -30,20 +39,32 @@ def makeHtmlTable(origlist, del_set):
 	table += '</table>'
 	return table
 
+#====================
 def writeQuestion(origlist, del_set):
+	### write question
+	#Genes a, b, c, d, e, and f are closely linked in a chromosome, but their order is unknown.
+	#Four deletions in the region are found to uncover recessive alleles of the genes as follows:
+	#Deletion?1 uncovers a, d, and f; Deletion?2 uncovers d, e, and f; Deletion?3 uncovers c, d, and e;
+	#Deletion?4 uncovers b and c. Which one of the following is the correct order for the genes?
+
 	sortedlist = copy.copy(origlist)
 	sortedlist.sort()
 
+	question = ''
+
 	sys.stderr.write("\n")
-	sys.stderr.write(("A total of %s genes "%(num2word[len(origlist)]))
+	question += (("<p>A total of %s genes "%(num2word[len(origlist)]))
 		+list2text(sortedlist)+" are closely linked in a single chromosome, but "
 		+"their order is unknown. ")
-	sys.stderr.write(("A total of %s deletions in the region are found "%(num2word[len(del_set)]))
-		+"to uncover recessive alleles of the genes as follows: ")
+	question += (("A total of %s deletions in the region are found "%(num2word[len(del_set)]))
+		+"to uncover recessive alleles of the genes as follows:</p><ul>  ")
 	for i,deletion in enumerate(del_set):
-		sys.stderr.write("Deletion #%d uncovers the %s genes %s; "%(i+1, num2word[len(deletion)], list2text(deletion)))
-	sys.stderr.write("What the correct order for the %s genes? "%(num2word[len(origlist)]))
-	sys.stderr.write("Hint: the first gene on the end is gene %s.\n"%(origlist[0]))
+		question += ("<li>Deletion #%d uncovers the %s genes %s;</li>  "%(i+1, num2word[len(deletion)], list2text(deletion)))
+	question += ("</ul> <h5>What the correct order for the %s genes?</h5> "%(num2word[len(origlist)]))
+	question += ("<p>Hint 1: the first gene on the end is gene %s.</p> "%(origlist[0]))
+	question += ("<p>Hint 2: enter your answer in the blank using only {0} letters with no spaces or commas.</p> ".format(num2word[len(origlist)]))
+
+	#sys.stderr.write(question)
 
 	sys.stderr.write("\n")
 	sys.stderr.write("Answer: %s\n"%(list2string(origlist)))
@@ -52,13 +73,16 @@ def writeQuestion(origlist, del_set):
 	#sys.stdout.write("Which one of the following is the correct order for the genes?")
 
 	sys.stderr.write("##########\n")
+	return question
 
+#====================
 def list2string(mylist):
 	mystring = ""
 	for letter in mylist:
 		mystring += letter
 	return mystring
 
+#====================
 def list2text(mylist):
 	mystring = ""
 	if len(mylist) > 2:
@@ -70,15 +94,7 @@ def list2text(mylist):
 		mystring = mylist[0]+" and "+mylist[1]
 	return mystring
 
-num2word = {
-	1: 'one', 2: 'two', 3: 'three', 4: 'four', 5: 'five',
-	6: 'six', 7: 'seven', 8: 'eight', 9: 'nine', 10: 'ten',
-	11: 'eleven', 12: 'twelve', 13: 'thirteen', 14: 'fourteen',
-	15: 'fifteen', 16: 'sixteen', 17: 'seventeen', 18: 'eighteen', 19: 'nineteen',
-	20: 'twenty',
-}
-
-
+#====================
 def makeDeletions(num_items):
 	charlist = list("ABCDEFGHJKMPQRSTWXYZ")
 	itemlist = charlist[:num_items]
@@ -149,11 +165,40 @@ def makeDeletions(num_items):
 	return origlist, del_set
 
 #====================
+def makeBlackboard(question, table, origlist):
+	blackboard = ''
+	blackboard += 'FIB\t'
+	blackboard += table
+	blackboard += question
+	blackboard += '\t'
+	answer = ''.join(origlist)
+	blackboard += answer
+	blackboard += '\t'
+	blackboard += answer[::-1]
+	blackboard += '\t'
+	commas = ','.join(origlist)
+	blackboard += commas
+	blackboard += '\t'
+	blackboard += commas[::-1]
+	blackboard += '\t'
+	spaces = ' '.join(origlist)
+	blackboard += spaces
+	blackboard += '\t'
+	blackboard += spaces[::-1]
+	blackboard += '\n'
+	return blackboard
+
+#====================
+#====================
 if __name__ == '__main__':
 	if len(sys.argv) >= 2:
 		num_items = int(sys.argv[1])
 	else:
 		num_items = 6
+	if len(sys.argv) >= 3:
+		no_table = True
+	else:
+		no_table = False
 	if num_items < 4:
 		print("Sorry, you must have at least 4 genes for this program")
 		sys.exit(1)
@@ -161,15 +206,19 @@ if __name__ == '__main__':
 		print("Sorry, you must have less than 20 genes for this program")
 		sys.exit(1)
 
-	origlist, del_set = makeDeletions(num_items)
+	duplicates = 1
 
-	### write question
-	#Genes a, b, c, d, e, and f are closely linked in a chromosome, but their order is unknown.
-	#Four deletions in the region are found to uncover recessive alleles of the genes as follows:
-	#Deletion?1 uncovers a, d, and f; Deletion?2 uncovers d, e, and f; Deletion?3 uncovers c, d, and e;
-	#Deletion?4 uncovers b and c. Which one of the following is the correct order for the genes?
-
-	random.shuffle(del_set)
-	print(makeHtmlTable(origlist, del_set))
-
-	writeQuestion(origlist, del_set)
+	f = open('bbq-deletion_mutants.txt', 'w')
+	for i in range(duplicates):
+		origlist, del_set = makeDeletions(num_items)
+		random.shuffle(del_set)
+		if no_table is False:
+			table = makeHtmlTable(origlist, del_set)
+		else:
+			table = ''
+		print(table)
+		question = writeQuestion(origlist, del_set)
+		print(question)
+		blackboard = makeBlackboard(question, table, origlist)
+		f.write(blackboard)
+	f.close()
