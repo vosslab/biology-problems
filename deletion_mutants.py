@@ -206,7 +206,7 @@ if __name__ == '__main__':
 		print("Sorry, you must have less than 20 genes for this program")
 		sys.exit(1)
 
-	duplicates = 1
+	duplicates = 92
 
 	f = open('bbq-deletion_mutants.txt', 'w')
 	for i in range(duplicates):

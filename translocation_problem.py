@@ -8,6 +8,8 @@ import random
 import pprint
 
 def list2string(mylist, spacer=""):
+	mystring = spacer.join(mylist)
+	return mystring
 	mystring = ""
 	for letter in mylist:
 		mystring += letter + spacer
@@ -55,7 +57,7 @@ def drawChromosomeCut(chromolist, cut):
 	return mystr
 
 #====================
-if __name__ == '__main__':
+def makeQuestion():
 	if len(sys.argv) >= 2:
 		min_size = int(sys.argv[1])
 	else:
@@ -78,23 +80,38 @@ if __name__ == '__main__':
 	chromosome2_shift = random.randint(chromosome1_size+1, len(charlist)-chromosome2_size)
 	chromosome2 = charlist[chromosome2_shift:chromosome2_shift+chromosome2_size]
 
-	chromosome1_cut = random.randint(1, chromosome1_size-1)
-	chromosome2_cut = random.randint(1, chromosome2_size-1)
+
+	chromosome1_cut = random.randint(2, chromosome1_size-2)
+	chromosome2_cut = random.randint(2, chromosome2_size-2)
 	#print chromosome1_cut, chromosome2_cut
 
-	print(chromosome1, chromosome2)
+	print(list2string(chromosome1), chromosome1_cut, chromosome1_size)
+	print(list2string(chromosome2), chromosome2_cut, chromosome2_size)
 	print(drawChromosomeCut(chromosome1, chromosome1_cut))
 	print(drawChromosomeCut(chromosome2, chromosome2_cut))
 
 	chromosome1_A, chromosome1_B = cutChromosome(chromosome1, chromosome1_cut)
 	chromosome2_A, chromosome2_B = cutChromosome(chromosome2, chromosome2_cut)
 
-	answers = []
-	answers.append( chromosome1_A + chromosome2_B )
-	answers.append( chromosome2_A + chromosome1_B )
-	answers.append( chromosome1_A + chromosome2_A[::-1] )
-	answers.append( chromosome1_B[::-1] + chromosome2_B )
+	#this should not happen, but it does
+	if len(chromosome1_A) <= 1:
+		print("ERROR")
+		return None
+	if len(chromosome1_B) <= 1:
+		print("ERROR")
+		return None
+	if len(chromosome2_A) <= 1:
+		print("ERROR")
+		return None
+	if len(chromosome2_B) <= 1:
+		print("ERROR")
+		return None
 
+	choices = []
+	choices.append( chromosome1_A + chromosome2_B )
+	choices.append( chromosome2_A + chromosome1_B )
+	choices.append( chromosome1_A + chromosome2_A[::-1] )
+	choices.append( chromosome1_B[::-1] + chromosome2_B )
 
 	#so many wrong answer to choose from, want a short answer
 	if len(chromosome1_A) < len(chromosome1_B):
@@ -121,33 +138,56 @@ if __name__ == '__main__':
 		else:
 			wrong_answer = chromosome_piece2[::-1] + chromosome_piece1
 
-	answers.append(wrong_answer)
-	print("\n")
+	choices.append(wrong_answer)
+	#print("\n")
 
 
-	sys.stderr.write("\n")
-	sys.stderr.write("XXX. Two chromosomes with the gene sequences ")
-	sys.stderr.write(list2string(chromosome1, ""))
-	sys.stderr.write(" and ")
-	sys.stderr.write(list2string(chromosome2, ""))
-	sys.stderr.write(" undergo a reciprocal translocation after breaks between ")
-	sys.stderr.write(chromosome1_A[-1] + "|" + chromosome1_B[0])
-	sys.stderr.write(" and ")
-	sys.stderr.write(chromosome2_A[-1] + "|" + chromosome2_B[0])
-	sys.stderr.write(". Which one of the following is NOT a possible product of this translocation?")
-	sys.stderr.write("\n")
 
-	random.shuffle(answers)
-	for i,a in enumerate(answers):
-		sys.stderr.write(charlist[i] + ". ")
+	bar = " <b>|</b> "
+
+	question = ''
+	question += ("Two chromosomes with the gene sequences ")
+	question += list2string(chromosome1_A, "") + list2string(chromosome1_B, "")
+	question += (" and ")
+	question += list2string(chromosome2_A, "") + list2string(chromosome2_B, "")
+	question += (" undergo a reciprocal translocation after breaks between ")
+	question += chromosome1_A[-1] + bar + chromosome1_B[0]
+	question += (" and ")
+	question += chromosome2_A[-1] + bar + chromosome2_B[0]
+	question += (". Which one of the following is <b>NOT</b> a possible product of this translocation?")
+
+	blackboard = "MC\t"
+	blackboard += question
+	#print(question)
+
+
+	random.shuffle(choices)
+	for i,a in enumerate(choices):
+		blackboard += "\t"
+		display = (charlist[i] + ". ")
 		if random.random() < 0.5:
-			sys.stderr.write(list2string(a, ""))
+			display += list2string(a, "")
+			blackboard += list2string(a, "")
 		else:
-			sys.stderr.write(list2string(a[::-1], "") )
-		sys.stderr.write("\t")
+			display += list2string(a[::-1], "")
+			blackboard += list2string(a[::-1], "")
+		print(display)
 		if a == wrong_answer:
 			correct_letter = charlist[i]
+			blackboard += '\tCorrect'
+		else:
+			blackboard += '\tIncorrect'
 
-	sys.stderr.write("\n\n")
-	sys.stderr.write("Answer: "+correct_letter)
-	sys.stderr.write("\n\n")
+	print("Answer: "+correct_letter)
+	return blackboard
+
+if __name__ == "__main__":
+	f = open('bbq-translocation_problem.txt', 'w')
+	duplicates = 89
+	for i in range(duplicates):
+		blackboard = makeQuestion()
+		if blackboard is not None:
+			f.write(blackboard+'\n')
+		else:
+			sys.exit(1)
+	f.close()
