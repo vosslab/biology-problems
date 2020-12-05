@@ -79,32 +79,32 @@ def blackboardFormat(chromosome1, chromosome2):
 
 	choices = []
 
-	ul = '<table style="border-collapse: collapse; border: 1px solid silver;">'
+	smtab = '<table style="border-collapse: collapse; border: 1px solid silver;">'
 	trtd = '<tr><td style="border: 0px solid white;">'
 
-	answer = '{2}{3}rob({0}; {1})</td></tr>'.format(chromosome1, chromosome2, ul, trtd)
+	answer = '{2}{3}rob({0}; {1})</td></tr>'.format(chromosome1, chromosome2, smtab, trtd)
 	answer += trtd + table12 + '</td></tr>'
 	answer += '</table><p></p><p></p>'
 	choices.append(answer)
 
-	wrong = '{2}{3}rob({0}; {1}), +{0}</td></tr>'.format(chromosome1, chromosome2, ul, trtd)
+	wrong = '{2}{3}rob({0}; {1}), +{0}</td></tr>'.format(chromosome1, chromosome2, smtab, trtd)
 	wrong += trtd + table12 + '</td></tr>'
 	wrong += trtd + table1 + '</td></tr>'
 	wrong += '</table><p></p><p></p>'
 	choices.append(wrong)
 
-	wrong = '{2}{3}rob({0}; {1}), +{1}</td></tr>'.format(chromosome1, chromosome2, ul, trtd)
+	wrong = '{2}{3}rob({0}; {1}), +{1}</td></tr>'.format(chromosome1, chromosome2, smtab, trtd)
 	wrong += trtd + table12 + '</td></tr>'
 	wrong += trtd + table2 + '</td></tr>'
 	wrong += '</table><p></p><p></p>'
 	choices.append(wrong)
 
-	wrong = '{2}{3}&ndash;{0}</td></tr>'.format(chromosome1, chromosome2, ul, trtd)
+	wrong = '{2}{3}&ndash;{0}</td></tr>'.format(chromosome1, chromosome2, smtab, trtd)
 	wrong += trtd + table2 + '</td></tr>'
 	wrong += '</table><p></p><p></p>'
 	choices.append(wrong)
 
-	wrong = '{2}{3}&ndash;{1}</td></tr>'.format(chromosome1, chromosome2, ul, trtd)
+	wrong = '{2}{3}&ndash;{1}</td></tr>'.format(chromosome1, chromosome2, smtab, trtd)
 	wrong += trtd + table1 + '</td></tr>'
 	wrong += '</table><p></p><p></p>'
 	choices.append(wrong)

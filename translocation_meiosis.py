@@ -51,15 +51,15 @@ def drawChromosome(chromosome1, color='red'):
 	table = ''
 	table += '<table style="border-collapse: collapse; border: 0px solid white; height: 30px">'
 	distance = chromosome_lengths[chromosome1]
-	table += '<colgroup width="{0}"></colgroup>'.format(distance[0]*3 - 16)
-	table += '<colgroup width="{0}"></colgroup>'.format(30)
-	table += '<colgroup width="{0}"></colgroup>'.format(distance[1]*3 - 16)
+	table += '<colgroup width="{0}"></colgroup>'.format(distance[0]*2.4 - 16)
+	table += '<colgroup width="{0}"></colgroup>'.format(32)
+	table += '<colgroup width="{0}"></colgroup>'.format(distance[1]*2.4 - 16)
 	table += '<tr>'
 	table += '<td bgcolor="{1}" style="border: 2px solid black;" align="center"><span style="font-size: small"></span></td>'.format(chromosome1, color_scales[color][2])
 	table += '<td bgcolor="{1}" style="border: 4px solid black;" align="center">{0}</td>'.format(chromosome1, color_scales[color][1])
 	table += '<td bgcolor="{1}" style="border: 2px solid black;" align="center"><span style="font-size: large"></span></td>'.format(chromosome1, color_scales[color][2])
 	table += '</tr>'
-	table += '</table><br/>'
+	table += '</table>'
 	return table
 
 def drawTranslocatedChromosome(chromosome1, chromosome2, color1='red', color2='blue'):
@@ -67,17 +67,17 @@ def drawTranslocatedChromosome(chromosome1, chromosome2, color1='red', color2='b
 	table += '<table style="border-collapse: collapse; border: 0px solid white; height: 30px">'
 	distance1 = chromosome_lengths[chromosome1]
 	distance2 = chromosome_lengths[chromosome2]
-	table += '<colgroup width="{0}"></colgroup>'.format(distance1[0]*3 - 16)
-	table += '<colgroup width="{0}"></colgroup>'.format(30)
-	table += '<colgroup width="{0}"></colgroup>'.format(distance1[1]*1.5 - 8)
-	table += '<colgroup width="{0}"></colgroup>'.format(distance2[1]*1.5 - 8)
+	table += '<colgroup width="{0}"></colgroup>'.format(distance1[0]*2.4 - 16)
+	table += '<colgroup width="{0}"></colgroup>'.format(32)
+	table += '<colgroup width="{0}"></colgroup>'.format(distance1[1]*1.2 - 8)
+	table += '<colgroup width="{0}"></colgroup>'.format(distance2[1]*1.2 - 8)
 	table += '<tr>'
 	table += '<td bgcolor="{1}" style="border: 2px solid black;" align="center"><span style="font-size: large"></span></td>'.format(chromosome1, color_scales[color1][2])
 	table += '<td bgcolor="{1}" style="border: 4px solid black;" align="center">{0}</td>'.format(chromosome1, color_scales[color1][1])
 	table += '<td bgcolor="{1}" style="border: 2px solid black; border-right: 1px dashed black" align="center"><span style="font-size: large"></span></td>'.format(chromosome2, color_scales[color1][2])
 	table += '<td bgcolor="{1}" style="border: 2px solid black; border-left: 1px dashed black" align="center"><span style="font-size: large"></span></td>'.format(chromosome2, color_scales[color2][2])
 	table += '</tr>'
-	table += '</table><br/>'
+	table += '</table>'
 	return table
 
 def questionText(type, chromosome1, chromosome2):
@@ -105,36 +105,43 @@ def blackboardFormat(type, chromosome1, chromosome2):
 
 	choices = []
 
-	ul = '<table style="border-collapse: collapse; border: 1px solid silver;">'
+	smtab = '<table style="border-collapse: collapse; border: 1px solid silver;">'
+	trtd = '<tr><td style="border: 0px solid white;">'
 
-	alternate1 = '<p>t({0}; {1}), t({1}; {0})</p>'.format(chromosome1, chromosome2)
-	alternate1 += table12
-	alternate1 += table21
+	alternate1 = smtab + trtd + 't({0}; {1}), t({1}; {0})</td></tr>'.format(chromosome1, chromosome2)
+	alternate1 += trtd + table12 + '</td></tr>'
+	alternate1 += trtd + table21 + '</td></tr>'
+	alternate1 += '</table><p></p><p></p>'
 	choices.append(alternate1)
 
-	alternate2 = '<p>{0}, {1}</p>'.format(chromosome1, chromosome2)
-	alternate2 += table1
-	alternate2 += table2
+	alternate2 = smtab + trtd + '{0}, {1}</td></tr>'.format(chromosome1, chromosome2)
+	alternate2 += trtd + table1 + '</td></tr>'
+	alternate2 += trtd + table2 + '</td></tr>'
+	alternate2 += '</table><p></p><p></p>'
 	choices.append(alternate2)
 
-	adjacent1a = '<p>t({0}; {1}), +{1}</p>'.format(chromosome1, chromosome2)
-	adjacent1a += table12
-	adjacent1a += table2
+	adjacent1a = smtab + trtd + 't({0}; {1}), +{1}</td></tr>'.format(chromosome1, chromosome2)
+	adjacent1a += trtd + table12 + '</td></tr>'
+	adjacent1a += trtd + table2 + '</td></tr>'
+	adjacent1a += '</table><p></p><p></p>'
 	choices.append(adjacent1a)
 
-	adjacent1b = '<p>t({1}; {0}), +{0}</p>'.format(chromosome1, chromosome2)
-	adjacent1b += table21
-	adjacent1b += table1
+	adjacent1b = smtab + trtd + 't({1}; {0}), +{0}</td></tr>'.format(chromosome1, chromosome2)
+	adjacent1b += trtd + table21 + '</td></tr>'
+	adjacent1b += trtd + table1 + '</td></tr>'
+	adjacent1b += '</table><p></p><p></p>'
 	choices.append(adjacent1b)
 
-	adjacent2a = '<p>t({0}; {1}), +{0}</p>'.format(chromosome1, chromosome2)
-	adjacent2a += table12
-	adjacent2a += table1
+	adjacent2a = smtab + trtd + 't({0}; {1}), +{0}</td></tr>'.format(chromosome1, chromosome2)
+	adjacent2a += trtd + table12 + '</td></tr>'
+	adjacent2a += trtd + table1 + '</td></tr>'
+	adjacent2a += '</table><p></p><p></p>'
 	choices.append(adjacent2a)
 
-	adjacent2b = '<p>t({1}; {0}), +{1}</p>'.format(chromosome1, chromosome2)
-	adjacent2b += table21
-	adjacent2b += table2
+	adjacent2b = smtab + trtd + 't({1}; {0}), +{1}</td></tr>'.format(chromosome1, chromosome2)
+	adjacent2b += trtd + table21 + '</td></tr>'
+	adjacent2b += trtd + table2 + '</td></tr>'
+	adjacent2b += '</table><p></p><p></p>'
 	choices.append(adjacent2b)
 
 
@@ -171,7 +178,7 @@ if __name__ == "__main__":
 	filename = "bbq-translocation_meiosis.txt"
 	f = open(filename, "w")
 	chromosomes = range(1,23) #[13, 14, 15, 21, 22]
-	num_problems = 99
+	num_problems = 90
 	count = 0
 	while count < num_problems:
 		type = random.randint(1,3)
