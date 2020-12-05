@@ -61,17 +61,17 @@ if __name__ == '__main__':
 				question += "<p><i>Note: {0}/2 = {3} and {0}/{1} = {2}</i></p>".format(total_chromosomes, ploidy, monoploid, haploid)
 
 			choices = []
-			answer = '<p>monoploid, m = {0}</p><p>haploid, h = {1}</p>'.format(monoploid, haploid)
+			answer = '<p>monoploid, m = {0} and haploid, h = {1}</p><p></p>'.format(monoploid, haploid)
 			choices.append(answer)
-			wrong = '<p>monoploid, m = {0}</p><p>haploid, h = {1}</p>'.format(haploid, monoploid)
+			wrong = '<p>monoploid, m = {0} and haploid, h = {1}</p><p></p>'.format(haploid, monoploid)
 			choices.append(wrong)
-			wrong = '<p>monoploid, m = {0}</p><p>haploid, h = {1}</p>'.format(monoploid, monoploid)
+			wrong = '<p>monoploid, m = {0} and haploid, h = {1}</p><p></p>'.format(monoploid, monoploid)
 			choices.append(wrong)
-			wrong = '<p>monoploid, m = {0}</p><p>haploid, h = {1}</p>'.format(haploid, haploid)
+			wrong = '<p>monoploid, m = {0} and haploid, h = {1}</p><p></p>'.format(haploid, haploid)
 			choices.append(wrong)
-			wrong = '<p>monoploid, m = {0}</p><p>haploid, h = {1}</p>'.format(total_chromosomes, monoploid)
+			wrong = '<p>monoploid, m = {0} and haploid, h = {1}</p><p></p>'.format(total_chromosomes, monoploid)
 			choices.append(wrong)
-			wrong = '<p>monoploid, m = {0}</p><p>haploid, h = {1}</p>'.format(total_chromosomes, haploid)
+			wrong = '<p>monoploid, m = {0} and haploid, h = {1}</p><p></p>'.format(total_chromosomes, haploid)
 			choices.append(wrong)
 
 			random.shuffle(choices)
