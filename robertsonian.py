@@ -105,7 +105,6 @@ def blackboardFormat(chromosome1, chromosome2):
 		else:
 			blackboard += '\tIncorrect'
 
-
 	print(question_string)
 	return blackboard
 
@@ -113,8 +112,6 @@ if __name__ == "__main__":
 	filename = "bbq-robertsonian.txt"
 	f = open(filename, "w")
 	acrocentric_chromosomes = [13, 14, 15, 21, 22]
-
-
 	duplicates = 2
 	for i in range(duplicates):
 		for chromosome1 in acrocentric_chromosomes:
