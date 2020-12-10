@@ -57,6 +57,16 @@ def questionText(chromosome1, chromosome2):
 	question += '<h5>Which one of the following gametes was formed by alternate segregation in this individual?</h5>'
 	return question
 
+def merge_tables(table_list):
+	table = ''
+	table += '<table style="border-collapse: collapse; border: 0px solid white;">'
+	for chromo_table in table_list:
+		table += '<tr>'
+		table += '  <td align="left">{0}</td>'.format(chromo_table)
+		table += '</tr>'
+	table += '</table>'
+	return table
+
 def blackboardFormat(chromosome1, chromosome2):
 	question_string = questionText(chromosome1, chromosome2)
 	table1 = ''
@@ -76,7 +86,10 @@ def blackboardFormat(chromosome1, chromosome2):
 	table1  = drawChromosome(chromosome1, color1)
 	table2  = drawChromosome(chromosome2, color2)
 	table12 = drawRobertChromosome(chromosome1, chromosome2, color1, color2)
-
+	#print(table1+table2+table12)
+	table_merge = merge_tables([table1, table2, table12])
+	question_string += '<p>all of three of the chromosomes from a somatic cell is shown below</p>'
+	question_string += table_merge
 	choices = []
 
 	smtab = '<table style="border-collapse: collapse; border: 1px solid silver;">'

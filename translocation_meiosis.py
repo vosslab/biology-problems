@@ -88,6 +88,16 @@ def questionText(type, chromosome1, chromosome2):
 	question += '<p>Which two (2) of the following sets of gametes was formed by <strong>{0}</strong> segregation in this individual? Check two boxes.</p>'.format(types[type])
 	return question
 
+def merge_tables(table_list):
+	table = ''
+	table += '<table style="border-collapse: collapse; border: 0px solid white;">'
+	for chromo_table in table_list:
+		table += '<tr>'
+		table += '  <td align="left">{0}</td>'.format(chromo_table)
+		table += '</tr>'
+	table += '</table>'
+	return table
+
 def blackboardFormat(type, chromosome1, chromosome2):
 	question_string = questionText(type, chromosome1, chromosome2)
 	table1 = ''
@@ -101,7 +111,10 @@ def blackboardFormat(type, chromosome1, chromosome2):
 	table2  = drawChromosome(chromosome2, 'blue')
 	table12 = drawTranslocatedChromosome(chromosome1, chromosome2, 'red', 'blue')
 	table21 = drawTranslocatedChromosome(chromosome2, chromosome1, 'blue', 'red')
-	print(table1+table2+table12+table21)
+	table_merge = merge_tables([table1, table2, table12, table21])
+	#print(table1+table2+table12+table21)
+	question_string += '<p>all of the chromosomes from a somatic cell is shown below</p>'
+	question_string += table_merge
 
 	choices = []
 
@@ -143,7 +156,6 @@ def blackboardFormat(type, chromosome1, chromosome2):
 	adjacent2b += trtd + table2 + '</td></tr>'
 	adjacent2b += '</table><p></p><p></p>'
 	choices.append(adjacent2b)
-
 
 	answers = []
 	if type == 1:
