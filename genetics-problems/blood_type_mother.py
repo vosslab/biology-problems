@@ -135,7 +135,7 @@ if __name__ == '__main__':
 					f.write("Incorrect\t")
 				print("{0}{1}. {2}".format(prefix, letters[i], choice))
 				i += 1
-			choice = "None of the above are possible"
+			choice = "None of the above are possible; the father &male; is not related to his {0}".format(offspring)
 			f.write(choice+"\t")
 			if len(answers) == 0:
 				answermap[choice] = True

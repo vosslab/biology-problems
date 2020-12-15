@@ -3,6 +3,7 @@
 import os
 import sys
 import copy
+import string
 import random
 from scipy.stats.distributions import chi2
 
@@ -416,6 +417,14 @@ def makeQuestion(error_type):
 	return complete_question
 
 
+def getCode():
+	source = string.ascii_uppercase + string.digits
+	code = ''
+	for i in range(5):
+		code += random.choice(source)
+	code += ' - '
+	return code
+
 
 #===================
 #===================
@@ -430,7 +439,8 @@ if __name__ == '__main__':
 		for error_type in range(max_error_types):
 			print("")
 			complete_question = makeQuestion(error_type)
-			f.write("MC\t{0}".format(complete_question))
+
+			f.write("MC\t" + getCode() + complete_question)
 			choice_index = error2choice[error_type]
 			answer = choices[choice_index]
 			choices_copy = copy.copy(choices)

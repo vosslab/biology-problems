@@ -16,6 +16,9 @@ from scipy.stats.distributions import chi2
 # - - forget to square the top divide by observed
 # student chooses which one is correct, and decides whether or not to reject the null.
 
+print("There is a problem with table numbering")
+sys.exit(1)
+
 error_types = {
 	0: 'divide by observed squared',
 	1: 'forget to square the top divide by observed squared',
@@ -365,6 +368,13 @@ def makeQuestion(error_type, desired_result):
 
 	return complete_question, answer_num
 
+def getCode():
+	source = string.ascii_uppercase + string.digits
+	code = ''
+	for i in range(5):
+		code += random.choice(source)
+	code += ' - '
+	return code
 
 #===================
 #===================
@@ -380,7 +390,7 @@ if __name__ == '__main__':
 				print("")
 				print(desired_result)
 				complete_question, answer_num = makeQuestion(error_type, desired_result)
-				f.write("MC\t{0}".format(complete_question))
+				f.write("MC\t" + getCode() + complete_question)
 				answer = choices[answer_num]
 				choices_copy = copy.copy(choices)
 				#random.shuffle(choices_copy)

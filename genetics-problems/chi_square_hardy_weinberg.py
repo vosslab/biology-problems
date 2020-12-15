@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
+import re
 import sys
 import copy
+import math
 import random
 from scipy.stats.distributions import chi2
 
@@ -14,20 +16,53 @@ choices = [
 	'the chi-squared (&chi;<sup>2</sup>) sum is '
 		+'<span style="color: darkblue; font-weight: bold;">GREATER than</span> '
 		+'the critical value and we '
-		+'<span style="color: darkgreen; font-weight: bold;">REJECT</span> the null hypothesis',
+		+'<span style="color: darkred; font-weight: bold;">REJECT</span> the null hypothesis',
 	'the chi-squared (&chi;<sup>2</sup>) sum is '
 		+'<span style="color: darkblue; font-weight: bold;">GREATER than</span> '
 		+'the critical value and we '
-		+'<span style="color: darkred; font-weight: bold;">ACCEPT</span> the null hypothesis',
+		+'<span style="color: darkgreen; font-weight: bold;">ACCEPT</span> the null hypothesis',
 	'the chi-squared (&chi;<sup>2</sup>) sum is '
 		+'<span style="color: Indigo; font-weight: bold;">LESS than</span> '
 		+'the critical value and we '
-		+'<span style="color: darkgreen; font-weight: bold;">REJECT</span> the null hypothesis',
+		+'<span style="color: darkred; font-weight: bold;">REJECT</span> the null hypothesis',
 	'the chi-squared (&chi;<sup>2</sup>) sum is '
 		+'<span style="color: Indigo; font-weight: bold;">LESS than</span> '
 		+'the critical value and we '
-		+'<span style="color: darkred; font-weight: bold;">ACCEPT</span> the null hypothesis',
+		+'<span style="color: darkgreen; font-weight: bold;">ACCEPT</span> the null hypothesis',
 ]
+
+#=========================
+def get_good_p():
+	max_p = 0.8
+	min_p = 0.4
+	r = random.random()
+	r *= (max_p-min_p)
+	r += min_p
+	#alleles
+	#p = round(r, 2)
+	p = r
+	return p
+
+#=========================
+def get_good_F(p):
+	if p <= 0.5:
+		maxF = (1 - p)/p - 0.01
+	else:
+		maxF = 0.9
+	r1 = 2*maxF*random.random() - maxF
+	#F = round(r1, 1)
+	F = r1
+	if F < 0.01 and maxF > 0.1:
+		F = 0.1 * random.choice([-1, 1])
+	return F
+
+#=========================
+def get_good_N(F, desired_result):
+	if desired_result == 'reject':
+		N = 5.0 / F**2
+	else:
+		N = 3.0 / F**2
+	return int(math.ceil(N))
 
 #===================
 #===================
@@ -40,7 +75,6 @@ def choice2answer(desired_result):
 		print('unknown desired result:', desired_result)
 		sys.exit(1)
 	return answer
-
 
 #===================
 #===================
@@ -58,50 +92,43 @@ def get_critical_value(alpha_criterion, df):
 
 #===================
 #===================
-def createObservedProgeny(N=160, ratio="9:2:4:1"):
-	#female lay 100 eggs per day
-	bins = ratio.split(':')
-	floats = []
-	for b in bins:
-		floats.append(float(b))
-	total = sum(floats)
-	#print(floats)
-	probs = []
-	sumprob = 0
-	for f in floats:
-		sumprob += f/total
-		probs.append(sumprob)
-	#print(probs)
-	count_dict = {}
-	for i in range(N):
-		r = random.random()
-		for j in range(len(probs)):
-			if r < probs[j]:
-				count_dict[j] = count_dict.get(j, 0) + 1
-				break
-	#print(count_dict)
-	count_list = []
-	for j in range(len(probs)):
-		count_list.append(count_dict.get(j, 0))
-	#print(count_list)
+def createObservedCounts(p, F, N, decimal_places=0):
+	#Fp2 = p2 * (1 - F) + p*F
+	#Ftwopq = twopq * (1 - F)
+	#Fq2 = q2 * (1 - F) + q * F
+	q = 1.0 - p
+	homo_dominant_ratio = (1.0-F) * p*p + F*p
+	heterozygotes_ratio = (1.0-F) * 2*p*q
+	homo_recessive_ratio = (1.0-F) * q*q + F*q
+	if decimal_places == 0:
+		count_list = [
+			int(round(N * homo_dominant_ratio)),
+			int(round(N * heterozygotes_ratio)),
+			int(round(N * homo_recessive_ratio)),
+			]
+	else:
+		count_list = [
+			round(N * homo_dominant_ratio, decimal_places),
+			round(N * heterozygotes_ratio, decimal_places),
+			round(N * homo_recessive_ratio, decimal_places),
+			]
 	return count_list
 
-
-
-
-
 #===================
 #===================
-def normalGoodStats(ratio, observed=None):
-	expected = [90,30,30,10]
+def normalGoodStats(p, F, N):
+	#ChiSq = N * F^2
+	# Want a ChiSq between 3.84 and 5.99 shoot for 4.92
+	observed = createObservedCounts(p, F, N, decimal_places=0)
+	expected = createObservedCounts(p, 0.0, N, decimal_places=1)
 	stats_list = []
 	chisq = 0.0
 	for j in range(len(observed)):
 		row = []
 		obs = observed[j]
 		exp = expected[j]
-		row.append(exp)
 		row.append(obs)
+		row.append(exp)
 		chirow = (obs-exp)**2/float(exp)
 		calc = "<sup>({0}-{1})<sup>2</sup></sup>&frasl;&nbsp;<sub>{2}</sub>".format(obs, exp, exp)
 		row.append(calc)
@@ -113,16 +140,15 @@ def normalGoodStats(ratio, observed=None):
 	stats_list.append(chistr)
 	return stats_list
 
-
 #===================
 #===================
 def createDataTable(stats_list, title=None):
 	numcol = len(stats_list[0])
 	table = '<table border=1 style="border: 1px solid black; border-collapse: collapse; ">'
-	table += '<colgroup width="160"></colgroup> '
-	table += '<colgroup width="80"></colgroup> '
-	table += '<colgroup width="80"></colgroup> '
 	table += '<colgroup width="100"></colgroup> '
+	table += '<colgroup width="80"></colgroup> '
+	table += '<colgroup width="80"></colgroup> '
+	table += '<colgroup width="160"></colgroup> '
 	table += '<colgroup width="80"></colgroup> '
 	if title is not None:
 		table += "<tr>"
@@ -130,8 +156,8 @@ def createDataTable(stats_list, title=None):
 		table += "</tr>"
 	table += "<tr>"
 	table += " <th align='center' style='background-color: lightgray'>Phenotype</th> "
-	table += " <th align='center' style='background-color: lightgray'>Expected</th> "
 	table += " <th align='center' style='background-color: lightgray'>Observed</th> "
+	table += " <th align='center' style='background-color: lightgray'>Expected</th> "
 	table += " <th align='center' style='background-color: lightgray'>Calculation</th> "
 	table += " <th align='center' style='background-color: lightgray'>Statistic</th> "
 	table += "</tr>"
@@ -193,12 +219,13 @@ def make_chi_square_table():
 
 #===================
 #===================
-def questionContent():
+def questionContent(p):
 	question = ''
-	question += "<p>You finally have a new competent lab partner that you trust. "
-	question += "This lab partner did a chi-squared (&chi;<sup>2</sup>) test for your Hardy-Weinberg data.</p>"
+	question += "<p>You finally have a new competent lab partner that you trust.</p>"
+	question += 'This lab partner calculated the allele frequencies of p={0:.2f} and q={1:.2f}. '.format(p, 1-p)
+	question += 'Then they did a chi-squared (&chi;<sup>2</sup>) test for your Hardy-Weinberg data.</p>'
 
-	question += "<p>They wanted to you to decided whether you reject or accept "
+	question += "<p>They need you to decide whether you reject or accept "
 	question += "the null hypothesis using the information provided.</p> "
 	return question
 
@@ -215,37 +242,34 @@ def getChiSquareResult(final_chisq, df, alpha):
 #===================
 #===================
 def makeQuestion(desired_result):
-	"""
-	error type to NOT include
-
-	0: 'divide by observed squared',
-	1: 'forget to square the top divide by observed squared',
-	2: 'forget to square the top divide by observed',
-	"""
-
-	if desired_result == 'reject':
-		ratio = '8:2:4:2'
-	elif desired_result == 'accept':
-		ratio = '9:3:3:1'
-
-	observed = [90, 30, 30, 10]
-	while 88 <= observed[0] <= 92 or 9 <= observed[3] <= 11 or observed[3] > 19:
-		observed = createObservedProgeny(ratio=ratio)
+	p = get_good_p()
+	F = get_good_F(p)
+	N = get_good_N(F, desired_result)
+	while N < 50:
+		#print("N=", N)
+		#shrinking F, makes N bigger
+		F /= 2.0
+		N = get_good_N(F, desired_result)
+	print("p={0:.3f}, F={1:.3f}, N={2:,d}".format(p,F,N))
 
 	chi_square_table = make_chi_square_table()
 
-	answer_stats = normalGoodStats(ratio, observed)
+	answer_stats = normalGoodStats(p, F, N)
 	numbers_table = createDataTable(answer_stats, "Table {0}".format(i+1))
 
 	#use the real values
 	final_chisq = float(answer_stats[-1])
-	df = 3
+	df = 1
 	alpha = 0.05
 	result = getChiSquareResult(final_chisq, df, alpha)
-	print(result)
+	print(result.upper())
+	if not result.startswith(desired_result):
+		print("ERROR")
+		sys.exit(1)
 
 	# write the question content
-	question = questionContent()
+	question = questionContent(p)
+	print(question)
 
 	complete_question = chi_square_table+" <br/> "
 	complete_question += numbers_table+" <br/> "
@@ -261,7 +285,7 @@ def makeBBText(desired_result):
 	blackboard_text += makeQuestion(desired_result)
 	answer = choice2answer(desired_result)
 	choices_copy = copy.copy(choices)
-	#random.shuffle(choices_copy)
+	random.shuffle(choices_copy)
 	for k, c in enumerate(choices_copy):
 		if c == answer:
 			prefix = "*"
@@ -269,26 +293,29 @@ def makeBBText(desired_result):
 		else:
 			prefix = ""
 			status = "Incorrect"
-		blackboard_text += "\t{0}\t{1}".format(c, status))
-		print("{0}{1}. {2}".format(prefix, letters[k], c))
+		blackboard_text += "\t{0}\t{1}".format(c, status)
+		clean = re.sub("<[^>]*>", "", c)
+		print("{0}{1}. {2}".format(prefix, letters[k], clean[:110]))
 	return blackboard_text
-
 
 #===================
 #===================
 #===================
 #===================
 if __name__ == '__main__':
-	duplicates = 1
+	duplicates = 72
 	letters = "ABCDEFGHI"
 	f = open("bbq-chi_square_hardy_weinberg.txt", "w")
+	count = 0
 	for i in range(duplicates):
-		for desired_result in ('accept', 'reject'):
+		#for desired_result in ('accept', 'reject'):
+		for desired_result in ('reject',):
 			print("")
 			print(desired_result.upper())
 			blackboard_text = makeBBText(desired_result)
 			f.write(blackboard_text + "\n")
-
+			count += 1
+	print("wrote {0} questions".format(count))
 	f.close()
 
 #exit

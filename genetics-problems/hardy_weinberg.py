@@ -49,6 +49,19 @@ def get_good_p():
 	p = round(r, 2)
 	return p
 
+#=========================
+def get_good_F(p):
+	if p <= 0.5:
+		maxF = (1 - p)/p - 0.01
+	else:
+		maxF = 0.9
+	r1 = 2*maxF*random.random() - maxF
+	F = round(r1, 1)
+	if F < 0.01 and maxF > 0.1:
+		F = 0.1 * random.choice([-1, 1])
+	return F
+
+#=========================
 def add_note():
 	note_text = ''
 	note_text += '<p>Note: Do not use a percentage, if the answer is 42.3%, use 0.423 on the blank. '
@@ -76,7 +89,7 @@ def make_interesting_fraction(n, d=10000):
 		sys.exit(1)
 	return numerator, denominator
 
-
+#=========================
 def makeType1Table(organism, colors, counts):
 	table = '<table style="border-collapse: collapse; border: 2px solid black;">'
 	table += '<tr>'
@@ -113,16 +126,7 @@ def makeType1Question(p, phenotype=None):
 	# 1/F < 1 - 1/q < (q - 1)/q
 	# F < q / (q - 1) = 1-p / (-p) q/p
 
-	if p > 0.5:
-		maxF = (1 - p)/p - 0.01
-	else:
-		maxF = 0.9
-	r1 = 2*maxF*random.random() - maxF
-	F = round(r1, 1)
-	if F < 0.01 and maxF > 0.1:
-		F = 0.1 * random.choice([-1, 1])
-	#qadj = abs(F/(F - 1.0) - 0.005)
-	#p = round(1 - qadj, 4)
+	F = get_good_F(p)
 
 	p, q, p2, twopq, q2 = get_values(p)
 	if phenotype != 'recessive' or random.random() < 0.5:
