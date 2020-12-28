@@ -69,7 +69,7 @@ def get_peak_pH(protein1, protein2):
 
 def writeQuestion(protein_dict, pH, N=77):
 	question = "\n"
-	question += "{0:d}. <h6>Isoelectric Point Problem</h6> ".format(N)
+	question += "{0:d}. {1} <h6>Isoelectric Point Problem</h6> ".format(N, protein_dict['abbr'].lower())
 	question += ('<table cellpadding="2" cellspacing="2" style="text-align:center; border: 1px solid black; font-size: 14px;">')
 	question += ('<tr><th>Protein Name</th><th>isoelectric point (pI)</th><th>molecular weight</th></tr>')
 	question += ('<tr><td>{0} ({1})</td><td align="center">{2:.1f}</td><td align="center">{3:.1f}</td></tr>'.format(protein_dict['fullname'], protein_dict['abbr'], protein_dict['pI'], protein_dict['MW']))
@@ -90,8 +90,8 @@ def writeQuestion(protein_dict, pH, N=77):
 	#low_pH_answers.append("Many carboxyl groups will be protonated (&ndash;COOH)")
 	#high_pH_answers.append("Many carboxyl groups will be deprotonated (&ndash;COO<sup>&ndash;</sup>)")
 
-	low_pH_answers.append('The protein will have a net <span style="color:darkblue">positive (+)</span> charge')
-	high_pH_answers.append('The protein will have a net <span style="color:darkred">negative (&ndash;)</span> charge')
+	high_pH_answers.append('The protein will have a net <span style="color:darkblue">positive (+)</span> charge')
+	low_pH_answers.append('The protein will have a net <span style="color:darkred">negative (&ndash;)</span> charge')
 	neutral = ('The protein will have a <span style="color:goldenrod">neutral (0)</span> charge')
 
 	if pH > protein_dict['pI']:
@@ -109,7 +109,7 @@ def writeQuestion(protein_dict, pH, N=77):
 def printQuestion(question, answers, wrongs):
 	letters = "ABCDEFGH"
 	print(question)
-	
+
 	for i in range(len(answers)):
 		item_number = 2*i
 		if random.random() < 0.5:
@@ -138,5 +138,3 @@ if __name__ == '__main__':
 			question_count += 1
 			question, answers, wrongs = writeQuestion(protein_dict, pH, question_count)
 			printQuestion(question, answers, wrongs)
-
-
