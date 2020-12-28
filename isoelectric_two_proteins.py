@@ -84,7 +84,10 @@ def get_peak_pH(protein1, protein2):
 
 def writeQuestion(protein1, protein2, pH, N=77):
 	question = "\n"
-	question += "{0:d}. <h6>Isoelectric Point Problem</h6> ".format(N)
+	ab1 = protein1['abbr']
+	ab2 = protein2['abbr']
+
+	question += "{0:d}. {1}.{2} <h6>Isoelectric Point Problem</h6> ".format(N, ab1.lower(), ab2.lower())
 	question += "<p>A mixture of two proteins are to be separated by isoelectric focusing.</p> "
 	question += ('<table cellpadding="2" cellspacing="2" style="text-align:center; border: 1px solid black; font-size: 14px;">')
 	question += ('<tr><th>Protein Name</th><th>isoelectric point (pI)</th><th>molecular weight</th></tr>')
@@ -111,8 +114,6 @@ def writeQuestion(protein1, protein2, pH, N=77):
 		#protein 1 is positive and protein 2 is negative; protein 1 goes negative and protein 2 goes positive
 		answer_number = 4
 
-	ab1 = protein1['abbr']
-	ab2 = protein2['abbr']
 	answer1 = 'Both {0} and {1} will travel towards the <span style="color:darkblue">positive (+)</span> terminal'.format(ab1, ab2)
 	answer2 = 'Both {0} and {1} will travel towards the <span style="color:darkred">negative (&ndash;)</span> terminal'.format(ab1, ab2)
 	answer3 = '{0} will travel towards the <span style="color:darkblue">positive (+)</span> and {1} will travel towards the <span style="color:darkred">negative (&ndash;)</span> '.format(ab1, ab2)
@@ -142,7 +143,7 @@ if __name__ == '__main__':
 		protein1, protein2 = random_select_proteins(protein_tree.copy())
 		midpoint_pH = get_midpoint_pH(protein1, protein2)
 		best_peak_pI,other_peak_pI = get_peak_pH(protein1, protein2)
-	
+
 		pH_list = [midpoint_pH, best_peak_pI, other_peak_pI, midpoint_pH]
 		pH = random.choice(pH_list)
 		if pH < 2 or pH > 12:
@@ -152,5 +153,3 @@ if __name__ == '__main__':
 		printQuestion(question, answers, answer_number)
 		answer_count[answer_number] += 1
 	print(answer_count)
-
-

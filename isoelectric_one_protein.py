@@ -90,8 +90,8 @@ def writeQuestion(protein_dict, pH, N=77):
 	#low_pH_answers.append("Many carboxyl groups will be protonated (&ndash;COOH)")
 	#high_pH_answers.append("Many carboxyl groups will be deprotonated (&ndash;COO<sup>&ndash;</sup>)")
 
-	high_pH_answers.append('The protein will have a net <span style="color:darkblue">positive (+)</span> charge')
-	low_pH_answers.append('The protein will have a net <span style="color:darkred">negative (&ndash;)</span> charge')
+	low_pH_answers.append('The protein will have a net <span style="color:darkblue">positive (+)</span> charge')
+	high_pH_answers.append('The protein will have a net <span style="color:darkred">negative (&ndash;)</span> charge')
 	neutral = ('The protein will have a <span style="color:goldenrod">neutral (0)</span> charge')
 
 	if pH > protein_dict['pI']:

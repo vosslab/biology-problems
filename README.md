@@ -20,6 +20,9 @@ Table of Contents
 
 ## Isoelectric Point Problems
 
+![Isoelectric Point Diagram](images/isoelectric_diagram.png)
+
+
 ### isoelectric_one_protein.py
 
 <table cellpadding="2" cellspacing="2" style="text-align:center; border: 1px solid black; font-size: 14px;">
