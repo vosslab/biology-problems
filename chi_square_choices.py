@@ -4,6 +4,7 @@ import os
 import sys
 import copy
 import random
+import string
 from scipy.stats.distributions import chi2
 
 ### types of errors
@@ -16,8 +17,10 @@ from scipy.stats.distributions import chi2
 # - - forget to square the top divide by observed
 # student chooses which one is correct, and decides whether or not to reject the null.
 
+#the table numbering answer choice is off
+
 print("There is a problem with table numbering")
-sys.exit(1)
+#sys.exit(1)
 
 error_types = {
 	0: 'divide by observed squared',
@@ -323,7 +326,7 @@ def makeQuestion(error_type, desired_result):
 
 	chi_square_table = make_chi_square_table()
 
-	answer_stats = normalGoodStats(ratio, observed)
+	answer_stat_list = normalGoodStats(ratio, observed)
 
 	number_stats = []
 	i = -1
@@ -336,24 +339,31 @@ def makeQuestion(error_type, desired_result):
 		wrong_stats_list = method(ratio, observed)
 		number_stats.append(wrong_stats_list)
 
-	#tabke the tables and shuffle them
-	number_stats.append(answer_stats)
+	#take the tables and shuffle them
+	number_stats.append(answer_stat_list)
 	shuffle_map = list(range(len(number_stats)))
 	random.shuffle(shuffle_map)
 	#print(shuffle_map)
 	shuffled_tables = []
-	for i,index in enumerate(shuffle_map):
+	for i, index in enumerate(shuffle_map):
 		stats_list = number_stats[index]
 		numbers_table = createDataTable(stats_list, "Table {0}".format(i+1))
 		shuffled_tables.append(numbers_table)
 
 	#use the real values
-	final_chisq = float(answer_stats[-1])
+	final_chisq = float(answer_stat_list[-1])
 	df = 3
 	alpha = 0.05
 	result = getChiSquareResult(final_chisq, df, alpha)
-	print(result)
-	answer_num = shuffle_map[2]
+	if not result.startswith(desired_result):
+		print("Woah! Unexpected result, it's okay though.")
+		print(desired_result, "!=", result)
+		print(final_chisq)
+		#sys.exit(1)
+	#print(desired_result, result)
+	# this line below needed fixing for this problem to work!!!
+	answer_num = shuffle_map.index(2)
+	#print("answer_num", answer_num)
 	if result == 'accept_null':
 		answer_num += 3
 
@@ -381,7 +391,7 @@ def getCode():
 #===================
 #===================
 if __name__ == '__main__':
-	duplicates = 15
+	duplicates = 1
 	letters = "ABCDEFGHI"
 	f = open("bbq-chi_square_choices.txt", "w")
 	for i in range(duplicates):

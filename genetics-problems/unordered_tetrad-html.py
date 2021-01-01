@@ -400,7 +400,6 @@ def questionText(basetype):
 	question_string += '<li>Step 5: Go to Step 2 and pick a new pair of genes until all pairs are complete.</li>'
 	question_string += '</ul>'
 
-
 	return question_string
 
 def getVariables(basetype):

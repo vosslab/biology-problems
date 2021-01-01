@@ -126,7 +126,9 @@ def makeType1Question(p, phenotype=None):
 	# 1/F < 1 - 1/q < (q - 1)/q
 	# F < q / (q - 1) = 1-p / (-p) q/p
 
-	F = 0.0 #get_good_F(p)
+	F = get_good_F(p)
+	#if you change F from 0, then everything below breaks.
+	#used to believe above statement, but it was a bug twopq instead of Ftwopq
 
 	print(phenotype)
 	p, q, p2, twopq, q2 = get_values(p)
@@ -157,14 +159,14 @@ def makeType1Question(p, phenotype=None):
 		return None
 
 	gcd1 = math.gcd(int(Fp2*1e5), 100000)
-	gcd2 = math.gcd(int(twopq*1e5), int(Fq2*1e5))
+	gcd2 = math.gcd(int(Ftwopq*1e5), int(Fq2*1e5))
 	gcd = math.gcd(gcd1, gcd2)
 	homo_recessive = int(Fq2*1e5) // gcd
 	if homo_recessive == 1 and gcd % 2 == 0:
 		gcd = gcd // 2
 
 	homo_dominant = int(Fp2*1e5) // gcd
-	heterozygote  = int(twopq*1e5) // gcd
+	heterozygote  = int(Ftwopq*1e5) // gcd
 	homo_recessive = int(Fq2*1e5) // gcd
 
 	print(homo_dominant, heterozygote, homo_recessive)
@@ -185,11 +187,12 @@ def makeType1Question(p, phenotype=None):
 
 	actual_q = (homo_recessive*2 + heterozygote)/(2.0*total)
 	actual_p = 1.0 - actual_q
-	print("p={0:.2f}; actual_p={1:.5f}, diff={2:.5f}".format(p, actual_p, abs(p - actual_p)))
-	print("q={0:.2f}; actual_q={1:.5f}, diff={2:.5f}".format(q, actual_q, abs(q - actual_q)))
-	if abs(q - actual_q) > 0.008 or abs(p - actual_p) > 0.008:
+	print("p={0:.2f}; actual_p={1:.5f}, diff={2:.8f}".format(p, actual_p, abs(p - actual_p)))
+	print("q={0:.2f}; actual_q={1:.5f}, diff={2:.8f}".format(q, actual_q, abs(q - actual_q)))
+	if abs(q - actual_q) > 0.001 or abs(p - actual_p) > 0.001:
+		print("ERROR VALUES ARE OFF")
+		sys.exit(1)
 		return None
-
 
 	blackboard_text = 'NUM\t'
 	blackboard_text += table + question_text + '\t'
@@ -250,6 +253,8 @@ def makeType2bQuestion(p):
 	blackboard_text += '0.009\n'
 	return blackboard_text
 
+
+
 #=========================
 def makeQuestion(type, p):
 	if type == '1a':
@@ -265,7 +270,7 @@ def makeQuestion(type, p):
 #=========================
 #=========================
 if __name__ == '__main__':
-	type = '1b'
+	type = '1a'
 
 	filename = 'bbq-hardy_weinberg-type_{0}.txt'.format(type)
 	f = open(filename, 'w')
