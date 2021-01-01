@@ -5,6 +5,7 @@ import sys
 import copy
 import math
 import numpy
+import string
 import random
 
 debug = False
@@ -366,21 +367,29 @@ def generateTypeCounts(parental, geneorder, distances, progeny_size, basetype):
 
 	return tetradCount
 
+def getCode():
+	source = string.ascii_uppercase + string.digits
+	code = ''
+	for i in range(5):
+		code += random.choice(source)
+	code += ' - '
+	return code
+
 def questionText(basetype):
-	question_string = '<p></p>'
+	question_string = getCode()
 	question_string += '<h6>Unordered Tetrad Gene Mapping</h6>'
 	question_string += '<p>The yeast <i>Saccharomyces cerevisiae</i> has unordered tetrads. '
 	question_string += 'A cross is made to study the linkage relationships among three genes. '
 	question_string += '<p>Using the table, determine the order of the genes and the distances between them. '
 	question_string += 'Once calculated, fill in the following four blanks: </p><ul>'
-	question_string += '<li>The distance between genes {0} and {1} is [{0}{1}] ({0}{1})</li>'.format(basetype[0].upper(),basetype[1].upper())
-	question_string += '<li>The distance between genes {0} and {1} is [{0}{1}] ({0}{1})</li>'.format(basetype[0].upper(),basetype[2].upper())
-	question_string += '<li>The distance between genes {0} and {1} is [{0}{1}] ({0}{1})</li>'.format(basetype[1].upper(),basetype[2].upper())
+	question_string += '<li>The distance between genes {0} and {1} is [{0}{1}] cM ({0}{1})</li>'.format(basetype[0].upper(),basetype[1].upper())
+	question_string += '<li>The distance between genes {0} and {1} is [{0}{1}] cM ({0}{1})</li>'.format(basetype[0].upper(),basetype[2].upper())
+	question_string += '<li>The distance between genes {0} and {1} is [{0}{1}] cM ({0}{1})</li>'.format(basetype[1].upper(),basetype[2].upper())
 	question_string += '<li>From this the correct order of the genes is [geneorder] (gene order).</li></ul>'
 	question_string += '<p><i>Hint 1:</i> ALL gene distances will be whole numbers, '
 	question_string += ' do NOT enter a decimal; if you have a decimal your calculations are wrong.</p>'
-  	question_string += '<p><i>Hint 2:</i> enter your answer in the blank using only letters or numbers '
-  	question_string += ' with no spaces or commas. Also, do NOT add units, e.g. cM or m.u.</p>'
+	question_string += '<p><i>Hint 2:</i> enter your answer in the blank using only letters or numbers '
+	question_string += ' with no spaces or commas. Also, do NOT add units, e.g. cM or m.u.</p>'
 	question_string += '<ul>'
 	question_string += '<li>Step 1: Find the Row for the Parental Type for all three genes.</li>'
 	question_string += '<li>Step 2: Pick any two genes and assign PD, NPD, TT</li>'

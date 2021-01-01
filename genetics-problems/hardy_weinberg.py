@@ -107,7 +107,7 @@ def makeType1Table(organism, colors, counts):
 	table += '  <td align="center">{0}</td>'.format(colors[1])
 	table += '  <td align="right">{0:,d}</td>'.format(counts[1])
 	table += '</tr><tr>'
-	table += '  <td align="center">homozygous<br/>dominant</td>'
+	table += '  <td align="center">homozygous<br/>recessive</td>'
 	table += '  <td align="center">{0}</td>'.format(colors[2])
 	table += '  <td align="right">{0:,d}</td>'.format(counts[2])
 	table += '</tr><tr>'
@@ -126,15 +126,17 @@ def makeType1Question(p, phenotype=None):
 	# 1/F < 1 - 1/q < (q - 1)/q
 	# F < q / (q - 1) = 1-p / (-p) q/p
 
-	F = get_good_F(p)
+	F = 0.0 #get_good_F(p)
 
+	print(phenotype)
 	p, q, p2, twopq, q2 = get_values(p)
-	if phenotype != 'recessive' or random.random() < 0.5:
+	if phenotype != 'recessive': # or random.random() < 0.5:
 		#get p
 		phenotype = 'dominant'
 		answer = p
 	else:
 		#get p
+		print(phenotype)
 		phenotype = 'recessive'
 		answer = q
 	Fp2 = round(p2 * (1 - F) + p*F, 8)
@@ -146,7 +148,7 @@ def makeType1Question(p, phenotype=None):
 	if abs(Fsum - 1.0) > 0.01:
 		print("sum error")
 		return None
-	print("p={0:.2f} AND q={1:.2f} AND F={2:.2f} AND maxF={3:.2f}".format(p,q,F,maxF))
+	print("p={0:.2f} AND q={1:.2f} AND F={2:.2f}".format(p,q,F))
 	print(" p2={0:.4f},  2pq={1:.4f},  q2={2:.4f},  sum={3:.4f}".format(p2, twopq, q2, sum))
 	print("Fp2={0:.4f}, F2pq={1:.4f}, Fq2={2:.4f}, Fsum={3:.4f}".format(Fp2, Ftwopq, Fq2, Fsum))
 	print("")
@@ -169,6 +171,7 @@ def makeType1Question(p, phenotype=None):
 	organism = random.choice(organism_list)
 	colors = random.choice(color_series_list)
 	counts = [homo_dominant, heterozygote, homo_recessive]
+	total = homo_dominant + heterozygote + homo_recessive
 
 	table = makeType1Table(organism, colors, counts)
 
@@ -180,10 +183,18 @@ def makeType1Question(p, phenotype=None):
 	question_text += 'What is the frequency of the <b>{0}</b> allele?</p>'.format(phenotype)
 	question_text += add_note()
 
+	actual_q = (homo_recessive*2 + heterozygote)/(2.0*total)
+	actual_p = 1.0 - actual_q
+	print("p={0:.2f}; actual_p={1:.5f}, diff={2:.5f}".format(p, actual_p, abs(p - actual_p)))
+	print("q={0:.2f}; actual_q={1:.5f}, diff={2:.5f}".format(q, actual_q, abs(q - actual_q)))
+	if abs(q - actual_q) > 0.008 or abs(p - actual_p) > 0.008:
+		return None
+
+
 	blackboard_text = 'NUM\t'
 	blackboard_text += table + question_text + '\t'
 	blackboard_text += '{0:.2f}\t'.format(answer)
-	blackboard_text += '0.009\n'
+	blackboard_text += '0.0099\n'
 	return blackboard_text
 
 #=========================
