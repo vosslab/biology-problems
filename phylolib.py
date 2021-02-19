@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import numpy
 import itertools
 
 space = " "
@@ -14,6 +15,10 @@ black_top = 'border-bottom: 3px solid black; '
 black_left = 'border-left: 3px solid black; '
 black_right = 'border-right: 3px solid black; '
 middle = 'vertical-align: middle; '
+
+def empty_array():
+	char_array3 = np.empty((3, 3), dtype='str')
+	char_array3[:] = ' '
 
 def comb_safe_permutations(genes):
 	complete_set = itertools.permutations(genes, len(genes))
@@ -352,13 +357,13 @@ def comb_tree_4_leaves_html(values, distances=None):
 	# 5 rows are needed
 	if distances is None:
 		distances = [2,3,4]
-	#row1 = "           ____ a"
-	#row2 = "      ____|     "
-	#row3 = "     |    |____ b"
-	#row4 = "   __|          "
-	#row5 = "  |  |_________ c"
-	#row6 = "__|              "
-	#row6 = "  |____________ d"
+	#row1 = "         ____ a"
+	#row2 = "      __|      "
+	#row3 = "     |  |____ b"
+	#row4 = "   __|         "
+	#row5 = "  |  |_______ c"
+	#row6 = "__|            "
+	#row7 = "  |__________ d"
 	table = '<table style="border-collapse: collapse; border: 1px solid silver;">'
 	table += '<colgroup width="30"></colgroup>'
 	table += '<colgroup width="{0}"></colgroup>'.format((distances[2]-distances[1])*20)
