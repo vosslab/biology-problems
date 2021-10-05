@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 
-import sys
 import random
 import phylolib
-import itertools
 
 # make a gene tree with 4 leaves, ask students to find the similar one
 

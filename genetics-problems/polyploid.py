@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 import random
 
 """
@@ -40,7 +41,9 @@ if __name__ == '__main__':
 
 	num_genes = 7
 	N = 0
-	f = open('bbq-polyploid.txt', 'w')
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('writing to file: '+outfile)
+	f = open(outfile, 'w')	
 	for ploidy in ploidies:
 		for monoploid in monoploid_sizes:
 			N += 1

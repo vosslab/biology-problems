@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import os
-import sys
 import copy
 import random
 import string
@@ -393,7 +392,9 @@ def getCode():
 if __name__ == '__main__':
 	duplicates = 1
 	letters = "ABCDEFGHI"
-	f = open("bbq-chi_square_choices.txt", "w")
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('writing to file: '+outfile)
+	f = open(outfile, 'w')
 	for i in range(duplicates):
 		for error_type in error_types:
 			for desired_result in ('accept', 'reject'):

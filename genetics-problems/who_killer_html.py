@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 import sys
 import random
 import gellib
@@ -109,7 +110,9 @@ if __name__ == '__main__':
 	full_question = "<p>Who is the killer?</p> {0} {1}".format(table, question)
 	print("complete\n\n")
 
-	f = open("bbq-killer_questions.txt", "a")
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('writing to file: '+outfile)
+	f = open(outfile, 'a')
 	f.write("MC\t")
 	f.write(full_question+"\t")
 	f.write(choice)

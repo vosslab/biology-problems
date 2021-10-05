@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 import random
 import genotype
 
@@ -11,8 +12,10 @@ if __name__ == '__main__':
 	max_choices = 5
 	N = 0
 	choice_dict = {}
-	
-	f = open('bbq-gametes_unique_cross_phenotype.txt', 'w')
+
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('writing to file: '+outfile)
+	f = open(outfile, 'w')
 	for i in range(num_questions):
 		N += 1
 		number = "{0}. ".format(N)

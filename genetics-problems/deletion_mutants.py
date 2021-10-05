@@ -1,11 +1,9 @@
 #!/usr/bin/env python
 
-import re
+import os
 import sys
-import math
 import copy
 import random
-import pprint
 
 num2word = {
 	1: 'one', 2: 'two', 3: 'three', 4: 'four', 5: 'five',
@@ -208,7 +206,9 @@ if __name__ == '__main__':
 
 	duplicates = 92
 
-	f = open('bbq-deletion_mutants.txt', 'w')
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('writing to file: '+outfile)
+	f = open(outfile, 'w')
 	for i in range(duplicates):
 		origlist, del_set = makeDeletions(num_items)
 		random.shuffle(del_set)

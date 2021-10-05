@@ -2,7 +2,6 @@
 
 import random
 import phylolib
-import itertools
 
 # make a gene tree with 3 leaves, ask students to find the similar one
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import os
-import sys
 import copy
 import math
 import random
@@ -32,7 +31,9 @@ two_colon_choices = [
 def write_question(question, choices):
 	global N
 	N += 1
-	f = open('bbq-epistasis_test_cross.txt', 'a')
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('writing to file: '+outfile)
+	f = open(outfile, 'a')
 	print('{0}. {1}'.format(N, question))
 
 	letters = 'ABCDEF'

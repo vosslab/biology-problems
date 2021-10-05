@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 import sys
 import copy
 import random
@@ -127,7 +128,9 @@ if __name__ == '__main__':
 		print(("{0}{1}. {2}".format(prefix,c,a)))
 
 	
-	f = open("bbq-hla_genotypes.txt", "a")
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('writing to file: '+outfile)
+	f = open(outfile, 'a')
 	f.write("MC\t")
 	f.write(question+"\t")
 	f.write(answer_str)

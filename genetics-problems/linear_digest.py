@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import sys
+import os
 import random
 import restrictlib
 
@@ -187,7 +187,9 @@ if __name__ == '__main__':
 			answer_str += "Incorrect\t"
 	print(answer_str)
 	#sys.exit(1)
-	f = open("bbq-linear_digest.txt", "a")
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('writing to file: '+outfile)
+	f = open(outfile, 'w')
 	f.write("MA\t")
 	f.write(header+table+details+question+"\t")
 	f.write(answer_str)

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 import copy
 import random
 import crossinglib
@@ -86,7 +87,9 @@ def writeQuestion(letter, gene_type, color_set, file_handle):
 if __name__ == '__main__':
 	duplicates = 1
 	#gene_letters = list('A')
-	file_handle = open("bbq-monohybird_cross_dominance.txt", "w")
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('writing to file: '+outfile)
+	file_handle = open(outfile, 'w')	
 	for letter in crossinglib.gene_letters:
 		for gene_type in crossinglib.single_gene_types:
 			for color_set in crossinglib.get_three_color_sets():

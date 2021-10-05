@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 import re
 import sys
 import copy
@@ -305,7 +306,9 @@ def makeBBText(desired_result):
 if __name__ == '__main__':
 	duplicates = 72
 	letters = "ABCDEFGHI"
-	f = open("bbq-chi_square_hardy_weinberg.txt", "w")
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('writing to file: '+outfile)
+	f = open(outfile, 'w')
 	count = 0
 	for i in range(duplicates):
 		#for desired_result in ('accept', 'reject'):

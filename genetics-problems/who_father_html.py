@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 import sys
 import random
 import gellib
@@ -121,7 +122,9 @@ if __name__ == '__main__':
 	#print("open males.png")
 	question = "<h6>Based on the DNA gel profile above, who is the father of the child?</h6>"
 	full_question = "<p>Who is the father of the child?</p> {0} {1}".format(table, question)
-	f = open("bbq-father_questions.txt", "a")
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('writing to file: '+outfile)
+	f = open(outfile, 'a')
 	f.write("MC\t")
 	f.write(full_question+"\t")
 	print("complete\n\n")

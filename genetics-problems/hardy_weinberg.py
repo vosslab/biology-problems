@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 import sys
 import math
 import random
@@ -320,8 +321,10 @@ def makeQuestion(type, p):
 if __name__ == '__main__':
 	type = '3a'
 
-	filename = 'bbq-hardy_weinberg-type_{0}.txt'.format(type)
-	f = open(filename, 'w')
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + ('-type_{0}-questions.txt'.format(type))
+	print('writing to file: '+outfile)
+	f = open(outfile, 'a')
+
 	count = 0
 	for rawp in range(40, 100, 2):
 		p = rawp/100.
@@ -333,5 +336,5 @@ if __name__ == '__main__':
 		f.write(blackboard_text)
 		print(count, blackboard_text)
 		#break
-	print("wrote", count, "questions to", filename)
+	print("wrote", count, "questions to", outfile)
 	f.close()

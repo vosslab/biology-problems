@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import random
+import os
 import genotype
 
 
@@ -8,7 +8,9 @@ if __name__ == '__main__':
 	num_genes = 7
 	num_questions = 99
 	N = 0
-	f = open('bbq-gametes_unique.txt', 'w')
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('writing to file: '+outfile)
+	f = open(outfile, 'w')
 	for i in range(num_questions):
 		N += 1
 		number = "{0}. ".format(N)

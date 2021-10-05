@@ -1,11 +1,8 @@
 #!/usr/bin/env python
 
-import re
+import os
 import sys
-import math
-import copy
 import random
-import pprint
 
 def list2string(mylist, spacer=""):
 	mystring = spacer.join(mylist)
@@ -182,7 +179,9 @@ def makeQuestion():
 	return blackboard
 
 if __name__ == "__main__":
-	f = open('bbq-translocation_problem.txt', 'w')
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('writing to file: '+outfile)
+	f = open(outfile, 'w')	
 	duplicates = 89
 	for i in range(duplicates):
 		blackboard = makeQuestion()

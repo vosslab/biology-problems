@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import sys
+import os
 import random
 
 phenotypes = ['O', 'A', 'B', 'AB',]
@@ -84,7 +84,9 @@ if __name__ == '__main__':
 	"""
 	letters = "ABCDEF"
 
-	f = open("bbq-blood_type_mother.txt", "w")
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('writing to file: '+outfile)
+	f = open(outfile, 'w')
 	for dad_pheno in phenotypes:
 		for kid_pheno in phenotypes:
 

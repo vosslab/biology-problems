@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import os
+
 phenotypes = ['O', 'A', 'B', 'AB',]
 genotypes = ['OO', 'AO', 'BO', 'AB',]
 pmap = {
@@ -32,7 +34,9 @@ if __name__ == '__main__':
 	"""
 	letters = "ABCDEF"
 
-	f = open("bbq-blood_type_offspring.txt", "w")
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('writing to file: '+outfile)
+	f = open(outfile, 'w')
 	for pheno1 in phenotypes:
 		for pheno2 in phenotypes:
 			answers = set()

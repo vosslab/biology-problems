@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import sys
+import os
 import random
 
 def geno2pheno(genotype):
@@ -85,7 +85,9 @@ if __name__ == '__main__':
 		'homozygous mutant female (ww) and mutant male (w&ndash;)',
 	]
 	N = 0
-	f = open("bbq-poisson_flies.txt", "w")
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('writing to file: '+outfile)
+	f = open(outfile, 'w')
 	post_question = "<p><strong>What are the genotypes of the parents in this cross?</strong></p>"
 	female_genotype = random.choice(("++", "+w", "ww"))
 	male_genotype = random.choice(("+-", "w-"))

@@ -17,7 +17,7 @@ black_right = 'border-right: 3px solid black; '
 middle = 'vertical-align: middle; '
 
 def empty_array():
-	char_array3 = np.empty((3, 3), dtype='str')
+	char_array3 = numpy.empty((3, 3), dtype='str')
 	char_array3[:] = ' '
 
 def comb_safe_permutations(genes):
@@ -719,13 +719,16 @@ if __name__ == '__main__':
 	#balanced_tree_5_leaves_type_2_html(['a','b','c','d','e'], distances=[3,6,9,12])
 	#balanced_tree_5_leaves_type_3_html(['a','b','c','d','e'], distances=[3,6,9,12])
 
-	comb_tree_3_leaves_html(['Asian elephant', 'African elephant', 'Woolly mammoth'])
+	t = comb_tree_3_leaves_ascii(['Asian elephant', 'African elephant', 'Woolly mammoth'])
+	print(t)
 	print('')
-	comb_tree_3_leaves_type_2_html(['African elephant', 'Asian elephant', 'Woolly mammoth'])
+	t = comb_tree_3_leaves_alternate_ascii(['African elephant', 'Asian elephant', 'Woolly mammoth'])
+	print(t)
 	print('')
-	comb_tree_3_leaves_type_2_html(['Asian elephant', 'African elephant', 'Woolly mammoth'])
+	t = comb_tree_3_leaves_alternate_ascii(['Asian elephant', 'African elephant', 'Woolly mammoth'])
+	print(t)
 	print('')
-	balanced_tree_3_leaves_html(['Asian elephant', 'African elephant', 'Woolly mammoth'])
-
+	t = balanced_tree_3_leaves_ascii(['Asian elephant', 'African elephant', 'Woolly mammoth'])
+	print(t)
 
 #THE END

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import sys
+import os
 import copy
 import random
 import crossinglib
@@ -432,7 +432,9 @@ method_list = [
 #===================
 if __name__ == '__main__':
 	duplicates = 1
-	file_handle = open("bbq-dihybrid_cross_gene_metabolics.txt", "w")
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('writing to file: '+outfile)
+	file_handle = open(outfile, 'w')
 	for i in range(duplicates):
 		for color_set in crossinglib.get_four_color_sets():
 			for gene_id in crossinglib.gene_interaction_names:

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import math
+import os
 import random
 
 
@@ -111,7 +111,9 @@ if __name__ == '__main__':
 	bcodes = list(code2type.keys())
 	N = 0
 	letters = "ABCDEFG"
-	f = open("bbq-blood_type_agglutination_test.txt", "a")
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('writing to file: '+outfile)
+	f = open(outfile, 'w')
 	for bcode in bcodes:
 		N += 1
 		answer = bcode+"1"
