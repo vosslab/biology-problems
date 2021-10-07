@@ -75,6 +75,15 @@ def makeSequence(seqlen=10):
 		elif compl[-half:] == flip(seq[-half:]):
 			endloop = False
 
+		if endloop is True:
+			newseq = copy.copy(seq)
+			newseq = newseq.replace('T', 'A')
+			if 'AAAA' in newseq:
+				endloop = False
+			newseq = newseq.replace('C', 'G')
+			if 'GGGG' in newseq:
+				endloop = False			
+
 	return seq
 
 #========================================
