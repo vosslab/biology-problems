@@ -12,6 +12,25 @@ sequence_length = 12
 separate = 3
 
 #==========================
+def colorNucleotide(nt):
+	adenine = ' bgcolor="#e6ffe6"' #green
+	cytosine = ' bgcolor="#e6f3ff"' #blue
+	thymine = ' bgcolor="#ffe6e6"' #red
+	guanine = ' bgcolor="#f2f2f2"' #black
+	uracil = ' bgcolor="#f3e6ff"' #purple
+	if nt == 'A':
+		return adenine
+	elif nt == 'C':
+		return cytosine
+	elif nt == 'G':
+		return guanine
+	elif nt == 'T':
+		return thymine
+	elif nt == 'U':
+		return thymine
+	return ''
+
+#==========================
 def makeSequences():
 	sequence_list = []
 	for j in range(num_sequence):
@@ -64,7 +83,8 @@ def makeHtmlRow(seq):
 	for i in range(len(seq)):
 		if i > 0 and i % separate == 0:
 			htmlrow += "<td>&nbsp;,&nbsp;</td> "
-		htmlrow += "<td>&nbsp;{0}&nbsp;</td> ".format(seq[i])
+		nt = seq[i]
+		htmlrow += "<td {1}>&nbsp;{0}&nbsp;</td> ".format(nt, colorNucleotide(nt))
 	return htmlrow
 
 #==========================
@@ -103,14 +123,15 @@ if __name__ == '__main__':
 	#for j in range(num_sequence):
 	#	printSequence(sequence_list[j], consensus)
 	#printSequence(consensus, consensus)
-	
+
 	table = makeHtmlTable(sequence_list)
 	question = "blank 1. {0} <br/> What is the consensus sequence for the table above? ".format(table)
-	#question += "<br/> <i> do not include comma or spaces in your answer </i>"
-	
+	question += "<br/> <i> you may include a comma every {0} letters, but ".format(separate)
+	question += "do not include extra commas or spaces in your answer. </i>"
+
 	#============================
 	print(question)
 	print("A. {0}".format(consensus))
 	print("B. {0}".format(insertCommas(consensus)))
 	print('')
-	
+
