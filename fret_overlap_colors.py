@@ -61,8 +61,6 @@ if __name__ == '__main__':
 		question += "F&ouml;rster resonance energy transfer (FRET) requires both an acceptor fluorescent protein and a donor fluorescent protein. "
 		question += "Which one of the following color combinations would be an effective FRET setup? "
 
-
-
 		letters = "ABCDEF"
 
 		permuations = list(itertools.permutations(color_set))
