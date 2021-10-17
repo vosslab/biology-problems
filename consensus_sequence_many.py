@@ -7,30 +7,9 @@ import random
 
 dna = ['A', 'C', 'G', 'T',]
 
-"""
-num_sequence = 3 #fixed for easy
-num_diff_sequence = 1 #fixed for easy / max 3
-random_diff_sequence = False
-sequence_length = 6
-separate = 3
-"""
-
-"""
-num_sequence = 5 #fixed for easy
-num_diff_sequence = 3 #fixed for easy / max 3
-random_diff_sequence = True
+num_sequence = 9 #fixed for easy
 sequence_length = 12
 separate = 3
-"""
-
-num_sequence = 9 #fixed for easy
-num_diff_sequence = 3 #fixed for easy / max 3
-random_diff_sequence = False
-sequence_length = 9
-separate = 3
-
-
-
 
 #==========================
 def colorNucleotide(nt):
@@ -51,6 +30,49 @@ def colorNucleotide(nt):
 		return thymine
 	return ''
 
+
+#==========================
+def histogramList(seq_list):
+	histogram = {}
+	for nt in dna:
+		histogram[nt] = seq_list.count(nt)
+	return histogram
+
+#==========================
+def getConsensus(histogram):
+	max_value = -1
+	key_list = []
+	for k,v in histogram.items():
+		if v > max_value:
+			max_value = v
+	for k,v in histogram.items():
+		if v == max_value:
+			key_list.append(k)
+	return key_list
+
+#==========================
+def makeSequenceColumn():
+	seq_list = []
+	for j in range(num_sequence):
+		seq_list.append(random.choice(dna))
+
+	histogram = histogramList(seq_list)
+	print(histogram)
+	key_list = getConsensus(histogram)
+	while len(key_list) != 1:
+		print("***")
+		consensus_nt = random.choice(key_list)
+		for k in key_list:
+			if k == consensus_nt:
+				continue
+			seq_list.remove(k)
+			seq_list.append(consensus_nt)
+		histogram = histogramList(seq_list)
+		print(histogram)
+		key_list = getConsensus(histogram)
+	consensus_nt = key_list[0]
+	return seq_list, consensus_nt
+
 #==========================
 def makeSequences():
 	sequence_list = []
@@ -59,21 +81,10 @@ def makeSequences():
 	consensus = ''
 	
 	for i in range(sequence_length):
-		other_dna = copy.copy(dna)
-		random.shuffle(other_dna)
-		letter = other_dna.pop()
-		consensus += letter
-		indices = list(range(num_sequence))
-		random.shuffle(indices)
-		if random_diff_sequence is True:
-			diff_sequence_indices = indices[:random.randint(0,num_diff_sequence)]
-		else:
-			diff_sequence_indices = indices[:num_diff_sequence]
-		for j in range(num_sequence):
-			if j in diff_sequence_indices:
-				sequence_list[j] += other_dna.pop()
-			else:
-				sequence_list[j] += letter
+		seq_list, consensus_nt = makeSequenceColumn()
+		consensus += consensus_nt
+		for j, nt in enumerate(seq_list):
+			sequence_list[j] += nt
 
 	return consensus, sequence_list
 

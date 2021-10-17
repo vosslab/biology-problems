@@ -4,8 +4,8 @@ import os
 import random
 
 if __name__ == '__main__':
-	num_cycles = 12
-	num_choices = 6
+	num_cycles = 30
+	num_choices = 5
 	N = 0
 	answer_hist = {}
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'

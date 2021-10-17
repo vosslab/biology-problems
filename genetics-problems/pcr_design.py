@@ -160,9 +160,9 @@ def makeChoices(primer_set, answer_set):
 #=====================
 #=====================
 if __name__ == '__main__':
-	sequence_len = 30
-	primer_len = 6
-	num_questions = 10
+	sequence_len = 36
+	primer_len = 9
+	num_questions = 199
 
 	N = 0
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'

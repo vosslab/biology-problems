@@ -6,14 +6,18 @@ import restrictlib
 
 #============================================
 #============================================
-def tdBlock(vtype="top", htype="middle", fill_color="white", strand_color="black", tick_color="#999999"):
+def tdBlock(vtype="top", htype="middle", fill_color="white", strand_color="black", tick_color="#999999", fragment=True):
 	border_str = ""
-	if vtype == "top":
+	if vtype == "top" and not fragment:
+		border_str += 'border-bottom: 4px solid {0}; '.format(strand_color)
+	elif vtype == "top" and not (htype == "start" or htype == "end"):
 		border_str += 'border-bottom: 4px solid {0}; '.format(strand_color)
 	else:
 		border_str += 'border-bottom: 0px solid {0}; '.format(fill_color)
 
-	if vtype == "bottom":
+	if vtype == "bottom" and not fragment:
+		border_str += 'border-top: 4px solid {0}; '.format(strand_color)
+	elif vtype == "bottom" and not (htype == "start" or htype == "end"):
 		border_str += 'border-top: 4px solid {0}; '.format(strand_color)
 	else:
 		border_str += 'border-top: 0px solid {0}; '.format(fill_color)
@@ -80,11 +84,11 @@ def makeTable(length, label_dict=None, fragment=True):
 		table += '<td style="border: 0px solid white; "></td>'
 	else:
 		table += longDNA("top")
-	table += tdBlock("top", "start")
+	table += tdBlock("top", "start", fragment=fragment)
 	for i in range(length):
-		table += tdBlock("top", "left")
-		table += tdBlock("top", "right")
-	table += tdBlock("top", "end")
+		table += tdBlock("top", "left", fragment=fragment)
+		table += tdBlock("top", "right", fragment=fragment)
+	table += tdBlock("top", "end", fragment=fragment)
 	if fragment is True:
 		table += '<td style="border: 0px solid white; "></td>'
 	else:
@@ -97,11 +101,11 @@ def makeTable(length, label_dict=None, fragment=True):
 		table += '<td style="border: 0px solid white; "></td>'
 	else:
 		table += longDNA("bottom")
-	table += tdBlock("bottom", "start")
+	table += tdBlock("bottom", "start", fragment=fragment)
 	for i in range(length):
-		table += tdBlock("bottom", "left")
-		table += tdBlock("bottom", "right")
-	table += tdBlock("bottom", "end")
+		table += tdBlock("bottom", "left", fragment=fragment)
+		table += tdBlock("bottom", "right", fragment=fragment)
+	table += tdBlock("bottom", "end", fragment=fragment)
 	if fragment is True:
 		table += '<td style="border: 0px solid white; "></td>'
 	else:
@@ -137,7 +141,7 @@ def getRandList(size, total_length, include_ends=False):
 #============================================
 #============================================
 if __name__ == '__main__':
-	length = 8
+	length = 10
 	fragment = True
 	enzymes = restrictlib.get_enzyme_list()
 	enzyme_class1 = restrictlib.random_enzyme_one_end(enzymes)
@@ -189,7 +193,7 @@ if __name__ == '__main__':
 	#sys.exit(1)
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
 	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
+	f = open(outfile, 'a')
 	f.write("MA\t")
 	f.write(header+table+details+question+"\t")
 	f.write(answer_str)
