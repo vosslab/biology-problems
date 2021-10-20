@@ -25,17 +25,10 @@ def makeQuestion(sugar_name):
 	extra_choices = []
 	for i in range(first_stereocarbon, 5+1):
 		wrong = sugar_codes_class.flip_position(sugar_code, i)
-<<<<<<< HEAD:biochem-problems/monosaccharide_Fischer_D_to_L_configuration.py
 		extra_choices.append(wrong)
 
 		wrong = sugar_codes_class.flip_position(answer_code, i)
 		extra_choices.append(wrong)
-=======
-		choice_codes.append(wrong)
-
-		wrong = sugar_codes_class.flip_position(answer_code, i)
-		choice_codes.append(wrong)
->>>>>>> 532051e (major fixes to all monosaccharide questions):monosaccharide_Fischer_D_to_L_configuration.py
 
 	extra_choices = list(set(extra_choices))
 	random.shuffle(extra_choices)
