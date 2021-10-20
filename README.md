@@ -1,7 +1,5 @@
 Python Scripts for Generating Biochemistry, Genetics, and Molecular Biology Homework/Quiz problems
 
-# Genetics Problems
-
 [comment]: <> ( https://guides.github.com/features/mastering-markdown/ )
 [comment]: <> ( https://docs.github.com/en/free-pro-team@latest/github/creating-cloning-and-archiving-repositories/about-readmes )
 [comment]: <> ( https://docs.github.com/en/free-pro-team@latest/github/writing-on-github/basic-writing-and-formatting-syntax )
@@ -9,9 +7,9 @@ Python Scripts for Generating Biochemistry, Genetics, and Molecular Biology Home
 Table of Contents
 =================
 
-   * [genetics-problems](#genetics-problems)
-   * [Table of Contents](#table-of-contents)
+   * [Genetics Problems](#genetics-problems)
       * [Blood Types](#blood-types)
+         * [blood_type_agglutination_test.py](#blood_type_agglutination_testpy)
          * [blood_type_offspring.py](#blood_type_offspringpy)
          * [blood_type_mother.py](#blood_type_motherpy)
          * [hla_genotype.py](#hla_genotypepy)
@@ -25,9 +23,29 @@ Table of Contents
       * [Chi-Squared Analysis](#chi-squared-analysis)
          * [Table of Chi-Squared (χ<sup>2</sup>) Critical Values](#table-of-chi-squared-χ2-critical-values)
          * [chi_square_errors.py](#chi_square_errorspy)
+      * [Progeny](#progeny)
+         * [probabiliy_of_progeny.py](#probabiliy_of_progenypy)
+   * [Biochemistry Problems](#biochemistry-problems)
+      * [Isoelectric Point Problems](#isoelectric-point-problems)
+         * [isoelectric_one_protein.py](#isoelectric_one_proteinpy)
+         * [isoelectric_two_proteins.py](#isoelectric_two_proteinspy)
+      * [Gel Migration Problem](#gel-migration-problem)
+         * [gel_migration.py](#gel_migrationpy)
+      * [Alpha Helix Hydrogen Bonding](#alpha-helix-hydrogen-bonding)
+         * [alpha_helix_h-bonds.py](#alpha_helix_h-bondspy)
+      * [Hydrophobicity](#hydrophobicity)
+         * [which_phobic.py](#which_phobicpy)
+      * [Michaelis-Menten](#michaelis-menten)
+         * [michaelis_menten_table-Km.py](#michaelis_menten_table-kmpy)
+         * [michaelis_menten_table-inhibition.py](#michaelis_menten_table-inhibitionpy)
+      * [Enzymes](#enzymes)
+         * [chymotrypsin_substrate.py](#chymotrypsin_substratepy)
+      * [Sugars](#sugars)
+         * [monosaccharide_Fischer_D_to_L_configuration.py](#monosaccharide_fischer_d_to_l_configurationpy)
 
 Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
 
+# Genetics Problems
 
 ## Blood Types
 
@@ -248,24 +266,12 @@ A women has nine (9) children, what is the probability that she has exactly five
 
 ![Image of Probabiliy of Progeny problem](images/probabiliy_of_progeny.png)
 
+
+
+
+
+
 # Biochemistry Problems
-
-Table of Contents
-=================
-
-   * [biochem-problems](#biochem-problems)
-      * [Isoelectric Point Problems](#isoelectric-point-problems)
-         * [isoelectric_one_protein.py](#isoelectric_one_proteinpy)
-         * [isoelectric_two_proteins.py](#isoelectric_two_proteinspy)
-      * [Gel Migration Problem](#gel-migration-problem)
-         * [gel_migration.py](#gel_migrationpy)
-      * [Alpha Helix Hydrogen Bonding](#alpha-helix-hydrogen-bonding)
-         * [alpha_helix_h-bonds.py](#alpha_helix_h-bondspy)
-      * [Hydrophobicity](#hydrophobicity)
-         * [which_phobic.py](#which_phobicpy)
-      * [Michaelis-Menten](#michaelis-menten)
-         * [michaelis_menten_table-Km.py](#michaelis_menten_table-kmpy)
-         * [michaelis_menten_table-inhibition.py](#michaelis_menten_table-inhibitionpy)
 
 ## Isoelectric Point Problems
 
