@@ -581,7 +581,7 @@ class SugarStructure(object):
 
 	#============================
 	def read_Haworth_pyranose_projection_html(self):
-		f = open('data/haworth_pyranose_table.html', 'r')
+		f = open('../data/haworth_pyranose_table.html', 'r')
 		table = ''
 		for line in f:
 			table += line.strip()
@@ -666,7 +666,7 @@ class SugarStructure(object):
 
 	#============================
 	def read_Haworth_furanose_projection_html(self):
-		f = open('data/haworth_furanose_table.html', 'r')
+		f = open('../data/haworth_furanose_table.html', 'r')
 		table = ''
 		for line in f:
 			table += line.strip()
