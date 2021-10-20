@@ -95,8 +95,8 @@ def getPrimerChoices(top_sequence, primer_len):
 	primer_set.append(seqlib.flip(primer))
 	
 	primer = bottom_sequence[-primer_len:]
-	primer_set.append(primer)  #answer2
-	primer_set.append(seqlib.flip(primer))
+	primer_set.append(primer)
+	primer_set.append(seqlib.flip(primer)) #answer2
 	answer2 = seqlib.flip(primer)
 	
 	answer_set = [answer1, answer2]
