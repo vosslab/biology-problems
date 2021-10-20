@@ -1,0 +1,291 @@
+
+
+#category, disorder, description
+
+sample:
+	disorder name:
+		abbreviation: null
+		short name: null
+		symptoms: null
+		cause: null
+		mechanism: null
+		frequency: null
+		locus: null
+		wikipedia url: https://en.wikipedia.org/wiki/Mendelian_traits_in_humans
+
+#=============================================	
+#=============================================
+autosomal dominant:
+	Huntington disease:
+		abbreviation: null
+		short name: null
+		symptoms: null
+		cause: null
+
+	Marfan syndrome: 
+		abbreviation: null
+		short name: null
+		symptoms: null
+		cause: null
+
+#=============================================	
+#=============================================
+autosomal recessive:	
+	cystic fibrosis: 
+		abbreviation: CF
+		symptoms: null
+		cause: null
+		wikipedia url: 
+
+	sickle cell disease:
+		abbreviation: null
+		short name: null
+		symptoms: null
+		cause: null
+		mechanism: null
+		frequency: null
+		locus: null
+		wikipedia url: 
+		
+	Setleis syndrome:
+		abbreviation: null
+		short name: null
+		symptoms: facial skin abnormalities and double upper eyelashes and missing lower eyelashes.
+		cause: TWIST2 gene mutations
+		mechanism: null
+		frequency: null
+		locus: null
+		wikipedia url: 
+		
+	Albinism:
+		abbreviation: null
+		short name: null
+		symptoms: absence of pigment in the skin, hair and eyes.
+		cause: mutations in the tyrosine 3-monooxygenase gene (tyrosinase), which synthesizes melanin from the amino acid tyrosine.
+		mechanism: null
+		frequency: null
+		locus: null
+		wikipedia url: https://en.wikipedia.org/wiki/Albinism_in_humans
+		
+	Tay–Sachs disease:
+		abbreviation: null
+		short name: null
+		symptoms: null
+		cause: null
+		mechanism: null
+		frequency: null
+		locus: null
+		wikipedia url: https://en.wikipedia.org/wiki/Tay%E2%80%93Sachs_disease
+
+#=============================================	
+#=============================================
+X-linked dominant:
+	fragile X syndrome:
+		abbreviation: null
+		short name: null
+		symptoms: null
+		cause: null
+		mechanism: null
+		frequency: null
+		locus: null
+		wikipedia url: 
+
+	X-linked hypophosphatemia:
+		abbreviation: XLH
+		symptoms: form of rickets where vitamin D supplementation has no effect
+
+	Rett syndrome:
+		abbreviation: RTT
+		symptoms: impairments in language and coordination and repetitive movements. Those affected often have slower growth, difficulty walking, and a smaller head size.
+		cause: mutation in the MECP2 gene on the X chromosome
+		
+	Aicardi Syndrome:
+		abbreviation: null
+		short name: null
+		symptoms: null
+		cause: null
+		mechanism: null
+		frequency: null
+		locus: null
+		wikipedia url: 
+		
+	Incontinentia pigmenti:
+		abbreviation: null
+		short name: null
+		symptoms: null
+		cause: null
+		mechanism: null
+		frequency: null
+		locus: null
+		wikipedia url: 
+		
+	Focal dermal hypoplasia:
+		abbreviation: null
+		short name: null
+		symptoms: yellow-pink bumps on the skin, pigmentation changes, shortness of stature, and some evidence suggests that it can cause epilepsy.
+		cause: PORCN gene mutation
+		mechanism: null
+		frequency: null
+		locus: X
+		
+	Alport syndrome:
+		abbreviation: null
+		short name: null
+		symptoms: glomerulonephritis, end-stage kidney disease, and hearing loss.
+		cause: inherited defect in type IV collagen COL4A5 gene
+		mechanism: null
+		frequency: 1 in 5,000-10,000
+		locus: X
+		wikipedia url: 
+	
+
+#=============================================	
+#=============================================
+X-linked recessive:
+	Red-green color blindness
+		short name: color blindness
+		symptoms: a person cannot distinguish between shades of red and green
+
+	hemophilia:
+		abbreviation: null
+		short name: null
+		symptoms: blood cannot clot properly due to a deficiency of a clotting factor
+		cause: null
+		mechanism: null
+		frequency: null
+		locus: null
+		wikipedia url: 
+	
+
+	Fabry disease:
+		abbreviation: null
+		short name: null
+		symptoms: null
+		cause: lysosomal storage disease
+		wikipedia url: 
+
+	Duchenne muscular dystrophy:
+		abbreviation: null
+		short name: null
+		symptoms: rapid progression of muscle degeneration, eventually leading to loss of skeletal muscle control, respiratory failure, and death.
+		cause: mutations in the dystrophin gene
+		mechanism: null
+		wikipedia url: 
+
+	X-linked agammaglobulinemia:
+		abbreviation: XLA
+		short name: null
+		symptoms: patients prone to develop serious and even fatal infections.
+		cause: null
+		mechanism: patients do not generate mature B cells.
+		wikipedia url: 
+
+	X-linked ichthyosis:
+		abbreviation: null
+		short name: null
+		symptoms: null
+		cause: hereditary deficiency of the steroid sulfatase (STS) enzyme
+		mechanism: null
+		wikipedia url: 
+
+	Glucose-6-phosphate dehydrogenase deficiency:
+		abbreviation: null
+		short name: null
+		symptoms: nonimmune hemolytic anemia in response to certain medications, chemicals, or foods.
+		cause: null
+		mechanism: null
+		wikipedia url: 
+
+	Adrenoleukodystrophy
+		abbreviation: null
+		short name: null
+		symptoms: leads to progressive brain damage, failure of the adrenal glands and eventually death.
+		cause: null
+		mechanism: null
+		wikipedia url: 
+
+	Androgen insensitivity syndrome:
+		abbreviation: AIS
+		short name: null
+		symptoms: impairs the development of male genitals and male secondary sexual characteristics at puberty
+		cause: mutation in the human androgen receptor (AR) gene
+		mechanism: partial or complete inability of cells to respond to androgens.
+		frequency: 1 in 20,000
+		locus: Xq11-Xq12
+		wikipedia url: 
+
+	Hunter syndrome:
+		abbreviation: null
+		short name: null
+		symptoms: hearing loss, thickening of the heart valves leading to a decline in cardiac function, obstructive airway disease, sleep apnea, and enlargement of the liver and spleen.
+		cause: null
+		mechanism: null
+		frequency: null
+		locus: null
+		wikipedia url: 
+		
+	Nasodigitoacoustic syndrome:
+		abbreviation: null
+		short name: null
+		symptoms: misshaped nose, brachydactyly of the distal phalanges, sensorineural deafness.
+		cause: null
+		mechanism: null
+		frequency: null
+		locus: null
+		wikipedia url: 
+		
+	X-linked sideroblastic anemia:
+		abbreviation: null
+		short name: null
+		symptoms: skin paleness, fatigue, dizziness and enlarged spleen and liver.
+		cause: null
+		mechanism: null
+		frequency: null
+		locus: null
+		wikipedia url: 
+
+#=============================================	
+#=============================================
+Y-linked:
+	Y chromosome infertility: 
+		abbreviation: null
+		short name: null
+		symptoms: null
+		cause: null
+		wikipedia url: 
+
+	Swyer syndrome: some cases
+		abbreviation: null
+		short name: null
+		symptoms: null
+		cause: null
+		wikipedia url: 
+
+#=============================================	
+#=============================================	
+Codominant:
+	ABO blood groups:
+		abbreviation: null
+		short name: null
+		symptoms: null
+		cause: null
+		wikipedia url: 
+
+	alpha-1 antitrypsin deficiency:
+		abbreviation: null
+		short name: null
+		symptoms: null
+		cause: null
+		wikipedia url: 
+
+#=============================================	
+#=============================================
+Mitochondrial:
+	Leber hereditary optic neuropathy:
+		abbreviation: LHON
+		short name: optic neuropathy
+		symptoms: null
+		cause: null
+		wikipedia url: 
+	
+	
