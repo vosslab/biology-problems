@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 import random
 
 carbs = [
@@ -171,7 +172,9 @@ def writeQuestion(macro, answer):
 	
 	
 if __name__ == '__main__':
-	f = open('bbq-simple_macromolecules.txt', 'w')
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('writing to file: '+outfile)
+	f = open(outfile, 'w')
 	for item in carbs:
 		complete_question = writeQuestion(item, 'Carbohydrates')
 		f.write(complete_question+'\n')

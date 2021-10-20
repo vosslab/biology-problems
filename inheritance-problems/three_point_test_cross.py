@@ -35,8 +35,8 @@ def flipGene(genotype, gene):
 	return newtype
 
 """
-afile = "bbq-gene_order_answers.txt"
-qfile = "bbq-gene_order_questions.txt"
+outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+print('writing to file: '+outfile)
 if not os.path.exists(afile):
 	open(afile, 'a').close()
 f = open(afile, "r")

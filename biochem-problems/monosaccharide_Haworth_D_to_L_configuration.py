@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 import sys
 import random
 import sugarlib
@@ -99,7 +100,9 @@ if __name__ == '__main__':
 	D_sugars.remove('D-idose')
 	D_sugars.remove('D-tagatose')
 
-	f = open('bbq-monosaccharide_Haworth_D_to_L_configuration.txt', 'w')
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('writing to file: '+outfile)
+	f = open(outfile, 'w')
 	for anomeric in ('alpha', 'beta'):
 		for sugar_name in D_sugars:
 			#random.shuffle(D_hexose_names)

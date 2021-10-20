@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 import math
 import random
 import locale
@@ -119,7 +120,9 @@ def make_choices(value, first_prefix, second_prefix, unit):
 #==================================================
 #==================================================
 if __name__ == '__main__':
-	f = open('bbq-orders_of_magnitude.txt', 'w')
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('writing to file: '+outfile)
+	f = open(outfile, 'w')
 	for unit in units:
 		for value in down_values:
 			for i in range(2, len(unit_orders[unit])):

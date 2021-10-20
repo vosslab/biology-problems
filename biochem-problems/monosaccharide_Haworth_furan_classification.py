@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 import sys
 import random
 import sugarlib
@@ -96,7 +97,9 @@ if __name__ == '__main__':
 	#D_sugars.remove('D-idose')
 	#D_sugars.remove('D-tagatose')
 
-	f = open('bbq-monosaccharide_Haworth_furan_classification.txt', 'w')
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('writing to file: '+outfile)
+	f = open(outfile, 'w')
 	for anomeric in ('alpha', 'beta'):
 		for sugar_name in sugars:
 			print("{0}-{1}".format(anomeric, sugar_name))

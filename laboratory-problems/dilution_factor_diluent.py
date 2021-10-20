@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 import math
 import random
 
@@ -42,7 +43,9 @@ def df_ratio_to_values(df_ratio):
 #==================================================
 #==================================================
 if __name__ == '__main__':
-	f = open('bbq-dilution_factor_diluent.txt', 'w')
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('writing to file: '+outfile)
+	f = open(outfile, 'w')
 	duplicates = 99 // len(df_ratios)
 	#duplicates = 1
 	for i in range(duplicates):

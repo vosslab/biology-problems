@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 import copy
 import random
 
@@ -143,7 +144,9 @@ def writeQuestion():
 
 if __name__ == '__main__':
 
-	f = open('bbq-which_phobic-big.txt', 'w')
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('writing to file: '+outfile)
+	f = open(outfile, 'w')
 	duplicates = 95
 
 	for d in range(duplicates):

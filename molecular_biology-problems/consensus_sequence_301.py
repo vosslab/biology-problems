@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 import time
 import math
 import copy
@@ -170,7 +171,9 @@ if __name__ == '__main__':
 	length = 9
 	num_sequences = 4
 
-	f = open('bbq-consensus_sequences.txt', 'w')
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('writing to file: '+outfile)
+	f = open(outfile, 'w')
 	for i in range(90):
 		bbtext = write_question(length, num_sequences)
 		f.write(bbtext)

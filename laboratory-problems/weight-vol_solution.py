@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 import math
 import random
 
@@ -62,7 +63,9 @@ def get_vol_conc_answer():
 
 
 if __name__ == '__main__':
-	f = open('bbq-weight-vol_solution.txt', 'w')
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('writing to file: '+outfile)
+	f = open(outfile, 'w')
 	powders = list(molecular_weights.keys())
 	duplicates = 99 // len(powders)
 	#duplicates = 1

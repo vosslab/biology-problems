@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 import math
 import copy
 import random
@@ -100,7 +101,9 @@ if __name__ == '__main__':
 	header += " The following question refers to the table (<i>below</i>) of enzyme activity.</p> "
 	question = "<p>Using the table (<i>above</i>), calculate the value for the Michaelis-Menten constant, K<sub>M</sub>.</p>"
 
-	f = open('bbq-michaelis_menten_table-Km.txt', 'w')
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('writing to file: '+outfile)
+	f = open(outfile, 'w')
 
 	### things that do change
 	#Vmax = random.choice(Vmax_choices)

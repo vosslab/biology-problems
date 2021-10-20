@@ -184,8 +184,9 @@ def blackboardFormat(type, chromosome1, chromosome2):
 	return blackboard
 
 if __name__ == "__main__":
-	filename = "bbq-translocation_meiosis.txt"
-	f = open(filename, "w")
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('writing to file: '+outfile)
+	f = open(outfile, 'w')
 	chromosomes = range(1,23) #[13, 14, 15, 21, 22]
 	num_problems = 90
 	count = 0

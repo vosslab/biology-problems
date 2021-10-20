@@ -144,9 +144,6 @@ class GelMigration(object):
 			choices = []
 			for i in range(4):
 				j = i+1
-				if j == gap:
-					choices.append(unknown_mw)
-					continue
 				mw, d, r, g = self.get_unknown(gel_set, j)
 				choices.append(mw)
 			letters = "ABCDEFG"

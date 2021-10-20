@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 import sys
 import random
 import sugarlib
@@ -85,7 +86,9 @@ if __name__ == '__main__':
 	#sugars.remove('D-idose')
 	#sugars.remove('D-tagatose')
 
-	f = open('bbq-monosaccharide_Fischer_classification.txt', 'w')
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('writing to file: '+outfile)
+	f = open(outfile, 'w')
 	for sugar_name in sugars:
 		print(sugar_name)
 		content = makeQuestion(sugar_name)

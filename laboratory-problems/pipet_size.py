@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 import math
 import random
 
@@ -104,7 +105,9 @@ def get_wrong_choices(volume):
 
 ##=========================
 if __name__ == '__main__':
-	f = open('bbq-which-pipet.txt', 'w')
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('writing to file: '+outfile)
+	f = open(outfile, 'w')
 	for i in range(30):
 		for pipet in pipet_choices:
 			volume = get_volume(pipet)

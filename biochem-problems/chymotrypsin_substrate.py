@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 import random
 
 #The main substrates of chymotrypsin are peptide bonds in which the amino acid N-terminal to the bond is a
@@ -71,7 +72,9 @@ def questionString(question, answer, choices):
 	return complete_text
 
 if __name__ == '__main__':
-	f = open('bbq-chymotrypsin_substrate.txt', 'w')
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('writing to file: '+outfile)
+	f = open(outfile, 'w')
 	question_count = 99
 	for i in range(question_count):
 		length = random.randint(7,11)

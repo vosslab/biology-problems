@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 import random
 
 num2cardinal = {
@@ -56,7 +57,9 @@ if __name__ == '__main__':
 	possible_chain_lengths = [12,14,16,18,20,22,24]
 	possible_num_double_bonds = [1,2,3,4]
 
-	f = open('bbq-quick_fatty_acid_colon_system.txt', 'w')
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('writing to file: '+outfile)
+	f = open(outfile, 'w')
 
 	for chain_length in possible_chain_lengths:
 		for num_double_bonds in possible_num_double_bonds:

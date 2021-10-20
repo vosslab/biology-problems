@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 import copy
 import random
 import phylolib
@@ -94,8 +95,9 @@ def makeQuestion(sorted_genes, version):
 if __name__ == "__main__":
 	lowercase = "abcdefghjkmnpqrstuwxyz"
 
-	filename = "bbq-gene_tree_choice_3.txt"
-	f = open(filename, "w")
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('writing to file: '+outfile)
+	f = open(outfile, 'w')
 	duplicates = 16
 	j = -1
 	for i in range(duplicates):

@@ -55,8 +55,9 @@ def write_question(question, choices):
 if __name__ == '__main__':
 	keys = list(epistasis_ratios.keys())
 	num_repeats = 11
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
 	try:
-		os.remove('bbq-epistasis_test_cross.txt')
+		os.remove(outfile)
 	except FileNotFoundError:
 		pass
 	#random.shuffle(keys)

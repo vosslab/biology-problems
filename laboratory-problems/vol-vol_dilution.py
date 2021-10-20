@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 import math
 import random
 
@@ -49,7 +50,9 @@ def get_vol_conc_answer():
 	return volume, concentration, answer
 
 if __name__ == '__main__':
-	f = open('bbq-vol-vol_dilution.txt', 'w')
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('writing to file: '+outfile)
+	f = open(outfile, 'w')
 	for solute in liquids:
 		for i in range(13):
 			volume, concentration, answer = get_vol_conc_answer()

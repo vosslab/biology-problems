@@ -441,8 +441,9 @@ def blackboardFormat(question_string, html_table, variable_list, geneorder, dist
 if __name__ == "__main__":
 	lowercase = "abcdefghijklmnpqrsuvwxyz"
 
-	filename = "bbq-unordered_tetrad.txt"
-	f = open(filename, "w")
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('writing to file: '+outfile)
+	f = open(outfile, 'w')
 	duplicates = 98
 	j = -1
 	for i in range(duplicates):
