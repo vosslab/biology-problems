@@ -4,6 +4,7 @@ import os
 import sys
 import copy
 import random
+import seqlib
 
 dna = ['A', 'C', 'G', 'T',]
 
@@ -29,27 +30,6 @@ random_diff_sequence = False
 sequence_length = 9
 separate = 3
 
-
-
-
-#==========================
-def colorNucleotide(nt):
-	adenine = ' bgcolor="#e6ffe6"' #green
-	cytosine = ' bgcolor="#e6f3ff"' #blue
-	thymine = ' bgcolor="#ffe6e6"' #red
-	guanine = ' bgcolor="#f2f2f2"' #black
-	uracil = ' bgcolor="#f3e6ff"' #purple
-	if nt == 'A':
-		return adenine
-	elif nt == 'C':
-		return cytosine
-	elif nt == 'G':
-		return guanine
-	elif nt == 'T':
-		return thymine
-	elif nt == 'U':
-		return thymine
-	return ''
 
 #==========================
 def makeSequences():
@@ -92,39 +72,9 @@ def makeSequencesSafe():
 	return consensus, sequence_list
 
 #==========================
-def scoreSequences(seq1, seq2):
-	min_length = min(len(seq1), len(seq2))
-	score = 0
-	for i in range(min_length):
-		if seq1[i] == seq2[i]:
-			score += 1
-	return score
-
-#==========================
-def makeHtmlRow(seq):
-	htmlrow = ""
-	htmlrow += "<tr>"
-	for i in range(len(seq)):
-		if i > 0 and i % separate == 0:
-			htmlrow += "<td>&nbsp;,&nbsp;</td> "
-		nt = seq[i]
-		htmlrow += "<td {1}>&nbsp;{0}&nbsp;</td> ".format(nt, colorNucleotide(nt))
-	return htmlrow
-
-#==========================
-def makeHtmlTable(sequence_list):
-	table = ""
-	table += '<table style="border-collapse: collapse; border: 1px solid silver;"> '
-	table += "<tr> "
-	for j in range(num_sequence):
-		table += makeHtmlRow(sequence_list[j])
-	table += '</tr></table> '
-	return table
-
-#==========================
 def printSequence(seq, consensus=None):
 	if consensus is not None:
-		score = scoreSequences(seq, consensus)
+		score = seqlib.sequenceSimilarityScore(seq, consensus)
 		sys.stderr.write('{0:02d} '.format(score))
 	for i in range(len(seq)):
 		if i > 0 and i % separate == 0:
@@ -139,7 +89,6 @@ def insertCommas(my_str):
 		new_str += my_str[i:i+separate] + ','
 	return new_str[:-1]
 
-
 # FIB TAB question text TAB answer text TAB answer two text
 
 #==========================
@@ -151,7 +100,7 @@ def makeCompleteQuestion():
 	#	printSequence(sequence_list[j], consensus)
 	#printSequence(consensus, consensus)
 
-	table = makeHtmlTable(sequence_list)
+	table = seqlib.makeHtmlTable(sequence_list)
 	question = "What is the consensus sequence for the table above? "
 	question += "<br/> <i> you may include a comma every {0} letters, but ".format(separate)
 	question += "do not include any extra commas or spaces in your answer. </i>"

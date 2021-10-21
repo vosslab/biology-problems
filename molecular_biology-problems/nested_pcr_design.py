@@ -11,26 +11,6 @@ import seqlib
 5'  GGATCGATCAAGAAC  3'
 """
 
-#=====================
-#=====================
-def colorNucleotide(nt):
-	adenine = ' bgcolor="#e6ffe6"' #green
-	cytosine = ' bgcolor="#e6f3ff"' #blue
-	thymine = ' bgcolor="#ffe6e6"' #red
-	guanine = ' bgcolor="#f2f2f2"' #black
-	uracil = ' bgcolor="#f3e6ff"' #purple
-	if nt == 'A':
-		return adenine
-	elif nt == 'C':
-		return cytosine
-	elif nt == 'G':
-		return guanine
-	elif nt == 'T':
-		return thymine
-	elif nt == 'U':
-		return thymine
-	return ''
-
 
 #=====================
 #=====================
@@ -38,65 +18,16 @@ def BIG_Table(sequence_tuple):
 	big_table = '<table style="border-collapse: collapse; border: 1px solid silver;"> '
 	big_table += '<tr>'
 	big_table += '  <td align="right">{0}</td>'.format(
-		DNA_Table(sequence_tuple[0], left_primes=True, right_primes=False))
+		seqlib.DNA_Table(sequence_tuple[0], left_primes=True, right_primes=False))
 	big_table += '  <td>&nbsp;</td>'
 	big_table += '  <td align="center">{0}</td>'.format(
-		DNA_Table(sequence_tuple[1], left_primes=False, right_primes=False))
+		seqlib.DNA_Table(sequence_tuple[1], left_primes=False, right_primes=False))
 	big_table += '  <td>&nbsp;</td>'
 	big_table += '  <td align="left">{0}</td>'.format(
-		DNA_Table(sequence_tuple[2], left_primes=False, right_primes=True))
+		seqlib.DNA_Table(sequence_tuple[2], left_primes=False, right_primes=True))
 	big_table += '</tr>'
 	big_table += '</table>'
 	return big_table
-
-#=====================
-#=====================
-def DNA_Table(top_sequence, bottom_sequence=None, left_primes=True, right_primes=True):
-	table = '<table style="border-collapse: collapse; border: 1px solid silver;"> '
-
-	table += '<tr>'
-	if left_primes is True:
-		table += '<td>5&prime;&ndash;</td>'
-	for i, c in enumerate(list(top_sequence)):
-		if i > 0 and i % 3 == 0:
-			table += '<td>,</td> '
-		table += '<td {1}>{0}</td>'.format(c, colorNucleotide(c))
-	if right_primes is True:
-		table += '<td>&ndash;3&prime;</td>'
-	table += '</tr>  '
-
-	if bottom_sequence is None:
-		bottom_sequence = seqlib.complement(top_sequence)
-	table += '<tr>'
-	if left_primes is True:
-		table += '<td>3&prime;&ndash;</td>'
-	for i, c in enumerate(list(bottom_sequence)):
-		if i > 0 and i % 3 == 0:
-			table += '<td>,</td> '
-		table += '<td {1}>{0}</td>'.format(c, colorNucleotide(c))
-	if right_primes is True:
-		table += '<td>&ndash;5&prime;</td>'
-	table += '</tr>  '
-	table += '</table>'
-	return table
-
-#=====================
-#=====================
-def Primer_Table(primer):
-	table = '<table style="border-collapse: collapse; border: 0px; display:inline-table"> '
-
-	table += '<tr>'
-	table += '<td>5&prime;&ndash;</td>'
-	rna_list = list(seqlib.transcribe(primer))
-	for i, c in enumerate(rna_list):
-		if i > 0 and i % 3 == 0:
-			table += '<td>,</td> '
-		table += '<td {1}>{0}</td>'.format(c, colorNucleotide(c))
-	table += '<td>&ndash;3&prime;</td>'
-	table += '</tr>  '
-
-	table += '</table>'
-	return table
 
 #=====================
 #=====================
@@ -158,7 +89,6 @@ def getSequence(sequence_len, round1_primer_len, round2_primer_len):
 		sequence_tuple = (left_top_sequence, known_top_sequence, right_top_sequence)
 	return sequence_tuple, primer_set, answer_set 
 
-
 #=====================
 #=====================
 def makeChoices(primer_set, answer_set):
@@ -182,7 +112,6 @@ def makeChoices(primer_set, answer_set):
 	random.shuffle(choices_list)
 	return choices_list
 
-
 #=====================
 #=====================
 #=====================
@@ -191,7 +120,7 @@ if __name__ == '__main__':
 	sequence_len = 24
 	round1_primer_len = 6
 	round2_primer_len = 6
-	num_questions = 199
+	num_questions = 6
 
 	N = 0
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
@@ -210,7 +139,7 @@ if __name__ == '__main__':
 		+"Probably from using too short of primers "
 		+"that were only {0} nucleotide in length.</p>".format(round1_primer_len)
 		+"<p>Choose the correct pair of RNA primers that will amplify the remaining region of DNA "
-		+"inside the old primers using nested PCR. "
+		+"inside the old primers using <strong>nested PCR</strong>. "
 		+"The nested RNA primers are {0} bases in length.</p>".format(round2_primer_len)
 		+"<p>Pay close attention to the 5&prime; and 3&prime; ends of the primers.</p>" )
 
@@ -228,7 +157,7 @@ if __name__ == '__main__':
 
 		letters = "ABCDEF"
 		for i, choice in enumerate(choices):
-			f.write('{0} AND {1}\t'.format(Primer_Table(choice[0]), Primer_Table(choice[1])))
+			f.write('{0} AND {1}\t'.format(seqlib.Primer_Table(choice[0]), seqlib.Primer_Table(choice[1])))
 			if choice == answer_tuple:
 				prefix = 'x'
 				f.write('Correct\t')

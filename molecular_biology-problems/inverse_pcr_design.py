@@ -13,27 +13,6 @@ import seqlib
 
 #=====================
 #=====================
-def colorNucleotide(nt):
-	adenine = ' bgcolor="#e6ffe6"' #green
-	cytosine = ' bgcolor="#e6f3ff"' #blue
-	thymine = ' bgcolor="#ffe6e6"' #red
-	guanine = ' bgcolor="#f2f2f2"' #black
-	uracil = ' bgcolor="#f3e6ff"' #purple
-	if nt == 'A':
-		return adenine
-	elif nt == 'C':
-		return cytosine
-	elif nt == 'G':
-		return guanine
-	elif nt == 'T':
-		return thymine
-	elif nt == 'U':
-		return thymine
-	return ''
-
-
-#=====================
-#=====================
 def BIG_Table(sequence_tuple):
 	big_table = '<table style="border-collapse: collapse; border: 1px solid silver;"> '
 	big_table += '<tr>'
@@ -45,15 +24,15 @@ def BIG_Table(sequence_tuple):
 	big_table += '</tr>'
 	big_table += '<tr>'
 	big_table += '  <td bgcolor="#ecb3ff" align="left">{0}</td>'.format(
-		DNA_Table(' AATTC', '     G',  left_primes=True,  right_primes=False))
+		seqlib.DNA_Table(' AATTC', '     G',  left_primes=True,  right_primes=False))
 	big_table += '  <td bgcolor="#ffff99" align="right">{0}</td>'.format(
-		DNA_Table(sequence_tuple[0], left_primes=False, right_primes=False))
+		seqlib.DNA_Table(sequence_tuple[0], left_primes=False, right_primes=False))
 	big_table += '  <td bgcolor="#99ff99" align="center">{0}</td>'.format(
-		DNA_Table(sequence_tuple[1], left_primes=False, right_primes=False))
+		seqlib.DNA_Table(sequence_tuple[1], left_primes=False, right_primes=False))
 	big_table += '  <td bgcolor="#ffff99" align="left">{0}</td>'.format(
-		DNA_Table(sequence_tuple[2], left_primes=False, right_primes=False))
+		seqlib.DNA_Table(sequence_tuple[2], left_primes=False, right_primes=False))
 	big_table += '  <td bgcolor="#ecb3ff" align="left">{0}</td>'.format(
-		DNA_Table('G     ', 'CTTAA ',  left_primes=False, right_primes=True ))
+		seqlib.DNA_Table('G     ', 'CTTAA ',  left_primes=False, right_primes=True ))
 	big_table += '</tr>'
 	big_table += '<tr>'
 	big_table += '  <td bgcolor="#ecb3ff" align="center">&nbsp;</td>'	
@@ -64,63 +43,6 @@ def BIG_Table(sequence_tuple):
 	big_table += '</tr>'
 	big_table += '</table>'
 	return big_table
-
-#=====================
-#=====================
-def DNA_Table(top_sequence, bottom_sequence=None, left_primes=True, right_primes=True):
-	table = '<table style="border-collapse: collapse; border: 1px solid silver;"> '
-
-	table += '<tr>'
-	if left_primes is True:
-		table += '<td>5&prime;&ndash;</td>'
-	else:
-		table += '<td>&ndash;</td>'
-	for i, c in enumerate(list(top_sequence)):
-		if i > 0 and i % 3 == 0:
-			table += '<td>,</td> '
-		table += '<td {1}>{0}</td>'.format(c, colorNucleotide(c))
-	if right_primes is True:
-		table += '<td>&ndash;3&prime;</td>'
-	else:
-		table += '<td>&ndash;</td>'
-	table += '</tr>  '
-
-	if bottom_sequence is None:
-		bottom_sequence = seqlib.complement(top_sequence)
-	table += '<tr>'
-	if left_primes is True:
-		table += '<td>3&prime;&ndash;</td>'
-	else:
-		table += '<td>&ndash;</td>'
-	for i, c in enumerate(list(bottom_sequence)):
-		if i > 0 and i % 3 == 0:
-			table += '<td>,</td> '
-		table += '<td {1}>{0}</td>'.format(c, colorNucleotide(c))
-	if right_primes is True:
-		table += '<td>&ndash;5&prime;</td>'
-	else:
-		table += '<td>&ndash;</td>'
-	table += '</tr>  '
-	table += '</table>'
-	return table
-
-#=====================
-#=====================
-def Primer_Table(primer):
-	table = '<table style="border-collapse: collapse; border: 0px; display:inline-table"> '
-
-	table += '<tr>'
-	table += '<td>5&prime;&ndash;</td>'
-	rna_list = list(seqlib.transcribe(primer))
-	for i, c in enumerate(rna_list):
-		if i > 0 and i % 3 == 0:
-			table += '<td>,</td> '
-		table += '<td {1}>{0}</td>'.format(c, colorNucleotide(c))
-	table += '<td>&ndash;3&prime;</td>'
-	table += '</tr>  '
-
-	table += '</table>'
-	return table
 
 #=====================
 #=====================
@@ -182,7 +104,6 @@ def getSequence(sequence_len, primer_len):
 		sequence_tuple = (left_top_sequence, known_top_sequence, right_top_sequence)
 	return sequence_tuple, primer_set, answer_set 
 
-
 #=====================
 #=====================
 def makeChoices(primer_set, answer_set):
@@ -214,7 +135,7 @@ def makeChoices(primer_set, answer_set):
 if __name__ == '__main__':
 	sequence_len = 15
 	primer_len = 6
-	num_questions = 199
+	num_questions = 6
 
 	N = 0
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
@@ -223,10 +144,10 @@ if __name__ == '__main__':
 	for i in range(num_questions):
 		N += 1
 		number = "{0}. ".format(N)
-		question = ("Choose the correct pair of RNA primers that will amplify the "
-		+"both the known and unknown region of DNA shown above using Inverse PCR. "
-		+"The RNA primers are {0} bases in length. ".format(primer_len)
-		+"Pay close attention to the 5&prime; and 3&prime; ends of the primers. " )
+		question = ("<p>Choose the correct pair of RNA primers that will amplify the "
+		+"both the known and unknown region of DNA shown above using <strong>inverse PCR</strong>.</p> "
+		+"<p>The RNA primers are {0} bases in length.</p> ".format(primer_len)
+		+"<p>Pay close attention to the 5&prime; and 3&prime; ends of the primers.</p> " )
 
 		sequence_tuple, primer_set, answer_set = getSequence(sequence_len, primer_len)
 		answer_tuple = tuple(answer_set)
@@ -243,7 +164,7 @@ if __name__ == '__main__':
 
 		letters = "ABCDEF"
 		for i, choice in enumerate(choices):
-			f.write('{0} AND {1}\t'.format(Primer_Table(choice[0]), Primer_Table(choice[1])))
+			f.write('{0} AND {1}\t'.format(seqlib.Primer_Table(choice[0]), seqlib.Primer_Table(choice[1])))
 			if choice == answer_tuple:
 				prefix = 'x'
 				f.write('Correct\t')

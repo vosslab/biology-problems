@@ -2,9 +2,9 @@
 
 import os
 import time
-import math
 import copy
 import random
+import seqlib
 
 dna_letters = ['A', 'C', 'G', 'T']
 
@@ -108,11 +108,10 @@ def make_choices(consensus_sequence, sequence_list):
 #============================
 #============================
 def sequence_to_table_row(seq):
-	length = len(seq)
-	bits = length // 3 + 1
+	#length = len(seq)
+	#bits = length // 3 + 1
 	row = "<tr> "
-	for bit in range(bits):
-		row += '<td>{0}</td> '.format(seq[3*bit:3*bit + 3])
+	row += seqlib.makeHtmlTDRow(seq)
 	row += "</tr> "
 	return row
 

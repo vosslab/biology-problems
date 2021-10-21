@@ -1,6 +1,154 @@
 import copy
 import random
 
+
+
+arbitrary_codes = {
+	'A': ('A'),
+	'B': ('C', 'G', 'T',), # not A
+	'C': ('C'),
+	'D': ('A', 'G', 'T',), # not C
+	'G': ('G'),
+	'H': ('A', 'C', 'T',), # not G
+	'K': ('G', 'T',),
+	'M': ('A', 'C',),
+	'N': ('A', 'C', 'G', 'T',),
+	'R': ('A', 'G',), # purine
+	'S': ('C', 'G',), # strong
+	'T': ('T'),
+	'V': ('A', 'C', 'G',), # not T
+	'W': ('A', 'T',), # weak
+	'Y': ('C', 'T',), # pyrimidine
+}
+inverse_arbitrary_codes = {
+	('A',): 'A',
+	('C', 'G', 'T'): 'B',
+	('C',): 'C',
+	('A', 'G', 'T'): 'D',
+	('G',): 'G',
+	('A', 'C', 'T'): 'H',
+	('G', 'T'): 'K',
+	('A', 'C'): 'M',
+	('A', 'C', 'G', 'T'): 'N',
+	('A', 'G'): 'R',
+	('C', 'G'): 'S',
+	('T',): 'T',
+	('A', 'C', 'G'): 'V',
+	('A', 'T'): 'W',
+	('C', 'T'): 'Y'
+}
+
+#==========================
+def colorNucleotideBackground(nt):
+	adenine = ' bgcolor="#e6ffe6"' #green
+	cytosine = ' bgcolor="#e6f3ff"' #blue
+	thymine = ' bgcolor="#ffe6e6"' #red
+	guanine = ' bgcolor="#f2f2f2"' #black
+	uracil = ' bgcolor="#f3e6ff"' #purple
+	if nt == 'A':
+		return adenine
+	elif nt == 'C':
+		return cytosine
+	elif nt == 'G':
+		return guanine
+	elif nt == 'T':
+		return thymine
+	elif nt == 'U':
+		return uracil
+	return ''
+
+#==========================
+def colorNucleotideForeground(nt):
+	adenine = '#004d00' #green
+	cytosine = '#003566' #blue
+	thymine = '#6e1212' #red
+	guanine = '#2a2000' #black
+	uracil = '#420080' #purple
+	code = "<span style='color: {0};'>{1}</span>"
+	if nt == 'A':
+		return code.format(adenine, nt)
+	elif nt == 'C':
+		return code.format(cytosine, nt)
+	elif nt == 'G':
+		return code.format(guanine, nt)
+	elif nt == 'T':
+		return code.format(thymine, nt)
+	elif nt == 'U':
+		return code.format(uracil, nt)
+	return code.format('black', nt)
+
+#==========================
+def DNA_Table(top_sequence, bottom_sequence=None, left_primes=True, right_primes=True):
+	table = ' <table style="border-collapse: collapse; border: 1px solid silver;"> '
+	#===========
+	table += ' <tr>'
+	if left_primes is True:
+		table += '<td>5&prime;&ndash;</td>'
+	else:
+		table += '<td>&ndash;</td>'
+	table += makeHtmlTDRow(top_sequence)
+	if right_primes is True:
+		table += '<td>&ndash;3&prime;</td>'
+	else:
+		table += '<td>&ndash;</td>'
+	table += '</tr> '
+	#===========
+	if bottom_sequence is None:
+		bottom_sequence = complement(top_sequence)
+	table += ' <tr>'
+	if left_primes is True:
+		table += '<td>3&prime;&ndash;</td>'
+	else:
+		table += '<td>&ndash;</td>'
+	table += makeHtmlTDRow(bottom_sequence)
+	if right_primes is True:
+		table += '<td>&ndash;5&prime;</td>'
+	else:
+		table += '<td>&ndash;</td>'
+	table += '</tr> '
+	#===========
+	table += '</table> '
+	return table
+
+#=====================
+#=====================
+def Primer_Table(primer):
+	table = ' <table style="border-collapse: collapse; border: 0px; display:inline-table"> '
+	table += ' <tr>'
+	table += '<td>5&prime;&ndash;</td>'
+	rna_list = list(transcribe(primer))
+	table += makeHtmlTDRow(rna_list)
+	table += '<td>&ndash;3&prime;</td>'
+	table += '</tr> '
+	table += '</table> '
+	return table
+
+#==========================
+def makeHtmlTable(sequence_list, separate=3):
+	table = ""
+	table += '<table style="border-collapse: collapse; border: 1px solid silver;"> '
+	for j in range(len(sequence_list)):
+		table += ' <tr>'
+		table += makeHtmlTDRow(sequence_list[j], separate)
+		table += '</tr> '
+	table += '</table> '
+	return table
+
+#==========================
+def makeHtmlTDRow(sequence, separate=3):
+	htmlrow = ""
+	#print(sequence)
+	for i in range(len(sequence)):
+		if i > 0 and i % separate == 0:
+			htmlrow += "<td>&nbsp;,&nbsp;</td> "
+		nt = sequence[i]
+		htmlrow += "<td {1}>&nbsp;{0}&nbsp;</td> ".format(
+			colorNucleotideForeground(nt),
+			colorNucleotideBackground(nt))
+	return htmlrow
+
+
+
 #=========================
 def complement(seq):
 	newseq = copy.copy(seq)
@@ -85,6 +233,16 @@ def makeSequence(seqlen=10):
 				endloop = False			
 
 	return seq
+
+#========================================
+def sequenceSimilarityScore(seq1, seq2):
+	min_length = min(len(seq1), len(seq2))
+	score = 0
+	for i in range(min_length):
+		if seq1[i] == seq2[i]:
+			score += 1
+	return score
+
 
 #========================================
 def html_monospace(txt):

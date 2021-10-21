@@ -13,70 +13,6 @@ import seqlib
 
 #=====================
 #=====================
-def colorNucleotide(nt):
-	adenine = ' bgcolor="#e6ffe6"' #green
-	cytosine = ' bgcolor="#e6f3ff"' #blue
-	thymine = ' bgcolor="#ffe6e6"' #red
-	guanine = ' bgcolor="#f2f2f2"' #black
-	uracil = ' bgcolor="#f3e6ff"' #purple
-	if nt == 'A':
-		return adenine
-	elif nt == 'C':
-		return cytosine
-	elif nt == 'G':
-		return guanine
-	elif nt == 'T':
-		return thymine
-	elif nt == 'U':
-		return thymine
-	return ''
-
-#=====================
-#=====================
-def DNA_Table(top_sequence):
-	table = '<table style="border-collapse: collapse; border: 1px solid silver;"> '
-
-	table += '<tr>'
-	table += '<td>5&prime;&ndash;</td>'
-	for i, c in enumerate(list(top_sequence)):
-		if i > 0 and i % 3 == 0:
-			table += '<td>,</td> '
-		table += '<td {1}>{0}</td>'.format(c, colorNucleotide(c))
-	table += '<td>&ndash;3&prime;</td>'
-	table += '</tr>  '
-
-	bottom_sequence = seqlib.complement(top_sequence)
-	table += '<tr>'
-	table += '<td>3&prime;&ndash;</td>'
-	for i, c in enumerate(list(bottom_sequence)):
-		if i > 0 and i % 3 == 0:
-			table += '<td>,</td> '
-		table += '<td {1}>{0}</td>'.format(c, colorNucleotide(c))
-	table += '<td>&ndash;5&prime;</td>'
-	table += '</tr>  '
-	table += '</table>'
-	return table
-
-#=====================
-#=====================
-def Primer_Table(primer):
-	table = '<table style="border-collapse: collapse; border: 0px; display:inline-table"> '
-
-	table += '<tr>'
-	table += '<td>5&prime;&ndash;</td>'
-	rna_list = list(seqlib.transcribe(primer))
-	for i, c in enumerate(rna_list):
-		if i > 0 and i % 3 == 0:
-			table += '<td>,</td> '
-		table += '<td {1}>{0}</td>'.format(c, colorNucleotide(c))
-	table += '<td>&ndash;3&prime;</td>'
-	table += '</tr>  '
-
-	table += '</table>'
-	return table
-
-#=====================
-#=====================
 def getPrimerChoices(top_sequence, primer_len):
 	bottom_sequence = seqlib.complement(top_sequence)
 	primer_set = []
@@ -172,13 +108,13 @@ if __name__ == '__main__':
 		N += 1
 		number = "{0}. ".format(N)
 		#header = "{0} primer design".format(N)
-		question = ("Choose the correct pair of RNA primers that will amplify the entire region of DNA shown above using PCR. "
-		+"The RNA primers are {0} bases in length. ".format(primer_len)
-		+"Pay close attention to the 5&prime; and 3&prime; ends of the primers. " )
+		question = ("<p>Choose the correct pair of RNA primers that will amplify the entire region of DNA shown above using PCR. "
+		+"The RNA primers are {0} bases in length.</p> ".format(primer_len)
+		+"<p>Pay close attention to the 5&prime; and 3&prime; ends of the primers.</p> " )
 
 		top_sequence, primer_set, answer_set = getSequence(sequence_len, primer_len)
 		answer_tuple = tuple(answer_set)
-		table = DNA_Table(top_sequence)
+		table = seqlib.DNA_Table(top_sequence)
 		choices = makeChoices(primer_set, answer_set)
 
 		bottom_sequence = seqlib.complement(top_sequence)
@@ -189,7 +125,7 @@ if __name__ == '__main__':
 
 		letters = "ABCDEF"
 		for i, choice in enumerate(choices):
-			f.write('{0} AND {1}\t'.format(Primer_Table(choice[0]), Primer_Table(choice[1])))
+			f.write('{0} AND {1}\t'.format(seqlib.Primer_Table(choice[0]), seqlib.Primer_Table(choice[1])))
 			if choice == answer_tuple:
 				prefix = 'x'
 				f.write('Correct\t')
