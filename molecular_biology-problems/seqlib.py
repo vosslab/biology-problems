@@ -61,11 +61,6 @@ def colorNucleotideForeground(nt):
 		'G': '#2a2000', #G is black
 		'U': '#420080', #U is purple
 	}
-	adenine = '#004d00' #green
-	cytosine = '#003566' #blue
-	thymine = '#6e1212' #red
-	guanine = '#2a2000' #black
-	uracil = '#420080' #purple
 	code = "<span style='color: {0};'>{1}</span>"
 	if colormap.get(nt, None) is None:
 		return nt
