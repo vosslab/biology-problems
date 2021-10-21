@@ -40,42 +40,36 @@ inverse_arbitrary_codes = {
 
 #==========================
 def colorNucleotideBackground(nt):
-	adenine = ' bgcolor="#e6ffe6"' #green
-	cytosine = ' bgcolor="#e6f3ff"' #blue
-	thymine = ' bgcolor="#ffe6e6"' #red
-	guanine = ' bgcolor="#f2f2f2"' #black
-	uracil = ' bgcolor="#f3e6ff"' #purple
-	if nt == 'A':
-		return adenine
-	elif nt == 'C':
-		return cytosine
-	elif nt == 'G':
-		return guanine
-	elif nt == 'T':
-		return thymine
-	elif nt == 'U':
-		return uracil
-	return ''
+	colormap = {
+		'A': '#e6ffe6', #A is green
+		'C': '#e6f3ff', #C is blue
+		'T': '#ffe6e6', #T is red
+		'G': '#f2f2f2', #G is black
+		'U': '#f3e6ff', #U is purple
+	}
+	if colormap.get(nt, None) is None:
+		return ''
+	bgcolorcode = ' bgcolor="{0}"'.format(colormap[nt])
+	return bgcolorcode
 
 #==========================
 def colorNucleotideForeground(nt):
+	colormap = {
+		'A': '#004d00', #A is green
+		'C': '#003566', #C is blue
+		'T': '#6e1212', #T is red
+		'G': '#2a2000', #G is black
+		'U': '#420080', #U is purple
+	}
 	adenine = '#004d00' #green
 	cytosine = '#003566' #blue
 	thymine = '#6e1212' #red
 	guanine = '#2a2000' #black
 	uracil = '#420080' #purple
 	code = "<span style='color: {0};'>{1}</span>"
-	if nt == 'A':
-		return code.format(adenine, nt)
-	elif nt == 'C':
-		return code.format(cytosine, nt)
-	elif nt == 'G':
-		return code.format(guanine, nt)
-	elif nt == 'T':
-		return code.format(thymine, nt)
-	elif nt == 'U':
-		return code.format(uracil, nt)
-	return code.format('black', nt)
+	if colormap.get(nt, None) is None:
+		return nt
+	return code.format(colormap[nt], nt)
 
 #==========================
 def DNA_Table(top_sequence, bottom_sequence=None, left_primes=True, right_primes=True):
