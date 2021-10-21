@@ -1,0 +1,77 @@
+---
+
+#Which one of the following statements is FALSE/TRUE <connection word> <topic>
+topic: ~
+override_question_true: Which one of the following English words is a palindrome?
+override_question_false: Which one of the following English words is <strong>NOT</strong> a palindrome?
+
+connection_words: ~
+
+true_statements:
+  truth1: Rotor
+  truth2: Stats
+  truth3: Racecar
+  truth4: Pop
+  truth5: Anna
+  truth6: Kayak
+  truth7: Mom
+  truth8: Madam
+  truth9: Noon
+  truth11: Level
+  truth12: Civic
+  truth13: Redder
+  truth14: Refer
+  truth15: Rotator
+  truth16: Solos
+  truth17: Radar
+
+false_statements:
+  false1: solo
+  false2: Rattat
+  false3: mow
+  false4: dop
+  false5: lulu
+  false6: pod
+  false7: mirror
+  false8: dog
+  false9: bod
+  false10: dodo
+  false11: Stat
+  false12: roto
+  false13: stand
+  false14: leaves
+  false15: sos
+  false16: yeah
+  false17: joy
+  false18: dob
+  false19: bop
+  false20: civil
+  false21: lima
+  false22: mali
+  false23: dollop
+  false24: swims
+  false25: passed
+  false26: bud
+  false27: bid
+  false28: suns
+  false29: wog
+  
+# conflicts, means that the statements cannot appear together
+conflict_rules:
+  solos:
+    false1: True
+    truth16: True
+  stats:
+    false11: True
+    truth2: True
+  rotor:
+    false12: True
+    truth1: True
+
+
+
+
+
+
+
+

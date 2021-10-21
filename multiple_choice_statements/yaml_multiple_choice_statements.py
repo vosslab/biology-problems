@@ -19,7 +19,7 @@ import random
 import argparse
 import itertools
 
-connection_words = [ 'concerning', 'about', 'regarding', 'of', ]
+global_connection_words = [ 'concerning', 'about', 'regarding', 'of', ]
 
 #=======================
 def readYamlFile(yaml_file):
@@ -74,11 +74,8 @@ def filterOpposingStatements(main_statement_id, opposing_statement_tree, conflic
 	return opposing_statement_nested_list
 
 #=======================
-def makeQuestionsFromStatement(main_statement, opposing_statement_nested_list, question_type, connection_word_list, topic):
-	question = ("Which one of the following statements is "
-		+"<strong>{0}</strong> {1} {2}?".format(str(question_type).upper(), random.choice(connection_word_list), topic) )
-	
-	
+def makeQuestionsFromStatement(main_statement, opposing_statement_nested_list, question_text):
+
 	num_wrong_choices = min(4, len(opposing_statement_nested_list))
 	possible_iterations = len(list(itertools.product(*opposing_statement_nested_list)))
 	possible_duplicate = possible_iterations * math.comb(len(opposing_statement_nested_list), num_wrong_choices)
@@ -92,8 +89,8 @@ def makeQuestionsFromStatement(main_statement, opposing_statement_nested_list, q
 	
 	question_list = []
 	for j in range(num_duplicates):
-		bbformat = copy.copy(question)
-		print(question)
+		bbformat = copy.copy(question_text)
+		print(question_text)
 		random.shuffle(opposing_statement_nested_list)
 		choices_nested_list = copy.copy(opposing_statement_nested_list[:num_wrong_choices])
 		choices_nested_list.append([main_statement, ])
@@ -108,29 +105,46 @@ def makeQuestionsFromStatement(main_statement, opposing_statement_nested_list, q
 			else:
 				prefix = ' '
 				bbformat += '\tIncorrect'
-			print("- [{0}] {1}. {2}'".format(prefix, letters[i], choice))
+			print("- [{0}] {1}. {2}".format(prefix, letters[i], choice))
 		print("")
 		question_list.append(bbformat)
 	
 	return question_list
 
 #=======================
+def writeQuestion(yaml_data, question_type):
+	if question_type is True and yaml_data.get('override_question_true', None) is not None:
+		return yaml_data['override_question_true']
+	if question_type is False and yaml_data.get('override_question_false', None) is not None:
+		return yaml_data['override_question_false']
+
+	topic  = yaml_data['topic']
+	connection_word_list  = yaml_data.get('connection_words', global_connection_words)
+
+	question_text = ("Which one of the following statements is "
+		+"<strong>{0}</strong> {1} {2}?".format(str(question_type).upper(), random.choice(connection_word_list), topic) )
+	return question_text
+
+#=======================
 def sortStatements(yaml_data):
 	true_statement_tree = yaml_data['true_statements']
 	false_statement_tree = yaml_data['false_statements']
 	conflict_rules = yaml_data['conflict_rules']
-	topic  = yaml_data['topic']
-	connection_word_list  = yaml_data['connection_words']
+
 	list_of_complete_questions = []
+
+	question_text = writeQuestion(yaml_data, True)
 	for true_statement_id,true_statement in true_statement_tree.items():
-		question_type = True
+
 		filtered_false_statement_nested_list = filterOpposingStatements(true_statement_id, false_statement_tree, conflict_rules)
-		question_string_list = makeQuestionsFromStatement(true_statement, filtered_false_statement_nested_list, question_type, connection_word_list, topic)
+		question_string_list = makeQuestionsFromStatement(true_statement, filtered_false_statement_nested_list, question_text)
 		list_of_complete_questions.extend(question_string_list)
+
+	question_text = writeQuestion(yaml_data, False)
 	for false_statement_id,false_statement in false_statement_tree.items():
-		question_type = False
+
 		filtered_true_statement_nested_list = filterOpposingStatements(false_statement_id, true_statement_tree, conflict_rules)
-		question_string_list = makeQuestionsFromStatement(false_statement, filtered_true_statement_nested_list, question_type, connection_word_list, topic)
+		question_string_list = makeQuestionsFromStatement(false_statement, filtered_true_statement_nested_list, question_text)
 		list_of_complete_questions.extend(question_string_list)
 	return list_of_complete_questions
 
