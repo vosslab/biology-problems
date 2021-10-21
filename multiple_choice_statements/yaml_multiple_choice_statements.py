@@ -79,10 +79,12 @@ def makeQuestionsFromStatement(main_statement, opposing_statement_nested_list, q
 		+"<strong>{0}</strong> {1} {2}?".format(str(question_type).upper(), random.choice(connection_word_list), topic) )
 	
 	
-	possible_duplicate = len(list(itertools.product(*opposing_statement_nested_list)))
+	num_wrong_choices = min(4, len(opposing_statement_nested_list))
+	possible_iterations = len(list(itertools.product(*opposing_statement_nested_list)))
+	possible_duplicate = possible_iterations * math.comb(len(opposing_statement_nested_list), num_wrong_choices)
 	num_duplicates = max(1, int(math.floor(math.log(possible_duplicate))))
 	print("Using {0} of a total of {1} possible duplicates.".format(num_duplicates, possible_duplicate))
-	num_wrong_choices = min(4, len(opposing_statement_nested_list))
+
 	if num_wrong_choices <= 2:
 		print("WARNING: not enough choices for this question, skipping...")
 		return []
