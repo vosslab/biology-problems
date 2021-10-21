@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 
+import os
 import sys
 import csv
 import math
 #import numpy
 import random
+
+num_choices = 5
 
 class GelMigration(object):
 	def __init__(self):
@@ -48,16 +51,34 @@ class GelMigration(object):
 		return False
 
 	#==================================================
+	def getNearestValidDNA_Size(self, num_base_pairs):
+		num_zeros = math.floor(math.log10(num_base_pairs + 1))
+		two_divisor = 10**(num_zeros - 1)
+
+		first_two_digits = int(math.ceil(num_base_pairs / two_divisor))
+		first_digit = first_two_digits // 10
+		second_digit = first_two_digits % 10
+		#if 2 < second_digit < 8:
+		#	second_digit = 5
+		#else:
+		#	second_digit = 0
+		first_two_digits = first_digit * 10 + second_digit
+		new_num_base_pairs = first_two_digits * two_divisor
+		#print(num_base_pairs, "-->", new_num_base_pairs)
+
+		return new_num_base_pairs
+
+	#==================================================
 	def get_marker_set_for_gel(self):
 
 		gel_set = []
 		gel_set.append( {'MW': 500, 'fullname': '500 base pairs', 'abbr': '500 bp',} )
 		gel_set.append( {'MW': 1000, 'fullname': '1,000 base pairs', 'abbr': '1000 bp',} )
-		gel_set.append( {'MW': 1500, 'fullname': '1,500 base pairs', 'abbr': '1500 bp',} )
 		gel_set.append( {'MW': 2000, 'fullname': '2,000 base pairs', 'abbr': '2000 bp',} )		
 		gel_set.append( {'MW': 3000, 'fullname': '3,000 base pairs', 'abbr': '3000 bp',} )
-		gel_set.append( {'MW': 4000, 'fullname': '4,000 base pairs', 'abbr': '4000 bp',} )
 		gel_set.append( {'MW': 5000, 'fullname': '5,000 base pairs', 'abbr': '5000 bp',} )
+		gel_set.append( {'MW': 10000, 'fullname': '10,000 base pairs', 'abbr': '10000 bp',} )
+
 
 		gel_set = sorted(gel_set, key=lambda k: k['MW'])
 
@@ -84,6 +105,10 @@ class GelMigration(object):
 		
 		unknown_dist = adj_rand*(high_dist - low_dist) + low_dist
 		unknown_mw = self.distance_to_molecular_weight(unknown_dist)
+		#just clean up the numbers
+		unknown_mw = self.getNearestValidDNA_Size(unknown_mw)
+		unknown_dist = self.molecular_weight_to_distance(unknown_mw)
+
 
 		dist_range = (high_dist - low_dist)/2.0
 		low_unknown_mw = self.distance_to_molecular_weight(unknown_dist-dist_range)
@@ -119,29 +144,42 @@ class GelMigration(object):
 
 		if self.multiple_choice is True:
 			print(question)
+			choice_str = ""
 			choices = []
-			for i in range(4):
+			for i in range(num_choices):
 				j = i+1
 				if j == gap:
 					choices.append(unknown_mw)
 					continue
 				mw, d, r, g = self.get_unknown(gel_set, j)
+				self.getNearestValidDNA_Size(mw)
 				choices.append(mw)
 			letters = "ABCDEFG"
-			for i in range(4):
-				prefix = ''
-				if abs(choices[i] - unknown_mw) < 0.1:
-					prefix = '*'
-				print("{0}{1}. {2:.0f} base pairs".format(prefix, letters[i], choices[i]))
+			for i, choice in enumerate(choices):
+				choice_str += '{0:,.0f} base pairs\t'.format(choice)
+				if abs(choice - unknown_mw) < 0.1:
+					prefix = 'x'
+					choice_str += 'Correct\t'
+				else:
+					prefix = ' '
+					choice_str += 'Incorrect\t'
+				print("- [{0}] {1}. {2:,.0f} base pairs".format(prefix, letters[i], choice))
+			bb_format = self.format_MC_for_blackboard(question, choice_str)
 			print("")
 		else:
-			bb_format = self.format_for_blackboard(question, unknown_mw, mw_range)
+			bb_format = self.format_NUM_for_blackboard(question, unknown_mw, mw_range)
 			print(bb_format)
 
-		return question
+		return bb_format
 
 	#==================================================
-	def format_for_blackboard(self, question, answer, tolerance):
+	def format_MC_for_blackboard(self, question, choice_str):
+		#https://experts.missouristate.edu/plugins/servlet/mobile?contentId=63486780#content/view/63486780
+		#"NUM TAB question text TAB answer TAB [optional]tolerance"
+		return ("MC\t{0}\t{1}".format(question, choice_str))
+
+	#==================================================
+	def format_NUM_for_blackboard(self, question, answer, tolerance):
 		#https://experts.missouristate.edu/plugins/servlet/mobile?contentId=63486780#content/view/63486780
 		#"NUM TAB question text TAB answer TAB [optional]tolerance"
 		return ("NUM\t{0}\t{1:.1f}\t{2:.1f}".format(question,answer,tolerance))
@@ -151,10 +189,15 @@ class GelMigration(object):
 #==================================================
 #==================================================
 if __name__ == '__main__':
-	total_problems = 100
+	total_problems = 199
 	gelm = GelMigration()
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('writing to file: '+outfile)
+	f = open(outfile, 'w')
 	for question_count in range(total_problems):
-		problem = gelm.writeProblem(question_count+1)
+		bb_format = gelm.writeProblem(question_count+1)
+		f.write(bb_format+'\n')
+	f.close()
 
 
 
