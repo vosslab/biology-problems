@@ -1,0 +1,67 @@
+---
+
+#Which one of the following statements is FALSE/TRUE <connection word> <topic>
+topic: PCR primers that are efficient and avoid mispriming
+
+connection_words: ~
+
+true_statements:
+  truth1: The primers are about 18 to 30 nucleotides in length
+  truth2: The primers are complementary to highly conserved regions of the genome
+  truth3: Both primers have about the same melting temperature (T<sub>m</sub>)
+  truth5a: The primers' sequences do not bind to each other to form primer-dimers
+  truth5b: The primers do not have complementary regions to each other
+  truth6: The ends of their sequences do not bind to form secondary structures
+  truth7: The percentage of G/C bases in the range of 40% to 60%
+  truth8: The primers have a melting temperature (T<sub>m</sub>) in the range of 50&deg;C to 65&deg;C
+  truth9: The primers would ideally have unique sequences that a deficient in 1 of the 4 nucleotides
+
+false_statements:
+  false1a: The primers are shorter than 10 nucleotides in length
+  false1b: The primers areat least 50 nucleotides in length, if not longer
+  false2: The primers are complementary to highly variable regions of the genome
+  false3: Each primer has a unique melting temperature (T<sub>m</sub>), one is high and one is low
+  false4: The primers are rich in A/T bases at the 3&prime; end to ensure good binding
+  false5a: The primers are mostly complementary to each other
+  false5b: The primers can readily bind to form primer-dimers
+  false6: The ends of each primer are self-complementary to form strong secondary structure
+  false7a: The percentage of G/C bases are less than 30%
+  false7b: The percentage of G/C bases are more than 70%
+  false8a: The primers have a melting temperature (T<sub>m</sub>) less than 42&deg;C
+  false8b: The primers have a melting temperature (T<sub>m</sub>) more than 68&deg;C
+  false9: Both primers must always contain all four possible nucleotides
+
+# conflicts, means that the statements cannot appear together
+# add ': True' to each line, so the program runs a faster lookup 
+conflict_rules:
+  dNTPs:
+    truth1: True
+    false1a: True
+    false1b: True
+  conserved:
+    truth2: True
+    false2: True
+  melting:
+    truth3: True
+    false3: True
+  complementary:
+    truth5a: True
+    truth5b: True
+    false5a: True
+    false5b: True
+  ends:
+    truth6: True
+    false6: True
+  GC:
+    truth7: True
+    false7a: True
+    false7b: True
+  temp:
+    truth8: True
+    false8a: True
+    false8b: True
+  four:
+    truth9: True
+    false9: True
+
+

@@ -33,7 +33,7 @@ def checkIfConflict(statement1_id, statement2_id, conflict_rules):
 	# is a list of statement_ids
 	for conflict_rule in conflict_rules.values():
 		#print(conflict_rule)
-		#answer = conflict_rule.get(statement1_id, False)  and conflict_rule.get(statement2_id, False) 
+		#answer = conflict_rule.get(statement1_id, False)  and conflict_rule.get(statement2_id, False)
 		#print(statement1_id, "+", statement2_id, "=", answer)
 		if (conflict_rule.get(statement1_id, False) is True
 			and conflict_rule.get(statement2_id, False) is True):
@@ -86,7 +86,7 @@ def makeQuestionsFromStatement(main_statement, opposing_statement_nested_list, q
 		print("WARNING: not enough choices for this question, skipping...")
 		return []
 	letters = "ABCDEFGH"
-	
+
 	question_list = []
 	for j in range(num_duplicates):
 		bbformat = copy.copy(question_text)
@@ -108,25 +108,28 @@ def makeQuestionsFromStatement(main_statement, opposing_statement_nested_list, q
 			print("- [{0}] {1}. {2}".format(prefix, letters[i], choice))
 		print("")
 		question_list.append(bbformat)
-	
+
 	return question_list
 
 #=======================
 def writeQuestion(yaml_data, question_type):
-	if question_type is True and yaml_data.get('override_question_true', None) is not None:
+	if question_type is True and yaml_data.get('override_question_true', 'default') != 'default':
 		return yaml_data['override_question_true']
-	if question_type is False and yaml_data.get('override_question_false', None) is not None:
+	if question_type is False and yaml_data.get('override_question_false', 'default') != 'default':
 		return yaml_data['override_question_false']
 
 	topic  = yaml_data['topic']
-	connection_word_list  = yaml_data.get('connection_words', global_connection_words)
+	if yaml_data.get('connection_words', None) is not None:
+		connection_word_list = yaml_data.get('connection_words')
+	else:
+		connection_word_list = global_connection_words
 
 	question_text = ("Which one of the following statements is "
 		+"<strong>{0}</strong> {1} {2}?".format(str(question_type).upper(), random.choice(connection_word_list), topic) )
 	return question_text
 
 #=======================
-def sortStatements(yaml_data):
+def sortStatements(yaml_data, notrue=False, nofalse=False):
 	true_statement_tree = yaml_data['true_statements']
 	false_statement_tree = yaml_data['false_statements']
 	conflict_rules = yaml_data['conflict_rules']
@@ -134,18 +137,26 @@ def sortStatements(yaml_data):
 	list_of_complete_questions = []
 
 	question_text = writeQuestion(yaml_data, True)
-	for true_statement_id,true_statement in true_statement_tree.items():
+	print(question_text)
+	if notrue is False and question_text is not None:
+		for true_statement_id,true_statement in true_statement_tree.items():
 
-		filtered_false_statement_nested_list = filterOpposingStatements(true_statement_id, false_statement_tree, conflict_rules)
-		question_string_list = makeQuestionsFromStatement(true_statement, filtered_false_statement_nested_list, question_text)
-		list_of_complete_questions.extend(question_string_list)
+			filtered_false_statement_nested_list = filterOpposingStatements(true_statement_id, false_statement_tree, conflict_rules)
+			question_string_list = makeQuestionsFromStatement(true_statement, filtered_false_statement_nested_list, question_text)
+			list_of_complete_questions.extend(question_string_list)
+	else:
+		print("Skipping all of the TRUE statement questions")
 
 	question_text = writeQuestion(yaml_data, False)
-	for false_statement_id,false_statement in false_statement_tree.items():
+	print(question_text)
+	if nofalse is False and question_text is not None:
+		for false_statement_id,false_statement in false_statement_tree.items():
 
-		filtered_true_statement_nested_list = filterOpposingStatements(false_statement_id, true_statement_tree, conflict_rules)
-		question_string_list = makeQuestionsFromStatement(false_statement, filtered_true_statement_nested_list, question_text)
-		list_of_complete_questions.extend(question_string_list)
+			filtered_true_statement_nested_list = filterOpposingStatements(false_statement_id, true_statement_tree, conflict_rules)
+			question_string_list = makeQuestionsFromStatement(false_statement, filtered_true_statement_nested_list, question_text)
+			list_of_complete_questions.extend(question_string_list)
+	else:
+		print("Skipping all of the FALSE statement questions")
 	return list_of_complete_questions
 
 #=======================
@@ -154,8 +165,12 @@ if __name__ == '__main__':
 	parser = argparse.ArgumentParser(description='Process some integers.')
 	parser.add_argument('-f', '-y', '--file', metavar='<file>', type=str, dest='input_yaml_file',
 							  help='yaml input file to process')
+	parser.add_argument('--nofalse', '--no-false', action='store_true', dest='nofalse', default=False,
+							  help='do not create the false form (which one is false) of the question')
+	parser.add_argument('--notrue', '--no-true', action='store_true', dest='notrue', default=False,
+							  help='do not create the true form (which one is true) of the question')
 	args = parser.parse_args()
-	
+
 	if args.input_yaml_file is None or not os.path.isfile(args.input_yaml_file):
 		print("Usage: {0} -y <input_yaml_file>".format(__file__))
 		sys.exit(0)
@@ -163,7 +178,7 @@ if __name__ == '__main__':
 	yaml_data = readYamlFile(args.input_yaml_file)
 	pprint.pprint(yaml_data)
 
-	list_of_complete_questions = sortStatements(yaml_data)
+	list_of_complete_questions = sortStatements(yaml_data, notrue=args.notrue, nofalse=args.nofalse)
 
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(args.input_yaml_file))[0] + '-questions.txt'
 	print('writing to file: '+outfile)
@@ -175,5 +190,5 @@ if __name__ == '__main__':
 		f.write('MC\t' + number_str + bbformat_question + '\n')
 	f.close()
 	print("Wrote {0} questions to file.".format(N))
-		
+
 

@@ -1,0 +1,107 @@
+---
+
+#Which one of the following statements is FALSE/TRUE <connection word> <topic>
+topic: ~
+override_question_true: Which one of the following is the <strong>CORRECT</strong> order of steps in a polymerase chain reaction (PCR) reaction?
+override_question_false: ~
+connection_words: ~
+
+true_statements:
+  truth1a: Denaturation, annealing, and elongation
+  truth1b: Denaturation, annealing, and extension
+
+false_statements:
+  false1a: Denaturation, elongation, annealing
+  false2a: Annealing, denaturation, elongation
+  false3a: Annealing, elongation, denaturation
+  false4a: Elongation, denaturation, annealing
+  false5a: Elongation, annealing, denaturation
+  false1b: Denaturation, extension, annealing
+  false2b: Annealing, denaturation, extension
+  false3b: Annealing, extension, denaturation
+  false4b: Extension, denaturation, annealing
+  false5b: Extension, annealing, denaturation
+  false1c: Separation, elongation, annealing
+  false2c: Annealing, separation, elongation
+  false3c: Annealing, elongation, separation
+  false4c: Elongation, separation, annealing
+  false5c: Elongation, annealing, separation
+  false1d: Separation, extension, annealing
+  false2d: Annealing, separation, extension
+  false3d: Annealing, extension, separation
+  false4d: Extension, separation, annealing
+  false5d: Extension, annealing, separation 
+  false1e: Denaturation, elongation, binding
+  false2e: Binding, denaturation, elongation
+  false3e: Binding, elongation, denaturation
+  false4e: Elongation, denaturation, binding
+  false5e: Elongation, binding, denaturation
+  false1f: Denaturation, extension, binding
+  false2f: Binding, denaturation, extension
+  false3f: Binding, extension, denaturation
+  false4f: Extension, denaturation, binding
+  false5f: Extension, binding, denaturation
+  false1g: Separation, elongation, binding
+  false2g: Binding, separation, elongation
+  false3g: Binding, elongation, separation
+  false4g: Elongation, separation, binding
+  false5g: Elongation, binding, separation
+  false1h: Separation, extension, binding
+  false2h: Binding, separation, extension
+  false3h: Binding, extension, separation
+  false4h: Extension, separation, binding
+  false5h: Extension, binding, separation 
+
+  
+# conflicts, means that the statements cannot appear together
+# add ': True' to each line, so the program runs a faster lookup 
+conflict_rules:
+  one:
+    false1a: True
+    false1b: True
+    false1c: True
+    false1d: True
+    false1e: True
+    false1f: True
+    false1g: True
+    false1h: True
+  two:
+    false2a: True
+    false2b: True
+    false2c: True
+    false2d: True
+    false2e: True
+    false2f: True
+    false2g: True
+    false2h: True
+  three:
+    false3a: True
+    false3b: True
+    false3c: True
+    false3d: True
+    false3e: True
+    false3f: True
+    false3g: True
+    false3h: True
+  four:
+    false4a: True
+    false4b: True
+    false4c: True
+    false4d: True
+    false4e: True
+    false4f: True
+    false4g: True
+    false4h: True
+  five:
+    false5a: True
+    false5b: True
+    false5c: True
+    false5d: True
+    false5e: True
+    false5f: True
+    false5g: True
+    false5h: True
+
+
+
+
