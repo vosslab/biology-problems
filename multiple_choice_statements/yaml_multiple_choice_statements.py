@@ -124,8 +124,15 @@ def writeQuestion(yaml_data, question_type):
 	else:
 		connection_word_list = global_connection_words
 
+	if question_type is False:
+		question_type_html = '<span style="color: #ba372a;"><strong>FALSE</strong></span> ' #BOLD RED
+	elif question_type is True:
+		question_type_html = '<span style="color: #169179;"><strong>TRUE</strong></span> ' #BOLD GREEN
+	else:
+		question_type_html = '<strong>{0}</strong> '.format(str(question_type).upper())
+
 	question_text = ("Which one of the following statements is "
-		+"<strong>{0}</strong> {1} {2}?".format(str(question_type).upper(), random.choice(connection_word_list), topic) )
+		+"{0} {1} {2}?".format(question_type_html, random.choice(connection_word_list), topic) )
 	return question_text
 
 #=======================
@@ -169,6 +176,8 @@ if __name__ == '__main__':
 							  help='do not create the false form (which one is false) of the question')
 	parser.add_argument('--notrue', '--no-true', action='store_true', dest='notrue', default=False,
 							  help='do not create the true form (which one is true) of the question')
+	parser.add_argument('-x', '--max-questions', metavar='<file>', type=int, dest='max_questions',
+							  help='yaml input file to process', default=199)
 	args = parser.parse_args()
 
 	if args.input_yaml_file is None or not os.path.isfile(args.input_yaml_file):
@@ -179,6 +188,12 @@ if __name__ == '__main__':
 	pprint.pprint(yaml_data)
 
 	list_of_complete_questions = sortStatements(yaml_data, notrue=args.notrue, nofalse=args.nofalse)
+	if len(list_of_complete_questions) > args.max_questions:
+		print("Too many questions, trimming down to {0} questions".format(args.max_questions))
+		random.shuffle(list_of_complete_questions)
+		less_questions = list_of_complete_questions[:args.max_questions]
+		less_questions.sort()
+		list_of_complete_questions = less_questions
 
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(args.input_yaml_file))[0] + '-questions.txt'
 	print('writing to file: '+outfile)

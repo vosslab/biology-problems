@@ -1,0 +1,141 @@
+---
+
+#Which one of the following statements is FALSE/TRUE <connection word> <topic>
+topic: '<span style="color: #236fa1;">mitosis</span> and <span style="color: #e67e23;">meiosis</span> cell division'
+
+#<span style="color: #e67e23;"><span style="color: #e67e23;">meiosis</span></span> #orange
+#<span style="color: #236fa1;"><span style="color: #236fa1;">mitosis</span></span> #blue
+
+connection_words: ~
+
+true_statements:
+  truth1a: 'Each daughter cell formed by <span style="color: #236fa1;">mitosis</span> has the same kinds of chromosomes as the parent cell.'
+  truth1b: 'Each daughter cell formed by <span style="color: #e67e23;">meiosis</span> has the half the number of chromosomes as the parent cell.'
+  truth2a: 'In <span style="color: #236fa1;">mitosis</span>, The parent cell and the daughter cells are genetically identical.'
+  truth2b: 'The daughter cells produced at the end of <span style="color: #e67e23;">meiosis</span> are completely different from the original parent cell.'
+  truth3a: '<span style="color: #236fa1;">Mitosis</span> is cell division that produces two (2) daughter cells.'
+  truth3b: '<span style="color: #e67e23;">Meiosis</span> is cell division that produces four (4) daughter cells.'
+  truth4a: 'The cells resulting from <span style="color: #e67e23;">meiosis</span> cell division are haploid.'
+  truth4b: 'The cells resulting from <span style="color: #236fa1;">mitosis</span> cell division are diploid.'
+  truth5: 'Both <span style="color: #e67e23;">meiosis</span> and <span style="color: #236fa1;">mitosis</span> both start with only one cell.'
+  truth6a: '<span style="color: #236fa1;">Mitosis</span> produces new cells to help organisms grow in size and repair damaged tissue.'
+  truth6b: '<span style="color: #e67e23;">Meiosis</span> produces new gamete cells, such as sperm and egg.'
+  truth7a: '<span style="color: #236fa1;">Mitosis</span> goes through cytokinesis cell division once.'
+  truth7b: '<span style="color: #e67e23;">Meiosis</span> goes through cytokinesis cell division twice.'
+  truth8a: 'Cross-over happens in <span style="color: #e67e23;">meiosis</span>, but not in <span style="color: #236fa1;">mitosis</span>.'
+  truth8b: '<span style="color: #236fa1;">Mitosis</span> does not involve crossing over of the chromosomes.'
+  truth9a: '<span style="color: #236fa1;">Mitosis</span> normally occurs in somatic cells of organisms and facilitates growth and development of organisms.'
+  truth9b: '<span style="color: #e67e23;">Meiosis</span> occurs in the gamete cells and facilitates sexual reproduction in living organisms.'
+  truth10: '<span style="color: #e67e23;">Meiosis</span> occurs in two phases, that is, <span style="color: #e67e23;">meiosis</span> I and <span style="color: #e67e23;">meiosis</span> II.'
+  truth11: 'During the process of <span style="color: #e67e23;">meiosis</span> several processes occurs that cause genetic variation among organisms.'
+  truth12a: '<span style="color: #e67e23;">Meiosis</span> I is the only stage where homologous chromosomes pair up and exchange genetic material.'
+  truth13a: 'Only sexually reproductive organisms utilize <span style="color: #e67e23;">meiosis</span>.'
+  truth13b: '<span style="color: #e67e23;">Meiosis</span> is a special type of cell division that produces sex cells for reproduction.'
+  truth13c: 'Both sexual and asexual organisms go through the process of <span style="color: #236fa1;">mitosis</span>.'
+  truth14a: 'The daughter cells produced at the end of <span style="color: #e67e23;">meiosis</span> are completely different from the original parent cell.'
+  truth14b: '<span style="color: #e67e23;">Meiosis</span> daughter cells contain half of the genetic material which is a mix of both the maternal and paternal genes.'
+
+false_statements:
+  false1a: 'Each daughter cell formed by <span style="color: #e67e23;">meiosis</span> has the same kinds of chromosomes as the parent cell.'
+  false1b: 'Each daughter cell formed by <span style="color: #236fa1;">mitosis</span> has the half the number of chromosomes as the parent cell.'
+  false2a: 'In <span style="color: #e67e23;">meiosis</span>, the parent cell and the daughter cells are genetically identical.'
+  false2b: 'The daughter cells produced at the end of <span style="color: #236fa1;">mitosis</span> are completely different from the original parent cell.'
+  false3a: '<span style="color: #e67e23;">Meiosis</span> is cell division that produces two (2) daughter cells.'
+  false3b: '<span style="color: #236fa1;">Mitosis</span> is cell division that produces four (4) daughter cells.'
+  false4a: 'The final cells resulting from <span style="color: #e67e23;">meiosis</span> cell division are diploid.'
+  false4b: 'The final cells resulting from <span style="color: #236fa1;">mitosis</span> cell division are haploid.'
+  false5a: '<span style="color: #e67e23;">Meiosis</span> starts with two cells and and <span style="color: #e67e23;">meiosis</span> starts with only one cell.'
+  false5b: '<span style="color: #236fa1;">Mitosis</span> starts with two cells and and <span style="color: #236fa1;">mitosis</span> starts with only one cell.'
+  false6a: '<span style="color: #e67e23;">Meiosis</span> produces new cells to help organisms grow in size and repair damaged tissue.'
+  false6b: '<span style="color: #236fa1;">Mitosis</span> produces new gamete cells, such as sperm and egg.'
+  false7a: '<span style="color: #e67e23;">Meiosis</span> goes through cytokinesis cell division once.'
+  false7a: '<span style="color: #236fa1;">Mitosis</span> goes through cytokinesis cell division twice.'
+  false8a: 'Cross-over happens in <span style="color: #236fa1;">mitosis</span>, but not in <span style="color: #e67e23;">meiosis</span>.'
+  false8b: '<span style="color: #e67e23;">Meiosis</span> does not involve crossing over of the chromosomes.'
+  false9a: '<span style="color: #e67e23;">Meiosis</span> normally occurs in somatic cells of organisms and facilitates growth and development of organisms.'
+  false9b: '<span style="color: #236fa1;">Mitosis</span> occurs in the gamete cells and facilitates sexual reproduction in living organisms.'
+  false10: '<span style="color: #236fa1;">Mitosis</span> occurs in two phases, that is, <span style="color: #236fa1;">mitosis</span> I and <span style="color: #236fa1;">mitosis</span> II.'
+  false11: 'During the process of <span style="color: #e67e23;">meiosis</span> several processes occurs that cause genetic variation among organisms.'
+  false12a: '<span style="color: #236fa1;">Mitosis</span> I is the only stage where homologous chromosomes pair up and exchange genetic material.'
+  false12b: '<span style="color: #236fa1;">Mitosis</span> II is the only stage where homologous chromosomes pair up and exchange genetic material.'
+  false12c: '<span style="color: #e67e23;">Meiosis</span> I is the only stage where sister chromatids pair up and exchange genetic material.'
+  false12d: '<span style="color: #e67e23;">Meiosis</span> II is the only stage where sister chromatids pair up and exchange genetic material.'
+  false13a: 'Only sexually reproductive organisms utilize <span style="color: #236fa1;">mitosis</span>.'
+  false13b: '<span style="color: #236fa1;">Mitosis</span> is a special type of cell division that produces sex cells for reproduction.'
+  false13c: 'Both sexual and asexual organisms go through the process of <span style="color: #e67e23;">meiosis</span>.'
+
+
+# conflicts, means that the statements cannot appear together
+# add ': True' to each line, so the program runs a faster lookup
+conflict_rules:
+  identical:
+    truth2a: True
+    truth2b: True
+    false2a: True
+    false2b: True
+  kinds:
+    truth1a: True
+    truth1b: True
+    false1a: True
+    false1b: True
+  number:
+    truth3a: True
+    truth3b: True
+    false3a: True
+    false3b: True
+  diploid:
+    truth4a: True
+    truth4b: True
+    false4a: True
+    false4b: True
+  startcells:
+    truth5: True
+    false5a: True
+    false5b: True
+  types:
+    truth6a: True
+    truth6b: True
+    false6a: True
+    false6b: True
+  cytokinesis:
+    truth7a: True
+    truth7b: True
+    false7a: True
+    false7b: True
+  crossover:
+    truth8a: True
+    truth8b: True
+    false8a: True
+    false8b: True
+  normal:
+    truth9a: True
+    truth9b: True
+    false9a: True
+    false9b: True
+  phases:
+    truth10: True
+    false10: True
+  variations:
+    truth11: True
+    false11: True
+  pairup:
+    truth12a: True
+    false12a: True
+    false12b: True
+    false12c: True
+    false12d: True
+  sex:
+    truth13a: True
+    truth13b: True
+    truth13c: True
+    false13a: True
+    false13b: True
+    false13c: True
+
+
+
+
+
+
+
+
