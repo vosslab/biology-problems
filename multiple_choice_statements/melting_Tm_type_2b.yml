@@ -1,0 +1,58 @@
+---
+
+#Which one of the following statements is FALSE/TRUE <connection word> <topic>
+topic: melting temperature (T<sub>m</sub>) of DNA
+
+override_question_true: Which one of the following will <strong>DECREASE</strong> the melting temperature (T<sub>m</sub>) of a DNA strand?
+override_question_false: ~
+
+connection_words: ~
+
+true_statements:
+   truth1a: 'decrease the amount of cytosine (C) + guanine (G) base pairing.'
+   truth1b: 'increase the amount of adenine (A) + thymine (T) base pairing.'
+
+false_statements:
+   false1a: 'increase the amount of cytosine (C) + guanine (G) base pairing.'
+   false1b: 'decrease the amount of adenine (A) + thymine (T) base pairing.'
+
+   false2a: 'decrease the amount of purine nucleobases, adenine (A) + guanine (G).'
+   false2b: 'increase the amount of purine nucleobases, adenine (A) + guanine (G).'
+
+   false3a: 'decrease the amount of pyrimidine nucleobases, cytosine (C) + thymine (T).'
+   false3b: 'increase the amount of pyrimidine nucleobases, cytosine (C) + thymine (T).'
+
+   false4a: 'decrease the amount of nucleobases with ketone groups, guanine (G) + thymine (T).'
+   false4b: 'increase the amount of nucleobases with ketone groups, guanine (G) + thymine (T).'
+
+   false4a: 'decrease the amount of nucleobases with amino groups adenine (A) + cytosine (C).'
+   false5b: 'increase the amount of nucleobases with amino groups adenine (A) + cytosine (C).'
+   
+#conflicts, means that the statements cannot appear together
+
+conflict_rules:
+   canonical:
+     truth1a: True
+     false1a: True
+   canonical:
+     truth1b: True
+     false1b: True
+   purine:
+     false2a: True
+     false2b: True
+   pyrimidine:
+     false3a: True
+     false3b: True
+   ketone:
+     false4a: True
+     false4b: True
+   amino:
+     false5a: True
+     false5b: True
+
+
+
+
+
+
+
