@@ -59,7 +59,9 @@ if __name__ == '__main__':
 			parent = random.choice(('father (&male;)', 'mother (&female;)'))
 			base_question += 'The {0} of the man is wild-type phenotype and does not have the {1} genetic disorder.</p> '.format(parent, AD_short_name)
 
-			base_question += '<p>Reminder: {0} is autosomal dominant and {1} is X-linked recessive.</p>'.format(XLR_short_name, AD_short_name)
+			base_question += '<p>Reminder: {0} is {1} and {2} is {3}.</p>'.format(
+				XLR_short_name, XLR_disorder_dict['type'],
+				AD_short_name, AD_disorder_dict['type'])
 			
 			N += 1
 			question = base_question + '<p>What fraction of their daughters (&female;) will have both {0} and {1} genetic disorders?</p>'.format(XLR_short_name, AD_short_name)
