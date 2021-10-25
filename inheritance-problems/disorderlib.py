@@ -3,6 +3,7 @@
 import os
 import re
 import sys
+import copy
 import yaml
 import random
 
@@ -75,7 +76,6 @@ class MultiDisorderClass(object):
 		new_string = string[0].upper() + string[1:]
 		return new_string
 
-
 	#=====================
 	def breakUpGeneLocus(self, locus):
 		locus_dict = {}
@@ -105,13 +105,13 @@ class MultiDisorderClass(object):
 	def getDisorderParagraph(self, disorder_dict):
 		description = ''
 		shortest_name = None
-		description += self.capitalFirstLetterOnly(disorder_dict['name']) + " "
+		description += '<strong>' + self.capitalFirstLetterOnly(disorder_dict['name']) + " "
 		if disorder_dict.get('abbreviation') is not None:
 			description += "(" + disorder_dict['abbreviation'] + ") "
 		shortest_name = self.getDisorderShortName(disorder_dict)
 
 
-		description += 'is an ' + disorder_dict['type'] + " genetic disorder "
+		description += '</strong> is an ' + disorder_dict['type'] + " genetic disorder "
 
 		description += 'that is caused by ' + disorder_dict['caused by'] + ". "
 
@@ -138,12 +138,25 @@ class MultiDisorderClass(object):
 		return disorder_dict
 
 	#=====================
+	def getStandardChoicesList(self):
+		choices_list = ['None, 0%', '1/4, 25%', '1/2, 50%', '3/4, 75%', 'All, 100%']
+		return choices_list
+
+	#=====================
+	def makeQuestionPretty(self, question):
+		pretty_question = copy.copy(question)
+		pretty_question = re.sub('\<\/p\>\s*\<p\>', '\n\n', pretty_question)
+		return pretty_question
+
+
+	#=====================
 	def formatBB_Question(self, N, question, choices_list, answer):
 		bb_question = ''
 
 		number = "{0}. ".format(N)
 		bb_question += 'MC\t<p>{0}. {1}'.format(N, question)
-		print('{0}. {1}'.format(N, question))
+		pretty_question = self.makeQuestionPretty(question)
+		print('{0}. {1}'.format(N, pretty_question))
 
 		letters = 'ABCDEFGH'
 		for i, choice in enumerate(choices_list):
