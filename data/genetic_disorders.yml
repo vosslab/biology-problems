@@ -8,7 +8,7 @@ sample:
       abbreviation: null
       short name: null
       symptoms: null
-      cause: null
+      caused by: null
       mechanism: null
       frequency: null
       locus: null
@@ -21,9 +21,9 @@ autosomal dominant:
       complete: True
       abbreviation: HD
       short name: null
-      symptoms: physical abilities gradually worsen, mental abilities generally decline into dementia
-      cause: increase in trinucleotide repeats in the HTT gene
-      mechanism: the mutated Huntington protein is toxic to certain cell types, particularly brain cells
+      symptoms: physical abilities that gradually worsen and mental abilities that decline into dementia
+      caused by: an increase in trinucleotide repeats in the HTT gene
+      mechanism: a mutated Huntington protein that is toxic to certain cell types, particularly brain cells
       frequency: 1 in 10,000 adults of European descent
       locus: 4p16.3
       wikipedia url: https://en.wikipedia.org/wiki/Huntington%27s_disease
@@ -32,24 +32,24 @@ autosomal dominant:
       complete: True
       abbreviation: MFS
       short name: null
-      symptoms: tall and thin, with serious complications involving the heart and aorta
-      cause: mutation in FBN1 gene that makes fibrillin protein
-      mechanism: a genetic disorder that affects the connective tissue
+      symptoms: tall and thin features with serious complications involving the heart and aorta
+      caused by: a mutation in FBN1 gene that makes fibrillin protein
+      mechanism: weaked connective tissue throughout the body
       frequency: 1 in 10,000 people
       locus: 15q21.1
       wikipedia url: https://en.wikipedia.org/wiki/Marfan_syndrome
 
-	Achondroplasia
+   achondroplasia:
       complete: True
       abbreviation: null
       short name: null
-      symptoms: primary feature is dwarfism, short arms and legs, enlarged head, prominent forehead
-      cause: mutation in the FGFR3 gene
-      mechanism: mutated gene interacts with growth factors leading to complications with bone production
+      symptoms: dwarfism with short arms and legs, an enlarged head, and a prominent forehead
+      caused by: a mutation in the FGFR3 gene
+      mechanism: a mutated protein that interacts negatively with growth factors leading to complications with bone production
       frequency: 1 in 27,500 people
       locus: 4p16.3
       wikipedia url: https://en.wikipedia.org/wiki/Achondroplasia
-		
+
 #=============================================
 #=============================================
 autosomal recessive:
@@ -57,9 +57,9 @@ autosomal recessive:
       complete: True
       abbreviation: CF
       short name: null
-      symptoms: difficulty breathing, coughing up mucus, poor growth
-      cause: mutation in the CFTR gene
-      mechanism: chloride channel membrane protein mutations lead to dysregulation of epithelial fluid transport in the lung
+      symptoms: difficulty breathing, often cough up mucus, and poor growth characteristics
+      caused by: a mutation in the CFTR gene
+      mechanism: non-functional chloride channels that lead to dysregulation of epithelial fluid transport in the lung
       frequency: 1 in 3,000 adults of Northern European descent
       locus: 7q31.2
       wikipedia url: https://en.wikipedia.org/wiki/Cystic_fibrosis
@@ -68,9 +68,9 @@ autosomal recessive:
       complete: True
       abbreviation: SCD
       short name: sickle cell
-      symptoms: Attacks of pain, anemia, swelling in the hands and feet, bacterial infections, stroke
-      cause: mutation in the HbA gene for hemoglobin chain A
-      mechanism: mutated protein polymerizes and forms fibrous precipitates that distort the shape of the red blood cells
+      symptoms: frequent attacks of pain, anemia, swelling in the hands and feet, bacterial infections, and strokes
+      caused by: a mutation in the HbA gene for hemoglobin chain A
+      mechanism: mutated protein polymers which form fibrous precipitates that distort the shape of the red blood cells
       frequency: 1 of 365 births from parents of African descent
       locus: 11p15.5
       wikipedia url: https://en.wikipedia.org/wiki/Sickle_cell_disease
@@ -79,31 +79,31 @@ autosomal recessive:
       complete: False
       abbreviation: null
       short name: null
-      symptoms: facial skin abnormalities and double upper eyelashes and missing lower eyelashes.
-      cause: TWIST2 gene mutations
+      symptoms: facial skin abnormalities, double upper eyelashes, and missing lower eyelashes
+      caused by: a mutation in the TWIST2 gene
       mechanism: null
       frequency: null
       locus: null
       wikipedia url: null
 
-   Albinism:
+   albinism:
       complete: True
       abbreviation: null
       short name: null
-      symptoms: absence of pigment in the skin, hair and eyes.
-      cause: mutations in OCA1 or TYR gene for tyrosinase
-      mechanism: mutated protein is unable to synthesize melanin from precursor tyrosine.
+      symptoms: the absence of pigment in the skin, hair, and eyes
+      caused by: mutations in OCA1 or TYR gene for tyrosinase
+      mechanism: a mutated protein that is unable to synthesize melanin from precursor tyrosine
       frequency: 1 in 17,000
       locus: 11q1.4-q2.1
       wikipedia url: https://en.wikipedia.org/wiki/Albinism_in_humans
 
-   Tay–Sachs disease:
+   Tay-Sachs disease:
       complete: True
       abbreviation: TSD
-      short name: Tay–Sachs
-      symptoms: seizures, hearing loss, inability to move
-      cause: mutation in the HEXA gene
-      mechanism: lysosomal enzyme mutation causes lipids to accumulate in the brain and interfere with normal biological processes
+      short name: Tay-Sachs
+      symptoms: seizures, hearing loss, and inability to move
+      caused by: a mutation in the HEXA gene
+      mechanism: non-functional lysosomal enzyme causes lipids to accumulate in the brain and interfere with normal biological processes
       frequency: 1 in 3,500 newborn among Ashkenazi Jews, French Canadians, and the Cajun community of Louisiana
       locus: 15q23-24
       wikipedia url: https://en.wikipedia.org/wiki/Tay%E2%80%93Sachs_disease
@@ -115,9 +115,9 @@ X-linked dominant:
       complete: True
       abbreviation: FXS
       short name: fragile X
-      symptoms: Autism features, intellectual disability, long and narrow face, large ears
-      cause: increase in trinucleotide repeats in the FMR1 gene
-      mechanism: FMR1 protein is not expressed, which is essential for normal cognitive development
+      symptoms: autism features, intellectual disability, a long and narrow face, and large ears
+      caused by: an increase in trinucleotide repeats in the FMR1 gene
+      mechanism: FMR1 protein not being expressed, which is essential for normal cognitive development
       frequency: 1 in 4,000 births
       locus: Xq27.3
       wikipedia url: https://en.wikipedia.org/wiki/Fragile_X_syndrome
@@ -126,52 +126,52 @@ X-linked dominant:
       complete: False
       abbreviation: XLH
       short name: null
-      symptoms: form of rickets where vitamin D supplementation has no effect
-      cause: null
+      symptoms: a special form of rickets where vitamin D supplementation has no effect
+      caused by: null
       mechanism: null
       frequency: null
       locus: null
       wikipedia url: null
-	  
+
    Rett syndrome:
       complete: False
       abbreviation: RTT
       short name: null
-      symptoms: impairments in language and coordination and repetitive movements. Those affected often have slower growth, difficulty walking, and a smaller head size.
-      cause: mutation in the MECP2 gene on the X chromosome
+      symptoms: impairments in language and coordination and repetitive movements. Those affected often have slower growth, difficulty walking, and a smaller head size
+      caused by: a mutation in the MECP2 gene on the X chromosome
       mechanism: null
       frequency: null
       locus: null
       wikipedia url: null
-	  
+
    Aicardi Syndrome:
       complete: False
       abbreviation: null
       short name: null
       symptoms: null
-      cause: null
+      caused by: null
       mechanism: null
       frequency: null
       locus: null
       wikipedia url: null
 
-   Incontinentia pigmenti:
+   incontinentia pigmenti:
       complete: False
       abbreviation: null
       short name: null
       symptoms: null
-      cause: null
+      caused by: null
       mechanism: null
       frequency: null
       locus: null
       wikipedia url: null
 
-   Focal dermal hypoplasia:
+   focal dermal hypoplasia:
       complete: False
       abbreviation: null
       short name: null
-      symptoms: yellow-pink bumps on the skin, pigmentation changes, shortness of stature, and some evidence suggests that it can cause epilepsy.
-      cause: PORCN gene mutation
+      symptoms: yellow-pink bumps on the skin, pigmentation changes, shortness of stature, and some evidence suggests that it can cause epilepsy
+      caused by: a mutation in the PORCN gene
       mechanism: null
       frequency: null
       locus: X
@@ -181,8 +181,8 @@ X-linked dominant:
       complete: False
       abbreviation: null
       short name: null
-      symptoms: glomerulonephritis, end-stage kidney disease, and hearing loss.
-      cause: inherited defect in type IV collagen COL4A5 gene
+      symptoms: glomerulonephritis, end-stage kidney disease, and hearing loss
+      caused by: inherited defect in type IV collagen COL4A5 gene
       mechanism: null
       frequency: 1 in 5,000-10,000
       locus: X
@@ -191,57 +191,59 @@ X-linked dominant:
 #=============================================
 #=============================================
 X-linked recessive:
-   Red-green color blindness
-      complete: False
+   deuteranomaly red-green color blindness:
+      complete: True
       abbreviation: null
       short name: color blindness
-      symptoms: a person cannot distinguish between shades of red and green
-      cause: null
-      mechanism: null
-      frequency: null
-      locus: null
-      wikipedia url: null
-	  
-   hemophilia:
-      complete: False
-      abbreviation: null
-      short name: null
-      symptoms: blood cannot clot properly due to a deficiency of a clotting factor
-      cause: null
-      mechanism: null
-      frequency: null
-      locus: null
-      wikipedia url: null
+      symptoms: decreased ability to see colors in which they are unable distinguish between shades of red and green
+      caused by: mutations in the OPN1MW gene
+      mechanism: shift in the green retinal receptors toward red wavelength sensitivity
+      frequency: 1 in 20 males and 1 in 400 females of Northern European ancestry
+      locus: Xq28
+      wikipedia url: https://en.wikipedia.org/wiki/Color_blindness
+
+   hemophilia A:
+      complete: True
+      abbreviation: HemA
+      short name: hemophilia
+      symptoms: prolonged bleeding from common injuries
+      caused by: a mutation in the HEMA gene
+      mechanism:  blood cannot clot properly due to a deficiency of a clotting factor
+      frequency: 1 in 1,000 American males
+      locus: Xq28
+      omim: 306700
+      wikipedia url: https://en.wikipedia.org/wiki/Haemophilia_A
 
    Fabry disease:
       complete: False
       abbreviation: null
       short name: null
       symptoms: null
-      cause: lysosomal storage disease
-      mechanism: null
+      caused by: null
+      mechanism: lysosomal storage disease
       frequency: null
       locus: null
       wikipedia url: null
 
    Duchenne muscular dystrophy:
-      complete: False
-      abbreviation: null
+      complete: True
+      abbreviation: DMD
       short name: null
-      symptoms: rapid progression of muscle degeneration, eventually leading to loss of skeletal muscle control, respiratory failure, and death.
-      cause: null
-      cause: mutations in the dystrophin gene
-      frequency: null
-      locus: null
-      wikipedia url: null
+      symptoms: muscle weakness, trouble standing up, which eventually leads to loss of skeletal muscle control, respiratory failure, and death
+      caused by: mutations in the DMD gene
+      mechanism: dystrophin is responsible for connecting the actin cytoskeleton to the extracellular matrix (ECM) in muscle cells
+      frequency: 1 in 20,000 males
+      locus: Xp21.2-p21.1
+      omim: 310200
+      wikipedia url: https://en.wikipedia.org/wiki/Duchenne_muscular_dystrophy
 
    X-linked agammaglobulinemia:
       complete: False
       abbreviation: XLA
       short name: null
-      symptoms: patients prone to develop serious and even fatal infections.
-      cause: null
-      mechanism: patients do not generate mature B cells.
+      symptoms: serious and even fatal infections
+      caused by: null
+      mechanism: patients do not generate mature B cells
       frequency: null
       locus: null
       wikipedia url: null
@@ -251,51 +253,51 @@ X-linked recessive:
       abbreviation: null
       short name: null
       symptoms: null
-      cause: hereditary deficiency of the steroid sulfatase (STS) enzyme
+      caused by: hereditary deficiency of the steroid sulfatase (STS) enzyme
       mechanism: null
       frequency: null
       locus: null
       wikipedia url: null
 
-   Glucose-6-phosphate dehydrogenase deficiency:
+   glucose-6-phosphate dehydrogenase deficiency:
       complete: False
       abbreviation: null
       short name: null
-      symptoms: nonimmune hemolytic anemia in response to certain medications, chemicals, or foods.
-      cause: null
+      symptoms: non-immune hemolytic anemia in response to certain medications, chemicals, or foods
+      caused by: null
       mechanism: null
       frequency: null
       locus: null
       wikipedia url: null
 
-   Adrenoleukodystrophy
+   adrenoleukodystrophy:
       complete: False
       abbreviation: null
       short name: null
-      symptoms: leads to progressive brain damage, failure of the adrenal glands and eventually death.
-      cause: null
+      symptoms: progressive brain damage, failure of the adrenal glands and eventually death
+      caused by: null
       mechanism: null
       frequency: null
       locus: null
       wikipedia url: null
 
-   Androgen insensitivity syndrome:
-      complete: False
+   androgen insensitivity syndrome:
+      complete: True
       abbreviation: AIS
       short name: null
-      symptoms: impairs the development of male genitals and male secondary sexual characteristics at puberty
-      cause: mutation in the human androgen receptor (AR) gene
-      mechanism: partial or complete inability of cells to respond to androgens.
+      symptoms: impaired development of male genitals and male secondary sexual characteristics at puberty
+      caused by: a mutation in the AR gene for the human androgen receptor
+      mechanism: partial or complete inability of cells to respond to androgens
       frequency: 1 in 20,000
       locus: Xq11-Xq12
-      wikipedia url: null
+      wikipedia url: https://en.wikipedia.org/wiki/Androgen_insensitivity_syndrome
 
    Hunter syndrome:
       complete: False
       abbreviation: null
       short name: null
-      symptoms: hearing loss, thickening of the heart valves leading to a decline in cardiac function, obstructive airway disease, sleep apnea, and enlargement of the liver and spleen.
-      cause: null
+      symptoms: hearing loss, thickening of the heart valves, obstructive airway disease, sleep apnea, and enlargement of the liver and spleen
+      caused by: null
       mechanism: null
       frequency: null
       locus: null
@@ -305,8 +307,8 @@ X-linked recessive:
       complete: False
       abbreviation: null
       short name: null
-      symptoms: misshaped nose, brachydactyly of the distal phalanges, sensorineural deafness.
-      cause: null
+      symptoms: misshaped noses, brachydactyly of the distal phalanges, and sensorineural deafness
+      caused by: null
       mechanism: null
       frequency: null
       locus: null
@@ -316,8 +318,8 @@ X-linked recessive:
       complete: False
       abbreviation: null
       short name: null
-      symptoms: skin paleness, fatigue, dizziness and enlarged spleen and liver.
-      cause: null
+      symptoms: skin paleness, fatigue, and dizziness along with an enlarged spleen and liver
+      caused by: null
       mechanism: null
       frequency: null
       locus: null
@@ -331,18 +333,18 @@ Y-linked:
       abbreviation: null
       short name: null
       symptoms: null
-      cause: null
+      caused by: null
       mechanism: null
       frequency: null
       locus: null
       wikipedia url: null
 
-   Swyer syndrome: some cases
+   Swyer syndrome:
       complete: False
       abbreviation: null
       short name: null
       symptoms: null
-      cause: null
+      caused by: null
       mechanism: null
       frequency: null
       locus: null
@@ -350,13 +352,13 @@ Y-linked:
 
 #=============================================
 #=============================================
-Codominant:
+codominant:
    ABO blood groups:
       complete: False
       abbreviation: null
       short name: null
       symptoms: null
-      cause: null
+      caused by: null
       mechanism: null
       frequency: null
       locus: null
@@ -367,7 +369,7 @@ Codominant:
       abbreviation: null
       short name: null
       symptoms: null
-      cause: null
+      caused by: null
       mechanism: null
       frequency: null
       locus: null
@@ -375,15 +377,17 @@ Codominant:
 
 #=============================================
 #=============================================
-Mitochondrial:
+mitochondrial:
    Leber hereditary optic neuropathy:
       complete: False
       abbreviation: LHON
       short name: optic neuropathy
       symptoms: null
-      cause: null
+      caused by: null
       mechanism: null
       frequency: null
       locus: null
       wikipedia url: null
+
+
 
