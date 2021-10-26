@@ -24,6 +24,8 @@ true_statements:
   truth15: Rotator
   truth16: Solos
   truth17: Radar
+  truth18: Sos
+
 
 false_statements:
   false1: solo
@@ -40,7 +42,6 @@ false_statements:
   false12: roto
   false13: stand
   false14: leaves
-  false15: sos
   false16: yeah
   false17: joy
   false18: dob
