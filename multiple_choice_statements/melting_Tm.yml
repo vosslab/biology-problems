@@ -1,7 +1,11 @@
 ---
 
-Which one of the following statements is FALSE/TRUE <connection word> <topic>
+#Which one of the following statements is FALSE/TRUE <connection word> <topic>
 topic: melting temperature (T<sub>m</sub>) of DNA
+
+replacement_rules:
+  increases: '<span style="color: OrangeRed;">increases</span>'
+  decreases: '<span style="color: MediumBlue;">decreases</span>'
 
 connection_words: ~
 
@@ -38,7 +42,7 @@ false_statements:
    false6c: 'The melting temperature (T<sub>m</sub>) of a DNA strand goes up (increases) when the amount of nucleobases with amino groups, adenine (A) + cytosine (C), increases.'
    false6d: 'The melting temperature (T<sub>m</sub>) of a DNA strand goes down (decreases) when the amount of nucleobases with amino groups, adenine (A) + cytosine (C), decreases.'
 
- conflicts, means that the statements cannot appear together
+#conflicts, means that the statements cannot appear together
 conflict_rules:
    CG:
      truth1a: True

@@ -2,11 +2,18 @@
 
 import sys
 import random
+import crcmod.predefined
 
 uppercase = "ABCDEFGHJKMPQRSTVWXYZ"
 lowercase = "abcdefghjkmpqrstvwxyz"
 
+#=======================
+def getCrc16_FromString(mystr):
+ crc16 = crcmod.predefined.Crc('xmodem')
+ crc16.update(mystr.encode('ascii'))
+ return crc16.hexdigest().lower()
 
+#=======================
 def deconstructPowerOfNumber(num):
 	temp_num = num
 	power2 = 0

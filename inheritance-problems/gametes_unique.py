@@ -3,27 +3,28 @@
 import os
 import genotype
 
-
 if __name__ == '__main__':
 	num_genes = 7
-	num_questions = 99
+	num_questions = 199
 	N = 0
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
 	print('writing to file: '+outfile)
 	f = open(outfile, 'w')
 	for i in range(num_questions):
 		N += 1
-		number = "{0}. ".format(N)
 		question = ""
-		question += "How many unique gametes could be produced through independent assortment by "
+		question += '<p>How many unique <span style="color: Green;"><strong>GAMETES</strong></span> '
+		question += 'could be produced through independent assortment by '
+		question += 'an individual with the following genotype?</p> '
 		gamete_count = 1
 		while gamete_count < 4 or gamete_count > 32:
 			geno, gamete_count = genotype.createGenotype(num_genes)
-		question += "an individual with the genotype {0}?".format(geno)
-
+		question += '<p>{0}</p>'.format(geno)
 		
-		f.write("MC\t{0}\t".format(question))
-		print("{0}. {1}".format(N, question))
+		
+		crc16 = genotype.getCrc16_FromString(question)
+		f.write("MC\t<p>{0}. {1}</p> {2}\t".format(N, crc16, question))
+		print("{0}. {1} - {2}".format(N, crc16, question))
 
 		letters = "ABCDEF"
 		for power in range(2, 7):

@@ -18,12 +18,27 @@ import pprint
 import random
 import argparse
 import itertools
+import crcmod.predefined
 
 global_connection_words = [ 'concerning', 'about', 'regarding', 'of', ]
-base_replacement_rules = {
-	' NOT ': ' <strong>NOT</strong> '
+base_replacement_rule_dict = {
+	' not ': ' <strong>NOT</strong> ', #BOLD BLACK
+	' Not ': ' <strong>NOT</strong> ', #BOLD BLACK
+	' NOT ': ' <strong>NOT</strong> ', #BOLD BLACK
+	' false ': ' <span style="color: #ba372a;"><strong>FALSE</strong></span> ', #BOLD RED
+	' False ': ' <span style="color: #ba372a;"><strong>FALSE</strong></span> ', #BOLD RED
+	' FALSE ': ' <span style="color: #ba372a;"><strong>FALSE</strong></span> ', #BOLD RED
+	' true ': ' <span style="color: #169179;"><strong>TRUE</strong></span> ', #BOLD GREEN
+	' True ': ' <span style="color: #169179;"><strong>TRUE</strong></span> ', #BOLD GREEN
+	' TRUE ': ' <span style="color: #169179;"><strong>TRUE</strong></span> ', #BOLD GREEN
+	'  ': ' ',
 }
 
+#=======================
+def getCrc16_FromString(mystr):
+ crc16 = crcmod.predefined.Crc('xmodem')
+ crc16.update(mystr.encode('ascii'))
+ return crc16.hexdigest().lower()
 
 #=======================
 def readYamlFile(yaml_file):
@@ -129,21 +144,23 @@ def writeQuestion(yaml_data, question_type):
 		connection_word_list = global_connection_words
 
 	if question_type is False:
-		question_type_html = '<span style="color: #ba372a;"><strong>FALSE</strong></span> ' #BOLD RED
+		question_type_html = 'FALSE '
 	elif question_type is True:
-		question_type_html = '<span style="color: #169179;"><strong>TRUE</strong></span> ' #BOLD GREEN
+		question_type_html = 'TRUE ' 
 	else:
 		question_type_html = '<strong>{0}</strong> '.format(str(question_type).upper())
 
-	question_text = ("Which one of the following statements is "
-		+"{0} {1} {2}?".format(question_type_html, random.choice(connection_word_list), topic) )
+	question_text = ("<p>Which one of the following statements is "
+		+"{0} {1} {2}?</p>".format(question_type_html, random.choice(connection_word_list), topic) )
 	return question_text
 
 #=======================
 def applyReplacementRulesToQuestions(list_of_question_text, replacement_rule_dict):
 	if replacement_rule_dict is None:
 		print("no replacement rules found")
-		return list_of_question_text
+		replacement_rule_dict = base_replacement_rule_dict
+	else:
+		replacement_rule_dict = {**base_replacement_rule_dict, **replacement_rule_dict}
 	new_list_of_question_text = []
 	for question_text in list_of_question_text:
 		for find_text,replace_text in replacement_rule_dict.items():
@@ -220,8 +237,9 @@ if __name__ == '__main__':
 	N = 0
 	for bbformat_question in list_of_complete_questions:
 		N += 1
-		number_str = "{0}. ".format(N)
-		f.write('MC\t' + number_str + bbformat_question + '\n')
+		crc16_value = getCrc16_FromString(bbformat_question)
+		output_format = "MC\t<p>{0:03d}. {1}</p> {2}\n".format(N, crc16_value, bbformat_question)
+		f.write(output_format)
 	f.close()
 	print("Wrote {0} questions to file.".format(N))
 

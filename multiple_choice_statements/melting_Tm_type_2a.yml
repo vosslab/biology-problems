@@ -3,6 +3,12 @@
 #Which one of the following statements is FALSE/TRUE <connection word> <topic>
 topic: melting temperature (T<sub>m</sub>) of DNA
 
+replacement_rules:
+  increase: '<span style="color: OrangeRed;">increase</span>'
+  decrease: '<span style="color: MediumBlue;">decrease</span>'
+  INCREASE: '<span style="color: OrangeRed;">INCREASE</span>'
+  DECREASE: '<span style="color: MediumBlue;">DECREASE</span>'
+
 override_question_true: Which one of the following will <strong>INCREASE</strong> the melting temperature (T<sub>m</sub>) of a DNA strand?
 override_question_false: ~
 

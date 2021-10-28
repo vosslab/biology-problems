@@ -4,10 +4,10 @@
 topic: 'mitosis and meiosis cell division'
 
 replacement_rules:
-  Mitosis: '<span style="color: DarkOrange;">Mitosis</span>'
-  mitosis: '<span style="color: DarkOrange;">mitosis</span>'
-  Meiosis: '<span style="color: DarkBlue;">Meiosis</span>'
-  meiosis: '<span style="color: DarkBlue;">meiosis</span>'
+  Mitosis: '<span style="color: OrangeRed;">Mitosis</span>'
+  mitosis: '<span style="color: OrangeRed;">mitosis</span>'
+  Meiosis: '<span style="color: MediumBlue;">Meiosis</span>'
+  meiosis: '<span style="color: MediumBlue;">meiosis</span>'
 
 connection_words: ~
 
@@ -35,7 +35,7 @@ true_statements:
   truth13a: 'Only sexually reproductive organisms utilize meiosis.'
   truth13b: 'Meiosis is a special type of cell division that produces sex cells for reproduction.'
   truth13c: 'Both sexual and asexual organisms go through the process of mitosis.'
-  truth14a: 'The daughter cells produced at the end of meiosis are completely different from the original parent cell.'
+  truth14a: 'The daughter cells produced at the end of meiosis are quite different from the original parent cell.'
   truth14b: 'Meiosis daughter cells contain half of the genetic material which is a mix of both the maternal and paternal genes.'
 
 false_statements:
