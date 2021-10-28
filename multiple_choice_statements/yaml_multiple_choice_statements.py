@@ -20,6 +20,10 @@ import argparse
 import itertools
 
 global_connection_words = [ 'concerning', 'about', 'regarding', 'of', ]
+base_replacement_rules = {
+	' NOT ': ' <strong>NOT</strong> '
+}
+
 
 #=======================
 def readYamlFile(yaml_file):
@@ -136,6 +140,18 @@ def writeQuestion(yaml_data, question_type):
 	return question_text
 
 #=======================
+def applyReplacementRulesToQuestions(list_of_question_text, replacement_rule_dict):
+	if replacement_rule_dict is None:
+		print("no replacement rules found")
+		return list_of_question_text
+	new_list_of_question_text = []
+	for question_text in list_of_question_text:
+		for find_text,replace_text in replacement_rule_dict.items():
+			question_text = question_text.replace(find_text,replace_text)
+		new_list_of_question_text.append(question_text)
+	return new_list_of_question_text
+
+#=======================
 def sortStatements(yaml_data, notrue=False, nofalse=False):
 	true_statement_tree = yaml_data['true_statements']
 	false_statement_tree = yaml_data['false_statements']
@@ -164,6 +180,9 @@ def sortStatements(yaml_data, notrue=False, nofalse=False):
 			list_of_complete_questions.extend(question_string_list)
 	else:
 		print("Skipping all of the FALSE statement questions")
+		
+	list_of_complete_questions = applyReplacementRulesToQuestions(list_of_complete_questions, yaml_data.get('replacement_rules'))	
+		
 	return list_of_complete_questions
 
 #=======================
