@@ -9,6 +9,14 @@ autosomal_dominant = [
 	+"r+Tdr+Tdr+d%"
 	+"#*x*#o##ox#%"
 	),	
+	("#T*.oT#.xTo%"
+	+"r+d.r^d.r+d%"
+	+"x#*T#.oTxo#%"
+	+"..r^d.r^d..%"
+	+"oT#.x=*.oT#%"
+	+"r+drT+Tdr+d%"
+	+"#o#x*#o*oo#%"
+	),
 ]
 [	("#To.xT*.#To.#To%"
 	+"r^d.r^d.r^d.r^d%"
@@ -30,6 +38,14 @@ autosomal_recessive = [
 	+"r+drT+Tdr+d%"
 	+"##o*#(x[o[#%"
 	),
+	("[To.(T[.#To%"
+	+"r+d.r^d.r+d%"
+	+"oo(Tx.(T###%"
+	+"..r^d.r^d..%"
+	+"oT*.[=(.oT#%"
+	+"r+drT+Tdr+d%"
+	+"o#o[(*oxoo#%"
+	),	
 ]
 [	("#To.#To.#To.#To%"
 	+"r^d.r^d.r^d.r^d%"
@@ -41,25 +57,6 @@ autosomal_recessive = [
 	),
 ]
 
-x_linked_recessive = [
-	("xTo.#To.#T*%"
-	+"r+d.r^d.r+d%"
-	+"(#(T#.oTxxo%"
-	+"..r^d.r^d..%"
-	+"#To.x=(.(T#%"
-	+"r+drT+Tdr+d%"
-	+"##oox*x#ox#%"
-	),
-]
-[	("#To..xTo%"
-	+"r^d...|.%"
-	+"#.x-T-*.%"
-	+"r-T-+-d.%"
-	+"x.o.x.x.%"
-	),
-]
-
-
 x_linked_dominant = [
 	("#To.#T*.#To%"
 	+"r+d.r^d.r+d%"
@@ -68,6 +65,14 @@ x_linked_dominant = [
 	+"xT*.#=*.oT#%"
 	+"r+drT+Tdr+d%"
 	+"#***xo*#o##%"
+	),
+	("xT*.oT#.#T*%"
+	+"r+d.r^d.r+d%"
+	+"#**T#.oTx##%"
+	+"..r^d.r+d..%"
+	+"oT#.#=*#*T#%"
+	+"r+drT+Tdr+d%"
+	+"#oo##*oo*##%"
 	),
 ]
 [
@@ -85,6 +90,35 @@ x_linked_dominant = [
 	),
 ]
 
+x_linked_recessive = [
+	("xTo.#To.#T*%"
+	+"r+d.r^d.r+d%"
+	+"(#(T#.oTxxo%"
+	+"..r^d.r^d..%"
+	+"#To.x=(.(T#%"
+	+"r+drT+Tdr+d%"
+	+"##oox*x#ox#%"
+	),
+	("xTo.oT#.#T*%"
+	+"r+d.r^d.r+d%"
+	+"(#(T#.oTx(x%"
+	+"..r^d.r^d..%"
+	+"oT#.x=(.#To%"
+	+"r+drT+Tdr+d%"
+	+"oo#*ox#*#o#%"
+	),
+]
+[	("#To..xTo%"
+	+"r^d...|.%"
+	+"#.x-T-*.%"
+	+"r-T-+-d.%"
+	+"x.o.x.x.%"
+	),
+]
+
+
+
+
 
 y_linked = [
 	("#To.#To.xTo%"
@@ -94,6 +128,14 @@ y_linked = [
 	+"oT#.o=x.oT#%"
 	+"r+drT+Tdr+d%"
 	+"##ooxoxxo##%"
+	),
+	("#To.oTx.#To%"
+	+"r+d.r^d.r+d%"
+	+"o#oTx.oT#oo%"
+	+"..r^d.r^d..%"
+	+"oTx.x=o.#To%"
+	+"r+drT+Tdr+d%"
+	+"oxoxxoxo#o#%"
 	),
 ]
 [
@@ -115,3 +157,24 @@ y_linked = [
 	),
 ]
 
+if __name__ == '__main__':
+	for i in autosomal_dominant:
+		print("autosomal_dominant")
+		print(autosomal_dominant)
+		print("autosomal_dominant")
+	for i in autosomal_recessive:
+		print("autosomal_recessive")
+		print(autosomal_recessive)
+		print("autosomal_recessive")
+	for i in x_linked_dominant:
+		print("x_linked_dominant")
+		print(x_linked_dominant)
+		print("x_linked_dominant")
+	for i in x_linked_recessive:
+		print("x_linked_recessive")
+		print(x_linked_recessive)
+		print("x_linked_recessive")
+	for i in y_linked:
+		print("y-linked")
+		print(y_linked)
+		print("y-linked")
