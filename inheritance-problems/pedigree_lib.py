@@ -178,6 +178,15 @@ def mirrorPedigree(code_string):
 	mirror_code_lines = []
 	for code_line in code_lines:
 		mirror_code_line = code_line[::-1]
+		#u <-> L
+		mirror_code_line = mirror_code_line.replace('u', '@')
+		mirror_code_line = mirror_code_line.replace('L', 'u')
+		mirror_code_line = mirror_code_line.replace('@', 'L')
+		#r <-> d
+		mirror_code_line = mirror_code_line.replace('r', '@')
+		mirror_code_line = mirror_code_line.replace('d', 'r')
+		mirror_code_line = mirror_code_line.replace('@', 'd')
+
 		mirror_code_lines.append(mirror_code_line)
 	mirror_code_string = '%'.join(mirror_code_lines)
 	return mirror_code_string

@@ -1,9 +1,21 @@
+#!/usr/bin/env python
+
+templates = [
+	("#To.oT#.#To%"
+	+"r+d.r^d.r+d%"
+	+"oooT#.oT###%"
+	+"..r^d.r^d..%"
+	+"oT#.#=o.oT#%"
+	+"r+drT+Tdr+d%"
+	+"###########%"
+	),	
+]
 
 
 autosomal_dominant = [
 	("xTo.#To.#T*%"
 	+"r+d.r^d.r+d%"
-	+"*#xTo.oTx*#%"
+	+"o#xTo.oTx*#%"
 	+"..r^d.r^d..%"
 	+"*Tx.#=o.*T#%"
 	+"r+Tdr+Tdr+d%"
@@ -72,7 +84,7 @@ x_linked_dominant = [
 	+"..r^d.r+d..%"
 	+"oT#.#=*#*T#%"
 	+"r+drT+Tdr+d%"
-	+"#oo##*oo*##%"
+	+"#oox#*oo*##%"
 	),
 ]
 [
@@ -105,7 +117,7 @@ x_linked_recessive = [
 	+"..r^d.r^d..%"
 	+"oT#.x=(.#To%"
 	+"r+drT+Tdr+d%"
-	+"oo#*ox#*#o#%"
+	+"oo#*ox#x#o#%"
 	),
 ]
 [	("#To..xTo%"
@@ -158,23 +170,39 @@ y_linked = [
 ]
 
 if __name__ == '__main__':
+	import pedigree_lib
 	for i in autosomal_dominant:
-		print("autosomal_dominant")
-		print(autosomal_dominant)
-		print("autosomal_dominant")
+		print("autosomal_dominant<br/>")
+		print(pedigree_lib.translateCode(i))
+		print(pedigree_lib.translateCode(pedigree_lib.mirrorPedigree(i)))
+		print("affected males &male; = {0}<br/>".format(i.count('x')))
+		print("affected females &female; = {0}<br/>".format(i.count('*')))
+		print("autosomal_dominant<br/>")
 	for i in autosomal_recessive:
-		print("autosomal_recessive")
-		print(autosomal_recessive)
-		print("autosomal_recessive")
+		print("autosomal_recessive<br/>")
+		print(pedigree_lib.translateCode(i))
+		print(pedigree_lib.translateCode(pedigree_lib.mirrorPedigree(i)))
+		print("affected males &male; = {0}<br/>".format(i.count('x')))
+		print("affected females &female; = {0}<br/>".format(i.count('*')))
+		print("autosomal_recessive<br/>")
 	for i in x_linked_dominant:
-		print("x_linked_dominant")
-		print(x_linked_dominant)
-		print("x_linked_dominant")
+		print("x_linked_dominant<br/>")
+		print(pedigree_lib.translateCode(i))
+		print(pedigree_lib.translateCode(pedigree_lib.mirrorPedigree(i)))
+		print("affected males &male; = {0}<br/>".format(i.count('x')))
+		print("affected females &female; = {0}<br/>".format(i.count('*')))
+		print("x_linked_dominant<br/>")
 	for i in x_linked_recessive:
-		print("x_linked_recessive")
-		print(x_linked_recessive)
-		print("x_linked_recessive")
+		print("x_linked_recessive<br/>")
+		print(pedigree_lib.translateCode(i))
+		print(pedigree_lib.translateCode(pedigree_lib.mirrorPedigree(i)))
+		print("affected males &male; = {0}<br/>".format(i.count('x')))
+		print("affected females &female; = {0}<br/>".format(i.count('*')))
+		print("x_linked_recessive<br/>")
 	for i in y_linked:
-		print("y-linked")
-		print(y_linked)
-		print("y-linked")
+		print("y-linked<br/>")
+		print(pedigree_lib.translateCode(i))
+		print(pedigree_lib.translateCode(pedigree_lib.mirrorPedigree(i)))
+		print("affected males &male; = {0}<br/>".format(i.count('x')))
+		print("affected females &female; = {0}<br/>".format(i.count('*')))
+		print("y-linked<br/>")
