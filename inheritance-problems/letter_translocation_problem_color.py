@@ -195,12 +195,11 @@ def makePossibleChoiceList(possible_choice_pairs):
 
 
 #====================
-def makeQuestion(N):
-	#this is a BIG function
+def makeChromosomes():
 	if len(sys.argv) >= 2:
 		min_size = int(sys.argv[1])
 	else:
-		min_size = 5
+		min_size = 6
 	if min_size < 4:
 		print("Sorry, you must have at least 4 genes for this program")
 		sys.exit(1)
@@ -220,7 +219,7 @@ def makeQuestion(N):
 	chromosome2 = charlist[chromosome2_shift:chromosome2_shift+chromosome2_size]
 
 	chromosome1_cut = random.randint(2, chromosome1_size-2)
-	chromosome2_cut = random.randint(2, chromosome2_size-2)
+	chromosome2_cut = random.randint(3, chromosome2_size-3)
 	#print chromosome1_cut, chromosome2_cut
 
 	print(list2string(chromosome1), chromosome1_cut, chromosome1_size)
@@ -246,8 +245,18 @@ def makeQuestion(N):
 		return None
 	len_set = set([len(chromosome1_A),  len(chromosome1_B), len(chromosome2_A), len(chromosome2_B) ])
 	if len(len_set) < 4:
-		print("ERROR")
+		print("Chromosomes have matching lengths")
 		return None
+	return (chromosome1_A, chromosome1_B, chromosome2_A, chromosome2_B)
+
+#====================
+def makeQuestion(N):
+	#this is a BIG function
+	chromosome_tuple = None
+	while chromosome_tuple is None:
+		chromosome_tuple = makeChromosomes()
+
+	chromosome1_A, chromosome1_B, chromosome2_A, chromosome2_B = chromosome_tuple
 
 	possible_choice_pairs = makeAllPossibleTranslocations(chromosome1_A, chromosome1_B, chromosome2_A, chromosome2_B)
 	possible_choices = makePossibleChoiceList(possible_choice_pairs)
@@ -294,6 +303,6 @@ if __name__ == "__main__":
 		if blackboard is not None:
 			f.write(blackboard)
 		else:
-			continue
-			#sys.exit(1)
+			#continue
+			sys.exit(1)
 	f.close()
