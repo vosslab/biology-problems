@@ -4,6 +4,8 @@
 topic: melting temperature (T<sub>m</sub>) of DNA
 
 replacement_rules:
+  '(increases)': '<span style="color: OrangeRed;">(increases)</span>'
+  '(decreases)': '<span style="color: MediumBlue;">(decreases)</span>'
   increases: '<span style="color: OrangeRed;">increases</span>'
   decreases: '<span style="color: MediumBlue;">decreases</span>'
 
