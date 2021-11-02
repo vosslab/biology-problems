@@ -244,16 +244,22 @@ def makeQuestion(N):
 	if len(chromosome2_B) <= 1:
 		print("ERROR")
 		return None
+	len_set = set([len(chromosome1_A),  len(chromosome1_B), len(chromosome2_A), len(chromosome2_B) ])
+	if len(len_set) < 4:
+		print("ERROR")
+		return None
 
 	possible_choice_pairs = makeAllPossibleTranslocations(chromosome1_A, chromosome1_B, chromosome2_A, chromosome2_B)
 	possible_choices = makePossibleChoiceList(possible_choice_pairs)
 	random.shuffle(possible_choices)
-	possible_choices.pop()
+	popped = possible_choices.pop()
 	
 	impossible_translocation_choices = makeAllImpossibleTranslocations(chromosome1_A, chromosome1_B, chromosome2_A, chromosome2_B)
 	random.shuffle(impossible_translocation_choices)
 	random.shuffle(impossible_translocation_choices)
-	answer_choice = impossible_translocation_choices.pop()
+	answer_choice = ''
+	while len(answer_choice) != len(popped):
+		answer_choice = impossible_translocation_choices.pop()
 
 	possible_choices.append(answer_choice)
 	random.shuffle(possible_choices)
@@ -286,7 +292,8 @@ if __name__ == "__main__":
 	for i in range(duplicates):
 		blackboard = makeQuestion(i+1)
 		if blackboard is not None:
-			f.write(blackboard+'\n')
+			f.write(blackboard)
 		else:
-			sys.exit(1)
+			continue
+			#sys.exit(1)
 	f.close()
