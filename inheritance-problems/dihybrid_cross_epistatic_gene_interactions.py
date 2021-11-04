@@ -26,7 +26,7 @@ def questionContent(gene_id):
 #===================
 #===================
 def makeQuestion(gene_id, color_set, letter1, letter2):
-	assigned_colors = crossinglib.dihybridAssignColors(gene_id, color_set)
+	assigned_colors = crossinglib.dihybridAssignColorsOriginal(gene_id, color_set)
 	dihybrid_table = crossinglib.createDiHybridTable(letter1, letter2, assigned_colors)
 	testcross_table = crossinglib.createTestCrossTable(letter1, letter2, assigned_colors)
 
