@@ -34,11 +34,13 @@ base_replacement_rule_dict = {
 	'  ': ' ',
 }
 
+lowercase = "abcdefghijklmnopqrstuvwxyz"
+
 #=======================
 def getCrc16_FromString(mystr):
- crc16 = crcmod.predefined.Crc('xmodem')
- crc16.update(mystr.encode('ascii'))
- return crc16.hexdigest().lower()
+	crc16 = crcmod.predefined.Crc('xmodem')
+	crc16.update(mystr.encode('ascii'))
+	return crc16.hexdigest().lower()
 
 #=======================
 def readYamlFile(yaml_file):
@@ -48,17 +50,50 @@ def readYamlFile(yaml_file):
 	return data
 
 #=======================
+def autoAddConflictRules(yaml_data):
+	is_lowercase = {}
+	for c in list(lowercase):
+		is_lowercase[c] = True
+	is_number = {}
+	for n in range(0,10):
+		is_number[str(n)] = True
+	true_statement_tree = yaml_data['true_statements']
+	false_statement_tree = yaml_data['false_statements']
+	conflict_rules = yaml_data['conflict_rules']
+	statement_keys = list(true_statement_tree.keys())
+	statement_keys += list(false_statement_tree.keys())
+	rule_bases = set()
+	for key in statement_keys:
+		#print(key[:-1])
+		if is_lowercase.get(key[-1]) is True and is_number.get(key[-2]):
+			#fits pattern the truth[1a]
+			base = key[:-1]
+			base = base.replace('false', 'truth')
+			rule_bases.add(base)
+	print(rule_bases)
+	for base1 in rule_bases:
+		base2 = base1.replace('truth', 'false')
+		yaml_data['conflict_rules'][base] = {}
+		for key in statement_keys:
+			if key == base1 or key == base2 or key[:-1] == base1 or key[:-1] == base2:
+				yaml_data['conflict_rules'][base][key] = True
+	pprint.pprint(yaml_data['conflict_rules'])
+	#sys.exit(1)
+	return
+			
+
+
+#=======================
 def checkIfConflict(statement1_id, statement2_id, conflict_rules):
 	# is a list of statement_ids
 	for conflict_rule in conflict_rules.values():
 		#print(conflict_rule)
-		#answer = conflict_rule.get(statement1_id, False)  and conflict_rule.get(statement2_id, False)
+		#answer = conflict_rule.get(statement1_id, False) and conflict_rule.get(statement2_id, False)
 		#print(statement1_id, "+", statement2_id, "=", answer)
 		if (conflict_rule.get(statement1_id, False) is True
 			and conflict_rule.get(statement2_id, False) is True):
 			#print(statement1_id, statement2_id, conflict_rule.get(statement1_id, False), conflict_rule.get(statement2_id, False))
 			return True
-
 	return False
 
 #=======================
@@ -137,7 +172,7 @@ def writeQuestion(yaml_data, question_type):
 	if question_type is False and yaml_data.get('override_question_false', 'default') != 'default':
 		return yaml_data['override_question_false']
 
-	topic  = yaml_data['topic']
+	topic = yaml_data['topic']
 	if yaml_data.get('connection_words', None) is not None:
 		connection_word_list = yaml_data.get('connection_words')
 	else:
@@ -146,7 +181,7 @@ def writeQuestion(yaml_data, question_type):
 	if question_type is False:
 		question_type_html = 'FALSE '
 	elif question_type is True:
-		question_type_html = 'TRUE ' 
+		question_type_html = 'TRUE '
 	else:
 		question_type_html = '<strong>{0}</strong> '.format(str(question_type).upper())
 
@@ -197,9 +232,7 @@ def sortStatements(yaml_data, notrue=False, nofalse=False):
 			list_of_complete_questions.extend(question_string_list)
 	else:
 		print("Skipping all of the FALSE statement questions")
-		
-	list_of_complete_questions = applyReplacementRulesToQuestions(list_of_complete_questions, yaml_data.get('replacement_rules'))	
-		
+	list_of_complete_questions = applyReplacementRulesToQuestions(list_of_complete_questions, yaml_data.get('replacement_rules'))
 	return list_of_complete_questions
 
 #=======================
@@ -207,13 +240,13 @@ def sortStatements(yaml_data, notrue=False, nofalse=False):
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser(description='Process some integers.')
 	parser.add_argument('-f', '-y', '--file', metavar='<file>', type=str, dest='input_yaml_file',
-							  help='yaml input file to process')
+		help='yaml input file to process')
 	parser.add_argument('--nofalse', '--no-false', action='store_true', dest='nofalse', default=False,
-							  help='do not create the false form (which one is false) of the question')
+		help='do not create the false form (which one is false) of the question')
 	parser.add_argument('--notrue', '--no-true', action='store_true', dest='notrue', default=False,
-							  help='do not create the true form (which one is true) of the question')
+		help='do not create the true form (which one is true) of the question')
 	parser.add_argument('-x', '--max-questions', metavar='<file>', type=int, dest='max_questions',
-							  help='yaml input file to process', default=199)
+		help='yaml input file to process', default=199)
 	args = parser.parse_args()
 
 	if args.input_yaml_file is None or not os.path.isfile(args.input_yaml_file):
@@ -222,6 +255,8 @@ if __name__ == '__main__':
 
 	yaml_data = readYamlFile(args.input_yaml_file)
 	pprint.pprint(yaml_data)
+	autoAddConflictRules(yaml_data)
+
 
 	list_of_complete_questions = sortStatements(yaml_data, notrue=args.notrue, nofalse=args.nofalse)
 	if len(list_of_complete_questions) > args.max_questions:
