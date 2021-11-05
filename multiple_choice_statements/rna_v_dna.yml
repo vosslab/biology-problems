@@ -21,14 +21,16 @@ true_statements:
 
   truth4a: RNA nucleotides have a 2&prime; hydroxide (-OH) group, DNA does not
   truth4b: DNA nucleotides are missing the 2&prime; hydroxide (-OH) group
+  truth4c: DNA contains one less hydroxyl (-OH) group than RNA
 
   truth5a: RNA is mostly in the A-form helix, whereas DNA is mostly in the B-form helix
   truth5b: DNA is mostly in the B-form helix, whereas RNA is mostly in the A-form helix
 
-  truth6: Both DNA and RNA have a positive charge
+  truth6: Both DNA and RNA have a negative charge
 
-  truth8: DNA contains one less hydroxyl (-OH) group than RNA
-
+  truth10a: DNA has a regular consistent structure, whereas RNA adopts a wide variety of tertiary structures 
+  truth10b: RNA adopts a wide variety of tertiary structures 
+  truth10c: DNA has a regular consistent structure
 
 false_statements:
   false1a: RNA is usually double stranded (duplex), whereas DNA is usually single stranded (simplex)
@@ -50,6 +52,7 @@ false_statements:
   false4b: RNA nucleotides are missing the 2&prime; hydroxide (-OH) group compared to RNA
   false4c: RNA nucleotides have an extra 4&prime; hydroxide (-OH) group, DNA does not
   false4d: DNA nucleotides are missing the 4&prime; hydroxide (-OH) group compared to RNA
+  false4e: RNA contains one less hydroxyl (-OH) group than DNA
 
   false5a: DNA is mostly in the A-form helix, whereas RNA is mostly in the B-form helix
   false5b: RNA is mostly in the B-form helix, whereas DNA is mostly in the A-form helix
@@ -62,11 +65,16 @@ false_statements:
   
   false7a: RNA is made of nucleotides, DNA is made of amino acids
   false7b: DNA is made of nucleotides, RNA is made of amino acids
-  
-  false8: RNA contains one less hydroxyl (-OH) group than DNA
 
-  false9a: DNA has a sugar-phosphate backbone, RNA does not
-  false9b: RNA has a sugar-phosphate backbone, DNA does not
+  false8a: DNA has a sugar-phosphate backbone, RNA does not
+  false8b: RNA has a sugar-phosphate backbone, DNA does not
+
+  false9a: DNA has major and minor grooves, RNA does not
+  false9b: RNA has major and minor grooves, DNA does not
+
+  false10a: RNA has a regular consistent structure, whereas DNA adopts a wide variety of tertiary structures 
+  false10b: DNA adopts a wide variety of tertiary structures 
+  false10c: RNA has a regular consistent structure 
 
 # conflicts, means that the statements cannot appear together
 # add ': True' to each line, so the program runs a faster lookup 

@@ -25,6 +25,7 @@ true_statements:
 
   truth9a: G-C base pairs have three hydrogen bonds, whereas A-T base pairs only have two hydrogen bonds
   truth9b: G-C base pairs are stronger than A-T base pairs
+  truth9c: A-T base pairs are weaker than G-C base pairs
 
   truth12: the DNA double helix has ten nucleotides between each turn
   truth13: the DNA double helix has a consistent diameter
@@ -34,7 +35,6 @@ false_statements:
   false1a: the backbone contains only phosphate and nucleobase
   false1b: the backbone contains only nucleobase and sugar
 
-  #Jerry O'Donohue
   false2a: ionic bonds hold the two strands together
   false2b: covalent bonds hold the two strands together
   false2c: hydrophobic contacts hold the two strands together
@@ -58,8 +58,9 @@ false_statements:
   false8a: one strand is positively charged and the other is negatively charged
   false8b: the DNA strands are uniformly positively charged
 
-  false9a: G-C base pairs have three hydrogen bonds, whereas A-T base pairs only have two hydrogen bonds
-  false9b: G-C base pairs are stronger than A-T base pairs
+  false9a: A-T base pairs have three hydrogen bonds, whereas G-C base pairs only have two hydrogen bonds
+  false9b: A-T base pairs are stronger than G-C base pairs
+  false9c: G-C base pairs are weaker than A-T base pairs
 
   false14: base pairings create unequal spacing between the two DNA strands
 
