@@ -55,52 +55,7 @@ false_statements:
   
 # conflicts, means that the statements cannot appear together
 # add ': True' to each line, so the program runs a faster lookup 
-conflict_rules:
-  one:
-    false1a: True
-    false1b: True
-    false1c: True
-    false1d: True
-    false1e: True
-    false1f: True
-    false1g: True
-    false1h: True
-  two:
-    false2a: True
-    false2b: True
-    false2c: True
-    false2d: True
-    false2e: True
-    false2f: True
-    false2g: True
-    false2h: True
-  three:
-    false3a: True
-    false3b: True
-    false3c: True
-    false3d: True
-    false3e: True
-    false3f: True
-    false3g: True
-    false3h: True
-  four:
-    false4a: True
-    false4b: True
-    false4c: True
-    false4d: True
-    false4e: True
-    false4f: True
-    false4g: True
-    false4h: True
-  five:
-    false5a: True
-    false5b: True
-    false5c: True
-    false5d: True
-    false5e: True
-    false5f: True
-    false5g: True
-    false5h: True
+conflict_rules: ~
 
 
 

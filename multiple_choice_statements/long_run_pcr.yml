@@ -3,64 +3,45 @@
 #Which one of the following statements is FALSE/TRUE <connection word> <topic>
 topic: Long Distance PCR
 
-connection_words:
-  - concerning
-  - about
-  - regarding
-  - of
+connection_words: ~
 
 true_statements:
    truth1a: the time for polymerase elongation step is extended
    truth1b: the polymerase elongation time is increased
+
    truth2a: the time for dna denaturation step is shortened
    truth2b: the dna denaturation time is decreased
+
    truth3a: the temperature for polymerase elongation step is lowered
    truth3b: the polymerase elongation temperature is decreased
-   truth4: a second polymerase is added to proofread mistakes made by Taq
-   truth5: the dna denaturation step can cause depurination of the purine bases
-   truth6: the buffer conditions are modified to provide better ionic concentrations
-   truth7: normal PCR cannot produce products longer than 5 kb
-   truth8: long range PCR can amplify long target DNA sequences up to 30 kb
-   truth9: a mixture of two different thermostable polymerases is used
+
+   truth4a: a second polymerase is added to proofread mistakes made by Taq
+   truth4b: a mixture of two different thermostable polymerases is used
+
+   truth5a: normal PCR cannot produce products longer than 5 kb
+   truth5b: long range PCR can amplify long target DNA sequences up to 30 kb
+
+   truth6: the dna denaturation step can cause depurination of the purine bases
+
+   truth7: the buffer conditions are modified to provide better ionic concentrations
+
 
 false_statements:
    false1a: the time for polymerase elongation step is shortened
    false1b: the polymerase elongation time is decreased
+
    false2a: the time for dna denaturation step is extended
    false2b: the dna denaturation time is increased
+
    false3a: the temperature for polymerase elongation step is raised
    false3b: the polymerase elongation temperature is increased
-   false4: the dna denaturation step can cause depurination of the pyrimidine bases
-   false5: long range PCR can amplify long target DNA sequences up to an amazing 3,000 kb
-   false6: normal PCR cannot produce products longer than 200 bases
-   false7: long range PCR can amplify long target DNA sequences of only 4 kb
+
+   false5a: long range PCR can amplify long target DNA sequences up to an amazing 3,000 kb
+   false5b: normal PCR cannot produce products longer than 200 bases
+   false5c: long range PCR can amplify long target DNA sequences of only 4 kb
+
+   false6: the dna denaturation step can cause depurination of the pyrimidine bases
+
 
 # conflicts, means that the statements cannot appear together
-conflict_rules:
-   elongation time:
-     truth1a: True
-     false1a: True
-     truth1b: True
-     false1b: True
-   denaturation time:
-     truth2a: True
-     truth2b: True
-     false2a: True
-     false2b: True
-   elongation temperature:
-     truth3a: True
-     truth3b: True
-     false3a: True
-     false3b: True
-   2nd polymerase:
-     truth4: True
-     truth9: True
-   range:
-     truth7: True
-     truth8: True
-     false5: True
-     false6: True
-     false7: True
-   depurination:
-     truth5: True
-     false4: True
+conflict_rules: ~

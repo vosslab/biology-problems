@@ -8,29 +8,31 @@ override_question_false: Which one of the following English words is <strong>NOT
 connection_words: ~
 
 true_statements:
-  truth1: Rotor
+  truth1: Solos
   truth2: Stats
-  truth3: Racecar
-  truth4: Pop
-  truth5: Anna
-  truth6: Kayak
-  truth7: Mom
-  truth8: Madam
-  truth9: Noon
-  truth11: Level
-  truth12: Civic
-  truth13: Redder
-  truth14: Refer
-  truth15: Rotator
-  truth16: Solos
-  truth17: Radar
-  truth18: Sos
+  truth3: Rotor
+  
+  truth84: Pop
+  truth85: Anna
+  truth86: Kayak
+  truth87: Mom
+  truth88: Madam
+  truth89: Noon
+  truth90: Racecar
+  truth91: Level
+  truth92: Civic
+  truth93: Redder
+  truth94: Refer
+  truth95: Rotator
+  truth97: Radar
+  truth98: Sos
 
 
 false_statements:
   false1: solo
-  false2: Rattat
-  false3: mow
+  false2: Stat
+  false3: roto
+
   false4: dop
   false5: lulu
   false6: pod
@@ -38,8 +40,8 @@ false_statements:
   false8: dog
   false9: bod
   false10: dodo
-  false11: Stat
-  false12: roto
+  false11: Rattat
+  false12: mow
   false13: stand
   false14: leaves
   false16: yeah
@@ -58,16 +60,7 @@ false_statements:
   false29: wog
   
 # conflicts, means that the statements cannot appear together
-conflict_rules:
-  solos:
-    false1: True
-    truth16: True
-  stats:
-    false11: True
-    truth2: True
-  rotor:
-    false12: True
-    truth1: True
+conflict_rules: ~
 
 
 

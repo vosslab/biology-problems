@@ -17,10 +17,10 @@ true_statements:
   truth2b: thymine in DNA takes the place of uracil in RNA
 
   truth3a: the DNA sugar is dexoyribose, RNA has a different sugar
-  truth3a: the RNA sugar is ribose, DNA has a different sugar
+  truth3b: the RNA sugar is ribose, DNA has a different sugar
 
   truth4a: RNA nucleotides have a 2&prime; hydroxide (-OH) group, DNA does not
-  truth4a: DNA nucleotides are missing the 2&prime; hydroxide (-OH) group
+  truth4b: DNA nucleotides are missing the 2&prime; hydroxide (-OH) group
 
   truth5a: RNA is mostly in the A-form helix, whereas DNA is mostly in the B-form helix
   truth5b: DNA is mostly in the B-form helix, whereas RNA is mostly in the A-form helix
@@ -44,7 +44,7 @@ false_statements:
   false2h: thymine in DNA takes the place of adenine in RNA
 
   false3a: the DNA sugar is ribose, RNA has a different sugar
-  false3a: the RNA sugar is deoxyribose, DNA has a different sugar
+  false3b: the RNA sugar is deoxyribose, DNA has a different sugar
 
   false4a: DNA nucleotides have a 2&prime; hydroxide (-OH) group, RNA does not
   false4b: RNA nucleotides are missing the 2&prime; hydroxide (-OH) group compared to RNA
@@ -70,40 +70,7 @@ false_statements:
 
 # conflicts, means that the statements cannot appear together
 # add ': True' to each line, so the program runs a faster lookup 
-conflict_rules:
-  stranded:
-    truth1a: True
-    truth1b: True
-    false1a: True
-    false1b: True
-  pairing:
-    truth2a: True
-    truth2b: True
-    false2a: True
-    false2b: True
-    false2c: True
-    false2d: True
-    false2e: True
-    false2f: True
-    false2g: True
-    false2h: True
-  sugar:
-    truth3a: True
-    truth3b: True
-    false3a: True
-    false3b: True    
-  2 prime:
-    truth4a: True
-    truth4b: True
-    false4a: True
-    false4b: True
-    false4c: True
-    false4d: True    
-  helix form:
-    truth5a: True
-    truth5b: True
-    false5a: True
-    false5b: True
+conflict_rules: ~
     
 
 

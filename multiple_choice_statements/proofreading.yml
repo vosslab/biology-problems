@@ -21,43 +21,16 @@ true_statements:
   truth9: Proofreading allows polymerase to remove mismatched nucleotides in the 3&prime;&rarr;5&prime; direction
 
 false_statements:
-  false1: Proofreading is designed to allow polymerase to 'start from scratch'
+  false1a: Proofreading is designed to allow polymerase to 'start from scratch'
+  false1b: Proofreading allows polymerase to 'start from scratch'
   false2: Most RNA polymerases have proofreading capability
   false3: DNA polymerases do not proofread
   false4: Taq DNA polymerase has proofreading capability
   false5: DNA polymerase can start synthesis without primer
   false6: RNA polymerase requires a primer to start synthesis
-  false7: Proofreading allows polymerase to 'start from scratch'
   false8: The 5&prime;&rarr;3&prime; exonuclease polymerase domain is required for proofreading
   false9: Proofreading allows polymerase to remove mismatched nucleotides in the 5&prime;&rarr;3&prime; direction
 
 # conflicts, means that the statements cannot appear together
-conflict_rules:
-  design:
-     truth1: True
-     false1: True
-  RNA poly:
-     truth2: True
-     false2: True
-  DNA poly:
-     truth3: True
-     false3: True
-  Taq:
-     truth4: True
-     false4: True
-  DNA primer:
-     truth5: True
-     false5: 
-  RNA primer:
-     truth6: True
-     false6: True
-  scratch:
-     truth7: True
-     false7: True
-     false1: True
-  domain:
-     truth8: True
-     false8: True
-  remove:
-     truth9: True
-     false9: True     
+conflict_rules: ~
+  

@@ -33,35 +33,6 @@ false_statements:
 
 # conflicts, means that the statements cannot appear together
 # add ': True' to each line, so the program runs a faster lookup 
-conflict_rules:
-  dNTPs:
-    truth1: True
-    false1a: True
-    false1b: True
-  conserved:
-    truth2: True
-    false2: True
-  melting:
-    truth3: True
-    false3: True
-  complementary:
-    truth5a: True
-    truth5b: True
-    false5a: True
-    false5b: True
-  ends:
-    truth6: True
-    false6: True
-  GC:
-    truth7: True
-    false7a: True
-    false7b: True
-  temp:
-    truth8: True
-    false8a: True
-    false8b: True
-  four:
-    truth9: True
-    false9: True
+conflict_rules: ~
 
 

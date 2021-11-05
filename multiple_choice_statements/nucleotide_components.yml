@@ -10,37 +10,30 @@ true_statements:
   truth1a: sugar molecule
   truth1b: deoxyribose
   truth1c: ribose
+
   truth2: phosphate group
+
   truth3a: nitrogenous base
   truth3b: nucleobase
   truth3c: purines and pyrimidines
 
 false_statements:
-  false1: carboxyl
-  false2a: amino acid
-  false2b: protein
-  false3: alanine
-  false4: glycerol backbone
-  false5: oxygen
-  false6: hydrogen
-  false7: nucleus
-  false8: cytoplasm
-  false9: glucose
-  false9: chromatin
+  false11: carboxyl
+
+  false12a: amino acid
+  false12b: protein
+
+  false13: alanine
+  false14: glycerol backbone
+  false15: oxygen
+  false16: hydrogen
+  false17: nucleus
+  false18: cytoplasm
+  false19: glucose
+  false20: chromatin
 
 # conflicts, means that the statements cannot appear together
 # add ': True' to each line, so the program runs a faster lookup 
-conflict_rules:
-  sugar:
-    truth1a: True
-    truth1b: True
-    truth1c: True
-  base:
-    truth3a: True
-    truth3b: True
-    truth3c: True
-  protein:
-    false2a: True
-    false2b: True
+conflict_rules: ~
 
 

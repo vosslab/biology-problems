@@ -11,14 +11,28 @@ C.
 
 import os
 import sys
-import math
-import yaml
 import copy
+import math
+import time
+import yaml
 import pprint
 import random
 import argparse
 import itertools
 import crcmod.predefined
+
+# special loader with duplicate key checking
+class UniqueKeyLoader(yaml.SafeLoader):
+	def construct_mapping(self, node, deep=False):
+		mapping = []
+		for key_node, value_node in node.value:
+			key = self.construct_object(key_node, deep=deep)
+			if key in mapping:
+				print("DUPLICATE KEY: ", key)
+				raise AssertionError("DUPLICATE KEY: ", key)
+			mapping.append(key)
+		return super().construct_mapping(node, deep)
+
 
 global_connection_words = [ 'concerning', 'about', 'regarding', 'of', ]
 base_replacement_rule_dict = {
@@ -44,8 +58,14 @@ def getCrc16_FromString(mystr):
 
 #=======================
 def readYamlFile(yaml_file):
+	print("Processing file: ", yaml_file)
+	yaml.allow_duplicate_keys = False
 	yaml_pointer = open(yaml_file, 'r')
-	data = yaml.safe_load(yaml_pointer)
+	#data = UniqueKeyLoader(yaml_pointer)
+	#help(data)
+	yaml_text = yaml_pointer.read()
+	data = yaml.load(yaml_text, Loader=UniqueKeyLoader)
+	#data = yaml.safe_load(yaml_pointer)
 	yaml_pointer.close()
 	return data
 
@@ -59,7 +79,8 @@ def autoAddConflictRules(yaml_data):
 		is_number[str(n)] = True
 	true_statement_tree = yaml_data['true_statements']
 	false_statement_tree = yaml_data['false_statements']
-	conflict_rules = yaml_data['conflict_rules']
+	if yaml_data['conflict_rules'] is None:
+		yaml_data['conflict_rules'] = {}
 	statement_keys = list(true_statement_tree.keys())
 	statement_keys += list(false_statement_tree.keys())
 	rule_bases = set()
@@ -68,19 +89,38 @@ def autoAddConflictRules(yaml_data):
 		if is_lowercase.get(key[-1]) is True and is_number.get(key[-2]):
 			#fits pattern the truth[1a]
 			base = key[:-1]
-			base = base.replace('false', 'truth')
+			base = base.replace('false', 'bool')
+			base = base.replace('truth', 'bool')
 			rule_bases.add(base)
-	print(rule_bases)
-	for base1 in rule_bases:
-		base2 = base1.replace('truth', 'false')
+		elif is_number.get(key[-1]):
+			#fits pattern the truth[1a]
+			base = key
+			base = base.replace('false', 'bool')
+			base = base.replace('truth', 'bool')
+			rule_bases.add(base)
+	#print("Rule Bases", rule_bases)
+	for base in rule_bases:
+		base1 = base.replace('bool', 'truth')
+		base2 = base.replace('bool', 'false')
+		#print(base, base1, base2)
 		yaml_data['conflict_rules'][base] = {}
 		for key in statement_keys:
-			if key == base1 or key == base2 or key[:-1] == base1 or key[:-1] == base2:
+			if key == base1 or key == base2:
+				#print(key, "True")
 				yaml_data['conflict_rules'][base][key] = True
+			elif is_lowercase.get(key[-1]) and (key[:-1] == base1 or key[:-1] == base2):
+				yaml_data['conflict_rules'][base][key] = True
+	base_keys = list(yaml_data['conflict_rules'].keys())
+	for base in base_keys:
+		if len(yaml_data['conflict_rules'][base]) == 1:
+			del yaml_data['conflict_rules'][base]
+	print("Final Conflict Rules:")
 	pprint.pprint(yaml_data['conflict_rules'])
+	print("")
+	#time.sleep(1)
 	#sys.exit(1)
 	return
-			
+
 
 
 #=======================
@@ -277,5 +317,3 @@ if __name__ == '__main__':
 		f.write(output_format)
 	f.close()
 	print("Wrote {0} questions to file.".format(N))
-
-

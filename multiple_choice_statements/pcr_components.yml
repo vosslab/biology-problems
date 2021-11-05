@@ -8,29 +8,38 @@ override_question_false: Which one of the following is <strong>NOT</strong> a co
 connection_words: ~
 
 true_statements:
-  truth1a: Deoxynucleotide triphosphates
-  truth1b: dNTPs
-  truth1c: dATP, dTTP, dCTP, and dGTP
-  truth2a: Magnesium ions (Mg<sup>2+</sup>)
-  truth2b: positively charged metal ions
-  truth3a: Oligonucleotide primers
-  truth3b: Primers complementary to each end of the sequence to be amplified
-  truth4a: <i>Taq</i> DNA Polymerase
-  truth4b: Thermostable DNA Polymerase
-  truth4c: Heat stable DNA Polymerase
-  truth5a: Reaction Buffer
-  truth5b: pH Buffer  
-  truth6a: Template DNA
-  truth6b: DNA containing the sequences to be amplified
-  truth7: Thermal Cycler
+  truth1a: <i>Taq</i> DNA Polymerase
+  truth1b: Thermostable DNA Polymerase
+  truth1c: Heat stable DNA Polymerase
+
+  truth21a: Deoxynucleotide triphosphates
+  truth21b: dNTPs
+  truth21c: dATP, dTTP, dCTP, and dGTP
+
+  truth22a: Magnesium ions (Mg<sup>2+</sup>)
+  truth22b: positively charged metal ions
+
+  truth24a: Oligonucleotide primers
+  truth24b: Primers complementary to each end of the sequence to be amplified 
+
+  truth25a: Reaction Buffer
+  truth25b: pH Buffer  
+
+  truth26a: Template DNA
+  truth26b: DNA containing the sequences to be amplified
+
+  truth27: Thermal Cycler
 
 false_statements:
-  false1: DNA Ligase
-  false2: DNA Helicase
-  false3a: <i>E. coli</i> DNA Polymerase
-  false3b: Thermolabile DNA Polymerase
+  false1a: <i>E. coli</i> DNA Polymerase
+  false1b: Thermolabile DNA Polymerase
+
+  false2: DNA Ligase
+  false3: DNA Helicase
+
   false4a: mRNA template
   false4b: messenger RNA template
+
   false5: reverse transciptase (RT)
   false6: Restriction enzymes
   false7: DNA Primase
@@ -43,33 +52,7 @@ false_statements:
   
 # conflicts, means that the statements cannot appear together
 # add ': True' to each line, so the program runs a faster lookup 
-conflict_rules:
-  dNTPs:
-    truth1a: True
-    truth1b: True
-    truth1c: True
-  ions:
-    truth2a: True
-    truth2b: True
-  primers:
-    truth3a: True
-    truth3b: True
-  polymerase:
-    false3a: True
-    false3b: True
-    truth4a: True
-    truth4b: True
-    truth4c: True
-  buffers:
-    truth5a: True
-    truth5b: True
-  mRNA:
-    false4a: True
-    false4b: True
-  template:
-    truth6a: True
-    truth6b: True
-
+conflict_rules: ~
 
 
 

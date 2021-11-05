@@ -14,13 +14,16 @@ connection_words: ~
 true_statements:
    truth1a: 'The melting temperature (T<sub>m</sub>) of a DNA strand goes up (increases) when the cytosine (C) + guanine (G) base pairing content increases.'
    truth1b: 'The melting temperature (T<sub>m</sub>) of a DNA strand goes down (decreases) when the cytosine (C) + guanine (G) base pairing content decreases.'
+
    truth2a: 'The melting temperature (T<sub>m</sub>) of a DNA strand goes up (increases) when the adenine (A) + thymine (T) base pairing content decreases.'
    truth2b: 'The melting temperature (T<sub>m</sub>) of a DNA strand goes down (decreases) when the adenine (A) + thymine (T) base pairing content increases.'
+
    truth10: 'The melting temperature (T<sub>m</sub>) of a DNA strand is the temperature at which half of strands are single-stranded and the other half are double-stranded.'
 
 false_statements:
    false1a: 'The melting temperature (T<sub>m</sub>) of a DNA strand goes up (increases) when the cytosine (C) + guanine (G) base pairing content decreases.'
    false1b: 'The melting temperature (T<sub>m</sub>) of a DNA strand goes down (decreases) when the cytosine (C) + guanine (G) base pairing content increases.'
+
    false2a: 'The melting temperature (T<sub>m</sub>) of a DNA strand goes up (increases) when the adenine (A) + thymine (T) base pairing content increases.'
    false2b: 'The melting temperature (T<sub>m</sub>) of a DNA strand goes down (decreases) when the adenine (A) + thymine (T) base pairing content decreases.'
 
@@ -45,37 +48,7 @@ false_statements:
    false6d: 'The melting temperature (T<sub>m</sub>) of a DNA strand goes down (decreases) when the amount of nucleobases with amino groups, adenine (A) + cytosine (C), decreases.'
 
 #conflicts, means that the statements cannot appear together
-conflict_rules:
-   CG:
-     truth1a: True
-     false1a: True
-     truth1b: True
-     false1b: True
-   AT:
-     truth2a: True
-     truth2b: True
-     false2a: True
-     false2b: True
-   purine:
-     false3a: True
-     false3b: True
-     false3c: True
-     false3d: True
-   pyrimidine:
-     false4a: True
-     false4b: True
-     false4c: True
-     false4d: True
-   ketone:
-     false5a: True
-     false5b: True
-     false5c: True
-     false5d: True
-   amino:
-     false6a: True
-     false6b: True
-     false6c: True
-     false6d: True
+conflict_rules: ~
 
 
 
