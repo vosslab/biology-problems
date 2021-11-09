@@ -102,7 +102,7 @@ if __name__ == "__main__":
 	j = -1
 	for i in range(duplicates):
 		j += 1
-		if j + 3 == len(lowercase):
+		if j + 2 == len(lowercase):
 			j = 0
 		basetype = lowercase[j:j+3]
 		g = list(basetype)

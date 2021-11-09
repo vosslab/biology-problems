@@ -1,11 +1,14 @@
 #!/usr/bin/env python
 
 import os
+import re
 import sys
+import copy
 import math
 import numpy
 import string
 import random
+import crcmod.predefined
 
 debug = False
 
@@ -256,25 +259,16 @@ def makeQuestion(basetype, geneorder, distances, progeny_size):
 	typemap = generateProgenyData(types, type_counts, basetype)
 	return typemap
 
-def getCode():
-	source = string.ascii_uppercase + string.digits
-	code = ''
-	for i in range(5):
-		code += random.choice(source)
-	code += ' - '
-	return code
-
 def questionText(basetype):
-	question_string = getCode()
-	question_string += '<h6>Three-Point Test-Cross Gene Mapping</h6>'
+	question_string = '<h6>Three-Point Test-Cross Gene Mapping</h6>'
 	question_string += '<p>A test-cross with a heterozygote fruit fly for three genes is conducted. '
-	question_string += 'The resulting phenotypes are summarized in above table.</p> '
-	question_string += '<p>Using the table, determine the order of the genes and the distances between them. '
-	question_string += 'Once calculated, fill in the following four blanks: </p><ul>'
+	question_string += 'The resulting phenotypes are summarized in the table above.</p> '
+	question_string += '<p>Using the table above, determine the order of the genes and the distances between them. '
+	question_string += 'Once calculated, fill in the following four blanks: </p><p> <ul>'
 	question_string += '<li>The distance between genes {0} and {1} is [{0}{1}] cM ({0}{1})</li>'.format(basetype[0].upper(),basetype[1].upper())
 	question_string += '<li>The distance between genes {0} and {1} is [{0}{1}] cM ({0}{1})</li>'.format(basetype[0].upper(),basetype[2].upper())
 	question_string += '<li>The distance between genes {0} and {1} is [{0}{1}] cM ({0}{1})</li>'.format(basetype[1].upper(),basetype[2].upper())
-	question_string += '<li>From this the correct order of the genes is [geneorder] (gene order).</li></ul>'
+	question_string += '<li>From this the correct order of the genes is [geneorder] (gene order).</li></ul></p>'
 	question_string += '<p><i>Hint 1:</i> ALL gene distances will be whole numbers, '
 	question_string += 'do NOT enter a decimal; if you have a decimal your calculations are wrong.</p>'
 	question_string += '<p><i>Hint 2:</i> enter your answer in the blank using only letters or numbers '
@@ -302,33 +296,58 @@ def getVariables(basetype):
 	variable_list.append(variable)
 	return variable_list
 
+#=======================
+def getCrc16_FromString(mystr):
+	crc16 = crcmod.predefined.Crc('xmodem')
+	crc16.update(mystr.encode('ascii'))
+	return crc16.hexdigest().lower()
 
-def blackboardFormat(question_string, html_table, variable_list, geneorder, distances):
+#=====================
+def makeQuestionPretty(question):
+	pretty_question = copy.copy(question)
+	#print(len(pretty_question))
+	pretty_question = re.sub('\<table.+\<\/table\>', '[]\n', pretty_question)
+	#print(len(pretty_question))
+	pretty_question = re.sub('\<\/p\>\s*\<p\>', '\n', pretty_question)
+	#print(len(pretty_question))
+	return pretty_question
+
+#=====================
+def formatBB_FIB_PLUS_Question(N, question, variable_list, geneorder, distances):
+	number = "{0}. ".format(N)
+	crc16 = getCrc16_FromString(question)
+
 	#FIB_PLUS TAB question text TAB variable1 TAB answer1 TAB answer2 TAB TAB variable2 TAB answer3
-	blackboard = 'FIB_PLUS\t'
-	blackboard += html_table
-	blackboard += question_string
+	bb_question = 'FIB_PLUS\t<p>{0}. {1}</p> {2}'.format(N, crc16, question)
+	pretty_question = makeQuestionPretty(question)
+	print('{0}. {1} -- {2}'.format(N, crc16, pretty_question))
+
 	variable_to_distance = {}
 	for i in range(len(variable_list)-1):
 		variable_to_distance[variable_list[i]] = distances[i]
 	variable_list.sort()
 	for i in range(len(variable_list)-1):
 		variable = variable_list[i]
-		blackboard += '\t{0}\t{1}\t'.format(variable, variable_to_distance[variable])
-	blackboard += '\tgeneorder\t{0}\t{1}\n'.format(geneorder, geneorder[::-1])
-	return blackboard
+		bb_question += '\t{0}\t{1}\t'.format(variable, variable_to_distance[variable])
+	bb_question += '\tgeneorder\t{0}\t{1}'.format(geneorder, geneorder[::-1])
+	bb_question += '\n'
+	return bb_question
 
+#=====================
+#=====================
 if __name__ == "__main__":
 	lowercase = "abcdefghijklmnpqrsuvwxyz"
 
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
 	print('writing to file: '+outfile)
 	f = open(outfile, 'w')
-	duplicates = 98
+	duplicates = 197
 	j = -1
+	N = 0
 	for i in range(duplicates):
+		N += 1
 		j += 1
-		if j + 3 == len(lowercase):
+		if j + 2 == len(lowercase):
 			j = 0
 		basetype = lowercase[j:j+3]
 		geneorder = getGeneOrder(basetype)
@@ -342,8 +361,8 @@ if __name__ == "__main__":
 		#print(html_table)
 		question_string = questionText(basetype)
 		variable_list = getVariables(geneorder)
-
-		final_question = blackboardFormat(question_string, html_table, variable_list, geneorder, distances)
+		complete_question = html_table + question_string
+		final_question = formatBB_FIB_PLUS_Question(N, complete_question, variable_list, geneorder, distances)
 		#print(final_question)
 
 		f.write(final_question)
