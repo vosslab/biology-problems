@@ -85,8 +85,10 @@ def getDistances():
 		10:	[ 5, 15, 20, 25, 30, 35,],
 		5:	[10, 20, 30, 40, ],
 	}
-	a = random.choice(list(key_maps.keys()))
-	b = random.choice(key_maps[a])
+	#a = random.choice(list(key_maps.keys()))
+	#b = random.choice(key_maps[a])
+	a = random.randint(15,35)
+	b = random.randint(2,a-2)
 	if a == b:
 		print("ERROR")
 		sys.exit(1)
@@ -341,7 +343,7 @@ if __name__ == "__main__":
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
 	print('writing to file: '+outfile)
 	f = open(outfile, 'w')
-	duplicates = 197
+	duplicates = 1
 	j = -1
 	N = 0
 	for i in range(duplicates):
