@@ -5,7 +5,7 @@ import re
 import sys
 import copy
 import random
-import crossinglib
+import dihybridcrosslib
 import crcmod.predefined
 
 
@@ -20,10 +20,10 @@ def digenic_inheritance(color_set):
 	Ab_color_raw = color_set[1]
 	aB_color_raw = color_set[2]
 	ab_color_raw = color_set[3]
-	AB_color = crossinglib.color_translate.get(AB_color_raw, AB_color_raw)
-	Ab_color = crossinglib.color_translate.get(Ab_color_raw, Ab_color_raw)
-	aB_color = crossinglib.color_translate.get(aB_color_raw, aB_color_raw)
-	ab_color = crossinglib.color_translate.get(ab_color_raw, ab_color_raw)
+	AB_color = dihybridcrosslib.color_translate.get(AB_color_raw, AB_color_raw)
+	Ab_color = dihybridcrosslib.color_translate.get(Ab_color_raw, Ab_color_raw)
+	aB_color = dihybridcrosslib.color_translate.get(aB_color_raw, aB_color_raw)
+	ab_color = dihybridcrosslib.color_translate.get(ab_color_raw, ab_color_raw)
 
 	table = '<table border="0" style="border: 0px solid white; border-collapse: collapse; ">'
 	table += '<tr>'
@@ -72,8 +72,8 @@ def digenic_inheritance(color_set):
 	table += '</td></tr>'
 	table += '</table>'
 
-	#assigned_colors = crossinglib.dihybridAssignColors(0, color_set)
-	#print(crossinglib.createDiHybridTable('A', 'B', assigned_colors, 'digenic inheritance'))
+	#assigned_colors = dihybridcrosslib.dihybridAssignColors(0, color_set)
+	#print(dihybridcrosslib.createDiHybridTable('A', 'B', assigned_colors, 'digenic inheritance'))
 
 	description = table+'</br>'
 	description += 'A two step metabolic pathway determines the pigment color. '
@@ -93,10 +93,10 @@ def recessive_epistasis(color_set):
 	Ab_color_raw = color_set[1]
 	#aB_color_raw = color_set[2]
 	ab_color_raw = color_set[3]
-	AB_color = crossinglib.color_translate.get(AB_color_raw, AB_color_raw)
-	Ab_color = crossinglib.color_translate.get(Ab_color_raw, Ab_color_raw)
-	#aB_color = crossinglib.color_translate.get(aB_color_raw, aB_color_raw)
-	ab_color = crossinglib.color_translate.get(ab_color_raw, ab_color_raw)
+	AB_color = dihybridcrosslib.color_translate.get(AB_color_raw, AB_color_raw)
+	Ab_color = dihybridcrosslib.color_translate.get(Ab_color_raw, Ab_color_raw)
+	#aB_color = dihybridcrosslib.color_translate.get(aB_color_raw, aB_color_raw)
+	ab_color = dihybridcrosslib.color_translate.get(ab_color_raw, ab_color_raw)
 
 	table = '<table border="0" style="border: 0px solid white; border-collapse: collapse; ">'
 	for i in range(5):
@@ -116,8 +116,8 @@ def recessive_epistasis(color_set):
 	table += '</tr>'
 	table += '</table>'
 
-	#assigned_colors = crossinglib.dihybridAssignColors(1, color_set)
-	#print(crossinglib.createDiHybridTable('A', 'B', assigned_colors, 'recessive epistasis'))
+	#assigned_colors = dihybridcrosslib.dihybridAssignColors(1, color_set)
+	#print(dihybridcrosslib.createDiHybridTable('A', 'B', assigned_colors, 'recessive epistasis'))
 
 	description = table+'</br>'
 	description += 'A two step metabolic pathway determines the pigment color. '
@@ -136,10 +136,10 @@ def dominant_epistasis(color_set):
 	Ab_color_raw = color_set[1]
 	#aB_color_raw = color_set[2]
 	ab_color_raw = color_set[3]
-	AB_color = crossinglib.color_translate.get(AB_color_raw, AB_color_raw)
-	Ab_color = crossinglib.color_translate.get(Ab_color_raw, Ab_color_raw)
-	#aB_color = crossinglib.color_translate.get(aB_color_raw, aB_color_raw)
-	ab_color = crossinglib.color_translate.get(ab_color_raw, ab_color_raw)
+	AB_color = dihybridcrosslib.color_translate.get(AB_color_raw, AB_color_raw)
+	Ab_color = dihybridcrosslib.color_translate.get(Ab_color_raw, Ab_color_raw)
+	#aB_color = dihybridcrosslib.color_translate.get(aB_color_raw, aB_color_raw)
+	ab_color = dihybridcrosslib.color_translate.get(ab_color_raw, ab_color_raw)
 
 	table = '<table border="0" style="border: 0px solid white; border-collapse: collapse; ">'
 	for i in range(5):
@@ -158,8 +158,8 @@ def dominant_epistasis(color_set):
 	table += '</tr>'
 	table += '</table>'
 
-	#assigned_colors = crossinglib.dihybridAssignColors(2, color_set)
-	#print(crossinglib.createDiHybridTable('A', 'B', assigned_colors, 'dominant epistasis'))
+	#assigned_colors = dihybridcrosslib.dihybridAssignColors(2, color_set)
+	#print(dihybridcrosslib.createDiHybridTable('A', 'B', assigned_colors, 'dominant epistasis'))
 
 	description = table+'</br>'
 	description += 'A two step metabolic pathway determines the pigment color.<li> '
@@ -182,10 +182,10 @@ def duplicate_recessive_epistasis(color_set):
 	#Ab_color_raw = color_set[1]
 	#aB_color_raw = color_set[2]
 	ab_color_raw = color_set[3]
-	AB_color = crossinglib.color_translate.get(AB_color_raw, AB_color_raw)
-	#Ab_color = crossinglib.color_translate.get(Ab_color_raw, Ab_color_raw)
-	#aB_color = crossinglib.color_translate.get(aB_color_raw, aB_color_raw)
-	ab_color = crossinglib.color_translate.get(ab_color_raw, ab_color_raw)
+	AB_color = dihybridcrosslib.color_translate.get(AB_color_raw, AB_color_raw)
+	#Ab_color = dihybridcrosslib.color_translate.get(Ab_color_raw, Ab_color_raw)
+	#aB_color = dihybridcrosslib.color_translate.get(aB_color_raw, aB_color_raw)
+	ab_color = dihybridcrosslib.color_translate.get(ab_color_raw, ab_color_raw)
 
 	table = '<table border="0" style="border: 0px solid white; border-collapse: collapse; ">'
 	for i in range(5):
@@ -205,8 +205,8 @@ def duplicate_recessive_epistasis(color_set):
 	table += '</tr>'
 	table += '</table>'
 
-	#assigned_colors = crossinglib.dihybridAssignColors(3, color_set)
-	#print(crossinglib.createDiHybridTable('A', 'B', assigned_colors, 'duplicate recessive epistasis'))
+	#assigned_colors = dihybridcrosslib.dihybridAssignColors(3, color_set)
+	#print(dihybridcrosslib.createDiHybridTable('A', 'B', assigned_colors, 'duplicate recessive epistasis'))
 
 	description = table+'</br>'
 	description += 'A two step metabolic pathway determines the pigment color. '
@@ -224,10 +224,10 @@ def duplicate_interaction_epistasis(color_set):
 	Ab_color_raw = color_set[1]
 	#aB_color_raw = color_set[2]
 	ab_color_raw = color_set[3]
-	AB_color = crossinglib.color_translate.get(AB_color_raw, AB_color_raw)
-	Ab_color = crossinglib.color_translate.get(Ab_color_raw, Ab_color_raw)
-	#aB_color = crossinglib.color_translate.get(aB_color_raw, aB_color_raw)
-	ab_color = crossinglib.color_translate.get(ab_color_raw, ab_color_raw)
+	AB_color = dihybridcrosslib.color_translate.get(AB_color_raw, AB_color_raw)
+	Ab_color = dihybridcrosslib.color_translate.get(Ab_color_raw, Ab_color_raw)
+	#aB_color = dihybridcrosslib.color_translate.get(aB_color_raw, aB_color_raw)
+	ab_color = dihybridcrosslib.color_translate.get(ab_color_raw, ab_color_raw)
 
 	table = '<table border="0" style="border: 0px solid white; border-collapse: collapse; ">'
 	table += '<tr>'
@@ -276,8 +276,8 @@ def duplicate_interaction_epistasis(color_set):
 	table += '</td></tr>'
 	table += '</table>'
 
-	#assigned_colors = crossinglib.dihybridAssignColors(4, color_set)
-	#print(crossinglib.createDiHybridTable('A', 'B', assigned_colors, 'duplicate interaction epistasis'))
+	#assigned_colors = dihybridcrosslib.dihybridAssignColors(4, color_set)
+	#print(dihybridcrosslib.createDiHybridTable('A', 'B', assigned_colors, 'duplicate interaction epistasis'))
 
 	#Complete dominance at both gene pairs; however, when either gene is dominant, it hides the effects of the other gene
 	#Certain phenotypic traits depend on the dominant alleles of two gene loci. When dominant is present it will show its phenotype. The ratio will be 9: 6: 1.
@@ -299,10 +299,10 @@ def duplicate_dominant_epistasis(color_set):
 	#Ab_color_raw = color_set[1]
 	#aB_color_raw = color_set[2]
 	ab_color_raw = color_set[3]
-	AB_color = crossinglib.color_translate.get(AB_color_raw, AB_color_raw)
-	#Ab_color = crossinglib.color_translate.get(Ab_color_raw, Ab_color_raw)
-	#aB_color = crossinglib.color_translate.get(aB_color_raw, aB_color_raw)
-	ab_color = crossinglib.color_translate.get(ab_color_raw, ab_color_raw)
+	AB_color = dihybridcrosslib.color_translate.get(AB_color_raw, AB_color_raw)
+	#Ab_color = dihybridcrosslib.color_translate.get(Ab_color_raw, Ab_color_raw)
+	#aB_color = dihybridcrosslib.color_translate.get(aB_color_raw, aB_color_raw)
+	ab_color = dihybridcrosslib.color_translate.get(ab_color_raw, ab_color_raw)
 
 	table = '<table border="0" style="border: 0px solid white; border-collapse: collapse; ">'
 	for i in range(3):
@@ -318,8 +318,8 @@ def duplicate_dominant_epistasis(color_set):
 	table += '<tr><td></td><td align="center">Gene 2</td></tr>'
 	table += '</table>'
 
-	#assigned_colors = crossinglib.dihybridAssignColors(5, color_set)
-	#print(crossinglib.createDiHybridTable('A', 'B', assigned_colors, 'duplicate dominant epistasis'))
+	#assigned_colors = dihybridcrosslib.dihybridAssignColors(5, color_set)
+	#print(dihybridcrosslib.createDiHybridTable('A', 'B', assigned_colors, 'duplicate dominant epistasis'))
 
 	description = table+'</br>'
 	description += 'When either gene 1 or gene 2 is dominant, they express an enzyme that converts the {0} precursor pigment into the {1} pigment. '.format(ab_color, AB_color)
@@ -335,10 +335,10 @@ def dominant_and_recessive_epistasis(color_set):
 	#Ab_color_raw = color_set[1]
 	#aB_color_raw = color_set[2]
 	ab_color_raw = color_set[3]
-	AB_color = crossinglib.color_translate.get(AB_color_raw, AB_color_raw)
-	#Ab_color = crossinglib.color_translate.get(Ab_color_raw, Ab_color_raw)
-	#aB_color = crossinglib.color_translate.get(aB_color_raw, aB_color_raw)
-	ab_color = crossinglib.color_translate.get(ab_color_raw, ab_color_raw)
+	AB_color = dihybridcrosslib.color_translate.get(AB_color_raw, AB_color_raw)
+	#Ab_color = dihybridcrosslib.color_translate.get(Ab_color_raw, Ab_color_raw)
+	#aB_color = dihybridcrosslib.color_translate.get(aB_color_raw, aB_color_raw)
+	ab_color = dihybridcrosslib.color_translate.get(ab_color_raw, ab_color_raw)
 
 	table = '<table border="0" style="border: 0px solid white; border-collapse: collapse; ">'
 	for i in range(3):
@@ -353,8 +353,8 @@ def dominant_and_recessive_epistasis(color_set):
 	table += '</tr>'
 	table += '</table>'
 
-	#assigned_colors = crossinglib.dihybridAssignColors(6, color_set)
-	#print(crossinglib.createDiHybridTable('A', 'B', assigned_colors, 'dominant and recessive epistasis'))
+	#assigned_colors = dihybridcrosslib.dihybridAssignColors(6, color_set)
+	#print(dihybridcrosslib.createDiHybridTable('A', 'B', assigned_colors, 'dominant and recessive epistasis'))
 
 	description = table+'</br>'
 	description += 'When gene 2 is dominant and gene 1 is homozygous recessive, '
@@ -379,9 +379,9 @@ def questionContent(gene_id):
 #===================
 #===================
 def makeQuestion(gene_id, color_set, letter1, letter2):
-	#assigned_colors = crossinglib.dihybridAssignColors(gene_id, color_set)
-	#dihybrid_table = crossinglib.createDiHybridTable(letter1, letter2, assigned_colors)
-	#testcross_table = crossinglib.createTestCrossTable(letter1, letter2, assigned_colors)
+	#assigned_colors = dihybridcrosslib.dihybridAssignColors(gene_id, color_set)
+	#dihybrid_table = dihybridcrosslib.createDiHybridTable(letter1, letter2, assigned_colors)
+	#testcross_table = dihybridcrosslib.createTestCrossTable(letter1, letter2, assigned_colors)
 
 	method = method_list[gene_id]
 	header = method(color_set)
@@ -443,7 +443,7 @@ def formatBB_MC_Question(N, question, choices_list, answer):
 def writeQuestion(N, gene_id, color_set):
 	# make the question
 
-	letter_pool = copy.copy(crossinglib.gene_letters)
+	letter_pool = copy.copy(dihybridcrosslib.gene_letters)
 	random.shuffle(letter_pool)
 	two_letters = [letter_pool.pop(), letter_pool.pop()]
 	two_letters.sort()
@@ -454,36 +454,36 @@ def writeQuestion(N, gene_id, color_set):
 	# write the question
 	choice_letters = "ABCDEFGHI"
 	answer_gene_id = gene_id
-	num_colors = crossinglib.gene_type_num_colors[answer_gene_id]
+	num_colors = dihybridcrosslib.gene_type_num_colors[answer_gene_id]
 	wrong_gene_ids = []
-	mixed_gene_ids = list(crossinglib.gene_interaction_names_plus.keys())
+	mixed_gene_ids = list(dihybridcrosslib.gene_interaction_names_plus.keys())
 	if answer_gene_id == 1:
 		mixed_gene_ids.remove(10)
 	for sub_gene_id in mixed_gene_ids:
-		if crossinglib.gene_type_num_colors[sub_gene_id] == num_colors:
+		if dihybridcrosslib.gene_type_num_colors[sub_gene_id] == num_colors:
 			wrong_gene_ids.append(sub_gene_id)
 	while len(wrong_gene_ids) < 5:
 		wrong_gene_ids.append(random.choice(mixed_gene_ids))
 		wrong_gene_ids = list(set(wrong_gene_ids))
 	print(answer_gene_id, wrong_gene_ids)
 	#sys.exit(1)
-	
+
 	random.shuffle(wrong_gene_ids)
 	random.shuffle(wrong_gene_ids)
 	choices_list = []
 	for k, sub_gene_id in enumerate(wrong_gene_ids):
-		ratio = crossinglib.gene_type_ratios[sub_gene_id]
-		name = crossinglib.gene_interaction_names_plus[sub_gene_id]
-		#description = crossinglib.gene_type_description[sub_gene_id]
-		assigned_colors = crossinglib.dihybridAssignColorsModified(sub_gene_id, color_set)
-		data_table = crossinglib.createDiHybridTable('A', 'B', assigned_colors, name)
+		ratio = dihybridcrosslib.gene_type_ratios[sub_gene_id]
+		name = dihybridcrosslib.gene_interaction_names_plus[sub_gene_id]
+		#description = dihybridcrosslib.gene_type_description[sub_gene_id]
+		assigned_colors = dihybridcrosslib.dihybridAssignColorsModified(sub_gene_id, color_set)
+		data_table = dihybridcrosslib.createDiHybridTable('A', 'B', assigned_colors, name)
 		choice_text = "<p>These two genes would show {0} and a <b>{1} ratio</b>.</p> {2}".format(name, ratio, data_table)
 		choices_list.append(choice_text)
 		if sub_gene_id == answer_gene_id:
 			answer_text = choice_text
 	complete_bb_question = formatBB_MC_Question(N, complete_question, choices_list, answer_text)
 	return complete_bb_question
-	
+
 
 #===================
 method_list = [
@@ -507,8 +507,8 @@ if __name__ == '__main__':
 	file_handle = open(outfile, 'w')
 	N = 0
 	for i in range(duplicates):
-		for color_set in crossinglib.get_four_color_sets():
-			for gene_id in crossinglib.gene_interaction_names:
+		for color_set in dihybridcrosslib.get_four_color_sets():
+			for gene_id in dihybridcrosslib.gene_interaction_names:
 				N += 1
 				complete_bb_question = writeQuestion(N, gene_id, color_set)
 				file_handle.write(complete_bb_question)

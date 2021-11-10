@@ -3,7 +3,7 @@
 import os
 import copy
 import random
-import crossinglib
+import dihybridcrosslib
 
 #===================
 #===================
@@ -12,9 +12,9 @@ def questionContent(gene_type, color_set):
 	question += '<p>Above are the phenotypic results from a monohybrid cross. '
 	question += 'The phenotypes were '
 
-	color1 = crossinglib.color_translate.get(color_set[0], color_set[0])
-	color2 = crossinglib.color_translate.get(color_set[1], color_set[1])
-	color3 = crossinglib.color_translate.get(color_set[2], color_set[2])
+	color1 = dihybridcrosslib.color_translate.get(color_set[0], color_set[0])
+	color2 = dihybridcrosslib.color_translate.get(color_set[1], color_set[1])
+	color3 = dihybridcrosslib.color_translate.get(color_set[2], color_set[2])
 
 	if gene_type == 'complete dominance':
 		question += 'three {0} and one {1}. '.format(color1, color3)
@@ -42,7 +42,7 @@ def makeQuestion(gene_type, color_set, letter):
 	2: 'codominance',
 	"""
 
-	gene_table = crossinglib.createSingleGeneTable(gene_type, letter, color_set, 'Gene 1')
+	gene_table = dihybridcrosslib.createSingleGeneTable(gene_type, letter, color_set, 'Gene 1')
 	print(gene_table)
 
 	# write the question content
@@ -60,7 +60,7 @@ def makeQuestion(gene_type, color_set, letter):
 def writeQuestion(letter, gene_type, color_set, file_handle):
 	complete_question = makeQuestion(gene_type, color_set, letter)
 	answer = gene_type
-	gene_types_copy = copy.copy(crossinglib.single_gene_types)
+	gene_types_copy = copy.copy(dihybridcrosslib.single_gene_types)
 	gene_types_copy.append('epistasis')
 	gene_types_copy.append('X-linked recessive')
 	random.shuffle(gene_types_copy)
@@ -89,9 +89,9 @@ if __name__ == '__main__':
 	#gene_letters = list('A')
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
 	print('writing to file: '+outfile)
-	file_handle = open(outfile, 'w')	
-	for letter in crossinglib.gene_letters:
-		for gene_type in crossinglib.single_gene_types:
-			for color_set in crossinglib.get_three_color_sets():
+	file_handle = open(outfile, 'w')
+	for letter in dihybridcrosslib.gene_letters:
+		for gene_type in dihybridcrosslib.single_gene_types:
+			for color_set in dihybridcrosslib.get_three_color_sets():
 				writeQuestion(letter, gene_type, color_set, file_handle)
 	file_handle.close()
