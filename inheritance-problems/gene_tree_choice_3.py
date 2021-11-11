@@ -2,6 +2,7 @@
 
 import os
 import copy
+import math
 import random
 import phylolib
 
@@ -9,7 +10,8 @@ import phylolib
 
 def makeTable(genes):
 	distances = []
-	while len(distances) < len(genes)-1:
+	num_distances = math.comb(len(genes), 2)
+	while len(distances) < num_distances:
 		r = random.randint(4,10)
 		if not r in distances:
 			distances.append(r)
@@ -53,23 +55,14 @@ def makeQuestion(sorted_genes, version):
 	#print(perms)
 	if version // len(sorted_genes) == 0:
 		answer = phylolib.comb_tree_3_leaves_html(genes)
-		#answer += phylolib.comb_tree_3_leaves_alternate_html(genes)
 	else:
 		answer = phylolib.comb_tree_3_leaves_alternate_html(genes)
-		#answer += phylolib.comb_tree_3_leaves_html(genes)
 
 	wrongs = []
 	for oth in perms:
-		if random.random() < 0.5:
-			w1 = phylolib.comb_tree_3_leaves_html(oth)
-			#w1 += phylolib.comb_tree_3_leaves_alternate_html(oth)
-			wrongs.append(w1)
-		else:
-			w2 = phylolib.comb_tree_3_leaves_alternate_html(oth)
-			#w2 += phylolib.comb_tree_3_leaves_html(oth)
-			wrongs.append(w2)
-	sorted_genes = list(copy.copy(genes))
-	sorted_genes.sort()
+		wrong_tree = phylolib.random_tree_3_leaves_html(oth)
+		wrongs.append(wrong_tree)
+
 	w3 = phylolib.balanced_tree_3_leaves_html(sorted_genes)
 	wrongs.append(w3)
 
