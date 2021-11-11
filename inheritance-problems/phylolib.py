@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import numpy
+import random
 import itertools
 
 space = " "
@@ -79,6 +80,15 @@ def letter_cell(text):
 	td_cell += '{0}</span></td>'.format(text) # value
 	return td_cell
 
+def random_tree_3_leaves_html(values, distances=None):
+	r = random.randint(1,3)
+	if r == 1:
+		return comb_tree_3_leaves_html(values, distances)
+	elif r == 2:
+		return comb_tree_3_leaves_alternate_html(values, distances)
+	elif r == 3:
+		return balanced_tree_3_leaves_html(values, distances)
+
 def comb_tree_3_leaves_ascii(values, distances=None):
 	# values = ['a','b','c']
 	# distances = [2, 3]; 3 >2
@@ -133,7 +143,6 @@ def comb_tree_3_leaves_ascii(values, distances=None):
 	#===============
 	tree = row1 + '\n' + row2 + '\n'  + row3 + '\n' + row4 + '\n' + row5 + '\n'
 	return tree
-
 
 def comb_tree_3_leaves_html(values, distances=None):
 	# values = ['a','b','c']
@@ -349,6 +358,14 @@ def balanced_tree_3_leaves_html(values, distances=None):
 	return table
 
 
+def random_tree_4_leaves_html(values, distances=None):
+	r = random.randint(1,3)
+	if r == 1:
+		return comb_tree_4_leaves_html(values, distances)
+	elif r == 2:
+		return comb_tree_4_leaves_alternate_html(values, distances)
+	elif r == 3:
+		return balanced_tree_4_leaves_html(values, distances)
 
 def comb_tree_4_leaves_html(values, distances=None):
 	# values = ['a','b','c', 'd']
@@ -471,6 +488,19 @@ def balanced_tree_4_leaves_html(values, distances=None):
 	table += '</tr>'
 	table += '</table>'
 	return table
+
+def random_tree_5_leaves_html(values, distances=None):
+	r = random.randint(1,5)
+	if r == 1:
+		return giraffe_tree_5_leaves_html(values, distances)
+	elif r == 2:
+		return comb_tree_5_leaves_html(values, distances)
+	elif r == 3:
+		return balanced_tree_5_leaves_type_1_html(values, distances)
+	elif r == 4:
+		return balanced_tree_5_leaves_type_2_html(values, distances)
+	elif r == 5:
+		return balanced_tree_5_leaves_type_3_html(values, distances)
 
 
 def giraffe_tree_5_leaves_html(values, distances=None):
