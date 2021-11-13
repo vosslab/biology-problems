@@ -21,6 +21,8 @@ import argparse
 import itertools
 import crcmod.predefined
 
+answer_histogram = {}
+
 # special loader with duplicate key checking
 class UniqueKeyLoader(yaml.SafeLoader):
 	def construct_mapping(self, node, deep=False):
@@ -196,6 +198,7 @@ def makeQuestionsFromStatement(main_statement, opposing_statement_nested_list, q
 			if choice == main_statement:
 				prefix = 'x'
 				bbformat += '\tCorrect'
+				answer_histogram[letters[i]] = answer_histogram.get(letters[i], 0) + 1
 			else:
 				prefix = ' '
 				bbformat += '\tIncorrect'
@@ -277,6 +280,14 @@ def sortStatements(yaml_data, notrue=False, nofalse=False):
 
 #=======================
 #=======================
+def printAnswerHistogram():
+	keys = list(answer_histogram.keys())
+	keys.sort()
+	for key in keys:
+		print("{0}: {1}".format(key, answer_histogram[key]))
+
+#=======================
+#=======================
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser(description='Process some integers.')
 	parser.add_argument('-f', '-y', '--file', metavar='<file>', type=str, dest='input_yaml_file',
@@ -316,4 +327,5 @@ if __name__ == '__main__':
 		output_format = "MC\t<p>{0:03d}. {1}</p> {2}\n".format(N, crc16_value, bbformat_question)
 		f.write(output_format)
 	f.close()
+	printAnswerHistogram()
 	print("Wrote {0} questions to file.".format(N))

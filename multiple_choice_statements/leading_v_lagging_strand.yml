@@ -1,0 +1,90 @@
+---
+
+#Which one of the following statements is FALSE/TRUE <connection word> <topic>
+topic: difference between the leading strand and the lagging strand in DNA replication
+
+#override_question_true: ~
+override_question_false: ~
+
+connection_words: ~
+
+replacement_rules:
+   Okazaki fragments:     '<span style="color: Maroon;">Okazaki fragments</span>'
+   RNA primers:           '<span style="color: #b33000;">RNA primers</span>'
+   DNA primers:           '<span style="color: #248f24;">DNA primers</span>'
+   leading strand:        '<span style="color: #002699;">leading strand</span>'
+   lagging strand:        '<span style="color: #995c00;">lagging strand</span>'
+
+
+true_statements:
+   truth1a: the leading strand is replicated continuously, while the lagging strand is replicated piecewise
+   truth1b: the lagging strand is replicated piecewise, while the leading strand is replicated continuously
+   truth1c: the leading strand is replicated continuously, while the lagging strand is replicated discontinuously
+   truth1d: the lagging strand is replicated discontinuously, while the leading strand is replicated continuously
+   truth1e: the leading strand is synthesized continuously,<br/> whereas the lagging strand is synthesized in short fragments that are ultimately stitched together
+   truth1f: the lagging strand is synthesized in short fragments that are ultimately stitched together,<br/> whereas the leading strand is synthesized continuously
+
+   truth2a: both the the leading strand and the lagging strand are synthesized in the 5&prime;&rarr;3&prime; direction of the template strand
+
+   truth3a: both the leading strand and the lagging strand require RNA primers
+
+   truth4a: Okazaki fragments are DNA fragments synthesized on the lagging strand, but not on the leading strand
+
+   truth5a: the leading strand is only synthesize by a single polymerase, while lagging strand uses more than one
+   truth5b: the lagging strand is synthesized by multiple polymerases, while lagging strand only uses one
+
+   truth6a: the leading strand is synthesized in the same direction as the movement of the replication fork,<br/> whereas the lagging strand is synthesized in the opposite direction
+   truth6b: the lagging strand is synthesized in the opposite direction as the movement of the replication fork,<br/> whereas the leading strand is synthesized in the same direction
+
+   truth7a: both the leading strand and the lagging strand are synthesized by adding nucleotides to the 3&prime; end of the growing strand
+
+   truth9a: the leading strand is synthesized continuously,<br/> whereas the lagging strand is synthesized in short fragments that are ultimately stitched together
+   truth9b: the lagging strand is synthesized in short fragments that are ultimately stitched together,<br/> whereas the leading strand is synthesized continuously
+
+
+false_statements:
+   false1a: the leading strand is replicated piecewise, while the lagging strand is replicated continuously
+   false1b: the lagging strand is replicated continuously, while the leading strand is replicated piecewise
+   false1c: the leading strand is replicated discontinuously, while the lagging strand is replicated continuously
+   false1d: the lagging strand is replicated continuously, while the leading strand is replicated discontinuously
+   false1e: both the leading strand and the lagging strand are replicated continuously
+   false1f: both the leading strand and the lagging strand are replicated discontinuously
+   false1g: both the leading strand and the lagging strand are replicated piecewise
+   false1h: the lagging strand is synthesized continuously,<br/> whereas the leading strand is synthesized in short fragments that are ultimately stitched together
+   false1i: the leading strand is synthesized in short fragments that are ultimately stitched together,<br/> whereas the lagging strand is synthesized continuously
+
+   false2a: the leading strand is synthesized in the 3&prime;&rarr;5&prime; direction of the template strand,<br/> while the lagging strand is synthesized in the 5&prime;&rarr;3&prime; direction of the template strand
+   false2b: the lagging strand is synthesized in the 3&prime;&rarr;5&prime; direction of the template strand,<br/> while the leading strand is synthesized in the 5&prime;&rarr;3&prime; direction of the template strand
+   false2c: both the the leading strand and the lagging strand are synthesized in the 3&prime;&rarr;5&prime; direction of the template strand
+
+   false3a: the leading strand requires RNA primers, whereas the lagging strand does not
+   false3b: the lagging strand requires RNA primers, whereas the leading strand does not
+   false3c: the leading strand requires DNA primers, whereas the lagging strand does not
+   false3d: the lagging strand requires DNA primers, whereas the leading strand does not
+   false3e: both the leading strand and the lagging strand require DNA primers
+
+   false4a: Okazaki fragments are DNA fragments synthesized on the leading strand, but not on the lagging strand
+   false4b: Okazaki fragments are DNA fragments synthesized on both the leading strand and the lagging strand
+
+   false5a: the lagging strand is only synthesize by a single polymerase, while the leading strand uses more than one
+   false5b: a single polymerase creates both the leading strand and the lagging strand
+   false5c: multiple polymerase enzymes are required to synthesize the leading strand and the lagging strand
+
+   false6a: the lagging strand is synthesized in the same direction as the movement of the replication fork,<br/> and the leading strand is synthesized in the opposite direction
+   false6b: the leading strand is synthesized in the opposite direction as the movement of the replication fork,<br/> whereas the lagging strand is synthesized in the same direction
+   false6c: both the leading strand and the lagging strand are synthesized in the same direction as the movement of the replication fork
+   false6d: both the leading strand and the lagging strand are synthesized in the opposite direction as the movement of the replication fork
+
+   false7a: the leading strand is synthesized by adding nucleotides to the 3&prime; end of the growing strand,<br/> whereas the lagging strand is synthesized by adding nucleotides to the 5&prime; end
+   false7b: the lagging strand is synthesized by adding nucleotides to the 3&prime; end of the growing strand,<br/> whereas the leading strand is synthesized by adding nucleotides to the 5&prime; end
+   false7c: both the leading strand and the lagging strand are synthesized by adding nucleotides to the 5&prime; end of the growing strand
+
+   false8a: the leading strand is synthesized at twice the rate of the lagging strand
+   false8b: the lagging strand is synthesized at twice the rate of the leading strand
+   false8c: the leading strand is synthesized at half the rate of the lagging strand
+   false8d: the lagging strand is synthesized at half the rate of the leading strand
+   false8e: the leading strand is synthesized at four times the rate of the lagging strand
+   false8f: the lagging strand is synthesized at four times the rate of the leading strand
+
+# conflicts, means that the statements cannot appear together
+conflict_rules: ~
