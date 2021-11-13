@@ -1,0 +1,100 @@
+---
+
+#Which one of the following statements is FALSE/TRUE <connection word> <topic>
+topic: DNA replication in bacteria
+
+connection_words: ~
+
+replacement_rules:
+  single-strand binding proteins: '<span style="color: DarkKhaki;">single-strand binding proteins</span>'
+  DNA polymerase I:      '<span style="color: SaddleBrown;">DNA polymerase I</span>'
+  DNA polymerase II:     '<span style="color: DarkSlateGray;">DNA polymerase II</span>'
+  DNA polymerase III:    '<span style="color: MediumBlue;">DNA polymerase III</span>'
+  DNA polymerase IV:     '<span style="color: DarkTurquoise;">DNA polymerase IV</span>'
+  DNA helicase:          '<span style="color: DarkGreen;">DNA helicase</span>'
+  DNA ligase:            '<span style="color: MediumVioletRed;">DNA helicase</span>'
+  DNA gyrase:            '<span style="color: Indigo;">DNA helicase</span>'
+  primase:               '<span style="color: SteelBlue;">primase</span>'
+  Okazaki fragments:     '<span style="color: Maroon;">Okazaki fragments</span>'
+  RNA:                   '<span style="color: OrangeRed;">RNA</span>'
+
+true_statements:
+   truth1: the leading strand is replicated continuously, while the lagging strand is replicated piecewise
+
+   truth2: single-strand binding proteins stabilize the open conformation of the unwound DNA
+
+   truth3a: DNA helicase unwinds the DNA double helix
+   truth3b: DNA gyrase releases the supercoiling tension in the DNA strand
+   truth3c: DNA helicase separates the two strands of the DNA helix
+
+   truth4: Okazaki fragments are DNA fragments synthesized on the lagging strand
+
+   truth5a: DNA polymerase adds dNTP monomers in the 5&prime; to 3&prime; direction of the template strand
+   truth5b: DNA polymerase adds dNTP monomers to the terminal 3&prime;-OH of the newly synthesized strand
+
+   truth6a: primase creates an RNA primer that serve as a starting point for DNA synthesis
+   truth6b: primase is a type of RNA polymerase that creates an RNA primer
+
+   truth8: in the final step, DNA ligase seals the gaps between the Okazaki fragments to create one continuous DNA strand
+
+   truth9a: DNA polymerase I removes RNA primers and fills the gaps with DNA between Okazaki fragments
+   truth9b: DNA polymerase I removes the RNA primers at the beginning of each Okazaki fragment and replaces them with DNA 
+
+   truth10a: the DNA polymerase III holoenzyme is responsible for the synthesis of most of the bacterial chromosome
+   truth10b: DNA polymerase III is the major replicative polymerase that functions in the synthesis both the leading and lagging strands
+   truth10c: one complex of DNA polymerase III is responsible for synthesizing the entire leading strand
+
+false_statements:
+   false1a: the leading strand is replicated piecewise, while the lagging strand is replicated continuously
+   false1b: both the leading and lagging strands are replicated continuously
+   false1c: both the leading and lagging strands are replicated discontinuously
+
+   false2: single-strand binding proteins stabilize the double helix conformation of the newly synthesized DNA
+
+   false3a: DNA gyrase unwinds the DNA double helix
+   false3b: DNA helicase releases the supercoiling tension in the DNA strand
+   false3c: DNA gyrase separates the two strands of the DNA helix
+
+   false4: Okazaki fragments are DNA fragments synthesized on the leading strand
+
+   false5a: DNA polymerase adds dNTP monomers in the 3&prime; to 5&prime; direction of the template strand
+   false5b: DNA polymerase adds dNTP monomers to the terminal 5&prime;-OH of the newly synthesized strand
+
+   false6a: primase creates a DNA primer that serve as a starting point for DNA synthesis
+   false6b: primase is a type of DNA polymerase that creates a DNA primer
+
+   false8a: in the final step, DNA polymerase I seals the gaps between the Okazaki fragments to create one continuous DNA strand
+   false8b: in the final step, DNA polymerase II seals the gaps between the Okazaki fragments to create one continuous DNA strand
+   false8c: in the final step, DNA polymerase III seals the gaps between the Okazaki fragments to create one continuous DNA strand
+   false8d: in the final step, DNA polymerase IV seals the gaps between the Okazaki fragments to create one continuous DNA strand
+   false8e: in the final step, DNA helicase seals the gaps between the Okazaki fragments to create one continuous DNA strand
+   false8f: in the final step, DNA gyrase seals the gaps between the Okazaki fragments to create one continuous DNA strand
+
+   false9a: DNA polymerase II removes RNA primers and fills the gaps with DNA between Okazaki fragments
+   false9b: DNA polymerase II removes the RNA primers at the beginning of each Okazaki fragment and replaces them with DNA 
+   false9c: DNA polymerase III removes RNA primers and fills the gaps with DNA between Okazaki fragments
+   false9d: DNA polymerase III removes the RNA primers at the beginning of each Okazaki fragment and replaces them with DNA 
+   false9e: DNA polymerase IV removes RNA primers and fills the gaps with DNA between Okazaki fragments
+   false9f: DNA polymerase IV removes the RNA primers at the beginning of each Okazaki fragment and replaces them with DNA 
+   false9g: DNA ligase removes RNA primers and fills the gaps with DNA between Okazaki fragments
+   false9h: DNA ligase removes the RNA primers at the beginning of each Okazaki fragment and replaces them with DNA 
+   false9i: DNA helicase removes RNA primers and fills the gaps with DNA between Okazaki fragments
+   false9j: DNA helicase removes the RNA primers at the beginning of each Okazaki fragment and replaces them with DNA 
+   false9k: DNA gyrase removes RNA primers and fills the gaps with DNA between Okazaki fragments
+   false9l: DNA gyrase removes the RNA primers at the beginning of each Okazaki fragment and replaces them with DNA 
+
+   false10a: the DNA polymerase I holoenzyme is responsible for the synthesis of most of the bacterial chromosome
+   false10b: the DNA polymerase II holoenzyme is responsible for the synthesis of most of the bacterial chromosome
+   false10c: the DNA polymerase IV holoenzyme is responsible for the synthesis of most of the bacterial chromosome
+ 
+   false10d: DNA polymerase I is the major replicative polymerase that functions in the synthesis both the leading and lagging strands
+   false10e: DNA polymerase II is the major replicative polymerase that functions in the synthesis both the leading and lagging strands
+   false10f: DNA polymerase IV is the major replicative polymerase that functions in the synthesis both the leading and lagging strands
+ 
+   false10g: one complex of DNA polymerase I is responsible for synthesizing the entire leading strand
+   false10h: one complex of DNA polymerase II is responsible for synthesizing the entire leading strand
+   false10i: one complex of DNA polymerase IV is responsible for synthesizing the entire leading strand
+
+
+# conflicts, means that the statements cannot appear together
+conflict_rules: ~
