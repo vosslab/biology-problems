@@ -1,0 +1,52 @@
+
+items to match per question: 4
+
+key description: dna sequencing technique
+
+value description: description
+
+matching pairs:
+  DNA gyrase:
+    - this enzyme relieves strain in the parental DNA double helix caused by the supercoiling
+    - this enzyme releases the supercoiling tension in the DNA double helix
+  primase:
+    - this enzyme builds RNA primers using the parental DNA strand as a template
+    - this enzyme creates the RNA primers that serve as a starting point for DNA synthesis
+  DNA helicase:
+    - this enzyme unwinds the parental DNA double helix
+    - this enzyme separates the two strands of the DNA double helix
+  DNA ligase:
+    - this enzyme joins Okazaki fragments together to create one continuous DNA strand
+    - this enzyme seals the gaps between the Okazaki fragments to create one continuous DNA strand
+  single-strand binding protein:
+    - this protein holds the DNA strands apart while they are being replicated
+    - this protein stabilizes the open conformation of the unwound DNA
+  DNA polymerase I:
+    - this enzyme replaces the RNA primers with DNA in the Okazaki fragments
+    - this enzyme removes RNA primers and fills the gaps with DNA between Okazaki fragments
+    - this enzyme removes the RNA primers at the beginning of each Okazaki fragment and replaces them with DNA
+  DNA polymerase III:
+    - this enzyme produces the majority of DNA polymer during DNA replications
+    - this enzyme is responsible for the synthesis of most of the bacterial chromosome
+    - this enzyme synthesizes DNA on both the leading strand and the lagging strand
+    - this enzyme is responsible for synthesizing the entire leading strand
+
+
+replacement_rules:
+   single-strand binding protein: '<span style="color: #7b7737;">single-strand binding proteins</span>'
+   DNA polymerase IV:     '<span style="color: #5A8432;">DNA&nbsp;polymerase&nbsp;&#8547;</span>'
+   DNA polymerase III:    '<span style="color: #3E3EC4;">DNA&nbsp;polymerase&nbsp;&#8546;</span>'
+   DNA polymerase II:     '<span style="color: #793AAA;">DNA&nbsp;polymerase&nbsp;&#8545;</span>'
+   DNA polymerase I:      '<span style="color: #b45918;">DNA&nbsp;polymerase&nbsp;&#8544;</span>'
+   DNA helicase:          '<span style="color: DarkGreen;">DNA&nbsp;helicase</span>'
+   DNA ligase:            '<span style="color: MediumVioletRed;">DNA&nbsp;ligase</span>'
+   DNA gyrase:            '<span style="color: Indigo;">DNA&nbsp;gyrase</span>'
+   primase:               '<span style="color: SteelBlue;">primase</span>'
+   Okazaki fragments:     '<span style="color: Maroon;">Okazaki fragments</span>'
+   RNA primers:           '<span style="color: #b33000;">RNA primers</span>'
+   DNA primers:           '<span style="color: #248f24;">DNA primers</span>'
+   DNA double helix:      '<span style="color: #248f24;">DNA double helix</span>'
+   DNA strand:            '<span style="color: #248f24;">DNA strand</span>'
+   leading strand:        '<span style="color: #002699;">leading strand</span>'
+   lagging strand:        '<span style="color: #995c00;">lagging strand</span>'
+   

@@ -60,6 +60,32 @@ def printAnswerHistogram():
 	for key in keys:
 		print("{0}: {1}".format(key, answer_histogram[key]))
 
+base_replacement_rule_dict = {
+	' not ': ' <strong>NOT</strong> ', #BOLD BLACK
+	' Not ': ' <strong>NOT</strong> ', #BOLD BLACK
+	' NOT ': ' <strong>NOT</strong> ', #BOLD BLACK
+	' false ': ' <span style="color: #ba372a;"><strong>FALSE</strong></span> ', #BOLD RED
+	' False ': ' <span style="color: #ba372a;"><strong>FALSE</strong></span> ', #BOLD RED
+	' FALSE ': ' <span style="color: #ba372a;"><strong>FALSE</strong></span> ', #BOLD RED
+	' true ': ' <span style="color: #169179;"><strong>TRUE</strong></span> ', #BOLD GREEN
+	' True ': ' <span style="color: #169179;"><strong>TRUE</strong></span> ', #BOLD GREEN
+	' TRUE ': ' <span style="color: #169179;"><strong>TRUE</strong></span> ', #BOLD GREEN
+	'  ': ' ',
+}
+
+#=======================
+def applyReplacementRulesToQuestions(list_of_question_text, replacement_rule_dict):
+	if replacement_rule_dict is None:
+		print("no replacement rules found")
+		replacement_rule_dict = base_replacement_rule_dict
+	else:
+		replacement_rule_dict = {**base_replacement_rule_dict, **replacement_rule_dict}
+	new_list_of_question_text = []
+	for question_text in list_of_question_text:
+		for find_text,replace_text in replacement_rule_dict.items():
+			question_text = question_text.replace(find_text,replace_text)
+		new_list_of_question_text.append(question_text)
+	return new_list_of_question_text
 
 #=======================
 def permuteMatchingPairs(yaml_data):
@@ -83,9 +109,13 @@ def permuteMatchingPairs(yaml_data):
 		complete_question = question
 		for key in key_list:
 			complete_question += '\t' + key
-			complete_question += '\t' + matching_pairs_dict[key]
+			value = matching_pairs_dict[key]
+			if isinstance(value, list):
+				value = random.choice(value)
+			complete_question += '\t' + value
 		list_of_complete_questions.append(complete_question)
 
+	list_of_complete_questions = applyReplacementRulesToQuestions(list_of_complete_questions, yaml_data.get('replacement_rules'))
 	return list_of_complete_questions
 
 
@@ -96,7 +126,9 @@ if __name__ == '__main__':
 	parser.add_argument('-f', '-y', '--file', metavar='<file>', type=str, dest='input_yaml_file',
 		help='yaml input file to process')
 	parser.add_argument('-x', '--max-questions', metavar='<file>', type=int, dest='max_questions',
-		help='yaml input file to process', default=199)
+		help='max number of questions', default=199)
+	parser.add_argument('-d', '--duplicate-runs', metavar='<file>', type=int, dest='duplicate_runs',
+		help='if more than one value is provided for each choice, run duplicates', default=1)
 	args = parser.parse_args()
 
 	if args.input_yaml_file is None or not os.path.isfile(args.input_yaml_file):
@@ -106,7 +138,10 @@ if __name__ == '__main__':
 	yaml_data = readYamlFile(args.input_yaml_file)
 	pprint.pprint(yaml_data)
 
-	list_of_complete_questions = permuteMatchingPairs(yaml_data)
+	list_of_complete_questions = []
+	for i in range(args.duplicate_runs):
+		list_of_complete_questions += permuteMatchingPairs(yaml_data)
+	
 	if len(list_of_complete_questions) > args.max_questions:
 		print("Too many questions, trimming down to {0} questions".format(args.max_questions))
 		random.shuffle(list_of_complete_questions)

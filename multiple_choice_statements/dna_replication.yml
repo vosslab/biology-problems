@@ -44,7 +44,8 @@ true_statements:
    truth8: in the final step, DNA ligase seals the gaps between the Okazaki fragments to create one continuous DNA strand
 
    truth9a: DNA polymerase I removes RNA primers and fills the gaps with DNA between Okazaki fragments
-   truth9b: DNA polymerase I removes the RNA primers at the beginning of each Okazaki fragment and replaces them with DNA 
+   truth9b: DNA polymerase I removes the RNA primers at the beginning of each Okazaki fragment and replaces them with DNA
+   truth9c: DNA polymerase I replaces the RNA primers with DNA in the Okazaki fragments
 
    truth10a: the DNA polymerase III holoenzyme is responsible for the synthesis of most of the bacterial chromosome
    truth10b: DNA polymerase III is the major replicative polymerase that functions in the synthesis both the leading strand and lagging strand
