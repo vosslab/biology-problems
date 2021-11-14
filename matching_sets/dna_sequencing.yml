@@ -1,0 +1,25 @@
+
+items to match per question: 4
+
+key description: dna sequencing technique
+
+value description: description
+
+matching pairs:
+  Classical Sanger sequencing:
+    takes advantage that di-deoxynucleotide triphosphates terminate DNA strand elongation and molecules of different lengths can be separated on a gel
+  Terminal-dye Sanger sequencing:
+    detects fluorescently tagged di-deoxynucleotide triphosphates that terminate DNA strand elongation
+  Roche 454 pyrosequencing:
+    detects the light from the luciferase enzyme as it consumes the diphosphate molecules released when nucleotides are added to the DNA template
+  ABI solid sequencing:
+    detects sequences as they ligate to a di-base probe attached to a magnetic bead
+  Illumina sequencing by synthesis:
+    detects the light emitted from fluorescently tagged nucleotides as they are added to the DNA template
+  Ion Torrent semiconductor sequencing:
+    detects individual hydrogen ions released during DNA synthesis using microscopic pH meters
+  PacBio single molecule real time (SMRT) sequencing:
+    detects a fluorescent tag on each nucleotide using a zero-mode waveguide with a single active DNA polymerase attached
+  Oxford Nanopore sequencing:
+    detects the electrical signal of nucleotides on a single-strand of DNA as it is pulled through a membrane protein channel
+  
