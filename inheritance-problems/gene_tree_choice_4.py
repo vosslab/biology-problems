@@ -9,7 +9,6 @@ import random
 import bptools
 from classic_phylolib import phylolib
 
-
 # make a gene tree table with 4 leaves, ask students to choose correct one
 
 total_choices = 6
