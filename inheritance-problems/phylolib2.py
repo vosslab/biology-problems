@@ -25,7 +25,7 @@ class ascii_tree(object):
 		return char_array
 
 	def print_array(self):
-		lines = []
+		#lines = []
 		shape = self.char_array.shape
 		for rownum in range(shape[0]):
 			line = ''.join(self.char_array[rownum]) + ' '
@@ -68,7 +68,10 @@ class ascii_tree(object):
 		line_length = 3*edge_number + 1
 		return line_length
 
-	def make_tree(self, code=None):
+	def make_tree_ascii(self, code=None):
+		"""
+		takes code and writes to self.char_array
+		"""
 		if code is None:
 			code = '(((a3b)4((c1d)2e))5f)'
 			code = '(((a1b)4((c2d)3e))5f)'
@@ -97,7 +100,7 @@ class ascii_tree(object):
 		newcode = copy.copy(code)
 		for edge_number in range(1, self.leaves):
 			#print("===========\nedge_number {0} of {1} for code: '{2}'".format(edge_number,self.leaves-1,newcode))
-			index = newcode.find(str(edge_number))
+			#index = newcode.find(str(edge_number))
 			#char1 = newcode[index-1]
 			#char2 = newcode[index+1]
 			#if char1 in '()' or char2 in '()':
@@ -118,7 +121,7 @@ class ascii_tree(object):
 			row2 = char_row_number[char2]
 			midrow = (row1 + row2 + 1)//2
 
-			combined = "{0}{2}".format(char1,edge_number,char2)
+			combined = "{0}{2}".format(char1, edge_number, char2)
 			#print("{0} -> {1},".format(subcode, combined))
 			newcode = newcode.replace(subcode, combined)
 			#print("{0} -> {1},".format(code, newcode))
@@ -198,7 +201,13 @@ code_library = {
 	## 6 leaves  -- 6 type / 16 edge-labeled
 	'6comb':		'(((((a1b)2c)3d)4e)5f)', #type 1
 	'5giraffe+1':	'((((a1b)3(c2d))4e)5f)', #type 2
-	#'5giraffe*+1':	'((((a2b)3(c1d))4e)5f)',
+	'5giraffe*+1':	'((((c2d)3(a1b))4e)5f)', #type 2 alternate (extra)
+	'5giraffe|+1':	'(f5(e4((c2d)3(a1b))))', #type 2 mirror (extra)
+	'5giraffe|*+1':	'(f5(e4((a1b)3(c2d))))', #type 2 mirror/alternate (extra)
+	'5giraffe?+1':	'((e4((a1b)3(c2d)))5f)', #type 2 e-flop (extra)
+	'5giraffe?*+1':	'((e4((c2d)3(a1b)))5f)', #type 2 e-flop/alternate (extra)
+	'5giraffe|?+1':	'(f5(((a1b)3(c2d))4e))', #type 2 mirror/e-flop (extra)
+	'5giraffe|?*+1':	'(f5(((c2d)3(a1b))4e))', #type 2 mirror/e-flop/alternate (extra)
 
 	'3comb+pair1+1':	'((((a1b)2c)4(d3e))5f)', #type 3 / 3 edge-labels
 	'3comb+pair2+1':	'((((a1b)3c)4(d2e))5f)',
@@ -337,8 +346,8 @@ if __name__ == '__main__':
 	a = ascii_tree()
 	for name in code_library:
 		code = code_library[name]
-		if a.code_to_number_of_leaves(code) < 9:
+		if a.code_to_number_of_leaves(code) != 6:
 			continue
 		print('=====\n{0}'.format(name))
-		a.make_tree(code)
+		a.make_tree_ascii(code)
 		a.print_array()
