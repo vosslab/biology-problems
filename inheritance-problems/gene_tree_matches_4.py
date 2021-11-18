@@ -51,7 +51,7 @@ if __name__ == "__main__":
 	N = 0
 	for i in range(duplicates):
 		j += 1
-		if j + 2 == len(lowercase):
+		if j + 3 == len(lowercase):
 			j = 0
 		basetype = lowercase[j:j+4]
 		sorted_genes = list(basetype)

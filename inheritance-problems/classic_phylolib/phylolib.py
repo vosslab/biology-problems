@@ -2,7 +2,10 @@
 
 #NOTE: phylolib2 is much better, use that when you can
 
+import sys
 import itertools
+
+sys.path.append('classic_phylolib')
 from phylolib3leaves import *
 from phylolib4leaves import *
 from phylolib5leaves import *
