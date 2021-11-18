@@ -30,8 +30,8 @@ true_statements:
 
    truth4a: Okazaki fragments are DNA fragments synthesized on the lagging strand, but not on the leading strand
 
-   truth5a: the leading strand is only synthesize by a single polymerase, while lagging strand uses more than one
-   truth5b: the lagging strand is synthesized by multiple polymerases, while lagging strand only uses one
+   truth5a: the leading strand is only synthesized by a single polymerase, while lagging strand uses more than one
+   truth5b: the lagging strand is synthesized by multiple polymerases, while leading strand only uses one
 
    truth6a: the leading strand is synthesized in the same direction as the movement of the replication fork,<br/> whereas the lagging strand is synthesized in the opposite direction
    truth6b: the lagging strand is synthesized in the opposite direction as the movement of the replication fork,<br/> whereas the leading strand is synthesized in the same direction
@@ -66,7 +66,7 @@ false_statements:
    false4a: Okazaki fragments are DNA fragments synthesized on the leading strand, but not on the lagging strand
    false4b: Okazaki fragments are DNA fragments synthesized on both the leading strand and the lagging strand
 
-   false5a: the lagging strand is only synthesize by a single polymerase, while the leading strand uses more than one
+   false5a: the lagging strand is only synthesized by a single polymerase, while the leading strand uses more than one
    false5b: a single polymerase creates both the leading strand and the lagging strand
    false5c: multiple polymerase enzymes are required to synthesize the leading strand and the lagging strand
 

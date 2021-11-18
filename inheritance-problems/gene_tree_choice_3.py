@@ -4,6 +4,8 @@ import os
 import copy
 import math
 import random
+
+import bptools
 import phylolib
 
 # make a gene tree with 3 leaves, ask students to find the similar one
@@ -51,17 +53,21 @@ def makeQuestion(sorted_genes, version):
 	perms = phylolib.comb_safe_permutations(sorted_genes)
 	index = version % len(sorted_genes)
 	genes = perms.pop(index)
-	#print(genes)
-	#print(perms)
-	if version // len(sorted_genes) == 0:
+
+	if random.random() < 0.5:
 		answer = phylolib.comb_tree_3_leaves_html(genes)
 	else:
 		answer = phylolib.comb_tree_3_leaves_alternate_html(genes)
 
 	wrongs = []
-	for oth in perms:
-		wrong_tree = phylolib.random_tree_3_leaves_html(oth)
-		wrongs.append(wrong_tree)
+	#for oth in perms:		
+	#	wrong_tree = phylolib.random_comb_tree_3_leaves_html(oth)
+	#	wrongs.append(wrong_tree)
+	for oth in perms:		
+		w1 = phylolib.comb_tree_3_leaves_html(oth)
+		wrongs.append(w1)
+		w2 = phylolib.comb_tree_3_leaves_alternate_html(oth)
+		wrongs.append(w2)
 
 	w3 = phylolib.balanced_tree_3_leaves_html(sorted_genes)
 	wrongs.append(w3)
@@ -73,15 +79,8 @@ def makeQuestion(sorted_genes, version):
 	question = ''
 	question += makeTable(genes)
 	question += '<p></p><h6>Given the table above, which one of the following gene trees best fit the distance matrix data?</h6>'
-	complete = 'MC\t'
-	complete += question
-	for c in choices:
-		complete += '\t'+c
-		if c == answer:
-			complete += "\tCorrect"
-		else:
-			complete += "\tIncorrect"
-	complete += '\n'
+
+	complete = bptools.formatBB_MC_Question(version, question, choices, answer)
 	return complete
 
 
@@ -91,15 +90,17 @@ if __name__ == "__main__":
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
 	print('writing to file: '+outfile)
 	f = open(outfile, 'w')
-	duplicates = 16
+	duplicates = 24
 	j = -1
+	N = 0
 	for i in range(duplicates):
 		j += 1
 		if j + 2 == len(lowercase):
 			j = 0
 		basetype = lowercase[j:j+3]
 		g = list(basetype)
-		for version in range(6):
-			complete_question = makeQuestion(g, version)
-			f.write(complete_question)
+		N += 1
+		complete_question = makeQuestion(g, N)
+		f.write(complete_question)
 	f.close()
+	print("{0} questions were written to file {1}".format(N, outfile))
