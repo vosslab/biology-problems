@@ -4,7 +4,7 @@ import os
 import random
 
 import bptools
-import phylolib
+from classic_phylolib import phylolib
 
 # make a gene tree with 3 leaves, ask students to find the similar one
 
