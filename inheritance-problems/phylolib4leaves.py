@@ -2,7 +2,6 @@
 
 #NOTE: phylolib2 is much better, use that when you can
 
-
 import random
 import phylolib_common as phc
 
