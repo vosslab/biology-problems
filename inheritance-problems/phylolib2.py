@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import re
+import sys
 import copy
 import numpy
 
@@ -9,6 +10,7 @@ class ascii_tree(object):
 		self.code = None
 		self.leaves = None
 		self.char_array = None
+		self.html_array = None
 
 	def code_to_number_of_leaves(self, code):
 		return len(self.code_to_char_list(code))
@@ -24,8 +26,7 @@ class ascii_tree(object):
 		char_array[:] = ' '
 		return char_array
 
-	def print_array(self):
-		#lines = []
+	def print_array_ascii(self):
 		shape = self.char_array.shape
 		for rownum in range(shape[0]):
 			line = ''.join(self.char_array[rownum]) + ' '
@@ -68,7 +69,7 @@ class ascii_tree(object):
 		line_length = 3*edge_number + 1
 		return line_length
 
-	def make_tree_ascii(self, code=None):
+	def make_char_tree(self, code=None):
 		"""
 		takes code and writes to self.char_array
 		"""
@@ -81,7 +82,6 @@ class ascii_tree(object):
 		self.char_array = self.create_empty_array(self.leaves)
 
 		char_list = self.code_to_char_list(code)
-		#print(char_list)
 		char_edge_number = {}
 		char_row_number = {}
 		edge_number_char_list = {}
@@ -94,17 +94,9 @@ class ascii_tree(object):
 			edge_number_char_list[edge_number] = edge_number_char_list.get(edge_number, []) + [character]
 			line_length = self.edge_number_to_line_length(edge_number)
 			self.char_array[row, -line_length-2:-2] = '_'
-		#print(char_edge_number)
-		#print(edge_number_char_list)
-
+		
 		newcode = copy.copy(code)
 		for edge_number in range(1, self.leaves):
-			#print("===========\nedge_number {0} of {1} for code: '{2}'".format(edge_number,self.leaves-1,newcode))
-			#index = newcode.find(str(edge_number))
-			#char1 = newcode[index-1]
-			#char2 = newcode[index+1]
-			#if char1 in '()' or char2 in '()':
-			#	continue
 			char1 = edge_number_char_list[edge_number][0]
 			char2 = edge_number_char_list[edge_number][1]
 			subcode = "({0}{1}{2})".format(char1,edge_number,char2)
@@ -115,37 +107,90 @@ class ascii_tree(object):
 			if not subcode in newcode:
 				print('{0} not found in {1}'.format(subcode, newcode))
 				raise
-			#print(char1, char2)
 
 			row1 = char_row_number[char1]
 			row2 = char_row_number[char2]
 			midrow = (row1 + row2 + 1)//2
 
-			combined = "{0}{2}".format(char1, edge_number, char2)
-			#print("{0} -> {1},".format(subcode, combined))
+			combined = "{0}{1}".format(char1, char2)
 			newcode = newcode.replace(subcode, combined)
-			#print("{0} -> {1},".format(code, newcode))
 			new_edge_number = self.get_edge_number_for_string(combined, newcode)
 			if new_edge_number is not None:
 				edge_number_char_list[new_edge_number] = edge_number_char_list.get(new_edge_number, []) + [combined]
 			char_row_number[combined] = midrow
-			#print(char_row_number)
 
-
-			#print(row1, row2, midrow)
 			line_length = self.edge_number_to_line_length(edge_number)
 			if new_edge_number is not None:
 				next_line_length = self.edge_number_to_line_length(new_edge_number)
-				#print(line_length, next_line_length)
 				gap = next_line_length - line_length - 1
 			else:
 				gap = 2
-			#self.char_array[row1, -line_length-2:-2] = '_'
-			#self.char_array[row2, -line_length-2:-2] = '_'
 			self.char_array[midrow, -line_length-3-gap:-line_length-3] = '_'
 			self.char_array[row1+1:row2+1, -line_length-3] = '|'
 
 		return
+
+	def get_td_cell(self, cell_code):
+		line = ' 3px solid black; '
+		td_cell = '<td style="border: 0px solid white; '
+		if '|' in cell_code:
+			td_cell += 'border-right:'+line
+		if '_' in cell_code:
+			td_cell += 'border-bottom:'+line
+		td_cell += '">'
+		content = cell_code.replace(' ', '')
+		content = content.replace('|', '')
+		content = content.replace('_', '')
+		td_cell += content
+		td_cell += '</td>' # third line
+		return td_cell
+
+	def make_html_tree(self, code=None):
+		"""
+		this function will translate the char_array into an html_array
+		"""
+		if code is not None:
+			# assume char tree is stale and make it again
+			self.make_char_tree(code)
+		elif self.char_array is None:
+			# make a default code
+			self.make_char_tree()
+		#else: we're good we have a char_array ready to go
+		#print(self.char_array)
+		(rows, cols) = self.char_array.shape
+		#print((rows, cols))
+		self.html_array = numpy.empty((rows, cols//2+2), dtype=numpy.chararray)
+		for r in range(rows):
+			self.html_array[r,0] = '<tr>'
+			self.html_array[r,-1] = '</tr>'
+			for c in range(0,cols,2):
+				char_pair = ''.join(self.char_array[r,c:c+2])
+				#sys.stderr.write("'{0}'".format(char_pair))
+				td_cell = self.get_td_cell(char_pair)
+				#print(td_cell)
+				self.html_array[r,c//2+1] = td_cell
+			#row_list = list(self.html_array[r,:])
+			#print(''.join(row_list))
+			#sys.stderr.write('\n')
+	
+	def format_array_html(self):
+		if self.html_array is None:
+			self.make_html_tree()
+		(rows, cols) = self.html_array.shape
+		html_table = '<table style="border-collapse: collapse; border: 1px solid silver;">'
+		"""
+		table += '<colgroup width="30"></colgroup>'
+		table += '<colgroup width="{0}"></colgroup>'.format((distances[3]-distances[2])*20)
+		table += '<colgroup width="{0}"></colgroup>'.format((distances[2]-distances[1])*20)
+		table += '<colgroup width="{0}"></colgroup>'.format((distances[1]-distances[0])*20)
+		table += '<colgroup width="{0}"></colgroup>'.format(distances[0]*20)
+		table += '<colgroup width="30"></colgroup>'
+		"""
+		for r in range(rows):
+			row_list = list(self.html_array[r,:])
+			html_table += ''.join(row_list)
+		html_table += '</table>'
+
 
 code_library = {
 	### Number of types for number of leaves:
@@ -346,8 +391,9 @@ if __name__ == '__main__':
 	a = ascii_tree()
 	for name in code_library:
 		code = code_library[name]
-		if a.code_to_number_of_leaves(code) != 6:
+		if a.code_to_number_of_leaves(code) != 5:
 			continue
 		print('=====\n{0}'.format(name))
-		a.make_tree_ascii(code)
-		a.print_array()
+		a.make_char_tree(code)
+		a.print_array_ascii()
+		a.make_html_tree()
