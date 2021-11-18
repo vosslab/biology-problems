@@ -9,6 +9,14 @@ import crcmod.predefined
 def test():
 	sys.stderr.write("good job")
 
+#=====================
+def getGeneLetters(length, shift=0):
+	all_lowercase = "abcdefghijklmnopqrstuvwxyz"
+	lowercase =     "abcdefghjkmnpqrstuwxyz"
+	shift = shift % (len(lowercase) - length + 1)
+	gene_string = lowercase[shift:shift+length]
+	gene_list = list(gene_string)
+	return gene_list
 
 #=======================
 def getCrc16_FromString(mystr):
