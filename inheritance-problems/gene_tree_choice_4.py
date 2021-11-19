@@ -28,14 +28,6 @@ def makeRandDistanceList(num_distances):
 	distances.sort()
 	return distances
 
-#===========================================
-def assignDistanceTuple(gene1, gene2, distance, distance_dict, linked_genes):
-	gene_tuple1  = (gene1, gene2)
-	gene_tuple2  = (gene2, gene1)
-	distance_dict[gene_tuple1] = distance
-	distance_dict[gene_tuple2] = distance
-
-	return
 
 #===========================================
 def getShifts(num_linked_genes):

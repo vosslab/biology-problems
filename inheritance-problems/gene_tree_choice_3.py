@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import sys
 import copy
 import math
 import random
@@ -10,21 +11,66 @@ from classic_phylolib import phylolib
 
 # make a gene tree with 3 leaves, ask students to find the similar one
 
-def makeTable(genes):
+#===========================================
+def makeRandDistanceList(num_distances):
 	distances = []
-	num_distances = math.comb(len(genes), 2)
 	while len(distances) < num_distances:
-		r = random.randint(4,10)
-		if not r in distances:
+		r = random.randint(2, num_distances*4)
+		r *= 2
+		skip = False
+		for d in distances:
+			if abs(r - d) <= 4:
+				skip = True
+		if skip is False:
 			distances.append(r)
 	distances.sort()
-	#distances[0] //= 2
-	distances[1] *= 2
-	distances.reverse()
-	distances.append(distances[0] + 1)
-	sorted_genes = list(copy.copy(genes))
-	sorted_genes.sort()
+	return distances
 
+#===========================================
+def makeDistances_Comb(ordered_genes):
+	# A-1-B -2-C -3-D
+	distance_dict = {}
+	num_distances = math.comb(len(ordered_genes), 2)
+	distances = makeRandDistanceList(num_distances)
+	print("distances=",distances)
+	distance_dict = {}
+	for i,g1 in enumerate(ordered_genes):
+		if i == 0:
+			continue
+		for j,g2 in enumerate(ordered_genes):
+				if i <= j:
+					continue
+				# i > j OR j < i
+				key1 = (ordered_genes[j], ordered_genes[i])
+				key2 = key1[::-1]
+				distance_dict[key1] = distances[i-1]
+				distance_dict[key2] = distances[i-1]
+	makeTable_ascii(ordered_genes, distance_dict)
+	return distance_dict
+
+#===========================================
+def makeTable_ascii(ordered_genes, distance_dict):
+	sorted_genes = list(copy.copy(ordered_genes))
+	sorted_genes.sort()
+	sys.stderr.write('\t')
+	for gene in sorted_genes:
+		sys.stderr.write('{0}\t'.format(gene))
+	sys.stderr.write('\n')
+	for gene1 in sorted_genes:
+		sys.stderr.write('{0}\t'.format(gene1))
+		for gene2 in sorted_genes:
+			if gene1 == gene2:
+				sys.stderr.write('x\t')
+			else:
+				gene_tuple  = (gene1, gene2)
+				distance = distance_dict[gene_tuple]
+				sys.stderr.write('{0:d}\t'.format(distance))
+		sys.stderr.write('\n')
+
+#===========================================
+def makeTable_html(ordered_genes, distance_dict):
+	sorted_genes = list(copy.copy(ordered_genes))
+	sorted_genes.sort()
 	td_extra = 'align="center" style="border: 1px solid black;"'
 	span = '<span style="font-size: medium;">'
 
@@ -41,9 +87,11 @@ def makeTable(genes):
 			if g1 == g2:
 				table += ' <td {0} style="background-color: gray">&times;</td>'.format(td_extra)
 			else:
-				gene_sum = genes.index(g1) + genes.index(g2)
-				d = distances[gene_sum-1]
-				table += ' <td {0}>{1}{2:d}</span></td>'.format(td_extra, span, d)
+				#gene_sum = ordered_genes.index(g1) + ordered_genes.index(g2)
+				gene_tuple  = (g1, g2)
+				distance = distance_dict[gene_tuple]
+				#d = distances[gene_sum-1]
+				table += ' <td {0}>{1}{2:d}</span></td>'.format(td_extra, span, distance)
 		table += '</tr>'
 	table += '</table>'
 	return table
@@ -52,12 +100,11 @@ def makeTable(genes):
 def makeQuestion(sorted_genes, version):
 	perms = phylolib.comb_safe_permutations(sorted_genes)
 	index = version % len(sorted_genes)
-	genes = perms.pop(index)
+	ordered_genes = perms.pop(index)
 
-	if random.random() < 0.5:
-		answer = phylolib.comb_tree_3_leaves_html(genes)
-	else:
-		answer = phylolib.comb_tree_3_leaves_alternate_html(genes)
+	alt_answer1 = phylolib.comb_tree_3_leaves_html(ordered_genes)
+	alt_answer2 = phylolib.comb_tree_3_leaves_alternate_html(ordered_genes)
+	answer = random.choice([alt_answer1, alt_answer2])
 
 	wrongs = []
 	#for oth in perms:		
@@ -69,15 +116,19 @@ def makeQuestion(sorted_genes, version):
 		w2 = phylolib.comb_tree_3_leaves_alternate_html(oth)
 		wrongs.append(w2)
 
-	w3 = phylolib.balanced_tree_3_leaves_html(sorted_genes)
+	w3 = phylolib.balanced_tree_3_leaves_html(ordered_genes)
 	wrongs.append(w3)
 
-	choices = wrongs
+	choices = set(wrongs)
+	choices.discard(alt_answer1)
+	choices.discard(alt_answer2)
+	choices = list(choices)
 	choices.append(answer)
 	random.shuffle(choices)
 
+	distance_dict = makeDistances_Comb(ordered_genes)
 	question = ''
-	question += makeTable(genes)
+	question += makeTable_html(ordered_genes, distance_dict)
 	question += '<p></p><h6>Given the table above, which one of the following gene trees best fit the distance matrix data?</h6>'
 
 	complete = bptools.formatBB_MC_Question(version, question, choices, answer)

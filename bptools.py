@@ -4,6 +4,7 @@ import sys
 import copy
 import crcmod.predefined
 
+answer_histogram = {}
 
 #=======================
 def test():
@@ -53,6 +54,7 @@ def formatBB_MC_Question(N, question, choices_list, answer):
 			prefix = 'x'
 			bb_question += '\tCorrect'
 			answer_count += 1
+			answer_histogram[letters[i]] = answer_histogram.get(letters[i], 0) + 1
 		else:
 			prefix = ' '
 			bb_question += '\tIncorrect'
@@ -62,3 +64,13 @@ def formatBB_MC_Question(N, question, choices_list, answer):
 		print("Wrong answer count {0}".format(answer_count))
 		sys.exit(1)
 	return bb_question + '\n'
+
+#=====================
+def print_histogram():
+	keys = list(answer_histogram.keys())
+	keys.sort()
+	for key in keys:
+		sys.stderr.write("{0}: {1},  ".format(key, answer_histogram[key]))
+	sys.stderr.write("\n")
+
+

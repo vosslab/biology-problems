@@ -29,7 +29,7 @@ def makeDifferentQuestion(N, sorted_genes, num_leaves, num_choices):
 	question_code = all_codes_list.pop()
 	question_tree_name = genetree.get_tree_name_from_code(match_code)
 
-	choice_codes_list = all_codes_list[:num_choices]
+	choice_codes_list = all_codes_list[:num_choices-1]
 	random.shuffle(choice_codes_list)
 	html_choices_list = []
 	for choice_code in choice_codes_list:
@@ -65,13 +65,13 @@ def makeSameQuestion(N, sorted_genes, num_leaves, num_choices):
 	answer_code = genetree.get_random_code_permutation(raw_code)
 	question_code = answer_code
 	while question_code == answer_code:
-		question_code = genetree.get_random_code_permutation(raw_code)	
+		question_code = genetree.get_random_code_permutation(raw_code)
 	answer_html_choice = genetree.get_html_from_code(answer_code)
 
 	#print("answer_code=", answer_code)
 
 	random.shuffle(all_diff_codes)
-	choice_codes_list = all_diff_codes[:num_choices]
+	choice_codes_list = all_diff_codes[:num_choices-1]
 	random.shuffle(choice_codes_list)
 	html_choices_list = []
 	for choice_code in choice_codes_list:
@@ -121,3 +121,4 @@ if __name__ == '__main__':
 		f.write(complete_question)
 	f.close()
 	print("wrote {0} questions to the file {1}".format(N, outfile))
+	bptools.print_histogram()

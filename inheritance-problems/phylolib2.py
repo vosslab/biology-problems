@@ -14,11 +14,11 @@ class GeneTree(object):
 		self.char_array = None
 		self.html_array = None
 		self.cell_count = 0
-		
-		
+
+
 		self._load_code_library()
 		self._check_tree_count_theory()
-		
+
 	#==================================
 	def _load_code_library(self):
 		self.num_leaves_to_tree_set = {}
@@ -43,7 +43,7 @@ class GeneTree(object):
 		keys.sort()
 		for key in keys:
 			print("leaves=", key, ": trees=", len(self.num_leaves_to_tree_set[key]))
-		return 
+		return
 
 	#==================================
 	def get_tree_name_from_code(self, code):
@@ -135,7 +135,7 @@ class GeneTree(object):
 			print(new_code,"<-new_code")
 			print("ERROR, see parentheses!!")
 			sys.exit(1)
-			
+
 		return new_code
 
 	#==================================
@@ -217,7 +217,7 @@ class GeneTree(object):
 	#==================================
 	def code_to_number_of_nodes(self, code):
 		return len(self.code_to_node_list(code))
-	
+
 	#==================================
 	def code_to_node_list(self, code):
 		#print(code)
