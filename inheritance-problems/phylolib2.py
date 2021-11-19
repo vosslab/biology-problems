@@ -207,11 +207,12 @@ class GeneTree(object):
 		#print(code_permutations)
 		code_permutations = list(set(code_permutations))
 		postlen = len(code_permutations)
-		if prelen != postlen:
+		if prelen != postlen and max_nodes >= 6:
 			print("count of code permuations are duplicates")
 			#print(code_permutations)
 			print("prelen=", prelen, "postlen=", postlen)
 			#sys.exit(1)
+			pass
 		return code_permutations
 
 	#==================================
