@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import copy
 import random
 import argparse
 
@@ -14,15 +15,22 @@ import phylolib2
 #=======================
 def makeDifferentQuestion(N, sorted_genes, num_leaves, num_choices):
 	""" make a gene tree with N leaves, ask students to find the different one """
+	ordered_genes = copy.copy(sorted_genes)
+	random.shuffle(ordered_genes)
+	#^^ this does not work for the substitution
+
 	genetree = phylolib2.GeneTree()
 	match_code = genetree.get_random_gene_tree_code(num_leaves)
+	match_code = genetree.replace_gene_letters(match_code, ordered_genes)
+	print("match_code=", match_code)
 
 	not_code = match_code
 	while match_code == not_code:
 		not_code = genetree.get_random_gene_tree_code_for_leaf_count(num_leaves)
+		not_code = genetree.replace_gene_letters(not_code, ordered_genes)
 	answer_code = genetree.get_random_code_permutation(not_code)
 	answer_html_choice = genetree.get_html_from_code(answer_code)
-	#print("answer_code=", answer_code)
+	print("answer_code=", answer_code)
 
 	all_codes_list = genetree.get_all_code_permutations(match_code)
 	random.shuffle(all_codes_list)
@@ -44,7 +52,7 @@ def makeDifferentQuestion(N, sorted_genes, num_leaves, num_choices):
 	#	f.write(html_choice)
 	#f.close()
 
-	question = '<p>The tree below Dr. Voss affectionatly calls: {0}</p>'.format(question_tree_name)
+	question = '<p>The tree below Dr. Voss affectionately calls: {0}</p>'.format(question_tree_name)
 	question += genetree.get_html_from_code(question_code)
 	question += '<p>All but one of the gene trees below are the same as the gene tree above.</p>'
 	question += '<p>Which one of the following represents a <strong>different</strong> gene tree?</p>'
@@ -56,6 +64,9 @@ def makeDifferentQuestion(N, sorted_genes, num_leaves, num_choices):
 #=======================
 def makeSameQuestion(N, sorted_genes, num_leaves, num_choices):
 	""" make a gene tree with N leaves, ask students to find the same one """
+	ordered_genes = copy.copy(sorted_genes)
+	random.shuffle(ordered_genes)
+	
 	genetree = phylolib2.GeneTree()
 	all_diff_codes = genetree.get_all_gene_tree_code_for_leaf_count(num_leaves)
 	random.shuffle(all_diff_codes)
@@ -63,9 +74,14 @@ def makeSameQuestion(N, sorted_genes, num_leaves, num_choices):
 	raw_code = all_diff_codes.pop()
 	question_tree_name = genetree.get_tree_name_from_code(raw_code)
 	answer_code = genetree.get_random_code_permutation(raw_code)
+	answer_code = genetree.replace_gene_letters(answer_code, ordered_genes)
+	print("answer_code=", answer_code)
 	question_code = answer_code
 	while question_code == answer_code:
 		question_code = genetree.get_random_code_permutation(raw_code)
+		question_code = genetree.replace_gene_letters(question_code, ordered_genes)
+	print("question_code=", question_code)
+
 	answer_html_choice = genetree.get_html_from_code(answer_code)
 
 	#print("answer_code=", answer_code)
@@ -76,7 +92,8 @@ def makeSameQuestion(N, sorted_genes, num_leaves, num_choices):
 	html_choices_list = []
 	for choice_code in choice_codes_list:
 		#print("choice_code=", choice_code)
-		html_choice = genetree.get_html_from_code(choice_code)
+		choice_code_edit = genetree.replace_gene_letters(choice_code, ordered_genes)
+		html_choice = genetree.get_html_from_code(choice_code_edit)
 		html_choices_list.append(html_choice)
 	html_choices_list.append(answer_html_choice)
 	random.shuffle(html_choices_list)
@@ -86,17 +103,17 @@ def makeSameQuestion(N, sorted_genes, num_leaves, num_choices):
 		f.write(html_choice)
 	f.close()
 
-	question = '<p>The tree below Dr. Voss affectionatly calls: {0}</p>'.format(question_tree_name)
+	question = '<p>The tree below is a {0} leaf gene tree, Dr. Voss affectionatly calls this tree "{1}"</p>'.format(num_leaves, question_tree_name)
 	question += genetree.get_html_from_code(question_code)
-	question += '<p>All but one of the gene trees below are the same as the gene tree above.</p>'
-	question += '<p>Which one of the following represents a <strong>different</strong> gene tree?</p>'
+	question += '<p></p><h6>All but one of the gene trees below are the same as the gene tree above.</h6>'
+	question += '<h6>Which one of the following represents a <strong>different</strong> gene tree?</h6>'
 	complete = bptools.formatBB_MC_Question(N, question, html_choices_list, answer_html_choice)
 
 	return complete
 
 
-#=======================
-#=======================
+#===========================================
+#===========================================
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser(description='Process some integers.')
 	parser.add_argument('-l', '--leaves', '--num-leaves', type=int, dest='num_leaves',
@@ -112,8 +129,7 @@ if __name__ == '__main__':
 	f = open(outfile, 'w')
 	N = 0
 	for i in range(args.duplicate_runs):
-		sorted_genes = bptools.getGeneLetters(3, i)
-		print(sorted_genes)
+		sorted_genes = bptools.getGeneLetters(args.num_leaves, i)
 		N += 1
 		#complete_question = makeDifferentQuestion(N, sorted_genes, args.num_leaves, args.num_choices)
 		complete_question = makeSameQuestion(N, sorted_genes, args.num_leaves, args.num_choices)

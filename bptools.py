@@ -47,7 +47,7 @@ def formatBB_MC_Question(N, question, choices_list, answer):
 
 	answer_count = 0
 
-	letters = 'ABCDEFGH'
+	letters = 'ABCDEFGHJKMNPQRSTUWXYZ'
 	for i, choice in enumerate(choices_list):
 		bb_question += '\t{0}.  {1}&nbsp; '.format(letters[i], choice)
 		if choice == answer:

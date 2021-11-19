@@ -3,6 +3,7 @@
 import re
 import sys
 import copy
+import time
 import numpy
 import random
 
@@ -44,6 +45,26 @@ class GeneTree(object):
 		for key in keys:
 			print("leaves=", key, ": trees=", len(self.num_leaves_to_tree_set[key]))
 		return
+
+	#==================================
+	def replace_gene_letters(self, code, ordered_genes):
+		## assumes existing genes are alphabetical, also assumes ordered genes lag 
+		all_lowercase = "abcdefghijklmnopqrstuvwxyz"
+		num_leaves = self.code_to_number_of_leaves(code)
+		new_code = copy.copy(code)
+		changed = {}
+		#print("{0} -> {1}".format(all_lowercase[0:num_leaves], ''.join(ordered_genes)))
+		for i in range(num_leaves, 0, -1):
+			original_letter = all_lowercase[i-1]
+			new_letter = ordered_genes[i-1].upper()
+			#print("{0} -> {1}".format(original_letter, new_letter))
+			if changed.get(original_letter) is True:
+				print("WARNING: replace_gene_letters() error")
+				time.sleep(1)
+			changed[new_letter] = True
+			new_code = new_code.replace(original_letter, new_letter)
+		#print("{0} -> {1}".format(code, new_code))
+		return new_code.lower()
 
 	#==================================
 	def get_tree_name_from_code(self, code):
@@ -201,6 +222,13 @@ class GeneTree(object):
 		return new_code
 
 	#==================================
+	def get_random_even_code_permutation(self, code):
+		max_nodes = self.code_to_number_of_nodes(code)
+		node_binary = random.randint(0, 2**(max_nodes-1))*2
+		new_code = self._permute_code_by_node_binary(code, node_binary)
+		return new_code
+
+	#==================================
 	def code_to_number_of_leaves(self, code):
 		return len(self.code_to_char_list(code))
 
@@ -299,6 +327,7 @@ class GeneTree(object):
 		self.char_array = self.create_empty_array(self.leaves)
 
 		char_list = self.code_to_char_list(code)
+		#print("char_list=", char_list)
 		#char_edge_number = {}
 		char_row_number = {}
 		edge_number_char_list = {}
