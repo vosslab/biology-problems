@@ -6,6 +6,7 @@ import copy
 import time
 import numpy
 import random
+import itertools
 
 class GeneTree(object):
 	#==================================
@@ -15,10 +16,11 @@ class GeneTree(object):
 		self.char_array = None
 		self.html_array = None
 		self.cell_count = 0
-
+		self.lowercase_letters = "abcdefghjkmnpqrstuwxyz"
 
 		self._load_code_library()
 		self._check_tree_count_theory()
+		self.make_all_cache = {}
 
 	#==================================
 	def _load_code_library(self):
@@ -79,7 +81,7 @@ class GeneTree(object):
 		return random.choice(good_codes)
 
 	#==================================
-	def get_all_gene_tree_code_for_leaf_count(self, num_leaves):
+	def get_all_gene_tree_codes_for_leaf_count(self, num_leaves):
 		return self.num_leaves_to_tree_set[num_leaves]
 
 	#==================================
@@ -208,12 +210,137 @@ class GeneTree(object):
 		code_permutations = list(set(code_permutations))
 		postlen = len(code_permutations)
 		if prelen != postlen and max_nodes >= 6:
-			print("count of code permuations are duplicates")
+			#print("count of code permuations are duplicates")
 			#print(code_permutations)
-			print("prelen=", prelen, "postlen=", postlen)
+			#print("prelen=", prelen, "postlen=", postlen)
 			#sys.exit(1)
 			pass
 		return code_permutations
+
+	#===========================================
+	def get_all_gene_letter_permutations(self, gene_set):
+		all_gene_permutations = itertools.permutations(gene_set, len(gene_set))
+		all_gene_permutations = list(all_gene_permutations)
+		return all_gene_permutations
+
+	#===========================================
+	def make_all_gene_trees_for_leaf_count(self, num_leaves, sorted_genes=None):
+		if num_leaves > 7:
+			print("generating the 88,200 trees for 7 leaves takes 5 seconds, 8 leaves takes over 2 minutes to make 1.3M trees")
+			print("too many leaves requested, try a different method for generating trees")
+			sys.exit(1)
+
+		#if self.make_all_cache.get(num_leaves) is not None:
+		#	return self.make_all_cache.get(num_leaves)
+
+		if sorted_genes is None:
+			sorted_genes = list(self.lowercase_letters[:num_leaves])
+
+		t0 = time.time()
+		all_gene_permutations = self.get_all_gene_letter_permutations(sorted_genes)
+		print("len(all_gene_permutations)=", len(all_gene_permutations))
+	
+		sorted_gene_tree_codes = self.get_all_gene_tree_codes_for_leaf_count(num_leaves)
+		print("len(sorted_gene_tree_codes)=", len(sorted_gene_tree_codes))
+		
+		### ASSEMBLE CODE LIST
+		code_choice_list = []
+	
+		for sorted_code in sorted_gene_tree_codes:
+			all_permute_codes = self.get_all_code_permutations(sorted_code)
+			for permuted_code in all_permute_codes:
+				for permuted_genes in all_gene_permutations:
+					final_code = self.replace_gene_letters(permuted_code, permuted_genes)
+					if self.is_gene_tree_alpha_sorted(final_code, num_leaves-1) is True:
+						code_choice_list.append(final_code)
+		#purge some other duplicates
+		code_choice_list = list(set(code_choice_list))
+		print("Created all trees ({0} in total) for {1} leaves in {2:.3f} seconds".format(
+			len(code_choice_list), num_leaves, time.time() - t0))
+		print("")
+		return code_choice_list
+
+	#===========================================
+	def gene_tree_code_to_profile(self, code, num_nodes):
+		"""
+		method to quickly compare two trees by creating a profile
+		if two trees have different profiles, they are different
+		Note: if two trees have the same profile, they could be different or same
+		"""
+		code_dict = {}
+		for i in range(num_nodes):
+			node_num = i + 1
+			node_index = code.find(str(node_num))
+			if code[node_index-1].isalpha():
+				code_dict[node_num] = code_dict.get(node_num, []) + [code[node_index-1],]
+			if code[node_index+1].isalpha():
+				code_dict[node_num] = code_dict.get(node_num, []) + [code[node_index+1],]
+		#print(code, code_dict)
+		profile = ""
+		keys = list(code_dict.keys())
+		keys.sort()
+		for key in keys:
+			profile += str(key)
+			values = code_dict[key]
+			values.sort()
+			profile += ''.join(values)
+		#print(code, profile)
+		return profile
+	
+	#===========================================
+	def group_gene_trees_by_profile(self, gene_tree_codes, num_nodes):
+		self.gene_tree_profile_groups = {}
+		for code in gene_tree_codes:
+			profile = self.gene_tree_code_to_profile(code, num_nodes)
+			self.gene_tree_profile_groups[profile] = self.gene_tree_profile_groups.get(profile, []) + [code,]
+		print("{0} profile groups were formed".format(len(self.gene_tree_profile_groups)))
+		return self.gene_tree_profile_groups
+	
+	#===========================================
+	def sort_profiles_by_closeness(self, profile_groups, answer_profile):
+		similar_scores = {}
+		if '(' in answer_profile:
+			print("error: wanted profile, but received code")
+			print(answer_profile)
+			sys.exit(1)
+		profile_group_keys = list(profile_groups.keys())
+		random.shuffle(profile_group_keys)
+		max_scores = []
+		for profile in profile_groups.keys():
+			score = self.string_match(profile, answer_profile)
+			similar_scores[profile] = score 
+		#print(max_scores)
+		sorted_profile_group_keys = [k for k in sorted(similar_scores.keys(), key=similar_scores.get, reverse=True)]
+		return sorted_profile_group_keys
+
+	#===========================================
+	def string_match(self, str1, str2):
+		minlen = min(len(str1), len(str2))
+		count = 0
+		count_step = 10
+		list1 = list(str1)
+		list2 = list(str2)
+		for i in range(minlen):
+			if list1[i] != list2[i]:
+				count_step = 1
+			count += count_step
+		return count
+
+	#===========================================
+	def is_gene_tree_alpha_sorted(self, code, num_nodes):
+		code_dict = {}
+		for i in range(num_nodes):
+			node_num = i + 1
+			node_index = code.find(str(node_num))
+			char1 = code[node_index-1]
+			if not char1.isalpha():
+				continue
+			char2 = code[node_index+1]
+			if not char2.isalpha():
+				continue
+			if char1 > char2:
+				return False
+		return True
 
 	#==================================
 	def get_random_code_permutation(self, code):

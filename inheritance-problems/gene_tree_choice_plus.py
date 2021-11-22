@@ -48,16 +48,19 @@ def comb_safe_permutations(genes):
 
 #===========================================
 def makeRandDistanceList(num_distances):
+	###num_distances = math.comb(len(ordered_genes), 2)//2 <- WRONG?
 	distances = []
+	multiplier = 2
 	while len(distances) < num_distances:
-		r = random.randint(2, num_distances*5)
+		r = random.randint(2, num_distances*multiplier)
 		r *= 2
 		skip = False
 		for d in distances:
-			if abs(r - d) <= 4:
+			if abs(r - d) <= 7:
 				skip = True
 		if skip is False:
 			distances.append(r)
+			multiplier += 2
 	distances.sort()
 	return distances
 
@@ -83,8 +86,6 @@ def get_gene_pair_node(code, gene1, gene2):
 def makeDistancePairs(ordered_genes, distance_list, answer_code):
 	# A-1-B -2-C -3-D
 	distance_dict = {}
-	num_distances = math.comb(len(ordered_genes), 2)//2
-	distance_dict = {}
 	for i,gene1 in enumerate(ordered_genes):
 		if i == 0:
 			continue
@@ -94,7 +95,7 @@ def makeDistancePairs(ordered_genes, distance_list, answer_code):
 			# i > j OR j < i
 			max_node = get_gene_pair_node(answer_code, gene1, gene2)
 			distance_index = max_node - 1
-			#print(gene1, gene2, distance_index, "j=", j)
+			#print(gene1, gene2, distance_index, distance_list[distance_index])
 			distance_dict[(gene1, gene2)] = distance_list[distance_index]
 			distance_dict[(gene2, gene1)] = distance_list[distance_index]
 	#makeTable_ascii(ordered_genes, distance_dict)
@@ -106,7 +107,7 @@ def addDistancePairShifts(distance_dict, ordered_genes, answer_code):
 	for n in range(len(ordered_genes)-2):
 		shift_list.append(0)
 	shift_list.sort()
-	print("shift_list=", shift_list)
+	#print("shift_list=", shift_list)
 	for i,gene1 in enumerate(ordered_genes):
 		for j,gene2 in enumerate(ordered_genes):
 			if i == j:
@@ -183,10 +184,10 @@ def makeTable_html(ordered_genes, distance_dict, distance_list):
 	return table
 
 #===========================================
-def getGoodGenePermutation(gene_permutations, ordered_genes, replace_answer_code):
-	one_index = replace_answer_code.find('1')
-	first_letter = replace_answer_code[one_index-1]
-	second_letter = replace_answer_code[one_index+1]
+def getGoodGenePermutation(gene_permutations, ordered_genes, answer_code):
+	one_index = answer_code.find('1')
+	first_letter = answer_code[one_index-1]
+	second_letter = answer_code[one_index+1]
 	first_letter_index_pair = (ordered_genes.index(first_letter),  ordered_genes.index(second_letter))
 	random.shuffle(gene_permutations)
 	for permuted_genes in gene_permutations:
@@ -201,74 +202,56 @@ def getGoodGenePermutation(gene_permutations, ordered_genes, replace_answer_code
 
 #===========================================
 def makeQuestion(N, sorted_genes, num_leaves, num_choices):
+	num_nodes = num_leaves -1
 	genetree = phylolib2.GeneTree()
-	distance_list = makeRandDistanceList(num_leaves-1)
-	print("distance_list=",distance_list)
 
+	### FIND A PARTICULAR GENE ORDER
 	gene_permutations = comb_safe_permutations(sorted_genes)
-	#print(gene_permutations)
 	random.shuffle(gene_permutations)
 	ordered_genes = gene_permutations.pop()
 	print('ordered_genes=',ordered_genes)
 
-	all_diff_codes = genetree.get_all_gene_tree_code_for_leaf_count(num_leaves)
-	#print("len(all_diff_codes)=", len(all_diff_codes))
-	random.shuffle(all_diff_codes)
-
-	answer_code = all_diff_codes.pop()
-	answer_code = genetree.get_random_code_permutation(answer_code)
-	replace_answer_code = genetree.replace_gene_letters(answer_code, ordered_genes)
-
-	print('replace_answer_code=',replace_answer_code)
-
-	distance_dict = makeDistancePairs(ordered_genes, distance_list, replace_answer_code)
-	#print("distance_dict=",distance_dict)
-	makeTable_ascii(ordered_genes, distance_dict)
-	addDistancePairShifts(distance_dict, ordered_genes, replace_answer_code)
-	#print("distance_dict=",distance_dict)
-	makeTable_ascii(ordered_genes, distance_dict)
-
-	all_answer_permute_codes = genetree.get_all_code_permutations(replace_answer_code) # uses custom genes
-	all_permute_codes = genetree.get_all_code_permutations(answer_code) # uses a,b,c,...
-	all_permute_codes.remove(answer_code)
-
-	### MAKE WRONG ANSWERS
-	code_choice_list = []
-
-	random.shuffle(all_diff_codes)
-	print("len(all_diff_codes)=", len(all_diff_codes))
-	wrong_tree_choice_codes_list = all_diff_codes[:num_choices]
-	for wrong_tree_choice_code in wrong_tree_choice_codes_list:
-		wrong_tree_choice_code = genetree.get_random_code_permutation(wrong_tree_choice_code)
-		wrong_tree_choice_code = genetree.replace_gene_letters(wrong_tree_choice_code, ordered_genes)
-		code_choice_list.append(wrong_tree_choice_code)
-
-	random.shuffle(all_permute_codes)
-	print("len(all_permute_codes)=", len(all_permute_codes))
-	wrong_permute_choice_codes_list = all_permute_codes[:num_choices]
-	for wrong_permute_choice_code in wrong_permute_choice_codes_list:
-		permuted_genes = getGoodGenePermutation(gene_permutations, ordered_genes, replace_answer_code)
-		wrong_permute_choice_code = genetree.replace_gene_letters(wrong_permute_choice_code, permuted_genes)
-		code_choice_list.append(wrong_permute_choice_code)
-
-	### FILTER WRONG ANSWERS
-	code_choice_list = list(set(code_choice_list))
+	### GET ALL POSSIBLE TREES
+	code_choice_list = genetree.make_all_gene_trees_for_leaf_count(num_leaves, sorted_genes)
 	random.shuffle(code_choice_list)
+	answer_code = code_choice_list.pop()
+	print("answer_code=", answer_code)
+
+	distance_list = makeRandDistanceList(num_leaves-1)
+	print("distance_list=",distance_list)
+
+	distance_dict = makeDistancePairs(ordered_genes, distance_list, answer_code)
+	#print("distance_dict=",distance_dict)
+	makeTable_ascii(ordered_genes, distance_dict)
+	addDistancePairShifts(distance_dict, ordered_genes, answer_code)
+	#print("distance_dict=",distance_dict)
+	makeTable_ascii(ordered_genes, distance_dict)
+
+	### REMOVE ANY CHOICES WITH MATCHING PROFILES
+	answer_profile = genetree.gene_tree_code_to_profile(answer_code, num_nodes)
+	profile_groups = genetree.group_gene_trees_by_profile(code_choice_list, num_nodes)
+	if profile_groups.get(answer_profile) is not None:
+		del profile_groups[answer_profile]
+
+	### USE MORE SIMILAR TREES FIRST
+	sorted_profile_group_keys = list(profile_groups.keys())
+	#print("UNsorted profiles=", sorted_profile_group_keys[:3])
+	if len(profile_groups) > num_choices:
+		sorted_profile_group_keys = genetree.sort_profiles_by_closeness(profile_groups, answer_profile)
+
 	html_choices_list = []
-	for code_choice in code_choice_list:
-		#if code_choice in all_answer_permute_codes:
-		#	print("spotted duplicate answer, whew!")
-		#	print("code_choice=",code_choice, "replace_answer_code=",replace_answer_code)
-		#	time.sleep(2)
-		#	continue
+	print(answer_profile)
+	print("sorted profiles=", sorted_profile_group_keys[:6])
+	for key in sorted_profile_group_keys:
+		profile_code_list = profile_groups[key]
+		code_choice = random.choice(profile_code_list)
 		html_choice = genetree.get_html_from_code(code_choice)
 		html_choices_list.append(html_choice)
 		if len(html_choices_list) >= num_choices - 1:
 			break
-	answer_html_choice = genetree.get_html_from_code(replace_answer_code)
+	answer_html_choice = genetree.get_html_from_code(answer_code)
 	html_choices_list.append(answer_html_choice)
 	random.shuffle(html_choices_list)
-
 
 	#WRITE QUESTION
 	question = ''

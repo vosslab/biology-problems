@@ -68,50 +68,60 @@ def group_gene_trees(gene_tree_codes, num_nodes):
 	#pprint.pprint(gene_tree_groups)
 	return gene_tree_groups
 
+#===========================================
+def is_gene_tree_alpha_sorted(code, num_nodes):
+	code_dict = {}
+	for i in range(num_nodes):
+		node_num = i + 1
+		node_index = code.find(str(node_num))
+		char1 = code[node_index-1]
+		if not char1.isalpha():
+			continue
+		char2 = code[node_index+1]
+		if not char2.isalpha():
+			continue
+		if char1 > char2:
+			return False
+	return True
+		
+
 
 #===========================================
 def makeQuestion(N, sorted_genes, num_leaves):
+	t0 = time.time()
 	genetree = phylolib2.GeneTree()
+	num_nodes = num_leaves - 1
+	code_choice_list = genetree.make_all_gene_trees_for_leaf_count(num_leaves)
 
-	gene_permutations = all_permutations(sorted_genes)
-	print("len(gene_permutations)=", len(gene_permutations))
+	code_choice_list.sort()
+	print("code_choice_list: prelen=", prelen, "postlen=", postlen)
 
-	all_diff_codes = genetree.get_all_gene_tree_code_for_leaf_count(num_leaves)
-	print("len(all_diff_codes)=", len(all_diff_codes))
-
-	base_code = all_diff_codes[0]
-	print('base_code=', base_code)
-
-	all_permute_codes = genetree.get_all_code_permutations(base_code)
-
-	### MAKE WRONG ANSWERS
-	code_choice_list = []
-
-	for diff_code in all_diff_codes:
-		all_permute_codes = genetree.get_all_code_permutations(diff_code)
-		for permute_code in all_permute_codes:
-			for permuted_genes in gene_permutations:
-				final_code = genetree.replace_gene_letters(permute_code, permuted_genes)
-				code_choice_list.append(final_code)
+	gene_tree_profile_groups = genetree.group_gene_trees_by_profile(code_choice_list, num_nodes)
 
 	### FILTER ANSWERS
-	code_choice_list = list(set(code_choice_list))
-	code_choice_list.sort()
-	gene_tree_groups = group_gene_trees(code_choice_list, num_leaves-1)
-	group_names = list(gene_tree_groups.keys())
+
+
+	group_names = list(gene_tree_profile_groups.keys())
 	group_names.sort()
-	print(group_names)
+	if len(group_names) < 15:
+		print(group_names)
+	"""
 	f = open('temp.html', 'w')
 	for i, profile in enumerate(group_names):
-		f.write('<h1>{0}. {1}</h1>'.format(i+1, profile))
 		codes = gene_tree_groups[profile]
+		f.write('<h1>{0}. {1} &mdash; {2} trees</h1>'.format(i+1, profile, len(codes)))
 		codes.sort()
-		for code in (codes[0], codes[random.randint(1, len(codes)-2)], codes[-1]):
+		count = 0
+		for code in codes:
 			#gene_tree_code_to_profile(code_choice, num_leaves-1)
 			html_choice = genetree.get_html_from_code(code)
 			#html_choices_list.append(html_choice)
 			f.write(html_choice+'<br/>')
+			count += 1
+			if count >= 5:
+				break
 	f.close()
+	"""
 	return ''
 
 #===========================================
