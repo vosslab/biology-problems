@@ -66,7 +66,9 @@ class GeneTree(object):
 			changed[new_letter] = True
 			new_code = new_code.replace(original_letter, new_letter)
 		#print("{0} -> {1}".format(code, new_code))
-		return new_code.lower()
+		new_code = new_code.lower()
+		new_code = self.sort_alpha_for_gene_tree(new_code, len(ordered_genes)-1)
+		return new_code
 
 	#==================================
 	def get_tree_name_from_code(self, code):
@@ -180,10 +182,11 @@ class GeneTree(object):
 	def _permute_code_by_node_binary(self, code, node_binary):
 		max_nodes = self.code_to_number_of_nodes(code)
 		new_code = copy.copy(code)
-		for node_number in range(max_nodes+1):
+		for node_number_less_one in range(max_nodes):
+			node_number = node_number_less_one + 1
 			# power of two, essentually a binary number
-			if (node_binary // 2**node_number) % 2 == 1:
-				new_code = self.permute_code_by_node(code, node_number)
+			if (node_binary // 2**node_number_less_one) % 2 == 1:
+				new_code = self.permute_code_by_node(new_code, node_number)
 		return new_code
 
 	#==================================
@@ -202,19 +205,63 @@ class GeneTree(object):
 	def get_all_code_permutations(self, code):
 		max_nodes = self.code_to_number_of_nodes(code)
 		code_permutations = []
-		for node_binary in range(2**max_nodes+1):
+		for node_binary in range(1, 2**max_nodes+1):
 			new_code = self._permute_code_by_node_binary(code, node_binary)
+			#print(node_binary, code, '->', new_code)
 			code_permutations.append(new_code)
 		prelen = len(code_permutations)
 		#print(code_permutations)
 		code_permutations = list(set(code_permutations))
 		postlen = len(code_permutations)
 		if prelen != postlen and max_nodes >= 6:
-			#print("count of code permuations are duplicates")
-			#print(code_permutations)
-			#print("prelen=", prelen, "postlen=", postlen)
-			#sys.exit(1)
+			#code_permutations.sort()
+			dupes = [x for n, x in enumerate(code_permutations) if x in code_permutations[:n]]
+			print(dupes)
+			print("some code rotation permuation were duplicates")
+			print("prelen=", prelen, "postlen=", postlen)
+			sys.exit(1)
 			pass
+		return code_permutations
+
+	#==================================
+	def get_all_alpha_sorted_code_rotation_permutations(self, code):
+		max_nodes = self.code_to_number_of_nodes(code)
+
+		skip_nodes = []
+		for i in range(max_nodes):
+			node_num = i + 1
+			node_index = code.find(str(node_num))
+			if node_index == -1:
+				print(node_index, "not in", code)
+				print("WARNING: get_all_alpha_sorted_code_rotation_permutations() error")
+				time.sleep(1)
+				break
+			char1 = code[node_index-1]
+			if not char1.isalpha():
+				continue
+			char2 = code[node_index+1]
+			if not char2.isalpha():
+				continue
+			skip_nodes.append(node_num)
+
+		code_permutations = []
+		for node_binary in range(2**max_nodes+1):
+			my_code = copy.copy(code)
+			new_code = self._permute_code_by_node_binary(my_code, node_binary)
+			print(code, my_code, new_code)
+			code_permutations.append(new_code)
+		prelen = len(code_permutations)
+		#print(code_permutations)
+		code_permutations2 = list(set(code_permutations))
+		postlen = len(code_permutations2)
+		if prelen != postlen and max_nodes >= 6:
+			dupes = [x for n, x in enumerate(code_permutations) if x in code_permutations[:n]]
+			print(dupes)
+			print("some code rotation permuation were duplicates")
+			print("prelen=", prelen, "postlen=", postlen)
+			sys.exit(1)
+			pass
+		expected_code_permutations = 2**max_nodes
 		return code_permutations
 
 	#===========================================
@@ -261,12 +308,14 @@ class GeneTree(object):
 		return code_choice_list
 
 	#===========================================
-	def gene_tree_code_to_profile(self, code, num_nodes):
+	def gene_tree_code_to_profile(self, code, num_nodes=None):
 		"""
 		method to quickly compare two trees by creating a profile
 		if two trees have different profiles, they are different
 		Note: if two trees have the same profile, they could be different or same
 		"""
+		if num_nodes is None:
+			num_nodes = self.code_to_number_of_nodes(code)
 		code_dict = {}
 		for i in range(num_nodes):
 			node_num = i + 1
@@ -289,6 +338,8 @@ class GeneTree(object):
 	
 	#===========================================
 	def group_gene_trees_by_profile(self, gene_tree_codes, num_nodes):
+		if num_nodes is None:
+			num_nodes = self.code_to_number_of_nodes(gene_tree_codes[0])
 		self.gene_tree_profile_groups = {}
 		for code in gene_tree_codes:
 			profile = self.gene_tree_code_to_profile(code, num_nodes)
@@ -300,7 +351,7 @@ class GeneTree(object):
 	def sort_profiles_by_closeness(self, profile_groups, answer_profile):
 		similar_scores = {}
 		if '(' in answer_profile:
-			print("error: wanted profile, but received code")
+			print("ERROR: wanted profile, but received code")
 			print(answer_profile)
 			sys.exit(1)
 		profile_group_keys = list(profile_groups.keys())
@@ -328,6 +379,8 @@ class GeneTree(object):
 
 	#===========================================
 	def is_gene_tree_alpha_sorted(self, code, num_nodes):
+		if num_nodes is None:
+			num_nodes = self.code_to_number_of_nodes(code)		
 		code_dict = {}
 		for i in range(num_nodes):
 			node_num = i + 1
@@ -341,6 +394,33 @@ class GeneTree(object):
 			if char1 > char2:
 				return False
 		return True
+
+	#===========================================
+	def sort_alpha_for_gene_tree(self, code, num_nodes):
+		if num_nodes is None:
+			num_nodes = self.code_to_number_of_nodes(code)	
+		code_dict = {}
+		new_code_list = list(code)
+		for i in range(num_nodes):
+			node_num = i + 1
+			node_index = code.find(str(node_num))
+			if node_index == -1:
+				print(node_index, "not in", code)
+				print("WARNING: sort_alpha_for_gene_tree() error")
+				time.sleep(1)
+				break
+			char1 = code[node_index-1]
+			if not char1.isalpha():
+				continue
+			char2 = code[node_index+1]
+			if not char2.isalpha():
+				continue
+			if char1 > char2:
+				new_code_list[node_index-1] = char2
+				new_code_list[node_index+1] = char1
+		new_code_str = ''.join(new_code_list)
+		return new_code_str
+
 
 	#==================================
 	def get_random_code_permutation(self, code):
