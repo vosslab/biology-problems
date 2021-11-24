@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import sys
 import copy
 import time
 import random
@@ -235,14 +236,13 @@ def findSameQuestion(N, sorted_genes, num_leaves, num_choices):
 	question = '<p>The tree below is a {0} leaf gene tree, Dr. Voss affectionatly calls this tree "{1}"</p>'.format(num_leaves, question_tree_name)
 	question += genetree.get_html_from_code(question_code)
 	question += '<p></p><h6>Several gene trees are shown below, but only one is the same as the one above.</h6>'
-	question += '<h6>Which one of the following represents a '
+	question += '<h6>Which one of the following represents or is equivalent to the '
 	question += '<span style="color: #169179;"><strong>SAME</strong></span> gene tree?</h6>'
 	### 7b. format the question
 	complete = bptools.formatBB_MC_Question(N, question, html_choices_list, answer_html_choice)
 
 	print("findSameQuestion() is complete for {0} leaves and {1} choices".format(num_leaves, num_choices))
 	return complete
-
 
 #===========================================
 #===========================================
@@ -264,7 +264,7 @@ if __name__ == '__main__':
 	N = 1
 	errors = 0
 	while N <= args.num_questions:
-		if errors > 5:
+		if errors > N > 5:
 			print("TOO MANY ERRORS, QUITTING")
 			sys.exit(1)
 		sorted_genes = bptools.getGeneLetters(args.num_leaves, N-1)

@@ -755,7 +755,7 @@ code_library = {
 	## 5 leaves	 -- 3 type / 5 edge-labeled
 	'5comb':		'((((a1b)2c)3d)4e)', #type 1
 	'5giraffe':		'(((a1b)3(c2d))4e)', #type 2
-	#'5giraffe*':	'(((a2b)3(c1d))4e)',
+	#'5giraffe*':	'(((a2b)3(c1d))4e)', #type 2 alternate (extra)
 	'3comb+pair1':	'(((a1b)2c)4(d3e))', #type 3 / 3 edge-labels
 	'3comb+pair2':	'(((a1b)3c)4(d2e))',
 	'3comb+pair3':	'(((a2b)3c)4(d1e))',
@@ -803,14 +803,14 @@ code_library = {
 	## 7 leaves  -- 11 type / 61 edge-labeled
 	'7comb':			'((((((a1b)2c)3d)4e)5f)6g)', #type 1 / 1 edge-labels
 	'5giraffe+1+1':		'(((((a1b)3(c2d))4e)5f)6g)', #type 2 / 1 edge-labels
-	'3comb+pair1+1+1':	'(((((a1b)2c)4(d3e))5f)6g)', #type 3 / 3 edge-labels
-	'4comb+pair1+1':	'(((((a1b)2c)3d)5(e4f))6g)', #type 4 / 4 edge-labels
+	'3comb+pair+1+1':	'(((((a1b)2c)4(d3e))5f)6g)', #type 3 / 3 edge-labels
+	'4comb+pair+1':		'(((((a1b)2c)3d)5(e4f))6g)', #type 4 / 4 edge-labels
 	'6twohead1+1':		'((((a1b)3(c2d))5(e4f))6g)', #type 5 / 4 edge-labels
 	'6balanced1+1':		'((((a1b)2c)5((d3e)4f))6g)', #type 6 / 3 edge-labels
 
 	'5comb+pair':		'(((((a1b)2c)3d)4e)6(f5g))', #type 7 / 5 edge-labels
 	'5giraffe+pair':	'((((a1b)3(c2d))4e)6(f5g))', #type 8 / 5 edge-labels
-	'3comb+pair1+pair':	'((((a1b)2c)4(d3e))6(f5g))', #type 9 / 5x3 = 15 edge-labels
+	'3comb+pair+pair':	'((((a1b)2c)4(d3e))6(f5g))', #type 9 / 5x3 = 15 edge-labels
 
 	'4comb+3comb':		'((((a1b)2c)3d)6((e4f)5g))', #type 10 / (4+3+2+1) = 10 edge-labels
 	'4balanced+3comb':	'(((a1b)3(c2d))6((e4f)5g))', #type 11 / (4+3+2+1) = 10 edge-labels
@@ -821,33 +821,33 @@ code_library = {
 	# previous: 11 from 7 leaves
 	'8comb':				'(((((((a1b)2c)3d)4e)5f)6g)7h)', #type  1 /  1 edge-labels
 	'5giraffe+1+1+1':		'((((((a1b)3(c2d))4e)5f)6g)7h)', #type  2 /  1 edge-labels
-	'3comb+pair1+1+1+1':	'((((((a1b)2c)4(d3e))5f)6g)7h)', #type  3 /  3 edge-labels
-	'4comb+pair1+1+1':		'((((((a1b)2c)3d)5(e4f))6g)7h)', #type  4 /  4 edge-labels
+	'3comb+pair+1+1+1':		'((((((a1b)2c)4(d3e))5f)6g)7h)', #type  3 /  3 edge-labels
+	'4comb+pair+1+1':		'((((((a1b)2c)3d)5(e4f))6g)7h)', #type  4 /  4 edge-labels
 	'6twohead1+1+1':		'(((((a1b)3(c2d))5(e4f))6g)7h)', #type  5 /  4 edge-labels
 	'6balanced1+1+1':		'(((((a1b)2c)5((d3e)4f))6g)7h)', #type  6 /  3 edge-labels
 	'5comb+pair+1':			'((((((a1b)2c)3d)4e)6(f5g))7h)', #type  7 /  5 edge-labels
 	'5giraffe+pair+1':		'(((((a1b)3(c2d))4e)6(f5g))7h)', #type  8 /  5 edge-labels
-	'3comb+pair1+pair+1':	'(((((a1b)2c)4(d3e))6(f5g))7h)', #type  9 / 15 edge-labels
+	'3comb+pair+pair+1':	'(((((a1b)2c)4(d3e))6(f5g))7h)', #type  9 / 15 edge-labels
 	'4comb+3comb+1':		'(((((a1b)2c)3d)6((e4f)5g))7h)', #type 10 / 10 edge-labels
 	'4balanced+3comb+1':	'((((a1b)3(c2d))6((e4f)5g))7h)', #type 11 / 10 edge-labels
 
 	# 6 from 6 leaves
 	'6comb+pair':			'((((((a1b)2c)3d)4e)5f)7(g6h))', #type 12 /  6 edge-labels
 	'5giraffe+1+pair':		'(((((a1b)3(c2d))4e)5f)7(g6h))', #type 13 /  6 edge-labels
-	'3comb+pair1+1+pair':	'(((((a1b)2c)4(d3e))5f)7(g6h))', #type 14 / 18 edge-labels
-	'4comb+pair1+pair':		'(((((a1b)2c)3d)5(e4f))7(g6h))', #type 15 / 24 edge-labels
+	'3comb+pair+1+pair':	'(((((a1b)2c)4(d3e))5f)7(g6h))', #type 14 / 18 edge-labels
+	'4comb+pair+pair':		'(((((a1b)2c)3d)5(e4f))7(g6h))', #type 15 / 24 edge-labels
 	'6twohead1+pair':		'((((a1b)3(c2d))5(e4f))7(g6h))', #type 16 / 24 edge-labels
 	'6balanced1+pair':		'((((a1b)2c)5((d3e)4f))7(g6h))', #type 17 / 18 edge-labels
 
 	# 3 from 5 leaves
 	'5comb+3comb':			'(((((a1b)2c)3d)4e)7((f5g)6h))', #type 18 / 15 edge-labels
 	'5giraffe+3comb':		'((((a1b)3(c2d))4e)7((f5g)6h))', #type 19 / 15 edge-labels
-	'3comb+pair1+3comb':	'((((a1b)2c)4(d3e))7((f5g)6h))', #type 20 / 45 edge-labels
+	'3comb+pair+3comb':		'((((a1b)2c)4(d3e))7((f5g)6h))', #type 20 / 45 edge-labels
 
 	# 2x2 from 4 leaves
 	'8hanukkah':			'((((a1b)3c)5d)7(e6(f4(g2h))))', #type 21 / 10 edge-labels
 	'8balanced':			'(((a1b)5(c3d))7((e4f)6(g2h)))', #type 22 / 10 edge-labels
-	#'4balanced+4comb':		'(((a1b)3(c2d))7(((e4f)5g)6h))', #duplicate
+	#'4balanced+4comb':		'(((a1b)3(c2d))7(((e4f)5g)6h))', #duplicate to below
 	'4comb+4balanced':		'((((a1b)2c)3d)7((e4f)6(g5h)))', #type 23 / 20 edge-labels
 
 	###================================================
@@ -856,57 +856,70 @@ code_library = {
 	# previous: 23 from 8 leaves
 	'9comb':				'((((((((a1b)2c)3d)4e)5f)6g)7h)8i)', #type  1 /  1 edge-labels
 	'5giraffe+1+1+1+1':		'(((((((a1b)3(c2d))4e)5f)6g)7h)8i)', #type  2 /  1 edge-labels
-	'3comb+pair1+1+1+1+1':	'(((((((a1b)2c)4(d3e))5f)6g)7h)8i)', #type  3 /  3 edge-labels
-	'4comb+pair1+1+1+1':	'(((((((a1b)2c)3d)5(e4f))6g)7h)8i)', #type  4 /  4 edge-labels
+	'3comb+pair+1+1+1+1':	'(((((((a1b)2c)4(d3e))5f)6g)7h)8i)', #type  3 /  3 edge-labels
+	'4comb+pair+1+1+1':		'(((((((a1b)2c)3d)5(e4f))6g)7h)8i)', #type  4 /  4 edge-labels
 	'6twohead1+1+1+1':		'((((((a1b)3(c2d))5(e4f))6g)7h)8i)', #type  5 /  4 edge-labels
 	'6balanced1+1+1+1':		'((((((a1b)2c)5((d3e)4f))6g)7h)8i)', #type  6 /  3 edge-labels
 	'5comb+pair+1+1':		'(((((((a1b)2c)3d)4e)6(f5g))7h)8i)', #type  7 /  5 edge-labels
 	'5giraffe+pair+1+1':	'((((((a1b)3(c2d))4e)6(f5g))7h)8i)', #type  8 /  5 edge-labels
-	'3comb+pair1+pair+1+1':	'((((((a1b)2c)4(d3e))6(f5g))7h)8i)', #type  9 / 15 edge-labels
+	'3comb+pair+pair+1+1':	'((((((a1b)2c)4(d3e))6(f5g))7h)8i)', #type  9 / 15 edge-labels
 	'4comb+3comb+1+1':		'((((((a1b)2c)3d)6((e4f)5g))7h)8i)', #type 10 / 10 edge-labels
 	'4balanced+3comb+1+1':	'(((((a1b)3(c2d))6((e4f)5g))7h)8i)', #type 11 / 10 edge-labels
 	'6comb+pair+1':			'(((((((a1b)2c)3d)4e)5f)7(g6h))8i)', #type 12 /  6 edge-labels
 	'5giraffe+1+pair+1':	'((((((a1b)3(c2d))4e)5f)7(g6h))8i)', #type 13 /  6 edge-labels
-	'3comb+pair1+1+pair+1':	'((((((a1b)2c)4(d3e))5f)7(g6h))8i)', #type 14 / 18 edge-labels
-	'4comb+pair1+pair+1':	'((((((a1b)2c)3d)5(e4f))7(g6h))8i)', #type 15 / 24 edge-labels
+	'3comb+pair+1+pair+1':	'((((((a1b)2c)4(d3e))5f)7(g6h))8i)', #type 14 / 18 edge-labels
+	'4comb+pair+pair+1':	'((((((a1b)2c)3d)5(e4f))7(g6h))8i)', #type 15 / 24 edge-labels
 	'6twohead1+pair+1':		'(((((a1b)3(c2d))5(e4f))7(g6h))8i)', #type 16 / 24 edge-labels
 	'6balanced1+pair+1':	'(((((a1b)2c)5((d3e)4f))7(g6h))8i)', #type 17 / 18 edge-labels
 	'5comb+3comb+1':		'((((((a1b)2c)3d)4e)7((f5g)6h))8i)', #type 18 / 15 edge-labels
 	'5giraffe+3comb+1':		'(((((a1b)3(c2d))4e)7((f5g)6h))8i)', #type 19 / 15 edge-labels
-	'3comb+pair1+3comb+1':	'(((((a1b)2c)4(d3e))7((f5g)6h))8i)', #type 20 / 45 edge-labels
+	'3comb+pair+3comb+1':	'(((((a1b)2c)4(d3e))7((f5g)6h))8i)', #type 20 / 45 edge-labels
 	'8hanukkah+1':			'(((((a1b)3c)5d)7(e6(f4(g2h))))8i)', #type 21 / 10 edge-labels
 	'8balanced+1':			'((((a1b)5(c3d))7((e4f)6(g2h)))8i)', #type 22 / 10 edge-labels
 	'4comb+4balanced+1':	'(((((a1b)2c)3d)7((e4f)6(g5h)))8i)', #type 23 / 10 edge-labels
 
 	# 11 from 7 leaves
-	'7comb+pair':				'(((((((a1b)2c)3d)4e)5f)6g)8(h7i))', #type 24 /  7 edge-labels
-	'5giraffe+1+1+pair':		'((((((a1b)3(c2d))4e)5f)6g)8(h7i))', #type 25 /  7 edge-labels
-	'3comb+pair1+1+1+pair':		'((((((a1b)2c)4(d3e))5f)6g)8(h7i))', #type 26 / 21 edge-labels
-	'4comb+pair1+1+pair':		'((((((a1b)2c)3d)5(e4f))6g)8(h7i))', #type 27 / 28 edge-labels
-	'6twohead1+1+pair':			'(((((a1b)3(c2d))5(e4f))6g)8(h7i))', #type 28 / 28 edge-labels
-	'6balanced1+1+pair':		'(((((a1b)2c)5((d3e)4f))6g)8(h7i))', #type 29 / 21 edge-labels
-	'5comb+pair+pair':			'((((((a1b)2c)3d)4e)6(f5g))8(h7i))', #type 30 / 35 edge-labels
-	'5giraffe+pair+pair':		'(((((a1b)3(c2d))4e)6(f5g))8(h7i))', #type 31 / 35 edge-labels
-	'3comb+pair1+pair+pair':	'(((((a1b)2c)4(d3e))6(f5g))8(h7i))', #type 32 /105 edge-labels
-	'4comb+3comb+pair':			'(((((a1b)2c)3d)6((e4f)5g))8(h7i))', #type 33 / 70 edge-labels
-	'4balanced+3comb+pair':		'((((a1b)3(c2d))6((e4f)5g))8(h7i))', #type 34 / 70 edge-labels
+	'7comb+pair':			'(((((((a1b)2c)3d)4e)5f)6g)8(h7i))', #type 24 /  7 edge-labels
+	'5giraffe+1+1+pair':	'((((((a1b)3(c2d))4e)5f)6g)8(h7i))', #type 25 /  7 edge-labels
+	'3comb+pair+1+1+pair':	'((((((a1b)2c)4(d3e))5f)6g)8(h7i))', #type 26 / 21 edge-labels
+	'4comb+pair+1+pair':	'((((((a1b)2c)3d)5(e4f))6g)8(h7i))', #type 27 / 28 edge-labels
+	'6twohead1+1+pair':		'(((((a1b)3(c2d))5(e4f))6g)8(h7i))', #type 28 / 28 edge-labels
+	'6balanced1+1+pair':	'(((((a1b)2c)5((d3e)4f))6g)8(h7i))', #type 29 / 21 edge-labels
+	'5comb+pair+pair':		'((((((a1b)2c)3d)4e)6(f5g))8(h7i))', #type 30 / 35 edge-labels
+	'5giraffe+pair+pair':	'(((((a1b)3(c2d))4e)6(f5g))8(h7i))', #type 31 / 35 edge-labels
+	'3comb+pair+pair+pair':	'(((((a1b)2c)4(d3e))6(f5g))8(h7i))', #type 32 /105 edge-labels
+	'4comb+3comb+pair':		'(((((a1b)2c)3d)6((e4f)5g))8(h7i))', #type 33 / 70 edge-labels
+	'4balanced+3comb+pair':	'((((a1b)3(c2d))6((e4f)5g))8(h7i))', #type 34 / 70 edge-labels
 
 	# 6 from 6 leaves
 	'6comb+3comb':			'((((((a1b)2c)3d)4e)5f)8((g6h)7i))', #type 35 / 21 edge-labels
 	'5giraffe+1+3comb':		'(((((a1b)3(c2d))4e)5f)8((g6h)7i))', #type 36 / 21 edge-labels
-	'3comb+pair1+1+3comb':	'(((((a1b)2c)4(d3e))5f)8((g6h)7i))', #type 37 / 63 edge-labels
-	'4comb+pair1+3comb':	'(((((a1b)2c)3d)5(e4f))8((g6h)7i))', #type 38 / 84 edge-labels
+	'3comb+pair+1+3comb':	'(((((a1b)2c)4(d3e))5f)8((g6h)7i))', #type 37 / 63 edge-labels
+	'4comb+pair+3comb':		'(((((a1b)2c)3d)5(e4f))8((g6h)7i))', #type 38 / 84 edge-labels
 	'6twohead1+3comb':		'((((a1b)3(c2d))5(e4f))8((g6h)7i))', #type 39 / 84 edge-labels
 	'6balanced1+3comb':		'((((a1b)2c)5((d3e)4f))8((g6h)7i))', #type 40 / 63 edge-labels
 
 	# 2x3 from 5 leaves
-	'5comb+4comb':				'(((((a1b)2c)3d)4e)8(((f5g)6h)7i))', #type 41 / 15 edge-labels
-	'5giraffe+4comb':			'((((a1b)3(c2d))4e)8(((f5g)6h)7i))', #type 42 / 15 edge-labels
-	'3comb+pair1+4comb':		'((((a1b)2c)4(d3e))8(((f5g)6h)7i))', #type 43 / 45 edge-labels
-	'5comb+4balanced':			'(((((a1b)2c)3d)4e)8(((f5g)6h)7i))', #type 44 / 15 edge-labels
-	'5giraffe+4balanced':		'((((a1b)3(c2d))4e)8(((f5g)6h)7i))', #type 45 / 15 edge-labels
-	'3comb+pair1+4balanced':	'((((a1b)2c)4(d3e))8(((f5g)6h)7i))', #type 46 / 45 edge-labels
+	'5comb+4comb':			'(((((a1b)2c)3d)4e)8(((f5g)6h)7i))', #type 41 / 15 edge-labels
+	'5giraffe+4comb':		'((((a1b)3(c2d))4e)8(((f5g)6h)7i))', #type 42 / 15 edge-labels
+	'3comb+pair+4comb':		'((((a1b)2c)4(d3e))8(((f5g)6h)7i))', #type 43 / 45 edge-labels
+	'5comb+4balanced':		'(((((a1b)2c)3d)4e)8(((f5g)6h)7i))', #type 44 / 15 edge-labels
+	'5giraffe+4balanced':	'((((a1b)3(c2d))4e)8(((f5g)6h)7i))', #type 45 / 15 edge-labels
+	'3comb+pair+4balanced':	'((((a1b)2c)4(d3e))8(((f5g)6h)7i))', #type 46 / 45 edge-labels
 
+	###================================================
+	###================================================
+	## 10 leaves  -- 98 type / 7936 edge-labeled
+	# previous: 46 types from 9 leaves
+
+	### Number of types for number of leaves:
+	# Wedderburn-Etherington numbers
+	# https://oeis.org/A001190
+	# unlabeled binary rooted trees (every node has out-degree 0 or 2) with n endpoints (and 2n-1 nodes in all)
+	# 1, 1, 2, 3,  6, 11,  23,   46,   98,   207,   451, ...
+	### Number of edge-labeled for number of leaves:
+	# https://oeis.org/A000111
+	# 1, 1, 2, 5, 16, 61, 272, 1385, 7936, 50521, ...
 
 	###================================================
 	###================================================
