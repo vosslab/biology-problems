@@ -179,90 +179,96 @@ class GeneTree(object):
 		return new_code
 
 	#==================================
-	def _permute_code_by_node_binary(self, code, node_binary):
+	def _permute_code_by_node_binary(self, code, node_binary_list):
 		max_nodes = self.code_to_number_of_nodes(code)
 		new_code = copy.copy(code)
-		for node_number_less_one in range(max_nodes):
-			node_number = node_number_less_one + 1
+		reverse_binary_list = node_binary_list[::-1]
+		for node_number_index in range(max_nodes):
+			node_number = node_number_index + 1
 			# power of two, essentually a binary number
-			if (node_binary // 2**node_number_less_one) % 2 == 1:
+			#if (node_binary // 2**node_number_less_one) % 2 == 1:
+			if node_number_index >= len(reverse_binary_list):
+				continue
+			if reverse_binary_list[node_number_index] == 1:
 				new_code = self.permute_code_by_node(new_code, node_number)
 		return new_code
-
-	#==================================
-	def int_to_binary_list(self, num):
-		bin_list = []
-		if num == 0:
-			return [0,]
-		import math
-		max_nodes = int(math.ceil(math.log(float(num))/math.log(2.0)))
-		for j in range(0, max_nodes+1):
-			# power of two, essentually a binary number
-			bin_list.append((num  // 2**j) % 2)
-		print(num, bin_list)
 
 	#==================================
 	def get_all_code_permutations(self, code):
 		max_nodes = self.code_to_number_of_nodes(code)
 		code_permutations = []
-		for node_binary in range(1, 2**max_nodes+1):
-			new_code = self._permute_code_by_node_binary(code, node_binary)
+		for node_binary in range(2**max_nodes):
+			node_binary_list = self.convert_int_to_binary_list(node_binary)
+			new_code = self._permute_code_by_node_binary(code, node_binary_list)
 			#print(node_binary, code, '->', new_code)
+			if new_code in code_permutations:
+				sys.exit(1)
 			code_permutations.append(new_code)
 		prelen = len(code_permutations)
-		#print(code_permutations)
-		code_permutations = list(set(code_permutations))
-		postlen = len(code_permutations)
-		if prelen != postlen and max_nodes >= 6:
-			#code_permutations.sort()
+		unique_code_permutations = list(set(code_permutations))
+		postlen = len(unique_code_permutations)
+		if prelen != postlen and max_nodes >= 4:
 			dupes = [x for n, x in enumerate(code_permutations) if x in code_permutations[:n]]
 			print(dupes)
 			print("some code rotation permuation were duplicates")
 			print("prelen=", prelen, "postlen=", postlen)
 			sys.exit(1)
-			pass
-		return code_permutations
+		return unique_code_permutations
+
+	#==================================
+	def convert_int_to_binary_list(self, integer):
+		binary_list = [int(x) for x in list('{0:0b}'.format(integer))]
+		#print(integer, '->', binary_list)
+		return binary_list
 
 	#==================================
 	def get_all_alpha_sorted_code_rotation_permutations(self, code):
 		max_nodes = self.code_to_number_of_nodes(code)
+		original_code_permutations = self.get_all_code_permutations(code)
+		alpha_sorted_code_permutations = []
+		for code in original_code_permutations:
+			new_code = self.sort_alpha_for_gene_tree(code, max_nodes)
+			alpha_sorted_code_permutations.append(new_code)
+		code_permutations = list(set(alpha_sorted_code_permutations))
+		return code_permutations
 
+	#==================================
+	def OLD_OLD_OLD_get_all_alpha_sorted_code_rotation_permutations(self, code):
+		max_nodes = self.code_to_number_of_nodes(code)
+		#some nodes can be skipped
 		skip_nodes = []
 		for i in range(max_nodes):
 			node_num = i + 1
 			node_index = code.find(str(node_num))
-			if node_index == -1:
-				print(node_index, "not in", code)
-				print("WARNING: get_all_alpha_sorted_code_rotation_permutations() error")
-				time.sleep(1)
-				break
-			char1 = code[node_index-1]
-			if not char1.isalpha():
-				continue
-			char2 = code[node_index+1]
-			if not char2.isalpha():
-				continue
-			skip_nodes.append(node_num)
+			if code[node_index-1].isalpha() and code[node_index+1].isalpha():
+				skip_nodes.append(node_num)
+		skip_nodes.sort()
 
 		code_permutations = []
-		for node_binary in range(2**max_nodes+1):
-			my_code = copy.copy(code)
-			new_code = self._permute_code_by_node_binary(my_code, node_binary)
-			print(code, my_code, new_code)
+		for node_binary in range(1, 2**max_nodes+1):
+			node_binary_list = self.convert_int_to_binary_list(node_binary)
+			skip_num = False
+			for skip_node in skip_nodes:
+				if skip_node < len(node_binary_list) and node_binary_list[skip_node] == 1:
+					skip_num = True
+			if skip_num is True:
+				continue
+			new_code = self._permute_code_by_node_binary(code, node_binary_list)
+			#print(node_binary, code, '->', new_code)
 			code_permutations.append(new_code)
 		prelen = len(code_permutations)
-		#print(code_permutations)
-		code_permutations2 = list(set(code_permutations))
-		postlen = len(code_permutations2)
+		code_permutations = list(set(code_permutations))
+		postlen = len(code_permutations)
 		if prelen != postlen and max_nodes >= 6:
 			dupes = [x for n, x in enumerate(code_permutations) if x in code_permutations[:n]]
 			print(dupes)
 			print("some code rotation permuation were duplicates")
 			print("prelen=", prelen, "postlen=", postlen)
 			sys.exit(1)
-			pass
-		expected_code_permutations = 2**max_nodes
 		return code_permutations
+
+
+
 
 	#===========================================
 	def get_all_gene_letter_permutations(self, gene_set):
@@ -426,14 +432,16 @@ class GeneTree(object):
 	def get_random_code_permutation(self, code):
 		max_nodes = self.code_to_number_of_nodes(code)
 		node_binary = random.randint(0, 2**max_nodes)
-		new_code = self._permute_code_by_node_binary(code, node_binary)
+		node_binary_list = self.convert_int_to_binary_list(node_binary)
+		new_code = self._permute_code_by_node_binary(code, node_binary_list)
 		return new_code
 
 	#==================================
 	def get_random_even_code_permutation(self, code):
 		max_nodes = self.code_to_number_of_nodes(code)
 		node_binary = random.randint(0, 2**(max_nodes-1))*2
-		new_code = self._permute_code_by_node_binary(code, node_binary)
+		node_binary_list = self.convert_int_to_binary_list(node_binary)
+		new_code = self._permute_code_by_node_binary(code, node_binary_list)
 		return new_code
 
 	#==================================

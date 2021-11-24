@@ -70,7 +70,7 @@ def findDifferentQuestion(N, sorted_genes, num_leaves, num_choices):
 
 	### 3. now get the all the matches to the replaced_match_code for other choices
 	### 3a. get all rotation permutations for replaced_match_code
-	choice_codes_list = genetree.get_all_code_permutations(replaced_match_code)
+	choice_codes_list = genetree.get_all_alpha_sorted_code_rotation_permutations(replaced_match_code)
 	choice_codes_list.sort()
 	if debug is True:
 		print("choice_codes_list=", choice_codes_list)
@@ -113,9 +113,8 @@ def findDifferentQuestion(N, sorted_genes, num_leaves, num_choices):
 	if len(html_choices_list) != num_choices - 1:
 		print("WARNING: requested choices were not fulfilled")
 		time.sleep(1)
-		if num_choices > 3 and len(html_choices_list) <= 2:
-			print("ERROR not enough choices")
-			sys.exit(1)
+		### some graphs just don't have enough alternate choices
+		return None
 	### 3e. add the correct choice to the list
 	html_choices_list.append(rotated_replaced_most_similar_html_choice)
 	random.shuffle(html_choices_list)
@@ -143,91 +142,102 @@ def findDifferentQuestion(N, sorted_genes, num_leaves, num_choices):
 #=======================
 def findSameQuestion(N, sorted_genes, num_leaves, num_choices):
 	""" make a gene tree with N leaves, ask students to find the same one among other wrong ones"""
+	### 0. setup variables
 	num_nodes = num_leaves - 1
 	ordered_genes = copy.copy(sorted_genes)
 	random.shuffle(ordered_genes)
-
 	genetree = phylolib2.GeneTree()
+	
+	### 1. get all possible gene base codes
 	all_diff_codes = genetree.get_all_gene_tree_codes_for_leaf_count(num_leaves)
 	random.shuffle(all_diff_codes)
 
+	### 2. select a gene tree, for matching
 	raw_code = all_diff_codes.pop()
 	raw_profile = genetree.gene_tree_code_to_profile(raw_code, num_nodes)
 	print("raw_code=", raw_code, raw_profile)
 	question_tree_name = genetree.get_tree_name_from_code(raw_code)
-	count = 0
-	answer_alpha_sorted = False
-	while answer_alpha_sorted is False and count < 4:
-		count += 1
-		answer_code = genetree.get_random_code_permutation(raw_code)
-		answer_code = genetree.replace_gene_letters(answer_code, ordered_genes)
-		answer_code = genetree.sort_alpha_for_gene_tree(answer_code, num_leaves-1)
-		answer_alpha_sorted = genetree.is_gene_tree_alpha_sorted(answer_code, num_leaves-1)
-	print("Final Alpha Sort status for answer: {0}".format(answer_alpha_sorted))
+
+	### 3. rotation permute the raw code to get the answer gene tree
+	answer_code = genetree.get_random_code_permutation(raw_code)
+	answer_code = genetree.replace_gene_letters(answer_code, ordered_genes)
+	answer_code = genetree.sort_alpha_for_gene_tree(answer_code, num_nodes)
 	answer_profile = genetree.gene_tree_code_to_profile(answer_code, num_nodes)
 	print("answer_code=", answer_code, answer_profile)
+
+	### 4a. selected a different rotation permutation of the raw code for the question text
 	question_code = answer_code
-	count = 0
-	question_alpha_sorted = False
-	while question_code == answer_code or question_alpha_sorted is False:
-		count += 1
+	while question_code == answer_code:
 		question_code = genetree.get_random_code_permutation(raw_code)
 		question_code = genetree.replace_gene_letters(question_code, ordered_genes)
 		question_code = genetree.sort_alpha_for_gene_tree(question_code, num_leaves-1)
-		question_alpha_sorted = genetree.is_gene_tree_alpha_sorted(question_code, num_leaves-1)
-		if count > 4 and question_code != answer_code:
-			break
-	print("Final Alpha Sort status for question: {0}".format(question_alpha_sorted))
-
 	question_profile = genetree.gene_tree_code_to_profile(question_code, num_nodes)
 	print("question_code=", question_code, question_profile)
+	### 4b. double check answer and question are same tree
 	if answer_profile != question_profile:
 		print("ERROR: answer and question have different profiles")
 		sys.exit(1)
 
+	### 5. take all the unused trees and create the incorrect choices
+	### 5a. sort the unused trees into profile groups
 	profile_groups = genetree.group_gene_trees_by_profile(all_diff_codes, num_nodes)
-	print(profile_groups.keys())
+	#print("profile_groups.keys()=", profile_groups.keys())
+	### 5b. double-check and remove if necessary the profile group of the answer
 	if profile_groups.get(raw_profile) is not None:
 		del profile_groups[raw_profile]
+	### 5c. sort the remaining profile groups by how similar they are to the answer
 	sorted_profile_group_keys = genetree.sort_profiles_by_closeness(profile_groups, raw_profile)
 
 	html_choices_list = []
-	print("sorted profiles=", sorted_profile_group_keys[:6])
+	print("best sorted profile keys=", sorted_profile_group_keys[:num_choices - 1])
+	### 5d. convert each tree type into an incorrect choice
 	for key in sorted_profile_group_keys:
+		### 5d1. get the list of codes for this profile
 		profile_code_list = profile_groups[key]
+		### 5d2. randomly select one of the codes
 		choice_code = random.choice(profile_code_list)
+		### 5d3. replace the gene letters
 		choice_code = genetree.replace_gene_letters(choice_code, ordered_genes)
+		### 5d4. make sure the tree is alpha sorted
 		choice_code = genetree.sort_alpha_for_gene_tree(choice_code, num_leaves-1)
+		### 5d5. double-check that the profile does not match the answer
 		choice_profile = genetree.gene_tree_code_to_profile(choice_code, num_nodes)
 		if choice_profile == answer_profile or choice_profile == question_profile:
 			continue
 		print("choice_code=", choice_code, choice_profile)
+		### 5d6. convert the gene tree to html
 		html_choice = genetree.get_html_from_code(choice_code)
+		### 5d7. add html to growing list
 		html_choices_list.append(html_choice)
+		### 5d8. stop when we have enough 
 		if len(html_choices_list) >= num_choices - 1:
 			break
-	### 3d. check to make sure we got enough choices
+
+	### 6a. check to make sure we got enough choices
 	if len(html_choices_list) != num_choices - 1:
 		print("WARNING: requested choices were not fulfilled")
 		time.sleep(1)
-		if num_choices > 3 and len(html_choices_list) <= 2:
-			print("ERROR not enough choices")
-			sys.exit(1)
+		return None
 
+	### 6b. add the correct choice to the list
 	answer_html_choice = genetree.get_html_from_code(answer_code)
 	html_choices_list.append(answer_html_choice)
 	random.shuffle(html_choices_list)
 
-	f = open("temp.html", "w")
-	for html_choice in html_choices_list:
-		f.write(html_choice)
-	f.close()
+	### 6c. debug if necessary
+	if debug is True:
+		f = open("temp.html", "w")
+		for html_choice in html_choices_list:
+			f.write(html_choice)
+		f.close()
 
+	### 7a. write question text
 	question = '<p>The tree below is a {0} leaf gene tree, Dr. Voss affectionatly calls this tree "{1}"</p>'.format(num_leaves, question_tree_name)
 	question += genetree.get_html_from_code(question_code)
 	question += '<p></p><h6>Several gene trees are shown below, but only one is the same as the one above.</h6>'
 	question += '<h6>Which one of the following represents a '
 	question += '<span style="color: #169179;"><strong>SAME</strong></span> gene tree?</h6>'
+	### 7b. format the question
 	complete = bptools.formatBB_MC_Question(N, question, html_choices_list, answer_html_choice)
 
 	print("findSameQuestion() is complete for {0} leaves and {1} choices".format(num_leaves, num_choices))
@@ -251,10 +261,13 @@ if __name__ == '__main__':
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
 	print('writing to file: '+outfile)
 	f = open(outfile, 'w')
-	N = 0
-	for i in range(args.num_questions):
-		sorted_genes = bptools.getGeneLetters(args.num_leaves, i)
-		N += 1
+	N = 1
+	errors = 0
+	while N <= args.num_questions:
+		if errors > 5:
+			print("TOO MANY ERRORS, QUITTING")
+			sys.exit(1)
+		sorted_genes = bptools.getGeneLetters(args.num_leaves, N-1)
 		if args.style == 'same':
 			complete_question = findSameQuestion(N, sorted_genes, args.num_leaves, args.num_choices)
 		elif args.style == 'different':
@@ -262,8 +275,12 @@ if __name__ == '__main__':
 		else:
 			print("ERROR")
 			sys.exit(1)
+		if complete_question is None:
+			errors += 1
+			continue
 
 		f.write(complete_question)
+		N += 1
 	f.close()
 	print("wrote {0} questions to the file {1}".format(N, outfile))
 	bptools.print_histogram()
