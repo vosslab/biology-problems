@@ -1,0 +1,48 @@
+
+items to match per question: 4
+
+key description: chromosome shape categories
+
+value description: shape description
+
+replacement_rules:
+   chromosome:      '<span style="color: #793AAA;">chromosome</span>'
+   centromere:      '<span style="color: #b45918;"> centromere</span>'
+   'centromere</span>s':      'centromeres</span>'
+
+matching pairs:
+  Acentric:
+    - an abnormal chromosome that lacks a centromere
+    - spindle fibers cannot attach and the chromosome is lost when the cell divides
+    - an unstable chromosome lacking spindle fiber attachment
+    - an unstable chromosome with no centromere
+  Acrocentric:
+    - the short arm of the chromosome is so short that it is hard to observe
+    - the chromosome most resembles the letter V during metaphase
+    - the centromere is located very close to one end of the chromosome
+    - the chromosome most resembles the letter I after separation
+    - the centromere is closer to the end rather than the center
+    - the centromere is very offset from the center leading to a very short arm
+    - a chromosome with one very long arm and one very short arm
+  Dicentric:
+    - an abnormal chromosome that has two centromeres that often appear in cancer cells
+    - an abnormal chromosome with two centromeres that often appear in cancer cells
+    - an unstable chromosome due to unpredictable spindle fiber attachment
+    - a chromosome with formed through the fusion of two chromosome segments, each with a centromere
+    - genomic rearrangements placing two centromeres on the same chromosome
+  Metacentric:
+    - the two arms of the chromosomes are almost equal
+    - the chromosome most resembles the letter V after separation
+    - the chromosome most resembles a perfect letter X during metaphase
+    - the centromere is located midway between the ends of the chromosome
+    - a chromosome with a centrally placed centromere
+    - the centromere divides the chromosome into two arms with equal length
+    - a chromosome with two arms of equal length
+  Submetacentric:
+    - the chromosome most resembles the letter J after separation
+    - a chromosome with slightly shorter p arm relative to q arm
+    - the centromere situated so that one arm is somewhat shorter than the other
+    - a slight asymmetry in the length of the two chromosome arms
+    - the centromere slightly offset from the center 
+
+  

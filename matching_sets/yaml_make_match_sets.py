@@ -88,7 +88,7 @@ def applyReplacementRulesToQuestions(list_of_question_text, replacement_rule_dic
 	return new_list_of_question_text
 
 #=======================
-def permuteMatchingPairs(yaml_data):
+def permuteMatchingPairs(yaml_data, num_choices=None):
 	matching_pairs_dict = yaml_data['matching pairs']
 
 	list_of_complete_questions = []
@@ -98,9 +98,15 @@ def permuteMatchingPairs(yaml_data):
 	question = ("<p>Match the each of the following {0} with their corresponding {1}.</p>".format(
 		yaml_data['key description'], yaml_data['value description']))
 	question += '<p><i>Note:</i> all choices will be used exacly once</p>'
+	print("")
+	print("question", question)
+
+
+	if num_choices is None:
+		num_choices = yaml_data.get('items to match per question', 5)
 
 	all_keys = list(matching_pairs_dict.keys())
-	all_combs = list(itertools.combinations(all_keys, yaml_data['items to match per question']))
+	all_combs = list(itertools.combinations(all_keys, num_choices))
 	random.shuffle(all_combs)
 	print('Created {0} combinations from {1} items'.format(len(all_combs), len(all_keys)))
 	for comb in all_combs:
@@ -125,10 +131,12 @@ if __name__ == '__main__':
 	parser = argparse.ArgumentParser(description='Process some integers.')
 	parser.add_argument('-f', '-y', '--file', metavar='<file>', type=str, dest='input_yaml_file',
 		help='yaml input file to process')
-	parser.add_argument('-x', '--max-questions', metavar='<file>', type=int, dest='max_questions',
+	parser.add_argument('-x', '--max-questions', metavar='#', type=int, dest='max_questions',
 		help='max number of questions', default=199)
-	parser.add_argument('-d', '--duplicate-runs', metavar='<file>', type=int, dest='duplicate_runs',
+	parser.add_argument('-d', '--duplicate-runs', metavar='#', type=int, dest='duplicate_runs',
 		help='if more than one value is provided for each choice, run duplicates', default=1)
+	parser.add_argument('-c', '--num-choices', metavar='#', type=int, dest='num_choices',
+		help='how many choices to have for each question', default=None)
 	args = parser.parse_args()
 
 	if args.input_yaml_file is None or not os.path.isfile(args.input_yaml_file):
@@ -140,7 +148,7 @@ if __name__ == '__main__':
 
 	list_of_complete_questions = []
 	for i in range(args.duplicate_runs):
-		list_of_complete_questions += permuteMatchingPairs(yaml_data)
+		list_of_complete_questions += permuteMatchingPairs(yaml_data, args.num_choices)
 	
 	if len(list_of_complete_questions) > args.max_questions:
 		print("Too many questions, trimming down to {0} questions".format(args.max_questions))
@@ -160,5 +168,6 @@ if __name__ == '__main__':
 		output_format = "MAT\t<p>{0:03d}. {1}</p> {2}\n".format(N, crc16_value, bbformat_question)
 		f.write(output_format)
 	f.close()
+	print()
 	printAnswerHistogram()
 	print("Wrote {0} questions to file.".format(N))
