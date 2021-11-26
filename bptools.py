@@ -29,9 +29,20 @@ def getCrc16_FromString(mystr):
 def makeQuestionPretty(question):
 	pretty_question = copy.copy(question)
 	#print(len(pretty_question))
-	pretty_question = re.sub('\<table.+\<\/table\>', '[TABLE]\n', pretty_question)
+	pretty_question = re.sub('\<table .+\<\/table\>', '[TABLE]\n', pretty_question)
+	pretty_question = re.sub('\<table .*\<\/table\>', '[TABLE]\n', pretty_question)
+	if 'table' in pretty_question:
+		print(pretty_question)
+		sys.exit(1)
 	#print(len(pretty_question))
+	pretty_question = re.sub('h[0-9]\>', 'p>', pretty_question)	
+	pretty_question = re.sub('\<hr\/\>', '', pretty_question)
 	pretty_question = re.sub('\<\/p\>\s*\<p\>', '\n', pretty_question)
+	pretty_question = re.sub('\<p\>\s*\<\/p\>', '\n', pretty_question)
+	pretty_question = re.sub('\n\<\/p\>', '', pretty_question)	
+	pretty_question = re.sub('\n\<p\>', '\n', pretty_question)	
+	pretty_question = re.sub('\n\n', '\n', pretty_question)
+
 	#print(len(pretty_question))
 	return pretty_question
 
@@ -61,12 +72,43 @@ def formatBB_MC_Question(N, question, choices_list, answer):
 		print("- [{0}] {1}. {2}".format(prefix, letters[i], makeQuestionPretty(choice)))
 	print("")
 	if answer_count != 1:
-		print("Wrong answer count {0}".format(answer_count))
+		print("Too many or few answers count {0}".format(answer_count))
+		sys.exit(1)
+	return bb_question + '\n'
+
+#=====================
+def formatBB_MA_Question(N, question, choices_list, answers_list):
+	bb_question = ''
+
+	#number = "{0}. ".format(N)
+	crc16 = getCrc16_FromString(question)
+	bb_question += 'MA\t<p>{0}. {1}</p> {2}'.format(N, crc16, question)
+	pretty_question = makeQuestionPretty(question)
+	print('{0}. {1} -- {2}'.format(N, crc16, pretty_question))
+
+	answer_count = 0
+
+	letters = 'ABCDEFGHJKMNPQRSTUWXYZ'
+	for i, choice in enumerate(choices_list):
+		bb_question += '\t{0}.  {1}&nbsp; '.format(letters[i], choice)
+		if choice in answers_list:
+			prefix = 'x'
+			bb_question += '\tCorrect'
+			answer_count += 1
+			answer_histogram[letters[i]] = answer_histogram.get(letters[i], 0) + 1
+		else:
+			prefix = ' '
+			bb_question += '\tIncorrect'
+		print("- [{0}] {1}. {2}".format(prefix, letters[i], makeQuestionPretty(choice)))
+	print("")
+	if answer_count == 0:
+		print("No answer count {0}".format(answer_count))
 		sys.exit(1)
 	return bb_question + '\n'
 
 #=====================
 def print_histogram():
+	sys.stderr.write("=== Answer Choice Histogram ===\n")
 	keys = list(answer_histogram.keys())
 	keys.sort()
 	for key in keys:
