@@ -3,6 +3,8 @@
 import os
 import random
 
+import bptools
+
 debug = False
 
 #Mbp
@@ -50,7 +52,8 @@ def questionText(chromosome1, chromosome2):
 	question = ''
 	question += '<p>An individual has a Robertsonian translocation involving chromosomes '
 	question += '{0} and {1}.</p>'.format(chromosome1, chromosome2)
-	question += '<h5>Which one of the following gametes was formed by alternate segregation in this individual?</h5>'
+	question += '<h5>Which one of the following gametes was formed by '
+	question += '<span style="color: darkred;">alternate</span> segregation in this individual?</h5>'
 	return question
 
 def merge_tables(table_list):
@@ -63,7 +66,7 @@ def merge_tables(table_list):
 	table += '</table>'
 	return table
 
-def blackboardFormat(chromosome1, chromosome2):
+def blackboardFormat(N, chromosome1, chromosome2):
 	question_string = questionText(chromosome1, chromosome2)
 	table1 = ''
 	#A. rob(14; 21)
@@ -84,8 +87,9 @@ def blackboardFormat(chromosome1, chromosome2):
 	table12 = drawRobertChromosome(chromosome1, chromosome2, color1, color2)
 	#print(table1+table2+table12)
 	table_merge = merge_tables([table1, table2, table12])
-	question_string += '<p>all of three of the chromosomes from a somatic cell is shown below</p>'
 	question_string += table_merge
+	question_string += '<p>all of three of the chromosomes in a somatic cell are shown above.</p><p></p>'
+
 	choices = []
 
 	smtab = '<table style="border-collapse: collapse; border: 1px solid silver;">'
@@ -118,19 +122,9 @@ def blackboardFormat(chromosome1, chromosome2):
 	wrong += '</table><p></p><p></p>'
 	choices.append(wrong)
 
-	blackboard = "MC\t"
-	blackboard += question_string
-	#print(question)
-
 	random.shuffle(choices)
-	for c in choices:
-		blackboard += "\t" + c
-		if c == answer:
-			blackboard += '\tCorrect'
-		else:
-			blackboard += '\tIncorrect'
+	blackboard = bptools.formatBB_MC_Question(N, question_string, choices, answer)
 
-	print(question_string)
 	return blackboard
 
 if __name__ == "__main__":
@@ -139,12 +133,15 @@ if __name__ == "__main__":
 	f = open(outfile, 'w')
 	acrocentric_chromosomes = [13, 14, 15, 21, 22]
 	duplicates = 2
+	N = 0
 	for i in range(duplicates):
 		for chromosome1 in acrocentric_chromosomes:
 			for chromosome2 in acrocentric_chromosomes:
 				if chromosome1 >= chromosome2:
 					continue
-				final_question = blackboardFormat(chromosome1, chromosome2)
-				print(chromosome1, chromosome2)
-				f.write(final_question+'\n')
+				print("chromosome pair: {0} and {1}".format(chromosome1, chromosome2))
+				N += 1
+				final_question = blackboardFormat(N, chromosome1, chromosome2)
+				f.write(final_question)
 	f.close()
+	bptools.print_histogram()
