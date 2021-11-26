@@ -4,6 +4,7 @@ import os
 import sys
 import copy
 import random
+import argparse
 
 num2word = {
 	1: 'one', 2: 'two', 3: 'three', 4: 'four', 5: 'five',
@@ -60,7 +61,7 @@ def writeQuestion(origlist, del_set):
 		question += ("<li>Deletion #%d uncovers the %s genes %s;</li>  "%(i+1, num2word[len(deletion)], list2text(deletion)))
 	question += ("</ul> <h5>What the correct order for the %s genes?</h5> "%(num2word[len(origlist)]))
 	question += ("<p>Hint 1: the first gene on the end is gene %s.</p> "%(origlist[0]))
-	question += ("<p>Hint 2: enter your answer in the blank using only {0} letters with no spaces or commas.</p> ".format(num2word[len(origlist)]))
+	question += ("<p>Hint 2: enter your answer in the blank using only {0} letters or one comma every 3 letters.</p> ".format(num2word[len(origlist)]))
 
 	#sys.stderr.write(question)
 
@@ -93,9 +94,9 @@ def list2text(mylist):
 	return mystring
 
 #====================
-def makeDeletions(num_items):
+def makeDeletions(num_genes):
 	charlist = list("ABCDEFGHJKMPQRSTWXYZ")
-	itemlist = charlist[:num_items]
+	itemlist = charlist[:num_genes]
 	random.shuffle(itemlist)
 
 	# complicated step to get version of list that is most alphabetical
@@ -162,6 +163,13 @@ def makeDeletions(num_items):
 	print("\n##########\n")
 	return origlist, del_set
 
+#==========================
+def insertCommas(my_str, separate=3):
+	new_str = ''
+	for i in range(0, len(my_str), separate):
+		new_str += my_str[i:i+separate] + ','
+	return new_str[:-1]
+
 #====================
 def makeBlackboard(question, table, origlist):
 	blackboard = ''
@@ -174,51 +182,51 @@ def makeBlackboard(question, table, origlist):
 	blackboard += '\t'
 	blackboard += answer[::-1]
 	blackboard += '\t'
-	commas = ','.join(origlist)
-	blackboard += commas
+	blackboard += insertCommas(answer)
 	blackboard += '\t'
-	blackboard += commas[::-1]
-	blackboard += '\t'
-	spaces = ' '.join(origlist)
-	blackboard += spaces
-	blackboard += '\t'
-	blackboard += spaces[::-1]
+	blackboard += insertCommas(answer[::-1])
 	blackboard += '\n'
 	return blackboard
 
 #====================
 #====================
 if __name__ == '__main__':
-	if len(sys.argv) >= 2:
-		num_items = int(sys.argv[1])
-	else:
-		num_items = 6
-	if len(sys.argv) >= 3:
-		no_table = True
-	else:
-		no_table = False
-	if num_items < 4:
+	parser = argparse.ArgumentParser(description='Process some integers.')
+	parser.add_argument('-n', '--num-genes', type=int, dest='num_genes',
+		help='number of deleted genes on the chromosome', default=5)
+	parser.add_argument('-q', '--num-questions', type=int, dest='num_questions',
+		help='number of questions to create', default=24)
+	parser.add_argument('-T', '--table', dest='table', action='store_true')
+	parser.add_argument('-F', '--free', '--no-table', dest='table', action='store_false')
+	parser.set_defaults(table=True)
+	parser.add_argument('-c', '--choices', type=int, dest='num_choices',
+		help='number of choices to choose from in the question', default=5)
+	args = parser.parse_args()
+
+	no_table = not args.table
+
+	if args.num_genes < 4:
 		print("Sorry, you must have at least 4 genes for this program")
 		sys.exit(1)
-	if num_items > 20:
+	if args.num_genes > 20:
 		print("Sorry, you must have less than 20 genes for this program")
 		sys.exit(1)
-
-	duplicates = 92
 
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
 	print('writing to file: '+outfile)
 	f = open(outfile, 'w')
-	for i in range(duplicates):
-		origlist, del_set = makeDeletions(num_items)
+	for i in range(args.num_questions):
+		origlist, del_set = makeDeletions(args.num_genes)
 		random.shuffle(del_set)
-		if no_table is False:
+		if args.table is True:
+			print("Making TABLE")
 			table = makeHtmlTable(origlist, del_set)
 		else:
 			table = ''
-		print(table)
 		question = writeQuestion(origlist, del_set)
 		print(question)
+		answer = ''.join(origlist)
+		print(answer)
 		blackboard = makeBlackboard(question, table, origlist)
 		f.write(blackboard)
 	f.close()
