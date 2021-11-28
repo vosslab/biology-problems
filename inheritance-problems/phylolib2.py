@@ -8,6 +8,12 @@ import numpy
 import random
 import itertools
 
+### TODO
+# add background colors to gene labels
+# add font colors to gene labels
+# test new function sort_codes_by_closeness()
+
+
 class GeneTree(object):
 	#==================================
 	def __init__(self):
