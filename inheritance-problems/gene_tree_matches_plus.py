@@ -13,6 +13,10 @@ import phylolib2
 
 debug = False
 
+### TODO
+# get most dissimilar in find SAME for quesiton and answer
+# get most dissimilar in find DIFFERENT for quesiton and wrong choices
+
 #=======================
 #=======================
 def findDifferentQuestion(N, sorted_genes, num_leaves, num_choices):
@@ -41,7 +45,7 @@ def findDifferentQuestion(N, sorted_genes, num_leaves, num_choices):
 	#replaced_match_code is just used for generation of the other choices
 
 
-	### 2. now get the most similar to replaced_match_code but different gene tree from the list
+	### 2. now get the most similar to replaced_match_code but DIFFERENT gene tree from the list
 	### 2a. groups the unused trees
 	profile_groups = genetree.group_gene_trees_by_profile(all_base_tree_codes, num_nodes)
 	print(profile_groups.keys())
@@ -69,7 +73,7 @@ def findDifferentQuestion(N, sorted_genes, num_leaves, num_choices):
 	### 2g. make sure it's different from original gene tree
 	rotated_replaced_most_similar_html_choice = genetree.get_html_from_code(rotated_replaced_most_similar_different_code)
 
-	### 3. now get the all the matches to the replaced_match_code for other choices
+	### 3. now get the all the matches to the replaced_match_code for other SAME choices
 	### 3a. get all rotation permutations for replaced_match_code
 	choice_codes_list = genetree.get_all_alpha_sorted_code_rotation_permutations(replaced_match_code)
 	choice_codes_list.sort()
