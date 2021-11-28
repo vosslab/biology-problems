@@ -362,13 +362,28 @@ class GeneTree(object):
 			sys.exit(1)
 		profile_group_keys = list(profile_groups.keys())
 		random.shuffle(profile_group_keys)
-		max_scores = []
 		for profile in profile_groups.keys():
 			score = self.string_match(profile, answer_profile)
 			similar_scores[profile] = score 
-		#print(max_scores)
 		sorted_profile_group_keys = [k for k in sorted(similar_scores.keys(), key=similar_scores.get, reverse=True)]
 		return sorted_profile_group_keys
+
+	#===========================================
+	def sort_codes_by_closeness(self, code_list, answer_code):
+		"""
+		has not been thoroughly tested
+		"""
+		similar_scores = {}
+		if not '(' in answer_code:
+			print("ERROR: wanted code, but received profile")
+			print(answer_code)
+			sys.exit(1)
+		max_scores = []
+		for code in code_list:
+			score = self.string_match(code, answer_code)
+			similar_scores[code] = score 
+		sorted_codes = [k for k in sorted(code_list, key=similar_scores.get, reverse=True)]
+		return sorted_codes
 
 	#===========================================
 	def string_match(self, str1, str2):
