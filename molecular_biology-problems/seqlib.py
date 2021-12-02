@@ -101,16 +101,27 @@ def DNA_Table(top_sequence, bottom_sequence=None, left_primes=True, right_primes
 
 #=====================
 #=====================
-def Primer_Table(primer):
-	table = ' <table style="border-collapse: collapse; border: 0px; display:inline-table"> '
+def Single_Strand_Table(ss_sequence_str, fivetothree=True):
+	table = '&nbsp;<table style="border-collapse: collapse; border: 0px; display:inline-table"> '
 	table += ' <tr>'
-	table += '<td>5&prime;&ndash;</td>'
-	rna_list = list(transcribe(primer))
-	table += makeHtmlTDRow(rna_list)
-	table += '<td>&ndash;3&prime;</td>'
+	if fivetothree is True:
+		table += '<td>5&prime;&ndash;</td>'
+	else:
+		table += '<td>3&prime;&ndash;</td>'
+	ss_sequence_list = list(ss_sequence_str)
+	table += makeHtmlTDRow(ss_sequence_list)
+	if fivetothree is True:
+		table += '<td>&ndash;3&prime;</td>'
+	else:
+		table += '<td>&ndash;5&prime;</td>'
 	table += '</tr> '
 	table += '</table> '
 	return table
+
+#=====================
+#=====================
+def Primer_Table(primer):
+	return Single_Strand_Table(transcribe(primer), fivetothree=True)
 
 #==========================
 def makeHtmlTable(sequence_list, separate=3):
@@ -136,7 +147,12 @@ def makeHtmlTDRow(sequence, separate=3):
 			colorNucleotideBackground(nt))
 	return htmlrow
 
-
+#==========================
+def insertCommas(my_str, separate=3):
+	new_str = ''
+	for i in range(0, len(my_str), separate):
+		new_str += my_str[i:i+separate] + ','
+	return new_str[:-1]
 
 #=========================
 def complement(seq):
