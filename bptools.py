@@ -32,9 +32,12 @@ def makeQuestionPretty(question):
 	pretty_question = re.sub('\<table .+\<\/table\>', '[TABLE]\n', pretty_question)
 	pretty_question = re.sub('\<table .*\<\/table\>', '[TABLE]\n', pretty_question)
 	if 'table' in pretty_question:
+		print("MISSED A TABLE")
 		print(pretty_question)
-		sys.exit(1)
+		#sys.exit(1)
+		pass
 	#print(len(pretty_question))
+	pretty_question = re.sub('&nbsp;', ' ', pretty_question)	
 	pretty_question = re.sub('h[0-9]\>', 'p>', pretty_question)	
 	pretty_question = re.sub('\<hr\/\>', '', pretty_question)
 	pretty_question = re.sub('\<\/p\>\s*\<p\>', '\n', pretty_question)
@@ -52,9 +55,9 @@ def formatBB_MC_Question(N, question, choices_list, answer):
 
 	#number = "{0}. ".format(N)
 	crc16 = getCrc16_FromString(question)
-	bb_question += 'MC\t<p>{0}. {1}</p> {2}'.format(N, crc16, question)
+	bb_question += 'MC\t<p>{0:03d}. {1}</p> {2}'.format(N, crc16, question)
 	pretty_question = makeQuestionPretty(question)
-	print('{0}. {1} -- {2}'.format(N, crc16, pretty_question))
+	print('{0:03d}. {1} -- {2}'.format(N, crc16, pretty_question))
 
 	answer_count = 0
 
@@ -82,9 +85,9 @@ def formatBB_MA_Question(N, question, choices_list, answers_list):
 
 	#number = "{0}. ".format(N)
 	crc16 = getCrc16_FromString(question)
-	bb_question += 'MA\t<p>{0}. {1}</p> {2}'.format(N, crc16, question)
+	bb_question += 'MA\t<p>{0:03d}. {1}</p> {2}'.format(N, crc16, question)
 	pretty_question = makeQuestionPretty(question)
-	print('{0}. {1} -- {2}'.format(N, crc16, pretty_question))
+	print('{0:03d}. {1} -- {2}'.format(N, crc16, pretty_question))
 
 	answer_count = 0
 
@@ -104,6 +107,23 @@ def formatBB_MA_Question(N, question, choices_list, answers_list):
 	if answer_count == 0:
 		print("No answer count {0}".format(answer_count))
 		sys.exit(1)
+	return bb_question + '\n'
+
+#=====================
+def formatBB_FIB_Question(N, question, answers_list):
+	#FIB TAB question text TAB answer text TAB answer two text
+	bb_question = ''
+
+	#number = "{0}. ".format(N)
+	crc16 = getCrc16_FromString(question)
+	bb_question += 'FIB\t<p>{0:03d}. {1}</p> {2}'.format(N, crc16, question)
+	pretty_question = makeQuestionPretty(question)
+	print('{0:03d}. {1} -- {2}'.format(N, crc16, pretty_question))
+
+	for i, answer in enumerate(answers_list):
+		bb_question += '\t{0}'.format(answer)
+		print("- {0}".format(makeQuestionPretty(answer)))
+	print("")
 	return bb_question + '\n'
 
 #=====================
