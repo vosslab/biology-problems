@@ -1,50 +1,80 @@
 #!/usr/bin/env python
 
+import os
 import sys
-import seqlib
 import random
 
+#local
+import seqlib
+import bptools
+
+def write_question(N, seqlen):
+	#============================
+	question_seq = seqlib.makeSequence(seqlen)
+	if random.randint(1,2) == 1:
+		question_table = seqlib.Single_Strand_Table(question_seq)
+	else:
+		question_table = seqlib.Single_Strand_Table(seqlib.flip(question_seq), fivetothree=False)
+
+	if random.randint(1,2) == 1:
+		choice_fivetothree = True
+	else:
+		choice_fivetothree = False
+
+	answer_seq = seqlib.complement(question_seq)
+	answer_table = seqlib.Single_Strand_Table(answer_seq, choice_fivetothree)
+
+	question_text = ''
+	question_text += question_table
+	question_text += '<p>Which one of the following sequences below is complimentary to '
+	question_text += 'the DNA sequence above?</p>'
+	question_text += '<p>Hint: pay close attention to the 5&prime; and 3&prime; directions!</p>'
+
+	#============================
+	choice_list = []
+	half = int(seqlen//2)
+
+	#choice 1
+	choice_list.append(question_seq)
+	#choice 2
+	choice_list.append(seqlib.flip(question_seq))
+	#choice 3
+	choice_list.append(answer_seq)
+	#choice 4
+	choice_list.append(seqlib.flip(answer_seq))
+	#choice 5
+	nube = question_seq[:half] + answer_seq[half:]
+	choice_list.append(nube)
+	
+	choice_table_list = []
+	for choice in choice_list:
+		choice_table = seqlib.Single_Strand_Table(choice, choice_fivetothree)
+		choice_table_list.append(choice_table)
+
+	#============================
+	random.shuffle(choice_table_list)
+	bbformat = bptools.formatBB_MC_Question(N, question_text, choice_table_list, answer_table)
+	return bbformat
+		
+#============================
+#============================
+#============================
+#============================
 if __name__ == '__main__':
 	if len(sys.argv) >= 2:
 		seqlen = int(sys.argv[1])
 	else:
-		seqlen = 7
-
-	#============================
-	seq = seqlib.makeSequence(seqlen)
-	answer = seqlib.flip(seqlib.complement(seq))
-
-	#============================
-	if random.random() < 0.5:
-		print("1. Which one of the following sequences is complimentary to the sequence <span style='font-family: monospace;'>5'-%s-3'</span>? Hint: pay attention to the 5' and 3' directions!"%(seq))
+		seqlen = 9
+	if len(sys.argv) >= 3:
+		seqlen = int(sys.argv[2])
 	else:
-		print("1. Which one of the following sequences is complimentary to the sequence <span style='font-family: monospace;'>3'-%s-5'</span>? Hint: pay attention to the 5' and 3' directions!"%(seqlib.flip(seq)))
+		num_sequences = 24
 
-	#============================
-	choices = []
-	half = int(seqlen//2)
-
-	#choice 1
-	choices.append(seq)
-	#choice 2
-	choices.append(seqlib.flip(seq))
-	#choice 3
-	choices.append(answer)
-	#choice 4
-	choices.append(seqlib.flip(answer))
-	#choice 5
-	nube = seq[:half] + answer[half:]
-	choices.append(nube)
-
-	#============================
-	random.shuffle(choices)
-	charlist = "ABCDE"
-	for i in range(len(choices)):
-		choice_msg = choices[i]
-		letter = charlist[i]
-		prefix = ""
-		if choice_msg == answer:
-			prefix = "*"
-		print("%s%s. <span style='font-family: monospace;'>5'-%s-3'</span>"%(prefix, letter, choice_msg))
-		
-		
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('writing to file: '+outfile)
+	f = open(outfile, 'w')
+	for i in range(num_sequences):
+		N = i + 1
+		bbtext = write_question(N, seqlen)
+		f.write(bbtext)
+	f.close()		

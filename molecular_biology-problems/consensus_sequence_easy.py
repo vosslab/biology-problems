@@ -105,7 +105,6 @@ def makeCompleteQuestion():
 	question += "<br/> <i> you may include a comma every {0} letters, but ".format(separate)
 	question += "do not include any extra commas or spaces in your answer. </i>"
 
-
 	bbquestion = 'FIB\t'
 	bbquestion += table + ' <br/> '
 	bbquestion += question + '\t'
