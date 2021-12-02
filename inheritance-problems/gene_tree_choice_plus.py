@@ -259,7 +259,8 @@ def makeQuestion(N, sorted_genes, num_leaves, num_choices):
 	question += html_table
 	question += '<p></p><h6>Given the gene distance matrix table above, '
 	question += 'which one of the following gene trees correctly fit the data?</h6>'
-
+	
+	"""
 	f = open('temp.html', 'w')
 	f.write(answer_html_choice+'<br/>')
 	f.write(html_table+'<br/>')
@@ -267,7 +268,8 @@ def makeQuestion(N, sorted_genes, num_leaves, num_choices):
 		f.write(hc+'<br/>')
 	f.write(''.join(ordered_genes))
 	f.close()
-
+	"""
+	
 	complete = bptools.formatBB_MC_Question(N, question, html_choices_list, answer_html_choice)
 	return complete
 
