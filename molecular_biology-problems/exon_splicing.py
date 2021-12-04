@@ -69,17 +69,18 @@ def ryb_to_rgb(r, y, b): # Assumption: r, y, b in [0, 1]
 #==========================
 #==========================
 def makeHtmlTable(part_sizes):
-	color_wheel = make_color_wheel(255, 128, 0)
+	color_wheel = make_color_wheel(128, 128, 0, 22)
 	table = ''
 	table += '<table style="border-collapse: collapse; border: 2px solid black; table-layout: fixed;'
 	table += '<colgroup width="{0}"></colgroup>'.format(10)
 	for size in part_sizes:
 		table += '<colgroup width="{0}"></colgroup>'.format(size)
-	table += '<colgroup width="{0}px"></colgroup>'.format(10)		
+	table += '<colgroup width="{0}px"></colgroup>'.format(10)
 	table += '<tr>'
 	part_type_tuple = ('exon', 'intron')
 	for i, size in enumerate(part_sizes):
-		color = color_wheel[i%len(color_wheel)]
+		shift = (i%2) * len(color_wheel)//2
+		color = color_wheel[(i)%len(color_wheel)]
 		part_type = part_type_tuple[(i+1)%2]
 		if i == 0:
 			table += '<td bgcolor="#{0}">5&prime; UTR &mdash; {1} bp</td>'.format(color, size)
@@ -101,7 +102,7 @@ def makeCompleteQuestion(N, num_exons):
 	f = open("temp.html", "w")
 	f.write(table)
 	f.close()
-	
+
 	sys.exit(1)
 	bbformat = bptools.formatBB_MC_Question(N, question, choices_list, answer)
 	return bbformat
@@ -111,14 +112,14 @@ def makeCompleteQuestion(N, num_exons):
 
 #==========================
 #==========================
-if __name__ == '__main__':	
+if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument('-n', '--num-exons', type=int, dest='num_exons',
 		help='number of exons in the gene', default=5)
 	parser.add_argument('-q', '--num-questions', type=int, dest='num_questions',
 		help='number of questions to create', default=24)
 	args = parser.parse_args()
-	
+
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
 	print('writing to file: '+outfile)
 	f = open(outfile, 'w')
