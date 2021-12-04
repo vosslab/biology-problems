@@ -191,7 +191,7 @@ def makeBlackboard(question, table, origlist):
 #====================
 #====================
 if __name__ == '__main__':
-	parser = argparse.ArgumentParser(description='Process some integers.')
+	parser = argparse.ArgumentParser()
 	parser.add_argument('-n', '--num-genes', type=int, dest='num_genes',
 		help='number of deleted genes on the chromosome', default=5)
 	parser.add_argument('-q', '--num-questions', type=int, dest='num_questions',
