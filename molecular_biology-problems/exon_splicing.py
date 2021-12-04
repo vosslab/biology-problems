@@ -15,7 +15,7 @@ def getGenePartSizes(num_exons):
 	#5' UTR - exon 1 - intron 1 - exon 2 - ... - intron N-1 - exon N - 3' UTR
 	part_sizes = []
 	for i in range(total_gene_parts):
-		part_size = random.randint(2, 99) * 10
+		part_size = random.randint(11, 59) * 10
 		part_sizes.append(part_size)
 	return part_sizes
 
@@ -69,7 +69,9 @@ def ryb_to_rgb(r, y, b): # Assumption: r, y, b in [0, 1]
 #==========================
 #==========================
 def makeHtmlTable(part_sizes):
-	color_wheel = make_color_wheel(128, 128, 0, 22)
+	deg_step = int(round(360./len(part_sizes) - 4))
+	color_amount = random.randint(80,128)
+	color_wheel = make_color_wheel(color_amount, 0, 0, deg_step)
 	table = ''
 	table += '<table style="border-collapse: collapse; border: 2px solid black; table-layout: fixed;'
 	table += '<colgroup width="{0}"></colgroup>'.format(10)
@@ -80,14 +82,15 @@ def makeHtmlTable(part_sizes):
 	part_type_tuple = ('exon', 'intron')
 	for i, size in enumerate(part_sizes):
 		shift = (i%2) * len(color_wheel)//2
-		color = color_wheel[(i)%len(color_wheel)]
+		color = color_wheel[(i//2 + shift)%len(color_wheel)]
+		num = i // 2 + 1
 		part_type = part_type_tuple[(i+1)%2]
 		if i == 0:
-			table += '<td bgcolor="#{0}">5&prime; UTR &mdash; {1} bp</td>'.format(color, size)
+			table += '<td bgcolor="#{0}" align="center">5&prime; UTR<br/>{1} bp</td>'.format(color, size)
 		elif i == len(part_sizes) - 1:
-			table += '<td bgcolor="#{0}">3&prime; UTR &mdash; {1} bp</td>'.format(color, size)
+			table += '<td bgcolor="#{0}" align="center">3&prime; UTR<br/>{1} bp</td>'.format(color, size)
 		else:
-			table += '<td bgcolor="#{0}">{1} &mdash; {2} bp</td>'.format(color, part_type, size)
+			table += '<td bgcolor="#{0}" align="center">{1} {2}<br/>{3} bp</td>'.format(color, part_type, num, size)
 	table += '</tr>'
 	table += '</table>'
 	print(table)
@@ -115,7 +118,7 @@ def makeCompleteQuestion(N, num_exons):
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument('-n', '--num-exons', type=int, dest='num_exons',
-		help='number of exons in the gene', default=5)
+		help='number of exons in the gene', default=3)
 	parser.add_argument('-q', '--num-questions', type=int, dest='num_questions',
 		help='number of questions to create', default=24)
 	args = parser.parse_args()
