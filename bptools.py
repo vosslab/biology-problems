@@ -2,6 +2,7 @@
 import re
 import sys
 import copy
+import colorsys
 import crcmod.predefined
 
 answer_histogram = {}
@@ -10,6 +11,53 @@ answer_histogram = {}
 def test():
 	sys.stderr.write("good job")
 
+#==========================
+#==========================
+#==========================
+def make_color_wheel(r, g, b, degree_step=40): # Assumption: r, g, b in [0, 255]
+	r, g, b = map(lambda x: x/255., [r, g, b]) # Convert to [0, 1]
+	#print(r, g, b)
+	hue, l, s = colorsys.rgb_to_hls(r, g, b)     # RGB -> HLS
+	#print(hue, l, s)
+	wheel = []
+	for deg in range(0, 359, degree_step):
+		hue_i = (hue*360. + float(deg))/360.
+		#print(hue_i, l, s)
+		ryb_percent_color = colorsys.hls_to_rgb(hue_i, l, s)
+		#print(ryb_percent_color)
+		rgb_percent_color = _ryb_to_rgb(*ryb_percent_color)
+		rgb_color = tuple(map(lambda x: int(round(x*255)), rgb_percent_color))
+		hexcolor = '%02x%02x%02x' % rgb_color
+		wheel.append(hexcolor)
+	return wheel
+
+#==========================
+def _cubic(t, a, b):
+	weight = t * t * (3 - 2*t)
+	return a + weight * (b - a)
+
+#==========================
+def _ryb_to_rgb(r, y, b): # Assumption: r, y, b in [0, 1]
+	# red
+	x0, x1 = _cubic(b, 1.0, 0.163), _cubic(b, 1.0, 0.0)
+	x2, x3 = _cubic(b, 1.0, 0.5), _cubic(b, 1.0, 0.2)
+	y0, y1 = _cubic(y, x0, x1), _cubic(y, x2, x3)
+	red = _cubic(r, y0, y1)
+	# green
+	x0, x1 = _cubic(b, 1.0, 0.373), _cubic(b, 1.0, 0.66)
+	x2, x3 = _cubic(b, 0., 0.), _cubic(b, 0.5, 0.094)
+	y0, y1 = _cubic(y, x0, x1), _cubic(y, x2, x3)
+	green = _cubic(r, y0, y1)
+	# blue
+	x0, x1 = _cubic(b, 1.0, 0.6), _cubic(b, 0.0, 0.2)
+	x2, x3 = _cubic(b, 0.0, 0.5), _cubic(b, 0.0, 0.0)
+	y0, y1 = _cubic(y, x0, x1), _cubic(y, x2, x3)
+	blue = _cubic(r, y0, y1)
+	# return
+	return (red, green, blue)
+
+#=====================
+#=====================
 #=====================
 def getGeneLetters(length, shift=0):
 	all_lowercase = "abcdefghijklmnopqrstuvwxyz"
@@ -19,13 +67,15 @@ def getGeneLetters(length, shift=0):
 	gene_list = list(gene_string)
 	return gene_list
 
-#=======================
+#==========================
+#==========================
+#==========================
 def getCrc16_FromString(mystr):
 	crc16 = crcmod.predefined.Crc('xmodem')
 	crc16.update(mystr.encode('ascii'))
 	return crc16.hexdigest().lower()
 
-#=====================
+#==========================
 def makeQuestionPretty(question):
 	pretty_question = copy.copy(question)
 	#print(len(pretty_question))
@@ -49,7 +99,9 @@ def makeQuestionPretty(question):
 	#print(len(pretty_question))
 	return pretty_question
 
-#=====================
+#==========================
+#==========================
+#==========================
 def formatBB_MC_Question(N, question, choices_list, answer):
 	bb_question = ''
 
@@ -126,7 +178,9 @@ def formatBB_FIB_Question(N, question, answers_list):
 	print("")
 	return bb_question + '\n'
 
-#=====================
+#==========================
+#==========================
+#==========================
 def print_histogram():
 	sys.stderr.write("=== Answer Choice Histogram ===\n")
 	keys = list(answer_histogram.keys())
