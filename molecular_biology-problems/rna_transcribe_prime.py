@@ -12,18 +12,19 @@ def write_question(N, seqlen):
 	#============================
 	question_seq = seqlib.makeSequence(seqlen)
 	if random.randint(1,2) == 1:
-		question_table = seqlib.Single_Strand_Table(question_seq)
+		question_table = seqlib.Single_Strand_Table(question_seq, fivetothree=True)
 	else:
 		question_table = seqlib.Single_Strand_Table(seqlib.flip(question_seq), fivetothree=False)
 
-	if random.randint(1,2) == 1:
-		choice_fivetothree = True
-	else:
-		choice_fivetothree = False
-
 	answer_seq = seqlib.complement(question_seq)
 	answer_mRNA = seqlib.transcribe(answer_seq)
-	answer_table = seqlib.Single_Strand_Table(answer_mRNA, choice_fivetothree)
+
+	if random.randint(1,2) == 1:
+		choice_fivetothree = True
+		answer_table = seqlib.Single_Strand_Table(seqlib.flip(answer_mRNA), fivetothree=True)
+	else:
+		choice_fivetothree = False
+		answer_table = seqlib.Single_Strand_Table(answer_mRNA, fivetothree=False)
 
 	question_text = ''
 	question_text += question_table
@@ -50,7 +51,10 @@ def write_question(N, seqlen):
 	choice_table_list = []
 	for choice in choice_list:
 		mRNA = seqlib.transcribe(choice)
-		choice_table = seqlib.Single_Strand_Table(mRNA, choice_fivetothree)
+		if choice_fivetothree is True:
+			choice_table = seqlib.Single_Strand_Table(seqlib.flip(mRNA), fivetothree=True)
+		elif choice_fivetothree is False:
+			choice_table = seqlib.Single_Strand_Table(mRNA, fivetothree=False)
 		choice_table_list.append(choice_table)
 
 	#============================
@@ -70,7 +74,7 @@ if __name__ == '__main__':
 	if len(sys.argv) >= 3:
 		seqlen = int(sys.argv[2])
 	else:
-		num_sequences = 24
+		num_sequences = 19
 
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
 	print('writing to file: '+outfile)
