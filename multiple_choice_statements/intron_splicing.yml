@@ -1,0 +1,90 @@
+---
+
+#Which one of the following statements is FALSE/TRUE <connection word> <topic>
+topic: intron removal mechanisms
+
+override_question_false: ~
+connection_words: ~
+
+replacement_rules:
+   group I introns:       '<span style="color: #b30059;">group &#8544; introns</span>'
+   group I intron:        '<span style="color: #b30059;">group &#8544; intron</span>'
+
+   group II introns:      '<span style="color: #0000b3;">group &#8545; introns</span>'
+   group II intron:       '<span style="color: #0000b3;">group &#8545; intron</span>'
+
+   lariat structure:      '<span style="color: #86592d;">lariat structure</span>'
+   linear structure:      '<span style="color: #008080;">linear structure</span>'
+
+   self-splicing:         '<span style="color: #3d5c5c;">self-splicing</span>'
+   spliceosome:           '<span style="color: #804d00;">spliceosome</span>'
+   spliceosomal introns:  '<span style="color: #804d00;">spliceosomal introns</span>'
+
+   ATP hydrolysis:        '<span style="color: #00802b;">ATP hydrolysis</span>'
+   GTP hydrolysis:        '<span style="color: #4d4d00;">GTP hydrolysis</span>'
+
+   exogenous guanine nucleoside:   '<span style="color: #666600;">exogenous guanine nucleoside</span>'
+   internal guanine nucleotide:    '<span style="color: #666600;">internal guanine nucleotide</span>'
+   exogenous adenine nucleoside:   '<span style="color: #006600;">exogenous adenine nucleoside</span>'
+   internal adenine nucleotide:    '<span style="color: #006600;">internal adenine nucleotide</span>'
+
+   adenine on the 5&prime; end:    '<span style="color: #004d00;">adenine on the 5&prime; end</span>'
+   guanine on the 5&prime; end:    '<span style="color: #4d4d00;">guanine on the 5&prime; end</span>'
+
+true_statements:
+   truth1: the group I intron uses an exogenous guanine nucleoside for catalytic activity
+
+   truth2: the group II intron uses an internal adenine nucleotide for catalytic activity
+
+   truth3a: the group I intron does NOT require ATP energy input
+   truth3b: the group II intron does NOT require ATP energy input
+   truth3c: both the group I intron and the group II intron do NOT require ATP energy input
+
+   truth4: after splicing, the group I intron forms a linear structure with a guanine on the 5&prime; end
+   truth5: after splicing, the group II intron forms a lariat structure with an adenine on the 5&prime; end
+
+   truth6a: spliceosomal introns and self-splicing group II introns share a common mechanism
+   truth6b: self-splicing group II introns and spliceosomal introns share a common mechanism
+
+   truth7: group I introns are always self-splicing
+
+   truth8: both group I introns and group II introns use a phosphoester transfer mechanism
+
+
+false_statements:
+   false1a: the group I intron uses an internal adenine nucleotide for catalytic activity
+   false1b: the group I intron uses an internal guanine nucleotide for catalytic activity
+   false1c: the group I intron uses an exogenous adenine nucleoside for catalytic activity
+
+   false2a: the group II intron uses an internal guanine nucleotide for catalytic activity
+   false2b: the group II intron uses an exogenous guanine nucleoside for catalytic activity
+   false2c: the group II intron uses an exogenous adenine nucleoside for catalytic activity
+
+   false3a: the group I intron requires ATP hydrolysis, while the group II intron does not.
+   false3b: the group II intron requires ATP hydrolysis, while the group I intron does not.
+   false3c: the group I intron requires GTP hydrolysis, while the group II intron does not.
+   false3d: the group II intron requires GTP hydrolysis, while the group I intron does not.
+   false3e: both the group I intron and the group II intron require ATP hydrolysis
+   false3f: both the group I intron and the group II intron require GTP hydrolysis
+
+   false4a: after splicing, the group I intron forms a lariat structure with an adenine on the 5&prime; end
+   false4b: after splicing, the group I intron forms a lariat structure with a guanine on the 5&prime; end
+   false4c: after splicing, the group I intron forms a linear structure with an adenine on the 5&prime; end
+
+   false5a: after splicing, the group II intron forms a linear structure with an adenine on the 5&prime; end
+   false5b: after splicing, the group II intron forms a linear structure with a guanine on the 5&prime; end
+   false5c: after splicing, the group II intron forms a lariat structure with a guanine on the 5&prime; end
+
+   false6a: spliceosomal introns and self-splicing group I introns share a common mechanism
+   false6b: self-splicing group I introns and spliceosomal introns share a common mechanism
+
+   false7a: group I introns are never self-splicing
+   false7b: group II introns are always self-splicing
+   false7c: group II introns are never self-splicing
+   
+   false8a: group I introns use a phosphoester transfer mechanism, while group II introns do not
+   false8b: group II introns use a phosphoester transfer mechanism, while group I introns do not
+
+
+# conflicts, means that the statements cannot appear together
+conflict_rules: ~
