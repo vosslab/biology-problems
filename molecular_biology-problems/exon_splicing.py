@@ -11,6 +11,14 @@ import bptools
 
 capcolor = 'lightgray'
 
+"""
+1. In a eukaryotic cell, a molecule of pre-mRNA is found to have four exons and three introns. Which of the following is NOT a possible combinations of the exons, if the order in which they are written is the order in which they will be translated?
+A. Exon 1, Exon 2, Exon 3, Exon 4
+B. Exon 1, Exon 3, Exon 4
+*C. Exon 1, Exon 4, Exon 2, Exon 3
+D. Exon 2, Exon 3, Exon 4
+"""
+
 #==========================
 #==========================
 def getGenePartSizes(num_exons):
