@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 
+import os
 import csv
 import math
 import random
+
+import bptools
 
 debug = False
 
@@ -83,14 +86,14 @@ def get_peak_pH(protein1, protein2):
 	return best_peak_pI,other_peak_pI
 
 def writeQuestion(protein1, protein2, pH, N=77):
-	question = "\n"
+	question = ''
 	ab1 = protein1['abbr']
 	ab2 = protein2['abbr']
 
-	question += "{0:d}. {1}.{2} <h6>Isoelectric Point Problem</h6> ".format(N, ab1.lower(), ab2.lower())
+	question += "<h6>Isoelectric Point Problem</h6> "
 	question += "<p>A mixture of two proteins are to be separated by isoelectric focusing.</p> "
-	question += ('<table cellpadding="2" cellspacing="2" style="text-align:center; border: 1px solid black; font-size: 14px;">')
-	question += ('<tr><th>Protein Name</th><th>isoelectric point (pI)</th><th>molecular weight</th></tr>')
+	question += ('<table cellpadding="2" cellspacing="2" style="text-align:center; border: 1px solid black;">')
+	question += ('<tr><th>Protein<br/>Name</th><th>Isoelectric<br/>Point (pI)</th><th>Molecular<br/>Weight</th></tr>')
 	question += ('<tr><td>{0} ({1})</td><td align="right">{2:.1f}</td><td align="right">{3:.1f}</td></tr>'.format(protein1['fullname'], protein1['abbr'], protein1['pI'], protein1['MW']))
 	question += ('<tr><td>{0} ({1})</td><td align="right">{2:.1f}</td><td align="right">{3:.1f}</td></tr>'.format(protein2['fullname'], protein2['abbr'], protein2['pI'], protein2['MW']))
 	question += "</table>"
@@ -101,37 +104,41 @@ def writeQuestion(protein1, protein2, pH, N=77):
 
 	question += "<p>In which direction will each protein in the table migrate at <b>pH {0:.1f}</b></p>".format(pH)
 
+	# when the pH is above the pI, the protein is negatively charged
+	# when the pH is below the pI, the protein is positively charged
+
 	if pH > protein1['pI'] and pH > protein2['pI']:
 		#both have negative charge; go towards positive
-		answer_number = 1
+		answer_id = 0
 	elif pH < protein1['pI'] and pH < protein2['pI']:
 		#both have positive charge; go towards negative
-		answer_number = 2
+		answer_id = 1
 	elif protein1['pI'] > pH > protein2['pI']:
 		#protein 1 is negative and protein 2 is positive; protein 1 goes positive and protein 2 goes negative
-		answer_number = 3
+		answer_id = 2
 	elif protein1['pI'] < pH < protein2['pI']:
 		#protein 1 is positive and protein 2 is negative; protein 1 goes negative and protein 2 goes positive
-		answer_number = 4
+		answer_id = 3
 
-	answer1 = 'Both {0} and {1} will travel towards the <span style="color:darkblue">positive (+)</span> terminal'.format(ab1, ab2)
-	answer2 = 'Both {0} and {1} will travel towards the <span style="color:darkred">negative (&ndash;)</span> terminal'.format(ab1, ab2)
-	answer3 = '{0} will travel towards the <span style="color:darkblue">positive (+)</span> and {1} will travel towards the <span style="color:darkred">negative (&ndash;)</span> '.format(ab1, ab2)
-	answer4 = '{0} will travel towards the <span style="color:darkred">negative (&ndash;)</span> and {1} will travel towards the <span style="color:darkblue">positive (+)</span> '.format(ab1, ab2)
-	answers = [answer1, answer2, answer3, answer4]
+	choice1 = ('Both {0} and {1} will have a <span style="color:darkred">negative (&ndash;)</span> charge '.format(ab1, ab2)
+		+ 'and travel towards the <span style="color:darkblue">positive (+)</span> terminal')
+	choice2 = ('Both {0} and {1} will have a <span style="color:darkblue">positive (+)</span> charge '.format(ab1, ab2)
+		+ 'and travel towards the <span style="color:darkred">negative (&ndash;)</span> terminal')
+	choice3 = ('{0} will have a <span style="color:darkblue">positive (+)</span> charge '.format(ab1)
+		+ 'and travel towards the <span style="color:darkred">negative (&ndash;)</span> terminal<br/> '
+		+ '{0} will have a <span style="color:darkred">negative (&ndash;)</span> charge '.format(ab2)
+		+ 'and travel towards the <span style="color:darkblue">positive (+)</span> terminal ')
+	choice4 = ('{0} will have a <span style="color:darkred">negative (&ndash;)</span> charge '.format(ab1)
+		+ 'and travel towards the <span style="color:darkblue">positive (+)</span> terminal<br/> '
+		+ '{0} will have a <span style="color:darkblue">positive (+)</span> charge '.format(ab2)
+		+ 'and travel towards the <span style="color:darkred">negative (&ndash;)</span> terminal ')
 
-	return question, answers, answer_number
+	choices_list = [choice1, choice2, choice3, choice4,]
+	answer = choices_list[answer_id]
 
+	bb_format = bptools.formatBB_MC_Question(N, question, choices_list, answer)
 
-def printQuestion(question, answers, answer_number):
-	letters = "ABCDEFGH"
-	print(question)
-	for i in range(len(answers)):
-		answer = answers[i]
-		prefix = ''
-		if i+1 == answer_number:
-			prefix = '*'
-		print("{0}{1}. {2}".format(prefix, letters[i], answer))
+	return bb_format
 
 
 if __name__ == '__main__':
@@ -139,7 +146,11 @@ if __name__ == '__main__':
 	protein_tree = parse_protein_file()
 	answer_count = {1:0, 2:0, 3:0, 4:0}
 
-	while(question_count < 200):
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('writing to file: '+outfile)
+	f = open(outfile, 'w')
+
+	while(question_count < 24):
 		protein1, protein2 = random_select_proteins(protein_tree.copy())
 		midpoint_pH = get_midpoint_pH(protein1, protein2)
 		best_peak_pI,other_peak_pI = get_peak_pH(protein1, protein2)
@@ -149,7 +160,7 @@ if __name__ == '__main__':
 		if pH < 2 or pH > 12:
 			continue
 		question_count += 1
-		question, answers, answer_number = writeQuestion(protein1, protein2, pH, question_count)
-		printQuestion(question, answers, answer_number)
-		answer_count[answer_number] += 1
-	print(answer_count)
+		bb_format= writeQuestion(protein1, protein2, pH, question_count)
+		f.write(bb_format)
+	f.close()
+	bptools.print_histogram()

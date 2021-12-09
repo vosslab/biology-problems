@@ -54,17 +54,29 @@ def makeHtmlTable(pre_mRNA_tree):
 		sys.exit(1)
 
 	table = ''
-	table += '<table style="border-collapse: collapse; border: 2px solid black; table-layout: fixed;">'
+	table += '<table style="border-collapse: collapse; border: 0px solid white; table-layout: fixed;">'
 	for mRNA_part in pre_mRNA_tree:
-		table += '<colgroup width="{0}"></colgroup>'.format(mRNA_part['size'])
+		table += '<colgroup width="{0}"></colgroup> '.format(mRNA_part['size'])
 	table += '<tr>'
 	part_type_tuple = ('exon', 'intron')
 	for mRNA_part in pre_mRNA_tree:
 		html_name = mRNA_part['name'].replace(' ', '&nbsp;')
-		table += '<td bgcolor="{0}" align="center">{1}<br/><font size=-2>{2} bp</font></td>'.format(
-			mRNA_part['color'], mRNA_part['name'], mRNA_part['size'])
+		if mRNA_part.get('type') == 'exon':
+			table += '<td bgcolor="{0}" align="center" rowspan=2 '.format(mRNA_part['color'])
+			table += 'style="vertical-align: middle; border: 4px solid black;"> '
+			table += '{0}<br/><font size=-2>{1} bp</font></td> '.format(html_name, mRNA_part['size'])
+		else:
+			table += '<td bgcolor="{0}" align="center" '.format(mRNA_part['color'])
+			table += 'style="border-bottom: 8px solid black; border-top: 0px solid white;">'
+			table += '{0}</td> '.format(html_name)
+	table += '</tr><tr> '
+	for mRNA_part in pre_mRNA_tree:
+		if mRNA_part.get('type') != 'exon':
+			table += '<td bgcolor="{0}" align="center" '.format('white')
+			table += 'style="border-bottom: 0px solid white; border-top: 8px solid black;"> '
+			table += '<font size=-2>{0} bp</font></td> '.format(mRNA_part['size'])
 	table += '</tr>'
-	table += '</table>'
+	table += '</table><br/>'
 	#print(table)
 	return table
 
@@ -83,7 +95,7 @@ def makeAllValid_mRNA(pre_mRNA_tree, num_exons, min_exons=3):
 	mRNA_list = []
 	for i in range(1, 2**num_exons):
 		mRNA_tree = []
-		p5_cap = { 'name': '5&prime; cap', 'color': capcolor, 'size': 80, }
+		p5_cap = { 'name': '5&prime; cap', 'color': capcolor, 'size': 80, 'type': 'cap'}
 		mRNA_tree.append(p5_cap)
 		binary_list = convert_int_to_binary_list(i, num_exons)
 		if sum(binary_list) < min_exons:
@@ -94,7 +106,7 @@ def makeAllValid_mRNA(pre_mRNA_tree, num_exons, min_exons=3):
 			if b == 1:
 				mRNA_tree.append(pre_mRNA_tree[exon_index])
 				#print(pre_mRNA_tree[exon_index]['name'])
-		polyA = { 'name': 'polyA tail', 'color': capcolor, 'size': 120, }
+		polyA = { 'name': 'polyA tail', 'color': capcolor, 'size': 120, 'type': 'tail'}
 		mRNA_tree.append(polyA)
 		mRNA_list.append(mRNA_tree)
 	#for mRNA_tree in mRNA_list:
@@ -110,7 +122,7 @@ def shift(seq, n):
 
 def makeINValid_mRNA(pre_mRNA_tree, num_exons, exons_to_use):
 	mRNA_tree = []
-	p5_cap = { 'name': '5&prime; cap', 'color': capcolor, 'size': 80, }
+	p5_cap = { 'name': '5&prime; cap', 'color': capcolor, 'size': 80, 'type': 'cap', }
 	mRNA_tree.append(p5_cap)
 
 	exon_list = list(range(1, num_exons+1))
@@ -130,7 +142,7 @@ def makeINValid_mRNA(pre_mRNA_tree, num_exons, exons_to_use):
 		exon_index = 2*exon_num - 1
 		mRNA_tree.append(pre_mRNA_tree[exon_index])
 		#print(pre_mRNA_tree[exon_index]['name'])
-	polyA = { 'name': 'polyA tail', 'color': capcolor, 'size': 120, }
+	polyA = { 'name': 'polyA tail', 'color': capcolor, 'size': 120, 'type': 'tail', }
 	mRNA_tree.append(polyA)
 	#print(mRNA_tree)
 	return mRNA_tree
@@ -164,13 +176,13 @@ def makePre_mRNA_tree(part_sizes):
 
 #==========================
 #==========================
-def makeCompleteQuestion(N, num_exons):
+def makeCompleteQuestion(N, num_exons, min_exons):
 	part_sizes = getGenePartSizes(num_exons)
 	pre_mRNA_tree = makePre_mRNA_tree(part_sizes)
 	#print(pre_mRNA_tree)
 	table = makeHtmlTable(pre_mRNA_tree)
-	valid_mRNA_list = makeAllValid_mRNA(pre_mRNA_tree, num_exons, num_exons-1)
-	invalid_mRNA = makeINValid_mRNA(pre_mRNA_tree, num_exons, num_exons-1)
+	valid_mRNA_list = makeAllValid_mRNA(pre_mRNA_tree, num_exons, min_exons)
+	invalid_mRNA = makeINValid_mRNA(pre_mRNA_tree, num_exons, min_exons)
 	answer = makeHtmlTable(invalid_mRNA)
 
 	random.shuffle(valid_mRNA_list)
@@ -203,17 +215,22 @@ def makeCompleteQuestion(N, num_exons):
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument('-n', '--num-exons', type=int, dest='num_exons',
-		help='number of exons in the gene', default=4)
+		help='number of total exons in the gene', default=4)
+	parser.add_argument('-m', '--min-exons', type=int, dest='min_exons',
+		help='number of exons in the choices', default=None)
 	parser.add_argument('-q', '--num-questions', type=int, dest='num_questions',
 		help='number of questions to create', default=24)
 	args = parser.parse_args()
+
+	if args.min_exons is None:
+		args.min_exons = args.num_exons - 1
 
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
 	print('writing to file: '+outfile)
 	f = open(outfile, 'w')
 	for i in range(args.num_questions):
 		N = i+1
-		bbformat = makeCompleteQuestion(N, args.num_exons)
+		bbformat = makeCompleteQuestion(N, args.num_exons, args.min_exons)
 		f.write(bbformat)
 		f.write('\n')
 	f.close()
