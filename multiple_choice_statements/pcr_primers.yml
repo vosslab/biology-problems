@@ -4,35 +4,45 @@
 topic: PCR primers that are efficient and avoid mispriming
 
 connection_words: ~
-
-true_statements:
-  truth1: The primers are about 18 to 30 nucleotides in length
-  truth2: The primers are complementary to highly conserved regions of the genome
-  truth3: Both primers have about the same melting temperature (T<sub>m</sub>)
-  truth5a: The primers' sequences do not bind to each other to form primer-dimers
-  truth5b: The primers do not have complementary regions to each other
-  truth6: The ends of their sequences do not bind to form secondary structures
-  truth7: The percentage of G/C bases in the range of 40% to 60%
-  truth8: The primers have a melting temperature (T<sub>m</sub>) in the range of 50&deg;C to 65&deg;C
-  truth9: The primers would ideally have unique sequences that a deficient in 1 of the 4 nucleotides
-
-false_statements:
-  false1a: The primers are shorter than 10 nucleotides in length
-  false1b: The primers areat least 50 nucleotides in length, if not longer
-  false2: The primers are complementary to highly variable regions of the genome
-  false3: Each primer has a unique melting temperature (T<sub>m</sub>), one is high and one is low
-  false4: The primers are rich in A/T bases at the 3&prime; end to ensure good binding
-  false5a: The primers are mostly complementary to each other
-  false5b: The primers can readily bind to form primer-dimers
-  false6: The ends of each primer are self-complementary to form strong secondary structure
-  false7a: The percentage of G/C bases are less than 30%
-  false7b: The percentage of G/C bases are more than 70%
-  false8a: The primers have a melting temperature (T<sub>m</sub>) less than 42&deg;C
-  false8b: The primers have a melting temperature (T<sub>m</sub>) more than 68&deg;C
-  false9: Both primers must always contain all four possible nucleotides
-
 # conflicts, means that the statements cannot appear together
 # add ': True' to each line, so the program runs a faster lookup 
 conflict_rules: ~
+
+replacement_rules:
+   nucleotides:           '<span style="color: Maroon;">nucleotides</span>'
+   complementary:         '<span style="color: #b33000;">complementary</span>'
+   primers:               '<span style="color: #248f24;">primers</span>'
+   'primer ':             '<span style="color: #248f24;">primer </span>'
+   sequences:             '<span style="color: #002699;">sequences</span>'
+   'sequence ':           '<span style="color: #002699;">sequence </span>'
+   melting temperature:   '<span style="color: #995c00;">melting temperature (T<sub>m</sub>)</span>'
+
+true_statements:
+  truth1: the primers are about 18 to 30 nucleotides in length
+  truth2: the primers are complementary to highly conserved regions of the genome
+  truth3: both primers have about the same melting temperature
+  truth5a: the primers' sequences do not bind to each other to form primer-dimers
+  truth5b: the primers do not have any complementary regions to each other
+  truth6: the ends of the primer sequence must not bind to form secondary structures
+  truth7: the percentage of G/C bases in the range of 40% to 60%
+  truth8: the primers have a melting temperature in the range of 50&deg;C to 65&deg;C
+  truth9: the primers would ideally have unique sequences that a deficient in 1 of the 4 nucleotides
+
+false_statements:
+  false1a: the primers are shorter than 10 nucleotides in length
+  false1b: the primers are at least 50 nucleotides in length, if not longer
+  false2: the primers are complementary to highly variable regions of the genome
+  false3: each primer has a unique melting temperature, one is high and one is low
+  false4: the primers are rich in A/T bases at the 3&prime; end to ensure good binding
+  false5a: the primers are mostly complementary to each other
+  false5b: the primers can readily bind to form primer-dimers
+  false6: the ends of each primer are self-complementary to form strong secondary structure
+  false7a: the percentage of G/C bases are less than 30%
+  false7b: the percentage of G/C bases are more than 70%
+  false8a: the primers have a melting temperature less than 42&deg;C
+  false8b: the primers have a melting temperature more than 68&deg;C
+  false9: both primers must always contain all four possible nucleotides
+
+
 
 
