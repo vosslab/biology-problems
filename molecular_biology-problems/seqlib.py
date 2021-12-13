@@ -101,7 +101,7 @@ def DNA_Table(top_sequence, bottom_sequence=None, left_primes=True, right_primes
 
 #=====================
 #=====================
-def Single_Strand_Table(ss_sequence_str, fivetothree=True):
+def Single_Strand_Table(ss_sequence_str, fivetothree=True, separate=3):
 	table = '&nbsp;<table style="border-collapse: collapse; border: 0px; display:inline-table"> '
 	table += ' <tr>'
 	if fivetothree is True:
@@ -109,11 +109,22 @@ def Single_Strand_Table(ss_sequence_str, fivetothree=True):
 	else:
 		table += '<td>3&prime;&ndash;</td>'
 	ss_sequence_list = list(ss_sequence_str)
-	table += makeHtmlTDRow(ss_sequence_list)
+	table += makeHtmlTDRow(ss_sequence_list, separate)
 	if fivetothree is True:
 		table += '<td>&ndash;3&prime;</td>'
 	else:
 		table += '<td>&ndash;5&prime;</td>'
+	table += '</tr> '
+	table += '</table> '
+	return table
+
+#=====================
+#=====================
+def Single_Strand_Table_No_Primes(ss_sequence_str, separate=3):
+	table = '&nbsp;<table style="border-collapse: collapse; border: 0px; display:inline-table"> '
+	table += ' <tr>'
+	ss_sequence_list = list(ss_sequence_str)
+	table += makeHtmlTDRow(ss_sequence_list, separate)
 	table += '</tr> '
 	table += '</table> '
 	return table
