@@ -1,8 +1,13 @@
 #!/usr/bin/env python
 
+import os
 import sys
 import copy
 import random
+
+#local
+import seqlib
+import bptools
 
 def complement(seq):
 	newseq = copy.copy(seq)
@@ -44,76 +49,75 @@ def fiveLetters(choice):
 	return question
 
 
-if __name__ == '__main__':
+def writeQuestion(N):
 	nt1 = random.choice(('A', 'C', 'T', 'G'))
 	nt2 = complement(nt1)
-	#print(("letters used: %s and %s"%(nt1, nt2)))
 
-	choices = []
-	choices.append(nt1+nt1+nt2)
-	choices.append(nt1+nt2+nt2)
-	choices.append(nt2+nt2+nt1)
-	choices.append(nt2+nt1+nt1)
-	#print(choices)
-	random.shuffle(choices)
+	matching_list = []
+	matching_list.append(nt1+nt1+nt2)
+	matching_list.append(nt1+nt2+nt2)
+	matching_list.append(nt2+nt2+nt1)
+	matching_list.append(nt2+nt1+nt1)
+	random.shuffle(matching_list)
 
-	#for s in choices:
-	#	c = complement(s)
-	#	print("{0} -> {1}".format(s, c))
+	answers_list = []
+	unusedchoices = copy.copy(matching_list)
 
-	questions = []
-	unusedchoices = copy.copy(choices)
-	
-	choice = unusedchoices.pop(0)
-	question = oneLetter(choice)
-	#print(("%s -> %s"%(choice, question)))
-	questions.append(question)
-	
-	choice = unusedchoices.pop(0)
-	question = threeLetters(choice)
-	#print(("%s -> %s"%(choice, question)))
-	questions.append(question)
+	match1 = unusedchoices.pop(0)
+	answer1 = oneLetter(match1)
+	answers_list.append(answer1)
 
-	choice = unusedchoices.pop(0)
-	question = fiveLetters(choice)
-	#print(("%s -> %s"%(choice, question)))
-	questions.append(question)
-	
-	choice = unusedchoices.pop(0)
-	r = random.random()
-	if r < 0.333:
-		question = oneLetter(choice)
-	elif r < 0.667:
-		question = threeLetters(choice)
+	match2 = unusedchoices.pop(0)
+	answer2 = threeLetters(match2)
+	answers_list.append(answer2)
+
+	match3 = unusedchoices.pop(0)
+	answer3 = fiveLetters(match3)
+	answers_list.append(answer3)
+
+	match4 = unusedchoices.pop(0)
+	r = random.randint(1,3)
+	if r == 1:
+		answer4 = oneLetter(match4)
+	elif r == 2:
+		answer4 = threeLetters(match4)
+	elif r == 3:
+		answer4 = fiveLetters(match4)
 	else:
-		question = fiveLetters(choice)
-	#print(("%s -> %s"%(choice, question)))
-	#print("")
-	questions.append(question)
+		sys.exit(1)
+	answers_list.append(answer4)
 
-	print(("match 3. "
-			+"The following numbered sequences only contains half of a palindromic sequence. "
-			+"Match the correct lettered sequence that would finish and replace the 'N's in the sequence to make them palindromes. "
-			+"Letters will be used exactly once."))
+	answers_table_list = []
+	for answer in answers_list:
+		if len(answer) == 6:
+			answer_table = seqlib.Single_Strand_Table(answer, fivetothree=True, separate=3)
+		else:
+			answer_table = seqlib.Single_Strand_Table(answer, fivetothree=True, separate=4)
+		answers_table_list.append(answer_table)
 
-	#random.shuffle(choices)
-	#random.shuffle(questions)
-	numbers = list(range(len(choices)))
-	random.shuffle(numbers)
-	letters = "ABCDE"
-	count = 0
-	for i in numbers:
-		l = letters[count]
-		c = choices[i]
-		#sys.stderr.write("%s. %s\t"%(l, c))
-		q = questions[i]
-		#sys.stderr.write("_ XX. 5'-%s-3'"%(q))
-		sys.stderr.write("%s. 5'-%s-3' / %s"%(l, q, c))
+	matching_table_list = []
+	for match in matching_list:
+		match_table = seqlib.Single_Strand_Table_No_Primes(match, separate=4)
+		matching_table_list.append(match_table)
+		
+	question_text = ''
+	question_text += "<p>The following numbered sequences only contains half of a palindromic sequence.</p> "
+	question_text += "<p>Match the correct lettered sequence that would finish and replace "
+	question_text += "the '<strong>N</strong>'s in the sequence to make them palindromes.</p> "
+	question_text += "<p>Letters will be used exactly once.</p> "
 
-		#if i % 2 == 1:
-		#	sys.stderr.write("\n")
-		#else:
-		#	sys.stderr.write("\t")
-		sys.stderr.write("\n")
-		count += 1
+	bbformat = bptools.formatBB_MAT_Question(N, question_text, answers_table_list, matching_table_list)
+	return bbformat
 
+if __name__ == '__main__':
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('writing to file: '+outfile)
+	f = open(outfile, 'w')
+
+	num_questions = 98
+	for i in range(num_questions):
+		N = i + 1
+		bbformat = writeQuestion(N)
+		f.write(bbformat)
+	f.close()
+	bptools.print_histogram()
