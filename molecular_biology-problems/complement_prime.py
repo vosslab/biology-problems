@@ -26,8 +26,8 @@ def write_question(N, seqlen):
 
 	question_text = ''
 	question_text += question_table
-	question_text += '<p>Which one of the following sequences below is complimentary to '
-	question_text += 'the DNA sequence above?</p>'
+	question_text += '<h5>Which one of the following sequences below is complimentary to '
+	question_text += 'the DNA sequence above?</h5>'
 	question_text += '<p>Hint: pay close attention to the 5&prime; and 3&prime; directions!</p>'
 
 	#============================
@@ -77,4 +77,5 @@ if __name__ == '__main__':
 		N = i + 1
 		bbtext = write_question(N, seqlen)
 		f.write(bbtext)
-	f.close()		
+	f.close()
+	bptools.print_histogram()
