@@ -58,7 +58,8 @@ def get_vol_conc_answer(solute):
 	min_remainer = 1
 	min_concentration_value = -1
 	for concentration in valid_values:
-		answer = volume * concentration / 100. / mw * 1000
+		# mL   x   mmol / L   x  mg / mmol  x   1/ 1000
+		answer = volume * concentration * mw / 1000.
 		if answer < 10:
 			continue
 		if answer > 980:
@@ -75,9 +76,10 @@ def get_vol_conc_answer(solute):
 
 	#answer should be a whole number
 	# there for the numbers 2, 2, 5, 5 need to be in the numbers
-	answer = volume * concentration / 100. / mw * 1000
+	answer = volume * concentration * mw / 1000.
 	return volume, concentration, answer
 
+#==================================================
 if __name__ == '__main__':
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
 	print('writing to file: '+outfile)
