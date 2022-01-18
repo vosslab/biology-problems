@@ -6,10 +6,11 @@ import bptools
 
 #==================================================
 #==================================================
-def make_question_text(volume_mL, df_value):
+def make_question_text(aliquot_mL, diluent_mL):
 	question = ''
-	question += "<p>You are preparing {0}&nbsp;mL of a new solution with a dilution factor of DF={1}.</p>".format(volume_mL, df_value)
-	question += "<p>What volume of aliquot in milliliters (mL) do you add to distilled water to make the dilution?</p>"
+	question += "<p>You are preparing a new solution.</p>"
+	question += "<p>You dilute {0} mL of stock solution into {1} mL distilled water to make a dilution.</p>".format(aliquot_mL, diluent_mL)
+	question += '<p>What is the dilution factor?</p>'
 	return question
 
 #==================================================
@@ -35,9 +36,10 @@ if __name__ == '__main__':
 	for i in range(duplicates):
 		N += 1
 		df_value, volume_mL, aliquot_uL = get_random_values()
-		q = make_question_text(volume_mL, df_value)
-		diluent_mL = volume_mL - aliquot_uL / 1000.
-		answer = aliquot_uL / 1000.
+		aliquot_mL = aliquot_uL / 1000.
+		diluent_mL = volume_mL - aliquot_mL
+		q = make_question_text(aliquot_mL, diluent_mL)
+		answer = df_value
 		tolerance = 0.9
 		bbf = bptools.formatBB_NUM_Question(N, q, answer, tolerance)
 		f.write(bbf+'\n')

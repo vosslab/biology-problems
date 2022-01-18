@@ -46,8 +46,10 @@ def df_ratio_to_values(df_ratio):
 #==================================================
 #==================================================
 def format_volumes(vol1, vol2):
-	return '{0:.0f} &mu;L previously diluted sample and <span style="color: darkblue;">{1:.0f} &mu;L distilled water</span>'.format(vol1, vol2)
-
+	choice_text = ''
+	choice_text += '{0:.1f} mL previously diluted sample (aliquot) and<br/>&nbsp;&nbsp;'.format(vol1)
+	choice_text += '<span style="color: darkblue;">{0:.0f} mL distilled water (diluent)</span>'.format(vol2)
+	return choice_text
 #==================================================
 #==================================================
 def get_nearest_df_ratios(orig_df_ratio):
@@ -110,7 +112,7 @@ def make_choices(df_ratio, volume):
 
 	wrong = format_volumes(vol2, vol1)
 	wrong_choices.append(wrong)
-	#print(wrong_choices)
+	wrong_choices = list(set(wrong_choices))
 
 	choices = wrong_choices
 	choices.append(answer)
