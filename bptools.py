@@ -178,6 +178,23 @@ def formatBB_FIB_Question(N, question, answers_list):
 	print("")
 	return bb_question + '\n'
 
+#=====================
+def formatBB_NUM_Question(N, question, answer, tolerance):
+	#NUM TAB question text TAB answer TAB [optional]tolerance
+	bb_question = ''
+
+	#number = "{0}. ".format(N)
+	crc16 = getCrc16_FromString(question)
+	bb_question += 'NUM\t<p>{0:03d}. {1}</p> {2}'.format(N, crc16, question)
+	pretty_question = makeQuestionPretty(question)
+	print('{0:03d}. {1} -- {2}'.format(N, crc16, pretty_question))
+
+	bb_question += '\t{0:.8f}'.format(answer)
+	print("=== {0:.3f}".format(answer))
+	bb_question += '\t{0:.8f}'.format(tolerance)
+	print("+/- {0:.3f}".format(tolerance))
+	print("")
+	return bb_question + '\n'
 
 #=====================
 def formatBB_MAT_Question(N, question, answers_list, matching_list):
