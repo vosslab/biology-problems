@@ -102,6 +102,9 @@ def make_choices(df_ratio, volume):
 		wrong2 = format_volumes(wvol2, wvol1)
 		wrong_choices.append(wrong2)
 
+	if answer in wrong_choices:
+		wrong_choices.remove(answer)
+	wrong_choices = list(set(wrong_choices))
 	random.shuffle(wrong_choices)
 	wrong_choices = wrong_choices[:3]
 

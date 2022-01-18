@@ -16,7 +16,6 @@ solute_full_names = {
 	'NaH<sub>2</sub>PO<sub>4</sub>': 'Monosodium phosphate',
 }
 
-
 molecular_weights = {
 	'EDTA': 292.24,
 	'NaCl': 58.44,
@@ -41,8 +40,8 @@ def question_text(solute, volume, concentration):
 	question = "<p>How many milligrams (mg) of {0} would you need to make ".format(merge_name)
 	question += "<strong>{1} mL of a {2} mM</strong> {0} solution?</p> ".format(solute, volume, concentration)
 	mw = molecular_weights[solute]
-	question += "<p>The molecular weight of {1} is {0:.2f} g/mol. ".format(merge_name, mw)
-	question += "{0} is a solid powder at room temperature.</p> ".format(full_name)
+	question += "<p>The molecular weight of {0} is {1:.2f} g/mol. ".format(merge_name, mw)
+	question += "{0} is a solid powder at room temperature.</p> ".format(solute)
 
 	return question
 
