@@ -132,7 +132,7 @@ if __name__ == '__main__':
 			volume, df1, df2 = df_ratio_to_values(df_ratio)
 			q = question_text(volume, df1, df2)
 			choices, answer = make_choices(df_ratio, volume)
-			bbf = bptools.formatBB_MC_Question(N, q, answer, choices)
+			bbf = bptools.formatBB_MC_Question(N, q, choices, answer)
 			#bbf = MC_format_for_blackboard(q, answer, choices)
 			f.write(bbf)
 	f.close()
