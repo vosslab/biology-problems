@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 import os
-import math
 import random
+import bptools
 
 ###
 
@@ -82,12 +82,12 @@ def question_text(volume):
 
 ##=========================
 def get_wrong_choices(volume):
-	if volume < 10:
-		volume2 = volume * 100
-	elif volume < 100:
-		volume2 = volume * 10
-	else:
-		volume2 = volume // 10
+	#if volume < 10:
+	#	volume2 = volume * 100
+	#elif volume < 100:
+	#	volume2 = volume * 10
+	#else:
+	#	volume2 = volume // 10
 	choices = []
 	rawdigits1 = get_raw_digits(volume)
 	if rawdigits1 < 100:
@@ -108,21 +108,25 @@ if __name__ == '__main__':
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
 	print('writing to file: '+outfile)
 	f = open(outfile, 'w')
-	for i in range(30):
+	N = 0
+	duplicates = 30
+	for i in range(duplicates):
 		for pipet in pipet_choices:
+			N += 1
 			volume = get_volume(pipet)
 			rawdigits = get_raw_digits(volume)
 			print(pipet, volume, rawdigits)
 			question = question_text(volume)
 			choices = get_wrong_choices(volume)
-			f.write('MC\t{0}'.format(question))
+			choices_list = []
 			for choice in choices:
-				correct = "Incorrect"
 				if choice['pipet'] == pipet and choice['rawdigits'] == rawdigits:
-					correct = "Correct"
-				f.write('\t{0}\t{1}'.format(choice['text'], correct))
-			f.write('\n')
-	f.close()			
+					answer = choice['text']
+				choices_list.append(choice['text'])
+			bb_format = bptools.formatBB_MC_Question(N, question, choices_list, answer)
+			f.write(bb_format)
+	f.close()
+	bptools.print_histogram()
 
 			
 

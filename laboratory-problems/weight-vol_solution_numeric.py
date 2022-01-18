@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 import os
-import math
 import random
+import bptools
 
 solute_full_names = {
 	'NaCl': 'Sodium chloride',
@@ -38,14 +38,8 @@ def question_text(solute, volume, concentration):
 	mw = molecular_weights[solute]
 	question += "<p>The molecular weight of {0} ({1}) is {2:.2f} g/mol. ".format(full_name.lower(), solute, mw)
 	question += "{0} is a solid powder at room temperature.</p> ".format(full_name)
-	
-	return question
 
-#==================================================
-def format_for_blackboard(question, answer, tolerance):
-	#https://experts.missouristate.edu/plugins/servlet/mobile?contentId=63486780#content/view/63486780
-	#"NUM TAB question text TAB answer TAB [optional]tolerance"
-	return "NUM\t{0}\t{1:.1f}\t{2:.1f}".format(question,answer,tolerance)
+	return question
 
 def get_vol_conc_answer():
 	volume = random.randint(2, 10)
@@ -55,7 +49,7 @@ def get_vol_conc_answer():
 			volume *= n
 		else:
 			concentration *= n
-	
+
 	#answer should be a whole number
 	# there for the numbers 2, 2, 5, 5 need to be in the numbers
 	answer = int(volume * concentration / 100.)
@@ -69,17 +63,15 @@ if __name__ == '__main__':
 	powders = list(molecular_weights.keys())
 	duplicates = 99 // len(powders)
 	#duplicates = 1
+	N = 0
 	for solute in powders:
 		for i in range(duplicates):
+			N += 1
 			volume, concentration, answer = get_vol_conc_answer()
 			if concentration is None:
 				continue
 			q = question_text(solute, volume, concentration)
-			print(q)
-			print(answer)
-			print("")
-			bbf = format_for_blackboard(q, answer, 0.9)
+			bbf = bptools.formatBB_NUM_Question(N, q, answer, 0.9)
 			f.write(bbf+'\n')
 	f.close()
-
-	print("")
+	bptools.print_histogram()

@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 import os
-import math
 import random
+import bptools
 
 
 #https://en.wikipedia.org/wiki/List_of_water-miscible_solvents
@@ -19,22 +19,15 @@ molecular_weights = {
 	'formic acid': 46.03,
 }
 
-
 def question_text(solute, volume, concentration):
 	question = "<p>How many milliliters (mL) of {0} you would need to make ".format(solute)
 	question += "{1} mL of a {2}% (v/v) {0} solution?</p> ".format(solute, volume, concentration)
 	mw = molecular_weights[solute]
 	question += "<p>The molecular weight of {0} is {1:.2f} g/mol. ".format(solute, mw)
 	question += "{0} is a liquid at room temperature.</p> ".format(solute.title())
-	
 	return question
 
 #==================================================
-def format_for_blackboard(question, answer, tolerance):
-	#https://experts.missouristate.edu/plugins/servlet/mobile?contentId=63486780#content/view/63486780
-	#"NUM TAB question text TAB answer TAB [optional]tolerance"
-	return "NUM\t{0}\t{1:.1f}\t{2:.1f}".format(question,answer,tolerance)
-
 def get_vol_conc_answer():
 	volume = random.randint(2, 10)
 	concentration = random.randint(2, 10)
@@ -43,7 +36,7 @@ def get_vol_conc_answer():
 			volume *= n
 		else:
 			concentration *= n
-	
+
 	#answer should be a whole number
 	# there for the numbers 2, 2, 5, 5 need to be in the numbers
 	answer = int(volume * concentration / 100.)
@@ -53,14 +46,14 @@ if __name__ == '__main__':
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
 	print('writing to file: '+outfile)
 	f = open(outfile, 'w')
+	N = 0
 	for solute in liquids:
 		for i in range(13):
+			N += 1
 			volume, concentration, answer = get_vol_conc_answer()
 			q = question_text(solute, volume, concentration)
-			print(q)
-			print(answer)
-			bbf = format_for_blackboard(q, answer, 0.9)
-			f.write(bbf+'\n')
+			tolerance = 0.9
+			bbf = bptools.formatBB_NUM_Question(N, q, answer, tolerance)
+			f.write(bbf)
 	f.close()
-
-	print("")
+	bptools.print_histogram()

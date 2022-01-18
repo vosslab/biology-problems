@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import os
-import math
 import random
 import bptools
 
@@ -32,6 +31,7 @@ molecular_weights = {
 	'NaH<sub>2</sub>PO<sub>4</sub>': 119.98,
 }
 
+#==================================================
 def question_text(solute, volume, concentration):
 	full_name = solute_full_names.get(solute, None)
 	if full_name is None:
@@ -41,16 +41,10 @@ def question_text(solute, volume, concentration):
 	question = "<p>How many milligrams (mg) of {0} would you need to make ".format(merge_name)
 	question += "<strong>{1} mL of a {2} mg/mL</strong> {0} solution?</p> ".format(solute, volume, concentration)
 	mw = molecular_weights[solute]
-	question += "<p>The molecular weight of is {1:.2f} g/mol. ".format(merge_name, mw)
+	question += "<p>The molecular weight of {0} is {1:.2f} g/mol. ".format(merge_name, mw)
 	question += "{0} is a solid powder at room temperature.</p> ".format(full_name)
-	
-	return question
 
-#==================================================
-def format_for_blackboard(question, answer, tolerance):
-	#https://experts.missouristate.edu/plugins/servlet/mobile?contentId=63486780#content/view/63486780
-	#"NUM TAB question text TAB answer TAB [optional]tolerance"
-	return "NUM\t{0}\t{1:.3f}\t{2:.2f}".format(question,answer,tolerance)
+	return question
 
 #==================================================
 def get_vol_conc_answer(solute):
@@ -67,6 +61,7 @@ def get_vol_conc_answer(solute):
 
 	return volume, concentration, answer
 
+#==================================================
 if __name__ == '__main__':
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
 	print('writing to file: '+outfile)
@@ -83,7 +78,6 @@ if __name__ == '__main__':
 				continue
 			q = question_text(solute, volume, concentration)
 			bbf = bptools.formatBB_NUM_Question(N, q, answer, 0.9)
-			f.write(bbf+'\n')
+			f.write(bbf)
 	f.close()
-
-	print("")
+	bptools.print_histogram()

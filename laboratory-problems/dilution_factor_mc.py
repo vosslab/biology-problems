@@ -1,21 +1,16 @@
 #!/usr/bin/env python
 
 import os
-import math
 import random
-
-
+import bptools
 
 df_ratios = [
 	(2, 1), (3, 1), (4, 1),
 	(3, 2), (5, 2), (7, 2),
 	(4, 3), (5, 3), (7, 3), (8, 3),
-	(5, 4), (7, 4), (9, 4), 
+	(5, 4), (7, 4), (9, 4),
 	(6, 5), (7, 5), (8, 5), (9, 5),
 ]
-
-
-
 
 #==================================================
 #==================================================
@@ -23,13 +18,6 @@ def question_text(volume, df1, df2):
 	question = "<p>Using a previous diluted sample at DF={0}, create a new dilution with a final dilution of DF={1}.</p>".format(df1, df2)
 	question += "<p>How much liquid do you add to make a total of {0} &mu;L?</p>".format(volume)
 	return question
-
-#==================================================
-#==================================================
-def NUM_format_for_blackboard(question, answer, tolerance):
-	#https://experts.missouristate.edu/plugins/servlet/mobile?contentId=63486780#content/view/63486780
-	#"NUM TAB question text TAB answer TAB [optional]tolerance"
-	return "NUM\t{0}\t{1:.1f}\t{2:.1f}".format(question,answer,tolerance)
 
 #==================================================
 #==================================================
@@ -47,7 +35,7 @@ def MC_format_for_blackboard(question, answer, choices):
 #==================================================
 def df_ratio_to_values(df_ratio):
 	print(df_ratio)
-	dfsum = df_ratio[0] + df_ratio[1]
+	#dfsum = df_ratio[0] + df_ratio[1]
 	max_int = 100 // df_ratio[0]
 	volume = df_ratio[0] * random.randint(1, max_int) * 10
 	multiplier = random.choice((4,5,8,10,20,25,40,50))
@@ -99,10 +87,10 @@ def make_choices(df_ratio, volume):
 	wrong = format_volumes(vol2, vol1)
 	wrong_choices.append(wrong)
 
-	new_ratio = (df_ratio[0])
+	#new_ratio = (df_ratio[0])
 	vol1 = volume * df_ratio[1] / df_ratio[0]
 	vol2 = volume - vol1
-	
+
 	near_df_ratios = get_nearest_df_ratios(df_ratio)
 	for wrong_df_ratio in near_df_ratios:
 		wvol1 = volume * wrong_df_ratio[1] / wrong_df_ratio[0]
@@ -135,17 +123,17 @@ if __name__ == '__main__':
 	f = open(outfile, 'w')
 	duplicates = 99 // len(df_ratios)
 	#duplicates = 1
+	N = 1
 	for i in range(duplicates):
 		for df_ratio in df_ratios:
 			if df_ratio[1] < 3:
 				continue
+			N += 1
 			volume, df1, df2 = df_ratio_to_values(df_ratio)
 			q = question_text(volume, df1, df2)
-			print(q)
 			choices, answer = make_choices(df_ratio, volume)
-			print(answer)
-			bbf = MC_format_for_blackboard(q, answer, choices)
-			f.write(bbf+'\n')
+			bbf = bptools.formatBB_MC_Question(N, q, answer, choices)
+			#bbf = MC_format_for_blackboard(q, answer, choices)
+			f.write(bbf)
 	f.close()
-
-	print("")
+	bptools.print_histogram()

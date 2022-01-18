@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
 import os
-import math
 import random
 import locale
+import bptools
+
 
 locale.setlocale(locale.LC_ALL, 'en_US')
 
@@ -46,7 +47,7 @@ order_factors = {
 #==================================================
 def question_text(value, first_prefix, unit):
 	formed_str = format_value(value, first_prefix, unit)
-	question = "<p>Order of Magnitude Units</p>".format(formed_str)
+	question = "<p>Order of Magnitude Units</p>"
 	question = "<p>Which one of the following values is equal to: <strong>{0}</strong>?</p>".format(formed_str)
 	return question
 
@@ -82,7 +83,7 @@ def format_value(value, prefix, unit):
 	elif value >= 1e-6:
 		formed_str = "{0:.6f} {1}{2}".format(value, prefix, unit)
 	elif value >= 1e-7:
-		formed_str = "{0:.7f} {1}{2}".format(value, prefix, unit)		
+		formed_str = "{0:.7f} {1}{2}".format(value, prefix, unit)
 	return formed_str
 
 #==================================================
@@ -145,5 +146,4 @@ if __name__ == '__main__':
 				bbf = MC_format_for_blackboard(q, answer, choices)
 				f.write(bbf+'\n')
 	f.close()
-
-	print("")
+	bptools.print_histogram()
