@@ -1,0 +1,65 @@
+---
+
+#Which one of the following statements is FALSE/TRUE <connection word> <topic>
+topic: ~
+override_question_true: Which one of the following atoms/molecules would readily pass through the lipid membrane?
+override_question_false: Which one of the following atoms/molecules could <b>NOT</b> readily pass through the lipid membrane?
+
+connection_words: ~
+
+true_statements:
+  truth1a: nitrogen gas, N<sub>2</sub>
+  truth1b: oxygen gas, O<sub>2</sub>
+  truth1c: carbon dioxide gas, CO<sub>2</sub>
+  truth1d: methane gas, CH<sub>4</sub>
+  truth1e: hydrogen gas, H<sub>2</sub>
+
+  truth2a: testosterone steriods
+  truth2b: estrogen steriods
+
+false_statements:
+  false1a: chloride ions, Cl<sup>&ndash;</sup>
+  false1b: bicarbonate ions, HCO<sub>3</sub><sup>&ndash;</sup>
+  false1c: acetate, CH<sub>3</sub>COO<sup>&ndash;</sup>
+
+  false2a: calcium ions, Ca<sup>2+</sup>
+  false2b: sodium ions, Na<sup>+</sup>
+  false2c: potassium ions, K<sup>+</sup>
+  false2d: ammonia, NH<sub>3</sub><sup>+</sup>
+
+  false3a: adenine nucleotides
+  false3b: guanine nucleotides
+  false3c: thymine nucleotides
+  false3d: uracil nucleotides
+  false3e: cytosine nucleotides
+
+  false4a: fructose sugars
+  false4b: glucose sugars
+  false4c: mannose sugars
+  false4d: galactose sugars
+  false4e: sucrose sugars
+  false4f: lactose sugars
+  false4g: maltose sugars
+  false4h: ribose sugars
+
+  false5a: glycine amino acid
+  false5b: alanine amino acid
+  false5c: serine amino acid
+  false5d: cysteine amino acid
+  false5e: arginine amino acid
+  false5f: lysine amino acid
+
+  false6a: dihydrogen oxide, H<sub>2</sub>O
+  false6b: water, H<sub>2</sub>O
+  false6c: ethanol, CH<sub>3</sub>CH<sub>2</sub>OH
+
+# conflicts, means that the statements cannot appear together
+conflict_rules: ~
+
+
+
+
+
+
+
+
