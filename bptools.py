@@ -243,7 +243,7 @@ def formatBB_MAT_Question(N, question, answers_list, matching_list):
 		sys.exit(1)
 
 	#number = "{0}. ".format(N)
-	crc16 = getCrc16_FromString(question)
+	crc16 = getCrc16_FromString(question + ''.join(answers_list) + ''.join(matching_list))
 	bb_question += 'MAT\t<p>{0:03d}. {1}</p> {2}'.format(N, crc16, question)
 	pretty_question = makeQuestionPretty(question)
 	print('{0:03d}. {1} -- {2}'.format(N, crc16, pretty_question))
@@ -254,7 +254,7 @@ def formatBB_MAT_Question(N, question, answers_list, matching_list):
 		answer = answers_list[i]
 		match = matching_list[i]
 		bb_question += '\t{0}&nbsp;\t{1}&nbsp;'.format(answer, match)
-		print("- {0}. {1} == {2} -".format(letters[i], makeQuestionPretty(answer), makeQuestionPretty(match)))
+		print("- {0}. {1} == {2}".format(letters[i], makeQuestionPretty(answer), makeQuestionPretty(match)))
 	print("")
 	return bb_question + '\n'
 

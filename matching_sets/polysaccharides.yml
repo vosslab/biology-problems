@@ -1,0 +1,57 @@
+
+items to match per question: 5
+
+key description: polysaccharides
+
+value description: description
+
+matching pairs:
+  glycogen:
+    - storage form of glucose in animals
+    - animal polysaccharide that contains &alpha;-glycosidic linkages
+    - animal molecule composed of linear chains of &alpha;-(1,4) D-glucose residues connected through &alpha;-(1,6) linkages
+    - glucose storage found in skeleton muscle and liver cells
+    - highly branched polymer of &alpha;-linked glucose units found in animals
+    - highly branched energy storage in animals
+  amylopectin:
+    - branched storage form of glucose in plants
+    - highly branched polymer of &alpha;-linked glucose units found in plants
+    - highly branched glucose polymer found in plants that is readily digested by humans and other mammals
+    - plant molecule composed of linear chains of &alpha;-(1,4) D-glucose residues connected through &alpha;-(1,6) linkages
+    - moderately branched energy storage in plants
+  amylose:
+    - unbranched storage form of glucose in plants
+    - unbranched energy storage in plants
+    - linear chain of glucose with &alpha;-glycosidic linkages and no branches
+    - also know as resistant starch, because it has no branches and it is resistant to digestion
+  chitin:
+    - structural form of glucose in some animals
+    - animal polysaccharide that contains &beta;-glycosidic linkages
+    - major structural component of arthopod (e.g., insects) exoskeletons
+    - polymer of &beta;-linked glucose units found in some animals
+    - carbohydrate polymer that used for structural purposes by some animals
+    - structural material in arthropods and fungi
+  cellulose:
+    - structural form of glucose in plants
+    - major structural component of cell walls
+    - plant polysaccharide that contains &beta;-glycosidic linkages
+    - polymer of &beta;-linked glucose units found in plants
+    - carbohydrate polymer that used for structural purposes by plants
+    - structural material in plant cell walls
+
+replacement_rules:
+   animals:             '<span style="color: #843232;">animals</span>'
+   'animal ':           '<span style="color: #843232;">animal</span> '
+   plants:              '<span style="color: #5A8432;">plants</span>'
+   'plant ':            '<span style="color: #5A8432;">plant</span> '
+   structural:          '<span style="color: #AA693A;">structural</span>'
+   storage:             '<span style="color: #693AAA;">storage</span>'
+   cell walls:          '<span style="color: #b45918;">cell walls</span>'
+
+   glycogen:     '<span style="color: DarkGreen;"><strong>glycogen</strong></span>'
+   chitin:       '<span style="color: MediumVioletRed;"><strong>chitin</strong></span>'
+   cellulose:    '<span style="color: Indigo;"><strong>cellulose</strong></span>'
+   amylose:      '<span style="color: SteelBlue;"><strong>amylose</strong></span>'
+   amylopectin:  '<span style="color: DarkRed;"><strong>amylopectin</strong></span>'
+
+
