@@ -15,6 +15,8 @@ import itertools
 
 import bptools
 
+N = 0
+
 #=======================
 #=======================
 
@@ -58,7 +60,7 @@ def permuteMatchingPairs(yaml_data, num_choices=None):
 	question += '<p><i>Note:</i> all choices will be used exacly once</p>'
 	print("")
 	print("question", question)
-
+	global N
 
 	if num_choices is None:
 		num_choices = yaml_data.get('items to match per question', 5)
@@ -68,15 +70,16 @@ def permuteMatchingPairs(yaml_data, num_choices=None):
 	random.shuffle(all_combs)
 	print('Created {0} combinations from {1} items'.format(len(all_combs), len(all_keys)))
 	for comb in all_combs:
-		key_list = list(comb)
-		random.shuffle(key_list)
-		complete_question = question
-		for key in key_list:
-			complete_question += '\t' + key
+		answers_list = list(comb)
+		random.shuffle(answers_list)
+		matching_list = []
+		for key in answers_list:
 			value = matching_pairs_dict[key]
 			if isinstance(value, list):
 				value = random.choice(value)
-			complete_question += '\t' + value
+			matching_list.append(value)
+		N += 1
+		complete_question = bptools.formatBB_MAT_Question(N, question, answers_list, matching_list)
 		list_of_complete_questions.append(complete_question)
 
 	list_of_complete_questions = applyReplacementRulesToQuestions(list_of_complete_questions, yaml_data.get('replacement_rules'))
@@ -114,17 +117,17 @@ if __name__ == '__main__':
 		less_questions.sort()
 		list_of_complete_questions = less_questions
 
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(args.input_yaml_file))[0] + '-questions.txt'
+	outfile = 'bbq-MATCH-' + os.path.splitext(os.path.basename(args.input_yaml_file))[0] + '-questions.txt'
 	print('writing to file: '+outfile)
 	f = open(outfile, 'w')
 	N = 0
 	for bbformat_question in list_of_complete_questions:
 		N += 1
-		crc16_value = bptools.getCrc16_FromString(bbformat_question)
+		#crc16_value = bptools.getCrc16_FromString(bbformat_question)
 		#MAT TAB question text TAB answer text TAB matching text TAB answer two text TAB matching two text
 		#formatBB_MAT_Question(N, question, answers_list, matching_list)
-		output_format = "MAT\t<p>{0:03d}. {1}</p> {2}\n".format(N, crc16_value, bbformat_question)
-		f.write(output_format)
+		#output_format = "MAT\t<p>{0:03d}. {1}</p> {2}\n".format(N, crc16_value, bbformat_question)
+		f.write(bbformat_question)
 	f.close()
 	print("Wrote {0} questions to file.".format(N))
 	print('')

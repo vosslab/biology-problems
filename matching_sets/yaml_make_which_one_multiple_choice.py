@@ -46,19 +46,9 @@ def applyReplacementRulesToQuestions(list_of_question_text, replacement_rule_dic
 	return new_list_of_question_text
 
 #=======================
-def permuteMatchingPairs(yaml_data, num_choices=None):
+def makeQuestions(yaml_data, num_choices=None):
 	matching_pairs_dict = yaml_data['matching pairs']
-
 	list_of_complete_questions = []
-
-	#MAT TAB question text TAB answer text TAB matching text TAB answer two text TAB matching two text
-	#"Match the each of the following <keys> with their corresponding <values>"
-	question = ("<p>Match the each of the following {0} with their corresponding {1}.</p>".format(
-		yaml_data['key description'], yaml_data['value description']))
-	question += '<p><i>Note:</i> all choices will be used exacly once</p>'
-	print("")
-	print("question", question)
-
 
 	if num_choices is None:
 		num_choices = yaml_data.get('items to match per question', 5)
@@ -67,16 +57,20 @@ def permuteMatchingPairs(yaml_data, num_choices=None):
 	all_combs = list(itertools.combinations(all_keys, num_choices))
 	random.shuffle(all_combs)
 	print('Created {0} combinations from {1} items'.format(len(all_combs), len(all_keys)))
+	N = 0
 	for comb in all_combs:
-		key_list = list(comb)
-		random.shuffle(key_list)
-		complete_question = question
-		for key in key_list:
-			complete_question += '\t' + key
-			value = matching_pairs_dict[key]
-			if isinstance(value, list):
-				value = random.choice(value)
-			complete_question += '\t' + value
+		choices_list = list(comb)
+		random.shuffle(choices_list)
+		answer = choices_list[0]
+		answer_description = matching_pairs_dict[answer]
+		if isinstance(answer_description, list):
+			answer_description = random.choice(answer_description)
+		random.shuffle(choices_list)
+		question = ("<p>Which one of the following {0} correspond to the description <strong>'{1}'</strong>.</p>".format(
+			yaml_data['key description'], answer_description))
+		N += 1
+		complete_question = bptools.formatBB_MC_Question(N, question, choices_list, answer)
+
 		list_of_complete_questions.append(complete_question)
 
 	list_of_complete_questions = applyReplacementRulesToQuestions(list_of_complete_questions, yaml_data.get('replacement_rules'))
@@ -105,7 +99,7 @@ if __name__ == '__main__':
 
 	list_of_complete_questions = []
 	for i in range(args.duplicate_runs):
-		list_of_complete_questions += permuteMatchingPairs(yaml_data, args.num_choices)
+		list_of_complete_questions += makeQuestions(yaml_data, args.num_choices)
 
 	if len(list_of_complete_questions) > args.max_questions:
 		print("Too many questions, trimming down to {0} questions".format(args.max_questions))
@@ -114,17 +108,13 @@ if __name__ == '__main__':
 		less_questions.sort()
 		list_of_complete_questions = less_questions
 
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(args.input_yaml_file))[0] + '-questions.txt'
+	outfile = 'bbq-MC-' + os.path.splitext(os.path.basename(args.input_yaml_file))[0] + '-questions.txt'
 	print('writing to file: '+outfile)
 	f = open(outfile, 'w')
 	N = 0
 	for bbformat_question in list_of_complete_questions:
 		N += 1
-		crc16_value = bptools.getCrc16_FromString(bbformat_question)
-		#MAT TAB question text TAB answer text TAB matching text TAB answer two text TAB matching two text
-		#formatBB_MAT_Question(N, question, answers_list, matching_list)
-		output_format = "MAT\t<p>{0:03d}. {1}</p> {2}\n".format(N, crc16_value, bbformat_question)
-		f.write(output_format)
+		f.write(bbformat_question)
 	f.close()
 	print("Wrote {0} questions to file.".format(N))
 	print('')

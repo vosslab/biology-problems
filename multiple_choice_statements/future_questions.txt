@@ -1,0 +1,24 @@
+
+Which one of the following statements is TRUE in regards to DNA and RNA?
+  DNA is usually single stranded (simplex), whereas RNA is not.
+  The DNA sugar is ribose, RNA has a different sugar.
+  DNA nucleotides have a 2' hydroxide (-OH) group, RNA does not.
+* In RNA, uracil takes the place of thymine.
+
+Which one of the following is FALSE regarding the structure of DNA?
+  The backbone contains only phosphate and sugar.
+  Two strands of are antiparallel.
+* Ionic bonds hold the two strands together.
+  Purine bases pair up with pyrimidine bases.
+
+What three (3) components make up a nucleotide?
+  phosphate, nitrogenous base, uracil
+  sugar, phosphate, carboxyl
+* sugar, phosphate, nitrogenous base
+  uracil, carboxyl, phosphate
+
+Which one of the following best describes a DNA molecule?
+Question ##questionNumber## - Correct Answer1helical shape
+contains ribose
+made of amino acids
+contains uracil
