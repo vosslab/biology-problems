@@ -3,19 +3,20 @@
 #Which one of the following statements is FALSE/TRUE <connection word> <topic>
 topic: ~
 override_question_true: Which one of the following atoms/molecules would readily pass through the lipid membrane?
-override_question_false: Which one of the following atoms/molecules could <b>NOT</b> readily pass through the lipid membrane?
+#override_question_false: Which one of the following atoms/molecules could <b>NOT</b> readily pass through the lipid membrane?
+override_question_false: ~
 
 connection_words: ~
 
 true_statements:
-  truth1a: nitrogen gas, N<sub>2</sub>
-  truth1b: oxygen gas, O<sub>2</sub>
-  truth1c: carbon dioxide gas, CO<sub>2</sub>
-  truth1d: methane gas, CH<sub>4</sub>
-  truth1e: hydrogen gas, H<sub>2</sub>
+  truth81a: nitrogen gas, N<sub>2</sub>
+  truth81b: oxygen gas, O<sub>2</sub>
+  truth81c: carbon dioxide gas, CO<sub>2</sub>
+  truth81d: methane gas, CH<sub>4</sub>
+  truth81e: hydrogen gas, H<sub>2</sub>
 
-  truth2a: testosterone steriods
-  truth2b: estrogen steriods
+  truth82a: testosterone steriods
+  truth82b: estrogen steriods
 
 false_statements:
   false1a: chloride ions, Cl<sup>&ndash;</sup>
