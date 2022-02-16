@@ -8,14 +8,16 @@ topic: cell theory
 override_question_true: ~
 
 replacement_rules:
+  'cell theory':      '<span style="color: #793AAA;">cell&nbsp;theory</span>'
   Cells:              '<span style="color: MediumBlue;">Cells</span>'
   cells:              '<span style="color: MediumBlue;">cells</span>'
   ' cell':            ' <span style="color: MediumBlue;">cell</span>'
   living things:      '<span style="color: OrangeRed;">living things</span>'
   living organisms:   '<span style="color: OrangeRed;">living organisms</span>'
-  Organs:             '<span style="color: MediumVioletRed;">Organs</span>'
-  organs:             '<span style="color: MediumVioletRed;">organs</span>'
-  ' organ':           ' <span style="color: MediumVioletRed;">organ</span>'
+  life:               '<span style="color: OrangeRed;">life</span>'
+  Organs:             '<span style="color: MediumBlue;">Organs</span>'
+  organs:             '<span style="color: MediumBlue;">organs</span>'
+  'organ ':           '<span style="color: MediumBlue;">organ</span> '
 
 connection_words: ~
 
