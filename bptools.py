@@ -135,8 +135,13 @@ def makeQuestionPretty(question):
 #==========================
 #==========================
 def formatBB_MC_Question(N, question, choices_list, answer):
-	bb_question = ''
+	if len(choices_list) <= 1:
+		print("not enough choices to choose from, you need two choices for multiple choice")
+		print("answer=", answer)
+		print("choices_list=", choices_list)
+		sys.exit(1)
 
+	bb_question = ''
 	#number = "{0}. ".format(N)
 	crc16 = getCrc16_FromString(question)
 	bb_question += 'MC\t<p>{0:03d}. {1}</p> {2}'.format(N, crc16, question)
@@ -165,8 +170,13 @@ def formatBB_MC_Question(N, question, choices_list, answer):
 
 #=====================
 def formatBB_MA_Question(N, question, choices_list, answers_list):
-	bb_question = ''
+	if len(choices_list) <= 1:
+		print("not enough choices to choose from, you need two choices for multiple choice")
+		print("answers_list=", answers_list)
+		print("choices_list=", choices_list)
+		sys.exit(1)
 
+	bb_question = ''
 	#number = "{0}. ".format(N)
 	crc16 = getCrc16_FromString(question)
 	bb_question += 'MA\t<p>{0:03d}. {1}</p> {2}'.format(N, crc16, question)
