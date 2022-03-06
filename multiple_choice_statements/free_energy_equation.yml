@@ -1,0 +1,76 @@
+---
+
+#Which one of the following statements is FALSE/TRUE <connection word> <topic>
+topic: the Gibbs free energy, &Delta;G = &Delta;H &ndash; T &Delta;S
+
+connection_words: ~
+
+replacement_rules:
+   '&Delta;G':           '<span style="color: #248f24;"><strong>&Delta;<i>G</i></strong></span>'
+   '&Delta;H':           '<span style="color: #e68a00;"><strong>&Delta;<i>H</i></strong></span>'
+   '&Delta;S':           '<span style="color: #0033cc;"><strong>&Delta;<i>S</i></strong></span>'
+   'T ':                 '<span style="color: #a3297a;"><strong><i>T</i></strong></span> '
+
+   temperature:        '<span style="color: #8f2424;">temperature</span>'
+   free energy:        '<span style="color: #8f2424;">free energy</span>'
+   enthalpy:           '<span style="color: #8f2424;">enthalpy</span>'
+   entropy:            '<span style="color: #8f2424;">enthalpy</span>'
+
+   ' spontaneous':     ' <span style="color: #333366;"><i>spontaneous</i></span>'
+   'non-spontaneous':  '<span style="color: #663333;"><i>non-spontaneous</i></span>'
+
+true_statements:
+  truth1a: '&Delta;G is the change in free energy'
+  truth1b: '&Delta;H is the change in enthalpy'
+  truth1c: '&Delta;S is the change in entropy'
+
+  truth2a: entropy is associated with a state of disorder, randomness, or uncertainty
+  truth2b: enthalpy is associated with the amount of heat exhanged with the environment
+  truth2c: the Gibbs free energy can be described as the energy available to do work
+
+  truth3a: T is the temperature in degrees Kelvin
+
+  truth4a: 'When &Delta;G = 0 the reaction has reached equilibrium'
+
+  truth5a: 'When &Delta;G > 0 the reaction is called non-spontaneous'
+  truth5b: 'When &Delta;G < 0 the reaction is called spontaneous'
+
+false_statements:
+  false1a: '&Delta;H is the change in free energy'
+  false1b: '&Delta;S is the change in free energy'
+  false1c: '&Delta;G is the change in enthalpy'
+  false1d: '&Delta;S is the change in enthalpy'
+  false1e: '&Delta;G is the change in entropy'
+  false1f: '&Delta;H is the change in entropy'
+
+  false2a: enthalpy is associated with a state of disorder, randomness, or uncertainty
+  false2b: enthalpy can be described as the energy available to do work
+  false2c: entropy is associated with the amount of heat exhanged with the environment
+  false2d: entropy can be described as the energy available to do work
+  false2e: free energy is associated with a state of disorder, randomness, or uncertainty
+  false2f: free energy is associated with the amount of heat exhanged with the environment
+
+  false3a: T is the temperature in degrees Celcius
+  false3b: T is the temperature in degrees Fahrenheit
+
+  false4a: 'When &Delta;H = 0 the reaction has reached equilibrium'
+  false4b: 'When &Delta;S = 0 the reaction has reached equilibrium'
+
+  false5a: 'When &Delta;H < 0 the reaction is called spontaneous'
+  false5b: 'When &Delta;S < 0 the reaction is called spontaneous'
+  false5c: 'When &Delta;H < 0 the reaction is called non-spontaneous'
+  false5d: 'When &Delta;S < 0 the reaction is called non-spontaneous'
+  false5e: 'When &Delta;H > 0 the reaction is called spontaneous'
+  false5f: 'When &Delta;S > 0 the reaction is called spontaneous'
+  false5g: 'When &Delta;H > 0 the reaction is called non-spontaneous'
+  false5h: 'When &Delta;S > 0 the reaction is called non-spontaneous'
+
+  false5i: 'When &Delta;G < 0 the reaction is called non-spontaneous'
+  false5j: 'When &Delta;G > 0 the reaction is called spontaneous'
+
+# conflicts, means that the statements cannot appear together
+# add ': True' to each line, so the program runs a faster lookup
+conflict_rules: ~
+
+
+
