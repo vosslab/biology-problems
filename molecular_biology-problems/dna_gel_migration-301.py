@@ -6,6 +6,7 @@ import csv
 import math
 #import numpy
 import random
+import bptools
 
 num_choices = 5
 
@@ -37,6 +38,9 @@ class GelMigration(object):
 	#==================================================
 	def molecular_weight_to_distance(self, mw):
 		dist = self.intercept - math.log(mw)*self.slope
+		if dist <= 0:
+			print("distance less than zero")
+			sys.exit(1)
 		return dist
 
 	#==================================================
@@ -104,6 +108,9 @@ class GelMigration(object):
 		adj_rand = random.random()*0.4 + 0.3
 		
 		unknown_dist = adj_rand*(high_dist - low_dist) + low_dist
+		if unknown_dist < 0:
+			print("distance less than zero")
+			sys.exit(1)
 		unknown_mw = self.distance_to_molecular_weight(unknown_dist)
 		#just clean up the numbers
 		unknown_mw = self.getNearestValidDNA_Size(unknown_mw)
@@ -127,47 +134,37 @@ class GelMigration(object):
 		gel_set = self.get_marker_set_for_gel()
 		unknown_mw, unknown_dist, mw_range, gap = self.get_unknown(gel_set)
 
-		if self.multiple_choice is True:
-			question = "{0:d}. ".format(N)
-		else:
-			question = ""
+		question = ''
 		question += " <h6>Gel Migration Problem</h6> "
 		question += ('<p><table cellpadding="2" cellspacing="2" style="text-align:center; border: 1px solid black; font-size: 14px;">')
-		question += ('<tr><th>Marker</th><th align="center">&num; of<br/>Base Pairs (bp)</th><th align="center">>Migration<br/>Distance (cm)</th></tr>')
+		question += ('<tr><th align="center" style="vertical-align: bottom;">DNA Marker</th>'
+					 +'<th align="center">&num; of<br/>Base Pairs<br/>(bp)</th>'
+					 +'<th align="center">Migration<br/>Distance<br/>(cm)</th></tr>')
 		for marker_dict in gel_set:
 			dist = self.molecular_weight_to_distance(marker_dict['MW'])
-			question += ('<tr><td>{0}</td><td align="center">{2:d}</td><td align="center">{3:.2f}</td></tr>'.format(marker_dict['fullname'], marker_dict['abbr'], marker_dict['MW'], dist))
-		question += ('<tr><td>{0}</td><td align="center">{1}</td><td align="center">{2:.2f}</td></tr>'.format("Unknown", "?", unknown_dist))
+			question += ('<tr><td align="right">{0}</td><td align="right">{2:d}</td><td align="right">{3:.2f}</td></tr>'.format(
+				marker_dict['fullname'], marker_dict['abbr'], marker_dict['MW'], dist))
+		question += ('<tr><td align="right">{0}</td><td align="center">{1}</td><td align="right">{2:.2f}</td></tr>'.format(
+			"Unknown", "?&nbsp;?", unknown_dist))
 		question += "</table></p>"
 		question += '<p>The standard DNA ladder and unknown DNA strand listed in the table were separated using an agarose gel</p>'
 		question += '<p><b>Estimate the number of base pairs of the unknown DNA strand.</b></p>'
 
 		if self.multiple_choice is True:
-			print(question)
-			choice_str = ""
-			choices = []
+			#print(question)
+			choices_list = []
+			answer = '{0} base pairs (bp)'.format(unknown_mw)
 			for i in range(num_choices):
 				j = i+1
 				if j == gap:
-					choices.append(unknown_mw)
+					choices_list.append(answer)
 					continue
 				mw, d, r, g = self.get_unknown(gel_set, j)
-				self.getNearestValidDNA_Size(mw)
-				choices.append(mw)
-			letters = "ABCDEFG"
-			for i, choice in enumerate(choices):
-				choice_str += '{0:,.0f} base pairs\t'.format(choice)
-				if abs(choice - unknown_mw) < 0.1:
-					prefix = 'x'
-					choice_str += 'Correct\t'
-				else:
-					prefix = ' '
-					choice_str += 'Incorrect\t'
-				print("- [{0}] {1}. {2:,.0f} base pairs".format(prefix, letters[i], choice))
-			bb_format = self.format_MC_for_blackboard(question, choice_str)
-			print("")
+				new_num_base_pairs = self.getNearestValidDNA_Size(mw)
+				choices_list.append('{0} base pairs (bp)'.format(new_num_base_pairs))
+			bb_format = bptools.formatBB_MC_Question(N, question, choices_list, answer)
 		else:
-			bb_format = self.format_NUM_for_blackboard(question, unknown_mw, mw_range)
+			bb_format = bptools.formatBB_NUM_Question(N, question, unknown_mw, mw_range)
 			print(bb_format)
 
 		return bb_format
@@ -178,18 +175,12 @@ class GelMigration(object):
 		#"NUM TAB question text TAB answer TAB [optional]tolerance"
 		return ("MC\t{0}\t{1}".format(question, choice_str))
 
-	#==================================================
-	def format_NUM_for_blackboard(self, question, answer, tolerance):
-		#https://experts.missouristate.edu/plugins/servlet/mobile?contentId=63486780#content/view/63486780
-		#"NUM TAB question text TAB answer TAB [optional]tolerance"
-		return ("NUM\t{0}\t{1:.1f}\t{2:.1f}".format(question,answer,tolerance))
-
 
 
 #==================================================
 #==================================================
 if __name__ == '__main__':
-	total_problems = 199
+	total_problems = 24
 	gelm = GelMigration()
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
 	print('writing to file: '+outfile)
