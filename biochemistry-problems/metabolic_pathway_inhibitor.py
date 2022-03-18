@@ -35,14 +35,14 @@ def writeQuestion(N):
 	letters = getLetters(N)
 	
 	question_text = ''
-	question_text += 'A series of enzymes catalyze the reaction'
-	question_text += ' {0} &rarr; {1} &rarr; {2} &rarr; {3}. '.format(letters[0],letters[1],letters[2],letters[3],)
-	question_text += 'Product {2} binds to the enzyme that converts {0} &rarr; {1} '.format(letters[0],letters[1],letters[3],)
+	question_text += '<p>A series of enzymes catalyze the reaction'
+	question_text += ' {0} &rarr; {1} &rarr; {2} &rarr; {3}.</p> '.format(letters[0],letters[1],letters[2],letters[3],)
+	question_text += '<p>Product {2} binds to the enzyme that converts {0} &rarr; {1} '.format(letters[0],letters[1],letters[3],)
 
 	question_text_list = [
-		'in its active site. ',
-		'at a location far away from its active site. ',
-		'at a location far away from its active site. ',
+		'in its active site.</p> ',
+		'at a location far away from its active site.</p> ',
+		'at a location far away from its active site.</p> ',
 		]
 	choices_list = [
 		'competitive inhibitor',
@@ -55,10 +55,10 @@ def writeQuestion(N):
 	question_text += question_text_list[choice_index]
 
 	if choice_index in (0,1,):
-		question_text += 'This binding <strong><span style="color: brown">decreases</span></strong> the activity of the enzyme. '
+		question_text += '<p>This binding <strong><span style="color: brown">decreases</span></strong> the activity of the enzyme.</p> '
 	else:
-		question_text += 'This binding <strong><span style="color: seagreen">increases</span></strong> the activity of the enzyme. '
-	question_text += 'What does substance {0} functions as? '.format(letters[3],)
+		question_text += '<p>This binding <strong><span style="color: seagreen">increases</span></strong> the activity of the enzyme.</p> '
+	question_text += '<p>What does substance {0} functions as?</p>'.format(letters[3],)
 
 	new_choices_list = copy.copy(choices_list)
 	random.shuffle(new_choices_list)
