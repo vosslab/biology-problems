@@ -1,0 +1,46 @@
+
+items to match per question: 3
+
+key description: cell receptors
+
+value description: description
+
+matching pairs:
+  gpcrZZ:
+    - the protein contains 7TM &alpha;-helices
+    - often called 7TM receptors  based on their structure
+    - the receptor acts as a GEF by exchanging GDP for GTP to activate a nearby protein
+    - when this receptor binds the extracellular primary messenger, it then activates another intracellular protein
+    - the time the message from this receptor is active is based on how long it takes to hydrolyze GTP to GDP
+    - this receptor is responsible for our taste sensing of bitter, umami (savory), and sweet substances
+
+  rtkZZ:
+    - form a dimers upon binding of the extracellular primary messenger 
+    - performs autophosphorylation, <i>i.e.</i>, it phosphorylates itself
+    - contains several intracellular <i>Tyr</i> amino acids that are phosphorylated when activated
+    - extracellular ligand binding will typically causes the receptor to form a dimer
+    - the only receptor where the receptor becomes phosphorylated when activated
+    - unlike other forms of this receptor, the insulin receptor (IR) still forms a dimer, but monomers are permanently held together via disulfide bonds
+
+  lgicZZ:
+    - when this receptor is activated, it can cause an immediate change in the electrochemical gradient
+    - upon binding of the extracellular primary messenger, this receptor opens to allow ions to pass through the membrane
+    - often in neurons when this receptor is activated, it can cause membrane depolarization leading to an action potential
+    - when this receptor is activated, it can cause a rapid depolarization of membrane potential due to an influx of ions
+
+
+replacement_rules:
+   gpcrZZ:          '<span style="color: #843232;">G protein-coupled receptor (GPCR)</span>'
+   rtkZZ:           '<span style="color: #693AAA;">Receptor tyrosine kinase (RTK)</span>'
+   lgicZZ:          '<span style="color: #5A8432;">Ligand-gated ion channel (LGIC)</span>'
+
+   GEF:         '<span style="color: #AA693A;">guanine nucleotide exchange factor (GEF)</span>'
+   7TM:         '<span style="color: #b45918;">7 transmembrane (7TM)</span>'
+
+   glycogen:     '<span style="color: DarkGreen;"><strong>glycogen</strong></span>'
+   chitin:       '<span style="color: MediumVioletRed;"><strong>chitin</strong></span>'
+   cellulose:    '<span style="color: Indigo;"><strong>cellulose</strong></span>'
+   amylose:      '<span style="color: SteelBlue;"><strong>amylose</strong></span>'
+   amylopectin:  '<span style="color: DarkRed;"><strong>amylopectin</strong></span>'
+
+
