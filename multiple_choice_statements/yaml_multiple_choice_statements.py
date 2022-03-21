@@ -296,7 +296,7 @@ if __name__ == '__main__':
 		help='do not create the false form (which one is false) of the question')
 	parser.add_argument('--notrue', '--no-true', action='store_true', dest='notrue', default=False,
 		help='do not create the true form (which one is true) of the question')
-	parser.add_argument('-x', '--max-questions', metavar='<file>', type=int, dest='max_questions',
+	parser.add_argument('-x', '--max-questions', metavar='#', type=int, dest='max_questions',
 		help='yaml input file to process', default=199)
 	args = parser.parse_args()
 

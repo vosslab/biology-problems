@@ -1,0 +1,20 @@
+MC	<p>001. b030</p> Which one of the following is an example of a second messenger?	A. testosterone	Incorrect	B. NADPH	Incorrect	C. epinephrine	Incorrect	D. Ca<sup>2+</sup>	Correct	E. insulin	Incorrect
+MC	<p>002. 0003</p> Which one of the following is an example of a second messenger?	A. epinephrine	Incorrect	B. neurotransmitters	Incorrect	C. Ca<sup>2+</sup>	Correct	D. insulin	Incorrect	E. testosterone	Incorrect
+MC	<p>003. 92dc</p> Which one of the following is an example of a second messenger?	A. insulin	Incorrect	B. FADH<sub>2</sub>	Incorrect	C. neurotransmitters	Incorrect	D. Ca<sup>2+</sup>	Correct	E. testosterone	Incorrect
+MC	<p>004. b156</p> Which one of the following is an example of a second messenger?	A. FADH<sub>2</sub>	Incorrect	B. epinephrine	Incorrect	C. Ca<sup>2+</sup>	Correct	D. insulin	Incorrect	E. testosterone	Incorrect
+MC	<p>005. a0b7</p> Which one of the following is an example of a second messenger?	A. ADP	Incorrect	B. IP<sub>3</sub>	Correct	C. neurotransmitters	Incorrect	D. adrenaline	Incorrect	E. testosterone	Incorrect
+MC	<p>006. ccde</p> Which one of the following is an example of a second messenger?	A. NADH	Incorrect	B. IP<sub>3</sub>	Correct	C. ATP	Incorrect	D. neurotransmitters	Incorrect	E. estrogen	Incorrect
+MC	<p>007. 0e41</p> Which one of the following is an example of a second messenger?	A. GMP	Incorrect	B. IP<sub>3</sub>	Correct	C. epinephrine	Incorrect	D. NADH	Incorrect	E. neurotransmitters	Incorrect
+MC	<p>008. bbf6</p> Which one of the following is an example of a second messenger?	A. epinephrine	Incorrect	B. NADH	Incorrect	C. IP<sub>3</sub>	Correct	D. neurotransmitters	Incorrect	E. GTP	Incorrect
+MC	<p>009. 3fca</p> Which one of the following is an example of a second messenger?	A. ATP	Incorrect	B. NADH	Incorrect	C. estrogen	Incorrect	D. epinephrine	Incorrect	E. IP<sub>3</sub>	Correct
+MC	<p>010. c6fb</p> Which one of the following is an example of a second messenger?	A. cAMP	Correct	B. insulin	Incorrect	C. FADH<sub>2</sub>	Incorrect	D. AMP	Incorrect	E. neurotransmitters	Incorrect
+MC	<p>011. d37b</p> Which one of the following is an example of a second messenger?	A. GTP	Incorrect	B. neurotransmitters	Incorrect	C. cAMP	Correct	D. insulin	Incorrect	E. NADPH	Incorrect
+MC	<p>012. 0af1</p> Which one of the following is an example of a second messenger?	A. ADP	Incorrect	B. cAMP	Correct	C. NADH	Incorrect	D. testosterone	Incorrect	E. neurotransmitters	Incorrect
+MC	<p>013. c737</p> Which one of the following is an example of a second messenger?	A. neurotransmitters	Incorrect	B. ATP	Incorrect	C. cAMP	Correct	D. estrogen	Incorrect	E. insulin	Incorrect
+MC	<p>014. 37b2</p> Which one of the following is an example of a second messenger?	A. cAMP	Correct	B. NADH	Incorrect	C. testosterone	Incorrect	D. neurotransmitters	Incorrect	E. ADP	Incorrect
+MC	<p>015. 7725</p> Which one of the following is <strong>NOT</strong> an example of a secondary messengers?	A. cAMP	Incorrect	B. IP<sub>3</sub>	Incorrect	C. Ca<sup>2+</sup>	Incorrect	D. testosterone	Correct
+MC	<p>016. 67db</p> Which one of the following is <strong>NOT</strong> an example of a secondary messengers?	A. estrogen	Correct	B. cAMP	Incorrect	C. Ca<sup>2+</sup>	Incorrect	D. IP<sub>3</sub>	Incorrect
+MC	<p>017. ce3e</p> Which one of the following is <strong>NOT</strong> an example of a secondary messengers?	A. cAMP	Incorrect	B. IP<sub>3</sub>	Incorrect	C. Ca<sup>2+</sup>	Incorrect	D. NADPH	Correct
+MC	<p>018. 7332</p> Which one of the following is <strong>NOT</strong> an example of a secondary messengers?	A. IP<sub>3</sub>	Incorrect	B. cAMP	Incorrect	C. NADH	Correct	D. Ca<sup>2+</sup>	Incorrect
+MC	<p>019. 0b95</p> Which one of the following is <strong>NOT</strong> an example of a secondary messengers?	A. IP<sub>3</sub>	Incorrect	B. Ca<sup>2+</sup>	Incorrect	C. cAMP	Incorrect	D. FADH<sub>2</sub>	Correct
+MC	<p>020. 08dd</p> Which one of the following is <strong>NOT</strong> an example of a secondary messengers?	A. Ca<sup>2+</sup>	Incorrect	B. cAMP	Incorrect	C. neurotransmitters	Correct	D. IP<sub>3</sub>	Incorrect

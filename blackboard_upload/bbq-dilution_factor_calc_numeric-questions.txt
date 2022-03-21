@@ -1,0 +1,198 @@
+NUM	<p>001. 9913</p> <p>You are preparing a new solution.</p><p>You dilute 4.0 mL of stock solution into 152.0 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	39.00000000	0.90000000
+
+NUM	<p>002. d206</p> <p>You are preparing a new solution.</p><p>You dilute 4.8 mL of stock solution into 403.2 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	85.00000000	0.90000000
+
+NUM	<p>003. 0c04</p> <p>You are preparing a new solution.</p><p>You dilute 5.2 mL of stock solution into 124.8 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	25.00000000	0.90000000
+
+NUM	<p>004. a411</p> <p>You are preparing a new solution.</p><p>You dilute 6.0 mL of stock solution into 222.0 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	38.00000000	0.90000000
+
+NUM	<p>005. db93</p> <p>You are preparing a new solution.</p><p>You dilute 4.2 mL of stock solution into 163.8 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	40.00000000	0.90000000
+
+NUM	<p>006. b81a</p> <p>You are preparing a new solution.</p><p>You dilute 9.5 mL of stock solution into 85.5 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	10.00000000	0.90000000
+
+NUM	<p>007. b1e3</p> <p>You are preparing a new solution.</p><p>You dilute 6.5 mL of stock solution into 604.5 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	94.00000000	0.90000000
+
+NUM	<p>008. 764c</p> <p>You are preparing a new solution.</p><p>You dilute 9.8 mL of stock solution into 431.2 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	45.00000000	0.90000000
+
+NUM	<p>009. 42f3</p> <p>You are preparing a new solution.</p><p>You dilute 6.0 mL of stock solution into 336.0 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	57.00000000	0.90000000
+
+NUM	<p>010. cc7d</p> <p>You are preparing a new solution.</p><p>You dilute 0.2 mL of stock solution into 11.8 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	60.00000000	0.90000000
+
+NUM	<p>011. 1387</p> <p>You are preparing a new solution.</p><p>You dilute 7.1 mL of stock solution into 205.9 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	30.00000000	0.90000000
+
+NUM	<p>012. 2a80</p> <p>You are preparing a new solution.</p><p>You dilute 4.0 mL of stock solution into 236.0 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	60.00000000	0.90000000
+
+NUM	<p>013. 20b7</p> <p>You are preparing a new solution.</p><p>You dilute 4.3 mL of stock solution into 38.7 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	10.00000000	0.90000000
+
+NUM	<p>014. 8b14</p> <p>You are preparing a new solution.</p><p>You dilute 8.0 mL of stock solution into 456.0 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	58.00000000	0.90000000
+
+NUM	<p>015. e9c3</p> <p>You are preparing a new solution.</p><p>You dilute 1.8 mL of stock solution into 151.2 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	85.00000000	0.90000000
+
+NUM	<p>016. a0d9</p> <p>You are preparing a new solution.</p><p>You dilute 8.6 mL of stock solution into 722.4 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	85.00000000	0.90000000
+
+NUM	<p>017. ca15</p> <p>You are preparing a new solution.</p><p>You dilute 4.0 mL of stock solution into 240.0 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	61.00000000	0.90000000
+
+NUM	<p>018. f033</p> <p>You are preparing a new solution.</p><p>You dilute 0.2 mL of stock solution into 18.8 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	95.00000000	0.90000000
+
+NUM	<p>019. a806</p> <p>You are preparing a new solution.</p><p>You dilute 7.2 mL of stock solution into 280.8 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	40.00000000	0.90000000
+
+NUM	<p>020. e925</p> <p>You are preparing a new solution.</p><p>You dilute 0.5 mL of stock solution into 30.5 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	62.00000000	0.90000000
+
+NUM	<p>021. c26a</p> <p>You are preparing a new solution.</p><p>You dilute 1.7 mL of stock solution into 83.3 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	50.00000000	0.90000000
+
+NUM	<p>022. 5afd</p> <p>You are preparing a new solution.</p><p>You dilute 6.0 mL of stock solution into 444.0 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	75.00000000	0.90000000
+
+NUM	<p>023. d04e</p> <p>You are preparing a new solution.</p><p>You dilute 10.0 mL of stock solution into 140.0 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	15.00000000	0.90000000
+
+NUM	<p>024. 0198</p> <p>You are preparing a new solution.</p><p>You dilute 4.6 mL of stock solution into 110.4 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	25.00000000	0.90000000
+
+NUM	<p>025. 8a52</p> <p>You are preparing a new solution.</p><p>You dilute 5.5 mL of stock solution into 291.5 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	54.00000000	0.90000000
+
+NUM	<p>026. 4893</p> <p>You are preparing a new solution.</p><p>You dilute 6.5 mL of stock solution into 305.5 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	48.00000000	0.90000000
+
+NUM	<p>027. 819f</p> <p>You are preparing a new solution.</p><p>You dilute 3.4 mL of stock solution into 200.6 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	60.00000000	0.90000000
+
+NUM	<p>028. 857b</p> <p>You are preparing a new solution.</p><p>You dilute 6.1 mL of stock solution into 298.9 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	50.00000000	0.90000000
+
+NUM	<p>029. 6125</p> <p>You are preparing a new solution.</p><p>You dilute 9.5 mL of stock solution into 294.5 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	32.00000000	0.90000000
+
+NUM	<p>030. 36ad</p> <p>You are preparing a new solution.</p><p>You dilute 2.2 mL of stock solution into 63.8 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	30.00000000	0.90000000
+
+NUM	<p>031. a379</p> <p>You are preparing a new solution.</p><p>You dilute 6.6 mL of stock solution into 125.4 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	20.00000000	0.90000000
+
+NUM	<p>032. 3db8</p> <p>You are preparing a new solution.</p><p>You dilute 7.5 mL of stock solution into 517.5 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	70.00000000	0.90000000
+
+NUM	<p>033. e45b</p> <p>You are preparing a new solution.</p><p>You dilute 7.6 mL of stock solution into 106.4 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	15.00000000	0.90000000
+
+NUM	<p>034. aa9c</p> <p>You are preparing a new solution.</p><p>You dilute 4.5 mL of stock solution into 400.5 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	90.00000000	0.90000000
+
+NUM	<p>035. f8c4</p> <p>You are preparing a new solution.</p><p>You dilute 7.0 mL of stock solution into 637.0 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	92.00000000	0.90000000
+
+NUM	<p>036. f730</p> <p>You are preparing a new solution.</p><p>You dilute 8.0 mL of stock solution into 72.0 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	10.00000000	0.90000000
+
+NUM	<p>037. fae4</p> <p>You are preparing a new solution.</p><p>You dilute 7.8 mL of stock solution into 109.2 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	15.00000000	0.90000000
+
+NUM	<p>038. 4488</p> <p>You are preparing a new solution.</p><p>You dilute 2.0 mL of stock solution into 40.0 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	21.00000000	0.90000000
+
+NUM	<p>039. 4619</p> <p>You are preparing a new solution.</p><p>You dilute 8.9 mL of stock solution into 792.1 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	90.00000000	0.90000000
+
+NUM	<p>040. 3553</p> <p>You are preparing a new solution.</p><p>You dilute 5.5 mL of stock solution into 93.5 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	18.00000000	0.90000000
+
+NUM	<p>041. 249b</p> <p>You are preparing a new solution.</p><p>You dilute 4.4 mL of stock solution into 281.6 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	65.00000000	0.90000000
+
+NUM	<p>042. a29f</p> <p>You are preparing a new solution.</p><p>You dilute 5.6 mL of stock solution into 134.4 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	25.00000000	0.90000000
+
+NUM	<p>043. d93b</p> <p>You are preparing a new solution.</p><p>You dilute 6.3 mL of stock solution into 623.7 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	100.00000000	0.90000000
+
+NUM	<p>044. eaab</p> <p>You are preparing a new solution.</p><p>You dilute 4.3 mL of stock solution into 339.7 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	80.00000000	0.90000000
+
+NUM	<p>045. bb9d</p> <p>You are preparing a new solution.</p><p>You dilute 7.3 mL of stock solution into 430.7 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	60.00000000	0.90000000
+
+NUM	<p>046. fb2e</p> <p>You are preparing a new solution.</p><p>You dilute 5.0 mL of stock solution into 45.0 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	10.00000000	0.90000000
+
+NUM	<p>047. a6db</p> <p>You are preparing a new solution.</p><p>You dilute 5.0 mL of stock solution into 125.0 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	26.00000000	0.90000000
+
+NUM	<p>048. cd15</p> <p>You are preparing a new solution.</p><p>You dilute 3.0 mL of stock solution into 27.0 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	10.00000000	0.90000000
+
+NUM	<p>049. 81b0</p> <p>You are preparing a new solution.</p><p>You dilute 3.7 mL of stock solution into 33.3 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	10.00000000	0.90000000
+
+NUM	<p>050. 4d06</p> <p>You are preparing a new solution.</p><p>You dilute 8.0 mL of stock solution into 248.0 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	32.00000000	0.90000000
+
+NUM	<p>051. f91b</p> <p>You are preparing a new solution.</p><p>You dilute 0.5 mL of stock solution into 18.5 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	38.00000000	0.90000000
+
+NUM	<p>052. 25b6</p> <p>You are preparing a new solution.</p><p>You dilute 6.2 mL of stock solution into 396.8 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	65.00000000	0.90000000
+
+NUM	<p>053. 81ab</p> <p>You are preparing a new solution.</p><p>You dilute 7.0 mL of stock solution into 189.0 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	28.00000000	0.90000000
+
+NUM	<p>054. 8a10</p> <p>You are preparing a new solution.</p><p>You dilute 1.7 mL of stock solution into 168.3 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	100.00000000	0.90000000
+
+NUM	<p>055. bcbb</p> <p>You are preparing a new solution.</p><p>You dilute 7.6 mL of stock solution into 144.4 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	20.00000000	0.90000000
+
+NUM	<p>056. c339</p> <p>You are preparing a new solution.</p><p>You dilute 7.0 mL of stock solution into 217.0 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	32.00000000	0.90000000
+
+NUM	<p>057. 7a7f</p> <p>You are preparing a new solution.</p><p>You dilute 4.0 mL of stock solution into 260.0 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	66.00000000	0.90000000
+
+NUM	<p>058. b5ef</p> <p>You are preparing a new solution.</p><p>You dilute 7.7 mL of stock solution into 69.3 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	10.00000000	0.90000000
+
+NUM	<p>059. 0be0</p> <p>You are preparing a new solution.</p><p>You dilute 9.0 mL of stock solution into 720.0 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	81.00000000	0.90000000
+
+NUM	<p>060. 29aa</p> <p>You are preparing a new solution.</p><p>You dilute 4.7 mL of stock solution into 418.3 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	90.00000000	0.90000000
+
+NUM	<p>061. 06c3</p> <p>You are preparing a new solution.</p><p>You dilute 6.0 mL of stock solution into 198.0 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	34.00000000	0.90000000
+
+NUM	<p>062. 3e11</p> <p>You are preparing a new solution.</p><p>You dilute 6.5 mL of stock solution into 227.5 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	36.00000000	0.90000000
+
+NUM	<p>063. e1ac</p> <p>You are preparing a new solution.</p><p>You dilute 1.5 mL of stock solution into 112.5 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	76.00000000	0.90000000
+
+NUM	<p>064. e925</p> <p>You are preparing a new solution.</p><p>You dilute 0.5 mL of stock solution into 30.5 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	62.00000000	0.90000000
+
+NUM	<p>065. 5490</p> <p>You are preparing a new solution.</p><p>You dilute 2.5 mL of stock solution into 152.5 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	62.00000000	0.90000000
+
+NUM	<p>066. 503f</p> <p>You are preparing a new solution.</p><p>You dilute 10.0 mL of stock solution into 610.0 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	62.00000000	0.90000000
+
+NUM	<p>067. 7922</p> <p>You are preparing a new solution.</p><p>You dilute 2.6 mL of stock solution into 49.4 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	20.00000000	0.90000000
+
+NUM	<p>068. c4e8</p> <p>You are preparing a new solution.</p><p>You dilute 6.8 mL of stock solution into 435.2 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	65.00000000	0.90000000
+
+NUM	<p>069. b3b5</p> <p>You are preparing a new solution.</p><p>You dilute 2.0 mL of stock solution into 184.0 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	93.00000000	0.90000000
+
+NUM	<p>070. 6dda</p> <p>You are preparing a new solution.</p><p>You dilute 2.4 mL of stock solution into 129.6 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	55.00000000	0.90000000
+
+NUM	<p>071. 3335</p> <p>You are preparing a new solution.</p><p>You dilute 5.0 mL of stock solution into 335.0 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	68.00000000	0.90000000
+
+NUM	<p>072. faaa</p> <p>You are preparing a new solution.</p><p>You dilute 7.2 mL of stock solution into 136.8 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	20.00000000	0.90000000
+
+NUM	<p>073. 46da</p> <p>You are preparing a new solution.</p><p>You dilute 9.9 mL of stock solution into 881.1 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	90.00000000	0.90000000
+
+NUM	<p>074. 14a2</p> <p>You are preparing a new solution.</p><p>You dilute 2.0 mL of stock solution into 44.0 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	23.00000000	0.90000000
+
+NUM	<p>075. b87e</p> <p>You are preparing a new solution.</p><p>You dilute 4.5 mL of stock solution into 85.5 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	20.00000000	0.90000000
+
+NUM	<p>076. ede4</p> <p>You are preparing a new solution.</p><p>You dilute 1.4 mL of stock solution into 33.6 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	25.00000000	0.90000000
+
+NUM	<p>077. 95aa</p> <p>You are preparing a new solution.</p><p>You dilute 0.5 mL of stock solution into 47.5 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	96.00000000	0.90000000
+
+NUM	<p>078. bbd9</p> <p>You are preparing a new solution.</p><p>You dilute 0.6 mL of stock solution into 11.4 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	20.00000000	0.90000000
+
+NUM	<p>079. 5959</p> <p>You are preparing a new solution.</p><p>You dilute 4.0 mL of stock solution into 160.0 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	41.00000000	0.90000000
+
+NUM	<p>080. 037a</p> <p>You are preparing a new solution.</p><p>You dilute 8.0 mL of stock solution into 312.0 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	40.00000000	0.90000000
+
+NUM	<p>081. ff2d</p> <p>You are preparing a new solution.</p><p>You dilute 3.8 mL of stock solution into 167.2 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	45.00000000	0.90000000
+
+NUM	<p>082. 630e</p> <p>You are preparing a new solution.</p><p>You dilute 6.5 mL of stock solution into 45.5 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	8.00000000	0.90000000
+
+NUM	<p>083. 040a</p> <p>You are preparing a new solution.</p><p>You dilute 9.0 mL of stock solution into 828.0 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	93.00000000	0.90000000
+
+NUM	<p>084. 0631</p> <p>You are preparing a new solution.</p><p>You dilute 8.0 mL of stock solution into 88.0 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	12.00000000	0.90000000
+
+NUM	<p>085. d167</p> <p>You are preparing a new solution.</p><p>You dilute 5.0 mL of stock solution into 250.0 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	51.00000000	0.90000000
+
+NUM	<p>086. ab86</p> <p>You are preparing a new solution.</p><p>You dilute 2.2 mL of stock solution into 217.8 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	100.00000000	0.90000000
+
+NUM	<p>087. 7bf2</p> <p>You are preparing a new solution.</p><p>You dilute 0.4 mL of stock solution into 3.6 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	10.00000000	0.90000000
+
+NUM	<p>088. e8f3</p> <p>You are preparing a new solution.</p><p>You dilute 8.0 mL of stock solution into 728.0 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	92.00000000	0.90000000
+
+NUM	<p>089. 2ab5</p> <p>You are preparing a new solution.</p><p>You dilute 2.0 mL of stock solution into 150.0 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	76.00000000	0.90000000
+
+NUM	<p>090. 91b4</p> <p>You are preparing a new solution.</p><p>You dilute 0.5 mL of stock solution into 4.5 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	10.00000000	0.90000000
+
+NUM	<p>091. 4445</p> <p>You are preparing a new solution.</p><p>You dilute 2.2 mL of stock solution into 140.8 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	65.00000000	0.90000000
+
+NUM	<p>092. f96e</p> <p>You are preparing a new solution.</p><p>You dilute 7.0 mL of stock solution into 693.0 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	100.00000000	0.90000000
+
+NUM	<p>093. e492</p> <p>You are preparing a new solution.</p><p>You dilute 6.5 mL of stock solution into 474.5 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	74.00000000	0.90000000
+
+NUM	<p>094. 0ddb</p> <p>You are preparing a new solution.</p><p>You dilute 4.5 mL of stock solution into 22.5 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	6.00000000	0.90000000
+
+NUM	<p>095. 6b71</p> <p>You are preparing a new solution.</p><p>You dilute 7.5 mL of stock solution into 682.5 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	92.00000000	0.90000000
+
+NUM	<p>096. 87b7</p> <p>You are preparing a new solution.</p><p>You dilute 3.5 mL of stock solution into 164.5 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	48.00000000	0.90000000
+
+NUM	<p>097. 0ec7</p> <p>You are preparing a new solution.</p><p>You dilute 6.4 mL of stock solution into 57.6 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	10.00000000	0.90000000
+
+NUM	<p>098. 946e</p> <p>You are preparing a new solution.</p><p>You dilute 9.5 mL of stock solution into 503.5 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	54.00000000	0.90000000
+
+NUM	<p>099. cac0</p> <p>You are preparing a new solution.</p><p>You dilute 4.0 mL of stock solution into 212.0 mL distilled water to make a dilution.</p><p>What is the dilution factor?</p>	54.00000000	0.90000000
+

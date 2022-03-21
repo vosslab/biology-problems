@@ -1,0 +1,110 @@
+NUM	<p>001. 7963</p> <p>Using a previous diluted sample at DF=60, create a new dilution with a final dilution of DF=80 and a total volume of 840&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	210.00000000	0.90000000
+
+NUM	<p>002. c061</p> <p>Using a previous diluted sample at DF=120, create a new dilution with a final dilution of DF=200 and a total volume of 650&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	260.00000000	0.90000000
+
+NUM	<p>003. d082</p> <p>Using a previous diluted sample at DF=12, create a new dilution with a final dilution of DF=28 and a total volume of 700&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	400.00000000	0.90000000
+
+NUM	<p>004. 49a4</p> <p>Using a previous diluted sample at DF=150, create a new dilution with a final dilution of DF=400 and a total volume of 560&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	350.00000000	0.90000000
+
+NUM	<p>005. 2970</p> <p>Using a previous diluted sample at DF=16, create a new dilution with a final dilution of DF=20 and a total volume of 650&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	130.00000000	0.90000000
+
+NUM	<p>006. 2942</p> <p>Using a previous diluted sample at DF=160, create a new dilution with a final dilution of DF=280 and a total volume of 140&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	60.00000000	0.90000000
+
+NUM	<p>007. 95dd</p> <p>Using a previous diluted sample at DF=200, create a new dilution with a final dilution of DF=450 and a total volume of 180&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	100.00000000	0.90000000
+
+NUM	<p>008. 1ce2</p> <p>Using a previous diluted sample at DF=250, create a new dilution with a final dilution of DF=300 and a total volume of 180&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	30.00000000	0.90000000
+
+NUM	<p>009. 8324</p> <p>Using a previous diluted sample at DF=100, create a new dilution with a final dilution of DF=140 and a total volume of 140&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	40.00000000	0.90000000
+
+NUM	<p>010. 23d3</p> <p>Using a previous diluted sample at DF=200, create a new dilution with a final dilution of DF=320 and a total volume of 880&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	330.00000000	0.90000000
+
+NUM	<p>011. 1987</p> <p>Using a previous diluted sample at DF=100, create a new dilution with a final dilution of DF=180 and a total volume of 90&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	40.00000000	0.90000000
+
+NUM	<p>012. 956a</p> <p>Using a previous diluted sample at DF=75, create a new dilution with a final dilution of DF=100 and a total volume of 720&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	180.00000000	0.90000000
+
+NUM	<p>013. 7ecc</p> <p>Using a previous diluted sample at DF=24, create a new dilution with a final dilution of DF=40 and a total volume of 400&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	160.00000000	0.90000000
+
+NUM	<p>014. cd13</p> <p>Using a previous diluted sample at DF=30, create a new dilution with a final dilution of DF=70 and a total volume of 490&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	280.00000000	0.90000000
+
+NUM	<p>015. 1a59</p> <p>Using a previous diluted sample at DF=24, create a new dilution with a final dilution of DF=64 and a total volume of 560&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	350.00000000	0.90000000
+
+NUM	<p>016. 20a5</p> <p>Using a previous diluted sample at DF=32, create a new dilution with a final dilution of DF=40 and a total volume of 250&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	50.00000000	0.90000000
+
+NUM	<p>017. 0732</p> <p>Using a previous diluted sample at DF=40, create a new dilution with a final dilution of DF=70 and a total volume of 560&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	240.00000000	0.90000000
+
+NUM	<p>018. 88ac</p> <p>Using a previous diluted sample at DF=20, create a new dilution with a final dilution of DF=45 and a total volume of 90&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	50.00000000	0.90000000
+
+NUM	<p>019. de8a</p> <p>Using a previous diluted sample at DF=200, create a new dilution with a final dilution of DF=240 and a total volume of 240&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	40.00000000	0.90000000
+
+NUM	<p>020. 3f94</p> <p>Using a previous diluted sample at DF=200, create a new dilution with a final dilution of DF=280 and a total volume of 630&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	180.00000000	0.90000000
+
+NUM	<p>021. 504f</p> <p>Using a previous diluted sample at DF=200, create a new dilution with a final dilution of DF=320 and a total volume of 80&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	30.00000000	0.90000000
+
+NUM	<p>022. 8f39</p> <p>Using a previous diluted sample at DF=100, create a new dilution with a final dilution of DF=180 and a total volume of 720&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	320.00000000	0.90000000
+
+NUM	<p>023. ce7e</p> <p>Using a previous diluted sample at DF=12, create a new dilution with a final dilution of DF=16 and a total volume of 240&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	60.00000000	0.90000000
+
+NUM	<p>024. 1622</p> <p>Using a previous diluted sample at DF=150, create a new dilution with a final dilution of DF=250 and a total volume of 250&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	100.00000000	0.90000000
+
+NUM	<p>025. 235e</p> <p>Using a previous diluted sample at DF=75, create a new dilution with a final dilution of DF=175 and a total volume of 70&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	40.00000000	0.90000000
+
+NUM	<p>026. 0833</p> <p>Using a previous diluted sample at DF=15, create a new dilution with a final dilution of DF=40 and a total volume of 80&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	50.00000000	0.90000000
+
+NUM	<p>027. bec2</p> <p>Using a previous diluted sample at DF=40, create a new dilution with a final dilution of DF=50 and a total volume of 550&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	110.00000000	0.90000000
+
+NUM	<p>028. 6ee7</p> <p>Using a previous diluted sample at DF=160, create a new dilution with a final dilution of DF=280 and a total volume of 630&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	270.00000000	0.90000000
+
+NUM	<p>029. 2b15</p> <p>Using a previous diluted sample at DF=20, create a new dilution with a final dilution of DF=45 and a total volume of 450&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	250.00000000	0.90000000
+
+NUM	<p>030. df1d</p> <p>Using a previous diluted sample at DF=20, create a new dilution with a final dilution of DF=24 and a total volume of 840&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	140.00000000	0.90000000
+
+NUM	<p>031. 86bb</p> <p>Using a previous diluted sample at DF=50, create a new dilution with a final dilution of DF=70 and a total volume of 770&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	220.00000000	0.90000000
+
+NUM	<p>032. a740</p> <p>Using a previous diluted sample at DF=40, create a new dilution with a final dilution of DF=64 and a total volume of 960&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	360.00000000	0.90000000
+
+NUM	<p>033. edab</p> <p>Using a previous diluted sample at DF=200, create a new dilution with a final dilution of DF=360 and a total volume of 90&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	40.00000000	0.90000000
+
+NUM	<p>034. ba73</p> <p>Using a previous diluted sample at DF=24, create a new dilution with a final dilution of DF=32 and a total volume of 920&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	230.00000000	0.90000000
+
+NUM	<p>035. a7df</p> <p>Using a previous diluted sample at DF=12, create a new dilution with a final dilution of DF=20 and a total volume of 450&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	180.00000000	0.90000000
+
+NUM	<p>036. ce18</p> <p>Using a previous diluted sample at DF=15, create a new dilution with a final dilution of DF=35 and a total volume of 840&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	480.00000000	0.90000000
+
+NUM	<p>037. f846</p> <p>Using a previous diluted sample at DF=12, create a new dilution with a final dilution of DF=32 and a total volume of 80&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	50.00000000	0.90000000
+
+NUM	<p>038. 0e05</p> <p>Using a previous diluted sample at DF=160, create a new dilution with a final dilution of DF=200 and a total volume of 750&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	150.00000000	0.90000000
+
+NUM	<p>039. ec40</p> <p>Using a previous diluted sample at DF=32, create a new dilution with a final dilution of DF=56 and a total volume of 700&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	300.00000000	0.90000000
+
+NUM	<p>040. fb74</p> <p>Using a previous diluted sample at DF=40, create a new dilution with a final dilution of DF=90 and a total volume of 90&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	50.00000000	0.90000000
+
+NUM	<p>041. cd30</p> <p>Using a previous diluted sample at DF=200, create a new dilution with a final dilution of DF=240 and a total volume of 840&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	140.00000000	0.90000000
+
+NUM	<p>042. f5b3</p> <p>Using a previous diluted sample at DF=200, create a new dilution with a final dilution of DF=280 and a total volume of 210&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	60.00000000	0.90000000
+
+NUM	<p>043. 75e1</p> <p>Using a previous diluted sample at DF=50, create a new dilution with a final dilution of DF=80 and a total volume of 720&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	270.00000000	0.90000000
+
+NUM	<p>044. 64ab</p> <p>Using a previous diluted sample at DF=40, create a new dilution with a final dilution of DF=72 and a total volume of 540&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	240.00000000	0.90000000
+
+NUM	<p>045. ef8c</p> <p>Using a previous diluted sample at DF=75, create a new dilution with a final dilution of DF=100 and a total volume of 960&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	240.00000000	0.90000000
+
+NUM	<p>046. 6c24</p> <p>Using a previous diluted sample at DF=120, create a new dilution with a final dilution of DF=200 and a total volume of 150&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	60.00000000	0.90000000
+
+NUM	<p>047. b5ea</p> <p>Using a previous diluted sample at DF=120, create a new dilution with a final dilution of DF=280 and a total volume of 140&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	80.00000000	0.90000000
+
+NUM	<p>048. 1a59</p> <p>Using a previous diluted sample at DF=24, create a new dilution with a final dilution of DF=64 and a total volume of 560&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	350.00000000	0.90000000
+
+NUM	<p>049. c936</p> <p>Using a previous diluted sample at DF=80, create a new dilution with a final dilution of DF=100 and a total volume of 550&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	110.00000000	0.90000000
+
+NUM	<p>050. 20e0</p> <p>Using a previous diluted sample at DF=16, create a new dilution with a final dilution of DF=28 and a total volume of 490&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	210.00000000	0.90000000
+
+NUM	<p>051. d25e</p> <p>Using a previous diluted sample at DF=40, create a new dilution with a final dilution of DF=90 and a total volume of 270&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	150.00000000	0.90000000
+
+NUM	<p>052. 1393</p> <p>Using a previous diluted sample at DF=125, create a new dilution with a final dilution of DF=150 and a total volume of 780&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	130.00000000	0.90000000
+
+NUM	<p>053. fe45</p> <p>Using a previous diluted sample at DF=250, create a new dilution with a final dilution of DF=350 and a total volume of 910&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	260.00000000	0.90000000
+
+NUM	<p>054. 552a</p> <p>Using a previous diluted sample at DF=25, create a new dilution with a final dilution of DF=40 and a total volume of 800&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	300.00000000	0.90000000
+
+NUM	<p>055. fc32</p> <p>Using a previous diluted sample at DF=100, create a new dilution with a final dilution of DF=180 and a total volume of 270&nbsp;&mu;L.</p><p>What volume of diluent in microliters (&mu;L) do you add to the aliquoted sample?</p>	120.00000000	0.90000000
+

@@ -1,0 +1,192 @@
+NUM	<p>001. 79f2</p> <p>How many grams (g) of ethylenediaminetetraacetic acid (EDTA) you would need to make <strong>300 mL of a 10% (w/v)</strong> EDTA solution?</p> <p>The molecular weight of ethylenediaminetetraacetic acid (EDTA) is 292.24 g/mol. Ethylenediaminetetraacetic acid is a solid powder at room temperature.</p> 	30.00000000	0.90000000
+
+NUM	<p>002. 0f35</p> <p>How many grams (g) of ethylenediaminetetraacetic acid (EDTA) you would need to make <strong>40 mL of a 90% (w/v)</strong> EDTA solution?</p> <p>The molecular weight of ethylenediaminetetraacetic acid (EDTA) is 292.24 g/mol. Ethylenediaminetetraacetic acid is a solid powder at room temperature.</p> 	36.00000000	0.90000000
+
+NUM	<p>003. e8e2</p> <p>How many grams (g) of ethylenediaminetetraacetic acid (EDTA) you would need to make <strong>90 mL of a 80% (w/v)</strong> EDTA solution?</p> <p>The molecular weight of ethylenediaminetetraacetic acid (EDTA) is 292.24 g/mol. Ethylenediaminetetraacetic acid is a solid powder at room temperature.</p> 	72.00000000	0.90000000
+
+NUM	<p>004. fd8a</p> <p>How many grams (g) of ethylenediaminetetraacetic acid (EDTA) you would need to make <strong>30 mL of a 80% (w/v)</strong> EDTA solution?</p> <p>The molecular weight of ethylenediaminetetraacetic acid (EDTA) is 292.24 g/mol. Ethylenediaminetetraacetic acid is a solid powder at room temperature.</p> 	24.00000000	0.90000000
+
+NUM	<p>005. 23ee</p> <p>How many grams (g) of ethylenediaminetetraacetic acid (EDTA) you would need to make <strong>500 mL of a 12% (w/v)</strong> EDTA solution?</p> <p>The molecular weight of ethylenediaminetetraacetic acid (EDTA) is 292.24 g/mol. Ethylenediaminetetraacetic acid is a solid powder at room temperature.</p> 	60.00000000	0.90000000
+
+NUM	<p>006. b3f9</p> <p>How many grams (g) of ethylenediaminetetraacetic acid (EDTA) you would need to make <strong>50 mL of a 36% (w/v)</strong> EDTA solution?</p> <p>The molecular weight of ethylenediaminetetraacetic acid (EDTA) is 292.24 g/mol. Ethylenediaminetetraacetic acid is a solid powder at room temperature.</p> 	18.00000000	0.90000000
+
+NUM	<p>007. c967</p> <p>How many grams (g) of ethylenediaminetetraacetic acid (EDTA) you would need to make <strong>24 mL of a 50% (w/v)</strong> EDTA solution?</p> <p>The molecular weight of ethylenediaminetetraacetic acid (EDTA) is 292.24 g/mol. Ethylenediaminetetraacetic acid is a solid powder at room temperature.</p> 	12.00000000	0.90000000
+
+NUM	<p>008. 61da</p> <p>How many grams (g) of ethylenediaminetetraacetic acid (EDTA) you would need to make <strong>120 mL of a 20% (w/v)</strong> EDTA solution?</p> <p>The molecular weight of ethylenediaminetetraacetic acid (EDTA) is 292.24 g/mol. Ethylenediaminetetraacetic acid is a solid powder at room temperature.</p> 	24.00000000	0.90000000
+
+NUM	<p>009. 4293</p> <p>How many grams (g) of sodium chloride (NaCl) you would need to make <strong>60 mL of a 40% (w/v)</strong> NaCl solution?</p> <p>The molecular weight of sodium chloride (NaCl) is 58.44 g/mol. Sodium chloride is a solid powder at room temperature.</p> 	24.00000000	0.90000000
+
+NUM	<p>010. a42d</p> <p>How many grams (g) of sodium chloride (NaCl) you would need to make <strong>400 mL of a 10% (w/v)</strong> NaCl solution?</p> <p>The molecular weight of sodium chloride (NaCl) is 58.44 g/mol. Sodium chloride is a solid powder at room temperature.</p> 	40.00000000	0.90000000
+
+NUM	<p>011. 20b1</p> <p>How many grams (g) of sodium chloride (NaCl) you would need to make <strong>50 mL of a 50% (w/v)</strong> NaCl solution?</p> <p>The molecular weight of sodium chloride (NaCl) is 58.44 g/mol. Sodium chloride is a solid powder at room temperature.</p> 	25.00000000	0.90000000
+
+NUM	<p>012. 28d0</p> <p>How many grams (g) of sodium chloride (NaCl) you would need to make <strong>100 mL of a 20% (w/v)</strong> NaCl solution?</p> <p>The molecular weight of sodium chloride (NaCl) is 58.44 g/mol. Sodium chloride is a solid powder at room temperature.</p> 	20.00000000	0.90000000
+
+NUM	<p>013. 2e2a</p> <p>How many grams (g) of sodium chloride (NaCl) you would need to make <strong>500 mL of a 9% (w/v)</strong> NaCl solution?</p> <p>The molecular weight of sodium chloride (NaCl) is 58.44 g/mol. Sodium chloride is a solid powder at room temperature.</p> 	45.00000000	0.90000000
+
+NUM	<p>014. 2944</p> <p>How many grams (g) of sodium chloride (NaCl) you would need to make <strong>600 mL of a 9% (w/v)</strong> NaCl solution?</p> <p>The molecular weight of sodium chloride (NaCl) is 58.44 g/mol. Sodium chloride is a solid powder at room temperature.</p> 	54.00000000	0.90000000
+
+NUM	<p>015. 8e4b</p> <p>How many grams (g) of sodium chloride (NaCl) you would need to make <strong>25 mL of a 60% (w/v)</strong> NaCl solution?</p> <p>The molecular weight of sodium chloride (NaCl) is 58.44 g/mol. Sodium chloride is a solid powder at room temperature.</p> 	15.00000000	0.90000000
+
+NUM	<p>016. 4a0f</p> <p>How many grams (g) of sodium chloride (NaCl) you would need to make <strong>45 mL of a 40% (w/v)</strong> NaCl solution?</p> <p>The molecular weight of sodium chloride (NaCl) is 58.44 g/mol. Sodium chloride is a solid powder at room temperature.</p> 	18.00000000	0.90000000
+
+NUM	<p>017. 68c7</p> <p>How many grams (g) of potassium chloride (KCl) you would need to make <strong>400 mL of a 9% (w/v)</strong> KCl solution?</p> <p>The molecular weight of potassium chloride (KCl) is 74.55 g/mol. Potassium chloride is a solid powder at room temperature.</p> 	36.00000000	0.90000000
+
+NUM	<p>018. 37bb</p> <p>How many grams (g) of potassium chloride (KCl) you would need to make <strong>600 mL of a 5% (w/v)</strong> KCl solution?</p> <p>The molecular weight of potassium chloride (KCl) is 74.55 g/mol. Potassium chloride is a solid powder at room temperature.</p> 	30.00000000	0.90000000
+
+NUM	<p>019. c08a</p> <p>How many grams (g) of potassium chloride (KCl) you would need to make <strong>300 mL of a 18% (w/v)</strong> KCl solution?</p> <p>The molecular weight of potassium chloride (KCl) is 74.55 g/mol. Potassium chloride is a solid powder at room temperature.</p> 	54.00000000	0.90000000
+
+NUM	<p>020. ef43</p> <p>How many grams (g) of potassium chloride (KCl) you would need to make <strong>20 mL of a 30% (w/v)</strong> KCl solution?</p> <p>The molecular weight of potassium chloride (KCl) is 74.55 g/mol. Potassium chloride is a solid powder at room temperature.</p> 	6.00000000	0.90000000
+
+NUM	<p>021. 1682</p> <p>How many grams (g) of potassium chloride (KCl) you would need to make <strong>45 mL of a 80% (w/v)</strong> KCl solution?</p> <p>The molecular weight of potassium chloride (KCl) is 74.55 g/mol. Potassium chloride is a solid powder at room temperature.</p> 	36.00000000	0.90000000
+
+NUM	<p>022. 79b9</p> <p>How many grams (g) of potassium chloride (KCl) you would need to make <strong>60 mL of a 45% (w/v)</strong> KCl solution?</p> <p>The molecular weight of potassium chloride (KCl) is 74.55 g/mol. Potassium chloride is a solid powder at room temperature.</p> 	27.00000000	0.90000000
+
+NUM	<p>023. 85a7</p> <p>How many grams (g) of potassium chloride (KCl) you would need to make <strong>200 mL of a 14% (w/v)</strong> KCl solution?</p> <p>The molecular weight of potassium chloride (KCl) is 74.55 g/mol. Potassium chloride is a solid powder at room temperature.</p> 	28.00000000	0.90000000
+
+NUM	<p>024. a33f</p> <p>How many grams (g) of potassium chloride (KCl) you would need to make <strong>200 mL of a 6% (w/v)</strong> KCl solution?</p> <p>The molecular weight of potassium chloride (KCl) is 74.55 g/mol. Potassium chloride is a solid powder at room temperature.</p> 	12.00000000	0.90000000
+
+NUM	<p>025. 0db8</p> <p>How many grams (g) of glucose (Glucose) you would need to make <strong>250 mL of a 32% (w/v)</strong> Glucose solution?</p> <p>The molecular weight of glucose (Glucose) is 180.16 g/mol. Glucose is a solid powder at room temperature.</p> 	80.00000000	0.90000000
+
+NUM	<p>026. 1331</p> <p>How many grams (g) of glucose (Glucose) you would need to make <strong>80 mL of a 90% (w/v)</strong> Glucose solution?</p> <p>The molecular weight of glucose (Glucose) is 180.16 g/mol. Glucose is a solid powder at room temperature.</p> 	72.00000000	0.90000000
+
+NUM	<p>027. 747c</p> <p>How many grams (g) of glucose (Glucose) you would need to make <strong>20 mL of a 40% (w/v)</strong> Glucose solution?</p> <p>The molecular weight of glucose (Glucose) is 180.16 g/mol. Glucose is a solid powder at room temperature.</p> 	8.00000000	0.90000000
+
+NUM	<p>028. 5423</p> <p>How many grams (g) of glucose (Glucose) you would need to make <strong>150 mL of a 24% (w/v)</strong> Glucose solution?</p> <p>The molecular weight of glucose (Glucose) is 180.16 g/mol. Glucose is a solid powder at room temperature.</p> 	36.00000000	0.90000000
+
+NUM	<p>029. 9201</p> <p>How many grams (g) of glucose (Glucose) you would need to make <strong>60 mL of a 40% (w/v)</strong> Glucose solution?</p> <p>The molecular weight of glucose (Glucose) is 180.16 g/mol. Glucose is a solid powder at room temperature.</p> 	24.00000000	0.90000000
+
+NUM	<p>030. f8a6</p> <p>How many grams (g) of glucose (Glucose) you would need to make <strong>200 mL of a 7% (w/v)</strong> Glucose solution?</p> <p>The molecular weight of glucose (Glucose) is 180.16 g/mol. Glucose is a solid powder at room temperature.</p> 	14.00000000	0.90000000
+
+NUM	<p>031. d08b</p> <p>How many grams (g) of glucose (Glucose) you would need to make <strong>350 mL of a 14% (w/v)</strong> Glucose solution?</p> <p>The molecular weight of glucose (Glucose) is 180.16 g/mol. Glucose is a solid powder at room temperature.</p> 	49.00000000	0.90000000
+
+NUM	<p>032. 6145</p> <p>How many grams (g) of glucose (Glucose) you would need to make <strong>16 mL of a 50% (w/v)</strong> Glucose solution?</p> <p>The molecular weight of glucose (Glucose) is 180.16 g/mol. Glucose is a solid powder at room temperature.</p> 	8.00000000	0.90000000
+
+NUM	<p>033. c526</p> <p>How many grams (g) of sucrose (Sucrose) you would need to make <strong>100 mL of a 6% (w/v)</strong> Sucrose solution?</p> <p>The molecular weight of sucrose (Sucrose) is 342.30 g/mol. Sucrose is a solid powder at room temperature.</p> 	6.00000000	0.90000000
+
+NUM	<p>034. 2a91</p> <p>How many grams (g) of sucrose (Sucrose) you would need to make <strong>450 mL of a 16% (w/v)</strong> Sucrose solution?</p> <p>The molecular weight of sucrose (Sucrose) is 342.30 g/mol. Sucrose is a solid powder at room temperature.</p> 	72.00000000	0.90000000
+
+NUM	<p>035. b4e1</p> <p>How many grams (g) of sucrose (Sucrose) you would need to make <strong>150 mL of a 20% (w/v)</strong> Sucrose solution?</p> <p>The molecular weight of sucrose (Sucrose) is 342.30 g/mol. Sucrose is a solid powder at room temperature.</p> 	30.00000000	0.90000000
+
+NUM	<p>036. 8c41</p> <p>How many grams (g) of sucrose (Sucrose) you would need to make <strong>30 mL of a 20% (w/v)</strong> Sucrose solution?</p> <p>The molecular weight of sucrose (Sucrose) is 342.30 g/mol. Sucrose is a solid powder at room temperature.</p> 	6.00000000	0.90000000
+
+NUM	<p>037. 9c57</p> <p>How many grams (g) of sucrose (Sucrose) you would need to make <strong>50 mL of a 70% (w/v)</strong> Sucrose solution?</p> <p>The molecular weight of sucrose (Sucrose) is 342.30 g/mol. Sucrose is a solid powder at room temperature.</p> 	35.00000000	0.90000000
+
+NUM	<p>038. d549</p> <p>How many grams (g) of sucrose (Sucrose) you would need to make <strong>300 mL of a 3% (w/v)</strong> Sucrose solution?</p> <p>The molecular weight of sucrose (Sucrose) is 342.30 g/mol. Sucrose is a solid powder at room temperature.</p> 	9.00000000	0.90000000
+
+NUM	<p>039. f2bc</p> <p>How many grams (g) of sucrose (Sucrose) you would need to make <strong>900 mL of a 3% (w/v)</strong> Sucrose solution?</p> <p>The molecular weight of sucrose (Sucrose) is 342.30 g/mol. Sucrose is a solid powder at room temperature.</p> 	27.00000000	0.90000000
+
+NUM	<p>040. 6e7d</p> <p>How many grams (g) of sucrose (Sucrose) you would need to make <strong>200 mL of a 9% (w/v)</strong> Sucrose solution?</p> <p>The molecular weight of sucrose (Sucrose) is 342.30 g/mol. Sucrose is a solid powder at room temperature.</p> 	18.00000000	0.90000000
+
+NUM	<p>041. 5af8</p> <p>How many grams (g) of valine (Valine) you would need to make <strong>100 mL of a 14% (w/v)</strong> Valine solution?</p> <p>The molecular weight of valine (Valine) is 117.15 g/mol. Valine is a solid powder at room temperature.</p> 	14.00000000	0.90000000
+
+NUM	<p>042. e4b1</p> <p>How many grams (g) of valine (Valine) you would need to make <strong>40 mL of a 40% (w/v)</strong> Valine solution?</p> <p>The molecular weight of valine (Valine) is 117.15 g/mol. Valine is a solid powder at room temperature.</p> 	16.00000000	0.90000000
+
+NUM	<p>043. dbb6</p> <p>How many grams (g) of valine (Valine) you would need to make <strong>50 mL of a 40% (w/v)</strong> Valine solution?</p> <p>The molecular weight of valine (Valine) is 117.15 g/mol. Valine is a solid powder at room temperature.</p> 	20.00000000	0.90000000
+
+NUM	<p>044. 7c89</p> <p>How many grams (g) of valine (Valine) you would need to make <strong>250 mL of a 10% (w/v)</strong> Valine solution?</p> <p>The molecular weight of valine (Valine) is 117.15 g/mol. Valine is a solid powder at room temperature.</p> 	25.00000000	0.90000000
+
+NUM	<p>045. 0db9</p> <p>How many grams (g) of valine (Valine) you would need to make <strong>50 mL of a 50% (w/v)</strong> Valine solution?</p> <p>The molecular weight of valine (Valine) is 117.15 g/mol. Valine is a solid powder at room temperature.</p> 	25.00000000	0.90000000
+
+NUM	<p>046. ee77</p> <p>How many grams (g) of valine (Valine) you would need to make <strong>100 mL of a 10% (w/v)</strong> Valine solution?</p> <p>The molecular weight of valine (Valine) is 117.15 g/mol. Valine is a solid powder at room temperature.</p> 	10.00000000	0.90000000
+
+NUM	<p>047. 0954</p> <p>How many grams (g) of valine (Valine) you would need to make <strong>250 mL of a 6% (w/v)</strong> Valine solution?</p> <p>The molecular weight of valine (Valine) is 117.15 g/mol. Valine is a solid powder at room temperature.</p> 	15.00000000	0.90000000
+
+NUM	<p>048. 71d8</p> <p>How many grams (g) of valine (Valine) you would need to make <strong>70 mL of a 20% (w/v)</strong> Valine solution?</p> <p>The molecular weight of valine (Valine) is 117.15 g/mol. Valine is a solid powder at room temperature.</p> 	14.00000000	0.90000000
+
+NUM	<p>049. 62f6</p> <p>How many grams (g) of cysteine (Cysteine) you would need to make <strong>50 mL of a 20% (w/v)</strong> Cysteine solution?</p> <p>The molecular weight of cysteine (Cysteine) is 121.16 g/mol. Cysteine is a solid powder at room temperature.</p> 	10.00000000	0.90000000
+
+NUM	<p>050. da94</p> <p>How many grams (g) of cysteine (Cysteine) you would need to make <strong>90 mL of a 60% (w/v)</strong> Cysteine solution?</p> <p>The molecular weight of cysteine (Cysteine) is 121.16 g/mol. Cysteine is a solid powder at room temperature.</p> 	54.00000000	0.90000000
+
+NUM	<p>051. d86b</p> <p>How many grams (g) of cysteine (Cysteine) you would need to make <strong>40 mL of a 30% (w/v)</strong> Cysteine solution?</p> <p>The molecular weight of cysteine (Cysteine) is 121.16 g/mol. Cysteine is a solid powder at room temperature.</p> 	12.00000000	0.90000000
+
+NUM	<p>052. 3d1d</p> <p>How many grams (g) of cysteine (Cysteine) you would need to make <strong>300 mL of a 8% (w/v)</strong> Cysteine solution?</p> <p>The molecular weight of cysteine (Cysteine) is 121.16 g/mol. Cysteine is a solid powder at room temperature.</p> 	24.00000000	0.90000000
+
+NUM	<p>053. 92ab</p> <p>How many grams (g) of cysteine (Cysteine) you would need to make <strong>500 mL of a 5% (w/v)</strong> Cysteine solution?</p> <p>The molecular weight of cysteine (Cysteine) is 121.16 g/mol. Cysteine is a solid powder at room temperature.</p> 	25.00000000	0.90000000
+
+NUM	<p>054. 5e31</p> <p>How many grams (g) of cysteine (Cysteine) you would need to make <strong>50 mL of a 30% (w/v)</strong> Cysteine solution?</p> <p>The molecular weight of cysteine (Cysteine) is 121.16 g/mol. Cysteine is a solid powder at room temperature.</p> 	15.00000000	0.90000000
+
+NUM	<p>055. e949</p> <p>How many grams (g) of cysteine (Cysteine) you would need to make <strong>450 mL of a 8% (w/v)</strong> Cysteine solution?</p> <p>The molecular weight of cysteine (Cysteine) is 121.16 g/mol. Cysteine is a solid powder at room temperature.</p> 	36.00000000	0.90000000
+
+NUM	<p>056. 4e6c</p> <p>How many grams (g) of cysteine (Cysteine) you would need to make <strong>60 mL of a 50% (w/v)</strong> Cysteine solution?</p> <p>The molecular weight of cysteine (Cysteine) is 121.16 g/mol. Cysteine is a solid powder at room temperature.</p> 	30.00000000	0.90000000
+
+NUM	<p>057. f1da</p> <p>How many grams (g) of magnesium sulfate (MgSO<sub>4</sub>) you would need to make <strong>100 mL of a 24% (w/v)</strong> MgSO<sub>4</sub> solution?</p> <p>The molecular weight of magnesium sulfate (MgSO<sub>4</sub>) is 120.37 g/mol. Magnesium sulfate is a solid powder at room temperature.</p> 	24.00000000	0.90000000
+
+NUM	<p>058. 6ca5</p> <p>How many grams (g) of magnesium sulfate (MgSO<sub>4</sub>) you would need to make <strong>20 mL of a 50% (w/v)</strong> MgSO<sub>4</sub> solution?</p> <p>The molecular weight of magnesium sulfate (MgSO<sub>4</sub>) is 120.37 g/mol. Magnesium sulfate is a solid powder at room temperature.</p> 	10.00000000	0.90000000
+
+NUM	<p>059. e429</p> <p>How many grams (g) of magnesium sulfate (MgSO<sub>4</sub>) you would need to make <strong>30 mL of a 60% (w/v)</strong> MgSO<sub>4</sub> solution?</p> <p>The molecular weight of magnesium sulfate (MgSO<sub>4</sub>) is 120.37 g/mol. Magnesium sulfate is a solid powder at room temperature.</p> 	18.00000000	0.90000000
+
+NUM	<p>060. 5f28</p> <p>How many grams (g) of magnesium sulfate (MgSO<sub>4</sub>) you would need to make <strong>400 mL of a 12% (w/v)</strong> MgSO<sub>4</sub> solution?</p> <p>The molecular weight of magnesium sulfate (MgSO<sub>4</sub>) is 120.37 g/mol. Magnesium sulfate is a solid powder at room temperature.</p> 	48.00000000	0.90000000
+
+NUM	<p>061. 7531</p> <p>How many grams (g) of magnesium sulfate (MgSO<sub>4</sub>) you would need to make <strong>100 mL of a 6% (w/v)</strong> MgSO<sub>4</sub> solution?</p> <p>The molecular weight of magnesium sulfate (MgSO<sub>4</sub>) is 120.37 g/mol. Magnesium sulfate is a solid powder at room temperature.</p> 	6.00000000	0.90000000
+
+NUM	<p>062. 665c</p> <p>How many grams (g) of magnesium sulfate (MgSO<sub>4</sub>) you would need to make <strong>80 mL of a 50% (w/v)</strong> MgSO<sub>4</sub> solution?</p> <p>The molecular weight of magnesium sulfate (MgSO<sub>4</sub>) is 120.37 g/mol. Magnesium sulfate is a solid powder at room temperature.</p> 	40.00000000	0.90000000
+
+NUM	<p>063. dd7e</p> <p>How many grams (g) of magnesium sulfate (MgSO<sub>4</sub>) you would need to make <strong>180 mL of a 45% (w/v)</strong> MgSO<sub>4</sub> solution?</p> <p>The molecular weight of magnesium sulfate (MgSO<sub>4</sub>) is 120.37 g/mol. Magnesium sulfate is a solid powder at room temperature.</p> 	81.00000000	0.90000000
+
+NUM	<p>064. 0ada</p> <p>How many grams (g) of magnesium sulfate (MgSO<sub>4</sub>) you would need to make <strong>250 mL of a 20% (w/v)</strong> MgSO<sub>4</sub> solution?</p> <p>The molecular weight of magnesium sulfate (MgSO<sub>4</sub>) is 120.37 g/mol. Magnesium sulfate is a solid powder at room temperature.</p> 	50.00000000	0.90000000
+
+NUM	<p>065. 7fd9</p> <p>How many grams (g) of magnesium chloride (MgCl<sub>2</sub>) you would need to make <strong>80 mL of a 35% (w/v)</strong> MgCl<sub>2</sub> solution?</p> <p>The molecular weight of magnesium chloride (MgCl<sub>2</sub>) is 95.21 g/mol. Magnesium chloride is a solid powder at room temperature.</p> 	28.00000000	0.90000000
+
+NUM	<p>066. 8727</p> <p>How many grams (g) of magnesium chloride (MgCl<sub>2</sub>) you would need to make <strong>400 mL of a 3% (w/v)</strong> MgCl<sub>2</sub> solution?</p> <p>The molecular weight of magnesium chloride (MgCl<sub>2</sub>) is 95.21 g/mol. Magnesium chloride is a solid powder at room temperature.</p> 	12.00000000	0.90000000
+
+NUM	<p>067. 303f</p> <p>How many grams (g) of magnesium chloride (MgCl<sub>2</sub>) you would need to make <strong>200 mL of a 30% (w/v)</strong> MgCl<sub>2</sub> solution?</p> <p>The molecular weight of magnesium chloride (MgCl<sub>2</sub>) is 95.21 g/mol. Magnesium chloride is a solid powder at room temperature.</p> 	60.00000000	0.90000000
+
+NUM	<p>068. eb3b</p> <p>How many grams (g) of magnesium chloride (MgCl<sub>2</sub>) you would need to make <strong>300 mL of a 6% (w/v)</strong> MgCl<sub>2</sub> solution?</p> <p>The molecular weight of magnesium chloride (MgCl<sub>2</sub>) is 95.21 g/mol. Magnesium chloride is a solid powder at room temperature.</p> 	18.00000000	0.90000000
+
+NUM	<p>069. 3329</p> <p>How many grams (g) of magnesium chloride (MgCl<sub>2</sub>) you would need to make <strong>100 mL of a 20% (w/v)</strong> MgCl<sub>2</sub> solution?</p> <p>The molecular weight of magnesium chloride (MgCl<sub>2</sub>) is 95.21 g/mol. Magnesium chloride is a solid powder at room temperature.</p> 	20.00000000	0.90000000
+
+NUM	<p>070. 12db</p> <p>How many grams (g) of magnesium chloride (MgCl<sub>2</sub>) you would need to make <strong>40 mL of a 30% (w/v)</strong> MgCl<sub>2</sub> solution?</p> <p>The molecular weight of magnesium chloride (MgCl<sub>2</sub>) is 95.21 g/mol. Magnesium chloride is a solid powder at room temperature.</p> 	12.00000000	0.90000000
+
+NUM	<p>071. eb3b</p> <p>How many grams (g) of magnesium chloride (MgCl<sub>2</sub>) you would need to make <strong>300 mL of a 6% (w/v)</strong> MgCl<sub>2</sub> solution?</p> <p>The molecular weight of magnesium chloride (MgCl<sub>2</sub>) is 95.21 g/mol. Magnesium chloride is a solid powder at room temperature.</p> 	18.00000000	0.90000000
+
+NUM	<p>072. d1fd</p> <p>How many grams (g) of magnesium chloride (MgCl<sub>2</sub>) you would need to make <strong>70 mL of a 40% (w/v)</strong> MgCl<sub>2</sub> solution?</p> <p>The molecular weight of magnesium chloride (MgCl<sub>2</sub>) is 95.21 g/mol. Magnesium chloride is a solid powder at room temperature.</p> 	28.00000000	0.90000000
+
+NUM	<p>073. 0181</p> <p>How many grams (g) of sodium bicarbonate (NaHCO<sub>3</sub>) you would need to make <strong>180 mL of a 45% (w/v)</strong> NaHCO<sub>3</sub> solution?</p> <p>The molecular weight of sodium bicarbonate (NaHCO<sub>3</sub>) is 84.01 g/mol. Sodium bicarbonate is a solid powder at room temperature.</p> 	81.00000000	0.90000000
+
+NUM	<p>074. e2fd</p> <p>How many grams (g) of sodium bicarbonate (NaHCO<sub>3</sub>) you would need to make <strong>20 mL of a 60% (w/v)</strong> NaHCO<sub>3</sub> solution?</p> <p>The molecular weight of sodium bicarbonate (NaHCO<sub>3</sub>) is 84.01 g/mol. Sodium bicarbonate is a solid powder at room temperature.</p> 	12.00000000	0.90000000
+
+NUM	<p>075. 7e3e</p> <p>How many grams (g) of sodium bicarbonate (NaHCO<sub>3</sub>) you would need to make <strong>140 mL of a 25% (w/v)</strong> NaHCO<sub>3</sub> solution?</p> <p>The molecular weight of sodium bicarbonate (NaHCO<sub>3</sub>) is 84.01 g/mol. Sodium bicarbonate is a solid powder at room temperature.</p> 	35.00000000	0.90000000
+
+NUM	<p>076. 2ef3</p> <p>How many grams (g) of sodium bicarbonate (NaHCO<sub>3</sub>) you would need to make <strong>30 mL of a 50% (w/v)</strong> NaHCO<sub>3</sub> solution?</p> <p>The molecular weight of sodium bicarbonate (NaHCO<sub>3</sub>) is 84.01 g/mol. Sodium bicarbonate is a solid powder at room temperature.</p> 	15.00000000	0.90000000
+
+NUM	<p>077. 6183</p> <p>How many grams (g) of sodium bicarbonate (NaHCO<sub>3</sub>) you would need to make <strong>25 mL of a 40% (w/v)</strong> NaHCO<sub>3</sub> solution?</p> <p>The molecular weight of sodium bicarbonate (NaHCO<sub>3</sub>) is 84.01 g/mol. Sodium bicarbonate is a solid powder at room temperature.</p> 	10.00000000	0.90000000
+
+NUM	<p>078. 9d69</p> <p>How many grams (g) of sodium bicarbonate (NaHCO<sub>3</sub>) you would need to make <strong>200 mL of a 36% (w/v)</strong> NaHCO<sub>3</sub> solution?</p> <p>The molecular weight of sodium bicarbonate (NaHCO<sub>3</sub>) is 84.01 g/mol. Sodium bicarbonate is a solid powder at room temperature.</p> 	72.00000000	0.90000000
+
+NUM	<p>079. 4152</p> <p>How many grams (g) of sodium bicarbonate (NaHCO<sub>3</sub>) you would need to make <strong>180 mL of a 10% (w/v)</strong> NaHCO<sub>3</sub> solution?</p> <p>The molecular weight of sodium bicarbonate (NaHCO<sub>3</sub>) is 84.01 g/mol. Sodium bicarbonate is a solid powder at room temperature.</p> 	18.00000000	0.90000000
+
+NUM	<p>080. adad</p> <p>How many grams (g) of sodium bicarbonate (NaHCO<sub>3</sub>) you would need to make <strong>80 mL of a 70% (w/v)</strong> NaHCO<sub>3</sub> solution?</p> <p>The molecular weight of sodium bicarbonate (NaHCO<sub>3</sub>) is 84.01 g/mol. Sodium bicarbonate is a solid powder at room temperature.</p> 	56.00000000	0.90000000
+
+NUM	<p>081. b88e</p> <p>How many grams (g) of calcium carbonate (CaCO<sub>3</sub>) you would need to make <strong>50 mL of a 20% (w/v)</strong> CaCO<sub>3</sub> solution?</p> <p>The molecular weight of calcium carbonate (CaCO<sub>3</sub>) is 100.09 g/mol. Calcium carbonate is a solid powder at room temperature.</p> 	10.00000000	0.90000000
+
+NUM	<p>082. 4d8d</p> <p>How many grams (g) of calcium carbonate (CaCO<sub>3</sub>) you would need to make <strong>50 mL of a 80% (w/v)</strong> CaCO<sub>3</sub> solution?</p> <p>The molecular weight of calcium carbonate (CaCO<sub>3</sub>) is 100.09 g/mol. Calcium carbonate is a solid powder at room temperature.</p> 	40.00000000	0.90000000
+
+NUM	<p>083. dbd4</p> <p>How many grams (g) of calcium carbonate (CaCO<sub>3</sub>) you would need to make <strong>120 mL of a 20% (w/v)</strong> CaCO<sub>3</sub> solution?</p> <p>The molecular weight of calcium carbonate (CaCO<sub>3</sub>) is 100.09 g/mol. Calcium carbonate is a solid powder at room temperature.</p> 	24.00000000	0.90000000
+
+NUM	<p>084. 174d</p> <p>How many grams (g) of calcium carbonate (CaCO<sub>3</sub>) you would need to make <strong>80 mL of a 35% (w/v)</strong> CaCO<sub>3</sub> solution?</p> <p>The molecular weight of calcium carbonate (CaCO<sub>3</sub>) is 100.09 g/mol. Calcium carbonate is a solid powder at room temperature.</p> 	28.00000000	0.90000000
+
+NUM	<p>085. de6e</p> <p>How many grams (g) of calcium carbonate (CaCO<sub>3</sub>) you would need to make <strong>400 mL of a 4% (w/v)</strong> CaCO<sub>3</sub> solution?</p> <p>The molecular weight of calcium carbonate (CaCO<sub>3</sub>) is 100.09 g/mol. Calcium carbonate is a solid powder at room temperature.</p> 	16.00000000	0.90000000
+
+NUM	<p>086. bc7d</p> <p>How many grams (g) of calcium carbonate (CaCO<sub>3</sub>) you would need to make <strong>250 mL of a 40% (w/v)</strong> CaCO<sub>3</sub> solution?</p> <p>The molecular weight of calcium carbonate (CaCO<sub>3</sub>) is 100.09 g/mol. Calcium carbonate is a solid powder at room temperature.</p> 	100.00000000	0.90000000
+
+NUM	<p>087. 57e5</p> <p>How many grams (g) of calcium carbonate (CaCO<sub>3</sub>) you would need to make <strong>1000 mL of a 9% (w/v)</strong> CaCO<sub>3</sub> solution?</p> <p>The molecular weight of calcium carbonate (CaCO<sub>3</sub>) is 100.09 g/mol. Calcium carbonate is a solid powder at room temperature.</p> 	90.00000000	0.90000000
+
+NUM	<p>088. e838</p> <p>How many grams (g) of calcium carbonate (CaCO<sub>3</sub>) you would need to make <strong>70 mL of a 70% (w/v)</strong> CaCO<sub>3</sub> solution?</p> <p>The molecular weight of calcium carbonate (CaCO<sub>3</sub>) is 100.09 g/mol. Calcium carbonate is a solid powder at room temperature.</p> 	49.00000000	0.90000000
+
+NUM	<p>089. a294</p> <p>How many grams (g) of monosodium phosphate (NaH<sub>2</sub>PO<sub>4</sub>) you would need to make <strong>60 mL of a 45% (w/v)</strong> NaH<sub>2</sub>PO<sub>4</sub> solution?</p> <p>The molecular weight of monosodium phosphate (NaH<sub>2</sub>PO<sub>4</sub>) is 119.98 g/mol. Monosodium phosphate is a solid powder at room temperature.</p> 	27.00000000	0.90000000
+
+NUM	<p>090. 8894</p> <p>How many grams (g) of monosodium phosphate (NaH<sub>2</sub>PO<sub>4</sub>) you would need to make <strong>700 mL of a 8% (w/v)</strong> NaH<sub>2</sub>PO<sub>4</sub> solution?</p> <p>The molecular weight of monosodium phosphate (NaH<sub>2</sub>PO<sub>4</sub>) is 119.98 g/mol. Monosodium phosphate is a solid powder at room temperature.</p> 	56.00000000	0.90000000
+
+NUM	<p>091. 863c</p> <p>How many grams (g) of monosodium phosphate (NaH<sub>2</sub>PO<sub>4</sub>) you would need to make <strong>100 mL of a 25% (w/v)</strong> NaH<sub>2</sub>PO<sub>4</sub> solution?</p> <p>The molecular weight of monosodium phosphate (NaH<sub>2</sub>PO<sub>4</sub>) is 119.98 g/mol. Monosodium phosphate is a solid powder at room temperature.</p> 	25.00000000	0.90000000
+
+NUM	<p>092. 8bf2</p> <p>How many grams (g) of monosodium phosphate (NaH<sub>2</sub>PO<sub>4</sub>) you would need to make <strong>250 mL of a 40% (w/v)</strong> NaH<sub>2</sub>PO<sub>4</sub> solution?</p> <p>The molecular weight of monosodium phosphate (NaH<sub>2</sub>PO<sub>4</sub>) is 119.98 g/mol. Monosodium phosphate is a solid powder at room temperature.</p> 	100.00000000	0.90000000
+
+NUM	<p>093. e81e</p> <p>How many grams (g) of monosodium phosphate (NaH<sub>2</sub>PO<sub>4</sub>) you would need to make <strong>300 mL of a 8% (w/v)</strong> NaH<sub>2</sub>PO<sub>4</sub> solution?</p> <p>The molecular weight of monosodium phosphate (NaH<sub>2</sub>PO<sub>4</sub>) is 119.98 g/mol. Monosodium phosphate is a solid powder at room temperature.</p> 	24.00000000	0.90000000
+
+NUM	<p>094. def9</p> <p>How many grams (g) of monosodium phosphate (NaH<sub>2</sub>PO<sub>4</sub>) you would need to make <strong>1000 mL of a 6% (w/v)</strong> NaH<sub>2</sub>PO<sub>4</sub> solution?</p> <p>The molecular weight of monosodium phosphate (NaH<sub>2</sub>PO<sub>4</sub>) is 119.98 g/mol. Monosodium phosphate is a solid powder at room temperature.</p> 	60.00000000	0.90000000
+
+NUM	<p>095. 6c49</p> <p>How many grams (g) of monosodium phosphate (NaH<sub>2</sub>PO<sub>4</sub>) you would need to make <strong>450 mL of a 20% (w/v)</strong> NaH<sub>2</sub>PO<sub>4</sub> solution?</p> <p>The molecular weight of monosodium phosphate (NaH<sub>2</sub>PO<sub>4</sub>) is 119.98 g/mol. Monosodium phosphate is a solid powder at room temperature.</p> 	90.00000000	0.90000000
+
+NUM	<p>096. fe1e</p> <p>How many grams (g) of monosodium phosphate (NaH<sub>2</sub>PO<sub>4</sub>) you would need to make <strong>500 mL of a 9% (w/v)</strong> NaH<sub>2</sub>PO<sub>4</sub> solution?</p> <p>The molecular weight of monosodium phosphate (NaH<sub>2</sub>PO<sub>4</sub>) is 119.98 g/mol. Monosodium phosphate is a solid powder at room temperature.</p> 	45.00000000	0.90000000
+
