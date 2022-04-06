@@ -1,8 +1,13 @@
 #!/usr/bin/env python
 
+import os
 import sys
 import random
 
+import seqlib
+import bptools
+
+#========================================
 nt2name = {
 	'A':	'adenine',
 	'C':	'cytosine',
@@ -16,6 +21,7 @@ nt2name = {
 	'Ura':	'uracil',
 }
 
+#========================================
 canonical = {
 	'A':	'Ade',
 	'C':	'Cyt',
@@ -34,6 +40,7 @@ canonical = {
 	'uracil':	'Ura',
 }
 
+#========================================
 complement = {
 	'A': 'T',
 	'T': 'A',
@@ -45,6 +52,7 @@ complement = {
 	'Cyt': 'Gua',
 }
 
+#========================================
 def getAnswer(nt1, percent):
 	#nt2 = complement(nt1)
 	offperc = 50 - percent
@@ -62,20 +70,34 @@ def getAnswer(nt1, percent):
 		answer = [percent, offperc, offperc]
 	return answer
 
-def printChoice(letter, nts, valuelist, prefix):
-	mystr = ("%s%s. %s:%d, %s:%d, %s:%d"
-		%(prefix, letter, nts[0], valuelist[0], nts[1], valuelist[1], nts[2], valuelist[2]))
+#========================================
+colormap = {
+	'A': '#004d00', #A is green
+	'C': '#003566', #C is blue
+	'T': '#6e1212', #T is red
+	'G': '#2a2000', #G is black
+	'U': '#420080', #U is purple
+}
+
+#========================================
+def printChoice(nts, valuelist):
+	global colormap
+	mystr = ''
+	#seqlib.colorNucleotideForeground()
+	for i in range(3):
+		nt = nts[i][0]
+		color = colormap[nt]
+		mystr += "<span style='color: {0};'>{1}:{2:02d}%</span>, ".format(color, nts[i], valuelist[i])
 	return mystr
 
-if __name__ == '__main__':
-	if len(sys.argv) > 1:
-		percent = int(sys.argv[1])
+#========================================
+#========================================
+def makeQuestion(N):
+	global colormap
+	if random.random() < 0.5:
+		percent = random.randint(1,23)
 	else:
-		#percent = random.choice((10, 15, 20, 30, 35, 40))
-		if random.random() < 0.5:
-			percent = random.randint(1,23)
-		else:
-			percent = random.randint(27,49)
+		percent = random.randint(27,49)
 
 	nt1 = None
 	if len(sys.argv) > 2:
@@ -83,7 +105,6 @@ if __name__ == '__main__':
 		keys = list(canonical.keys())
 		if text in keys:
 			nt1 = canonical[text]
-
 
 	nts = ['Ade', 'Cyt', 'Thy', 'Gua']
 	random.shuffle(nts)
@@ -93,12 +114,16 @@ if __name__ == '__main__':
 		nts.remove(nt1)
 	nts.sort()
 
-	question = "2. In a sample of double stranded DNA, %d%s is %s. "%(percent, '%', nt2name[nt1])
-	question += "What are the percentages of the other three (3) bases?"
+	question = "<p>According to Chargraff's experimental data "
+	question += "and a sample of double stranded DNA where "
+	nt = nt1[0].upper()
+	color = colormap[nt]
+	question += "<strong><span style='color: {0};'>{1:02d}% is {2}</strong>.</p>".format(color, percent, nt2name[nt1])
+	question += "<p>What are the percentages of the other three (3) bases?</p>"
 
 	answer = getAnswer(nt1, percent)
 
-	print(question)
+	#print(question)
 	choices = []
 	offperc = 50 - percent
 	avgperc = 25
@@ -114,15 +139,26 @@ if __name__ == '__main__':
 	choices.append(offchoices[1])
 	random.shuffle(choices)
 	
-	letters = ('A', 'B', 'C', 'D', 'E')
-	mystr = ""
-	for i in range(len(choices)):
-		valuelist = choices[i]
-		letter = letters[i]
-		prefix = ""
+	choices_list = []
+	for valuelist in choices:
+		choice_text = printChoice(nts, valuelist)
+		choices_list.append(choice_text)
 		if valuelist == answer:
-			prefix = "*"
-		mystr += printChoice(letter, nts, valuelist, prefix)
-		mystr += "\n"
-	print(mystr)
+			answer_text = choice_text
+	
+	complete_question = bptools.formatBB_MC_Question(N, question, choices_list, answer_text)
+	return complete_question
+
+#========================================
+#========================================
+if __name__ == '__main__':
+	num_questions = 199
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('writing to file: '+outfile)
+	f = open(outfile, 'w')
+	for i in range(num_questions):
+		complete_question = makeQuestion(i+1)
+		f.write(complete_question)
+	f.close()
+
 	

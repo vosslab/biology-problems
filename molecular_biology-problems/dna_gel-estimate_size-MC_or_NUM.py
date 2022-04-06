@@ -13,7 +13,7 @@ num_choices = 5
 class GelMigration(object):
 	def __init__(self):
 		self.debug = False
-		self.multiple_choice = True
+		self.multiple_choice = False
 
 		self.slope = 0.8 * self.random_average(10)
 		self.min_mw = 100

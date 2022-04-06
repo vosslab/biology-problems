@@ -43,12 +43,18 @@ molecular_weights = {
 def question_text(solute, volume, conc1, conc2):
 	#Prepare 80 mL of 2.5% sucrose solution using a 50% stock solution.
 	question = ''
-	question += '<p>You have an already prepared stock solution of {0}% {1} on the shelf.</p>'.format(solute, conc1)
-	question += '<p>Prepare {0} ml of {1}% {2} solution using the stock solution.</p>'.format(volume, conc2, solute)
+	if conc1 >= conc2:
+		print("ERROR: conc1 >= conc2")
+		sys.exit(1)
+	unit1 = 'microliters (&mu;L)'
+	unit2 = 'milliliters (mL)'
+	unit = random.choice((unit1,unit2))
+	question += '<p>You have an already prepared stock solution of {0}% {1} on the shelf.</p>'.format(conc2, solute)
+	question += '<p>Prepare {0} {1} of {2}% {3} solution using the stock solution.</p>'.format(volume, unit, conc1, solute)
 	full_name = solute_full_names.get(solute, solute)
 	mw = molecular_weights[solute]
 	question += "<p>The molecular weight of {0} ({1}) is {2:.2f} g/mol. ".format(full_name.lower(), solute, mw)
-	question += "<p>What volume of aliquot in microliters (&mu;L) do you add to distilled water to make the final dilution?</p>"
+	question += "<p>What volume of aliquot in {0} do you add to distilled water to make the final dilution?</p>".format(unit)
 	return question
 
 #==================================================
@@ -69,21 +75,23 @@ if __name__ == '__main__':
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
 	print('writing to file: '+outfile)
 	f = open(outfile, 'w')
-	duplicates = 99 // len(df_ratios)
-	#duplicates = 1
+	#duplicates = 99 // len(df_ratios) // len(solute_full_names.keys())
+	duplicates = 1
 	N = 0
-	for i in range(duplicates):
-		for df_ratio in df_ratios:
-			if df_ratio[1] < 3:
-				continue
-			N += 1
-			volume, df1, df2 = df_ratio_to_values(df_ratio)
-			q = question_text(volume, df1, df2)
-			aliquot = volume * df_ratio[1] / df_ratio[0]
-			diluent = volume - aliquot
-			answer = aliquot
-			tolerance = 0.9
-			bbf = bptools.formatBB_NUM_Question(N, q, answer, tolerance)
-			f.write(bbf)
+	for d in range(duplicates):
+		for solute in solute_full_names.keys():
+			for df_ratio in df_ratios:
+				print(N)
+				if df_ratio[1] < 3:
+					continue
+				N += 1
+				volume, df1, df2 = df_ratio_to_values(df_ratio)
+				q = question_text(solute, volume, df1, df2)
+				aliquot = volume * df_ratio[1] / df_ratio[0]
+				diluent = volume - aliquot
+				answer = aliquot
+				tolerance = 0.9
+				bbf = bptools.formatBB_NUM_Question(N, q, answer, tolerance)
+				f.write(bbf)
 	f.close()
 	bptools.print_histogram()

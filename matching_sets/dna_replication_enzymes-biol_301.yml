@@ -6,7 +6,7 @@ key description: DNA replication enzymes
 value description: function
 
 matching pairs:
-  DNA gyrase:
+  DNA topoisomerase:
     - this enzyme relieves strain in the parental DNA double helix caused by the supercoiling
     - this enzyme releases the supercoiling tension in the DNA double helix
   primase:
@@ -33,6 +33,8 @@ matching pairs:
   DNA sliding clamp:
     - this enzyme is a ring that tethers certain enzymes to DNA
     - this enzyme prevents certain enzymes from falling off of the DNA
+    
+
 
 replacement_rules:
    single-strand binding protein: '<span style="color: #7b7737;">single-strand binding proteins</span>'
@@ -42,7 +44,7 @@ replacement_rules:
    DNA polymerase I:      '<span style="color: #b45918;">DNA&nbsp;polymerase&nbsp;&#8544;</span>'
    DNA helicase:          '<span style="color: DarkGreen;">DNA&nbsp;helicase</span>'
    DNA ligase:            '<span style="color: MediumVioletRed;">DNA&nbsp;ligase</span>'
-   DNA gyrase:            '<span style="color: Indigo;">DNA&nbsp;gyrase</span>'
+   DNA topoisomerase:     '<span style="color: Indigo;">DNA&nbsp;topoisomerase</span>'
    primase:               '<span style="color: SteelBlue;">primase</span>'
    Okazaki fragments:     '<span style="color: Maroon;">Okazaki fragments</span>'
    RNA primers:           '<span style="color: #b33000;">RNA primers</span>'
