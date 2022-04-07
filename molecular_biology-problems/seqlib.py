@@ -66,7 +66,8 @@ def colorNucleotideForeground(nt):
 
 #==========================
 def DNA_Table(top_sequence, bottom_sequence=None, left_primes=True, right_primes=True):
-	table = ' <table style="border-collapse: collapse; border: 1px solid silver;"> '
+	table = '<!-- {0} --> '.format(''.join(top_sequence))
+	table += ' <table style="border-collapse: collapse; border: 1px solid silver;"> '
 	#===========
 	table += ' <tr>'
 	if left_primes is True:
@@ -95,13 +96,13 @@ def DNA_Table(top_sequence, bottom_sequence=None, left_primes=True, right_primes
 	table += '</tr> '
 	#===========
 	table += '</table> '
-	table += '<!-- {0} --> '.format(''.join(top_sequence))
 	return table
 
 #=====================
 #=====================
 def Single_Strand_Table(ss_sequence_str, fivetothree=True, separate=3):
-	table = '&nbsp;<table style="border-collapse: collapse; border: 0px; display:inline-table"> '
+	table = '<!-- {0} --> '.format(''.join(ss_sequence_str))
+	table += '&nbsp;<table style="border-collapse: collapse; border: 0px; display:inline-table"> '
 	table += ' <tr>'
 	if fivetothree is True:
 		table += '<td>5&prime;&ndash;</td>'
@@ -115,19 +116,18 @@ def Single_Strand_Table(ss_sequence_str, fivetothree=True, separate=3):
 		table += '<td>&ndash;5&prime;</td>'
 	table += '</tr> '
 	table += '</table> '
-	table += '<!-- {0} --> '.format(''.join(ss_sequence_str))
 	return table
 
 #=====================
 #=====================
 def Single_Strand_Table_No_Primes(ss_sequence_str, separate=3):
-	table = '&nbsp;<table style="border-collapse: collapse; border: 0px; display:inline-table"> '
+	table = '<!-- {0} --> '.format(''.join(ss_sequence_str))
+	table += '&nbsp;<table style="border-collapse: collapse; border: 0px; display:inline-table"> '
 	table += ' <tr>'
 	ss_sequence_list = list(ss_sequence_str)
 	table += makeHtmlTDRow(ss_sequence_list, separate)
 	table += '</tr> '
 	table += '</table> '
-	table += '<!-- {0} --> '.format(''.join(ss_sequence_str))
 	return table
 
 #=====================
@@ -137,14 +137,13 @@ def Primer_Table(primer):
 
 #==========================
 def makeHtmlTable(sequence_list, separate=3):
-	table = ""
+	table = '<!-- {0} --> '.format(''.join(sequence_list))
 	table += '<table style="border-collapse: collapse; border: 1px solid silver;"> '
 	for j in range(len(sequence_list)):
 		table += ' <tr>'
 		table += makeHtmlTDRow(sequence_list[j], separate)
 		table += '</tr> '
 	table += '</table> '
-	table += '<!-- {0} --> '.format(''.join(sequence_list))
 	return table
 
 #==========================
