@@ -1,8 +1,6 @@
 import copy
 import random
 
-
-
 arbitrary_codes = {
 	'A': ('A'),
 	'B': ('C', 'G', 'T',), # not A
@@ -97,6 +95,7 @@ def DNA_Table(top_sequence, bottom_sequence=None, left_primes=True, right_primes
 	table += '</tr> '
 	#===========
 	table += '</table> '
+	table += '<!-- {0} --> '.format(''.join(top_sequence))
 	return table
 
 #=====================
@@ -116,6 +115,7 @@ def Single_Strand_Table(ss_sequence_str, fivetothree=True, separate=3):
 		table += '<td>&ndash;5&prime;</td>'
 	table += '</tr> '
 	table += '</table> '
+	table += '<!-- {0} --> '.format(''.join(ss_sequence_str))
 	return table
 
 #=====================
@@ -127,6 +127,7 @@ def Single_Strand_Table_No_Primes(ss_sequence_str, separate=3):
 	table += makeHtmlTDRow(ss_sequence_list, separate)
 	table += '</tr> '
 	table += '</table> '
+	table += '<!-- {0} --> '.format(''.join(ss_sequence_str))
 	return table
 
 #=====================
@@ -143,6 +144,7 @@ def makeHtmlTable(sequence_list, separate=3):
 		table += makeHtmlTDRow(sequence_list[j], separate)
 		table += '</tr> '
 	table += '</table> '
+	table += '<!-- {0} --> '.format(''.join(sequence_list))
 	return table
 
 #==========================
@@ -267,8 +269,13 @@ def html_monospace(txt):
 #=========================
 def _makeSequence(seqlen=10):
 	seq = ""
-	for i in range(seqlen):
-		seq += random.choice('AGCT')
+	letters = list('AGCT')
+	for i in range(seqlen-1):
+		seq += random.choice(letters)
+	#last letter must not match the first
+	letters.remove(seq[0])
+	letters.remove(complement(seq[0]))
+	seq += random.choice(letters)
 	return seq
 
 #=========================
