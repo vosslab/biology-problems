@@ -72,7 +72,7 @@ if __name__ == '__main__':
 	else:
 		seqlen = 9
 	if len(sys.argv) >= 3:
-		seqlen = int(sys.argv[2])
+		num_sequences = int(sys.argv[2])
 	else:
 		num_sequences = 19
 

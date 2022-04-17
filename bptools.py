@@ -205,6 +205,7 @@ def formatBB_MA_Question(N, question, choices_list, answers_list):
 
 #=====================
 def formatBB_FIB_Question(N, question, answers_list):
+	#fill in the black = FIB
 	#FIB TAB question text TAB answer text TAB answer two text
 	bb_question = ''
 
