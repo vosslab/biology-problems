@@ -7,24 +7,33 @@ override_question_true: Accuracy in translation of mRNA into a polypeptide depen
 override_question_false: ~
 
 replacement_rules:
-  ribosome:     '<span style="color: OrangeRed;">ribosome</span>'
-  amino acid:   '<span style="color: DarkBlue;">amino acid</span>'
-  anticodon:    '<span style="color: DarkRed;">anticodon</span>'  
+  ribosome:          '<span style="color: OrangeRed;">ribosome</span>'
+  amino acid:        '<span style="color: DarkBlue;">amino acid</span>'
+  'tRNA anticodon':  '<span style="color: DarkRed;">tRNA anticodon</span>'  
+  'mRNA codon':      '<span style="color: DarkGreen;">mRNA codon</span>'  
+  'tRNA molecule':   '<span style="color: #663300;">tRNA molecule</span>'  
+
 
 connection_words: ~
 
 true_statements:
   truth1a: bonding of the tRNA anticodon to the mRNA codon.
+  truth1b: bonding of the mRNA codon to the tRNA anticodon.
+  truth1c: base-pairing of the mRNA codon to the tRNA anticodon.
+  truth1d: base-pairing of the tRNA anticodon to the mRNA codon.
   
   truth2a: attachment of the specific amino acid to the tRNA.
   truth2b: covalent attachment of the specific amino acid to the tRNA CCA tail.
+  truth2c: amino acid attached to tRNA by the synthase enzyme.
+  truth2d: match between the attached amino acid and the tRNA anticodon
+  truth2e: match between the tRNA anticodon and the attached amino acid 
 
 
 false_statements:
   false1a: attachment of the carboxyl on the previous amino acid with the amine of the next amino acid.
   false1b: attachment of the amine on the previous amino acid with the carboxyl of the next amino acid.
 
-  false3a: binding of the anticodon to small subunit of the ribosome.
+  false3a: binding of the tRNA anticodon to small subunit of the ribosome.
   false3b: binding of small subunit of the ribosome to mRNA.
   false3c: binding of small subunit of the ribosome to the mRNA's Shine-Delgarno sequence.
   
