@@ -1,0 +1,51 @@
+---
+
+#Which one of the following statements is FALSE/TRUE <connection word> <topic>
+topic: ~
+
+override_question_true: Accuracy in translation of mRNA into a polypeptide depends on the correct ___.
+override_question_false: ~
+
+replacement_rules:
+  ribosome:     '<span style="color: OrangeRed;">ribosome</span>'
+  amino acid:   '<span style="color: DarkBlue;">amino acid</span>'
+  anticodon:    '<span style="color: DarkRed;">anticodon</span>'  
+
+connection_words: ~
+
+true_statements:
+  truth1a: bonding of the tRNA anticodon to the mRNA codon.
+  
+  truth2a: attachment of the specific amino acid to the tRNA.
+  truth2b: covalent attachment of the specific amino acid to the tRNA CCA tail.
+
+
+false_statements:
+  false1a: attachment of the carboxyl on the previous amino acid with the amine of the next amino acid.
+  false1b: attachment of the amine on the previous amino acid with the carboxyl of the next amino acid.
+
+  false3a: binding of the anticodon to small subunit of the ribosome.
+  false3b: binding of small subunit of the ribosome to mRNA.
+  false3c: binding of small subunit of the ribosome to the mRNA's Shine-Delgarno sequence.
+  
+  false4a: binding of the new tRNA molecule to the A-site of the ribosome.
+  
+  false5a: removal of the tRNA molecule from the E-site of the ribosome.
+  
+  false6a: binding of large subunit of the ribosome to the amino acyl-tRNA.
+  false6b: binding of large subunit of the ribosome to the tRNA's CCA tail.
+
+  false7a: translocation of the tRNA molecule from the A-site to the E-site of the ribosome.
+  false7b: translocation of the tRNA molecule from the A-site to the P-site of the ribosome.
+  false7c: translocation of the tRNA molecule from the E-site to the A-site of the ribosome.
+  false7d: translocation of the tRNA molecule from the E-site to the P-site of the ribosome.
+  false7e: translocation of the tRNA molecule from the P-site to the A-site of the ribosome.
+  false7f: translocation of the tRNA molecule from the P-site to the E-site of the ribosome.
+
+
+# conflicts, means that the statements cannot appear together
+# add ': True' to each line, so the program runs a faster lookup 
+conflict_rules: ~  
+    
+    
+    
