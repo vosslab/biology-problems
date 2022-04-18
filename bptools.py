@@ -88,11 +88,13 @@ def _ryb_to_rgb(r, y, b): # Assumption: r, y, b in [0, 1]
 #=====================
 #=====================
 #=====================
-def getGeneLetters(length, shift=0):
+def getGeneLetters(length, shift=0, upper=False):
 	all_lowercase = "abcdefghijklmnopqrstuvwxyz"
 	lowercase =     "abcdefghjkmnpqrstuwxyz"
 	shift = shift % (len(lowercase) - length + 1)
 	gene_string = lowercase[shift:shift+length]
+	if upper is True:
+		gene_string = gene_string.upper()
 	gene_list = list(gene_string)
 	return gene_list
 
@@ -110,16 +112,17 @@ def makeQuestionPretty(question):
 	#print(len(pretty_question))
 	pretty_question = re.sub('\<table .+\<\/table\>', '[TABLE]\n', pretty_question)
 	pretty_question = re.sub('\<table .*\<\/table\>', '[TABLE]\n', pretty_question)
-	if 'table' in pretty_question:
+	if '<table' in pretty_question or '</table' in pretty_question:
 		print("MISSED A TABLE")
 		print(pretty_question)
-		#sys.exit(1)
+		sys.exit(1)
 		pass
 	#print(len(pretty_question))
 	pretty_question = re.sub('&nbsp;', ' ', pretty_question)
 	pretty_question = re.sub('h[0-9]\>', 'p>', pretty_question)
 	pretty_question = re.sub('<br/>', '\n', pretty_question)
 	pretty_question = re.sub('<span [^>]*>', ' ', pretty_question)
+	pretty_question = re.sub('<\/?strong>', ' ', pretty_question)
 	pretty_question = re.sub('</span>', '', pretty_question)
 	pretty_question = re.sub('\<hr\/\>', '', pretty_question)
 	pretty_question = re.sub('\<\/p\>\s*\<p\>', '\n', pretty_question)
@@ -127,6 +130,7 @@ def makeQuestionPretty(question):
 	pretty_question = re.sub('\n\<\/p\>', '', pretty_question)
 	pretty_question = re.sub('\n\<p\>', '\n', pretty_question)
 	pretty_question = re.sub('\n\n', '\n', pretty_question)
+	pretty_question = re.sub('  *', ' ', pretty_question)
 
 	#print(len(pretty_question))
 	return pretty_question
