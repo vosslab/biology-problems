@@ -2,31 +2,81 @@
 
 import os
 import sys
+import random
 import argparse
 
 import seqlib
+
+#==========================
+#==========================
+def makeInverseGeneticCode():
+	inverse_genetic_code = {}
+	for codon,amino_acid in seqlib.genetic_code.items():
+		inverse_genetic_code[amino_acid] = inverse_genetic_code.get(amino_acid, []) + [codon,]
+	return inverse_genetic_code
+
+#==========================
+#==========================
+def makeRandomPeptide(peptide_length):
+	peptide_sequence = 'M'
+	nucleotide_sequence = "AUG"
+
+	inverse_genetic_code = makeInverseGeneticCode()
+	amino_acid_list = list(inverse_genetic_code.keys())
+	#remove stop codon
+	amino_acid_list.remove('_')
+	amino_acid_list.sort()
+
+	for i in range(peptide_length-1):
+		amino_acid = random.choice(amino_acid_list)
+		peptide_sequence += amino_acid
+		codon = random.choice(inverse_genetic_code[amino_acid])
+		nucleotide_sequence += codon
+
+	print("nucleotide_sequence = ",nucleotide_sequence)
+	peptide_sequence_calc = seqlib.translate(nucleotide_sequence)
+	print("peptide_sequence = ", peptide_sequence)
+	print("peptide_sequence_calc = ", peptide_sequence_calc)
+
+	return peptide_sequence, nucleotide_sequence
+
+
+#==========================
+#==========================
+def readWordleList():
+	f = open('real_wordles.txt', 'r')
+
+#==========================
+#==========================
+def makeWordlePeptide(peptide_length):
+	wordle_list = readWordleList()
+	peptide_sequence = 'M'
+	nucleotide_sequence = "AUG"
+
+	inverse_genetic_code = makeInverseGeneticCode()
+	amino_acid_list = list(inverse_genetic_code.keys())
+	#remove stop codon
+	amino_acid_list.remove('_')
+	amino_acid_list.sort()
+
+	for i in range(peptide_length-1):
+		amino_acid = random.choice(amino_acid_list)
+		peptide_sequence += amino_acid
+		codon = random.choice(inverse_genetic_code[amino_acid])
+		nucleotide_sequence += codon
+
+	print("nucleotide_sequence = ",nucleotide_sequence)
+	peptide_sequence_calc = seqlib.translate(nucleotide_sequence)
+	print("peptide_sequence = ", peptide_sequence)
+	print("peptide_sequence_calc = ", peptide_sequence_calc)
+
+	return peptide_sequence, nucleotide_sequence
 
 
 #==========================
 #==========================
 def makeCompleteQuestion(N, peptide_length):
-	peptide_sequence = 'M'
-	nucleotide_sequence = "AUG"
-	seqlen = (peptide_length - 1) * 3
-	dna = seqlib.makeSequence(seqlen)
-	rna = seqlib.transcribe(dna)
-	nucleotide_sequence += rna
-	print(nucleotide_sequence)
-	peptide_sequence = seqlib.translate(nucleotide_sequence)
-	print(peptide_sequence)
-	sys.exit(1)
-
-
-
-
-
-
-
+	peptide_sequence, nucleotide_sequence = makeRandomPeptide(peptide_length)
 
 #==========================
 #==========================
