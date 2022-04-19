@@ -207,6 +207,10 @@ def flip(seq):
 
 #=========================
 def makeSequence(seqlen=10):
+	if seqlen <= 3:
+		## too many checks
+		seq = _makeSequence(seqlen)
+		return seq
 	endloop = False
 	half = int(seqlen//2)
 	while not endloop:
