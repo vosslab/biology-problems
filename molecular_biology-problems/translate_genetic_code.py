@@ -189,7 +189,9 @@ def makeCompleteQuestion(N, peptide_length, extra=False):
 	f.close()
 	#print(question)
 
-	answers_list = [peptide_sequence,]
+	sep3 = seqlib.insertCommas(peptide_sequence, separate=3)
+	sep5 = seqlib.insertCommas(peptide_sequence, separate=5)
+	answers_list = [peptide_sequence, sep3, sep5]
 
 	bbformat = bptools.formatBB_FIB_Question(N, question, answers_list)
 
