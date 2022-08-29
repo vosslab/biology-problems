@@ -1,0 +1,65 @@
+
+items to match per question: 4
+
+key description: genetic disorders
+
+value description: description
+
+matching pairs:
+  Achondroplasia:
+    - impairs the growth of bone in the limbs and causes abnormal growth in the spine and skull
+  Beta-Thalassemia:
+    - reduced hemoglobin proteins that result in variable outcomes including severe anemia
+  Cystic fibrosis:
+    - a faulty protein that affects the cells, tissues, and the glands that make mucus and sweat
+    - autosomal recessive genetic disorder affecting most critically the lungs
+  Duchenne muscular dystrophy:
+    - disorder that affects the muscles, leading to muscle wasting that gets worse over time
+  Fragile X syndrome:
+    - a genetic condition involving changes in part of the X chromosome
+  Galactosemia:
+    - metabolic disorder that affects an individual's ability to metabolize the sugar galactose properly
+  Hemophilia:
+    - an inherited bleeding disorder in which the blood does not clot properly
+  "Huntington's disease":
+    - disorder that causes the progressive breakdown (degeneration) of nerve cells in the brain
+  Maple syrup urine disease:
+    - metabolic disorder affecting branched-chain amino acids
+    - "gets its name from the distinctive sweet odor of affected infants' urine"
+  Marfan syndrome:
+    - multi-systemic genetic disorder that affects the connective tissue
+    - individuals with the condition tend to be tall and thin, with long arms, legs, fingers, and toes
+  Phenylketonuria:
+    - inherited disorder that causes an amino acid called phenylalanine to build up in the body
+    - "genetic metabolic disorder that increases the body's levels of phenylalanine"
+    -  inherited disorder of metabolism that causes an increase in the blood of a chemical known as phenylalanine
+  Sickle-cell anemia:
+    - affects your red blood cells, turning them from round flexible discs into stiff and sticky, long, and rigid cells
+  Tay–Sachs disease:
+    - a genetic disorder that results in the destruction of nerve cells in the brain and spinal cord
+    - people with the disorder do not have enough of an enzyme called beta-hexosaminidase
+  
+  Angelman syndrome:
+    - caused by duplications of the UBE3A gene located on chromosome 15
+  Cri du chat syndrome:
+    - usually include a high-pitched cat-like cry, mental disablity, delayed development, distinctive facial features, widely-spaced eyes
+    - disorder that is due to a missing piece (deletion) of a specific part of chromosome 5 
+  DiGeorge syndrome:
+  Down syndrome:
+  "Edward's syndrome":
+  Klinefelter syndrome:
+  Patau syndrome:
+  Philadelphia chromosome:
+  Prader-Willi syndrome:
+  Triple X syndrome:
+  Turner syndrome:
+  WAGR syndrome :
+  Wolf-Hirschhorn syndrome:
+
+replacement_rules:
+   disorder:       '<span style=color: DarkGreen;>disorder</span>'
+   genetic:        '<span style=color: MediumVioletRed;>genetic</span>'
+   metabolic:      '<span style=color: Indigo;>metabolic</span>'
+   chromosome:     '<span style=color: SteelBlue;>chromosome</span>'
+
+
