@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
 This program creates all permutations of statements make a multiple choice question of the form:
