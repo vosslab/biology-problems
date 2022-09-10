@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os
 import sys
@@ -45,7 +45,7 @@ def write_question(N, seqlen):
 	#choice 5
 	nube = question_seq[:half] + answer_seq[half:]
 	choice_list.append(nube)
-	
+
 	choice_table_list = []
 	for choice in choice_list:
 		choice_table = seqlib.Single_Strand_Table(choice, choice_fivetothree)
@@ -55,7 +55,7 @@ def write_question(N, seqlen):
 	random.shuffle(choice_table_list)
 	bbformat = bptools.formatBB_MC_Question(N, question_text, choice_table_list, answer_table)
 	return bbformat
-		
+
 #============================
 #============================
 #============================
@@ -66,7 +66,7 @@ if __name__ == '__main__':
 	else:
 		seqlen = 9
 	if len(sys.argv) >= 3:
-		seqlen = int(sys.argv[2])
+		num_sequences = int(sys.argv[2])
 	else:
 		num_sequences = 24
 
