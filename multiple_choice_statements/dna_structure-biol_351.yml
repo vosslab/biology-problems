@@ -1,0 +1,52 @@
+---
+
+#Which one of the following statements is FALSE/TRUE <connection word> <topic>
+topic: the structure of DNA
+
+connection_words: ~
+
+true_statements:
+  truth1: the backbone contains only phosphate and sugar
+
+  truth2: hydrogen bonds hold the two strands together
+
+  truth3: the helix is made of nucleotides
+
+  truth4a: the two strands of DNA are anti-parallel
+  truth4b: DNA exists as an anti-parallel double helix
+  truth4c: DNA contains two strands, with each strand running in opposite directions
+
+  truth5: purine bases pair up with pyrimidine bases
+
+  truth6: the DNA bases for each strand face the inside of the helix
+  truth7: the phosphate groups are on the outside of the DNA double helix
+
+  truth9a: G-C base pairs have three hydrogen bonds, whereas A-T base pairs only have two hydrogen bonds
+  truth9b: G-C base pairs are stronger than A-T base pairs
+  truth9c: A-T base pairs are weaker than G-C base pairs
+
+false_statements:
+  false1a: the backbone contains only phosphate and nucleobase
+  false1b: the backbone contains only nucleobase and sugar
+
+  false2b: covalent bonds hold the two strands together
+  
+  false3: the helix is made of amino acids
+
+  false4a: DNA exists as a parallel double helix
+  false4b: the two strands of DNA are parallel
+  false4c: DNA contains two strands, with both strands running the same direction
+
+  false5a: purine bases pair up with like purine bases
+  false5b: pyrimidine bases pair up with like pyrimidine bases
+
+  false6: the DNA bases for each strand face the outside of the helix
+  false7: the phosphate groups are on the inside of the DNA double helix
+
+  false9a: A-T base pairs have three hydrogen bonds, whereas G-C base pairs only have two hydrogen bonds
+  false9b: A-T base pairs are stronger than G-C base pairs
+  false9c: G-C base pairs are weaker than A-T base pairs
+
+# conflicts, means that the statements cannot appear together
+# add ': True' to each line, so the program runs a faster lookup
+conflict_rules: ~
