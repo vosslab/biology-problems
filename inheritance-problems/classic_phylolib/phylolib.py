@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 #NOTE: phylolib2 is much better, use that when you can
 
