@@ -4,13 +4,23 @@ import sys
 import copy
 import yaml
 import colorsys
-import crcmod.predefined
+import num2words #pip
+import crcmod.predefined #pip
 
 answer_histogram = {}
 
 #=======================
 def test():
 	sys.stderr.write("good job")
+
+#==========================
+#==========================
+#==========================
+def number_to_ordinal(integer):
+	return num2words.num2words(integer, to='ordinal', lang='en_US')
+#==========================
+def number_to_cardinal(integer):
+	return num2words.num2words(integer, to='cardinal', lang='en_US')
 
 #==========================
 #==========================
@@ -283,5 +293,3 @@ def print_histogram():
 	for key in keys:
 		sys.stderr.write("{0}: {1},  ".format(key, answer_histogram[key]))
 	sys.stderr.write("\n")
-
-
