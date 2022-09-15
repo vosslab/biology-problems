@@ -179,6 +179,16 @@ def _validate(all_buffer_dict):
 			except ValueError:
 				print(pKa_value, 'is not a float')
 				sys.exit(1)
+		print('...is valid')
+
+#============================
+#============================
+#============================
+def expand_buffer_dict(buffer_dict):
+	num_pkas = len(buffer_dict['pKa_list'])
+	buffer_dict['protic_name'] = protic_names[num_pkas]
+	buffer_dict['formula_list'] = format_list_of_chemical_formula_html(buffer_dict['state_list'])
+	return buffer_dict
 
 #============================
 #============================
@@ -187,8 +197,7 @@ def get_random_buffer():
 	buffer_name = random.choice(list(all_buffer_dict.keys()))
 	buffer_dict = all_buffer_dict[buffer_name]
 	buffer_dict['name'] = buffer_dict
-	num_pkas = len(buffer_dict['pKa_list'])
-	buffer_dict['protic_name'] = protic_names[num_pkas]
+	buffer_dict = expand_buffer_dict(buffer_dict)
 	return buffer_dict
 
 #============================
@@ -203,6 +212,14 @@ def get_protonation_state(buffer_dict, pH_value):
 			state = state_list[i]
 			break
 	return state
+
+#============================
+#============================
+#============================
+def get_protonation_formula(buffer_dict, pH_value):
+	state = get_protonation_state(buffer_dict, pH_value)
+	formula = format_chemical_formula_html(state)
+	return formula
 
 #============================
 #============================
