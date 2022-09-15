@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 import sys
 import random
 
@@ -52,7 +53,7 @@ def pKa_list_to_words(pKa_list):
 #============================
 #============================
 #============================
-def get_pH_values(pKa_list, pH_diff_cutoff=0.7):
+def get_pH_values(pKa_list, pH_diff_cutoff=0.65):
 	all_pH_list = [
 		0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0,
 		5.5, 6.0, 6.5, 7.0, 7.5, 8.0, 8.5, 9.0, 9.5, 10.0,
@@ -68,7 +69,6 @@ def get_pH_values(pKa_list, pH_diff_cutoff=0.7):
 		if good_value is True:
 			pH_list.append(pH)
 	return pH_list
-
 
 #============================
 #============================
@@ -91,15 +91,34 @@ def write_question(buffer_dict, pH_value):
 #============================
 #============================
 #============================
-N = 1
-buffer_dict = bufferslib.get_random_buffer()
-pH_list = get_pH_values(buffer_dict['pKa_list'])
-#print(pH_list)
-pH_value = random.choice(pH_list)
-question_text = write_question(buffer_dict, pH_value)
-choices_list = bufferslib.format_list_of_chemical_formula_html(buffer_dict['state_list'])
-if random.random() < 0.5:
-	choices_list.reverse()
-answer_state = bufferslib.get_protonation_state(buffer_dict, pH_value)
-answer_formula = bufferslib.format_chemical_formula_html(answer_state)
-bptools.formatBB_MC_Question(N, question_text, choices_list, answer_formula)
+def make_complete_question(N, buffer_dict, pH_value):
+	question_text = write_question(buffer_dict, pH_value)
+	choices_list = buffer_dict['formula_list']
+	if random.random() < 0.5:
+		choices_list.reverse()
+	answer_formula = bufferslib.get_protonation_formula(buffer_dict, pH_value)
+	bbformat = bptools.formatBB_MC_Question(N, question_text, choices_list, answer_formula)
+	return bbformat
+
+#============================
+#============================
+#============================
+if __name__ == '__main__':
+	N = 0
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('writing to file: '+outfile)
+	f = open(outfile, 'w')
+	buffer_list = list(bufferslib.diprotic.values())
+	for buffer_dict in buffer_list:
+		buffer_dict = bufferslib.expand_buffer_dict(buffer_dict)
+		pH_list = get_pH_values(buffer_dict['pKa_list'])
+		for pH_value in pH_list:
+			N += 1
+			bbformat = make_complete_question(N, buffer_dict, pH_value)
+			f.write(bbformat)
+	f.close()
+	bptools.print_histogram()
+
+#============================
+#============================
+#============================
