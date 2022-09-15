@@ -65,6 +65,9 @@ if __name__ == '__main__':
 		seqlen = int(sys.argv[1])
 	else:
 		seqlen = 9
+	if seqlen > 18:
+		print('sequence length too long', seqlen)
+		sys.exit(1)
 	if len(sys.argv) >= 3:
 		num_sequences = int(sys.argv[2])
 	else:
