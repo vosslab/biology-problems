@@ -1,0 +1,60 @@
+
+items to match per question: 4
+
+key description: cell disruption techniques
+
+value description: description
+
+matching pairs:
+  Enzymatic method:
+    - chemical reactions digest the cell wall
+    - cells are suspended in buffers containing protein catalysts that digest the cell wall
+    - digestive protein catalysts digest and decompose the microbial cell wall
+    - lysozyme is commonly used to digest the cell wall of gram-positive bacteria
+
+  Bead beating:
+    - tiny glass particles are mixed and stirred to a high level agitation
+    - this technique involves using glass or metal particles to apply gentle abrasion while vortexing them
+    - small glass particles are placed into a blender and act like bullets smashing the cells
+    - small glass or ceramic particles are used to crack open cells
+
+  Sonication:
+    - this technique applies high-frequency sound waves to shatter the cells
+    - this technique uses short bursts of ultrasonic waves to disrupt the tissue
+    - high-frequency sound waves cause disruption of cells by shear force and tension
+    - ultrasonic sound energy is used to cause air bubbles in a liquid to implode damaging the cells
+    - high-frequency sound waves produce tiny bubbles that explode, producing a local shockwave
+    - this technique uses the forces of ultrasonic waves in order to rupture cells
+
+  Freeze-thaw:
+    - this technique uses extremely cold temperatures and grinding to pulverize the cells
+    - under cold temperatures the water inside the cells expands into ice causing the cells to burst open
+    - cell suspensions are subjected to variable temperatures that results in rupture of the walls
+    - cold temperatures form ice crystals, which expand, and this ultimately causes the cell wall to rupture
+
+  Mortar and pestle:
+    - samples are ground to break to apart into small pieces
+    - this is laborious manual work that can take several minutes
+    - grinding of the cells such that they are disrupted
+
+  Dounce homogenizer:
+    - handheld device that spins in a tube to smash the cells
+    - handheld cylindrical glass tube and a pestle that has a tight fit within the shaft
+
+  Mechanical homogenizer:
+    - this technique works like drill with spinning rotor blades to shear the cells apart
+    - consists of a fast-spinning inner rotor with a stationary outer stator to produce shearing forces
+    - motorized device with rotating blades that shears the cells apart
+
+  French press:
+    - a hydraulic piston within a cylinder forces the cells through a small hole using high pressure
+    - a hydraulic press drives a piston to squeeze the sample through a needle valve
+    - cell suspension is forced through a narrow valve using a hydraulic piston
+    - cell suspension is forced by a piston-type pump under high pressure through a small orifice
+
+  Microfluidizer:
+    - a high pressure pump pushes the cells through a Z-shaped interaction chamber
+    - uses a pump and a Z-shaped interaction chamber to create high pressures
+
+  High throughput homogenizer:
+    - a bead beating machine that can process a large number of samples simultaneously in a short time
