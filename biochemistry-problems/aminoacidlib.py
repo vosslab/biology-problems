@@ -6,18 +6,11 @@ import sys
 #============================
 #============================
 #============================
-class SugarStructure(object):
+class AminoAcidStructure(object):
 	#============================
 	def __init__(self, sugar_code):
-		self.sugar_code = sugar_code
 		self.molecular_formula_ready = False
 		self.structural_parts = []
-
-	#============================
-	def sugar_summary(self):
-		print(self.molecular_formula_txt())
-		print(self.structural_part_txt())
-		print(self.Fischer_projection_html())
 
 	#============================
 	def structural_part_txt(self):
