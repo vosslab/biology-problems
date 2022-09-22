@@ -1,0 +1,80 @@
+
+items to match per question: 4
+
+key description: cell disruption techniques
+
+value description: description
+
+matching pairs:
+  alleles:
+    - different versions of the same gene, such as <strong>A</strong> or <strong>a</strong>
+    - one of two or more versions of DNA sequence at a given genomic location
+    - one of two or more alternative forms of a gene at the same site in a chromosome,
+    - alternative forms of a gene
+    - variants of the gene
+    - alternative DNA sequences at a locus
+    - either of a pair of Mendelian characters that may occur in an organism
+    - variations at one gene locus
+    - variants at a gene locus that code for a specific traits
+
+  character:
+    - heritable feature that varies among individuals, such as seed shape
+    - heritable feature that varies among individuals, such as seed color
+    - heritable feature that varies among individuals, such as flower position
+    - heritable feature that varies among individuals, such as stem length
+    - heritable feature that varies among individuals, such as eye color
+    - an observable feature of a particular group of organisms, such as flower color
+    - an observable feature of a particular group of organisms, such as hair color
+    - an observable feature of a particular group of organisms, such as seed color
+
+  genotype:
+    - the genetic constitution of an organism
+    - combination of alleles that determines a specific trait
+    - genetic content of an organism to make a specific trait
+    - chemical makeup of DNA that causes a particular phenotype
+
+  heterozygous:
+    - when two copies of a gene are different
+    - different alleles at one or more corresponding chromosomal loci
+    - two different alleles of a given gene
+    - different inherited versions of a gene from each biological parent
+    - possession of a pair of differing alleles
+
+  homozygous:
+    - the two copies of a gene are identical
+    - identical alleles at one or more corresponding chromosomal loci
+    - two identical alleles of a given gene
+    - identical inherited versions of a gene from each biological parent
+    - possession of a pair of identical alleles
+
+  homologous chromosomes:
+    - two similar but different copies of a chromosome
+    - one chromosome from the mother and one chromosome from the father
+    - two chromosomes which carry the same genes, one from each parental source
+    - chromosomes which contain the same genes in the same order along their chromosomal arms
+    - chromosomes of similar length, gene position, and centromere location
+    - two chromosomes containing identical genetic loci although possibly different allelic forms
+
+  locus:
+    - location of a gene on a chromosome
+    - where on a chromosome a specific gene is located
+    - a specific, fixed position on a chromosome of a particular gene
+    - a spot or "address" on a chromosome at which a gene for a particular trait is located
+    - the physical position of a gene within a chromosome
+
+  phenotype:
+    - the observable traits of an organism
+    - the observable traits of an individual, such as eye color and blood type
+    - the observable traits of an individual, such as height and blood type
+    - the observable traits of an individual, such as height and eye color
+    - the observable expression of DNA
+    - the physical traits or characteristics of an organism
+    - observable characteristics due to how its genes interact with the environment
+    - all the observable characteristics of an organism
+
+  trait:
+    - each variant for a character, such as purple or white color for flowers
+    - each variant for a character, such as green or yellow color for seeds
+    - each variant for a character, such as round or wrinkled seeds in flowers
+    - a distinct variant of a character of an organism, such as purple or white color for flowers
+    - a distinct variant of a character of an organism, such as short or long stems in flowers
