@@ -22,18 +22,35 @@ false_statements:
 
   false12a: amino acid
   false12b: protein
+  false12c: peptide bond
+  false12d: polypeptide
 
-  false13: alanine
-  false14: glycerol backbone
-  false15: oxygen
-  false16: hydrogen
-  false17: nucleus
-  false18: cytoplasm
-  false19: glucose
-  false20: chromatin
+  false13a: alanine
+  false13b: glycine
+  false13b: serine
+
+  false14a: glycerol backbone
+  false14b: glycerin
+  false14c: glyceraldehyde
+
+  false15: sulfur
+
+  false16a: nuclein
+  false16b: nucleus
+  false16c: nucleolus
+
+  false18a: cytoplasm
+  false18b: cytosol
+
+  false19a: glucose
+  false19b: fructose
+  false19c: sucrose
+
+  false20a: chromatin
+  false20b: chromosomes
+  false20c: chromatid
+
 
 # conflicts, means that the statements cannot appear together
-# add ': True' to each line, so the program runs a faster lookup 
+# add ': True' to each line, so the program runs a faster lookup
 conflict_rules: ~
-
-
