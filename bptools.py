@@ -8,6 +8,7 @@ import num2words #pip
 import crcmod.predefined #pip
 
 answer_histogram = {}
+question_count = 0
 
 #=======================
 def test():
@@ -158,6 +159,7 @@ def QuestionHeader(N, crc16, question):
 #==========================
 #==========================
 def formatBB_MC_Question(N, question, choices_list, answer):
+	global question_count
 	if len(choices_list) <= 1:
 		print("not enough choices to choose from, you need two choices for multiple choice")
 		print("answer=", answer)
@@ -188,10 +190,12 @@ def formatBB_MC_Question(N, question, choices_list, answer):
 	if answer_count != 1:
 		print("Too many or few answers count {0}".format(answer_count))
 		sys.exit(1)
+	question_count += 1
 	return bb_question + '\n'
 
 #=====================
 def formatBB_MA_Question(N, question, choices_list, answers_list):
+	global question_count
 	if len(choices_list) <= 1:
 		print("not enough choices to choose from, you need two choices for multiple choice")
 		print("answers_list=", answers_list)
@@ -222,10 +226,12 @@ def formatBB_MA_Question(N, question, choices_list, answers_list):
 	if answer_count == 0:
 		print("No answer count {0}".format(answer_count))
 		sys.exit(1)
+	question_count += 1
 	return bb_question + '\n'
 
 #=====================
 def formatBB_FIB_Question(N, question, answers_list):
+	global question_count
 	#fill in the black = FIB
 	#FIB TAB question text TAB answer text TAB answer two text
 	bb_question = ''
@@ -239,10 +245,12 @@ def formatBB_FIB_Question(N, question, answers_list):
 		bb_question += '\t{0}'.format(answer)
 		print("- {0}".format(makeQuestionPretty(answer)))
 	print("")
+	question_count += 1
 	return bb_question + '\n'
 
 #=====================
 def formatBB_NUM_Question(N, question, answer, tolerance):
+	global question_count
 	#NUM TAB question text TAB answer TAB [optional]tolerance
 	bb_question = ''
 
@@ -256,6 +264,7 @@ def formatBB_NUM_Question(N, question, answer, tolerance):
 	bb_question += '\t{0:.8f}'.format(tolerance)
 	print("+/- {0:.3f}".format(tolerance))
 	print("")
+	question_count += 1
 	return bb_question + '\n'
 
 #=====================
@@ -285,18 +294,20 @@ def formatBB_MAT_Question(N, question, answers_list, matching_list):
 		bb_question += '\t{0}&nbsp;\t{1}&nbsp;'.format(answer, match)
 		print("- {0}. {1} == {2}".format(letters[i], makeQuestionPretty(answer), makeQuestionPretty(match)))
 	print("")
+	question_count += 1
 	return bb_question + '\n'
 
 #==========================
 #==========================
 #==========================
 def print_histogram():
+	global question_count
 	sys.stderr.write("=== Answer Choice Histogram ===\n")
 	keys = list(answer_histogram.keys())
 	keys.sort()
-	total = 0
+	total_answers = 0
 	for key in keys:
-		total += answer_histogram[key]
+		total_answers += answer_histogram[key]
 		sys.stderr.write("{0}: {1},  ".format(key, answer_histogram[key]))
 	sys.stderr.write("\n")
-	sys.stderr.write("Total Answers = {0:d}\n".format(total))
+	sys.stderr.write("Total Questions = {0:d}; Total Answers = {1:d}\n".format(question_count, total_answers))
