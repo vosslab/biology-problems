@@ -146,6 +146,15 @@ def makeQuestionPretty(question):
 	return pretty_question
 
 #==========================
+def QuestionHeader(N, crc16, question):
+	crc16 = getCrc16_FromString(question)
+	#header = '<p>{0:03d}. {1}</p> {2}'.format(N, crc16, question)
+	header = '<p>{0}</p> {1}'.format(crc16, question)
+	pretty_question = makeQuestionPretty(question)
+	print('{0:03d}. {1} -- {2}'.format(N, crc16, pretty_question))
+	return header
+
+#==========================
 #==========================
 #==========================
 def formatBB_MC_Question(N, question, choices_list, answer):
@@ -157,10 +166,9 @@ def formatBB_MC_Question(N, question, choices_list, answer):
 
 	bb_question = ''
 	#number = "{0}. ".format(N)
-	crc16 = getCrc16_FromString(question)
-	bb_question += 'MC\t<p>{0:03d}. {1}</p> {2}'.format(N, crc16, question)
-	pretty_question = makeQuestionPretty(question)
-	print('{0:03d}. {1} -- {2}'.format(N, crc16, pretty_question))
+
+	bb_question += 'MC\t'
+	bb_question += QuestionHeader(N, crc16, question)
 
 	answer_count = 0
 
@@ -193,9 +201,8 @@ def formatBB_MA_Question(N, question, choices_list, answers_list):
 	bb_question = ''
 	#number = "{0}. ".format(N)
 	crc16 = getCrc16_FromString(question)
-	bb_question += 'MA\t<p>{0:03d}. {1}</p> {2}'.format(N, crc16, question)
-	pretty_question = makeQuestionPretty(question)
-	print('{0:03d}. {1} -- {2}'.format(N, crc16, pretty_question))
+	bb_question += 'MA\t'
+	bb_question += QuestionHeader(N, crc16, question)
 
 	answer_count = 0
 
@@ -225,9 +232,8 @@ def formatBB_FIB_Question(N, question, answers_list):
 
 	#number = "{0}. ".format(N)
 	crc16 = getCrc16_FromString(question)
-	bb_question += 'FIB\t<p>{0:03d}. {1}</p> {2}'.format(N, crc16, question)
-	pretty_question = makeQuestionPretty(question)
-	print('{0:03d}. {1} -- {2}'.format(N, crc16, pretty_question))
+	bb_question += 'FIB\t'
+	bb_question += QuestionHeader(N, crc16, question)
 
 	for i, answer in enumerate(answers_list):
 		bb_question += '\t{0}'.format(answer)
@@ -242,9 +248,8 @@ def formatBB_NUM_Question(N, question, answer, tolerance):
 
 	#number = "{0}. ".format(N)
 	crc16 = getCrc16_FromString(question)
-	bb_question += 'NUM\t<p>{0:03d}. {1}</p> {2}'.format(N, crc16, question)
-	pretty_question = makeQuestionPretty(question)
-	print('{0:03d}. {1} -- {2}'.format(N, crc16, pretty_question))
+	bb_question += 'NUM\t'
+	bb_question += QuestionHeader(N, crc16, question)
 
 	bb_question += '\t{0:.8f}'.format(answer)
 	print("=== {0:.3f}".format(answer))
@@ -269,9 +274,8 @@ def formatBB_MAT_Question(N, question, answers_list, matching_list):
 
 	#number = "{0}. ".format(N)
 	crc16 = getCrc16_FromString(question + ''.join(answers_list) + ''.join(matching_list))
-	bb_question += 'MAT\t<p>{0:03d}. {1}</p> {2}'.format(N, crc16, question)
-	pretty_question = makeQuestionPretty(question)
-	print('{0:03d}. {1} -- {2}'.format(N, crc16, pretty_question))
+	bb_question += 'MAT\t'
+	bb_question += QuestionHeader(N, crc16, question)
 
 	num_items = min(len(answers_list), len(matching_list))
 	letters = 'ABCDEFGHJKMNPQRSTUWXYZ'
@@ -290,6 +294,9 @@ def print_histogram():
 	sys.stderr.write("=== Answer Choice Histogram ===\n")
 	keys = list(answer_histogram.keys())
 	keys.sort()
+	total = 0
 	for key in keys:
+		total += answer_histogram[key]
 		sys.stderr.write("{0}: {1},  ".format(key, answer_histogram[key]))
 	sys.stderr.write("\n")
+	sys.stderr.write("Total Answers = {0:d}\n".format(total))
