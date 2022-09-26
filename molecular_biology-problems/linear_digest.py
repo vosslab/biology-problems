@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import sys
 import time
 import random
 import bptools
@@ -10,16 +11,16 @@ debug = True
 
 #============================================
 #============================================
-def tdBlock(vtype="top", htype="middle", fill_color="white", strand_color="black", tick_color="#999999", fragment=True):
+def tdBlock(vtype="top", htype="middle", fill_color="white", strand_color="black", tick_color="#999999", dna_type='fragment'):
 	border_str = ""
-	if vtype == "top" and not fragment:
+	if vtype == "top" and dna_type == 'strand':
 		border_str += 'border-bottom: 4px solid {0}; '.format(strand_color)
 	elif vtype == "top" and not (htype == "start" or htype == "end"):
 		border_str += 'border-bottom: 4px solid {0}; '.format(strand_color)
 	else:
 		border_str += 'border-bottom: 0px solid {0}; '.format(fill_color)
 
-	if vtype == "bottom" and not fragment:
+	if vtype == "bottom" and dna_type == 'strand':
 		border_str += 'border-top: 4px solid {0}; '.format(strand_color)
 	elif vtype == "bottom" and not (htype == "start" or htype == "end"):
 		border_str += 'border-top: 4px solid {0}; '.format(strand_color)
@@ -59,7 +60,7 @@ def longDNA(vtype="top", fill_color="white", strand_color="gray", tick_color="#9
 
 #============================================
 #============================================
-def makeTable(length, label_dict=None, fragment=True):
+def makeTable(length, label_dict=None, dna_type='fragment'):
 	if label_dict is None:
 		label_dict = { 1: "EcoRI", 4: "NheI", }
 	table = ""
@@ -84,35 +85,35 @@ def makeTable(length, label_dict=None, fragment=True):
 
 	#DNA top row
 	table += "<tr>"
-	if fragment is True:
+	if dna_type == 'fragment':
 		table += '<td style="border: 0px solid white; "></td>'
-	else:
+	elif dna_type == 'strand':
 		table += longDNA("top")
-	table += tdBlock("top", "start", fragment=fragment)
+	table += tdBlock("top", "start", dna_type=dna_type)
 	for i in range(length):
-		table += tdBlock("top", "left", fragment=fragment)
-		table += tdBlock("top", "right", fragment=fragment)
-	table += tdBlock("top", "end", fragment=fragment)
-	if fragment is True:
+		table += tdBlock("top", "left", dna_type=dna_type)
+		table += tdBlock("top", "right", dna_type=dna_type)
+	table += tdBlock("top", "end", dna_type=dna_type)
+	if dna_type == 'fragment':
 		table += '<td style="border: 0px solid white; "></td>'
-	else:
+	elif dna_type == 'strand':
 		table += longDNA("top")
 	table += "</tr>"
 
 	#DNA bottom row
 	table += "<tr>"
-	if fragment is True:
+	if dna_type == 'fragment':
 		table += '<td style="border: 0px solid white; "></td>'
-	else:
+	elif dna_type == 'strand':
 		table += longDNA("bottom")
-	table += tdBlock("bottom", "start", fragment=fragment)
+	table += tdBlock("bottom", "start", dna_type=dna_type)
 	for i in range(length):
-		table += tdBlock("bottom", "left", fragment=fragment)
-		table += tdBlock("bottom", "right", fragment=fragment)
-	table += tdBlock("bottom", "end", fragment=fragment)
-	if fragment is True:
+		table += tdBlock("bottom", "left", dna_type=dna_type)
+		table += tdBlock("bottom", "right", dna_type=dna_type)
+	table += tdBlock("bottom", "end", dna_type=dna_type)
+	if dna_type == 'fragment':
 		table += '<td style="border: 0px solid white; "></td>'
-	else:
+	elif dna_type == 'strand':
 		table += longDNA("bottom")
 	table += "</tr>"
 
@@ -143,7 +144,7 @@ def getRandList(size, total_length, include_ends=False):
 
 #============================================
 #============================================
-def writeQuestion(N=1, length=10, num_sites=2, fragment=True):
+def writeQuestion(N=1, length=10, num_sites=2, dna_type='fragment', max_fragment_size=7):
 
 	enzymes = restrictlib.get_enzyme_list()
 	enzyme_class1 = restrictlib.random_enzyme_one_end(enzymes)
@@ -151,10 +152,10 @@ def writeQuestion(N=1, length=10, num_sites=2, fragment=True):
 	enzyme_class2 = restrictlib.random_enzyme_one_end(enzymes, badletter=enzyme_name1[0])
 	enzyme_name2 = enzyme_class2.__name__
 
-	if fragment is False and num_sites < 3:
+	if dna_type == 'strand' and num_sites < 3:
 		print("Strand mode requires at least 3 sites")
 		sys.exit(1)
-	elif fragment is True and num_sites < 2:
+	elif dna_type == 'fragment' and num_sites < 2:
 		print("Fragment mode requires at least 2 sites")
 		sys.exit(1)
 
@@ -202,9 +203,9 @@ def writeQuestion(N=1, length=10, num_sites=2, fragment=True):
 		time.sleep(0.1)
 		return None
 
-	if fragment is True:
+	if dna_type == 'fragment':
 		answers = fragment_answers
-	elif fragment is False:
+	elif dna_type == 'strand':
 		answers = strand_answers
 	if len(answers) < 2:
 		print("too few fragments")
@@ -213,19 +214,23 @@ def writeQuestion(N=1, length=10, num_sites=2, fragment=True):
 		return None
 
 	if debug is True:
-		strand_answers.sort()
-		fragment_answers.sort()
 		print("TRIM fragment_answers=", fragment_answers)
 		print("TRIM strand_answers=", strand_answers)
 
-	table = makeTable(length, label_dict, fragment)
-	if fragment is True:
+	if max(answers) > max_fragment_size:
+		print("too big of a fragment", max(answers))
+		print(answers)
+		time.sleep(0.1)
+		return None
+
+	table = makeTable(length, label_dict, dna_type)
+	if dna_type == 'fragment':
 		header = "<p>Below is a short fragment of DNA that is {0:d} kb in length.</p> ".format(length)
-	elif fragment is False:
+	elif dna_type == 'strand':
 		header = "<p>Below is a long strand of DNA, a close up of particular section is shown.</p> "
 	details  = "<p>There are two (2) different types of restriction sites: "
 	details += "<i>{0}</i> and <i>{1}</i> labeled at the top of the DNA strand.</p>".format(enzyme_name1, enzyme_name2)
-	if fragment is False:
+	if dna_type == 'strand':
 		details += "<p>Note: The dashes at the left and right indicate that the next restriction site is"
 		details += "very far away and will not be appear in a gel; it will likely be stuck in the well.</p>"
 	question = "<h6>Determine the sizes of bands that would appear on a gel "
@@ -233,8 +238,7 @@ def writeQuestion(N=1, length=10, num_sites=2, fragment=True):
 	#print(header+details+question)
 	#print(header+table+details+question)
 
-	max_answer = max(fragment_answers)
-	answer_str = ""
+	max_answer = max(answers)
 	last_answer = max(max_answer+1, 5)
 	choices_list = []
 	answers_list = []
@@ -255,11 +259,13 @@ if __name__ == '__main__':
 	num_questions = 10
 	length=18
 	num_sites=4
-	fragment=False
+	#dna_type='fragment' # short piece of DNA
+	dna_type='strand' # long strand of DNA
+	max_fragment_size = 7
 	print("num_questions=", num_questions)
 	print("length=", length)
 	print("num_sites=", num_sites)
-	print("fragment=", fragment)
+	print("dna_type=", dna_type)
 
 
 
@@ -268,7 +274,7 @@ if __name__ == '__main__':
 	f = open(outfile, 'w')
 	N = 0
 	for i in range(num_questions):
-		bb_question = writeQuestion(N, length, num_sites, fragment)
+		bb_question = writeQuestion(N, length, num_sites, dna_type, max_fragment_size)
 		if bb_question is not None:
 			N += 1
 			f.write(bb_question)
