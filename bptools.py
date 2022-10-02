@@ -131,7 +131,7 @@ def checkAscii(mystr):
 				sys.exit(1)
 	return True
 
-
+#==========================
 def getCrc16_FromString(mystr):
 	crc16 = crcmod.predefined.Crc('xmodem')
 	try:
@@ -171,8 +171,9 @@ def makeQuestionPretty(question):
 	return pretty_question
 
 #==========================
-def QuestionHeader(N, crc16, question):
-	crc16 = getCrc16_FromString(question)
+def QuestionHeader(question, N, crc16=None):
+	if crc16 is not None:
+		crc16 = getCrc16_FromString(question)
 	#header = '<p>{0:03d}. {1}</p> {2}'.format(N, crc16, question)
 	header = '<p>{0}</p> {1}'.format(crc16, question)
 	pretty_question = makeQuestionPretty(question)
@@ -194,7 +195,7 @@ def formatBB_MC_Question(N, question, choices_list, answer):
 	#number = "{0}. ".format(N)
 
 	bb_question += 'MC\t'
-	bb_question += QuestionHeader(N, crc16, question)
+	bb_question += QuestionHeader(question, N)
 
 	answer_count = 0
 
@@ -228,9 +229,8 @@ def formatBB_MA_Question(N, question, choices_list, answers_list):
 
 	bb_question = ''
 	#number = "{0}. ".format(N)
-	crc16 = getCrc16_FromString(question)
 	bb_question += 'MA\t'
-	bb_question += QuestionHeader(N, crc16, question)
+	bb_question += QuestionHeader(question, N)
 
 	answer_count = 0
 
@@ -261,9 +261,8 @@ def formatBB_FIB_Question(N, question, answers_list):
 	bb_question = ''
 
 	#number = "{0}. ".format(N)
-	crc16 = getCrc16_FromString(question)
 	bb_question += 'FIB\t'
-	bb_question += QuestionHeader(N, crc16, question)
+	bb_question += QuestionHeader(question, N)
 
 	for i, answer in enumerate(answers_list):
 		bb_question += '\t{0}'.format(answer)
@@ -279,9 +278,8 @@ def formatBB_NUM_Question(N, question, answer, tolerance):
 	bb_question = ''
 
 	#number = "{0}. ".format(N)
-	crc16 = getCrc16_FromString(question)
 	bb_question += 'NUM\t'
-	bb_question += QuestionHeader(N, crc16, question)
+	bb_question += QuestionHeader(question, N)
 
 	bb_question += '\t{0:.8f}'.format(answer)
 	print("=== {0:.3f}".format(answer))
@@ -307,9 +305,10 @@ def formatBB_MAT_Question(N, question, answers_list, matching_list):
 		sys.exit(1)
 
 	#number = "{0}. ".format(N)
-	crc16 = getCrc16_FromString(question + ''.join(answers_list) + ''.join(matching_list))
+	full_quesiton = question + ' '.join(answers_list) + ' '.join(matching_list))
+	crc16 = getCrc16_FromString(full_quesiton)
 	bb_question += 'MAT\t'
-	bb_question += QuestionHeader(N, crc16, question)
+	bb_question += QuestionHeader(question, N, crc16)
 
 	num_items = min(len(answers_list), len(matching_list))
 	letters = 'ABCDEFGHJKMNPQRSTUWXYZ'
