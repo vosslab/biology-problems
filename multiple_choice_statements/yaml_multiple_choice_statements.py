@@ -19,22 +19,9 @@ import pprint
 import random
 import argparse
 import itertools
-import crcmod.predefined
+import bptools
 
 answer_histogram = {}
-
-# special loader with duplicate key checking
-class UniqueKeyLoader(yaml.SafeLoader):
-	def construct_mapping(self, node, deep=False):
-		mapping = []
-		for key_node, value_node in node.value:
-			key = self.construct_object(key_node, deep=deep)
-			if key in mapping:
-				print("DUPLICATE KEY: ", key)
-				raise AssertionError("DUPLICATE KEY: ", key)
-			mapping.append(key)
-		return super().construct_mapping(node, deep)
-
 
 global_connection_words = [ 'concerning', 'about', 'regarding', 'of', ]
 base_replacement_rule_dict = {
@@ -51,25 +38,6 @@ base_replacement_rule_dict = {
 }
 
 lowercase = "abcdefghijklmnopqrstuvwxyz"
-
-#=======================
-def getCrc16_FromString(mystr):
-	crc16 = crcmod.predefined.Crc('xmodem')
-	crc16.update(mystr.encode('ascii'))
-	return crc16.hexdigest().lower()
-
-#=======================
-def readYamlFile(yaml_file):
-	print("Processing file: ", yaml_file)
-	yaml.allow_duplicate_keys = False
-	yaml_pointer = open(yaml_file, 'r')
-	#data = UniqueKeyLoader(yaml_pointer)
-	#help(data)
-	yaml_text = yaml_pointer.read()
-	data = yaml.load(yaml_text, Loader=UniqueKeyLoader)
-	#data = yaml.safe_load(yaml_pointer)
-	yaml_pointer.close()
-	return data
 
 #=======================
 def autoAddConflictRules(yaml_data):
@@ -124,7 +92,6 @@ def autoAddConflictRules(yaml_data):
 	return
 
 
-
 #=======================
 def checkIfConflict(statement1_id, statement2_id, conflict_rules):
 	# is a list of statement_ids
@@ -171,7 +138,6 @@ def filterOpposingStatements(main_statement_id, opposing_statement_tree, conflic
 
 #=======================
 def makeQuestionsFromStatement(main_statement, opposing_statement_nested_list, question_text):
-
 	num_wrong_choices = min(4, len(opposing_statement_nested_list))
 	possible_iterations = len(list(itertools.product(*opposing_statement_nested_list)))
 	possible_duplicate = possible_iterations * math.comb(len(opposing_statement_nested_list), num_wrong_choices)
@@ -181,29 +147,22 @@ def makeQuestionsFromStatement(main_statement, opposing_statement_nested_list, q
 	if num_wrong_choices <= 2:
 		print("WARNING: not enough choices for this question, skipping...")
 		return []
-	letters = "ABCDEFGH"
 
 	question_list = []
 	for j in range(num_duplicates):
-		bbformat = copy.copy(question_text)
-		print(question_text)
+		#get all the possible wrong answers
 		random.shuffle(opposing_statement_nested_list)
 		choices_nested_list = copy.copy(opposing_statement_nested_list[:num_wrong_choices])
-		choices_nested_list.append([main_statement, ])
-		random.shuffle(choices_nested_list)
-		for i, choice_list in enumerate(choices_nested_list):
-			random.shuffle(choice_list)
-			choice = choice_list[0]
-			bbformat += '\t{0}. {1}'.format(letters[i], choice)
-			if choice == main_statement:
-				prefix = 'x'
-				bbformat += '\tCorrect'
-				answer_histogram[letters[i]] = answer_histogram.get(letters[i], 0) + 1
-			else:
-				prefix = ' '
-				bbformat += '\tIncorrect'
-			print("- [{0}] {1}. {2}".format(prefix, letters[i], choice))
-		print("")
+		choices_list = []
+		for nest_choice_list in choices_nested_list:
+			choice = random.choice(nest_choice_list)
+			choices_list.append(choice)
+		#assign answer, add, and shuffle
+		answer_string = main_statement
+		choices_list.append(answer_string)
+		random.shuffle(choices_list)
+		N = random.randint(1, 999)
+		bbformat = bptools.formatBB_MC_Question(N, question_text, choices_list, answer_string)
 		question_list.append(bbformat)
 
 	return question_list
@@ -304,10 +263,9 @@ if __name__ == '__main__':
 		print("Usage: {0} -y <input_yaml_file>".format(__file__))
 		sys.exit(0)
 
-	yaml_data = readYamlFile(args.input_yaml_file)
+	yaml_data = bptools.readYamlFile(args.input_yaml_file)
 	pprint.pprint(yaml_data)
 	autoAddConflictRules(yaml_data)
-
 
 	list_of_complete_questions = sortStatements(yaml_data, notrue=args.notrue, nofalse=args.nofalse)
 	if len(list_of_complete_questions) > args.max_questions:
@@ -323,7 +281,7 @@ if __name__ == '__main__':
 	N = 0
 	for bbformat_question in list_of_complete_questions:
 		N += 1
-		crc16_value = getCrc16_FromString(bbformat_question)
+		crc16_value = bptools.getCrc16_FromString(bbformat_question)
 		output_format = "MC\t<p>{0:03d}. {1}</p> {2}\n".format(N, crc16_value, bbformat_question)
 		f.write(output_format)
 	f.close()
