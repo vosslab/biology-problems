@@ -225,9 +225,9 @@ def writeQuestion(N=1, length=10, num_sites=2, dna_type='fragment', max_fragment
 
 	table = makeTable(length, label_dict, dna_type)
 	if dna_type == 'fragment':
-		header = "<p>Below is a short fragment of DNA that is {0:d} kb in length.</p> ".format(length)
+		header = "<p>Below is a short fragment of DNA that is only {0:d} kb in length.</p> ".format(length)
 	elif dna_type == 'strand':
-		header = "<p>Below is a long strand of DNA, a close up of particular section is shown.</p> "
+		header = "<p>Below is a long strand of DNA, where a particular section is shown close up.</p> "
 	details  = "<p>There are two (2) different types of restriction sites: "
 	details += "<i>{0}</i> and <i>{1}</i> labeled at the top of the DNA strand.</p>".format(enzyme_name1, enzyme_name2)
 	if dna_type == 'strand':
@@ -257,17 +257,15 @@ def writeQuestion(N=1, length=10, num_sites=2, dna_type='fragment', max_fragment
 #============================================
 if __name__ == '__main__':
 	num_questions = 10
-	length=18
+	length= random.randint(16,20)
 	num_sites=4
-	#dna_type='fragment' # short piece of DNA
-	dna_type='strand' # long strand of DNA
+	dna_type='fragment' # short piece of DNA
+	#dna_type='strand' # long strand of DNA
 	max_fragment_size = 7
 	print("num_questions=", num_questions)
 	print("length=", length)
 	print("num_sites=", num_sites)
 	print("dna_type=", dna_type)
-
-
 
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
 	print('writing to file: '+outfile)
