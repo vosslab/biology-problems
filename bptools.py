@@ -30,26 +30,29 @@ def number_to_cardinal(integer):
 # special loader with duplicate key checking
 class UniqueKeyLoader(yaml.SafeLoader):
 	def construct_mapping(self, node, deep=False):
-		mapping = []
+		mapping = {}
 		for key_node, value_node in node.value:
 			key = self.construct_object(key_node, deep=deep)
-			if key in mapping:
-				print("DUPLICATE KEY: ", key)
-				raise AssertionError("DUPLICATE KEY: ", key)
-			mapping.append(key)
+			if isinstance(key, str):
+				if mapping.get(key) is True:
+					print("DUPLICATE KEY: ", key)
+					raise AssertionError("DUPLICATE KEY: ", key)
+				mapping[key] = True
+			else:
+				raise NotImplementedError
 		return super().construct_mapping(node, deep)
 
 #=======================
 def readYamlFile(yaml_file):
 	print("Processing file: ", yaml_file)
 	yaml.allow_duplicate_keys = False
-	yaml_pointer = open(yaml_file, 'r')
+	yaml_file_pointer = open(yaml_file, 'r')
 	#data = UniqueKeyLoader(yaml_pointer)
 	#help(data)
-	yaml_text = yaml_pointer.read()
+	yaml_text = yaml_file_pointer.read()
 	data = yaml.load(yaml_text, Loader=UniqueKeyLoader)
 	#data = yaml.safe_load(yaml_pointer)
-	yaml_pointer.close()
+	yaml_file_pointer.close()
 	return data
 
 #==========================
