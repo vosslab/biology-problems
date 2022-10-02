@@ -305,7 +305,7 @@ def formatBB_MAT_Question(N, question, answers_list, matching_list):
 		sys.exit(1)
 
 	#number = "{0}. ".format(N)
-	full_quesiton = question + ' '.join(answers_list) + ' '.join(matching_list))
+	full_quesiton = question + ' '.join(answers_list) + ' '.join(matching_list)
 	crc16 = getCrc16_FromString(full_quesiton)
 	bb_question += 'MAT\t'
 	bb_question += QuestionHeader(question, N, crc16)
