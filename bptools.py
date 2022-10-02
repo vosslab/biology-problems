@@ -112,9 +112,33 @@ def getGeneLetters(length, shift=0, upper=False):
 #==========================
 #==========================
 #==========================
+def checkAscii(mystr):
+	#destructive function
+	mystr = mystr.replace('. ', '\n')
+	mystr = mystr.replace(', ', '\n')
+	mystr = mystr.replace('<p>', '\n')
+	mystr = mystr.replace('</p>', '\n')
+	mystr = mystr.replace('<br/>', '\n')
+	mystr = mystr.replace('\n\n', '\n')
+	for i,line in enumerate(mystr.split('\n')):
+		for j,c in enumerate(list(line)):
+			try:
+				c.encode('ascii', errors='strict')
+			except UnicodeEncodeError:
+				print(line)
+				print(i, j, c)
+				print("^ is not ascii")
+				sys.exit(1)
+	return True
+
+
 def getCrc16_FromString(mystr):
 	crc16 = crcmod.predefined.Crc('xmodem')
-	crc16.update(mystr.encode('ascii'))
+	try:
+		crc16.update(mystr.encode('ascii', errors='strict'))
+	except UnicodeEncodeError:
+		checkAscii(mystr)
+		sys.exit(1)
 	return crc16.hexdigest().lower()
 
 #==========================
@@ -270,6 +294,7 @@ def formatBB_NUM_Question(N, question, answer, tolerance):
 #=====================
 def formatBB_MAT_Question(N, question, answers_list, matching_list):
 	#MAT TAB question text TAB answer text TAB matching text TAB answer two text TAB matching two text
+	global question_count
 	bb_question = ''
 
 	if len(answers_list) > len(set(answers_list)):
