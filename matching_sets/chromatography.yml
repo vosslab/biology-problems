@@ -1,0 +1,49 @@
+items to match per question: 4
+
+key description: type of column chromatography
+
+value description: description
+
+#######################
+matching pairs:
+  size-exclusion column (SEC): &id01
+    - size separation in a column filled with porous beads
+    - separates molecules by differences in size as they pass through a porous particles in a column
+    - only liquid chromatography method where molecules do not bind to the chromatography particles
+    - ability to separate protein samples by size using porous particles
+
+#duplicate of SEC
+  gel filtration column (GFC): *id01
+
+  ion exchange column (IEX):
+    - separate by charge, particle binding is controlled by pH of the solvent mobile phase
+    - separates proteins with differences in surface charge
+    - charged proteins interact with an oppositely charged chromatography particle resin
+    - above its isoelectric point (pI), a protein will bind to a positively charged anion exchanger
+    - below its isoelectric point (pI), a protein will bind to a negatively charged cation exchanger
+    - separation method essentially based on the net charge of the protein
+    - relies on charge-charge interactions between the proteins in your sample and the charges on the particle resin
+
+  hydrophobic interaction column (HIC): &id03
+    - separates by surface hydrophobicity, particle binding is controlled by salt concentration and/or organic solvents
+    - separates proteins according to differences in their surface hydrophobicity
+    - hydrophobic-based separations for protein characterization
+    - for one type, high salt concentration enhances the interaction, whereas low salt concentrations weaken it
+    - for one type, a decreasing salt gradient is used to separate samples in order of increasing hydrophobicity
+    - technique based on the ability to separate proteins based on relative hydrophobic differences
+    - for one type, gradients of increasing organic solvent concentration are used to affect separations
+
+#duplicate of HIC
+  reverse phase column (RPC): *id03
+
+  affinity column (AC):
+    - separation based on proteins binding to a ligand
+    - separates proteins on the basis of a reversible interaction between the target protein and a specific ligand
+    - works using resin-attached ligands to grab hold of the corresponding proteins
+    - a specific ligand is attached to the particle resin in the column
+    - relies on the specific and reversible binding of a protein to a matrix-bound ligand
+    - ligand-attached beads bind directly to the protein of interest
+
+exclude pairs:
+  - [size-exclusion column (SEC), gel filtration column (GFC)]
+  - [hydrophobic interaction column (HIC), reverse phase column (RPC)]
