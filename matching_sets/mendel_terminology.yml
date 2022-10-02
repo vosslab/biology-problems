@@ -1,22 +1,69 @@
 
 items to match per question: 4
 
-key description: cell disruption techniques
+key description: term
 
 value description: description
 
-matching pairs:
-  alleles:
-    - different versions of the same gene, such as <strong>A</strong> or <strong>a</strong>
-    - one of two or more versions of DNA sequence at a given genomic location
-    - one of two or more alternative forms of a gene at the same site in a chromosome,
-    - alternative forms of a gene
-    - variants of the gene
-    - alternative DNA sequences at a locus
-    - either of a pair of Mendelian characters that may occur in an organism
-    - variations at one gene locus
-    - variants at a gene locus that code for a specific traits
+#######################
+matching pairs 1:
+  haploid:
+    - a cell or organism that a single set of chromosomes
 
+  diploid:
+    - a cell or organism that has paired chromosomes
+
+  gene:
+    - the unit of inheritance passed from parents to offspring
+    - the main elements of heredity
+
+  genetics:
+    - the study of heredity and the variation of inherited characteristics
+    - the study of the effect of genetic differences on organisms
+    - study of genes, genetic variation, and heredity in organisms
+    - scientific study of how genes control the characteristics of plants and animals
+    - study of both trait and molecular inheritance mechanisms of genes
+    - the study of heredity and how genes control the inherited characteristics
+
+  genetic code:
+    - the set of instructions that tell a cell how to make a specific protein
+    - the set of rules used by living cells to translate information encoded within genetic material into proteins
+    - the set of instructions that converts the sequence of nucleotides into an amino acid sequence in proteins
+    - the code our body uses to convert the instructions contained in our DNA the essential materials of life
+
+  genomics:
+    - the study of all of the genes in an organism
+    - the structure, function, evolution, and mapping of genomes
+
+  genome:
+    - an organism's complete set of DNA
+    - complete set of DNA in an organism
+    - complete set of DNA in a cell or organism
+
+  locus:
+    - location of a gene on a chromosome
+    - where on a chromosome a specific gene is located
+    - a specific, fixed position on a chromosome of a particular gene
+    - a spot or "address" on a chromosome at which a gene for a particular trait is located
+    - the physical position of a gene within a chromosome
+
+  single nucleotide polymorphism (SNP):
+    - variation resulting from a single base pair change
+    - most common type of genetic variation among people
+    - a genomic variant at a single base position in the DNA
+    - a substitution of a single nucleotide at a specific position in the genome
+
+  homologous chromosomes:
+    - two similar but different copies of a chromosome
+    - one chromosome from the mother and one chromosome from the father
+    - two chromosomes which carry the same genes, one from each parental source
+    - chromosomes which contain the same genes in the same order along their chromosomal arms
+    - chromosomes of similar length, gene position, and centromere location
+    - two chromosomes containing identical genetic loci although possibly different allelic forms
+
+
+#######################
+matching pairs 2:
   character:
     - heritable feature that varies among individuals, such as seed shape
     - heritable feature that varies among individuals, such as seed color
@@ -27,11 +74,49 @@ matching pairs:
     - an observable feature of a particular group of organisms, such as hair color
     - an observable feature of a particular group of organisms, such as seed color
 
+  trait:
+    - each variant for a character, such as purple or white color for flowers
+    - each variant for a character, such as green or yellow color for seeds
+    - each variant for a character, such as round or wrinkled seeds in flowers
+    - a distinct variant of a character of an organism, such as purple or white color for flowers
+    - a distinct variant of a character of an organism, such as short or long stems in flowers
+    - a variation in an inherited characteristic
+
   genotype:
     - the genetic constitution of an organism
     - combination of alleles that determines a specific trait
     - genetic content of an organism to make a specific trait
     - chemical makeup of DNA that causes a particular phenotype
+    - Mendel refered to this as the <i>"internal nature"</i> of an organism
+
+  phenotype:
+    - the observable traits of an organism
+    - the observable traits of an individual, such as eye color and blood type
+    - the observable traits of an individual, such as height and blood type
+    - the observable traits of an individual, such as height and eye color
+    - the observable expression of DNA
+    - the physical traits or characteristics of an organism
+    - observable characteristics due to how its genes interact with the environment
+    - all the observable characteristics of an organism
+    - Mendel refered to this as the <i>"external resemblance"</i> of an organism
+
+  alleles:
+    - different versions of the same gene, such as <strong>A</strong> or <strong>a</strong>
+    - one of two or more versions of DNA sequence at a given genomic location
+    - one of two or more alternative forms of a gene at the same site in a chromosome
+    - alternative forms of a gene
+    - variants of the gene
+    - alternative DNA sequences at a locus
+    - either of a pair of Mendelian characters that may occur in an organism
+    - variations at one gene locus
+    - variants at a gene locus that code for a specific traits
+
+  gamete:
+    - a haploid reproductive cell having the half number of chromosomes
+    - a general term for either male (sperm) or female (egg) germ cells, which unite to form the zygote
+    - a haploid cell (e.g., sperm or egg) that fuses with another haploid cell during fertilization in organisms
+    - sex, or reproductive, cell containing only one set of dissimilar chromosomes
+    - reproductive cells carrying only one copy of each chromosome in preparation for fertilization
 
   heterozygous:
     - when two copies of a gene are different
@@ -47,34 +132,88 @@ matching pairs:
     - identical inherited versions of a gene from each biological parent
     - possession of a pair of identical alleles
 
-  homologous chromosomes:
-    - two similar but different copies of a chromosome
-    - one chromosome from the mother and one chromosome from the father
-    - two chromosomes which carry the same genes, one from each parental source
-    - chromosomes which contain the same genes in the same order along their chromosomal arms
-    - chromosomes of similar length, gene position, and centromere location
-    - two chromosomes containing identical genetic loci although possibly different allelic forms
+  dominant:
+    - describes a trait that masks the expression of another trait when both versions of the gene are present
+    - describes a trait that masks the expression of another trait when the alleles for both traits are present
+    - if two copies of a gene are different, this allele will be expressed
 
-  locus:
-    - location of a gene on a chromosome
-    - where on a chromosome a specific gene is located
-    - a specific, fixed position on a chromosome of a particular gene
-    - a spot or "address" on a chromosome at which a gene for a particular trait is located
-    - the physical position of a gene within a chromosome
+  recessive:
+    - describes a trait whose expression is masked by another trait when both versions of the gene are present
+    - describes a trait whose expression is masked by another trait when the alleles for both traits are present
+    - if two copies of a gene are different, this allele will be masked
 
-  phenotype:
-    - the observable traits of an organism
-    - the observable traits of an individual, such as eye color and blood type
-    - the observable traits of an individual, such as height and blood type
-    - the observable traits of an individual, such as height and eye color
-    - the observable expression of DNA
-    - the physical traits or characteristics of an organism
-    - observable characteristics due to how its genes interact with the environment
-    - all the observable characteristics of an organism
 
-  trait:
-    - each variant for a character, such as purple or white color for flowers
-    - each variant for a character, such as green or yellow color for seeds
-    - each variant for a character, such as round or wrinkled seeds in flowers
-    - a distinct variant of a character of an organism, such as purple or white color for flowers
-    - a distinct variant of a character of an organism, such as short or long stems in flowers
+#######################
+matching pairs 3:
+  Principle of Paired Factors:
+    - each organism has two alleles that make up the genotype for a given trait
+    - character is represented in an organism by at least two factors
+    - in an organism, a two separate factors control the appearance of a given characteristic
+    - for a given characteristic, each trait consists of two alleles
+    - each organism has two alleles for each gene
+
+  Principle of Dominance:
+    - out of the two contrasting alleles for the same gene, only one is able to express its effect
+    - for each character there is a dominant allele, the trait is determined by dominant allele
+    - for each genotype there is a dominant allele, the phenotype is determined by dominant allele
+    - hybrid offspring will only inherit the dominant allele as its phenotype
+    - in hybrid offspring, their recessive alleles are suppressed and not present in its phenotype
+    - in hybrid offspring, their dominant alleles are expressed and determine its phenotype
+    - in an organism that is heterozygous for a geneotype only the dominant trait will be seen
+    - some alleles are dominant, which means that their phenotype will mask the recessive phenotype
+
+  Law of Segregation:
+    - each parent contributes just one of their two alleles to its offspring
+    - two factors of a character get randomly distributed to different gametes
+    - when the gametes are formed, the factors separate and are distributed as units to each gamete
+    - two copies of each factor segregate so that offspring acquire one factor from each parent
+    - allele pairs separate during the formation of gametes and re-unite randomly during fertilization
+    - two alleles for each trait separate during the formation of gametes and re-unite randomly during fertilization
+    - only one random allele from each parent combines during fertilization
+    - a gamete carries only a recessive or a dominant allele but not both the alleles
+    - alleles separate and recombine randomly during meiosis and fertilization
+
+  Law of Independent Assortment:
+    - two different characters will be inherited separately of each other
+    - inheritance of genes at one location does not influence the inheritance of genes at another location
+    - different pairs of alleles are passed onto the offspring independently of each other
+    - two factors of each character separate independent of other characters at the time of gamete formation
+    - a pair of traits segregates independently of another pair during gamete formation
+
+#######################
+matching pairs 4:
+  test cross:
+    - dominant phenotype is crossed with the homozygous recessive genotype
+    - uses a homozygous recessive organism to determine the genetic makeup of another dominant organism
+    - cross involving an individual which is homozygous recessive for all genes of interest
+    - mating of a dominant phenotype (with unknown genotype) to a homozygous recessive genotype
+    - a test organism showing a dominant trait is crossed with one showing all recessive traits
+    - breeding method between a homozygous recessive individual with an individual of an unknown dominant genotype
+    - a cross of an individual of dominant phenotype and unknown genotype and an individual with a homozygous recessive genotype
+
+  backcross:
+    - F<sub>1</sub> hybrids crossed with one of the parental genotypes
+    - When F<sub>1</sub> individuals are crossed with one of the two parents
+
+  hybrid cross:
+    - cross between two individuals who have homozygous genotypes
+    - cross between two true-breeding individuals
+    - the process of mating two true-breeding individuals that differ
+
+  reciprocal cross:
+    - experiment designed to test the role of parental sex on a given inheritance pattern
+    - two separate crosses where the traits of the male and female in one cross are switche in another cross
+
+  P:
+    - the parental generation in a cross
+    - in a hybrid cross, this generation are both true-breeding individuals with different traits
+    - for a hybrid cross, this generation consists of two homozygous individuals with different phenotypes
+
+  F<sub>1</sub>:
+    - the first generation in a cross; the offspring of the parental generation
+    - hybrid offspring of the parental generation
+
+  F<sub>2</sub>:
+    - the second generation in a cross; the offspring of the F<sub>1</sub> generation
+    - the second generation produced when F<sub>1</sub> individuals are self-crossed or fertilized with each other
+    - the offspring of the F<sub>1</sub> generation; the "<i>grandchildren</i>" of the parental generation
