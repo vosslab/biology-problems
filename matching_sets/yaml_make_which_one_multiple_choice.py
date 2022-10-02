@@ -48,6 +48,8 @@ def applyReplacementRulesToQuestions(list_of_question_text, replacement_rule_dic
 #=======================
 def makeQuestions(yaml_data, num_choices=None):
 	matching_pairs_dict = yaml_data['matching pairs']
+	exclude_pairs_list = yaml_data.get('exclude pairs', [])
+
 	list_of_complete_questions = []
 
 	if num_choices is None:
@@ -55,8 +57,21 @@ def makeQuestions(yaml_data, num_choices=None):
 
 	all_keys = list(matching_pairs_dict.keys())
 	all_combs = list(itertools.combinations(all_keys, num_choices))
-	random.shuffle(all_combs)
 	print('Created {0} combinations from {1} items'.format(len(all_combs), len(all_keys)))
+	#filter combinations
+	if len(exclude_pairs_list) > 0:
+		filter_combs = []
+		for comb in all_combs:
+			excluded_comb = False
+			#print(comb)
+			for a,b in exclude_pairs_list:
+				if a in comb and b in comb:
+					excluded_comb = True
+			if excluded_comb is False:
+				filter_combs.append(comb)
+		print('Filtered {0} combinations from {1} items'.format(len(filter_combs), len(all_combs)))
+		all_combs = filter_combs
+	random.shuffle(all_combs)
 	N = 0
 	for comb in all_combs:
 		choices_list = list(comb)
@@ -118,4 +133,3 @@ if __name__ == '__main__':
 	f.close()
 	print("Wrote {0} questions to file.".format(N))
 	print('')
-
