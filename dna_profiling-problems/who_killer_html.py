@@ -3,7 +3,9 @@
 import os
 import sys
 import random
+
 import gellib
+import bptools
 
 def isKiller(blood, victim, suspect):
 	#check if the suspect is the killer
@@ -11,7 +13,7 @@ def isKiller(blood, victim, suspect):
 		return True
 	return False
 
-if __name__ == '__main__':
+def writeQuestion(N):
 	#structure
 	gel = gellib.GelClassHtml()
 	gel.setTextColumn("Suspect 5")
@@ -20,11 +22,12 @@ if __name__ == '__main__':
 	total_bands = 18
 	min_bands = 12
 	max_band_percent = 0.7
-
+	"""
 	num_suspects = 9 #min 3
 	total_bands = 24
 	min_bands = 14
 	max_band_percent = 0.6
+	"""
 	"""
 	num_suspects = 5 #min 3
 	total_bands = 12
@@ -33,16 +36,15 @@ if __name__ == '__main__':
 	"""
 
 	band_tree = gel.createBandTree(total_bands)
-	subsize = random.randint(min_bands, int(total_bands*max_band_percent)) 
+	subsize = random.randint(min_bands, int(total_bands*max_band_percent))
 	victim = gel.getRandomSubSet(total_bands, subsize)
 	victim.add(0)
 	suspects = []
 	for i in range(num_suspects-2):
-		subsize = random.randint(min_bands, int(total_bands*max_band_percent)) 
+		subsize = random.randint(min_bands, int(total_bands*max_band_percent))
 		suspect = gel.getRandomSubSet(total_bands, subsize)
 		suspects.append(suspect)
 	print(suspects)
-
 
 	allbands = set(range(total_bands))
 	killer = random.choice(suspects)
@@ -56,10 +58,14 @@ if __name__ == '__main__':
 
 	if len(musthave) < 2:
 		#start over
-		sys.exit(1)
+		#sys.exit(1)
+		print('too few musthave lanes')
+		return None
 	if len(canthave) < 2:
 		#start over
-		sys.exit(1)
+		#sys.exit(1)
+		print('too few canthave lanes')
+		return None
 
 	# add a suspect with 1 band extra
 	suspect = killer.copy()
@@ -90,36 +96,41 @@ if __name__ == '__main__':
 	for i in range(len(suspects)):
 		suspect = suspects[i]
 		table += gel.drawLane(suspect, "Suspect &num;{0:d}".format(i+1))
-
 		iskiller = isKiller(blood, victim, suspect)
-		print(("Suspect #%d: %s"%(i+1, iskiller)))
-		choice += "Suspect &num;{0}\t".format(i+1)
-
 		if iskiller:
-			choice += "Correct\t"
+			killer_num = i
 			killcount += 1
-		else:
-			choice += "Incorrect\t"
 	if killcount != 1:
 		"wrong number of killers"
-		sys.exit(1)
+		return None
 	table += gel.blankLane()
 	#table += gel.drawLane(canthave, "canthave")
 	#table += gel.drawLane(musthave, "musthave")
 	table += "</table> "
 	full_question = "<p>Who is the killer?</p> {0} {1}".format(table, question)
-	print("complete\n\n")
 
+	choices_list = []
+	answer_string = ''
+	for i in range(len(suspects)):
+		choice = "Suspect &num;{0}".format(i+1)
+		choices_list.append(choice)
+		if i == killer_num:
+			answer_string = choice
+	bb_question = bptools.formatBB_MC_Question(N, full_question, choices_list, answer_string)
+	return bb_question
+
+
+if __name__ == '__main__':
+	duplicates = 199
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
 	print('writing to file: '+outfile)
-	f = open(outfile, 'a')
-	f.write("MC\t")
-	f.write(full_question+"\t")
-	f.write(choice)
+	f = open(outfile, 'w')
+	for i in range(duplicates):
+		N = i + 1
+		bb_question = writeQuestion(N)
+		if bb_question is None:
+			continue
+		f.write(bb_question)
 	f.write("\n")
 	f.close()
-
-	print(question)
-	print(choice)
-
-	print("")
+	bptools.print_histogram()

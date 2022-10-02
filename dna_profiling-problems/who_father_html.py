@@ -3,6 +3,8 @@
 import os
 import sys
 import random
+
+import bptools
 import gellib
 
 ### ugly code, but works
@@ -30,7 +32,7 @@ def haveBaby(mother, father, num_males=3):
 		child.add(random.choice(list(diffs)))
 	return child
 
-if __name__ == '__main__':
+def writeQuestion(N):
 	gel = gellib.GelClassHtml()
 	gel.setTextColumn("Mother")
 	"""
@@ -40,7 +42,6 @@ if __name__ == '__main__':
 	max_band_percent = 0.5
 	"""
 
-	"""
 	num_males = 5 #min 3
 	total_bands = 18
 	min_bands = 10
@@ -50,15 +51,16 @@ if __name__ == '__main__':
 	total_bands = 32
 	min_bands = 14
 	max_band_percent = 0.8
+	"""
 
 	band_tree = gel.createBandTree(total_bands)
-	subsize = random.randint(min_bands, int(total_bands*max_band_percent)) 
+	subsize = random.randint(min_bands, int(total_bands*max_band_percent))
 	mother = gel.getRandomSubSet(total_bands, subsize)
 	mother.add(0)
 	allbands = set(range(total_bands))
 	notmother = allbands - mother
 	males = []
-	subsize = random.randint(min_bands, int(total_bands*max_band_percent)) 
+	subsize = random.randint(min_bands, int(total_bands*max_band_percent))
 	father = gel.getRandomSubSet(total_bands, subsize)
 	father.add(random.choice(list(notmother)))
 	father.add(random.choice(list(notmother)))
@@ -79,7 +81,7 @@ if __name__ == '__main__':
 	if len(musthave) < num_males-1:
 		#start over
 		print("not enough band difference")
-		sys.exit(1)
+		return None
 	# add a male with 1 band missing
 	while len(males) < num_males:
 		male = father.copy()
@@ -112,7 +114,7 @@ if __name__ == '__main__':
 		table += gel.drawLane(male, "Male %d"%(i+1))
 	if dadcount != 1:
 		print("wrong number of fathers")
-		sys.exit(1)
+		return None
 	table += gel.blankLane()
 	#table += gel.drawLane(musthave, "musthave")
 	#table += gel.drawLane(ignore, "ignore")
@@ -122,23 +124,28 @@ if __name__ == '__main__':
 	#print("open males.png")
 	question = "<h6>Based on the DNA gel profile above, who is the father of the child?</h6>"
 	full_question = "<p>Who is the father of the child?</p> {0} {1}".format(table, question)
+
+	choices_list = []
+	answer_string = ''
+	for i in range(len(males)):
+		choice = "Male &num;{0:d}".format(i+1)
+		choices_list.append(choice)
+		if i == answer:
+			answer_string = choice
+	bb_question = bptools.formatBB_MC_Question(N, full_question, choices_list, answer_string)
+	return bb_question
+
+if __name__ == '__main__':
+	duplicates = 199
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
 	print('writing to file: '+outfile)
-	f = open(outfile, 'a')
-	f.write("MC\t")
-	f.write(full_question+"\t")
-	print("complete\n\n")
-	print(question)
-	charlist = "ABCDEFGHIJKLMN"
-	for i in range(len(males)):
-		letter = charlist[i]
-		choice = "Male &num;{0:d}\t".format(i+1)
-		if i == answer:
-			choice += "Correct\t"
-		else:
-			choice += "Incorrect\t"
-		print(choice)
-		f.write(choice)
+	f = open(outfile, 'w')
+	for i in range(duplicates):
+		N = i + 1
+		bb_question = writeQuestion(N)
+		if bb_question is None:
+			continue
+		f.write(bb_question)
 	f.write("\n")
 	f.close()
-	print("")
+	bptools.print_histogram()
