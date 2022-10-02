@@ -9,6 +9,7 @@ import crcmod.predefined #pip
 
 answer_histogram = {}
 question_count = 0
+crc16_dict = {}
 
 #=======================
 def test():
@@ -172,8 +173,18 @@ def makeQuestionPretty(question):
 
 #==========================
 def QuestionHeader(question, N, crc16=None):
-	if crc16 is not None:
+	global crc16_dict
+	if crc16 is None:
 		crc16 = getCrc16_FromString(question)
+	if crc16_dict.get(crc16) == 1:
+		print('crc16 first hash collision', crc16)
+		crc16_dict[crc16] += 1
+	elif crc16_dict.get(crc16) == 3:
+		global question_count
+		print('crc16 third hash collision', crc16, 'after question #', question_count)
+		crc16_dict[crc16] += 1
+	else:
+		crc16_dict[crc16] = 1
 	#header = '<p>{0:03d}. {1}</p> {2}'.format(N, crc16, question)
 	header = '<p>{0}</p> {1}'.format(crc16, question)
 	pretty_question = makeQuestionPretty(question)
