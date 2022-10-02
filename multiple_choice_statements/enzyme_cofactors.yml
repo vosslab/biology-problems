@@ -1,0 +1,70 @@
+#Which one of the following statements is FALSE/TRUE <connection word> <topic>
+topic: being an enzymatic cofactor
+
+override_question_true: ~
+override_question_false: Which one of the following molecular entities cannot be classified as an enzymatic cofactor?
+
+replacement_rules:
+  cannot:            '<span style="color: OrangeRed;">CANNOT</span>'
+  enzyme:            '<span style="color: DarkBlue;">enzyme</span>'
+  organic molecule:  '<span style="color: DarkRed;">organic molecule </span>'
+  vitamin:           '<span style="color: DarkGreen;">vitamin</span>'
+  ion:               '<span style="color: #663300;">ion</span>'
+  steroid:           '<span style="color: #6600cc;">steroid</span>'
+  adenosine:         '<span style="color: #990033;">adenosine</span>'
+
+connection_words: ~
+
+conflict_rules: ~
+
+#######################
+false_statements:
+    false1a: polyalanine peptide
+    false1b: ACTH protein
+    false1c: transcription factor proteins
+    false1d: the glycolysis enzyme, hexokinase
+    false1e: the glycolysis enzyme, pyruvate kinase
+    false1f: the glycolysis enzyme, glyceraldehyde 3-phosphate dehydrogenase
+    false1g: the oxygen transport protein, hemoglobin
+
+true_statements:
+    truth1a: the organic molecule of a heme porphyrin with an iron ion, Fe<sup>2+</sup>, attached
+    truth1b: creatine, an organic molecule that recharges ATP
+    truth1c: S-adenosyl methionine (SAM), an organic molecule used for methyl group transfer
+
+    truth2a: magnesium ion, Mg<sup>2+</sup>
+    truth2b: calcium ion, Ca<sup>2+</sup>
+    truth2c: sodium ion, Na<sup>+</sup>
+    truth2d: potassium ion, K<sup>+</sup>
+    truth2e: iron ion, Fe<sup>+2</sup>
+    truth2f: zinc ion, Zn<sup>2+</sup>
+
+    truth3a: flavin adenine dinucleotide (FAD &rarr; FADH<sub>2</sub>)
+    truth3b: nicotinamide adenine dinucleotide (NAD<sup>+</sup> &rarr; NADH)
+    truth3c: nicotinamide adenine dinucleotide phosphate (NADP<sup>+</sup> &rarr; NADPH)
+    truth3d: coenzyme A (CoA)
+    truth3e: flavin mononucleotide (FMN &rarr; FMNH<sub>2</sub>)
+    truth3f: coenzyme Q10, ubiquinone
+
+    truth4a: vitamin B<sub>1</sub>, thiamin
+    truth4b: vitamin B<sub>2</sub>, riboflavin
+    truth4c: vitamin B<sub>3</sub>, niacin
+    truth4d: vitamin B<sub>5</sub>, pantothenic acid
+    truth4e: vitamin B<sub>6</sub>, pyridoxamine
+    truth4f: vitamin B<sub>7</sub>, biotin
+    truth4g: vitamin B<sub>9</sub>, folate
+    truth4h: vitamin B<sub>12</sub>, cobalamins
+    truth4i: vitamin A, retinol
+
+    truth5a: testosterone, an anabolic-androgenic steriod and the principal male sex hormone
+    truth5b: cholesterol, a cell membrane steriod
+    truth5c: aldosterone, a steroid hormone that acts on the kidney
+    truth5d: cortisol, a cortico-steroid hormone that is produced in response to stress
+    truth5e: estrone (E1), one of the estrogen steroid hormones responsible for female sex characteristics
+    truth5f: estradiol (E2), one of the estrogen steroid hormones responsible for female sex characteristics
+    truth5g: estriol (E3), one of the estrogen steroid hormones responsible for female sex characteristics
+    truth5h: progesterone (P4), a steroid hormone involved in the female menstrual cycle
+
+    truth6a: adenosine monophosphate (AMP)
+    truth6b: adenosine diphosphate (ADP)
+    truth6c: adenosine triphosphate (ATP)
