@@ -28,9 +28,7 @@ false_statements:
     false1g: the oxygen transport protein, hemoglobin
 
 true_statements:
-    truth1a: the organic molecule of a heme porphyrin with an iron ion, Fe<sup>2+</sup>, attached
-    truth1b: creatine, an organic molecule that recharges ATP
-    truth1c: S-adenosyl methionine (SAM), an organic molecule used for methyl group transfer
+    truth1a: wrong choice, do not select
 
     truth2a: magnesium ion, Mg<sup>2+</sup>
     truth2b: calcium ion, Ca<sup>2+</sup>
@@ -68,3 +66,7 @@ true_statements:
     truth6a: adenosine monophosphate (AMP)
     truth6b: adenosine diphosphate (ADP)
     truth6c: adenosine triphosphate (ATP)
+
+    truth7a: the organic molecule of a heme porphyrin with an iron ion, Fe<sup>2+</sup>, attached
+    truth7b: creatine, an organic molecule that recharges ATP
+    truth7c: S-adenosyl methionine (SAM), an organic molecule used for methyl group transfer
