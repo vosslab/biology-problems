@@ -35,19 +35,19 @@ matching pairs:
     -  inherited disorder of metabolism that causes an increase in the blood of a chemical known as phenylalanine
   Sickle-cell anemia:
     - affects your red blood cells, turning them from round flexible discs into stiff and sticky, long, and rigid cells
-  Tay–Sachs disease:
+  Tay-Sachs disease:
     - a genetic disorder that results in the destruction of nerve cells in the brain and spinal cord
     - people with the disorder do not have enough of an enzyme called beta-hexosaminidase
-  
+
   Angelman syndrome:
     - caused by duplications of the UBE3A gene located on chromosome 15
-    - disorder that is due to a extra piece (duplication) of a specific gene on chromosome 15 
+    - disorder that is due to a extra piece (duplication) of a specific gene on chromosome 15
   Prader-Willi syndrome:
     - a genetic disorder caused by a loss of function of specific genes on chromosome 15
-    - disorder that is due to a missing piece (deletion) of a specific part of chromosome 15 
+    - disorder that is due to a missing piece (deletion) of a specific part of chromosome 15
   Cri du chat syndrome:
     - usually include a high-pitched cat-like cry, mental disablity, delayed development, distinctive facial features, widely-spaced eyes
-    - disorder that is due to a missing piece (deletion) of a specific part of chromosome 5 
+    - disorder that is due to a missing piece (deletion) of a specific part of chromosome 5
     - disorder caused when a small part of chromosome 5 is missing
   DiGeorge syndrome:
     - disorder caused when a small part of chromosome 22 is missing
@@ -60,7 +60,7 @@ matching pairs:
   Edwards syndrome:
     - chromosomal abnormality characterized by the presence of an extra copy of genetic material on the 18th chromosome
     - genetic disorder caused by the presence of all or part of a third copy of chromosome 18
-    - a chromosomal abnormality, in which the cells of the body contain extra genetic material from chromosome 18    
+    - a chromosomal abnormality, in which the cells of the body contain extra genetic material from chromosome 18
     - result of a random error that causes a person to be born with an extra chromosome 18
   Klinefelter syndrome:
     - result of a random error that causes a male to be born with an extra X chromosome
@@ -94,5 +94,3 @@ replacement_rules:
    genetic:        '<span style=color: MediumVioletRed;>genetic</span>'
    metabolic:      '<span style=color: Indigo;>metabolic</span>'
    chromosome:     '<span style=color: SteelBlue;>chromosome</span>'
-
-
