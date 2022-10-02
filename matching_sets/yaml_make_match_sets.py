@@ -50,6 +50,7 @@ def applyReplacementRulesToQuestions(list_of_question_text, replacement_rule_dic
 #=======================
 def permuteMatchingPairs(yaml_data, num_choices=None):
 	matching_pairs_dict = yaml_data['matching pairs']
+	exclude_pairs_list = yaml_data.get('exclude pairs', [])
 
 	list_of_complete_questions = []
 
@@ -67,13 +68,28 @@ def permuteMatchingPairs(yaml_data, num_choices=None):
 
 	all_keys = list(matching_pairs_dict.keys())
 	all_combs = list(itertools.combinations(all_keys, num_choices))
-	random.shuffle(all_combs)
 	print('Created {0} combinations from {1} items'.format(len(all_combs), len(all_keys)))
+	#filter combinations
+	if len(exclude_pairs_list) > 0:
+		filter_combs = []
+		for comb in all_combs:
+			excluded_comb = False
+			#print(comb)
+			for a,b in exclude_pairs_list:
+				if a in comb and b in comb:
+					excluded_comb = True
+			if excluded_comb is False:
+				filter_combs.append(comb)
+		print('Filtered {0} combinations from {1} items'.format(len(filter_combs), len(all_combs)))
+		all_combs = filter_combs
+	random.shuffle(all_combs)
 	for comb in all_combs:
 		answers_list = list(comb)
 		random.shuffle(answers_list)
 		matching_list = []
 		for key in answers_list:
+			if isinstance(key, list):
+				key = random.choice(key)
 			value = matching_pairs_dict[key]
 			if isinstance(value, list):
 				value = random.choice(value)
@@ -111,7 +127,7 @@ if __name__ == '__main__':
 		list_of_complete_questions += permuteMatchingPairs(yaml_data, args.num_choices)
 
 	if len(list_of_complete_questions) > args.max_questions:
-		print("Too many questions, trimming down to {0} questions".format(args.max_questions))
+		print("Too many questions ({0}), trimming down to {1} questions".format(len(list_of_complete_questions), args.max_questions))
 		random.shuffle(list_of_complete_questions)
 		less_questions = list_of_complete_questions[:args.max_questions]
 		less_questions.sort()
@@ -131,4 +147,3 @@ if __name__ == '__main__':
 	f.close()
 	print("Wrote {0} questions to file.".format(N))
 	print('')
-
