@@ -1,0 +1,44 @@
+
+items to match per question: 4
+
+key description: terms
+
+value description: description
+
+#######################
+matching pairs:
+  test cross:
+    - a type of cross where the dominant phenotype is crossed with the homozygous recessive genotype
+    - a type of cross that uses a homozygous recessive organism to determine the genetic makeup of another dominant organism
+    - a type of cross involving an individual which is homozygous recessive for all genes of interest
+    - a type of cross where a dominant phenotype (with unknown genotype) to a homozygous recessive genotype
+    - a type of cross where a test organism showing a dominant trait is crossed with one showing all recessive traits
+    - a type of cross between a homozygous recessive individual with an individual of an unknown dominant genotype
+    - a type of cross of an individual of dominant phenotype and unknown genotype and an individual with a homozygous recessive genotype
+
+  backcross:
+    - a type of cross where F<sub>1</sub> hybrids are crossed with one of the parental genotypes
+    - a type of cross when F<sub>1</sub> individuals are crossed with one of the two parents
+
+  hybrid cross:
+    - a type of cross between two individuals who have homozygous genotypes
+    - a type of cross between two true-breeding individuals
+    - a type of cross that mates two true-breeding individuals that differ
+
+  reciprocal cross:
+    - a type of cross designed to test the role of parental sex on a given inheritance pattern
+    - two separate crosses where the traits of the male and female in one cross are switche in another cross
+
+  P:
+    - the parental generation in a hybrid cross
+    - this generation are both true-breeding individuals with different traits in a hybrid cross
+    - this generation consists of two homozygous individuals with different phenotypes for a hybrid cross
+
+  F<sub>1</sub>:
+    - the first generation in a cross; the offspring of the parental generation
+    - hybrid offspring of the parental generation
+
+  F<sub>2</sub>:
+    - the second generation in a cross; the offspring of the F<sub>1</sub> generation
+    - the second generation produced when F<sub>1</sub> individuals are self-crossed or fertilized with each other
+    - the offspring of the F<sub>1</sub> generation; the "<i>grandchildren</i>" of the parental generation

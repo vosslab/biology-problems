@@ -1,0 +1,44 @@
+
+items to match per question: 4
+
+key description: terms
+
+value description: description
+
+#######################
+matching pairs:
+  Principle of Paired Factors:
+    - each organism has two alleles that make up the genotype for a given trait
+    - character is represented in an organism by at least two factors
+    - in an organism, a two separate factors control the appearance of a given characteristic
+    - for a given characteristic, each trait consists of two alleles
+    - each organism has two alleles for each gene
+
+  Principle of Dominance:
+    - out of the two contrasting alleles for the same gene, only one is able to express its effect
+    - for each character there is a dominant allele, the trait is determined by dominant allele
+    - for each genotype there is a dominant allele, the phenotype is determined by dominant allele
+    - hybrid offspring will only inherit the dominant allele as its phenotype
+    - in hybrid offspring, their recessive alleles are suppressed and not present in its phenotype
+    - in hybrid offspring, their dominant alleles are expressed and determine its phenotype
+    - in an organism that is heterozygous for a geneotype only the dominant trait will be seen
+    - some alleles are dominant, which means that their phenotype will mask the recessive phenotype
+
+  Law of Segregation:
+    - each parent contributes just one of their two alleles to its offspring
+    - two factors of a character get randomly distributed to different gametes
+    - when the gametes are formed, the factors separate and are distributed as units to each gamete
+    - two copies of each factor segregate so that offspring acquire one factor from each parent
+    - allele pairs separate during the formation of gametes and re-unite randomly during fertilization
+    - two alleles for each trait separate during the formation of gametes and re-unite randomly during fertilization
+    - only one random allele from each parent combines during fertilization
+    - a gamete carries only a recessive or a dominant allele but not both the alleles
+    - alleles separate and recombine randomly during meiosis and fertilization
+    - pairs of characters separate during gamete formation
+
+  Law of Independent Assortment:
+    - two different characters will be inherited separately of each other
+    - inheritance of genes at one location does not influence the inheritance of genes at another location
+    - different pairs of alleles are passed onto the offspring independently of each other
+    - two factors of each character separate independent of other characters at the time of gamete formation
+    - a pair of traits segregates independently of another pair during gamete formation
