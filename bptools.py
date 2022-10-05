@@ -104,7 +104,7 @@ def _ryb_to_rgb(r, y, b): # Assumption: r, y, b in [0, 1]
 #=====================
 #=====================
 def getGeneLetters(length, shift=0, upper=False):
-	all_lowercase = "abcdefghijklmnopqrstuvwxyz"
+	#all_lowercase = "abcdefghijklmnopqrstuvwxyz"
 	lowercase =     "abcdefghjkmnpqrstuwxyz"
 	shift = shift % (len(lowercase) - length + 1)
 	gene_string = lowercase[shift:shift+length]
@@ -175,10 +175,13 @@ def makeQuestionPretty(question):
 	return pretty_question
 
 #==========================
-def QuestionHeader(question, N, crc16=None):
+def QuestionHeader(question, N, big_question=None, crc16=None):
 	global crc16_dict
 	if crc16 is None:
-		crc16 = getCrc16_FromString(question)
+		if big_question is not None:
+			crc16 = getCrc16_FromString(big_question)
+		else:
+			crc16 = getCrc16_FromString(question)
 	if crc16_dict.get(crc16) == 1:
 		print('crc16 first hash collision', crc16)
 		crc16_dict[crc16] += 1
@@ -209,7 +212,8 @@ def formatBB_MC_Question(N, question, choices_list, answer):
 	#number = "{0}. ".format(N)
 
 	bb_question += 'MC\t'
-	bb_question += QuestionHeader(question, N)
+	big_question = question + ' '.join(choices_list) + answer
+	bb_question += QuestionHeader(question, N, big_question)
 
 	answer_count = 0
 
@@ -244,7 +248,8 @@ def formatBB_MA_Question(N, question, choices_list, answers_list):
 	bb_question = ''
 	#number = "{0}. ".format(N)
 	bb_question += 'MA\t'
-	bb_question += QuestionHeader(question, N)
+	big_question = question + ' '.join(choices_list) + ' '.join(answers_list)
+	bb_question += QuestionHeader(question, N, big_question)
 
 	answer_count = 0
 
@@ -276,7 +281,8 @@ def formatBB_FIB_Question(N, question, answers_list):
 
 	#number = "{0}. ".format(N)
 	bb_question += 'FIB\t'
-	bb_question += QuestionHeader(question, N)
+	big_question = question + ' '.join(answers_list)
+	bb_question += QuestionHeader(question, N, big_question)
 
 	for i, answer in enumerate(answers_list):
 		bb_question += '\t{0}'.format(answer)
@@ -293,7 +299,8 @@ def formatBB_NUM_Question(N, question, answer, tolerance):
 
 	#number = "{0}. ".format(N)
 	bb_question += 'NUM\t'
-	bb_question += QuestionHeader(question, N)
+	big_question = question + str(answer)
+	bb_question += QuestionHeader(question, N, big_question)
 
 	bb_question += '\t{0:.8f}'.format(answer)
 	print("=== {0:.3f}".format(answer))
