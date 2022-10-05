@@ -1,0 +1,32 @@
+
+items to match per question: 4
+
+key description: terms
+
+value description: description
+
+#######################
+matching pairs:
+  homologous chromosomes:
+    - two similar but different copies of a chromosome
+    - one chromosome from the mother and one chromosome from the father
+    - two chromosomes which carry the same genes, one from each parental source
+    - chromosomes which contain the same genes in the same order along their chromosomal arms
+    - chromosomes of similar length, gene position, and centromere location
+    - two chromosomes containing identical genetic loci although possibly different allelic forms
+    - chromosome pairs (one from each parent) that are similar in length, gene position, and centromere location
+
+  homologous:
+    - not an exact copy but having the same structural features and pattern of genes
+
+  synapsis:
+    - process of pairing of homologous (maternal and paternal) chromosomes
+
+  sister chromatids:
+    - two identical copies of a single replicated chromosome. They are joined at the centromere
+
+  crossing over:
+    - the exchange of genes between homologous chromosomes, resulting in a mixture of parental characteristics in offspring
+
+  chiasmata:
+    - the point of contact (or physical link) between two homologous chromosomes where crossing over occurs

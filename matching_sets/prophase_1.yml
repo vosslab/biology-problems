@@ -1,0 +1,46 @@
+
+items to match per question: 5
+
+key description: stages of prophase I
+
+value description: partial description
+
+#######################
+matching pairs:
+  Leptotene:
+    - chromosomes start to condense
+    - thread-like chromomeres first become visible
+    - chromosomes first become visible in the form of thread-like structures
+    - chromosomes first appear as fine discrete threads
+    - chromosomes start forming thin thread-like structures
+    - condensation of the chromosomes wherein they first become visible as chromatin
+    - uncoiling and condensing of chromosomes first takes place
+
+  Zygotene:
+    - synapsis begins
+    - the pairing of homologous chromosomes begins
+    - the synapsis process forms numerous points of contact
+    - stage where homologous chromosomes become paired
+    - homologous chromosomes come together and pair
+    - synapsis of homologous chromosomes occurs
+    - strands of homologous chromosomes line up and become pairs
+
+  Early/Late Pachytene:
+    - synapsis is complete
+    - the pairing of homologous chromosomes is complete
+    - crossing-over occurs at the chiasmata
+    - crossing-over occurs between homologous chromosomes
+    - the swapping of genetic material occurs between homologous chromosomes
+    - the swapping of genetic material occurs at the chiasmata
+    - exchange of segments between chromatids may occur
+    - chromosomes continue to shorten and thicken
+    - sister chromatids first become visible
+
+  Diplotene:
+    - every chiasmata is fully visible at this stage
+    - homologous chromosomes begin to migrate apart
+    - homologous chromosomes are held together only by the chiasmata
+
+  Diakinesis:
+    - chromosomes are at their most condensed form
+    - homologous chromosomes reach maximum repulsion before separation
