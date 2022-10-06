@@ -38,7 +38,7 @@ false_statements:
 
   #2020:
   false20201: advanced mathematical methods to study unusual states of matter, such as superconductors, superfluids and thin magnetic films
-  false20202: discovery of blood-borne Hepatitis C virus, a major global health problem 
+  false20202: discovery of blood-borne Hepatitis C virus, a major global health problem
   false20203: development of the method for precise genome editing using CRISPR/Cas9 genetic scissors
 
   #2019:
@@ -73,4 +73,12 @@ false_statements:
 
   #2012:
   false20121: discovery that mature cells can be reprogrammed to become pluripotent stem cells
-  false20122: discovery and studies of G-protein
+  false20122: discovery and studies of G-protein coupled receptors (GPCRs)
+
+  #2011:
+  false20111: discoveries concerning the activation of innate immunity when encountering pathogenic microorganisms
+  false20112: discovery of the dendritic cell and its role in adaptive immunity, a memory against pathogenic substances
+  false20113: discovery of quasicrystals with regular patterns that never repeat themselves that was considered impossible
+
+  #2009:
+  false20091: used a method called X-ray crystallography to solve the structure and function of the ribosome
