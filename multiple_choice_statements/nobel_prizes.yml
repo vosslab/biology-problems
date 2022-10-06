@@ -1,0 +1,76 @@
+---
+
+#Which one of the following statements is FALSE/TRUE <connection word> <topic>
+topic: topic of a &YEAR; Nobel Prizes awarded this week
+
+override_question_true: '<strong>BONUS:</strong> Which of the following was a topic of the 2022 Nobel Prizes awarded this past week?'
+override_question_false: '<strong>BONUS:</strong> Which of the following was NOT a topic of the 2022 Nobel Prizes awarded this past week??'
+
+replacement_rules:
+  Mitosis II: '<span style="color: OrangeRed;">Mitosis II</span>'
+  Mitosis I: '<span style="color: OrangeRed;">Mitosis I</span>'
+
+connection_words: ~
+
+# conflicts, means that the statements cannot appear together
+# add ': True' to each line, so the program runs a faster lookup
+conflict_rules: ~
+
+true_statements:
+  #2022
+  truth1: discoveries concerning the genomes of extinct hominins and human evolution
+  truth2: development of click chemistry in which molecular building blocks snap together quickly and efficiently
+  truth3: development of bioorthogonal chemistry reactions that take place without disrupting the normal chemistry of the cell
+  truth4: establishing the violation of Bell inequalities and pioneering quantum information science using entangled photons
+
+false_statements:
+  #2022
+  #false20221: discoveries concerning the genomes of extinct hominins and human evolution
+  #false20222: development of click chemistry in which molecular building blocks snap together quickly and efficiently
+  #false20223: development of bioorthogonal chemistry reactions that take place without disrupting the normal chemistry of the cell
+  #false20224: establishing the violation of Bell inequalities and pioneering quantum information science using entangled photons
+
+  #2021
+  false20211: development of asymmetric organocatalysis tools that revolutionised pharmaceutical research and made chemistry greener
+  false20212: discoveries of the molecular basis for sensing heat, cold and mechanical force, which is fundamental for our ability to feel and touch
+  false20213: "physical modelling of Earth climate: quantifying variability and reliably predicting global warming"
+  false20214: discovery of the interplay of disorder and fluctuations in physical systems from atomic to planetary scales
+
+  #2020:
+  false20201: advanced mathematical methods to study unusual states of matter, such as superconductors, superfluids and thin magnetic films
+  false20202: discovery of blood-borne Hepatitis C virus, a major global health problem 
+  false20203: development of the method for precise genome editing using CRISPR/Cas9 genetic scissors
+
+  #2019:
+  false20191: discoveries of how cells sense and adapt to oxygen availability
+  false20192: development of lithium-ion batteries that are lightweight, rechargeable, powerful, and store significant amounts of energy
+
+  #2018:
+  false20181: discovery of cancer therapy by inhibition of negative immune regulation
+  false20182: development of directed evolution of enzymes used to manufacture everything from biofuels to pharmaceuticals
+  false20183: development of phage display used to evolve new proteins, peptides, and antibodies
+
+  #2017:
+  false20171: discoveries of molecular mechanisms controlling the circadian rhythm
+  false20172: developing cryo-electron microscopy high-resolution structure determination of biomolecules in solution
+
+  #2016:
+  false20161: discoveries of mechanisms for autophagy
+  false20162: design and synthesis of molecular machines to be used in the development of new materials, sensors, and energy storage
+
+  #2015:
+  false20151: discoveries concerning a novel therapy against Malaria
+  false20152: discoveries concerning a novel therapy against infections caused by roundworm parasites
+  false20153: mechanistic studies of DNA repair and how cells repair damaged DNA and safeguard the genetic information
+
+  #2014:
+  false20141: discoveries of cells that constitute a positioning system in the brain
+  false20142: development of super-resolved fluorescence microscopy
+
+  #2013:
+  false20131: discoveries of machinery regulating vesicle transport in our cells
+  false20132: development of multiscale models for complex chemical systems
+
+  #2012:
+  false20121: discovery that mature cells can be reprogrammed to become pluripotent stem cells
+  false20122: discovery and studies of G-protein
