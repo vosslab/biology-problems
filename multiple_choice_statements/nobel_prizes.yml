@@ -3,8 +3,8 @@
 #Which one of the following statements is FALSE/TRUE <connection word> <topic>
 topic: topic of a &YEAR; Nobel Prizes awarded this week
 
-override_question_true: '<strong>BONUS:</strong> Which of the following was a topic of the 2022 Nobel Prizes awarded this past week?'
-override_question_false: '<strong>BONUS:</strong> Which of the following was NOT a topic of the 2022 Nobel Prizes awarded this past week??'
+override_question_true: '<strong>BONUS:</strong> Which of the following was a topic of the 2022 Nobel Prizes awarded this week?'
+override_question_false: '<strong>BONUS:</strong> Which of the following was NOT a topic of the 2022 Nobel Prizes awarded this week??'
 
 replacement_rules:
   Mitosis II: '<span style="color: OrangeRed;">Mitosis II</span>'
