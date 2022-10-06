@@ -281,9 +281,7 @@ if __name__ == '__main__':
 	N = 0
 	for bbformat_question in list_of_complete_questions:
 		N += 1
-		crc16_value = bptools.getCrc16_FromString(bbformat_question)
-		output_format = "MC\t<p>{0:03d}. {1}</p> {2}\n".format(N, crc16_value, bbformat_question)
-		f.write(output_format)
+		f.write(bbformat_question)
 	f.close()
 	printAnswerHistogram()
 	print("Wrote {0} questions to file.".format(N))
