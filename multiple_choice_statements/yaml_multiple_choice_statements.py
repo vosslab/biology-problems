@@ -257,7 +257,13 @@ if __name__ == '__main__':
 		help='do not create the true form (which one is true) of the question')
 	parser.add_argument('-x', '--max-questions', metavar='#', type=int, dest='max_questions',
 		help='yaml input file to process', default=199)
+	parser.add_argument('-d', '--duplicates', metavar='#', type=int, dest='duplicates',
+		help='number of duplicate runs to do', default=1)
 	args = parser.parse_args()
+
+	#if args.duplicates > 1:
+	#	print('duplicates are not implemented yet')
+	#	sys.exit(0)
 
 	if args.input_yaml_file is None or not os.path.isfile(args.input_yaml_file):
 		print("Usage: {0} -y <input_yaml_file>".format(__file__))
@@ -267,7 +273,10 @@ if __name__ == '__main__':
 	pprint.pprint(yaml_data)
 	autoAddConflictRules(yaml_data)
 
-	list_of_complete_questions = sortStatements(yaml_data, notrue=args.notrue, nofalse=args.nofalse)
+	list_of_complete_questions = []
+	for i in range(args.duplicates):
+		list_of_complete_questions += sortStatements(yaml_data, notrue=args.notrue, nofalse=args.nofalse)
+	#list_of_complete_questions = list(set(list_of_complete_questions))
 	if len(list_of_complete_questions) > args.max_questions:
 		print("Too many questions, trimming down to {0} questions".format(args.max_questions))
 		random.shuffle(list_of_complete_questions)
