@@ -1,0 +1,40 @@
+#YAML file for Matching Questions
+
+items to match per question: 5
+
+#plural
+key description: potency of stem cells
+
+#singular
+value description: description
+
+matching pairs:
+  unipotent:
+    - can differentiate into only one type of cell; e.g., skin cells
+    - capable of developing into only one type of cell or tissue; e.g., germ line stem cell
+    - the capacity to develop into only one type of cell or tissue; e.g., epidermal stem cells
+    - a cell that can differentiate along only one lineage; e.g., germ line stem cells that make sperm
+    - in comparison with other types of stem cells, this type has the lowest differentiation potential
+
+  oligopotent:
+    - can differentiate into only a few cells; e.g., lymphoid or myeloid stem cells
+    - have the ability to transform into a small number of types of cells; e.g., plasma cells
+    - myeloid stem cells are this type because they only produce a few types of cells; e.g., neutrophils and eosinophils
+
+  multipotent:
+    - can differentiate into a limited type of cells; e.g., adult and cord blood stem cells
+    - derived from the mesoderm, they are widely found throughout the body and can be easily isolated and cultured
+    - have the ability to turn into a number of different cells in the body; e.g., bone, muscle, cartilage, or fat cells
+    - they are found in most body organs, where they replace diseased or aged cells
+    - these cells develop into multiple specialized cell types present in a specific tissue or organ
+
+  pluripotent:
+    - can differentiate into all three basic body layers; e.g., embryonic stem cells
+    - an undifferentiated cell that has the potential to differentiate into any of the 220 cell-types of the human body
+    - cells that can maintain an undifferentiated state indefinitely and can differentiate into most, if not all, cells of the body
+
+  totipotent:
+    - can differentiate into all of the cell types of the body as well as placental cells; e.g., first two zygote cells after fertilization
+    - can form all the cell types in a body, as well as the extraembryonic or placental cells
+    - can give rise to any of the 220 cell types found in an embryo as well as extra-embryonic cells (placenta)
+    - extremely rare cells that have the ability to form an entire human being including the trophoblast

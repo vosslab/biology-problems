@@ -1,0 +1,31 @@
+#YAML file for Matching Questions
+
+items to match per question: 4
+
+#plural
+key description: methods of culture enrichment
+
+#singular
+value description: description
+
+matching pairs:
+  stable isotope probing (SIP):
+    - adding heavy isotopes to an environmental sample to distinguish actively growing organisms
+    - substrate is enriched with a heavy isotopes to be consumed by the organisms to be studied
+    - relies on the consuption of a substrate that is highly enriched by an isotope, such as <sup>13</sup>C
+    - isotope-labeled carbon (<sup>13</sup>C) or nitrogen (<sup>15</sup>N) sources are assimilated into microbial environmental samples
+
+  RNA stable isotope probing (RNA-SIP):
+    - adding heavy isotopes into SSU ribosomal RNA to distinguish metabolically active organisms
+    - active labeled substrate metabolism and incorporation of heavier mass isotopes into the RNA
+    - environmental sample of 16S rRNA from bacteria is labeled with a carbon isotope (<sup>13</sup>C)
+
+  suppressive subtraction hybridization (SSH):
+    - compares microorganisms present in two different samples by removing identical DNA
+    - takes advantage of the genetic differences between samples from two different areas
+    - identical mRNA is removed from two different samples leaving only mRNA that is different
+
+  BrdU:
+    - halogenated nucleotides that can be incorporated into newly synthesized DNA and isolated
+    - a labeled nucleotide is incorporated into the DNA of actively growing bacteria or viruses
+    - bacteria that are actively growing will take up a nucleotide analog and incorporate it into its DNA
