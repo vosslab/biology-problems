@@ -1,0 +1,58 @@
+---
+
+#Which one of the following statements is FALSE/TRUE <connection word> <topic>
+topic: the structure of xDNA and XNA
+
+replacement_rules:
+  XNA:          '<span style="color: #990000;">XNA</span>'
+  xDNA:         '<span style="color: #009900;">xDNA</span>'
+  natural DNA:  '<i><span style="color: #000099;">natural DNA</span></i>'
+
+connection_words: ~
+
+true_statements:
+  truth11a: XNA has more than four nucleobase letters
+  truth12a: XNA has a modified sugar backbone
+  truth13a: XNA can base pair with natural DNA
+  truth14a: XNA stands for Xeno Nucleic Acid
+
+  truth21a: xDNA is wider than natural DNA
+  truth22a: xDNA contains an extra benzene ring in its nucleobases
+  truth23a: xDNA can base pair with natural DNA
+  truth24a: xDNA stands for expanded DNA because it is larger
+  truth25a: xDNA is also known as benzo-homologated DNA
+
+false_statements:
+  false11a: xDNA has more than four nucleobase letters
+  false12a: xDNA has a modified sugar backbone
+  false13a: XNA cannot base pair with natural DNA
+
+  false14a: XNA stands for Xylo Nucleic Acid
+  false14b: XNA stands for Xenon Nucleic Acid
+  false14c: XNA stands for Xylose Nucleic Acid
+  false14d: XNA stands for Xylene Nucleic Acid
+  false14e: XNA stands for Xyloid Nucleic Acid
+  false14f: XNA stands for Xenopus Nucleic Acid
+  false14g: XNA stands for Xerotic Nucleic Acid
+  false14h: XNA stands for expanded DNA
+
+  false21a: XNA is wider than natural DNA
+  false22a: XNA contains an extra benzene ring in its nucleobases
+  false23a: xDNA cannot base pair with natural DNA
+
+  false24a: xDNA stands for extra DNA because it has more letters
+  false24b: xDNA stands for expanded DNA because it has more letters
+  false24c: xDNA stands for exon DNA because it has no introns
+  false24d: xDNA stands for excreted DNA because it is exported from the cell
+  false24e: xDNA stands for extinct DNA because it is obtained from ancient species
+  false24f: xDNA stands for extreme DNA because it does not denature even in boiling water (100&deg;C)
+
+  false25a: XNA is also known as benzo-homologated DNA
+
+
+
+
+
+# conflicts, means that the statements cannot appear together
+# add ': True' to each line, so the program runs a faster lookup
+conflict_rules: ~
