@@ -1,0 +1,49 @@
+#YAML file for Matching Questions
+
+items to match per question: 4
+
+#plural
+key description: sex determination systems
+
+#singular
+value description: description
+
+matching pairs:
+  X-Y system:
+    - males &male; are heterogametic and females &female; are homogametic
+    - females &female; are homogametic and males &male; are heterogametic
+    - sex is determined by which chromosome is contained in the sperm cell
+    - found in most mammals, as well as some insects
+    - males &male; have two different kinds of chromosomes
+    - females &female; have two of the same kind of sex chromosome,
+    - sex of an offspring depends on which of two sex chromosomes are contained with the sperm
+
+  X-O system:
+    - males &male; are diploid, but only have one sex chromosome
+    - males &male only have one sex chromosome, while females &female; have two
+    - females &female; have two homologous sex chromosomes, males &male; have only one
+    - sex is determined on whether the sperm contains a sex chromosome or not
+    - found in a number of insects, including the grasshoppers, cockroaches, and crickets
+    - sex of the offspring depends on whether or not a sex chromosome is present in the male gamete
+    - sperm normally contain either one sex chromosome or no sex chromosomes at all
+    - sex of an offspring depends on if the sperm contains a sex chromosome or if it is missing
+
+  Z-W system:
+    - females &female; are heterogametic and males &male; are homogametic
+    - males &male; are homogametic and females &female; are heterogametic
+    - sex of an offspring depends on which sex chromosome is contained with the egg (ovum)
+    - only system where sex is determined by the egg (ovum)
+    - found in most birds, many reptiles, and some insects
+    - this system is the reverse of the system found in humans
+    - females &female; have two different kinds of chromosomes
+    - males &male; have two of the same kind of chromosomes
+    - males &male; have two homologous sex chromosomes
+
+  Haplo-Diploid system:
+    - males &male; develop from unfertilized eggs and thus have no fathers
+    - males &male; have no fathers
+    - males &male; only have one copy of every sex and autosomal chromosome
+    - found in insects, such as ants and bees
+    - unfertilized eggs develop into males &male;
+    - females &female; decide the sex by choosing whether to expose the egg to sperm or not
+    - there are no sex chromosomes

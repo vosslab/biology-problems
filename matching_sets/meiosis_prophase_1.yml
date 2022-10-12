@@ -1,7 +1,7 @@
 
-items to match per question: 5
+items to match per question: 4
 
-key description: stages of prophase I
+key description: stages of meiosis prophase I
 
 value description: partial description
 
@@ -36,11 +36,16 @@ matching pairs:
     - chromosomes continue to shorten and thicken
     - sister chromatids first become visible
 
-  Diplotene:
+  Diplotene and/or Diakinesis:
+    - the paired chromosomes being to separate
     - every chiasmata is fully visible at this stage
     - homologous chromosomes begin to migrate apart
+    - homologous chromosome pairs begin to separate and chiasmata become visible
+    - the paired homologous chromosomes begin to separate
+    - homologous chromosomes separate and chiasmata become visible
     - homologous chromosomes are held together only by the chiasmata
-
-  Diakinesis:
     - chromosomes are at their most condensed form
     - homologous chromosomes reach maximum repulsion before separation
+    - characterized by shortening and thickening of the paired chromosomes
+    - the chromosomes shorten in preparation for anaphase
+    - both the nucleolus and nuclear envelope disappear while spindle fibers form
