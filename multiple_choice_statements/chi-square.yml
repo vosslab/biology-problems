@@ -1,0 +1,69 @@
+---
+
+#Which one of the following statements is FALSE/TRUE <connection word> <topic>
+topic: chi-square (&chi;&sup2;) test
+
+#override_question_true: ~
+override_question_false: ~
+
+replacement_rules:
+  rejected:   '<span style="color: #FE2712;">rejected</span>'
+  accepted:   '<span style="color: #66B032;">accepted</span>'
+  c2s:        '<span style="color: #FB9902;">chi-square (&chi;&sup2;) statistic</span>'
+  p-value:    '<span style="color: #C21460;">p-value</span>'
+  losa:       '<span style="color: #8601AF;">level of significance, &alpha;</span>'
+  critval:    '<span style="color: #4424D6;">critical value</span>'
+  nullhyp:    '<span style="color: #0247FE;">null hypothesis, H<sub>0</sub></span>'
+  althyp:     '<span style="color: #FC600A;">alternative hypothesis, H<sub>a</sub></span>'
+
+connection_words: ~
+
+true_statements:
+  truth1a: the nullhyp is accepted if the c2s is less than the critval
+  truth1b: the nullhyp is rejected if the c2s is larger than the critval
+
+  truth2a: the nullhyp is accepted if the p-value is larger than the losa
+  truth2b: the nullhyp is rejected if the p-value is less than the losa
+
+  truth3a: the althyp is accepted if the c2s is larger than the critval
+
+  truth4a: the althyp is accepted if the p-value is less than the losa
+
+false_statements:
+  false1a: the nullhyp is accepted if the c2s is less than the critval
+  false1b: the nullhyp is rejected if the c2s is less than the critval
+  false1c: the nullhyp is accepted if the c2s is larger than the critval
+
+  false2a: the nullhyp is accepted if the p-value is larger than the losa
+  false2b: the nullhyp is rejected if the p-value is larger than the losa
+  false2c: the nullhyp is accepted if the p-value is less than the losa
+
+  false3a: the althyp is accepted if the c2s is less than the critval
+
+  false4a: the althyp is accepted if the p-value is larger than the losa
+
+  #---
+
+  false5a: the nullhyp is accepted if the c2s is less than the losa
+  false5b: the nullhyp is accepted if the c2s is larger than the losa
+  false5c: the nullhyp is rejected if the c2s is larger than the losa
+  false5d: the nullhyp is rejected if the c2s is less than the losa
+
+  false6a: the nullhyp is accepted if the p-value is larger than the critval
+  false6b: the nullhyp is accepted if the p-value is less than the critval
+  false6c: the nullhyp is rejected if the p-value is larger than the critval
+  false6d: the nullhyp is rejected if the p-value is less than the critval
+
+  false7a: the althyp is accepted if the c2s is less than the losa
+  false7b: the althyp is accepted if the c2s is larger than the losa
+  false7c: the althyp is rejected if the c2s is less than the losa
+  false7d: the althyp is rejected if the c2s is larger than the losa
+
+  false8a: the althyp is accepted if the p-value is less than the critval
+  false8b: the althyp is accepted if the p-value is larger than the critval
+  false8c: the althyp is rejected if the p-value is less than the critval
+  false8d: the althyp is rejected if the p-value is larger than the critval
+
+# conflicts, means that the statements cannot appear together
+# add ': True' to each line, so the program runs a faster lookup
+conflict_rules: ~
