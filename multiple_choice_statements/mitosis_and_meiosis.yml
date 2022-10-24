@@ -5,17 +5,17 @@ topic: mitosis and meiosis cell division'
 
 replacement_rules:
   Mitosis II: '<span style="color: OrangeRed;">Mitosis II</span>'
-  Mitosis I: '<span style="color: OrangeRed;">Mitosis I</span>'  
+  Mitosis I: '<span style="color: OrangeRed;">Mitosis I</span>'
   Mitosis: '<span style="color: OrangeRed;">Mitosis</span>'
   mitosis II: '<span style="color: OrangeRed;">mitosis II</span>'
-  mitosis I: '<span style="color: OrangeRed;">mitosis I</span>'  
+  mitosis I: '<span style="color: OrangeRed;">mitosis I</span>'
   mitosis: '<span style="color: OrangeRed;">mitosis</span>'
 
   Meiosis II: '<span style="color: MediumBlue;">Meiosis II</span>'
-  Meiosis I: '<span style="color: MediumBlue;">Meiosis I</span>'  
+  Meiosis I: '<span style="color: MediumBlue;">Meiosis I</span>'
   Meiosis: '<span style="color: MediumBlue;">Meiosis</span>'
   meiosis II: '<span style="color: MediumBlue;">meiosis II</span>'
-  meiosis I: '<span style="color: MediumBlue;">meiosis I</span>'  
+  meiosis I: '<span style="color: MediumBlue;">meiosis I</span>'
   meiosis: '<span style="color: MediumBlue;">meiosis</span>'
 
 connection_words: ~
@@ -26,6 +26,7 @@ true_statements:
 
   truth2a: In mitosis, the parent cell and the daughter cells are genetically identical
   truth2b: The daughter cells produced at the end of meiosis are quite different from the original parent cell
+  truth2c: Meiosis daughter cells contain half of the genetic material which is a mix of both the maternal and paternal genes
 
   truth3a: Mitosis is cell division that produces two (2) daughter cells
   truth3b: Meiosis is cell division that produces four (4) daughter cells
@@ -56,9 +57,6 @@ true_statements:
   truth13a: Only sexually reproductive organisms utilize meiosis
   truth13b: Meiosis is a special type of cell division that produces sex cells for reproduction
   truth13c: Both sexual and asexual organisms go through the process of mitosis
-
-  truth14a: The daughter cells produced at the end of meiosis are quite different from the original parent cell
-  truth14b: Meiosis daughter cells contain half of the genetic material which is a mix of both the maternal and paternal genes
 
 false_statements:
   false1a: Each daughter cell formed by meiosis has the same kinds of chromosomes as the parent cell
@@ -106,11 +104,3 @@ false_statements:
 # conflicts, means that the statements cannot appear together
 # add ': True' to each line, so the program runs a faster lookup
 conflict_rules: ~
-
-
-
-
-
-
-
-
