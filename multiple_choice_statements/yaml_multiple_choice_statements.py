@@ -53,6 +53,7 @@ def checkUnique(yaml_data):
 			print(value)
 			print(statement_dict.get(value))
 			print(key)
+			time.sleep(2)
 			sys.exit(1)
 	for key, value in false_statement_dict.items():
 		if statement_dict.get(value) is None:
@@ -62,6 +63,7 @@ def checkUnique(yaml_data):
 			print(value)
 			print(statement_dict.get(value))
 			print(key)
+			time.sleep(2)
 			sys.exit(1)
 	print("PASS checkUnique")
 	return
