@@ -11,15 +11,15 @@ value description: defintion
 matching pairs:
   critval:
     - found in a table for a given degrees of freedom and losa
-    - the boundary of how extreme a test statistic we need to reject the null hypothesis
+    - the boundary of how extreme a test statistic we need to reject the nullhyp
     - the cutoff used to compare against the observed chi2 test statistic
-    - the bigger this number, the smaller the p-value
     - a measure of the discrepancy between the observed and expected data sets
     - the sum of the normalized square difference between observed and expected data
 
   chi2 test statistic:
     - if this value is large, then there is stronger evidence in favor of the althyp
     - if this value is large, then there is stronger evidence in against of the nullhyp
+    - the bigger this number, the smaller the p-value
 
   losa:
     - the statistical cutoff of the result for the nullhyp to be true or false
@@ -35,7 +35,7 @@ matching pairs:
     - represents the probability of occurrence of the given observations
     - if this value is small, then there is stronger evidence in favor of the althyp
     - if this value is small, then there is stronger evidence in against of the nullhyp
-    - the smaller this number, the bigger the critval
+    - the smaller this number, the bigger the chi2 test statistic
     - if this value is small, it suggests that the observed data are not consistent with the nullhyp
 
   nullhyp:
@@ -45,7 +45,7 @@ matching pairs:
 
   althyp:
     - we are attempting to demonstrate this hypothesis in an indirect way by using the chi2 test
-    - if the null hypothesis is disproved, then this opposing statement gets accepted
+    - if the nullhyp is disproved, then this opposing hypothesis gets accepted
     - we want to accept this hypothesis in our chi2 test
     - for this hypothesis, the expected values may be impossible to calculate
 
