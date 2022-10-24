@@ -15,6 +15,9 @@ replacement_rules:
   critval:    '<span style="color: #4424D6;">critical value</span>'
   nullhyp:    '<span style="color: #0247FE;">null hypothesis, H<sub>0</sub></span>'
   althyp:     '<span style="color: #FC600A;">alternative hypothesis, H<sub>a</sub></span>'
+  less than:   '<strong>less than</strong>'
+  larger than: '<strong>larger than</strong>'
+
 
 connection_words: ~
 
@@ -30,11 +33,11 @@ true_statements:
   truth4a: the althyp is accepted if the p-value is less than the losa
 
 false_statements:
-  false1a: the nullhyp is accepted if the c2s is less than the critval
+  #false1a: the nullhyp is accepted if the c2s is less than the critval
   false1b: the nullhyp is rejected if the c2s is less than the critval
   false1c: the nullhyp is accepted if the c2s is larger than the critval
 
-  false2a: the nullhyp is accepted if the p-value is larger than the losa
+  #false2a: the nullhyp is accepted if the p-value is larger than the losa
   false2b: the nullhyp is rejected if the p-value is larger than the losa
   false2c: the nullhyp is accepted if the p-value is less than the losa
 
