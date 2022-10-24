@@ -335,7 +335,6 @@ def getVariables(basetype):
 	variable_list.append(variable)
 	return variable_list
 
-
 #=====================
 #=====================
 if __name__ == "__main__":
