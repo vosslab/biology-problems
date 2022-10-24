@@ -40,6 +40,34 @@ base_replacement_rule_dict = {
 lowercase = "abcdefghijklmnopqrstuvwxyz"
 
 #=======================
+def checkUnique(yaml_data):
+	true_statement_dict = yaml_data['true_statements']
+	#pprint.pprint(true_statement_dict)
+	false_statement_dict = yaml_data['false_statements']
+	statement_dict = {}
+	for key, value in true_statement_dict.items():
+		if statement_dict.get(value) is None:
+			statement_dict[value] = key
+		else:
+			print("DUPLICATE STATEMENT")
+			print(value)
+			print(statement_dict.get(value))
+			print(key)
+			sys.exit(1)
+	for key, value in false_statement_dict.items():
+		if statement_dict.get(value) is None:
+			statement_dict[value] = key
+		else:
+			print("DUPLICATE STATEMENT")
+			print(value)
+			print(statement_dict.get(value))
+			print(key)
+			sys.exit(1)
+	print("PASS checkUnique")
+	return
+
+
+#=======================
 def autoAddConflictRules(yaml_data):
 	is_lowercase = {}
 	for c in list(lowercase):
@@ -270,6 +298,7 @@ if __name__ == '__main__':
 		sys.exit(0)
 
 	yaml_data = bptools.readYamlFile(args.input_yaml_file)
+	checkUnique(yaml_data)
 	pprint.pprint(yaml_data)
 	autoAddConflictRules(yaml_data)
 
