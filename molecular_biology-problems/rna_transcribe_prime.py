@@ -10,12 +10,15 @@ import bptools
 
 def write_question(N, seqlen):
 	#============================
+	#sequence is 5' -> 3'
 	question_seq = seqlib.makeSequence(seqlen)
+
 	if random.randint(1,2) == 1:
 		question_table = seqlib.Single_Strand_Table(question_seq, fivetothree=True)
 	else:
 		question_table = seqlib.Single_Strand_Table(seqlib.flip(question_seq), fivetothree=False)
 
+	#sequence is 3' -> 5'
 	answer_seq = seqlib.complement(question_seq)
 	answer_mRNA = seqlib.transcribe(answer_seq)
 
@@ -47,7 +50,7 @@ def write_question(N, seqlen):
 	#choice 5
 	nube = question_seq[:half] + answer_seq[half:]
 	choice_list.append(nube)
-	
+
 	choice_table_list = []
 	for choice in choice_list:
 		mRNA = seqlib.transcribe(choice)
@@ -58,10 +61,15 @@ def write_question(N, seqlen):
 		choice_table_list.append(choice_table)
 
 	#============================
+	choice_table_list.append(answer_table)
 	random.shuffle(choice_table_list)
+	choice_table_list = list(set(choice_table_list))
+	#this next line should be okay
+	#since the only way to have more than 5 is if the answer is duplicated
+	choice_table_list = choice_table_list[:5]
 	bbformat = bptools.formatBB_MC_Question(N, question_text, choice_table_list, answer_table)
 	return bbformat
-		
+
 #============================
 #============================
 #============================
@@ -83,4 +91,4 @@ if __name__ == '__main__':
 		N = i + 1
 		bbtext = write_question(N, seqlen)
 		f.write(bbtext)
-	f.close()		
+	f.close()

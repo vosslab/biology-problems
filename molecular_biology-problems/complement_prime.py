@@ -11,10 +11,14 @@ import bptools
 def write_question(N, seqlen):
 	#============================
 	question_seq = seqlib.makeSequence(seqlen)
+	#sequence will be 5' -> 3'
 	if random.randint(1,2) == 1:
 		question_table = seqlib.Single_Strand_Table(question_seq)
 	else:
 		question_table = seqlib.Single_Strand_Table(seqlib.flip(question_seq), fivetothree=False)
+
+	#sequence will be 5' -> 3'
+	#answer_seq = seqlib.complement(question_seq)
 
 	if random.randint(1,2) == 1:
 		choice_fivetothree = True
