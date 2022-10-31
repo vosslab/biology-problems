@@ -256,11 +256,11 @@ def writeQuestion(N=1, length=10, num_sites=2, dna_type='fragment', max_fragment
 #============================================
 #============================================
 if __name__ == '__main__':
-	num_questions = 10
-	length= random.randint(16,20)
-	num_sites=4
-	dna_type='fragment' # short piece of DNA
-	#dna_type='strand' # long strand of DNA
+	num_questions = 100
+	length= 12 #random.randint(16,20)
+	num_sites = 3
+	#dna_type='fragment' # short piece of DNA
+	dna_type='strand' # long strand of DNA
 	max_fragment_size = 7
 	print("num_questions=", num_questions)
 	print("length=", length)
