@@ -11,14 +11,15 @@ value description: information
 matching pairs:
   Elizabeth:
     - Founder and chief execuitive officer (CEO) of Theranos
-    - youngest and wealthiest self-made female billionaire in America based on the $9-billion company valuation
-    - dropped out of Stanford in 2004 to start her own blood testing company
 
   Sunny:
     - former president and chief operating officer (COO) of Theranos
-    - joined Theranos in 2009 and ran the company's day-to- day operations as its president
-    - was in a romantic relationship with Elizabeth Holmes during his tenure at Theranos
 
+replacement_rules:
+   disorder:       '<span style=color: DarkGreen;>disorder</span>'
+   genetic:        '<span style=color: MediumVioletRed;>genetic</span>'
+   metabolic:      '<span style=color: Indigo;>metabolic</span>'
+   chromosome:     '<span style=color: SteelBlue;>chromosome</span>'
 
 exclude pairs:
   - [Sunny, Elizabeth]
