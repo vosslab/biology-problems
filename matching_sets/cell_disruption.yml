@@ -58,3 +58,6 @@ matching pairs:
 
   High throughput homogenizer:
     - a bead beating machine that can process a large number of samples simultaneously in a short time
+
+exclude pairs:
+  - [High throughput homogenizer, Bead beating]
