@@ -1,0 +1,38 @@
+#YAML file for Matching Questions
+
+items to match per question: 2
+
+#plural
+key description: genetic disease treatment methods
+
+#singular
+value description: description
+
+replacement_rules:
+   gene therapy:    '<span style=color: DarkGreen;>gene&nbsp;therapy</span>'
+   genome editing:  '<span style=color: MediumVioletRed;>genome&nbsp;editing</span>'
+   enzyme:     '<span style=color: Indigo;>enzyme</span>'
+   proteins:   '<span style=color: Indigo;>proteins</span>'
+   protein:    '<span style=color: Indigo;>protein</span>'
+   ' gene':    ' <span style=color: Indigo;>gene</span>'
+   virus:      '<span style=color: SteelBlue;>virus</span>'
+   viral:      '<span style=color: SteelBlue;>viral</span>'
+   treatment:  '<span style=color: SteelBlue;>treatment</span>'
+
+
+matching pairs:
+  gene therapy:
+    - treating cystic fibrosis using adenovirus to introduce a functioning protein channel
+    - engineering virus for injection into a tumor to promote apoptosis
+    - introducing a new gene on a plasmid into a patient to replace a faulty &beta;-thalassemia enzyme
+    - culture and reprogram blood progenitor cells from bone marrow to kill HIV-infected cells
+    - mRNA vaccines express the viral spike proteins to train the immune system to recognize the virus
+
+  genome editing:
+    - using CRISPR to change a single nucleotide in sickle-cell allele
+    - deleting the fragments of HIV DNA from the genome of an infected patient
+    - correcting a mutation within the host genome that causes liver disease
+    - using zinc finger nuclease (ZFN) mediated treatment to replace a nucleotide in the diseased &beta;-thalassemia allele
+    - using transcriptor activator-like effector nuclease (TALENs) to correct inherited retinal dystrophy
+    - CRISPR is used to insert a functional micro-dystrophin gene correcting Duchenne muscular dystrophy (DMD)
+    - correct defective DNA elements within a gene
