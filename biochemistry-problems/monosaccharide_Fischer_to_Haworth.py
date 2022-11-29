@@ -4,8 +4,9 @@ import os
 import sys
 import random
 import sugarlib
+import bptools
 
-def makeQuestion(sugar_name, anomeric):
+def makeQuestion(N, sugar_name, anomeric):
 	sugar_code = sugar_codes_class.sugar_name_to_code[sugar_name]
 	if len(sugar_code) == 5 and sugar_code[0] == 'A':
 		#aldo pentose
@@ -70,23 +71,26 @@ def makeQuestion(sugar_name, anomeric):
 		print("Lost some choices {0} -> {1}".format(prelen, postlen))
 		sys.exit(1)
 
-	content = 'MC\t<p>{1}&xrarr;&{0};-{1}</p> '.format(anomeric, sugar_name)
-	content += fischer
-	content += question
+	full_quesiton = '<p>{1}&xrarr;&{0};-{1}</p> '.format(anomeric, sugar_name)
+	full_quesiton += fischer
+	full_quesiton += question
 
-	random.shuffle(choice_codes)
+	choices_list = []
 	for s,a in choice_codes:
 		my_sugar_struct = sugarlib.SugarStructure(s)
 		my_haworth = my_sugar_struct.Haworth_projection_html(ring=ring, anomeric=a)
-		content += "\t"+my_haworth #+'<br/>'+a+s
 		if s == answer_code and a == anomeric:
-			content += "\tCorrect"
-		else:
-			content += "\tIncorrect"
-	return content
+			answer = my_haworth
+		choices_list.append(my_haworth)
+	random.shuffle(choices_list)
+
+	bbformat = bptools.formatBB_MC_Question(N, full_quesiton, choices_list, answer)
+
+	return bbformat
 
 if __name__ == '__main__':
 	sugar_codes_class = sugarlib.SugarCodes()
+	"""
 	D_sugars = []
 	D_sugars += sugar_codes_class.get_sugar_names(5, 'D', 'aldo')
 	#print(D_sugars)
@@ -102,14 +106,20 @@ if __name__ == '__main__':
 	D_sugars.remove('D-galactose')
 	D_sugars.remove('D-idose')
 	D_sugars.remove('D-tagatose')
+	"""
+	D_sugars = ['D-ribose', 'D-fructose', 'D-glucose', 'D-galactose', 'D-idose', 'L-glucose']
+
+
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
 	print('writing to file: '+outfile)
 	f = open(outfile, 'w')
+	N = 0
 	for anomeric in ('alpha', 'beta'):
 		for sugar_name in D_sugars:
+			N += 1
 			#random.shuffle(D_hexose_names)
 			#sugar_name = D_hexose_names.pop()
 			print(sugar_name)
-			content = makeQuestion(sugar_name, anomeric)
+			content = makeQuestion(N, sugar_name, anomeric)
 			f.write(content+'\n')
 	f.close()
