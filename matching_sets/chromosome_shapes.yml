@@ -16,6 +16,7 @@ matching pairs:
     - spindle fibers cannot attach and the chromosome is lost when the cell divides
     - an unstable chromosome lacking spindle fiber attachment
     - an unstable chromosome with no centromere
+
   Acrocentric:
     - the short arm of the chromosome is so short that it is hard to observe
     - the chromosome most resembles the letter V during metaphase
@@ -24,12 +25,14 @@ matching pairs:
     - the centromere is closer to the end rather than the center
     - the centromere is very offset from the center leading to a very short arm
     - a chromosome with one very long arm and one very short arm
+
   Dicentric:
     - an abnormal chromosome that has two centromeres that often appear in cancer cells
     - an abnormal chromosome with two centromeres that often appear in cancer cells
     - an unstable chromosome due to unpredictable spindle fiber attachment
     - a chromosome with formed through the fusion of two chromosome segments, each with a centromere
     - genomic rearrangements placing two centromeres on the same chromosome
+
   Metacentric:
     - the two arms of the chromosomes are almost equal
     - the chromosome most resembles the letter V after separation
@@ -38,11 +41,10 @@ matching pairs:
     - a chromosome with a centrally placed centromere
     - the centromere divides the chromosome into two arms with equal length
     - a chromosome with two arms of equal length
+
   Submetacentric:
     - the chromosome most resembles the letter J after separation
     - a chromosome with slightly shorter p arm relative to q arm
     - the centromere situated so that one arm is somewhat shorter than the other
     - a slight asymmetry in the length of the two chromosome arms
-    - the centromere slightly offset from the center 
-
-  
+    - the centromere slightly offset from the center
