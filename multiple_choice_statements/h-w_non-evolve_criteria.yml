@@ -1,0 +1,75 @@
+---
+
+#Which one of the following statements is FALSE/TRUE <connection word> <topic>
+topic: Hardy-Weinberg equilibrium conditions for non-evolving populations
+
+#override_question_true: ~
+#override_question_false: ~
+
+replacement_rules: ~
+
+connection_words: ~
+
+true_statements:
+  truth1a: no mutations are actively occuring
+  truth1b: alleles remain the same across generations
+  truth1c: no new alleles are being added to the gene pool
+  truth1d: the gene copy number is not changing due to chromosomal alterations
+
+  truth2a: no selective mating is actively occuring
+  truth2b: random mating is actively occuring
+  truth2c: no inbreeding is actively occuring
+  truth2d: random mixing of gametes is actively occuring
+
+  truth3a: no natural selection is actively occuring
+  truth3b: all individuals are equally likely to survive
+  truth3c: there are no genotype-based differences in survival rates of individuals
+  truth3d: there are no genotype-based differences in reproductive success of individuals
+  truth3e: all genotypes have equal chance at surviving
+  truth3f: all genotypes are equally likely to survive
+
+  truth4a: no genetic drift is actively occuring
+  truth4b: there exists an extremely large population size
+  truth4c: the population size is extremely large
+  truth4d: allele frequecies remain constant across generations
+
+  truth5a: no gene flow is actively occuring
+  truth5b: it is an isolated population
+  truth5c: alleles are not moving into and out of the population
+  truth5d: no emigration and no immgration is actively occuring
+
+false_statements:
+  false1a: mutations are actively occuring across generations
+  false1b: alleles are becoming actively modified across generations
+  false1c: genes are actively being duplicated or deleted due to chromosomal alterations
+  false1d: genes are actively being deleted or duplicated due to chromosomal alterations
+  false1e: new alleles are actively being added to the gene pool
+
+  false2a: selective mating is actively occuring
+  false2b: mating is not completly random
+  false2c: a significant amount of inbreeding is actively occuring
+  false2d: some individuals are only mating with a subset of the population
+
+  false3a: natural selection is actively occuring
+  false3b: some individuals are more likely to survive than others
+  false3c: there are genotype-based differences in survival rates of individuals
+  false3d: there are genotype-based differences in reproductive success of individuals
+  false3e: some genotypes have a better chance at surviving
+  false3f: some genotypes are more likely to survive than others
+
+  false4a: genetic drift is actively occuring
+  false4b: there exists an extremely small population size
+  false4c: the population size is extremely small
+  false4d: allele frequecies are randomly changing
+
+  false5a: gene flow is actively occuring
+  false5b: the population is often mixed with other populations
+  false5c: alleles are moving into and out of the population
+  false5d: allele frequecies change constant across generations
+  false5e: a significant amount of immgration is actively occuring
+  false5f: a significant amount of migration is actively occuring
+
+
+# conflicts, means that the statements cannot appear together
+# add ': True' to each line, so the program runs a faster lookup
+conflict_rules: ~
