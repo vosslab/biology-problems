@@ -1,0 +1,16 @@
+#use RYB color wheel, brightness=-99, https://bahamas10.github.io/ryb/
+red,#cc201d,h=0
+brick,#c1480a,h=16
+orange,#bb5d00,h=32
+gold,#b77b04,
+yellow,#989b0f,h=52
+lime,#478d1b,h=70
+green,#127822,h=90
+teal,#008a75,h=155
+cyan,#00b3b3,h=180
+skyblue,#0078a3,h=192
+blue,#005aa3,h=224
+indigo,#56225d,h=264
+purple,#660955,h=280
+magenta,#881042,h=300
+coral,#cc2489,h=324

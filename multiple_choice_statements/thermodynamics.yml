@@ -1,0 +1,69 @@
+---
+
+#Which one of the following statements is FALSE/TRUE <connection word> <topic>
+topic: thermodynamics and kinetics
+
+replacement_rules:
+  thermodynamics:    '<span style="color: #bb5d00;">thermodynamics</span>'
+  kinetics:          '<span style="color: #56225d;">kinetics</span>'
+  equilibrium:       '<span style="color: #478d1b;">equilibrium</span>'
+  reaction:          '<span style="color: #008a75;">reaction</span>'
+  'reaction</span>s': 'reactions</span>'
+  enzymes:            '<span style="color: #cc2489;">enzymes</span>'
+  entropy:            '<span style="color: #b77b04;">entropy</span>'
+  enthalpy:           '<span style="color: #0078a3;">enthalpy</span>'
+
+connection_words: ~
+
+true_statements:
+  truth1a: thermodynamics tells us the equilibrium point
+  truth1b: kinetics tells us how fast is equilibrium approached
+
+  truth2a: enzymes change the rate of reactions
+  truth2b: enzymes change the reaction kinetics
+  truth2c: thermodynamics is unaffected by enzymes
+
+  truth3a: enzymes do not change the &Delta;G of the reaction
+  truth3b: enzymes do not change the &Delta;G&deg;&prime; of the reaction
+  truth3c: enzymes do not change the K&prime;<sub>eq</sub> of the reaction
+
+  truth4a: thermodynamics tells us the direction of the reaction
+  truth4b: thermodynamics depends on the ratio of product and substrates
+
+  truth5a: thermodynamics is determined by a combination of enthalpy and entropy
+
+  truth6a: the first law of thermodynamics is the conservation of energy
+  truth6b: the second law of thermodynamics is that entropy of a closed system always increases
+
+  truth7a: hydrolysis reactions tend to increase entropy of the products
+  truth7b: dehydration reactions tend to decrease entropy of the products
+  truth7c: in general, more disorder means more entropy
+
+false_statements:
+  false1a: kinetics tells us the equilibrium point
+  false1b: thermodynamics tells us how fast is equilibrium approached
+
+  false2a: enzymes change the equilibrium point
+  false2b: enzymes change the reaction thermodynamics
+  false2c: kinetics is unaffected by enzymes
+
+  false3a: enzymes change the &Delta;G of the reaction
+  false3b: enzymes change the &Delta;G&deg;&prime; of the reaction
+  false3c: enzymes change the K&prime;<sub>eq</sub> of the reaction
+
+  false4a: kinetics tells us the direction of the reaction
+  false4b: kinetics depends only on the ratio of product and substrates
+
+  false5a: kinetics is determined by a combination of enthalpy and entropy
+
+  false6a: the second law of thermodynamics is the conservation of energy
+  false6b: the first law of thermodynamics is that entropy of a closed system always increases
+
+  false7a: hydrolysis reactions tend to decrease entropy of the products
+  false7b: dehydration reactions tend to increase entropy of the products
+  false7c: in general, more disorder means less entropy
+
+
+# conflicts, means that the statements cannot appear together
+# add ': True' to each line, so the program runs a faster lookup
+conflict_rules: ~

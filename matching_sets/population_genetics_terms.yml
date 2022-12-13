@@ -1,0 +1,52 @@
+#YAML file for Matching Questions
+
+items to match per question: 4
+
+#plural
+key description: characters in the Theranos story
+
+#singular
+value description: information
+
+matching pairs:
+
+  population genetics:
+
+  allele frequencies:
+
+  genotype frequencies:
+
+
+  mutation:
+    - unpredictable changes in the nucleotides that form a DNA sequence
+    - only process that creates new genetic variations
+
+  genetic drift:
+    - a random change in the allele frequencies within a population
+    - stronger in small populations and decrease the overall fitness of that population
+
+  gene flow:
+    - movement of alleles between populations
+
+  natural selection:
+
+  sexual selection:
+
+  random mating:
+    - former president and chief operating officer (COO) of Theranos
+
+  assortative mating:
+    - mating between individuals with similar phenotypes
+
+  consanguineous mating:
+    - mating between genetically related individuals
+    - mating between relatives, such as first cousins
+    - type of mating that reduces heterozygotes and increases homozygotes
+
+
+
+replacement_rules:
+   disorder:       '<span style=color: DarkGreen;>disorder</span>'
+   genetic:        '<span style=color: MediumVioletRed;>genetic</span>'
+   metabolic:      '<span style=color: Indigo;>metabolic</span>'
+   chromosome:     '<span style=color: SteelBlue;>chromosome</span>'
