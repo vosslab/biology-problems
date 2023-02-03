@@ -48,7 +48,7 @@ false_statements:
   false3b: the RNA sugar is deoxyribose, DNA has a different sugar
 
   false4a: DNA nucleotides have a 2&prime; hydroxide (-OH) group, RNA does not
-  false4b: RNA nucleotides are missing the 2&prime; hydroxide (-OH) group compared to RNA
+  false4b: RNA nucleotides are missing the 2&prime; hydroxide (-OH) group compared to DNA
   false4c: RNA nucleotides have an extra 4&prime; hydroxide (-OH) group, DNA does not
   false4d: DNA nucleotides are missing the 4&prime; hydroxide (-OH) group compared to RNA
   false4e: RNA contains one less hydroxyl (-OH) group than DNA

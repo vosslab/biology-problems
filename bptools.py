@@ -58,6 +58,13 @@ def readYamlFile(yaml_file):
 #==========================
 #==========================
 #==========================
+def default_color_wheel(num_colors=4):
+	degree_step = int(360 / float(num_colors))
+	r,g,b = (255, 0, 0)
+	color_wheel = make_color_wheel(r,g,b, degree_step)
+	return color_wheel
+
+#==========================
 def make_color_wheel(r, g, b, degree_step=40): # Assumption: r, g, b in [0, 255]
 	r, g, b = map(lambda x: x/255., [r, g, b]) # Convert to [0, 1]
 	#print(r, g, b)
