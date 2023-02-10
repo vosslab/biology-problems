@@ -1,0 +1,53 @@
+#YAML file for Matching Questions
+
+items to match per question: 4
+
+#plural
+key description: cellular structures
+
+#singular
+value description: description
+
+matching pairs:
+  Flagellum:
+    - tail-like structure for motility and movement
+    - motility structure for movement and navigation
+    - whiplike structure for bacterial movement and motility
+
+  Fimbriae:
+    - hair-like appendages used for attachment
+    - hair-like attachment structures for colonization
+    - short, hair-like appendages that aid in attachment and infection
+    - short projections that aid in attachment and infection
+
+  Sex pilus:
+    - mating structure for transfer of genetic material
+    - mating structure for genetic material transfer
+    - structure for transferring genetic material
+    - used for the exchange of genetic material
+    - structure that allows for the transfer of DNA
+    - structure for transfer of genetic material between cells
+
+  Capsule:
+    - thin layer for protection and evasion
+    - thin protective layer that aids in survival
+    - protective layer used for evasion
+    - layer for protecting and evading
+    - a polysaccharide material that surrounds the bacterial cell
+    - A protective covering surrounding bacteria
+
+  Peptidoglycan:
+    complex protein and polysaccharide structure within the cell wall
+    stiff protein and carbohydrate layer within bacteria cell wall
+
+
+
+
+replacement_rules:
+   disorder:       '<span style=color: DarkGreen;>disorder</span>'
+   genetic:        '<span style=color: MediumVioletRed;>genetic</span>'
+   metabolic:      '<span style=color: Indigo;>metabolic</span>'
+   chromosome:     '<span style=color: SteelBlue;>chromosome</span>'
+
+exclude pairs:
+  - [Sunny, Elizabeth]

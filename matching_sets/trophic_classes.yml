@@ -1,0 +1,50 @@
+#YAML file for Matching Questions
+
+items to match per question: 4
+
+#plural
+key description: trophic classifications
+
+#singular
+value description: definition
+
+matching pairs:
+  heterotroph:
+    - consume other organisms for food
+    - rely on other organisms for their food
+    - obtain their nourishment from other organisms
+
+  autotroph:
+    - produce their own food
+    - generate their own food
+    - produce their own nourishment
+
+  chemotroph:
+    - obtain energy from molecules rather than light
+    - derive energy from molecules rather than light
+    - get their energy from molecules instead of from light
+    - use molecules as a source of energy
+
+  phototroph:
+    - use light as a source of energy
+    - get their energy from light instead of from chemicals
+    - derive energy from light rather than chemicals
+
+  lithotroph:
+    - derive energy from inorganic compounds
+    - obtain energy from inorganic compounds
+    - obtain their energy from inorganic chemicals
+
+  organotroph:
+    - derive energy from organic compounds
+    - obtain energy from organic compounds
+    - obtain their energy from organic matter
+
+replacement_rules:
+   disorder:       '<span style=color: DarkGreen;>disorder</span>'
+   genetic:        '<span style=color: MediumVioletRed;>genetic</span>'
+   metabolic:      '<span style=color: Indigo;>metabolic</span>'
+   chromosome:     '<span style=color: SteelBlue;>chromosome</span>'
+
+exclude pairs:
+  - [Sunny, Elizabeth]

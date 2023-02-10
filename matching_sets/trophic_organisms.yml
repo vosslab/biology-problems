@@ -1,0 +1,43 @@
+#YAML file for Matching Questions
+
+items to match per question: 4
+
+#plural
+key description: trophic organisms
+
+#singular
+value description: definition
+
+matching pairs:
+  photolithoautotroph:
+    - uses light for energy and CO<sub>2</sub> as a carbon source
+    - uses light for energy and carbon dioxide as a carbon source
+    - obtains energy from light and its organic material is derived from carbon dioxide
+
+  chemolithoautotroph:
+    - obtains energy by oxidizing inorganic compounds
+    - uses inorganic compounds for both energy and carbon source
+    - uses sulfur, iron, or nitrogen as energy sources and carbon dioxide as a carbon source
+
+  chemoorganoheterotroph:
+    - derives its energy using organic chemicals from consuming other organisms
+    - uses organic compounds for both energy and its carbon source
+
+  chemolithoheterotroph:
+    - its energy from the oxidation of inorganic compounds, but uses organic compounds as its carbon source
+    - derives its energy using inorganic chemicals, but its carbon from other organisms
+    - uses inorganic compounds for energy, but uses organic compounds as its carbon source
+    - uses sulfur, iron, or nitrogen as energy sources, but uses organic compounds from other organisms as its carbon source
+
+  photoorganoheterotroph:
+    - obtains energy from light and organic material from other organisms
+    - obtains energy from light and organic material as its carbon source
+    - uses energy from light and organic material from other organisms
+    - relys on light for energy and organic compounds from other organisms for survival
+    - uses light for energy, but requires organic compounds from other organisms to provide the carbon it needs
+
+replacement_rules:
+   light:       '<span style=color: DarkGreen;>light</span>'
+   energy:        '<span style=color: MediumVioletRed;>energy</span>'
+   organisms:      '<span style=color: Indigo;>organisms</span>'
+   organic:     '<span style=color: SteelBlue;>organic</span>'
