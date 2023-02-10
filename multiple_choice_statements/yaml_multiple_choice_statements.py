@@ -40,6 +40,21 @@ base_replacement_rule_dict = {
 lowercase = "abcdefghijklmnopqrstuvwxyz"
 
 #=======================
+def applyReplacementRulesToQuestions(list_of_question_text, replacement_rule_dict):
+	if replacement_rule_dict is None:
+		print("no replacement rules found")
+		replacement_rule_dict = base_replacement_rule_dict
+	else:
+		#replacement_rule_dict = {**base_replacement_rule_dict, **replacement_rule_dict}
+		replacement_rule_dict |= base_replacement_rule_dict
+	new_list_of_question_text = []
+	for question_text in list_of_question_text:
+		for find_text,replace_text in replacement_rule_dict.items():
+			question_text = question_text.replace(find_text,replace_text)
+		new_list_of_question_text.append(question_text)
+	return new_list_of_question_text
+
+#=======================
 def checkUnique(yaml_data):
 	true_statement_dict = yaml_data['true_statements']
 	#pprint.pprint(true_statement_dict)
@@ -314,6 +329,9 @@ if __name__ == '__main__':
 		less_questions = list_of_complete_questions[:args.max_questions]
 		less_questions.sort()
 		list_of_complete_questions = less_questions
+
+	list_of_complete_questions = applyReplacementRulesToQuestions(list_of_complete_questions,
+		yaml_data.get('replacement_rules'))
 
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(args.input_yaml_file))[0] + '-questions.txt'
 	print('writing to file: '+outfile)
