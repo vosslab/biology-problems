@@ -81,8 +81,8 @@ def makeQuestions(yaml_data, num_choices=None):
 		if isinstance(answer_description, list):
 			answer_description = random.choice(answer_description)
 		random.shuffle(choices_list)
-		question = ("<p>Which one of the following {0} correspond to the description <strong>'{1}'</strong>.</p>".format(
-			yaml_data['key description'], answer_description))
+		question = ("<p>Which one of the following {0} correspond to the {1} <strong>'{2}'</strong>.</p>".format(
+			yaml_data['key description'], yaml_data['value description'], answer_description))
 		N += 1
 		complete_question = bptools.formatBB_MC_Question(N, question, choices_list, answer)
 
@@ -139,8 +139,8 @@ def makeQuestions2(yaml_data, num_choices=None):
 		choices_list.sort()
 		answer = key
 		answer_description = value
-		question = ("<p>Which one of the following {0} correspond to the description <strong>'{1}'</strong>.</p>".format(
-			yaml_data['key description'], answer_description))
+		question = ("<p>Which one of the following {0} correspond to the {1} <strong>'{2}'</strong>.</p>".format(
+			yaml_data['key description'], yaml_data['value description'], answer_description))
 		N += 1
 		complete_question = bptools.formatBB_MC_Question(N, question, choices_list, answer)
 
