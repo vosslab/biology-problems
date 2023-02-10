@@ -3,12 +3,20 @@
 #Which one of the following statements is FALSE/TRUE <connection word> <topic>
 topic: the structure of DNA
 
+#UNCOMMENT ONE OR BOTH FOR THIS TO WORK
 override_question_true: ~
 override_question_false: ~
 
 replacement_rules:
-  Mitosis II: '<span style="color: OrangeRed;">Mitosis II</span>'
-  Mitosis I: '<span style="color: OrangeRed;">Mitosis I</span>'  
+  AAAAAAA: '<span style="color: #ff0000;">AAAAAAA</span>' #RED
+  BBBBBBB: '<span style="color: #ff5e00;">BBBBBBB</span>' #DARK ORANGE
+  CCCCCCC: '<span style="color: #ffa100;">CCCCCCC</span>' #LIGHT ORANGE
+  DDDDDDD: '<span style="color: #b3b300;">DDDDDDD</span>' #DARK YELLOW
+  EEEEEEE: '<span style="color: #2fbd0f;">EEEEEEE</span>' #LIME GREEN
+  FFFFFFF: '<span style="color: #009e4c;">FFFFFFF</span>' #TEAL
+  GGGGGGG: '<span style="color: #0d57a5;">GGGGGGG</span>' #BLUE
+  HHHHHHH: '<span style="color: #6d108e;">HHHHHHH</span>' #PURPLE
+  IIIIIII: '<span style="color: #a1005e;">IIIIIII</span>' #MAGENTA
 
 connection_words: ~
 

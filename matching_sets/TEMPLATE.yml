@@ -8,18 +8,23 @@ key description: characters in the Theranos story
 #singular
 value description: information
 
+replacement_rules:
+  AAAAAAA: '<span style="color: #ff0000;">AAAAAAA</span>' #RED
+  BBBBBBB: '<span style="color: #ff5e00;">BBBBBBB</span>' #DARK ORANGE
+  CCCCCCC: '<span style="color: #ffa100;">CCCCCCC</span>' #LIGHT ORANGE
+  DDDDDDD: '<span style="color: #b3b300;">DDDDDDD</span>' #DARK YELLOW
+  EEEEEEE: '<span style="color: #2fbd0f;">EEEEEEE</span>' #LIME GREEN
+  FFFFFFF: '<span style="color: #009e4c;">FFFFFFF</span>' #TEAL
+  GGGGGGG: '<span style="color: #0d57a5;">GGGGGGG</span>' #BLUE
+  HHHHHHH: '<span style="color: #6d108e;">HHHHHHH</span>' #PURPLE
+  IIIIIII: '<span style="color: #a1005e;">IIIIIII</span>' #MAGENTA
+
 matching pairs:
   Elizabeth:
     - Founder and chief execuitive officer (CEO) of Theranos
 
   Sunny:
     - former president and chief operating officer (COO) of Theranos
-
-replacement_rules:
-   disorder:       '<span style=color: DarkGreen;>disorder</span>'
-   genetic:        '<span style=color: MediumVioletRed;>genetic</span>'
-   metabolic:      '<span style=color: Indigo;>metabolic</span>'
-   chromosome:     '<span style=color: SteelBlue;>chromosome</span>'
 
 exclude pairs:
   - [Sunny, Elizabeth]
