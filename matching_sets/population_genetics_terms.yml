@@ -3,18 +3,18 @@
 items to match per question: 4
 
 #plural
-key description: characters in the Theranos story
+key description: population genetics terms
 
 #singular
-value description: information
+value description: definition
 
 matching pairs:
 
-  population genetics:
+  #population genetics:
 
-  allele frequencies:
+  #allele frequencies:
 
-  genotype frequencies:
+  #genotype frequencies:
 
 
   mutation:
@@ -28,9 +28,9 @@ matching pairs:
   gene flow:
     - movement of alleles between populations
 
-  natural selection:
+  #natural selection:
 
-  sexual selection:
+  #sexual selection:
 
   random mating:
     - former president and chief operating officer (COO) of Theranos
