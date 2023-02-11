@@ -67,17 +67,26 @@ def default_color_wheel(num_colors=4):
 #==========================
 def make_color_wheel(r, g, b, degree_step=40): # Assumption: r, g, b in [0, 255]
 	r, g, b = map(lambda x: x/255., [r, g, b]) # Convert to [0, 1]
-	#print(r, g, b)
+	#print('rgb: {0:.2f}, {1:.2f}, {2:.2f}'.format(r, g, b))
 	hue, l, s = colorsys.rgb_to_hls(r, g, b)     # RGB -> HLS
-	#print(hue, l, s)
+	#print('hsl: {0:.2f}, {1:.2f}, {2:.2f}'.format(hue, s, l))
 	wheel = []
 	for deg in range(0, 359, degree_step):
+		#print('--')
 		hue_i = (hue*360. + float(deg))/360.
 		#print(hue_i, l, s)
+		#print('hsl: {0:.2f}, {1:.2f}, {2:.2f}'.format(hue_i, s, l))
 		ryb_percent_color = colorsys.hls_to_rgb(hue_i, l, s)
 		#print(ryb_percent_color)
+		#print('ryb: {0:.2f}, {1:.2f}, {2:.2f}'.format(
+		#	ryb_percent_color[0], ryb_percent_color[1], ryb_percent_color[2],))
 		rgb_percent_color = _ryb_to_rgb(*ryb_percent_color)
+		#print('rgb: {0:.2f}, {1:.2f}, {2:.2f}'.format(
+		#	rgb_percent_color[0], rgb_percent_color[1], rgb_percent_color[2],))
+		### this does not work
 		rgb_color = tuple(map(lambda x: int(round(x*255)), rgb_percent_color))
+		### this is worse
+		#rgb_color = tuple(map(lambda x: int(round(x*255)), ryb_percent_color))
 		hexcolor = '%02x%02x%02x' % rgb_color
 		wheel.append(hexcolor)
 	return wheel
