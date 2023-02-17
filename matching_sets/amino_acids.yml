@@ -1,0 +1,91 @@
+#YAML file for Matching Questions
+
+items to match per question: 4
+
+#plural
+key description: characters in the Theranos story
+
+#singular
+value description: information
+
+replacement_rules:
+  negatively charged amino acid: '<span style="color: #ff0000;">negatively charged amino acid</span>' #RED
+  aromatic amino acid: '<span style="color: #ff5e00;">aromatic amino acid</span>' #DARK ORANGE
+  non-polar branched chain amino acid: '<span style="color: #ffa100;">non-polar branched chain amino acid</span>' #LIGHT ORANGE
+  non-polar amino acid: '<span style="color: #b3b300;">non-polar amino acid</span>' #DARK YELLOW
+  small amino acid: '<span style="color: #2fbd0f;">small amino acid</span>' #LIME GREEN
+  polar amino acid: '<span style="color: #009e4c;">polar amino acid</span>' #TEAL
+  positively charged amino acid: '<span style="color: #0d57a5;">positively charged amino acid</span>' #BLUE
+  side chain: '<span style="color: #6d108e;">side chain</span>' #PURPLE
+  IIIIIII: '<span style="color: #a1005e;">IIIIIII</span>' #MAGENTA
+
+# <td style=" transform: rotate(180deg) scaleX(0.5);" align="center">&#9650;</td>
+# <td style="border: none;"  align="center">&vellip;</td>
+#below are unique definitions for each of the 20 amino acids in YAML format. Remove my definitions and create new defnitions to the existing 20 amino acids. Make sure when presented with the definition, only one amino acid matches
+
+#below are unique definitions for each of the 20 amino acids in YAML format. Format each of my definitions so that they are grammatically consistent
+
+matching pairs:
+  alanine:
+    - 'a non-polar amino acid, with a single methyl group (-CH<sub>3</sub>) as its side chain'
+    - 'a non-polar amino acid, with only a methyl group (-CH<sub>3</sub>) attached to the &alpha;-carbon'
+    - '<table border="1" style="border: 1px lightgray solid;" cellpading="0" cellspacing="0" align="center"> <tr><<!-- top atoms --> <td style="border: none;"></td> <td style="border: none;"></td> <td style="border: none;"></td> <td colspan=2 style="border: none;" align="center">H</td> <td style="border: none;"></td> </tr> <tr><!-- top vertical bond lines --> <td style="border: none;"></td> <td style="border: none;"></td> <td style="border: none;"></td> <td style="border: none; border-right: 2px black solid;">&nbsp;</td> <td style="border: none; border-left: 2px black solid;">&nbsp;</td> <td style="border: none;"></td> </tr> <tr><!-- middle bonds atoms and lines --> <td rowspan=2 colspan=2 style="border: none;" align="center"><sup>&ndash;</sup>OOC</td> <td style="font-size: 1px; border: none; border-bottom: 2px black solid;" width="20px">&nbsp;</td> <td rowspan=2 colspan=2 style="border: none;" align="center">C<sub>&alpha;</sub></td> <td style="font-size: 1px; border: none; border-bottom: 2px black solid;" width="20px">&nbsp;</td> <td rowspan=2 colspan=2 style="border: none;" align="center">CH<sub>3</sub></td> </tr> <tr><!-- left over middle bond lines --> <td style="font-size: 1px; border: none; border-top: 2px black solid;" width="20px">&nbsp;</td> <td style="font-size: 1px; border: none; border-top: 2px black solid;" width="20px">&nbsp;</td> </tr> <tr><!-- bottom vertical bond lines --> <td style="border: none;"></td> <td style="border: none;"></td> <td style="border: none;"></td> <td style="border: none; border-right: 2px black solid;">&nbsp;</td> <td style="border: none; border-left: 2px black solid;">&nbsp;</td> <td style="border: none;"></td> </tr> <tr><!-- bottom atoms --> <td style="border: none;"></td> <td style="border: none;"></td> <td colspan=4 style="border: none;" align="center">NH<sub>3</sub><sup>+</sup></td> <td style="border: none;"></td> </tr> </tr></table>'
+  arginine:
+    - 'a positively charged amino acid with a long, flexible side chain containing 3 nitrogen atoms (guanidinium)'
+  asparagine:
+    - 'a polar amino acid with a shorter amine-substituted carboxylate (amide) -C(=O)NH<sub>2</sub> group'
+  aspartate:
+    - 'a negatively charged amino acid with a small, carboxylate (-COOH) side chain'
+  aspartic acid:
+    - 'a negatively charged amino acid with a small, carboxylate (-COOH) side chain'
+  cysteine:
+    - 'a polar amino acid with a thiol (-SH) group that can form disulfide bonds'
+    - 'a polar amino acid that can form disulfide bridges'
+    - 'a polar amino acid that is capable of thiol (-SH) chemistry'
+    - '<table border="1" style="border: 1px lightgray solid;" cellpading="0" cellspacing="0" align="center"> <tr> <td style="border: none;"></td> <td colspan=4 style="border: none;" align="center">O<span style="display: inline-block; transform: scaleX(1.5); padding-right: 0.15em; padding-left: 0.15em;">=</span>C<strong>&ndash;</strong>OH</td> <td style="border: none;"></td> </tr> <tr> <td style="border: none;"></td> <td style="border: none;"></td> <td style="border: none; border-right: 2px black solid;">&nbsp;</td> <td style="border: none; border-left: 2px black solid;">&nbsp;</td> <td style="border: none;"></td> </tr> <tr> <td rowspan=2 style="border: none;">H</td> <td style="font-size: 1px; border: none; border-bottom: 2px black solid;" width="20px">&nbsp;</td> <td rowspan=2 colspan=2 style="border: none;" align="center">C<sub>&alpha;</sub></td> <td style="font-size: 1px; border: none; border-bottom: 2px black solid;" width="20px">&nbsp;</td> <td rowspan=2 colspan=2 style="border: none;" align="center">CH<sub>2</sub></td> <td style="font-size: 1px; border: none; border-bottom: 2px black solid;" width="20px">&nbsp;</td> <td rowspan=2 colspan=2 style="border: none;" align="center">SH</td> </tr> <tr> <td style="font-size: 1px; border: none; border-top: 2px black solid;" width="20px">&nbsp;</td> <td style="font-size: 1px; border: none; border-top: 2px black solid;" width="20px">&nbsp;</td> <td style="font-size: 1px; border: none; border-top: 2px black solid;" width="20px">&nbsp;</td> </tr> <tr> <td style="border: none;"></td> <td style="border: none;"></td> <td style="border: none; border-right: 2px black solid;">&nbsp;</td> <td style="border: none; border-left: 2px black solid;">&nbsp;</td> <td style="border: none;"></td> </tr> <tr> <td style="border: none;"></td> <td colspan=4 style="border: none;" align="center">H<strong>&ndash;</strong>N<strong>&ndash;</strong>H</td> <td style="border: none;"></td> </tr></table>'
+  glutamine:
+    - 'a polar amino acid with a longer amine-substituted carboxylate (amide) -C(=O)NH<sub>2</sub> group'
+  glutamate:
+    - 'a negatively charged amino acid with a large, carboxylate (-COOH) side chain'
+  glutamic acid:
+    - 'a negatively charged amino acid with a large, carboxylate (-COOH) side chain'
+  glycine:
+    - 'a small amino acid with a single hydrogen atom as its side chain'
+    - 'a small amino acid with the simple chemical formula NH<sub>2</sub>-CH<sub>2</sub>-COOH'
+    - '<table border="1" style="border: 1px lightgray solid;" cellpading="0" cellspacing="0" align="center"> <tr><<!-- top atoms --> <td style="border: none;"></td> <td style="border: none;"></td> <td style="border: none;"></td> <td colspan=2 style="border: none;" align="center">H</td> <td style="border: none;"></td> </tr> <tr><!-- top vertical bond lines --> <td style="border: none;"></td> <td style="border: none;"></td> <td style="border: none;"></td> <td style="border: none; border-right: 2px black solid;">&nbsp;</td> <td style="border: none; border-left: 2px black solid;">&nbsp;</td> <td style="border: none;"></td> </tr> <tr><!-- middle bonds atoms and lines --> <td rowspan=2 colspan=2 style="border: none;" align="center"><sup>&ndash;</sup>OOC</td> <td style="font-size: 1px; border: none; border-bottom: 2px black solid;" width="20px">&nbsp;</td> <td rowspan=2 colspan=2 style="border: none;" align="center">C<sub>&alpha;</sub></td> <td style="font-size: 1px; border: none; border-bottom: 2px black solid;" width="20px">&nbsp;</td> <td rowspan=2 colspan=2 style="border: none;" align="center">H</td> </tr> <tr><!-- left over middle bond lines --> <td style="font-size: 1px; border: none; border-top: 2px black solid;" width="20px">&nbsp;</td> <td style="font-size: 1px; border: none; border-top: 2px black solid;" width="20px">&nbsp;</td> </tr> <tr><!-- bottom vertical bond lines --> <td style="border: none;"></td> <td style="border: none;"></td> <td style="border: none;"></td> <td style="border: none; border-right: 2px black solid;">&nbsp;</td> <td style="border: none; border-left: 2px black solid;">&nbsp;</td> <td style="border: none;"></td> </tr> <tr><!-- bottom atoms --> <td style="border: none;"></td> <td style="border: none;"></td> <td colspan=4 style="border: none;" align="center">NH<sub>3</sub><sup>+</sup></td> <td style="border: none;"></td> </tr> </tr></table>'
+  histidine:
+    - 'an aromatic amino acid with a side chain containing a 5-membered nitrogenous ring and a pKa close to pH 7'
+  isoleucine:
+    - 'a non-polar branched chain amino acid that is an isomer of leucine'
+    - 'a non-polar branched chain amino acid that is a valine with a extra methyl group (-CH<sub>3</sub>) at the end'
+  leucine:
+    - 'a non-polar branched chain amino acid that is an isomer of isoleucine'
+    - 'a non-polar branched chain amino acid with a double methylated &gamma;-carbon'
+    - 'a non-polar branched chain amino acid that is a longer version of valine'
+  lysine:
+    - 'a positively charged amino acid with a long, flexible side chain containing an amine group'
+  methionine:
+    - 'a non-polar amino acid with a side chain containing a sulfur atom that is not available for chemical reactions'
+  phenylalanine:
+    - 'a non-polar amino acid with an aromatic side chain containing a single benzene (-C<sub>6</sub>H<sub>6</sub>) ring'
+  proline:
+    - 'a non-polar amino acid where the side chain is bonded to the backbone amine, resulting in a rigid cyclic structure'
+  serine:
+    - 'a polar amino acid with the smallest side chain containing a hydroxyl group (-OH)'
+    - 'a polar amino acid with the smallest polar side chain'
+    - '<table border="1" style="border: 1px lightgray solid;" cellpading="0" cellspacing="0" align="center"> <tr> <td style="border: none;"></td> <td colspan=4 style="border: none;" align="center">O<span style="display: inline-block; transform: scaleX(1.5); padding-right: 0.15em; padding-left: 0.15em;">=</span>C<strong>&ndash;</strong>OH</td> <td style="border: none;"></td> </tr> <tr> <td style="border: none;"></td> <td style="border: none;"></td> <td style="border: none; border-right: 2px black solid;">&nbsp;</td> <td style="border: none; border-left: 2px black solid;">&nbsp;</td> <td style="border: none;"></td> </tr> <tr> <td rowspan=2 style="border: none;">H</td> <td style="font-size: 1px; border: none; border-bottom: 2px black solid;" width="20px">&nbsp;</td> <td rowspan=2 colspan=2 style="border: none;" align="center">C<sub>&alpha;</sub></td> <td style="font-size: 1px; border: none; border-bottom: 2px black solid;" width="20px">&nbsp;</td> <td rowspan=2 colspan=2 style="border: none;" align="center">CH<sub>2</sub></td> <td style="font-size: 1px; border: none; border-bottom: 2px black solid;" width="20px">&nbsp;</td> <td rowspan=2 colspan=2 style="border: none;" align="center">OH</td> </tr> <tr> <td style="font-size: 1px; border: none; border-top: 2px black solid;" width="20px">&nbsp;</td> <td style="font-size: 1px; border: none; border-top: 2px black solid;" width="20px">&nbsp;</td> <td style="font-size: 1px; border: none; border-top: 2px black solid;" width="20px">&nbsp;</td> </tr> <tr> <td style="border: none;"></td> <td style="border: none;"></td> <td style="border: none; border-right: 2px black solid;">&nbsp;</td> <td style="border: none; border-left: 2px black solid;">&nbsp;</td> <td style="border: none;"></td> </tr> <tr> <td style="border: none;"></td> <td colspan=4 style="border: none;" align="center">H<strong>&ndash;</strong>N<strong>&ndash;</strong>H</td> <td style="border: none;"></td> </tr></table>'
+  threonine:
+    - 'a polar amino acid that is a methylated form of serine'
+  tryptophan:
+    - 'an aromatic amino acid with the largest side chain consisting of a fused pair of rings'
+  tyrosine:
+    - 'a aromatic amino acid with a side chain containing a phenol (-C<sub>6</sub>H<sub>6</sub>OH) group, derived from phenylalanine'
+  valine:
+    - 'a non-polar branched chain amino acid with the shortest hydrophobic side chain'
+    - 'a non-polar branched chain amino acid that is a shorter version of leucine'
+    - 'a non-polar branched chain amino acid with a double methylated &beta;-carbon'
+
+
+exclude pairs:
+  - [glutamic acid, glutamate]
+  - [aspartic acid, aspartate]
