@@ -114,8 +114,8 @@ def makeQuestion(N):
 		nts.remove(nt1)
 	nts.sort()
 
-	question = "<p>According to Chargraff's experimental data "
-	question += "and a sample of double stranded DNA where "
+	question = "<p>Based on Chargaff's analysis of the relative base composition of DNA. "
+	question += "Given a sample of double stranded DNA where the percent composition of "
 	nt = nt1[0].upper()
 	color = colormap[nt]
 	question += "<strong><span style='color: {0};'>{1:02d}% is {2}</strong>.</p>".format(color, percent, nt2name[nt1])
