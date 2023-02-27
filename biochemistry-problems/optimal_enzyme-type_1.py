@@ -30,7 +30,7 @@ def writeQuestion1(N):
 	too_low_temp = enzyme_dict['temp1'] - random.randint(6,15)
 
 	question = '<br/>'
-	question += '<p>If <strong>enzyme {0}</strong> is functioning '.format(enzyme_dict['name'])
+	question += '<p>If <strong>enzyme {0}</strong> is currently functioning '.format(enzyme_dict['name'])
 	if question_type == 'A': ## A. good temp, too low pH
 		current_temp = good_temp
 		current_pH = too_low_pH
@@ -44,8 +44,9 @@ def writeQuestion1(N):
 		current_pH = optim_pH
 		question += 'at {0}&deg;C and a pH of {1}.</p> '.format(too_low_temp, optim_pH)
 
-	question += '<p>Under which one of the following conditions would the rate of '
-	question += 'enzyme activity <span style="color: DarkGreen;">increase?</span></p>'
+	question += '<p>Which one of the following conditions would '
+	question += '<strong><span style="color: DarkGreen;">increase</span></strong> '
+	question += 'the rate of enzyme activity</p>'
 
 	low_temp = current_temp - random.randint(5,14)
 	choice1 = 'The temperature is {1} to {0}&deg;C and the pH is {2}.'.format(low_temp, decreased, kept_same)
