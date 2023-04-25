@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import sys
 import random
 
 import bptools
@@ -26,7 +27,7 @@ def writeQuestion1(N):
 	good_temp = random.randint(enzyme_dict['temp1']+1, enzyme_dict['temp2']-1)
 	optim_pH = enzyme_dict['optim_pH']
 	too_low_pH = enzyme_dict['optim_pH'] - random.randint(3,5)/2.0
-	too_high_pH = enzyme_dict['optim_pH'] - random.randint(3,5)/2.0
+	too_high_pH = enzyme_dict['optim_pH'] + random.randint(3,5)/2.0
 	too_low_temp = enzyme_dict['temp1'] - random.randint(6,15)
 
 	question = '<br/>'
@@ -57,6 +58,10 @@ def writeQuestion1(N):
 		choice3 = 'The temperature is {2} and the pH is {1} to {0}.'.format(low_pH, decreased, kept_same)
 		new_pH = enzyme_dict['optim_pH'] - 0.5
 		answer_text = 'The temperature is {2} and the pH is {1} to {0}.'.format(new_pH, increased, kept_same)
+		if new_pH < current_pH:
+			print("ERROR A")
+			print(new_pH, current_pH, enzyme_dict['optim_pH'])
+			sys.exit(1)
 	elif question_type == 'B': ## B. good temp, too high pH
 		high_temp = enzyme_dict['temp1'] + random.randint(5,14)
 		choice2 = 'The temperature is {1} to {0}&deg;C and the pH is {2}.'.format(high_temp, increased, kept_same)
@@ -64,6 +69,10 @@ def writeQuestion1(N):
 		choice3 = 'The temperature is {2} and the pH is {1} to {0}.'.format(high_pH, increased, kept_same)
 		new_pH = enzyme_dict['optim_pH'] + 0.5
 		answer_text = 'The temperature is {2} and the pH is {1} to {0}.'.format(new_pH, decreased, kept_same)
+		if new_pH > current_pH:
+			print("ERROR B")
+			print(new_pH, current_pH, enzyme_dict['optim_pH'])
+			sys.exit(1)
 	elif question_type == 'C': ## C. too low temp, good pH
 		high_pH = current_pH + random.randint(2,5)/2.0
 		choice2 = 'The temperature is {2} and the pH is {1} to {0}.'.format(high_pH, increased, kept_same)
