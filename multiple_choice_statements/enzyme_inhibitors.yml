@@ -1,0 +1,78 @@
+---
+
+#Which one of the following statements is FALSE/TRUE <connection word> <topic>
+topic: the structure of DNA
+
+#UNCOMMENT ONE OR BOTH FOR THIS TO WORK
+
+replacement_rules:
+  Competitive inhibitors: '<span style="color: #ff0000;">Competitive inhibitors</span>' #RED
+  ' substrate': ' <span style="color: #ff5e00;">substrate</span>' #DARK ORANGE
+  Enzyme inhibitors: '<span style="color: #ffa100;">Enzyme inhibitors</span>' #LIGHT ORANGE
+  enzyme-substrate complex: '<span style="color: #b3b300;">enzyme-substrate complex</span>' #DARK YELLOW
+  Noncompetitive inhibitors: '<span style="color: #2fbd0f;">Noncompetitive inhibitors</span>' #LIME GREEN
+  product: '<span style="color: #009e4c;">product</span>' #TEAL
+  Uncompetitive inhibitors: '<span style="color: #0d57a5;">Uncompetitive inhibitors</span>' #BLUE
+  binding: '<span style="color: #6d108e;">binding</span>' #PURPLE
+  'bind ': '<span style="color: #6d108e;">bind</span> ' #PURPLE
+  active site: '<span style="color: #a1005e;">active site</span>' #MAGENTA
+
+connection_words: ~
+
+true_statements:
+  truth01a: Competitive inhibitors bind to the active site of an enzyme and compete with the substrate for binding.
+  truth01b: Competitive inhibitors bind to the active site of an enzyme.
+  truth01c: Competitive inhibitors compete with the substrate for active site binding.
+  truth01d: Competitive inhibitors have a structure that is similar to the substrate.
+  truth01e: Competitive inhibitors can be overcome by increasing the concentration of the substrate.
+
+  truth02a: Noncompetitive inhibitors do not bind the active site, but can alter active site conformation.
+  truth02b: Noncompetitive inhibitors do not bind the active site, but can reduce active site activity.
+  truth02c: Noncompetitive inhibitors bind to a site on the enzyme that is distinct from the active site
+  truth02d: Noncompetitive inhibitors do not affect substrate binding, but they do decrease catalysis.
+
+  truth03a: Uncompetitive inhibitors bind to the enzyme-substrate complex and prevent product formation.
+  truth03b: Uncompetitive inhibitors only bind to the enzyme-substrate complex.
+  truth03d: Uncompetitive inhibitors have a higher affinity for the enzyme-substrate complex than for the free enzyme.
+
+  truth05c: Enzyme inhibitors can be used as probes to study enzyme structure and function.
+  truth05d: Enzyme inhibitors can be used as therapeutic agents to treat a variety of diseases.
+
+false_statements:
+  false01a: Noncompetitive inhibitors bind to the active site of an enzyme and compete with the substrate for binding.
+  false01b: Noncompetitive inhibitors bind to the active site of an enzyme.
+  false01c: Noncompetitive inhibitors compete with the substrate for active site binding.
+  false01d: Noncompetitive inhibitors bind the active site to reduce active site activity.
+  false01e: Uncompetitive inhibitors bind to the active site of an enzyme and compete with the substrate for binding.
+  false01f: Uncompetitive inhibitors bind to the active site of an enzyme.
+  false01g: Uncompetitive inhibitors compete with the substrate for active site binding.
+  false01h: Uncompetitive inhibitors bind to the enzyme and prevent substrate binding.
+  false01i: Competitive inhibitors do not compete with the substrate for active site binding.
+  false01j: Competitive inhibitors do not bind to the active site of an enzyme.
+  false01k: Competitive inhibitors do not bind to the enzyme to prevent substrate binding.
+
+  false02a: Competitive inhibitors bind to a site on the enzyme that is distinct from the active site.
+  false02b: Competitive inhibitors do not bind the active site, but can alter active site conformation.
+  false02c: Competitive inhibitors do not bind the active site, but can reduce active site activity.
+  false02d: Competitive inhibitors do not affect substrate binding, but they do decrease catalysis.
+  false02e: Uncompetitive inhibitors bind to a site on the enzyme that is distinct from the active site.
+  false02f: Noncompetitive inhibitors affect substrate binding, but do not decrease catalysis.
+
+  false03a: Competitive inhibitors only bind to the enzyme-substrate complex.
+  false03b: Competitive inhibitors bind to the enzyme-substrate complex and prevent product formation.
+  false03c: Competitive inhibitors have a higher affinity for the enzyme-substrate complex than for the free enzyme.
+  false03d: Noncompetitive inhibitors only bind to the enzyme-substrate complex.
+  false03e: Noncompetitive inhibitors bind to the enzyme-substrate complex and prevent product formation.
+  false03f: Noncompetitive inhibitors have a higher affinity for the enzyme-substrate complex than for the free enzyme.
+  false03g: Uncompetitive inhibitors have a higher affinity for the free enzyme than for the enzyme-substrate complex.
+
+  false05a: Enzyme inhibitors completely block all enzyme activity regardless of their concentration.
+  false05b: Enzyme inhibitors have no impact on the structure or function of enzymes.
+
+
+# conflicts, means that the statements cannot appear together
+# add ': True' to each line, so the program runs a faster lookup 
+conflict_rules: ~  
+    
+    
+    
