@@ -1,0 +1,63 @@
+#YAML file for Matching Questions
+
+items to match per question: 4
+
+#plural
+key description: stages in the central dogma of biology
+
+#singular
+value description: terminology or event
+
+replacement_rules:
+  AAAAAAA: '<span style="color: #ff0000;">AAAAAAA</span>' #RED
+  BBBBBBB: '<span style="color: #ff5e00;">BBBBBBB</span>' #DARK ORANGE
+  CCCCCCC: '<span style="color: #ffa100;">CCCCCCC</span>' #LIGHT ORANGE
+  DDDDDDD: '<span style="color: #b3b300;">DDDDDDD</span>' #DARK YELLOW
+  EEEEEEE: '<span style="color: #2fbd0f;">EEEEEEE</span>' #LIME GREEN
+  FFFFFFF: '<span style="color: #009e4c;">FFFFFFF</span>' #TEAL
+  GGGGGGG: '<span style="color: #0d57a5;">GGGGGGG</span>' #BLUE
+  HHHHHHH: '<span style="color: #6d108e;">HHHHHHH</span>' #PURPLE
+  IIIIIII: '<span style="color: #a1005e;">IIIIIII</span>' #MAGENTA
+
+matching pairs:
+  DNA replication:
+    - DNA polymerase
+    - Okazaki fragments
+    - leading strand
+    - lagging strand
+    - origin of replication 
+    - helicase
+    - primase
+    - single-stranded binding proteins
+    - topoisomerase
+    - replication fork
+
+  RNA transcription:
+    - RNA polymerase
+    - enhancer sequences
+    - activator proteins
+    - template strand
+    
+  mRNA processing:
+    - 5&prime; cap
+    - intron removal
+    - poly-A tail
+    - alternative splicing
+    - spliceosome
+    
+  tRNA charging:
+    - anti-codon recognition for amino acid attachment
+    - synthetase enzymes
+
+  Protein translation:
+    - start codon
+    - stop codon
+    - codon/anti-codon binding
+    - ribosome
+    - large ribosomal subunit
+    - small ribosomal subunit
+    - peptidyl transferase
+    - elongation factors
+    - A-site
+    - P-site
+    - E-site
