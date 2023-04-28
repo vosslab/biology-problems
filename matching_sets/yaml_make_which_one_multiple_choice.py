@@ -8,6 +8,7 @@ MAT TAB question text TAB answer text TAB matching text TAB answer two text TAB 
 
 import os
 import sys
+import copy
 import pprint
 import random
 import argparse
@@ -46,6 +47,7 @@ def applyReplacementRulesToQuestions(list_of_question_text, replacement_rule_dic
 	return new_list_of_question_text
 
 #=======================
+""""
 def makeQuestions(yaml_data, num_choices=None):
 	matching_pairs_dict = yaml_data['matching pairs']
 	exclude_pairs_list = yaml_data.get('exclude pairs', [])
@@ -56,6 +58,7 @@ def makeQuestions(yaml_data, num_choices=None):
 		num_choices = yaml_data.get('items to match per question', 5)
 
 	all_keys = list(matching_pairs_dict.keys())
+	print('Shuffling {0} items'.format(len(all_keys)))
 	all_combs = list(itertools.combinations(all_keys, num_choices))
 	print('Created {0} combinations from {1} items'.format(len(all_combs), len(all_keys)))
 	#filter combinations
@@ -90,9 +93,10 @@ def makeQuestions(yaml_data, num_choices=None):
 
 	list_of_complete_questions = applyReplacementRulesToQuestions(list_of_complete_questions, yaml_data.get('replacement_rules'))
 	return list_of_complete_questions
+"""
 
 #=======================
-def makeQuestions2(yaml_data, num_choices=None):
+def makeQuestions2(yaml_data, num_choices=None, flip=False):
 	matching_pairs_dict = yaml_data['matching pairs']
 	exclude_pairs_list = yaml_data.get('exclude pairs', [])
 
@@ -108,6 +112,7 @@ def makeQuestions2(yaml_data, num_choices=None):
 			pair = (key, value)
 			key_value_pairs.append(pair)
 	### Generate Combiniations
+	print('Shuffling {0} items'.format(len(all_keys)))
 	all_combs = list(itertools.combinations(all_keys, num_choices))
 	print('Created {0} combinations from {1} items'.format(len(all_combs), len(all_keys)))
 	#filter combinations
@@ -135,12 +140,28 @@ def makeQuestions2(yaml_data, num_choices=None):
 			if count > 20:
 				print("something probably wrong, too many combinations searched")
 				sys.exit(1)
-		choices_list = list(comb)
-		choices_list.sort()
-		answer = key
-		answer_description = value
-		question = ("<p>Which one of the following {0} correspond to the {1} <strong>'{2}'</strong>.</p>".format(
-			yaml_data['key description'], yaml_data['value description'], answer_description))
+		if flip is False:
+			item_name = value
+			plural_choice_description = yaml_data['keys description']
+			singular_item_description = yaml_data['value description']
+			choices_list = list(comb)
+			choices_list.sort()
+			answer = key
+		else:
+			print("Flipping the question")
+			item_name = key
+			plural_choice_description = yaml_data['values description']
+			singular_item_description =yaml_data['key description']
+			choices_list = [value, ]
+			for comb_key in comb:
+				if comb_key == key:
+					continue
+				choice = random.choice(matching_pairs_dict[comb_key])
+				choices_list.append(choice)
+			choices_list.sort()
+			answer = value
+		question = ("<p>Which one of the following {0} correspond to the {1} <span style='font-size: 2em;''><strong>'{2}'</strong></span>.</p>".format(
+			plural_choice_description, singular_item_description, item_name))
 		N += 1
 		complete_question = bptools.formatBB_MC_Question(N, question, choices_list, answer)
 
@@ -161,6 +182,7 @@ if __name__ == '__main__':
 		help='if more than one value is provided for each choice, run duplicates', default=1)
 	parser.add_argument('-c', '--num-choices', metavar='#', type=int, dest='num_choices',
 		help='how many choices to have for each question', default=None)
+	parser.add_argument('--flip', action='store_true', dest='flip', help='Flip the keys and values from the YAML input')
 	args = parser.parse_args()
 
 	if args.input_yaml_file is None or not os.path.isfile(args.input_yaml_file):
@@ -172,7 +194,7 @@ if __name__ == '__main__':
 
 	list_of_complete_questions = []
 	for i in range(args.duplicate_runs):
-		list_of_complete_questions += makeQuestions2(yaml_data, args.num_choices)
+		list_of_complete_questions += makeQuestions2(yaml_data, args.num_choices, args.flip)
 
 	if len(list_of_complete_questions) > args.max_questions:
 		print("Too many questions, trimming down to {0} questions".format(args.max_questions))
