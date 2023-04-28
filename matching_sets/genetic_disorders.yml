@@ -1,9 +1,14 @@
+#YAML file for Matching Questions
 
-items to match per question: 4
+items to match per question: 5
 
-key description: genetic disorders
+#both singular and plural
+key description: genetic disorder
+keys description: genetic disorders
 
+#both singular and plural
 value description: description
+values description: descriptions
 
 matching pairs:
   Achondroplasia:

@@ -1,9 +1,14 @@
+#YAML file for Matching Questions
 
-items to match per question: 4
+items to match per question: 5
 
-key description: intercellular junctions
+#both singular and plural
+key description: intercellular junction
+keys description: intercellular junctions
 
+#both singular and plural
 value description: function
+values description: functions
 
 matching pairs:
   desmosome:

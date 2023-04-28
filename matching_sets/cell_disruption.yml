@@ -1,9 +1,13 @@
 
-items to match per question: 4
+items to match per question: 5
 
-key description: cell disruption techniques
+#both singular and plural
+key description: cell disruption method
+keys description: cell disruption techniques
 
+#both singular and plural
 value description: description
+values description: descriptions
 
 matching pairs:
   Enzymatic method:

@@ -1,9 +1,14 @@
+#YAML file for Matching Questions
 
 items to match per question: 4
 
-key description: dna sequencing technique
+#both singular and plural
+key description: DNA sequencing technique
+keys description: DNA sequencing techniques
 
+#both singular and plural
 value description: description
+values description: descriptions
 
 matching pairs:
   Classical Sanger sequencing:

@@ -1,8 +1,12 @@
 items to match per question: 4
 
+#both singular and plural
 key description: type of column chromatography
+keys description: types of column chromatography
 
+#both singular and plural
 value description: description
+values description: descriptions
 
 #######################
 matching pairs:

@@ -1,12 +1,14 @@
 #YAML file for Matching Questions
 
-items to match per question: 4
+items to match per question: 5
 
-#plural
-key description: sex determination systems
+#both singular and plural
+key description: sex determination system
+keys description: sex determination systems
 
-#singular
+#both singular and plural
 value description: description
+values description: descriptions
 
 matching pairs:
   X-Y system:

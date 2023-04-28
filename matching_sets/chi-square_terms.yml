@@ -1,12 +1,14 @@
 #YAML file for Matching Questions
 
-items to match per question: 4
+items to match per question: 5
 
-#plural
-key description: chi2 terms
+#both singular and plural
+key description: chi2 term
+keys description: chi2 terms
 
-#singular
+#both singular and plural
 value description: defintion
+values description: defintions
 
 matching pairs:
   critval:

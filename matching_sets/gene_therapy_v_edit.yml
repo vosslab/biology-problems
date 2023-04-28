@@ -2,11 +2,13 @@
 
 items to match per question: 2
 
-#plural
-key description: genetic disease treatment methods
+#both singular and plural
+key description: genetic disease treatment method
+keys description: genetic disease treatment methods
 
-#singular
+#both singular and plural
 value description: description
+values description: descriptions
 
 replacement_rules:
    gene therapy:    '<span style=color: DarkGreen;>gene&nbsp;therapy</span>'

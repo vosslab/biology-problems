@@ -1,9 +1,14 @@
+#YAML file for Matching Questions
 
 items to match per question: 5
 
-key description: polysaccharides
+#both singular and plural
+key description: polysaccharide
+keys description: polysaccharides
 
+#both singular and plural
 value description: description
+values description: descriptions
 
 matching pairs:
   glycogen:

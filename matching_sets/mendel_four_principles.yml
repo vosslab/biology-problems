@@ -1,9 +1,13 @@
 
 items to match per question: 4
 
-key description: terms
+#both singular and plural
+key description: Mendelian genetics concept
+keys description: Mendelian genetics concepts
 
+#both singular and plural
 value description: description
+values description: descriptions
 
 #######################
 matching pairs:

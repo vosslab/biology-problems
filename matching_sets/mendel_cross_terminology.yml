@@ -1,9 +1,12 @@
-
 items to match per question: 4
 
-key description: terms
+#both singular and plural
+key description: Mendel cross concept
+keys description: Mendel cross concepts
 
+#both singular and plural
 value description: description
+values description: descriptions
 
 #######################
 matching pairs:

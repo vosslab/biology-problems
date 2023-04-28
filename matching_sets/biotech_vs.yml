@@ -2,11 +2,13 @@
 
 items to match per question: 4
 
-#plural
-key description: characters in the Theranos story
+#both singular and plural
+key description: industry
+keys description: industries
 
-#singular
-value description: information
+#both singular and plural
+value description: description
+values description: descriptions
 
 matching pairs:
   Biotechnology:

@@ -1,9 +1,13 @@
 
-items to match per question: 4
+items to match per question: 5
 
-key description: alterations to chromosome structure
+#both singular and plural
+key description: alteration of chromosome structure
+keys description: alterations to chromosome structure
 
+#both singular and plural
 value description: description
+values description: descriptions
 
 replacement_rules:
    chromosome:              '<span style="color: #008a75;">chromosome</span>' #teal

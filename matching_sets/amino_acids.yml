@@ -1,6 +1,14 @@
 #YAML file for Matching Questions
 
-items to match per question: 4
+items to match per question: 5
+
+#both singular and plural
+key description: amino acid
+keys description: amino acids
+
+#both singular and plural
+value description: description
+values description: descriptions
 
 #plural
 key description: characters in the Theranos story

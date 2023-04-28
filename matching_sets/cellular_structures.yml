@@ -1,12 +1,14 @@
 #YAML file for Matching Questions
 
-items to match per question: 4
+items to match per question: 5
 
-#plural
-key description: cellular structures
+#both singular and plural
+key description: cellular structure
+keys description: cellular structures
 
-#singular
+#both singular and plural
 value description: description
+values description: descriptions
 
 matching pairs:
   Flagellum:

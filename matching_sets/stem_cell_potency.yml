@@ -2,11 +2,13 @@
 
 items to match per question: 5
 
-#plural
+#both singular and plural
 key description: potency of stem cells
+keys description: potencies of stem cells
 
-#singular
+#both singular and plural
 value description: description
+values description: descriptions
 
 matching pairs:
   unipotent:

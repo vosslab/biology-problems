@@ -1,9 +1,14 @@
+#YAML file for Matching Questions
 
 items to match per question: 4
 
-key description: DNA replication enzymes
+#both singular and plural
+key description: DNA replication enzyme
+keys description: DNA replication enzymes
 
+#both singular and plural
 value description: function
+values description: functions
 
 matching pairs:
   DNA topoisomerase:

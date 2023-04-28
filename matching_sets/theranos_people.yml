@@ -1,8 +1,14 @@
+#YAML file for Matching Questions
+
 items to match per question: 5
 
-key description: characters in the Theranos story
+#both singular and plural
+key description: character in the Theranos story
+keys description: characters in the Theranos story
 
+#both singular and plural
 value description: information
+values description: information
 
 matching pairs:
   Elizabeth Holmes:

@@ -1,12 +1,14 @@
 #YAML file for Matching Questions
 
-items to match per question: 4
+items to match per question: 5
 
-#plural
-key description: trophic classifications
+#both singular and plural
+key description: trophic classification
+keys description: trophic classifications
 
-#singular
+#both singular and plural
 value description: definition
+values description: definitions
 
 matching pairs:
   heterotroph:

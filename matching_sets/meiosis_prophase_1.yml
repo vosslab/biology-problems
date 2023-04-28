@@ -1,9 +1,14 @@
+#YAML file for Matching Questions
 
-items to match per question: 4
+items to match per question: 5
 
-key description: stages of meiosis prophase I
+#both singular and plural
+key description: stage of meiosis prophase I
+keys description: stages of meiosis prophase I
 
+#both singular and plural
 value description: partial description
+values description: partial descriptions
 
 #######################
 matching pairs:

@@ -2,22 +2,13 @@
 
 items to match per question: 4
 
-#plural
-key description: terms related to enzyme catalysis
+#both singular and plural
+key description: term related to enzyme catalysis
+keys description: terms related to enzyme catalysis
 
-#singular
+#both singular and plural
 value description: definition
-
-replacement_rules:
-  AAAAAAA: '<span style="color: #ff0000;">AAAAAAA</span>' #RED
-  BBBBBBB: '<span style="color: #ff5e00;">BBBBBBB</span>' #DARK ORANGE
-  CCCCCCC: '<span style="color: #ffa100;">CCCCCCC</span>' #LIGHT ORANGE
-  DDDDDDD: '<span style="color: #b3b300;">DDDDDDD</span>' #DARK YELLOW
-  EEEEEEE: '<span style="color: #2fbd0f;">EEEEEEE</span>' #LIME GREEN
-  FFFFFFF: '<span style="color: #009e4c;">FFFFFFF</span>' #TEAL
-  GGGGGGG: '<span style="color: #0d57a5;">GGGGGGG</span>' #BLUE
-  HHHHHHH: '<span style="color: #6d108e;">HHHHHHH</span>' #PURPLE
-  IIIIIII: '<span style="color: #a1005e;">IIIIIII</span>' #MAGENTA
+values description: definitions
 
 matching pairs:
   Substrate:

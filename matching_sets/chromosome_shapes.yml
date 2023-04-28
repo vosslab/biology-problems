@@ -1,9 +1,14 @@
 
-items to match per question: 4
+items to match per question: 5
 
-key description: chromosome shape categories
+#both singular and plural
+key description: category of chromosome shape
+keys description: categories of chromosome shape
 
+#both singular and plural
 value description: shape description
+values description: shape descriptions
+
 
 replacement_rules:
    chromosome:      '<span style="color: #793AAA;">chromosome</span>'

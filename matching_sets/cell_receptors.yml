@@ -1,9 +1,13 @@
 
 items to match per question: 3
 
-key description: cell receptors
+#both singular and plural
+key description: cell receptor
+keys description: cell receptors
 
+#both singular and plural
 value description: description
+values description: descriptions
 
 matching pairs:
   gpcrZZ:

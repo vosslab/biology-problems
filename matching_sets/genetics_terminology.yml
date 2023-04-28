@@ -1,9 +1,14 @@
+#YAML file for Matching Questions
 
-items to match per question: 4
+items to match per question: 5
 
-key description: terms
+#both singular and plural
+key description: genetic term
+keys description: genetic terms
 
-value description: description
+#both singular and plural
+value description: definition
+values description: definitions
 
 #######################
 matching pairs:
