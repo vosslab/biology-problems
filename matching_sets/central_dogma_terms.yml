@@ -22,42 +22,102 @@ replacement_rules:
 matching pairs:
   DNA replication:
     - DNA polymerase
+    - DNA pol III
+    - DNA pol I
     - Okazaki fragments
     - leading strand
     - lagging strand
-    - origin of replication 
+    - origin
+    - origin of replication
     - helicase
-    - primase
+    - RNA primase
+    - sliding clamp
+    - DNA ligase
     - single-stranded binding proteins
     - topoisomerase
     - replication fork
+    - telomere shortening
+    - semi-conservative model
+    - bubble
+    - replication bubble
+    - daughter DNA strand
+    - deoxytriphosphate nucleotides, such as dATP
+    - DNA proofreading
+    - primer removal
+    - Meselson-Stahl experiment
 
   RNA transcription:
     - RNA polymerase
+    - RNA polymerase II
+    - -35 and -10 promotor regions
+    - TATA box
+    - -35 promotor region
+    - -75 and -25 promotor regions
+    - RNA is synthesized
+    - Pribnow box
+    - non-template or coding strand
     - enhancer sequences
     - activator proteins
     - template strand
-    
+    - terminator
+    - terminator sequence
+    - transcription factors
+    - creation of pre-RNA transcript
+    - proximal promotor elements
+    - distal promotor elements
+
   mRNA processing:
     - 5&prime; cap
     - intron removal
     - poly-A tail
+    - poly-adenylation tail
+    - poly-A polymerase
     - alternative splicing
     - spliceosome
+    - removes introns and joins exons
+    - RNA splicing
+    - GT-AG introns
+    - group I self-splicing introns
+    - conversion of pre-RNA transcript into mRNA
+    - exons spliced together
+    - introns cut out
+    - capping enzyme
+    - nuclear export
     
   tRNA charging:
     - anti-codon recognition for amino acid attachment
     - synthetase enzymes
+    - attachment of amino acid to tRNA
+    - attachment of amino acid to CCA tail
+    - tRNA binds to the synthetase
+    - correct match between a tRNA and an amino acid
+    - creates aminoacyl-tRNA synthetase
+    - tRNA editing site
 
   Protein translation:
     - start codon
+    - AUG start codon
+    - codons, triplets of bases
+    - proteins are synthesized
     - stop codon
+    - UAA, UAG, UGA stop codons
+    - reading frame
+    - codon recognition by tRNA
+    - Shine-Delgarno sequence
     - codon/anti-codon binding
     - ribosome
+    - polysomes
+    - peptide bond formation
     - large ribosomal subunit
     - small ribosomal subunit
+    - mRNA attaches to ribosomes
     - peptidyl transferase
+    - initiation factors
     - elongation factors
+    - release factors
     - A-site
+    - aminoacyl-tRNA binds to A-site
+    - translocation
+    - translocation of peptidyl-tRNA
     - P-site
     - E-site

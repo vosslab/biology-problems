@@ -22,7 +22,6 @@ PURPLE: #7b12a1;
 MAGENTA: #b30077;
 PINK: #cc0066;
 
-
 replacement_rules:
     AAAAAAAA: '<span style="color: #e60000;">AAAAAAAA</span>' #RED
     BBBBBBBB: '<span style="color: #e65400;">BBBBBBBB</span>' #DARK ORANGE
