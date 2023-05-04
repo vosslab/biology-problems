@@ -160,7 +160,7 @@ def makeQuestions2(yaml_data, num_choices=None, flip=False):
 				choices_list.append(choice)
 			choices_list.sort()
 			answer = value
-		question = ("<p>Which one of the following {0} correspond to the {1} <span style='font-size: 2em;''><strong>'{2}'</strong></span>.</p>".format(
+		question = ("<p>Which one of the following {0} correspond to the {1} <span style='font-size: 1em;''><strong>'{2}'</strong></span>.</p>".format(
 			plural_choice_description, singular_item_description, item_name))
 		N += 1
 		complete_question = bptools.formatBB_MC_Question(N, question, choices_list, answer)
