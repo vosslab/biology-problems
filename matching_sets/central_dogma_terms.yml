@@ -12,22 +12,21 @@ values description: concepts
 
 
 replacement_rules:
-    RNA: '<span style="color: #e60000;">RNA</span>' #RED
-    tRNA: '<span style="color: #e60000;">tRNA</span>' #RED
-    mRNA: '<span style="color: #e60000;">mRNA</span>' #RED
-    factors: '<span style="color: #e65400;">factors</span>' #DARK ORANGE
+    RNA transcription: '<span style="color: #e60000;">RNA transcription</span>' #RED
+    tRNA charging: '<span style="color: #e65400;">tRNA charging</span>' #DARK ORANGE
     amino acid: '<span style="color: #e69100;">amino acid</span>' #LIGHT ORANGE
     strand: '<span style="color: #b3b300;">strand</span>' #DARK YELLOW
     polymerase: '<span style="color: #59b300;">polymerase</span>' #LIME GREEN
-    tail: '<span style="color: #009900;">tail</span>' #GREEN
+    Protein translation: '<span style="color: #009900;">Protein translation</span>' #GREEN
     introns: '<span style="color: #00b38f;">introns</span>' #TEAL
     promotor: '<span style="color: #00b3b3;">promotor</span>' #CYAN
     attachment: '<span style="color: #0a9bf5;">attachment</span>' #SKY BLUE
     terminator: '<span style="color: #0039e6;">terminator</span>' #BLUE
-    DNA: '<span style="color: #004d99;">DNA</span>' #NAVY
+    DNA replication: '<span style="color: #004d99;">DNA replication</span>' #NAVY
     synthetase: '<span style="color: #7b12a1;">synthetase</span>' #PURPLE
     codon: '<span style="color: #b30077;">codon</span>' #MAGENTA
     translocation: '<span style="color: #cc0066;">translocation</span>' #PINK
+    mRNA processing: '<span style="color: #cc0066;">mRNA processing</span>' #PINK
 
 matching pairs:
   DNA replication:
@@ -41,7 +40,7 @@ matching pairs:
     - origin of replication
     - helicase
     - RNA primase
-    - sliding clamp
+    - DNA sliding clamp
     - DNA ligase
     - single-stranded binding proteins
     - topoisomerase
@@ -52,7 +51,7 @@ matching pairs:
     - replication bubble
     - daughter DNA strand
     - deoxytriphosphate nucleotides, such as dATP
-    - DNA proofreading
+    - DNA proof-reading
     - primer removal
     - Meselson-Stahl experiment
 
@@ -72,12 +71,12 @@ matching pairs:
     - terminator
     - terminator sequence
     - transcription factors
-    - creation of pre-RNA transcript
+    - creation of pre-mRNA transcript
     - proximal promotor elements
     - distal promotor elements
 
   mRNA processing:
-    - 5&prime; cap
+    - 5&prime;-cap
     - intron removal
     - poly-A tail
     - poly-adenylation tail
@@ -88,11 +87,12 @@ matching pairs:
     - RNA splicing
     - GT-AG introns
     - group I self-splicing introns
-    - conversion of pre-RNA transcript into mRNA
-    - exons spliced together
+    - conversion of pre-mRNA transcript into mature mRNA
+    - exons are spliced together
     - introns are cut out
+    - introns are removed
     - capping enzyme
-    - nuclear export
+    - creation of mature mRNA
     
   tRNA charging:
     - anti-codon recognition for amino acid attachment
@@ -112,7 +112,8 @@ matching pairs:
     - stop codon
     - UAA, UAG, UGA stop codons
     - reading frame
-    - codon recognition by tRNA
+    - mRNA codon recognition by tRNA
+    - mRNA codon recognition
     - Shine-Delgarno sequence
     - codon/anti-codon binding
     - ribosome
@@ -128,6 +129,7 @@ matching pairs:
     - A-site
     - aminoacyl-tRNA binds to A-site
     - translocation
+    - tRNA translocation
     - translocation of peptidyl-tRNA
     - P-site
     - E-site
