@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test Script</title>
+</head>
+<body onload="displayValues()">
+  <script src="noprint.js"></script>
+  <h1>Test Page</h1>
+  <div id="debugInfo"></div>  
+  <p>
+    This is a sample paragraph. Try selecting this text.
+  </p>
+
+  <p>
+    Here's another paragraph. Try printing this page.
+  </p>
+
+  <div>
+    And one more block of text, inside a div this time.
+  </div>
+  
+  <footer>
+    <p>
+      This is footer text. Try taking a screenshot.
+    </p>
+  </footer>
+
+</body>
+
+<script>
+  function displayValues() {
+    const debugInfo = document.getElementById("debugInfo");
+    debugInfo.innerHTML = `
+      <p>noPrint: ${noPrint}</p>
+      <p>noCopy: ${noCopy}</p>
+      <p>noScreenshot: ${noScreenshot}</p>
+      <p>autoBlur: ${autoBlur}</p>
+    `;
+  }
+</script>
+</html>
