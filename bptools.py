@@ -218,23 +218,14 @@ def makeQuestionPretty(question):
 	return pretty_question
 
 def generate_js_function():
-	#does not work :(
-	return ''
-	js_code = '<script type="text/javascript">'
-	js_code += 'window.addEventListener("DOMContentLoaded",function(){disableSelection(document.body);});'
-	js_code += 'function disableSelection(targetElement){'
-	js_code += 'targetElement.addEventListener("contextmenu",function(e){e.preventDefault();});'
-	js_code += 'targetElement.style.userSelect="none";'
-	js_code += 'targetElement.style.webkitUserSelect="none";'
-	js_code += 'targetElement.style.mozUserSelect="none";'
-	js_code += 'targetElement.style.msUserSelect="none";'
-	js_code += 'targetElement.style.cursor="default";'
-	js_code += 'targetElement.addEventListener("mousedown",function(e){e.preventDefault();});'
-	js_code += '}</script>'
+	js_code = ''
+	js_code += '<script>var noPrint=true;var noCopy=true;var noScreenshot=true;var autoBlur=true;</script>'
+	js_code += '<script type="text/javascript" src="https://pdfanticopy.com/noprint.js"></script>'
 	return js_code
 
 #==========================
 def add_no_click_div(text):
+	return text
 	number = random.randint(1000,9999)
 	output  = f'<div id="drv_{number}" '
 	output += 'oncopy="return false;" onpaste="return false;" oncut="return false;" '
