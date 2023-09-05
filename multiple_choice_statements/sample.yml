@@ -1,0 +1,46 @@
+#Which one of the following statements is FALSE/TRUE <connection word> <topic>
+topic: the structure of DNA
+
+connection_words: ~
+
+replacement_rules:
+    AAAAAAAA: '<span style="color: #e60000;">AAAAAAAA</span>' #RED
+    phosphate: '<span style="color: #e65400;">phosphate</span>' #DARK ORANGE
+    CCCCCCCC: '<span style="color: #e69100;">CCCCCCCC</span>' #LIGHT ORANGE
+    covalent bonds: '<span style="color: #b3b300;">covalent bonds</span>' #DARK YELLOW
+    inside: '<span style="color: #59b300;">inside</span>' #LIME GREEN
+    purine bases: '<span style="color: #009900;">purine bases</span>' #GREEN
+    double helix: '<span style="color: #00b38f;">double helix</span>' #TEAL
+    ' parallel': ' <span style="color: #00b3b3;">parallel</span>' #CYAN
+    outside: '<span style="color: #0a9bf5;">outside</span>' #SKY BLUE
+    backbone: '<span style="color: #0039e6;">backbone</span>' #BLUE
+    hydrogen bonds: '<span style="color: #004d99;">hydrogen bonds</span>' #NAVY
+    DNA: '<span style="color: #7b12a1;"><Strong>DNA</Strong></span>' #PURPLE
+    pyrimidine bases: '<span style="color: #b30077;">pyrimidine bases</span>' #MAGENTA
+    anti-parallel: '<span style="color: #cc0066;">anti-parallel</span>' #PINK
+
+true_statements:
+  truth1: the backbone contains only phosphate and sugar
+  truth2: hydrogen bonds hold the two strands together
+  truth3: the helix is made of nucleotides
+  truth4a: the two strands of DNA are anti-parallel
+  truth4b: DNA exists as an anti-parallel double helix
+  truth5: purine bases pair up with pyrimidine bases
+  truth6: the DNA bases for each strand face the inside
+  truth7: the phosphate groups are on the outside of the helix
+
+false_statements:
+  false1a: the backbone contains only phosphate and nucleobase
+  false1b: the backbone contains only nucleobase and sugar
+  false2b: covalent bonds hold the two strands together
+  false3: the helix is made of amino acids
+  false4a: DNA exists as a parallel double helix
+  false4b: the two strands of DNA are parallel
+  false5a: purine bases pair up with like purine bases
+  false5b: pyrimidine bases pair up with like pyrimidine bases
+  false6: the DNA bases for each strand face the outside
+  false7: the phosphate groups are on the inside of the helix
+
+# conflicts, means that the statements cannot appear together
+# add ': True' to each line, so the program runs a faster lookup
+conflict_rules: ~
