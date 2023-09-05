@@ -963,7 +963,8 @@ if __name__ == '__main__':
 		code = code_library[name]
 		if a.code_to_number_of_leaves(code) != 9:
 			continue
-		new_code = a.permute_code(code)
+		#new_code = a.permute_code(code)
+		new_code = code
 		print('=====\n{0}'.format(name))
 		all_codes = a.get_all_code_permutations(code)
 		all_codes.sort()
@@ -973,6 +974,7 @@ if __name__ == '__main__':
 			print(c)
 			a.make_char_tree(c)
 			a.print_array_ascii()
+			break
 		sys.exit(1)
 
 		a.make_html_tree()
