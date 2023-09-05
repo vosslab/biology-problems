@@ -1,7 +1,16 @@
 /*
 NoPrint.js V1.0
 Created by PDFAntiCopy.com
+Modified by Neil Voss, Sept 2023
 */
+
+// Default values
+var noPrint = typeof noPrint !== 'undefined' ? noPrint : true;
+var noCopy = typeof noCopy !== 'undefined' ? noCopy : true;
+var noScreenshot = typeof noScreenshot !== 'undefined' ? noScreenshot : true;
+var autoBlur = typeof autoBlur !== 'undefined' ? autoBlur : true;
+
+
 if (noCopy)
 {
 	document.body.oncopy = function(){return false};
