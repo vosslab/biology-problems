@@ -3,6 +3,7 @@
 import os
 import sys
 import random
+import argparse
 
 import bptools
 import bufferslib
@@ -105,10 +106,30 @@ def make_complete_question(N, buffer_dict, pH_value):
 #============================
 if __name__ == '__main__':
 	N = 0
+	# Argument Parsing
+	parser = argparse.ArgumentParser(description='Generate questions related to buffer protonation states.')
+
+	parser.add_argument('-p', '--proton_count', '--protons', dest='proton_count', type=int, metavar='#',
+		help='Number of removable protons in a buffer (1, 2, 3, 4)',
+		required=True)
+	options = parser.parse_args()
+
+	# Conditional Logic based on proton_count
+	if options.proton_count == 1:
+		buffer_list = list(bufferslib.monoprotic.values())
+	elif options.proton_count == 2:
+		buffer_list = list(bufferslib.diprotic.values())
+	elif options.proton_count == 3:
+		buffer_list = list(bufferslib.triprotic.values())
+	elif options.proton_count == 4:
+		buffer_list = list(bufferslib.tetraprotic.values())
+	else:
+		print("Error: Invalid proton_count value.")
+		exit(1)
+
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
 	print('writing to file: '+outfile)
 	f = open(outfile, 'w')
-	buffer_list = list(bufferslib.diprotic.values())
 	for buffer_dict in buffer_list:
 		buffer_dict = bufferslib.expand_buffer_dict(buffer_dict)
 		pH_list = get_pH_values(buffer_dict['pKa_list'])
