@@ -23,7 +23,7 @@ if (noPrint)
 {
    var c=document.createElement("span");
    c.style.display="none";
-   c.style.postion="absolute";
+   c.style.position="absolute";
    c.style.background="#000";
 	var first=document.body.firstChild;
 	var wraphtml=document.body.insertBefore(c,first);
