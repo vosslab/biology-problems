@@ -1,12 +1,15 @@
 #General Toosl for These Problems
+import os
 import re
 import sys
 import copy
 import yaml
+import random
 import colorsys
 import num2words #pip
 import crcmod.predefined #pip
 
+hidden_term_bank = None
 answer_histogram = {}
 question_count = 0
 crc16_dict = {}
@@ -58,6 +61,30 @@ def readYamlFile(yaml_file):
 #==========================
 #==========================
 #==========================
+def load_hidden_term_bank():
+	module_path = os.path.dirname(os.path.abspath(__file__))
+	data_file_path = os.path.join(module_path, '../data/all_short_words.txt')
+	with open(data_file_path, 'r') as file:
+		terms = file.readlines()
+	return [term.strip() for term in terms]
+
+#==========================
+def insert_hidden_terms(question):
+	global hidden_term_bank
+	if hidden_term_bank is None:
+		hidden_term_bank = load_hidden_term_bank()
+	words = question.split(' ')
+	new_words = []
+	for word in words:
+		new_words.append(word)
+		hidden_term = random.choice(hidden_term_bank)
+		new_words.append(f"<span style='font-size: 1px; color: white'>{hidden_term}</span>")
+	return ''.join(new_words)
+
+#==========================
+#==========================
+#==========================
+
 def default_color_wheel(num_colors=4):
 	degree_step = int(360 / float(num_colors))
 	r,g,b = (255, 0, 0)
@@ -190,8 +217,35 @@ def makeQuestionPretty(question):
 	#print(len(pretty_question))
 	return pretty_question
 
+def generate_js_function():
+	#does not work :(
+	return ''
+	js_code = '<script type="text/javascript">'
+	js_code += 'window.addEventListener("DOMContentLoaded",function(){disableSelection(document.body);});'
+	js_code += 'function disableSelection(targetElement){'
+	js_code += 'targetElement.addEventListener("contextmenu",function(e){e.preventDefault();});'
+	js_code += 'targetElement.style.userSelect="none";'
+	js_code += 'targetElement.style.webkitUserSelect="none";'
+	js_code += 'targetElement.style.mozUserSelect="none";'
+	js_code += 'targetElement.style.msUserSelect="none";'
+	js_code += 'targetElement.style.cursor="default";'
+	js_code += 'targetElement.addEventListener("mousedown",function(e){e.preventDefault();});'
+	js_code += '}</script>'
+	return js_code
+
 #==========================
-def QuestionHeader(question, N, big_question=None, crc16=None):
+def add_no_click_div(text):
+	number = random.randint(1000,9999)
+	output  = f'<div id="drv_{number}" '
+	output += 'oncopy="return false;" onpaste="return false;" oncut="return false;" '
+	output += 'oncontextmenu="return false;" onmousedown="return false;" onselectstart="return false;" '
+	output += '>'
+	output += text
+	output += '</div>'
+	return output
+
+#==========================
+def QuestionHeader(question, N, big_question=None, crc16=None, add_noise=False, use_script=True):
 	global crc16_dict
 	if crc16 is None:
 		if big_question is not None:
@@ -208,10 +262,33 @@ def QuestionHeader(question, N, big_question=None, crc16=None):
 	else:
 		crc16_dict[crc16] = 1
 	#header = '<p>{0:03d}. {1}</p> {2}'.format(N, crc16, question)
-	header = '<p>{0}</p> {1}'.format(crc16, question)
 	pretty_question = makeQuestionPretty(question)
 	print('{0:03d}. {1} -- {2}'.format(N, crc16, pretty_question))
+	if add_noise is True:
+		noisy_question = insert_hidden_terms(question)
+	else:
+		noisy_question = question
+	header = ''
+	if use_script is True:
+		js_function_string = generate_js_function()
+		header += js_function_string
+	text = '<p>{0}</p> {1}'.format(crc16, noisy_question)
+	header += add_no_click_div(text)
 	return header
+
+#==========================
+def ChoiceHeader(choice_text, add_noise=False, use_script=False):
+	pretty_choice = makeQuestionPretty(choice_text)
+	if add_noise is True:
+		noisy_choice_text = insert_hidden_terms(choice_text)
+	else:
+		noisy_choice_text = choice_text
+	output = ''
+	if use_script is True:
+		js_function_string = generate_js_function()
+		output += js_function_string
+	output += add_no_click_div(noisy_choice_text)
+	return output
 
 #==========================
 #==========================
@@ -234,9 +311,11 @@ def formatBB_MC_Question(N, question, choices_list, answer):
 	answer_count = 0
 
 	letters = 'ABCDEFGHJKMNPQRSTUWXYZ'
-	for i, choice in enumerate(choices_list):
-		bb_question += '\t{0}.  {1}&nbsp; '.format(letters[i], choice)
-		if choice == answer:
+	for i, choice_text in enumerate(choices_list):
+		labeled_choice_text = '{0}.  {1}&nbsp; '.format(letters[i], choice_text)
+		noisy_choice_text = ChoiceHeader(labeled_choice_text)
+		bb_question += '\t'+noisy_choice_text
+		if choice_text == answer:
 			prefix = 'x'
 			bb_question += '\tCorrect'
 			answer_count += 1
@@ -244,7 +323,7 @@ def formatBB_MC_Question(N, question, choices_list, answer):
 		else:
 			prefix = ' '
 			bb_question += '\tIncorrect'
-		print("- [{0}] {1}. {2}".format(prefix, letters[i], makeQuestionPretty(choice)))
+		print("- [{0}] {1}. {2}".format(prefix, letters[i], makeQuestionPretty(choice_text)))
 	print("")
 	if answer_count != 1:
 		print("Too many or few answers count {0}".format(answer_count))
@@ -270,9 +349,11 @@ def formatBB_MA_Question(N, question, choices_list, answers_list):
 	answer_count = 0
 
 	letters = 'ABCDEFGHJKMNPQRSTUWXYZ'
-	for i, choice in enumerate(choices_list):
-		bb_question += '\t{0}.  {1}&nbsp; '.format(letters[i], choice)
-		if choice in answers_list:
+	for i, choice_text in enumerate(choices_list):
+		labeled_choice_text = '{0}.  {1}&nbsp; '.format(letters[i], choice_text)
+		noisy_choice_text = ChoiceHeader(labeled_choice_text)
+		bb_question += '\t'+noisy_choice_text
+		if choice_text in answers_list:
 			prefix = 'x'
 			bb_question += '\tCorrect'
 			answer_count += 1
@@ -280,7 +361,7 @@ def formatBB_MA_Question(N, question, choices_list, answers_list):
 		else:
 			prefix = ' '
 			bb_question += '\tIncorrect'
-		print("- [{0}] {1}. {2}".format(prefix, letters[i], makeQuestionPretty(choice)))
+		print("- [{0}] {1}. {2}".format(prefix, letters[i], makeQuestionPretty(choice_text)))
 	print("")
 	if answer_count == 0:
 		print("No answer count {0}".format(answer_count))
@@ -350,9 +431,11 @@ def formatBB_MAT_Question(N, question, answers_list, matching_list):
 	num_items = min(len(answers_list), len(matching_list))
 	letters = 'ABCDEFGHJKMNPQRSTUWXYZ'
 	for i in range(num_items):
-		answer = answers_list[i]
-		match = matching_list[i]
-		bb_question += '\t{0}&nbsp;\t{1}&nbsp;'.format(answer, match)
+		answer_text = answers_list[i]
+		noisy_answer_text = ChoiceHeader(answer_text)
+		match_text = matching_list[i]
+		noisy_match_text = ChoiceHeader(match_text)
+		bb_question += '\t{0}&nbsp;\t{1}&nbsp;'.format(noisy_answer_text, noisy_match_text)
 		print("- {0}. {1} == {2}".format(letters[i], makeQuestionPretty(answer), makeQuestionPretty(match)))
 	print("")
 	question_count += 1
