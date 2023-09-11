@@ -9,6 +9,15 @@ import colorsys
 import num2words #pip
 import crcmod.predefined #pip
 
+#anticheating measures
+use_nocopy_script = False
+use_insert_hidden_terms = True
+use_add_no_click_div = True
+noPrint = True
+noCopy = True
+noScreenshot = False
+autoBlur = True
+
 hidden_term_bank = None
 answer_histogram = {}
 question_count = 0
@@ -69,11 +78,15 @@ def load_hidden_term_bank():
 	return [term.strip() for term in terms]
 
 #==========================
-def insert_hidden_terms(question):
+def insert_hidden_terms(text_content):
+	#global use_insert_hidden_terms
+	if use_insert_hidden_terms is False:
+		return text_content
 	global hidden_term_bank
 	if hidden_term_bank is None:
 		hidden_term_bank = load_hidden_term_bank()
-	words = question.split(' ')
+	text_content = text_content.replace('  ', ' ')
+	words = text_content.split(' ')
 	new_words = []
 	for word in words:
 		new_words.append(word)
@@ -217,15 +230,38 @@ def makeQuestionPretty(question):
 	#print(len(pretty_question))
 	return pretty_question
 
+#==========================
 def generate_js_function():
-	js_code = ''
-	js_code += '<script>var noPrint=true;var noCopy=true;var noScreenshot=true;var autoBlur=true;</script>'
-	js_code += '<script type="text/javascript" src="https://pdfanticopy.com/noprint.js"></script>'
+	#global use_nocopy_script
+	if use_nocopy_script is False:
+		return ''
+	return jsdelivr_js_function()
+	#return pdfanticopy_js_function()
+
+
+#==========================
+def pdfanticopy_js_function():
+	# Using Python f-string to include global variables in the JavaScript code
+	js_code = f'<script>var noPrint={str(noPrint).lower()};var noCopy={str(noCopy).lower()};var noScreenshot={str(noScreenshot).lower()};var autoBlur={str(autoBlur).lower()};</script>'
+	js_code += '<script type="text/javascript" '
+	js_code += 'src="https://pdfanticopy.com/noprint.js"'
+	js_code += '></script>'
+	return js_code
+
+#==========================
+def jsdelivr_js_function():
+	# Similar technique is applied here, variables are inserted dynamically
+	js_code = f'<script>var noPrint={str(noPrint).lower()};var noCopy={str(noCopy).lower()};var noScreenshot={str(noScreenshot).lower()};var autoBlur={str(autoBlur).lower()};</script>'
+	js_code += '<script type="text/javascript" '
+	js_code += 'src="https://cdn.jsdelivr.net/gh/vosslab/biology-problems@main/javascript/noprint.js"'
+	js_code += '></script>'
 	return js_code
 
 #==========================
 def add_no_click_div(text):
-	return text
+	#global use_add_no_click_div
+	if use_add_no_click_div is False:
+		return text
 	number = random.randint(1000,9999)
 	output  = f'<div id="drv_{number}" '
 	output += 'oncopy="return false;" onpaste="return false;" oncut="return false;" '
@@ -236,8 +272,9 @@ def add_no_click_div(text):
 	return output
 
 #==========================
-def QuestionHeader(question, N, big_question=None, crc16=None, add_noise=False, use_script=True):
+def QuestionHeader(question, N, big_question=None, crc16=None):
 	global crc16_dict
+	#global use_nocopy_script
 	if crc16 is None:
 		if big_question is not None:
 			crc16 = getCrc16_FromString(big_question)
@@ -255,30 +292,19 @@ def QuestionHeader(question, N, big_question=None, crc16=None, add_noise=False, 
 	#header = '<p>{0:03d}. {1}</p> {2}'.format(N, crc16, question)
 	pretty_question = makeQuestionPretty(question)
 	print('{0:03d}. {1} -- {2}'.format(N, crc16, pretty_question))
-	if add_noise is True:
-		noisy_question = insert_hidden_terms(question)
-	else:
-		noisy_question = question
+	noisy_question = insert_hidden_terms(question)
+	text = '<p>{0}</p> {1}'.format(crc16, noisy_question)
 	header = ''
-	if use_script is True:
+	if use_nocopy_script is True:
 		js_function_string = generate_js_function()
 		header += js_function_string
-	text = '<p>{0}</p> {1}'.format(crc16, noisy_question)
 	header += add_no_click_div(text)
 	return header
 
 #==========================
-def ChoiceHeader(choice_text, add_noise=False, use_script=False):
-	pretty_choice = makeQuestionPretty(choice_text)
-	if add_noise is True:
-		noisy_choice_text = insert_hidden_terms(choice_text)
-	else:
-		noisy_choice_text = choice_text
-	output = ''
-	if use_script is True:
-		js_function_string = generate_js_function()
-		output += js_function_string
-	output += add_no_click_div(noisy_choice_text)
+def ChoiceHeader(choice_text):
+	noisy_choice_text = insert_hidden_terms(choice_text)
+	output = add_no_click_div(noisy_choice_text)
 	return output
 
 #==========================
@@ -427,7 +453,7 @@ def formatBB_MAT_Question(N, question, answers_list, matching_list):
 		match_text = matching_list[i]
 		noisy_match_text = ChoiceHeader(match_text)
 		bb_question += '\t{0}&nbsp;\t{1}&nbsp;'.format(noisy_answer_text, noisy_match_text)
-		print("- {0}. {1} == {2}".format(letters[i], makeQuestionPretty(answer), makeQuestionPretty(match)))
+		print("- {0}. {1} == {2}".format(letters[i], makeQuestionPretty(answer_text), makeQuestionPretty(match_text)))
 	print("")
 	question_count += 1
 	return bb_question + '\n'
