@@ -10,12 +10,6 @@ keys description: amino acids
 value description: description
 values description: descriptions
 
-#plural
-key description: characters in the Theranos story
-
-#singular
-value description: information
-
 replacement_rules:
   negatively charged amino acid: '<span style="color: #ff0000;">negatively charged amino acid</span>' #RED
   aromatic amino acid: '<span style="color: #ff5e00;">aromatic amino acid</span>' #DARK ORANGE
