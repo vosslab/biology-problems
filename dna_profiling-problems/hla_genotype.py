@@ -127,7 +127,6 @@ if __name__ == '__main__':
 			answer_str += "Incorrect\t"
 		print(("{0}{1}. {2}".format(prefix,c,a)))
 
-	
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
 	print('writing to file: '+outfile)
 	f = open(outfile, 'a')
