@@ -79,19 +79,19 @@ def load_hidden_term_bank():
 
 #==========================
 def insert_hidden_terms(text_content):
-	#global use_insert_hidden_terms
 	if use_insert_hidden_terms is False:
 		return text_content
 	global hidden_term_bank
 	if hidden_term_bank is None:
 		hidden_term_bank = load_hidden_term_bank()
-	text_content = text_content.replace('  ', ' ')
-	words = text_content.split(' ')
+	# Replace spaces outside HTML tags with '@'
+	text_content = re.sub(r'( +)(?![^<>]*>)', '@', text_content)
+	words = text_content.split('@')
 	new_words = []
 	for word in words:
 		new_words.append(word)
 		hidden_term = random.choice(hidden_term_bank)
-		new_words.append(f"<span style='font-size: 1px; color: white'>{hidden_term}</span>")
+		new_words.append(f"<span style='font-size: 1px; color: white;'>{hidden_term}</span>")
 	return ''.join(new_words)
 
 #==========================
