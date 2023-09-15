@@ -2,8 +2,11 @@
 
 import os
 import sys
+import math
 import time
 import random
+import argparse
+
 import bptools
 import restrictlib
 
@@ -225,16 +228,19 @@ def writeQuestion(N=1, length=10, num_sites=2, dna_type='fragment', max_fragment
 
 	table = makeTable(length, label_dict, dna_type)
 	if dna_type == 'fragment':
-		header = "<p>Below is a short fragment of DNA that is only {0:d} kb in length.</p> ".format(length)
+		header = "<p>Shown below is a short DNA fragment that is only {0:d} kb in length.</p>".format(length)
 	elif dna_type == 'strand':
-		header = "<p>Below is a long strand of DNA, where a particular section is shown close up.</p> "
-	details  = "<p>There are two (2) different types of restriction sites: "
-	details += "<i>{0}</i> and <i>{1}</i> labeled at the top of the DNA strand.</p>".format(enzyme_name1, enzyme_name2)
+		header = "<p>Examine the DNA strand presented below. The table provides a detailed view of a specific segment, which is actually part of a much longer strand.</p>"
+	# 'details' is refined but still includes all the necessary technical terms.
+	details  = "<p>Two (2) distinct types of restriction sites, "
+	details += "<i>{0}</i> and <i>{1}</i>, are labeled at the top of this DNA segment.</p>".format(enzyme_name1, enzyme_name2)
+	# Included a more detailed explanation about the dashes.
 	if dna_type == 'strand':
-		details += "<p>Note: The dashes at the left and right indicate that the next restriction site is"
-		details += "very far away and will not be appear in a gel; it will likely be stuck in the well.</p>"
-	question = "<h6>Determine the sizes of bands that would appear on a gel "
-	question += "after restriction enzyme digestion with only <i>{0}</i>.</h6>".format(enzyme_name1)
+		details += "<p>Note: The dashes at both ends of the strand indicate that the next restriction site is far away "
+		details += "and will not travel through the gel, remaining stuck in the well.</p>"
+	# The question is made clearer while retaining essential technical details.
+	question = "<h6><strong>Determine the sizes of the DNA bands</strong> that would appear on a gel "
+	question += "after you perform enzymatic digestion only with <i>{0}</i>.</h6>".format(enzyme_name1)
 	#print(header+details+question)
 	#print(header+table+details+question)
 
@@ -256,26 +262,45 @@ def writeQuestion(N=1, length=10, num_sites=2, dna_type='fragment', max_fragment
 #============================================
 #============================================
 if __name__ == '__main__':
-	num_questions = 100
-	length= 12 #random.randint(16,20)
-	num_sites = 3
-	#dna_type='fragment' # short piece of DNA
-	dna_type='strand' # long strand of DNA
-	max_fragment_size = 7
-	print("num_questions=", num_questions)
-	print("length=", length)
-	print("num_sites=", num_sites)
-	print("dna_type=", dna_type)
+	parser = argparse.ArgumentParser(description="Your program description.")
+	# Argument for the number of questions
+	parser.add_argument('-x', '--num_questions', type=int, default=100,
+						help='Number of questions to generate.')
+	# Argument for the length
+	parser.add_argument('-n', '--length', type=int, default=12,
+						help='Length of the DNA sequence.')
+	# Argument for the number of sites
+	parser.add_argument('-s', '--num_sites', type=int, default=3,
+						help='Number of sites in the DNA sequence.')
+	# Argument for DNA type
+	parser.add_argument('--dna_type', type=str, choices=['fragment', 'strand'], default='fragment',
+						help='Type of DNA sequence to use. Choices are "fragment" and "strand".')
+	# Argument for maximum fragment size
+	parser.add_argument('--max_fragment_size', type=int, default=None,
+						help='Maximum size of the DNA fragment.')
+	args = parser.parse_args()
+
+	if args.max_fragment_size is None:
+		args.max_fragment_size = math.ceil(args.length // 2 + 1)
+
+	# Now args.num_questions, args.length, args.num_sites, args.dna_type, and args.max_fragment_size
+	# contain the values supplied by the user or the default values.
+
+	print(f"Number of questions: {args.num_questions}")
+	print(f"Length: {args.length}")
+	print(f"Number of sites: {args.num_sites}")
+	print(f"DNA type: {args.dna_type}")
+	print(f"Maximum fragment size: {args.max_fragment_size}")
 
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
 	print('writing to file: '+outfile)
 	f = open(outfile, 'w')
 	N = 0
-	for i in range(num_questions):
-		bb_question = writeQuestion(N, length, num_sites, dna_type, max_fragment_size)
+	for i in range(args.num_questions):
+		bb_question = writeQuestion(N+1, args.length, args.num_sites, args.dna_type, args.max_fragment_size)
 		if bb_question is not None:
 			N += 1
 			f.write(bb_question)
 	f.close()
 	bptools.print_histogram()
-	print("Wrote", N, "of", num_questions, "questions")
+	print("Wrote", N, "of", args.num_questions, "questions")
