@@ -4,7 +4,6 @@ import os
 import sys
 import random
 
-import seqlib
 import bptools
 
 #========================================
@@ -83,12 +82,16 @@ colormap = {
 def printChoice(nts, valuelist):
 	global colormap
 	mystr = ''
-	#seqlib.colorNucleotideForeground()
+	# Iterate through the three nucleotides
 	for i in range(3):
+		# Get the first letter of the nucleotide to use as a key for the colormap
 		nt = nts[i][0]
+		# Fetch the corresponding color
 		color = colormap[nt]
-		mystr += "<span style='color: {0};'>{1}:{2:02d}%</span>, ".format(color, nts[i], valuelist[i])
-	return mystr
+		# Append the formatted string, color-coded and with full nucleotide names, abbreviations, and perhaps an em dash as a separator
+		mystr += "<span style='color: {0};'>{1} ({2}): {3:2d}%</span> &mdash; ".format(color, nt2name[nts[i]], nt, valuelist[i])
+	# Remove the trailing em dash and space
+	return mystr[:-9]
 
 #========================================
 #========================================
@@ -114,19 +117,27 @@ def makeQuestion(N):
 		nts.remove(nt1)
 	nts.sort()
 
-	question = "<p>Based on Chargaff's analysis of the relative base composition of DNA. "
-	question += "Given a sample of double stranded DNA where the percent composition of "
+	# Ensure the nucleotide is uppercase to match the colormap keys
 	nt = nt1[0].upper()
+	# Assign the appropriate color for the nucleotide based on the colormap
 	color = colormap[nt]
-	question += "<strong><span style='color: {0};'>{1:02d}% is {2}</strong>.</p>".format(color, percent, nt2name[nt1])
-	question += "<p>What are the percentages of the other three (3) bases?</p>"
+
+	# Initialize the question string with a precise introductory phrase
+	question = "<p>According to Chargaff's rules concerning the base pairing composition in double-stranded DNA, "
+	# Eliminate redundancy and improve formality by replacing 'Given' with 'consider'
+	question += "consider a sample where the percentage composition of "
+
+	# Utilize HTML to emphasize and color-code the percentage and nucleotide type
+	# Here, I retained your existing format and just tweaked the wording
+	question += "<strong><span style='color: {0};'>{1:2d}% is {2}</span></strong>.</p>".format(color, percent, nt2name[nt])
+	# Formulate the follow-up query in a separate paragraph for clarity
+	question += "<p>What are the percentages of the other three bases?</p>"
 
 	answer = getAnswer(nt1, percent)
 
 	#print(question)
 	choices = []
 	offperc = 50 - percent
-	avgperc = 25
 	choices.append([offperc, offperc, percent])
 	choices.append([offperc, percent, offperc])
 	choices.append([percent, offperc, offperc])
