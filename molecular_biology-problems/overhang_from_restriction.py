@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
 import sys
-import seqlib
 import random
+
+import seqlib
+import bptools
 import restrictlib
 
 #================================================
@@ -90,7 +92,39 @@ def makeMultipleChoiceQuestion(enzyme_class, question_number=13):
 		print("{0}{1}. {2}".format(prefix, ltr, choice))
 
 
-if __name__ == '__main__':
+
+
+def new_main():
+	# Argument parsing using argparse
+	parser = argparse.ArgumentParser(description='Generate enzyme questions.')
+	parser.add_argument('--multiple_choice', action='store_true',
+						help='Enable multiple choice questions.')
+	args = parser.parse_args()
+
+	# Directly use args.multiple_choice boolean value
+	multiple_choice = args.multiple_choice
+
+	# Remaining logic remains largely the same
+	enzymes = restrictlib.get_enzyme_list()
+
+	random.shuffle(enzymes)
+
+	question_number = 1
+	for enzyme_name in enzymes:
+		enzyme_class = restrictlib.enzyme_name_to_class(enzyme_name)
+		overhang = enzyme_class.overhang()
+		if not overhang.endswith('overhang'):
+			continue
+		if multiple_choice:
+			makeMultipleChoiceQuestion(enzyme_class, question_number)
+			bb_question = bptools.formatBB_MC_Question(question_number, "Your MC Question", ["Choice1", "Choice2"], "Answer")
+		else:
+			makeFillInBlankQuestion(enzyme_class, question_number)
+			bb_question = bptools.formatBB_FIB_Question(question_number, "Your FIB Question", ["Answer1", "Answer2"])
+		question_number += 1
+		print(bb_question)
+
+def old_main():
 	if len(sys.argv) >= 2:
 		multiple_choice = True
 	else:
@@ -116,5 +150,6 @@ if __name__ == '__main__':
 		#sys.exit(1)
 		print("")
 
-
+if __name__ == '__main__':
+	old_main()
 
