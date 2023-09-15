@@ -37,88 +37,39 @@ def make_question(N, num_metabolites):
 	deg_step = int(round(360./len(metabolites) - 1))
 	color_amount = 240
 	color_wheel = bptools.make_color_wheel(color_amount, 0, 0, deg_step)
-	
-	question = '<p>Refer to the metabolic pathway in the table above.</p>'
-	question += '<p>Metabolites '
-	for i, meta in enumerate(metabolites):
-		color = color_wheel[i]
-		question += '<span style="color: {0};"><strong>{1}</strong></span>, '.format(color, meta)
-		if i == len(metabolites) - 2:
-			question += 'and '
-	question = question[:-2]
-	question += ' are ALL required for growth.</p>'
+
+	question = '<p>Look at the metabolic pathway in the table above.</p>'
+	question += '<p>Metabolite '
+	color = color_wheel[len(metabolites)]
+	question += '<span style="color: {0};"><strong>{1}</strong></span>'.format(color, metabolites[-1])
+	question += ' is needed for the bacteria to grow.</p>'
 
 	enzyme_num = random.choice(range(1, len(metabolites)))
-	
-	question += '<p>Which one of the following supplemented media conditions '
-	question += 'would a bacterial strain that <strong>CANNOT</strong> make '
-	question += '<strong>enzyme {0:d}</strong> be able to grow?</p>'.format(enzyme_num)
+
+	question += '<p>Consider a bacterial strain that is mutant for the gene coding for enzyme {0:d}</p>'.format(enzyme_num)
+	question += '<p>Which nutrients, when added to minimal media, will help this bacteria grow?</p>'
+	question += '<p>Multiple answers may be correct.</p>'
 
 	question = enzyme_table(metabolites, color_wheel) + question
 
 	choices_list = []
-	
+	answers_list = []
+
 	indices = list(range(len(metabolites)))
 	random.shuffle(indices)
 	indices = indices[:2]
-	indices.sort()	
+	indices.sort()
 	#for i in range(len(metabolites)):
-	for i in indices:
-		color1 = color_wheel[i]
-		meta1 = '<span style="color: {0};"><strong>{1}</strong></span>'.format(color1, metabolites[i])
-		choice = "Nutrient {0} only".format(meta1)
+	for i,meta in enumerate(metabolites):
+		color_txt = color_wheel[i]
+		meta_txt = '<span style="color: {0};"><strong>{1}</strong></span>'.format(color_txt, meta)
+		choice = "Supplemented with nutrient {0}".format(meta_txt)
 		choices_list.append(choice)
+		if i >= enzyme_num:
+			answers_list.append(choice)
 
-	
-	indices = list(range(1, len(metabolites)))
-	indices.remove(enzyme_num)
-	random.shuffle(indices)
-	indices = indices[:2]
-	indices.append(enzyme_num)
-	indices.sort()
-	for i in indices:
-		color1 = color_wheel[i-1]
-		meta1 = '<span style="color: {0};"><strong>{1}</strong></span>'.format(color1, metabolites[i-1])
-		color2 = color_wheel[i]
-		meta2 = '<span style="color: {0};"><strong>{1}</strong></span>'.format(color2, metabolites[i])		
-		choice = "Nutrients {0} and {1} only".format(meta1, meta2)
-		if i == enzyme_num:
-			answer = choice
-		choices_list.append(choice)
-
-	indices = list(range(2, len(metabolites)))
-	try:
-		indices.remove(enzyme_num+1)
-	except ValueError:
-		pass
-	try:
-		indices.remove(enzyme_num)
-	except ValueError:
-		pass
-	random.shuffle(indices)
-	indices = indices[:1]
-	indices.sort()
-	for i in indices:
-		color1 = color_wheel[i-2]
-		meta1 = '<span style="color: {0};"><strong>{1}</strong></span>'.format(color1, metabolites[i-2])
-		color2 = color_wheel[i-1]
-		meta2 = '<span style="color: {0};"><strong>{1}</strong></span>'.format(color2, metabolites[i-1])		
-		color3 = color_wheel[i]
-		meta3 = '<span style="color: {0};"><strong>{1}</strong></span>'.format(color3, metabolites[i])		
-		choice = "Nutrients {0}, {1}, and {2} only".format(meta1, meta2, meta3)
-		choices_list.append(choice)
-
-	#choices_list.sort()
-	#f = open('temp.html', 'w')
-	#f.write(question)
-	#for c in choices_list:
-	#	f.write(c+'<br/>')
-	#f.close()
-
-	#print(answer)
-
-
-	bbformat_question = bptools.formatBB_MC_Question(N, question, choices_list, answer)
+	bbformat_question = bptools.formatBB_MA_Question(N, question, choices_list, answers_list)
+	#bbformat_question = bptools.formatBB_MC_Question(N, question, choices_list, answer)
 	return bbformat_question
 
 if __name__ == '__main__':
