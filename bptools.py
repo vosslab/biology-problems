@@ -98,7 +98,46 @@ def insert_hidden_terms(text_content):
 #==========================
 #==========================
 
-def default_color_wheel(num_colors=4):
+#==========================
+def colorHTMLText(text, hex_code):
+	return f'<span style="color: #{hex_code};">{text}</span>'
+
+#==========================
+fixed_color_wheel = [
+	'e60000',  # RED
+	'e65400',  # DARK ORANGE
+	'e69100',  # LIGHT ORANGE
+	'b3b300',  # DARK YELLOW
+	'59b300',  # LIME GREEN
+	'009900',  # GREEN
+	'00b38f',  # TEAL
+	'00b3b3',  # CYAN
+	'0a9bf5',  # SKY BLUE
+	'0039e6',  # BLUE
+	'004d99',  # NAVY
+	'7b12a1',  # PURPLE
+	'b30077',  # MAGENTA
+	'cc0066'   # PINK
+]
+
+#==========================
+def default_color_wheel(num_colors, random_shift=True):
+	# Calculate the step size for selecting colors
+	step = len(fixed_color_wheel) / num_colors
+	# Generate the list of indices to select colors from the fixed color wheel
+	indices = [round(step * i) for i in range(num_colors)]
+
+	# Apply a random shift to the selected indices if specified
+	if random_shift:
+		shift = random.randint(0, len(fixed_color_wheel) - 1)
+		indices = [(i + shift) % len(fixed_color_wheel) for i in indices]
+
+	# Select the colors based on the generated indices
+	selected_colors = [fixed_color_wheel[i] for i in indices]
+	return selected_colors
+
+#==========================
+def default_color_wheel_calc(num_colors=4):
 	degree_step = int(360 / float(num_colors))
 	r,g,b = (255, 0, 0)
 	color_wheel = make_color_wheel(r,g,b, degree_step)
