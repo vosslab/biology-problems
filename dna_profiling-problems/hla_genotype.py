@@ -4,32 +4,74 @@ import os
 import sys
 import copy
 import random
+import argparse
+import bptools
 
-used_markers = {}
-
-def createMarker(num_markers):
+#===============================
+def createMarker(num_markers, used_markers):
 	charlist = "ABCDEFG"
 	markers = []
+	single_digit_numbers = list(range(1,10))
 	for i in range(num_markers):
 		letter = charlist[i]
-		num = random.choice(list(range(1,10)))
-		marker = "%s%d"%(letter, num)
+		num = random.choice(single_digit_numbers)
+		marker = f"{letter}{num}"
+		# check to make sure we have not used this letter-number combo yet
 		while used_markers.get(marker) is not None:
-			num = random.choice(list(range(1,10)))
-			marker = "%s%d"%(letter, num)
+			num = random.choice(single_digit_numbers)
+			marker = f"{letter}{num}"
 		used_markers[marker] = True
 		markers.append(marker)
 	return set(markers)
 
-def markersToString(markers):
-	mystr = ""
-	markerlist = list(markers)
-	markerlist.sort()
-	for marker in markerlist:
-		mystr += "%s,"%(marker)
-	return mystr[:-1]
+#===============================
+def addColorToMarkers(marker_set, hex_color):
+	markers_list = []
+	for marker_text in marker_set:
+		marker_text = bptools.colorHTMLText(marker_text, hex_color)
+		markers_list.append(marker_text)
+	return set(markers_list)
 
-def splitMarkers(markers1, markers2):
+
+#===============================
+# I'm using Python's built-in join function to concatenate the string.
+# It's more efficient than using the "+=" operator repeatedly.
+def markersToString(markers):
+	markerlist = sorted(list(markers))
+	mystr = ",".join(markerlist)
+	return mystr
+
+#===============================
+def mixMarkers(markers1, markers2):
+	"""
+	Given two sets of string markers, this function returns a new set of markers.
+	The new set is the same length as the input sets, containing elements from both.
+	"""
+	markerlist1 = sorted(list(markers1))
+	markerlist2 = sorted(list(markers2))
+	#print("markerlist1=", markerlist1)
+	#print("markerlist2=", markerlist2)
+	markerselect = []
+
+	# Ensure markerselect has at least two unique elements
+	while len(set(markerselect)) <= 1:
+		markerselect = [random.choice((1, 2)) for _ in markerlist1]
+
+	#print("markerselect=", markerselect)
+	newmarkers = [
+		markerlist1[i] if ms == 1 else markerlist2[i]
+		for i, ms in enumerate(markerselect)
+	]
+
+	#print("newmarkers=", newmarkers)
+	return set(newmarkers)
+
+#===============================
+def mixMarkers2(markers1, markers2):
+	"""
+	Given two sets of string markers, this function returns a new set of markers.
+	The new set is the same length as the input sets, containing elements from both.
+	"""
 	markerlist1 = list(markers1)
 	markerlist1.sort()
 	markerlist2 = list(markers2)
@@ -48,92 +90,105 @@ def splitMarkers(markers1, markers2):
 			newmarkers.append(markerlist2[i])
 	return set(newmarkers)
 
+#===============================
+def generateChoices(marker_collection):
+	choices_list = []
+	[mom1, mom2, dad1, dad2] = marker_collection
 
-if __name__ == '__main__':
-	if len(sys.argv) >= 2:
-		num_markers = int(sys.argv[1])
-	else:
-		num_markers = 2
-	if num_markers > 7:
-		num_markers = 7
-		
-	mom1 = createMarker(num_markers)
-	mom2 = createMarker(num_markers)
-	dad1 = createMarker(num_markers)
-	dad2 = createMarker(num_markers)
-	print(mom1, mom2, dad1, dad2)
-	print("")
+	# part of mom and part of dad = answer
+	choice_set = copy.copy(random.choice([dad1, dad2])).union(random.choice([mom1, mom2]))
+	correct_answer_str = markersToString(choice_set)
+	choices_list.append(correct_answer_str)
 
-	#question = "XXX. "
-	question = ""
-	question += ('A mother has a HLA genotype of <span style="color:FireBrick">{0}</span> on one chromosome and <span style="color:DarkGoldenRod">{1}</span> on the other. '
-			.format(markersToString(mom1), markersToString(mom2)))
-	question += ('The father has a HLA genotype of <span style="color:DarkViolet">{0}</span> on one chromosome and <span style="color:DarkBlue">{1}</span> on the other. '
-			.format(markersToString(dad1), markersToString(dad2)))
-	question += 'Which one of the following is a possible genotype for one of their offspring?'
-	print(question)
+	# part of mom1 and part of mom2
+	choice_set = copy.copy(mom1).union(mom2)
+	choices_list.append(markersToString(choice_set))
 
-#A father has a HLA genotype of A2,B1 on one chromosome and A7,B6 on the other.
-#The mother has an HLA genotype of A4,B3 on one chromosome and A5,B9 on the other.
-#Which one of the following is a possible genotype for one of their offspring?
+	# part of dad1 and part of dad2
+	choice_set = copy.copy(dad1).union(dad2)
+	choices_list.append(markersToString(choice_set))
 
-	answers = []
+	# first mix of mom1/mom2 and mix of dad1/dad2
+	choice_set = mixMarkers(mom1, mom2).union(mixMarkers(dad1, dad2))
+	choices_list.append(markersToString(choice_set))
 
-	#wrong two moms
-	answer = copy.copy(mom1)
-	answer = answer.union(mom2)
-	answers.append(answer)
-	
-	#wrong two dads
-	answer = copy.copy(dad1)
-	answer = answer.union(dad2)
-	answers.append(answer)
+	# second mix of mom1/mom2 and mix of dad1/dad2
+	choice_set = mixMarkers(mom1, mom2).union(mixMarkers(dad1, dad2))
+	choices_list.append(markersToString(choice_set))
 
-	#real correct answer
-	answer = copy.copy(random.choice((dad1, dad2)))
-	answer = answer.union(random.choice((mom1, mom2)))
-	answers.append(answer)
-	correct = answer
+	# Remove duplicates and shuffle
+	unique_choices_list = list(set(choices_list))
+	random.shuffle(unique_choices_list)
 
-	#jumbled 1
-	answer = splitMarkers(mom1, mom2)
-	answer = answer.union(splitMarkers(dad1, dad2))
-	answers.append(answer)
+	return correct_answer_str, unique_choices_list
 
-	#jumbled 2
-	answer = splitMarkers(mom1, mom2)
-	answer = answer.union(splitMarkers(dad1, dad2))
-	answers.append(answer)
+#===============================
+def generateQuestion(marker_collection):
+	[mom1, mom2, dad1, dad2] = marker_collection
+	mom1_text = markersToString(mom1)
+	mom2_text = markersToString(mom2)
+	dad1_text = markersToString(dad1)
+	dad2_text = markersToString(dad2)
 
-	stringanswers = []
-	for a in answers:
-		stringanswers.append(markersToString(a))
-	stringanswers = list(set(stringanswers))
-	correct_str = markersToString(correct)
+	# Revised context on HLA typing emphasizing organ transplantation
+	question_string = "<p>HLA genotyping serves as a key component in the field of immunogenetics. "
+	question_string += "It is used for understanding individual variations in immune responses. "
+	question_string += "This molecular technique identifies unique alleles on paired chromosomes. "
+	question_string += "It's particularly vital in organ transplantation for matching donors and recipients. "
+	question_string += "Finding a correct match reduces the chance for graft rejection. </p>"
 
+	question_string += f"<p>A mother has a HLA genotype of <strong>{mom1_text}</strong> on one chromosome "
+	question_string += f"and <strong>{mom2_text}</strong> on the other chromosome. </p>"
+	question_string += f"<p>The father has a HLA genotype of <strong>{dad1_text}</strong> on one chromosome "
+	question_string += f"and <strong>{dad2_text}</strong> on the other chromosome. </p>"
+	question_string += "<p>Which one of the following combinations is a possible genotype for their offspring?</p>"
 
-	random.shuffle(stringanswers)
-	charlist = "ABCDE"
-	answer_str = ""
-	for i in range(len(stringanswers)):
-		c = charlist[i]
-		a = stringanswers[i]
-		prefix = ''
-		answer_str += "{0}\t".format(a)
-		if a == correct_str:
-			answer_str += "Correct\t"
-			prefix = '*'
-		else:
-			answer_str += "Incorrect\t"
-		print(("{0}{1}. {2}".format(prefix,c,a)))
+	return question_string
+
+#===============================
+#===============================
+def main():
+	parser = argparse.ArgumentParser(description='Generate HLA genotype questions.')
+	parser.add_argument('-n', '--num_markers', type=int, default=2, help='Number of markers.')
+	parser.add_argument('-x', '--max_questions', type=int, default=25, help='Maximum number of questions to generate.')
+	parser.add_argument('-c', '--color', dest='use_color', action='store_true', default=True, help='Add color to choices.')
+	parser.add_argument('-b', '--bw', dest='use_color', action='store_false', default=True, help='Black and White (default).')
+	args = parser.parse_args()
+	num_markers = min(args.num_markers, 7)  # Restricting num_markers to a maximum of 7
+
 
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'a')
-	f.write("MC\t")
-	f.write(question+"\t")
-	f.write(answer_str)
-	f.write('\n')
-	f.close()
+	print(f'writing to file: {outfile}')
 
+	colors = bptools.default_color_wheel(num_colors=4)
+	N = 0  # Initialize question counter
+	with open(outfile, 'w') as f:  # Using 'with' for better file handling
+		for i in range(args.max_questions):
+			used_markers = {}
+			N += 1  # Increment question counter
+			mom1 = createMarker(num_markers, used_markers)
+			mom2 = createMarker(num_markers, used_markers)
+			dad1 = createMarker(num_markers, used_markers)
+			dad2 = createMarker(num_markers, used_markers)
+			bw_marker_collection = [mom1, mom2, dad1, dad2]
+			mom1c = addColorToMarkers(mom1, colors[0])
+			mom2c = addColorToMarkers(mom2, colors[1])
+			dad1c = addColorToMarkers(dad1, colors[2])
+			dad2c = addColorToMarkers(dad2, colors[3])
+			color_marker_collection = [mom1c, mom2c, dad1c, dad2c]
 
+			question_string = generateQuestion(color_marker_collection)
+			if args.use_color is True:
+				answer_str, choices_list = generateChoices(color_marker_collection)
+			else:
+				answer_str, choices_list = generateChoices(bw_marker_collection)
+
+			formatted_question = bptools.formatBB_MC_Question(N, question_string, choices_list, answer_str)
+			# Writing the formatted question to the file
+			f.write(formatted_question)
+	bptools.print_histogram()
+
+#===============================
+#===============================
+if __name__ == '__main__':
+	main()
