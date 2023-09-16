@@ -2,47 +2,119 @@
 items to match per question: 4
 
 #both singular and plural
-key description: Mendelian genetics concept
-keys description: Mendelian genetics concepts
+key description: "Mendel's Foundational Principle of Genetics"
+keys description: "Mendel's Foundational Principles of Genetics"
+
+replacement_rules:
+    alleles: '<span style="color: #e60000;">alleles</span>' #RED
+    allele: '<span style="color: #e60000;">allele</span>' #RED
+    Principle_of_Dominance: '<span style="color: #e65400;">Principle of Dominance</span>' #DARK ORANGE
+    genotype: '<span style="color: #e69100;">characters</span>' #LIGHT ORANGE
+    dominant: '<span style="color: #b3b300;">dominant</span>' #DARK YELLOW
+    Law_of_Independent_Assortment: '<span style="color: #59b300;">Law of Independent&nbsp;Assortment</span>' #LIME GREEN
+    gametes: '<span style="color: #009900;">gametes</span>' #GREEN
+    gamete: '<span style="color: #009900;">gamete</span>' #GREEN
+    characters: '<span style="color: #00b38f;">characters</span>' #TEAL
+    'character<': '<span style="color: #00b38f;">character</span><' #TEAL
+    phenotype: '<span style="color: #00b3b3;">phenotype</span>' #CYAN
+    recessive: '<span style="color: #0a9bf5;">recessive</span>' #SKY BLUE
+    Law_of_Segregation: '<span style="color: #0039e6;">Law of Segregation</span>' #BLUE
+    separate: '<span style="color: #004d99;">separate</span>' #NAVY
+    factors: '<span style="color: #7b12a1;">factors</span>' #PURPLE
+    different: '<span style="color: #b30077;">different</span>' #MAGENTA
+    Principle_of_Paired_Factors: '<span style="color: #cc0066;">Principle of Paired&nbsp;Factors</span>' #PINK
 
 #both singular and plural
 value description: description
 values description: descriptions
 
+# Guidelines for Mendel's Foundational Principles of Genetics statements
+# 1. Use 'alleles' or 'genes' instead of 'genetic elements'.
+# 2. Use 'gamete' instead of 'reproductive cell' or 'sex cell'.
+# 3. Avoid discussing parents or inheritance for the first two principles: Paired Factors and Dominance.
+# 4. Avoid using tip-off keywords in the descriptions for the principles (e.g., pair, factors, segregate, independent, assortment). # 4a. Keywords may be used in the descriptions of other principles.
+# 4b. Synonyms for keywords are acceptable, like "sorting" for "assortment," but avoid making a direct connection.
+# 5. Use Mendelian specific genetics vocabulary: genes, factors, alleles, dominant, recessive, phenotype, genotype, character, trait.
+# 6. Avoid complex non-genetics vocabulary (e.g., counterpart, constitute, manifest, contrasting, dictates, precedence).
+# 7. Use accurate genetics vocabulary: differentiate between trait/character, dominant/recessive, genotype/phenotype.
+# 8. Keep the focus on "Mendel's Foundational Principles of Genetics"; modern exceptions like co-dominance, epistasis, and linked genes should not be included.
+# 9. Be clear and simple; the statements should be easily understood by those with a basic understanding of genetics.
+
 #######################
 matching pairs:
-  Principle of Paired Factors:
-    - each organism has two alleles that make up the genotype for a given trait
-    - character is represented in an organism by at least two factors
-    - in an organism, a two separate factors control the appearance of a given characteristic
-    - for a given characteristic, each trait consists of two alleles
-    - each organism has two alleles for each gene
+  Principle_of_Paired_Factors:
+    - Each organism has two alleles that make up the genotype for a given trait.
+    - Character is represented in an organism by two alleles.
+    - For a given characteristic, each trait consists of two alleles.
+    - Each organism has two alleles for each gene.
+    - Genotypes for specific traits are determined by two alleles.
+    - Two alleles contribute to an organism's characteristic.
+    - An organism possesses two alleles for each specific trait.
+    - The genetic makeup for a particular characteristic in an organism involves two alleles.
+    - A single trait in an organism is influenced by two alleles.
+    - The presence of two alleles accounts for each trait in an organism.
+    - An organism has two alleles that make up the genotype for a specific trait.
+    - Each trait in an organism is determined by two alleles.
+    - Two alleles define each specific trait in an organism.
+    - Two alleles determine a single trait in the offspring.
+    - Each organism has two alleles that influence a given characteristic.
+    - For every characteristic, an organism possesses two alleles.
+    - The genetic makeup for each character involves two alleles.
 
-  Principle of Dominance:
-    - out of the two contrasting alleles for the same gene, only one is able to express its effect
-    - for each character there is a dominant allele, the trait is determined by dominant allele
-    - for each genotype there is a dominant allele, the phenotype is determined by dominant allele
-    - hybrid offspring will only inherit the dominant allele as its phenotype
-    - in hybrid offspring, their recessive alleles are suppressed and not present in its phenotype
-    - in hybrid offspring, their dominant alleles are expressed and determine its phenotype
-    - in an organism that is heterozygous for a geneotype only the dominant trait will be seen
-    - some alleles are dominant, which means that their phenotype will mask the recessive phenotype
+  Principle_of_Dominance:
+    - Out of the two different alleles for the same gene, only one is able to express its effect.
+    - For each character there is a dominant allele, the trait is determined by that allele.
+    - For each genotype there is a dominant allele, the phenotype is determined by that allele.
+    - Recessive alleles are not expressed in the phenotype of the hybrid organism.
+    - Dominant alleles are the ones that determine the phenotype of the hybrid organism.
+    - Some alleles are dominant, which means that their phenotype will mask the recessive phenotype.
+    - Dominant alleles mask the expression of their recessive counterparts.
+    - In cases where contrasting alleles are present, the dominant allele determines the phenotype.
+    - Dominant alleles express their effects even when present in just a single copy.
+    - If contrasting alleles are present, the dominant one determines the phenotype.
+    - Presence of a dominant allele overrides the expression of the recessive allele.
+    - When different alleles exist, the dominant alleles determines the organism's traits.
+    - In a set of differing alleles, one will usually mask the effect of the other.
+    - When two different alleles are present, one usually determines the observable traits.
+    - One allele's traits will often be expressed over another allele's when both are present.
+    - The observable traits with mixed alleles are usually determined by one dominant allele.
+    - When different alleles are present, the effect of one will generally dominate.
 
-  Law of Segregation:
-    - each parent contributes just one of their two alleles to its offspring
-    - two factors of a character get randomly distributed to different gametes
-    - when the gametes are formed, the factors separate and are distributed as units to each gamete
-    - two copies of each factor segregate so that offspring acquire one factor from each parent
-    - allele pairs separate during the formation of gametes and re-unite randomly during fertilization
-    - two alleles for each trait separate during the formation of gametes and re-unite randomly during fertilization
-    - only one random allele from each parent combines during fertilization
-    - a gamete carries only a recessive or a dominant allele but not both the alleles
-    - alleles separate and recombine randomly during meiosis and fertilization
-    - pairs of characters separate during gamete formation
+  Law_of_Segregation:
+    - Each parent contributes just one of their two alleles to its offspring.
+    - Two factors of a character get randomly distributed to different gametes.
+    - When the gametes are formed, the factors separate and are distributed as units to each gamete.
+    - Allele pairs separate during the formation of gametes.
+    - Two alleles for each trait separate during the formation of gametes.
+    - A gamete carries only one allele for a gene but not both the alleles.
+    - Pairs of alleles separate during gamete formation.
+    - During gamete formation, allele pairs are separated into individual gametes.
+    - Each parent passes a single allele for each trait to the offspring during sexual reproduction.
+    - One allele from each gene pair is transmitted to an individual gamete.
+    - During the creation of gametes, alleles are distributed individually.
+    - Alleles from each parent are separated into individual gametes.
+    - During the creation of gametes, each parent contributes a single allele for each characteristic.
+    - A gamete carries just one of the two alleles for each characteristic.
+    - Two alleles for a character are randomly distributed into different gametes.
 
-  Law of Independent Assortment:
-    - two different characters will be inherited separately of each other
-    - inheritance of genes at one location does not influence the inheritance of genes at another location
-    - different pairs of alleles are passed onto the offspring independently of each other
-    - two factors of each character separate independent of other characters at the time of gamete formation
-    - a pair of traits segregates independently of another pair during gamete formation
+  Law_of_Independent_Assortment:
+    - Two different characters will be inherited separately from each other.
+    - Inheritance of genes at one location does not influence the inheritance of genes at another location.
+    - The segregation of one gene pair doesn't affect the segregation of another.
+    - Inheritance patterns for one trait do not interfere with those of another trait.
+    - The segregation of one pair of alleles is not influenced by another pair.
+    - Traits from different genes are passed down separately from one another.
+    - The inheritance of one gene has no bearing on the inheritance of another gene located at a different location.
+    - Genes at one location have no impact on the inheritance of genes at a separate location.
+    - The factors affecting one characteristic don't alter the factors affecting another characteristic during gamete creation.
+    - Traits inherited from different genes do not influence each other.
+    - Sorting one pair of alleles into gametes does not alter the sorting of another pair of alleles.
+    - No connection exists between the inheritance patterns of one trait and those of a different trait.
+    - During the creation of gametes, the grouping of one set of alleles doesn't affect the grouping of another set.
+    - Each pair of traits is passed down without any impact on the passage of other pairs during the creation of gametes.
+    - The inheritance of one gene does not impact the inheritance of another separate gene.
+    - The inheritance of one trait doesn't influence the inheritance of another.
+    - Alleles for different traits are passed down without influencing each other.
+    - Traits from separate genes do not affect each other during the reproductive process.
+    - In the process of forming gametes, each set of alleles sorts without impacting another set.
+    - The inheritance of one set of alleles has no impact on another set.
