@@ -60,7 +60,7 @@ def permuteMatchingPairs(yaml_data, num_choices=None):
 		yaml_data['keys description'], yaml_data['values description']))
 	question += '<p><i>Note:</i> all choices will be used exactly once</p>'
 	print("")
-	print("question", question)
+	#print("question", question)
 	global N
 
 	if num_choices is None:
