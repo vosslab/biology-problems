@@ -3,149 +3,85 @@
 import os
 import sys
 import random
+import argparse
 
 import bptools
 import gellib
 
-### ugly code, but works
+debug = None
 
-def isFather(child, mother, male):
-	#check if the male is the father
-	#print("father check", child - mother - male)
-	if len(child - mother - male) == 0:
-		return True
-	return False
+# Define complexity styles
+COMPLEXITY_STYLES = {
+	'easy': {'num_males': 4, 'num_bands': 18,},
+	'medium': {'num_males': 5, 'num_bands': 24,},
+	'hard': {'num_males': 9, 'num_bands': 32,}
+}
 
-def haveBaby(mother, father, num_males=3):
-	diffs = father - mother
-	print(diffs)
-	if len(diffs) < 2:
+#================
+def init_gel_params(style):
+	if style not in COMPLEXITY_STYLES:
+		print(f"Error: Style '{style}' not recognized. Available styles are {', '.join(COMPLEXITY_STYLES.keys())}.")
 		sys.exit(1)
-	child = set()
-	for i in mother:
-		if random.random() < 0.5:
-			child.add(i)
-	for i in father:
-		if random.random() < 0.4:
-			child.add(i)
-	for i in range(num_males):
-		child.add(random.choice(list(diffs)))
-	return child
+	return COMPLEXITY_STYLES[style]
 
-def writeQuestion(N):
-	gel = gellib.GelClassHtml()
-	gel.setTextColumn("Mother")
-	"""
-	num_males = 5 #min 3
-	total_bands = 12
-	min_bands = 4
-	max_band_percent = 0.5
-	"""
+#================
+#================
+def writeQuestion(N, params, debug):
+	# Initialization
+	rflp_class = gellib.RFLPClass(params['num_bands'])
+	rflp_class.debug = debug
+	results = None
+	while results is None:
+		results = rflp_class.create_family()
+	mother, father, child = results
+	# Create additional males
+	males = rflp_class.create_additional_males(params['num_males'])
 
-	num_males = 5 #min 3
-	total_bands = 18
-	min_bands = 10
-	max_band_percent = 0.65
-	"""
-	num_males = 9 #min 3
-	total_bands = 32
-	min_bands = 14
-	max_band_percent = 0.8
-	"""
+	# Generate the HTML table
+	table, answer_index = rflp_class.make_unknown_males_HTML_table()
+	rflp_class.make_unknown_males_PNG_image()
 
-	band_tree = gel.createBandTree(total_bands)
-	subsize = random.randint(min_bands, int(total_bands*max_band_percent))
-	mother = gel.getRandomSubSet(total_bands, subsize)
-	mother.add(0)
-	allbands = set(range(total_bands))
-	notmother = allbands - mother
-	males = []
-	subsize = random.randint(min_bands, int(total_bands*max_band_percent))
-	father = gel.getRandomSubSet(total_bands, subsize)
-	father.add(random.choice(list(notmother)))
-	father.add(random.choice(list(notmother)))
-	bothparents = father.intersection(mother)
-	if len(bothparents) > 2:
-		father.remove(random.choice(list(bothparents)))
-	males.append(father)
+	# Define the sub-headings and questions as HTML
+	background = "<h6>Background</h6><p>Restriction Fragment Length Polymorphism (RFLP) is a molecular biology technique used to distinguish between closely related DNA samples. It's commonly employed in paternity tests, among other applications.</p>"
+	the_question = "<h6>The Question</h6><p>Who is the father of the child?</p>"
+	instructions = "<h6>Instructions</h6><p>Use the provided DNA gel profile to determine paternity. Each band in the gel corresponds to a DNA fragment. Fragments are inherited; thus, the child's DNA will have overlapping fragments with the true father.</p>"
 
-	child = haveBaby(mother, father, num_males)
-	musthave = child - mother
-	print("mother", sorted(mother))
-	print("child ", sorted(child))
-	print("father", sorted(father))
-	print("musthv", sorted(musthave))
-	ignore = mother.intersection(child)
-	print("ignore", sorted(ignore))
-
-	if len(musthave) < num_males-1:
-		#start over
-		print("not enough band difference")
-		return None
-	# add a male with 1 band missing
-	while len(males) < num_males:
-		male = father.copy()
-		male.remove(random.choice(list(musthave)))
-		if male in males:
-			musthave2 = male.intersection(musthave)
-			male.remove(random.choice(list(musthave2)))
-		if not male in males:
-			males.append(male)
-	for male in males:
-		male.add(random.choice(list(allbands)))
-
-	table = ""
-	table += gel.tableWidths()
-	#table += gel.drawLane(list(allbands), "allbands")
-	table += gel.blankLane()
-	table += gel.drawLane(sorted(mother), "Mother")
-	table += gel.drawLane(sorted(child), "Child")
-	random.shuffle(males)
-	random.shuffle(males)
-	dadcount = 0
-	answer = None
-	for i in range(len(males)):
-		male = males[i]
-		isfather = isFather(child, mother, male)
-		if isfather:
-			dadcount += 1
-			answer = i
-		#print(("Male #%d: %s -- %s"%(i+1, str(sorted(male)), isfather)))
-		table += gel.drawLane(male, "Male %d"%(i+1))
-	if dadcount != 1:
-		print("wrong number of fathers")
-		return None
-	table += gel.blankLane()
-	#table += gel.drawLane(musthave, "musthave")
-	#table += gel.drawLane(ignore, "ignore")
-	table += "</table>"
-
-	#gel.saveImage("males.png")
-	#print("open males.png")
-	question = "<h6>Based on the DNA gel profile above, who is the father of the child?</h6>"
-	full_question = "<p>Who is the father of the child?</p> {0} {1}".format(table, question)
+	# Combine all elements to form the full question
+	full_question = "{0} {1} {2} {3}".format(the_question, table, background, instructions)
 
 	choices_list = []
-	answer_string = ''
-	for i in range(len(males)):
+	for i, male in enumerate(males):
 		choice = "Male &num;{0:d}".format(i+1)
 		choices_list.append(choice)
-		if i == answer:
+		if i == answer_index:
 			answer_string = choice
 	bb_question = bptools.formatBB_MC_Question(N, full_question, choices_list, answer_string)
 	return bb_question
 
+#================
+#================
 if __name__ == '__main__':
-	duplicates = 199
+	# Command-line argument parsing moved here
+	parser = argparse.ArgumentParser(description="Generate DNA gel questions.")
+	parser.add_argument('-s', '--style', type=str, default='medium',
+		help='The complexity style for generating questions (easy, medium, hard)')
+	parser.add_argument('-d', '--debug', dest='debug', action='store_true',
+		help='Enable debug mode, which changes the question output.')
+	parser.add_argument('-x', '--max_questions', dest='max_questions', type=int, default=3,
+		help='Number of questions to write')
+	parser.set_defaults(debug=False)
+
+	args = parser.parse_args()
+	params = init_gel_params(args.style)
+
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	for i in range(duplicates):
-		N = i + 1
-		bb_question = writeQuestion(N)
-		if bb_question is None:
-			continue
-		f.write(bb_question)
-	f.write("\n")
-	f.close()
+	print(f'writing to file: {outfile}')
+	with open(outfile, 'w') as f:
+		for i in range(args.max_questions):
+			N = i + 1
+			bb_question = writeQuestion(N, params, args.debug)
+			if bb_question is None:
+				continue
+			f.write(bb_question)
+		f.write("\n")
 	bptools.print_histogram()
