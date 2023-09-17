@@ -13,25 +13,21 @@ def isFather(child, mother, male):
 		return True
 	return False
 
-def haveBaby(mother, father, num_males=3):
-	diffs = father - mother
-	print(diffs)
-	if len(diffs) < 2:
-		sys.exit(1)
+def have_baby(mother, father):
 	child = set()
 	for i in mother:
-		if random.random() < 0.5:
+		if random.random() < 0.4:
 			child.add(i)
 	for i in father:
 		if random.random() < 0.4:
 			child.add(i)
-	for i in range(num_males):
-		child.add(random.choice(list(diffs)))
+	child.update(random.sample(mother - father, 2))  # Two unique from mother
+	child.update(random.sample(father - mother, 2))  # Two unique from father
 	return child
 
 if __name__ == '__main__':
 	gel = gellib.GelClass()
-	gel.setTextColumn("Mother")
+	gel.setTextColumn("musthave")
 
 	num_males = 5 #min 3
 	total_bands = 18
