@@ -3,6 +3,7 @@
 import os
 import sys
 import copy
+import math
 import random
 import argparse
 
@@ -13,9 +14,9 @@ debug = None
 
 # Define complexity styles
 COMPLEXITY_STYLES = {
-	'easy': {'num_males': 3, 'num_bands': 23,},
+	'easy': {'num_males': 3, 'num_bands': 14,},
 	'medium': {'num_males': 5, 'num_bands': 24,},
-	'hard': {'num_males': 9, 'num_bands': 32,}
+	'hard': {'num_males': 9, 'num_bands': 36,}
 }
 
 
@@ -27,6 +28,7 @@ class RFLPClass:
 		self.allbands = set(range(self.num_bands))
 		self.people = {}
 		self.debug = True
+		self.fail = {}
 
 	#=====================================
 	def create_family(self):
@@ -55,42 +57,55 @@ class RFLPClass:
 		father_size = int(mother_size * random.uniform(0.9, 1.1))
 
 		# Populate 'mother' and 'father'
-		mother = frozenset(random.sample(list(self.allbands), mother_size))
+		mother = set(random.sample(list(self.allbands), mother_size))
+		#always good to give first band to mom, otherwise makes problem a little too easy
+		mother.add(0)
+		mother = frozenset(mother)
 		father = set(random.sample(list(mother), mother_size//2))
 		father.update(random.sample(list(self.allbands - mother), father_size - len(father)))
 		father = frozenset(father)
+		parent_diffs = father - mother
+		forced_unique = max(len(parent_diffs)//2, 1)
 
 		# Generate 'child' using the 'have_baby' function
-		child = self.have_baby(mother, father, forced_unique=2)
+		child = self.have_baby(mother, father, forced_unique)
 
 		# Calculate derived sets
 		musthave = child - mother
 		ignore = mother.intersection(child)
-		parent_diffs = father - mother
+
+		minimum_musthave = math.sqrt(len(mother))/2.0
+		self.fail['minimum musthave'] = f"{minimum_musthave:.03f}"
+		minimum_parent_diffs = math.sqrt(len(mother))
+		self.fail['minimum parent_diffs'] = f"{minimum_parent_diffs:.03f}"
+
 
 		# Check criteria
-		if len(musthave) <= 2:
+		if len(musthave) < minimum_musthave:
 			if self.debug is True:
 				print(".. mother=", len(mother), mother)
 				print(".. child=", len(child), child)
 				print(".. musthave=", len(musthave), musthave)
 				print("The child and mother are too similar.")
+			self.fail['musthave'] = self.fail.get('musthave', 0) + 1
 			return None
 
-		if len(ignore) <= 2:
+		if len(ignore) < 2:
 			if self.debug is True:
 				print(".. mother=", len(mother), mother)
 				print(".. child=", len(child), child)
 				print(".. ignore=", len(ignore), ignore)
 				print("The child and mother are too disimilar.")
+			self.fail['ignore'] = self.fail.get('ignore', 0) + 1
 			return None
 
-		if len(parent_diffs) <= 4:
+		if len(parent_diffs) <= minimum_parent_diffs:
 			if self.debug is True:
 				print(".. mother=", len(mother), mother)
 				print(".. father=", len(father), father)
 				print(".. parent_diffs=", len(parent_diffs), parent_diffs)
 				print("The mother and father are too similar.")
+			self.fail['parent_diffs'] = self.fail.get('parent_diffs', 0) + 1
 			return None
 
 		if abs(len(mother) - len(father)) / len(mother) >= 0.25:
@@ -98,6 +113,7 @@ class RFLPClass:
 				print(".. mother=", len(mother), mother)
 				print(".. father=", len(father), father)
 				print("The mother and father sets have lengths that differ by more than 25%.")
+			self.fail['mother-father'] = self.fail.get('mother-father', 0) + 1
 			return None
 
 		if abs(len(mother) - len(child)) / len(mother) >= 0.25:
@@ -105,6 +121,7 @@ class RFLPClass:
 				print(".. mother=", len(mother), mother)
 				print(".. child=", len(child), child)
 				print("The mother and child sets have lengths that differ by more than 25%.")
+			self.fail['mother-child'] = self.fail.get('mother-child', 0) + 1
 			return None
 
 		if self.debug is True:
@@ -143,7 +160,6 @@ class RFLPClass:
 		males_set = set()
 		males_set.add(self.people.get('father'))
 		musthave = self.people.get('musthave')
-		print(".. musthave=", len(musthave), musthave)
 		for i, exclude_band in enumerate(list(musthave)):
 			male_type_1 = self.create_male_type_1(exclude_band)
 			if male_type_1 is not None:
@@ -234,8 +250,11 @@ class RFLPClass:
 			print("wrong number of fathers")
 			sys.exit(1)
 		gel_class.blankLane()
-		gel_class.drawLane(self.people.get('musthave'), "Must Have")
-		gel_class.drawLane(self.people.get('ignore'), "Ignore")
+		if self.debug is True:
+			gel_class.drawLane(self.people.get('father'), "Father")
+			gel_class.drawLane(self.people.get('musthave'), "Must Have")
+			gel_class.drawLane(self.people.get('ignore'), "Ignore")
+			gel_class.blankLane()
 		gel_class.saveImage(f"males_{N:04d}.png")
 		print("open males.png")
 		return answer_index
@@ -267,8 +286,10 @@ class RFLPClass:
 			return None
 		table += gel_class.blankLane()
 		if self.debug is True:
+			table += gel_class.drawLane(self.people.get('father'), "Father")
 			table += gel_class.drawLane(self.people.get('musthave'), "musthave")
 			table += gel_class.drawLane(self.people.get('ignore'), "ignore")
+			table += gel_class.blankLane()
 		table += "</table>"
 		return table, answer_index
 
@@ -297,8 +318,17 @@ def writeQuestion(N, params, debug):
 	rflp_class = RFLPClass(params['num_bands'])
 	rflp_class.debug = debug
 	results = None
+	attempts = 0
 	while results is None:
+		attempts += 1
+		if attempts % 100 == 0:
+			print(f"Still working on creating the Family, so far {attempts} attempts")
+		if attempts > 10000:
+			print(rflp_class.fail)
+			print("too many attempts")
+			sys.exit(1)
 		results = rflp_class.create_family()
+	print(f"Created Family in {attempts} attempts")
 	mother, father, child = results
 	# Create additional males
 	males = rflp_class.create_additional_males(params['num_males'])
@@ -349,6 +379,7 @@ if __name__ == '__main__':
 	with open(outfile, 'w') as f:
 		for i in range(args.max_questions):
 			N = i + 1
+			print(f"\nQuestion {N} of {args.max_questions}")
 			bb_question = writeQuestion(N, params, args.debug)
 			if bb_question is None:
 				continue
