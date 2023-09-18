@@ -81,6 +81,36 @@ def load_hidden_term_bank():
 def insert_hidden_terms(text_content):
 	if use_insert_hidden_terms is False:
 		return text_content
+
+	global hidden_term_bank
+	if hidden_term_bank is None:
+		hidden_term_bank = load_hidden_term_bank()
+
+	# Separate table and non-table content
+	table_parts = re.split(r'(<table>.*?</table>)', text_content, flags=re.DOTALL)
+
+	# Process each part
+	new_parts = []
+	for part in table_parts:
+		if part.startswith('<table>'):  # Keep table content unchanged
+			new_parts.append(part)
+		else:  # Apply the modified logic to non-table parts
+			# Replace spaces adjacent to words with '@'
+			part = re.sub(r'([A-Za-z]) +(?![^<>]*>)', r'\1@', part)
+			part = re.sub(r' +([A-Za-z])(?![^<>]*>)', r'@\1', part)
+			words = part.split('@')
+			new_words = []
+			for word in words:
+				new_words.append(word)
+				hidden_term = random.choice(hidden_term_bank)
+				new_words.append(f"<span style='font-size: 1px; color: white;'>{hidden_term}</span>")
+			new_parts.append(''.join(new_words))
+	return ''.join(new_parts)
+
+#==========================
+def insert_hidden_terms_old(text_content):
+	if use_insert_hidden_terms is False:
+		return text_content
 	global hidden_term_bank
 	if hidden_term_bank is None:
 		hidden_term_bank = load_hidden_term_bank()
