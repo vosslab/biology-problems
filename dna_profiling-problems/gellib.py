@@ -124,13 +124,19 @@ class GelClassImage(GelClass):
 
 
 class GelClassHtml(GelClass):
+	"""Initialize GelClass attributes."""
+	def __init__(self):
+		self.table = None
+		self.row = 0
+
 	# Generate colgroup element for HTML table with column widths
 	def tableWidths(self):
-		space_width = 10
+		space_width = 5
 		# Initialize table and first colgroup
 		colgroup = '<table cellspacing="0" border="0"> '
 		colgroup += '<colgroup width="{0}"></colgroup> '.format(space_width)
-
+		# Add flexible line for text labels
+		colgroup += '<colgroup></colgroup> '
 		# Generate colgroups based on band widths
 		for band in self.band_tree:
 			w = int(band['width'] * 1.5 + 2)
