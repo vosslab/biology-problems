@@ -234,17 +234,18 @@ class RFLPClass:
 		gel_class = gellib.GelClassImage()
 		gel_class.createBandTree(self.num_bands)
 		gel_class.setTextColumn("Must Have")
-		gel_class.drawLane(self.allbands, "allbands")
-		gel_class.blankLane()
+		if self.debug is True:
+			gel_class.drawLane(self.allbands, "allbands")
+			gel_class.blankLane()
 		gel_class.drawLane(self.people.get('mother'), "Mother")
 		gel_class.drawLane(self.people.get('child'), "Child")
 		males_list = self.people.get('males_list')
+		gel_class.blankLane()
 		dadcount = 0
 		for i, male in enumerate(males_list):
 			if self.is_father(male) is True:
 				dadcount += 1
 				answer_index = i
-			#print(("Male #%d: %s -- %s"%(i+1, str(sorted(male)), isfather)))
 			gel_class.drawLane(male, "Male %d"%(i+1))
 		if dadcount != 1:
 			print("wrong number of fathers")
@@ -255,6 +256,7 @@ class RFLPClass:
 			gel_class.drawLane(self.people.get('musthave'), "Must Have")
 			gel_class.drawLane(self.people.get('ignore'), "Ignore")
 			gel_class.blankLane()
+		gel_class.blankLane()
 		gel_class.saveImage(f"males_{N:04d}.png")
 		print("open males.png")
 		return answer_index
