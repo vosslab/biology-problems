@@ -160,7 +160,6 @@ def main():
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
 	print(f'writing to file: {outfile}')
 
-	colors = bptools.default_color_wheel(num_colors=4)
 	N = 0  # Initialize question counter
 	with open(outfile, 'w') as f:  # Using 'with' for better file handling
 		for i in range(args.max_questions):
@@ -171,6 +170,7 @@ def main():
 			dad1 = createMarker(num_markers, used_markers)
 			dad2 = createMarker(num_markers, used_markers)
 			bw_marker_collection = [mom1, mom2, dad1, dad2]
+			colors = bptools.default_color_wheel(num_colors=4)
 			mom1c = addColorToMarkers(mom1, colors[0])
 			mom2c = addColorToMarkers(mom2, colors[1])
 			dad1c = addColorToMarkers(dad1, colors[2])
