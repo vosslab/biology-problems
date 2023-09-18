@@ -1,47 +1,112 @@
 items to match per question: 4
 
 #both singular and plural
-key description: Mendel cross concept
-keys description: Mendel cross concepts
+key description: Mendelian cross or generational stage
+keys description: Mendelian crosses and generational stages
 
 #both singular and plural
 value description: description
 values description: descriptions
 
+# Guidelines for Mendel's cross breeding concepts statements
+# 1. Avoid using tip-off keywords in the descriptions for the cross (e.g., back, test, reciprocal, hydrid.
+# 2. Synonyms for keywords are acceptable, like "reverses" for "reciprocal," but avoid making a direct connection.
+# 3. Use Mendelian specific genetics vocabulary, such as genes, factors, dominant, recessive, phenotype, genotype, character, trait.
+# 4. Avoid complex non-genetics vocabulary (e.g., counterpart, constitute, manifest, contrasting, dictates, precedence, filial).
+# 5. Use accurate genetics vocabulary: differentiate between trait/character, dominant/recessive, genotype/phenotype.
+# 6. Keep the focus on "types of genetics crosses"; avoid modern exceptions like co-dominance, epistasis, and linked genes
+# 7. Be clear and simple; the statements should be easily understood by those with a basic understanding of genetics.
+
+replacement_rules:
+    test&nbsp;cross:         '<span style="color: #e60000;">test cross</span>' #RED
+    F<sub>1</sub>:      '<span style="color: #e65400;">F<sub>1</sub></span>' #DARK ORANGE
+    inheritance:         '<span style="color: #e69100;">inheritance</span>' #LIGHT ORANGE
+    homozygous:         '<span style="color: #b3b300;">homozygous</span>' #DARK YELLOW
+    backcross:          '<span style="color: #59b300;">backcross</span>' #LIME GREEN
+    F<sub>2</sub>:      '<span style="color: #009900;">F<sub>2</sub></span>' #GREEN
+    recessive:          '<span style="color: #00b38f;">recessive</span>' #TEAL
+    hybrid&nbsp;cross:       '<span style="color: #00b3b3;">hybrid cross</span>' #CYAN
+    genotypes:           '<span style="color: #0a9bf5;">genotype</span>' #SKY BLUE
+    genotype:           '<span style="color: #0a9bf5;">genotype</span>' #SKY BLUE
+    dominant:           '<span style="color: #0039e6;">dominant</span>' #BLUE
+    parental:           '<span style="color: #004d99;">parental</span>' #NAVY
+    reciprocal&nbsp;cross:   '<span style="color: #7b12a1;">reciprocal cross</span>' #PURPLE
+    P&num;:            '<span style="color: #b30077;">P</span>' #MAGENTA
+    phenotypes:          '<span style="color: #cc0066;">phenotype</span>' #PINK
+    phenotype:          '<span style="color: #cc0066;">phenotype</span>' #PINK
+
 #######################
 matching pairs:
-  test cross:
+  test&nbsp;cross:
     - a type of cross where the dominant phenotype is crossed with the homozygous recessive genotype
     - a type of cross that uses a homozygous recessive organism to determine the genetic makeup of another dominant organism
     - a type of cross involving an individual which is homozygous recessive for all genes of interest
-    - a type of cross where a dominant phenotype (with unknown genotype) to a homozygous recessive genotype
+    - a type of cross involving an individuals with a dominant phenotype and an unknown genotype, mated with a homozygous recessive individual
     - a type of cross where a test organism showing a dominant trait is crossed with one showing all recessive traits
     - a type of cross between a homozygous recessive individual with an individual of an unknown dominant genotype
     - a type of cross of an individual of dominant phenotype and unknown genotype and an individual with a homozygous recessive genotype
+    - a genetic cross in which a dominant phenotype is paired with a homozygous recessive genotype
+    - a genetic cross to identify the genotype of an organism with a dominant phenotype by crossing it with a homozygous recessive individual
+    - a cross used to determine whether an individual with a dominant trait is homozygous or heterozygous
+    - a cross to uncover the genotype of an individual with the dominant phenotype by mating it with a homozygous recessive organism
+    - a cross designed to reveal the genotype of a dominant phenotype individual by pairing it with a homozygous recessive individual
 
   backcross:
     - a type of cross where F<sub>1</sub> hybrids are crossed with one of the parental genotypes
     - a type of cross when F<sub>1</sub> individuals are crossed with one of the two parents
+    - a cross involving F<sub>1</sub> hybrids and one of their parental genotypes
+    - a mating event where F<sub>1</sub> individuals are bred with one of the original parental types
+    - a genetic cross to trace the inheritance of a specific trait back to one of the original parents
+    - a genetic cross that involves the F<sub>1</sub> generation being mated with one of the parent types
 
-  hybrid cross:
-    - a type of cross between two individuals who have homozygous genotypes
-    - a type of cross between two true-breeding individuals
-    - a type of cross that mates two true-breeding individuals that differ
+  hybrid&nbsp;cross:
+    - a type of cross between two individuals who have distinct homozygous genotypes
+    - a type of cross between two true-breeding individuals with different phenotypes
+    - a type of cross that mates two true-breeding individuals with different phenotypes
+    - a genetic cross between two homozygous individuals with different traits
+    - a cross involving two true-breeding organisms with distinct traits
+    - a mating event that pairs two homozygous individuals with different characteristics
+    - a genetic cross to combine traits from two different true-breeding parents
+    - a cross between two true-breeding organisms that each display distinct, homozygous traits
+    - a cross that brings together two true-breeding individuals who are homozygous for different sets of traits
 
-  reciprocal cross:
+  reciprocal&nbsp;cross:
     - a type of cross designed to test the role of parental sex on a given inheritance pattern
-    - two separate crosses where the traits of the male and female in one cross are switche in another cross
+    - two separate crosses where the traits of the male and female in one cross are switched in another cross
+    - a genetic cross that examines the impact of parental sex on inheritance patterns
+    - two distinct mating events where male and female traits are swapped between the crosses
+    - a pair of crosses that reverses the sexes associated with specific traits
+    - a set of two crosses to investigate if the sex of the parent influences the inheritance of traits
+    - two distinct crosses where the male and female parental traits are reversed in the subsequent cross
+    - two paired crosses that switch the roles of male and female parents to investigate the influence of parental sex on trait inheritance
 
-  P:
-    - the parental generation in a hybrid cross
-    - this generation are both true-breeding individuals with different traits in a hybrid cross
-    - this generation consists of two homozygous individuals with different phenotypes for a hybrid cross
+  P&num;:
+    - the parental generation in a hybrid&nbsp;cross
+    - this generation includes two true-breeding individuals with different traits in a hybrid&nbsp;cross
+    - this generation consists of two true-breeding individuals, each exhibiting different traits, participating in a hybrid&nbsp;cross
+    - this generation consists of two homozygous individuals with different phenotypes for a hybrid&nbsp;cross
+    - the original parental generation in a hybrid&nbsp;cross
+    - a generation with two homozygous individuals with different phenotypes in a hybrid&nbsp;cross
+    - the starting generation consisting of true-breeding parents in a hybrid&nbsp;cross
+    - the initial generation of a hybrid&nbsp;cross that includes two homozygous, true-breeding organisms with distinct phenotypes
 
   F<sub>1</sub>:
     - the first generation in a cross; the offspring of the parental generation
     - hybrid offspring of the parental generation
+    - the first generation of offspring from the parental generation
+    - the first generation derived from a genetic cross between members of the parental generation
+    - the first generation of hybrids resulting from a cross between two parental organisms
+    - the initial offspring derived from a cross between two parental types
+    - the first generational step in assessing genetic variance, originating from the parental generation
+    - the immediate progeny produced by the cross of two distinct parental genotypes
 
   F<sub>2</sub>:
     - the second generation in a cross; the offspring of the F<sub>1</sub> generation
     - the second generation produced when F<sub>1</sub> individuals are self-crossed or fertilized with each other
     - the offspring of the F<sub>1</sub> generation; the "<i>grandchildren</i>" of the parental generation
+    - the offspring from the F<sub>1</sub> generation, and considered the 'grandchildren' of the initial parental generation
+    - the second generation of offspring, descended from the F<sub>1</sub> generation
+    - the offspring resulting from either self-fertilization or cross-fertilization of F<sub>1</sub> individuals
+    - the subsequent generation derived from interbreeding or self-breeding of F<sub>1</sub> hybrids
+    - the generation resulting from the mating of F<sub>1</sub> hybrids
+
