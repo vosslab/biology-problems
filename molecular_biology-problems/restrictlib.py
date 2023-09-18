@@ -1,8 +1,15 @@
 #python library of restriction enzymes
 
+import os
 import re
+import sys
+import time
+import yaml
+import json
 import random
+import requests
 from Bio import Restriction
+from bs4 import BeautifulSoup
 
 """
 'all_suppliers', 'buffers', 'catalyse', 'catalyze', 'charac', 'characteristic', 'compatible_end', 'compsite', 'cut_once', 'cut_twice', 'dna', 'elucidate', 'equischizomers', 'freq', 'frequency', 'fst3', 'fst5', 'inact_temp', 'is_3overhang', 'is_5overhang', 'is_ambiguous', 'is_blunt', 'is_comm', 'is_defined', 'is_equischizomer', 'is_isoschizomer', 'is_methylable', 'is_neoschizomer', 'is_palindromic', 'is_unknown', 'isoschizomers', 'mro', 'neoschizomers', 'opt_temp', 'overhang', 'ovhg', 'ovhgseq', 'results', 'scd3', 'scd5', 'search', 'site', 'size', 'substrat', 'suppl', 'supplier_list', 'suppliers'
@@ -28,6 +35,88 @@ Useful attributes:
 . ovhgseq
 . site -> recognition site
 """
+#============================
+def save_cache(cache_data):
+	if len(cache_data) == 0:
+		return
+	print('==== SAVE CACHE ====')
+	t0 = time.time()
+	cache_name = 'enzyme_names_cache'
+	cache_format = 'yml'
+	file_name = cache_name+'.'+cache_format
+	if len(cache_data) > 0:
+		if cache_format == 'json':
+			json.dump( cache_data, open( file_name, 'w') )
+		elif cache_format == 'yml':
+			yaml.dump( cache_data, open( file_name, 'w') )
+		else:
+			print("UNKNOWN CACHE FORMAT: ", cache_data)
+			sys.exit(1)
+		print('.. wrote {0} entires to {1} in {2:,d} usec'.format(
+			len(cache_data), file_name, int((time.time()-t0)*1e6)))
+	print('==== END SAVE CACHE ====')
+
+#============================
+def load_cache():
+	cache_name = 'enzyme_names_cache'
+	cache_format = 'yml'
+	file_name = cache_name+'.'+cache_format
+	print('==== LOAD CACHE ====')
+	if os.path.isfile(file_name):
+		try:
+			t0 = time.time()
+			if cache_format == 'json':
+				cache_data = json.load( open(file_name, 'r') )
+			elif cache_format == 'yml':
+				cache_data =  yaml.safe_load( open(file_name, 'r') )
+			else:
+				print("UNKNOWN CACHE FORMAT: ", cache_data)
+				sys.exit(1)
+			print('.. loaded {0} entires from {1} in {2:,d} usec'.format(
+				len(cache_data), file_name, int((time.time()-t0)*1e6)))
+		except IOError:
+			cache_data = {}
+	else:
+		cache_data = {}
+	print('==== END LOAD CACHE ====')
+	return cache_data
+
+#============================
+def get_web_data(enzyme_class):
+	uri = enzyme_class.uri
+	#print(f"URI: {uri}")
+	headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537'}
+	headers = {'User-Agent': 'Mozilla/5.0'}
+	response = requests.get(uri, headers=headers)
+	#print(f"HTTP Response: {response.status_code}")
+	if response.status_code != 200:
+		print("Failed to fetch data")
+		return {}
+	time.sleep(random.random())
+
+	soup = BeautifulSoup(response.content, 'html.parser')
+
+	# Create a dictionary to store the data
+	enzyme_data = {'uri': uri,}
+	# Iterate through each <b> tag that has the field name
+	for field in soup.find_all('b'):
+		field_name = field.text.replace(":", "").strip()
+		next_tag = field.find_next()
+		if next_tag and next_tag.name == 'a':
+			field_value = next_tag.text
+		elif next_tag and next_tag.name == 'font':
+			continue  # Skip, as this doesn't seem to hold data of interest
+		else:
+			next_sibling = field.find_next_sibling(text=True)
+			field_value = next_sibling.strip() if next_sibling else ""
+
+		# Only add the field if it has a name and value
+		if field_name and field_value and field_name.startswith("Organism"):
+			enzyme_data[field_name] = field_value.strip()
+
+	#print(f"Enzyme data: {enzyme_data}")
+	return enzyme_data
+
 
 #========================================
 def check_for_good_ending(item):
@@ -143,7 +232,8 @@ def format_enzyme(enzyme_class):
 
 #========================================
 def html_monospace(txt):
-	return "<span style='font-family: 'andale mono', 'courier new', courier, monospace;'>{0}</span>".format(txt)
+	return f"<code>{txt}</code>"
+	#return f"<span style='font-family: 'andale mono', 'courier new', courier, monospace;'>{txt}</span>"
 
 #========================================
 #========================================
