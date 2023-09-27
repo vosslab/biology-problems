@@ -27,6 +27,33 @@ def deconstructPowerOfNumber(num):
 	#print(num, power2, power3)
 	return power2, power3
 
+# Wrapper function that adds a concise but clear hint to the choice if hint_flag is True
+def format_choice_plus(power2, power3, hint_flag):
+	# Call the original formatChoice function to get the base string
+	base_choice = formatChoice(power2, power3)
+
+	if hint_flag is False:
+		return base_choice
+
+	# Generate the hint text based on the powers
+	parts = []
+	if power2 == 1:
+		parts.append(f"{power2} gene with two forms")
+	elif power2 > 1:
+		parts.append(f"{power2} genes with two forms")
+	if power3 == 1:
+		parts.append(f"{power3} gene with three forms")
+	elif power3 > 1:
+		parts.append(f"{power3} genes with three forms")
+	hint_str = f" (<i>i.e.</i> {' and '.join(parts)})"
+
+	# Combine the base choice and hint
+	final_choice = base_choice + hint_str
+
+	return final_choice
+
+
+#=======================
 def formatChoice(power2, power3):
 	num = 2**power2 * 3**power3
 
@@ -54,6 +81,7 @@ def formatChoice(power2, power3):
 		mystr = "{0} &times; {1} &nbsp; = {2}".format(pow2str, pow3str, num)
 	return mystr
 
+#=======================
 def crossGenotypes(geno1, geno2):
 	cross = []
 	for g1 in geno1:
@@ -67,6 +95,7 @@ def crossGenotypes(geno1, geno2):
 	#print(result)
 	return result
 
+#=======================
 def countGenotypesForCross(gene_list1, gene_list2):
 	if len(gene_list1) != len(gene_list2):
 		print("different sizes of lists")
@@ -79,7 +108,7 @@ def countGenotypesForCross(gene_list1, gene_list2):
 		total_genotypes *= len(cross)
 	return total_genotypes
 
-
+#=======================
 def crossPhenotypes(geno1, geno2):
 	cross = []
 	#print(geno1, geno2)
@@ -95,6 +124,7 @@ def crossPhenotypes(geno1, geno2):
 	#print(result)
 	return result
 
+#=======================
 def countPhenotypesForCross(gene_list1, gene_list2):
 	if len(gene_list1) != len(gene_list2):
 		print("different sizes of lists")
@@ -107,7 +137,7 @@ def countPhenotypesForCross(gene_list1, gene_list2):
 		total_genotypes *= len(cross)
 	return total_genotypes
 
-
+#=======================
 def createGenotypeList(num_genes):
 	gene_list = []
 	for i in range(num_genes):
@@ -120,6 +150,7 @@ def createGenotypeList(num_genes):
 			gene_list.append((lowercase[i], lowercase[i]))
 	return gene_list
 
+#=======================
 def createGenotypeStringFromList(gene_list):
 	genestr = ""
 	gamete_count = 1
@@ -129,11 +160,14 @@ def createGenotypeStringFromList(gene_list):
 		genestr += gene_pair[0] + gene_pair[1] + " "
 	return genestr, gamete_count
 
+#=======================
 def createGenotype(num_genes):
 	gene_list = createGenotypeList(num_genes)
 	genestr, gamete_count = createGenotypeStringFromList(gene_list)
 	return genestr, gamete_count
 
+#=======================
+#=======================
 if __name__ == '__main__':
 	if len(sys.argv) >= 2:
 		num_genes = int(sys.argv[1])
