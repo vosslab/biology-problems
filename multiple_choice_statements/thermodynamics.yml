@@ -33,7 +33,7 @@ true_statements:
   truth3d: The equilibrium constant (K&prime;<sub>eq</sub>) is related to the standard change in free energy (&Delta;G&deg;&prime;) of a reaction.
 
   truth4a: Thermodynamics determines the direction a reaction will proceed under specific conditions.
-  truth4b: Thermodynamics depends on the concentration of reactants and products.
+
   truth4c: A reaction is spontaneous if the standard change in free energy (&Delta;G&deg;&prime;) is negative.
 
   truth5a: The change in Gibbs free energy (&Delta;G) of a reaction is related to the enthalpy and entropy changes of the reaction.
@@ -48,7 +48,7 @@ true_statements:
 
 false_statements:
   false1a: Kinetics tells us the equilibrium point.
-  false1b: Thermodynamics tells us how fast is equilibrium approached.
+  false1b: Thermodynamics tells us how fast equilibrium is approached.
   false1c: Thermodynamics determines the rate of a reaction.
 
   false2a: Enzymes change the equilibrium point.

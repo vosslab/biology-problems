@@ -9,16 +9,21 @@ override_question_false: ~
 connection_words: ~
 
 true_statements:
-  truth1: galactosidase
-  truth2: hexokinase
-  truth3: lactase
-  truth4: sucrase
-  truth5: maltase
-  truth6: pyruvate decarboxylase
-  truth7: lactate dehydrogenase
-  truth8: glyceraldehyde-3-phosphate dehydrogenase (GAPDH)
-  truth9: '&alpha;-amylase'
-  truth10: adenylyl cyclase
+  truth11: galactosidase
+  truth12: hexokinase
+  truth13: lactase
+  truth14: sucrase
+  truth15: maltase
+  truth16: pyruvate decarboxylase
+  truth17: lactate dehydrogenase
+  truth18: glyceraldehyde-3-phosphate dehydrogenase (GAPDH)
+  truth19: '&alpha;-amylase'
+  truth20: adenylyl cyclase
+  truth21: phosphofructokinase
+  truth22: carbonic anhydrase
+  truth23: acetylcholinesterase
+  truth24: catalase
+  truth25: DNA polymerase
 
 false_statements:
   false1a: phospholipid
@@ -26,7 +31,7 @@ false_statements:
   false1c: triacylglycerol
   false1d: triglyceride
 
-  false2a: steroid
+  false22a: steroid
   false2b: testosterone
   false2c: estrogen
   false2d: cholesterol
@@ -34,8 +39,13 @@ false_statements:
   false3a: manganese ions (Mn<sup>2+</sup>)
   false3b: magnesium ions (Mg<sup>2+</sup>)
   false3c: calcium ions (Ca<sup>2+</sup>)
-  false3d: sodium ions (Na<sup>2+</sup>)
-  
+  false3d: sodium ions (Na<sup>+</sup>)
+  false3e: potassium ions, K<sup>+</sup>
+  false3f: iron ions, Fe<sup>+2</sup>/Fe<sup>+3</sup>
+  false3g: zinc ions, Zn<sup>2+</sup>
+  false3h: copper ions, Cu<sup>2+</sup>
+  false3i: chloride ions, Cl<sup>-</sup>
+
   false4a: chitin
   false4b: cellulose
   false4c: glycogen
@@ -66,8 +76,13 @@ false_statements:
   false7c: GDP
   false7d: ADP
   false7e: GMP
-  false7f: AMP  
-  
+  false7f: AMP
+
+  false9a: water (H<sub>2</sub>O)
+  false9b: oxygen (O<sub>2</sub>)
+  false9c: carbon dioxide (CO<sub>2</sub>)
+
+
 # conflicts, means that the statements cannot appear together
 # add ': True' to each line, so the program runs a faster lookup 
 conflict_rules: ~  

@@ -30,7 +30,7 @@ true_statements:
   truth5a: For chemical reactions to occur, the chemical identity of the substances must change.
   false5b: For chemical reactions to occur, the chemical formulas of both the reactant and the product can be the same.
 
-  truth11a: Salt (NaCl) disolving in water breaking the ionic bonds between Na<sup>+</sup> and Cl<sup>&ndash;</sup> is a chemical reaction.
+  truth11a: Salt (NaCl) dissolving in water breaking the ionic bonds between Na<sup>+</sup> and Cl<sup>&ndash;</sup> is a physical reaction.
 
   truth15a: Chemical reactions are involved in many important processes in biology.
   truth15b: Chemical reactions play a role in many important biological processes.
@@ -40,11 +40,14 @@ true_statements:
 false_statements:
   false5a: For chemical reactions to occur, the chemical formula of the substances must change.
   false5b: For chemical reactions to occur, the chemical formulas of both the reactant and the product cannot be the same.
+  false5c: For chemical reactions to happen, the chemical identity of both reactants and products remains the same.
 
   false11a: Chemical reactions always involve physical changes.
   false11b: Chemical reactions only involve physical changes.
   false11c: Ice melting into water is a chemical reaction.
   false11d: Sugar (glucose) disolving in water is a chemical reaction.
+  false11e: Sublimation of dry ice into carbon dioxide gas is a chemical reaction.
+  false11f: Salt (NaCl) dissolving in water is a chemical reaction since breaking ionic bonds forms in new chemicals.
 
   false12a: Chemical reactions only occur when energy is added.
   false12b: Chemical reactions only occur when energy is released.

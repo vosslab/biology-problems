@@ -26,6 +26,9 @@ false_statements:
     false1e: the glycolysis enzyme, pyruvate kinase
     false1f: the glycolysis enzyme, glyceraldehyde 3-phosphate dehydrogenase
     false1g: the oxygen transport protein, hemoglobin
+    false1h: insulin, a hormone and a protein
+    false1i: the structural protein, keratin
+    false1j: immunoglobulin proteins
 
 true_statements:
     truth1a: wrong choice, do not select
@@ -34,8 +37,11 @@ true_statements:
     truth2b: calcium ion, Ca<sup>2+</sup>
     truth2c: sodium ion, Na<sup>+</sup>
     truth2d: potassium ion, K<sup>+</sup>
-    truth2e: iron ion, Fe<sup>+2</sup>
+    truth2e: iron ions, Fe<sup>+2</sup>/Fe<sup>+3</sup>
     truth2f: zinc ion, Zn<sup>2+</sup>
+    truth2g: copper ion, Cu<sup>2+</sup>
+    truth2h: chloride ion, Cl<sup>-</sup>
+    truth2i: manganese ions (Mn<sup>2+</sup>)
 
     truth3a: flavin adenine dinucleotide (FAD &rarr; FADH<sub>2</sub>)
     truth3b: nicotinamide adenine dinucleotide (NAD<sup>+</sup> &rarr; NADH)
@@ -43,6 +49,9 @@ true_statements:
     truth3d: coenzyme A (CoA)
     truth3e: flavin mononucleotide (FMN &rarr; FMNH<sub>2</sub>)
     truth3f: coenzyme Q10, ubiquinone
+    truth3g: pyridoxal phosphate (PLP), a derivative of Vitamin B<sub>6</sub>
+    truth3h: tetrahydrofolate (THF), a form of folic acid, Vitamin B<sub>9</sub>
+    truth3i: methylcobalamin, a form of Vitamin B<sub>12</sub>
 
     truth4a: vitamin B<sub>1</sub>, thiamin
     truth4b: vitamin B<sub>2</sub>, riboflavin
@@ -54,14 +63,15 @@ true_statements:
     truth4h: vitamin B<sub>12</sub>, cobalamins
     truth4i: vitamin A, retinol
 
-    truth5a: testosterone, an anabolic-androgenic steriod and the principal male sex hormone
-    truth5b: cholesterol, a cell membrane steriod
+    truth5a: testosterone, an anabolic-androgenic steroid and the principal male sex hormone
+    truth5b: cholesterol, a cell membrane steroid
     truth5c: aldosterone, a steroid hormone that acts on the kidney
-    truth5d: cortisol, a cortico-steroid hormone that is produced in response to stress
+    truth5d: cortisol, a corticosteroid hormone that is produced in response to stress
     truth5e: estrone (E1), one of the estrogen steroid hormones responsible for female sex characteristics
     truth5f: estradiol (E2), one of the estrogen steroid hormones responsible for female sex characteristics
     truth5g: estriol (E3), one of the estrogen steroid hormones responsible for female sex characteristics
-    truth5h: progesterone (P4), a steroid hormone involved in the female menstrual cycle
+    truth5h: progesterone (P4), a steroid hormone involved in the menstrual cycle
+    truth5i: dehydroepiandrosterone (DHEA), a steroid hormone precursor
 
     truth6a: adenosine monophosphate (AMP)
     truth6b: adenosine diphosphate (ADP)
@@ -70,3 +80,4 @@ true_statements:
     truth7a: the organic molecule of a heme porphyrin with an iron ion, Fe<sup>2+</sup>, attached
     truth7b: creatine, an organic molecule that recharges ATP
     truth7c: S-adenosyl methionine (SAM), an organic molecule used for methyl group transfer
+    truth7e: quinone, an organic compound involved in electron transport

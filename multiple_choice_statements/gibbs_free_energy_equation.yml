@@ -25,8 +25,9 @@ true_statements:
   truth1c: '&Delta;S is the change in entropy'
 
   truth2a: entropy is associated with a state of disorder, randomness, or uncertainty
-  truth2b: enthalpy is associated with the amount of heat exhanged with the environment
-  truth2c: the Gibbs free energy can be described as the energy available to do work
+  truth2b: enthalpy is associated with the amount of heat exchanged with the environment
+  truth2c: enthalpy is associated with the heat content of a system
+  truth2d: the Gibbs free energy can be described as the energy available to do work
 
   truth3a: T is the temperature in degrees Kelvin
 
@@ -45,10 +46,12 @@ false_statements:
 
   false2a: enthalpy is associated with a state of disorder, randomness, or uncertainty
   false2b: enthalpy can be described as the energy available to do work
-  false2c: entropy is associated with the amount of heat exhanged with the environment
+  false2c: entropy is associated with the amount of heat exchanged with the environment
   false2d: entropy can be described as the energy available to do work
   false2e: free energy is associated with a state of disorder, randomness, or uncertainty
-  false2f: free energy is associated with the amount of heat exhanged with the environment
+  false2f: free energy is associated with the amount of heat exchanged with the environment
+  truth2g: entropy is associated with the heat content of a system
+  truth2h: free energy is associated with the heat content of a system
 
   false3a: T is the temperature in degrees Celcius
   false3b: T is the temperature in degrees Fahrenheit
