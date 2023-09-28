@@ -56,9 +56,12 @@ def permuteMatchingPairs(yaml_data, num_choices=None):
 
 	#MAT TAB question text TAB answer text TAB matching text TAB answer two text TAB matching two text
 	#"Match the each of the following <keys> with their corresponding <values>"
-	question = ("<p>Match the each of the following {0} with their corresponding {1}.</p>".format(
-		yaml_data['keys description'], yaml_data['values description']))
-	question += '<p><i>Note:</i> all choices will be used exactly once</p>'
+	if yaml_data.get("question override") is None:
+		question = ("<p>Match the each of the following {0} with their corresponding {1}.</p>".format(
+			yaml_data['keys description'], yaml_data['values description']))
+	else:
+		question = yaml_data.get("question override")
+	question += '<p><i>Note:</i> Each choice will be used exactly once.</p>'
 	print("")
 	#print("question", question)
 	global N
