@@ -86,13 +86,14 @@ def insert_hidden_terms(text_content):
 	if hidden_term_bank is None:
 		hidden_term_bank = load_hidden_term_bank()
 
-	# Separate table and non-table content
-	table_parts = re.split(r'(<table>.*?</table>)', text_content, flags=re.DOTALL)
+	# Separate table, code and non-table/non-code content
+	parts = re.split(r'(<table>.*?</table>|<code>.*?</code>)', text_content, flags=re.DOTALL)
 
 	# Process each part
 	new_parts = []
-	for part in table_parts:
-		if part.startswith('<table>'):  # Keep table content unchanged
+	for part in parts:
+		if part.startswith('<table>') or part.startswith('<code>'):
+			# Keep table and code content unchanged
 			new_parts.append(part)
 		else:  # Apply the modified logic to non-table parts
 			# Replace spaces adjacent to words with '@'
@@ -106,6 +107,16 @@ def insert_hidden_terms(text_content):
 				new_words.append(f"<span style='font-size: 1px; color: white;'>{hidden_term}</span>")
 			new_parts.append(''.join(new_words))
 	return ''.join(new_parts)
+
+#========================================
+def html_monospace(txt, use_nbsp=True):
+	local_txt = copy.copy(txt)
+	if use_nbsp is True:
+		local_txt = local_txt.replace(' ', '&nbsp;')
+	return f"<span style='font-family: monospace;'>{local_txt}</span>"
+	#return f"<span style=\"font-family: 'andale mono', 'courier new', courier, monospace;\">{local_txt}</span>"
+	#return f"<span style='font-family: 'andale mono', 'courier new', courier, monospace;'><code>{txt}</code></span>"
+
 
 #==========================
 def insert_hidden_terms_old(text_content):
