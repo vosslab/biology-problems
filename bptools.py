@@ -97,8 +97,10 @@ def insert_hidden_terms(text_content):
 			new_parts.append(part)
 		else:  # Apply the modified logic to non-table parts
 			# Replace spaces adjacent to words with '@'
-			part = re.sub(r'([A-Za-z]) +(?![^<>]*>)', r'\1@', part)
-			part = re.sub(r' +([A-Za-z])(?![^<>]*>)', r'@\1', part)
+			#part = re.sub(r'([a-z]) +(?![^<>]*>)', r'\1@', part)
+			part = re.sub(r'([a-z]) +([a-z])', r'\1@\2', part)
+			#part = re.sub(r'([A-Za-z]) +(?![^<>]*>)', r'\1@', part)
+			#part = re.sub(r' +([A-Za-z])(?![^<>]*>)', r'@\1', part)
 			words = part.split('@')
 			new_words = []
 			for word in words:
