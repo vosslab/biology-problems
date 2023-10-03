@@ -6,18 +6,23 @@ topic: the Gibbs free energy, &Delta;G = &Delta;H &ndash; T &Delta;S
 connection_words: ~
 
 replacement_rules:
-   '&Delta;G':           '<span style="color: #248f24;"><strong>&Delta;<i>G</i></strong></span>'
-   '&Delta;H':           '<span style="color: #e68a00;"><strong>&Delta;<i>H</i></strong></span>'
-   '&Delta;S':           '<span style="color: #0033cc;"><strong>&Delta;<i>S</i></strong></span>'
-   'T ':                 '<span style="color: #a3297a;"><strong><i>T</i></strong></span> '
+    '&Delta;H': '<span style="color: #e60000;"><strong>&Delta;<i>H</i></strong></span>' #RED
+    enthalpy: '<span style="color: #e65400;">enthalpy</span>' #DARK ORANGE
+    'T ': '<span style="color: #e69100;"><strong><i>T</i></strong></span>' #LIGHT ORANGE
+    temperature: '<span style="color: #b3b300;">temperature</span>' #DARK YELLOW
+    EEEEEEEE: '<span style="color: #59b300;">EEEEEEEE</span>' #LIME GREEN
+    ' spontaneous': '<span style="color: #009900;"><i>spontaneous</i></span>' #GREEN
+    GGGGGGGG: '<span style="color: #00b38f;">GGGGGGGG</span>' #TEAL
+    entropy: '<span style="color: #00b3b3;">entropy</span>' #CYAN
+    '&Delta;S': '<span style="color: #0a9bf5;"><strong>&Delta;<i>S</i></strong></span>' #SKY BLUE
+    JJJJJJJJ: '<span style="color: #0039e6;">JJJJJJJJ</span>' #BLUE
+    '&Delta;G': '<span style="color: #004d99;"><strong>&Delta;<i>G</i></strong></span>' #NAVY
+    free energy: '<span style="color: #7b12a1;">free energy</span>' #PURPLE
+    'non-spontaneous': '<span style="color: #b30077;"><i>non-spontaneous</i></span>' #MAGENTA
+    degrees Celcius: '<span style="color: #cc0066;">degrees Celcius</span>' #PINK
+    degrees Fahrenheit: '<span style="color: #cc0066;">degrees Fahrenheit</span>' #PINK
+    degrees Kelvin: '<span style="color: #cc0066;">degrees Kelvin</span>' #PINK
 
-   temperature:        '<span style="color: #8f2424;">temperature</span>'
-   free energy:        '<span style="color: #8f2424;">free energy</span>'
-   enthalpy:           '<span style="color: #8f2424;">enthalpy</span>'
-   entropy:            '<span style="color: #8f2424;">enthalpy</span>'
-
-   ' spontaneous':     ' <span style="color: #333366;"><i>spontaneous</i></span>'
-   'non-spontaneous':  '<span style="color: #663333;"><i>non-spontaneous</i></span>'
 
 true_statements:
   truth1a: '&Delta;G is the change in free energy'
