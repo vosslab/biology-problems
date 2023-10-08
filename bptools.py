@@ -98,7 +98,7 @@ def insert_hidden_terms(text_content):
 		else:  # Apply the modified logic to non-table parts
 			# Replace spaces adjacent to words with '@'
 			#part = re.sub(r'([a-z]) +(?![^<>]*>)', r'\1@', part)
-			part = re.sub(r'([a-z]) +([a-z])', r'\1@\2', part)
+			part = re.sub(r'([a-z]) +([a-z])(?![^<>]*>)', r'\1@\2', part)
 			#part = re.sub(r'([A-Za-z]) +(?![^<>]*>)', r'\1@', part)
 			#part = re.sub(r' +([A-Za-z])(?![^<>]*>)', r'@\1', part)
 			words = part.split('@')
@@ -118,7 +118,6 @@ def html_monospace(txt, use_nbsp=True):
 	return f"<span style='font-family: monospace;'>{local_txt}</span>"
 	#return f"<span style=\"font-family: 'andale mono', 'courier new', courier, monospace;\">{local_txt}</span>"
 	#return f"<span style='font-family: 'andale mono', 'courier new', courier, monospace;'><code>{txt}</code></span>"
-
 
 #==========================
 def insert_hidden_terms_old(text_content):
