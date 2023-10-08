@@ -38,6 +38,21 @@ base_replacement_rule_dict = {
 }
 
 lowercase = "abcdefghijklmnopqrstuvwxyz"
+is_lowercase = {}
+for c in list(lowercase):
+	is_lowercase[c] = True
+
+#=======================
+def applyReplacementRulesToText(text, replacement_rule_dict):
+	if replacement_rule_dict is None:
+		print("no replacement rules found")
+		replacement_rule_dict = base_replacement_rule_dict
+	else:
+		#replacement_rule_dict = {**base_replacement_rule_dict, **replacement_rule_dict}
+		replacement_rule_dict |= base_replacement_rule_dict
+	for find_text, replace_text in replacement_rule_dict.items():
+		text = text.replace(find_text, replace_text)
+	return text
 
 #=======================
 def applyReplacementRulesToQuestions(list_of_question_text, replacement_rule_dict):
@@ -83,12 +98,8 @@ def checkUnique(yaml_data):
 	print("PASS checkUnique")
 	return
 
-
 #=======================
 def autoAddConflictRules(yaml_data):
-	is_lowercase = {}
-	for c in list(lowercase):
-		is_lowercase[c] = True
 	is_number = {}
 	for n in range(0,10):
 		is_number[str(n)] = True
@@ -182,7 +193,7 @@ def filterOpposingStatements(main_statement_id, opposing_statement_tree, conflic
 	return opposing_statement_nested_list
 
 #=======================
-def makeQuestionsFromStatement(main_statement, opposing_statement_nested_list, question_text):
+def makeQuestionsFromStatement(main_statement, opposing_statement_nested_list, question_text, replacement_rules_dict):
 	num_wrong_choices = min(4, len(opposing_statement_nested_list))
 	possible_iterations = len(list(itertools.product(*opposing_statement_nested_list)))
 	possible_duplicate = possible_iterations * math.comb(len(opposing_statement_nested_list), num_wrong_choices)
@@ -203,10 +214,14 @@ def makeQuestionsFromStatement(main_statement, opposing_statement_nested_list, q
 			choice = random.choice(nest_choice_list)
 			choices_list.append(choice)
 		#assign answer, add, and shuffle
-		answer_string = main_statement
+		answer_string = applyReplacementRulesToText(main_statement, replacement_rules_dict)
+		#choices_list = applyReplacementRulesToQuestions(choices_list, replacement_rules_dict)
+
 		choices_list.append(answer_string)
 		random.shuffle(choices_list)
 		N = random.randint(1, 999)
+
+		question_text = applyReplacementRulesToText(question_text, replacement_rules_dict)
 		bbformat = bptools.formatBB_MC_Question(N, question_text, choices_list, answer_string)
 		question_list.append(bbformat)
 
@@ -236,19 +251,6 @@ def writeQuestion(yaml_data, question_type):
 		+"{0} {1} {2}?</p>".format(question_type_html, random.choice(connection_word_list), topic) )
 	return question_text
 
-#=======================
-def applyReplacementRulesToQuestions(list_of_question_text, replacement_rule_dict):
-	if replacement_rule_dict is None:
-		print("no replacement rules found")
-		replacement_rule_dict = base_replacement_rule_dict
-	else:
-		replacement_rule_dict = {**base_replacement_rule_dict, **replacement_rule_dict}
-	new_list_of_question_text = []
-	for question_text in list_of_question_text:
-		for find_text,replace_text in replacement_rule_dict.items():
-			question_text = question_text.replace(find_text,replace_text)
-		new_list_of_question_text.append(question_text)
-	return new_list_of_question_text
 
 #=======================
 def sortStatements(yaml_data, notrue=False, nofalse=False):
@@ -257,6 +259,7 @@ def sortStatements(yaml_data, notrue=False, nofalse=False):
 	conflict_rules = yaml_data['conflict_rules']
 
 	list_of_complete_questions = []
+	replacement_rules_dict = yaml_data.get('replacement_rules')
 
 	question_text = writeQuestion(yaml_data, True)
 	print(question_text)
@@ -264,7 +267,7 @@ def sortStatements(yaml_data, notrue=False, nofalse=False):
 		for true_statement_id,true_statement in true_statement_tree.items():
 
 			filtered_false_statement_nested_list = filterOpposingStatements(true_statement_id, false_statement_tree, conflict_rules)
-			question_string_list = makeQuestionsFromStatement(true_statement, filtered_false_statement_nested_list, question_text)
+			question_string_list = makeQuestionsFromStatement(true_statement, filtered_false_statement_nested_list, question_text, replacement_rules_dict)
 			list_of_complete_questions.extend(question_string_list)
 	else:
 		print("Skipping all of the TRUE statement questions")
@@ -275,11 +278,11 @@ def sortStatements(yaml_data, notrue=False, nofalse=False):
 		for false_statement_id,false_statement in false_statement_tree.items():
 
 			filtered_true_statement_nested_list = filterOpposingStatements(false_statement_id, true_statement_tree, conflict_rules)
-			question_string_list = makeQuestionsFromStatement(false_statement, filtered_true_statement_nested_list, question_text)
+			question_string_list = makeQuestionsFromStatement(false_statement, filtered_true_statement_nested_list, question_text, replacement_rules_dict)
 			list_of_complete_questions.extend(question_string_list)
 	else:
 		print("Skipping all of the FALSE statement questions")
-	list_of_complete_questions = applyReplacementRulesToQuestions(list_of_complete_questions, yaml_data.get('replacement_rules'))
+	list_of_complete_questions = applyReplacementRulesToQuestions(list_of_complete_questions, replacement_rules_dict)
 	return list_of_complete_questions
 
 #=======================
@@ -330,8 +333,8 @@ if __name__ == '__main__':
 		less_questions.sort()
 		list_of_complete_questions = less_questions
 
-	list_of_complete_questions = applyReplacementRulesToQuestions(list_of_complete_questions,
-		yaml_data.get('replacement_rules'))
+	#list_of_complete_questions = applyReplacementRulesToQuestions(list_of_complete_questions,
+	#	yaml_data.get('replacement_rules'))
 
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(args.input_yaml_file))[0] + '-questions.txt'
 	print('writing to file: '+outfile)
