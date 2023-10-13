@@ -1,0 +1,146 @@
+'(1) Oxidoreductases':
+  Description: Oxidation/reduction reactions; transfer of H and O atoms or electrons from one substance to another
+  Typical reaction: AH + BO &rarr; AO + BH
+  Typical enzyme names: Dehydrogenase, oxidase
+  Reactions:
+    - Enzyme: Alcohol dehydrogenase
+      EC: 1.1.1.1
+      Substrates: [Ethanol, NAD+]
+      Products: [Acetaldehyde, NADH]
+    - Enzyme: Glyceraldehyde-3-phosphate dehydrogenase
+      EC: 1.2.1.12
+      Substrates: [Glyceraldehyde-3-phosphate, NAD+]
+      Products: ['1,3-bisphosphoglycerate', NADH]
+    - Enzyme: Malate dehydrogenase
+      EC: 1.1.1.37
+      Substrates: [Malate, NAD+]
+      Products: [Oxaloacetate, NADH]
+    - Enzyme: Isocitrate dehydrogenase
+      EC: 1.1.1.42
+      Substrates: [Isocitrate, NAD+]
+      Products: ['&alpha;-Ketoglutarate', NADH]
+    - Enzyme: Succinate dehydrogenase
+      EC: 1.3.5.1
+      Substrates: [Succinate, FAD]
+      Products: [Fumarate, FADH_2]
+
+
+'(2) Transferases':
+  Description: Transfer of a functional group from one substance to another. The group may be methyl-, acyl-, amino- or phosphate group
+  Typical reaction: A-B + C &rarr; A + B-C
+  Typical enzyme names: Transaminase, kinase
+  Reactions:
+    - Enzyme: Hexokinase
+      EC: 2.7.1.1
+      Substrates: [Glucose, ATP]
+      Products: [Glucose-6-phosphate, ADP]
+    - Enzyme: Aspartate transaminase (AST or GOT)
+      EC: 2.6.1.1
+      Substrates: [Aspartate, '&alpha;-Ketoglutarate']
+      Products: [Oxaloacetate, Glutamate]
+    - Enzyme: Alanine transaminase
+      EC: 2.6.1.2
+      Substrates: [Alanine, '&alpha;-Ketoglutarate']
+      Products: [Pyruvate, Glutamate]
+    - Enzyme: Acetyl-CoA carboxylase
+      EC: 2.3.1.9
+      Substrates: [Acetyl-CoA, Bicarbonate, ATP]
+      Products: [Malonyl-CoA, ADP, Orthophosphate]
+
+'(3) Hydrolases':
+  Description: Formation of two products from a substrate by hydrolysis
+  Typical reaction: A-B + H<sub>2</sub>O &rarr; AOH + BH
+  Typical enzyme names: Lipase, amylase, peptidase, phosphatase
+  Reactions:
+    - Enzyme: Lipase
+      EC: 3.1.1.3
+      Substrates: [Triacylglycerol]
+      Products: [Diacylglycerol, Fatty acid]
+    - Enzyme: Amylase
+      EC: 3.2.1.1
+      Substrates: [Starch]
+      Products: [Maltose, Maltotriose, Dextrins]
+    - Enzyme: Peptidase (e.g., Trypsin)
+      EC: 3.4.21.4
+      Substrates: [Protein (polypeptide chain)]
+      Products: [Shorter peptide chains, Amino acids]
+    - Enzyme: Phosphatase (e.g. Alkaline phosphatase)
+      EC: 3.1.3.1
+      Substrates: [Phosphorylated molecule]
+      Products: [De-phosphorylated molecule, Orthophosphate]
+    - Enzyme: Esterase
+      EC: 3.1.1.1
+      Substrates: [Ester]
+      Products: [Alcohol, Carboxylic acid]
+
+
+'(4) Lyases':
+  Description: Non-hydrolytic addition or removal of groups from substrates. C-C, C-N, C-O or C-S bonds may be cleaved
+  Typical reaction: X-A + B-Y &lrarr; A=B + X-Y
+  Typical enzyme names: Decarboxylase
+  Reactions:
+    - Enzyme: Pyruvate decarboxylase
+      EC: 4.1.1.1
+      Substrates: [Pyruvate]
+      Products: [Acetaldehyde, Carbon dioxide]
+    - Enzyme: Aldolase
+      EC: 4.1.2.13
+      Substrates: ['Fructose-1,6-bisphosphate']
+      Products: [Glyceraldehyde-3-phosphate, Dihydroxyacetone phosphate]
+    - Enzyme: Citrate lyase
+      EC: 4.1.3.6
+      Substrates: [Citrate]
+      Products: [Acetate, Oxaloacetate]
+
+
+'(5) Isomerases':
+  Description: Intramolecule rearrangement, i.e. isomerization changes within a single molecule
+  Typical reaction: ABC &rarr; BCA
+  Typical enzyme names: Isomerase, mutase
+  Reactions:
+    - Enzyme: Phosphohexose isomerase (or Glucose phosphate isomerase)
+      EC: 5.3.1.9
+      Substrates: [Glucose-6-phosphate]
+      Products: [Fructose-6-phosphate]
+    - Enzyme: Triosephosphate isomerase
+      EC: 5.3.1.1
+      Substrates: [Dihydroxyacetone phosphate]
+      Products: [Glyceraldehyde-3-phosphate]
+    - Enzyme: Maleate isomerase
+      EC: 5.2.1.1
+      Substrates: [Maleate]
+      Products: [Fumarate]
+    - Enzyme: Alanine racemase
+      EC: 5.1.1.1
+      Substrates: [L-Alanine]
+      Products: [D-Alanine]
+
+
+'(6) Ligases':
+  Description: Join together two molecules by synthesis of new C-O, C-S, C-N or C-C bonds with simultaneous breakdown of ATP
+  Typical reaction: X + Y + ATP &rarr; X-Y + ADP + Pi
+  Typical enzyme names: Synthetase
+  Reactions:
+    - Enzyme: Glutamine synthetase
+      EC: 6.3.1.2
+      Substrates: [Glutamate, Ammonia, ATP]
+      Products: [Glutamine, ADP, Pi]
+    - Enzyme: Acetyl-CoA synthetase (or Acetate--CoA ligase)
+      EC: 6.2.1.1
+      Substrates: [Acetate, CoA, ATP]
+      Products: [Acetyl-CoA, AMP, PPi]
+    - Enzyme: DNA ligase
+      EC: 6.5.1.1
+      Substrates: [Nick in DNA, ATP]
+      Products: [Joined DNA, ADP, Pi]
+    - Enzyme: Biotin-protein ligase
+      EC: 6.3.4.15
+      Substrates: [Biotin, Protein, ATP]
+      Products: [Biotinylated protein, ADP, Pi]
+    - Enzyme: Leucyl-tRNA synthetase
+      EC: 6.1.1.4
+      Substrates: [L-Leucine, tRNA(Leu), ATP]
+      Products: [Leucyl-tRNA(Leu), AMP, PPi]
+
+
+
