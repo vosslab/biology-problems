@@ -6,6 +6,7 @@ import copy
 import yaml
 import random
 import colorsys
+import subprocess
 import num2words #pip
 import crcmod.predefined #pip
 
@@ -70,9 +71,22 @@ def readYamlFile(yaml_file):
 #==========================
 #==========================
 #==========================
+def get_git_root(path=None):
+	"""Return the absolute path of the repository root."""
+	if path is None:
+		# Use the path of the script
+		path = os.path.dirname(os.path.abspath(__file__))
+	try:
+		base = subprocess.check_output(['git', 'rev-parse', '--show-toplevel'], cwd=path, universal_newlines=True).strip()
+		return base
+	except subprocess.CalledProcessError:
+		# Not inside a git repository
+		return None
+
+#==========================
 def load_hidden_term_bank():
-	module_path = os.path.dirname(os.path.abspath(__file__))
-	data_file_path = os.path.join(module_path, '../data/all_short_words.txt')
+	git_root = get_git_root()
+	data_file_path = os.path.join(git_root, 'data/all_short_words.txt')
 	with open(data_file_path, 'r') as file:
 		terms = file.readlines()
 	return [term.strip() for term in terms]
