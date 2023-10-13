@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 
 
-# Importing necessary libraries
+# general built-in/pip libraries
 import os
 import re
 import sys
 import random
 import argparse
 
-# External library imports for bioinformatics operations
+# local libraries
 import bptools
 import aminoacidlib
 bptools.use_insert_hidden_terms = False
