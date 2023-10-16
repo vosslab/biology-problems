@@ -147,7 +147,7 @@ if __name__ == '__main__':
 	# Define argparse for command-line options
 	parser = argparse.ArgumentParser(description="Generate questions about metabolic pathways.")
 	parser.add_argument('-d', '--duplicates', type=int, default=95, help="Number of questions to create.")
-	parser.add_argument('-n', '--num_letters', type=int, default=4, help="Number of letters in the metabolic pathway.")
+	parser.add_argument('-n', '--num_letters', type=int, default=5, help="Number of letters in the metabolic pathway.")
 	args = parser.parse_args()
 
 	# Output file setup
@@ -162,3 +162,4 @@ if __name__ == '__main__':
 			complete_question = writeQuestion(N, args.num_letters)
 			f.write(complete_question)
 			#print(complete_question)
+	bptools.print_histogram()

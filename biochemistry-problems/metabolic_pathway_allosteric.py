@@ -15,7 +15,8 @@ def writeQuestion(N, num_letters=4):
 	# Create the question stem and generate the metabolic pathway table
 	question_text = '<p>A series of enzymes catalyze the reactions in the following metabolic pathway:</p>'
 	metabolic_table = metaboliclib.generate_metabolic_pathway(num_letters, N)
-	print(metabolic_table)
+	letters = metaboliclib.get_letters(num_letters, N)
+	#print(metabolic_table)
 
 	# Add the generated metabolic table to the question
 	question_text += metabolic_table
@@ -26,7 +27,8 @@ def writeQuestion(N, num_letters=4):
 
 	choices_list = []
 	for i in range(num_letters-1):
-		choice_str = f'enzyme {i+1}'
+		choice_str = f'<strong>enzyme {i+1}</strong> '
+		choice_str += f'that catalyzes the reaction from substrate {letters[i]} to product {letters[i+1]}'
 		choices_list.append(choice_str)
 	answer_text = choices_list[0]
 
@@ -42,7 +44,7 @@ if __name__ == '__main__':
 	# Define argparse for command-line options
 	parser = argparse.ArgumentParser(description="Generate questions about metabolic pathways.")
 	parser.add_argument('-d', '--duplicates', type=int, default=95, help="Number of questions to create.")
-	parser.add_argument('-n', '--num_letters', type=int, default=4, help="Number of letters in the metabolic pathway.")
+	parser.add_argument('-n', '--num_letters', type=int, default=6, help="Number of letters in the metabolic pathway.")
 	args = parser.parse_args()
 
 	# Output file setup
@@ -56,4 +58,5 @@ if __name__ == '__main__':
 			N += 1
 			complete_question = writeQuestion(N, args.num_letters)
 			f.write(complete_question)
-			print(complete_question)
+			#print(complete_question)
+	bptools.print_histogram()

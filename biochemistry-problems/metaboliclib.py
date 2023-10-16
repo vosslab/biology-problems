@@ -78,17 +78,17 @@ def generate_metabolic_pathway(num_letters, shift=0):
 	# Create the row for enzymes
 	metabolic_table += '<tr><td colspan=2></td>'  # Leading empty cells
 	for i in range(len(letters) - 1):
-		metabolic_table += f'<td style="font-size: 50%; text-align:center; vertical-align: bottom;" colspan=3>enzyme {i+1}</td>'
+		metabolic_table += f'<td style="font-size: 75%; text-align:center; vertical-align: bottom;" colspan=3>enzyme {i+1}</td>'
 		metabolic_table += '<td></td>'  # Trailing empty cell
 	metabolic_table += '<td></td></tr>'  # Trailing empty cell
 
 	# Create the row for molecules and arrows
 	metabolic_table += '<tr>'
 	for i in range(len(letters) - 1):
-		metabolic_table += f'<td style="font-size: 125%; text-align:center;" colspan=3>{letters[i]}</td>'
+		metabolic_table += f'<td style="font-size: 150%; text-align:center;" colspan=3>{letters[i]}</td>'
 		metabolic_table += '<td style="text-align:center; vertical-align:top;">&nbsp;&xrarr;&nbsp;</td>'
 	# Add the last molecule
-	metabolic_table += f'<td style="font-size: 125%; text-align:center;" colspan=3>{letters[-1]}</td></tr>'
+	metabolic_table += f'<td style="font-size: 150%; text-align:center;" colspan=3>{letters[-1]}</td></tr>'
 
 	# Create a row for spacing (to separate rows visually)
 	metabolic_table += '<tr>'
