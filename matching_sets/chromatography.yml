@@ -8,18 +8,38 @@ keys description: types of column chromatography
 value description: description
 values description: descriptions
 
+replacement_rules:
+    column: '<span style="color: #e60000;">column</span>' #RED
+    separates: '<span style="color: #e65400;">separates</span>' #DARK ORANGE
+    separation: '<span style="color: #e65400;">separation</span>' #DARK ORANGE
+    '(RPC)': '<span style="color: #e69100;">reverse phase column (RPC)</span>' #LIGHT ORANGE
+    '(HIC)': '<span style="color: #b3b300;">hydrophobic interaction column (HIC)</span>' #DARK YELLOW
+    '(GFC)': '<span style="color: #59b300;">gel filtration column (GFC)</span>' #LIME GREEN
+    '(SEC)': '<span style="color: #009900;">size-exclusion column (SEC)</span>' #GREEN
+    particles: '<span style="color: #00b38f;">particles</span>' #TEAL
+    'particle ': '<span style="color: #00b38f;">particle</span> ' #TEAL
+    proteins: '<span style="color: #00b3b3;">proteins</span>' #CYAN
+    'protein ': '<span style="color: #00b3b3;">protein</span> ' #CYAN
+    surface: '<span style="color: #0a9bf5;">surface</span>' #SKY BLUE
+    '(IEX)': '<span style="color: #0039e6;">ion exchange column (IEX)</span>' #BLUE
+    charged: '<span style="color: #004d99;">charged</span>' #NAVY
+    ligand: '<span style="color: #7b12a1;">ligand</span>' #PURPLE
+    chromatography: '<span style="color: #b30077;">chromatography</span>' #MAGENTA
+    '(AC)': '<span style="color: #cc0066;">affinity column (AC)</span>' #PINK
+
+
 #######################
 matching pairs:
-  size-exclusion column (SEC): &id01
+  (SEC): &id01
     - size separation in a column filled with porous beads
     - separates molecules by differences in size as they pass through a porous particles in a column
     - only liquid chromatography method where molecules do not bind to the chromatography particles
     - ability to separate protein samples by size using porous particles
 
 #duplicate of SEC
-  gel filtration column (GFC): *id01
+  (GFC): *id01
 
-  ion exchange column (IEX):
+  (IEX):
     - separate by charge, particle binding is controlled by pH of the solvent mobile phase
     - separates proteins with differences in surface charge
     - charged proteins interact with an oppositely charged chromatography particle resin
@@ -28,7 +48,7 @@ matching pairs:
     - separation method essentially based on the net charge of the protein
     - relies on charge-charge interactions between the proteins in your sample and the charges on the particle resin
 
-  hydrophobic interaction column (HIC): &id03
+  (HIC): &id03
     - separates by surface hydrophobicity, particle binding is controlled by salt concentration and/or organic solvents
     - separates proteins according to differences in their surface hydrophobicity
     - hydrophobic-based separations for protein characterization
@@ -38,9 +58,9 @@ matching pairs:
     - for one type, gradients of increasing organic solvent concentration are used to affect separations
 
 #duplicate of HIC
-  reverse phase column (RPC): *id03
+  (RPC): *id03
 
-  affinity column (AC):
+  (AC):
     - separation based on proteins binding to a ligand
     - separates proteins on the basis of a reversible interaction between the target protein and a specific ligand
     - works using resin-attached ligands to grab hold of the corresponding proteins
@@ -49,5 +69,5 @@ matching pairs:
     - ligand-attached beads bind directly to the protein of interest
 
 exclude pairs:
-  - [size-exclusion column (SEC), gel filtration column (GFC)]
-  - [hydrophobic interaction column (HIC), reverse phase column (RPC)]
+  - [(SEC), (GFC)]
+  - [(HIC), (RPC)]
