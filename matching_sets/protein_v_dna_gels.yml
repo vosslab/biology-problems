@@ -1,0 +1,57 @@
+#YAML file for Matching Questions
+
+items to match per question: 3
+
+#both singular and plural
+key description: type of macromolecules
+keys description: types of macromolecules
+
+#both singular and plural
+value description: gel component
+values description: gel components
+
+replacement_rules:
+    gel red stain: '<span style="color: #e60000;">gel red stain</span>' #RED
+    Only proteins: '<span style="color: #e65400;">Only proteins</span>' #DARK ORANGE
+    'heating to almost boiling (95&deg;C)': '<span style="color: #e69100;">heating to almost boiling (95&deg;C)</span>' #LIGHT ORANGE
+    dithiothreitol (DTT): '<span style="color: #b3b300;">dithiothreitol (DTT)</span>' #DARK YELLOW
+    '&beta;-mercaptoethanol (&beta;ME)': '<span style="color: #59b300;">&beta;-mercaptoethanol (&beta;ME)</span>' #LIME GREEN
+    SYBR safe stain: '<span style="color: #009900;">SYBR safe stain</span>' #GREEN
+    isoelectric focusing: '<span style="color: #00b38f;">isoelectric focusing</span>' #TEAL
+    2D gels: '<span style="color: #00b38f;">2D gels</span>' #TEAL
+    two-dimensional gels: '<span style="color: #00b38f;">two-dimensional gels</span>' #TEAL
+    Only nucleotides: '<span style="color: #00b3b3;">Only nucleotides</span>' #CYAN
+    electrical fields: '<span style="color: #0a9bf5;">electrical fields</span>' #SKY BLUE
+    Coomassie blue stain: '<span style="color: #0039e6;">Coomassie blue stain</span>' #BLUE
+    stain / destaining process: '<span style="color: #004d99;">stain / destaining process</span>' #NAVY
+    Both protein and nucleotide: '<span style="color: #7b12a1;">Both protein and nucleotide</span>' #PURPLE
+    ultraviolet light (UV) visualization: '<span style="color: #b30077;">ultraviolet light (UV) visualization</span>' #MAGENTA
+    ethidium bromide (EtBr) stain: '<span style="color: #cc0066;">ethidium bromide (EtBr) stain</span>' #PINK
+
+matching pairs:
+  Only proteins:
+    - sodium dodecyl sulfate (SDS)
+    - dithiothreitol (DTT)
+    - '&beta;-mercaptoethanol (&beta;ME)'
+    - Coomassie blue stain
+    - isoelectric focusing
+    - 'heating to almost boiling (95&deg;C)'
+    - stain / destaining process
+    - native gels
+    - 2D gels
+    - two-dimensional gels
+
+  Only nucleotides:
+    - agarose gels
+    - ultraviolet light (UV) visualization
+    - ethidium bromide (EtBr) stain
+    - SYBR safe stain
+    - gel red stain
+    - horizontally run gel
+
+  Both protein and nucleotide:
+    - PAGE
+    - acrylamide
+    - polyacrylamide gel electrophoresis
+    - electrical fields
+    - vertically run gel
