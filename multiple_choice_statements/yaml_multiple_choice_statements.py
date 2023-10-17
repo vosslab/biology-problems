@@ -306,3 +306,6 @@ if __name__ == '__main__':
 	f.close()
 	printAnswerHistogram()
 	print("Wrote {0} questions to file.".format(N))
+	bptools.print_histogram()
+
+
