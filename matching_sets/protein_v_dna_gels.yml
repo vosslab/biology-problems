@@ -7,8 +7,8 @@ key description: type of macromolecules
 keys description: types of macromolecules
 
 #both singular and plural
-value description: gel component
-values description: gel components
+value description: gel component or process
+values description: gel components or processes
 
 replacement_rules:
     gel red stain: '<span style="color: #e60000;">gel red stain</span>' #RED
