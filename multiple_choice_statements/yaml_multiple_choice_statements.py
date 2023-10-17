@@ -24,50 +24,10 @@ import bptools
 answer_histogram = {}
 
 global_connection_words = [ 'concerning', 'about', 'regarding', 'of', ]
-base_replacement_rule_dict = {
-	' not ': ' <strong>NOT</strong> ', #BOLD BLACK
-	' Not ': ' <strong>NOT</strong> ', #BOLD BLACK
-	' NOT ': ' <strong>NOT</strong> ', #BOLD BLACK
-	' false ': ' <span style="color: #ba372a;"><strong>FALSE</strong></span> ', #BOLD RED
-	' False ': ' <span style="color: #ba372a;"><strong>FALSE</strong></span> ', #BOLD RED
-	' FALSE ': ' <span style="color: #ba372a;"><strong>FALSE</strong></span> ', #BOLD RED
-	' true ': ' <span style="color: #169179;"><strong>TRUE</strong></span> ', #BOLD GREEN
-	' True ': ' <span style="color: #169179;"><strong>TRUE</strong></span> ', #BOLD GREEN
-	' TRUE ': ' <span style="color: #169179;"><strong>TRUE</strong></span> ', #BOLD GREEN
-	'  ': ' ',
-}
-
 lowercase = "abcdefghijklmnopqrstuvwxyz"
 is_lowercase = {}
 for c in list(lowercase):
 	is_lowercase[c] = True
-
-#=======================
-def applyReplacementRulesToText(text, replacement_rule_dict):
-	if replacement_rule_dict is None:
-		print("no replacement rules found")
-		replacement_rule_dict = base_replacement_rule_dict
-	else:
-		#replacement_rule_dict = {**base_replacement_rule_dict, **replacement_rule_dict}
-		replacement_rule_dict |= base_replacement_rule_dict
-	for find_text, replace_text in replacement_rule_dict.items():
-		text = text.replace(find_text, replace_text)
-	return text
-
-#=======================
-def applyReplacementRulesToQuestions(list_of_question_text, replacement_rule_dict):
-	if replacement_rule_dict is None:
-		print("no replacement rules found")
-		replacement_rule_dict = base_replacement_rule_dict
-	else:
-		#replacement_rule_dict = {**base_replacement_rule_dict, **replacement_rule_dict}
-		replacement_rule_dict |= base_replacement_rule_dict
-	new_list_of_question_text = []
-	for question_text in list_of_question_text:
-		for find_text,replace_text in replacement_rule_dict.items():
-			question_text = question_text.replace(find_text,replace_text)
-		new_list_of_question_text.append(question_text)
-	return new_list_of_question_text
 
 #=======================
 def checkUnique(yaml_data):
@@ -214,14 +174,14 @@ def makeQuestionsFromStatement(main_statement, opposing_statement_nested_list, q
 			choice = random.choice(nest_choice_list)
 			choices_list.append(choice)
 		#assign answer, add, and shuffle
-		answer_string = applyReplacementRulesToText(main_statement, replacement_rules_dict)
-		#choices_list = applyReplacementRulesToQuestions(choices_list, replacement_rules_dict)
+		answer_string = bptools.applyReplacementRulesToText(main_statement, replacement_rules_dict)
+		#choices_list = bptools.applyReplacementRulesToList(choices_list, replacement_rules_dict)
 
 		choices_list.append(answer_string)
 		random.shuffle(choices_list)
 		N = random.randint(1, 999)
 
-		question_text = applyReplacementRulesToText(question_text, replacement_rules_dict)
+		question_text = bptools.applyReplacementRulesToText(question_text, replacement_rules_dict)
 		bbformat = bptools.formatBB_MC_Question(N, question_text, choices_list, answer_string)
 		question_list.append(bbformat)
 
@@ -282,7 +242,7 @@ def sortStatements(yaml_data, notrue=False, nofalse=False):
 			list_of_complete_questions.extend(question_string_list)
 	else:
 		print("Skipping all of the FALSE statement questions")
-	list_of_complete_questions = applyReplacementRulesToQuestions(list_of_complete_questions, replacement_rules_dict)
+	list_of_complete_questions = bptools.applyReplacementRulesToList(list_of_complete_questions, replacement_rules_dict)
 	return list_of_complete_questions
 
 #=======================
@@ -333,7 +293,7 @@ if __name__ == '__main__':
 		less_questions.sort()
 		list_of_complete_questions = less_questions
 
-	#list_of_complete_questions = applyReplacementRulesToQuestions(list_of_complete_questions,
+	#list_of_complete_questions = bptools.applyReplacementRulesToList(list_of_complete_questions,
 	#	yaml_data.get('replacement_rules'))
 
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(args.input_yaml_file))[0] + '-questions.txt'

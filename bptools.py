@@ -154,6 +154,53 @@ def insert_hidden_terms_old(text_content):
 #==========================
 #==========================
 
+#=======================
+#=======================
+
+base_replacement_rule_dict = {
+	' not ': ' <strong>NOT</strong> ', #BOLD BLACK
+	' Not ': ' <strong>NOT</strong> ', #BOLD BLACK
+	' NOT ': ' <strong>NOT</strong> ', #BOLD BLACK
+	' false ': ' <span style="color: #ba372a;"><strong>FALSE</strong></span> ', #BOLD RED
+	' False ': ' <span style="color: #ba372a;"><strong>FALSE</strong></span> ', #BOLD RED
+	' FALSE ': ' <span style="color: #ba372a;"><strong>FALSE</strong></span> ', #BOLD RED
+	' true ': ' <span style="color: #169179;"><strong>TRUE</strong></span> ', #BOLD GREEN
+	' True ': ' <span style="color: #169179;"><strong>TRUE</strong></span> ', #BOLD GREEN
+	' TRUE ': ' <span style="color: #169179;"><strong>TRUE</strong></span> ', #BOLD GREEN
+	'  ': ' ',
+}
+
+#=======================
+def applyReplacementRulesToText(text_string, replacement_rule_dict):
+	if replacement_rule_dict is None:
+		print("no replacement rules found")
+		replacement_rule_dict = base_replacement_rule_dict
+	else:
+		#replacement_rule_dict = {**base_replacement_rule_dict, **replacement_rule_dict}
+		replacement_rule_dict |= base_replacement_rule_dict
+	for find_text, replace_text in replacement_rule_dict.items():
+		text_string = text_string.replace(find_text, replace_text)
+	return text_string
+
+#=======================
+def applyReplacementRulesToList(list_of_text_strings, replacement_rule_dict):
+	if replacement_rule_dict is None:
+		print("no replacement rules found")
+		replacement_rule_dict = base_replacement_rule_dict
+	else:
+		#replacement_rule_dict = {**base_replacement_rule_dict, **replacement_rule_dict}
+		replacement_rule_dict |= base_replacement_rule_dict
+	new_list_of_text_strings = []
+	for string_text in list_of_text_strings:
+		for find_text,replace_text in replacement_rule_dict.items():
+			string_text = string_text.replace(find_text,replace_text)
+		new_list_of_text_strings.append(string_text)
+	return new_list_of_text_strings
+
+#==========================
+#==========================
+#==========================
+
 #==========================
 def colorHTMLText(text, hex_code):
 	return f'<span style="color: #{hex_code};">{text}</span>'
