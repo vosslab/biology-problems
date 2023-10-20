@@ -4,8 +4,9 @@ import os
 import copy
 import math
 import random
+import argparse
 
-N = 0
+import bptools
 
 epistasis_ratios = {
 	'15:1':	'3:1',
@@ -38,30 +39,6 @@ two_colon_choices = [
 ]
 
 
-def write_question(question, choices):
-	global N
-	N += 1
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'a')
-	print('{0}. {1}'.format(N, question))
-
-	letters = 'ABCDEF'
-
-	f.write('MC\t{0}\t'.format(question))
-	for i,choice in enumerate(choices):
-		f.write(choice+'\t')
-		if choice == answer:
-			prefix = 'x'
-			f.write('Correct\t')
-		else:
-			prefix = ' '
-			f.write('Incorrect\t')
-		print('- [{0}] {1}. {2}'.format(prefix, letters[i], choice))
-	print('')
-	f.write('\n')
-	f.close()
-
 def firstDigit(key):
 	bits = key.split(':')
 	number = float(bits[0])
@@ -70,53 +47,52 @@ def firstDigit(key):
 
 
 if __name__ == '__main__':
-	keys = list(epistasis_ratios.keys())
-	random.shuffle(keys)
-	num_repeats = 11
+	# Initialize argparse for command line arguments
+	parser = argparse.ArgumentParser(description='Generate blackboard questions.')
+	# Add command line options for number of genes and number of questions
+	parser.add_argument('-x', '--num_repeats', dest='num_repeats', type=int, default=11, help='Number of question generation runs')
+	# Parse the command line arguments
+	args = parser.parse_args()
+
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	try:
-		os.remove(outfile)
-	except FileNotFoundError:
-		pass
+	print('writing to file: '+outfile)
+	f = open(outfile, 'w')
 	#random.shuffle(keys)
-	for dihybrid_ratio in keys:
-		test_ratio = epistasis_ratios[dihybrid_ratio]
-		number = '{0}. '.format(N)
-		question = ''
-		question += 'An F<sub>1</sub> heterozygote individual from dihybrid cross is used for a test-cross. '
-		question += 'The progeny from the test-cross exhibited a modified <b>ratio of {0}</b> (instead of 1:1:1:1). '.format(test_ratio)
-		question += 'What phenotypic ratio would be expected in the F<sub>2</sub> progeny if the dihybrid cross is continued? '
+	N = 0
+	question_list = []
+	for i in range(args.num_repeats):
+		for dihybrid_ratio in list(epistasis_ratios.keys()):
+			N += 1
+			test_ratio = epistasis_ratios[dihybrid_ratio]
+			question_txt = ''
+			question_txt += f'The progeny from the test-cross exhibited a modified <b>ratio of {test_ratio}</b>'
+			question_txt += ', different from the expected 1:1:1:1 ratio. '
+			question_txt += 'What would be the expected phenotypic ratio in the F<sub>2</sub> generation if the original dihybrid cross is continued?'
 
-		answer = dihybrid_ratio
-		colon_count = answer.split(' ')[0].count(':')
-		if colon_count == 2:
-			choice_set = set(copy.copy(two_colon_choices))
-		elif colon_count == 1:
-			choice_set = set(copy.copy(one_colon_choices))
-		#print(choice_set)
-		#print(answer)
-		possible_answers = set(inverse_ratios[test_ratio])
-		#print(possible_answers)
-		choices = list(choice_set.difference(possible_answers))
+			answer_txt = dihybrid_ratio
+			colon_count = answer_txt.split(' ')[0].count(':')
+			if colon_count == 2:
+				choice_set = set(copy.copy(two_colon_choices))
+			elif colon_count == 1:
+				choice_set = set(copy.copy(one_colon_choices))
+			#print(choice_set)
+			#print(answer_txt)
+			possible_answers = set(inverse_ratios[test_ratio])
+			#print(possible_answers)
+			choices_list = list(choice_set.difference(possible_answers))
 
-		#print(choices)
+			#print(choices_list)
 
+			#possibilities = math.comb(len(choices_list), 4)
+			#print("There are {0} possibilities\n".format(possibilities))
 
-		possibilities = math.comb(len(choices), 4)
-		#print("There are {0} possibilities\n".format(possibilities))
+			random.shuffle(choices_list)
+			choices_list = choices_list[:4]
+			choices_list.append(answer_txt)
+			choices_list = sorted(choices_list, key=firstDigit)
+			choices_list.reverse()
 
-		### BREAK
-		original_choices = choices
-		for i in range(num_repeats):
-			choices = copy.copy(original_choices)
-			random.shuffle(choices)
-			random.shuffle(choices)
-			choices = choices[0:4]
-			choices.append(answer)
-			choices = sorted(choices, key=firstDigit)
-			choices.reverse()
-
-			write_question(question, choices)
-		#sys.exit(1)
+			bbformat = bptools.formatBB_MC_Question(N, question_txt, choices_list, answer_txt)
+			f.write(bbformat)
 
 
