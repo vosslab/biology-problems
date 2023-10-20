@@ -1,23 +1,28 @@
 ---
 
 #Which one of the following statements is FALSE/TRUE <connection word> <topic>
-topic: chi-square (&chi;&sup2;) test
+topic: chi-square (&chi;&sup2;) tests
 
 #override_question_true: ~
 override_question_false: ~
 
 replacement_rules:
-  rejected:   '<span style="color: #FE2712;">rejected</span>'
-  accepted:   '<span style="color: #66B032;">accepted</span>'
-  c2s:        '<span style="color: #FB9902;">chi-square (&chi;&sup2;) statistic</span>'
-  p-value:    '<span style="color: #C21460;">p-value</span>'
-  losa:       '<span style="color: #8601AF;">level of significance, &alpha;</span>'
-  critval:    '<span style="color: #4424D6;">critical value</span>'
-  nullhyp:    '<span style="color: #0247FE;">null hypothesis, H<sub>0</sub></span>'
-  althyp:     '<span style="color: #FC600A;">alternative hypothesis, H<sub>a</sub></span>'
-  less than:   '<strong>less than</strong>'
-  larger than: '<strong>larger than</strong>'
-
+    rejected:   '<span style="color: #e60000;">REJECTED</span>' #RED
+    accepted:   '<span style="color: #009900;">ACCEPTED</span>' #GREEN
+    c2s:        '<span style="color: #004d99;">chi-square (&chi;&sup2;) statistic</span>' #NAVY
+    p-value:    '<span style="color: #b3b300;">p-value</span>' #DARK YELLOW
+    losa:       '<span style="color: #e65400;">level of significance, &alpha;</span>' #DARK ORANGE
+    critval:    '<span style="color: #e69100;">critical value</span>' #LIGHT ORANGE
+    nullhyp:    '<span style="color: #0a9bf5;">null hypothesis, H<sub>0</sub></span>' #SKY BLUE
+    althyp:     '<span style="color: #b30077;">alternative hypothesis, H<sub>a</sub></span>' #MAGENTA
+    less than:   '<strong>less than</strong>'
+    larger than: '<strong>larger than</strong>'
+    EEEEEEEE: '<span style="color: #59b300;">EEEEEEEE</span>' #LIME GREEN
+    GGGGGGGG: '<span style="color: #00b38f;">GGGGGGGG</span>' #TEAL
+    HHHHHHHH: '<span style="color: #00b3b3;">HHHHHHHH</span>' #CYAN
+    JJJJJJJJ: '<span style="color: #0039e6;">JJJJJJJJ</span>' #BLUE
+    LLLLLLLL: '<span style="color: #7b12a1;">LLLLLLLL</span>' #PURPLE
+    NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
 
 connection_words: ~
 

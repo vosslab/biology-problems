@@ -6,6 +6,7 @@ import copy
 import yaml
 import random
 import colorsys
+import subprocess
 import num2words #pip
 import crcmod.predefined #pip
 
@@ -70,9 +71,22 @@ def readYamlFile(yaml_file):
 #==========================
 #==========================
 #==========================
+def get_git_root(path=None):
+	"""Return the absolute path of the repository root."""
+	if path is None:
+		# Use the path of the script
+		path = os.path.dirname(os.path.abspath(__file__))
+	try:
+		base = subprocess.check_output(['git', 'rev-parse', '--show-toplevel'], cwd=path, universal_newlines=True).strip()
+		return base
+	except subprocess.CalledProcessError:
+		# Not inside a git repository
+		return None
+
+#==========================
 def load_hidden_term_bank():
-	module_path = os.path.dirname(os.path.abspath(__file__))
-	data_file_path = os.path.join(module_path, '../data/all_short_words.txt')
+	git_root = get_git_root()
+	data_file_path = os.path.join(git_root, 'data/all_short_words.txt')
 	with open(data_file_path, 'r') as file:
 		terms = file.readlines()
 	return [term.strip() for term in terms]
@@ -135,6 +149,53 @@ def insert_hidden_terms_old(text_content):
 		hidden_term = random.choice(hidden_term_bank)
 		new_words.append(f"<span style='font-size: 1px; color: white;'>{hidden_term}</span>")
 	return ''.join(new_words)
+
+#==========================
+#==========================
+#==========================
+
+#=======================
+#=======================
+
+base_replacement_rule_dict = {
+	' not ': ' <strong>NOT</strong> ', #BOLD BLACK
+	' Not ': ' <strong>NOT</strong> ', #BOLD BLACK
+	' NOT ': ' <strong>NOT</strong> ', #BOLD BLACK
+	' false ': ' <span style="color: #ba372a;"><strong>FALSE</strong></span> ', #BOLD RED
+	' False ': ' <span style="color: #ba372a;"><strong>FALSE</strong></span> ', #BOLD RED
+	' FALSE ': ' <span style="color: #ba372a;"><strong>FALSE</strong></span> ', #BOLD RED
+	' true ': ' <span style="color: #169179;"><strong>TRUE</strong></span> ', #BOLD GREEN
+	' True ': ' <span style="color: #169179;"><strong>TRUE</strong></span> ', #BOLD GREEN
+	' TRUE ': ' <span style="color: #169179;"><strong>TRUE</strong></span> ', #BOLD GREEN
+	'  ': ' ',
+}
+
+#=======================
+def applyReplacementRulesToText(text_string, replacement_rule_dict):
+	if replacement_rule_dict is None:
+		print("no replacement rules found")
+		replacement_rule_dict = base_replacement_rule_dict
+	else:
+		#replacement_rule_dict = {**base_replacement_rule_dict, **replacement_rule_dict}
+		replacement_rule_dict |= base_replacement_rule_dict
+	for find_text, replace_text in replacement_rule_dict.items():
+		text_string = text_string.replace(find_text, replace_text)
+	return text_string
+
+#=======================
+def applyReplacementRulesToList(list_of_text_strings, replacement_rule_dict):
+	if replacement_rule_dict is None:
+		print("no replacement rules found")
+		replacement_rule_dict = base_replacement_rule_dict
+	else:
+		#replacement_rule_dict = {**base_replacement_rule_dict, **replacement_rule_dict}
+		replacement_rule_dict |= base_replacement_rule_dict
+	new_list_of_text_strings = []
+	for string_text in list_of_text_strings:
+		for find_text,replace_text in replacement_rule_dict.items():
+			string_text = string_text.replace(find_text,replace_text)
+		new_list_of_text_strings.append(string_text)
+	return new_list_of_text_strings
 
 #==========================
 #==========================

@@ -1,5 +1,5 @@
 
-items to match per question: 5
+items to match per question: 4
 
 #both singular and plural
 key description: cell disruption method
@@ -11,23 +11,23 @@ values description: descriptions
 
 replacement_rules:
     cells: '<span style="color: #e60000;">cells</span>' #RED
-    cell : '<span style="color: #e65400;">cell </span>' #DARK ORANGE
-    CCCCCCCC: '<span style="color: #e69100;">CCCCCCCC</span>' #LIGHT ORANGE
-    DDDDDDDD: '<span style="color: #b3b300;">DDDDDDDD</span>' #DARK YELLOW
-    EEEEEEEE: '<span style="color: #59b300;">EEEEEEEE</span>' #LIME GREEN
-    FFFFFFFF: '<span style="color: #009900;">FFFFFFFF</span>' #GREEN
-    GGGGGGGG: '<span style="color: #00b38f;">GGGGGGGG</span>' #TEAL
-    HHHHHHHH: '<span style="color: #00b3b3;">HHHHHHHH</span>' #CYAN
-    IIIIIIII: '<span style="color: #0a9bf5;">IIIIIIII</span>' #SKY BLUE
-    JJJJJJJJ: '<span style="color: #0039e6;">JJJJJJJJ</span>' #BLUE
-    KKKKKKKK: '<span style="color: #004d99;">KKKKKKKK</span>' #NAVY
-    LLLLLLLL: '<span style="color: #7b12a1;">LLLLLLLL</span>' #PURPLE
+    'cell ': '<span style="color: #e65400;">cell</span> ' #DARK ORANGE
+    Enzymatic Method: '<span style="color: #e69100;">Enzymatic Method</span>' #LIGHT ORANGE
+    Bead-beating: '<span style="color: #b3b300;">Bead-beating</span>' #DARK YELLOW
+    Sonication: '<span style="color: #59b300;">Sonication</span>' #LIME GREEN
+    Freeze-thaw: '<span style="color: #009900;">Freeze-thaw</span>' #GREEN
+    'Mortar &amp; Pestle': '<span style="color: #00b38f;">Mortar &amp; Pestle</span>' #TEAL
+    Dounce Homogenizer: '<span style="color: #00b3b3;">Dounce Homogenizer</span>' #CYAN
+    Mechanical Homogenizer: '<span style="color: #0a9bf5;">Mechanical Homogenizer</span>' #SKY BLUE
+    French Press: '<span style="color: #0039e6;">French Press</span>' #BLUE
+    Microfluidizer: '<span style="color: #004d99;">Microfluidizer</span>' #NAVY
+    High-throughput Homogenizer: '<span style="color: #7b12a1;">High-throughput Homogenizer</span>' #PURPLE
     MMMMMMMM: '<span style="color: #b30077;">MMMMMMMM</span>' #MAGENTA
     NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
 
 
 matching pairs:
-  Enzymatic method:
+  Enzymatic Method:
     - Chemical reactions digest the cell wall.
     - Cells are suspended in buffers containing protein catalysts that digest the cell wall.
     - Digestive protein catalysts digest and decompose the microbial cell wall.
@@ -37,7 +37,7 @@ matching pairs:
     - Protein catalysts decompose the microbial cell wall.
     - Lysozyme digests gram-positive bacterial cell walls.
 
-  Bead beating:
+  Bead-beating:
     - Tiny glass particles are mixed and stirred to a high level of agitation.
     - This technique involves using glass or metal particles to apply gentle abrasion while vortexing them.
     - Small glass particles are placed into a blender and act like bullets smashing the cells.
@@ -67,27 +67,27 @@ matching pairs:
     - Extreme temperature variations cause cell wall rupture.
     - Ice crystal expansion leads to cell wall disruption.
 
-  Mortar and pestle:
+  'Mortar &amp; Pestle':
     - Samples are ground by hand to break apart into small pieces.
     - This is laborious manual work that can take several minutes.
     - Grinding of the cells by hand to disrupt the cell walls.
     - The cells are disrupted by hand grinding them.
     - Manual grinding of cells that can take several minutes."
 
-  Dounce homogenizer:
+  Dounce Homogenizer:
     - Handheld device that spins in a tube to smash cells.
-    - Handheld cylindrical glass tube and a pestle that has a tight fit within the shaft.
+    - Handheld cylindrical glass tube and a spinning pestle that has a tight fit within the shaft.
     - Cells are smashed using a spinning handheld device in a tube.
+    - A spinning handheld device smashes cells in a tube.
 
-  Mechanical homogenizer:
-    - This technique works like a drill with spinning rotor blades to shear cells apart.
+  Mechanical Homogenizer:
+    - Drill-like device with spinning rotor blades to shear cells apart.
     - Consists of a fast-spinning inner rotor with a stationary outer stator to produce shearing forces.
     - Motorized device with rotating blades that shear cells apart.
-    - A spinning handheld device smashes cells in a tube.
     - Shearing forces from spinning blades break cells apart.
     - Spinning rotor blades shear the cell walls.
 
-  French press:
+  French Press:
     - A hydraulic piston within a cylinder forces cells through a small hole using high pressure.
     - A hydraulic press drives a piston to squeeze the sample through a needle valve.
     - Cell suspension is forced through a narrow valve using a hydraulic piston.
@@ -103,10 +103,10 @@ matching pairs:
     - Z-shaped chamber and pump create high pressure to disrupt cells.
     - Cells are pushed through a Z-shaped chamber using a high-pressure pump.
 
-  High throughput homogenizer:
-    - A bead-beating machine can process a large number of samples simultaneously in a short time.
+  High-throughput Homogenizer:
+    - An expensive bead-beating machine can process a large number of samples simultaneously in a short time.
     - Numerous samples are processed simultaneously using a bead-beating machine.
     - Large numbers of samples are disrupted simultaneously using a bead-beating machine.
 
 exclude pairs:
-  - [High throughput homogenizer, Bead beating]
+  - [High-throughput Homogenizer, Bead-beating]

@@ -19,34 +19,6 @@ N = 0
 
 #=======================
 #=======================
-
-base_replacement_rule_dict = {
-	' not ': ' <strong>NOT</strong> ', #BOLD BLACK
-	' Not ': ' <strong>NOT</strong> ', #BOLD BLACK
-	' NOT ': ' <strong>NOT</strong> ', #BOLD BLACK
-	' false ': ' <span style="color: #ba372a;"><strong>FALSE</strong></span> ', #BOLD RED
-	' False ': ' <span style="color: #ba372a;"><strong>FALSE</strong></span> ', #BOLD RED
-	' FALSE ': ' <span style="color: #ba372a;"><strong>FALSE</strong></span> ', #BOLD RED
-	' true ': ' <span style="color: #169179;"><strong>TRUE</strong></span> ', #BOLD GREEN
-	' True ': ' <span style="color: #169179;"><strong>TRUE</strong></span> ', #BOLD GREEN
-	' TRUE ': ' <span style="color: #169179;"><strong>TRUE</strong></span> ', #BOLD GREEN
-	'  ': ' ',
-}
-
-#=======================
-def applyReplacementRulesToQuestions(list_of_question_text, replacement_rule_dict):
-	if replacement_rule_dict is None:
-		print("no replacement rules found")
-		replacement_rule_dict = base_replacement_rule_dict
-	else:
-		replacement_rule_dict = {**base_replacement_rule_dict, **replacement_rule_dict}
-	new_list_of_question_text = []
-	for question_text in list_of_question_text:
-		for find_text,replace_text in replacement_rule_dict.items():
-			question_text = question_text.replace(find_text,replace_text)
-		new_list_of_question_text.append(question_text)
-	return new_list_of_question_text
-
 #=======================
 def permuteMatchingPairs(yaml_data, num_choices=None):
 	matching_pairs_dict = yaml_data['matching pairs']
@@ -62,6 +34,7 @@ def permuteMatchingPairs(yaml_data, num_choices=None):
 	else:
 		question = yaml_data.get("question override")
 	question += '<p><i>Note:</i> Each choice will be used exactly once.</p>'
+	question = bptools.applyReplacementRulesToText(question, yaml_data.get('replacement_rules'))
 	print("")
 	#print("question", question)
 	global N
@@ -98,10 +71,12 @@ def permuteMatchingPairs(yaml_data, num_choices=None):
 				value = random.choice(value)
 			matching_list.append(value)
 		N += 1
+		answers_list = bptools.applyReplacementRulesToList(answers_list, yaml_data.get('replacement_rules'))
+		matching_list = bptools.applyReplacementRulesToList(matching_list, yaml_data.get('replacement_rules'))
 		complete_question = bptools.formatBB_MAT_Question(N, question, answers_list, matching_list)
 		list_of_complete_questions.append(complete_question)
 
-	list_of_complete_questions = applyReplacementRulesToQuestions(list_of_complete_questions, yaml_data.get('replacement_rules'))
+	#list_of_complete_questions = bptools.applyReplacementRulesToList(list_of_complete_questions, yaml_data.get('replacement_rules'))
 	return list_of_complete_questions
 
 #=======================
@@ -150,3 +125,5 @@ if __name__ == '__main__':
 	f.close()
 	print("Wrote {0} questions to file.".format(N))
 	print('')
+	#does not make sense for matching questions
+	#bptools.print_histogram()
