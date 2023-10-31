@@ -207,16 +207,6 @@ def questionContent():
 	question += "the null hypothesis</b> using the information provided.</p> "
 	return question
 
-#===================
-#===================
-def getChiSquareResult(final_chisq, df, alpha):
-	critical_value = chisquarelib.get_critical_value(alpha, df)
-	if final_chisq > critical_value:
-		return 'reject_null'
-	elif final_chisq <= critical_value:
-		return 'accept_null'
-	return None
-
 """bad_ratios = [
 	'8:2:4:2',
 	'10:3:2:1',
@@ -304,7 +294,7 @@ def makeQuestion(error_type: int, desired_result: str) -> tuple:
 	# Calculate chi-square result
 	df = 3
 	alpha = 0.05
-	result = getChiSquareResult(answer_chi_sq, df, alpha)
+	result = chisquarelib.get_chi_square_result(answer_chi_sq, df, alpha)
 
 	# Error check: unexpected result
 	if not result.startswith(desired_result):

@@ -4,7 +4,6 @@ import os
 import copy
 import random
 import argparse
-from scipy.stats.distributions import chi2
 
 import bptools
 import chisquarelib
@@ -34,49 +33,19 @@ error2choice = {
 }
 
 choices = [
-	'the wrong numbers in the calculation were used for division',
-	'the numbers in the calculation have to be squared',
-	'the wrong rejection criteria was used',
-	'the expected progeny for the null hypothesis is incorrect',
-	'the degrees of freedom is wrong',
+	'The wrong numbers in the calculation were used for division, you need to divide by a different number.',
+	'The numbers in the calculation have to be squared and they are not squared.',
+	'The wrong rejection criteria was used. the significance level, &alpha; is wrong.',
+	'The expected progeny for the null hypothesis is incorrect. They did the calculation wrong. ',
+	'The degrees of freedom is wrong, it should be a different value.',
 ]
-
-#===================
-#===================
-def createObservedProgeny(N=160, ratio="9:2:4:1"):
-	#female lay 100 eggs per day
-	bins = ratio.split(':')
-	floats = []
-	for b in bins:
-		floats.append(float(b))
-	total = sum(floats)
-	#print(floats)
-	probs = []
-	sumprob = 0
-	for f in floats:
-		sumprob += f/total
-		probs.append(sumprob)
-	#print(probs)
-	count_dict = {}
-	for i in range(N):
-		r = random.random()
-		for j in range(len(probs)):
-			if r < probs[j]:
-				count_dict[j] = count_dict.get(j, 0) + 1
-				break
-	#print(count_dict)
-	count_list = []
-	for j in range(len(probs)):
-		count_list.append(count_dict.get(j, 0))
-	#print(count_list)
-	return count_list
 
 #===================
 #===================
 def divideByObservedError():
 	observed = [90]
 	while 88 <= observed[0] <= 92 or 9 <= observed[3] <= 11:
-		observed = createObservedProgeny()
+		observed = chisquarelib.create_observed_progeny()
 	expected = [90,30,30,10]
 	stats_list = []
 	chisq = 0.0
@@ -102,7 +71,7 @@ def divideByObservedError():
 def divideByObservedAndSquareError():
 	observed = [90]
 	while 88 <= observed[0] <= 92 or 9 <= observed[3] <= 11:
-		observed = createObservedProgeny()
+		observed = chisquarelib.create_observed_progeny()
 	expected = [90,30,30,10]
 	stats_list = []
 	chisq = 0.0
@@ -128,7 +97,7 @@ def divideByObservedAndSquareError():
 def divideBySquareError():
 	observed = [90]
 	while 88 <= observed[0] <= 92 or 9 <= observed[3] <= 11:
-		observed = createObservedProgeny()
+		observed = chisquarelib.create_observed_progeny()
 	expected = [90,30,30,10]
 	stats_list = []
 	chisq = 0.0
@@ -154,7 +123,7 @@ def divideBySquareError():
 def noSquareError():
 	observed = [90]
 	while 88 <= observed[0] <= 92 or 9 <= observed[3] <= 11:
-		observed = createObservedProgeny()
+		observed = chisquarelib.create_observed_progeny()
 	expected = [90,30,30,10]
 	stats_list = []
 	chisq = 0.0
@@ -180,7 +149,7 @@ def noSquareError():
 def normalGoodStats():
 	observed = [90]
 	while 88 <= observed[0] <= 92 or 9 <= observed[3] <= 11:
-		observed = createObservedProgeny()
+		observed = chisquarelib.create_observed_progeny()
 	expected = [90,30,30,10]
 	stats_list = []
 	chisq = 0.0
@@ -206,7 +175,7 @@ def normalGoodStats():
 def wrongNullHypothesis():
 	observed = [90]
 	while observed[0] >= 70 or observed[3] <= 20:
-		observed = createObservedProgeny(ratio="7:5:3:2")
+		observed = chisquarelib.create_observed_progeny(ratio="7:5:3:2")
 	expected = [40,40,40,40]
 	stats_list = []
 	chisq = 0.0
@@ -278,8 +247,8 @@ def questionContent(chisq: float, df: int=3, alpha: float=0.05, flip: bool=False
 	question += f"{chisq:.2f} with {df} degrees of freedom. "
 
 	# Append information about the critical value and significance level
-	question += "Using the Table of &chi;&sup2; Critical Values and a level of significance &alpha;="
-	question += f"{alpha:.2f}, we get a critical value of {critical_value:.2f}. "
+	question += "Consulting the Table of &chi;&sup2; Critical Values and a level of significance &alpha;="
+	question += f"{alpha:.2f}, we obtain a critical value of {critical_value:.2f}.</p>"
 
 
 	#keep in case I want to change question in future
@@ -295,17 +264,17 @@ def questionContent(chisq: float, df: int=3, alpha: float=0.05, flip: bool=False
 
 	# Build the last part of the question string based on the results of the chi-squared test
 	# Complete the question string with chi-squared test results
-	question += f"Since the chi-squared value of {chisq:.2f} is {results[0]} than the "
-	question += f"critical value of {critical_value:.2f}, the null hypothesis is {results[1]}.</p>"
+	question += f"<p>Since the chi-squared value of {chisq:.2f} is {results[0]} than the "
+	question += f"critical value of {critical_value:.2f}, the null hypothesis is {results[1].upper()}.</p>"
 
 	# Separate different sections of the question
 	question += "<hr/> "
 
 	# Add a scenario involving a lab partner
-	question += "<p>Your lab partner has done a chi-squared (&chi;&sup2;) test for your lab data (above), "
-	question += "for the F<sub>2</sub> generation in a standard dihybrid cross. They wanted to know if "
-	question += "the results confirm the expected phenotype ratios, "
-	question += "but as usual they did something wrong. <strong>What did they do wrong?</strong></p>"
+	question += "<p>Your lab partner completed a chi-squared (&chi;&sup2;) test on your lab data (above) "
+	question += "for the F<sub>2</sub> generation in a standard dihybrid cross. The goal was to verify if "
+	question += "the observed results matched the expected phenotype ratios.</p>"
+	question += "<p>However, it appears they made an error. <strong>What did they do wrong?</strong></p>"
 
 	return question
 

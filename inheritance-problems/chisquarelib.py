@@ -1,5 +1,6 @@
 
 import math
+import random
 from scipy.stats.distributions import chi2
 
 
@@ -62,6 +63,25 @@ def get_critical_value(alpha_criterion: float, df: int) -> float:
 result = get_critical_value(0.05, 3)
 #print(f"get_critical_value={result}")
 assert math.isclose(result, 7.81472790325, abs_tol=1e-9), f"Expected around 7.8147, got {result}"
+
+def get_chi_square_result(final_chisq: float, df: int, alpha: float) -> str:
+	# Fetch the critical value based on the significance level and degrees of freedom
+	critical_value = get_critical_value(alpha, df)
+
+	# Compare the final chi-square value to the critical value
+	# Reject the null hypothesis if final_chisq is greater than the critical_value
+	if final_chisq > critical_value:
+		return 'reject_null'
+	# Accept the null hypothesis if final_chisq is less than or equal to the critical_value
+	elif final_chisq <= critical_value:
+		return 'accept_null'
+
+	# Return None if none of the conditions are met (though this is unlikely)
+	return None
+
+# Simple assertion test for the function: 'getChiSquareResult'
+assert get_chi_square_result(10.0, 2, 0.05) == 'reject_null'
+assert get_chi_square_result(3.0, 2, 0.05) == 'accept_null'
 
 
 #===============
@@ -138,8 +158,64 @@ def make_chi_square_table() -> str:
 	# Return the HTML string
 	return table
 
-# Simple assertion test for the function: 'make_chi_square_table'
-# Since the function returns an HTML string, it's difficult to assert without a correct sample HTML. Consider manual verification.
+
+#===================
+#===================
+def create_observed_progeny(N: int = 160, ratio: str = "9:2:4:1") -> list:
+	"""
+	create_observed_progeny - Simulates the observed progeny count based on a given genetic ratio.
+
+	Parameters
+	----------
+	N: int
+		Number of progenies to simulate (Default is 160).
+	ratio: str
+		The genetic ratio in string format separated by colons (Default is "9:2:4:1").
+
+	Returns
+	-------
+	list
+		Returns a list of observed progeny counts.
+	"""
+
+	# Split the ratio string by colon to get the individual bin ratios.
+	bins = ratio.split(':')
+	floats = []
+	# Convert string ratios to float for calculations.
+	for b in bins:
+		floats.append(float(b))
+	# Calculate the total sum of ratios.
+	total = sum(floats)
+
+	# Calculate the cumulative probabilities for each bin.
+	probs = []
+	sumprob = 0
+	for f in floats:
+		sumprob += f / total
+		probs.append(sumprob)
+
+	# Initialize a dictionary to store the count of progenies falling into each bin.
+	count_dict = {}
+	# Generate N random numbers and map them to bins based on calculated probabilities.
+	for i in range(N):
+		r = random.random()
+		for j in range(len(probs)):
+			if r < probs[j]:
+				count_dict[j] = count_dict.get(j, 0) + 1
+				break
+
+	# Create a list of observed counts from the dictionary.
+	count_list = []
+	for j in range(len(probs)):
+		count_list.append(count_dict.get(j, 0))
+
+	return count_list
+
+# Simple assertion test for the function 'createObservedProgeny'.
+# Note: The test might vary due to the random nature of the function.
+result = create_observed_progeny(160, "9:2:4:1")
+assert isinstance(result, list) and len(result) == 4
+
 
 #===============
 #===============
