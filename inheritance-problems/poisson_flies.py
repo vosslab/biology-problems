@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 
 import os
+import copy
 import random
+import argparse
+
+import bptools
 
 def geno2pheno(genotype):
 	if genotype.startswith('+'):
@@ -67,23 +71,57 @@ def print_distribution_table(distribution):
 	pkeys.sort()
 	mystr = '<table cellpadding="2" cellspacing="2" style="border-collapse: collapse; text-align:center; border: 1px solid black; font-size: 14px;">'
 	mystr += "<tr><th>phenotype</th><th>female &female;</th><th>male &male;</th></tr> "
-	mystr += "<tr><td>red-eyed (wildtype)</td><td align='center'>{0}</td><td align='center'>{1}</td></tr> ".format(pcount.get('red female', 0), pcount.get('red male', 0))
-	mystr += "<tr><td>white-eyed (mutant)</td><td align='center'>{0}</td><td align='center'>{1}</td></tr> ".format(pcount.get('white female', 0), pcount.get('white male', 0))
+	mystr += "<tr><td><span style='color: darkred;'>red-eyed (wildtype)</span></td> "
+	mystr +=   f"<td align='center'>{pcount.get('red female', 0)}</td>"
+	mystr +=   f"<td align='center'>{pcount.get('red male', 0)}</td></tr> "
+	mystr += "<tr><td>white-eyed (mutant)</td> "
+	mystr +=   f"<td align='center'>{pcount.get('white female', 0)}</td>"
+	mystr +=   f"<td align='center'>{pcount.get('white male', 0)}</td></tr> "
 	mystr += "</table><br/>"
 	return mystr
 
 
-if __name__ == '__main__':
-	#for female_genotype in ("++", "+w", "ww"):
-	#	for male_genotype in ("+-", "w-"):
-	duplicates = 4
-	choices = [
+def make_question(N, female_genotype, male_genotype, progeny_size):
+	choices_list = [
 		'homozygous wildtype female (++) and male of unknown genotype',
 		'heterozygous female (+w) and wildtype male (+&ndash;)',
 		'heterozygous female (+w) and mutant male (w&ndash;)',
 		'homozygous mutant female (ww) and wildtype male (+&ndash;)',
 		'homozygous mutant female (ww) and mutant male (w&ndash;)',
 	]
+
+	pre_question = "<p>The white-eyed phenotype is an X-linked recessive disorder in fruit flies. The red allele, +, is dominant to the white allele, w. The offspring of size {0} from the mating of a single female and a single male are shown in the table below:</p>".format(progeny_size)
+
+	#print(female_genotype)
+	#print(male_genotype)
+	distribution = cross_experiment(female_genotype, male_genotype, progeny_size)
+	answer_id = get_answer(female_genotype, male_genotype)
+	answer_txt = choices_list[answer_id]
+
+	bad_cross = False
+	for key in distribution:
+		if distribution[key] % 5 == 0:
+			bad_cross = True
+	if bad_cross is True:
+		return None
+	print_distribution_string(distribution)
+	table = print_distribution_table(distribution)
+
+	question_txt = pre_question + table + post_question
+
+	random.shuffle(choices_list)
+	bbformat = bptools.formatBB_MC_Question(N, question_txt, choices_list, answer_txt)
+	return bbformat
+
+
+if __name__ == '__main__':
+	# Initialize argparse for command line arguments
+	parser = argparse.ArgumentParser(description='Generate blackboard questions.')
+	# Add command line options for number of genes and number of questions
+	parser.add_argument('-x', '--num_questions', type=int, default=24, help='Number of questions')
+	# Parse the command line arguments
+	args = parser.parse_args()
+
 	N = 0
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
 	print('writing to file: '+outfile)
@@ -93,41 +131,19 @@ if __name__ == '__main__':
 	male_genotype = random.choice(("+-", "w-"))
 	letters = "ABCDEFG"
 	progeny_size_selection = (160, 200, 400, 600,)
-	for i in range(duplicates):
-		for progeny_size in progeny_size_selection:
-			for female_genotype in ("++", "+w", "ww"):
-				for male_genotype in ("+-", "w-"):
-					if female_genotype == "++" and male_genotype == "+-":
-						continue
-					pre_question = "<p>The white-eyed phenotype is an X-linked recessive disorder in fruit flies. The red allele, +, is dominant to the white allele, w. The offspring of size {0} from the mating of a single female and a single male are shown in the table below:</p>".format(progeny_size)
-					N += 1
-					print(female_genotype)
-					print(male_genotype)
-					distribution = cross_experiment(female_genotype, male_genotype, progeny_size)
-					answer_id = get_answer(female_genotype, male_genotype)
-
-					bad_cross = False
-					for key in distribution:
-						if distribution[key] % 5 == 0:
-							bad_cross = True
-					if bad_cross is True:
-						continue
-					print_distribution_string(distribution)
-					print(pre_question)
-					table = print_distribution_table(distribution)
-					print(table)
-					print(post_question)
-					choice_txt = ""
-					for j, choice in enumerate(choices):
-						if j == answer_id:
-							prefix = "*"
-							status = "Correct"
-						else:
-							prefix = ""
-							status = "Incorrect"
-						print('{0}{1}. {2}'.format(prefix, letters[j], choice))
-						choice_txt += "\t{0}\t{1}".format(choice, status)
-					f.write("MC\t{0}{1}{2}{3}\n".format(pre_question, table, post_question, choice_txt))
-					print("")
+	female_types = ("++", "+w", "ww")
+	male_types = ("+-", "w-")
+	for i in range(args.num_questions):
+		progeny_size = random.choice(progeny_size_selection)
+		female_genotype = random.choice(female_types)
+		if female_genotype == '++':
+			male_genotype = 'w-'
+		else:
+			male_genotype = random.choice(male_types)
+		N += 1
+		bbformat = make_question(N, female_genotype, male_genotype, progeny_size)
+		if bbformat is not None:
+			#only about 60-75% questions are not None
+			f.write(bbformat)
 	f.close()
-
+	bptools.print_histogram()
