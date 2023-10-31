@@ -164,15 +164,11 @@ if __name__ == '__main__':
 	question_group = parser.add_mutually_exclusive_group()
 	# Add question type argument with choices
 	question_group.add_argument('--desired_result', dest='desired_result', type=str,
-		choices=('accept', 'reject'),
-		help='Set the question type: accept or reject')
-	# Add flags for multiple-choice and fill-in-the-blank question types
+		choices=('accept', 'reject'), help='Set the question type: accept or reject')
 	question_group.add_argument('-a', '--accept', dest='desired_result', action='store_const',
-		const='accept',
-		help='Set question type to multiple choice.')
+		const='accept',)
 	question_group.add_argument('-r', '--reject', dest='desired_result', action='store_const',
-		const='reject',
-		help='Set question type to fill-in-the-blank.')
+		const='reject',)
 
 	args = parser.parse_args()
 
