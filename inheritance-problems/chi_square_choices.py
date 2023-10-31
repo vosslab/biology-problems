@@ -2,12 +2,11 @@
 
 import os
 import sys
-import copy
 import random
 import argparse
-from scipy.stats.distributions import chi2
 
 import bptools
+import chisquarelib
 
 
 ### types of errors
@@ -50,19 +49,7 @@ choices_list = [
 	f'{tables_list[2]} with &chi;&sup2; = XXXX is correct and we {accept_str} the null hypothesis',
 ]
 
-#===================
-#===================
-def get_p_value(chisq, df):
-	#print("chisq={0}, df={1}".format(chisq, df))
-	pvalue = chi2.sf(float(chisq), int(df))
-	return float(pvalue)
 
-#===================
-#===================
-def get_critical_value(alpha_criterion, df):
-	critical_value = chi2.ppf(1.0 - float(alpha_criterion), int(df))
-	#print(chisq)
-	return float(critical_value)
 
 #===================
 #===================
@@ -202,92 +189,6 @@ def normalGoodStats(ratio, observed=None):
 	stats_list.append(chistr)
 	return stats_list
 
-
-#===================
-#===================
-def createDataTable(stats_list, title=None):
-	numcol = len(stats_list[0])
-	table = '<table border=1 style="border: 1px solid black; border-collapse: collapse; ">'
-	table += '<colgroup width="160"></colgroup> '
-	table += '<colgroup width="80"></colgroup> '
-	table += '<colgroup width="80"></colgroup> '
-	table += '<colgroup width="100"></colgroup> '
-	table += '<colgroup width="80"></colgroup> '
-	if title is not None:
-		table += "<tr>"
-		table += " <th align='center' colspan='5' style='background-color: silver'>{0}</th> ".format(title)
-		table += "</tr>"
-	table += "<tr>"
-	table += " <th align='center' style='background-color: lightgray'>Phenotype</th> "
-	table += " <th align='center' style='background-color: lightgray'>Expected</th> "
-	table += " <th align='center' style='background-color: lightgray'>Observed</th> "
-	table += " <th align='center' style='background-color: lightgray'>Calculation</th> "
-	table += " <th align='center' style='background-color: lightgray'>Statistic</th> "
-	table += "</tr>"
-	table += "<tr>"
-	table += " <td>&nbsp;Yellow Round (Y&ndash;R&ndash;)</td>"
-	for j in range(numcol):
-		stat = stats_list[0][j]
-		table += " <td align='center'>{0}</td>".format(stat)
-	table += "</tr>"
-	table += "<tr>"
-	table += " <td>&nbsp;Yellow Wrinkled (Y&ndash;rr)</td>"
-	for j in range(numcol):
-		stat = stats_list[1][j]
-		table += " <td align='center'>{0}</td>".format(stat)
-	table += "</tr>"
-	table += "<tr>"
-	table += " <td>&nbsp;Green Round (yyR&ndash;)</td>"
-	for j in range(numcol):
-		stat = stats_list[2][j]
-		table += " <td align='center'>{0}</td>".format(stat)
-	table += "</tr>"
-	table += "<tr>"
-	table += " <td>&nbsp;Green Wrinkled (yyrr)</td>"
-	for j in range(numcol):
-		stat = stats_list[3][j]
-		table += " <td align='center'>{0}</td>".format(stat)
-	table += "</tr>"
-	table += "<tr>"
-	table += " <td colspan='{0}' align='right' style='background-color: lightgray'>(sum) &chi;&sup2;&nbsp;=&nbsp;</td>".format(numcol)
-	stat = stats_list[4]
-	table += " <td align='center'>{0}</td>".format(stat)
-	table += "</tr>"
-	table += "</table>"
-	return table
-
-#===================
-#===================
-def make_chi_square_table():
-	max_df = 4
-	p_values = [0.95, 0.90, 0.75, 0.5, 0.25, 0.1, 0.05, 0.01]
-	table = '<table border=1 style="border: 1px solid gray; border-collapse: collapse; ">'
-	table += '<colgroup width="100"></colgroup> '
-	for p in p_values:
-		table += '<colgroup width="60"></colgroup> '
-	table += "<tr>"
-	table += " <th align='center' colspan='{0}' style='background-color: gainsboro'>Table of Chi-Squared (&chi;&sup2;) Critical Values</th>".format(len(p_values)+1)
-	table += "</tr>"
-
-	table += "<tr>"
-	table += " <th rowspan='2' align='center' style='background-color: silver'>Degrees of Freedom</th>"
-	table += " <th align='center' colspan='{0}' style='background-color: silver'>Probability</th>".format(len(p_values))
-	table += "</tr>"
-	table += "<tr>"
-	for p in p_values:
-		table += " <th align='center' style='background-color: gainsboro'>{0:.2f}</th>".format(p)
-	table += "</tr>"
-	for df in range(1, max_df+1):
-		table += "<tr>"
-		table += " <th align='center' style='background-color: silver'>{0:d}</th>".format(df)
-		for p in p_values:
-			chisq = get_critical_value(p, df)
-			table += " <td align='center'>{0:.2f}</td>".format(chisq)
-		table += "</tr>"
-
-	table += "</table>"
-	return table
-
 #===================
 #===================
 def questionContent():
@@ -309,7 +210,7 @@ def questionContent():
 #===================
 #===================
 def getChiSquareResult(final_chisq, df, alpha):
-	critical_value = get_critical_value(alpha, df)
+	critical_value = chisquarelib.get_critical_value(alpha, df)
 	if final_chisq > critical_value:
 		return 'reject_null'
 	elif final_chisq <= critical_value:
@@ -365,7 +266,7 @@ def makeQuestion(error_type: int, desired_result: str) -> tuple:
 		observed = createObservedProgeny(ratio=ratio)
 
 	# Create chi-square table (not defined in this code)
-	chi_square_table = make_chi_square_table()
+	chi_square_table =chisquarelib.make_chi_square_table()
 
 	# Generate correct answer stats
 	answer_stat_list = normalGoodStats(ratio, observed)
@@ -397,7 +298,7 @@ def makeQuestion(error_type: int, desired_result: str) -> tuple:
 	for i, index in enumerate(shuffle_map):
 		stats_list = number_stats[index]
 		new_number_stats.append(stats_list)
-		numbers_table = createDataTable(stats_list, tables_list[i])
+		numbers_table = chisquarelib.create_data_table(stats_list, tables_list[i])
 		shuffled_tables.append(numbers_table)
 
 	# Calculate chi-square result

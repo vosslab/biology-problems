@@ -7,6 +7,7 @@ import argparse
 from scipy.stats.distributions import chi2
 
 import bptools
+import chisquarelib
 
 ### types of errors
 # 0 * divide by the observed instead of expected
@@ -39,20 +40,6 @@ choices = [
 	'the expected progeny for the null hypothesis is incorrect',
 	'the degrees of freedom is wrong',
 ]
-
-#===================
-#===================
-def get_p_value(chisq, df):
-	#print("chisq={0}, df={1}".format(chisq, df))
-	pvalue = chi2.sf(float(chisq), int(df))
-	return float(pvalue)
-
-#===================
-#===================
-def get_chisq_value(pvalue, df):
-	chisq = chi2.ppf(1.0 - float(pvalue), int(df))
-	#print(chisq)
-	return float(chisq)
 
 #===================
 #===================
@@ -100,7 +87,7 @@ def divideByObservedError():
 		row.append(exp)
 		row.append(obs)
 		chirow = (obs-exp)**2/float(obs)
-		calc = "<sup>({0}-{1})<sup>2</sup></sup>&frasl;&nbsp;<sub>{2}</sub>".format(obs, exp, obs)
+		calc = "<sup>({0}-{1})&sup2;</sup>&frasl;&nbsp;<sub>{2}</sub>".format(obs, exp, obs)
 		row.append(calc)
 		chistr = "{0:.3f}".format(chirow)
 		row.append(chistr)
@@ -126,7 +113,7 @@ def divideByObservedAndSquareError():
 		row.append(exp)
 		row.append(obs)
 		chirow = (obs-exp)**2/float(obs**2)
-		calc = "<sup>({0}-{1})<sup>2</sup></sup>&frasl;&nbsp;<sub>{2}<sup>2</sup></sub>".format(obs, exp, obs)
+		calc = "<sup>({0}-{1})&sup2;</sup>&frasl;&nbsp;<sub>{2}&sup2;</sub>".format(obs, exp, obs)
 		row.append(calc)
 		chistr = "{0:.3f}".format(chirow)
 		row.append(chistr)
@@ -152,7 +139,7 @@ def divideBySquareError():
 		row.append(exp)
 		row.append(obs)
 		chirow = (obs-exp)**2/float(exp**2)
-		calc = "<sup>({0}-{1})<sup>2</sup></sup>&frasl;&nbsp;<sub>{2}<sup>2</sup></sub>".format(obs, exp, exp)
+		calc = "<sup>({0}-{1})&sup2;</sup>&frasl;&nbsp;<sub>{2}&sup2;</sub>".format(obs, exp, exp)
 		row.append(calc)
 		chistr = "{0:.3f}".format(chirow)
 		row.append(chistr)
@@ -204,7 +191,7 @@ def normalGoodStats():
 		row.append(exp)
 		row.append(obs)
 		chirow = (obs-exp)**2/float(exp)
-		calc = "<sup>({0}-{1})<sup>2</sup></sup>&frasl;&nbsp;<sub>{2}</sub>".format(obs, exp, exp)
+		calc = "<sup>({0}-{1})&sup2;</sup>&frasl;&nbsp;<sub>{2}</sub>".format(obs, exp, exp)
 		row.append(calc)
 		chistr = "{0:.3f}".format(chirow)
 		row.append(chistr)
@@ -230,7 +217,7 @@ def wrongNullHypothesis():
 		row.append(exp)
 		row.append(obs)
 		chirow = (obs-exp)**2/float(exp)
-		calc = "<sup>({0}-{1})<sup>2</sup></sup>&frasl;&nbsp;<sub>{2}</sub>".format(obs, exp, exp)
+		calc = "<sup>({0}-{1})&sup2;</sup>&frasl;&nbsp;<sub>{2}</sub>".format(obs, exp, exp)
 		row.append(calc)
 		chistr = "{0:.3f}".format(chirow)
 		row.append(chistr)
@@ -239,87 +226,6 @@ def wrongNullHypothesis():
 	chistr = "{0:.3f}".format(chisq)
 	stats_list.append(chistr)
 	return stats_list
-
-#===================
-#===================
-def createDataTable(stats_list):
-	numcol = len(stats_list[0])
-	table = '<table border=1 style="border: 1px solid black; border-collapse: collapse; ">'
-	table += '<colgroup width="160"></colgroup> '
-	table += '<colgroup width="80"></colgroup> '
-	table += '<colgroup width="80"></colgroup> '
-	table += '<colgroup width="100"></colgroup> '
-	table += '<colgroup width="80"></colgroup> '
-	table += "<tr>"
-	table += " <th align='center' style='background-color: lightgray'>Phenotype</th> "
-	table += " <th align='center' style='background-color: lightgray'>Expected</th> "
-	table += " <th align='center' style='background-color: lightgray'>Observed</th> "
-	table += " <th align='center' style='background-color: lightgray'>Calculation</th> "
-	table += " <th align='center' style='background-color: lightgray'>Statistic</th> "
-	table += "</tr>"
-	table += "<tr>"
-	table += " <td>Yellow Round (Y&ndash;R&ndash;)</td>"
-	for j in range(numcol):
-		stat = stats_list[0][j]
-		table += " <td align='center'>{0}</td>".format(stat)
-	table += "</tr>"
-	table += "<tr>"
-	table += " <td>Yellow Wrinkled (Y&ndash;rr)</td>"
-	for j in range(numcol):
-		stat = stats_list[1][j]
-		table += " <td align='center'>{0}</td>".format(stat)
-	table += "</tr>"
-	table += "<tr>"
-	table += " <td>Green Round (yyR&ndash;)</td>"
-	for j in range(numcol):
-		stat = stats_list[2][j]
-		table += " <td align='center'>{0}</td>".format(stat)
-	table += "</tr>"
-	table += "<tr>"
-	table += " <td>Green Wrinkled (yyrr)</td>"
-	for j in range(numcol):
-		stat = stats_list[3][j]
-		table += " <td align='center'>{0}</td>".format(stat)
-	table += "</tr>"
-	table += "<tr>"
-	table += " <td colspan='{0}' align='right' style='background-color: lightgray'>(sum) &chi;<sup>2</sup>&nbsp;=&nbsp;</td>".format(numcol)
-	stat = stats_list[4]
-	table += " <td align='center'>{0}</td>".format(stat)
-	table += "</tr>"
-	table += "</table>"
-	return table
-
-#===================
-#===================
-def make_chi_square_table():
-	max_df = 4
-	p_values = [0.95, 0.90, 0.75, 0.5, 0.25, 0.1, 0.05, 0.01]
-	table = '<table border=1 style="border: 1px solid gray; border-collapse: collapse; ">'
-	table += '<colgroup width="100"></colgroup> '
-	for p in p_values:
-		table += '<colgroup width="60"></colgroup> '
-	table += "<tr>"
-	table += " <th align='center' colspan='{0}' style='background-color: gainsboro'>Table of Chi-Squared (&chi;<sup>2</sup>) Critical Values</th>".format(len(p_values)+1)
-	table += "</tr>"
-
-	table += "<tr>"
-	table += " <th rowspan='2' align='center' style='background-color: silver'>Degrees of Freedom</th>"
-	table += " <th align='center' colspan='{0}' style='background-color: silver'>Probability</th>".format(len(p_values))
-	table += "</tr>"
-	table += "<tr>"
-	for p in p_values:
-		table += " <th align='center' style='background-color: gainsboro'>{0:.2f}</th>".format(p)
-	table += "</tr>"
-	for df in range(1, max_df+1):
-		table += "<tr>"
-		table += " <th align='center' style='background-color: silver'>{0:d}</th>".format(df)
-		for p in p_values:
-			chisq = get_chisq_value(p, df)
-			table += " <td align='center'>{0:.2f}</td>".format(chisq)
-		table += "</tr>"
-
-	table += "</table>"
-	return table
 
 #===================
 #===================
@@ -339,29 +245,68 @@ def chiSquareResults(chisq, critical_value, flip):
 
 #===================
 #===================
-def questionContent(chisq, df, alpha, flip=False):
+def questionContent(chisq: float, df: int=3, alpha: float=0.05, flip: bool=False) -> str:
+	"""
+	Generate a question based on chi-squared test results.
 
-	#pvalue = get_p_value(chisq, df)
-	critical_value = get_chisq_value(alpha, df)
+	Parameters
+	----------
+	chisq : float
+		The chi-squared test value.
+	df : int, optional
+		The degrees of freedom, by default 3.
+	alpha : float, optional
+		The level of significance, by default 0.05.
+	flip : bool, optional
+		Flip the result, by default False.
 
+	Returns
+	-------
+	str
+		A question string containing the chi-squared test results.
+	"""
+
+	# pvalue = get_p_value(chisq, df)
+	critical_value = chisquarelib.get_critical_value(alpha, df)
+
+	# Initialize the question string
 	question = ""
-	question += "<p>The final result gives the chi-squared (&chi;<sup>2</sup>) test value of {0:.2f} with {1} degrees of freedom. ".format(chisq, df)
-	question += "Using the Table of &chi;<sup>2</sup> Critical Values and a level of significance &alpha;={0:.2f}, we get a critical value of {1:.2f}. ".format(alpha, critical_value)
+
+	# Start building the first part of the question string
+	# Now using f-strings for string formatting
+	question += "<p>The final result gives the chi-squared (&chi;&sup2;) test value of "
+	question += f"{chisq:.2f} with {df} degrees of freedom. "
+
+	# Append information about the critical value and significance level
+	question += "Using the Table of &chi;&sup2; Critical Values and a level of significance &alpha;="
+	question += f"{alpha:.2f}, we get a critical value of {critical_value:.2f}. "
+
+
+	#keep in case I want to change question in future
 	#question += "They calculated a p-value of {2:.3f} ({3:.1f}%). ".format(chisq, df, pvalue, pvalue*100)
 	#question += "Since the p-value was {0} than the level of significance &alpha;=0.05 (5%), the null hypothesis was {1}.</p>".format("less", "rejected")
-	print("chi_square     = {0:.3f}".format(chisq))
-	print("critical_value = {0:.3f}".format(critical_value))
 
+	# Debugging print statements for the chi-squared and critical values
+	print(f"chi_square     = {chisq:.3f}")
+	print(f"critical_value = {critical_value:.3f}")
+
+	# Get the result string of the chi-squared test based on the test value and critical value
 	results = chiSquareResults(chisq, critical_value, flip)
 
-	question += "Since the chi-squared (&chi;<sup>2</sup>) test value of {0:.2f} is {1} than the critical value of {2:.2f}, the null hypothesis was {3}.</p>".format(chisq, results[0], critical_value, results[1])
+	# Build the last part of the question string based on the results of the chi-squared test
+	# Complete the question string with chi-squared test results
+	question += f"Since the chi-squared value of {chisq:.2f} is {results[0]} than the "
+	question += f"critical value of {critical_value:.2f}, the null hypothesis is {results[1]}.</p>"
 
+	# Separate different sections of the question
 	question += "<hr/> "
 
-	question += "<p>Your lab partner has done a chi-squared (&chi;<sup>2</sup>) test for your lab data (above), "
-	question += "for the F<sub>2</sub> generation in a standard dihybid cross. They wanted to know if "
+	# Add a scenario involving a lab partner
+	question += "<p>Your lab partner has done a chi-squared (&chi;&sup2;) test for your lab data (above), "
+	question += "for the F<sub>2</sub> generation in a standard dihybrid cross. They wanted to know if "
 	question += "the results confirm the expected phenotype ratios, "
 	question += "but as usual they did something wrong. <strong>What did they do wrong?</strong></p>"
+
 	return question
 
 
@@ -410,8 +355,8 @@ def makeQuestion(error_type):
 		alpha = 0.05
 
 	chisq = float(stats_list[-1])
-	table1 = createDataTable(stats_list)
-	chi_square_table = make_chi_square_table()
+	table1 = chisquarelib.create_data_table(stats_list)
+	chi_square_table = chisquarelib.make_chi_square_table()
 	question = questionContent(chisq, df, alpha, flip)
 	complete_question = chi_square_table+"<br/>"+table1+"<br/>"+question
 
@@ -434,7 +379,7 @@ if __name__ == '__main__':
 	f = open(outfile, 'w')
 	N = 0
 	for i in range(args.duplicate_runs):
-		error_type = random.randit(0, max_error_types-1)
+		error_type = random.randint(0, max_error_types-1)
 		complete_question = makeQuestion(error_type)
 		answer_index = error2choice[error_type]
 		answer = choices[answer_index]
