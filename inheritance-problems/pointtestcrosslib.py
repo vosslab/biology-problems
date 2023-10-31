@@ -1,4 +1,6 @@
 
+import math
+import numpy
 import random
 import itertools
 
@@ -33,6 +35,33 @@ phenotype_dict = {
 	'y': 'yellow',
 	'z': 'zipper',
 }
+
+
+#====================================
+def get_distance():
+	#integers
+	return random.randint(2,45)
+
+#====================================
+def get_progeny_size(distance):
+	if debug is True: print("determine progeny size")
+	gcdfinal = math.gcd(distance, 100)
+	if debug is True: print("Final GCD", gcdfinal)
+	progenybase = 100/gcdfinal
+	minprogeny =  900/progenybase
+	maxprogeny = 6000/progenybase
+	progs = numpy.arange(minprogeny, maxprogeny+1, 1, dtype=numpy.float64)*progenybase
+	#print(progs)
+	numpy.random.shuffle(progs)
+	#print(progs)
+	bases = progs * distance * distance / 1e4
+	#print(bases)
+	devs = (bases - numpy.around(bases, 0))**2
+	#print(devs)
+	argmin = numpy.argmin(devs)
+	progeny_size = int(progs[argmin])
+	if debug is True: print(("total progeny: %d\n"%(progeny_size)))
+	return progeny_size
 
 #====================================
 def invert_genotype(genotype: str, basetype: str) -> str:
