@@ -38,7 +38,7 @@ def dna_complement_context():
 	context_str += ("This base pairing is critical for the stability of the "
 					"DNA molecule and is central to processes like DNA replication and transcription.")
 
-	context_str += "</p>"
+	context_str += "</p><br/>"
 
 	# Return the complete context string
 	return context_str
@@ -54,7 +54,7 @@ def write_directionless_fib_question(N, seqlen):
 	question_table = seqlib.Single_Strand_Table_No_Primes(question_seq)
 	#============================
 
-	question_text = ''
+	question_text = dna_complement_context()
 	question_text += question_table
 	question_text += "<h5>Find the complementary DNA sequence to the given direction-less DNA sequence above.</h5>"
 	question_text += "<p><i>You can include a comma after every 3 letters. Do not add extra commas or spaces.</i></p>"
@@ -79,7 +79,7 @@ def write_directionless_mc_question(N, seqlen):
 	question_table = seqlib.Single_Strand_Table_No_Primes(question_seq)
 	#============================
 
-	question_text = ''
+	question_text = dna_complement_context()
 	question_text += question_table
 	question_text += "<h5>Which one of the following DNA sequences is complementary to the direction-less DNA sequence shown above?</h5>"
 
@@ -133,7 +133,7 @@ def write_prime_fib_question(N, seqlen):
 	else:
 		question_table = seqlib.Single_Strand_Table(seqlib.flip(question_seq), fivetothree=True)
 
-	question_text = ''
+	question_text = dna_complement_context()
 	question_text += question_table
 	question_text += "<h5>Determine the complementary DNA sequence for the DNA strand above.</h5>"
 	question_text += "<p>Hint: pay close attention to the 5&prime; and 3&prime; directions of the strand.</p>"
@@ -176,7 +176,7 @@ def write_prime_mc_question(N, seqlen):
 	answer_seq = seqlib.complement(question_seq)
 	answer_table = seqlib.Single_Strand_Table(answer_seq, choice_fivetothree)
 
-	question_text = ''
+	question_text = dna_complement_context()
 	question_text += question_table
 	question_text += '<h5>Which one of the following sequences below is complementary to '
 	question_text += 'the DNA sequence shown above?</h5>'
@@ -280,7 +280,11 @@ if __name__ == '__main__':
 	# Main Processing
 	#=====================
 	# Generate output file name
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	outfile = ('bbq-'
+		+ os.path.splitext(os.path.basename(__file__))[0]
+		+ "-" + args.question_type
+		+ "-" + args.direction_mode
+		+ '-questions.txt')
 	print('writing to file: ' + outfile)
 
 	# Open output file for writing using 'with' statement
