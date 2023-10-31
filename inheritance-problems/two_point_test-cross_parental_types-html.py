@@ -13,7 +13,7 @@ debug = False
 
 #====================================
 def questionText(basetype, type='parental'):
-	question_string = '<h6>Two-Point Test-Cross Gene Mapping</h6>'
+	question_string = '<h6>Two-Point Test-Cross: Parental vs. Recombinant Types</h6>'
 	question_string += '<p>A test-cross with a heterozygote fruit fly for two genes is conducted. '
 	question_string += 'The resulting phenotypes are summarized in the table above.</p> '
 	question_string += '<p>Using the table above, determine the <strong>{0}</strong> types.</p> '.format(type)
@@ -33,11 +33,11 @@ def makeQuestion(basetype, distance, progeny_size):
 	parental = random.choice(types)
 	both_parental_types = (parental, ptcl.invert_genotype(parental, basetype))
 	recombinant_types = copy.copy(types)
-	recombinant_types.remove(parental)
-	recombinant_types.remove(ptcl.invert_genotype(parental, basetype))
+	for genotype in both_parental_types:
+		recombinant_types.remove(genotype)
 
 	type_categories = {
-		'parental':    (parental,   ptcl.invert_genotype(parental, basetype)),
+		'parental': both_parental_types,
 		'recombinant': recombinant_types,
 	}
 	print('type_categories=',type_categories)
@@ -70,7 +70,7 @@ if __name__ == "__main__":
 	lowercase = "abcdefghijklmnpqrsuvwxyz"
 
 	outfile = ('bbq-' + os.path.splitext(os.path.basename(__file__))[0]
-		+ f'-{args.question_type}' + '-questions.txt')
+		+ f'-{args.question_type.upper()}' + '-questions.txt')
 	print('writing to file: '+outfile)
 	f = open(outfile, 'w')
 	duplicates = 197

@@ -10,7 +10,7 @@ debug = False
 
 #====================================
 def questionText(basetype):
-	question_string = '<h6>Two-Point Test-Cross Gene Mapping</h6>'
+	question_string = '<h6>Two-Point Test-Cross: Gene Distance Mapping</h6>'
 	question_string += '<p>A test-cross with a heterozygote fruit fly for two genes is conducted. '
 	question_string += 'The resulting phenotypes are summarized in the table above.</p> '
 	question_string += '<p>Using the table above, determine the distance between the two genes.</p> '

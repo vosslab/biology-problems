@@ -51,71 +51,6 @@ def getDistancesOriginal():
 	if debug is True: print(distances)
 	return distances
 
-def getProgenySize(distances):
-	if debug is True: print("determine progeny size")
-	gcd1 = math.gcd(distances[0], 100)
-	gcd2 = math.gcd(distances[1], 100)
-	gcdfinal = math.gcd(gcd1, gcd2)
-	if debug is True: print("Final GCD", gcdfinal)
-	progenybase = 100/gcdfinal
-	minprogeny =  900/progenybase
-	maxprogeny = 6000/progenybase
-	progs = numpy.arange(minprogeny, maxprogeny+1, 1, dtype=numpy.float64)*progenybase
-	#print(progs)
-	numpy.random.shuffle(progs)
-	#print(progs)
-	bases = progs * distances[0] * distances[1] / 1e4
-	#print(bases)
-	devs = (bases - numpy.around(bases, 0))**2
-	#print(devs)
-	argmin = numpy.argmin(devs)
-	progeny_size = int(progs[argmin])
-	if debug is True: print(("total progeny: %d\n"%(progeny_size)))
-	return progeny_size
-
-def makeProgenyHtmlTable(typemap, progeny_size):
-	alltypes = list(typemap.keys())
-	alltypes.sort()
-	td_extra = 'align="center" style="border: 1px solid black;"'
-	span = '<span style="font-size: medium;">'
-	table = '<table style="border-collapse: collapse; border: 2px solid black; width: 460px; height: 280px">'
-	table += '<tr>'
-	table += '  <th {0}>{1}Phenotype</span></th>'.format(td_extra, span)
-	table += '  <th colspan="3" {0}>{1}Genotypes</span></th>'.format(td_extra, span)
-	table += '  <th {0}>{1}Progeny<br/>Count</span></th>'.format(td_extra, span)
-	table += '</tr>'
-	for type in alltypes:
-		phenotype_string = ptcl.get_phenotype_name(type)
-		table += '<tr>'
-		table += ' <td {0}>&nbsp;{1}{2}</span></td>'.format(td_extra.replace('center', 'left'), span, phenotype_string)
-		table += ' <td {0}>{1}{2}</span></td>'.format(td_extra, span, type[0])
-		table += ' <td {0}>{1}{2}</span></td>'.format(td_extra, span, type[1])
-		table += ' <td {0}>{1}{2}</span></td>'.format(td_extra, span, type[2])
-		table += ' <td {0}>{1}{2:d}</span></td>'.format(td_extra.replace('center', 'right'), span, typemap[type])
-		table += '</tr>'
-	table += '<tr>'
-	table += '  <th colspan="4" {0}">{1}TOTAL =</span></th>'.format(td_extra.replace('center', 'right'), span)
-	table += '  <td {0}>{1}{2:d}</span></td>'.format(td_extra.replace('center', 'right'), span, progeny_size)
-	table += '</tr>'
-	table += '</table>'
-	return table
-
-def makeProgenyAsciiTable(typemap, progeny_size):
-	alltypes = list(typemap.keys())
-	alltypes.sort()
-	table = ''
-	for type in alltypes:
-		phenotype_string = ptcl.get_phenotype_name(type)
-		table += ("{0}\t".format(type[0]))
-		table += ("{0}\t".format(type[1]))
-		table += ("{0}\t".format(type[2]))
-		table += ("{0:d}\t".format(typemap[type]))
-		table += ("{0}\t".format(phenotype_string))
-		table += "\n"
-	table +=  "\t\t\t-----\n"
-	table +=  "\t\tTOTAL\t%d\n\n"%(progeny_size)
-	return table
-
 def generateProgenyData(types, type_counts, basetype):
 	if debug is True: print("\n\ngenerate progeny data")
 	typemap = {}
@@ -168,7 +103,6 @@ def generateTypeCounts(parental, doublecross, basetype):
 
 	return type_counts
 
-
 def makeQuestion(basetype, geneorder, distances, progeny_size):
 	if debug is True: print("------------")
 	answerString = ("%s - %d - %s - %d - %s"
@@ -189,7 +123,7 @@ def makeQuestion(basetype, geneorder, distances, progeny_size):
 	return typemap
 
 def questionText(basetype):
-	question_string = '<h6>Three-Point Test-Cross Gene Mapping</h6>'
+	question_string = '<h6>Three-Point Test-Cross: Gene Mapping</h6>'
 	question_string += '<p>A test-cross with a heterozygote fruit fly for three genes is conducted. '
 	question_string += 'The resulting phenotypes are summarized in the table above.</p> '
 	question_string += '<p>Using the table above, determine the order of the genes and the distances between them. '
@@ -273,12 +207,11 @@ if __name__ == "__main__":
 		basetype = lowercase[j:j+3]
 		geneorder = ptcl.get_random_gene_order(basetype)
 		distances = getDistances()
-		print(distances)
-		progeny_size = getProgenySize(distances)
+		progeny_size = ptcl.get_general_progeny_size(distances)
 		typemap = makeQuestion(basetype, geneorder, distances, progeny_size)
-		ascii_table = makeProgenyAsciiTable(typemap, progeny_size)
+		ascii_table = ptcl.make_progeny_ascii_table(typemap, progeny_size)
 		print(ascii_table)
-		html_table = makeProgenyHtmlTable(typemap, progeny_size)
+		html_table = ptcl.make_progeny_html_table(typemap, progeny_size)
 		#print(html_table)
 		question_string = questionText(basetype)
 		variable_list = getVariables(geneorder)

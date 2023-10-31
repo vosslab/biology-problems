@@ -1,12 +1,9 @@
 #!/usr/bin/env python3
 
 import os
-import re
 import sys
-import copy
 import math
 import numpy
-import string
 import argparse
 import random
 
@@ -219,12 +216,12 @@ def makeQuestion(basetype, geneorder, distances, progeny_size):
 #=====================
 #=====================
 def questionText(basetype, type='parental', gene=None):
-	question_string = '<h6>Three-Point Test-Cross Gene Mapping</h6>'
+	question_string = '<h6>Three-Point Test-Cross: Parental Types</h6>'
 	question_string += '<p>A test-cross with a heterozygote fruit fly for three genes is conducted. '
 	question_string += 'The resulting phenotypes are summarized in the table above.</p> '
 	question_string += '<p>Using the table above, '
 	if type == 'gene' and gene is not None:
-		question_string += f'determine the recombinant types for gene {gene}.</p> '
+		question_string += f'determine the recombinant types for gene {gene.upper()}.</p> '
 	elif type == 'double':
 		question_string += 'determine the double recombinant types.</p> '
 	elif type == 'parental':
@@ -258,9 +255,21 @@ def getVariables(basetype):
 #=====================
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
-	parser.add_argument('-t', '--type', type=str, dest='question_type',
-		help='type of question to ask, (parental, double, gene)', default=5)
+	question_group = parser.add_mutually_exclusive_group()
+	# Add question type argument with choices
+	question_group.add_argument('-t', '--type', dest='question_type', type=str,
+		choices=('parental', 'double', 'gene'), help='Set the question type: accept or reject')
+	question_group.add_argument('-p', '--parental', dest='question_type', action='store_const',
+		const='parental',)
+	question_group.add_argument('-d', '--double', dest='question_type', action='store_const',
+		const='double',)
+	question_group.add_argument('-g', '--gene', dest='question_type', action='store_const',
+		const='gene',)
+
 	args = parser.parse_args()
+	if args.question_type is None:
+		parser.print_help()
+		sys.exit(1)
 
 	lowercase = "abcdefghijklmnpqrsuvwxyz"
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'

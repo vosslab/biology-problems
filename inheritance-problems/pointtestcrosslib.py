@@ -1,8 +1,11 @@
 
+import sys
+import copy
 import math
 import numpy
 import random
 import itertools
+from functools import reduce
 from bs4 import BeautifulSoup
 
 debug = False
@@ -123,27 +126,62 @@ def get_distance():
 	#integers
 	return random.randint(2,45)
 
-#====================================
-def get_progeny_size(distance):
-	if debug is True: print("determine progeny size")
-	gcdfinal = math.gcd(distance, 100)
-	if debug is True: print("Final GCD", gcdfinal)
-	progenybase = 100/gcdfinal
-	minprogeny =  900/progenybase
-	maxprogeny = 6000/progenybase
-	progs = numpy.arange(minprogeny, maxprogeny+1, 1, dtype=numpy.float64)*progenybase
-	#print(progs)
+#============================
+def get_general_progeny_size(distances: list) -> int:
+	"""
+	Numpydoc Comment
+	----------------
+	Parameters:
+		distances : list
+			List of distances
+
+	Returns:
+		int
+			The optimal progeny size
+	"""
+
+	# Check if debug flag is active
+	if debug is True:
+		print("determine progeny size")
+
+	# Copy the list and append 100 to find gcd with all distances
+	raw_values = copy.copy(distances)
+	raw_values.append(100)
+	gcdfinal = reduce(math.gcd, raw_values)
+
+	if debug is True:
+		print(f"Final GCD: {gcdfinal}")
+
+	# Calculate base, min, and max progeny sizes
+	progenybase = 100 / gcdfinal
+	minprogeny = 900 / progenybase
+	maxprogeny = 6000 / progenybase
+
+	# Create an array of possible progeny sizes
+	progs = numpy.arange(minprogeny, maxprogeny + 1, 1, dtype=numpy.float64) * progenybase
+
+	# Shuffle the array to randomize
 	numpy.random.shuffle(progs)
-	#print(progs)
-	bases = progs * distance * distance / 1e4
-	#print(bases)
+
+	# Calculate bases by multiplying with square of all distances and dividing by 1e4
+	bases = progs * reduce(lambda x, y: x * y, distances) / 1e4
+
+	# Calculate the deviations from the nearest integers
 	devs = (bases - numpy.around(bases, 0))**2
-	#print(devs)
+
+	# Find the minimum deviation and corresponding progeny size
 	argmin = numpy.argmin(devs)
 	progeny_size = int(progs[argmin])
-	if debug is True: print(("total progeny: %d\n"%(progeny_size)))
+
+	if debug is True:
+		print(f"total progeny: {progeny_size}")
+
 	return progeny_size
 
+
+#====================================
+def get_progeny_size(distance: int) -> int:
+	return get_general_progeny_size([distance,])
 
 #=============================
 #=============================
