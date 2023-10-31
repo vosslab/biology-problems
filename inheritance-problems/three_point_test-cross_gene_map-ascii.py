@@ -6,33 +6,15 @@ import math
 import numpy
 import random
 
+import bptools
+import pointtestcrosslib as ptcl
+
 basetype = 'abc'
 if len(sys.argv) > 1:
 	basetype = sys.argv[1].strip()
 basetype2 = basetype[0]+basetype[2]+basetype[1]
 basetype3 = basetype[1]+basetype[0]+basetype[2]
 
-def invertType(genotype):
-	newtype = ''
-	for i in range(3):
-		if genotype[i] == '+':
-			newtype += basetype[i]
-		else:
-			newtype += '+'
-	return newtype
-
-def flipGene(genotype, gene):
-	newlist = list(genotype)
-	for i in range(3):
-		if basetype[i] == gene:
-			if genotype[i] == '+':
-				newlist[i] = basetype[i]
-			else:
-				newlist[i] = '+'
-	newtype = ""
-	for i in newlist:
-		newtype += i
-	return newtype
 
 """
 outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
@@ -90,36 +72,36 @@ print(("total progeny: %d\n"%(progeny)))
 print("determine parental type")
 types = ['+++', '++'+basetype[2], '+'+basetype[1]+'+', '+'+basetype[1]+basetype[2]]
 parental = random.choice(types)
-print(parental, invertType(parental))
+print(parental, ptcl.invert_genotype(parental))
 
 typemap1 = {}
 print("determine double type")
-doubletype = flipGene(parental, geneorder[1])
+doubletype = ptcl.flip_gene_by_letter(parental, geneorder[1])
 doublecount = int(round(doublecross*progeny/100.))
-print(doubletype, invertType(doubletype), doublecount)
+print(doubletype, ptcl.invert_genotype(doubletype), doublecount)
 typemap1[doubletype] = doublecount
 
 print("determine first flip")
-firsttype = flipGene(parental, geneorder[0])
+firsttype = ptcl.flip_gene_by_letter(parental, geneorder[0])
 firstcount = int(round(distances[0]*progeny/100.)) - doublecount
-print(firsttype, invertType(firsttype), firstcount)
+print(firsttype, ptcl.invert_genotype(firsttype), firstcount)
 typemap1[firsttype] = firstcount
 
 print("determine second flip")
-secondtype = flipGene(parental, geneorder[2])
+secondtype = ptcl.flip_gene_by_letter(parental, geneorder[2])
 secondcount = int(round(distances[1]*progeny/100.)) - doublecount
-print(secondtype, invertType(secondtype), secondcount)
+print(secondtype, ptcl.invert_genotype(secondtype), secondcount)
 typemap1[secondtype] = secondcount
 
 print("determine parental type count")
 parentcount = progeny - doublecount - firstcount - secondcount
-print(parental, invertType(parental), parentcount)
+print(parental, ptcl.invert_genotype(parental), parentcount)
 typemap1[parental] = parentcount
 
 print("\n\ngenerate table")
 typemap = {}
 for t in types:
-	n = invertType(t)
+	n = ptcl.invert_genotype(t)
 	#rand = random.gauss(0.5, 0.01)
 	try:
 		count = typemap1[t]

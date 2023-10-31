@@ -6,6 +6,9 @@ import math
 import numpy
 import random
 
+import bptools
+import pointtestcrosslib as ptcl
+
 basetype = 'def'
 if len(sys.argv) > 1:
 	basetype = sys.argv[1].strip()
@@ -14,28 +17,6 @@ def tetradSetToString(tetradSet):
 	mystr = ("%s\t%s\t%s\t%s\t"
 		%(tetradSet[0],tetradSet[1],tetradSet[2],tetradSet[3],))
 	return mystr
-
-def invertType(genotype):
-	newtype = ''
-	for i in range(3):
-		if genotype[i] == '+':
-			newtype += basetype[i]
-		else:
-			newtype += '+'
-	return newtype
-
-def flipGene(genotype, gene):
-	newlist = list(genotype)
-	for i in range(3):
-		if basetype[i] == gene:
-			if genotype[i] == '+':
-				newlist[i] = basetype[i]
-			else:
-				newlist[i] = '+'
-	newtype = ""
-	for i in newlist:
-		newtype += i
-	return newtype
 
 #gene order
 print("selecting gene order")
@@ -83,7 +64,7 @@ print(progeny)
 print("determine parental type")
 types = ['+++', '++'+basetype[2], '+'+basetype[1]+'+', '+'+basetype[1]+basetype[2]]
 parental = random.choice(types)
-print(parental, invertType(parental))
+print(parental, ptcl.invert_genotype(parental))
 
 ### START CHANGING HERE
 
@@ -132,51 +113,51 @@ parentcount = progeny - doublecount - firstcount - secondcount
 sixTetradSets = []
 tetradCount = {}
 
-tetradSet = [parental, parental, invertType(parental), invertType(parental),]
+tetradSet = [parental, parental, ptcl.invert_genotype(parental), ptcl.invert_genotype(parental),]
 tetradSet.sort()
 tetradName = tetradSetToString(tetradSet)
 sixTetradSets.append(tetradName)
 tetradCount[tetradName] = parentcount
 
 #first flip
-firsttype = flipGene(parental, geneorder[0])
+firsttype = ptcl.flip_gene_by_letter(parental, geneorder[0])
 
 #usually TT
-tetradSet = [firsttype, invertType(firsttype), parental, invertType(parental),]
+tetradSet = [firsttype, ptcl.invert_genotype(firsttype), parental, ptcl.invert_genotype(parental),]
 tetradSet.sort()
 tetradName = tetradSetToString(tetradSet)
 sixTetradSets.append(tetradName)
 tetradCount[tetradName] = firstcount
 
 #usually NPD
-tetradSet = [firsttype, invertType(firsttype), firsttype, invertType(firsttype), ]
+tetradSet = [firsttype, ptcl.invert_genotype(firsttype), firsttype, ptcl.invert_genotype(firsttype), ]
 tetradSet.sort()
 tetradName = tetradSetToString(tetradSet)
 sixTetradSets.append(tetradName)
 tetradCount[tetradName] = dcount1
 
 #second flip
-secondtype = flipGene(parental, geneorder[2])
+secondtype = ptcl.flip_gene_by_letter(parental, geneorder[2])
 
 #usually TT
-tetradSet = [secondtype, invertType(secondtype), parental, invertType(parental),]
+tetradSet = [secondtype, ptcl.invert_genotype(secondtype), parental, ptcl.invert_genotype(parental),]
 tetradSet.sort()
 tetradName = tetradSetToString(tetradSet)
 sixTetradSets.append(tetradName)
 tetradCount[tetradName] = secondcount
 
 #usually NPD
-tetradSet = [secondtype, invertType(secondtype), secondtype, invertType(secondtype),]
+tetradSet = [secondtype, ptcl.invert_genotype(secondtype), secondtype, ptcl.invert_genotype(secondtype),]
 tetradSet.sort()
 tetradName = tetradSetToString(tetradSet)
 sixTetradSets.append(tetradName)
 tetradCount[tetradName] = dcount2
 
 #both flips
-thirdtype = flipGene(flipGene(parental, geneorder[2]), geneorder[0])
+thirdtype = ptcl.flip_gene_by_letter(ptcl.flip_gene_by_letter(parental, geneorder[2]), geneorder[0])
 
 #usually NPD
-tetradSet = [thirdtype, invertType(thirdtype), thirdtype, invertType(thirdtype),]
+tetradSet = [thirdtype, ptcl.invert_genotype(thirdtype), thirdtype, ptcl.invert_genotype(thirdtype),]
 tetradSet.sort()
 tetradName = tetradSetToString(tetradSet)
 sixTetradSets.append(tetradName)

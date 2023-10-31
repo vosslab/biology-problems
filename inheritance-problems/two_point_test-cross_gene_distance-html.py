@@ -8,64 +8,11 @@ import math
 import numpy
 import string
 import random
-import crcmod.predefined
 
+import bptools
+import pointtestcrosslib as ptcl
 
 debug = True
-
-#====================================
-phenotype_dict = {
-	'a': 'amber',
-	'b': 'bald',
-	'c': 'conehead',
-	'd': 'dumpy',
-	'e': 'eyeless',
-	'f': 'forked',
-	'g': 'garnet',
-	'h': 'hook',
-	'i': 'indy',
-	'j': 'jagged',
-	'k': 'kidney',
-	'l': 'lyra',
-	'm': 'marula',
-	'n': 'notch',
-	'o': 'okra',
-	'p': 'prickly',
-	'q': 'quick',
-	'r': 'rosy',
-	's': 'scute',
-	't': 'taxi',
-	'u': 'upturned',
-	'v': 'vestigial',
-	'w': 'white',
-	'x': 'xray',
-	'y': 'yellow',
-	'z': 'zipper',
-}
-
-#====================================
-def invertType(genotype, basetype):
-	newtype = ''
-	for i in range(2):
-		if genotype[i] == '+':
-			newtype += basetype[i]
-		else:
-			newtype += '+'
-	return newtype
-
-#====================================
-def flipGene(genotype, gene, basetype):
-	newlist = list(genotype)
-	for i in range(2):
-		if basetype[i] == gene:
-			if genotype[i] == '+':
-				newlist[i] = basetype[i]
-			else:
-				newlist[i] = '+'
-	newtype = ""
-	for i in newlist:
-		newtype += i
-	return newtype
 
 #====================================
 def getDistance():
@@ -94,20 +41,6 @@ def getProgenySize(distance):
 	return progeny_size
 
 #====================================
-def getPhenotype(genotype):
-	if genotype == "++":
-		return '<i>wildtype</i>'
-	phenotype_list = []
-	for allele in genotype:
-		if allele == '+':
-			continue
-		phenotype = phenotype_dict.get(allele)
-		phenotype_list.append(phenotype)
-	#print(phenotype_list)
-	phenotype_string = ', '.join(phenotype_list)
-	return phenotype_string
-
-#====================================
 def makeProgenyHtmlTable(typemap, progeny_size):
 	alltypes = list(typemap.keys())
 	alltypes.sort()
@@ -120,7 +53,7 @@ def makeProgenyHtmlTable(typemap, progeny_size):
 	table += '  <th {0}>{1}Progeny<br/>Count</span></th>'.format(td_extra, span)
 	table += '</tr>'
 	for type in alltypes:
-		phenotype_string = getPhenotype(type)
+		phenotype_string = ptcl.get_phenotype_name(type)
 		table += '<tr>'
 		table += ' <td {0}>&nbsp;{1}{2}</span></td>'.format(td_extra.replace('center', 'left'), span, phenotype_string)
 		table += ' <td {0}>{1}{2}</span></td>'.format(td_extra, span, type[0])
@@ -140,7 +73,7 @@ def makeProgenyAsciiTable(typemap, progeny_size):
 	alltypes.sort()
 	table = ''
 	for genotype in alltypes:
-		phenotype_string = getPhenotype(genotype)
+		phenotype_string = ptcl.get_phenotype_name(genotype)
 		table += ("{0}\t".format(genotype[0]))
 		table += ("{0}\t".format(genotype[1]))
 		table += ("{0:d}\t".format(typemap[genotype]))
@@ -165,9 +98,9 @@ def questionText(basetype):
 #====================================
 def generateTypeCounts(parental_type, basetype, progeny_size, distance):
 	type_counts = {}
-	recombinant_type_1 = flipGene(parental_type, geneorder[0], basetype)
+	recombinant_type_1 = ptcl.flip_gene_by_letter(parental_type, geneorder[0], basetype)
 	if debug is True: print("recombinant type 1=", recombinant_type_1)
-	recombinant_type_2 = invertType(recombinant_type_1, basetype)
+	recombinant_type_2 = ptcl.invert_genotype(recombinant_type_1, basetype)
 	if debug is True: print("recombinant type 2=", recombinant_type_2)
 
 	if debug is True: print("determine recombinant type counts")
@@ -191,7 +124,7 @@ def generateTypeCounts(parental_type, basetype, progeny_size, distance):
 
 	if debug is True: print("determine parental type count")
 	total_parent_count = progeny_size - total_recombinant_count
-	if debug is True: print("  ", parental_type, invertType(parental_type, basetype), total_parent_count)
+	if debug is True: print("  ", parental_type, ptcl.invert_genotype(parental_type, basetype), total_parent_count)
 	parent_count_1 = 0
 	parent_count_2 = 0
 	for i in range(total_parent_count):
@@ -206,7 +139,7 @@ def generateTypeCounts(parental_type, basetype, progeny_size, distance):
 	
 	type_counts[parental_type] = parent_count_1
 	if debug is True: print("parental count_1=", parent_count_1)
-	type_counts[invertType(parental_type, basetype)] = parent_count_2
+	type_counts[ptcl.invert_genotype(parental_type, basetype)] = parent_count_2
 	if debug is True: print("parental count_2=", parent_count_2)
 
 
@@ -224,42 +157,10 @@ def makeQuestion(basetype, distance, progeny_size):
 	types = ['++', '+'+basetype[1], basetype[0]+'+', basetype[0]+basetype[1]]
 	if debug is True: print("types=", types)
 	parental = random.choice(types)
-	if debug is True: print("parental=", parental, invertType(parental, basetype))
+	if debug is True: print("parental=", parental, ptcl.invert_genotype(parental, basetype))
 	type_counts = generateTypeCounts(parental, basetype, progeny_size, distance)
 	if debug is True: print("type_counts=", type_counts)
 	return type_counts
-
-
-#=======================
-def getCrc16_FromString(mystr):
-	crc16 = crcmod.predefined.Crc('xmodem')
-	crc16.update(mystr.encode('ascii'))
-	return crc16.hexdigest().lower()
-
-#=====================
-def makeQuestionPretty(question):
-	pretty_question = copy.copy(question)
-	#print(len(pretty_question))
-	pretty_question = re.sub('\<table.+\<\/table\>', '[]\n', pretty_question)
-	#print(len(pretty_question))
-	pretty_question = re.sub('\<\/p\>\s*\<p\>', '\n', pretty_question)
-	#print(len(pretty_question))
-	return pretty_question
-
-#=====================
-def formatBB_NUM_Question(N, question, answer, tolerance):
-	bb_question = ''
-
-	number = "{0}. ".format(N)
-	crc16 = getCrc16_FromString(question)
-	bb_question += 'NUM\t<p>{0}. {1}</p> {2}'.format(N, crc16, question)
-	pretty_question = makeQuestionPretty(question)
-	print('{0}. {1} -- {2}'.format(N, crc16, pretty_question))
-
-	bb_question += '\t{0:d}\t{1:.1f}'.format(answer, tolerance)
-	print("ANSWER {0:.4f} +/- {1:.1f}".format(answer, tolerance))
-	print("")
-	return bb_question + '\n'
 
 #====================================
 #====================================
@@ -289,7 +190,7 @@ if __name__ == "__main__":
 		#print(html_table)
 		question_string = questionText(basetype)
 		#variable_list = getVariables(geneorder)
-		final_question = formatBB_NUM_Question(N, html_table+question_string, distance, 0.1)
+		final_question = bptools.formatBB_NUM_Question(N, html_table+question_string, distance, 0.1)
 		#final_question = blackboardFormat(N, question_string, html_table, distance)
 		#print(final_question)
 

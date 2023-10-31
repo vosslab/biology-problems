@@ -8,7 +8,9 @@ import math
 import numpy
 import string
 import random
-import crcmod.predefined
+
+import bptools
+import pointtestcrosslib as ptcl
 
 debug = False
 
@@ -16,38 +18,6 @@ def tetradSetToString(tetradSet):
 	mystr = ("%s\t%s\t%s\t%s\t"
 		%(tetradSet[0],tetradSet[1],tetradSet[2],tetradSet[3],))
 	return mystr
-
-def invertType(genotype, basetype):
-	newtype = ''
-	for i in range(3):
-		if genotype[i] == '+':
-			newtype += basetype[i]
-		else:
-			newtype += '+'
-	return newtype
-
-def flipGene(genotype, gene, basetype):
-	newlist = list(genotype)
-	for i in range(3):
-		if basetype[i] == gene:
-			if genotype[i] == '+':
-				newlist[i] = basetype[i]
-			else:
-				newlist[i] = '+'
-	newtype = ""
-	for i in newlist:
-		newtype += i
-	return newtype
-
-def getGeneOrder(basetype):
-	basetype2 = basetype[0]+basetype[2]+basetype[1]
-	basetype3 = basetype[1]+basetype[0]+basetype[2]
-
-	#gene order
-	if debug is True: print("selecting gene order")
-	geneorder = random.choice([basetype, basetype2, basetype3])
-	if debug is True: print(geneorder)
-	return geneorder
 
 def getDistancesThreePoint():
 	#integers
@@ -269,7 +239,7 @@ def getDoubleCounts(distances, progeny_size):
 	d11 = distances[1]*distances[1] #20^2
 	totalcross = float(d00 + d11 + d01)
 	r00 = d00/totalcross
-	r01 = d01/totalcross
+	#???r01 = d01/totalcross
 	r11 = d11/totalcross
 	dcount1 = 0
 	dcount2 = 0
@@ -321,7 +291,7 @@ def generateTypeCounts(parental, geneorder, distances, progeny_size, basetype):
 	# Create Six Genotypes
 	tetradCount = {}
 
-	tetradSet = [parental, parental, invertType(parental, basetype), invertType(parental, basetype),]
+	tetradSet = [parental, parental, ptcl.invert_genotype(parental, basetype), ptcl.invert_genotype(parental, basetype),]
 	tetradSet.sort()
 	if debug is True: print(" parental ", tetradSet)
 
@@ -329,40 +299,40 @@ def generateTypeCounts(parental, geneorder, distances, progeny_size, basetype):
 	tetradCount[tetradName] = parentcount
 
 	#first flip
-	firsttype = flipGene(parental, geneorder[0], basetype)
+	firsttype = ptcl.flip_gene_by_letter(parental, geneorder[0], basetype)
 
 	#usually TT
-	tetradSet = [firsttype, invertType(firsttype, basetype), parental, invertType(parental, basetype),]
+	tetradSet = [firsttype, ptcl.invert_genotype(firsttype, basetype), parental, ptcl.invert_genotype(parental, basetype),]
 	tetradSet.sort()
 	tetradName = tetradSetToString(tetradSet)
 	tetradCount[tetradName] = firstcount
 
 	#usually NPD
-	tetradSet = [firsttype, invertType(firsttype, basetype), firsttype, invertType(firsttype, basetype), ]
+	tetradSet = [firsttype, ptcl.invert_genotype(firsttype, basetype), firsttype, ptcl.invert_genotype(firsttype, basetype), ]
 	tetradSet.sort()
 	tetradName = tetradSetToString(tetradSet)
 	tetradCount[tetradName] = dcount1
 
 	#second flip
-	secondtype = flipGene(parental, geneorder[2], basetype)
+	secondtype = ptcl.flip_gene_by_letter(parental, geneorder[2], basetype)
 
 	#usually TT
-	tetradSet = [secondtype, invertType(secondtype, basetype), parental, invertType(parental, basetype),]
+	tetradSet = [secondtype, ptcl.invert_genotype(secondtype, basetype), parental, ptcl.invert_genotype(parental, basetype),]
 	tetradSet.sort()
 	tetradName = tetradSetToString(tetradSet)
 	tetradCount[tetradName] = secondcount
 
 	#usually NPD
-	tetradSet = [secondtype, invertType(secondtype, basetype), secondtype, invertType(secondtype, basetype),]
+	tetradSet = [secondtype, ptcl.invert_genotype(secondtype, basetype), secondtype, ptcl.invert_genotype(secondtype, basetype),]
 	tetradSet.sort()
 	tetradName = tetradSetToString(tetradSet)
 	tetradCount[tetradName] = dcount2
 
 	#both flips
-	thirdtype = flipGene(flipGene(parental, geneorder[2], basetype), geneorder[0], basetype)
+	thirdtype = ptcl.flip_gene_by_letter(ptcl.flip_gene_by_letter(parental, geneorder[2], basetype), geneorder[0], basetype)
 
 	#usually NPD
-	tetradSet = [thirdtype, invertType(thirdtype, basetype), thirdtype, invertType(thirdtype, basetype),]
+	tetradSet = [thirdtype, ptcl.invert_genotype(thirdtype, basetype), thirdtype, ptcl.invert_genotype(thirdtype, basetype),]
 	tetradSet.sort()
 	tetradName = tetradSetToString(tetradSet)
 	tetradCount[tetradName] = dcount3
@@ -439,30 +409,14 @@ def blackboardFormat(question_string, html_table, variable_list, geneorder, dist
 	blackboard += '\tgeneorder\t{0}\t{1}\n'.format(geneorder, geneorder[::-1])
 	return blackboard
 
-#=======================
-def getCrc16_FromString(mystr):
-	crc16 = crcmod.predefined.Crc('xmodem')
-	crc16.update(mystr.encode('ascii'))
-	return crc16.hexdigest().lower()
-
-#=====================
-def makeQuestionPretty(question):
-	pretty_question = copy.copy(question)
-	#print(len(pretty_question))
-	pretty_question = re.sub('\<table.+\<\/table\>', '[]\n', pretty_question)
-	#print(len(pretty_question))
-	pretty_question = re.sub('\<\/p\>\s*\<p\>', '\n', pretty_question)
-	#print(len(pretty_question))
-	return pretty_question
 
 #=====================
 def formatBB_FIB_PLUS_Question(N, question, variable_list, geneorder, distances):
-	number = "{0}. ".format(N)
-	crc16 = getCrc16_FromString(question)
+	crc16 = bptools.getCrc16_FromString(question)
 
 	#FIB_PLUS TAB question text TAB variable1 TAB answer1 TAB answer2 TAB TAB variable2 TAB answer3
 	bb_question = 'FIB_PLUS\t<p>{0}. {1}</p> {2}'.format(N, crc16, question)
-	pretty_question = makeQuestionPretty(question)
+	pretty_question = bptools.makeQuestionPretty(question)
 	print('{0}. {1} -- {2}'.format(N, crc16, pretty_question))
 
 	variable_to_distance = {}
@@ -492,7 +446,7 @@ if __name__ == "__main__":
 		if j + 2 == len(lowercase):
 			j = 0
 		basetype = lowercase[j:j+3]
-		geneorder = getGeneOrder(basetype)
+		geneorder = ptcl.get_random_gene_order(basetype)
 		distances = getDistances()
 		print(distances)
 		progeny_size = getProgenySize(distances)

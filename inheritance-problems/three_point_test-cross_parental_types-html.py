@@ -11,81 +11,15 @@ import argparse
 import random
 
 import bptools
+import pointtestcrosslib as ptcl
 
 debug = False
-
-phenotype_dict = {
-	'a': 'amber',
-	'b': 'bald',
-	'c': 'conehead',
-	'd': 'dumpy',
-	'e': 'eyeless',
-	'f': 'forked',
-	'g': 'garnet',
-	'h': 'hook',
-	'i': 'indy',
-	'j': 'jagged',
-	'k': 'kidney',
-	'l': 'lyra',
-	'm': 'marula',
-	'n': 'notch',
-	'o': 'okra',
-	'p': 'prickly',
-	'q': 'quick',
-	'r': 'rosy',
-	's': 'scute',
-	't': 'taxi',
-	'u': 'upturned',
-	'v': 'vestigial',
-	'w': 'white',
-	'x': 'xray',
-	'y': 'yellow',
-	'z': 'zipper',
-}
-
-#=====================
-#=====================
-def invertType(genotype, basetype):
-	newtype = ''
-	for i in range(3):
-		if genotype[i] == '+':
-			newtype += basetype[i]
-		else:
-			newtype += '+'
-	return newtype
-
-#=====================
-#=====================
-def flipGene(genotype, gene, basetype):
-	newlist = list(genotype)
-	for i in range(3):
-		if basetype[i] == gene:
-			if genotype[i] == '+':
-				newlist[i] = basetype[i]
-			else:
-				newlist[i] = '+'
-	newtype = ""
-	for i in newlist:
-		newtype += i
-	return newtype
-
-#=====================
-#=====================
-def getGeneOrder(basetype):
-	basetype2 = basetype[0]+basetype[2]+basetype[1]
-	basetype3 = basetype[1]+basetype[0]+basetype[2]
-
-	#gene order
-	if debug is True: print("selecting gene order")
-	geneorder = random.choice([basetype, basetype2, basetype3])
-	if debug is True: print(geneorder)
-	return geneorder
 
 #=====================
 #=====================
 def getDistances():
 	#integers
-	key_maps = {
+	"""key_maps = {
 		35:	[10, 20, 30, 40, ],
 		30:	[ 5, 10, 15, 20, 25, 35,],
 		25:	[ 2,  4,  6,  8, 12, 14, 16, 18, 22,],
@@ -93,7 +27,7 @@ def getDistances():
 		15:	[10, 20, 30, 40, ],
 		10:	[ 5, 15, 20, 25, 30, 35,],
 		5:	[10, 20, 30, 40, ],
-	}
+	}"""
 	#a = random.choice(list(key_maps.keys()))
 	#b = random.choice(key_maps[a])
 	a = random.randint(15,35)
@@ -148,21 +82,6 @@ def getProgenySize(distances):
 
 #=====================
 #=====================
-def getPhenotype(genotype):
-	if genotype == "+++":
-		return '<i>wildtype</i>'
-	phenotype_list = []
-	for allele in genotype:
-		if allele == '+':
-			continue
-		phenotype = phenotype_dict.get(allele)
-		phenotype_list.append(phenotype)
-	#print(phenotype_list)
-	phenotype_string = ', '.join(phenotype_list)
-	return phenotype_string
-
-#=====================
-#=====================
 def makeProgenyHtmlTable(typemap, progeny_size):
 	alltypes = list(typemap.keys())
 	alltypes.sort()
@@ -175,7 +94,7 @@ def makeProgenyHtmlTable(typemap, progeny_size):
 	table += '  <th {0}>{1}Progeny<br/>Count</span></th>'.format(td_extra, span)
 	table += '</tr>'
 	for type in alltypes:
-		phenotype_string = getPhenotype(type)
+		phenotype_string = ptcl.get_phenotype_name(type)
 		table += '<tr>'
 		table += ' <td {0}>&nbsp;{1}{2}</span></td>'.format(td_extra.replace('center', 'left'), span, phenotype_string)
 		table += ' <td {0}>{1}{2}</span></td>'.format(td_extra, span, type[0])
@@ -197,7 +116,7 @@ def makeProgenyAsciiTable(typemap, progeny_size):
 	alltypes.sort()
 	table = ''
 	for type in alltypes:
-		phenotype_string = getPhenotype(type)
+		phenotype_string = ptcl.get_phenotype_name(type)
 		table += ("{0}\t".format(type[0]))
 		table += ("{0}\t".format(type[1]))
 		table += ("{0}\t".format(type[2]))
@@ -214,7 +133,7 @@ def generateProgenyData(types, type_counts, basetype):
 	if debug is True: print("\n\ngenerate progeny data")
 	typemap = {}
 	for t in types:
-		n = invertType(t, basetype)
+		n = ptcl.invert_genotype(t, basetype)
 		#rand = random.gauss(0.5, 0.01)
 		try:
 			count = type_counts[t]
@@ -241,34 +160,34 @@ def generateTypeCounts(parental, doublecross, basetype):
 	type_counts = {}
 
 	if debug is True: print("determine double type")
-	doubletype = flipGene(parental, geneorder[1], basetype)
+	doubletype = ptcl.flip_gene_by_letter(parental, geneorder[1], basetype)
 	doublecount = int(round(doublecross*progeny_size/100.))
-	if debug is True: print("  ", doubletype, invertType(doubletype, basetype), doublecount)
+	if debug is True: print("  ", doubletype, ptcl.invert_genotype(doubletype, basetype), doublecount)
 	type_counts[doubletype] = doublecount
 
 	if debug is True: print("determine first flip")
-	firsttype = flipGene(parental, geneorder[0], basetype)
+	firsttype = ptcl.flip_gene_by_letter(parental, geneorder[0], basetype)
 	firstcount = int(round(distances[0]*progeny_size/100.)) - doublecount
-	if debug is True: print("  ", firsttype, invertType(firsttype, basetype), firstcount)
+	if debug is True: print("  ", firsttype, ptcl.invert_genotype(firsttype, basetype), firstcount)
 	type_counts[firsttype] = firstcount
 
 	if debug is True: print("determine second flip")
-	secondtype = flipGene(parental, geneorder[2], basetype)
+	secondtype = ptcl.flip_gene_by_letter(parental, geneorder[2], basetype)
 	secondcount = int(round(distances[1]*progeny_size/100.)) - doublecount
-	if debug is True: print("  ", secondtype, invertType(secondtype, basetype), secondcount)
+	if debug is True: print("  ", secondtype, ptcl.invert_genotype(secondtype, basetype), secondcount)
 	type_counts[secondtype] = secondcount
 
 	if debug is True: print("determine parental type count")
 	parentcount = progeny_size - doublecount - firstcount - secondcount
-	if debug is True: print("  ", parental, invertType(parental, basetype), parentcount)
+	if debug is True: print("  ", parental, ptcl.invert_genotype(parental, basetype), parentcount)
 	type_counts[parental] = parentcount
 
 	type_categories = {
-		'parental':   (parental,   invertType(parental, basetype)),
-		'double':     (doubletype, invertType(doubletype, basetype)),
-		geneorder[0]: (firsttype,  invertType(firsttype, basetype)),
-		geneorder[1]: (doubletype, invertType(firsttype, basetype)),
-		geneorder[2]: (secondtype, invertType(firsttype, basetype)),
+		'parental':   (parental,   ptcl.invert_genotype(parental, basetype)),
+		'double':     (doubletype, ptcl.invert_genotype(doubletype, basetype)),
+		geneorder[0]: (firsttype,  ptcl.invert_genotype(firsttype, basetype)),
+		geneorder[1]: (doubletype, ptcl.invert_genotype(firsttype, basetype)),
+		geneorder[2]: (secondtype, ptcl.invert_genotype(firsttype, basetype)),
 	}
 	print('type_categories=',type_categories)
 
@@ -290,7 +209,7 @@ def makeQuestion(basetype, geneorder, distances, progeny_size):
 	if debug is True: print("determine parental type")
 	types = ['+++', '++'+basetype[2], '+'+basetype[1]+'+', '+'+basetype[1]+basetype[2]]
 	parental = random.choice(types)
-	both_parental_types = (parental, invertType(parental, basetype))
+	both_parental_types = (parental, ptcl.invert_genotype(parental, basetype))
 
 	if debug is True: print("both_parental_types=", both_parental_types)
 	type_counts, type_categories = generateTypeCounts(parental, doublecross, basetype)
@@ -305,7 +224,7 @@ def questionText(basetype, type='parental', gene=None):
 	question_string += 'The resulting phenotypes are summarized in the table above.</p> '
 	question_string += '<p>Using the table above, '
 	if type == 'gene' and gene is not None:
-		question_string += 'determine the recombinant types for gene .</p> '.format(gene)
+		question_string += f'determine the recombinant types for gene {gene}.</p> '
 	elif type == 'double':
 		question_string += 'determine the double recombinant types.</p> '
 	elif type == 'parental':
@@ -356,7 +275,7 @@ if __name__ == "__main__":
 		if j + 2 == len(lowercase):
 			j = 0
 		basetype = lowercase[j:j+3]
-		geneorder = getGeneOrder(basetype)
+		geneorder = ptcl.get_random_gene_order(basetype)
 		gene = random.choice(geneorder)
 		distances = getDistances()
 		print(distances)
