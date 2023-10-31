@@ -555,6 +555,8 @@ def formatBB_NUM_Question(N, question, answer, tolerance):
 
 	#number = "{0}. ".format(N)
 	bb_question += 'NUM\t'
+	question += f'<p><i>Answers need to be within {tolerance/answer*100:.1f}&percnt;'
+	question += 'of the actual value to be correct.</i></p> '
 	big_question = question + str(answer)
 	bb_question += QuestionHeader(question, N, big_question)
 
