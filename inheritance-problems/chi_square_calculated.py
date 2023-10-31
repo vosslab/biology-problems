@@ -4,7 +4,10 @@ import os
 import sys
 import random
 import string
+import argparse
 from scipy.stats.distributions import chi2
+
+import bptools
 
 ### simply calculate the chi square value
 
@@ -212,23 +215,21 @@ def getCode():
 	code += ' - '
 	return code
 
-#==================================================
-def format_for_blackboard(question, answer, tolerance):
-	#https://experts.missouristate.edu/plugins/servlet/mobile?contentId=63486780#content/view/63486780
-	#"NUM TAB question text TAB answer TAB [optional]tolerance"
-	return ("NUM\t{0}\t{1:.3f}\t{2:.3f}".format(question,answer,tolerance))
-
 #===================
 #===================
 #===================
 #===================
 if __name__ == '__main__':
-	duplicates = 250
+	parser = argparse.ArgumentParser(description='Chi Square Question')
+	parser.add_argument('-d', '--duplicate-runs', type=int, dest='duplicate_runs',
+		help='number of questions to create', default=199)
+	args = parser.parse_args()
+
 	letters = "ABCDEFGHI"
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
 	print('writing to file: '+outfile)
 	f = open(outfile, 'w')
-	for i in range(duplicates):
+	for i in range(args.duplicate_runs):
 		#for desired_result in ('accept', 'reject'):
 		desired_result = 'accept'
 		#print("")
@@ -241,7 +242,9 @@ if __name__ == '__main__':
 			i -= 1
 			continue
 		tolerance = final_chisq * 0.10
-		bbq_content = format_for_blackboard(complete_question, final_chisq, tolerance)
+		N = i+1
+		bbq_content = bptools.formatBB_NUM_Question(N, complete_question, final_chisq, tolerance)
 		f.write(bbq_content)
 		f.write("\n")
 	sys.stderr.write("\n")
+	bptools.print_histogram()

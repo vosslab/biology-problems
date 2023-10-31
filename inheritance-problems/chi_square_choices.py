@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 
 import os
+import sys
 import copy
 import random
-import string
+import argparse
 from scipy.stats.distributions import chi2
+
+import bptools
+
 
 ### types of errors
 # show 3 tables of chi square calculations
@@ -18,7 +22,7 @@ from scipy.stats.distributions import chi2
 
 #the table numbering answer choice is off
 
-print("There is a problem with table numbering")
+#print("There is a problem with table numbering")
 #sys.exit(1)
 
 error_types = {
@@ -27,14 +31,23 @@ error_types = {
 	2: 'forget to square the top divide by observed',
 }
 
-choices = [
-	'table 1 is correct and we <b>reject</b> the null hypothesis',
-	'table 2 is correct and we <b>reject</b> the null hypothesis',
-	'table 3 is correct and we <b>reject</b> the null hypothesis',
+accept_str = '<span style="color: #009900;"><strong>ACCEPT</strong></span>' #GREEN
+reject_str = '<span style="color: #e60000;"><strong>REJECT</strong></span>' #RED
+tables_list = [
+		'<span style="color: #e69100;"><strong>Table 1</strong></span>', #LIGHT ORANGE
+		'<span style="color: #004d99;"><strong>Table 2</strong></span>', #NAVY BLUE
+		'<span style="color: #b30077;"><strong>Table 3</strong></span>', #MAGENTA
+	]
 
-	'table 1 is correct and we <b>accept</b> the null hypothesis',
-	'table 2 is correct and we <b>accept</b> the null hypothesis',
-	'table 3 is correct and we <b>accept</b> the null hypothesis',
+
+choices_list = [
+	f'{tables_list[0]} with &chi;&sup2;=XXXX is correct and we {reject_str} the null hypothesis',
+	f'{tables_list[1]} with &chi;&sup2;=XXXX is correct and we {reject_str} the null hypothesis',
+	f'{tables_list[2]} with &chi;&sup2;=XXXX is correct and we {reject_str} the null hypothesis',
+
+	f'{tables_list[0]} with &chi;&sup2;=XXXX is correct and we {accept_str} the null hypothesis',
+	f'{tables_list[1]} with &chi;&sup2;=XXXX is correct and we {accept_str} the null hypothesis',
+	f'{tables_list[2]} with &chi;&sup2;=XXXX is correct and we {accept_str} the null hypothesis',
 ]
 
 #===================
@@ -98,7 +111,7 @@ def divideByObservedError(ratio, observed=None):
 		row.append(exp)
 		row.append(obs)
 		chirow = (obs-exp)**2/float(obs)
-		calc = "<sup>({0}-{1})<sup>2</sup></sup>&frasl;&nbsp;<sub>{2}</sub>".format(obs, exp, obs)
+		calc = "<sup>({0}-{1})&sup2;</sup>&frasl;&nbsp;<sub>{2}</sub>".format(obs, exp, obs)
 		row.append(calc)
 		chistr = "{0:.3f}".format(chirow)
 		row.append(chistr)
@@ -125,7 +138,7 @@ def divideByObservedAndSquareError(ratio, observed=None):
 		row.append(exp)
 		row.append(obs)
 		chirow = (obs-exp)**2/float(obs**2)
-		calc = "<sup>({0}-{1})<sup>2</sup></sup>&frasl;&nbsp;<sub>{2}<sup>2</sup></sub>".format(obs, exp, obs)
+		calc = "<sup>({0}-{1})&sup2;</sup>&frasl;&nbsp;<sub>{2}&sup2;</sub>".format(obs, exp, obs)
 		row.append(calc)
 		chistr = "{0:.3f}".format(chirow)
 		row.append(chistr)
@@ -179,7 +192,7 @@ def normalGoodStats(ratio, observed=None):
 		row.append(exp)
 		row.append(obs)
 		chirow = (obs-exp)**2/float(exp)
-		calc = "<sup>({0}-{1})<sup>2</sup></sup>&frasl;&nbsp;<sub>{2}</sub>".format(obs, exp, exp)
+		calc = "<sup>({0}-{1})&sup2;</sup>&frasl;&nbsp;<sub>{2}</sub>".format(obs, exp, exp)
 		row.append(calc)
 		chistr = "{0:.3f}".format(chirow)
 		row.append(chistr)
@@ -236,7 +249,7 @@ def createDataTable(stats_list, title=None):
 		table += " <td align='center'>{0}</td>".format(stat)
 	table += "</tr>"
 	table += "<tr>"
-	table += " <td colspan='{0}' align='right' style='background-color: lightgray'>(sum) &chi;<sup>2</sup>&nbsp;=&nbsp;</td>".format(numcol)
+	table += " <td colspan='{0}' align='right' style='background-color: lightgray'>(sum) &chi;&sup2;&nbsp;=&nbsp;</td>".format(numcol)
 	stat = stats_list[4]
 	table += " <td align='center'>{0}</td>".format(stat)
 	table += "</tr>"
@@ -253,7 +266,7 @@ def make_chi_square_table():
 	for p in p_values:
 		table += '<colgroup width="60"></colgroup> '
 	table += "<tr>"
-	table += " <th align='center' colspan='{0}' style='background-color: gainsboro'>Table of Chi-Squared (&chi;<sup>2</sup>) Critical Values</th>".format(len(p_values)+1)
+	table += " <th align='center' colspan='{0}' style='background-color: gainsboro'>Table of Chi-Squared (&chi;&sup2;) Critical Values</th>".format(len(p_values)+1)
 	table += "</tr>"
 
 	table += "<tr>"
@@ -279,13 +292,13 @@ def make_chi_square_table():
 #===================
 def questionContent():
 	question = ''
-	question += "<p>Your lab partner is trying again (eye roll) and did another a chi-squared (&chi;<sup>2</sup>) test "
+	question += "<p>Your lab partner is trying again (eye roll) and did another a chi-squared (&chi;&sup2;) test "
 	question += "on the F<sub>2</sub> generation in a dihybid cross based on your lab data (above). "
 	question += "They wanted to know if the results confirm the expected phenotype ratios.</p>"
 
 	question += "<p>You helped them set up the null hypothesis, so you know that part is correct, "
 	question += "but they got confused and were unsure about how to calculate the "
-	question += "chi-squared (&chi;<sup>2</sup>) value. So much so that "
+	question += "chi-squared (&chi;&sup2;) value. So much so that "
 	question += "they did it three (3) different ways.</p> "
 
 	question += "<p>Before you ask your instructor for a new lab partner, "
@@ -303,9 +316,20 @@ def getChiSquareResult(final_chisq, df, alpha):
 		return 'accept_null'
 	return None
 
+"""bad_ratios = [
+	'8:2:4:2',
+	'10:3:2:1',
+	'9:5:1:1',
+	'7:3:3:3',
+	'4:4:4:4',
+	]"""
+
+bad_ratios = [
+	'8:2:4:2',
+	]
 #===================
 #===================
-def makeQuestion(error_type, desired_result):
+def makeQuestion(error_type: int, desired_result: str):
 	"""
 	error type to NOT include
 
@@ -313,9 +337,8 @@ def makeQuestion(error_type, desired_result):
 	1: 'forget to square the top divide by observed squared',
 	2: 'forget to square the top divide by observed',
 	"""
-
 	if desired_result == 'reject':
-		ratio = '8:2:4:2'
+		ratio = random.choice(bad_ratios)
 	elif desired_result == 'accept':
 		ratio = '9:3:3:1'
 
@@ -326,10 +349,11 @@ def makeQuestion(error_type, desired_result):
 	chi_square_table = make_chi_square_table()
 
 	answer_stat_list = normalGoodStats(ratio, observed)
+	answer_chi_sq = float(answer_stat_list[-1])
 
 	number_stats = []
 	i = -1
-	#print(error_type)
+	#print(f"error_type={error_type}")
 	for method in (divideByObservedError, divideByObservedAndSquareError, noSquareError):
 		i += 1
 		#print(i)
@@ -337,34 +361,46 @@ def makeQuestion(error_type, desired_result):
 			continue
 		wrong_stats_list = method(ratio, observed)
 		number_stats.append(wrong_stats_list)
+	if len(number_stats) > 2:
+		sys.exit(1)
 
 	#take the tables and shuffle them
 	number_stats.append(answer_stat_list)
+	print(f"answer_chi_sq={answer_chi_sq}")
 	shuffle_map = list(range(len(number_stats)))
 	random.shuffle(shuffle_map)
 	#print(shuffle_map)
 	shuffled_tables = []
+	new_number_stats = []
 	for i, index in enumerate(shuffle_map):
 		stats_list = number_stats[index]
-		numbers_table = createDataTable(stats_list, "Table {0}".format(i+1))
+		new_number_stats.append(stats_list)
+		numbers_table = createDataTable(stats_list, tables_list[i%3])
 		shuffled_tables.append(numbers_table)
-
 	#use the real values
-	final_chisq = float(answer_stat_list[-1])
 	df = 3
 	alpha = 0.05
-	result = getChiSquareResult(final_chisq, df, alpha)
+	result = getChiSquareResult(answer_chi_sq, df, alpha)
 	if not result.startswith(desired_result):
 		print("Woah! Unexpected result, it's okay though.")
 		print(desired_result, "!=", result)
-		print(final_chisq)
-		#sys.exit(1)
+		print(answer_chi_sq)
+		sys.exit(1)
 	#print(desired_result, result)
 	# this line below needed fixing for this problem to work!!!
+	#print(shuffle_map)
 	answer_num = shuffle_map.index(2)
+	if answer_chi_sq != float(new_number_stats[answer_num][-1]):
+		print("Woah! Unexpected result, it's okay though.")
+		print(answer_chi_sq, float(new_number_stats[answer_num][-1]))
+		sys.exit(1)
+	answer_str = choices_list[answer_num]
+	#print(answer_num, answer_str)
 	#print("answer_num", answer_num)
 	if result == 'accept_null':
 		answer_num += 3
+	answer_str = choices_list[answer_num]
+	print(answer_num, answer_str)
 
 	# write the question content
 	question = questionContent()
@@ -377,41 +413,34 @@ def makeQuestion(error_type, desired_result):
 
 	return complete_question, answer_num
 
-def getCode():
-	source = string.ascii_uppercase + string.digits
-	code = ''
-	for i in range(5):
-		code += random.choice(source)
-	code += ' - '
-	return code
-
 #===================
 #===================
 #===================
 #===================
 if __name__ == '__main__':
-	duplicates = 1
+	parser = argparse.ArgumentParser(description='Chi Square Question')
+	parser.add_argument('-d', '--duplicate-runs', type=int, dest='duplicate_runs',
+		help='number of questions to create', default=199)
+	args = parser.parse_args()
+
 	letters = "ABCDEFGHI"
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
 	print('writing to file: '+outfile)
 	f = open(outfile, 'w')
-	for i in range(duplicates):
-		for error_type in error_types:
-			for desired_result in ('accept', 'reject'):
-				print("")
-				print(desired_result)
-				complete_question, answer_num = makeQuestion(error_type, desired_result)
-				f.write("MC\t" + getCode() + complete_question)
-				answer = choices[answer_num]
-				choices_copy = copy.copy(choices)
-				#random.shuffle(choices_copy)
-				for k, c in enumerate(choices_copy):
-					if c == answer:
-						prefix = "*"
-						status = "Correct"
-					else:
-						prefix = ""
-						status = "Incorrect"
-					f.write("\t{0}\t{1}".format(c, status))
-					print("{0}{1}. {2}".format(prefix, letters[k], c))
-				f.write("\n")
+	N = 0
+	for i in range(args.duplicate_runs):
+		# three (3) types
+		error_type = random.choice(list(error_types.keys()))
+		# two (2) outcomes
+		desired_result = random.choice(('accept', 'reject'))
+		print(f"desired_result={desired_result} error_type={error_type}")
+		complete_question, answer_num = makeQuestion(error_type, desired_result)
+		print(answer_num)
+		answer_str = choices_list[answer_num]
+		print(answer_str)
+		choices_list_copy = copy.copy(choices_list)
+		N += 1
+		bbformat = bptools.formatBB_MC_Question(N, complete_question, choices_list_copy, answer_str)
+		f.write(bbformat)
+	f.close()
+	bptools.print_histogram()

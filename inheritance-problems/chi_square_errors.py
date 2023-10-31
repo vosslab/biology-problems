@@ -2,9 +2,11 @@
 
 import os
 import copy
-import string
 import random
+import argparse
 from scipy.stats.distributions import chi2
+
+import bptools
 
 ### types of errors
 # 0 * divide by the observed instead of expected
@@ -339,7 +341,7 @@ def chiSquareResults(chisq, critical_value, flip):
 #===================
 def questionContent(chisq, df, alpha, flip=False):
 
-	pvalue = get_p_value(chisq, df)
+	#pvalue = get_p_value(chisq, df)
 	critical_value = get_chisq_value(alpha, df)
 
 	question = ""
@@ -415,44 +417,30 @@ def makeQuestion(error_type):
 
 	return complete_question
 
-
-def getCode():
-	source = string.ascii_uppercase + string.digits
-	code = ''
-	for i in range(5):
-		code += random.choice(source)
-	code += ' - '
-	return code
-
-
 #===================
 #===================
 #===================
 #===================
 if __name__ == '__main__':
-	duplicates = 11
-	max_error_types = len(error2choice)
+	parser = argparse.ArgumentParser(description='Chi Square Question')
+	parser.add_argument('-d', '--duplicate-runs', type=int, dest='duplicate_runs',
+		help='number of questions to create', default=199)
+	args = parser.parse_args()
+
 	letters = "ABCDEFGHI"
+	max_error_types = len(error2choice)
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
 	print('writing to file: '+outfile)
 	f = open(outfile, 'w')
-	for i in range(duplicates):
-		for error_type in range(max_error_types):
-			print("")
-			complete_question = makeQuestion(error_type)
-
-			f.write("MC\t" + getCode() + complete_question)
-			choice_index = error2choice[error_type]
-			answer = choices[choice_index]
-			choices_copy = copy.copy(choices)
-			random.shuffle(choices_copy)
-			for k, c in enumerate(choices_copy):
-				if c == answer:
-					prefix = "*"
-					status = "Correct"
-				else:
-					prefix = ""
-					status = "Incorrect"
-				f.write("\t{0}\t{1}".format(c, status))
-				print("{0}{1}. {2}".format(prefix, letters[k], c))
-			f.write("\n")
+	N = 0
+	for i in range(args.duplicate_runs):
+		error_type = random.randit(0, max_error_types-1)
+		complete_question = makeQuestion(error_type)
+		answer_index = error2choice[error_type]
+		answer = choices[answer_index]
+		choices_list_copy = copy.copy(choices)
+		random.shuffle(choices_list_copy)
+		N += 1
+		bbformat = bptools.formatBB_MC_Question(N, complete_question, choices_list_copy, answer)
+		f.write(bbformat)
+	bptools.print_histogram()
