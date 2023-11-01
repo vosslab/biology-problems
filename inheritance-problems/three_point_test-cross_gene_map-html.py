@@ -4,17 +4,29 @@ import os
 import re
 import sys
 import copy
-import math
 import numpy
-import string
 import random
 
 import bptools
 import pointtestcrosslib as ptcl
 
-debug = False
+debug = True
 
 def getDistances():
+	possible_solutions = [
+		(10, 5, 16), (15, 10, 28),
+		(20, 5, 27), (20, 10, 34),
+		(20, 15, 41), (25, 2, 28),
+		(25, 4, 31), (25, 6, 34),
+		(25, 8, 37), (25, 10, 40),
+		(25, 12, 43), (25, 14, 46),
+		(30, 5, 38), (30, 10, 46)
+	]
+	solution = random.choice(possible_solutions)
+	if debug is True: print(f"distances={solution}")
+	return list(solution)
+
+def getDistancesOLD2():
 	#integers
 	"""key_maps = {
 		35:	[10, 20, 30, 40, ],
@@ -209,6 +221,7 @@ if __name__ == "__main__":
 		distances = getDistances()
 		progeny_size = ptcl.get_general_progeny_size(distances)
 		typemap = makeQuestion(basetype, geneorder, distances, progeny_size)
+		ptcl.gene_map_solver(typemap, basetype, progeny_size)
 		ascii_table = ptcl.make_progeny_ascii_table(typemap, progeny_size)
 		print(ascii_table)
 		html_table = ptcl.make_progeny_html_table(typemap, progeny_size)
