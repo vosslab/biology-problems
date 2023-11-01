@@ -11,6 +11,7 @@ from bs4 import BeautifulSoup
 debug = False
 
 #====================================
+#====================================
 phenotype_dict = {
 	'a': 'amber',
 	'b': 'bald',
@@ -40,47 +41,7 @@ phenotype_dict = {
 	'z': 'zipper',
 }
 
-
-#=============================
-#=============================
-def is_valid_html_table(html_str: str) -> bool:
-	"""
-		Check if the given HTML string represents a valid HTML table.
-
-		Parameters
-		----------
-		html_str : str
-			The HTML string to check.
-
-		Returns
-		-------
-		bool
-			True if the string represents a valid HTML table, False otherwise.
-	"""
-	# Parse the HTML string using BeautifulSoup
-	soup = BeautifulSoup(html_str, 'html.parser')
-
-	# Search for the first 'table' tag
-	table = soup.find('table')
-
-	# If there is no 'table' tag, it's not a valid HTML table
-	if not table:
-		return False
-
-	# Check for 'tr', 'td', and 'th' tags within the table
-	rows = table.find_all('tr')
-	for row in rows:
-		cells = row.find_all(['td', 'th'])
-		if not cells:
-			return False
-
-	# If the code reaches here, the HTML contains a well-structured table
-	return True
-
-# Simple assertion test for the function: 'is_valid_html_table'
-assert is_valid_html_table('<table><tr><td>Cell 1</td><td>Cell 2</td></tr></table>') == True
-assert is_valid_html_table('<p>This is not a table</p>') == False
-
+#====================================
 #====================================
 def get_phenotype_name(genotype: str) -> str:
 	"""
@@ -122,11 +83,53 @@ assert get_phenotype_name('+++') == '<i>wildtype</i>'
 assert get_phenotype_name('++') == '<i>wildtype</i>'
 
 #====================================
+#====================================
+def is_valid_html_table(html_str: str) -> bool:
+	"""
+		Check if the given HTML string represents a valid HTML table.
+
+		Parameters
+		----------
+		html_str : str
+			The HTML string to check.
+
+		Returns
+		-------
+		bool
+			True if the string represents a valid HTML table, False otherwise.
+	"""
+	# Parse the HTML string using BeautifulSoup
+	soup = BeautifulSoup(html_str, 'html.parser')
+
+	# Search for the first 'table' tag
+	table = soup.find('table')
+
+	# If there is no 'table' tag, it's not a valid HTML table
+	if not table:
+		return False
+
+	# Check for 'tr', 'td', and 'th' tags within the table
+	rows = table.find_all('tr')
+	for row in rows:
+		cells = row.find_all(['td', 'th'])
+		if not cells:
+			return False
+
+	# If the code reaches here, the HTML contains a well-structured table
+	return True
+
+# Simple assertion test for the function: 'is_valid_html_table'
+assert is_valid_html_table('<table><tr><td>Cell 1</td><td>Cell 2</td></tr></table>') == True
+assert is_valid_html_table('<p>This is not a table</p>') == False
+
+#====================================
+#====================================
 def get_distance():
 	#integers
 	return random.randint(2,45)
 
-#============================
+#====================================
+#====================================
 def get_general_progeny_size(distances: list) -> int:
 	"""
 	Numpydoc Comment
@@ -145,8 +148,8 @@ def get_general_progeny_size(distances: list) -> int:
 		print("determine progeny size")
 
 	# Copy the list and append 100 to find gcd with all distances
-	raw_values = copy.copy(distances)
-	raw_values.append(100)
+	# we add 100 so the final numbers round to two decimals places, 0.01
+	raw_values = distances + [100,]
 	gcdfinal = reduce(math.gcd, raw_values)
 
 	if debug is True:
@@ -177,14 +180,16 @@ def get_general_progeny_size(distances: list) -> int:
 		print(f"total progeny: {progeny_size}")
 
 	return progeny_size
+assert get_general_progeny_size([10,15]) % 200 == 0
 
-
+#====================================
 #====================================
 def get_progeny_size(distance: int) -> int:
 	return get_general_progeny_size([distance,])
+assert get_progeny_size(10) % 1000 == 0
 
-#=============================
-#=============================
+#====================================
+#====================================
 def make_progeny_html_table(typemap: dict, progeny_size: int) -> str:
 	"""
 		Create an HTML table representation of progeny data.
@@ -246,23 +251,149 @@ result = make_progeny_html_table(example_typemap, example_progeny_size)
 assert 'TOTAL =' in result
 assert f'{example_progeny_size:d}' in result
 
+#====================================
+#====================================
+def right_justify_int(num: int, length: int) -> str:
+	my_str = f'{num:d}'
+	while len(my_str) < length:
+		my_str = ' ' + my_str
+	return my_str
+assert right_justify_int(7,5) == "    7"
 
 #====================================
-def make_progeny_ascii_table(typemap, progeny_size):
-	alltypes = list(typemap.keys())
-	alltypes.sort()
-	table = ''
-	for genotype in alltypes:
+#====================================
+def make_progeny_ascii_table(typemap: dict, progeny_size: int) -> str:
+	"""
+	Numpydoc Comment
+	----------------
+	Parameters:
+		typemap : dict
+			Dictionary mapping genotypes to their corresponding counts
+		progeny_size : int
+			The total number of progenies
+
+	Returns:
+		str
+			The ASCII table representing the genotype and phenotype counts
+	"""
+
+	# Initialize an empty string to hold the table
+	table = '\n'
+
+	# Sort all types from the typemap keys
+	all_genotypes = list(typemap.keys())
+	all_genotypes.sort()
+	genes = all_genotypes[-1]
+
+	for gene in genes:
+		table += " -----"
+	table += " --------- ------------------"
+	table += "\n"
+	table += "|"
+	for gene in genes:
+		table += f"  {gene}  |"
+	table += "  count  | phenotype"
+	table += "\n"
+	for gene in genes:
+		table += " -----"
+	table += " --------- ------------------"
+	table += "\n"
+
+	# Loop through sorted genotypes to fill the table
+	for genotype in all_genotypes:
+		# Fetch the phenotype name based on the genotype
 		phenotype_string = get_phenotype_name(genotype)
+		table += "|"
+		# Add genotype to the table
 		for gene in genotype:
-			table += f"{gene}\t"
-		table += ("{0:d}\t".format(typemap[genotype]))
-		table += ("{0}\t".format(phenotype_string))
+			table += f"  {gene}  |"
+
+		# Add genotype count and phenotype name
+		table += f"{right_justify_int(typemap[genotype],7)}  |"
+		table += f" {phenotype_string}\t"
+
+		# Add newline to complete the row
 		table += "\n"
-	table +=  "\t\t\t-----\n"
-	table +=  "\t\tTOTAL\t%d\n\n"%(progeny_size)
+
+	for i in range(len(genes)):
+		table += " -----"
+	# Add delimiter and total progeny size at the end
+	table += " --------- ------------------"
+	table += "\n"
+	for i in range(len(genes)-1):
+		table += "      "
+	table += f"  TOTAL{right_justify_int(progeny_size,7)}\n\n"
+
+	# Return the completed table
 	return table
 
+#====================================
+#====================================
+def get_gene_distance(parental_types: tuple, gene_pair: tuple, typemap: dict, basetype: str, progeny_size: int) -> float:
+	# Identify which genes are NOT in the pair (i.e., unused genes)
+	unused_genes = [g for g in basetype if g not in gene_pair]
+
+	# Start with the parental types and flip one of the two genes in the pair
+	recomb1 = flip_gene_by_letter(parental_types[0], gene_pair[0], basetype)
+	recomb2 = flip_gene_by_letter(parental_types[1], gene_pair[0], basetype)
+
+	# Add them to the list of recombinants
+	recombinants = [recomb1, recomb2]
+
+	# Create new recombinants by flipping each unused gene in the recombinants generated so far
+	for unused_gene in unused_genes:
+		new_recombinants = [flip_gene_by_letter(recombinant, unused_gene, basetype) for recombinant in recombinants]
+		recombinants += new_recombinants
+
+	sum_progeny = 0
+	for recomb in recombinants:
+		sum_progeny += typemap[recomb]
+	distance = sum_progeny/float(progeny_size)*100.0
+	return distance
+
+#====================================
+#====================================
+def gene_map_solver(typemap: dict, basetype: str, progeny_size: int) -> str:
+	"""
+	Find recombinants based on typemap, basetype, and progeny_size.
+
+	Parameters
+	----------
+	typemap : dict
+		Dictionary containing genotype frequencies.
+	basetype : str
+		String containing the basic genotype.
+	progeny_size : int
+		Total number of progenies.
+
+	Returns
+	-------
+	str
+		Description of recombinants.
+	"""
+	#all_genotypes = list(typemap.keys())
+	sorted_typemap = sorted(typemap.items(), key=lambda x: x[1], reverse=True)
+	parental_types = (sorted_typemap[0][0], sorted_typemap[1][0])
+	#double_crossovers = (sorted_typemap[-1][0], sorted_typemap[-2][0])
+	print(f'parental_types = {parental_types}')
+	#print(f'double_crossovers = {double_crossovers}')
+
+	# Generate all unique combinations of two genes
+	gene_pairs = list(itertools.combinations(basetype, 2))
+
+	distances_dict = {}
+	for gene_pair in gene_pairs:
+		distance = get_gene_distance(parental_types, gene_pair, typemap, basetype, progeny_size)
+		distances_dict[gene_pair] = distance
+
+	#gene_pair_keys = list(distances_dict.keys())
+	distances_tuples_list = sorted(distances_dict.items(), key=lambda x: x[1], reverse=False)
+	#print(distances_tuples_list)
+
+	for gene_pair, distance in distances_tuples_list:
+		print(f'\t{gene_pair[0]} and {gene_pair[1]}: {distance:.3f}')
+
+#====================================
 #====================================
 def generate_type_counts(parental_type, basetype, progeny_size, distance, geneorder):
 	type_counts = {}
@@ -309,9 +440,9 @@ def generate_type_counts(parental_type, basetype, progeny_size, distance, geneor
 	if debug is True: print("parental count_1=", parent_count_1)
 	type_counts[invert_genotype(parental_type, basetype)] = parent_count_2
 	if debug is True: print("parental count_2=", parent_count_2)
-
 	return type_counts
 
+#====================================
 #====================================
 def invert_genotype(genotype: str, basetype: str) -> str:
 	"""
@@ -346,6 +477,7 @@ assert invert_genotype('+b+d', 'abcd') == 'a+c+'
 assert invert_genotype('+b+', 'abc') == 'a+c'
 assert invert_genotype('+b', 'ab') == 'a+'
 
+#====================================
 #====================================
 def flip_gene_by_letter(genotype: str, gene_letter: str, basetype: str) -> str:
 	"""
@@ -387,7 +519,7 @@ assert flip_gene_by_letter('+b+d', 'b', 'abcd') == '+++d'
 assert flip_gene_by_letter('+b+', 'c', 'abc') == '+bc'
 assert flip_gene_by_letter('+b', 'a', 'ab') == 'ab'
 
-
+#====================================
 #====================================
 def flip_gene_by_index(genotype: str, gene_index: int, basetype: str) -> str:
 	"""
@@ -429,8 +561,7 @@ assert flip_gene_by_index('+b+d', 2, 'abcd') == '+++d'
 assert flip_gene_by_index('+b+', 3, 'abc') == '+bc'
 assert flip_gene_by_index('+b', 1, 'ab') == 'ab'
 
-
-
+#====================================
 #====================================
 def get_random_gene_order(basetype: str) -> str:
 	"""
