@@ -1,14 +1,235 @@
 
 import sys
-import copy
 import math
-import numpy
 import random
 import itertools
-from functools import reduce
 from bs4 import BeautifulSoup
 
 debug = False
+
+#===========================================================
+#===========================================================
+"""
+# Two gene example
+self.num_genes_int = 2
+self.gene_letters_str = 'ab'
+self.gene_order_str = 'ab'
+self.distances_dict = {
+	(1, 2): 12,  # 'ab'
+}
+self.progeny_count_int = 1220
+self.parental_genotypes_tuple = ('++', 'ab')
+self.double_crossover_genotypes_tuple = None
+self.interference_dict = {
+	(1, 2): None,  # adjacent genes: 'ab',
+}
+
+#===========================================================
+#===========================================================
+# Three gene example
+self.num_genes_int = 3
+self.gene_letters_str = 'abc'  # alphabetical
+self.gene_order_str = 'bac'
+self.distances_dict = {  # alphabetical numbering
+	(1, 2): 12,  # 'ab'
+	(1, 3): 16,  # 'ac'
+	(2, 3): 24,  # 'bc'
+}
+self.progeny_count_int = 1220
+self.parental_genotypes_tuple = ('+++', 'abc')
+self.double_crossover_genotypes_tuple = ('a++', '+bc')
+self.interference_dict = {  # alphabetical numbering
+	(1, 2): None,  # adjacent genes: 'ab',
+	(1, 3): None,  # adjacent genes: 'ac',
+	(2, 3): (1, 4),  # max distance: 'bc'
+}
+
+#===========================================================
+#===========================================================
+# Four gene example
+self.num_genes_int = 4
+self.gene_letters_str = 'abcd'  # alphabetical
+self.gene_order_str = 'bacd'
+self.distances_dict = {  # alphabetical numbering
+	(1, 2): 12,  # 'ab' adjacent
+	(1, 3): 16,  # 'ac' adjacent
+	(1, 4): 20,  # 'ad' double
+	(2, 3): 24,  # 'bc' double
+	(2, 4): 30,  # 'bd' triple
+	(3, 4): 8,   # 'cd' adjacent
+}
+self.progeny_count_int = 1220
+self.parental_genotypes_tuple = ('++++', 'abcd')
+self.double_crossover_genotypes_tuple = None
+self.double_crossover_genotypes_dict = None
+self.triple_crossover_genotypes_tuple = ('a++d', '+bc+')
+self.interference_dict = {  # alphabetical numbering
+	(1, 2): None,  # adjacent genes: 'ab',
+	(1, 3): None,  # adjacent genes: 'ac',
+	(1, 4): (1, 4),  # distance: 'acd'
+	(2, 3): (1, 4),  # distance: 'bac'
+	(2, 4): (1, 2),  # distance: 'bacd' = 'acd' + 'bac'?
+	(3, 4): None,   # adjacent genes: 'cd'
+}
+"""
+#===========================================================
+#===========================================================
+class GeneMappingLib:
+	#global cls variable
+	_distance_triplet_list_cache = None
+
+	#===========================================================
+	#===========================================================
+	def __init__(self, num_genes_int: int, question_count: int) -> None:
+		if num_genes_int < 2:
+			raise ValueError("Too few genes, num_genes_int must be at least 2")
+		if num_genes_int > 4:
+			raise ValueError("Too many genes, num_genes_int cannot be more than 4")
+		self.num_genes_int = num_genes_int
+		self.question_count_int = question_count
+		self.set_gene_letters()  # This will set self.gene_letters_str
+		self.set_gene_order()
+
+		self.distances_dict = None
+		self.progeny_count_int = -1
+		self.parental_genotypes_tuple = None
+		self.double_crossover_genotypes_tuple = None
+		self.triple_crossover_genotypes_tuple = None
+		self.interference_dict = None
+
+	#===========================================================
+	#===========================================================
+	def set_gene_letters(self) -> None:
+		lowercase = "abcdefghijklmnpqrsuvwxyz"  # Make sure this has the letters you want
+		gene_letters_set = set()
+		while len(gene_letters_set) < self.num_genes_int:
+			gene_letters_set.update(random.choice(lowercase))  # Add a randomly chosen letter
+
+		# Sort after the set has the correct number of elements
+		gene_letters_list = sorted(gene_letters_set)
+		self.gene_letters_str = ''.join(gene_letters_list)  # Create string from sorted list
+
+	#===========================================================
+	#===========================================================
+	def set_gene_order(self) -> None:
+		gene_order_list = list(self.gene_letters_str)
+		random.shuffle(gene_order_list)
+		gene_order_list = min(gene_order_list, gene_order_list[::-1])
+		self.gene_order_str = ''.join(gene_order_list)
+
+	#===========================================================
+	#===========================================================
+	def print_gene_map_data(self) -> None:
+		print(f'self.num_genes_int = {self.num_genes_int}')
+		print(f'self.gene_letters_str = {self.gene_letters_str}')
+		print(f'self.gene_order_str = {self.gene_order_str}')
+		if self.distances_dict is not None:
+			print('self.distances_dict = {')
+			for key, value in self.distances_dict.items():
+				print(f'{key}: {value:02d} # gene '
+					+f'{self.gene_letters_str[key[0]].upper()} and '
+					+f'{self.gene_letters_str[key[1]].upper()} '
+				)
+			print('}')
+		if self.progeny_count_int > 0:
+			print(f'self.progeny_count_int = {self.progeny_count_int}')
+		if self.parental_genotypes_tuple is not None:
+			print(f'self.parental_genotypes_tuple = {self.parental_genotypes_tuple}')
+		if self.double_crossover_genotypes_tuple is not None:
+			print(f'self.double_crossover_genotypes_tuple = {self.double_crossover_genotypes_tuple}')
+		if self.triple_crossover_genotypes_tuple is not None:
+			print(f'self.triple_crossover_genotypes_tuple = {self.triple_crossover_genotypes_tuple}')
+		if self.interference_dict is not None:
+			print('self.distances_dict = {')
+			for key, value in self.interference_dict.items():
+				if value is None:
+					print(f'{key}: {value} # adjacent genes '
+						+f'{self.gene_letters_str[key[0]].upper()} and '
+						+f'{self.gene_letters_str[key[1]].upper()} '
+					)
+				else:
+					print(f'{key}: {value} # distance btw '
+						+f'{self.gene_letters_str[key[0]].upper()} and '
+						+f'{self.gene_letters_str[key[1]].upper()} '
+					)
+			print('}')
+
+	#===========================================================
+	#===========================================================
+	def map_gene_order_to_alphabetical(self, gene_order_index) -> None:
+		if gene_order_index < 1 or gene_order_index > self.num_genes_int:
+			raise ValueError(f'gene order index must be 1 <= {gene_order_index} <= {self.num_genes_int}')
+		gene_letter = self.gene_order_str[gene_order_index]
+		gene_alphabet_index = self.gene_letters_str.find(gene_letter) + 1
+		return gene_alphabet_index
+
+	#===========================================================
+	#===========================================================
+	def map_gene_order_pair_to_alphabetical_pair(self, gene_order_index1, gene_order_index2) -> None:
+		gene_alphabet_index1 = self.map_gene_order_to_alphabetical(gene_order_index1)
+		gene_alphabet_index2 = self.map_gene_order_to_alphabetical(gene_order_index2)
+		if gene_alphabet_index1 < gene_alphabet_index2:
+			return gene_alphabet_index1, gene_alphabet_index2
+		else:
+			return gene_alphabet_index2, gene_alphabet_index1
+
+	#===========================================================
+	#===========================================================
+	def set_gene_distances(self, min_distance=2, max_distance=48) -> None:
+		if self.num_genes_int == 2:
+			distance = random.randint(min_distance,max_distance)
+			self.distances_dict = { (1,2): distance, }
+		elif self.num_genes_int == 3:
+			distance_triplet_list = self.get_distance_triplets()
+			distance_triplet_tuple = random.choice(distance_triplet_list)
+			pair_tuple = self.map_gene_order_pair_to_alphabetical_pair(1,2)
+			self.distances_dict[pair_tuple] = distance_triplet_tuple[0]
+			pair_tuple = self.map_gene_order_pair_to_alphabetical_pair(2,3)
+			self.distances_dict[pair_tuple] = distance_triplet_tuple[1]
+			pair_tuple = self.map_gene_order_pair_to_alphabetical_pair(1,3)
+			self.distances_dict[pair_tuple] = distance_triplet_tuple[2]
+
+	#====================================
+	#====================================
+	@classmethod
+	def get_distance_triplets(cls, max_fraction_int: int=12) -> list:
+		if cls._distance_triplet_list_cache is not None:
+			return cls._distance_triplet_list_cache
+		used_values = {}
+		distance_triplet_list = []
+		for numerator_prime  in range(1,max_fraction_int):
+			for denominator_prime in range(numerator_prime+1,max_fraction_int+1):
+				gcd_prime = math.gcd(numerator_prime ,denominator_prime )
+				numerator = numerator_prime // gcd_prime
+				denominator= denominator_prime // gcd_prime
+				if used_values.get((numerator,denominator)) is None:
+					used_values[(numerator,denominator)] = True
+					new_distance_triplet_list = cls.distance_triplet_generator((numerator,denominator))
+					if new_distance_triplet_list is not None:
+						#print(f'distance_generator for interference={numerator:02d}/{denominator:02d} '
+						#	+f'gives {len(new_distance_triplet_list):02d} results')
+						distance_triplet_list += new_distance_triplet_list
+		print(f'found {len(distance_triplet_list)} from all interference fractions up to denominator {max_fraction_int}')
+		cls._distance_triplet_list_cache = distance_triplet_list
+		return distance_triplet_list
+
+	#====================================
+	#====================================
+	@staticmethod
+	def distance_triplet_generator(interference_tuple: tuple=(0,1), max_dist=47):
+		distance_triplet_list = []
+		for x in range(1, max_dist):
+			for y in range(x, max_dist):
+				z = calculate_third_distance(x, y, interference_tuple)
+				if y < z < max_dist and is_almost_integer(z):
+					distance_tuple =(y,x,int(z))
+					if min_difference(distance_tuple) > 1:
+						distance_triplet_list.append(distance_tuple)
+		distance_triplet_list.sort()
+		#print(f'distance_generator for interference={interference_tuple} gives {len(distance_triplet_list)} results')
+		#print(distance_triplet_list)
+		return distance_triplet_list
+
 
 #====================================
 #====================================
@@ -130,63 +351,201 @@ def get_distance():
 
 #====================================
 #====================================
-def get_general_progeny_size(distances: list) -> int:
+def distance_triplet_generator(interference_tuple: tuple=(0,1), max_dist=47):
+	distance_triplet_list = []
+	for x in range(1, max_dist):
+		for y in range(x, max_dist):
+			z = calculate_third_distance(x, y, interference_tuple)
+			if y < z < max_dist and is_almost_integer(z):
+				distance_tuple =(y,x,int(z))
+				if min_difference(distance_tuple) > 1:
+					distance_triplet_list.append(distance_tuple)
+	distance_triplet_list.sort()
+	#print(f'distance_generator for interference={interference_tuple} gives {len(distance_triplet_list)} results')
+	#print(distance_triplet_list)
+	return distance_triplet_list
+
+#====================================
+#====================================
+def get_all_distance_triplets(max_fraction_int: int=12) -> list:
+	used_values = {}
+	distance_triplet_list = []
+	for numerator_prime  in range(1,max_fraction_int):
+		#for denominator_prime in range(max(numerator_prime+1,12),max_fraction_int+1):
+		for denominator_prime in range(numerator_prime+1,max_fraction_int+1):
+			gcd_prime = math.gcd(numerator_prime ,denominator_prime )
+			numerator = numerator_prime // gcd_prime
+			denominator= denominator_prime // gcd_prime
+			if used_values.get((numerator,denominator)) is None:
+				used_values[(numerator,denominator)] = True
+				new_distance_triplet_list = distance_triplet_generator((numerator,denominator))
+				if new_distance_triplet_list is not None:
+					#print(f'distance_generator for interference={numerator:02d}/{denominator:02d} gives {len(new_distance_triplet_list):02d} results')
+					distance_triplet_list += new_distance_triplet_list
+	print(f'found {len(distance_triplet_list)} from all interference fractions up to denominator {max_fraction_int}')
+	return distance_triplet_list
+
+#====================================
+#====================================
+def calculate_third_distance(x: int, y: int, interference_tuple: tuple=(0,1)) -> float:
 	"""
-	Numpydoc Comment
-	----------------
+	Calculates the recombination distance between two outer genes (A and C)
+	given the recombination distances between inner gene pairs (A-B and B-C)
+	and a specified level of interference.
+
 	Parameters:
-		distances : list
-			List of distances
+	- x: float, recombination distance between genes A and B. 0 < x < 0.5.
+	- y: float, recombination distance between genes B and C. x < y < 0.5.
+	- interference: float, the interference value, typically between 0 and 1.
 
 	Returns:
-		int
-			The optimal progeny size
+	- float, recombination distance between genes A and C.
+
+	Derivation and Assumptions:
+	- The number of expected double crossovers is calculated as dco = x * y * (1 - interference).
+	- Single crossovers for A-B and B-C are derived as sco(x) = x - dco and
+	  sco(y) = y - dco, respectively.
+	- The distance z between A and C is calculated as z = x + y - 2 * dco,
+	  where dco contributes to both x and y but cancels out for z.
+
+	interference:
+	- Incorporates the level of interference in the calculation.
+	- In genetics, "interference" is defined as the degree to which one
+	  crossover event interferes with additional crossovers in the same region.
+	  If interference = 1, it means complete interference (no double crossovers occur).
+	  If interference = 0, it means no interference (double crossovers occur as expected).
 	"""
 
-	# Check if debug flag is active
-	if debug is True:
-		print("determine progeny size")
+	# Validate the input constraints: 0 < x < 0.5, x < y < 0.5, and 0 <= interference <= 1
+	if x < 1 or x >= 50 or y < 1 or y >= 50:
+		raise ValueError("Invalid input values. Make sure 1 < x < 50 and 1 < y < 50.")
+	a = interference_tuple[0]
+	b = interference_tuple[1]
+	interference_float = a/float(b)
+	if interference_float < 0 or interference_float > 1:
+		raise ValueError("Invalid input values. Make sure 0 <= interference <= 1.")
+	# Calculate the number of expected double crossovers with interference
+	# 1 - a/b == (b-a)/b
+	dco = x * y * (b - a) / 100. / b
+	if not is_almost_integer(2*dco):
+		print(f'x={x}; y={y}; interference={a}/{b}')
+		print(f'double crossovers is NOT integer!!! {dco:.4f}')
+		#raise ValueError(f'double crossovers is NOT integer!!! {dco:.4f}')
+		#return -1
+	# Calculate the distance z between genes A and C
+	z = x + y - 2 * dco
 
-	# Copy the list and append 100 to find gcd with all distances
-	# we add 100 so the final numbers round to two decimals places, 0.01
-	raw_values = distances + [100,]
-	gcdfinal = reduce(math.gcd, raw_values)
+	return z
 
-	if debug is True:
-		print(f"Final GCD: {gcdfinal}")
+#====================================
+#====================================
+def min_difference(numbers: list) -> int:
+	"""
+	Find the minimum difference between any two consecutive integers in a sorted list.
 
-	# Calculate base, min, and max progeny sizes
-	progenybase = 100 / gcdfinal
-	minprogeny = 900 / progenybase
-	maxprogeny = 6000 / progenybase
+	Parameters
+	----------
+	numbers : list
+		A list of integers.
 
-	# Create an array of possible progeny sizes
-	progs = numpy.arange(minprogeny, maxprogeny + 1, 1, dtype=numpy.float64) * progenybase
+	Returns
+	-------
+	int
+		The smallest difference found between any two consecutive integers.
+	"""
+	if isinstance(numbers, tuple):
+		numbers = list(numbers)
+	# Sort the list in place
+	numbers.sort()
+	# Calculate differences using list comprehension
+	differences = [numbers[i+1] - numbers[i] for i in range(len(numbers) - 1)]
+	# Return the smallest difference
+	return min(differences)
+assert min_difference([40, 41]) == 1
+assert min_difference([30, 15, 36]) == 6
+assert min_difference([84, 25, 24, 37]) == 1
+assert min_difference([84, 30, 30, 42, 56, 72]) == 0
 
-	# Shuffle the array to randomize
-	numpy.random.shuffle(progs)
+#====================================
+#====================================
+def is_almost_integer(num: float, epsilon: float = 1e-6) -> bool:
+	"""
+	Checks if a float number is close to an integer within a given epsilon.
 
-	# Calculate bases by multiplying with square of all distances and dividing by 1e4
-	bases = progs * reduce(lambda x, y: x * y, distances) / 1e4
+	Parameters
+	----------
+	num : float
+		The number to check.
+	epsilon : float, optional
+		The tolerance level for being close to an integer. Default is 1e-6.
 
-	# Calculate the deviations from the nearest integers
-	devs = (bases - numpy.around(bases, 0))**2
+	Returns
+	-------
+	bool
+		True if the number is close to an integer, False otherwise.
+	"""
+	# Calculate the absolute difference between the number and its nearest integer
+	difference = abs(num - round(num))
+	# Check if the difference is within the given epsilon and return the result
+	return difference < epsilon
+# Simple assertion tests for the function: 'is_almost_integer'
+assert is_almost_integer(5.0000001)  == True
+assert is_almost_integer(5.001)      == False
 
-	# Find the minimum deviation and corresponding progeny size
-	argmin = numpy.argmin(devs)
-	progeny_size = int(progs[argmin])
+#====================================
+#====================================
+def get_general_progeny_size(distances: list) -> int:
+	"""
+	Calculate a suitable progeny size based on genetic distances.
 
-	if debug is True:
-		print(f"total progeny: {progeny_size}")
+	Parameters
+	----------
+	distances : list
+		A list of genetic distances between genes.
 
-	return progeny_size
-assert get_general_progeny_size([10,15]) % 200 == 0
+	Returns
+	-------
+	int
+		A calculated progeny size that factors in the provided genetic distances.
+
+	"""
+	# lazy method 1: just use 200
+	progeny_base = 200
+	multiplier = random.randint(900//200+1, 9900//200-1)
+	return multiplier * progeny_base
+	# more unique progeny numbers, GCD method 2
+	# goal is to get the smallest progeny_base for set of distances
+	# smallest progeny_base possible is 20
+	# Calculate the greatest common divisor of the distances
+	gcdf1 = math.gcd(*distances)
+	# Why GCD with 40?
+	# prime factors of 200 = 2^3 x 5^2
+	# 200 / 3 and 200 / 7 are not integers, so must be multiple of 2 and 5
+	# for each d in distances, d must be in range 1 < d < 49 = the max
+	# 2^3= 8:  8,16,24 is GOOD
+	# 2^4=16: 16,32,48 is too big <- also 200/16 is not int.
+	# 5^1= 5:  5,10,15 is GOOD
+	# 5^2=25: 25,50,75 is too big
+	# Calculate the GCD with 40 = 2^3 x 5^1 to find a common scale factor
+	gcdfinal = math.gcd(40, gcdf1)
+	# Determine the base progeny size by dividing 200 by the final GCD
+	progeny_base = 200 // gcdfinal
+	# Compute the minimum progeny multiplier by dividing 900 by progeny base and adding 1
+	min_progeny_multiplier = 900 // progeny_base + 1
+	# Compute the maximum progeny multiplier by dividing 9900 by progeny base and subtracting 1
+	max_progeny_multiplier = 9900 // progeny_base - 1
+	# Generate a random multiplier between the min and max progeny multiplier
+	multiplier = random.randint(min_progeny_multiplier, max_progeny_multiplier)
+	# Return the final calculated progeny size
+	return multiplier * progeny_base
+assert get_general_progeny_size([2, 3, 7]) % 200 == 0
+#assert get_general_progeny_size([10, 20, 30]) % 20 == 0
 
 #====================================
 #====================================
 def get_progeny_size(distance: int) -> int:
 	return get_general_progeny_size([distance,])
-assert get_progeny_size(10) % 1000 == 0
+assert get_progeny_size(10) % 200 == 0
 
 #====================================
 #====================================
@@ -374,28 +733,123 @@ def gene_map_solver(typemap: dict, basetype: str, progeny_size: int) -> str:
 	#all_genotypes = list(typemap.keys())
 	sorted_typemap = sorted(typemap.items(), key=lambda x: x[1], reverse=True)
 	parental_types = (sorted_typemap[0][0], sorted_typemap[1][0])
-	#double_crossovers = (sorted_typemap[-1][0], sorted_typemap[-2][0])
-	print(f'parental_types = {parental_types}')
+	observed_double_crossovers = sorted_typemap[-1][1] + sorted_typemap[-2][1]
+	#print(f'parental_types = {parental_types}')
 	#print(f'double_crossovers = {double_crossovers}')
 
 	# Generate all unique combinations of two genes
 	gene_pairs = list(itertools.combinations(basetype, 2))
 
 	distances_dict = {}
+	distances_list = []
 	for gene_pair in gene_pairs:
 		distance = get_gene_distance(parental_types, gene_pair, typemap, basetype, progeny_size)
 		distances_dict[gene_pair] = distance
+		distances_list.append(distance)
 
 	#gene_pair_keys = list(distances_dict.keys())
-	distances_tuples_list = sorted(distances_dict.items(), key=lambda x: x[1], reverse=False)
 	#print(distances_tuples_list)
 
+	distances_list.sort()
+	predict_dist = calculate_third_distance(distances_list[1], distances_list[0])
+	expected_double_crossovers = distances_list[0]*distances_list[1]*progeny_size/10000.
+	print(f'distances=({distances_list[1]:.0f}, {distances_list[0]:.0f}) and {distances_list[2]:.3f} vs {predict_dist:.1f})')
+	if abs(expected_double_crossovers - observed_double_crossovers) > 1e-6:
+		interference = 1.0 - observed_double_crossovers/expected_double_crossovers
+		print(f'Expected DCO: {expected_double_crossovers} vs Observed DCO: {observed_double_crossovers}; Interference {interference}')
+		sys.exit(1)
+
+	"""
+	distances_tuples_list = sorted(distances_dict.items(), key=lambda x: x[1], reverse=False)
 	for gene_pair, distance in distances_tuples_list:
-		print(f'\t{gene_pair[0]} and {gene_pair[1]}: {distance:.3f}')
+		if abs(distance - round(distance)) > 1e-6:
+			dist_text = f'{distance:.4f}'
+		else:
+			dist_text = f'{distance:.2f}'
+		print(f'\t{gene_pair[0]} and {gene_pair[1]}: {dist_text}')
+	"""
 
 #====================================
 #====================================
-def generate_type_counts(parental_type, basetype, progeny_size, distance, geneorder):
+def get_interfernce(parental_type, basetype, progeny_size, distance, geneorder):
+	pass
+
+#====================================
+#====================================
+def generate_genotype_counts(parental_type: str, basetype: str, progeny_size: int, distances: tuple, geneorder: str) -> dict:
+	"""
+	A - x - B - y - C
+	A - z - C
+	determine interference_tuple
+
+	determine DCO from A-B
+	determine DCO from A-C
+	get interference_tuple?
+
+	make sure DCO is an integer
+
+	determine SCO(x) for A-B genotype pairs, subtract DCO
+	determine SCO(y) for B-C genotype pairs, subtract DCO
+
+	leftover is for Parental genotype pairs
+	"""
+	pass
+
+def generate_three_gene_type_map(types: list, type_counts: dict, basetype: str) -> dict:
+	if debug is True: print("\n\ngenerate progeny data")
+	typemap = {}
+	for t in types:
+		n = ptcl.invert_genotype(t, basetype)
+		#rand = random.gauss(0.5, 0.01)
+		try:
+			count = type_counts[t]
+		except KeyError:
+			count = type_counts[n]
+		tcount = 0
+		ncount = 0
+		for i in range(count):
+			if random.random() > 0.5:
+				tcount += 1
+			else:
+				ncount += 1
+		#sys.stderr.write(".")
+		#typemap[t] = int(rand * count)
+		#typemap[n] = count - typemap[t]
+		typemap[t] = tcount
+		typemap[n] = ncount
+	sys.stderr.write("\n")
+	return typemap
+
+def generate_three_gene_type_counts(parental: str, doublecross: str, basetype: str, progeny_size: int, geneorder: str) -> dict:
+	type_counts = {}
+	if debug is True: print("determine double type")
+	doubletype = ptcl.flip_gene_by_letter(parental, geneorder[1], basetype)
+	doublecount = int(round(doublecross*progeny_size/100.))
+	if debug is True: print("  ", doubletype, ptcl.invert_genotype(doubletype, basetype), doublecount)
+	type_counts[doubletype] = doublecount
+
+	if debug is True: print("determine first flip")
+	firsttype = ptcl.flip_gene_by_letter(parental, geneorder[0], basetype)
+	firstcount = int(round(distances[0]*progeny_size/100.)) - doublecount
+	if debug is True: print("  ", firsttype, ptcl.invert_genotype(firsttype, basetype), firstcount)
+	type_counts[firsttype] = firstcount
+
+	if debug is True: print("determine second flip")
+	secondtype = ptcl.flip_gene_by_letter(parental, geneorder[2], basetype)
+	secondcount = int(round(distances[1]*progeny_size/100.)) - doublecount
+	if debug is True: print("  ", secondtype, ptcl.invert_genotype(secondtype, basetype), secondcount)
+	type_counts[secondtype] = secondcount
+
+	if debug is True: print("determine parental type count")
+	parentcount = progeny_size - doublecount - firstcount - secondcount
+	if debug is True: print("  ", parental, ptcl.invert_genotype(parental, basetype), parentcount)
+	type_counts[parental] = parentcount
+
+	return type_counts
+
+#====================================
+#====================================
+def generate_two_gene_type_counts(parental_type: str, basetype: str, progeny_size: int, distance: int, geneorder: str) -> dict:
 	type_counts = {}
 	recombinant_type_1 = flip_gene_by_letter(parental_type, geneorder[0], basetype)
 	if debug is True: print("recombinant type 1=", recombinant_type_1)

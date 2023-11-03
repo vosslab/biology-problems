@@ -4,51 +4,51 @@ import os
 import re
 import sys
 import copy
-import math
 import numpy
 import random
 
 import bptools
 import pointtestcrosslib as ptcl
 
-debug = False
-possible_distance_solutions = ptcl.get_all_distance_triplets()
+debug = True
+
+def get_possible_y_values():
+	# Initialize an empty list to store possible y values
+	possible_y_values = []
+
+	# Loop through possible x values
+	for x in range(7, 41):  # x is from 15 to 35
+		# Loop through possible y values (positive integers greater than zero)
+		for y in range(2, x):  # I'm limiting y up to 1000 for the example
+			# Check if xy/50 is an integer
+			if (x * y) % 50 == 0:
+				# Calculate z
+				z = x + y + (x * y) // 50  # using // for integer division
+
+				# Check if z > x and z < 46
+				if z <= 47:
+					# Append to possible_y_values if all conditions are met
+					possible_y_values.append((x, y, z))
+
+	# Print out the possible (x, y) pairs
+	possible_y_values.sort()
+	print(f'found {len(possible_y_values)} solutions!!')
+	print(f'possible_y_values={possible_y_values}')
+	return possible_y_values
 
 def getDistances():
-	solution = random.choice(possible_distance_solutions)
-	print(f"distances={solution}")
+	possible_solutions = [
+		(10, 5, 16), (15, 10, 28),
+		(20, 5, 27), (20, 10, 34),
+		(20, 15, 41), (25, 2, 28),
+		(25, 4, 31), (25, 6, 34),
+		(25, 8, 37), (25, 10, 40),
+		(25, 12, 43), (25, 14, 46),
+		(30, 5, 38), (30, 10, 46)
+	]
+	solution = random.choice(possible_solutions)
 	if debug is True: print(f"distances={solution}")
 	return list(solution)
-
-def getDistancesOLD2():
-	#integers
-	"""key_maps = {
-		35:	[10, 20, 30, 40, ],
-		30:	[ 5, 10, 15, 20, 25, 35,],
-		25:	[ 2,  4,  6,  8, 12, 14, 16, 18, 22,],
-		20:	[ 5, 10, 15, 25, 30, 35,],
-		15:	[10, 20, 30, 40, ],
-		10:	[ 5, 15, 20, 25, 30, 35,],
-		5:	[10, 20, 30, 40, ],
-	}"""
-	#a = random.choice(list(key_maps.keys()))
-	#b = random.choice(key_maps[a])
-	a = random.randint(15,35)
-	b = random.randint(2,a-2)
-	if a == b:
-		print("ERROR")
-		sys.exit(1)
-	if debug is True: print("determine gene distances")
-	distances = [a, b]
-	random.shuffle(distances)
-	distance_calculator(distances[0], distances[1])
-	distance3 = int(distances[0] + distances[1] - (distances[0] * distances[1])/50)
-	distances.append(distance3)
-	if debug is True: print(distances)
-	return distances
-
-def distance_calculator(x, y):
-	return x + y - 2*x*y/100
 
 def getDistancesOriginal():
 	if debug is True: print("determine gene distances")
@@ -78,7 +78,7 @@ def generateProgenyData(types, type_counts, basetype):
 				tcount += 1
 			else:
 				ncount += 1
-		#sys.stderr.write(".")
+		sys.stderr.write(".")
 		#typemap[t] = int(rand * count)
 		#typemap[n] = count - typemap[t]
 		typemap[t] = tcount
@@ -207,20 +207,20 @@ if __name__ == "__main__":
 	print('writing to file: '+outfile)
 	f = open(outfile, 'w')
 	duplicates = 1
-	j = -199
+	j = -1
 	N = 0
 	for i in range(duplicates):
 		N += 1
-		j = N % (len(lowercase) - 2)
-		print(f'N={N}')
-		basetype = lowercase[j:j+3]
+		j += 1
+		if j + 2 == len(lowercase):
+			j = 0
+		basetype = lowercase[j:j+4]
 		geneorder = ptcl.get_random_gene_order(basetype)
 		distances = getDistances()
 		progeny_size = ptcl.get_general_progeny_size(distances)
 		typemap = makeQuestion(basetype, geneorder, distances, progeny_size)
-		ptcl.gene_map_solver(typemap, basetype, progeny_size)
-		continue
 		ascii_table = ptcl.make_progeny_ascii_table(typemap, progeny_size)
+		ptcl.gene_map_solver(typemap, progeny_size)
 		print(ascii_table)
 		html_table = ptcl.make_progeny_html_table(typemap, progeny_size)
 		#print(html_table)
@@ -230,6 +230,5 @@ if __name__ == "__main__":
 		final_question = formatBB_FIB_PLUS_Question(N, complete_question, variable_list, geneorder, distances)
 		#print(final_question)
 		f.write(final_question)
-		print('\n\n')
 	f.close()
 #THE END
