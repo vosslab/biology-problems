@@ -7,6 +7,70 @@ from bs4 import BeautifulSoup
 
 debug = False
 
+#====================================
+#====================================
+phenotype_dict = {
+	'a': 'artsy',
+	'b': 'bumpy',
+	'c': 'chummy',
+	'd': 'dewy',
+	'e': 'electric',
+	'f': 'fuzzy',
+	'g': 'gooey',
+	'h': 'horsey',
+	'i': 'icy',
+	'j': 'jolty',
+	'k': 'kidney',
+	'l': 'leafy',
+	'm': 'mushy',
+	'n': 'nerdy',
+	'o': 'okra',
+	'p': 'prickly',
+	'q': 'quacky',
+	'r': 'rusty',
+	's': 'spicy',
+	't': 'tipsy',
+	'u': 'ugly',
+	'v': 'valley',
+	'w': 'waxy',
+	'x': 'xanthine',
+	'y': 'yucky',
+	'z': 'zippy',
+}
+
+#====================================
+#====================================
+# Dictionary to describe hypothetical fruit fly phenotypes
+phenotype_description_dict = {
+	'artsy':   'has wings that are colorful and distinctive patterns.',
+	'bumpy':   'has a skin texture that is not smooth, but rough with small bumps all over.',
+	'chummy':  'shows behavior where it maintains a close distance to other flies.',
+	'dewy':    'appears moist, with its body covered in tiny droplets of water.',
+	'eery':    'appears to have something off, crooked limbs and other appendages.',
+	'fuzzy':   'is covered in a dense layer of hairs, giving it a soft appearance.',
+	'gooey':   'is coated with a thick, sticky substance, suggestive of a viscous bodily secretion.',
+	'horsey':  'is quite big and strong-looking, much larger than your typical fruit fly.',
+	'icy':     'has a frosted appearance, with a sheen like a layer of frost.',
+	'jolty':   'moves in rapid and sudden movements, displaying an unpredictable flight pattern.',
+	'kidney':  'has a body shape that is curved, similar to a kidney bean.',
+	'leafy':    'has wings that resemble the shape and pattern of leaves.',
+	'mushy':    'feels soft to the touch, unusually squishy, unlike the usual firmness.',
+	'nerdy':    'has large, prominent eyes that stand out, much like thick-rimmed glasses.',
+	'okra':     'features a long, slender body, resembling the shape of an okra pod.',
+	'prickly':  'is covered with sharp bristles, giving it a spiky texture.',
+	'quacky':   'emits sounds that oddly mimic the quack of a duck.',
+	'rusty':    'has a reddish-brown color, much like rusted iron metal.',
+	'spicy':    'has chemical defense giving a tingling sensation, similar to spicy food.',
+	'tipsy':    'moves in an erratic path, suggesting a lack of coordination, as if intoxicated.',
+	'ugly':     'has dull colors and uneven features different from the typical fruit fly.',
+	'valley':   'shows deep grooves along its body, creating a landscape of peaks and troughs.',
+	'waxy':     'has a thick protective layer that is water resistant and opague.',
+	'xanthic':  'has a fluorescent bright yellow coloring.',
+	'yucky':    'gives off an unpleasant odor and has a generally unappealing look.',
+	'zippy':    'zooms around quickly, darting from one place to another.',
+}
+
+
 #===========================================================
 #===========================================================
 """
@@ -74,7 +138,7 @@ self.interference_dict = {  # alphabetical numbering
 """
 #===========================================================
 #===========================================================
-class GeneMappingLib:
+class GeneMappingClass:
 	#global cls variable
 	_distance_triplet_list_cache = None
 
@@ -90,24 +154,19 @@ class GeneMappingLib:
 		self.set_gene_letters()  # This will set self.gene_letters_str
 		self.set_gene_order()
 
+		self.distance_triplet_tuple = None
 		self.distances_dict = None
 		self.progeny_count_int = -1
 		self.parental_genotypes_tuple = None
 		self.double_crossover_genotypes_tuple = None
 		self.triple_crossover_genotypes_tuple = None
 		self.interference_dict = None
+		self.print_gene_map_data()
 
 	#===========================================================
 	#===========================================================
 	def set_gene_letters(self) -> None:
-		lowercase = "abcdefghijklmnpqrsuvwxyz"  # Make sure this has the letters you want
-		gene_letters_set = set()
-		while len(gene_letters_set) < self.num_genes_int:
-			gene_letters_set.update(random.choice(lowercase))  # Add a randomly chosen letter
-
-		# Sort after the set has the correct number of elements
-		gene_letters_list = sorted(gene_letters_set)
-		self.gene_letters_str = ''.join(gene_letters_list)  # Create string from sorted list
+		self.gene_letters_str = get_gene_letters(self.num_genes_int)
 
 	#===========================================================
 	#===========================================================
@@ -120,15 +179,16 @@ class GeneMappingLib:
 	#===========================================================
 	#===========================================================
 	def print_gene_map_data(self) -> None:
+		print('================================')
 		print(f'self.num_genes_int = {self.num_genes_int}')
 		print(f'self.gene_letters_str = {self.gene_letters_str}')
 		print(f'self.gene_order_str = {self.gene_order_str}')
 		if self.distances_dict is not None:
 			print('self.distances_dict = {')
 			for key, value in self.distances_dict.items():
-				print(f'{key}: {value:02d} # gene '
-					+f'{self.gene_letters_str[key[0]].upper()} and '
-					+f'{self.gene_letters_str[key[1]].upper()} '
+				print(f'  {key}: {value:02d} # gene '
+					+f'{self.gene_letters_str[key[0]-1].upper()} and '
+					+f'{self.gene_letters_str[key[1]-1].upper()} '
 				)
 			print('}')
 		if self.progeny_count_int > 0:
@@ -140,26 +200,28 @@ class GeneMappingLib:
 		if self.triple_crossover_genotypes_tuple is not None:
 			print(f'self.triple_crossover_genotypes_tuple = {self.triple_crossover_genotypes_tuple}')
 		if self.interference_dict is not None:
-			print('self.distances_dict = {')
-			for key, value in self.interference_dict.items():
+			print('self.interference_dict = {')
+			for key in self.distances_dict.keys():
+				value = self.interference_dict.get(key)
 				if value is None:
-					print(f'{key}: {value} # adjacent genes '
-						+f'{self.gene_letters_str[key[0]].upper()} and '
-						+f'{self.gene_letters_str[key[1]].upper()} '
+					print(f'  {key}: {value} # adjacent genes '
+						+f'{self.gene_letters_str[key[0]-1].upper()} and '
+						+f'{self.gene_letters_str[key[1]-1].upper()} '
 					)
 				else:
-					print(f'{key}: {value} # distance btw '
-						+f'{self.gene_letters_str[key[0]].upper()} and '
-						+f'{self.gene_letters_str[key[1]].upper()} '
+					print(f'  {key}: {value} # interference btw '
+						+f'{self.gene_letters_str[key[0]-1].upper()} and '
+						+f'{self.gene_letters_str[key[1]-1].upper()} '
 					)
 			print('}')
+		print('================================')
 
 	#===========================================================
 	#===========================================================
 	def map_gene_order_to_alphabetical(self, gene_order_index) -> None:
 		if gene_order_index < 1 or gene_order_index > self.num_genes_int:
 			raise ValueError(f'gene order index must be 1 <= {gene_order_index} <= {self.num_genes_int}')
-		gene_letter = self.gene_order_str[gene_order_index]
+		gene_letter = self.gene_order_str[gene_order_index-1]
 		gene_alphabet_index = self.gene_letters_str.find(gene_letter) + 1
 		return gene_alphabet_index
 
@@ -177,90 +239,164 @@ class GeneMappingLib:
 	#===========================================================
 	def set_gene_distances(self, min_distance=2, max_distance=48) -> None:
 		if self.num_genes_int == 2:
-			distance = random.randint(min_distance,max_distance)
+			distance = random.randint(min_distance, max_distance)
 			self.distances_dict = { (1,2): distance, }
 		elif self.num_genes_int == 3:
-			distance_triplet_list = self.get_distance_triplets()
-			distance_triplet_tuple = random.choice(distance_triplet_list)
+			self.distances_dict = {}
+			self.distance_triplet_tuple = self.get_one_distance_triplet()
 			pair_tuple = self.map_gene_order_pair_to_alphabetical_pair(1,2)
-			self.distances_dict[pair_tuple] = distance_triplet_tuple[0]
+			self.distances_dict[pair_tuple] = self.distance_triplet_tuple[0]
 			pair_tuple = self.map_gene_order_pair_to_alphabetical_pair(2,3)
-			self.distances_dict[pair_tuple] = distance_triplet_tuple[1]
+			self.distances_dict[pair_tuple] = self.distance_triplet_tuple[1]
 			pair_tuple = self.map_gene_order_pair_to_alphabetical_pair(1,3)
-			self.distances_dict[pair_tuple] = distance_triplet_tuple[2]
+			self.distances_dict[pair_tuple] = self.distance_triplet_tuple[2]
+		interference_tuple = calculate_interference_from_three_distances(*self.distance_triplet_tuple)
+		self.interference_dict = {
+			pair_tuple: interference_tuple,
+			}
+		self.print_gene_map_data()
 
 	#====================================
 	#====================================
 	@classmethod
-	def get_distance_triplets(cls, max_fraction_int: int=12) -> list:
+	def get_one_distance_triplet(cls, max_fraction_int: int=12, max_distance: int=47) -> list:
 		if cls._distance_triplet_list_cache is not None:
-			return cls._distance_triplet_list_cache
-		used_values = {}
-		distance_triplet_list = []
-		for numerator_prime  in range(1,max_fraction_int):
-			for denominator_prime in range(numerator_prime+1,max_fraction_int+1):
-				gcd_prime = math.gcd(numerator_prime ,denominator_prime )
-				numerator = numerator_prime // gcd_prime
-				denominator= denominator_prime // gcd_prime
-				if used_values.get((numerator,denominator)) is None:
-					used_values[(numerator,denominator)] = True
-					new_distance_triplet_list = cls.distance_triplet_generator((numerator,denominator))
-					if new_distance_triplet_list is not None:
-						#print(f'distance_generator for interference={numerator:02d}/{denominator:02d} '
-						#	+f'gives {len(new_distance_triplet_list):02d} results')
-						distance_triplet_list += new_distance_triplet_list
-		print(f'found {len(distance_triplet_list)} from all interference fractions up to denominator {max_fraction_int}')
+			return random.choice(cls._distance_triplet_list_cache)
+		distance_triplet_list = get_all_distance_triplets(max_fraction_int, max_distance)
 		cls._distance_triplet_list_cache = distance_triplet_list
-		return distance_triplet_list
+		return random.choice(distance_triplet_list)
 
 	#====================================
 	#====================================
-	@staticmethod
-	def distance_triplet_generator(interference_tuple: tuple=(0,1), max_dist=47):
-		distance_triplet_list = []
-		for x in range(1, max_dist):
-			for y in range(x, max_dist):
-				z = calculate_third_distance(x, y, interference_tuple)
-				if y < z < max_dist and is_almost_integer(z):
-					distance_tuple =(y,x,int(z))
-					if min_difference(distance_tuple) > 1:
-						distance_triplet_list.append(distance_tuple)
-		distance_triplet_list.sort()
-		#print(f'distance_generator for interference={interference_tuple} gives {len(distance_triplet_list)} results')
-		#print(distance_triplet_list)
-		return distance_triplet_list
+	def set_progeny_count(self):
+		self.progeny_count_int = get_general_progeny_size(self.distance_triplet_tuple)
+		self.print_gene_map_data()
 
+	#====================================
+	#====================================
+	def generate_genotype_counts(self) -> dict:
+		"""
+		A - x - B - y - C
+		A - z - C
+		determine interference_tuple
+
+		determine DCO from A-B
+		determine DCO from A-C
+		get interference_tuple?
+
+		make sure DCO is an integer
+
+		determine SCO(x) for A-B genotype pairs, subtract DCO
+		determine SCO(y) for B-C genotype pairs, subtract DCO
+
+		leftover is for Parental genotype pairs
+		"""
+		no_interference_DCO = self.distance_triplet_tuple[0]*self.distance_triplet_tuple[1]/1e4 * self.progeny_count_int
+		print(f'no_interference_DCO={no_interference_DCO:.5f}')
+		#if not is_almost_integer(no_interference_DCO):
+		#	raise ValueError(f'no_interference_DCO={no_interference_DCO:.5f} is NOT an integer')
+		(interference_tuple,) = self.interference_dict.values()
+		reduced_DCO = interference_tuple[0]*no_interference_DCO / interference_tuple[1]
+		print(f'reduced_DCO={reduced_DCO:.5f}')
+		if not is_almost_integer(reduced_DCO):
+			raise ValueError(f'reduced_DCO={reduced_DCO:.5f} is NOT an integer')
+
+
+	def generate_three_gene_type_map(types: list, type_counts: dict, basetype: str) -> dict:
+		if debug is True: print("\n\ngenerate progeny data")
+		typemap = {}
+		for t in types:
+			n = ptcl.invert_genotype(t, basetype)
+			#rand = random.gauss(0.5, 0.01)
+			try:
+				count = type_counts[t]
+			except KeyError:
+				count = type_counts[n]
+			tcount = 0
+			ncount = 0
+			for i in range(count):
+				if random.random() > 0.5:
+					tcount += 1
+				else:
+					ncount += 1
+			#sys.stderr.write(".")
+			#typemap[t] = int(rand * count)
+			#typemap[n] = count - typemap[t]
+			typemap[t] = tcount
+			typemap[n] = ncount
+		sys.stderr.write("\n")
+		return typemap
+
+	def generate_three_gene_type_counts(parental: str, doublecross: str, basetype: str, progeny_size: int, geneorder: str) -> dict:
+		type_counts = {}
+		if debug is True: print("determine double type")
+		doubletype = ptcl.flip_gene_by_letter(parental, geneorder[1], basetype)
+		doublecount = int(round(doublecross*progeny_size/100.))
+		if debug is True: print("  ", doubletype, ptcl.invert_genotype(doubletype, basetype), doublecount)
+		type_counts[doubletype] = doublecount
+
+		if debug is True: print("determine first flip")
+		firsttype = ptcl.flip_gene_by_letter(parental, geneorder[0], basetype)
+		firstcount = int(round(distances[0]*progeny_size/100.)) - doublecount
+		if debug is True: print("  ", firsttype, ptcl.invert_genotype(firsttype, basetype), firstcount)
+		type_counts[firsttype] = firstcount
+
+		if debug is True: print("determine second flip")
+		secondtype = ptcl.flip_gene_by_letter(parental, geneorder[2], basetype)
+		secondcount = int(round(distances[1]*progeny_size/100.)) - doublecount
+		if debug is True: print("  ", secondtype, ptcl.invert_genotype(secondtype, basetype), secondcount)
+		type_counts[secondtype] = secondcount
+
+		if debug is True: print("determine parental type count")
+		parentcount = progeny_size - doublecount - firstcount - secondcount
+		if debug is True: print("  ", parental, ptcl.invert_genotype(parental, basetype), parentcount)
+		type_counts[parental] = parentcount
+
+		return type_counts
+
+#===========================================================
+#===========================================================
+#===========================================================
+#===========================================================
+#===========================================================
+#===========================================================
+def get_gene_letters(num_genes_int: int) -> str:
+	lowercase = "abcdefghijklmnpqrsuvwxyz"  # Make sure this has the letters you want
+	gene_letters_set = set()
+	while len(gene_letters_set) < num_genes_int:
+		gene_letters_set.update(random.choice(lowercase))  # Add a randomly chosen letter
+
+	# Sort after the set has the correct number of elements
+	gene_letters_list = sorted(gene_letters_set)
+	gene_letters_str = ''.join(gene_letters_list)  # Create string from sorted list
+	return gene_letters_str
+assert len(get_gene_letters(5)) == 5
 
 #====================================
 #====================================
-phenotype_dict = {
-	'a': 'amber',
-	'b': 'bald',
-	'c': 'conehead',
-	'd': 'dumpy',
-	'e': 'eyeless',
-	'f': 'forked',
-	'g': 'garnet',
-	'h': 'hook',
-	'i': 'indy',
-	'j': 'jagged',
-	'k': 'kidney',
-	'l': 'lyra',
-	'm': 'marula',
-	'n': 'notch',
-	'o': 'okra',
-	'p': 'prickly',
-	'q': 'quick',
-	'r': 'rosy',
-	's': 'scute',
-	't': 'taxi',
-	'u': 'upturned',
-	'v': 'vestigial',
-	'w': 'white',
-	'x': 'xray',
-	'y': 'yellow',
-	'z': 'zipper',
-}
+def is_almost_integer(num: float, epsilon: float = 1e-6) -> bool:
+	"""
+	Checks if a float number is close to an integer within a given epsilon.
+
+	Parameters
+	----------
+	num : float
+		The number to check.
+	epsilon : float, optional
+		The tolerance level for being close to an integer. Default is 1e-6.
+
+	Returns
+	-------
+	bool
+		True if the number is close to an integer, False otherwise.
+	"""
+	# Calculate the absolute difference between the number and its nearest integer
+	# Check if the difference is within the given epsilon and return the result
+	difference = abs(num - round(num))
+	return difference < epsilon
+# Simple assertion tests for the function: 'is_almost_integer'
+assert is_almost_integer(5.0000001)  == True
+assert is_almost_integer(5.001)      == False
 
 #====================================
 #====================================
@@ -345,45 +481,38 @@ assert is_valid_html_table('<p>This is not a table</p>') == False
 
 #====================================
 #====================================
+def min_difference(numbers: list) -> int:
+	"""
+	Find the minimum difference between any two consecutive integers in a sorted list.
+
+	Parameters
+	----------
+	numbers : list
+		A list of integers.
+
+	Returns
+	-------
+	int
+		The smallest difference found between any two consecutive integers.
+	"""
+	if isinstance(numbers, tuple):
+		numbers = list(numbers)
+	# Sort the list in place
+	numbers.sort()
+	# Calculate differences using list comprehension
+	differences = [numbers[i+1] - numbers[i] for i in range(len(numbers) - 1)]
+	# Return the smallest difference
+	return min(differences)
+assert min_difference([40, 41]) == 1
+assert min_difference([30, 15, 36]) == 6
+assert min_difference([84, 25, 24, 37]) == 1
+assert min_difference([84, 30, 30, 42, 56, 72]) == 0
+
+#====================================
+#====================================
 def get_distance():
 	#integers
 	return random.randint(2,45)
-
-#====================================
-#====================================
-def distance_triplet_generator(interference_tuple: tuple=(0,1), max_dist=47):
-	distance_triplet_list = []
-	for x in range(1, max_dist):
-		for y in range(x, max_dist):
-			z = calculate_third_distance(x, y, interference_tuple)
-			if y < z < max_dist and is_almost_integer(z):
-				distance_tuple =(y,x,int(z))
-				if min_difference(distance_tuple) > 1:
-					distance_triplet_list.append(distance_tuple)
-	distance_triplet_list.sort()
-	#print(f'distance_generator for interference={interference_tuple} gives {len(distance_triplet_list)} results')
-	#print(distance_triplet_list)
-	return distance_triplet_list
-
-#====================================
-#====================================
-def get_all_distance_triplets(max_fraction_int: int=12) -> list:
-	used_values = {}
-	distance_triplet_list = []
-	for numerator_prime  in range(1,max_fraction_int):
-		#for denominator_prime in range(max(numerator_prime+1,12),max_fraction_int+1):
-		for denominator_prime in range(numerator_prime+1,max_fraction_int+1):
-			gcd_prime = math.gcd(numerator_prime ,denominator_prime )
-			numerator = numerator_prime // gcd_prime
-			denominator= denominator_prime // gcd_prime
-			if used_values.get((numerator,denominator)) is None:
-				used_values[(numerator,denominator)] = True
-				new_distance_triplet_list = distance_triplet_generator((numerator,denominator))
-				if new_distance_triplet_list is not None:
-					#print(f'distance_generator for interference={numerator:02d}/{denominator:02d} gives {len(new_distance_triplet_list):02d} results')
-					distance_triplet_list += new_distance_triplet_list
-	print(f'found {len(distance_triplet_list)} from all interference fractions up to denominator {max_fraction_int}')
-	return distance_triplet_list
 
 #====================================
 #====================================
@@ -416,7 +545,7 @@ def calculate_third_distance(x: int, y: int, interference_tuple: tuple=(0,1)) ->
 	  If interference = 0, it means no interference (double crossovers occur as expected).
 	"""
 
-	# Validate the input constraints: 0 < x < 0.5, x < y < 0.5, and 0 <= interference <= 1
+	# Validate the input constraints: 1 < x < 50, 1 < y < 50, and 0 <= interference <= 1
 	if x < 1 or x >= 50 or y < 1 or y >= 50:
 		raise ValueError("Invalid input values. Make sure 1 < x < 50 and 1 < y < 50.")
 	a = interference_tuple[0]
@@ -428,80 +557,172 @@ def calculate_third_distance(x: int, y: int, interference_tuple: tuple=(0,1)) ->
 	# 1 - a/b == (b-a)/b
 	dco = x * y * (b - a) / 100. / b
 	if not is_almost_integer(2*dco):
-		print(f'x={x}; y={y}; interference={a}/{b}')
-		print(f'double crossovers is NOT integer!!! {dco:.4f}')
+		#print(f'x={x}; y={y}; interference={a}/{b}')
+		#print(f'double crossovers is NOT integer!!! {dco:.4f}')
 		#raise ValueError(f'double crossovers is NOT integer!!! {dco:.4f}')
 		#return -1
+		pass
 	# Calculate the distance z between genes A and C
 	z = x + y - 2 * dco
-
+	if is_almost_integer(z):
+		z = int(round(z))
 	return z
+assert calculate_third_distance(25, 22, (7, 11)) == 43
+assert calculate_third_distance(20, 28, (3, 8)) == 41
 
 #====================================
 #====================================
-def min_difference(numbers: list) -> int:
+def calculate_interference_from_three_distances(x: int, y: int, z: int) -> tuple:
 	"""
-	Find the minimum difference between any two consecutive integers in a sorted list.
+	Calculate the interference based on three distances.
 
 	Parameters
 	----------
-	numbers : list
-		A list of integers.
+	x : int
+		The first distance value, must be between 1 and 50.
+	y : int
+		The second distance value, must be between 1 and 50.
+	z : int
+		The third distance value, must be greater than x and y but less than 50.
 
 	Returns
 	-------
-	int
-		The smallest difference found between any two consecutive integers.
+	tuple
+		A tuple containing the interference ratio (a, b) as integers.
 	"""
-	if isinstance(numbers, tuple):
-		numbers = list(numbers)
-	# Sort the list in place
-	numbers.sort()
-	# Calculate differences using list comprehension
-	differences = [numbers[i+1] - numbers[i] for i in range(len(numbers) - 1)]
-	# Return the smallest difference
-	return min(differences)
-assert min_difference([40, 41]) == 1
-assert min_difference([30, 15, 36]) == 6
-assert min_difference([84, 25, 24, 37]) == 1
-assert min_difference([84, 30, 30, 42, 56, 72]) == 0
+	# Validate the input constraints for x and y
+	if not 1 < x < 50 or not 1 < y < 50:
+		raise ValueError(f"Invalid input values for x and y. Ensure 1 < x < 50 and 1 < y < 50; got x={x}, y={y}.")
+
+	# Validate the input constraints for z
+	if not x < z < 50 or not y < z < 50:
+		raise ValueError(f"Invalid input values for z. Ensure z > x, z > y, and z < 50; got x={x}, y={y}, z={z}.")
+
+	# Begin with the third distance equation:
+	# z = x + y - 2 * x * y * (b-a)/b / 100
+	# This equation calculates the third distance z, which is altered by interference
+	# in double crossover events. The term (2 * x * y * (b-a)/b) / 100 quantifies the interference impact on z.
+
+	# To isolate the interference term (b-a)/b, we rearrange the equation:
+	# 2 * x * y * (b - a)/b / 100 = x + y - z
+	# Multiply through by 100 to remove the division by 100:
+	# 2 * x * y * (b - a)/b = 100 * (x + y - z)
+
+	# Now, to express (b - a)/b directly, divide both sides by 2 * x * y:
+	# (b - a)/b = 50 * (x + y - z) / (x * y)
+
+	# We are seeking integer values for a and b that represent the interference as a ratio.
+	# To find b (the denominator of the interference ratio), we set b equal to the product of x and y:
+	b = x * y
+
+	# To find a (the numerator of the interference ratio), we isolate a from the term (b - a):
+	# Solving for a, given (b - a) is equivalent to 50 * (x + y - z):
+	# -a = -b + 50 * (x + y - z) <=> a = b + 50 * (z - x - y)
+	a = b + 50 * (z - x - y)
+
+	# Note that a and b may not be in their simplest form.
+	# To reduce them to the simplest form, we calculate the greatest common divisor (GCD) of a and b
+	# then divide both a anb b by their GCD.
+	gcd1 = math.gcd(a, b)
+	a //= gcd1
+	b //= gcd1
+
+	# Return the simplified ratio representing interference.
+	return (a, b)
+# Assert statement for testing the function with an example
+assert calculate_interference_from_three_distances(5, 22, 26) == (6, 11)
+assert calculate_interference_from_three_distances(30, 15, 38) == (2, 9)
+
+# ==============================
+# ==============================
+def distance_triplet_generator(interference_tuple: tuple=(0,1), max_dist: int=47) -> list:
+    """
+    Generate a list of distance triplets (y, x, z) within a given maximum distance.
+
+    The function calculates the third distance z based on the given interference tuple and checks if z
+    is an almost integer and within the range. The distance triplet is then validated for minimum
+    difference and added to the list if it meets criteria.
+
+    Parameters
+    ----------
+    interference_tuple : tuple, optional
+        A tuple representing the interference ratio (default is (0,1) which means no interference).
+    max_dist : int, optional
+        The maximum distance for x and y (default is 47).
+
+    Returns
+    -------
+    list
+        A list of valid distance triplets sorted in ascending order.
+
+    Notes
+    -----
+    - Assumes that `calculate_third_distance`, `is_almost_integer`, and `min_difference`
+      functions are already defined.
+    - Potential error: `is_almost_integer` needs to be defined. If it's meant to check if `z`
+      is close to an integer, the standard library function `math.isclose` or a custom definition
+      might be needed.
+
+    Examples
+    --------
+    >>> distance_triplet_generator()
+    [(1, 1, 1), (2, 1, 2), ...]
+    """
+
+    # Initialize an empty list to store valid distance triplets
+    distance_triplet_list = []
+
+    # Iterate over possible values of x
+    for x in range(1, max_dist):
+        # Iterate over possible values of y starting from current x to avoid duplicates
+        for y in range(x, max_dist):
+            # Calculate the third distance z using the provided interference tuple
+            z = calculate_third_distance(x, y, interference_tuple)
+
+            # Check if z is an almost integer, within the valid range, and the min difference criteria is met
+            if y < z < max_dist and is_almost_integer(z):
+                distance_tuple =(y,x,int(z))
+                if min_difference(distance_tuple) > 1:
+                    # Add the valid triplet to the list
+                    distance_triplet_list.append(distance_tuple)
+
+    # Sort the list of distance triplets in ascending order before returning
+    distance_triplet_list.sort()
+    return distance_triplet_list
+# Example assertion for simple function validation (assuming other functions are defined)
+assert distance_triplet_generator((9,11), 36) == [(25, 11, 35)]
 
 #====================================
 #====================================
-def is_almost_integer(num: float, epsilon: float = 1e-6) -> bool:
-	"""
-	Checks if a float number is close to an integer within a given epsilon.
-
-	Parameters
-	----------
-	num : float
-		The number to check.
-	epsilon : float, optional
-		The tolerance level for being close to an integer. Default is 1e-6.
-
-	Returns
-	-------
-	bool
-		True if the number is close to an integer, False otherwise.
-	"""
-	# Calculate the absolute difference between the number and its nearest integer
-	difference = abs(num - round(num))
-	# Check if the difference is within the given epsilon and return the result
-	return difference < epsilon
-# Simple assertion tests for the function: 'is_almost_integer'
-assert is_almost_integer(5.0000001)  == True
-assert is_almost_integer(5.001)      == False
+def get_all_distance_triplets(max_fraction_int: int=12, max_distance: int=47) -> list:
+	used_values = {}
+	distance_triplet_list = []
+	for numerator_prime  in range(1, max_fraction_int):
+		#for denominator_prime in range(max(numerator_prime+1,12),max_fraction_int+1):
+		for denominator_prime in range(numerator_prime+1,max_fraction_int+1):
+			gcd_prime = math.gcd(numerator_prime ,denominator_prime )
+			numerator = numerator_prime // gcd_prime
+			denominator= denominator_prime // gcd_prime
+			if used_values.get((numerator,denominator)) is None:
+				used_values[(numerator,denominator)] = True
+				new_distance_triplet_list = distance_triplet_generator((numerator,denominator), max_distance)
+				if new_distance_triplet_list is not None:
+					distance_triplet_list += new_distance_triplet_list
+	print(f'found {len(distance_triplet_list)} distance tuples '+
+		f'with max distance {max_distance} '+
+		f'from all interference fractions up to denominator {max_fraction_int}')
+	return distance_triplet_list
 
 #====================================
 #====================================
-def get_general_progeny_size(distances: list) -> int:
+def get_general_progeny_size(distances: tuple) -> int:
 	"""
 	Calculate a suitable progeny size based on genetic distances.
 
 	Parameters
 	----------
 	distances : list
-		A list of genetic distances between genes.
+		A tuple of genetic distances between genes.
 
 	Returns
 	-------
@@ -510,8 +731,8 @@ def get_general_progeny_size(distances: list) -> int:
 
 	"""
 	# lazy method 1: just use 200
-	progeny_base = 200
-	multiplier = random.randint(900//200+1, 9900//200-1)
+	progeny_base = 2000
+	multiplier = random.randint(900//progeny_base+1, 9900//progeny_base-1)
 	return multiplier * progeny_base
 	# more unique progeny numbers, GCD method 2
 	# goal is to get the smallest progeny_base for set of distances
@@ -769,10 +990,6 @@ def gene_map_solver(typemap: dict, basetype: str, progeny_size: int) -> str:
 		print(f'\t{gene_pair[0]} and {gene_pair[1]}: {dist_text}')
 	"""
 
-#====================================
-#====================================
-def get_interfernce(parental_type, basetype, progeny_size, distance, geneorder):
-	pass
 
 #====================================
 #====================================
@@ -1067,4 +1284,19 @@ def get_random_gene_order(basetype: str) -> str:
 assert get_random_gene_order('de') == 'de'
 assert get_random_gene_order('abc') in ('abc', 'acb', 'bac')
 
+if __name__ == '__main__':
+	triplets = [(28, 20, 41), (25, 22, 43), (25, 7, 29), (22, 5, 26), (22, 10, 30), (30, 8, 35),]
+	for triplet in triplets:
+		print(triplet)
+		a, b = calculate_interference_from_three_distances(*triplet)
+		print(f'interference = {a}/{b}')
+		dist = calculate_third_distance(triplet[0], triplet[1], (a, b))
+		print(dist, triplet[2])
 
+	#print(distance_triplet_generator((9,11), 45))
+
+	for i in range(200):
+		a = GeneMappingClass(3, i)
+		a.set_gene_distances()
+		a.set_progeny_count()
+		a.generate_genotype_counts()
