@@ -155,12 +155,13 @@ class GeneMappingClass:
 		self.set_gene_order()
 
 		self.distance_triplet_tuple = None
+		self.interference_dict = None
 		self.distances_dict = None
 		self.progeny_count_int = -1
+		self.all_genotype_tuple_pairs_list = None
+		self.progeny_groups_count_dict = None
 		self.parental_genotypes_tuple = None
-		self.double_crossover_genotypes_tuple = None
-		self.triple_crossover_genotypes_tuple = None
-		self.interference_dict = None
+		self.genotype_counts = None
 		self.print_gene_map_data()
 
 	#===========================================================
@@ -178,6 +179,16 @@ class GeneMappingClass:
 
 	#===========================================================
 	#===========================================================
+	def setup_question(self):
+		self.set_gene_distances()
+		self.set_progeny_count()
+		self.set_progeny_groups_counts()
+		self.set_all_genotype_tuple_pairs_list()
+		self.set_parental_genotypes()
+		self.set_genotype_counts()
+
+	#===========================================================
+	#===========================================================
 	def print_gene_map_data(self) -> None:
 		print('================================')
 		print(f'self.num_genes_int = {self.num_genes_int}')
@@ -191,14 +202,6 @@ class GeneMappingClass:
 					+f'{self.gene_letters_str[key[1]-1].upper()} '
 				)
 			print('}')
-		if self.progeny_count_int > 0:
-			print(f'self.progeny_count_int = {self.progeny_count_int}')
-		if self.parental_genotypes_tuple is not None:
-			print(f'self.parental_genotypes_tuple = {self.parental_genotypes_tuple}')
-		if self.double_crossover_genotypes_tuple is not None:
-			print(f'self.double_crossover_genotypes_tuple = {self.double_crossover_genotypes_tuple}')
-		if self.triple_crossover_genotypes_tuple is not None:
-			print(f'self.triple_crossover_genotypes_tuple = {self.triple_crossover_genotypes_tuple}')
 		if self.interference_dict is not None:
 			print('self.interference_dict = {')
 			for key in self.distances_dict.keys():
@@ -213,6 +216,22 @@ class GeneMappingClass:
 						+f'{self.gene_letters_str[key[0]-1].upper()} and '
 						+f'{self.gene_letters_str[key[1]-1].upper()} '
 					)
+			print('}')
+		if self.progeny_count_int > 0:
+			print(f'self.progeny_count_int = {self.progeny_count_int}')
+		if self.progeny_groups_count_dict is not None:
+			print('self.progeny_groups_count_dict = {')
+			for key, value in self.progeny_groups_count_dict.items():
+				print(f'  {key}: {value} ')
+			print('}')
+		if self.all_genotype_tuple_pairs_list is not None:
+			print(f'self.all_genotype_tuple_pairs_list = {self.all_genotype_tuple_pairs_list}')
+		if self.parental_genotypes_tuple is not None:
+			print(f'self.parental_genotypes_tuple = {self.parental_genotypes_tuple}')
+		if self.genotype_counts is not None:
+			print('self.genotype_counts = {')
+			for genotype, count in self.genotype_counts.items():
+				print(f'  {genotype}: {count:d}')
 			print('}')
 		print('================================')
 
@@ -269,12 +288,13 @@ class GeneMappingClass:
 	#====================================
 	#====================================
 	def set_progeny_count(self):
+		#self.progeny_base_int = minN(self.distance_triplet_tuple[0], self.distance_triplet_tuple[1])
 		self.progeny_count_int = get_general_progeny_size(self.distance_triplet_tuple)
 		self.print_gene_map_data()
 
 	#====================================
 	#====================================
-	def generate_genotype_counts(self) -> dict:
+	def set_progeny_groups_counts(self):
 		"""
 		A - x - B - y - C
 		A - z - C
@@ -292,15 +312,95 @@ class GeneMappingClass:
 		leftover is for Parental genotype pairs
 		"""
 		no_interference_DCO = self.distance_triplet_tuple[0]*self.distance_triplet_tuple[1]/1e4 * self.progeny_count_int
-		print(f'no_interference_DCO={no_interference_DCO:.5f}')
-		#if not is_almost_integer(no_interference_DCO):
-		#	raise ValueError(f'no_interference_DCO={no_interference_DCO:.5f} is NOT an integer')
+		print(f'no_interference_DCO={no_interference_DCO:.3f}')
 		(interference_tuple,) = self.interference_dict.values()
-		reduced_DCO = interference_tuple[0]*no_interference_DCO / interference_tuple[1]
-		print(f'reduced_DCO={reduced_DCO:.5f}')
+		reduced_DCO = (interference_tuple[1] - interference_tuple[0])*no_interference_DCO / interference_tuple[1]
 		if not is_almost_integer(reduced_DCO):
 			raise ValueError(f'reduced_DCO={reduced_DCO:.5f} is NOT an integer')
+		reduced_DCO = int(round(reduced_DCO))
+		print(f'reduced_DCO={reduced_DCO:d}')
+		"""
+		dco = Xc * Yc * N * (b -a)/b
+		sx = N * Xc - dco
+		sy = N * Yc - dco
+		"""
+		sx = self.progeny_count_int * self.distance_triplet_tuple[1]/ 100 - reduced_DCO
+		if not is_almost_integer(sx):
+			raise ValueError(f'sx={sx:.5f} is NOT an integer')
+		sx = int(round(sx))
+		print(f'sx={sx:d}')
+		sy = self.progeny_count_int * self.distance_triplet_tuple[0]/ 100 - reduced_DCO
+		if not is_almost_integer(sy):
+			raise ValueError(f'sx={sy:.5f} is NOT an integer')
+		sy = int(round(sy))
+		print(f'sy={sy:d}')
+		parent_count_int = self.progeny_count_int - sx - sy - reduced_DCO
+		self.progeny_groups_count_dict = {
+			'parental': parent_count_int,
+			'dco': reduced_DCO,
+			'sco': {
+				(1,2): sy,
+				(2,3): sx,
+			},
+		}
 
+	#====================================
+	def set_all_genotype_tuple_pairs_list(self):
+		all_genotypes = generate_genotypes(self.gene_letters_str)
+		self.all_genotype_tuple_pairs_list = []
+		genotype_tuple_pairs_set = set()
+		for genotype in all_genotypes:
+			inverted = invert_genotype(genotype, self.gene_letters_str)
+			pair = sorted([genotype, inverted])
+			print(pair)
+			genotype_tuple_pairs_set.add(tuple(pair))
+		if len(genotype_tuple_pairs_set) != len(all_genotypes)//2:
+			print(genotype_tuple_pairs_set)
+			print(all_genotypes)
+			raise ValueError(f'len(genotype_tuple_pairs_set) {len(genotype_tuple_pairs_set)} != '
+					+f'len(all_genotypes)//2 {len(all_genotypes)}//2')
+		self.all_genotype_tuple_pairs_list = list(genotype_tuple_pairs_set)
+
+	#====================================
+	def set_parental_genotypes(self):
+		self.parental_genotypes_tuple = random.choice(self.all_genotype_tuple_pairs_list)
+		self.print_gene_map_data()
+
+	#====================================
+	def set_genotype_counts(self) -> dict:
+		"""self.progeny_groups_count_dict = {
+			'parental': parent_count_int,
+			'dco': reduced_DCO,
+			'sco': {
+				'(1,2)': sy,
+				'(2,3)': sx,
+			},
+		}"""
+		self.genotype_counts = {}
+		p_genotype1, p_genotype2 = self.parental_genotypes_tuple
+		p_count1, p_count2 = split_number_in_two(self.progeny_groups_count_dict['parental'])
+		self.genotype_counts[p_genotype1] = p_count1
+		self.genotype_counts[p_genotype2] = p_count2
+
+		dco_genotype1 = flip_gene_by_letter(p_genotype1, self.gene_order_str[1], self.gene_letters_str)
+		dco_genotype2 = flip_gene_by_letter(p_genotype2, self.gene_order_str[1], self.gene_letters_str)
+		dco_count1, dco_count2 = split_number_in_two(self.progeny_groups_count_dict['dco'])
+		self.genotype_counts[dco_genotype1] = dco_count1
+		self.genotype_counts[dco_genotype2] = dco_count2
+
+		sx_genotype1 = flip_gene_by_letter(p_genotype1, self.gene_order_str[0], self.gene_letters_str)
+		sx_genotype2 = flip_gene_by_letter(p_genotype2, self.gene_order_str[0], self.gene_letters_str)
+		sx_count1, sx_count2 = split_number_in_two(self.progeny_groups_count_dict['sco'][(1,2)])
+		self.genotype_counts[sx_genotype1] = sx_count1
+		self.genotype_counts[sx_genotype2] = sx_count2
+
+		sy_genotype1 = flip_gene_by_letter(p_genotype1, self.gene_order_str[2], self.gene_letters_str)
+		sy_genotype2 = flip_gene_by_letter(p_genotype2, self.gene_order_str[2], self.gene_letters_str)
+		sy_count1, sy_count2 = split_number_in_two(self.progeny_groups_count_dict['sco'][(2,3)])
+		self.genotype_counts[sy_genotype1] = sy_count1
+		self.genotype_counts[sy_genotype2] = sy_count2
+
+		self.print_gene_map_data()
 
 	def generate_three_gene_type_map(types: list, type_counts: dict, basetype: str) -> dict:
 		if debug is True: print("\n\ngenerate progeny data")
@@ -371,6 +471,50 @@ def get_gene_letters(num_genes_int: int) -> str:
 	gene_letters_str = ''.join(gene_letters_list)  # Create string from sorted list
 	return gene_letters_str
 assert len(get_gene_letters(5)) == 5
+
+def generate_genotypes(gene_letters: str) -> list:
+	"""
+	Generate all possible genotypes for a given string of gene letters.
+
+	Parameters
+	----------
+	gene_letters : str
+		A string containing gene letter identifiers.
+
+	Returns
+	-------
+	list
+		A list of tuples, each containing a pair representing the genotype.
+
+	Examples
+	--------
+	>>> generate_genotypes('abc')
+	['+++', '++c', '+b+', '+bc', 'a++', 'a+c', 'ab+', 'abc']
+	"""
+	genotypes = []
+	num_genes = len(gene_letters)
+	for i in range(2**num_genes):
+		# Generate a binary representation of i, then pad it with zeros
+		binary_repr = bin(i)[2:].zfill(num_genes)
+		genotype = ''.join(gene_letters[j] if bit == '1' else '+' for j, bit in enumerate(binary_repr))
+		genotypes.append(genotype)
+	return genotypes
+# Use this function to generate genotypes for 'abc'
+assert len(generate_genotypes('abc')) == 8
+assert len(generate_genotypes('qrst')) == 16
+
+
+#===========================================================
+def split_number_in_two(number: int) -> tuple:
+	a = 0
+	b = 0
+	for i in range(number):
+		if random.random() < 0.5:
+			a += 1
+		else:
+			b += 1
+	return (a,b)
+assert sum(split_number_in_two(100)) == 100
 
 #====================================
 #====================================
@@ -508,6 +652,63 @@ assert min_difference([30, 15, 36]) == 6
 assert min_difference([84, 25, 24, 37]) == 1
 assert min_difference([84, 30, 30, 42, 56, 72]) == 0
 
+def minN(x: int, y: int, a: int, b: int) -> int:
+	"""
+	Calculate the smallest integer N that satisfies the given genetic linkage conditions.
+
+	The function computes the minimum integer N such that for genetic linkage ratios x and y
+	(expressed in centiMorgans, cM), the number of single crossover offspring (dsx and dsy)
+	and double crossover offspring (dco) are maximized and still maintain whole numbers of offspring.
+
+	Parameters
+	----------
+	x : int
+		Recombination frequency between the first pair of genes in centiMorgans (cM).
+	y : int
+		Recombination frequency between the second pair of genes in centiMorgans (cM).
+	a : int
+		A parameter used in the equation for double crossovers (must be less than b).
+	b : int
+		A parameter used in the equation for double crossovers.
+
+	Returns
+	-------
+	int
+		The smallest integer N that satisfies the linkage conditions for genetic cross.
+
+	Examples
+	--------
+	>>> minN(2, 3, 1, 2)
+	10000
+
+	Notes
+	-----
+	The function ensures that the total number of offspring, N, when multiplied by the
+	recombination frequencies (in centiMorgans), results in whole numbers of single and
+	double crossover offspring. It involves finding the greatest common divisor (gcd) of
+	the potential maximum values of dsx, dsy, and dco, which in turn ensures the maximization
+	of observable recombinants and the accuracy of linkage estimation.
+
+	"""
+	# The base multiplier for N is set to 10000 times b. This value ensures whole number counts
+	# for single and double crossovers when N is divided by the recombination frequencies (x and y)
+	# and the double crossover correction factor ((b - a) / b).
+
+	# These are the desired integers for which we want N to guarantee whole numbers:
+	# dsx = 100 * b * x (single crossovers for gene pair x)
+	# dsy = 100 * b * y (single crossovers for gene pair y)
+	# dco = x * y * (b - a) (double crossovers adjusted for (b - a) and b)
+	# Finding the gcd of these terms gives the smallest factor by which 10000 * b can be
+	# divided to still ensure integer values for dsx, dsy, and dco, hence satisfying the
+	# genetic linkage conditions.
+	final_gcd = math.gcd(100 * b * x, 100 * b * y, x * y * (b - a), 10000 * b)
+	N = 10000 * b // final_gcd
+	return N
+assert minN(2, 3, 1, 2) == 10000
+assert minN(5, 22, 6, 11) == 200
+
+
+
 #====================================
 #====================================
 def get_distance():
@@ -636,59 +837,60 @@ assert calculate_interference_from_three_distances(30, 15, 38) == (2, 9)
 # ==============================
 # ==============================
 def distance_triplet_generator(interference_tuple: tuple=(0,1), max_dist: int=47) -> list:
-    """
-    Generate a list of distance triplets (y, x, z) within a given maximum distance.
+	"""
+	Generate a list of distance triplets (y, x, z) within a given maximum distance.
 
-    The function calculates the third distance z based on the given interference tuple and checks if z
-    is an almost integer and within the range. The distance triplet is then validated for minimum
-    difference and added to the list if it meets criteria.
+	The function calculates the third distance z based on the given interference tuple and checks if z
+	is an almost integer and within the range. The distance triplet is then validated for minimum
+	difference and added to the list if it meets criteria.
 
-    Parameters
-    ----------
-    interference_tuple : tuple, optional
-        A tuple representing the interference ratio (default is (0,1) which means no interference).
-    max_dist : int, optional
-        The maximum distance for x and y (default is 47).
+	Parameters
+	----------
+	interference_tuple : tuple, optional
+		A tuple representing the interference ratio (default is (0,1) which means no interference).
+	max_dist : int, optional
+		The maximum distance for x and y (default is 47).
 
-    Returns
-    -------
-    list
-        A list of valid distance triplets sorted in ascending order.
+	Returns
+	-------
+	list
+		A list of valid distance triplets sorted in ascending order.
 
-    Notes
-    -----
-    - Assumes that `calculate_third_distance`, `is_almost_integer`, and `min_difference`
-      functions are already defined.
-    - Potential error: `is_almost_integer` needs to be defined. If it's meant to check if `z`
-      is close to an integer, the standard library function `math.isclose` or a custom definition
-      might be needed.
+	Notes
+	-----
+	- Assumes that `calculate_third_distance`, `is_almost_integer`, and `min_difference`
+	functions are already defined.
+	- Potential error: `is_almost_integer` needs to be defined. If it's meant to check if `z`
+	is close to an integer, the standard library function `math.isclose` or a custom definition
+	might be needed.
 
-    Examples
-    --------
-    >>> distance_triplet_generator()
-    [(1, 1, 1), (2, 1, 2), ...]
-    """
+	Examples
+	--------
+	>>> distance_triplet_generator()
+	[(1, 1, 1), (2, 1, 2), ...]
+	"""
 
-    # Initialize an empty list to store valid distance triplets
-    distance_triplet_list = []
+	# Initialize an empty list to store valid distance triplets
+	distance_triplet_list = []
 
-    # Iterate over possible values of x
-    for x in range(1, max_dist):
-        # Iterate over possible values of y starting from current x to avoid duplicates
-        for y in range(x, max_dist):
-            # Calculate the third distance z using the provided interference tuple
-            z = calculate_third_distance(x, y, interference_tuple)
-
-            # Check if z is an almost integer, within the valid range, and the min difference criteria is met
-            if y < z < max_dist and is_almost_integer(z):
-                distance_tuple =(y,x,int(z))
-                if min_difference(distance_tuple) > 1:
-                    # Add the valid triplet to the list
-                    distance_triplet_list.append(distance_tuple)
-
-    # Sort the list of distance triplets in ascending order before returning
-    distance_triplet_list.sort()
-    return distance_triplet_list
+	# Iterate over possible values of x
+	for x in range(1, max_dist):
+		# Iterate over possible values of y starting from current x to avoid duplicates
+		for y in range(x, max_dist):
+			# Calculate the third distance z using the provided interference tuple
+			(a, b) = interference_tuple
+			N = minN(x, y, a, b)
+			if N < 10000:
+				z = calculate_third_distance(x, y, interference_tuple)
+				# Check if z is an almost integer, within the valid range, and the min difference criteria is met
+				if y < z < max_dist and is_almost_integer(z):
+					distance_tuple =(y,x,int(z))
+					if min_difference(distance_tuple) > 1:
+						# Add the valid triplet to the list
+						distance_triplet_list.append(distance_tuple)
+	# Sort the list of distance triplets in ascending order before returning
+	distance_triplet_list.sort()
+	return distance_triplet_list
 # Example assertion for simple function validation (assuming other functions are defined)
 assert distance_triplet_generator((9,11), 36) == [(25, 11, 35)]
 
@@ -698,7 +900,6 @@ def get_all_distance_triplets(max_fraction_int: int=12, max_distance: int=47) ->
 	used_values = {}
 	distance_triplet_list = []
 	for numerator_prime  in range(1, max_fraction_int):
-		#for denominator_prime in range(max(numerator_prime+1,12),max_fraction_int+1):
 		for denominator_prime in range(numerator_prime+1,max_fraction_int+1):
 			gcd_prime = math.gcd(numerator_prime ,denominator_prime )
 			numerator = numerator_prime // gcd_prime
@@ -731,7 +932,11 @@ def get_general_progeny_size(distances: tuple) -> int:
 
 	"""
 	# lazy method 1: just use 200
-	progeny_base = 2000
+	if len(distances) == 3:
+		a, b = calculate_interference_from_three_distances(distances[0], distances[1], distances[2])
+		progeny_base = minN(distances[0], distances[1], a, b)
+	else:
+		progeny_base = 200
 	multiplier = random.randint(900//progeny_base+1, 9900//progeny_base-1)
 	return multiplier * progeny_base
 	# more unique progeny numbers, GCD method 2
@@ -759,7 +964,7 @@ def get_general_progeny_size(distances: tuple) -> int:
 	multiplier = random.randint(min_progeny_multiplier, max_progeny_multiplier)
 	# Return the final calculated progeny size
 	return multiplier * progeny_base
-assert get_general_progeny_size([2, 3, 7]) % 200 == 0
+#assert get_general_progeny_size([2, 3, 7]) % 200 == 0
 #assert get_general_progeny_size([10, 20, 30]) % 20 == 0
 
 #====================================
@@ -1297,6 +1502,4 @@ if __name__ == '__main__':
 
 	for i in range(200):
 		a = GeneMappingClass(3, i)
-		a.set_gene_distances()
-		a.set_progeny_count()
-		a.generate_genotype_counts()
+		a.setup_question()
