@@ -1,5 +1,6 @@
 
 import sys
+import copy
 import math
 import random
 import itertools
@@ -144,6 +145,60 @@ class GeneMappingClass:
 
 	#===========================================================
 	#===========================================================
+	def print_gene_map_data(self) -> None:
+		print('================================')
+		print(f'self.num_genes_int = {self.num_genes_int}')
+		print(f'self.gene_letters_str = {self.gene_letters_str}')
+		print(f'self.gene_order_str = {self.gene_order_str}')
+		if self.distances_dict is not None:
+			print('self.distances_dict = {')
+			for key, value in self.distances_dict.items():
+				print(f'  {key}: {value:02d} # gene '
+					+f'{self.gene_order_str[key[0]-1].upper()} and '
+					+f'{self.gene_order_str[key[1]-1].upper()} '
+				)
+			print('}')
+		if self.interference_dict is not None:
+			print('self.interference_dict = {')
+			for key in self.distances_dict.keys():
+				value = self.interference_dict.get(key)
+				if value is None:
+					print(f'  {key}: {value} # adjacent genes '
+						+f'{self.gene_order_str[key[0]-1].upper()} and '
+						+f'{self.gene_order_str[key[1]-1].upper()} '
+					)
+				else:
+					print(f'  {key}: {value} # interference btw '
+						+f'{self.gene_order_str[key[0]-1].upper()} and '
+						+f'{self.gene_order_str[key[1]-1].upper()} '
+					)
+			print('}')
+		if self.progeny_count_int > 0:
+			print(f'self.progeny_count_int = {self.progeny_count_int}')
+		if self.progeny_groups_count_dict is not None:
+			print('self.progeny_groups_count_dict = {')
+			for key, value in self.progeny_groups_count_dict.items():
+				if isinstance(key, tuple):
+					print(f'  {key}: {value:02d} # gene '
+						+f'{self.gene_order_str[key[0]-1].upper()} and '
+						+f'{self.gene_order_str[key[1]-1].upper()} '
+					)
+				else:
+					print(f'  {key}: {value:02d} # parental')
+			print('}')
+		if self.all_genotype_tuple_pairs_list is not None:
+			print(f'self.all_genotype_tuple_pairs_list = {self.all_genotype_tuple_pairs_list}')
+		if self.parental_genotypes_tuple is not None:
+			print(f'self.parental_genotypes_tuple = {self.parental_genotypes_tuple}')
+		if self.genotype_counts is not None:
+			print('self.genotype_counts = {')
+			for genotype, count in self.genotype_counts.items():
+				print(f'  {genotype}: {count:d}')
+			print('}')
+		print('================================')
+
+	#===========================================================
+	#===========================================================
 	def __init__(self, num_genes_int: int, question_count: int) -> None:
 		if num_genes_int < 2:
 			raise ValueError("Too few genes, num_genes_int must be at least 2")
@@ -189,54 +244,6 @@ class GeneMappingClass:
 
 	#===========================================================
 	#===========================================================
-	def print_gene_map_data(self) -> None:
-		print('================================')
-		print(f'self.num_genes_int = {self.num_genes_int}')
-		print(f'self.gene_letters_str = {self.gene_letters_str}')
-		print(f'self.gene_order_str = {self.gene_order_str}')
-		if self.distances_dict is not None:
-			print('self.distances_dict = {')
-			for key, value in self.distances_dict.items():
-				print(f'  {key}: {value:02d} # gene '
-					+f'{self.gene_letters_str[key[0]-1].upper()} and '
-					+f'{self.gene_letters_str[key[1]-1].upper()} '
-				)
-			print('}')
-		if self.interference_dict is not None:
-			print('self.interference_dict = {')
-			for key in self.distances_dict.keys():
-				value = self.interference_dict.get(key)
-				if value is None:
-					print(f'  {key}: {value} # adjacent genes '
-						+f'{self.gene_letters_str[key[0]-1].upper()} and '
-						+f'{self.gene_letters_str[key[1]-1].upper()} '
-					)
-				else:
-					print(f'  {key}: {value} # interference btw '
-						+f'{self.gene_letters_str[key[0]-1].upper()} and '
-						+f'{self.gene_letters_str[key[1]-1].upper()} '
-					)
-			print('}')
-		if self.progeny_count_int > 0:
-			print(f'self.progeny_count_int = {self.progeny_count_int}')
-		if self.progeny_groups_count_dict is not None:
-			print('self.progeny_groups_count_dict = {')
-			for key, value in self.progeny_groups_count_dict.items():
-				print(f'  {key}: {value} ')
-			print('}')
-		if self.all_genotype_tuple_pairs_list is not None:
-			print(f'self.all_genotype_tuple_pairs_list = {self.all_genotype_tuple_pairs_list}')
-		if self.parental_genotypes_tuple is not None:
-			print(f'self.parental_genotypes_tuple = {self.parental_genotypes_tuple}')
-		if self.genotype_counts is not None:
-			print('self.genotype_counts = {')
-			for genotype, count in self.genotype_counts.items():
-				print(f'  {genotype}: {count:d}')
-			print('}')
-		print('================================')
-
-	#===========================================================
-	#===========================================================
 	def map_gene_order_to_alphabetical(self, gene_order_index) -> None:
 		if gene_order_index < 1 or gene_order_index > self.num_genes_int:
 			raise ValueError(f'gene order index must be 1 <= {gene_order_index} <= {self.num_genes_int}')
@@ -263,22 +270,33 @@ class GeneMappingClass:
 		elif self.num_genes_int == 3:
 			self.distances_dict = {}
 			self.distance_triplet_tuple = self.get_one_distance_triplet()
-			pair_tuple = self.map_gene_order_pair_to_alphabetical_pair(1,2)
-			self.distances_dict[pair_tuple] = self.distance_triplet_tuple[0]
-			pair_tuple = self.map_gene_order_pair_to_alphabetical_pair(2,3)
-			self.distances_dict[pair_tuple] = self.distance_triplet_tuple[1]
-			pair_tuple = self.map_gene_order_pair_to_alphabetical_pair(1,3)
-			self.distances_dict[pair_tuple] = self.distance_triplet_tuple[2]
-		interference_tuple = calculate_interference_from_three_distances(*self.distance_triplet_tuple)
-		self.interference_dict = {
-			pair_tuple: interference_tuple,
+			self.distances_dict[(1,2)] = self.distance_triplet_tuple[0]
+			self.distances_dict[(2,3)] = self.distance_triplet_tuple[1]
+			self.distances_dict[(1,3)] = self.distance_triplet_tuple[2]
+			interference_tuple = calculate_interference_from_three_distances(*self.distance_triplet_tuple)
+			self.interference_dict = {
+				(1,3): interference_tuple,
+				}
+		elif self.num_genes_int == 4:
+			self.distances_dict = {
+				(1,2): 5,
+				(2,3): 10,
+				(3,4): 15,
+				(1,3): 15,
+				(2,4): 25,
+				(1,4): 30,
+			}
+			self.interference_dict = {
+				(1,3): (1,1),
+				(2,4): (1,1),
+				(1,4): (1,1),
 			}
 		self.print_gene_map_data()
 
 	#====================================
 	#====================================
 	@classmethod
-	def get_one_distance_triplet(cls, max_fraction_int: int=12, max_distance: int=47) -> list:
+	def get_one_distance_triplet(cls, max_fraction_int: int=12, max_distance: int=40) -> list:
 		if cls._distance_triplet_list_cache is not None:
 			return random.choice(cls._distance_triplet_list_cache)
 		distance_triplet_list = get_all_distance_triplets(max_fraction_int, max_distance)
@@ -289,8 +307,60 @@ class GeneMappingClass:
 	#====================================
 	def set_progeny_count(self):
 		#self.progeny_base_int = minN(self.distance_triplet_tuple[0], self.distance_triplet_tuple[1])
-		self.progeny_count_int = get_general_progeny_size(self.distance_triplet_tuple)
+		self.progeny_count_int = get_general_progeny_size(tuple(self.distances_dict.values()))
 		self.print_gene_map_data()
+
+	#====================================
+	#====================================
+	def calculate_triple_crossovers(self, gene_pair):
+		#gene_pair = (1,3)
+		if gene_pair[1] - gene_pair[0] != 3:
+			raise ValueError(f"gene pair is not a triple crossover, {gene_pair}")
+		x1, x4 = gene_pair
+		x2 = x1 + 1
+		x3 = x1 + 2
+		no_interference_TCO = self.progeny_count_int
+		for x in range(gene_pair[0], gene_pair[1]):
+			no_interference_TCO *= self.distances_dict[(x,x+1)] / 100
+		print(f'no_interference_TCO={no_interference_TCO:.3f}')
+		interference_tuple= self.interference_dict[gene_pair]
+		Interference_TCO = no_interference_TCO * (interference_tuple[1] - interference_tuple[0]) / interference_tuple[1]
+		if not is_almost_integer(Interference_TCO):
+			raise ValueError(f'Interference_TCO={Interference_TCO:.5f} is NOT an integer')
+		Interference_TCO = int(round(Interference_TCO))
+		print(f'Interference_TCO for {gene_pair}={Interference_TCO:d}')
+		return Interference_TCO
+
+	#====================================
+	#====================================
+	def calculate_double_crossovers(self, gene_pair):
+		#gene_pair = (1,3)
+		if gene_pair[1] - gene_pair[0] != 2:
+			raise ValueError(f"gene pair is not a double crossover, {gene_pair}")
+		no_interference_DCO = self.progeny_count_int
+		for x in range(gene_pair[0], gene_pair[1]):
+			no_interference_DCO *= self.distances_dict[(x,x+1)] / 100
+		print(f'no_interference_DCO={no_interference_DCO:.3f}')
+		interference_tuple= self.interference_dict[gene_pair]
+		Interference_DCO = no_interference_DCO * (interference_tuple[1] - interference_tuple[0]) / interference_tuple[1]
+		if not is_almost_integer(Interference_DCO):
+			raise ValueError(f'Interference_DCO={Interference_DCO:.5f} is NOT an integer')
+		Interference_DCO = int(round(Interference_DCO))
+		print(f'Interference_DCO for {gene_pair}={Interference_DCO:d}')
+		return Interference_DCO
+
+	#====================================
+	#====================================
+	def calculate_single_crossover(self, gene_pair):
+		#gene_pair = (1,3)
+		if gene_pair[1] - gene_pair[0] != 1:
+			raise ValueError(f"gene pair is not a single crossover, {gene_pair}")
+		sco_progeny = self.progeny_count_int * self.distances_dict[gene_pair] / 100
+		if not is_almost_integer(sco_progeny):
+			raise ValueError(f'sco_progeny for {gene_pair}={sco_progeny:.5f} is NOT an integer')
+		sco_progeny = int(round(sco_progeny))
+		print(f'sco_progeny for {gene_pair}={sco_progeny:d}')
+		return sco_progeny
 
 	#====================================
 	#====================================
@@ -311,38 +381,35 @@ class GeneMappingClass:
 
 		leftover is for Parental genotype pairs
 		"""
-		no_interference_DCO = self.distance_triplet_tuple[0]*self.distance_triplet_tuple[1]/1e4 * self.progeny_count_int
-		print(f'no_interference_DCO={no_interference_DCO:.3f}')
-		(interference_tuple,) = self.interference_dict.values()
-		reduced_DCO = (interference_tuple[1] - interference_tuple[0])*no_interference_DCO / interference_tuple[1]
-		if not is_almost_integer(reduced_DCO):
-			raise ValueError(f'reduced_DCO={reduced_DCO:.5f} is NOT an integer')
-		reduced_DCO = int(round(reduced_DCO))
-		print(f'reduced_DCO={reduced_DCO:d}')
+
+		gene_diff_pairs = {}
+		for gene1 in range(1, self.num_genes_int):
+			for gene2 in range(gene1+1, self.num_genes_int+1):
+				diff = gene2 - gene1
+				# Concatenate the current pair as a new list to the existing list of pairs
+				gene_diff_pairs[diff] = gene_diff_pairs.get(diff, []) + [(gene1, gene2),]
+		print(f'gene_diff_pairs={gene_diff_pairs}')
+		self.progeny_groups_count_dict = {}
+		for gene_pair in gene_diff_pairs.get(3, []):
+			#triple crossovers (TCO)
+			self.progeny_groups_count_dict[gene_pair] = self.calculate_triple_crossovers(gene_pair)
+		for gene_pair in gene_diff_pairs.get(2, []):
+			#double crossovers (DCO)
+			self.progeny_groups_count_dict[gene_pair] = self.calculate_double_crossovers(gene_pair)
+		for gene_pair in gene_diff_pairs.get(1, []):
+			#single crossovers (SCO)
+			self.progeny_groups_count_dict[gene_pair] = self.calculate_single_crossover(gene_pair)
 		"""
+		three gene:
 		dco = Xc * Yc * N * (b -a)/b
 		sx = N * Xc - dco
 		sy = N * Yc - dco
 		"""
-		sx = self.progeny_count_int * self.distance_triplet_tuple[1]/ 100 - reduced_DCO
-		if not is_almost_integer(sx):
-			raise ValueError(f'sx={sx:.5f} is NOT an integer')
-		sx = int(round(sx))
-		print(f'sx={sx:d}')
-		sy = self.progeny_count_int * self.distance_triplet_tuple[0]/ 100 - reduced_DCO
-		if not is_almost_integer(sy):
-			raise ValueError(f'sx={sy:.5f} is NOT an integer')
-		sy = int(round(sy))
-		print(f'sy={sy:d}')
-		parent_count_int = self.progeny_count_int - sx - sy - reduced_DCO
-		self.progeny_groups_count_dict = {
-			'parental': parent_count_int,
-			'dco': reduced_DCO,
-			'sco': {
-				(1,2): sy,
-				(2,3): sx,
-			},
-		}
+		parent_count_int = self.progeny_count_int - sum(self.progeny_groups_count_dict.values())
+		self.progeny_groups_count_dict['parental'] = parent_count_int
+		total_count = sum(self.progeny_groups_count_dict.values())
+		if total_count != self.progeny_count_int:
+			raise ValueError(f'counts do not add up {total_count} vs expected {self.progeny_count_int}')
 
 	#====================================
 	def set_all_genotype_tuple_pairs_list(self):
@@ -377,82 +444,27 @@ class GeneMappingClass:
 			},
 		}"""
 		self.genotype_counts = {}
+		#okay this stage is easy
 		p_genotype1, p_genotype2 = self.parental_genotypes_tuple
 		p_count1, p_count2 = split_number_in_two(self.progeny_groups_count_dict['parental'])
 		self.genotype_counts[p_genotype1] = p_count1
 		self.genotype_counts[p_genotype2] = p_count2
 
-		dco_genotype1 = flip_gene_by_letter(p_genotype1, self.gene_order_str[1], self.gene_letters_str)
-		dco_genotype2 = flip_gene_by_letter(p_genotype2, self.gene_order_str[1], self.gene_letters_str)
-		dco_count1, dco_count2 = split_number_in_two(self.progeny_groups_count_dict['dco'])
-		self.genotype_counts[dco_genotype1] = dco_count1
-		self.genotype_counts[dco_genotype2] = dco_count2
-
-		sx_genotype1 = flip_gene_by_letter(p_genotype1, self.gene_order_str[0], self.gene_letters_str)
-		sx_genotype2 = flip_gene_by_letter(p_genotype2, self.gene_order_str[0], self.gene_letters_str)
-		sx_count1, sx_count2 = split_number_in_two(self.progeny_groups_count_dict['sco'][(1,2)])
-		self.genotype_counts[sx_genotype1] = sx_count1
-		self.genotype_counts[sx_genotype2] = sx_count2
-
-		sy_genotype1 = flip_gene_by_letter(p_genotype1, self.gene_order_str[2], self.gene_letters_str)
-		sy_genotype2 = flip_gene_by_letter(p_genotype2, self.gene_order_str[2], self.gene_letters_str)
-		sy_count1, sy_count2 = split_number_in_two(self.progeny_groups_count_dict['sco'][(2,3)])
-		self.genotype_counts[sy_genotype1] = sy_count1
-		self.genotype_counts[sy_genotype2] = sy_count2
-
+		for gene_index1 in range(1, self.num_genes_int):
+			for gene_index2 in range(gene_index1+1, self.num_genes_int+1):
+				gene_pair = (gene_index1, gene_index2)
+				print(gene_pair)
+				progeny_count1, progeny_count2 = split_number_in_two(self.progeny_groups_count_dict[gene_pair])
+				geno_type_1, geno_type_2 = copy.copy((p_genotype1, p_genotype2))
+				for crossover_index in range(gene_index1, gene_index2):
+					geno_type_1 = crossover_after_index(geno_type_1, crossover_index, self.gene_order_str)
+					geno_type_2 = crossover_after_index(geno_type_2, crossover_index, self.gene_order_str)
+				self.genotype_counts[geno_type_1] = progeny_count1
+				self.genotype_counts[geno_type_2] = progeny_count2
+		total_count = sum(self.genotype_counts.values())
+		if total_count != self.progeny_count_int:
+			raise ValueError(f'counts do not add up {total_count} vs expected {self.progeny_count_int}')
 		self.print_gene_map_data()
-
-	def generate_three_gene_type_map(types: list, type_counts: dict, basetype: str) -> dict:
-		if debug is True: print("\n\ngenerate progeny data")
-		typemap = {}
-		for t in types:
-			n = ptcl.invert_genotype(t, basetype)
-			#rand = random.gauss(0.5, 0.01)
-			try:
-				count = type_counts[t]
-			except KeyError:
-				count = type_counts[n]
-			tcount = 0
-			ncount = 0
-			for i in range(count):
-				if random.random() > 0.5:
-					tcount += 1
-				else:
-					ncount += 1
-			#sys.stderr.write(".")
-			#typemap[t] = int(rand * count)
-			#typemap[n] = count - typemap[t]
-			typemap[t] = tcount
-			typemap[n] = ncount
-		sys.stderr.write("\n")
-		return typemap
-
-	def generate_three_gene_type_counts(parental: str, doublecross: str, basetype: str, progeny_size: int, geneorder: str) -> dict:
-		type_counts = {}
-		if debug is True: print("determine double type")
-		doubletype = ptcl.flip_gene_by_letter(parental, geneorder[1], basetype)
-		doublecount = int(round(doublecross*progeny_size/100.))
-		if debug is True: print("  ", doubletype, ptcl.invert_genotype(doubletype, basetype), doublecount)
-		type_counts[doubletype] = doublecount
-
-		if debug is True: print("determine first flip")
-		firsttype = ptcl.flip_gene_by_letter(parental, geneorder[0], basetype)
-		firstcount = int(round(distances[0]*progeny_size/100.)) - doublecount
-		if debug is True: print("  ", firsttype, ptcl.invert_genotype(firsttype, basetype), firstcount)
-		type_counts[firsttype] = firstcount
-
-		if debug is True: print("determine second flip")
-		secondtype = ptcl.flip_gene_by_letter(parental, geneorder[2], basetype)
-		secondcount = int(round(distances[1]*progeny_size/100.)) - doublecount
-		if debug is True: print("  ", secondtype, ptcl.invert_genotype(secondtype, basetype), secondcount)
-		type_counts[secondtype] = secondcount
-
-		if debug is True: print("determine parental type count")
-		parentcount = progeny_size - doublecount - firstcount - secondcount
-		if debug is True: print("  ", parental, ptcl.invert_genotype(parental, basetype), parentcount)
-		type_counts[parental] = parentcount
-
-		return type_counts
 
 #===========================================================
 #===========================================================
@@ -472,6 +484,8 @@ def get_gene_letters(num_genes_int: int) -> str:
 	return gene_letters_str
 assert len(get_gene_letters(5)) == 5
 
+#===========================================================
+#===========================================================
 def generate_genotypes(gene_letters: str) -> list:
 	"""
 	Generate all possible genotypes for a given string of gene letters.
@@ -503,7 +517,7 @@ def generate_genotypes(gene_letters: str) -> list:
 assert len(generate_genotypes('abc')) == 8
 assert len(generate_genotypes('qrst')) == 16
 
-
+#===========================================================
 #===========================================================
 def split_number_in_two(number: int) -> tuple:
 	a = 0
@@ -516,8 +530,8 @@ def split_number_in_two(number: int) -> tuple:
 	return (a,b)
 assert sum(split_number_in_two(100)) == 100
 
-#====================================
-#====================================
+#===========================================================
+#===========================================================
 def is_almost_integer(num: float, epsilon: float = 1e-6) -> bool:
 	"""
 	Checks if a float number is close to an integer within a given epsilon.
@@ -542,8 +556,8 @@ def is_almost_integer(num: float, epsilon: float = 1e-6) -> bool:
 assert is_almost_integer(5.0000001)  == True
 assert is_almost_integer(5.001)      == False
 
-#====================================
-#====================================
+#===========================================================
+#===========================================================
 def get_phenotype_name(genotype: str) -> str:
 	"""
 	Gets the phenotype from a genotype.
@@ -583,48 +597,36 @@ assert get_phenotype_name('++++') == '<i>wildtype</i>'
 assert get_phenotype_name('+++') == '<i>wildtype</i>'
 assert get_phenotype_name('++') == '<i>wildtype</i>'
 
-#====================================
-#====================================
-def is_valid_html_table(html_str: str) -> bool:
+#===========================================================
+#===========================================================
+import xml.etree.ElementTree as ET
+
+def is_valid_html(html_str: str) -> bool:
 	"""
-		Check if the given HTML string represents a valid HTML table.
+	Validates if the input HTML string is well-formed.
 
-		Parameters
-		----------
-		html_str : str
-			The HTML string to check.
+	Args:
+	html_str (str): The HTML string to validate.
 
-		Returns
-		-------
-		bool
-			True if the string represents a valid HTML table, False otherwise.
+	Returns:
+	bool: True if the HTML is well-formed, False otherwise.
 	"""
-	# Parse the HTML string using BeautifulSoup
-	soup = BeautifulSoup(html_str, 'html.parser')
-
-	# Search for the first 'table' tag
-	table = soup.find('table')
-
-	# If there is no 'table' tag, it's not a valid HTML table
-	if not table:
+	try:
+		# Wrapping the HTML string with a root tag, because `ET.fromstring`
+		# requires a single root element, and typical HTML snippets might not have one.
+		wrapped_html = f"<root>{html_str}</root>"
+		ET.fromstring(wrapped_html)
+		return True
+	except ET.ParseError:
 		return False
 
-	# Check for 'tr', 'td', and 'th' tags within the table
-	rows = table.find_all('tr')
-	for row in rows:
-		cells = row.find_all(['td', 'th'])
-		if not cells:
-			return False
+# Simple assertion test for the function: 'is_valid_html'
+assert is_valid_html("<p>This is a paragraph.</p>") == True
+assert is_valid_html("<p>This is a paragraph.</html>") == False
+assert is_valid_html("<span style='no closing quote>This is a paragraph.</span>") == False
 
-	# If the code reaches here, the HTML contains a well-structured table
-	return True
-
-# Simple assertion test for the function: 'is_valid_html_table'
-assert is_valid_html_table('<table><tr><td>Cell 1</td><td>Cell 2</td></tr></table>') == True
-assert is_valid_html_table('<p>This is not a table</p>') == False
-
-#====================================
-#====================================
+#===========================================================
+#===========================================================
 def min_difference(numbers: list) -> int:
 	"""
 	Find the minimum difference between any two consecutive integers in a sorted list.
@@ -708,7 +710,6 @@ assert minN(2, 3, 1, 2) == 10000
 assert minN(5, 22, 6, 11) == 200
 
 
-
 #====================================
 #====================================
 def get_distance():
@@ -770,6 +771,20 @@ def calculate_third_distance(x: int, y: int, interference_tuple: tuple=(0,1)) ->
 	return z
 assert calculate_third_distance(25, 22, (7, 11)) == 43
 assert calculate_third_distance(20, 28, (3, 8)) == 41
+
+
+#====================================
+#====================================
+def calculate_fourth_distance(x: int, y: int, z: int) -> float:
+	# Validate the input constraints: 1 < x < 50, 1 < y < 50, and 0 <= z <= 50
+	if x < 1 or x >= 50 or y < 1 or y >= 50 or z < 1 or z >= 50:
+		raise ValueError("Invalid input values. Make sure 1 < x < 50 and 1 < y < 50 and 1 < z < 50.")
+	t = x + y + z - 2 * (x*y/100 + y*z/100) + 3 * (x*y*z/100/100)
+	if is_almost_integer(t):
+		t = int(round(t))
+	return t
+#assert calculate_fourth_distance(25, 22, (7, 11)) == 43
+#assert calculate_fourth_distance(20, 28, (3, 8)) == 41
 
 #====================================
 #====================================
@@ -836,7 +851,7 @@ assert calculate_interference_from_three_distances(30, 15, 38) == (2, 9)
 
 # ==============================
 # ==============================
-def distance_triplet_generator(interference_tuple: tuple=(0,1), max_dist: int=47) -> list:
+def distance_triplet_generator(interference_tuple: tuple=(0,1), max_dist: int=40) -> list:
 	"""
 	Generate a list of distance triplets (y, x, z) within a given maximum distance.
 
@@ -896,7 +911,7 @@ assert distance_triplet_generator((9,11), 36) == [(25, 11, 35)]
 
 #====================================
 #====================================
-def get_all_distance_triplets(max_fraction_int: int=12, max_distance: int=47) -> list:
+def get_all_distance_triplets(max_fraction_int: int=12, max_distance: int=40) -> list:
 	used_values = {}
 	distance_triplet_list = []
 	for numerator_prime  in range(1, max_fraction_int):
@@ -1022,7 +1037,7 @@ def make_progeny_html_table(typemap: dict, progeny_size: int) -> str:
 	table += f'<td {td_extra.replace("center", "right")}>{span}{progeny_size:d}</span></td></tr>'
 	table += '</table>'
 
-	if is_valid_html_table(table) is False:
+	if is_valid_html(table) is False:
 		sys.exit(1)
 	return table
 
@@ -1439,6 +1454,41 @@ assert flip_gene_by_index('+b', 1, 'ab') == 'ab'
 
 #====================================
 #====================================
+def crossover_after_index(genotype: str, gene_index: str, gene_order: str) -> str:
+	"""
+	Flips a specified gene in the genotype.
+
+	parent genotypes: ++++, abcd
+	index 1: +bcd, a+++
+	index 2: ++cd, ab++
+	index 3: +++d, abc+
+
+	Parameters
+	----------
+	genotype : str
+		The original genotype.
+	gene : str
+		The gene to flip.
+	gene_order : str
+		The basic type used as a reference for flipping the gene.
+	"""
+	sorted_genes = ''.join(sorted(list(gene_order)))
+
+	new_genotype = copy.copy(genotype)
+	# Iterate through the genotype to find and flip the specified gene
+	for i in range(len(genotype)):
+		if i >= gene_index:
+			gene_letter = gene_order[i]
+			new_genotype = flip_gene_by_letter(new_genotype, gene_letter, sorted_genes)
+	# Return the new genotype
+	return new_genotype
+assert crossover_after_index('++++', 1, 'abcd') == '+bcd'
+assert crossover_after_index('++++', 2, 'abcd') == '++cd'
+assert crossover_after_index('++++', 3, 'abcd') == '+++d'
+assert crossover_after_index('++++', 2, 'adcb') == '+bc+'
+
+#====================================
+#====================================
 def get_random_gene_order(basetype: str) -> str:
 	"""
 	Generates a random gene order based on all unique unordered permutations
@@ -1490,16 +1540,22 @@ assert get_random_gene_order('de') == 'de'
 assert get_random_gene_order('abc') in ('abc', 'acb', 'bac')
 
 if __name__ == '__main__':
-	triplets = [(28, 20, 41), (25, 22, 43), (25, 7, 29), (22, 5, 26), (22, 10, 30), (30, 8, 35),]
+	"""triplets = [(28, 20, 41), (25, 22, 43), (25, 7, 29), (22, 5, 26), (22, 10, 30), (30, 8, 35),]
 	for triplet in triplets:
 		print(triplet)
 		a, b = calculate_interference_from_three_distances(*triplet)
 		print(f'interference = {a}/{b}')
 		dist = calculate_third_distance(triplet[0], triplet[1], (a, b))
-		print(dist, triplet[2])
+		print(dist, triplet[2])"""
 
 	#print(distance_triplet_generator((9,11), 45))
+	a = GeneMappingClass(2, 1)
+	a.setup_question()
 
-	for i in range(200):
-		a = GeneMappingClass(3, i)
-		a.setup_question()
+	#for i in range(200):
+	a = GeneMappingClass(3, 1)
+	a.setup_question()
+
+	#for i in range(200):
+	a = GeneMappingClass(4, 1)
+	a.setup_question()
