@@ -18,7 +18,8 @@ def get_question_text(gene_letters: str) -> str:
 	question_string += 'Once you have calculated them, fill in the following four blanks: </p>'
 
 	question_string += '<p><ul> '
-	question_string += '<li>The distance between genes {0} and {1} is [{0}{1}] cM ({0}{1})</li>'.format(up_genes[0], up_genes[1])
+	question_string += '<li>The distance between genes '
+	question_string += f'{up_genes[0]} and {up_genes[1]} is {} cM</li>'
 	question_string += '<li>The distance between genes {0} and {1} is [{0}{1}] cM ({0}{1})</li>'.format(up_genes[0], up_genes[2])
 	question_string += '<li>The distance between genes {0} and {1} is [{0}{1}] cM ({0}{1})</li>'.format(up_genes[1], up_genes[2])
 	question_string += '<li>From this the correct order of the genes is [geneorder] (gene order).</li>'
