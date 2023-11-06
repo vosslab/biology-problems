@@ -33,9 +33,11 @@ def test():
 #==========================
 def number_to_ordinal(integer):
 	return num2words.num2words(integer, to='ordinal', lang='en_US')
+assert number_to_ordinal(3) == 'third'
 #==========================
 def number_to_cardinal(integer):
 	return num2words.num2words(integer, to='cardinal', lang='en_US')
+assert number_to_cardinal(3) == 'three'
 
 #==========================
 #==========================
@@ -206,7 +208,7 @@ def colorHTMLText(text, hex_code):
 	return f'<span style="color: #{hex_code};">{text}</span>'
 
 #==========================
-fixed_color_wheel = [
+fixed_color_wheel = (
 	'e60000',  # RED
 	'e65400',  # DARK ORANGE
 	'e69100',  # LIGHT ORANGE
@@ -221,7 +223,7 @@ fixed_color_wheel = [
 	'7b12a1',  # PURPLE
 	'b30077',  # MAGENTA
 	'cc0066'   # PINK
-]
+)
 
 #==========================
 def default_color_wheel(num_colors, random_shift=True):
@@ -238,6 +240,103 @@ def default_color_wheel(num_colors, random_shift=True):
 	# Select the colors based on the generated indices
 	selected_colors = [fixed_color_wheel[i] for i in indices]
 	return selected_colors
+
+# Lighter color wheel for background colors in HTML tables
+light_color_wheel = (
+	'ffcccc',  # Light Red
+	'ffd9cc',  # Light Dark Orange
+	'ffebcc',  # Light Light Orange
+	'ffffcc',  # Light Dark Yellow
+	'd9ffcc',  # Light Lime Green
+	'ccffcc',  # Light Green
+	'ccffe6',  # Light Teal
+	'ccffff',  # Light Cyan
+	'ccf2ff',  # Light Sky Blue
+	'ccd9ff',  # Light Blue
+	'ccccff',  # Light Navy
+	'e6ccff',  # Light Purple
+	'ffccf2',  # Light Magenta
+	'ffccff',  # Light Pink
+)
+
+# Lighter color wheel for background colors in HTML tables
+extra_light_color_wheel = (
+	'ffe6e6',  # Light Red
+	'ffece6',  # Light Orange
+	'fff5e6',  # Light Light Orange
+	'ffffe6',  # Light Yellow
+	'ecffe6',  # Light Lime Green
+	'e6ffe6',  # Light Green
+	'e6fff3',  # Light Teal
+	'e6ffff',  # Light Cyan
+	'e6f9ff',  # Light Sky Blue
+	'e6ecff',  # Light Blue
+	'e6e6ff',  # Light Navy
+	'f3e6ff',  # Light Purple
+	'ffe6f9',  # Light Magenta
+	'ffe6ff',  # Light Pink
+)
+
+def default_light_color_wheel(num_colors, random_shift=True, extra_light=False):
+	if extra_light is True:
+		color_wheel = extra_light_color_wheel
+	else:
+		color_wheel = light_color_wheel
+
+	# Calculate the step size for selecting colors
+	step = len(color_wheel) / num_colors
+	# Generate the list of indices to select colors from the light color wheel
+	indices = [round(step * i) for i in range(num_colors)]
+
+	# Apply a random shift to the selected indices if specified
+	if random_shift:
+		shift = random.randint(0, len(color_wheel) - 1)
+		indices = [(i + shift) % len(color_wheel) for i in indices]
+
+	# Select the colors based on the generated indices
+	selected_colors = [color_wheel[i] for i in indices]
+	return selected_colors
+
+def light_and_dark_color_wheel(num_colors, random_shift=True, extra_light=False):
+	if extra_light is True:
+		color_wheel = extra_light_color_wheel
+	else:
+		color_wheel = light_color_wheel
+
+	# Calculate the step size for selecting colors
+	step = len(color_wheel) / num_colors
+	# Generate the list of indices to select colors from the light color wheel
+	indices = [round(step * i) for i in range(num_colors)]
+
+	# Apply a random shift to the selected indices if specified
+	if random_shift:
+		shift = random.randint(0, len(color_wheel) - 1)
+		indices = [(i + shift) % len(color_wheel) for i in indices]
+
+	# Select the colors based on the generated indices
+	selected_light_colors = [color_wheel[i] for i in indices]
+	selected_dark_colors = [fixed_color_wheel[i] for i in indices]
+	return selected_light_colors, selected_dark_colors
+
+# Assume the fixed_color_wheel and light_color_wheel lists are defined elsewhere in this file, as shown above
+
+def write_html_color_table(filename):
+	with open(filename, 'w') as f:
+		# Start the HTML document
+		f.write("<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><title>Color Table</title>"
+				"<style>table {width: 100%; border-collapse: collapse;} th {background-color: #333; color: white; padding: 10px;}"
+				"td {padding: 10px; text-align: center;} .light-bg {font-weight: bold;} .dark-text {background-color: white;}"
+				"</style></head><body><table border='1'><tr><th>Color Name</th><th>Light Color (Background)</th>"
+				"<th>Fixed Color (Text)</th></tr>")
+
+		# Generate table rows
+		for i in range(len(light_color_wheel)):
+			fixed_index = i % len(fixed_color_wheel)  # Loop back if necessary
+			f.write(f"<tr><td>Color {i+1}</td><td class='light-bg' style='background-color:#{light_color_wheel[i]};'>Text</td>"
+					f"<td class='dark-text' style='color:#{fixed_color_wheel[fixed_index]};'>Text</td></tr>")
+
+		# End the HTML document
+		f.write("</table></body></html>")
 
 #==========================
 def default_color_wheel_calc(num_colors=4):
