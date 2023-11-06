@@ -74,7 +74,7 @@ if __name__ == "__main__":
 		distance = list(GMC.distances_dict.values())[0]
 
 		question_string = get_question_text()
-		full_question = header+phenotype_info_text+html_table+question_string
+		full_question = header + phenotype_info_text + html_table + question_string
 		final_question = bptools.formatBB_NUM_Question(N, full_question, distance, 0.1, tol_message=False)
 
 		f.write(final_question)
