@@ -178,12 +178,9 @@ assert get_phenotype_name_for_genotype('++') == '<i>wildtype</i>'
 #===========================================================
 #===========================================================
 
-def is_valid_html(html_str: str) -> bool:
-	return is_valid_html_xml(html_str)
-
 import xml.etree.ElementTree as ET
 
-def is_valid_html_xml(html_str: str) -> bool:
+def is_valid_html(html_str: str) -> bool:
 	"""
 	Validates if the input HTML string is well-formed by removing entities
 	and wrapping the content in a root element for XML parsing.
@@ -301,13 +298,6 @@ def minN(x: int, y: int, a: int, b: int) -> int:
 	return N
 assert minN(2, 3, 1, 2) == 10000
 assert minN(5, 22, 6, 11) == 200
-
-
-#====================================
-#====================================
-def get_distance():
-	#integers
-	return random.randint(2,45)
 
 #====================================
 #====================================
@@ -583,143 +573,12 @@ assert get_progeny_size(10) % 200 == 0
 
 #====================================
 #====================================
-def make_progeny_html_table(genotype_counts: dict, progeny_size: int) -> str:
-	"""
-		Create an HTML table representation of progeny data.
-
-		Parameters
-		----------
-		genotype_counts : dict
-			A dictionary containing genotype to progeny count mappings.
-		progeny_size : int
-			The total size of the progeny.
-
-		Returns
-		-------
-		str
-			The HTML table as a string.
-	"""
-	# Sort all genotype keys
-	alltypes = list(genotype_counts.keys())
-	alltypes.sort()
-
-	# Define common HTML attributes for table cells
-	td_extra = 'align="center" style="border: 1px solid black;"'
-	span = '<span style="font-size: medium;">'
-
-	# Initialize the HTML table
-	table = '<table style="border-collapse: collapse; border: 2px solid black; width: 460px; height: 280px">'
-
-	# Add header row to the table
-	table += f'<tr><th {td_extra}>{span}Phenotype</span></th>'
-	table += f'<th colspan="{len(alltypes)}" {td_extra}>{span}Genotypes</span></th>'
-	table += f'<th {td_extra}>{span}Progeny<br/>Count</span></th></tr>'
-
-	# Loop through each genotype and add a row to the table
-	for genotype in alltypes:
-		# Fetch the phenotype string based on the genotype
-		phenotype_string = get_phenotype_name_for_genotype(genotype)
-
-		table += f'<tr><td {td_extra.replace("center", "left")}>&nbsp;{span}{phenotype_string}</span></td>'
-		for i in range(len(genotype)):
-			table += f'<td {td_extra}>{span}{genotype[i]}</span></td>'
-		table += f'<td {td_extra.replace("center", "right")}>{span}{genotype_counts[genotype]:d}</span></td></tr>'
-
-	# Add total progeny size at the end of the table
-	table += f'<tr><th colspan="{len(alltypes)+1}" {td_extra.replace("center", "right")}>{span}TOTAL =</span></th>'
-	table += f'<td {td_extra.replace("center", "right")}>{span}{progeny_size:d}</span></td></tr>'
-	table += '</table>'
-
-	if is_valid_html(table) is False:
-		print(table)
-		raise ValueError
-	return table
-
-# Simple assertion test for the function: 'make_progeny_html_table'
-# Example dictionary and progeny size for testing
-example_typemap = {'++': 10, '+b': 15, 'a+': 5, 'ab': 5}
-example_progeny_size = 35
-result = make_progeny_html_table(example_typemap, example_progeny_size)
-# Since the return type is an HTML string, we are not asserting its exact content
-# Instead, we assert that it contains an expected substring
-assert 'TOTAL =' in result
-assert f'{example_progeny_size:d}' in result
-
-#====================================
-#====================================
 def right_justify_int(num: int, length: int) -> str:
 	my_str = f'{num:d}'
 	while len(my_str) < length:
 		my_str = ' ' + my_str
 	return my_str
 assert right_justify_int(7,5) == "    7"
-
-#====================================
-#====================================
-def make_progeny_ascii_table(typemap: dict, progeny_size: int) -> str:
-	"""
-	Numpydoc Comment
-	----------------
-	Parameters:
-		typemap : dict
-			Dictionary mapping genotypes to their corresponding counts
-		progeny_size : int
-			The total number of progenies
-
-	Returns:
-		str
-			The ASCII table representing the genotype and phenotype counts
-	"""
-
-	# Initialize an empty string to hold the table
-	table = '\n'
-
-	# Sort all types from the typemap keys
-	all_genotypes = list(typemap.keys())
-	all_genotypes.sort()
-	genes = all_genotypes[-1]
-
-	for gene in genes:
-		table += " -----"
-	table += " --------- ------------------"
-	table += "\n"
-	table += "|"
-	for gene in genes:
-		table += f"  {gene}  |"
-	table += "  count  | phenotype"
-	table += "\n"
-	for gene in genes:
-		table += " -----"
-	table += " --------- ------------------"
-	table += "\n"
-
-	# Loop through sorted genotypes to fill the table
-	for genotype in all_genotypes:
-		# Fetch the phenotype name based on the genotype
-		phenotype_string = get_phenotype_name_for_genotype(genotype)
-		table += "|"
-		# Add genotype to the table
-		for gene in genotype:
-			table += f"  {gene}  |"
-
-		# Add genotype count and phenotype name
-		table += f"{right_justify_int(typemap[genotype],7)}  |"
-		table += f" {phenotype_string}\t"
-
-		# Add newline to complete the row
-		table += "\n"
-
-	for i in range(len(genes)):
-		table += " -----"
-	# Add delimiter and total progeny size at the end
-	table += " --------- ------------------"
-	table += "\n"
-	for i in range(len(genes)-1):
-		table += "      "
-	table += f"  TOTAL{right_justify_int(progeny_size,7)}\n\n"
-
-	# Return the completed table
-	return table
 
 #====================================
 #====================================
@@ -874,55 +733,3 @@ assert crossover_after_index('++++', 1, 'abcd') == '+bcd'
 assert crossover_after_index('++++', 2, 'abcd') == '++cd'
 assert crossover_after_index('++++', 3, 'abcd') == '+++d'
 assert crossover_after_index('++++', 2, 'adcb') == '+bc+'
-
-#====================================
-#====================================
-def get_random_gene_order(basetype: str) -> str:
-	"""
-	Generates a random gene order based on all unique unordered permutations
-	of the characters in the string 'basetype'.
-
-	Parameters
-	----------
-	basetype : str
-		The original gene order.
-
-	Returns
-	-------
-	str
-		A randomly chosen gene order from all unique unordered permutations.
-	"""
-	# Generate all permutations of the 'basetype' string
-	all_permutations = set(itertools.permutations(basetype))
-
-	# Initialize a set to store unique permutations
-	unique_permutations = set()
-
-	# Filter out reverse duplicates by only adding the lexicographically smallest of each pair
-	for perm in all_permutations:
-		perm_str = ''.join(perm)
-		rev_perm_str = ''.join(reversed(perm))
-		unique_permutations.add(min(perm_str, rev_perm_str))
-
-	# Convert set to list
-	unique_permutations = list(unique_permutations)
-
-	# Debugging: Print information on gene order selection
-	if debug is True:
-		print("selecting gene order...")
-		print(f'from: {unique_permutations}')
-
-	# Randomly select a gene order from the unique permutations
-	geneorder = random.choice(unique_permutations)
-
-	# Debugging: Print the selected gene order
-	if debug is True:
-		print(geneorder)
-
-	# Return the randomly selected gene order
-	return geneorder
-
-# Simple assertion test for the function: 'get_random_gene_order'
-# Hard to assert due to random output, but you can test by running the function multiple times
-assert get_random_gene_order('de') == 'de'
-assert get_random_gene_order('abc') in ('abc', 'acb', 'bac')
