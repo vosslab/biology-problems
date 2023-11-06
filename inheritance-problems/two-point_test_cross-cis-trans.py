@@ -11,7 +11,7 @@ import genemapclass as gmc
 debug = False
 
 #====================================
-def questionText():
+def get_question_text():
 	question_string = ''
 	question_string += '<p>The phenotype counts resulting from the cross are summarized in the table above.</p> '
 	question_string += '<h6>Question</h6> '
@@ -56,7 +56,7 @@ if __name__ == "__main__":
 		else:
 			answer = 'trans'
 
-		question_string = questionText()
+		question_string = get_question_text()
 		full_question = header+phenotype_info_text+html_table+question_string
 		final_question = bptools.formatBB_MC_Question(N, full_question, choices_list, answer)
 

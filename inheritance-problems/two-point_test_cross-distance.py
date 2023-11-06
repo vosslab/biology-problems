@@ -2,6 +2,7 @@
 
 import os
 import random
+import argparse
 
 import bptools
 import genemapclass as gmc
@@ -9,15 +10,23 @@ import genemapclass as gmc
 debug = False
 
 #====================================
-def questionText(basetype):
-	question_string = '<h6>Two-Point Test-Cross: Gene Distance Mapping</h6>'
-	question_string += '<p>A test-cross with a heterozygote fruit fly for two genes is conducted. '
-	question_string += 'The resulting phenotypes are summarized in the table above.</p> '
-	question_string += '<p>Using the table above, determine the distance between the two genes.</p> '
-	question_string += '<ul> <li><i>Hint 1:</i> The gene distance will be a whole number, '
-	question_string += 'do NOT enter a decimal; if you have a decimal your calculations are likely wrong.</li>'
-	question_string += '<li><i>Hint 2:</i> enter your answer in the blank using only numbers '
-	question_string += ' with no spaces or commas. Also, do NOT add units, e.g. cM or m.u.</li></ul> '
+def get_question_text():
+	question_string = ''
+	question_string += '<p>The resulting phenotypes are summarized in the table above.</p> '
+	question_string += '<h6>Question</h6> '
+	question_string += '<p>With the progeny data from the table, '
+	question_string += '<strong>calculate the genetic distance between the two genes,</strong> '
+	question_string += 'expressing your answer in centimorgans (cM)</p> '
+	question_string += '<ul> '
+	question_string += '<li><i>Important Tip 1:</i> '
+	question_string +=   'The distance between genes will be a whole number. '
+	question_string +=   'Finding a decimal in your answer, such as 5.5, indicates a mistake was made. '
+	question_string +=   'Please provide your answer as a complete number without fractions or decimals.</li>'
+	question_string += '<li><i>Important Tip 2:</i> '
+	question_string +=   'Write your answer as only the numerical value, no spaces, commas, or units such as "cM" or "map units". '
+	question_string +=   'For example, if the distance is fifty one centimorgans, simply write "51". </li> '
+	question_string += '</ul> '
+
 	return question_string
 
 #====================================
@@ -53,24 +62,19 @@ if __name__ == "__main__":
 	N = 0
 	for i in range(args.duplicates):
 		N += 1
-		j += 1
-		if j + 1 == len(lowercase):
-			j = 0
-		basetype = lowercase[j:j+2]
-		geneorder = basetype
-		distance = ptcl.get_distance()
-		print(basetype, distance)
-		progeny_size = ptcl.get_progeny_size(distance)
-		typemap = makeQuestion(basetype, distance, progeny_size)
-		ascii_table =  ptcl.make_progeny_ascii_table(typemap, progeny_size)
-		print(ascii_table)
-		html_table = ptcl.make_progeny_html_table(typemap, progeny_size)
-		#print(html_table)
-		question_string = questionText(basetype)
-		#variable_list = getVariables(geneorder)
-		final_question = bptools.formatBB_NUM_Question(N, html_table+question_string, distance, 0.1)
-		#final_question = blackboardFormat(N, question_string, html_table, distance)
-		#print(final_question)
+
+		# Gene Mapping Class
+		GMC = gmc.GeneMappingClass(2, N)
+		GMC.setup_question()
+		print(GMC.get_progeny_ascii_table())
+		header = GMC.get_question_header()
+		html_table = GMC.get_progeny_html_table()
+		phenotype_info_text = GMC.get_phenotype_info()
+		distance = list(GMC.distances_dict.values())[0]
+
+		question_string = get_question_text()
+		full_question = header+phenotype_info_text+html_table+question_string
+		final_question = bptools.formatBB_NUM_Question(N, full_question, distance, 0.1, tol_message=False)
 
 		f.write(final_question)
 	f.close()

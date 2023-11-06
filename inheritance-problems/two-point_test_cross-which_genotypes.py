@@ -49,7 +49,7 @@ if __name__ == "__main__":
 		sys.exit(1)
 
 	outfile = ('bbq-' + os.path.splitext(os.path.basename(__file__))[0]
-		+ f'{args.question_type}-'
+		+ f'-{args.question_type}'
 		+ '-questions.txt')
 	print('writing to file: '+outfile)
 	f = open(outfile, 'w')
@@ -64,7 +64,7 @@ if __name__ == "__main__":
 		html_table = GMC.get_progeny_html_table()
 		phenotype_info_text = GMC.get_phenotype_info()
 
-		choices_list = sorted(GMC.genotype_counts.keys())
+		choices_list = sorted(GMC.genotype_counts.keys(), reverse=True)
 		if args.question_type == 'parental':
 			answers_list = list(GMC.parental_genotypes_tuple)
 		elif args.question_type == 'recombinant':
