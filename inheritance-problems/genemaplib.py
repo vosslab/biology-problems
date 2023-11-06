@@ -6,36 +6,6 @@ import itertools
 
 debug = False
 
-#====================================
-#====================================
-phenotype_dict = {
-	'a': 'artsy',
-	'b': 'bumpy',
-	'c': 'chummy',
-	'd': 'dewy',
-	'e': 'electric',
-	'f': 'fuzzy',
-	'g': 'gooey',
-	'h': 'horsey',
-	'i': 'icy',
-	'j': 'jolty',
-	'k': 'kidney',
-	'l': 'leafy',
-	'm': 'mushy',
-	'n': 'nerdy',
-	'o': 'okra',
-	'p': 'prickly',
-	'q': 'quacky',
-	'r': 'rusty',
-	's': 'spicy',
-	't': 'tipsy',
-	'u': 'ugly',
-	'v': 'valley',
-	'w': 'waxy',
-	'x': 'xanthine',
-	'y': 'yucky',
-	'z': 'zippy',
-}
 
 #====================================
 #====================================
@@ -45,7 +15,7 @@ phenotype_description_dict = {
 	'bumpy':   'has a skin texture that is not smooth, but rough with small bumps all over.',
 	'chummy':  'shows behavior where it maintains a close distance to other flies.',
 	'dewy':    'appears moist, with its body covered in tiny droplets of water.',
-	'eery':    'appears to have something off, crooked limbs and other appendages.',
+	'eery':    'appears to have something off, crooked limbs and other twisted appendages.',
 	'fuzzy':   'is covered in a dense layer of hairs, giving it a soft appearance.',
 	'gooey':   'is coated with a thick, sticky substance, suggestive of a viscous bodily secretion.',
 	'horsey':  'is quite big and strong-looking, much larger than your typical fruit fly.',
@@ -53,7 +23,7 @@ phenotype_description_dict = {
 	'jolty':   'moves in rapid and sudden movements, displaying an unpredictable flight pattern.',
 	'kidney':  'has a body shape that is curved, similar to a kidney bean.',
 	'leafy':    'has wings that resemble the shape and pattern of leaves.',
-	'mushy':    'feels soft to the touch, unusually squishy, unlike the usual firmness.',
+	'mushy':    'feels soft to the touch and unusually squishy, unlike the usual firmness.',
 	'nerdy':    'has large, prominent eyes that stand out, much like thick-rimmed glasses.',
 	'okra':     'features a long, slender body, resembling the shape of an okra pod.',
 	'prickly':  'is covered with sharp bristles, giving it a spiky texture.',
@@ -68,6 +38,15 @@ phenotype_description_dict = {
 	'yucky':    'gives off an unpleasant odor and has a generally unappealing look.',
 	'zippy':    'zooms around quickly, darting from one place to another.',
 }
+
+#====================================
+#====================================
+phenotype_names = list(phenotype_description_dict.keys())
+random.shuffle(phenotype_names)
+phenotype_dict = {}
+for name in phenotype_names:
+	phenotype_dict[name[0]] = name
+del phenotype_names
 
 #===========================================================
 def get_gene_letters(num_genes_int: int) -> str:
@@ -156,7 +135,7 @@ assert is_almost_integer(5.001)      == False
 
 #===========================================================
 #===========================================================
-def get_phenotype_name(genotype: str) -> str:
+def get_phenotype_name_for_genotype(genotype: str) -> str:
 	"""
 	Gets the phenotype from a genotype.
 
@@ -191,9 +170,9 @@ def get_phenotype_name(genotype: str) -> str:
 	return phenotype_string.strip()
 
 # Simple assertion tests for the function: 'get_phenotype_name'
-assert get_phenotype_name('++++') == '<i>wildtype</i>'
-assert get_phenotype_name('+++') == '<i>wildtype</i>'
-assert get_phenotype_name('++') == '<i>wildtype</i>'
+assert get_phenotype_name_for_genotype('++++') == '<i>wildtype</i>'
+assert get_phenotype_name_for_genotype('+++') == '<i>wildtype</i>'
+assert get_phenotype_name_for_genotype('++') == '<i>wildtype</i>'
 
 #===========================================================
 #===========================================================
@@ -680,7 +659,7 @@ def make_progeny_html_table(genotype_counts: dict, progeny_size: int) -> str:
 	# Loop through each genotype and add a row to the table
 	for genotype in alltypes:
 		# Fetch the phenotype string based on the genotype
-		phenotype_string = get_phenotype_name(genotype)
+		phenotype_string = get_phenotype_name_for_genotype(genotype)
 
 		table += f'<tr><td {td_extra.replace("center", "left")}>&nbsp;{span}{phenotype_string}</span></td>'
 		for i in range(len(genotype)):
