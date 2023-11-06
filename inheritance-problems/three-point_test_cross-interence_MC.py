@@ -112,9 +112,9 @@ if __name__ == "__main__":
 			 50: '1/2 = 0.500 = 50%',
 			  0: 'no interference, 0%',
 		}
-		answer_text, ans_percent = make_choice_text_from_fraction(b-a, b)
+		answer_text, ans_percent = make_choice_text_from_fraction(a, b)
 		choices_dict[ans_percent] = answer_text
-		wrong_text, wrong_percent = make_choice_text_from_fraction(a, b)
+		wrong_text, wrong_percent = make_choice_text_from_fraction(b-a, b)
 		choices_dict[wrong_percent] = wrong_text
 
 		if b < 8:
