@@ -483,6 +483,26 @@ class GeneMappingClass:
 
 	#====================================
 	#====================================
+	def get_all_recombinants_for_gene_letter(self, gene_pair: tuple) -> list:
+		recombinants = []
+		gene_index1 = self.gene_letters_str.find(gene_pair[0])
+		gene_index2 = self.gene_letters_str.find(gene_pair[1])
+
+		# Add them to the list of recombinants
+		recombinants = []
+		for genotype in self.genotype_counts.keys():
+			for ptype in self.parental_genotypes_tuple:
+				if genotype[gene_index1] == ptype[gene_index1] and genotype[gene_index2] != ptype[gene_index2]:
+					recombinants.append(genotype)
+		return recombinants
+
+	#====================================
+	#====================================
+	def is_valid_html(self, html_text) -> bool:
+		return gml.is_valid_html(html_text)
+
+	#====================================
+	#====================================
 	def get_progeny_ascii_table(self) -> str:
 		# Initialize an empty string to hold the table
 		table = '\n'
@@ -576,7 +596,7 @@ class GeneMappingClass:
 		table += f'<td {td_extra.replace("center", "right")}>{span}{self.progeny_count_int:,d}</span></td></tr>'
 		table += '</table>'
 
-		if gml.is_valid_html(table) is False:
+		if self.is_valid_html(table) is False:
 			print(table)
 			raise ValueError
 		return table
@@ -604,7 +624,7 @@ class GeneMappingClass:
 		header_text += '<p>For this problem, a test cross using a fruit fly (<i>Drosophila melanogaster</i>) '
 		header_text += f'heterozygous for {cardinal_text} genes was conducted to understand their genetic interactions.</p>'
 
-		if gml.is_valid_html(header_text) is False:
+		if self.is_valid_html(header_text) is False:
 			print(header_text)
 			raise ValueError
 		return header_text
@@ -629,7 +649,7 @@ class GeneMappingClass:
 			phenotype_info_text += f'A fruit fly that is homozygous recessive for {gene_span}Gene {gene_letter.upper()}</span> '
 			phenotype_info_text += f'{phenotype_description}</li> '
 		phenotype_info_text += '</ul></p>'
-		if gml.is_valid_html(phenotype_info_text) is False:
+		if self.is_valid_html(phenotype_info_text) is False:
 			print(phenotype_info_text)
 			raise ValueError
 		return phenotype_info_text
