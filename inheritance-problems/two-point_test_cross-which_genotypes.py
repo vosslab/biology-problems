@@ -74,14 +74,11 @@ if __name__ == "__main__":
 			sys.exit(1)
 
 		question_string = get_question_text(args.question_type)
-		full_question = header+phenotype_info_text+html_table+question_string
+		full_question = header + phenotype_info_text + html_table + question_string
 		final_question = bptools.formatBB_MA_Question(N, full_question, choices_list, answers_list)
 
 		f.write(final_question)
 	f.close()
 	bptools.print_histogram()
-
-
-
 
 #THE END
