@@ -192,7 +192,9 @@ class GeneMappingClass:
 		self.question_count_int = question_count
 		self.set_gene_letters()  # This will set self.gene_letters_str
 		self.set_gene_order()
+		self.light_colors, self.dark_colors = bptools.light_and_dark_color_wheel(self.num_genes_int, extra_light=True)
 
+		# set None and empty values
 		self.distance_triplet_tuple = None
 		self.interference_dict = None
 		self.distances_dict = None
@@ -201,7 +203,7 @@ class GeneMappingClass:
 		self.progeny_groups_count_dict = None
 		self.parental_genotypes_tuple = None
 		self.genotype_counts = None
-		self.light_colors, self.dark_colors = bptools.light_and_dark_color_wheel(self.num_genes_int, extra_light=True)
+		self.interference_mode = False
 
 		if self.debug is True:
 			self.print_gene_map_data()
@@ -256,7 +258,7 @@ class GeneMappingClass:
 			self.distances_dict = { (1,2): distance, }
 		elif self.num_genes_int == 3:
 			self.distances_dict = {}
-			self.distance_triplet_tuple = self.get_one_distance_triplet(max_gene_distance=self.max_gene_distance)
+			self.distance_triplet_tuple = self.get_one_distance_triplet(max_gene_distance=self.max_gene_distance, interference_mode=self.interference_mode)
 			if random.random() < 0.5:
 				self.distances_dict[(1,2)] = self.distance_triplet_tuple[0]
 				self.distances_dict[(2,3)] = self.distance_triplet_tuple[1]
@@ -288,10 +290,14 @@ class GeneMappingClass:
 	#====================================
 	#====================================
 	@classmethod
-	def get_one_distance_triplet(cls, max_fraction_int: int=12, max_gene_distance: int=40) -> list:
+	def get_one_distance_triplet(cls, max_fraction_int: int=12, max_gene_distance: int=40, interference_mode: bool=False) -> list:
 		if cls._distance_triplet_list_cache is not None:
 			return random.choice(cls._distance_triplet_list_cache)
-		distance_triplet_list = gml.get_all_distance_triplets(max_fraction_int, max_gene_distance)
+		if interference_mode is True:
+			max_fraction_int = 99
+			distance_triplet_list = gml.get_all_distance_triplets_INTERFERENCE(max_fraction_int, max_gene_distance)
+		else:
+			distance_triplet_list = gml.get_all_distance_triplets(max_fraction_int, max_gene_distance)
 		cls._distance_triplet_list_cache = distance_triplet_list
 		return random.choice(distance_triplet_list)
 

@@ -299,6 +299,12 @@ def minN(x: int, y: int, a: int, b: int) -> int:
 assert minN(2, 3, 1, 2) == 10000
 assert minN(5, 22, 6, 11) == 200
 
+
+def minN_INTERFERENCE(x: int, y: int, a: int, b: int) -> int:
+	final_gcd = math.gcd(b * x * y, 100 * b * x, 100 * b * y, x * y * (b - a), 10000 * b)
+	N = 10000 * b // final_gcd
+	return N
+
 #====================================
 #====================================
 def calculate_third_distance(x: int, y: int, interference_tuple: tuple=(0,1)) -> float:
@@ -511,6 +517,56 @@ def get_all_distance_triplets(max_fraction_int: int=12, max_distance: int=40) ->
 		f'with max distance {max_distance} '+
 		f'from all interference fractions up to denominator {max_fraction_int}')
 	return distance_triplet_list
+
+# ==============================
+def distance_triplet_generator_INTERFERENCE(interference_tuple: tuple=(0,1), max_dist: int=40) -> list:
+	# Initialize an empty list to store valid distance triplets
+	distance_triplet_list = []
+
+	# Iterate over possible values of x
+	for x in range(1, max_dist):
+		# Iterate over possible values of y starting from current x to avoid duplicates
+		for y in range(x, max_dist):
+			# Calculate the third distance z using the provided interference tuple
+			(a, b) = interference_tuple
+			N = minN_INTERFERENCE(x, y, a, b)
+			if N < 10000:
+				expected_dco = N * x * y / 10000
+				if not is_almost_integer(expected_dco):
+					continue
+				z = calculate_third_distance(x, y, interference_tuple)
+				# Check if z is an almost integer, within the valid range, and the min difference criteria is met
+				if y < z < max_dist and is_almost_integer(z):
+					distance_tuple =(y,x,int(z))
+					if min_difference(distance_tuple) > 1:
+						# Add the valid triplet to the list
+						distance_triplet_list.append(distance_tuple)
+	# Sort the list of distance triplets in ascending order before returning
+	distance_triplet_list.sort()
+	return distance_triplet_list
+# Example assertion for simple function validation (assuming other functions are defined)
+
+#====================================
+#====================================
+def get_all_distance_triplets_INTERFERENCE(max_fraction_int: int=99, max_distance: int=40) -> list:
+	used_values = {}
+	distance_triplet_list = []
+	for numerator_prime  in range(1, max_fraction_int):
+		denominator_prime = 100
+		gcd_prime = math.gcd(numerator_prime ,denominator_prime)
+		numerator = numerator_prime // gcd_prime
+		denominator= denominator_prime // gcd_prime
+		if used_values.get((numerator,denominator)) is None:
+			used_values[(numerator,denominator)] = True
+			new_distance_triplet_list = distance_triplet_generator((numerator,denominator), max_distance)
+			if new_distance_triplet_list is not None:
+				distance_triplet_list += new_distance_triplet_list
+	print(f'found {len(distance_triplet_list)} distance tuples '+
+		f'with max distance {max_distance} '+
+		f'from all interference fractions up to denominator {max_fraction_int}')
+	return distance_triplet_list
+
+print(get_all_distance_triplets_INTERFERENCE())
 
 #====================================
 #====================================
@@ -733,3 +789,4 @@ assert crossover_after_index('++++', 1, 'abcd') == '+bcd'
 assert crossover_after_index('++++', 2, 'abcd') == '++cd'
 assert crossover_after_index('++++', 3, 'abcd') == '+++d'
 assert crossover_after_index('++++', 2, 'adcb') == '+bc+'
+
