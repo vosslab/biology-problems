@@ -4,7 +4,7 @@ import os
 import random
 
 import bptools
-import pointtestcrosslib as ptcl
+import genemapclass as gmc
 
 debug = False
 
@@ -40,15 +40,18 @@ def makeQuestion(basetype, distance, progeny_size):
 #====================================
 #====================================
 if __name__ == "__main__":
-	lowercase = "abcdefghijklmnpqrsuvwxyz"
+	parser = argparse.ArgumentParser(description='Process some integers.')
+	parser.add_argument('-d', '--duplicates', metavar='#', type=int, dest='duplicates',
+		help='number of duplicate runs to do', default=1)
+	args = parser.parse_args()
 
+	lowercase = "abcdefghijklmnpqrsuvwxyz"
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
 	print('writing to file: '+outfile)
 	f = open(outfile, 'w')
-	duplicates = 197
 	j = -1
 	N = 0
-	for i in range(duplicates):
+	for i in range(args.duplicates):
 		N += 1
 		j += 1
 		if j + 1 == len(lowercase):
