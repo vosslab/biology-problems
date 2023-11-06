@@ -446,8 +446,8 @@ def getCrc16_FromString(mystr):
 def makeQuestionPretty(question):
 	pretty_question = copy.copy(question)
 	#print(len(pretty_question))
-	pretty_question = re.sub('\<table .+\<\/table\>', '[TABLE]\n', pretty_question)
-	pretty_question = re.sub('\<table .*\<\/table\>', '[TABLE]\n', pretty_question)
+	pretty_question = re.sub('\<table .+\<\/table\>', '\n[TABLE]\n', pretty_question)
+	pretty_question = re.sub('\<table .*\<\/table\>', '\n[TABLE]\n', pretty_question)
 	if '<table' in pretty_question or '</table' in pretty_question:
 		print("MISSED A TABLE")
 		print(pretty_question)
@@ -457,6 +457,7 @@ def makeQuestionPretty(question):
 	pretty_question = re.sub('&nbsp;', ' ', pretty_question)
 	pretty_question = re.sub('h[0-9]\>', 'p>', pretty_question)
 	pretty_question = re.sub('<br/>', '\n', pretty_question)
+	pretty_question = re.sub('<li>', '\n* ', pretty_question)
 	pretty_question = re.sub('<span [^>]*>', ' ', pretty_question)
 	pretty_question = re.sub('<\/?strong>', ' ', pretty_question)
 	pretty_question = re.sub('</span>', '', pretty_question)
@@ -647,15 +648,16 @@ def formatBB_FIB_Question(N, question, answers_list):
 	return bb_question + '\n'
 
 #=====================
-def formatBB_NUM_Question(N, question, answer, tolerance):
+def formatBB_NUM_Question(N, question, answer, tolerance, tol_message=True):
 	global question_count
 	#NUM TAB question text TAB answer TAB [optional]tolerance
 	bb_question = ''
 
 	#number = "{0}. ".format(N)
 	bb_question += 'NUM\t'
-	question += f'<p><i>Answers need to be within {tolerance/answer*100:.1f}&percnt;'
-	question += 'of the actual value to be correct.</i></p> '
+	if tol_message is True:
+		question += f'<p><i>Answers need to be within {tolerance/answer*100:.1f}&percnt;'
+		question += 'of the actual value to be correct.</i></p> '
 	big_question = question + str(answer)
 	bb_question += QuestionHeader(question, N, big_question)
 
