@@ -2,6 +2,8 @@
 
 import copy
 import random
+
+import bptools
 import genemaplib as gml
 
 
@@ -186,6 +188,7 @@ class GeneMappingClass:
 		if num_genes_int > 4:
 			raise ValueError("Too many genes, num_genes_int cannot be more than 4")
 		self.num_genes_int = num_genes_int
+		self.max_gene_distance = 40
 		self.question_count_int = question_count
 		self.set_gene_letters()  # This will set self.gene_letters_str
 		self.set_gene_order()
@@ -198,6 +201,8 @@ class GeneMappingClass:
 		self.progeny_groups_count_dict = None
 		self.parental_genotypes_tuple = None
 		self.genotype_counts = None
+		self.light_colors, self.dark_colors = bptools.light_and_dark_color_wheel(self.num_genes_int, extra_light=True)
+
 		if self.debug is True:
 			self.print_gene_map_data()
 
@@ -245,9 +250,9 @@ class GeneMappingClass:
 
 	#===========================================================
 	#===========================================================
-	def set_gene_distances(self, min_distance=2, max_distance=48) -> None:
+	def set_gene_distances(self, min_distance=2) -> None:
 		if self.num_genes_int == 2:
-			distance = random.randint(min_distance, max_distance)
+			distance = random.randint(min_distance, self.max_gene_distance)
 			self.distances_dict = { (1,2): distance, }
 		elif self.num_genes_int == 3:
 			self.distances_dict = {}
@@ -283,10 +288,10 @@ class GeneMappingClass:
 	#====================================
 	#====================================
 	@classmethod
-	def get_one_distance_triplet(cls, max_fraction_int: int=12, max_distance: int=40) -> list:
+	def get_one_distance_triplet(cls, max_fraction_int: int=12) -> list:
 		if cls._distance_triplet_list_cache is not None:
 			return random.choice(cls._distance_triplet_list_cache)
-		distance_triplet_list = gml.get_all_distance_triplets(max_fraction_int, max_distance)
+		distance_triplet_list = gml.get_all_distance_triplets(max_fraction_int, self.max_gene_distance)
 		cls._distance_triplet_list_cache = distance_triplet_list
 		return random.choice(distance_triplet_list)
 
@@ -476,6 +481,160 @@ class GeneMappingClass:
 		if self.debug is True:
 			self.print_gene_map_data()
 
+	#====================================
+	#====================================
+	def get_progeny_ascii_table(self) -> str:
+		# Initialize an empty string to hold the table
+		table = '\n'
+
+		# Sort all types from the typemap keys
+		all_genotypes = sorted(self.genotype_counts.keys(), reverse=True)
+
+		spacer_line = ''
+		for gene in range(self.num_genes_int):
+			spacer_line += " -----"
+		spacer_line += " --------- -----------------------\n"
+
+		table += spacer_line
+		table += "|"
+		for gene in self.gene_letters_str:
+			table += f"  {gene.upper()}  |"
+		table += "  count  | phenotype"
+		table += "\n"
+
+		# Loop through sorted genotypes to fill the table
+		for i, genotype in enumerate(all_genotypes):
+			if i % 4 == 0:
+				table += spacer_line
+			# Fetch the phenotype name based on the genotype
+			phenotype_string = gml.get_phenotype_name_for_genotype(genotype)
+			table += "|"
+			# Add genotype to the table
+			for gene in genotype:
+				table += f"  {gene}  |"
+
+			# Add genotype count and phenotype name
+			table += f"{gml.right_justify_int(self.genotype_counts[genotype],7)}  |"
+			table += f" {phenotype_string}\t"
+
+			# Add newline to complete the row
+			table += "\n"
+
+		table += spacer_line
+		for gene in range(self.num_genes_int-1):
+			table += "      "
+		table += f"  TOTAL{gml.right_justify_int(self.progeny_count_int,7)}\n\n"
+
+		# Return the completed table
+		return table
+
+	#====================================
+	#====================================
+	def get_progeny_html_table(self) -> str:
+		"""
+		Create an HTML table representation of progeny data.
+		"""
+		# Sort all genotype keys
+		all_genotypes = sorted(self.genotype_counts.keys(), reverse=True)
+
+		# Define common HTML attributes for table cells
+		cell_padding = "10px"  # Define your desired padding here
+		th_extra = 'align="center" style="border: 1px solid black; background-color: #cccccc; padding: 10px;"'
+		td_extra = 'align="center" style="border: 1px solid black; background-color: #ffffff; padding: 5px;"'
+		span = '<span style="font-size: medium; color: #000000;">'
+
+		# Initialize the HTML table
+		# width: 460px; height: 280px
+		table = '<table style="border-collapse: collapse; border: 2px solid black;">'
+
+		# Add header row to the table
+		table += f'<tr><th {th_extra}>{span}Phenotype</span></th>'
+		table += f'<th colspan="{self.num_genes_int}" {th_extra}>{span}Genotypes</span></th>'
+		table += f'<th {th_extra}>{span}Progeny<br/>Count</span></th></tr>'
+
+		# Loop through each genotype and add a row to the table
+		for genotype in all_genotypes:
+			# Fetch the phenotype string based on the genotype
+			phenotype_string = gml.get_phenotype_name_for_genotype(genotype)
+
+			table += f'<tr><td {td_extra.replace("center", "left")}>&nbsp;{span}{phenotype_string}</span></td>'
+			for i in range(self.num_genes_int):
+				local_span = copy.copy(span)
+				local_td_extra = copy.copy(td_extra)
+				allele = genotype[i]
+				if allele == '+':
+					local_span = local_span.replace('000000', self.dark_colors[i])
+					local_span = local_span.replace('medium', 'large')
+					local_td_extra = local_td_extra.replace('ffffff', 'f8f8f8')
+				else:
+					local_span = local_span.replace('medium', 'large')
+					local_td_extra = local_td_extra.replace('ffffff', self.light_colors[i])
+				table += f'<td {local_td_extra}>{local_span}{allele}</span></td>'
+			table += f'<td {td_extra.replace("center", "right")}>{span}{self.genotype_counts[genotype]:,d}</span></td></tr>'
+
+		# Add total progeny size at the end of the table
+		table += f'<tr><th colspan="{self.num_genes_int+1}" {th_extra.replace("center", "right")}>{span}TOTAL =</span></th>'
+		table += f'<td {td_extra.replace("center", "right")}>{span}{self.progeny_count_int:,d}</span></td></tr>'
+		table += '</table>'
+
+		if gml.is_valid_html(table) is False:
+			print(table)
+			raise ValueError
+		return table
+
+	#====================================
+	#====================================
+	def get_question_header(self) -> str:
+		cardinal_text = bptools.number_to_cardinal(self.num_genes_int)
+		header_text = f'<h4>{cardinal_text.capitalize()}-Point Test Cross Problem</h4>'
+
+		header_text += '<p>A test cross is a way to explore the relationship between genes and their respective alleles. '
+		header_text += 'It is a useful tool for genetic mapping and deciphering the inheritance of traits. '
+		header_text += f'Specifically, a {cardinal_text}-point test cross examines {cardinal_text} ({self.num_genes_int}) genes '
+		header_text += 'at the same time to learn about their assortment in gamete formation.</p>'
+
+		if self.num_genes_int == 2:
+			count_str = 'both'
+		else:
+			count_str = f'all {cardinal_text}'
+		header_text += f'<p>A standard {cardinal_text}-point test cross involves crossing '
+
+		header_text += f'a heterozygous organism for {count_str} genes '
+		header_text += f'with an organism that is homozygous recessive for {count_str} genes</p> '
+
+		header_text += '<p>For this problem, a test cross using a fruit fly (<i>Drosophila melanogaster</i>) '
+		header_text += f'heterozygous for {cardinal_text} genes was conducted to understand their genetic interactions.</p>'
+
+		if gml.is_valid_html(header_text) is False:
+			print(header_text)
+			raise ValueError
+		return header_text
+
+	#====================================
+	#====================================
+	def get_phenotype_info(self) -> str:
+		phenotype_info_text = ''
+		phenotype_info_text += '<h6>Characteristics of Recessive Phenotypes</h6>'
+
+		linking_words = ('linked with', 'associated with', 'related to',
+			'connected with', 'analogous to', 'affiliated with', 'correlated with',)
+		phenotype_info_text += '<p><ul>'
+		for i, gene_letter in enumerate(self.gene_letters_str):
+			# Fetch the phenotype string based on the genotype
+			phenotype_name = gml.phenotype_dict[gene_letter]
+			phenotype_description = gml.phenotype_description_dict[phenotype_name]
+			gene_span = f'<span style="color: #{self.dark_colors[i]};">'
+			phenotype_info_text += f"<li><strong>{gene_span}Gene {gene_letter.upper()}</span></strong> is "
+			phenotype_info_text += f'{random.choice(linking_words)} '
+			phenotype_info_text += f"the '{gene_span}<i>{phenotype_name}</i></span>' phenotype. "
+			phenotype_info_text += f'A fruit fly that is homozygous recessive for {gene_span}Gene {gene_letter.upper()}</span> '
+			phenotype_info_text += f'{phenotype_description}</li> '
+		phenotype_info_text += '</ul></p>'
+		if gml.is_valid_html(phenotype_info_text) is False:
+			print(phenotype_info_text)
+			raise ValueError
+		return phenotype_info_text
+
 #===========================================================
 #===========================================================
 #===========================================================
@@ -490,14 +649,15 @@ if __name__ == '__main__':
 	a.print_gene_map_data()
 
 	#for i in range(200):
-	a = GeneMappingClass(3, 1)
-	a.debug = False
-	a.setup_question()
-	a.print_gene_map_data()
-
-	#for i in range(200):
 	a = GeneMappingClass(4, 1)
 	a.debug = False
 	a.setup_question()
 	a.print_gene_map_data()
 
+	#for i in range(200):
+	a = GeneMappingClass(3, 1)
+	a.debug = False
+	a.setup_question()
+	a.print_gene_map_data()
+	print(a.get_question_header())
+	print(a.get_progeny_ascii_table())
