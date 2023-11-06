@@ -1,4 +1,5 @@
 
+import re
 import copy
 import math
 import random
@@ -13,30 +14,30 @@ debug = False
 phenotype_description_dict = {
 	'artsy':   'has wings that are colorful and distinctive patterns.',
 	'bumpy':   'has a skin texture that is not smooth, but rough with small bumps all over.',
-	'chummy':  'shows behavior where it maintains a close distance to other flies.',
+	'chummy':  'shows behavior where it always maintains a close distance to other flies.',
 	'dewy':    'appears moist, with its body covered in tiny droplets of water.',
 	'eery':    'appears to have something off, crooked limbs and other twisted appendages.',
 	'fuzzy':   'is covered in a dense layer of hairs, giving it a soft appearance.',
 	'gooey':   'is coated with a thick, sticky substance, suggestive of a viscous bodily secretion.',
 	'horsey':  'is quite big and strong-looking, much larger than your typical fruit fly.',
 	'icy':     'has a frosted appearance, with a sheen like a layer of frost.',
-	'jolty':   'moves in rapid and sudden movements, displaying an unpredictable flight pattern.',
+	'jerky':   'moves in rapid and sudden movements, displaying an unpredictable flight pattern.',
 	'kidney':  'has a body shape that is curved, similar to a kidney bean.',
-	'leafy':    'has wings that resemble the shape and pattern of leaves.',
-	'mushy':    'feels soft to the touch and unusually squishy, unlike the usual firmness.',
-	'nerdy':    'has large, prominent eyes that stand out, much like thick-rimmed glasses.',
-	'okra':     'features a long, slender body, resembling the shape of an okra pod.',
-	'prickly':  'is covered with sharp bristles, giving it a spiky texture.',
-	'quacky':   'emits sounds that oddly mimic the quack of a duck.',
-	'rusty':    'has a reddish-brown color, much like rusted iron metal.',
-	'spicy':    'has chemical defense giving a tingling sensation, similar to spicy food.',
-	'tipsy':    'moves in an erratic path, suggesting a lack of coordination, as if intoxicated.',
-	'ugly':     'has dull colors and uneven features different from the typical fruit fly.',
-	'valley':   'shows deep grooves along its body, creating a landscape of peaks and troughs.',
-	'waxy':     'has a thick protective layer that is water resistant and opague.',
-	'xanthic':  'has a fluorescent bright yellow coloring.',
-	'yucky':    'gives off an unpleasant odor and has a generally unappealing look.',
-	'zippy':    'zooms around quickly, darting from one place to another.',
+	'leafy':   'has wings that resemble the shape and pattern of leaves.',
+	'mushy':   'feels soft to the touch and unusually squishy, unlike the usual firmness.',
+	'nerdy':   'has large, prominent eyes that stand out, much like thick-rimmed glasses.',
+	'okra':    'features a long, slender body, resembling the shape of an okra pod.',
+	'prickly': 'is covered with sharp bristles, giving it a spiky texture.',
+	'quacky':  'emits sounds that oddly mimic the quack of a duck.',
+	'rusty':   'has a reddish-brown color, much like rusted iron metal.',
+	'spicy':   'has chemical defense giving a tingling sensation, similar to spicy food.',
+	'tipsy':   'moves in an erratic path, suggesting a lack of coordination, as if intoxicated.',
+	'ugly':    'has dull colors and uneven features different from the typical fruit fly.',
+	'valley':  'shows deep grooves along its body, creating a landscape of peaks and troughs.',
+	'waxy':    'has a thick protective layer that is water resistant and opague.',
+	'xanthic': 'has a fluorescent bright yellow coloring.',
+	'yucky':   'gives off an unpleasant odor and has a generally unappealing look.',
+	'zippy':   'zooms around quickly, darting from one place to another.',
 }
 
 #====================================
@@ -180,50 +181,7 @@ assert get_phenotype_name_for_genotype('++') == '<i>wildtype</i>'
 def is_valid_html(html_str: str) -> bool:
 	return is_valid_html_xml(html_str)
 
-import html5lib
-
-def is_valid_html_html5lib(html_str: str) -> bool:
-	"""
-	Validates if the input HTML string is well-formed using html5lib.
-
-	Args:
-	html_str (str): The HTML string to validate.
-
-	Returns:
-	bool: True if the HTML is well-formed, False otherwise.
-	"""
-	try:
-		# Parse the HTML
-		document = html5lib.parse(html_str, namespaceHTMLElements=False)
-		return True
-	except Exception as e:
-		print(f"Parse error with html5lib: {e}")
-		return False
-
-
-from lxml import etree, html
-
-def is_valid_html_lxml(html_str: str) -> bool:
-		"""
-		Validates if the input HTML string is well-formed using lxml.
-
-		Args:
-		html_str (str): The HTML string to validate.
-
-		Returns:
-		bool: True if the HTML is well-formed, False otherwise.
-		"""
-		try:
-			# Parse the HTML
-			document = html.fromstring(html_str)
-			etree.tostring(document, pretty_print=True)
-			return True
-		except etree.XMLSyntaxError as e:
-			print(f"Parse error with lxml: {e}")
-			return False
-
 import xml.etree.ElementTree as ET
-import re
 
 def is_valid_html_xml(html_str: str) -> bool:
 	"""
@@ -247,7 +205,8 @@ def is_valid_html_xml(html_str: str) -> bool:
 		return True
 	except ET.ParseError as e:
 		# Print the error message for debugging
-		#print(f"Parse error: {e}")
+		if len(html_str) > 80:
+			print(f"Parse error: {e}")
 		#print(html_str)
 		return False
 
@@ -737,7 +696,7 @@ def make_progeny_ascii_table(typemap: dict, progeny_size: int) -> str:
 	# Loop through sorted genotypes to fill the table
 	for genotype in all_genotypes:
 		# Fetch the phenotype name based on the genotype
-		phenotype_string = get_phenotype_name(genotype)
+		phenotype_string = get_phenotype_name_for_genotype(genotype)
 		table += "|"
 		# Add genotype to the table
 		for gene in genotype:

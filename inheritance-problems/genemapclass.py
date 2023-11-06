@@ -256,7 +256,7 @@ class GeneMappingClass:
 			self.distances_dict = { (1,2): distance, }
 		elif self.num_genes_int == 3:
 			self.distances_dict = {}
-			self.distance_triplet_tuple = self.get_one_distance_triplet()
+			self.distance_triplet_tuple = self.get_one_distance_triplet(max_gene_distance=self.max_gene_distance)
 			if random.random() < 0.5:
 				self.distances_dict[(1,2)] = self.distance_triplet_tuple[0]
 				self.distances_dict[(2,3)] = self.distance_triplet_tuple[1]
@@ -288,10 +288,10 @@ class GeneMappingClass:
 	#====================================
 	#====================================
 	@classmethod
-	def get_one_distance_triplet(cls, max_fraction_int: int=12) -> list:
+	def get_one_distance_triplet(cls, max_fraction_int: int=12, max_gene_distance: int=40) -> list:
 		if cls._distance_triplet_list_cache is not None:
 			return random.choice(cls._distance_triplet_list_cache)
-		distance_triplet_list = gml.get_all_distance_triplets(max_fraction_int, self.max_gene_distance)
+		distance_triplet_list = gml.get_all_distance_triplets(max_fraction_int, max_gene_distance)
 		cls._distance_triplet_list_cache = distance_triplet_list
 		return random.choice(distance_triplet_list)
 
@@ -538,7 +538,6 @@ class GeneMappingClass:
 		all_genotypes = sorted(self.genotype_counts.keys(), reverse=True)
 
 		# Define common HTML attributes for table cells
-		cell_padding = "10px"  # Define your desired padding here
 		th_extra = 'align="center" style="border: 1px solid black; background-color: #cccccc; padding: 10px;"'
 		td_extra = 'align="center" style="border: 1px solid black; background-color: #ffffff; padding: 5px;"'
 		span = '<span style="font-size: medium; color: #000000;">'
