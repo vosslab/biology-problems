@@ -3,6 +3,7 @@ import os
 import re
 import sys
 import copy
+import math
 import yaml
 import random
 import colorsys
@@ -207,39 +208,111 @@ def applyReplacementRulesToList(list_of_text_strings, replacement_rule_dict):
 def colorHTMLText(text, hex_code):
 	return f'<span style="color: #{hex_code};">{text}</span>'
 
+#===========================================================
+#===========================================================
+def min_difference(numbers: list) -> int:
+	"""
+	Find the minimum difference between any two consecutive integers in a sorted list.
+
+	Parameters
+	----------
+	numbers : list
+		A list of integers.
+
+	Returns
+	-------
+	int
+		The smallest difference found between any two consecutive integers.
+	"""
+	if isinstance(numbers, tuple):
+		numbers = list(numbers)
+	# Sort the list in place
+	numbers.sort()
+	# Calculate differences using list comprehension
+	differences = [numbers[i+1] - numbers[i] for i in range(len(numbers) - 1)]
+	# Return the smallest difference
+	return min(differences)
+assert min_difference([40, 41]) == 1
+assert min_difference([30, 15, 36]) == 6
+assert min_difference([84, 25, 24, 37]) == 1
+assert min_difference([84, 30, 30, 42, 56, 72]) == 0
+
 #==========================
-fixed_color_wheel = (
-	'e60000',  # RED
-	'e65400',  # DARK ORANGE
-	'e69100',  # LIGHT ORANGE
-	'b3b300',  # DARK YELLOW
-	'59b300',  # LIME GREEN
-	'009900',  # GREEN
-	'00b38f',  # TEAL
-	'00b3b3',  # CYAN
-	'0a9bf5',  # SKY BLUE
-	'0039e6',  # BLUE
-	'004d99',  # NAVY
-	'7b12a1',  # PURPLE
-	'b30077',  # MAGENTA
-	'cc0066'   # PINK
+dark_color_wheel = {
+	'red': 'b30000',
+	'orange': 'b34100',
+	'brown': '663300',
+	'gold': 'b37100',
+	'yellow': '999900',
+	'olive green': '465927',
+	'lime green': '4d9900',
+	'green': '008000',
+	'teal': '008066',
+	'cyan': '008080',
+	'sky blue': '076cab',
+	'blue': '002db3',
+	'navy': '004080',
+	'purple': '690f8a',
+	'magenta': '800055',
+	'pink': '99004d'
+}
+
+light_color_wheel = {
+	'red': 'ffcccc',
+	'orange': 'ffd9cc',
+	'brown': 'ffe6cc',
+	'gold': 'ffebcc',
+	'yellow': 'ffffcc',
+	'olive green': 'eaefdc',
+	'lime green': 'd9ffcc',
+	'green': 'ccffcc',
+	'teal': 'ccffe6',
+	'cyan': 'ccffff',
+	'sky blue': 'ccf2ff',
+	'blue': 'ccd9ff',
+	'navy': 'ccccff',
+	'purple': 'e6ccff',
+	'magenta': 'ffccf2',
+	'pink': 'ffccff'
+}
+
+extra_light_color_wheel = {
+    'red': 'ffe6e6',
+    'orange': 'ffece6',
+	'brown': 'fff3e6',
+    'gold': 'fff9e5',
+    'yellow': 'ffffe6',
+	'olive green': 'f5f7ee',
+    'lime green': 'ecffe6',
+    'green': 'e6ffe6',
+    'teal': 'e6fff3',
+    'cyan': 'e6ffff',
+    'sky blue': 'e6f9ff',
+    'blue': 'e6ecff',
+    'navy': 'e6e6ff',
+    'purple': 'f3e6ff',
+    'magenta': 'ffe6f9',
+    'pink': 'ffe6ff'
+}
+
+"""dark_color_wheel = (
+	'b30000',  # RED
+	'663300',  # BROWN
+	'b34100',  # DARK ORANGE
+	'b37100',  # LIGHT ORANGE
+	'999900',  # DARK YELLOW
+	'465927',  # OLIVE GREEN
+	'4d9900',  # LIME GREEN
+	'008000',  # GREEN
+	'008066',  # TEAL
+	'008080',  # CYAN
+	'076cab',  # SKY BLUE
+	'002db3',  # BLUE
+	'004080',  # NAVY
+	'690f8a',  # PURPLE
+	'800055',  # MAGENTA
+	'99004d'   # PINK
 )
-
-#==========================
-def default_color_wheel(num_colors, random_shift=True):
-	# Calculate the step size for selecting colors
-	step = len(fixed_color_wheel) / num_colors
-	# Generate the list of indices to select colors from the fixed color wheel
-	indices = [round(step * i) for i in range(num_colors)]
-
-	# Apply a random shift to the selected indices if specified
-	if random_shift:
-		shift = random.randint(0, len(fixed_color_wheel) - 1)
-		indices = [(i + shift) % len(fixed_color_wheel) for i in indices]
-
-	# Select the colors based on the generated indices
-	selected_colors = [fixed_color_wheel[i] for i in indices]
-	return selected_colors
 
 # Lighter color wheel for background colors in HTML tables
 light_color_wheel = (
@@ -275,26 +348,59 @@ extra_light_color_wheel = (
 	'f3e6ff',  # Light Purple
 	'ffe6f9',  # Light Magenta
 	'ffe6ff',  # Light Pink
-)
+)"""
 
-def default_light_color_wheel(num_colors, random_shift=True, extra_light=False):
-	if extra_light is True:
-		color_wheel = extra_light_color_wheel
-	else:
-		color_wheel = light_color_wheel
 
+def default_color_wheel(num_colors, color_wheel=dark_color_wheel):
+	color_wheel_keys = list(color_wheel.keys())
+	color_wheel_length = len(dark_color_wheel)
+	min_distance = int(math.floor(color_wheel_length / (num_colors+1)))
+
+	if num_colors > color_wheel_length // min_distance:
+		raise ValueError("num_colors too large to satisfy min_distance requirement")
+
+	selected_indices = []
+	available_indices = list(range(color_wheel_length))
+
+	for _ in range(num_colors):
+		if not available_indices:
+			raise ValueError("Cannot select further colors within min_distance constraints")
+
+		# Choose a random starting index if this is the first color, else randomize within allowed range
+		index = random.choice(available_indices)
+
+		# Add the chosen index to selected_indices
+		selected_indices.append(index)
+
+		# Remove indices too close to the chosen index
+		for offset in range(-min_distance+1, min_distance):
+			idx_to_remove = (index + offset) % color_wheel_length
+			if idx_to_remove in available_indices:
+				available_indices.remove(idx_to_remove)
+	selected_indices = sorted(selected_indices)
+	#print(f'selected_indices={selected_indices}')
+	if num_colors > 1 and min_difference(selected_indices) < min_distance:
+		raise ValueError(f'min_difference {min_difference(selected_indices)} < min_distance {min_distance}')
+	# Select the colors based on the generated indices
+	selected_keys = [color_wheel_keys[i] for i in selected_indices]
+	selected_colors_rgb = [color_wheel[i] for i in selected_keys]
+	return selected_colors_rgb
+
+
+#==========================
+def default_color_wheel2(num_colors, random_shift=True):
 	# Calculate the step size for selecting colors
-	step = len(color_wheel) / num_colors
-	# Generate the list of indices to select colors from the light color wheel
+	step = len(dark_color_wheel) / num_colors
+	# Generate the list of indices to select colors from the fixed color wheel
 	indices = [round(step * i) for i in range(num_colors)]
 
 	# Apply a random shift to the selected indices if specified
 	if random_shift:
-		shift = random.randint(0, len(color_wheel) - 1)
-		indices = [(i + shift) % len(color_wheel) for i in indices]
+		shift = random.randint(0, len(dark_color_wheel) - 1)
+		indices = [(i + shift) % len(dark_color_wheel) for i in indices]
 
 	# Select the colors based on the generated indices
-	selected_colors = [color_wheel[i] for i in indices]
+	selected_colors = [dark_color_wheel[i] for i in indices]
 	return selected_colors
 
 def light_and_dark_color_wheel(num_colors, random_shift=True, extra_light=False):
@@ -315,10 +421,9 @@ def light_and_dark_color_wheel(num_colors, random_shift=True, extra_light=False)
 
 	# Select the colors based on the generated indices
 	selected_light_colors = [color_wheel[i] for i in indices]
-	selected_dark_colors = [fixed_color_wheel[i] for i in indices]
+	selected_dark_colors = [dark_color_wheel[i] for i in indices]
 	return selected_light_colors, selected_dark_colors
 
-# Assume the fixed_color_wheel and light_color_wheel lists are defined elsewhere in this file, as shown above
 
 def write_html_color_table(filename):
 	with open(filename, 'w') as f:
@@ -328,12 +433,11 @@ def write_html_color_table(filename):
 				"td {padding: 10px; text-align: center;} .light-bg {font-weight: bold;} .dark-text {background-color: white;}"
 				"</style></head><body><table border='1'><tr><th>Color Name</th><th>Light Color (Background)</th>"
 				"<th>Fixed Color (Text)</th></tr>")
-
 		# Generate table rows
-		for i in range(len(light_color_wheel)):
-			fixed_index = i % len(fixed_color_wheel)  # Loop back if necessary
-			f.write(f"<tr><td>Color {i+1}</td><td class='light-bg' style='background-color:#{light_color_wheel[i]};'>Text</td>"
-					f"<td class='dark-text' style='color:#{fixed_color_wheel[fixed_index]};'>Text</td></tr>")
+		for i in range(len(dark_color_wheel)):
+			light_index = i % len(light_color_wheel)  # Loop back if necessary
+			f.write(f"<tr><td>Color {i+1}</td><td class='light-bg' style='background-color:#{light_color_wheel[light_index]};'>Text</td>"
+					f"<td class='dark-text' style='color:#{dark_color_wheel[i]};'>Text</td></tr>")
 
 		# End the HTML document
 		f.write("</table></body></html>")
