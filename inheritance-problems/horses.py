@@ -112,10 +112,10 @@ question_text = (
 	+"Only count phenotypes for offspring expected to live past one week of age.</p>"
 )
 
-print(overo_table+'\n')
+#print(overo_table+'\n')
 print(overo_text+'\n')
-print(leopard_table+'\n')
+#print(leopard_table+'\n')
 print(leopard_text+'\n')
-print(merge_table+'\n')
+#print(merge_table+'\n')
 print(merge_text+'\n')
 print(question_text+'\n')
