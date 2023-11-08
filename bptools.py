@@ -71,6 +71,38 @@ def readYamlFile(yaml_file):
 	yaml_file_pointer.close()
 	return data
 
+#===========================================================
+#===========================================================
+
+import xml.etree.ElementTree as ET
+
+def is_valid_html(html_str: str) -> bool:
+	"""
+	Validates if the input HTML string is well-formed by removing entities
+	and wrapping the content in a root element for XML parsing.
+
+	Args:
+	html_str (str): The HTML string to validate.
+
+	Returns:
+	bool: True if the HTML is well-formed, False otherwise.
+	"""
+	html_str = html_str.replace('<', '\n<')
+	try:
+		# Remove HTML entities by finding '&' followed by alphanumerics or '#' and a semicolon
+		cleaned_html = re.sub(r'&[#a-zA-Z0-9]+;', '', html_str)
+		# Wrap in a root tag for XML parsing as XML requires a single root element
+		wrapped_html = f"<root>{cleaned_html}</root>"
+		# Parse the cleaned and wrapped HTML with XML parser
+		ET.fromstring(wrapped_html)
+		return True
+	except ET.ParseError as e:
+		# Print the error message for debugging
+		if len(html_str) > 80:
+			print(f"Parse error: {e}")
+		#print(html_str)
+		return False
+
 #==========================
 #==========================
 #==========================
