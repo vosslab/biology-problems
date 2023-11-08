@@ -3,6 +3,39 @@
 import random
 import crcmod.predefined #pip
 
+purines = {
+	'purine': 'C1=C2C(=NC=N1)N=CN2',
+	'adenine': 'C1=NC2=NC=NC(=C2N1)N',
+	'guanine': 'C1=NC2=C(N1)C(=O)NC(=N2)N',
+	'hypoxanthine': 'C1=NC2=C(N1)C(=O)NC=N2',
+	'xanthine': 'C1=NC2=C(N1)C(=O)NC(=O)N2',
+	'caffeine': 'CN1C=NC2=C1C(=O)N(C(=O)N2C)C',
+	'thioguanine': 'C1=NC2=C(N1)C(=S)N=C(N2)N',
+	'uric acid': 'C12=C(NC(=O)N1)NC(=O)NC2=O',
+	'7-methylguanine': 'CN1C=NC2=C1C(=O)NC(=N2)N',
+	'isoguanine': 'C1=NC2=NC(=O)NC(=C2N1)N',
+	'theophylline': 'CN1C2=C(C(=O)N(C1=O)C)NC=N2',
+	'theobromine': 'CN1C=NC2=C1C(=O)NC(=O)N2C',
+	'paraxanthine': 'CN1C=NC2=C1C(=O)N(C(=O)N2)C',
+	'2,6-diaminopurine': 'C1=NC2=NC(=NC(=C2N1)N)N',
+	'oxypurinol': 'C1=NNC2=C1C(=O)NC(=O)N2'
+}
+pyrimidines = {
+	'pyrimidine': 'C1=CN=CN=C1',
+	'cytosine': 'C1=C(NC(=O)N=C1)N',
+	'thymine': 'CC1=CNC(=O)NC1=O',
+	'uracil': 'C1=CNC(=O)NC1=O',
+	'fluorouracil': 'C1=C(C(=O)NC(=O)N1)F',
+	'orotic acid': 'C1=C(NC(=O)NC1=O)C(=O)O',
+	'barbituric acid': 'C1C(=O)NC(=O)NC1=O',
+	'dihydrouracil': 'C1CNC(=O)NC1=O',
+	'5-methylcytosine': 'CC1=C(NC(=O)N=C1)N',
+	'5-hydroxymethylcytosine': 'C1=NC(=O)NC(=C1CO)N',
+}
+
+dTMP = 'CC1=CN(C(=O)NC1=O)[C@H]2C[C@@H]([C@H](O2)COP(=O)(O)O)O'
+cAMP = 'C1[C@@H]2[C@H]([C@H]([C@@H](O2)N3C=NC4=C(N=CN=C43)N)O)OP(=O)(O1)O'
+
 debug = False
 
 #=================================================
@@ -146,63 +179,7 @@ def generate_load_script():
 	return html_load_script
 
 #=================================================
-#=================================================
-def generate_js_functions_orig():
-	"""Generates JavaScript functions for rendering molecules with RDKit, highlighting peptide bonds."""
-	# Base JavaScript for rendering the molecule
-	javascript_functions = '<script>'
-	# New function to process matches and keep only the bonds
-	#javascript_functions += 'function handleError() { '
-	#javascript_functions += '  var errorMsg = document.createElement("p");'
-	#javascript_functions += '  errorMsg.style.color = "red";'
-	#javascript_functions += '  errorMsg.textContent = "Failed to load the RDKit library, contact Dr. Voss";'
-	#javascript_functions += '  document.body.insertBefore(errorMsg, document.body.firstChild);'
-	#javascript_functions += '};'
-
-	"""
-	javascript_functions += 'function getPeptideBonds(mol) {'
-	javascript_functions += ' let peptide_bond = "CC(=O)NC";'
-	javascript_functions += ' let qmol = window.RDKit.get_qmol(peptide_bond);'
-	javascript_functions += ' let matches = JSON.parse(mol.get_substruct_matches(qmol));'
-	javascript_functions += ' console.log("Matches result:", matches);'
-	javascript_functions += ' let aggregatedBonds = [];'
-	javascript_functions += ' for(let i = 0; i < matches.length; i++) {'
-	javascript_functions += '    let match = matches[i];'
-	javascript_functions += '    if (Array.isArray(match["bonds"])) {'
-	# Assuming the peptide bond C-N is always the last bond in the bonds array
-	javascript_functions += '      console.log("Bonds for match:", match["bonds"], i);'
-	javascript_functions += '      let peptideBond = match["bonds"].slice(-2)[0];'
-	javascript_functions += '      aggregatedBonds.push(peptideBond);'
-	javascript_functions += '    }'
-	javascript_functions += '  }'
-	javascript_functions += ' console.log(JSON.stringify(aggregatedBonds, null, 2));'
-	javascript_functions += '  return aggregatedBonds;'
-	javascript_functions += '}'
-	"""
-
-	javascript_functions += 'function renderMolecule(smiles, canvasId, legend) { '
-	javascript_functions += ' let mol = window.RDKit.get_mol(smiles);'
-	#javascript_functions += ' mol.straighten_depiction(true);'
-	# Add hydrogens to the molecule
-	#javascript_functions += ' let mol = mol.add_hs_in_place();'
-	# Highlight the peptide bond using substructure search
-	javascript_functions += ' let mdetails = {};'
-	#javascript_functions += ' mdetails["bonds"] = getPeptideBonds(mol);'
-	#javascript_functions += ' mdetails["legend"] = legend;'
-	javascript_functions += ' mdetails["explicitMethyl"] = true;'
-	#javascript_functions += ' mdetails["addStereoAnnotation"] = true;'
-	#javascript_functions += ' mdetails["highlightColour"] = [0,1,0];'
-	#javascript_functions += ' mdetails["addBondIndices"] = true;'
-	# Fetch the canvas and draw the molecule with highlighted peptide bond
-	javascript_functions += ' let canvas = document.getElementById(canvasId);'
-	javascript_functions += ' mol.draw_to_canvas_with_highlights(canvas, JSON.stringify(mdetails));'
-	javascript_functions += '};'
-	javascript_functions += '</script>'
-	javascript_functions = javascript_functions.replace('  ', ' ')
-	return javascript_functions
-
-#=================================================
-def generate_js_functions(smiles, canvas_id, molecule_name=None):
+def generate_js_functions(smiles, canvas_id, molecule_name=None, peptide=True):
 	"""Generates JavaScript functions for rendering molecules with RDKit, highlighting peptide bonds."""
 	# Base JavaScript for rendering the molecule
 	#this completely works
@@ -212,29 +189,31 @@ def generate_js_functions(smiles, canvas_id, molecule_name=None):
 	js_code += 'RDKitModule=instance;'
 	js_code += 'console.log("RDKit:"+RDKitModule.version());'
 	js_code += '/* */'
-	js_code += 'function/* */getPeptideBonds(mol){'
-	js_code += 'let/* */peptide_bond="CC(=O)NC";'
-	js_code += 'let/* */qmol=window.RDKitModule.get_qmol(peptide_bond);'
-	js_code += 'let/* */matches=JSON.parse(mol.get_substruct_matches(qmol));'
-	js_code += 'let/* */aggregatedBonds=[];'
-	js_code += 'for(let/* */i=0;i<matches.length;i++){'
-	js_code += 'match=matches[i];'
-	js_code += 'if(Array.isArray(match["bonds"])){'
-	# Tthe peptide bond C-N is always the second to last bond in the bonds array
-	js_code += 'aggregatedBonds.push(match["bonds"].slice(-2)[0]);'
-	js_code += '}'
-	js_code += '}'
-	js_code += 'return/* */aggregatedBonds;'
-	js_code += '}'
+	if peptide is True:
+		js_code += 'function/* */getPeptideBonds(mol){'
+		js_code += 'let/* */peptide_bond="CC(=O)NC";'
+		js_code += 'let/* */qmol=window.RDKitModule.get_qmol(peptide_bond);'
+		js_code += 'let/* */matches=JSON.parse(mol.get_substruct_matches(qmol));'
+		js_code += 'let/* */aggregatedBonds=[];'
+		js_code += 'for(let/* */i=0;i<matches.length;i++){'
+		js_code += 'match=matches[i];'
+		js_code += 'if(Array.isArray(match["bonds"])){'
+		# Tthe peptide bond C-N is always the second to last bond in the bonds array
+		js_code += 'aggregatedBonds.push(match["bonds"].slice(-2)[0]);'
+		js_code += '}'
+		js_code += '}'
+		js_code += 'return/* */aggregatedBonds;'
+		js_code += '}'
 	if debug is True:
 		js_code += 'console.log(RDKitModule);'
 	js_code += f'let/* */smiles="{smiles}";'
 	js_code += 'let/* */mol=RDKitModule.get_mol(smiles);'
 	js_code += 'let/* */mdetails={};'
-	js_code += 'mdetails.explicitMethyl=true;'
-	js_code += 'mdetails["bonds"]=getPeptideBonds(mol);'
-	js_code += 'mdetails["atoms"]=[0];'
-	js_code += 'mdetails["highlightColour"]=[0,1,0];'
+	#js_code += 'mdetails.explicitMethyl=true;'
+	if peptide is True:
+		js_code += 'mdetails["bonds"]=getPeptideBonds(mol);'
+		js_code += 'mdetails["atoms"]=[0];'
+		js_code += 'mdetails["highlightColour"]=[0,1,0];'
 	if molecule_name is not None:
 		js_code += f'mdetails["legend"]="{molecule_name}";'
 	js_code += 'mdetails["explicitMethyl"]=true;'
@@ -250,19 +229,20 @@ def generate_js_functions(smiles, canvas_id, molecule_name=None):
 	return js_code
 
 #=================================================
-def generate_html_for_molecule(smiles, molecule_name=None, width=1024, height=768):
+def generate_html_for_molecule(smiles, molecule_name=None, width=256, height=256, peptide=True):
 	"""Generates HTML section for each molecule."""
 	# Display molecule name
+	crc_code = getCrc16_FromString(smiles)
 	if molecule_name is None:
-		molecule_name = getCrc16_FromString(smiles)
+		molecule_name = crc_code
 	molecule_html = f'<h4>{molecule_name}</h4>'
 	if debug is True:
 		molecule_html += f'<p>SMILES: {smiles}</p>'
-	canvas_id = f"canvas_{molecule_name}"
+	canvas_id = f"canvas_{crc_code}"
 	molecule_html += f'<p><canvas id="{canvas_id}" width="{width}" height="{height}"></canvas></p>'
 	# Horizontal rule for separation
 	molecule_html += '<hr/>'
-	molecule_html += generate_js_functions(smiles, canvas_id)
+	molecule_html += generate_js_functions(smiles, canvas_id, molecule_name, peptide)
 	return molecule_html
 
 """
@@ -287,39 +267,34 @@ def generate_html_footer():
 	return "</body> </html>"
 
 
-
-
-
-
 #=================================================
 #=================================================
 def main():
 	"""Main function to generate the complete HTML page."""
 	# Start with the header
-	html_content = generate_html_header()
-	# List to store JavaScript function calls for each molecule
-	molecule_js_functions = []
+	html_content = generate_html_header(title="Test Amino Acids")
+	#html_content += generate_load_script()
 	# Loop through each molecule and generate HTML content
-	for molecule_name, side_chain_smiles in side_chains.items():
+	"""for molecule_name, side_chain_smiles in side_chains.items():
 		molecule_smiles = pentapeptide.replace('R1', side_chain_smiles)
 		molecule_smiles = molecule_smiles.replace('R2', side_chain_smiles)
 		molecule_smiles = molecule_smiles.replace('R3', side_chain_smiles)
 		molecule_smiles = molecule_smiles.replace('R4', side_chain_smiles)
 		molecule_smiles = molecule_smiles.replace('R5', side_chain_smiles)
-		html_content +=  generate_html_for_molecule(molecule_smiles, molecule_name)
-		molecule_js_function = generate_js_for_molecule(molecule_smiles, molecule_name)
-		molecule_js_functions.append(molecule_js_function)
-	# Append the JavaScript code
-	html_content += generation_rdkit_window_code(molecule_js_functions)
+		html_content +=  generate_html_for_molecule(molecule_smiles, molecule_name)"""
+	for name, smiles in purines.items():
+		html_content += generate_html_for_molecule(smiles, name, peptide=False)
+	for name, smiles in pyrimidines.items():
+		html_content += generate_html_for_molecule(smiles, name, peptide=False)
 	# Append the HTML footer
 	html_content += generate_html_footer()
 
 	# Write the HTML to a file
+	html_file = 'test_amino_acids.html'
 	with open('test_amino_acids.html', 'w') as file:
 		file.write(html_content)
+	print(f'open {html_file}')
 
-	print(tetrapeptide)
-	print(make_poly_peptide(4))
 
 # Run the main function
 if __name__ == "__main__":
