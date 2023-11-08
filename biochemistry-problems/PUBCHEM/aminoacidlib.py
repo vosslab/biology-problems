@@ -4,33 +4,40 @@ import random
 import crcmod.predefined #pip
 
 purines = {
-	'purine': 'C1=C2C(=NC=N1)N=CN2',
-	'adenine': 'C1=NC2=NC=NC(=C2N1)N',
-	'guanine': 'C1=NC2=C(N1)C(=O)NC(=N2)N',
-	'hypoxanthine': 'C1=NC2=C(N1)C(=O)NC=N2',
-	'xanthine': 'C1=NC2=C(N1)C(=O)NC(=O)N2',
+	'purine': 'C1=C2C(=NC=N1)N=CN2', #XNX
+	'adenine': 'C1=NC2=NC=NC(=C2N1)N', #HNX
+	'adeninex': 'FN1C=NC2=C1N=C(NC2N)', #OHH
+	#'guaninex': 'FN1C=NC2=C1N=C(NC2N)N', #OHH
+	'guanine': 'FN1C=NC2=C1N=C(NC2=O)N', #OHH
+	'2,6-diaminopurinex': 'FN1C=NC2=C1N=C(NC2N)N', #OHH
+	'2,6-diaminopurine': 'C1=NC2=C(N=C(N=C2N1F)N)N',
+	'hypoxanthine': 'C1=NC2=C(N1)C(=O)NC=N2', #tRNA #OHX
+	'isoguanine': 'C1=NC2=NC(=O)NC(=C2N1)N', #HHO
+	'xanthine': 'C1=NC2=C(N1)C(=O)NC(=O)N2', #OHO
+	'oxypurinol': 'C1=NNC2=C1C(=O)NC(=O)N2', #OHO
+	'uric acid': 'C12=C(NC(=O)N1)NC(=O)NC2=O', #OHO
+
 	'caffeine': 'CN1C=NC2=C1C(=O)N(C(=O)N2C)C',
+	'7-methylguanine': 'CN1C=NC2=C1C(=O)NC(=N2)N', #OHH
 	'thioguanine': 'C1=NC2=C(N1)C(=S)N=C(N2)N',
-	'uric acid': 'C12=C(NC(=O)N1)NC(=O)NC2=O',
-	'7-methylguanine': 'CN1C=NC2=C1C(=O)NC(=N2)N',
-	'isoguanine': 'C1=NC2=NC(=O)NC(=C2N1)N',
 	'theophylline': 'CN1C2=C(C(=O)N(C1=O)C)NC=N2',
 	'theobromine': 'CN1C=NC2=C1C(=O)NC(=O)N2C',
 	'paraxanthine': 'CN1C=NC2=C1C(=O)N(C(=O)N2)C',
-	'2,6-diaminopurine': 'C1=NC2=NC(=NC(=C2N1)N)N',
-	'oxypurinol': 'C1=NNC2=C1C(=O)NC(=O)N2'
 }
+
 pyrimidines = {
-	'pyrimidine': 'C1=CN=CN=C1',
-	'cytosine': 'C1=C(NC(=O)N=C1)N',
-	'thymine': 'CC1=CNC(=O)NC1=O',
-	'uracil': 'C1=CNC(=O)NC1=O',
-	'fluorouracil': 'C1=C(C(=O)NC(=O)N1)F',
-	'orotic acid': 'C1=C(NC(=O)NC1=O)C(=O)O',
-	'barbituric acid': 'C1C(=O)NC(=O)NC1=O',
-	'dihydrouracil': 'C1CNC(=O)NC1=O',
-	'5-methylcytosine': 'CC1=C(NC(=O)N=C1)N',
-	'5-hydroxymethylcytosine': 'C1=NC(=O)NC(=C1CO)N',
+	'pyrimidine': 'C1=CN=CN=C1', #XNX
+	'cytosine': 'C1=CN(C(=O)N=C1N)[Si@H]', #ONH
+	'thymine': 'CC1=CNC(=O)NC1=O', #OHO
+	'uracil': 'C1=CNC(=O)NC1=O', #OHO
+	'deoxyuracil': 'C1NC=CC(=O)N1', #XHO
+	'dihydrouracil': 'C1CNC(=O)NC1=O', #OHO
+
+	'fluorouracil': 'C1=C(C(=O)NC(=O)N1)F', #OHO
+	'orotic acid': 'C1=C(NC(=O)NC1=O)C(=O)O', #OHO
+	'barbituric acid': 'C1C(=O)NC(=O)NC1=O', #?
+	'5-methylcytosine': 'CC1=C(NC(=O)N=C1)N', #OHH
+	'5-hydroxymethylcytosine': 'C1=NC(=O)NC(=C1CO)N', #OHH
 }
 
 dTMP = 'CC1=CN(C(=O)NC1=O)[C@H]2C[C@@H]([C@H](O2)COP(=O)(O)O)O'
