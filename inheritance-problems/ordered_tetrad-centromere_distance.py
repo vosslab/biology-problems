@@ -19,7 +19,11 @@ patterns = (
 	"aaaa++++",
 )
 
+parental_patterns = ('++++aaaa', 'aaaa++++')
 
+
+#=====================
+#=====================
 def get_background_context():
 	background_text = ''
 	background_text += "<h3>Ordered Tetrads in <i>Neurospora crassa</i></h3>"
@@ -48,11 +52,27 @@ def get_formula():
 	)
 	return formula
 
+#====================================
+def get_important_tip():
+	important_tip_text = ''
+	important_tip_text += '<p>Express your answer in centimorgans (cM)</p> '
+	important_tip_text += '<ul> '
+	important_tip_text += '<li><i>Important Tip 1:</i> '
+	important_tip_text +=   'Your calculated distance between the genes should be a whole number. '
+	important_tip_text +=   'Finding a decimal in your answer, such as 5.5, indicates a mistake was made. '
+	important_tip_text +=   'Please provide your answer as a complete number without fractions or decimals.</li>'
+	important_tip_text += '<li><i>Important Tip 2:</i> '
+	important_tip_text +=   'Your answer should be written as a numerical value only, '
+	important_tip_text +=   'no spaces, commas, or units such as "cM" or "map units". '
+	important_tip_text +=   'For example, if the distance is fifty one centimorgans, simply write "51". </li> '
+	important_tip_text += '</ul> '
+	return important_tip_text
 
 #=====================
 #=====================
 def split_counts_into_bins(count, bins=2):
 	bin_list = [0 for i in range(bins)]
+	print(count)
 	for i in range(count):
 		bin_num = int(math.floor(random.random()*bins))
 		bin_list[bin_num] += 1
@@ -61,28 +81,32 @@ def split_counts_into_bins(count, bins=2):
 
 #=====================
 #=====================
-def get_asci_counts(distance):
+def get_asci_counts(distance: float) -> dict:
 	"""
 	d = count / N / 2 * 100
 	count/N = 2 * d/100
 	count = d/50 * N
 	"""
-	parental_patterns = ('++++aaaa', 'aaaa++++')
-	total_count = random.randint(3, 199) * 50
-	recombinant_count = total_count * distance // 50
-	parental_count = total_count - recombinant_count
+	gcd = math.gcd(50, int(round(distance*100)))
+	total_count = random.randint(3, 29) * 5000 / gcd
+	recombinant_count = int(round(total_count * distance // 50))
+	if abs(recombinant_count*50/total_count - distance) > 1e-6:
+		print(recombinant_count, total_count, recombinant_count/total_count/2, distance)
+		return None
+	parental_count = int(round(total_count - recombinant_count))
 	parent_counts = split_counts_into_bins(parental_count, 2)
 	recon_counts = split_counts_into_bins(recombinant_count, 4)
 	asci_count_dict = {}
 	for i, pattern in enumerate(parental_patterns):
-		asci_count_dict[pattern] = parent_counts[i]
+		asci_count_dict[pattern] = int(round(parent_counts[i]))
 	recon_patterns = set(patterns)
 	recon_patterns -= set(parental_patterns)
 	for i, pattern in enumerate(recon_patterns):
-		asci_count_dict[pattern] = recon_counts[i]
+		asci_count_dict[pattern] = int(round(recon_counts[i]))
 	check_count = sum(asci_count_dict.values())
 	if check_count != total_count:
 		raise ValueError
+	print(asci_count_dict)
 	return asci_count_dict
 
 #=====================
@@ -159,35 +183,113 @@ def get_question_text(gene_letter):
 		)
 	return question_text
 
+
+#=====================
+#=====================
+def values_to_text(values: tuple, total_count:int):
+	choice_text = '<sup>&half;&times;('
+	val_sum = 0
+	val_list = sorted(values)
+	for val in val_list:
+		choice_text += f'{val:,d} + '
+		val_sum += val
+	choice_text = choice_text[:-3]
+	choice_text += f')</sup>/<sub>{total_count:,d}</sub> = '
+	choice_text += f'<sup>&half;&times;{val_sum:,d}</sup>/<sub>{total_count:,d}</sub> = '
+	float_val = val_sum/float(total_count)/2
+	choice_text += f'{float_val:.4f} = '
+	choice_text += f'{float_val*100:.2f} cM<br/>'
+
+	return choice_text
+
+#=====================
+#=====================
+def make_choices(asci_count_dict):
+	choices_set = set()
+
+	total_count = sum(asci_count_dict.values())
+	answer_values = []
+	for key in asci_count_dict.keys():
+		if key not in parental_patterns:
+			answer_values.append(asci_count_dict[key])
+	answer_text = values_to_text(answer_values, total_count)
+	print(f'answer_text={answer_text}')
+	choices_set.add(answer_text)
+
+	parent_values = []
+	for key in asci_count_dict.keys():
+		if key in parental_patterns:
+			parent_values.append(asci_count_dict[key])
+	parent_text = values_to_text(parent_values, total_count)
+	print(f'parent_text={parent_text}')
+	choices_set.add(parent_text)
+
+	all_keys = list(asci_count_dict.keys())
+
+	while(len(choices_set) < 6):
+		num_items = random.randint(2, 4)
+		keys_set = set()
+		while(len(keys_set) < num_items):
+			key = random.choice(all_keys)
+			keys_set.add(key)
+		values_list = []
+		for key in keys_set:
+			values_list.append(asci_count_dict[key])
+		float_val = sum(values_list)/float(total_count)/2
+		if float_val > 0.46:
+			continue
+		choice_text = values_to_text(values_list, total_count)
+		choices_set.add(choice_text)
+	return list(choices_set), answer_text
+
 #=====================
 #=====================
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
+	question_group = parser.add_mutually_exclusive_group()
+	# Add question type argument with choices
+	question_group.add_argument('-t', '--type', dest='question_type', type=str,
+		choices=('num', 'mc'), help='Set the question type: accept or reject')
+	question_group.add_argument('-m', '--mc', dest='question_type', action='store_const',
+		const='mc',)
+	question_group.add_argument('-n', '--num', dest='question_type', action='store_const',
+		const='num',)
 	parser.add_argument('-d', '--duplicates', metavar='#', type=int, dest='duplicates',
 		help='number of duplicate runs to do', default=1)
 	args = parser.parse_args()
 	outfile = ('bbq-' + os.path.splitext(os.path.basename(__file__))[0]
+		+ f'-{args.question_type.upper()}'
 		+ '-questions.txt')
 	print('writing to file: '+outfile)
 	f = open(outfile, 'w')
 	N = 0
 	for i in range(args.duplicates):
 		N += 1
-		gene_letter = random.choice('abcdefghijklmnopqrstuvwxyz')
-		distance = random.randint(2, 29)
+		if args.question_type == 'mc':
+			multiplier = 20
+		else:
+			multiplier = 1
+		base_range = (9, 29)
+		distance = random.randint(base_range[0]*multiplier, base_range[1]*multiplier)/float(multiplier)
 		asci_count_dict = get_asci_counts(distance)
+		if asci_count_dict is None:
+			continue
 
 		background_text = get_background_context()
 		formula = get_formula()
+		gene_letter = random.choice('abcdefghijklmnopqrstuvwxyz')
 		octads_table = get_octads_table(asci_count_dict, gene_letter)
 		question_text = get_question_text(gene_letter)
-
 		full_question = background_text + octads_table + formula + question_text
-		"""g = open('circle.html', 'w')
-		g.write(full_question)
-		g.close()
-		print("open circle.html")"""
-		bb_question = bptools.formatBB_NUM_Question(N, full_question, distance, 0.1, tol_message=False)
+
+		if args.question_type == 'mc':
+			choices_list, answer_text = make_choices(asci_count_dict)
+			random.shuffle(choices_list)
+			bb_question = bptools.formatBB_MC_Question(N, full_question, choices_list, answer_text)
+		else:
+			important_tip_text = get_important_tip()
+			bb_question = bptools.formatBB_NUM_Question(N, full_question+important_tip_text, distance, 0.1, tol_message=False)
+
 		f.write(bb_question)
 	f.close()
 	bptools.print_histogram()
