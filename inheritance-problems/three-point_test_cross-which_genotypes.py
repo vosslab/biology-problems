@@ -60,7 +60,7 @@ if __name__ == "__main__":
 		sys.exit(1)
 
 	outfile = ('bbq-' + os.path.splitext(os.path.basename(__file__))[0]
-		+ f'-{args.question_type}'
+		+ f'-{args.question_type.upper()}'
 		+ '-questions.txt')
 	print('writing to file: '+outfile)
 	f = open(outfile, 'w')
@@ -93,7 +93,7 @@ if __name__ == "__main__":
 			genes_list = list(GMC.gene_letters_str)
 			random.shuffle(genes_list)
 			gene_pair = tuple(genes_list[0:2])
-			answers_list = GMC.get_all_recombinants_for_gene_letter(gene_pair)
+			answers_list = GMC.get_all_recombinants_for_gene_pair(gene_pair)
 		else:
 			raise ValueError(f'unknown question type: {args.question_type}')
 
