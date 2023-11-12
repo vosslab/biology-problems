@@ -49,7 +49,7 @@ if __name__ == "__main__":
 		sys.exit(1)
 
 	outfile = ('bbq-' + os.path.splitext(os.path.basename(__file__))[0]
-		+ f'-{args.question_type}'
+		+ f'-{args.question_type.upper()}'
 		+ '-questions.txt')
 	print('writing to file: '+outfile)
 	f = open(outfile, 'w')
