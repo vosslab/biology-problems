@@ -1,12 +1,8 @@
 #!/usr/bin/env python3
 
 import os
-import re
-import sys
-import copy
 import math
 import numpy
-import string
 import random
 
 import bptools
