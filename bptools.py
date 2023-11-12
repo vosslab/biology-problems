@@ -309,22 +309,22 @@ light_color_wheel = {
 }
 
 extra_light_color_wheel = {
-    'red': 'ffe6e6',
-    'orange': 'ffece6',
+	'red': 'ffe6e6',
+	'orange': 'ffece6',
 	'brown': 'fff3e6',
-    'gold': 'fff9e5',
-    'yellow': 'ffffe6',
+	'gold': 'fff9e5',
+	'yellow': 'ffffe6',
 	'olive green': 'f5f7ee',
-    'lime green': 'ecffe6',
-    'green': 'e6ffe6',
-    'teal': 'e6fff3',
-    'cyan': 'e6ffff',
-    'sky blue': 'e6f9ff',
-    'blue': 'e6ecff',
-    'navy': 'e6e6ff',
-    'purple': 'f3e6ff',
-    'magenta': 'ffe6f9',
-    'pink': 'ffe6ff'
+	'lime green': 'ecffe6',
+	'green': 'e6ffe6',
+	'teal': 'e6fff3',
+	'cyan': 'e6ffff',
+	'sky blue': 'e6f9ff',
+	'blue': 'e6ecff',
+	'navy': 'e6e6ff',
+	'purple': 'f3e6ff',
+	'magenta': 'ffe6f9',
+	'pink': 'ffe6ff'
 }
 
 """dark_color_wheel = (
@@ -382,10 +382,8 @@ extra_light_color_wheel = (
 	'ffe6ff',  # Light Pink
 )"""
 
-
-def default_color_wheel(num_colors, color_wheel=dark_color_wheel):
-	color_wheel_keys = list(color_wheel.keys())
-	color_wheel_length = len(dark_color_wheel)
+#==========================
+def get_indices_for_color_wheel(num_colors, color_wheel_length):
 	min_distance = int(math.floor(color_wheel_length / (num_colors+1)))
 
 	if num_colors > color_wheel_length // min_distance:
@@ -410,10 +408,19 @@ def default_color_wheel(num_colors, color_wheel=dark_color_wheel):
 			if idx_to_remove in available_indices:
 				available_indices.remove(idx_to_remove)
 	selected_indices = sorted(selected_indices)
-	#print(f'selected_indices={selected_indices}')
+
 	if num_colors > 1 and min_difference(selected_indices) < min_distance:
 		raise ValueError(f'min_difference {min_difference(selected_indices)} < min_distance {min_distance}')
+
+	return selected_indices
+
+#==========================
+def default_color_wheel(num_colors, color_wheel=dark_color_wheel):
+	color_wheel_length = len(color_wheel)
+	selected_indices = get_indices_for_color_wheel(num_colors, color_wheel_length)
+
 	# Select the colors based on the generated indices
+	color_wheel_keys = list(color_wheel.keys())
 	selected_keys = [color_wheel_keys[i] for i in selected_indices]
 	selected_colors_rgb = [color_wheel[i] for i in selected_keys]
 	return selected_colors_rgb
@@ -435,7 +442,23 @@ def default_color_wheel2(num_colors, random_shift=True):
 	selected_colors = [dark_color_wheel[i] for i in indices]
 	return selected_colors
 
-def light_and_dark_color_wheel(num_colors, random_shift=True, extra_light=False):
+#==========================
+def light_and_dark_color_wheel(num_colors, dark_color_wheel=dark_color_wheel, light_color_wheel=light_color_wheel):
+	color_wheel_length = min(len(dark_color_wheel), len(light_color_wheel))
+	selected_indices = get_indices_for_color_wheel(num_colors, color_wheel_length)
+
+	# Select the colors based on the generated indices
+	dark_color_wheel_keys = list(dark_color_wheel.keys())
+	dark_selected_keys = [dark_color_wheel_keys[i] for i in selected_indices]
+	dark_selected_colors_rgb = [dark_color_wheel[i] for i in dark_selected_keys]
+	light_color_wheel_keys = list(light_color_wheel.keys())
+	light_selected_keys = [light_color_wheel_keys[i] for i in selected_indices]
+	light_selected_colors_rgb = [light_color_wheel[i] for i in light_selected_keys]
+	return light_selected_colors_rgb, dark_selected_colors_rgb
+
+
+#==========================
+def light_and_dark_color_wheel2(num_colors, random_shift=True, extra_light=False):
 	if extra_light is True:
 		color_wheel = extra_light_color_wheel
 	else:
