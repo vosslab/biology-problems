@@ -3,7 +3,6 @@ import re
 import copy
 import math
 import random
-import itertools
 
 debug = False
 
