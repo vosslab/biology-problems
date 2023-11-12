@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import copy
+import math
 import random
 
 import bptools
@@ -135,7 +136,7 @@ class GeneMappingClass:
 		if self.distances_dict is not None:
 			print('self.distances_dict = {')
 			for key, value in self.distances_dict.items():
-				print(f'  {key}: {value:02d} # gene '
+				print(f'  {key}: {value} # gene '
 					+f'{self.gene_order_str[key[0]-1].upper()} and '
 					+f'{self.gene_order_str[key[1]-1].upper()} '
 				)
@@ -188,17 +189,18 @@ class GeneMappingClass:
 		if num_genes_int > 4:
 			raise ValueError("Too many genes, num_genes_int cannot be more than 4")
 		self.num_genes_int = num_genes_int
+		self.question_type = 'num'
 		self.max_gene_distance = 40
 		self.question_count_int = question_count
 		self.set_gene_letters()  # This will set self.gene_letters_str
 		self.set_gene_order()
-		self.light_colors, self.dark_colors = bptools.light_and_dark_color_wheel(self.num_genes_int, extra_light=True)
+		self.light_colors, self.dark_colors = bptools.light_and_dark_color_wheel(self.num_genes_int, light_color_wheel=bptools.extra_light_color_wheel)
 
 		# set None and empty values
-		self.distance_triplet_tuple = None
 		self.interference_dict = None
 		self.distances_dict = None
 		self.progeny_count_int = -1
+		self.multiplier = 100
 		self.all_genotype_tuple_pairs_list = None
 		self.progeny_groups_count_dict = None
 		self.parental_genotypes_tuple = None
@@ -253,20 +255,67 @@ class GeneMappingClass:
 	#===========================================================
 	#===========================================================
 	def set_gene_distances(self, min_distance=2) -> None:
+		if self.question_type == 'mc':
+			self.set_gene_distances_mc(min_distance)
+		else:
+			self.set_gene_distances_int(min_distance)
+		if self.debug is True:
+			self.print_gene_map_data()
+
+	#===========================================================
+	#===========================================================
+	def get_two_decimal_rand(self, min_value: int=9, multiplier: int=None) -> int:
+		if multiplier is None:
+			multiplier = self.multiplier
+		two_decimal_rand = random.randint(min_value*multiplier, self.max_gene_distance*multiplier)
+		two_decimal_rand = two_decimal_rand/float(multiplier)
+		return two_decimal_rand
+
+	#===========================================================
+	#===========================================================
+	def set_gene_distances_mc(self, min_distance=2) -> None:
+		if self.num_genes_int == 2:
+			distance = self.get_two_decimal_rand(min_value=9)
+			self.distances_dict = { (1,2): distance, }
+		elif self.num_genes_int == 3:
+			self.distances_dict = {}
+			distance_pair = []
+			distance_pair.append(self.get_two_decimal_rand(min_value=3))
+			distance_pair.append(self.get_two_decimal_rand(min_value=3))
+			if random.random() < 0.5:
+				self.distances_dict[(1,2)] = distance_pair[0]
+				self.distances_dict[(2,3)] = distance_pair[1]
+			else:
+				self.distances_dict[(1,2)] = distance_pair[1]
+				self.distances_dict[(2,3)] = distance_pair[0]
+			interference_numerator = random.randint(1, 7)
+			interference_denominator = random.randint(interference_numerator+1, 12)
+			interference_tuple = (interference_numerator, interference_denominator)
+			distance3 = gml.calculate_third_distance(distance_pair[0], distance_pair[1], interference_tuple)
+			self.distances_dict[(1,3)] = distance3
+			self.interference_dict = {
+				(1,3): interference_tuple,
+				}
+		elif self.num_genes_int >= 4:
+			raise NotImplementedError
+
+	#===========================================================
+	#===========================================================
+	def set_gene_distances_int(self, min_distance=2) -> None:
 		if self.num_genes_int == 2:
 			distance = random.randint(min_distance, self.max_gene_distance)
 			self.distances_dict = { (1,2): distance, }
 		elif self.num_genes_int == 3:
 			self.distances_dict = {}
-			self.distance_triplet_tuple = self.get_one_distance_triplet(max_gene_distance=self.max_gene_distance, interference_mode=self.interference_mode)
+			distance_triplet = self.get_one_distance_triplet(max_gene_distance=self.max_gene_distance, interference_mode=self.interference_mode)
 			if random.random() < 0.5:
-				self.distances_dict[(1,2)] = self.distance_triplet_tuple[0]
-				self.distances_dict[(2,3)] = self.distance_triplet_tuple[1]
+				self.distances_dict[(1,2)] = distance_triplet[0]
+				self.distances_dict[(2,3)] = distance_triplet[1]
 			else:
-				self.distances_dict[(1,2)] = self.distance_triplet_tuple[1]
-				self.distances_dict[(2,3)] = self.distance_triplet_tuple[0]
-			self.distances_dict[(1,3)] = self.distance_triplet_tuple[2]
-			interference_tuple = gml.calculate_interference_from_three_distances(*self.distance_triplet_tuple)
+				self.distances_dict[(1,2)] = distance_triplet[1]
+				self.distances_dict[(2,3)] = distance_triplet[0]
+			self.distances_dict[(1,3)] = distance_triplet[2]
+			interference_tuple = gml.calculate_interference_from_three_distances(*distance_triplet)
 			self.interference_dict = {
 				(1,3): interference_tuple,
 				}
@@ -284,8 +333,8 @@ class GeneMappingClass:
 				(2,4): (1,1),
 				(1,4): (1,1),
 			}
-		if self.debug is True:
-			self.print_gene_map_data()
+		elif self.num_genes_int >= 5:
+			raise NotImplementedError
 
 	#====================================
 	#====================================
@@ -304,8 +353,20 @@ class GeneMappingClass:
 	#====================================
 	#====================================
 	def set_progeny_count(self):
-		#self.progeny_base_int = minN(self.distance_triplet_tuple[0], self.distance_triplet_tuple[1])
-		self.progeny_count_int = gml.get_general_progeny_size(tuple(self.distances_dict.values()))
+		#self.progeny_base_int = minN(distance_triplet[0], distance_triplet[1])
+		if self.question_type == 'mc':
+			#DISTANCE ARE FLOATS
+			values = [100, ]
+			for val in self.distances_dict.values():
+				values.append(int(round(val*100)))
+			gcd = math.gcd(*values)
+			progeny_count = random.randint(2, 29) * 10000 / gcd
+			if not gml.is_almost_integer(progeny_count):
+				self.print_gene_map_data()
+				raise ValueError(f"progeny count error: {progeny_count:.8f}")
+			self.progeny_count_int = int(round(progeny_count))
+		else:
+			self.progeny_count_int = gml.get_general_progeny_size(tuple(self.distances_dict.values()))
 		if self.debug is True:
 			self.print_gene_map_data()
 
@@ -342,7 +403,7 @@ class GeneMappingClass:
 			print(f'no_interference_DCO={no_interference_DCO:.3f}')
 		interference_tuple = self.interference_dict[gene_pair]
 		Interference_DCO = no_interference_DCO * (interference_tuple[1] - interference_tuple[0]) / interference_tuple[1]
-		if not gml.is_almost_integer(Interference_DCO):
+		if self.question_type != 'mc' and not gml.is_almost_integer(Interference_DCO):
 			raise ValueError(f'Interference_DCO={Interference_DCO:.5f} is NOT an integer')
 		Interference_DCO = int(round(Interference_DCO))
 		if self.debug is True:
@@ -487,9 +548,29 @@ class GeneMappingClass:
 		if self.debug is True:
 			self.print_gene_map_data()
 
+	#=====================
+	#=====================
+	def values_to_text(self, values: tuple) -> str:
+		choice_text = '<sup>'
+		val_sum = sum(values)
+		if len(values) > 1:
+			choice_text += '('
+			val_list = sorted(values)
+			for val in val_list:
+				choice_text += f'{val:,d} + '
+			choice_text = choice_text[:-3]
+			choice_text += ')'
+			choice_text += f'</sup>/<sub>{self.progeny_count_int:,d}</sub> = '
+		choice_text += f'<sup>{val_sum:,d}</sup>/<sub>{self.progeny_count_int:,d}</sub> = '
+		float_val = val_sum/float(self.progeny_count_int)
+		choice_text += f'{float_val:.4f} = '
+		choice_text += f'<strong>{float_val*100:.2f} cM<strong>'
+
+		return choice_text
+
 	#====================================
 	#====================================
-	def get_all_recombinants_for_gene_letter(self, gene_pair: tuple) -> list:
+	def get_all_recombinants_for_gene_pair(self, gene_pair: tuple) -> list:
 		recombinants = []
 		gene_index1 = self.gene_letters_str.find(gene_pair[0])
 		gene_index2 = self.gene_letters_str.find(gene_pair[1])
@@ -501,6 +582,64 @@ class GeneMappingClass:
 				if genotype[gene_index1] == ptype[gene_index1] and genotype[gene_index2] != ptype[gene_index2]:
 					recombinants.append(genotype)
 		return recombinants
+
+	#====================================
+	#====================================
+	def get_counts_from_genotype_list(self, genotype_list: list) -> list:
+		counts = []
+		for genotype in genotype_list:
+			count = self.genotype_counts[genotype]
+			counts.append(count)
+		return counts
+
+	#=====================
+	#=====================
+	def make_choices(self, gene_pair: tuple=None):
+		if self.num_genes_int > 3:
+			raise NotImplementedError('this was only designed for three genes or fewer')
+		if gene_pair is None and self.num_genes_int == 2:
+			gene_pair = tuple(self.gene_order_str)
+		elif gene_pair is None:
+			raise ValueError('need input gene_pair')
+
+		choices_set = set()
+		recomb_genotypes = self.get_all_recombinants_for_gene_pair(gene_pair)
+		recomb_counts = self.get_counts_from_genotype_list(recomb_genotypes)
+		answer_text = self.values_to_text(recomb_counts)
+		print(f'answer_text={answer_text}')
+		choices_set.add(answer_text)
+
+		parent_values = []
+		parent_values = self.get_counts_from_genotype_list(self.parental_genotypes_tuple)
+		parent_text = self.values_to_text(parent_values)
+		print(f'parent_text={parent_text}')
+		choices_set.add(parent_text)
+
+		if self.num_genes_int == 2:
+			max_items = 2
+		elif self.num_genes_int == 3:
+			max_items = 6
+		all_genotypes = list(self.genotype_counts.keys())
+		loop_count = 0
+		while(len(choices_set) < 6):
+			loop_count += 1
+			num_items = random.randint(1, max_items)
+			genotypes_set = set()
+			while(len(genotypes_set) < num_items):
+				genotype = random.choice(all_genotypes)
+				genotypes_set.add(genotype)
+			values_list = []
+			for genotype in genotypes_set:
+				values_list.append(self.genotype_counts[genotype])
+			float_val = sum(values_list)/float(self.progeny_count_int)
+			if float_val > 0.49:
+				continue
+			choice_text = self.values_to_text(values_list)
+			print(f'choice_text={choice_text}')
+			choices_set.add(choice_text)
+			if loop_count > 100:
+				break
+		return list(choices_set), answer_text
 
 	#====================================
 	#====================================
