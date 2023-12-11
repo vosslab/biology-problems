@@ -61,7 +61,7 @@ class MultiDisorderClass(object):
 				disorder_dict = disorder_type_dict[disorder_name]
 				if disorder_dict['complete'] is True:
 					complete_disorder_count += 1
-					print('{0:02d}. {1} - {2}'.format(complete_disorder_count, disorder_name.title(), disorder_type_name.title()))
+					#print('{0:02d}. {1} - {2}'.format(complete_disorder_count, disorder_name.title(), disorder_type_name.title()))
 					disorder_data[disorder_type_name][disorder_name] = disorder_dict
 					disorder_data[disorder_type_name][disorder_name]['name'] = disorder_name
 					disorder_data[disorder_type_name][disorder_name]['type'] = disorder_type_name
@@ -116,17 +116,17 @@ class MultiDisorderClass(object):
 		description += 'that is caused by ' + disorder_dict['caused by'] + ". "
 
 		description += 'This results in ' + disorder_dict['mechanism'] + ". "
-		
-		description += 'The disorder affects ' + disorder_dict['frequency'] + '. ' 
-		
+
+		description += 'The disorder affects ' + disorder_dict['frequency'] + '. '
+
 		description += 'Individuals affected with ' + shortest_name + ' have ' + disorder_dict['symptoms'] + ". "
 
 		locus_dict = self.breakUpGeneLocus(disorder_dict['locus'])
 		description += 'The defective gene for ' + shortest_name + ' is located on the ' + locus_dict['arm'] + ' arm of '
 		description += 'chromosome ' + locus_dict['chromosome'] + ' at position ' + locus_dict['band']  + ". "
 
-		
 		return description
+
 	#=====================
 	def randomDisorderDict(self, disorder_type=None):
 		while disorder_type is None:
@@ -134,7 +134,7 @@ class MultiDisorderClass(object):
 			if len(self.disorder_data[disorder_type].keys()) == 0:
 				disorder_type = None
 		disorder_name = random.choice(list(self.disorder_data[disorder_type].keys()))
-		disorder_dict = md.disorder_data[disorder_type][disorder_name]
+		disorder_dict = self.disorder_data[disorder_type][disorder_name]
 		return disorder_dict
 
 	#=====================
@@ -147,7 +147,6 @@ class MultiDisorderClass(object):
 		pretty_question = copy.copy(question)
 		pretty_question = re.sub('\<\/p\>\s*\<p\>', '\n\n', pretty_question)
 		return pretty_question
-
 
 	#=====================
 	def formatBB_Question(self, N, question, choices_list, answer):
