@@ -1,0 +1,91 @@
+organisms:
+  butterflies:
+    typical_behavior: "Active during the day, often found near flowers."
+    habitats:
+      - "tropical rainforests"
+      - "meadows"
+      - "gardens"
+    characters:
+      - name: "wing color"
+        biological_significance: "Aids in mate attraction and predator evasion."
+        ecological_impact: "Influences pollination patterns."
+        colorful: true
+        trait_sets:
+          - ['brightly colored', 'mixed colors', 'dull colored']
+      - name: "wing pattern"
+        biological_significance: "Critical for camouflage and mating displays."
+        ecological_impact: "Affects interactions with predators and pollinators."
+        colorful: false
+        trait_sets:
+          - ['cirlcular', 'wavy pattern', 'solid color']
+
+  deer:
+    typical_behavior: "Grazing herbivores, often form herds."
+    habitats:
+      - "forests"
+      - "woodlands"
+      - "grasslands"
+    characters:
+      - name: "antler shape"
+        biological_significance: "Used for territorial fights and attracting mates."
+        ecological_impact: "Affects forest undergrowth due to rutting."
+        colorful: false
+        trait_sets:
+          - ['heavily branched', 'less branched', 'straight']
+
+  flowers:
+    typical_behavior: "Stationary, reliant on pollinators for reproduction."
+    habitats:
+      - "gardens"
+      - "meadows"
+      - "rainforests"
+    characters:
+      - name: "petal color"
+        biological_significance: "Attracts pollinators like bees and butterflies."
+        ecological_impact: "Critical for plant reproduction and ecosystem health."
+        colorful: true
+        trait_sets:
+          - ['vibrant colored', 'partially faded', 'pale colored']
+
+  fish:
+    typical_behavior: "Wide range, from solitary to schooling behavior."
+    habitats:
+      - "coral reefs"
+      - "freshwater streams"
+      - "lakes"
+    characters:
+      - name: "scale color"
+        biological_significance: "Plays a role in camouflage and mate selection."
+        ecological_impact: "Affects survival and reproductive success in diverse aquatic environments."
+        colorful: true
+        trait_sets:
+          - ['brightly colored', 'muted colors', 'dull colored']
+
+  snakes:
+    typical_behavior: "Solitary, using camouflage for hunting and defense."
+    habitats:
+      - "deserts"
+      - "forests"
+      - "wetlands"
+    characters:
+      - name: "scale pattern"
+        biological_significance: "Important for camouflage and thermoregulation."
+        ecological_impact: "Influences predator-prey dynamics in their ecosystems."
+        colorful: false
+        trait_sets:
+          - ['diamond pattern', 'striped pattern', 'solid color']
+
+  lizards:
+    typical_behavior: "Diverse, ranging from arboreal to burrowing habits."
+    habitats:
+      - "deserts"
+      - "rainforests"
+      - "mountainous areas"
+    characters:
+      - name: "scale pattern"
+        biological_significance: "Key for thermoregulation and social interactions."
+        ecological_impact: "Affects their ability to exploit different ecological niches."
+        colorful: false
+        trait_sets:
+          - ['spotted pattern', 'striped pattern', 'solid color']
+
