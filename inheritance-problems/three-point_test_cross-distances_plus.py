@@ -35,6 +35,10 @@ def get_question_text(gene_letters: str) -> str:
 	question_string +=   'Your answer should be written as a numerical value only, '
 	question_string +=   'no spaces, commas, or units such as "cM" or "map units". '
 	question_string +=   'For example, if the distance is fifty one centimorgans, simply write "51". </li> '
+	question_string += '<li><i>Important Tip 3:</i> '
+	question_string +=   'Your gene order answer should be written as three letters only, '
+	question_string +=   'no spaces, commas, hyphens or other characters are allowed. '
+	question_string +=   'For example, if the gene order is B - A - C, simply write "bac" or "cab". </li> '
 	question_string += '</ul></p> '
 
 	return question_string
