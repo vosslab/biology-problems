@@ -1,8 +1,16 @@
+
+
+#====================================
+P/Q Quesitons
 In a study of an X-linked recessive disorder in a certain species of fruit flies, male phenotypes are directly indicative of the allele frequencies due to their single X chromosome. In a laboratory population of 1,000 male fruit flies, 800 do not show the disorder (implying they have the dominant allele). Which Hardy-Weinberg variable is represented by the fraction 800/1000 of male fruit flies without the disorder?
 
 A species of butterflies exhibits incomplete dominance in its wing color. Those with two copies of the R allele have red wings, and heterozygotes have orange wings and recessive individuals have yellow wings. In a field, a researcher counted 3,125 butterflies. There were 3,038 red butterflies, 49 orange butterflies, and 38 yellow butterflies. The researcher calculates a fraction of (49 + 38*2)/6250 = 0.02. Which choice below is represented by 0.02?
 
+#====================================
+
 In a study of coat color in a population of rabbits, a gene exhibits incomplete dominance with the following phenotypes: black (homozygous dominant), gray (heterozygous), and white (homozygous recessive). Observations of 200 rabbits reveal that 120 are gray and 40 are white. Which Hardy-Weinberg variable is represented by the fraction (120 + 40)/200 of rabbits that are not black?
+
+#====================================
 
 In a botanical study, a rare flower shows incomplete dominance in petal coloration: blue (homozygous dominant), lavender (heterozygous), and white (homozygous recessive). After counting 500 flowers, researchers find that 100 are blue. Which Hardy-Weinberg variable is represented by the fraction 100/500 of blue flowers?
 
