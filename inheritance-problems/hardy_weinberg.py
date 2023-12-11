@@ -319,7 +319,7 @@ def makeQuestion(type, p):
 #=========================
 #=========================
 if __name__ == '__main__':
-	type = '3a'
+	type = '1a'
 
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + ('-type_{0}-questions.txt'.format(type))
 	print('writing to file: '+outfile)

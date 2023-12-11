@@ -1,0 +1,35 @@
+In a study of an X-linked recessive disorder in a certain species of fruit flies, male phenotypes are directly indicative of the allele frequencies due to their single X chromosome. In a laboratory population of 1,000 male fruit flies, 800 do not show the disorder (implying they have the dominant allele). Which Hardy-Weinberg variable is represented by the fraction 800/1000 of male fruit flies without the disorder?
+
+A species of butterflies exhibits incomplete dominance in its wing color. Those with two copies of the R allele have red wings, and heterozygotes have orange wings and recessive individuals have yellow wings. In a field, a researcher counted 3,125 butterflies. There were 3,038 red butterflies, 49 orange butterflies, and 38 yellow butterflies. The researcher calculates a fraction of (49 + 38*2)/6250 = 0.02. Which choice below is represented by 0.02?
+
+In a study of coat color in a population of rabbits, a gene exhibits incomplete dominance with the following phenotypes: black (homozygous dominant), gray (heterozygous), and white (homozygous recessive). Observations of 200 rabbits reveal that 120 are gray and 40 are white. Which Hardy-Weinberg variable is represented by the fraction (120 + 40)/200 of rabbits that are not black?
+
+In a botanical study, a rare flower shows incomplete dominance in petal coloration: blue (homozygous dominant), lavender (heterozygous), and white (homozygous recessive). After counting 500 flowers, researchers find that 100 are blue. Which Hardy-Weinberg variable is represented by the fraction 100/500 of blue flowers?
+
+A group of scientists studying a population of beetles discovers that a recessive trait results in a rare color pattern. Out of 400 beetles observed, 64 exhibit this color pattern. Which Hardy-Weinberg variable is represented by the fraction 64/400 of beetles with the rare color pattern?
+
+In a wildlife reserve, researchers are studying a population of deer in which a dominant allele causes a unique antler shape. After observing a group of 300 deer, they note that 210 exhibit this unique antler shape. Which Hardy-Weinberg variable is represented by the fraction 210/300 of deer with the unique antler shape?
+
+In a garden, a certain flower shows incomplete dominance in flower color: red (R), pink (RW), and white (W). After counting, it's observed that 25 out of 125 flowers are white. Which Hardy-Weinberg variable is represented by the fraction 25/125 of flower with the white color pattern?
+
+In a botanical garden, a certain species of flower exhibits incomplete dominance in its petal colors: red (homozygous dominant), pink (heterozygous), and white (homozygous recessive). Genetic studies have shown that out of 300 flowers, 60 are red, 180 are pink, and 60 are white. Which of the following values is represented by the fraction of pink flowers in the population (180/300)?
+
+A rare mammalian species in a protected wildlife reserve is known to carry a gene with two alleles, where one allele is recessive and leads to a unique fur pattern. Field researchers estimate that out of 250 mammals, 70 display the recessive phenotype, either as homozygous recessive individuals or as part of the heterozygous population. Which Hardy-Weinberg variable is represented by the fraction 70/250 of flower with the white color pattern?
+
+In a study of a lizard species in a desert ecosystem, researchers observe that out of 500 lizards, 420 exhibit a dominant scale pattern due to either being homozygous dominant or heterozygous. Which Hardy-Weinberg variable is represented by the fraction 420/500 of flower with the white color pattern?
+
+A certain genetic disorder in humans is caused by a recessive allele. In a small, isolated community, 5 out of 125 individuals exhibit this disorder. Which Hardy-Weinberg variable is represented by the fraction 5/125 of flower with the white color pattern?
+
+In a particular fish species found in a large lake, a genetic study has revealed that out of 1,250 fish, approximately 400 are heterozygous for a gene linked to fin shape.  Which Hardy-Weinberg variable is represented by the fraction 400/1250 of flower with the white color pattern?
+
+In a population of flowering plants, a dominant allele is responsible for a specific petal color. Botanists have found that out of 1,000 plants, 490 express this dominant petal color due to being homozygous dominant. Which Hardy-Weinberg variable is represented by the fraction 490/1000 of flower with the white color pattern?
+
+A remote island hosts a population of birds where a rare, recessive allele causes an unusual feather pattern. Recent field studies have determined that out of 200 birds observed, 40 exhibit the recessive feather pattern. Which Hardy-Weinberg variable is represented by the fraction 40/200 of flower with the white color pattern?
+
+In the depths of the Amazon rainforest, a population of a unique species of butterfly exhibits a striking color variation. Genetic studies have shown that out of 70 butterflies collected, 49 exhibit the bright color trait, which is dominant. Which Hardy-Weinberg variable is represented by the fraction 49/70 of flower with the white color pattern?
+"""
+
+now we need to update our program to generate these types of questions..
+my thoughts:
+1. numbers are easy, the context is harder.
+2. random choice of an organism and its habitat.
