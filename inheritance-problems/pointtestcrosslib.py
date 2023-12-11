@@ -1037,8 +1037,6 @@ def make_progeny_html_table(typemap: dict, progeny_size: int) -> str:
 	table += f'<td {td_extra.replace("center", "right")}>{span}{progeny_size:d}</span></td></tr>'
 	table += '</table>'
 
-	if is_valid_html(table) is False:
-		sys.exit(1)
 	return table
 
 # Simple assertion test for the function: 'make_progeny_html_table'
@@ -1547,6 +1545,7 @@ if __name__ == '__main__':
 		print(f'interference = {a}/{b}')
 		dist = calculate_third_distance(triplet[0], triplet[1], (a, b))
 		print(dist, triplet[2])"""
+	print("start")
 
 	#print(distance_triplet_generator((9,11), 45))
 	a = GeneMappingClass(2, 1)

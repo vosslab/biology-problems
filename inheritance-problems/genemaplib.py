@@ -499,7 +499,7 @@ assert distance_triplet_generator((9,11), 36) == [(25, 11, 35)]
 
 #====================================
 #====================================
-def get_all_distance_triplets(max_fraction_int: int=12, max_distance: int=40) -> list:
+def get_all_distance_triplets(max_fraction_int: int=12, max_distance: int=40, msg: bool=True) -> list:
 	used_values = {}
 	distance_triplet_list = []
 	for numerator_prime  in range(1, max_fraction_int):
@@ -512,9 +512,10 @@ def get_all_distance_triplets(max_fraction_int: int=12, max_distance: int=40) ->
 				new_distance_triplet_list = distance_triplet_generator((numerator,denominator), max_distance)
 				if new_distance_triplet_list is not None:
 					distance_triplet_list += new_distance_triplet_list
-	print(f'found {len(distance_triplet_list)} distance tuples '+
-		f'with max distance {max_distance} '+
-		f'from all interference fractions up to denominator {max_fraction_int}')
+	if msg is True:
+		print(f'found {len(distance_triplet_list)} distance tuples '+
+			f'with max distance {max_distance} '+
+			f'from all interference fractions up to denominator {max_fraction_int}')
 	return distance_triplet_list
 
 # ==============================
@@ -547,7 +548,7 @@ def distance_triplet_generator_INTERFERENCE(interference_tuple: tuple=(0,1), max
 
 #====================================
 #====================================
-def get_all_distance_triplets_INTERFERENCE(max_fraction_int: int=99, max_distance: int=40) -> list:
+def get_all_distance_triplets_INTERFERENCE(max_fraction_int: int=99, max_distance: int=40, msg: bool=True) -> list:
 	used_values = {}
 	distance_triplet_list = []
 	for numerator_prime  in range(1, max_fraction_int):
@@ -560,12 +561,11 @@ def get_all_distance_triplets_INTERFERENCE(max_fraction_int: int=99, max_distanc
 			new_distance_triplet_list = distance_triplet_generator((numerator,denominator), max_distance)
 			if new_distance_triplet_list is not None:
 				distance_triplet_list += new_distance_triplet_list
-	print(f'found {len(distance_triplet_list)} distance tuples '+
-		f'with max distance {max_distance} '+
-		f'from all interference fractions up to denominator {max_fraction_int}')
+	if msg is True:
+		print(f'found {len(distance_triplet_list)} distance tuples '+
+			f'with max distance {max_distance} '+
+			f'from all interference fractions up to denominator {max_fraction_int}')
 	return distance_triplet_list
-
-print(get_all_distance_triplets_INTERFERENCE())
 
 #====================================
 #====================================
@@ -637,15 +637,15 @@ assert right_justify_int(7,5) == "    7"
 
 #====================================
 #====================================
-def invert_genotype(genotype: str, basetype: str) -> str:
+def invert_genotype(genotype: str, gene_letters: str) -> str:
 	"""
-	Inverts the type of a genotype based on a given basetype.
+	Inverts the type of a genotype based on a given gene_letters.
 
 	Parameters
 	----------
 	genotype : str
 		The original genotype.
-	basetype : str
+	gene_letters : str
 		The basic type used as a reference for inverting the genotype.
 
 	Returns
@@ -659,7 +659,7 @@ def invert_genotype(genotype: str, basetype: str) -> str:
 	# Iterate through the length of the genotype to perform the inversion
 	for i in range(len(genotype)):
 		if genotype[i] == '+':
-			newtype += basetype[i]
+			newtype += gene_letters[i]
 		else:
 			newtype += '+'
 
@@ -672,7 +672,7 @@ assert invert_genotype('+b', 'ab') == 'a+'
 
 #====================================
 #====================================
-def flip_gene_by_letter(genotype: str, gene_letter: str, basetype: str) -> str:
+def flip_gene_by_letter(genotype: str, gene_letter: str, gene_letters: str) -> str:
 	"""
 	Flips a specified gene in the genotype.
 
@@ -682,7 +682,7 @@ def flip_gene_by_letter(genotype: str, gene_letter: str, basetype: str) -> str:
 		The original genotype.
 	gene : str
 		The gene to flip.
-	basetype : str
+	gene_letters : str
 		The basic type used as a reference for flipping the gene.
 
 	Returns
@@ -695,9 +695,9 @@ def flip_gene_by_letter(genotype: str, gene_letter: str, basetype: str) -> str:
 
 	# Iterate through the genotype to find and flip the specified gene
 	for i in range(len(genotype)):
-		if basetype[i] == gene_letter:
+		if gene_letters[i] == gene_letter:
 			if genotype[i] == '+':
-				newlist[i] = basetype[i]
+				newlist[i] = gene_letters[i]
 			else:
 				newlist[i] = '+'
 
@@ -714,7 +714,7 @@ assert flip_gene_by_letter('+b', 'a', 'ab') == 'ab'
 
 #====================================
 #====================================
-def flip_gene_by_index(genotype: str, gene_index: int, basetype: str) -> str:
+def flip_gene_by_index(genotype: str, gene_index: int, gene_letters: str) -> str:
 	"""
 	Flips a specified gene in the genotype.
 
@@ -724,7 +724,7 @@ def flip_gene_by_index(genotype: str, gene_index: int, basetype: str) -> str:
 		The original genotype.
 	gene_index : int
 		The gene number to flip. starts at 1.
-	basetype : str
+	gene_letters : str
 		The basic type used as a reference for flipping the gene.
 
 	Returns
@@ -734,12 +734,12 @@ def flip_gene_by_index(genotype: str, gene_index: int, basetype: str) -> str:
 	"""
 	# Convert genotype string to a list for easier manipulation
 	newlist = list(genotype)
-	gene_letter = basetype[gene_index-1]
+	gene_letter = gene_letters[gene_index-1]
 	# Iterate through the genotype to find and flip the specified gene
 	for i in range(len(genotype)):
-		if basetype[i] == gene_letter:
+		if gene_letters[i] == gene_letter:
 			if genotype[i] == '+':
-				newlist[i] = basetype[i]
+				newlist[i] = gene_letters[i]
 			else:
 				newlist[i] = '+'
 
@@ -788,4 +788,7 @@ assert crossover_after_index('++++', 1, 'abcd') == '+bcd'
 assert crossover_after_index('++++', 2, 'abcd') == '++cd'
 assert crossover_after_index('++++', 3, 'abcd') == '+++d'
 assert crossover_after_index('++++', 2, 'adcb') == '+bc+'
+
+if __name__ == "__main__":
+	print("DONE")
 

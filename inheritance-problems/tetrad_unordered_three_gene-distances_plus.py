@@ -1,158 +1,54 @@
 #!/usr/bin/env python3
 
 import os
-import re
 import sys
-import copy
-import math
-import numpy
-import string
 import random
+import argparse
 
 import bptools
+import genemaplib as gml
+import genemapclass as gmc
 import pointtestcrosslib as ptcl
 
-debug = False
+debug = True
 
+#=====================
+#=====================
+def questionText(basetype):
+	question_string = '<h6>Unordered Tetrad Three Gene Mapping</h6>'
+	question_string += '<p>The yeast <i>Saccharomyces cerevisiae</i> has unordered tetrads. '
+	question_string += 'A cross is made to study the linkage relationships among three genes. '
+	question_string += '<p>Using the table, determine the order of the genes and the distances between them. '
+	question_string += 'Once calculated, fill in the following four blanks: </p><ul>'
+	question_string += '<li>The distance between genes {0} and {1} is [{0}{1}] cM ({0}{1})</li>'.format(basetype[0].upper(),basetype[1].upper())
+	question_string += '<li>The distance between genes {0} and {1} is [{0}{1}] cM ({0}{1})</li>'.format(basetype[0].upper(),basetype[2].upper())
+	question_string += '<li>The distance between genes {0} and {1} is [{0}{1}] cM ({0}{1})</li>'.format(basetype[1].upper(),basetype[2].upper())
+	question_string += '<li>From this the correct order of the genes is [geneorder] (gene order).</li></ul>'
+	question_string += '<p><i>Hint 1:</i> ALL gene distances will be whole numbers, '
+	question_string += ' do NOT enter a decimal; if you have a decimal your calculations are wrong.</p>'
+	question_string += '<p><i>Hint 2:</i> enter your answer in the blank using only letters or numbers '
+	question_string += ' with no spaces or commas. Also, do NOT add units, e.g. cM or m.u.</p>'
+	question_string += '<ul>'
+	question_string += '<li>Step 1: Find the Row for the Parental Type for all three genes.</li>'
+	question_string += '<li>Step 2: Pick any two genes and assign PD, NPD, TT</li>'
+	question_string += '<li>Step 3: Determine if the two genes are linked.</li>'
+	question_string += '<ul><li>PD >> NPD &rarr; linked; PD &approx; NPD &rarr; unlinked</li></ul>'
+	question_string += '<li>Step 4: Determine the map distance between the two genes</li>'
+	question_string += '<ul><li>D = &half; (TT + 6 NPD)/total = (3 NPD + &half;TT)/total</li></ul>'
+	question_string += '<li>Step 5: Go to Step 2 and pick a new pair of genes until all pairs are complete.</li>'
+	question_string += '</ul>'
+
+	return question_string
+
+#=====================
+#=====================
 def tetradSetToString(tetradSet):
 	mystr = ("%s\t%s\t%s\t%s\t"
 		%(tetradSet[0],tetradSet[1],tetradSet[2],tetradSet[3],))
 	return mystr
 
-def getDistancesThreePoint():
-	#integers
-	key_maps = {
-		35:	[10, 20, 30, 40, ],
-		30:	[ 5, 10, 15, 20, 25, 35,],
-		25:	[ 2,  4,  6,  8, 12, 14, 16, 18, 22,],
-		20:	[ 5, 10, 15, 25, 30, 35,],
-		15:	[10, 20, 30, 40, ],
-		10:	[ 5, 15, 20, 25, 30, 35,],
-		5:	[10, 20, 30, 40, ],
-	}
-	a = random.choice(list(key_maps.keys()))
-	b = random.choice(key_maps[a])
-	if a == b:
-		print("ERROR")
-		sys.exit(1)
-	if debug is True: print("determine gene distances")
-	distances = [a, b]
-	random.shuffle(distances)
-	distance3 = int(distances[0] + distances[1] - (distances[0] * distances[1])/50)
-	distances.append(distance3)
-	if debug is True: print(distances)
-	return distances
-
-def getDistancesOriginal():
-	if debug is True: print("determine gene distances")
-	a = numpy.random.poisson(lam=12, size=7)
-	a.sort()
-	distances = [a[0], a[-1]]
-	random.shuffle(distances)
-	distance3 = distances[0] + distances[1] - (distances[0] * distances[1])/50.
-	distances.append(distance3)
-	if debug is True: print(distances)
-	return distances
-
-def getDistances():
-	#return [7,15,19]
-	#return [6,16,19]
-	return getDistancesOriginal()
-
-def getProgenySize(distances):
-	#return 2*2*3*3*5*5*7*7*11
-	#return getProgenySizeThreePoint(distances)
-	#return getProgenySizeTetrads(distances)
-	return getProgenySizeTetradThree(distances)
-
-def getProgenySizeThreePoint(distances):
-	if debug is True: print("determine progeny size")
-	gcd1 = math.gcd(distances[0], 100)
-	gcd2 = math.gcd(distances[1], 100)
-	gcdfinal = math.gcd(gcd1, gcd2)
-	if debug is True: print("Final GCD", gcdfinal)
-	progenybase = 100/gcdfinal
-	minprogeny =  900/progenybase
-	maxprogeny = 6000/progenybase
-	progs = numpy.arange(minprogeny, maxprogeny+1, 1, dtype=numpy.float64)*progenybase
-	#print(progs)
-	numpy.random.shuffle(progs)
-	#print(progs)
-	bases = progs * distances[0] * distances[1] / 1e4
-	#print(bases)
-	devs = (bases - numpy.around(bases, 0))**2
-	#print(devs)
-	argmin = numpy.argmin(devs)
-	progeny_size = int(progs[argmin])
-	if debug is True: print(("total progeny: %d\n"%(progeny_size)))
-	return progeny_size
-
-#600*dcount3/progeny_size is integer
-
-def lcm(a, b):
-	return abs(a*b) // math.gcd(a, b)
-
-def lcm4(a, b, c, d):
-	gcd1 = math.gcd(a, b)
-	gcd2 = math.gcd(c, d)
-	gcdfinal = math.gcd(gcd1, gcd2)
-	return abs(a*b*c*d) // gcdfinal
-
-def getProgenySizeTetradThree(distances):
-	if debug is True: print("determine progeny size")
-	dist_sum = distances[0] + distances[1]
-	#return lcm4(10, distances[0], distances[1], dist_sum)
-	gcd1 = math.gcd(distances[0], distances[1])
-	gcd2 = math.gcd(dist_sum, 100)
-	gcdfinal = math.gcd(gcd1, gcd2)
-	if debug is True: print("Final GCD", gcdfinal)
-	progenybase = 100 // gcdfinal
-	minprogeny =  900 // progenybase
-	maxprogeny = 6000 // progenybase
-	progs = numpy.arange(minprogeny, maxprogeny+1, 1, dtype=numpy.uint16)*progenybase
-	#print(progs)
-	numpy.random.shuffle(progs)
-	#print(progs)
-	#print("")
-	bases = progs * distances[0] * distances[1] / 1e4
-	#print(bases)
-	devs = (bases - numpy.around(bases, 0))**2
-	devs = numpy.lcm(progs, 600)
-	#print(devs)
-	devs2 = devs // 600
-	dev_lst = list(devs2)
-	#print(devs2)
-	doublecounts = distances[0] * distances[1] * progs // 10000 + 2
-	doublecounts = numpy.where(doublecounts <= 4, 5, doublecounts)
-	doublecounts // 2
-	#print(doublecounts)
-	for i,dev in enumerate(dev_lst):
-		#print(dev, "<", doublecounts[i], "->", progs[i], )
-		if dev < doublecounts[i]:
-			progeny_size = int(progs[i])
-			break
-	#argmin = numpy.argmin(devs)
-	#progeny_size = int(progs[argmin])
-	if debug is True: print(("total progeny: %d\n"%(progeny_size)))
-	return progeny_size
-
-
-def getProgenySizeTetrads(distances):
-	if debug is True: print("determine progeny size")
-	gcd1 = math.gcd(distances[0], 100)
-	gcd2 = math.gcd(distances[1], 100)
-	gcdfinal = math.gcd(gcd1, gcd2)
-	if debug is True: print("Final GCD", gcdfinal)
-	progenybase = 100/gcdfinal
-	progs = numpy.arange(2, 41, 1, dtype=numpy.float64)*progenybase
-	numpy.random.shuffle(progs)
-	bases = progs * distances[0] * distances[1] / 1e4
-	devs = (bases - numpy.around(bases, 0))**2
-	argmin = numpy.argmin(devs)
-	progeny_size = int(progs[argmin])
-	if debug is True: print(("total progeny: %d\n"%(progeny_size)))
-	return progeny_size
-
+#=====================
+#=====================
 def makeProgenyHtmlTable(typemap, progeny_size):
 	alltypes = list(typemap.keys())
 	alltypes.sort()
@@ -179,6 +75,9 @@ def makeProgenyHtmlTable(typemap, progeny_size):
 	table += '</table>'
 	return table
 
+
+#=====================
+#=====================
 def makeProgenyAsciiTable(typemap, progeny_size):
 	alltypes = list(typemap.keys())
 	alltypes.sort()
@@ -191,90 +90,18 @@ def makeProgenyAsciiTable(typemap, progeny_size):
 	table +=  "\t\tTOTAL\t%d\n\n"%(progeny_size)
 	return table
 
-def makeQuestion(basetype, geneorder, distances, progeny_size):
-	if debug is True: print("------------")
-	answerString = ("%s - %d - %s - %d - %s"
-		%(geneorder[0], distances[0], geneorder[1], distances[1], geneorder[2]))
-	print(answerString)
-	if debug is True: print("------------")
+#=====================
+#=====================
+def generateTypeCounts(parental, geneorder, distances, progeny_size, basetype, interference_tuple):
+	doublecount = calculate_double_crossovers(distances, progeny_size, interference_tuple)
 
-	if debug is True: print("determine double crossovers")
-	doublecross = distances[0]*distances[1]/100.
-	if debug is True: print("doublecross", doublecross*10, 'per 1000')
-
-	if debug is True: print("determine parental type")
-	types = ['+++', '++'+basetype[2], '+'+basetype[1]+'+', '+'+basetype[1]+basetype[2]]
-	parental = random.choice(types)
-
-	tetradCount = generateTypeCounts(parental, geneorder, distances, progeny_size, basetype)
-	return tetradCount
-
-
-
-def getDoubleCounts(distances, progeny_size):
-	doublecross = distances[0]*distances[1]/100.
-	doublecount = int(round(doublecross * progeny_size/100.))+2
-	if doublecount <= 4:
-		doublecount = 5
-	if debug is True: print("doublecount", doublecount)
-
-	# dcount3 controls the third distance
-	# for progeny_size of 1000, each dcount3 = 0.6 distance
-	maxdcount3 = int(2*doublecount // 3)
-	for dcount3 in range(1, maxdcount3+1):
-		distance3 = (distances[0] + distances[1]) - 6*dcount3/progeny_size*100
-		distance3 = round(distance3,8) #must be whole number
-		#print("dcount3", dcount3, "distance3", distance3)
-		if distance3.is_integer():
-			break
-	#GIVE UP
-	if dcount3 == maxdcount3:
-		dcount3 = 0
-	if debug is True: print("dcount3", dcount3)
-
-	#simulate the other numbers
-	#probably could be faster with Poisson random numbers, but this is more fun
-	d00 = distances[0]*distances[0] #10^2
-	d01 = 0 #distances[0]*distances[1] #10*20 #override for dcount3 set above
-	d11 = distances[1]*distances[1] #20^2
-	totalcross = float(d00 + d11 + d01)
-	r00 = d00/totalcross
-	#???r01 = d01/totalcross
-	r11 = d11/totalcross
-	dcount1 = 0
-	dcount2 = 0
-	#dcount3 = 0
-	for i in range(doublecount-dcount3):
-		r = random.random()
-		if r < r00:
-			dcount1 += 1
-		elif r < r00 + r11:
-			dcount2 += 1
-		else:
-			#dcount3 += 1
-			print("DCOUNT3!!")
-			pass
-	#DEBUGGING ONLY--
-	#dcount1 = int(round(r00*doublecount))
-	#dcount2 = int(round(r01*doublecount))
-	#dcount3 = int(round(r11*doublecount))
-	if debug is True: print("DOUBLE COUNTS", dcount1, dcount2, dcount3, doublecount)
-	return dcount1, dcount2, dcount3
-
-def generateTypeCounts(parental, geneorder, distances, progeny_size, basetype):
-	dcount1, dcount2, dcount3 = getDoubleCounts(distances, progeny_size)
-
-	doublecount = dcount1 + dcount2 + dcount3
 	firstcount = 2*(int(round(distances[0]*progeny_size/100.)) - 3*(dcount1 + dcount3))
 	secondcount = 2*(int(round(distances[1]*progeny_size/100.)) - 3*(dcount2 + dcount3))
 	parentcount = progeny_size - doublecount - firstcount - secondcount
 
 	# dcount3 controls the third distance
 	# for progeny_size of 1000, each dcount3 = 0.6 distance
-	distance3 = 0.5*(firstcount + secondcount + 6*(doublecount - dcount3))
-	distance3 = round(distance3/progeny_size*100, 4)
-	print("DISTANCE 3: ", distance3)
-	distances[2] = int(distance3)
+	distance3 = distances[-1]
 
 	if not distance3.is_integer():
 		return None
@@ -339,40 +166,8 @@ def generateTypeCounts(parental, geneorder, distances, progeny_size, basetype):
 
 	return tetradCount
 
-def getCode():
-	source = string.ascii_uppercase + string.digits
-	code = ''
-	for i in range(5):
-		code += random.choice(source)
-	code += ' - '
-	return code
-
-def questionText(basetype):
-	question_string = '<h6>Unordered Tetrad Three Gene Mapping</h6>'
-	question_string += '<p>The yeast <i>Saccharomyces cerevisiae</i> has unordered tetrads. '
-	question_string += 'A cross is made to study the linkage relationships among three genes. '
-	question_string += '<p>Using the table, determine the order of the genes and the distances between them. '
-	question_string += 'Once calculated, fill in the following four blanks: </p><ul>'
-	question_string += '<li>The distance between genes {0} and {1} is [{0}{1}] cM ({0}{1})</li>'.format(basetype[0].upper(),basetype[1].upper())
-	question_string += '<li>The distance between genes {0} and {1} is [{0}{1}] cM ({0}{1})</li>'.format(basetype[0].upper(),basetype[2].upper())
-	question_string += '<li>The distance between genes {0} and {1} is [{0}{1}] cM ({0}{1})</li>'.format(basetype[1].upper(),basetype[2].upper())
-	question_string += '<li>From this the correct order of the genes is [geneorder] (gene order).</li></ul>'
-	question_string += '<p><i>Hint 1:</i> ALL gene distances will be whole numbers, '
-	question_string += ' do NOT enter a decimal; if you have a decimal your calculations are wrong.</p>'
-	question_string += '<p><i>Hint 2:</i> enter your answer in the blank using only letters or numbers '
-	question_string += ' with no spaces or commas. Also, do NOT add units, e.g. cM or m.u.</p>'
-	question_string += '<ul>'
-	question_string += '<li>Step 1: Find the Row for the Parental Type for all three genes.</li>'
-	question_string += '<li>Step 2: Pick any two genes and assign PD, NPD, TT</li>'
-	question_string += '<li>Step 3: Determine if the two genes are linked.</li>'
-	question_string += '<ul><li>PD >> NPD &rarr; linked; PD &approx; NPD &rarr; unlinked</li></ul>'
-	question_string += '<li>Step 4: Determine the map distance between the two genes</li>'
-	question_string += '<ul><li>D = &half; (TT + 6 NPD)/total = (3 NPD + &half;TT)/total</li></ul>'
-	question_string += '<li>Step 5: Go to Step 2 and pick a new pair of genes until all pairs are complete.</li>'
-	question_string += '</ul>'
-
-	return question_string
-
+#=====================
+#=====================
 def getVariables(basetype):
 	variable_list = []
 	if basetype[0] < basetype[1]:
@@ -394,6 +189,8 @@ def getVariables(basetype):
 	variable_list.append(variable)
 	return variable_list
 
+#=====================
+#=====================
 def blackboardFormat(question_string, html_table, variable_list, geneorder, distances):
 	#FIB_PLUS TAB question text TAB variable1 TAB answer1 TAB answer2 TAB TAB variable2 TAB answer3
 	blackboard = 'FIB_PLUS\t'
@@ -409,7 +206,7 @@ def blackboardFormat(question_string, html_table, variable_list, geneorder, dist
 	blackboard += '\tgeneorder\t{0}\t{1}\n'.format(geneorder, geneorder[::-1])
 	return blackboard
 
-
+#=====================
 #=====================
 def formatBB_FIB_PLUS_Question(N, question, variable_list, geneorder, distances):
 	crc16 = bptools.getCrc16_FromString(question)
@@ -430,40 +227,126 @@ def formatBB_FIB_PLUS_Question(N, question, variable_list, geneorder, distances)
 	bb_question += '\n'
 	return bb_question
 
+#=====================
+#=====================
+def makeQuestion(basetype, geneorder, distances, progeny_size, interference_tuple):
+	if debug is True: print("------------")
+	answerString = ("%s - %d - %s - %d - %s"
+		%(geneorder[0], distances[0], geneorder[1], distances[1], geneorder[2]))
+	print(answerString)
+	if debug is True: print("------------")
 
+	if debug is True: print("determine double crossovers")
+	doublecross = distances[0]*distances[1]/100.
+	if debug is True: print("doublecross", doublecross*10, 'per 1000')
+
+	if debug is True: print("determine parental type")
+	types = ['+++', '++'+basetype[2], '+'+basetype[1]+'+', '+'+basetype[1]+basetype[2]]
+	parental = random.choice(types)
+
+	tetradCount = generateTypeCounts(parental, geneorder, distances, progeny_size, basetype, interference_tuple)
+	return tetradCount
+
+#=====================
+#=====================
+def translate_genotype_counts_to_tetrads(GMC):
+	print(GMC.progeny_groups_count_dict)
+	print(GMC.genotype_counts)
+	GMC.gene_letters_str
+
+	# Create Six Genotypes
+	tetradCount = {}
+
+	tetradSet = list(GMC.parental_genotypes_tuple) + list(GMC.parental_genotypes_tuple)
+	tetradSet.sort()
+	if debug is True: print(" parental ", tetradSet)
+
+	tetradName = tetradSetToString(tetradSet)
+	tetradCount[tetradName] = GMC.progeny_groups_count_dict['parental']
+
+	print(tetradCount)
+
+	#first flip
+	firsttype1 = gml.flip_gene_by_letter(GMC.parental_genotypes_tuple[0], GMC.gene_order_str[0], GMC.gene_letters_str)
+	firsttype2 = gml.invert_genotype(firsttype1, GMC.gene_letters_str)
+
+	#usually TT
+	tetradSet = list(GMC.parental_genotypes_tuple) + [firsttype1, firsttype2]
+	tetradSet.sort()
+	tetradName = tetradSetToString(tetradSet)
+	tetradCount[tetradName] = firstcount
+
+	#usually NPD for gene 1
+	tetradSet = [firsttype1, firsttype2, firsttype1, firsttype2]
+	tetradSet.sort()
+	tetradName = tetradSetToString(tetradSet)
+	tetradCount[tetradName] = dcount1
+
+	#second flip
+	secondtype = ptcl.flip_gene_by_letter(parental, geneorder[2], basetype)
+
+	#usually TT
+	tetradSet = [secondtype, ptcl.invert_genotype(secondtype, basetype), parental, ptcl.invert_genotype(parental, basetype),]
+	tetradSet.sort()
+	tetradName = tetradSetToString(tetradSet)
+	tetradCount[tetradName] = secondcount
+
+	#usually NPD
+	tetradSet = [secondtype, ptcl.invert_genotype(secondtype, basetype), secondtype, ptcl.invert_genotype(secondtype, basetype),]
+	tetradSet.sort()
+	tetradName = tetradSetToString(tetradSet)
+	tetradCount[tetradName] = dcount2
+
+	#both flips
+	thirdtype = ptcl.flip_gene_by_letter(ptcl.flip_gene_by_letter(parental, geneorder[2], basetype), geneorder[0], basetype)
+
+	#usually NPD
+	tetradSet = [thirdtype, ptcl.invert_genotype(thirdtype, basetype), thirdtype, ptcl.invert_genotype(thirdtype, basetype),]
+	tetradSet.sort()
+	tetradName = tetradSetToString(tetradSet)
+	tetradCount[tetradName] = dcount3
+
+	return tetradCount
+
+#=====================
+#=====================
 if __name__ == "__main__":
-	lowercase = "abcdefghijklmnpqrsuvwxyz"
-
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	parser = argparse.ArgumentParser()
+	parser.add_argument('-d', '--duplicates', metavar='#', type=int, dest='duplicates',
+		help='number of duplicate runs to do', default=1)
+	args = parser.parse_args()
+	outfile = ('bbq-' + os.path.splitext(os.path.basename(__file__))[0]
+		+ '-questions.txt')
 	print('writing to file: '+outfile)
 	f = open(outfile, 'w')
-	duplicates = 98
-	j = -1
 	N = 0
-	for i in range(duplicates):
+	print(N)
+	for i in range(args.duplicates):
 		N += 1
-		j += 1
-		if j + 2 == len(lowercase):
-			j = 0
-		basetype = lowercase[j:j+3]
-		geneorder = ptcl.get_random_gene_order(basetype)
-		distances = getDistances()
-		print(distances)
-		progeny_size = getProgenySize(distances)
+		GMC = gmc.GeneMappingClass(3, N)
+		GMC.setup_question()
+		print(GMC.get_progeny_ascii_table())
+		header = GMC.get_question_header()
+		html_table = GMC.get_progeny_html_table()
+		phenotype_info_text = GMC.get_phenotype_info()
 
-		typemap = makeQuestion(basetype, geneorder, distances, progeny_size)
-		if typemap is None:
+		translate_genotype_counts_to_tetrads(GMC)
+		sys.exit(1)
+
+		genotype_counts_dict = makeQuestion(gene_letters, gene_order, distances, progeny_size, interference_tuple)
+		if genotype_counts_dict is None:
 			continue
+		print(f'genotype_counts_dict={genotype_counts_dict}')
 
-		ascii_table = makeProgenyAsciiTable(typemap, progeny_size)
+		ascii_table = makeProgenyAsciiTable(genotype_counts_dict, progeny_size)
 		print(ascii_table)
-		html_table = makeProgenyHtmlTable(typemap, progeny_size)
+		html_table = makeProgenyHtmlTable(genotype_counts_dict, progeny_size)
 		#print(html_table)
-		question_string = questionText(basetype)
-		variable_list = getVariables(geneorder)
+		question_string = questionText(gene_letters)
+		variable_list = getVariables(gene_order)
 		complete_question = html_table + question_string
-		#final_question = blackboardFormat(question_string, html_table, variable_list, geneorder, distances)
-		final_question = formatBB_FIB_PLUS_Question(N, complete_question, variable_list, geneorder, distances)
+		#final_question = blackboardFormat(question_string, html_table, variable_list, gene_order, distances)
+		final_question = formatBB_FIB_PLUS_Question(N, complete_question, variable_list, gene_order, distances)
 		#print(final_question)
 
 		f.write(final_question)
