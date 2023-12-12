@@ -112,15 +112,10 @@ class MultiDisorderClass(object):
 
 
 		description += '</strong> is an ' + disorder_dict['type'] + " genetic disorder "
-
 		description += 'that is caused by ' + disorder_dict['caused by'] + ". "
-
 		description += 'This results in ' + disorder_dict['mechanism'] + ". "
-
 		description += 'The disorder affects ' + disorder_dict['frequency'] + '. '
-
 		description += 'Individuals affected with ' + shortest_name + ' have ' + disorder_dict['symptoms'] + ". "
-
 		locus_dict = self.breakUpGeneLocus(disorder_dict['locus'])
 		description += 'The defective gene for ' + shortest_name + ' is located on the ' + locus_dict['arm'] + ' arm of '
 		description += 'chromosome ' + locus_dict['chromosome'] + ' at position ' + locus_dict['band']  + ". "
