@@ -2,9 +2,9 @@ organisms:
   butterflies:
     typical_behavior: "Active during the day, often found near flowers."
     habitats:
-      - "tropical rainforests"
-      - "meadows"
-      - "gardens"
+      - "tropical rainforest"
+      - "meadow"
+      - "garden"
     characters:
       - name: "wing color"
         biological_significance: "Aids in mate attraction and predator evasion."
@@ -22,9 +22,9 @@ organisms:
   deer:
     typical_behavior: "Grazing herbivores, often form herds."
     habitats:
-      - "forests"
-      - "woodlands"
-      - "grasslands"
+      - "forest"
+      - "woodland"
+      - "grassland"
     characters:
       - name: "antler shape"
         biological_significance: "Used for territorial fights and attracting mates."
@@ -36,9 +36,9 @@ organisms:
   flowers:
     typical_behavior: "Stationary, reliant on pollinators for reproduction."
     habitats:
-      - "gardens"
-      - "meadows"
-      - "rainforests"
+      - "garden"
+      - "meadow"
+      - "rainforest"
     characters:
       - name: "petal color"
         biological_significance: "Attracts pollinators like bees and butterflies."
@@ -50,9 +50,9 @@ organisms:
   fish:
     typical_behavior: "Wide range, from solitary to schooling behavior."
     habitats:
-      - "coral reefs"
-      - "freshwater streams"
-      - "lakes"
+      - "coral reef"
+      - "freshwater stream"
+      - "lake"
     characters:
       - name: "scale color"
         biological_significance: "Plays a role in camouflage and mate selection."
@@ -64,9 +64,9 @@ organisms:
   snakes:
     typical_behavior: "Solitary, using camouflage for hunting and defense."
     habitats:
-      - "deserts"
-      - "forests"
-      - "wetlands"
+      - "desert"
+      - "forest"
+      - "wetland"
     characters:
       - name: "scale pattern"
         biological_significance: "Important for camouflage and thermoregulation."
@@ -78,9 +78,9 @@ organisms:
   lizards:
     typical_behavior: "Diverse, ranging from arboreal to burrowing habits."
     habitats:
-      - "deserts"
-      - "rainforests"
-      - "mountainous areas"
+      - "desert"
+      - "rainforest"
+      - "mountainous area"
     characters:
       - name: "scale pattern"
         biological_significance: "Key for thermoregulation and social interactions."
