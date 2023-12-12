@@ -18,7 +18,7 @@ import disorderlib
 
 yaml_file = "organism_data.yml"
 with open(yaml_file, 'r') as file:
-    organism_data = yaml.safe_load(file)
+	organism_data = yaml.safe_load(file)
 #import pprint
 #pprint.pprint(organism_data)
 
@@ -61,12 +61,55 @@ general_organism_dict = {
 }
 
 #=========================
+def make_html_fraction_line(numerator, denominator):
+	html_txt = '<span style="display: inline-block; vertical-align: middle; text-align: center;">'
+	html_txt += f'  <span style="display: block; font-size: 14px; vertical-align: top;">{numerator}</span>'
+	html_txt += '  <hr style="margin: 2px 0; border: none; height: 1px; color: black; background-color: black;" />'
+	html_txt += f'  <span style="display: block; font-size: 14px; vertical-align: bottom;">{denominator}</span>'
+	html_txt += '</span>'
+	return html_txt
+
+def make_html_fraction_table(numerator, denominator):
+	font_size = "90%"
+	html_txt = '&nbsp;<table style="display: inline-table; border-collapse: collapse; line-height: 1; vertical-align: middle;">'
+	html_txt += '  <tr>'
+	if isinstance(numerator, int):
+		html_txt += f'    <td style="border: none; font-size: {font_size}; padding: 2px; text-align: center;">&nbsp;{numerator:,d}&nbsp;</td>'
+	else:
+		html_txt += f'    <td style="border: none; font-size: {font_size}; padding: 2px; text-align: center;">&nbsp;{numerator}&nbsp;</td>'
+	html_txt += '  </tr>'
+	html_txt += '  <tr>'
+	html_txt += '    <td style="border: none; padding: 0; height: 2px; background-color: black;"></td>'
+	html_txt += '  </tr>'
+	html_txt += '  <tr>'
+	if isinstance(denominator, int):
+		html_txt += f'    <td style="border: none; font-size: {font_size}; padding: 2px; text-align: center;">&nbsp;{denominator:,d}&nbsp;</td>'
+	else:
+		html_txt += f'    <td style="border: none; font-size: {font_size}; padding: 2px; text-align: center;">&nbsp;{denominator}&nbsp;</td>'
+	html_txt += '  </tr>'
+	html_txt += '</table>&nbsp;'
+	return html_txt
+
+def make_html_fraction_slash(numerator, denominator):
+	html_txt = ""
+	html_txt += '<span style="display: inline-block; vertical-align: middle; line-height: normal;">'
+	html_txt += f'  <span style="font-size: 14px; vertical-align: top;">{numerator:,d}</span>'
+	html_txt += '  <span style="font-size: 12px; vertical-align: middle; margin: 4 0px;">&#x2215;</span>'
+	html_txt += f'  <span style="font-size: 14px; vertical-align: bottom;">&nbsp;{denominator:,d}&nbsp;</span>'
+	html_txt += '</span>'
+	return html_txt
+
+def make_html_fraction(numerator, denominator):
+	return make_html_fraction_table(numerator, denominator)
+
+
+#=========================
 def make_interesting_fraction(p, d=10000):
 	#assume out of 10000
 	# given numerator, n and denominator, d
 	n = int(round(p*10000))
 	gcd = math.gcd(n , d)
-	numerator = n  // gcd
+	numerator = n // gcd
 	denominator = d // gcd
 	if denominator <= 100:
 		factor = random.choice([7, 11, 13, 17])
@@ -133,16 +176,21 @@ def generate_p_q_allele_calc_question(given_var, p):
 
 	question = f"<p>In the {habitat_name} population of {denominator} {organism_name}, " \
 		f"there were {p2_num} with {traits_list[0]} {character_name}, " \
-		f"{twopq_num} with {traits_list[1]} {character_name}, and {q2_num} with {traits_list[2]} {character_name}. "
+		f"{twopq_num} with {traits_list[1]} {character_name}, and {q2_num} with {traits_list[2]} {character_name}.</p> "
 
 	if given_var == 'q':
-		question += f"The researcher calculates a fraction of " \
-			f"(1&times;{twopq_num} + 2&times;{q2_num})/{total_alleles} = {q:.2f}.</p>" \
-			f"<p>Which Hardy-Weinberg variable below is represented by the value {q:.2f}?</p>"
-	else:  # given_var == 'p'
-		question += "The researcher calculates a fraction of " \
-			f"(2&times;{p2_num}+ 1&times;{twopq_num})/{total_alleles} = {p:.2f}.</p>" \
-			f"<p>Which Hardy-Weinberg variable below is represented by the value {p:.2f}?</p>"
+		numerator = f"1 &times; {twopq_num:,d} &nbsp;+&nbsp; 2 &times; {q2_num:,d}"
+		question +=( "<p>The researcher calculates a fraction of "
+			+ make_html_fraction(numerator, total_alleles)
+			+ f" = {q:.2f}.</p>"
+			f"<p>Which Hardy-Weinberg variable below is represented by the value {q:.2f}?</p>")
+	else: # given_var == 'p'
+		numerator = f"2 &times; {p2_num:,d} &nbsp;+&nbsp; 1 &times; {twopq_num:,d}"
+		question += ( "<p>The researcher calculates a fraction of "
+			+ make_html_fraction(numerator, total_alleles)
+			+ f" = {p:.2f}.</p>"
+			+ f"<p>Which Hardy-Weinberg variable below is represented by the value {p:.2f}?</p>"
+			)
 	return question
 
 #====================================
@@ -165,12 +213,14 @@ def generate_p_q_allele_x_linked_question(given_var, p):
 
 	if given_var == 'q':
 		question = f"<p>In a study of {disorder_name}, an X-linked recessive disorder, " \
-			f"in a population of {denominator} male {organism_name}, {q_num} were found to have the disorder.</p> "  \
-			f"<p>Which Hardy-Weinberg variable is represented by the fraction {q_num}/{denominator}</p>?"
-	else:  # given_var == 'p'
+			f"in a population of {denominator} male {organism_name}, {q_num} were found to have the disorder.</p> " \
+			f"<p>Which Hardy-Weinberg variable is represented by the fraction " \
+			f"{make_html_fraction(q_num,denominator)}?</p> "
+	else: # given_var == 'p'
 		question = f"<p>In a study of {disorder_name}, an X-linked recessive disorder, " \
-			f"in a population of {denominator} male {organism_name}, {p_num} did NOT have the disorder.</p> "  \
-			f"<p>Which Hardy-Weinberg variable is represented by the fraction {p_num}/{denominator}?</p>"
+			f"in a population of {denominator} male {organism_name}, {p_num} did NOT have the disorder.</p> " \
+			f"<p>Which Hardy-Weinberg variable is represented by the fraction " \
+			f"{make_html_fraction(p_num,denominator)}?</p> "
 	return disorder_paragraph + question
 
 #====================================
@@ -187,7 +237,7 @@ def generate_2pq_q2_calc_question(p):
 		traits_list = random.choice(color_series_list)
 	else:
 		traits_list = random.choice(character_dict['trait_sets'])
-	#typical_behavior = organism_dict['typical_behavior']  # Define typical behavior
+	#typical_behavior = organism_dict['typical_behavior'] # Define typical behavior
 
 	# Choose a random uppercase letter to represent the allele
 	dom_allele = random.choice(string.ascii_uppercase)
@@ -204,9 +254,10 @@ def generate_2pq_q2_calc_question(p):
 		f"and those with two {rec_allele} alleles exhibit {traits_list[2]}.</p> "
 
 	question += f"<p>A group of {denominator} {organism_name} were observed. " \
-		f"{twopq_q2_num} had either <strong>{traits_list[1]} or {traits_list[2]}</strong> {character_name}, " \
+		f"{twopq_q2_num:,d} had either <strong>{traits_list[1]} or {traits_list[2]}</strong> {character_name}, " \
 		f"and did NOT have {traits_list[0]} {character_name}.</p> "
-	question += f"<p>Which Hardy-Weinberg variable is represented by the fraction {twopq_q2_num}/{denominator}?</p>"
+	question += ( "<p>Which Hardy-Weinberg variable is represented by the fraction"
+		+ f"{make_html_fraction(twopq_q2_num, denominator)}? </p>")
 
 	#ChatGPT please finish
 	return question
@@ -221,7 +272,7 @@ def generate_complete_dom_question(given_var, p):
 		traits_list = random.choice(color_series_list)
 	else:
 		traits_list = random.choice(character_dict['trait_sets'])
-	#typical_behavior = organism_dict['typical_behavior']  # Define typical behavior
+	#typical_behavior = organism_dict['typical_behavior'] # Define typical behavior
 
 	p, q, p2, twopq, q2 = get_values(p)
 
@@ -249,9 +300,11 @@ def generate_complete_dom_question(given_var, p):
 		f"while {q2_num} showed the recessive form of {traits_list[2]} {character_name}.</p> "
 
 	if given_var == 'q2':
-		question += f"<p>Which Hardy-Weinberg variable is represented by the fraction {q2_num}/{denominator}?</p>"
+		question += ( "<p>Which Hardy-Weinberg variable is represented by the fraction"
+			+ f"{make_html_fraction(q2_num, denominator)}? </p>")
 	elif given_var == 'p2 + 2pq':
-		question += f"<p>Which Hardy-Weinberg variable is represented by the fraction {dominant_num}/{denominator}?</p>"
+		question += ( "<p>Which Hardy-Weinberg variable is represented by the fraction"
+			+ f"{make_html_fraction(dominant_num, denominator)}? </p>")
 	return question
 
 #====================================
@@ -297,9 +350,12 @@ def generate_incomplete_dom_question(given_var, p):
 		f"and {q2_num} showed the recessive form of {traits_list[2]} {character_name}.</p> "
 
 	if given_var == 'p2':
+		question += ( "<p>Which Hardy-Weinberg variable is represented by the fraction"
+			+ f"{make_html_fraction(p2_num, denominator)}? </p>")
 		question += f"<p>Which Hardy-Weinberg variable is represented by the fraction {p2_num}/{denominator}?</p>"
 	elif given_var == '2pq':
-		question += f"<p>Which Hardy-Weinberg variable is represented by the fraction {twopq_num}/{denominator}?</p>"
+		question += ( "<p>Which Hardy-Weinberg variable is represented by the fraction"
+			+ f"{make_html_fraction(twopq_num, denominator)}? </p>")
 	return question
 
 #====================================
