@@ -2,6 +2,7 @@
 
 # built-in modules
 import os
+import sys
 import math
 import random
 import string
@@ -60,14 +61,12 @@ general_organism_dict = {
 }
 
 #=========================
-def make_interesting_fraction(n, d=10000):
+def make_interesting_fraction(p, d=10000):
 	#assume out of 10000
 	# given numerator, n and denominator, d
-	if n < 1:
-		n = round(n*1000)
-	n = int(n)
-	gcd = math.gcd(n, d)
-	numerator = n // gcd
+	n = int(round(p*10000))
+	gcd = math.gcd(n , d)
+	numerator = n  // gcd
 	denominator = d // gcd
 	if denominator <= 100:
 		factor = random.choice([7, 11, 13, 17])
@@ -77,7 +76,10 @@ def make_interesting_fraction(n, d=10000):
 		factor = random.choice([3, 7])
 		numerator *= factor
 		denominator *= factor
-	if (numerator*1e4/denominator - n*1e4/d) > 0.1:
+	frac = numerator/denominator
+	if abs(frac - p) > 0.01:
+		print(f'numerator = {numerator} and denominator = {denominator};')
+		print(f'frac = {frac:.4f}; n = {p:.4f}')
 		print("something went wrong")
 		sys.exit(1)
 	return numerator, denominator
@@ -114,23 +116,32 @@ def generate_p_q_allele_calc_question(given_var, p):
 	Which Hardy-Weinberg variable below is represented by the value 0.02?
 	"""
 	#organism_data
-	organism, trait = random.choice(list(colorful_organism_dict.items()))
-	colors_list = random.choice(color_series_list)
+	organism_name, organism_dict = random.choice(list(organism_data['organisms'].items()))
+	character_dict = random.choice(organism_dict['characters'])
+	character_name = character_dict['name']
+	habitat_name = random.choice(organism_dict['habitats'])
+	if character_dict['colorful'] is True:
+		traits_list = random.choice(color_series_list)
+	else:
+		traits_list = random.choice(character_dict['trait_sets'])
+
 	p, q, p2, twopq, q2 = get_values(p)
 	p2_num, denominator = make_interesting_fraction(p2)
 	q2_num = int(round(q2*denominator))
 	twopq_num = int(round(twopq*denominator))
 	total_alleles = denominator * 2
 
+	question = f"<p>In the {habitat_name} population of {denominator} {organism_name}, " \
+		f"there were {p2_num} with {traits_list[0]} {character_name}, " \
+		f"{twopq_num} with {traits_list[1]} {character_name}, and {q2_num} with {traits_list[2]} {character_name}. "
+
 	if given_var == 'q':
-		question = f"<p>In a population of {denominator} {organism}, there were {p2_num} with {colors_list[0]} {trait}, " \
-			f"{twopq_num} with {colors_list[1]} {trait}, and {q2_num} with {colors_list[2]} {trait}. " \
-			f"The researcher calculates a fraction of ({twopq_num} + {q2_num}&times;2)/{total_alleles} = {q:.2f}.</p>" \
+		question += f"The researcher calculates a fraction of " \
+			f"(1&times;{twopq_num} + 2&times;{q2_num})/{total_alleles} = {q:.2f}.</p>" \
 			f"<p>Which Hardy-Weinberg variable below is represented by the value {q:.2f}?</p>"
 	else:  # given_var == 'p'
-		question = f"<p>In a population of {denominator} {organism}, there were {p2_num} with {colors_list[0]} {trait}, " \
-			f"{twopq_num} with {colors_list[1]} {trait}, and {q2_num} with {colors_list[2]} {trait}. " \
-			f"The researcher calculates a fraction of ({p2_num}&times;2 + {twopq_num})/{total_alleles} = {p:.2f}.</p>" \
+		question += "The researcher calculates a fraction of " \
+			f"(2&times;{p2_num}+ 1&times;{twopq_num})/{total_alleles} = {p:.2f}.</p>" \
 			f"<p>Which Hardy-Weinberg variable below is represented by the value {p:.2f}?</p>"
 	return question
 
@@ -140,23 +151,25 @@ def generate_p_q_allele_x_linked_question(given_var, p):
 	In a study of an X-linked recessive disorder in a certain species of fruit flies, male phenotypes are directly indicative of the allele frequencies due to their single X chromosome. In a laboratory population of 1,000 male fruit flies, 800 do not show the disorder (implying they have the dominant allele).
 	Which Hardy-Weinberg variable is represented by the fraction 800/1000 of male fruit flies without the disorder?
 	"""
-	organism = random.choice(x_linked_organism_list)
+	organism_name = 'humans'
 	mdc = disorderlib.MultiDisorderClass()
 	disorder_dict = mdc.randomDisorderDict('X-linked recessive')
-	disorder_paragraph = mdc.getDisorderParagraph(disorder_dict)
+	disorder_paragraph = '<p>' + mdc.getDisorderParagraph(disorder_dict) + '</p><br/>'
 	disorder_name = mdc.getDisorderShortName(disorder_dict)
 
 	p, q, p2, twopq, q2 = get_values(p)
+	print(f'p = {p}')
 	p_num, denominator = make_interesting_fraction(p)
 	q_num = denominator - p_num
+	print(f'p_num = {p_num} and q_num = {q_num}; out of {denominator}')
 
 	if given_var == 'q':
 		question = f"<p>In a study of {disorder_name}, an X-linked recessive disorder, " \
-			f"in a population of {denominator} male {organism}, {q_num} do have the disorder.</p> "  \
+			f"in a population of {denominator} male {organism_name}, {q_num} were found to have the disorder.</p> "  \
 			f"<p>Which Hardy-Weinberg variable is represented by the fraction {q_num}/{denominator}</p>?"
 	else:  # given_var == 'p'
 		question = f"<p>In a study of {disorder_name}, an X-linked recessive disorder, " \
-			f"in a population of {denominator} male {organism}, {p_num} do NOT show the disorder.</p> "  \
+			f"in a population of {denominator} male {organism_name}, {p_num} did NOT have the disorder.</p> "  \
 			f"<p>Which Hardy-Weinberg variable is represented by the fraction {p_num}/{denominator}?</p>"
 	return disorder_paragraph + question
 
@@ -166,16 +179,33 @@ def generate_2pq_q2_calc_question(p):
 	In a garden, a certain flower shows incomplete dominance in flower color: red (R), pink (RW), and white (W). In practice, pink and white color flowers can be hard to distinguish, so they are counted together. Observations of 200 flowers reveal that 160 were either white or pink and not red.
 	Which Hardy-Weinberg variable is represented by the fraction 160/200 of flowers that are not red?
 	"""
-	organism, trait = random.choice(list(colorful_organism_dict.items()))
-	colors_list = random.choice(color_series_list)
+	organism_name, organism_dict = random.choice(list(organism_data['organisms'].items()))
+	character_dict = random.choice(organism_dict['characters'])
+	character_name = character_dict['name']
+	habitat_name = random.choice(organism_dict['habitats'])
+	if character_dict['colorful'] is True:
+		traits_list = random.choice(color_series_list)
+	else:
+		traits_list = random.choice(character_dict['trait_sets'])
+	#typical_behavior = organism_dict['typical_behavior']  # Define typical behavior
 
-	p, q, p2, twopq, q2 = get_values(p)
+	# Choose a random uppercase letter to represent the allele
+	dom_allele = random.choice(string.ascii_uppercase)
+	rec_allele = dom_allele.lower()
+
 	p, q, p2, twopq, q2 = get_values(p)
 	p2_num, denominator = make_interesting_fraction(p2)
 	twopq_q2_num = denominator - p2_num
 
-	question = f"<p>In a habitat with {denominator} {organism}, " \
-		f"{twopq_q2_num} were either {colors_list[1]} or {colors_list[2]}, not {colors_list[0]} {trait}.</p> "
+	question = f"<p>In the {habitat_name} population of {organism_name}, " \
+		f"there is a display of incomplete dominance in {character_name}. " \
+		f"Individuals with two {dom_allele} alleles exhibit {traits_list[0]}, " \
+		f"those with one {dom_allele} allele and one {rec_allele} allele exhibit {traits_list[1]}, " \
+		f"and those with two {rec_allele} alleles exhibit {traits_list[2]}.</p> "
+
+	question += f"<p>A group of {denominator} {organism_name} were observed. " \
+		f"{twopq_q2_num} had either <strong>{traits_list[1]} or {traits_list[2]}</strong> {character_name}, " \
+		f"and did NOT have {traits_list[0]} {character_name}.</p> "
 	question += f"<p>Which Hardy-Weinberg variable is represented by the fraction {twopq_q2_num}/{denominator}?</p>"
 
 	#ChatGPT please finish
@@ -191,13 +221,12 @@ def generate_complete_dom_question(given_var, p):
 		traits_list = random.choice(color_series_list)
 	else:
 		traits_list = random.choice(character_dict['trait_sets'])
-	typical_behavior = organism_dict['typical_behavior']  # Define typical behavior
+	#typical_behavior = organism_dict['typical_behavior']  # Define typical behavior
 
 	p, q, p2, twopq, q2 = get_values(p)
 
 	# Choose a random uppercase letter to represent the allele
 	dom_allele = random.choice(string.ascii_uppercase)
-	rec_allele = dom_allele.lower()
 
 	# Assuming a scenario of dominant/recessive trait
 	p2_num, denominator = make_interesting_fraction(p2)
@@ -239,7 +268,7 @@ def generate_incomplete_dom_question(given_var, p):
 		traits_list = random.choice(color_series_list)
 	else:
 		traits_list = random.choice(character_dict['trait_sets'])
-	typical_behavior = organism_dict['typical_behavior']  # Define typical behavior
+	#typical_behavior = organism_dict['typical_behavior']  # Define typical behavior
 
 	# Choose a random uppercase letter to represent the allele
 	dom_allele = random.choice(string.ascii_uppercase)
@@ -277,11 +306,12 @@ def generate_incomplete_dom_question(given_var, p):
 def generate_hw_problem():
 	variables = list(choices_dict.keys())
 	given_var = random.choice(variables)
+	#given_var = random.choice(('p', 'q'))
 	answer_string = choices_dict[given_var]
 	p = get_good_p() # value btw 0.40 and 0.99 two decimal places
 	#p, q, p2, twopq, q2 = get_values(p)
 
-	if given_var in ('p','q'):
+	if given_var in ('p', 'q'):
 		if random.random() < 0.5:
 			question_string = generate_p_q_allele_x_linked_question(given_var, p)
 		else:
