@@ -205,6 +205,20 @@ base_replacement_rule_dict = {
 	'  ': ' ',
 }
 
+
+#=======================
+def append_clear_font_space_to_text(string_text):
+	return f'<strong><span style="font-family: sans-serif; letter-spacing: 1px;">{string_text}</span></strong>'
+
+#=======================
+def append_clear_font_space_to_list(list_of_text_strings):
+	new_list_of_text_strings = []
+	for string_text in list_of_text_strings:
+		new_string_text = append_clear_font_space_to_text(string_text)
+		new_list_of_text_strings.append(new_string_text)
+	return new_list_of_text_strings
+
+
 #=======================
 def applyReplacementRulesToText(text_string, replacement_rule_dict):
 	if replacement_rule_dict is None:

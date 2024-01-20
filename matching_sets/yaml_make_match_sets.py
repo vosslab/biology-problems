@@ -72,7 +72,9 @@ def permuteMatchingPairs(yaml_data, num_choices=None):
 			matching_list.append(value)
 		N += 1
 		answers_list = bptools.applyReplacementRulesToList(answers_list, yaml_data.get('replacement_rules'))
+		answers_list = bptools.append_clear_font_space_to_list(answers_list)
 		matching_list = bptools.applyReplacementRulesToList(matching_list, yaml_data.get('replacement_rules'))
+		matching_list = bptools.append_clear_font_space_to_list(matching_list)
 		complete_question = bptools.formatBB_MAT_Question(N, question, answers_list, matching_list)
 		list_of_complete_questions.append(complete_question)
 
