@@ -4,28 +4,18 @@ items to match per question: 4
 
 
 #both singular and plural
-key description: stage in the central dogma of biology
-keys description: stages in the central dogma of biology
+key description: type of macromolecule
+keys description: types of macromolecules
 
 #both singular and plural
-value description: concept
-values description: concepts
+value description: macromolecule
+values description: macromolecules
 
 replacement_rules:
-    AAAAAAAA: '<span style="color: #e60000;">AAAAAAAA</span>' #RED
-    BBBBBBBB: '<span style="color: #e65400;">BBBBBBBB</span>' #DARK ORANGE
-    CCCCCCCC: '<span style="color: #e69100;">CCCCCCCC</span>' #LIGHT ORANGE
-    DDDDDDDD: '<span style="color: #b3b300;">DDDDDDDD</span>' #DARK YELLOW
-    EEEEEEEE: '<span style="color: #59b300;">EEEEEEEE</span>' #LIME GREEN
-    FFFFFFFF: '<span style="color: #009900;">FFFFFFFF</span>' #GREEN
-    GGGGGGGG: '<span style="color: #00b38f;">GGGGGGGG</span>' #TEAL
-    HHHHHHHH: '<span style="color: #00b3b3;">HHHHHHHH</span>' #CYAN
-    IIIIIIII: '<span style="color: #0a9bf5;">IIIIIIII</span>' #SKY BLUE
-    JJJJJJJJ: '<span style="color: #0039e6;">JJJJJJJJ</span>' #BLUE
-    KKKKKKKK: '<span style="color: #004d99;">KKKKKKKK</span>' #NAVY
-    LLLLLLLL: '<span style="color: #7b12a1;">LLLLLLLL</span>' #PURPLE
-    MMMMMMMM: '<span style="color: #b30077;">MMMMMMMM</span>' #MAGENTA
-    NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
+    lipids: '<span style="color: #e65400;">lipids</span>' #DARK ORANGE
+    proteins: '<span style="color: #009900;">proteins</span>' #GREEN
+    carbohydrates: '<span style="color: #0039e6;">carbohydrates</span>' #BLUE
+    nucleic acids: '<span style="color: #b30077;">nucleic acids</span>' #MAGENTA
 
 matching pairs:
   proteins:
@@ -57,20 +47,35 @@ matching pairs:
     - hemoglobin
     - collagen
     - insulin
+    - chymotypsin
+    - serum albumin &ndash; family of water-soluble polypeptides found in blood plasma
+    - lactalbumin &ndash; whey polypeptides found in milk
+    - antibodies &ndash; Y-shaped 150 kDa polypeptides used by the immune system
+    - enzymes
+
 
   lipids:
-    - monoglycerides
-    - diglycerides
-    - triglycerides
-    - fatty acids
-    - phospholipids
-    - membrane bilayer
-    - palmitate
     - vegetable oil
-    - wax
+    - beeswax
+    - spermaceti wax &ndash; found in the head cavities of sperm whales
+    - carnauba wax &ndash; from leaves of the Brazilian palm tree
+    - shellac wax &ndash; secreted by the female lac bug
+    - castor oil &ndash; oil pressed from castor beans
+    - lanolin or wool wax &ndash; secreted by the sebaceous glands of sheep
+
+    - monoglycerides
+    - fatty acids
+    - palmitate
+
+    - membrane bilayer
+    - diglycerides
+    - phospholipids
     - sphingolipids
     - sphingosine
     - phosphorylcholine
+
+    - triglycerides
+
     - steroids
     - cholesterol
     - testosterone
@@ -84,19 +89,44 @@ matching pairs:
     - pentose
     - ketose
     - aldose
+    - pyranose
+    - furanose
+
+    - erythrose
+    - threose
+    - erythrulose
+
+    - ribose
+    - arabinose
+    - xylose
+    - lyxose
+    - ribulose
+    - xylulose
+
+    - allose
+    - altrose
     - glucose
     - dextrose
-    - fructose
+    - mannose
+    - gulose
+    - idose
     - galactose
-    - xylose
+    - talose
+
+    - psicose
+    - fructose
+    - sorbose
+    - tagatose
 
     - disaccharides
     - sucrose
     - maltose
     - trehalose
     - lactose
-    - ribose
-    - sorbitol
+
+    - sorbitol &ndash; a sugar alcohol added to chewing gum
+    - xylitol &ndash; a sugar alcohol added to chewing gum
+
 
     - oligosaccharides
     - maltodextrin
@@ -111,7 +141,10 @@ matching pairs:
     - hemicellulose
     - dietary fiber
     - fiber
-    - pectin
+    - pectin &ndash; a heteropolysaccharide present in plant cell walls
+    - resistant starch
+    - xanthan gum &ndash; polysaccharide used as a thickening agent in food
+    - agarose &ndash; a heteropolysaccharide extracted from certain red seaweed
 
   nucleic acids:
     - nucleotides
