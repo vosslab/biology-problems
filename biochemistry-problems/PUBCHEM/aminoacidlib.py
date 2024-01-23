@@ -28,8 +28,8 @@ purines = {
 pyrimidines = {
 	'pyrimidine': 'C1=CN=CN=C1', #XNX
 	'cytosine': 'C1=CN(C(=O)N=C1N)[Si@H]', #ONH
-	'thymine': 'CC1=CNC(=O)NC1=O', #OHO
-	'uracil': 'C1=CNC(=O)NC1=O', #OHO
+	'thymine': 'CC1=CN(C(=O)NC1=O)[Si@H]', #OHO
+	'uracil': 'C1=CN(C(=O)NC1=O)[Si@H]', #OHO
 	'deoxyuracil': 'C1NC=CC(=O)N1', #XHO
 	'dihydrouracil': 'C1CNC(=O)NC1=O', #OHO
 

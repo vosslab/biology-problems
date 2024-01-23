@@ -1,0 +1,138 @@
+
+tryptophan
+alanine
+glycine
+serine
+threonine
+tyrosine
+phenylalanine
+histidine
+aspartate
+aspartic acid
+asparagine
+cysteine
+arginine
+glutamate
+glutamic acid
+glutamine
+leucine
+isoleucine
+methionine
+lysine
+proline
+valine
+
+glycyl-l-histidyl-l-lysine
+Glutathione
+Tuftsin
+Hemorphin-4
+MET-enkephalin
+Leu-enkephalin
+ANGIOTENSIN I
+L-Carnosine
+L-Anserine
+Kyotorphin
+
+butyric acid
+caproic acid
+caprylic acid
+capric acid
+lauric acid
+myristic acid
+palmitic acid
+stearic acid
+
+phosphatidylcholine
+1-Oleoyl-2-palmitoyl-phosphatidylcholine
+LECITHIN
+Dioleoyl phosphatidylcholine
+Distearoyl phosphatidylcholine
+Dilauroyl phosphatidylcholine
+Glyceryl monostearate
+Glyceryl tributyrate
+Glyceryl tricaproate
+Glyceryl tricaprylate
+Glyceryl tricaprate
+sphingosine
+N-Palmitoylsphingosine
+N-stearoylsphingomyelin
+N-lauroyl-D-erythro-Sphingosine
+
+cholesterol
+testosterone
+estradiol
+testosterone cypionate
+estrone
+nandrolone
+hydroxyprogesterone
+progesterone
+Danazol
+Drostanolone propionate
+Ethylestrenol
+Mesterolone
+Metandienone
+Metenolone acetate
+Metenolone enanthate
+Methyltestosterone
+Nandrolone decanoate
+Nandrolone phenylpropionate
+Norethandrolone
+Oxandrolone
+Oxymetholone
+Stanozolol
+testosterone enanthate
+testosterone propionate
+Testosterone undecanoate
+Exemestane
+trenbolone
+Trenbolone acetate
+Trenbolone Enanthate
+
+erythrose
+threose
+erythrulose
+
+ribose
+arabinose
+xylose
+lyxose
+ribulose
+xylulose
+
+allose
+altrose
+glucose
+dextrose
+mannose
+gulose
+idose
+galactose
+talose
+
+psicose
+fructose
+sorbose
+tagatose
+
+sucrose
+maltose
+trehalose
+lactose
+
+sorbitol
+xylitol
+
+adenine
+adenosine
+adenosine triphosphate
+thymine
+thymidine
+cytosol
+cytidine
+guanine
+guanosine
+guanosine triphosphate
+uracil
+uridine
+
+

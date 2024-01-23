@@ -53,7 +53,7 @@ def get_chemical_name(cid):
 	response = api_call(endpoint)
 	if response and 'InformationList' in response:
 		# Return the first name (usually the most common name)
-		return response['InformationList']['Information'][0]['Synonym'][0]
+		return response['InformationList']['Information'][0]['Synonym'][0].title()
 	return None
 
 #=======================
@@ -81,6 +81,40 @@ def main2():
 		else:
 			print(f"Could not find SMILES for {molecule}")
 
+#=======================
+def get_molecule_info_dict(molecule_name):
+	molecule_name = molecule_name.lower()
+	cid = get_cid(molecule_name)
+	if not cid:
+		return None
+	smiles = get_smiles(cid)
+	full_name = get_chemical_name(cid)
+	molecular_weight = get_molecular_weight(cid)
+	molecular_formula = get_molecular_formula(cid)
+
+	# Creating the molecule dictionary
+	molecule_data = {
+		molecule_name.lower(): {
+			'Abbreviation': molecule_name.lower(),  # Adjust as needed
+			'Full name': full_name,
+			'SMILES': smiles,
+			'Molecular_Weight': molecular_weight,
+			'Molecular_Formula': molecular_formula,
+			'CID': cid
+		}
+	}
+	return molecule_data
+
+#=======================
+def save_data(molecules_data_dict, data_filename):
+	print('... saving data ...')
+	# Write updated molecules to molecules.yml
+	with open(data_filename, "w") as f:
+		yaml.dump(molecules_data_dict, f)
+	return
+
+#=======================
+#=======================
 def main():
 	# Load existing molecules from molecules.yml
 	try:
@@ -99,24 +133,8 @@ def main():
 	# Process each molecule
 	for molecule in new_molecules:
 		if molecule not in existing_molecule_names:
-			cid = get_cid(molecule)
-			if cid:
-				smiles = get_smiles(cid)
-				full_name = get_chemical_name(cid)
-				molecular_weight = get_molecular_weight(cid)
-				molecular_formula = get_molecular_formula(cid)
-
-				# Creating the molecule dictionary
-				molecule_data = {
-					molecule: {
-						'Abbreviation': molecule,  # Adjust as needed
-						'Full name': full_name,
-						'SMILES': smiles,
-						'Molecular_Weight': molecular_weight,
-						'Molecular_Formula': molecular_formula,
-						'CID': cid
-					}
-				}
+			molecule_data = get_molecule_info_dict(molecule_name)
+			if molecule_data:
 				existing_molecules.append(molecule_data)
 			else:
 				print(f"Could not find data for {molecule}")

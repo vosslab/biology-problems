@@ -1,0 +1,274 @@
+
+
+#==============================================================
+#==============================================================
+#==============================================================
+carbohydrates:
+    - 2-ketoglutarate:
+        Abbreviation: 2-ketoglutaric acid
+        CID: 51
+        Full name: 2-ketoglutaric acid
+        Molecular_Formula: C5H6O5
+        Molecular_Weight: '146.10'
+        SMILES: C(CC(=O)O)C(=O)C(=O)O
+    - 2-Phosphoglycolic Acid:
+        Abbreviation: 2PG
+        CID: 529
+        Full name: 2-Phosphoglycolic Acid
+        Molecular_Formula: C2H5O6P
+        Molecular_Weight: '156.03'
+        SMILES: C(C(=O)O)OP(=O)(O)O
+    - 3-Phosphoglycolic Acid:
+        Abbreviation: 3-phosphoglycolate
+        CID: 20262030
+        Full name: 3-phosphoglycolic acid
+        Molecular_Formula: C2H3O5P
+        Molecular_Weight: '138.02'
+        SMILES: C(C(=O)O)O[P+](=O)[O-]
+    - Phosphoenolpyruvate:
+        Abbreviation: PEP
+        CID: 1005
+        Full name: phosphoenolpyruvate
+        Molecular_Formula: C3H5O6P
+        Molecular_Weight: '168.04'
+        SMILES: C=C(C(=O)O)OP(=O)(O)O
+    - 3-Phosphoglyceric acid:
+        Abbreviation: 3PG
+        CID: 724
+        Full name: 3-phosphoglycerate
+        Molecular_Formula: C3H7O7P
+        Molecular_Weight: '186.06'
+        SMILES: C(C(C(=O)O)O)OP(=O)(O)O
+    - 2-Phosphoglyceric acid:
+        Abbreviation: 2-Phosphoglyceric acid
+        CID: 59
+        Full name: 2-phosphoglyceric acid
+        Molecular_Formula: C3H7O7P
+        Molecular_Weight: '186.06'
+        SMILES: C(C(C(=O)O)OP(=O)(O)O)O
+    - 3-phosphonato-D-glycerate(3-):
+        Abbreviation: 3-phosphonato-D-glycerate(3-)
+        CID: 25245548
+        Full name: 3-phosphonato-D-glycerate(3-)
+        Molecular_Formula: C3H4O7P-3
+        Molecular_Weight: '183.03'
+        SMILES: C([C@H](C(=O)[O-])O)OP(=O)([O-])[O-]
+    - 2-Phosphoglycerate:
+        Abbreviation: 2-Phosphoglycerate
+        CID: 59
+        Full name: 2-phosphoglyceric acid
+        Molecular_Formula: C3H7O7P
+        Molecular_Weight: '186.06'
+        SMILES: C(C(C(=O)O)OP(=O)(O)O)O
+    - Citrate:
+        Abbreviation: Citrate
+        CID: 31348
+        Full name: 126-44-3
+        Molecular_Formula: C6H5O7-3
+        Molecular_Weight: '189.10'
+        SMILES: C(C(=O)[O-])C(CC(=O)[O-])(C(=O)[O-])O
+    - Dextrin:
+        Abbreviation: Dextrin
+        CID: 62698
+        Full name: Dextrin
+        Molecular_Formula: C18H32O16
+        Molecular_Weight: '504.4'
+        SMILES: C([C@@H]1[C@H]([C@@H]([C@H](C(O1)O[C@@H]2[C@H](OC([C@@H]([C@H]2O)O)O[C@@H]3[C@H](O[C@@H]([C@@H]([C@H]3O)O)O)CO)CO)O)O)O)O
+    - Dihydroxyacetone phosphate:
+        Abbreviation: DHAP
+        CID: 668
+        Full name: Dihydroxyacetone phosphate
+        Molecular_Formula: C3H7O6P
+        Molecular_Weight: '170.06'
+        SMILES: C(C(=O)COP(=O)(O)O)O
+    - Fructose-1,6-bisphosphate:
+        Abbreviation: F1,6BP
+        CID: 10267
+        Full name: beta-D-Fructose 1,6-bisphosphate
+        Molecular_Formula: C6H14O12P2
+        Molecular_Weight: '340.12'
+        SMILES: C([C@@H]1[C@H]([C@@H]([C@](O1)(COP(=O)(O)O)O)O)O)OP(=O)(O)O
+    - Fructose-6-phosphate:
+        Abbreviation: F6P
+        CID: 69507
+        Full name: fructose-6-phosphate
+        Molecular_Formula: C6H13O9P
+        Molecular_Weight: '260.14'
+        SMILES: C([C@H]([C@H]([C@@H](C(=O)CO)O)O)O)OP(=O)(O)O
+    - Fumarate:
+        Abbreviation: Fumarate
+        CID: 5460307
+        Full name: fumarate
+        Molecular_Formula: C4H2O4-2
+        Molecular_Weight: '114.06'
+        SMILES: C(=C/C(=O)[O-])\C(=O)[O-]
+    - Glucose:
+        Abbreviation: Glc
+        CID: 5793
+        Full name: D-Glucose
+        Molecular_Formula: C6H12O6
+        Molecular_Weight: '180.16'
+        SMILES: C([C@@H]1[C@H]([C@@H]([C@H](C(O1)O)O)O)O)O
+    - Glucose-6-phosphate:
+        Abbreviation: G6P
+        CID: 5958
+        Full name: Glucose 6-phosphate
+        Molecular_Formula: C6H13O9P
+        Molecular_Weight: '260.14'
+        SMILES: C([C@@H]1[C@H]([C@@H]([C@H](C(O1)O)O)O)O)OP(=O)(O)O
+    - Glyceraldehyde-3-phosphate:
+        Abbreviation: GAP
+        CID: 439168
+        Full name: d-glyceraldehyde 3-phosphate
+        Molecular_Formula: C3H7O6P
+        Molecular_Weight: '170.06'
+        SMILES: C([C@H](C=O)O)OP(=O)(O)O
+    - Isocitrate:
+        Abbreviation: Isocitrate
+        CID: 1198
+        Full name: isocitric acid
+        Molecular_Formula: C6H8O7
+        Molecular_Weight: '192.12'
+        SMILES: C(C(C(C(=O)O)O)C(=O)O)C(=O)O
+    - Malate:
+        Abbreviation: Malate
+        CID: 525
+        Full name: Malate
+        Molecular_Formula: C4H6O5
+        Molecular_Weight: '134.09'
+        SMILES: C(C(C(=O)O)O)C(=O)O
+    - Maleate:
+        Abbreviation: Maleate
+        CID: 5288227
+        Full name: maleate
+        Molecular_Formula: C4H2O4-2
+        Molecular_Weight: '114.06'
+        SMILES: C(=C\C(=O)[O-])\C(=O)[O-]
+    - Maltose:
+        Abbreviation: Maltose
+        CID: 6255
+        Full name: maltose
+        Molecular_Formula: C12H22O11
+        Molecular_Weight: '342.30'
+        SMILES: C([C@@H]1[C@H]([C@@H]([C@H]([C@H](O1)O[C@@H]2[C@H](O[C@H]([C@@H]([C@H]2O)O)O)CO)O)O)O)O
+    - Maltotriose:
+        Abbreviation: Maltotriose
+        CID: 439586
+        Full name: maltotriose
+        Molecular_Formula: C18H32O16
+        Molecular_Weight: '504.4'
+        SMILES: C([C@@H]1[C@H]([C@@H]([C@H]([C@H](O1)O[C@@H]2[C@H](O[C@@H]([C@@H]([C@H]2O)O)O[C@@H]3[C@H](OC([C@@H]([C@H]3O)O)O)CO)CO)O)O)O)O
+    - Oxaloacetate:
+        Abbreviation: Oxa
+        CID: 970
+        Full name: Oxaloacetate
+        Molecular_Formula: C4H4O5
+        Molecular_Weight: '132.07'
+        SMILES: C(C(=O)C(=O)O)C(=O)O
+    - Pyruvate:
+        Abbreviation: Pyruvate
+        CID: 107735
+        Full name: pyruvate
+        Molecular_Formula: C3H3O3-
+        Molecular_Weight: '87.05'
+        SMILES: CC(=O)C(=O)[O-]
+    - Succinate:
+        Abbreviation: Succinate
+        CID: 160419
+        Full name: succinate
+        Molecular_Formula: C4H4O4-2
+        Molecular_Weight: '116.07'
+        SMILES: C(CC(=O)[O-])C(=O)[O-]
+    - 1,3-bisphosphoglycerate:
+        Abbreviation: 1,3-BPG
+        CID: 439191
+        Full name: 3-phospho-D-glyceroyl dihydrogen phosphate
+        Molecular_Formula: C3H8O10P2
+        Molecular_Weight: '266.04'
+        SMILES: C([C@H](C(=O)OP(=O)(O)O)O)OP(=O)(O)O
+
+
+
+
+
+#==============================================================
+#==============================================================
+#==============================================================
+proteins:
+    - Alanine:
+        Abbreviation: Ala
+        CID: 5950
+        Full name: L-alanine
+        Molecular_Formula: C3H7NO2
+        Molecular_Weight: '89.09'
+        SMILES: C[C@@H](C(=O)O)N
+    - Aspartate:
+        Abbreviation: Asp
+        CID: 5960
+        Full name: L-aspartic acid
+        Molecular_Formula: C4H7NO4
+        Molecular_Weight: '133.10'
+        SMILES: C([C@@H](C(=O)O)N)C(=O)O
+    - Glutamate:
+        Abbreviation: Glu
+        CID: 33032
+        Full name: L-glutamic acid
+        Molecular_Formula: C5H9NO4
+        Molecular_Weight: '147.13'
+        SMILES: C(CC(=O)O)[C@@H](C(=O)O)N
+    - Glutamine:
+        Abbreviation: Gln
+        CID: 5961
+        Full name: L-glutamine
+        Molecular_Formula: C5H10N2O3
+        Molecular_Weight: '146.14'
+        SMILES: C(CC(=O)N)[C@@H](C(=O)O)N
+    - Leucine:
+        Abbreviation: Leu
+        CID: 6106
+        Full name: L-leucine
+        Molecular_Formula: C6H13NO2
+        Molecular_Weight: '131.17'
+        SMILES: CC(C)C[C@@H](C(=O)O)N
+    - Isoleucine:
+        Abbreviation: Iso
+        CID: 6306
+        Full name: L-isoleucine
+        Molecular_Formula: C6H13NO2
+        Molecular_Weight: '131.17'
+        SMILES: CC[C@H](C)[C@@H](C(=O)O)N
+
+
+
+#==============================================================
+#==============================================================
+#==============================================================
+lipids:
+
+
+
+#==============================================================
+#==============================================================
+#==============================================================
+nucleic acids:
+    - ADP:
+        Abbreviation: ADP
+        CID: 6022
+        Full name: Adenosine diphosphate
+        Molecular_Formula: C10H15N5O10P2
+        Molecular_Weight: '427.20'
+        SMILES: C1=NC(=C2C(=N1)N(C=N2)[C@H]3[C@@H]([C@@H]([C@H](O3)COP(=O)(O)OP(=O)(O)O)O)O)N
+    - AMP:
+        Abbreviation: AMP
+        CID: 6083
+        Full name: Adenosine monophosphate
+        Molecular_Formula: C10H14N5O7P
+        Molecular_Weight: '347.22'
+        SMILES: C1=NC(=C2C(=N1)N(C=N2)[C@H]3[C@@H]([C@@H]([C@H](O3)COP(=O)(O)O)O)O)N
+    - ATP:
+        Abbreviation: ATP
+        CID: 5957
+        Full name: Adenosine triphosphate
+        Molecular_Formula: C10H16N5O13P3
+        Molecular_Weight: '507.18'
+        SMILES: C1=NC(=C2C(=N1)N(C=N2)[C@H]3[C@@H]([C@@H]([C@H](O3)COP(=O)(O)OP(=O)(O)OP(=O)(O)O)O)O)N
