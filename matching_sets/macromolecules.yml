@@ -20,7 +20,7 @@ replacement_rules:
 matching pairs:
   proteins:
     - amino acids
-    - typtophan
+    - tryptophan
     - alanine
     - glycine
     - serine
@@ -65,14 +65,21 @@ matching pairs:
 
     - monoglycerides
     - fatty acids
-    - palmitate
+    - butyric acid &ndash; a fatty acid with 4 carbons
+    - caproic acid &ndash; a fatty acid with 6 carbons
+    - caprylic acid &ndash; a fatty acid with 8 carbons
+    - capric acid &ndash; a fatty acid with 10 carbons
+    - lauric acid &ndash; a fatty acid with 12 carbons
+    - myristic acid &ndash; a fatty acid with 14 carbons
+    - palmitic acid &ndash; a fatty acid with 16 carbons
+    - stearic acid &ndash; a fatty acid with 18 carbons
 
     - membrane bilayer
     - diglycerides
     - phospholipids
     - sphingolipids
     - sphingosine
-    - phosphorylcholine
+    - phosphatidylcholine
 
     - triglycerides
 
@@ -126,7 +133,6 @@ matching pairs:
 
     - sorbitol &ndash; a sugar alcohol added to chewing gum
     - xylitol &ndash; a sugar alcohol added to chewing gum
-
 
     - oligosaccharides
     - maltodextrin
