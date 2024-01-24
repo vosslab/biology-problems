@@ -4,12 +4,12 @@ items to match per question: 4
 
 
 #both singular and plural
-key description: stage in the central dogma of biology
-keys description: stages in the central dogma of biology
+key description: type of chemical bond
+keys description: types of chemical bonds
 
 #both singular and plural
-value description: concept
-values description: concepts
+value description: example
+values description: examples
 
 replacement_rules:
     hydrogen bond: '<span style="color: #e60000;">hydrogen bond</span>' #RED
@@ -40,12 +40,12 @@ matching pairs:
     - Ca<sup>2+</sup> &bull; CO<sub>3</sub><sup>2-</sup> (calcium carbonate)
     - K<sup>+</sup> &bull; Cl<sup>-</sup> (potassium chloride)
     - Mg<sup>2+</sup> &bull; 2&times; Cl<sup>-</sup> (magnesium chloride)
-    - Na<sup>+ &bull; Cl<sup>-</sup> (sodium chloride)
+    - Na<sup>+</sup> &bull; Cl<sup>-</sup> (sodium chloride)
     - NH<sub>4</sub><sup>+</sup> &bull; NO<sub>3</sub><sup>-</sup> (ammonium nitrate)
 
   hydrogen bond:
-    - N - H <span style="font-size: 75%;">| | | |</span> N
-    - N - H <span style="font-size: 75%;">| | | |</span> O
-    - O - H <span style="font-size: 75%;">| | | |</span> N
-    - O - H <span style="font-size: 75%;">| | | |</span> O
+    - 'N-H <span style="font-size: 75%;">| | | |</span> N (bond represented by the vertical lines)'
+    - 'N-H <span style="font-size: 75%;">| | | |</span> O (bond represented by the vertical lines)'
+    - 'O-H <span style="font-size: 75%;">| | | |</span> N (bond represented by the vertical lines)'
+    - 'O-H <span style="font-size: 75%;">| | | |</span> O (bond represented by the vertical lines)'
 
