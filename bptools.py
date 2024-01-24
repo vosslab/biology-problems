@@ -241,7 +241,9 @@ def applyReplacementRulesToList(list_of_text_strings, replacement_rule_dict):
 		replacement_rule_dict |= base_replacement_rule_dict
 	new_list_of_text_strings = []
 	for string_text in list_of_text_strings:
-		for find_text,replace_text in replacement_rule_dict.items():
+		if not isinstance(string_text, str):
+			raise TypeError(f"value is not string: {string_text}")
+		for find_text, replace_text in replacement_rule_dict.items():
 			string_text = string_text.replace(find_text,replace_text)
 		new_list_of_text_strings.append(string_text)
 	return new_list_of_text_strings
