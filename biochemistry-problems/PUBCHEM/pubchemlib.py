@@ -39,7 +39,7 @@ class PubChemLib():
 			self.molecular_data_cache = {
 				'cid_to_data': {},
 				'name_to_cid': {},
-				'time_stamp': time.time(),
+				'time_stamp': int(time.time()),
 			}
 		#print(len(self.molecular_data_cache['cid_to_data']))
 		print('==== END CACHE ====')
@@ -57,7 +57,7 @@ class PubChemLib():
 	def save_cache(self):
 		print('==== SAVE CACHE ====')
 		t0 = time.time()
-		self.molecular_data_cache['time_stamp'] = t0
+		self.molecular_data_cache['time_stamp'] = int(t0)
 		if len(self.molecular_data_cache) > 0:
 			with open(self.cache_file, 'w') as file:
 				yaml.dump(self.molecular_data_cache, file)
