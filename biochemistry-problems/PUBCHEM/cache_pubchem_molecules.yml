@@ -1,0 +1,418 @@
+cid_to_data:
+  264:
+    Abbreviation: butyric acid
+    CID: 264
+    Full name: butyric acid
+    Molecular formula: C4H8O2
+    Molecular weight: 88.11
+    Partition coefficient: 0.8
+    SMILES: CCCC(=O)O
+  379:
+    Abbreviation: caprylic acid
+    CID: 379
+    Full name: octanoic acid
+    Molecular formula: C8H16O2
+    Molecular weight: 144.21
+    Partition coefficient: 3.0
+    SMILES: CCCCCCCC(=O)O
+  754:
+    Abbreviation: glycerol-3-phosphate
+    CID: 754
+    Full name: Glycerophosphoric acid
+    Molecular formula: C3H9O6P
+    Molecular weight: 172.07
+    Partition coefficient: -2.9
+    SMILES: C(C(COP(=O)(O)O)O)O
+  985:
+    Abbreviation: palmitic acid
+    CID: 985
+    Full name: palmitic acid
+    Molecular formula: C16H32O2
+    Molecular weight: 256.42
+    Partition coefficient: 6.4
+    SMILES: CCCCCCCCCCCCCCCC(=O)O
+  5281:
+    Abbreviation: stearic acid
+    CID: 5281
+    Full name: stearic acid
+    Molecular formula: C18H36O2
+    Molecular weight: 284.5
+    Partition coefficient: 7.4
+    SMILES: CCCCCCCCCCCCCCCCCC(=O)O
+  5757:
+    Abbreviation: estradiol
+    CID: 5757
+    Full name: estradiol
+    Molecular formula: C18H24O2
+    Molecular weight: 272.4
+    Partition coefficient: 4.0
+    SMILES: C[C@]12CC[C@H]3[C@H]([C@@H]1CC[C@@H]2O)CCC4=C3C=CC(=C4)O
+  6013:
+    Abbreviation: testosterone
+    CID: 6013
+    Full name: testosterone
+    Molecular formula: C19H28O2
+    Molecular weight: 288.4
+    Partition coefficient: 3.3
+    SMILES: C[C@]12CC[C@H]3[C@H]([C@@H]1CC[C@@H]2O)CCC4=CC(=O)CC[C@]34C
+  6022:
+    Abbreviation: adenosine 5'-diphosphate
+    CID: 6022
+    Full name: Adenosine 5'-diphosphate
+    Molecular formula: C10H15N5O10P2
+    Molecular weight: 427.2
+    Partition coefficient: -4.6
+    SMILES: C1=NC(=C2C(=N1)N(C=N2)[C@H]3[C@@H]([C@@H]([C@H](O3)COP(=O)(O)OP(=O)(O)O)O)O)N
+  6029:
+    Abbreviation: uridine
+    CID: 6029
+    Full name: uridine
+    Molecular formula: C9H12N2O6
+    Molecular weight: 244.2
+    Partition coefficient: -2.0
+    SMILES: C1=CN(C(=O)NC1=O)[C@H]2[C@@H]([C@@H]([C@H](O2)CO)O)O
+  6030:
+    Abbreviation: uridine 5'-monophosphate
+    CID: 6030
+    Full name: Uridine 5'-monophosphate
+    Molecular formula: C9H13N2O9P
+    Molecular weight: 324.18
+    Partition coefficient: -3.6
+    SMILES: C1=CN(C(=O)NC1=O)[C@H]2[C@@H]([C@@H]([C@H](O2)COP(=O)(O)O)O)O
+  6031:
+    Abbreviation: uridine 5'-diphosphate
+    CID: 6031
+    Full name: Uridine 5'-diphosphate
+    Molecular formula: C9H14N2O12P2
+    Molecular weight: 404.16
+    Partition coefficient: -4.7
+    SMILES: C1=CN(C(=O)NC1=O)[C@H]2[C@@H]([C@@H]([C@H](O2)COP(=O)(O)OP(=O)(O)O)O)O
+  6050:
+    Abbreviation: glyceryl tributyrate
+    CID: 6050
+    Full name: Tributyrin
+    Molecular formula: C15H26O6
+    Molecular weight: 302.36
+    Partition coefficient: 2.4
+    SMILES: CCCC(=O)OCC(COC(=O)CCC)OC(=O)CCC
+  6057:
+    Abbreviation: tyrosine
+    CID: 6057
+    Full name: L-tyrosine
+    Molecular formula: C9H11NO3
+    Molecular weight: 181.19
+    Partition coefficient: -2.3
+    SMILES: C1=CC(=CC=C1C[C@@H](C(=O)O)N)O
+  6176:
+    Abbreviation: cytidine 5'-triphosphate
+    CID: 6176
+    Full name: Cytidine triphosphate
+    Molecular formula: C9H16N3O14P3
+    Molecular weight: 483.16
+    Partition coefficient: -5.6
+    SMILES: C1=CN(C(=O)N=C1N)[C@H]2[C@@H]([C@@H]([C@H](O2)COP(=O)(O)OP(=O)(O)OP(=O)(O)O)O)O
+  8892:
+    Abbreviation: caproic acid
+    CID: 8892
+    Full name: Hexanoic Acid
+    Molecular formula: C6H12O2
+    Molecular weight: 116.16
+    Partition coefficient: 1.9
+    SMILES: CCCCCC(=O)O
+  11333:
+    Abbreviation: lactulose
+    CID: 11333
+    Full name: lactulose
+    Molecular formula: C12H22O11
+    Molecular weight: 342.3
+    Partition coefficient: -4.3
+    SMILES: C([C@@H]1[C@@H]([C@@H]([C@H]([C@@H](O1)O[C@@H]2[C@H](O[C@@]([C@H]2O)(CO)O)CO)O)O)O)O
+  33032:
+    Abbreviation: glutamate
+    CID: 33032
+    Full name: L-glutamic acid
+    Molecular formula: C5H9NO4
+    Molecular weight: 147.13
+    Partition coefficient: -3.7
+    SMILES: C(CC(=O)O)[C@@H](C(=O)O)N
+  64968:
+    Abbreviation: thymidine 5'-triphosphate
+    CID: 64968
+    Full name: dTTP
+    Molecular formula: C10H17N2O14P3
+    Molecular weight: 482.17
+    Partition coefficient: -5.0
+    SMILES: CC1=CN(C(=O)NC1=O)[C@H]2C[C@@H]([C@H](O2)COP(=O)(O)OP(=O)(O)OP(=O)(O)O)O
+  65091:
+    Abbreviation: deoxycytidine triphosphate
+    CID: 65091
+    Full name: dCTP
+    Molecular formula: C9H16N3O13P3
+    Molecular weight: 467.16
+    Partition coefficient: -5.6
+    SMILES: C1[C@@H]([C@H](O[C@H]1N2C=CC(=NC2=O)N)COP(=O)(O)OP(=O)(O)OP(=O)(O)O)O
+  66359:
+    Abbreviation: trenbolone acetate
+    CID: 66359
+    Full name: Trenbolone acetate
+    Molecular formula: C20H24O3
+    Molecular weight: 312.4
+    Partition coefficient: 2.5
+    SMILES: CC(=O)O[C@H]1CC[C@@H]2[C@@]1(C=CC3=C4CCC(=O)C=C4CC[C@@H]23)C
+  72187:
+    Abbreviation: zidovudine triphosphate
+    CID: 72187
+    Full name: Zidovudine triphosphate
+    Molecular formula: C10H16N5O13P3
+    Molecular weight: 507.18
+    Partition coefficient: -3.2
+    SMILES: CC1=CN(C(=O)NC1=O)[C@H]2C[C@@H]([C@H](O2)COP(=O)(O)OP(=O)(O)OP(=O)(O)O)N=[N+]=[N-]
+  77982:
+    Abbreviation: ribose-5-phosphate
+    CID: 77982
+    Full name: ribose-5-phosphate
+    Molecular formula: C5H11O8P
+    Molecular weight: 230.11
+    Partition coefficient: -3.4
+    SMILES: C([C@H]([C@H]([C@H](C=O)O)O)O)OP(=O)(O)O
+  91493:
+    Abbreviation: 6-phosphogluconate
+    CID: 91493
+    Full name: 6-phosphogluconic acid
+    Molecular formula: C6H13O10P
+    Molecular weight: 276.14
+    Partition coefficient: -4.5
+    SMILES: C([C@H]([C@H]([C@@H]([C@H](C(=O)O)O)O)O)O)OP(=O)(O)O
+  112072:
+    Abbreviation: l-anserine
+    CID: 112072
+    Full name: Anserine
+    Molecular formula: C10H16N4O3
+    Molecular weight: 240.26
+    Partition coefficient: -4.0
+    SMILES: CN1C=NC=C1C[C@@H](C(=O)O)NC(=O)CCN
+  123804:
+    Abbreviation: kyotorphin
+    CID: 123804
+    Full name: kyotorphin
+    Molecular formula: C15H23N5O4
+    Molecular weight: 337.37
+    Partition coefficient: -4.3
+    SMILES: C1=CC(=CC=C1C[C@@H](C(=O)N[C@@H](CCCN=C(N)N)C(=O)O)N)O
+  124886:
+    Abbreviation: glutathione
+    CID: 124886
+    Full name: glutathione
+    Molecular formula: C10H17N3O6S
+    Molecular weight: 307.33
+    Partition coefficient: -4.5
+    SMILES: C(CC(=O)N[C@@H](CS)C(=O)NCC(=O)O)[C@@H](C(=O)O)N
+  128444:
+    Abbreviation: hemorphin-4
+    CID: 128444
+    Full name: Hemorphin 4
+    Molecular formula: C29H35N5O7
+    Molecular weight: 565.6
+    Partition coefficient: -1.5
+    SMILES: C[C@H]([C@@H](C(=O)O)NC(=O)[C@H](CC1=CNC2=CC=CC=C21)NC(=O)[C@@H]3CCCN3C(=O)[C@H](CC4=CC=C(C=C4)O)N)O
+  152306:
+    Abbreviation: sorbitol-6-phosphate
+    CID: 152306
+    Full name: Sorbitol 6-phosphate
+    Molecular formula: C6H15O9P
+    Molecular weight: 262.15
+    Partition coefficient: -4.7
+    SMILES: C([C@@H]([C@H]([C@@H]([C@@H](COP(=O)(O)O)O)O)O)O)O
+  164628:
+    Abbreviation: thymidine 5'-diphosphate
+    CID: 164628
+    Full name: dTDP
+    Molecular formula: C10H16N2O11P2
+    Molecular weight: 402.19
+    Partition coefficient: -3.9
+    SMILES: CC1=CN(C(=O)NC1=O)[C@H]2C[C@@H]([C@H](O2)COP(=O)(O)OP(=O)(O)O)O
+  439186:
+    Abbreviation: maltobiose
+    CID: 439186
+    Full name: maltose
+    Molecular formula: C12H22O11
+    Molecular weight: 342.3
+    Partition coefficient: -4.7
+    SMILES: C([C@@H]1[C@H]([C@@H]([C@H]([C@H](O1)O[C@@H]2[C@H](OC([C@@H]([C@H]2O)O)O)CO)O)O)O)O
+  439192:
+    Abbreviation: sorbose
+    CID: 439192
+    Full name: L-Sor
+    Molecular formula: C6H12O6
+    Molecular weight: 180.16
+    Partition coefficient: -2.8
+    SMILES: C1[C@@H]([C@H]([C@@H](C(O1)(CO)O)O)O)O
+  439224:
+    Abbreviation: l-carnosine
+    CID: 439224
+    Full name: L-Carnosine
+    Molecular formula: C9H14N4O3
+    Molecular weight: 226.23
+    Partition coefficient: -4.0
+    SMILES: C1=C(NC=N1)C[C@@H](C(=O)O)NC(=O)CCN
+  439312:
+    Abbreviation: tagatose
+    CID: 439312
+    Full name: D-Lyxo-Hex-2-ulo-Pyranose
+    Molecular formula: C6H12O6
+    Molecular weight: 180.16
+    Partition coefficient: -2.8
+    SMILES: C1[C@H]([C@@H]([C@@H](C(O1)(CO)O)O)O)O
+  439665:
+    Abbreviation: threose
+    CID: 439665
+    Full name: D-Threose
+    Molecular formula: C4H8O4
+    Molecular weight: 120.1
+    Partition coefficient: -2.2
+    SMILES: C([C@H]([C@@H](C=O)O)O)O
+  441036:
+    Abbreviation: psicose
+    CID: 441036
+    Full name: Allulose
+    Molecular formula: C6H12O6
+    Molecular weight: 180.16
+    Partition coefficient: -2.8
+    SMILES: C1[C@H]([C@H]([C@H](C(O1)(CO)O)O)O)O
+  441404:
+    Abbreviation: testosterone cypionate
+    CID: 441404
+    Full name: Testosterone Cypionate
+    Molecular formula: C27H40O3
+    Molecular weight: 412.6
+    Partition coefficient: 6.4
+    SMILES: C[C@]12CC[C@H]3[C@H]([C@@H]1CC[C@@H]2OC(=O)CCC4CCCC4)CCC5=CC(=O)CC[C@]35C
+  443363:
+    Abbreviation: met-enkephalin
+    CID: 443363
+    Full name: MET-enkephalin
+    Molecular formula: C27H35N5O7S
+    Molecular weight: 573.7
+    Partition coefficient: -2.1
+    SMILES: CSCC[C@@H](C(=O)O)NC(=O)[C@H](CC1=CC=CC=C1)NC(=O)CNC(=O)CNC(=O)[C@H](CC2=CC=C(C=C2)O)N
+  445724:
+    Abbreviation: fucitol
+    CID: 445724
+    Full name: L-Fucitol
+    Molecular formula: C6H14O5
+    Molecular weight: 166.17
+    Partition coefficient: -2.0
+    SMILES: C[C@@H]([C@H]([C@H]([C@@H](CO)O)O)O)O
+  461776:
+    Abbreviation: leu-enkephalin
+    CID: 461776
+    Full name: Leu-enkephalin
+    Molecular formula: C28H37N5O7
+    Molecular weight: 555.6
+    Partition coefficient: -2.3
+    SMILES: CC(C)C[C@@H](C(=O)O)NC(=O)[C@H](CC1=CC=CC=C1)NC(=O)CNC(=O)CNC(=O)[C@H](CC2=CC=C(C=C2)O)N
+  512874:
+    Abbreviation: dilauroyl phosphatidylcholine
+    CID: 512874
+    Full name: 18194-25-7
+    Molecular formula: C32H64NO8P
+    Molecular weight: 621.8
+    Partition coefficient: 9.1
+    SMILES: CCCCCCCCCCCC(=O)OC[C@H](COP(=O)([O-])OCC[N+](C)(C)C)OC(=O)CCCCCCCCCCC
+  3081372:
+    Abbreviation: angiotensin i
+    CID: 3081372
+    Full name: Angiotensin I
+    Molecular formula: C62H89N17O14
+    Molecular weight: 1296.5
+    Partition coefficient: -1.1
+    SMILES: CC[C@H](C)[C@@H](C(=O)N[C@@H](CC1=CN=CN1)C(=O)N2CCC[C@H]2C(=O)N[C@@H](CC3=CC=CC=C3)C(=O)N[C@@H](CC4=CN=CN4)C(=O)N[C@@H](CC(C)C)C(=O)O)NC(=O)[C@H](CC5=CC=C(C=C5)O)NC(=O)[C@H](C(C)C)NC(=O)[C@H](CCCN=C(N)N)NC(=O)[C@H](CC(=O)O)N
+  5459879:
+    Abbreviation: sedoheptulose
+    CID: 5459879
+    Full name: Sedoheptulose
+    Molecular formula: C7H14O7
+    Molecular weight: 210.18
+    Partition coefficient: -3.9
+    SMILES: C([C@H]([C@H]([C@H]([C@@H](C(=O)CO)O)O)O)O)O
+  12803287:
+    Abbreviation: 5-methyluridine 5'-monophosphate
+    CID: 12803287
+    Full name: 5-Methyluridine 5'-Monophosphate
+    Molecular formula: C10H15N2O9P
+    Molecular weight: 338.21
+    Partition coefficient: -3.3
+    SMILES: CC1=CN(C(=O)NC1=O)[C@H]2[C@@H]([C@@H]([C@H](O2)COP(=O)(O)O)O)O
+  135398619:
+    Abbreviation: guanosine 5'-diphosphate
+    CID: 135398619
+    Full name: Guanosine 5'-diphosphate
+    Molecular formula: C10H15N5O11P2
+    Molecular weight: 443.2
+    Partition coefficient: -4.6
+    SMILES: C1=NC2=C(N1[C@H]3[C@@H]([C@@H]([C@H](O3)COP(=O)(O)OP(=O)(O)O)O)O)N=C(NC2=O)N
+  135398631:
+    Abbreviation: guanosine 5'-monophosphate
+    CID: 135398631
+    Full name: 5'-Guanylic acid
+    Molecular formula: C10H14N5O8P
+    Molecular weight: 363.22
+    Partition coefficient: -3.5
+    SMILES: C1=NC2=C(N1[C@H]3[C@@H]([C@@H]([C@H](O3)COP(=O)(O)O)O)O)N=C(NC2=O)N
+  135398727:
+    Abbreviation: guanosine 3'-monophosphate
+    CID: 135398727
+    Full name: 3'-Guanylic Acid
+    Molecular formula: C10H14N5O8P
+    Molecular weight: 363.22
+    Partition coefficient: -3.5
+    SMILES: C1=NC2=C(N1[C@H]3[C@@H]([C@@H]([C@H](O3)CO)OP(=O)(O)O)O)N=C(NC2=O)N
+name_to_cid:
+  5-methyluridine 5'-monophosphate: 12803287
+  6-phosphogluconate: 91493
+  adenosine 5'-diphosphate: 6022
+  angiotensin i: 3081372
+  butyric acid: 264
+  caproic acid: 8892
+  caprylic acid: 379
+  cytidine 5'-triphosphate: 6176
+  deoxycytidine triphosphate: 65091
+  deoxythymidine triphosphate: 64968
+  dilauroyl phosphatidylcholine: 512874
+  estradiol: 5757
+  fucitol: 445724
+  glutamate: 33032
+  glutathione: 124886
+  glycerol-3-phosphate: 754
+  glyceryl tributyrate: 6050
+  guanosine 3'-monophosphate: 135398727
+  guanosine 5'-diphosphate: 135398619
+  guanosine 5'-monophosphate: 135398631
+  hemorphin-4: 128444
+  kyotorphin: 123804
+  l-anserine: 112072
+  l-carnosine: 439224
+  lactulose: 11333
+  leu-enkephalin: 461776
+  maltobiose: 439186
+  met-enkephalin: 443363
+  palmitic acid: 985
+  psicose: 441036
+  ribose-5-phosphate: 77982
+  sedoheptulose: 5459879
+  sorbitol-6-phosphate: 152306
+  sorbose: 439192
+  stearic acid: 5281
+  tagatose: 439312
+  testosterone: 6013
+  testosterone cypionate: 441404
+  threose: 439665
+  thymidine 5'-diphosphate: 164628
+  thymidine 5'-triphosphate: 64968
+  trenbolone acetate: 66359
+  tyrosine: 6057
+  uridine: 6029
+  uridine 5'-diphosphate: 6031
+  uridine 5'-monophosphate: 6030
+  zidovudine triphosphate: 72187
+time_stamp: 1706160153
