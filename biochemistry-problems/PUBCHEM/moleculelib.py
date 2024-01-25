@@ -83,13 +83,14 @@ def generate_html_for_molecule(smiles, molecule_name=None, width=256, height=256
 	crc_code = getCrc16_FromString(smiles)
 	if molecule_name is None:
 		molecule_name = crc_code
-	molecule_html = f'<h4>{molecule_name}</h4>'
+	molecule_html = ''
+	#molecule_html += f'<h4>{molecule_name}</h4>'
 	if debug is True:
 		molecule_html += f'<p>SMILES: {smiles}</p>'
 	canvas_id = f"canvas_{crc_code}"
 	molecule_html += f'<p><canvas id="{canvas_id}" width="{width}" height="{height}"></canvas></p>'
 	# Horizontal rule for separation
-	molecule_html += '<hr/>'
+	#molecule_html += '<hr/>'
 	molecule_html += generate_js_functions(smiles, canvas_id, molecule_name)
 	return molecule_html
 
@@ -99,7 +100,6 @@ def generate_html_footer():
 	"""Closes off the HTML structure."""
 	# Close the body and HTML tags
 	return "</body> </html>"
-
 
 #=================================================
 #=================================================

@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 
 import os
+import re
+import copy
 import time
 import yaml
 import random
 import requests
 
-
+#============================
+#============================
 class PubChemLib():
 	#============================
 	#============================
@@ -120,7 +123,7 @@ class PubChemLib():
 	def get_logp(self, cid):
 		"""Get the SMILES notation for a molecule given its CID."""
 		response_json = self.api_call(f"{self.BASE_URL}/compound/cid/{cid}/property/XLogP/JSON")
-		return response_json['PropertyTable']['Properties'][0]['XLogP']
+		return float(response_json['PropertyTable']['Properties'][0]['XLogP'])
 
 	#=======================
 	def get_chemical_name(self, cid):
@@ -129,7 +132,7 @@ class PubChemLib():
 		response = self.api_call(endpoint)
 		if response and 'InformationList' in response:
 			# Return the first name (usually the most common name)
-			return response['InformationList']['Information'][0]['Synonym'][0].title()
+			return response['InformationList']['Information'][0]['Synonym'][0]
 		return None
 
 	#=======================
@@ -137,7 +140,7 @@ class PubChemLib():
 		# Assuming there's a function in your library that retrieves the molecular weight given a CID
 		endpoint = f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/{cid}/property/MolecularWeight/JSON"
 		response = self.api_call(endpoint)
-		return response["PropertyTable"]["Properties"][0]["MolecularWeight"]
+		return float(response["PropertyTable"]["Properties"][0]["MolecularWeight"])
 
 	#=======================
 	def get_molecular_formula(self, cid):
@@ -167,6 +170,8 @@ class PubChemLib():
 
 		smiles = self.get_smiles(cid_number)
 		full_name = self.get_chemical_name(cid_number)
+		if full_name == full_name.upper():
+			full_name = full_name.title()
 		molecular_weight = self.get_molecular_weight(cid_number)
 		molecular_formula = self.get_molecular_formula(cid_number)
 		logp = self.get_logp(cid_number)
@@ -176,9 +181,9 @@ class PubChemLib():
 			'Abbreviation': low_molecule_name,
 			'CID': cid_number,
 			'Full name': full_name,
-			'LogP': logp,
-			'Molecular_Formula': molecular_formula,
-			'Molecular_Weight': molecular_weight,
+			'Partition coefficient': logp,
+			'Molecular formula': molecular_formula,
+			'Molecular weight': molecular_weight,
 			'SMILES': smiles,
 		}
 
@@ -188,6 +193,105 @@ class PubChemLib():
 			self.save_cache()
 
 		return molecule_data
+
+	#============================
+	#============================
+	#=======================
+	def format_molecular_formula(self, formula):
+		# Regular expression to match numbers and enclose them in <sub> tags
+		return re.sub(r'(\d+)', r'<sub>\1</sub> ', formula)
+
+
+	#============================
+	#============================
+	#=======================
+	def calculate_c_to_on_ratio(self, formula):
+		# Find all elements and their counts in the formula
+		elements = re.findall(r'([A-Z][a-z]*)(\d*)', formula)
+		print(elements)
+		element_counts = {element: int(count) if count else 1 for element, count in elements}
+		print(element_counts)
+
+		# Extract counts for C, O, and N
+		c_count = element_counts.get('C', 0)
+		o_count = element_counts.get('O', 0)
+		n_count = element_counts.get('N', 0)
+		p_count = element_counts.get('P', 0)
+		if p_count > 0:
+			o_count -= p_count*3
+
+		# Calculate the C/(O+N) ratio
+		try:
+			return c_count / (o_count + n_count) if (o_count + n_count) > 0 else None
+		except ZeroDivisionError:
+			return None
+
+	#============================
+	def get_link_to_image(self, cid_number):
+		return f'https://pubchem.ncbi.nlm.nih.gov/image/imgsrv.fcgi?cid={cid_number}&t=l'
+
+	#============================
+	def get_html_to_image(self, cid_number):
+		url = self.get_link_to_image(cid_number)
+		return f'<a href="{url}" target="_blank" rel="noopener">link to static image</a>'
+
+	#============================
+	#============================
+	#=======================
+	def generate_molecule_info_table(self, molecule_data):
+		if molecule_data is None:
+			return None
+		# Define the common style for table cells
+		cell_style = "border: 1px solid #ddd; padding: 5px; font-size: 90%; "
+		row_color = ["", "background-color: #f9e9e9;"]
+
+		local_molecule_data = copy.copy(molecule_data)
+
+		ratio = self.calculate_c_to_on_ratio(local_molecule_data['Molecular formula'])
+		if ratio:
+			local_molecule_data['C/(O+N) ratio'] = f'{ratio:.1f}'
+		local_molecule_data['Image link'] = self.get_html_to_image(local_molecule_data['CID'])
+
+		# Start the table with a header
+		html_table = f"""
+		<table style="border-collapse: collapse;">
+			<tr>
+				<th colspan="2"
+				style="background-color: #806060; color: white; text-align: center; {cell_style}">
+				Molecule Information</th>
+			</tr>
+		"""
+		keys_to_use = ['Abbreviation', 'Full name', 'Molecular formula', 'Molecular weight',
+			'Image link', 'Partition coefficient', 'C/(O+N) ratio']
+
+		if local_molecule_data['Full name'].lower() == local_molecule_data['Abbreviation'].lower():
+			keys_to_use.pop(0)
+
+		# Iterate over items in the dictionary to create table rows
+		for index, key in enumerate(keys_to_use):
+			value = local_molecule_data.get(key)
+			if value is None:
+				continue
+			if key == 'Molecular formula':
+				value = self.format_molecular_formula(value)
+			elif key == 'Molecular weight':
+				value = f"{value:.2f} g/mol"
+			elif key == 'Partition coefficient':
+				value = f"{value:.1f} logP"
+			html_table += f"""
+			<tr style="{row_color[index % 2]}">
+				<td style="{cell_style}">{key.replace('_', ' ')}</td>
+				<td style="{cell_style}">{value}</td>
+			</tr>
+			"""
+
+		# Close the table
+		html_table += "</table>"
+		html_table = html_table.replace('\n', ' ')
+		html_table = html_table.replace('\t', ' ')
+		while '  ' in html_table:
+			html_table = html_table.replace('  ', ' ')
+		return html_table
 
 #=======================
 #=======================
