@@ -1,38 +1,45 @@
 
-tryptophan
+#PROTEIN
+
+#amino acids
 alanine
-glycine
-serine
-threonine
-tyrosine
-phenylalanine
-histidine
+arginine
+asparagine
 aspartate
 aspartic acid
-asparagine
 cysteine
-arginine
 glutamate
 glutamic acid
 glutamine
-leucine
+glycine
+histidine
 isoleucine
-methionine
+leucine
 lysine
+methionine
+phenylalanine
 proline
+serine
+threonine
+tryptophan
+tyrosine
 valine
 
+#small peptides
 glycyl-l-histidyl-l-lysine
-Glutathione
-Tuftsin
-Hemorphin-4
-MET-enkephalin
-Leu-enkephalin
-ANGIOTENSIN I
-L-Carnosine
-L-Anserine
-Kyotorphin
+glutathione
+tuftsin
+hemorphin-4
+met-enkephalin
+leu-enkephalin
+angiotensin i
+l-carnosine
+l-anserine
+kyotorphin
 
+#LIPIDS
+
+#fatty acids
 butyric acid
 caproic acid
 caprylic acid
@@ -42,56 +49,62 @@ myristic acid
 palmitic acid
 stearic acid
 
+#phospholipids
 phosphatidylcholine
-1-Oleoyl-2-palmitoyl-phosphatidylcholine
-LECITHIN
-Dioleoyl phosphatidylcholine
-Distearoyl phosphatidylcholine
-Dilauroyl phosphatidylcholine
-Glyceryl monostearate
-Glyceryl tributyrate
-Glyceryl tricaproate
-Glyceryl tricaprylate
-Glyceryl tricaprate
+1-oleoyl-2-palmitoyl-phosphatidylcholine
+lecithin
+dioleoyl phosphatidylcholine
+distearoyl phosphatidylcholine
+dilauroyl phosphatidylcholine
+glyceryl monostearate
+glyceryl tributyrate
+glyceryl tricaproate
+glyceryl tricaprylate
+glyceryl tricaprate
 sphingosine
-N-Palmitoylsphingosine
-N-stearoylsphingomyelin
-N-lauroyl-D-erythro-Sphingosine
+n-palmitoylsphingosine
+n-stearoylsphingomyelin
+n-lauroyl-d-erythro-sphingosine
 
+#steroids
+danazol
+drostanolone propionate
+ethylestrenol
+exemestane
+mesterolone
+metandienone
+metenolone acetate
+metenolone enanthate
+methyltestosterone
+nandrolone decanoate
+nandrolone phenylpropionate
+norethandrolone
+oxandrolone
+oxymetholone
+stanozolol
+testosterone undecanoate
+trenbolone enanthate
+trenbolone acetate
 cholesterol
-testosterone
 estradiol
-testosterone cypionate
 estrone
-nandrolone
 hydroxyprogesterone
+nandrolone
 progesterone
-Danazol
-Drostanolone propionate
-Ethylestrenol
-Mesterolone
-Metandienone
-Metenolone acetate
-Metenolone enanthate
-Methyltestosterone
-Nandrolone decanoate
-Nandrolone phenylpropionate
-Norethandrolone
-Oxandrolone
-Oxymetholone
-Stanozolol
+testosterone
+testosterone cypionate
 testosterone enanthate
 testosterone propionate
-Testosterone undecanoate
-Exemestane
 trenbolone
-Trenbolone acetate
-Trenbolone Enanthate
 
+#CARBOHYDRATES
+
+# 4-carbon monosaccharides
 erythrose
 threose
 erythrulose
 
+# 5-carbon monosaccharides
 ribose
 arabinose
 xylose
@@ -99,6 +112,7 @@ lyxose
 ribulose
 xylulose
 
+# 6-carbon aldoses
 allose
 altrose
 glucose
@@ -109,30 +123,75 @@ idose
 galactose
 talose
 
+# 6-carbon ketoses
 psicose
 fructose
 sorbose
 tagatose
 
+# disaccharides
 sucrose
 maltose
 trehalose
 lactose
 
+#alcohol sugars
 sorbitol
 xylitol
 
+#NUCLEIC ACIDS
+
+# nucleobases
 adenine
-adenosine
-adenosine triphosphate
-thymine
-thymidine
 cytosol
-cytidine
 guanine
-guanosine
-guanosine triphosphate
+thymine
 uracil
+
+# nucleosides
+adenosine
+cytidine
+guanosine
+thymidine
 uridine
+
+# nucleotides
+adenosine 5'-monophosphate
+cytidine 5'-monophosphate
+guanosine 5'-monophosphate
+thymidine 5'-monophosphate
+uridine 5'-monophosphate
+#oxy thymidine = 5-methyluridine
+5-methyluridine 5'-monophosphate
+
+# 3' monophosphate
+adenosine 3'-monophosphate
+cytidine 3'-monophosphate
+guanosine 3'-monophosphate
+thymidine 3'-monophosphate
+uridine 3'-monophosphate
+
+# diphosphates
+adenosine 5'-diphosphate
+cytidine 5'-diphosphate
+guanosine 5'-diphosphate
+thymidine 5'-diphosphate
+uridine 5'-diphosphate
+deoxyuridine 5'-diphosphate
+
+# triphosphates
+adenosine 5'-triphosphate
+cytidine 5'-triphosphate
+guanosine 5'-triphosphate
+thymidine 5'-triphosphate
+uridine 5'-triphosphate
+
+deoxyadenosine triphosphate
+deoxycytidine triphosphate
+deoxyguanosine triphosphate
+deoxythymidine triphosphate
+deoxyuridine triphosphate
+
+zidovudine triphosphate
 
 
