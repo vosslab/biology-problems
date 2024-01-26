@@ -13,6 +13,8 @@ import moleculelib
 
 bptools.use_insert_hidden_terms = False
 bptools.use_add_no_click_div = False
+used_macromolecule_names = {}
+
 
 #======================================
 #======================================
@@ -121,9 +123,23 @@ def get_question_text(molecule_name, pcl):
 
 #======================================
 #======================================
-def get_random_molecule_name(answer_macro_name, macro_data) -> str:
-	molecule_group = random.choice(macro_data[answer_macro_name])
-	molecule_group_list = list(molecule_group.values())[0]
+def get_random_molecule_name(macro_type, macro_data) -> str:
+	molecule_name = select_random_molecule_name(macro_type, macro_data)
+	rejections = 0
+	while used_macromolecule_names.get(molecule_name) is True:
+		rejections += 1
+		print(f'REJECTED {rejections} :: molecule_name = {molecule_name}')
+		molecule_name = select_random_molecule_name(macro_type, macro_data)
+	used_macromolecule_names[molecule_name] = True
+	return molecule_name
+
+#======================================
+#======================================
+def select_random_molecule_name(macro_type, macro_data) -> str:
+	group_name = random.choice(list(macro_data[macro_type].keys()))
+	molecule_group_list = macro_data[macro_type][group_name]
+	print(f'molecule_group = {group_name}'
+		+ f'... {len(molecule_group_list)} molecules to choose from')
 	molecule_name = random.choice(molecule_group_list)
 	return molecule_name
 
@@ -133,9 +149,9 @@ def write_question(N: int, pcl, macro_data) -> str:
 	# Add more to the question based on the given letters
 
 	choices_list = list(choices_dict.values())
-	answer_macro_name = random.choice(list(choices_dict.keys()))
-	answer_text = choices_dict[answer_macro_name]
-	molecule_name = get_random_molecule_name(answer_macro_name, macro_data)
+	macro_type = random.choice(list(choices_dict.keys()))
+	answer_text = choices_dict[macro_type]
+	molecule_name = get_random_molecule_name(macro_type, macro_data)
 
 	question_text = get_question_text(molecule_name, pcl)
 	if question_text is None:
