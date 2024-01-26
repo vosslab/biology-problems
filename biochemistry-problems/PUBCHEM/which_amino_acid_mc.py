@@ -28,13 +28,12 @@ def get_question_text(molecule_name, pcl):
 		sys.exit(1)
 	#info_table = pcl.generate_molecule_info_table(molecule_data)
 	smiles = molecule_data.get('SMILES')
-	pubchem_image = moleculelib.generate_html_for_molecule(smiles, '', width=480, height=512)
+	pubchem_image = moleculelib.generate_html_for_molecule(smiles, '', width=480, height=320)
 
 	question_text = ""
 	question_text += moleculelib.generate_load_script()
 	question_text += pubchem_image
-	question_text +=  "<h3>Which one of the followung amino acids is represented by the chemical structure shown above?</h3>"
-	question_text += moleculelib.generate_load_script()
+	question_text +=  "<h3>Which one of the following amino acids is represented by the chemical structure shown above?</h3>"
 
 	return question_text
 
@@ -62,7 +61,7 @@ def main():
 	# Define argparse for command-line options
 	parser = argparse.ArgumentParser(description="Generate questions.")
 	parser.add_argument('-d', '--duplicates', type=int, default=95, help="Number of questions to create.")
-	parser.add_argument('-c', '--num_choices', type=int, default=4, help="Number of choices to create.")
+	parser.add_argument('-c', '--num_choices', type=int, default=7, help="Number of choices to create.")
 	args = parser.parse_args()
 
 	# Output file setup

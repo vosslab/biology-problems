@@ -25,7 +25,7 @@ def td_header(color_id):
 def get_question_text():
 	question_text = ""
 	question_text += moleculelib.generate_load_script()
-	question_text +=  "<h3>Match the amino acid structures to their names.</h3>"
+	question_text += "<h3>Match the amino acid structures to their names.</h3>"
 	question_text += '<p><i>Note:</i> Each choice will be used exactly once.</p>'
 
 	return question_text
@@ -62,7 +62,7 @@ def write_question(N: int, answer_amino_acid_name: str, pcl: object, num_choices
 def main():
 	# Define argparse for command-line options
 	parser = argparse.ArgumentParser(description="Generate questions.")
-	parser.add_argument('-c', '--num_choices', type=int, default=7, help="Number of choices to create.")
+	parser.add_argument('-c', '--num_choices', type=int, default=4, help="Number of choices to create.")
 	args = parser.parse_args()
 
 	# Output file setup

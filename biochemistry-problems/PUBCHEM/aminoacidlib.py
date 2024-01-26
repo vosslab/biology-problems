@@ -3,6 +3,92 @@
 import random
 import crcmod.predefined #pip
 
+amino_acids_fullnames = [
+	"alanine",
+	"arginine",
+	"asparagine",
+	"aspartic acid",
+	"cysteine",
+	"glutamic acid",
+	"glutamine",
+	"glycine",
+	"histidine",
+	"isoleucine",
+	"leucine",
+	"lysine",
+	"methionine",
+	"phenylalanine",
+	"proline",
+	"serine",
+	"threonine",
+	"tryptophan",
+	"tyrosine",
+	"valine"
+]
+
+#======================================
+#======================================
+def parse_formula(formula):
+	"""Parse a chemical formula into a dictionary of elements and their counts."""
+	import re
+	pattern = r'([A-Z][a-z]*)(\d*)'
+	elements = re.findall(pattern, formula)
+	return {element: int(count) if count else 1 for element, count in elements}
+
+#======================================
+#======================================
+def formula_disimilarity(formula1, formula2):
+	"""Calculate similarity between two chemical formulas."""
+	parsed1 = parse_formula(formula1)
+	parsed2 = parse_formula(formula2)
+	backbone_formula = 'C2H3NO'
+	backbone_parsed = parse_formula(backbone_formula)
+
+	# Subtract the backbone elements from each formula
+	for element, count in backbone_parsed.items():
+		parsed1[element] = max(parsed1.get(element, 0) - count, 0)
+		parsed2[element] = max(parsed2.get(element, 0) - count, 0)
+
+	common_elements = set(parsed1.keys()) & set(parsed2.keys())
+	total_elements = set(parsed1.keys()) | set(parsed2.keys())
+
+	disimilarity = sum(abs(parsed1[el] - parsed2[el]) for el in common_elements)
+	total_counts = sum(parsed1.get(el, 0) + parsed2.get(el, 0) for el in total_elements)
+
+	return disimilarity / total_counts if total_counts else 0
+
+#======================================
+#======================================
+def get_similar_amino_acids(aa_name, num=5, pcl=None):
+	target_data = pcl.get_molecule_data_dict(aa_name)
+	disimilarities = []
+
+	if pcl is None:
+		import pubchemlib
+		pcl = pubchemlib.PubChemLib()
+	#print(f"search amino acid '{aa_name}'")
+	for other_aa_name in amino_acids_fullnames:
+		if other_aa_name == aa_name:
+			continue
+
+		data = pcl.get_molecule_data_dict(other_aa_name)
+
+		#glycine_mw = 75.07
+		weight_diff = abs(target_data["Molecular weight"] - data["Molecular weight"])/target_data["Molecular weight"]
+		formula_disim = formula_disimilarity(target_data["Molecular formula"], data["Molecular formula"])
+
+		# Combine the weight difference and formula similarity into a single score
+		# Adjust the formula to prioritize either property
+		score = (formula_disim*100 + weight_diff*20)
+		#print(f'score={score:.2f} form->{formula_disim*100:.2f}, mass->{weight_diff*60:.2f} :: {other_aa_name}')
+
+		disimilarities.append((other_aa_name, score))
+
+	# Sort by the score in descending order and return the top `num` amino acids
+	disimilarities.sort(key=lambda x: x[1], reverse=False)
+	return [aa for aa, _ in disimilarities[:num]]
+
+
 purines = {
 	'purine': 'C1=C2C(=NC=N1)N=CN2', #XNX
 	'adenine': 'C1=NC2=NC=NC(=C2N1)N', #HNX
