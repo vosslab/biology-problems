@@ -75,7 +75,7 @@ def getCrc16_FromString(mystr):
 
 #=================================================
 #=================================================
-def make_poly_peptide(length=5):
+def make_generic_polypeptide(length=5):
 	amino_terminal_end = '[NH3+][C@@H]'
 	carboxyl_terminal_end = '(C(=O)[O-])'
 	peptide_bond = '(C(=O)N[C@@H]'
@@ -93,13 +93,13 @@ def make_poly_peptide(length=5):
 
 #=================================================
 #=================================================
-def make_peptide_from_sequence(seq):
-	poly_peptide = make_poly_peptide(len(seq))
-	for i,aa in enumerate(list(seq.upper())):
+def make_polypeptide_smiles_from_sequence(seq):
+	polypeptide_smiles = make_generic_polypeptide(len(seq))
+	for i, aa in enumerate(list(seq.upper())):
 		three_letter_code = amino_acid_mapping[aa]
 		side_chain = side_chains[three_letter_code]
-		poly_peptide = poly_peptide.replace(f'R{i+1}', side_chain)
-	return poly_peptide
+		polypeptide_smiles = polypeptide_smiles.replace(f'R{i+1}', side_chain)
+	return polypeptide_smiles
 
 #=================================================
 #=================================================

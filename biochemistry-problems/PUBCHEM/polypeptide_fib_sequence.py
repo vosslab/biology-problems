@@ -15,9 +15,6 @@ bptools.use_insert_hidden_terms = False
 bptools.use_add_no_click_div = False
 bptools.use_nocopy_script = False
 
-
-# Constant containing valid amino acid letters for reference
-VALID_AMINO_ACID_LETTERS = 'ACDEFGHIKLMNQRSTVWY'
 debug = False
 
 peptide_name_map = {
@@ -31,7 +28,9 @@ peptide_name_map = {
 #===============================
 #===============================
 def get_peptide_sequence(num_amino_acids):
-	amino_acid_letters = list('ACDEFGHIKLMNPQRSTVWY')
+	#amino_acid_letters = list('ACDEFGHIKLMNPQRSTVWY')
+	# no proline, too hard
+	amino_acid_letters = list('ACDEFGHIKLMNQRSTVWY')
 	peptide_sequence = ''
 	for i in range(num_amino_acids):
 		peptide_sequence += random.choice(amino_acid_letters)
@@ -65,7 +64,7 @@ def generate_question_text(num_amino_acids):
 
 		<li style="margin-bottom: 20px;">Once you have identified the single-letter codes for the {number_name} side chains, list them in the amino to carboxyl (N&rarr;C) direction. This is the standard method for writing peptide sequences.</li>
 
-		<li style="margin-bottom: 20px;">You answer will consist only {number_name} letters</li>
+		<li style="margin-bottom: 20px;">You answer will consist only {number_name} letters, no spaces and no other punctuation.</li>
 	</ol>
 	"""
 	# Remove any unnecessary newlines or tabs
@@ -77,17 +76,17 @@ def generate_question_text(num_amino_acids):
 
 #===============================
 #===============================
-def generate_html_content(dipeptde):
+def generate_html_content(peptide_sequence):
 	"""Generate the HTML content for amino acid visualization."""
 	# Start by generating the HTML header for the amino acid visualization
 	html_content = aminoacidlib.generate_load_script()
 
 	# Convert the word (amino acid sequence) to its peptide representation
-	poly_peptide_smiles = aminoacidlib.make_peptide_from_sequence(dipeptde)
+	poly_peptide_smiles = aminoacidlib.make_polypeptide_smiles_from_sequence(peptide_sequence)
 	#molecule_name = 'pentapeptide '+word
-	crc16 = bptools.getCrc16_FromString(dipeptde)
+	crc16 = bptools.getCrc16_FromString(peptide_sequence)
 	molecule_name = 'peptide_'+crc16
-	html_content += aminoacidlib.generate_html_for_molecule(poly_peptide_smiles, molecule_name)
+	html_content += aminoacidlib.generate_html_for_molecule(poly_peptide_smiles, molecule_name, width=480, height=512)
 
 	return html_content
 
@@ -99,16 +98,16 @@ def generate_complete_question(N, num_amino_acids, debug=False):
 	The question has an HTML visual representation of the amino acid and related question text.
 	Returns a formatted question.
 	"""
-	peptide = get_peptide_sequence(num_amino_acids)
+	peptide_sequence = get_peptide_sequence(num_amino_acids)
 
 	question_text = generate_question_text(num_amino_acids)
-	html_content = generate_html_content(peptide)
+	html_content = generate_html_content(peptide_sequence)
 
 	# Combine the molecule visualization with the question text
 	complete_question = html_content + question_text
 
 	# Format the question for the Blackboard system
-	answers_list = [peptide,]
+	answers_list = [peptide_sequence,]
 	bbformat = bptools.formatBB_FIB_Question(N, complete_question, answers_list)
 
 	if debug:
@@ -134,19 +133,20 @@ def main():
 
 	# Generate the output filename
 	outfile = ('bbq-'
-		+ f'{args.num_amino}-'
+		+ f'{args.num_amino}aa-'
 		+ os.path.splitext(os.path.basename(__file__))[0]
 		+ '-questions.txt')
 	print('writing to file: ' + outfile)
 
 	# Create and write questions to the output file
 	with open(outfile, 'w') as file:
-		N = 1
+		N = 0
 		for d in range(args.duplicates):
+			N += 1
 			bbformat = generate_complete_question(N, args.num_amino)
 			if bbformat is None:
+				N -= 1
 				continue
-			N += 1
 			file.write(bbformat)
 	bptools.print_histogram()
 	print(f'saved {N} questions to {outfile}')

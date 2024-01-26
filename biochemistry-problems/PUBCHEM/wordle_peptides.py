@@ -67,6 +67,8 @@ def generate_question_text():
 	# Remove any unnecessary newlines or tabs
 	question_text = question_text.replace('\n', ' ')
 	question_text = question_text.replace('\t', ' ')
+	while '  ' in question_text:
+		question_text = question_text.replace('  ', ' ')
 	return question_text
 
 #===============================
@@ -77,7 +79,7 @@ def generate_html_content(word):
 	html_content = aminoacidlib.generate_load_script()
 
 	# Convert the word (amino acid sequence) to its peptide representation
-	poly_peptide_smiles = aminoacidlib.make_peptide_from_sequence(word)
+	poly_peptide_smiles = aminoacidlib.make_polypeptide_smiles_from_sequence(word)
 	#molecule_name = 'pentapeptide '+word
 	crc16 = bptools.getCrc16_FromString(word)
 	molecule_name = 'peptide_'+crc16

@@ -33,10 +33,24 @@ def test():
 #==========================
 #==========================
 def number_to_ordinal(integer):
+	"""
+	Convert a number to its ordinal representation.
+	Args:
+		integer (int): A positive integer to be converted.
+	Returns:
+		str: The ordinal representation of the number in English.
+	"""
 	return num2words.num2words(integer, to='ordinal', lang='en_US')
 assert number_to_ordinal(3) == 'third'
 #==========================
 def number_to_cardinal(integer):
+	"""
+	Convert a number to its cardinal representation.
+	Args:
+		integer (int): A positive integer to be converted.
+	Returns:
+		str: The cardinal representation of the number in English.
+	"""
 	return num2words.num2words(integer, to='cardinal', lang='en_US')
 assert number_to_cardinal(3) == 'three'
 
