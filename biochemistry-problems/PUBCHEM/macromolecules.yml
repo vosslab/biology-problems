@@ -3,7 +3,7 @@
 #==============================================================
 #==============================================================
 proteins:
-    - amino acids:
+    amino acids:
         - alanine
         - arginine
         - asparagine
@@ -26,21 +26,99 @@ proteins:
         - tryptophan
         - tyrosine
         - valine
-    - small peptides:
-        - glycyl-l-histidyl-l-lysine
+    dipeptides:
+        - Ala-Arg
+        - Arg-Ala
+        - Arg-Leu
+        - Arg-Met
+        - Arg-Thr
+        - Asn-Cys
+        - Asn-Thr
+        - Asn-Trp
+        - Asp-Lys
+        - Asp-Pro
+        - Asp-Trp
+        - Cys-Gly
+        - Cys-Gly
+        - Cys-Val
+        - Gln-Glu
+        - Glu-Met
+        - Glu-Trp
+        - His-Thr
+        - Lys-Cys
+        - Lys-Ile
+        - Lys-Leu
+        - Lys-Met
+        - Met-Glu
+        - Met-Tyr
+        - Phe-Tyr
+        - Pro-Gln
+        - Thr-Arg
+        - Trp-Ala
+        - Trp-Glu
+        - Val-Trp
+    tripeptides:
+        - Ala-Gln-Phe
+        - Ala-Met-Phe
+        - Arg-Asp-Pro
+        - Arg-Gln-Asn
+        - Asn-Asp-Thr
+        - Asn-Cys-His
+        - Asn-Pro-His
+        - Asn-Ser-Ala
+        - Cys-Asp-Cys
+        - His-Met-Phe
+        - Ile-Leu-Glu
+        - Ile-Lys-Tyr
+        - Lys-Asn-Tyr
+        - Lys-Met-Phe
+        - Phe-Arg-Thr
+        - Phe-Gly-Asn
+        - Phe-Gly-Val
+        - Phe-Ile-Met
+        - Pro-Ala-Gln
+        - Pro-Pro-Ser
+        - Ser-Cys-Lys
+        - Ser-Gln-Glu
+        - Thr-Met-Met
+        - Trp-Gly-Thr
+        - Trp-Val-Lys
+        - Tyr-Ala-Glu
+        - Tyr-Phe-Asp
+        - Val-Cys-Cys
+        - Val-Met-Ile
+        - Val-Val-Gln
+    tetrapeptides: # mol wt: 246.22 <-> 816.88
+        - arg-gly-asp-ser # fibronectin tetrapeptide
+        - arg-gly-asp-val
+        - dermorphin tetrapeptide # tyr-arg-phe-gly
+        - endomorphin 2 # tyr-pro-phe-phe
+        - gly-gln-pro-arg # rigin
+        - gly-glu-lys-gly
+        - his-dphe-arg-trp
+        - insulin b22-b25-nh2 # arg-gly-phe-phe
+        - kentsin # thr-pro-arg-lys
+        - lys-arg-asp-ser
+        - tetragastrin
+        - tetraglycine # gly-gly-gly-gly
+        - tetrapeptide-11 # pro-pro-tyr-leu
+        - tetrapeptide-2 # lys-asp-val-tyr;
+        - tetrapeptide-4 # gly-glu-pro-gly
+    small modified peptides:
+        - Angiotensin I
         - glutathione
-        - tuftsin
         - hemorphin-4
-        - met-enkephalin
-        - leu-enkephalin
-        - angiotensin i
-        - l-carnosine
-        - l-anserine
         - kyotorphin
+        - l-anserine
+        - l-carnosine
+        - leu-enkephalin
+        - met-enkephalin
+        - tuftsin
 
-
+#==============================================================
+#==============================================================
 lipids:
-    - fatty acids:
+    saturated fatty acids:
         - butyric acid
         - caproic acid
         - caprylic acid
@@ -49,7 +127,24 @@ lipids:
         - myristic acid
         - palmitic acid
         - stearic acid
-    - phospholipids:
+        - arachidic acid
+    mono unsaturated fatty acids:
+        - palmitoleic acid # 16 carbons, 1 double bond, omega-7
+        - oleic acid # 18 carbons, 1 double bond, omega-9
+        - vaccenic acid # 18 carbons, 1 double bond, omega-7
+        - paullinic acid # 20 carbons, 1 double bond, omega-7
+        - erucic acid # 22 carbons, 1 double bond, omega-9
+        - nervonic acid # 24 carbons, 1 double bond, omega-9
+    poly unsaturated fatty acids:
+        - linoleic acid # 18 carbons, 2 double bonds, omega-6
+        - alpha-linolenic acid # 18 carbons, 3 double bonds, omega-3
+        - gamma-linolenic acid # 18 carbons, 3 double bonds, omega-6
+        - stearidonic acid # 18 carbons, 4 double bonds, omega-3
+        - arachidonic acid # 20 carbons, 4 double bonds, omega-6
+        - eicosapentaenoic acid # 20 carbons, 5 double bonds, omega-3
+        - docosapentaenoic acid # 22 carbons, 5 double bonds, omega-3
+        - docosahexaenoic acid # 22 carbons, 6 double bonds, omega-3
+    phospholipids:
         - phosphatidylcholine
         - 1-oleoyl-2-palmitoyl-phosphatidylcholine
         - lecithin
@@ -65,7 +160,8 @@ lipids:
         - n-palmitoylsphingosine
         - n-stearoylsphingomyelin
         - n-lauroyl-d-erythro-sphingosine
-    - steroids:
+        - dioleoyl phosphatidylethanolamine
+    steroids:
         - danazol
         - drostanolone propionate
         - ethylestrenol
@@ -96,19 +192,21 @@ lipids:
         - testosterone propionate
         - trenbolone
 
+#==============================================================
+#==============================================================
 carbohydrates:
-    - 4-carbon monosaccharides:
+    4-carbon monosaccharides:
         - erythrose
         - threose
         - erythrulose
-    - 5-carbon monosaccharides:
+    5-carbon monosaccharides:
         - ribose
         - arabinose
         - xylose
         - lyxose
         - ribulose
         - xylulose
-    - 6-carbon aldoses:
+    6-carbon aldoses:
         - allose
         - altrose
         - glucose
@@ -118,25 +216,25 @@ carbohydrates:
         - idose
         - galactose
         - talose
-    - 6-carbon ketoses:
+    6-carbon ketoses:
         - psicose
         - fructose
         - sorbose
         - tagatose
-    - 7-carbon monosaccharides:
+    7-carbon monosaccharides:
         - sedoheptulose
         - mannoheptulose
-    - disaccharides:
+    disaccharides:
         - 3-deoxysucrose
         - 6-deoxysucrose
         - allolactose
         - allosucrose
-        - alpha-1,6-mannobiose
-        - alpha,alpha-trehalose
+        - 'alpha-1,6-mannobiose'
+        - 'alpha,alpha-trehalose'
         - alpha-lactose
         - alpha-maltulose
         - alpha-sophorose
-        - beta,beta-trehalose
+        - 'beta,beta-trehalose'
         - beta-allolactose
         - beta-cellobiose
         - beta-gentiobiose
@@ -146,7 +244,7 @@ carbohydrates:
         - beta-mannobiose
         - beta-methylmelibiose
         - beta-sophorose
-        - beta-1,6-galactobiose
+        - 'beta-1,6-galactobiose'
         - cellobiose
         - cextromaltose
         - chitobiose
@@ -188,11 +286,11 @@ carbohydrates:
         - trehalulose
         - turanose
         - xylobiose
-    - trisaccharides:
+    trisaccharides:
         - maltotriose
         - melezitose
         - raffinose
-    - sugar alcohols :
+    sugar alcohols:
         - arabitol
         - erythritol
         - fucitol
@@ -205,17 +303,17 @@ carbohydrates:
         - sorbitol
         - threitol
         - xylitol
-    - glycolysis:
+    glycolysis:
         - glucose-6-phosphate
         - fructose-6-phosphate
-        - fructose-1,6-bisphosphate
+        - 'fructose-1,6-bisphosphate'
         - dihydroxyacetone phosphate
         - glyceraldehyde-3-phosphate
-        - 1,3-bisphosphoglycerate
+        - '1,3-bisphosphoglycerate'
         - 3-phosphoglycerate
         - 2-phosphoglycerate
         - phosphoenolpyruvate
-    - citric acid cycle:
+    citric acid cycle:
         - oxaloacetate
         - citrate
         - isocitrate
@@ -223,78 +321,102 @@ carbohydrates:
         - succinate
         - fumarate
         - malate
-    - similar to glycolysis:
-        - 2,3-bisphosphoglycerate
+    similar to glycolysis:
+        - '2,3-bisphosphoglycerate'
         - fructose-1-phosphate
-        - fructose-2,6-bisphosphate
-        - glucose-1,6-bisphosphate
+        - 'fructose-2,6-bisphosphate'
+        - 'glucose-1,6-bisphosphate'
         - glucose-1-phosphate
         - glycerate-2-phosphate
         - glycerate-3-phosphate
         - mannose-6-phosphate
         - ribulose-5-phosphate
-        - sedoheptulose-1,7-bisphosphate
-    - pentose phosphate pathway:
+        - 'sedoheptulose-1,7-bisphosphate'
+    pentose phosphate pathway:
         - ribose-5-phosphate
         - xylulose-5-phosphate
         - sedoheptulose-7-phosphate
         - erythrose-4-phosphate
         - 6-phosphogluconate
-    - other sugar phosphates and derivatives:
+    other sugar phosphates and derivatives:
         - gluconate-6-phosphate
         - 3-phosphoglyceroyl phosphate
         - galactose-1-phosphate
-        - tagatose-1,6-bisphosphate
+        - 'tagatose-1,6-bisphosphate'
         - erythrulose-4-phosphate
         - sorbitol-6-phosphate
         - trehalose-6-phosphate
         - glucuronate-1-phosphate
         - glycerol-3-phosphate
 
+
+#==============================================================
+#==============================================================
 nucleic acids:
-    - nucleobases:
+    nucleobases:
         - adenine
-        - cytosol
+        - cytosine
         - guanine
         - thymine
         - uracil
-    - nucleosides:
+    nucleobase analogs:
+        - Hypoxanthine
+        - Xanthine
+        - 7-Methylguanine
+        - 5,6-Dihydrouracil
+        - 5-Methylcytosine
+        - 5-Hydroxymethylcytosine
+        - caffeine
+        - uric acid
+        - isoguanine
+        - theobromine
+        - theophylline
+    nucleosides:
         - adenosine
         - cytidine
         - guanosine
         - thymidine
         - uridine
-    - nucleotides:
+    nucleoside analogs:
+        - Inosine
+        - Xanthosine
+        - 7-Methylguanosine
+        - Dihydrouridine
+        - 5-Methylcytidine
+        - Pseudouridine
+        - 5-Methyluridine
+        - N6-Methyladenosine
+    nucleotides:
         - adenosine 5'-monophosphate
         - cytidine 5'-monophosphate
         - guanosine 5'-monophosphate
         - thymidine 5'-monophosphate
         - uridine 5'-monophosphate
         - 5-methyluridine 5'-monophosphate #oxy thymidine = 5-methyluridine
-    - 3' monophosphates:
+    3' monophosphates:
         - adenosine 3'-monophosphate
         - cytidine 3'-monophosphate
         - guanosine 3'-monophosphate
         - thymidine 3'-monophosphate
         - uridine 3'-monophosphate
-    - diphosphates:
+    diphosphates:
         - adenosine 5'-diphosphate
         - cytidine 5'-diphosphate
         - guanosine 5'-diphosphate
         - thymidine 5'-diphosphate
         - uridine 5'-diphosphate
         - deoxyuridine 5'-diphosphate
-    - triphosphates:
+    triphosphates:
         - adenosine 5'-triphosphate
         - cytidine 5'-triphosphate
         - guanosine 5'-triphosphate
         - thymidine 5'-triphosphate
         - uridine 5'-triphosphate
-    - deoxy- triphosphates:
+    deoxy-triphosphates:
         - deoxyadenosine triphosphate
         - deoxycytidine triphosphate
         - deoxyguanosine triphosphate
         - deoxythymidine triphosphate
         - deoxyuridine triphosphate
-    - special nucleotides:
+    special nucleotides:
         - zidovudine triphosphate
