@@ -236,7 +236,7 @@ def generate_js_functions(smiles, canvas_id, molecule_name=None, peptide=True):
 	return js_code
 
 #=================================================
-def generate_html_for_molecule(smiles, molecule_name=None, width=256, height=256, peptide=True):
+def generate_html_for_molecule(smiles, molecule_name=None, width=480, height=512, peptide=True):
 	"""Generates HTML section for each molecule."""
 	# Display molecule name
 	crc_code = getCrc16_FromString(smiles)

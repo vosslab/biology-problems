@@ -196,6 +196,7 @@ def main():
 			f.write(complete_question)
 	pcl.close()
 	bptools.print_histogram()
+	print(f'saved {N} questions to {outfile}')
 
 #======================================
 #======================================
