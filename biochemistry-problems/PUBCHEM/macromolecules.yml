@@ -92,7 +92,7 @@ proteins:
         - arg-gly-asp-ser # fibronectin tetrapeptide
         - arg-gly-asp-val
         - dermorphin tetrapeptide # tyr-arg-phe-gly
-        - endomorphin 2 # tyr-pro-phe-phe
+        - endomorphin-2 # tyr-pro-phe-phe
         - gly-gln-pro-arg # rigin
         - gly-glu-lys-gly
         - his-dphe-arg-trp
@@ -363,7 +363,7 @@ nucleic acids:
         - Hypoxanthine
         - Xanthine
         - 7-Methylguanine
-        - 5,6-Dihydrouracil
+        - '5,6-Dihydrouracil'
         - 5-Methylcytosine
         - 5-Hydroxymethylcytosine
         - caffeine
@@ -387,36 +387,36 @@ nucleic acids:
         - 5-Methyluridine
         - N6-Methyladenosine
     nucleotides:
-        - adenosine 5'-monophosphate
-        - cytidine 5'-monophosphate
-        - guanosine 5'-monophosphate
-        - thymidine 5'-monophosphate
-        - uridine 5'-monophosphate
-        - 5-methyluridine 5'-monophosphate #oxy thymidine = 5-methyluridine
+        - adenosine-5'-monophosphate
+        - cytidine-5'-monophosphate
+        - guanosine-5'-monophosphate
+        - thymidine-5'-monophosphate
+        - uridine-5'-monophosphate
+        - 5-methyluridine-5'-monophosphate #oxy thymidine = 5-methyluridine
     3' monophosphates:
-        - adenosine 3'-monophosphate
-        - cytidine 3'-monophosphate
-        - guanosine 3'-monophosphate
-        - thymidine 3'-monophosphate
-        - uridine 3'-monophosphate
+        - adenosine-3'-monophosphate
+        - cytidine-3'-monophosphate
+        - guanosine-3'-monophosphate
+        - thymidine-3'-monophosphate
+        - uridine-3'-monophosphate
     diphosphates:
-        - adenosine 5'-diphosphate
-        - cytidine 5'-diphosphate
-        - guanosine 5'-diphosphate
-        - thymidine 5'-diphosphate
-        - uridine 5'-diphosphate
-        - deoxyuridine 5'-diphosphate
+        - adenosine-5'-diphosphate
+        - cytidine-5'-diphosphate
+        - guanosine-5'-diphosphate
+        - thymidine-5'-diphosphate
+        - uridine-5'-diphosphate
+        - deoxyuridine-5'-diphosphate
     triphosphates:
-        - adenosine 5'-triphosphate
-        - cytidine 5'-triphosphate
-        - guanosine 5'-triphosphate
-        - thymidine 5'-triphosphate
-        - uridine 5'-triphosphate
+        - adenosine-5'-triphosphate
+        - cytidine-5'-triphosphate
+        - guanosine-5'-triphosphate
+        - thymidine-5'-triphosphate
+        - uridine-5'-triphosphate
     deoxy-triphosphates:
-        - deoxyadenosine triphosphate
-        - deoxycytidine triphosphate
-        - deoxyguanosine triphosphate
-        - deoxythymidine triphosphate
-        - deoxyuridine triphosphate
+        - deoxyadenosine-triphosphate
+        - deoxycytidine-triphosphate
+        - deoxyguanosine-triphosphate
+        - deoxythymidine-triphosphate
+        - deoxyuridine-triphosphate
     special nucleotides:
-        - zidovudine triphosphate
+        - zidovudine-triphosphate

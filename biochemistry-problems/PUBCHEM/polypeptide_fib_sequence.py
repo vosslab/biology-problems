@@ -31,10 +31,13 @@ def get_peptide_sequence(num_amino_acids):
 	#amino_acid_letters = list('ACDEFGHIKLMNPQRSTVWY')
 	# no proline, too hard
 	amino_acid_letters = list('ACDEFGHIKLMNQRSTVWY')
-	peptide_sequence = ''
-	for i in range(num_amino_acids):
-		peptide_sequence += random.choice(amino_acid_letters)
-	return peptide_sequence
+	# this is so amino acids are not repeated
+	peptide_sequence_list = random.sample(amino_acid_letters, num_amino_acids)
+	# list is already shuffled, but do it again to be sure
+	random.shuffle(peptide_sequence_list)
+	peptide_sequence_text = ''.join(peptide_sequence_list)
+	print('peptide_sequence_text', peptide_sequence_text)
+	return peptide_sequence_text
 
 #===============================
 #===============================

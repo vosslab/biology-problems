@@ -143,6 +143,22 @@ cid_to_data:
     Molecular weight: 112.09
     Partition coefficient: -1.1
     SMILES: C1=CNC(=O)NC1=O
+  1175:
+    Abbreviation: uric acid
+    CID: 1175
+    Full name: uric acid
+    Molecular formula: C5H4N4O3
+    Molecular weight: 168.11
+    Partition coefficient: -1.9
+    SMILES: C12=C(NC(=O)N1)NC(=O)NC2=O
+  1188:
+    Abbreviation: xanthine
+    CID: 1188
+    Full name: xanthine
+    Molecular formula: C5H4N4O2
+    Molecular weight: 152.11
+    Partition coefficient: -0.7
+    SMILES: C1=NC2=C(N1)C(=O)NC(=O)N2
   1198:
     Abbreviation: isocitrate
     CID: 1198
@@ -151,6 +167,22 @@ cid_to_data:
     Molecular weight: 192.12
     Partition coefficient: -1.8
     SMILES: C(C(C(C(=O)O)O)C(=O)O)C(=O)O
+  2153:
+    Abbreviation: theophylline
+    CID: 2153
+    Full name: theophylline
+    Molecular formula: C7H8N4O2
+    Molecular weight: 180.16
+    Partition coefficient: 0.0
+    SMILES: CN1C2=C(C(=O)N(C1=O)C)NC=N2
+  2519:
+    Abbreviation: caffeine
+    CID: 2519
+    Full name: caffeine
+    Molecular formula: C8H10N4O2
+    Molecular weight: 194.19
+    Partition coefficient: -0.1
+    SMILES: CN1C=NC2=C1C(=O)N(C(=O)N2C)C
   2969:
     Abbreviation: capric acid
     CID: 2969
@@ -175,6 +207,14 @@ cid_to_data:
     Molecular weight: 284.5
     Partition coefficient: 7.4
     SMILES: CCCCCCCCCCCCCCCCCC(=O)O
+  5429:
+    Abbreviation: theobromine
+    CID: 5429
+    Full name: theobromine
+    Molecular formula: C7H8N4O2
+    Molecular weight: 180.16
+    Partition coefficient: -0.8
+    SMILES: CN1C=NC2=C1C(=O)NC(=O)N2C
   5757:
     Abbreviation: estradiol
     CID: 5757
@@ -663,6 +703,14 @@ cid_to_data:
     Molecular weight: 491.18
     Partition coefficient: -4.4
     SMILES: C1[C@@H]([C@H](O[C@H]1N2C=NC3=C(N=CN=C32)N)COP(=O)(O)OP(=O)(O)OP(=O)(O)O)O
+  18950:
+    Abbreviation: mannose
+    CID: 18950
+    Full name: D-Man
+    Molecular formula: C6H12O6
+    Molecular weight: 180.16
+    Partition coefficient: -2.6
+    SMILES: C([C@@H]1[C@H]([C@@H]([C@@H](C(O1)O)O)O)O)O
   24699:
     Abbreviation: glyceryl monostearate
     CID: 24699
@@ -735,6 +783,14 @@ cid_to_data:
     Molecular weight: 482.17
     Partition coefficient: -5.0
     SMILES: CC1=CN(C(=O)NC1=O)[C@H]2C[C@@H]([C@H](O2)COP(=O)(O)OP(=O)(O)OP(=O)(O)O)O
+  65040:
+    Abbreviation: 5-methylcytosine
+    CID: 65040
+    Full name: 5-Methylcytosine
+    Molecular formula: C5H7N3O
+    Molecular weight: 125.13
+    Partition coefficient: -0.8
+    SMILES: CC1=C(NC(=O)N=C1)N
   65070:
     Abbreviation: deoxyuridine triphosphate
     CID: 65070
@@ -799,6 +855,14 @@ cid_to_data:
     Molecular weight: 340.38
     Partition coefficient: -4.4
     SMILES: C1=C(NC=N1)C[C@@H](C(=O)N[C@@H](CCCCN)C(=O)O)NC(=O)CN
+  76900:
+    Abbreviation: isoguanine
+    CID: 76900
+    Full name: Isoguanine
+    Molecular formula: C5H5N5O
+    Molecular weight: 151.13
+    Partition coefficient: -1.7
+    SMILES: C1=NC2=NC(=O)NC(=C2N1)N
   77982:
     Abbreviation: ribose-5-phosphate
     CID: 77982
@@ -879,6 +943,14 @@ cid_to_data:
     Molecular weight: 236.27
     Partition coefficient: -2.5
     SMILES: C[C@@H](C(=O)N[C@@H](CC1=CC=CC=C1)C(=O)O)N
+  100094:
+    Abbreviation: glu-trp
+    CID: 100094
+    Full name: Oglufanide
+    Molecular formula: C16H19N3O5
+    Molecular weight: 333.34
+    Partition coefficient: -2.7
+    SMILES: C1=CC=C2C(=C1)C(=CN2)C[C@@H](C(=O)O)NC(=O)[C@H](CCC(=O)O)N
   101543:
     Abbreviation: uridine 3'-monophosphate
     CID: 101543
@@ -1303,6 +1375,14 @@ cid_to_data:
     Molecular weight: 166.17
     Partition coefficient: -2.0
     SMILES: C[C@@H]([C@H]([C@H]([C@@H](CO)O)O)O)O
+  446132:
+    Abbreviation: ala-arg
+    CID: 446132
+    Full name: L-Arginine, L-alanyl-
+    Molecular formula: C9H19N5O3
+    Molecular weight: 245.28
+    Partition coefficient: -4.5
+    SMILES: C[C@@H](C(=O)N[C@@H](CCCN=C(N)N)C(=O)O)N
   446569:
     Abbreviation: tetragastrin
     CID: 446569
@@ -1335,6 +1415,14 @@ cid_to_data:
     Molecular weight: 621.8
     Partition coefficient: 9.1
     SMILES: CCCCCCCCCCCC(=O)OC[C@H](COP(=O)([O-])OCC[N+](C)(C)C)OC(=O)CCCCCCCCCCC
+  515709:
+    Abbreviation: phe-tyr
+    CID: 515709
+    Full name: phenylalanyltyrosine
+    Molecular formula: C18H20N2O4
+    Molecular weight: 328.4
+    Partition coefficient: -1.7
+    SMILES: C1=CC=C(C=C1)C[C@@H](C(=O)N[C@@H](CC2=CC=C(C=C2)O)C(=O)O)N
   2723872:
     Abbreviation: fructose
     CID: 2723872
@@ -1375,6 +1463,14 @@ cid_to_data:
     Molecular weight: 299.5
     Partition coefficient: 5.3
     SMILES: CCCCCCCCCCCCC/C=C/[C@H]([C@H](CO)N)O
+  5280450:
+    Abbreviation: linoleic acid
+    CID: 5280450
+    Full name: linoleic acid
+    Molecular formula: C18H32O2
+    Molecular weight: 280.4
+    Partition coefficient: 6.8
+    SMILES: CCCCC/C=C\C/C=C\CCCCCCCC(=O)O
   5280933:
     Abbreviation: gamma-linolenic acid
     CID: 5280933
@@ -1495,6 +1591,14 @@ cid_to_data:
     Molecular weight: 236.27
     Partition coefficient: -2.9
     SMILES: C[C@@H](C(=O)O)NC(=O)[C@H](CC1=CC=CC=C1)N
+  6426949:
+    Abbreviation: glu-met
+    CID: 6426949
+    Full name: Glu-Met
+    Molecular formula: C10H18N2O5S
+    Molecular weight: 278.33
+    Partition coefficient: -3.7
+    SMILES: CSCC[C@@H](C(=O)O)NC(=O)[C@H](CCC(=O)O)N
   6453725:
     Abbreviation: n-stearoylsphingomyelin
     CID: 6453725
@@ -1503,6 +1607,14 @@ cid_to_data:
     Molecular weight: 731.1
     Partition coefficient: 13.4
     SMILES: CCCCCCCCCCCCCCCCCC(=O)N[C@@H](COP(=O)([O-])OCC[N+](C)(C)C)[C@@H](/C=C/CCCCCCCCCCCCC)O
+  6992563:
+    Abbreviation: arg-leu
+    CID: 6992563
+    Full name: Arg-Leu
+    Molecular formula: C12H25N5O3
+    Molecular weight: 287.36
+    Partition coefficient: -4.0
+    SMILES: CC(C)C[C@@H](C(=O)O)NC(=O)[C@H](CCCN=C(N)N)N
   6993090:
     Abbreviation: l-phe-l-phe
     CID: 6993090
@@ -1511,6 +1623,38 @@ cid_to_data:
     Molecular weight: 312.4
     Partition coefficient: -0.8
     SMILES: C1=CC=C(C=C1)C[C@@H](C(=O)N[C@@H](CC2=CC=CC=C2)C(=O)O)N
+  6993401:
+    Abbreviation: trp-ala
+    CID: 6993401
+    Full name: H-Trp-Ala-Oh
+    Molecular formula: C14H17N3O3
+    Molecular weight: 275.3
+    Partition coefficient: -2.0
+    SMILES: C[C@@H](C(=O)O)NC(=O)[C@H](CC1=CNC2=CC=CC=C21)N
+  7009558:
+    Abbreviation: met-tyr
+    CID: 7009558
+    Full name: H-Met-Tyr-Oh
+    Molecular formula: C14H20N2O4S
+    Molecular weight: 312.39
+    Partition coefficient: -2.0
+    SMILES: CSCC[C@@H](C(=O)N[C@@H](CC1=CC=C(C=C1)O)C(=O)O)N
+  7009663:
+    Abbreviation: trp-glu
+    CID: 7009663
+    Full name: H-Trp-Glu-OH
+    Molecular formula: C16H19N3O5
+    Molecular weight: 333.34
+    Partition coefficient: -2.6
+    SMILES: C1=CC=C2C(=C1)C(=CN2)C[C@@H](C(=O)N[C@@H](CCC(=O)O)C(=O)O)N
+  7010499:
+    Abbreviation: lys-ile
+    CID: 7010499
+    Full name: Lysyl-Isoleucine
+    Molecular formula: C12H25N3O3
+    Molecular weight: 259.35
+    Partition coefficient: -3.2
+    SMILES: CC[C@H](C)[C@@H](C(=O)O)NC(=O)[C@H](CCCCN)N
   7015689:
     Abbreviation: met-glu
     CID: 7015689
@@ -1519,6 +1663,14 @@ cid_to_data:
     Molecular weight: 278.33
     Partition coefficient: -3.7
     SMILES: CSCC[C@@H](C(=O)N[C@@H](CCC(=O)O)C(=O)O)N
+  7016103:
+    Abbreviation: lys-leu
+    CID: 7016103
+    Full name: Lys-Leu
+    Molecular formula: C12H25N3O3
+    Molecular weight: 259.35
+    Partition coefficient: -3.0
+    SMILES: CC(C)C[C@@H](C(=O)O)NC(=O)[C@H](CCCCN)N
   7016110:
     Abbreviation: thr-arg
     CID: 7016110
@@ -1543,6 +1695,14 @@ cid_to_data:
     Molecular weight: 305.4
     Partition coefficient: -4.4
     SMILES: CSCC[C@@H](C(=O)O)NC(=O)[C@H](CCCN=C(N)N)N
+  7020001:
+    Abbreviation: asp-trp
+    CID: 7020001
+    Full name: H-Asp-Trp-OH
+    Molecular formula: C15H17N3O5
+    Molecular weight: 319.31
+    Partition coefficient: -3.1
+    SMILES: C1=CC=C2C(=C1)C(=CN2)C[C@@H](C(=O)O)NC(=O)[C@H](CC(=O)O)N
   7020029:
     Abbreviation: gln-glu
     CID: 7020029
@@ -1551,6 +1711,30 @@ cid_to_data:
     Molecular weight: 275.26
     Partition coefficient: -5.8
     SMILES: C(CC(=O)N)[C@@H](C(=O)N[C@@H](CCC(=O)O)C(=O)O)N
+  7020333:
+    Abbreviation: arg-ala
+    CID: 7020333
+    Full name: Arginylalanine
+    Molecular formula: C9H19N5O3
+    Molecular weight: 245.28
+    Partition coefficient: -4.5
+    SMILES: C[C@@H](C(=O)O)NC(=O)[C@H](CCCN=C(N)N)N
+  7408110:
+    Abbreviation: pro-gln
+    CID: 7408110
+    Full name: Prolyl-Glutamine
+    Molecular formula: C10H17N3O4
+    Molecular weight: 243.26
+    Partition coefficient: -4.9
+    SMILES: C1C[C@H](NC1)C(=O)N[C@@H](CCC(=O)N)C(=O)O
+  9813246:
+    Abbreviation: cys-val
+    CID: 9813246
+    Full name: L-cysteinyl-L-valine
+    Molecular formula: C8H16N2O3S
+    Molecular weight: 220.29
+    Partition coefficient: -3.9
+    SMILES: CC(C)[C@@H](C(=O)O)NC(=O)[C@H](CS)N
   9933202:
     Abbreviation: arg-gly-asp-val
     CID: 9933202
@@ -1559,6 +1743,14 @@ cid_to_data:
     Molecular weight: 445.5
     Partition coefficient: -5.3
     SMILES: CC(C)[C@@H](C(=O)O)NC(=O)[C@H](CC(=O)O)NC(=O)CNC(=O)[C@H](CCCN=C(N)N)N
+  9943463:
+    Abbreviation: arg-thr
+    CID: 9943463
+    Full name: Arg-Thr
+    Molecular formula: C10H21N5O4
+    Molecular weight: 275.31
+    Partition coefficient: -5.1
+    SMILES: CC(C(C(=O)O)NC(=O)C(CCCN=C(N)N)N)O
   10219674:
     Abbreviation: altrose
     CID: 10219674
@@ -1607,6 +1799,22 @@ cid_to_data:
     Molecular weight: 342.3
     Partition coefficient: -4.7
     SMILES: C(C1[C@H](C(C(C(O1)O)O)O)O[C@H]2C(C(C(C(O2)CO)O)O)O)O
+  18218186:
+    Abbreviation: asn-thr
+    CID: 18218186
+    Full name: Asn-Thr
+    Molecular formula: C8H15N3O5
+    Molecular weight: 233.22
+    Partition coefficient: -5.4
+    SMILES: CC(C(C(=O)O)NC(=O)C(CC(=O)N)N)O
+  18218187:
+    Abbreviation: asn-trp
+    CID: 18218187
+    Full name: Asn-Trp
+    Molecular formula: C15H18N4O4
+    Molecular weight: 318.33
+    Partition coefficient: -3.7
+    SMILES: C1=CC=C2C(=C1)C(=CN2)CC(C(=O)O)NC(=O)C(CC(=O)N)N
   42630676:
     Abbreviation: tetrapeptide-4
     CID: 42630676
@@ -1631,6 +1839,14 @@ cid_to_data:
     Molecular weight: 235.26
     Partition coefficient: -4.8
     SMILES: C([C@@H](C(=O)N[C@@H](CS)C(=O)O)N)C(=O)N
+  71816170:
+    Abbreviation: lys-cys
+    CID: 71816170
+    Full name: lysylcysteine
+    Molecular formula: C9H19N3O3S
+    Molecular weight: 249.33
+    Partition coefficient: -3.6
+    SMILES: C(CCN)C[C@@H](C(=O)N[C@@H](CS)C(=O)O)N
   90684373:
     Abbreviation: ala-gln-phe
     CID: 90684373
@@ -1703,6 +1919,22 @@ cid_to_data:
     Molecular weight: 283.24
     Partition coefficient: -1.9
     SMILES: C1=NC2=C(N1[C@H]3[C@@H]([C@@H]([C@H](O3)CO)O)O)N=C(NC2=O)N
+  135398638:
+    Abbreviation: hypoxanthine
+    CID: 135398638
+    Full name: hypoxanthine
+    Molecular formula: C5H4N4O
+    Molecular weight: 136.11
+    Partition coefficient: -0.5
+    SMILES: C1=NC2=C(N1)C(=O)NC=N2
+  135398679:
+    Abbreviation: 7-methylguanine
+    CID: 135398679
+    Full name: 7-Methylguanine
+    Molecular formula: C6H7N5O
+    Molecular weight: 165.15
+    Partition coefficient: -1.1
+    SMILES: CN1C=NC2=C1C(=O)NC(=N2)N
   135398727:
     Abbreviation: guanosine 3'-monophosphate
     CID: 135398727
@@ -1711,6 +1943,14 @@ cid_to_data:
     Molecular weight: 363.22
     Partition coefficient: -3.5
     SMILES: C1=NC2=C(N1[C@H]3[C@@H]([C@@H]([C@H](O3)CO)OP(=O)(O)O)O)N=C(NC2=O)N
+  145453493:
+    Abbreviation: his-thr
+    CID: 145453493
+    Full name: His-Thr
+    Molecular formula: C10H16N4O4
+    Molecular weight: 256.26
+    Partition coefficient: -4.1
+    SMILES: C[C@@H]([C@@H](C(=O)O)NC(=O)[C@H](CC1=CN=CN1)N)O
   145454068:
     Abbreviation: asn-cys-his
     CID: 145454068
@@ -1788,9 +2028,11 @@ name_to_cid:
   2-phosphoglycerate: 59
   3-phosphoglycerate: 724
   3-phosphoglyceroyl phosphate: 439191
+  5-methylcytosine: 65040
   5-methyluridine 5'-monophosphate: 12803287
   6-deoxysucrose: 146374
   6-phosphogluconate: 91493
+  7-methylguanine: 135398679
   adenine: 190
   adenosine: 60961
   adenosine 3'-monophosphate: 41211
@@ -1905,6 +2147,7 @@ name_to_cid:
   aspartic acid: 5960
   beta-lactose: 6134
   butyric acid: 264
+  caffeine: 2519
   capric acid: 2969
   caproic acid: 8892
   caprylic acid: 379
@@ -1990,6 +2233,7 @@ name_to_cid:
   gln-val: 57262456
   glu-met: 6426949
   glu-trp: 100094
+  glucose: 5793
   glucose-1,6-bisphosphate: 82400
   glucose-6-phosphate: 5958
   glucuronate-1-phosphate: 439432
@@ -2021,6 +2265,7 @@ name_to_cid:
   his-thr: 145453493
   histidine: 6274
   hydroxyprogesterone: 6238
+  hypoxanthine: 135398638
   iditol: 90540
   idose: 11030410
   ile-leu-glu: 145456189
@@ -2028,6 +2273,7 @@ name_to_cid:
   inositol: 892
   insulin b22-b25-nh2: 3082397
   isocitrate: 1198
+  isoguanine: 76900
   isoleucine: 6306
   isomaltitol: 94169
   isomaltose: 439193
@@ -2043,6 +2289,7 @@ name_to_cid:
   lecithin: 5287971
   leu-enkephalin: 461776
   leucine: 6106
+  linoleic acid: 5280450
   lys-asn-tyr: 145456604
   lys-cys: 71816170
   lys-ile: 7010499
@@ -2056,6 +2303,7 @@ name_to_cid:
   maltobiose: 439186
   maltotriose: 439586
   mannoheptulose: 12600
+  mannose: 18950
   melezitose: 92817
   melibiose: 11458
   mesterolone: 15020
@@ -2120,6 +2368,8 @@ name_to_cid:
   tetragastrin: 446569
   tetrapeptide-2: 91936936
   tetrapeptide-4: 42630676
+  theobromine: 5429
+  theophylline: 2153
   thr-arg: 7016110
   thr-met-met: 145458154
   threitol: 169019
@@ -2143,6 +2393,7 @@ name_to_cid:
   tyr-phe-asp: 10138314
   tyrosine: 6057
   uracil: 1174
+  uric acid: 1175
   uridine: 6029
   uridine 3'-monophosphate: 101543
   uridine 5'-diphosphate: 6031
@@ -2154,7 +2405,8 @@ name_to_cid:
   val-trp: 168182
   val-val-gln: 7014907
   valine: 6287
+  xanthine: 1188
   xylose: 135191
   xylulose: 5289590
   zidovudine triphosphate: 72187
-time_stamp: 1706290973
+time_stamp: 1706585655

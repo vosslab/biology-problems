@@ -1,0 +1,94 @@
+
+#==============================================================
+#==============================================================
+#==============================================================
+proteins:
+    dipeptides:
+        - Ala-Arg
+        - Arg-Ala
+        - Arg-Leu
+        - Arg-Met
+        - Arg-Thr
+        - Asn-Cys
+        - Asn-Thr
+        - Asn-Trp
+        - Asp-Lys
+        - Asp-Pro
+        - Asp-Trp
+        - Cys-Gly
+        - Cys-Gly
+        - Cys-Val
+        - Gln-Glu
+        - Glu-Met
+        - Glu-Trp
+        - His-Thr
+        - Lys-Cys
+        - Lys-Ile
+        - Lys-Leu
+        - Lys-Met
+        - Met-Glu
+        - Met-Tyr
+        - Phe-Tyr
+        - Pro-Gln
+        - Thr-Arg
+        - Trp-Ala
+        - Trp-Glu
+        - Val-Trp
+
+#==============================================================
+#==============================================================
+lipids:
+    saturated fatty acids:
+        - lauric acid
+        - myristic acid
+        - palmitic acid
+        - stearic acid
+    mono-unsaturated fatty acids:
+        - palmitoleic acid # 16 carbons, 1 double bond, omega-7
+        - oleic acid # 18 carbons, 1 double bond, omega-9
+        - vaccenic acid # 18 carbons, 1 double bond, omega-7
+    poly-unsaturated fatty acids:
+        - linoleic acid # 18 carbons, 2 double bonds, omega-6
+        - alpha-linolenic acid # 18 carbons, 3 double bonds, omega-3
+        - gamma-linolenic acid # 18 carbons, 3 double bonds, omega-6
+        - stearidonic acid # 18 carbons, 4 double bonds, omega-3
+
+#==============================================================
+#==============================================================
+carbohydrates:
+    6-carbon aldoses:
+        - allose
+        - altrose
+        - glucose
+        - dextrose
+        - mannose
+        - gulose
+        - idose
+        - galactose
+        - talose
+    6-carbon ketoses:
+        - psicose
+        - fructose
+        - sorbose
+        - tagatose
+
+
+#==============================================================
+#==============================================================
+nucleic acids:
+    nucleobases:
+        - adenine
+        - cytosine
+        - guanine
+        - thymine
+        - uracil
+    nucleobase analogs:
+        - 5-methylcytosine
+        - 7-methylguanine
+        - caffeine
+        - hypoxanthine
+        - isoguanine
+        - theobromine
+        - theophylline
+        - uric acid
+        - xanthine

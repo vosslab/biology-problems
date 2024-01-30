@@ -25,6 +25,15 @@ choices_dict = {
 	'nucleic acids':	'<strong><span style="color: #e60000;">Nucleic acids</span></strong>', #RED
 }
 
+#======================================
+#======================================
+choices_dict = {
+	'carbohydrates':	'<strong><span style="color: #0a9bf5;">Carbohydrates (monosaccharides)</span></strong>', #SKY BLUE
+	'lipids': 			'<strong><span style="color: #e69100;">Lipids (fatty acids)</span></strong>', #LIGHT ORANGE
+	'proteins': 		'<strong><span style="color: #009900;">Proteins (amino acids and dipeptides)</span></strong>', #GREEN
+	'nucleic acids':	'<strong><span style="color: #e60000;">Nucleic acids (nucleobases)</span></strong>', #RED
+}
+
 def td_header(color_id):
 	return f'<tr><td style="background-color: {color_id};">'
 
@@ -128,8 +137,10 @@ def get_random_molecule_name(macro_type, macro_data) -> str:
 	rejections = 0
 	while used_macromolecule_names.get(molecule_name) is True:
 		rejections += 1
-		print(f'REJECTED {rejections} :: molecule_name = {molecule_name}')
+		print(f'USED ALREADY {rejections} :: molecule_name = {molecule_name}')
 		molecule_name = select_random_molecule_name(macro_type, macro_data)
+		if rejections > 5:
+			return None
 	used_macromolecule_names[molecule_name] = True
 	return molecule_name
 
@@ -152,6 +163,8 @@ def write_question(N: int, pcl, macro_data) -> str:
 	macro_type = random.choice(list(choices_dict.keys()))
 	answer_text = choices_dict[macro_type]
 	molecule_name = get_random_molecule_name(macro_type, macro_data)
+	if molecule_name is None:
+		return None
 
 	question_text = get_question_text(molecule_name, pcl)
 	if question_text is None:
@@ -164,8 +177,9 @@ def write_question(N: int, pcl, macro_data) -> str:
 
 #======================================
 #======================================
-def load_molecules():
-	macro_file = 'macromolecules.yml'
+def load_molecules(macro_file=None):
+	if macro_file is None:
+		macro_file = 'macromolecules.yml'
 	with open(macro_file, 'r') as file:
 		macro_data = yaml.safe_load(file)
 	return macro_data
@@ -176,6 +190,8 @@ def main():
 	# Define argparse for command-line options
 	parser = argparse.ArgumentParser(description="Generate questions.")
 	parser.add_argument('-d', '--duplicates', type=int, default=95, help="Number of questions to create.")
+	parser.add_argument('-f', '-y', '--file', metavar='<file>', type=str, dest='input_yaml_file',
+		help='yaml input file to process')
 	args = parser.parse_args()
 
 	# Output file setup
@@ -183,7 +199,7 @@ def main():
 	print(f'writing to file: {outfile}')
 
 	pcl = pubchemlib.PubChemLib()
-	macro_data = load_molecules()
+	macro_data = load_molecules(args.input_yaml_file)
 
 	# Create and write questions to the output file
 	with open(outfile, 'w') as f:

@@ -62,7 +62,7 @@ def generate_js_functions(smiles, canvas_id, molecule_name=None):
 	js_code += f'let/* */smiles="{smiles}";'
 	js_code += 'let/* */mol=RDKitModule.get_mol(smiles);'
 	js_code += 'let/* */mdetails={};'
-	if molecule_name is not None:
+	if molecule_name is not None and not ' ' in molecule_name:
 		js_code += f'mdetails["legend"]="{molecule_name}";'
 	js_code += 'mdetails["explicitMethyl"]=true;'
 	if debug is True:

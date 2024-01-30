@@ -58,6 +58,8 @@ class PubChemLib():
 	#============================
 	#============================
 	def save_cache(self):
+		if self.api_count == 0:
+			return
 		print('==== SAVE CACHE ====')
 		t0 = time.time()
 		self.molecular_data_cache['time_stamp'] = int(t0)
@@ -155,6 +157,8 @@ class PubChemLib():
 	#============================
 	#=======================
 	def get_molecule_data_dict(self, molecule_name):
+		if molecule_name is None:
+			return None
 		if len(molecule_name) < 2 or molecule_name.startswith("#"):
 			return None
 		low_molecule_name = molecule_name.lower().strip()
