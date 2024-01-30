@@ -54,19 +54,25 @@ def pKa_list_to_words(pKa_list):
 #============================
 #============================
 #============================
-def get_pH_values(pKa_list, pH_diff_cutoff=0.65):
+def get_pH_values(pKa_list):
+	min_pH_diff = 0.51
+	max_pH_diff = 1.9
 	all_pH_list = [
 		0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0,
 		5.5, 6.0, 6.5, 7.0, 7.5, 8.0, 8.5, 9.0, 9.5, 10.0,
 		10.5, 11.0, 11.5, 12.0, 12.5, 13.0, 13.5, 14.0,
 	]
 	pH_list = []
-
 	for pH in all_pH_list:
+		#print(pH, pH - max(pKa_list), min(pKa_list) - pH)
 		good_value = True
 		for pKa in pKa_list:
-			if abs(pKa-pH) < pH_diff_cutoff:
+			if abs(pKa-pH) < min_pH_diff:
 				good_value = False
+		if pH - max(pKa_list) > max_pH_diff:
+			good_value = False
+		elif min(pKa_list) - pH > max_pH_diff:
+			good_value = False
 		if good_value is True:
 			pH_list.append(pH)
 	return pH_list
