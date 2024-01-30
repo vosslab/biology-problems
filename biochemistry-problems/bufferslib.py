@@ -9,6 +9,15 @@ import random
 
 #https://www.engineeringtoolbox.com/pKa-inorganic-acid-base-hydrated-metal-ion-monoprotic-diprotic-triprotic-tetraprotic-d_1950.html
 
+colors_pyramid = [
+ [], #0
+ ['#404040',], #1
+ ['#00008B', '#8B0000', ], #2
+ ['#00008B', '#404040', '#8B0000', ], #3
+ ['#00008B', '#202060', '#602020', '#8B0000', ], #4
+ ['#00008B', '#202060', '#404040', '#602020', '#8B0000', ], #5
+]
+
 #============================
 #============================
 #============================
@@ -84,6 +93,13 @@ diprotic = {
 		'state_list':	['(COOH)CH2CH(OH)COOH', '(COOH)CH2CH(OH)COO-1',
 			'(COO)CH2CH(OH)COO-2',],
 	},
+	'oxalate':
+	{	'acid_name':	'oxalic acid',
+		'base_name':	'oxalate',
+		'description':	'is found in many plants and vegetables and is a product of metabolic processes',
+		'pKa_list':		[1.27, 4.28,],
+		'state_list':	['(COOH)2', 'HOOC-COO-1', 'C2O4-2',],
+	},
 	'succinate':
 	{	'acid_name':	'succinic acid',
 		'base_name':	'succinate',
@@ -97,6 +113,13 @@ diprotic = {
 		'description':	'occurs naturally in wine, but larger amounts are added to wine to stop fermentation and prevent spoilage',
 		'pKa_list':		[1.81, 6.97],
 		'state_list':	['H2SO3', 'HSO3-1', 'SO3-2',],
+	},
+	'urate':
+	{	'acid_name':	'uric acid',
+		'base_name':	'urate',
+		'description':	'is an end product of nucleotide purine metabolism.',
+		'pKa_list':		[5.4, 10.3,],
+		'state_list':	['C5H4N4O3', 'C5H3N4O3-1', 'C5H2N4O3-2'],
 	},
 }
 
@@ -138,6 +161,13 @@ tetraprotic = {
 		'description':	'is abbreviated PP<sub>i</sub> and is formed by cells from the hydrolysis of ATP into AMP',
 		'pKa_list':		[0.91, 2.1, 6.7, 9.32,],
 		'state_list':	['H4P2O7', 'H3P2O7-1', 'H2P2O7-2', 'HP2O7-3', 'P2O7-4',]
+	},
+	'EDTA':
+	{	'acid_name':	'ethylenediaminetetraacetic acid',
+		'base_name':	'EDTA',
+		'description':	'is commonly used in chelation therapy and as a chelating agent in biochemical experiments.',
+		'pKa_list':		[2.00, 2.67, 6.16, 10.26,],
+		'state_list':	['C10H16N2O8', 'C10H15N2O8-1', 'C10H14N2O8-2', 'C10H13N2O8-3', 'C10H12N2O8-4']
 	},
 }
 
@@ -206,25 +236,28 @@ def get_random_buffer():
 def get_protonation_state(buffer_dict, pH_value):
 	pKa_list = buffer_dict['pKa_list']
 	state_list = buffer_dict['state_list']
+	state_colors = colors_pyramid[len(state_list)]
 	state = state_list[-1]
+	color = state_colors[-1]
 	for i, pKa in enumerate(pKa_list):
 		if pH_value < pKa:
 			state = state_list[i]
+			color = state_colors[i]
 			break
-	return state
+	return state, color
 
 #============================
 #============================
 #============================
 def get_protonation_formula(buffer_dict, pH_value):
-	state = get_protonation_state(buffer_dict, pH_value)
-	formula = format_chemical_formula_html(state)
+	state, color = get_protonation_state(buffer_dict, pH_value)
+	formula = format_chemical_formula_html(state, color)
 	return formula
 
 #============================
 #============================
 #============================
-def format_chemical_formula_html(chem_state):
+def format_chemical_formula_html(chem_state, color=None):
 	string_list = list(chem_state)
 	chem_form = ''
 	charge = None
@@ -243,6 +276,8 @@ def format_chemical_formula_html(chem_state):
 
 		else:
 			chem_form += character
+	if color is not None:
+		chem_form = f'<span style="color: {color}">{chem_form}</span>'
 	return chem_form
 
 #============================
@@ -250,8 +285,10 @@ def format_chemical_formula_html(chem_state):
 #============================
 def format_list_of_chemical_formula_html(state_list):
 	formula_list = []
-	for state in state_list:
-		formula = format_chemical_formula_html(state)
+	state_colors = colors_pyramid[len(state_list)]
+	for i, state in enumerate(state_list):
+		color = state_colors[i]
+		formula = format_chemical_formula_html(state, color)
 		formula_list.append(formula)
 	return formula_list
 
