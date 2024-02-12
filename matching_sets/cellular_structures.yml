@@ -10,6 +10,22 @@ keys description: cellular structures
 value description: description
 values description: descriptions
 
+replacement_rules:
+    Flagellum: '<span style="color: #e60000;">Flagellum</span>' #RED
+    BBBBBBBB: '<span style="color: #e65400;">BBBBBBBB</span>' #DARK ORANGE
+    CCCCCCCC: '<span style="color: #e69100;">CCCCCCCC</span>' #LIGHT ORANGE
+    Fimbriae: '<span style="color: #b3b300;">Fimbriae</span>' #DARK YELLOW
+    EEEEEEEE: '<span style="color: #59b300;">EEEEEEEE</span>' #LIME GREEN
+    FFFFFFFF: '<span style="color: #009900;">FFFFFFFF</span>' #GREEN
+    Sex pilus: '<span style="color: #00b38f;">Sex pilus</span>' #TEAL
+    HHHHHHHH: '<span style="color: #00b3b3;">HHHHHHHH</span>' #CYAN
+    IIIIIIII: '<span style="color: #0a9bf5;">IIIIIIII</span>' #SKY BLUE
+    Capsule: '<span style="color: #0039e6;">Capsule</span>' #BLUE
+    KKKKKKKK: '<span style="color: #004d99;">KKKKKKKK</span>' #NAVY
+    LLLLLLLL: '<span style="color: #7b12a1;">LLLLLLLL</span>' #PURPLE
+    Peptidoglycan: '<span style="color: #b30077;">Peptidoglycan</span>' #MAGENTA
+    NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
+
 matching pairs:
   Flagellum:
     - tail-like structure for motility and movement
@@ -41,15 +57,3 @@ matching pairs:
   Peptidoglycan:
     complex protein and polysaccharide structure within the cell wall
     stiff protein and carbohydrate layer within bacteria cell wall
-
-
-
-
-replacement_rules:
-   disorder:       '<span style=color: DarkGreen;>disorder</span>'
-   genetic:        '<span style=color: MediumVioletRed;>genetic</span>'
-   metabolic:      '<span style=color: Indigo;>metabolic</span>'
-   chromosome:     '<span style=color: SteelBlue;>chromosome</span>'
-
-exclude pairs:
-  - [Sunny, Elizabeth]

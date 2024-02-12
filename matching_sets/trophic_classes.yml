@@ -10,6 +10,22 @@ keys description: trophic classifications
 value description: definition
 values description: definitions
 
+replacement_rules:
+    heterotroph: '<span style="color: #e60000;">heterotroph</span>' #RED
+    organisms: '<span style="color: #e65400;">organisms</span>' #DARK ORANGE
+    organotroph: '<span style="color: #e69100;">organotroph</span>' #LIGHT ORANGE
+    lithotroph: '<span style="color: #b3b300;">lithotroph</span>' #DARK YELLOW
+    XXXXXXX: '<span style="color: #59b300;">XXXXXXX</span>' #LIME GREEN
+    phototroph: '<span style="color: #009900;">phototroph</span>' #GREEN
+    light: '<span style="color: #00b38f;">light</span>' #TEAL
+    energy: '<span style="color: #00b3b3;">energy</span>' #CYAN
+    chemotroph: '<span style="color: #0a9bf5;">chemotroph</span>' #SKY BLUE
+    inorganic: '<span style="color: #0039e6;">inorganic</span>' #BLUE
+    YYYYYYYY: '<span style="color: #004d99;">YYYYYYYY</span>' #NAVY
+    ZZZZZZZZZ: '<span style="color: #7b12a1;">ZZZZZZZZZ</span>' #PURPLE
+    WWWWWWWW: '<span style="color: #b30077;">WWWWWWWW</span>' #MAGENTA
+    autotroph: '<span style="color: #cc0066;">autotroph</span>' #PINK
+
 matching pairs:
   heterotroph:
     - consume other organisms for food
@@ -41,12 +57,3 @@ matching pairs:
     - derive energy from organic compounds
     - obtain energy from organic compounds
     - obtain their energy from organic matter
-
-replacement_rules:
-   disorder:       '<span style=color: DarkGreen;>disorder</span>'
-   genetic:        '<span style=color: MediumVioletRed;>genetic</span>'
-   metabolic:      '<span style=color: Indigo;>metabolic</span>'
-   chromosome:     '<span style=color: SteelBlue;>chromosome</span>'
-
-exclude pairs:
-  - [Sunny, Elizabeth]
