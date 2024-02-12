@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import random
+import bptools
 
 phobic = [
 'benzene, C<sub>6</sub>H<sub>6</sub>',
