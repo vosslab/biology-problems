@@ -1,20 +1,20 @@
 ---
 
 #Which one of the following statements is FALSE/TRUE <connection word> <topic>
-topic: functions of membrane proteins
+topic: functions of membrane&nbsp;proteins
 
 replacement_rules:
-  'membrane proteins': '<span style="color: #ff0000;">membrane&nbsp;proteins</span>' #RED
+  'membrane&nbsp;proteins': '<span style="color: #ff0000;">membrane&nbsp;proteins</span>' #RED
   passage:          '<span style="color: #ff5e00;">passage</span>' #DARK ORANGE
   cells: '<span style="color: #ffa100;">cells</span>' #LIGHT ORANGE
   'cell ': '<span style="color: #ffa100;">cell </span>' #LIGHT ORANGE
-
+  hydrophobic: '<span style="color: #ffa100;">hydrophobic</span>' #LIGHT ORANGE
   ' proteins': '<span style="color: #b3b300;"> proteins</span>' #DARK YELLOW
   substances: '<span style="color: #2fbd0f;">substances</span>' #LIME GREEN
   transport: '<span style="color: #009e4c;">transport</span>' #TEAL
   molecules: '<span style="color: #0d57a5;">molecules</span>' #BLUE
   ' membrane ': '<span style="color: #6d108e;"> membrane</span>' #PURPLE
-  enzymatic activity: '<span style="color: #a1005e;">enzymatic activity</span>' #MAGENTA
+  enzymatic&nbsp;activity: '<span style="color: #a1005e;">enzymatic&nbsp;activity</span>' #MAGENTA
   enzymes: '<span style="color: #a1005e;">enzymes</span>' #MAGENTA
 
 
@@ -24,23 +24,23 @@ true_statements:
   truth1a: They facilitate transport of molecules across the membrane
   truth1b: They allow passage of hydrophilic substances across the membrane
   truth1c: They provide a hydrophilic channel for certain molecules or ions to use as a tunnel
-  truth1d: Some membrane proteins serve as channels, pumps, or receptors
+  truth1d: Some membrane&nbsp;proteins serve as channels, pumps, or receptors
 
   truth2a: They recognize and bind to other cells or substances
-  truth2b: Carbohydrates covantly attached to membrane proteins allow cells to recognize eachother
+  truth2b: Carbohydrates covantly attached to membrane&nbsp;proteins allow cells to recognize eachother
 
   truth3a: They tightly attach the cytoskeleton to the extracellular matrix (ECM)
-  truth3b: Some membrane proteins anchor the cytoskeleton to the plasma membrane
-  truth3c: Some membrane proteins anchor the extracellular matrix (ECM) to the plasma membrane
+  truth3b: Some membrane&nbsp;proteins anchor the cytoskeleton to the plasma membrane
+  truth3c: Some membrane&nbsp;proteins anchor the extracellular matrix (ECM) to the plasma membrane
 
-  truth4a: They provide enzymatic activity for certain chemical reactions
-  truth4b: Some membrane proteins are enzymes that catalyze specific reactions
+  truth4a: They provide enzymatic&nbsp;activity for certain chemical reactions
+  truth4b: Some membrane&nbsp;proteins are enzymes that catalyze specific reactions
 
   truth5a: They receive cell signals and transduce them across the membrane
-  truth5b: Some membrane proteins binds to signaling molecules such as hormones or neurotransmitters
+  truth5b: Some membrane&nbsp;proteins binds to signaling molecules such as hormones or neurotransmitters
 
   truth6a: They create intercellular junctions between adjacent cells
-  truth6b: Some membrane proteins are repsonsible for attaching cells together
+  truth6b: Some membrane&nbsp;proteins are repsonsible for attaching cells together
 
 false_statements:
   false1a: They prevent the passage of hydrophobic substances across the membrane
