@@ -85,7 +85,6 @@ def create_new_entries(mol_dict):
 			mol_dict[k1+'-'+k2] = merge_dict
 	return mol_dict
 
-
 def writeQuestion():
 	#============================
 	question_txt = "Based on only their molecular formula, "
