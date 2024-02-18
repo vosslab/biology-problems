@@ -47,10 +47,6 @@ class GelMigration(object):
 		return mw
 
 	#==================================================
-	def random_subset(self, size):
-		return random.sample(self.protein_tree, size)
-
-	#==================================================
 	def sort_by_molecular_weight(self, a, b):
 		if a['MW'] > b['MW']:
 			return True
@@ -184,7 +180,6 @@ class GelMigration(object):
 		#high_unknown_mw = self.distance_to_molecular_weight(unknown_dist + dist_range)
 		#mw_range = (high_unknown_mw - low_unknown_mw)/4.0
 
-
 		if self.debug is True:
 			print("Unknown: MW = {0:.1f} +/- {1:.1f}; Dist = {2:.2f} +/- {3:.2f}".format(unknown_mw, mw_range, unknown_dist, dist_range))
 		return unknown_mw, unknown_dist, mw_range, gap
@@ -228,9 +223,7 @@ class GelMigration(object):
 		question_text += f'  <td align="center">{unknown_dist:.2f}</td></tr>'
 		question_text += "</table></p>"
 
-
 		question_text += '<p>Estimate the molecular weight of the unknown protein by comparing its gel migration distance with those of the standards.</p>'
-
 
 		if question_type == 'mc':
 			choices_list = []
