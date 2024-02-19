@@ -125,6 +125,9 @@ class PubChemLib():
 	def get_logp(self, cid):
 		"""Get the SMILES notation for a molecule given its CID."""
 		response_json = self.api_call(f"{self.BASE_URL}/compound/cid/{cid}/property/XLogP/JSON")
+		xlogp_str = response_json['PropertyTable']['Properties'][0].get('XLogP')
+		if xlogp_str is None:
+			return None
 		return float(response_json['PropertyTable']['Properties'][0]['XLogP'])
 
 	#=======================
