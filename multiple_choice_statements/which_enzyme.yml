@@ -1,10 +1,26 @@
 ---
 
 #Which one of the following statements is FALSE/TRUE <connection word> <topic>
-topic: the structure of DNA
+topic: enzyme names
 
-override_question_true: Which one of the following molecules would be classified as an enzyme?
+override_question_true: '<p>Enzymes are biological catalysts that speed up chemical reactions in living organisms.</p><p>Which one of the following choices is most likely an enzyme?<br/><i>Hint: enzymes often have a distinct naming pattern that can help identify them.</i></p>'
 override_question_false: ~
+
+replacement_rules:
+    AAAAAAAA: '<span style="color: #e60000;">AAAAAAAA</span>' #RED
+    BBBBBBBB: '<span style="color: #e65400;">BBBBBBBB</span>' #DARK ORANGE
+    CCCCCCCC: '<span style="color: #e69100;">CCCCCCCC</span>' #LIGHT ORANGE
+    DDDDDDDD: '<span style="color: #b3b300;">DDDDDDDD</span>' #DARK YELLOW
+    EEEEEEEE: '<span style="color: #59b300;">EEEEEEEE</span>' #LIME GREEN
+    FFFFFFFF: '<span style="color: #009900;">FFFFFFFF</span>' #GREEN
+    GGGGGGGG: '<span style="color: #00b38f;">GGGGGGGG</span>' #TEAL
+    HHHHHHHH: '<span style="color: #00b3b3;">HHHHHHHH</span>' #CYAN
+    IIIIIIII: '<span style="color: #0a9bf5;">IIIIIIII</span>' #SKY BLUE
+    JJJJJJJJ: '<span style="color: #0039e6;">JJJJJJJJ</span>' #BLUE
+    KKKKKKKK: '<span style="color: #004d99;">KKKKKKKK</span>' #NAVY
+    LLLLLLLL: '<span style="color: #7b12a1;">LLLLLLLL</span>' #PURPLE
+    MMMMMMMM: '<span style="color: #b30077;">MMMMMMMM</span>' #MAGENTA
+    NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
 
 connection_words: ~
 
@@ -85,7 +101,4 @@ false_statements:
 
 # conflicts, means that the statements cannot appear together
 # add ': True' to each line, so the program runs a faster lookup 
-conflict_rules: ~  
-    
-    
-    
+conflict_rules: ~
