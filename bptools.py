@@ -14,6 +14,7 @@ import crcmod.predefined #pip
 #anticheating measures
 use_nocopy_script = False
 use_insert_hidden_terms = True
+hidden_term_density = 0.7
 use_add_no_click_div = True
 noPrint = True
 noCopy = True
@@ -168,8 +169,11 @@ def insert_hidden_terms(text_content):
 			new_words = []
 			for word in words:
 				new_words.append(word)
-				hidden_term = random.choice(hidden_term_bank)
-				new_words.append(f"<span style='font-size: 1px; color: white;'>{hidden_term}</span>")
+				if random.random() < hidden_term_density:
+					hidden_term = random.choice(hidden_term_bank)
+					new_words.append(f"<span style='font-size: 1px; color: white;'>{hidden_term}</span>")
+				else:
+					new_words.append(" ")
 			new_parts.append(''.join(new_words))
 	return ''.join(new_parts)
 
