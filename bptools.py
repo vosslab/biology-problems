@@ -896,6 +896,29 @@ def formatBB_MAT_Question(N, question, answers_list, matching_list):
 	question_count += 1
 	return bb_question + '\n'
 
+#=====================
+def formatBB_ORD_Question(N, question_text, ordered_answers_list):
+	#ORD TAB question text TAB answer text TAB answer two text
+	global question_count
+	if len(ordered_answers_list) <= 2:
+		print("not enough answers to choose from, you need three answers for an ordering problem")
+		print("answers_list=", ordered_answers_list)
+		sys.exit(1)
+
+	bb_question = ''
+	#number = "{0}. ".format(N)
+	bb_question += 'ORD\t'
+	big_question = question_text + ' '.join(ordered_answers_list)
+	bb_question += QuestionHeader(question_text, N, big_question)
+
+	for i, answer_text in enumerate(ordered_answers_list):
+		noisy_answer_text = ChoiceHeader(answer_text)
+		bb_question += '\t'+noisy_answer_text
+		print(f"- [{i+1}] {makeQuestionPretty(answer_text)}")
+	print("")
+	question_count += 1
+	return bb_question + '\n'
+
 #==========================
 #==========================
 #==========================
