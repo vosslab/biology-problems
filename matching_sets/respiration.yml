@@ -1,0 +1,68 @@
+#YAML file for Matching Questions
+
+items to match per question: 5
+
+#both singular and plural
+key description: stage in cellular respiration
+keys description: five stages in cellular respiration
+
+#both singular and plural
+value description: statement
+values description: statements
+
+replacement_rules:
+    cellular respiration: '<span style="color: #e60000;">cellular respiration</span>' #RED
+    Pyruvate&nbsp;Oxidation: '<span style="color: #e65400;">Pyruvate&nbsp;Oxidation</span>' #DARK ORANGE
+    Pyruvate: '<span style="color: #e69100;">Pyruvate</span>' #LIGHT ORANGE
+    pyruvate: '<span style="color: #e69100;">pyruvate</span>' #LIGHT ORANGE
+    DDDDDDDD: '<span style="color: #b3b300;">DDDDDDDD</span>' #DARK YELLOW
+    Chemiosmosis: '<span style="color: #59b300;">Chemiosmosis</span>' #LIME GREEN
+    FFFFFFFF: '<span style="color: #009900;">FFFFFFFF</span>' #GREEN
+    electron carriers: '<span style="color: #00b38f;">electron carriers</span>' #TEAL
+    Electron Transport Chain: '<span style="color: #00b3b3;">Electron Transport Chain</span>' #CYAN
+    IIIIIIII: '<span style="color: #0a9bf5;">IIIIIIII</span>' #SKY BLUE
+    JJJJJJJJ: '<span style="color: #0039e6;">JJJJJJJJ</span>' #BLUE
+    Glycolysis: '<span style="color: #004d99;">Glycolysis</span>' #NAVY
+    mitochondrial matrix: '<span style="color: #7b12a1;">mitochondrial matrix</span>' #PURPLE
+    Cirtic Acid Cycle: '<span style="color: #b30077;">Cirtic Acid Cycle</span>' #MAGENTA
+    electrochemical gradient: '<span style="color: #cc0066;">electrochemical gradient</span>' #PINK
+
+matching pairs:
+  Glycolysis:
+    - First stage of cellular respiration
+    - For each molecule of glucose, this stage produces two (2) ATP and two (2) NADH molecules
+    - The only stage of cellular respiration that takes place in the cytosol of the cell
+
+  Pyruvate&nbsp;Oxidation:
+    - Short stage that produces carbon dioxide (CO<sub>2</sub>) and NADH
+    - Takes pyruvate as input and produces acetyl-CoA
+    - A stage that links glycolysis to the rest of cellular respiration
+    - Pyruvate must enter the mitochondrial matrix for this stage to begin
+    - This stage is entirely carried out by a large enzyme complex called the pyruvate dehydrogenase complex
+    - For each molecule of glucose, this stage produces zero (0) ATP and two (2) NADH molecules
+    - First stage of cellular respiration that occurs within the mitochondria organelles
+
+  Cirtic Acid Cycle (TCA cycle):
+    - Starts by joining a four carbon sugar and a two carbon sugar
+    - Forms a GTP molecule which is equivalent to an ATP molecule
+    - Final stage in the oxidation of glucose into carbon dioxide (CO<sub>2</sub>)
+    - Acetyl CoA serves as fuel for this stage of cellular respiration
+    - This stage was identified by Hans Krebs and William Johnson in 1937 and is sometimes called the "Krebs cycle"
+    - Begins with the transfer of a two-carbon acetyl group to a four-carbon acceptor to form a six-carbon compound
+    - Begins with the transfer of a two-carbon acetyl CoA to a four-carbon oxaloacetate to form a six-carbon citrate
+    - The only stage of cellular respiration that produces the electron acceptor FADH<sub>2</sub>
+    - At the end this stage, the four-carbon oxaloacetate has been regenerated, and the stage repeats.
+    - For each molecule of glucose, this stage produces two (2) ATP, six (6) NADH, and two (2) FADH<sub>2</sub> molecules
+
+  Electron Transport Chain (ETC):
+    - Stage of cellular respiration that extracts energy from the electron carriers NADH and FADH<sub>2</sub>
+    - Occurs in the membrane of the mitochondrial matrix to produce the electrochemical gradient
+    - Involves a series of protein complexes to extract redox energy from the high energy electrons
+
+  Chemiosmosis:
+    - Stage of cellular respiration that produces the most ATP
+    - Occurs in the membrane of the mitochondrial matrix to produce ATP
+    - Uses the electrochemical gradient to produce substrate-level phosphorylation energy molecules
+    - The protein ATP synthase works like a water turbine in a dam
+    - The only stage of cellular respiration that does NOT involve electron carriers
+
