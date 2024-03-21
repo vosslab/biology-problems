@@ -13,8 +13,8 @@ values description: statements
 replacement_rules:
     cellular respiration: '<span style="color: #e60000;">cellular respiration</span>' #RED
     Pyruvate&nbsp;Oxidation: '<span style="color: #e65400;">Pyruvate&nbsp;Oxidation</span>' #DARK ORANGE
-    Pyruvate: '<span style="color: #e69100;">Pyruvate</span>' #LIGHT ORANGE
-    pyruvate: '<span style="color: #e69100;">pyruvate</span>' #LIGHT ORANGE
+    ' Pyruvate': ' <span style="color: #e69100;">Pyruvate</span>' #LIGHT ORANGE
+    ' pyruvate': ' <span style="color: #e69100;">pyruvate</span>' #LIGHT ORANGE
     DDDDDDDD: '<span style="color: #b3b300;">DDDDDDDD</span>' #DARK YELLOW
     Chemiosmosis: '<span style="color: #59b300;">Chemiosmosis</span>' #LIME GREEN
     FFFFFFFF: '<span style="color: #009900;">FFFFFFFF</span>' #GREEN
