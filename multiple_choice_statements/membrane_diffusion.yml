@@ -27,6 +27,8 @@ false_statements:
   false2b: sodium ions, Na<sup>+</sup>
   false2c: potassium ions, K<sup>+</sup>
   false2d: ammonia, NH<sub>3</sub><sup>+</sup>
+  false2e: magnesium ions, Mg<sup>2+</sup>
+  false2f: phosphate ions, PO<sub>4</sub><sup>3-</sup>
 
   false3a: adenine nucleotides
   false3b: guanine nucleotides
@@ -43,12 +45,14 @@ false_statements:
   false4g: maltose sugars
   false4h: ribose sugars
 
-  false5a: glycine amino acid
-  false5b: alanine amino acid
-  false5c: serine amino acid
-  false5d: cysteine amino acid
-  false5e: arginine amino acid
-  false5f: lysine amino acid
+  false5a: glycine amino acids
+  false5b: alanine amino acids
+  false5c: serine amino acids
+  false5d: cysteine amino acids
+  false5e: arginine amino acids
+  false5f: lysine amino acids
+  false5g: glutamate amino acids
+  false5h: glutamic acid amino acids
 
   false6a: dihydrogen oxide, H<sub>2</sub>O
   false6b: water, H<sub>2</sub>O
