@@ -1,3 +1,5 @@
+#find reactions at the URL: https://enzyme.expasy.org/EC/1.1.1.228
+
 '(1) Oxidoreductases':
   Description: Oxidation/reduction reactions; transfer of H and O atoms or electrons from one substance to another
   Typical reaction: AH + BO &rarr; AO + BH
@@ -15,6 +17,10 @@
       EC: 1.1.1.37
       Substrates: [Malate, NAD+]
       Products: [Oxaloacetate, NADH]
+    - Enzyme: Sorbitol dehydrogenase
+      EC: 1.1.1.14
+      Substrates: [D-sorbitol, NAD+]
+      Products: [D-xylitol, NADH]
     - Enzyme: Isocitrate dehydrogenase
       EC: 1.1.1.42
       Substrates: [Isocitrate, NAD+]

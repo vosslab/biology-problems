@@ -1,0 +1,76 @@
+-   abbreviation: 'Glc'
+    molecule number: 0
+    name: 'Glucose'
+    native CID: 5793
+    name CID: 5793
+    SMILES: 'C([C@@H]1[C@H]([C@@H]([C@H](C(O1)O)O)O)O)O'
+
+-   abbreviation: 'G6P'
+    molecule number: 1
+    name: 'Glucose 6-phosphate'
+    native CID: 23421199
+    name CID: 5958
+    SMILES: 'C([C@@H]1[C@H]([C@@H]([C@H](C(O1)O)O)O)O)OP(=O)([O-])[O-]'
+
+-   abbreviation: 'F6P'
+    molecule number: 2
+    name: 'Fructose 6-phosphate'
+    native CID: 21604863
+    name CID: 603
+    SMILES: 'C([C@@H]1[C@H]([C@@H]([C@](O1)(CO)O)O)O)OP(=O)([O-])[O-]'
+
+-   abbreviation: 'F1,6BP'
+    molecule number: 3
+    name: 'Fructose 1,6-bisphosphate'
+    native CID: 5460765
+    name CID: 10267
+    SMILES: 'C([C@@H]1[C@H]([C@@H]([C@](O1)(COP(=O)([O-])[O-])O)O)O)OP(=O)([O-])[O-]'
+
+-   abbreviation: 'DHAP'
+    molecule number: 4
+    name: 'Dihydroxyacetone phosphate'
+    native CID: 4643300
+    name CID: 668
+    SMILES: 'C(C(=O)COP(=O)([O-])[O-])O'
+
+-   abbreviation: 'GAP'
+    molecule number: 5
+    name: 'Glyceraldehyde 3-phosphate'
+    native CID: 24794350
+    name CID: 729
+    SMILES: 'C([C@H](C=O)O)OP(=O)([O-])[O-]'
+
+-   abbreviation: '1,3BPG'
+    molecule number: 6
+    name: '1,3-Bisphosphoglycerate'
+    native CID: 46878409
+    name CID: 683
+    SMILES: 'C([C@H](C(=O)OP(=O)([O-])[O-])O)OP(=O)([O-])[O-]'
+
+-   abbreviation: '3PG'
+    molecule number: 7
+    name: '3-Phosphoglycerate'
+    native CID: 25245548
+    name CID: 439183
+    SMILES: 'C([C@H](C(=O)[O-])O)OP(=O)([O-])[O-]'
+
+-   abbreviation: '2PG'
+    molecule number: 8
+    name: '2-Phosphoglycerate'
+    native CID: 40467846
+    name CID: 59
+    SMILES: 'C([C@H](C(=O)[O-])OP(=O)([O-])[O-])O'
+
+-   abbreviation: 'PEP'
+    molecule number: 9
+    name: 'Phosphoenolpyruvate'
+    native CID: 3674425
+    name CID: 1005
+    SMILES: 'C=C(C(=O)[O-])OP(=O)([O-])[O-]'
+
+-   abbreviation: 'Pyr'
+    molecule number: 10
+    name: 'Pyruvate'
+    native CID: 107735
+    name CID: 1060
+    SMILES: 'CC(=O)C(=O)[O-]'

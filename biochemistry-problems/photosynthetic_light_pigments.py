@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 
 import os
-import sys
-import copy
 import random
+
 import bptools
 import itertools
 
@@ -32,7 +31,7 @@ def colorHtml(color_name):
 
 #==================================
 def writeChoice(name1, name2):
-	choice = "{0} and {1}; ".format(colorHtml(name1), colorHtml(name2))
+	choice = "{0} and {1} ".format(colorHtml(name1), colorHtml(name2))
 	return choice
 
 #==================================

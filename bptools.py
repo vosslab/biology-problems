@@ -14,6 +14,7 @@ import crcmod.predefined #pip
 #anticheating measures
 use_nocopy_script = False
 use_insert_hidden_terms = True
+hidden_term_density = 0.7
 use_add_no_click_div = True
 noPrint = True
 noCopy = True
@@ -168,8 +169,11 @@ def insert_hidden_terms(text_content):
 			new_words = []
 			for word in words:
 				new_words.append(word)
-				hidden_term = random.choice(hidden_term_bank)
-				new_words.append(f"<span style='font-size: 1px; color: white;'>{hidden_term}</span>")
+				if random.random() < hidden_term_density:
+					hidden_term = random.choice(hidden_term_bank)
+					new_words.append(f"<span style='font-size: 1px; color: white;'>{hidden_term}</span>")
+				else:
+					new_words.append(" ")
 			new_parts.append(''.join(new_words))
 	return ''.join(new_parts)
 
@@ -222,7 +226,7 @@ base_replacement_rule_dict = {
 
 #=======================
 def append_clear_font_space_to_text(string_text):
-	return f'<strong><span style="font-family: sans-serif; letter-spacing: 1px;">{string_text}</span></strong>'
+	return f'<span style="font-family: sans-serif; letter-spacing: 1px;">{string_text}</span>'
 
 #=======================
 def append_clear_font_space_to_list(list_of_text_strings):
@@ -232,9 +236,10 @@ def append_clear_font_space_to_list(list_of_text_strings):
 		new_list_of_text_strings.append(new_string_text)
 	return new_list_of_text_strings
 
-
 #=======================
 def applyReplacementRulesToText(text_string, replacement_rule_dict):
+	if not isinstance(text_string, str):
+		raise TypeError(f"value is not string: {text_string}")
 	if replacement_rule_dict is None:
 		print("no replacement rules found")
 		replacement_rule_dict = base_replacement_rule_dict
@@ -242,6 +247,8 @@ def applyReplacementRulesToText(text_string, replacement_rule_dict):
 		#replacement_rule_dict = {**base_replacement_rule_dict, **replacement_rule_dict}
 		replacement_rule_dict |= base_replacement_rule_dict
 	for find_text, replace_text in replacement_rule_dict.items():
+		if not replace_text.startswith('<strong>'):
+			replace_text = f'<strong>{replace_text}</strong>'
 		text_string = text_string.replace(find_text, replace_text)
 	return text_string
 
@@ -254,12 +261,14 @@ def applyReplacementRulesToList(list_of_text_strings, replacement_rule_dict):
 		#replacement_rule_dict = {**base_replacement_rule_dict, **replacement_rule_dict}
 		replacement_rule_dict |= base_replacement_rule_dict
 	new_list_of_text_strings = []
-	for string_text in list_of_text_strings:
-		if not isinstance(string_text, str):
-			raise TypeError(f"value is not string: {string_text}")
+	for text_string in list_of_text_strings:
+		if not isinstance(text_string, str):
+			raise TypeError(f"value is not string: {text_string}")
 		for find_text, replace_text in replacement_rule_dict.items():
-			string_text = string_text.replace(find_text,replace_text)
-		new_list_of_text_strings.append(string_text)
+			if not replace_text.startswith('<strong>'):
+				replace_text = f'<strong>{replace_text}</strong>'
+			text_string = text_string.replace(find_text, replace_text)
+		new_list_of_text_strings.append(text_string)
 	return new_list_of_text_strings
 
 #==========================
@@ -635,8 +644,8 @@ def getCrc16_FromString(mystr):
 def makeQuestionPretty(question):
 	pretty_question = copy.copy(question)
 	#print(len(pretty_question))
-	pretty_question = re.sub('\<table .+\<\/table\>', '\n[TABLE]\n', pretty_question)
-	pretty_question = re.sub('\<table .*\<\/table\>', '\n[TABLE]\n', pretty_question)
+	pretty_question = re.sub(r'\<table .+\<\/table\>', '\n[TABLE]\n', pretty_question)
+	pretty_question = re.sub(r'\<table .*\<\/table\>', '\n[TABLE]\n', pretty_question)
 	if '<table' in pretty_question or '</table' in pretty_question:
 		print("MISSED A TABLE")
 		print(pretty_question)
@@ -644,17 +653,17 @@ def makeQuestionPretty(question):
 		pass
 	#print(len(pretty_question))
 	pretty_question = re.sub('&nbsp;', ' ', pretty_question)
-	pretty_question = re.sub('h[0-9]\>', 'p>', pretty_question)
+	pretty_question = re.sub(r'h[0-9]\>', 'p>', pretty_question)
 	pretty_question = re.sub('<br/>', '\n', pretty_question)
 	pretty_question = re.sub('<li>', '\n* ', pretty_question)
 	pretty_question = re.sub('<span [^>]*>', ' ', pretty_question)
-	pretty_question = re.sub('<\/?strong>', ' ', pretty_question)
+	pretty_question = re.sub(r'<\/?strong>', ' ', pretty_question)
 	pretty_question = re.sub('</span>', '', pretty_question)
-	pretty_question = re.sub('\<hr\/\>', '', pretty_question)
-	pretty_question = re.sub('\<\/p\>\s*\<p\>', '\n', pretty_question)
-	pretty_question = re.sub('\<p\>\s*\<\/p\>', '\n', pretty_question)
-	pretty_question = re.sub('\n\<\/p\>', '', pretty_question)
-	pretty_question = re.sub('\n\<p\>', '\n', pretty_question)
+	pretty_question = re.sub(r'\<hr\/\>', '', pretty_question)
+	pretty_question = re.sub(r'\<\/p\>\s*\<p\>', '\n', pretty_question)
+	pretty_question = re.sub(r'\<p\>\s*\<\/p\>', '\n', pretty_question)
+	pretty_question = re.sub(r'\n\<\/p\>', '', pretty_question)
+	pretty_question = re.sub(r'\n\<p\>', '\n', pretty_question)
 	pretty_question = re.sub('\n\n', '\n', pretty_question)
 	pretty_question = re.sub('  *', ' ', pretty_question)
 
@@ -888,6 +897,29 @@ def formatBB_MAT_Question(N, question, answers_list, matching_list):
 		noisy_match_text = ChoiceHeader(match_text)
 		bb_question += '\t{0}&nbsp;\t{1}&nbsp;'.format(noisy_answer_text, noisy_match_text)
 		print("- {0}. {1} == {2}".format(letters[i], makeQuestionPretty(answer_text), makeQuestionPretty(match_text)))
+	print("")
+	question_count += 1
+	return bb_question + '\n'
+
+#=====================
+def formatBB_ORD_Question(N, question_text, ordered_answers_list):
+	#ORD TAB question text TAB answer text TAB answer two text
+	global question_count
+	if len(ordered_answers_list) <= 2:
+		print("not enough answers to choose from, you need three answers for an ordering problem")
+		print("answers_list=", ordered_answers_list)
+		sys.exit(1)
+
+	bb_question = ''
+	#number = "{0}. ".format(N)
+	bb_question += 'ORD\t'
+	big_question = question_text + ' '.join(ordered_answers_list)
+	bb_question += QuestionHeader(question_text, N, big_question)
+
+	for i, answer_text in enumerate(ordered_answers_list):
+		noisy_answer_text = ChoiceHeader(answer_text)
+		bb_question += '\t'+noisy_answer_text
+		print(f"- [{i+1}] {makeQuestionPretty(answer_text)}")
 	print("")
 	question_count += 1
 	return bb_question + '\n'

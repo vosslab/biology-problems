@@ -108,7 +108,7 @@ def generateChoices(letters: list, question_type_id: int) -> (list, str):
 	return choices_list, answer_text
 
 #==========================
-def writeQuestion(N: int, num_letters: int) -> str:
+def writeQuestion(N: int, num_letters: int, course_name: str) -> str:
 	"""
 	Create a metabolic pathway question.
 
@@ -124,7 +124,12 @@ def writeQuestion(N: int, num_letters: int) -> str:
 	str
 	    Fully formatted question for display.
 	"""
-	question_type_id = (N-1)%4 #random.randint(0, 3)
+	if course_name == 'bchm355':
+		# BCHM 355/455
+		question_type_id = (N-1)%4 #random.randint(0, 3)
+	else:
+		# BIOL 301
+		question_type_id = (N-1)%2 #random.randint(0, 3)
 
 	letters = metaboliclib.get_letters(num_letters, N)
 	metabolic_table = metaboliclib.generate_metabolic_pathway(num_letters, N)
@@ -148,10 +153,27 @@ if __name__ == '__main__':
 	parser = argparse.ArgumentParser(description="Generate questions about metabolic pathways.")
 	parser.add_argument('-d', '--duplicates', type=int, default=95, help="Number of questions to create.")
 	parser.add_argument('-n', '--num_letters', type=int, default=5, help="Number of letters in the metabolic pathway.")
+
+	# Create a mutually exclusive group for question types
+	course_group = parser.add_mutually_exclusive_group()
+	# Add question type argument with choices
+	course_group.add_argument('-c', '--course', dest='course', type=str,
+		choices=('biol301', 'bchm355'),
+		help='Set the course: biol301 or bchm355.')
+	# Add flags for multiple-choice and fill-in-the-blank question types
+	course_group.add_argument('--biol301', dest='course', action='store_const', const='biol301',
+		help='Set question type to BIOL 301.')
+	course_group.add_argument('--bchm355', dest='course', action='store_const', const='bchm355',
+		help='Set question type to BCHM 355/455.')
+	course_group.set_defaults(course='bchm355')
+
 	args = parser.parse_args()
 
 	# Output file setup
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	outfile = ('bbq-'
+		+ args.course.upper()
+		+ os.path.splitext(os.path.basename(__file__))[0]
+		+ '-questions.txt')
 	print(f'writing to file: {outfile}')
 
 	# Create and write questions to the output file
@@ -159,7 +181,7 @@ if __name__ == '__main__':
 		N = 0
 		for d in range(args.duplicates):
 			N += 1
-			complete_question = writeQuestion(N, args.num_letters)
+			complete_question = writeQuestion(N, args.num_letters, args.course)
 			f.write(complete_question)
 			#print(complete_question)
 	bptools.print_histogram()
