@@ -7,9 +7,8 @@ key description: stage in the central dogma of biology
 keys description: stages in the central dogma of biology
 
 #both singular and plural
-value description: concept
-values description: concepts
-
+value description: related terminology
+values description: related terms
 
 replacement_rules:
     RNA transcription: '<span style="color: #e60000;">RNA transcription</span>' #RED

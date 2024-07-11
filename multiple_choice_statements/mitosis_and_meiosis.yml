@@ -1,7 +1,7 @@
 ---
 
 #Which one of the following statements is FALSE/TRUE <connection word> <topic>
-topic: mitosis and meiosis cell division'
+topic: mitosis and meiosis cell division
 
 replacement_rules:
   Mitosis II: '<span style="color: OrangeRed;">Mitosis II</span>'
