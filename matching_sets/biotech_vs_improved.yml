@@ -11,7 +11,7 @@ value description: project description
 values description: project descriptions
 
 replacement_rules:
-    'Modern Biotechnology': '<span style="color: #e60000;">Modern Biotechnology'</span>' #RED
+    'Modern Biotechnology': '<span style="color: #e60000;">Modern Biotechnology</span>' #RED
     BBBBBBBB: '<span style="color: #e65400;">BBBBBBBB</span>' #DARK ORANGE
     'Pharmaceuticals/Drug Manufacturing': '<span style="color: #e69100;">Pharmaceuticals/Drug Manufacturing</span>' #LIGHT ORANGE
     DDDDDDDD: '<span style="color: #b3b300;">DDDDDDDD</span>' #DARK YELLOW
