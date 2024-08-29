@@ -10,6 +10,22 @@ keys description: biotechnology adjacent industries
 value description: project description
 values description: project descriptions
 
+replacement_rules:
+    'Modern Biotechnology': '<span style="color: #e60000;">Modern Biotechnology'</span>' #RED
+    BBBBBBBB: '<span style="color: #e65400;">BBBBBBBB</span>' #DARK ORANGE
+    'Pharmaceuticals/Drug Manufacturing': '<span style="color: #e69100;">Pharmaceuticals/Drug Manufacturing</span>' #LIGHT ORANGE
+    DDDDDDDD: '<span style="color: #b3b300;">DDDDDDDD</span>' #DARK YELLOW
+    'Supplemental Industry/Traditional Remedies': '<span style="color: #59b300;">Supplemental Industry/Traditional Remedies</span>' #LIME GREEN
+    FFFFFFFF: '<span style="color: #009900;">FFFFFFFF</span>' #GREEN
+    GGGGGGGG: '<span style="color: #00b38f;">GGGGGGGG</span>' #TEAL
+    HHHHHHHH: '<span style="color: #00b3b3;">HHHHHHHH</span>' #CYAN
+    IIIIIIII: '<span style="color: #0a9bf5;">IIIIIIII</span>' #SKY BLUE
+    'Traditional Biotechnology': '<span style="color: #0039e6;">Traditional Biotechnology</span>' #BLUE
+    KKKKKKKK: '<span style="color: #004d99;">KKKKKKKK</span>' #NAVY
+    'Bio-engineering/Medical Devices': '<span style="color: #7b12a1;">Bio-engineering/Medical Devices</span>' #PURPLE
+    MMMMMMMM: '<span style="color: #b30077;">MMMMMMMM</span>' #MAGENTA
+    NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
+
 matching pairs:
   'Traditional Biotechnology':
     - Utilizing yeast fermentation to produce ethanol from agricultural waste materials for use as a renewable energy source.
@@ -50,7 +66,7 @@ matching pairs:
     - Creating a novel antiviral drug that inhibits viral replication processes to treat infections like HIV or hepatitis with improved efficacy and reduced side effects.
     - Designing a cognitive enhancement drug to improve memory and cognitive functions in individuals with neurodegenerative disorders or age-related cognitive decline.
 
-  Supplemental Industry/Traditional Remedies:
+  'Supplemental Industry/Traditional Remedies':
     - Formulating an herbal supplement by extracting compounds from turmeric and ginger to support joint health and reduce inflammation.
     - Producing a traditional remedy by blending eucalyptus and peppermint oils into a balm for alleviating respiratory congestion and muscle aches.
     - Cultivating cannabis plants to create extracts for headache relief and other medicinal purposes.
