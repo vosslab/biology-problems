@@ -1,0 +1,76 @@
+#YAML file for Matching Questions
+
+items to match per question: 5
+
+#both singular and plural
+key description: biotechnology adjacent industry
+keys description: biotechnology adjacent industries
+
+#both singular and plural
+value description: project description
+values description: project descriptions
+
+matching_pairs:
+  'Traditional Biotechnology':
+    - Utilizing yeast fermentation to produce ethanol from agricultural waste materials for use as a renewable energy source.
+    - Extracting natural enzymes from papaya to develop a meat tenderizer that breaks down protein fibers to improve texture and flavor.
+    - Using novel bacteria to ferment milk into yogurt for probiotic benefits.
+    - Utilizing yeast to brew beer through fermentation processes.
+    - Employing yeast to produce wine by fermenting grape juice.
+    - Using yeast to bake bread through fermentation to leaven dough.
+    - Crossing two apple varieties to create a new apple variety with improved taste or texture.
+    - Breeding a horse and a donkey to produce a mule with enhanced strength and endurance.
+    - Cultivating non-infectious viral particles to be used as a vaccine for immune system training.
+    - Harvesting cellulose from switchgrass to convert into ethanol, contributing to biofuel production.
+    - Extracting enzymes from cells to purify water, addressing clean water access in underdeveloped regions.
+    - Identifying and harnessing plastic-degrading fungus isolated from insect larvae to break down high-density polyethylene (HDPE) microplastics into lower molecular weight compounds.
+    - Identifying and harnessing nitrogen-fixing soil bacteria that convert atmospheric nitrogen into ammonia to create organic fertilizers, reducing chemical fertilizer use.
+    - Isolating polylactic acid (PLA) biopolymers from bacterial fermentation byproducts to produce sustainable food packaging, replacing plastic wraps.
+
+  'Modern Biotechnology':
+    - Genetically modifying yeast strains to produce high-yield bioethanol from non-food plant materials for more sustainable energy production.
+    - Engineering algae to synthesize bioactive compounds with antimicrobial properties for medical and environmental applications.
+    - Developing CRISPR-based tools to edit microbial genomes for enhanced production of therapeutic proteins and bio-based chemicals.
+    - Genetically enhancing plants to produce higher concentrations of essential nutrients and vitamins to combat global malnutrition.
+    - Genetically engineering garlic plants to produce high concentrations of anti-inflammatory compounds for treating irritation and allergies.
+    - Developing treats that reduce cat allergens by inhibiting the production of allergenic proteins in cat saliva.
+    - Developing genetically modified plants that attract beneficial insects and repel pests by enhancing their production of specific scents and toxins.
+    - Genetically engineering bacteria to produce high-performance PLA biopolymers via fermentation with improved degradation rates and functional properties for sustainable food packaging.
+    - Genetically modifying nitrogen-fixing soil bacteria to increase their efficiency in nitrogen fixation and improve their functionality in various soil types for optimized organic fertilizer production.
+    - Genetically enhancing a plastic-degrading fungus isolated from insect larvae to improve its efficiency in breaking down HDPE microplastics and optimizing its plastic-degrading pathways using synthetic biology tools.
+    - Growing algae with inserted genes to produce biodiesel, providing a sustainable and renewable fuel alternative.
+
+  'Pharmaceuticals/Drug Manufacturing':
+    - Developing a targeted therapy that utilizes engineered antibodies to selectively bind and neutralize pathogenic proteins associated with neurodegenerative diseases.
+    - Designing a novel drug that stabilizes mitochondrial DNA to improve cellular energy production and combat age-related degenerative disorders.
+    - Designing a novel drug to target and destroy cancer cells with minimal side effects on healthy tissue.
+    - Designing an oral drug to enhance maternal egg quality by stabilizing chromosomal structures to reduce the risk of Down syndrome in offspring.
+    - Developing a drug to regulate gut microbiota to treat conditions such as irritable bowel syndrome or inflammatory bowel disease.
+    - Formulating a drug for early detection of neurodegenerative diseases by binding to biomarkers to enable early diagnosis and intervention.
+    - Creating a novel antiviral drug that inhibits viral replication processes to treat infections like HIV or hepatitis with improved efficacy and reduced side effects.
+    - Designing a cognitive enhancement drug to improve memory and cognitive functions in individuals with neurodegenerative disorders or age-related cognitive decline.
+
+  Supplemental Industry/Traditional Remedies:
+    - Formulating an herbal supplement by extracting compounds from turmeric and ginger to support joint health and reduce inflammation.
+    - Producing a traditional remedy by blending eucalyptus and peppermint oils into a balm for alleviating respiratory congestion and muscle aches.
+    - Cultivating cannabis plants to create extracts for headache relief and other medicinal purposes.
+    - Creating a natural anti-inflammatory oil by combining garlic extract with coconut oil for use on irritated skin to reduce itching and pain from insect bites and skin allergies.
+    - Developing a supplement with curry spice herbs known to help the body cope with stress and improve overall well-being.
+    - Making a liquid extract from echinacea and elderberry to help boost the immune system and support respiratory health.
+    - Creating a Bifidobacterium probiotic supplement in various flavors to support digestion and maintain a healthy gut.
+    - Formulating a soothing herbal tea blend with valerian root and chamomile to promote restful sleep and ease insomnia.
+
+  'Bio-engineering/Medical Devices':
+    - Designing a robotic surgical assistant that enhances precision and minimizes tissue damage through real-time imaging and automated adjustments during surgery.
+    - Creating an advanced prosthetic limb with integrated sensors and adaptive control systems that respond to neural signals for improved movement and dexterity.
+    - Designing an advanced 3D bioprinter capable of creating functional human organs by precisely layering stem cells to replicate natural tissue structures.
+    - Creating a wearable smart watch that provides real-time blood pressure readings and alerts, empowering users to track their cardiovascular health seamlessly.
+    - Developing smart contact lenses that measure blood sugar levels from tears using electrophoretic sensors.
+    - Developing a wearable glucose monitor that continuously tracks blood sugar levels and transmits data to a smartphone app.
+    - Creating customized titanium implants mixed with hydrogels containing cartilage cells to repair damaged joints by mimicking natural tissue for enhanced healing and reduced rejection.
+
+  'Supplemental Industry/Traditional Remedies':
+    - Formulating an herbal supplement by extracting compounds from turmeric and ginger to support joint health and reduce inflammation.
+    - Producing a traditional remedy by blending eucalyptus and peppermint oils into a balm for alleviating respiratory congestion and muscle aches.
+    - Cultivating cannabis plants to create extracts for headache relief and other medicinal purposes.
+    - Creating a natural anti-inflammatory oil by combining garlic extract with coconut oil for use on irritated skin to reduce itching and pain from insect bites and skin allergies.
