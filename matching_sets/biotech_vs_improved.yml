@@ -10,7 +10,7 @@ keys description: biotechnology adjacent industries
 value description: project description
 values description: project descriptions
 
-matching_pairs:
+matching pairs:
   'Traditional Biotechnology':
     - Utilizing yeast fermentation to produce ethanol from agricultural waste materials for use as a renewable energy source.
     - Extracting natural enzymes from papaya to develop a meat tenderizer that breaks down protein fibers to improve texture and flavor.
@@ -68,9 +68,3 @@ matching_pairs:
     - Developing smart contact lenses that measure blood sugar levels from tears using electrophoretic sensors.
     - Developing a wearable glucose monitor that continuously tracks blood sugar levels and transmits data to a smartphone app.
     - Creating customized titanium implants mixed with hydrogels containing cartilage cells to repair damaged joints by mimicking natural tissue for enhanced healing and reduced rejection.
-
-  'Supplemental Industry/Traditional Remedies':
-    - Formulating an herbal supplement by extracting compounds from turmeric and ginger to support joint health and reduce inflammation.
-    - Producing a traditional remedy by blending eucalyptus and peppermint oils into a balm for alleviating respiratory congestion and muscle aches.
-    - Cultivating cannabis plants to create extracts for headache relief and other medicinal purposes.
-    - Creating a natural anti-inflammatory oil by combining garlic extract with coconut oil for use on irritated skin to reduce itching and pain from insect bites and skin allergies.
