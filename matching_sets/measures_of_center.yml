@@ -1,0 +1,51 @@
+#YAML file for Matching Questions
+
+items to match per question: 4
+
+#both singular and plural
+key description: measure of center
+keys description: measures of center
+
+#both singular and plural
+value description: definition
+values description: definitions
+
+replacement_rules:
+    Mean: '<span style="color: #e60000;">Mean</span>' #RED
+    BBBBBBBB: '<span style="color: #e65400;">BBBBBBBB</span>' #DARK ORANGE
+    CCCCCCCC: '<span style="color: #e69100;">CCCCCCCC</span>' #LIGHT ORANGE
+    DDDDDDDD: '<span style="color: #b3b300;">DDDDDDDD</span>' #DARK YELLOW
+    Mode: '<span style="color: #59b300;">Mode</span>' #LIME GREEN
+    FFFFFFFF: '<span style="color: #009900;">FFFFFFFF</span>' #GREEN
+    GGGGGGGG: '<span style="color: #00b38f;">GGGGGGGG</span>' #TEAL
+    HHHHHHHH: '<span style="color: #00b3b3;">HHHHHHHH</span>' #CYAN
+    Median: '<span style="color: #0a9bf5;">Median</span>' #SKY BLUE
+    JJJJJJJJ: '<span style="color: #0039e6;">JJJJJJJJ</span>' #BLUE
+    KKKKKKKK: '<span style="color: #004d99;">KKKKKKKK</span>' #NAVY
+    Midrange: '<span style="color: #7b12a1;">Midrange</span>' #PURPLE
+    MMMMMMMM: '<span style="color: #b30077;">MMMMMMMM</span>' #MAGENTA
+    NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
+
+matching pairs:
+  Mean:
+    - The central measure found by summing all values and dividing by the total number of values.
+    - The measure calculated by dividing the sum of all data points by the number of data points.
+    - A central tendency measure determined by the total sum of values divided by how many values there are.
+
+  Mode:
+    - The value or values that occur most frequently in the data set.
+    - The most common data point(s) within a set.
+    - The value that appears with the greatest frequency in the set.
+
+  Median:
+    - The value located at the midpoint of an ordered data set, or the average of two middle values for an even set.
+    - The middle number in a sorted list of values, or the average of the two central numbers if the data count is even.
+    - The middle value of an arranged set, splitting the data into two equal halves.
+
+  Midrange:
+    - The value obtained by adding the maximum and minimum values in the set, then dividing the result by two.
+    - The midpoint between the smallest and largest values in the data set.
+    - The value calculated by taking the sum of the highest and lowest values and halving it.
+
+
+
