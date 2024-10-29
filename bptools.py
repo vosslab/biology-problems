@@ -11,6 +11,8 @@ import subprocess
 import num2words #pip
 import crcmod.predefined #pip
 
+import xml.etree.ElementTree as ET
+
 #anticheating measures
 use_nocopy_script = False
 use_insert_hidden_terms = True
@@ -787,6 +789,49 @@ def formatBB_MC_Question(N, question, choices_list, answer):
 		sys.exit(1)
 	question_count += 1
 	return bb_question + '\n'
+
+#=====================
+def formatQTI_MC_Question_Simple(N, question, choices_list, answer):
+	# Set up the QTI namespace
+	QTI_NS = "http://www.imsglobal.org/xsd/imsqti_v2p1"
+	ET.register_namespace('', QTI_NS)
+
+	# Create the root element
+	assessmentItem = ET.Element("{%s}assessmentItem" % QTI_NS, {
+		"identifier": f"MCQ{N}",
+		"adaptive": "false",
+		"timeDependent": "false"
+	})
+
+	# Correct response setup
+	responseDeclaration = ET.SubElement(assessmentItem, "responseDeclaration", {
+		"identifier": "RESPONSE",
+		"cardinality": "single",
+		"baseType": "identifier"
+	})
+	correctResponse = ET.SubElement(responseDeclaration, "correctResponse")
+	correctValue = ET.SubElement(correctResponse, "value")
+	correctValue.text = str(choices_list.index(answer))
+
+	# Question stem setup
+	itemBody = ET.SubElement(assessmentItem, "itemBody")
+	choiceInteraction = ET.SubElement(itemBody, "choiceInteraction", {
+		"responseIdentifier": "RESPONSE",
+		"shuffle": "true",
+		"maxChoices": "1"
+	})
+	prompt = ET.SubElement(choiceInteraction, "prompt")
+	prompt.text = question
+
+	# Choices setup
+	for choice in choices_list:
+		simpleChoice = ET.SubElement(choiceInteraction, "simpleChoice", {
+			"identifier": str(choices_list.index(choice))
+		})
+		simpleChoice.text = choice
+
+	# Convert the ElementTree to a string
+	return ET.tostring(assessmentItem, encoding='unicode')
 
 #=====================
 def formatBB_MA_Question(N, question, choices_list, answers_list):

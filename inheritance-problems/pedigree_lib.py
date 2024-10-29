@@ -276,12 +276,12 @@ if __name__ == '__main__':
 					+"#.*...o.x...#.o%"
 				)
 	code_string = 	("#To.#To.#To.xTo%"
-	+"r^d.r^d.r^d.r^d%"
-	+"o.oT#.o.#.oTx.x%"
-	+"..r^d.....r^d..%"
-	+"oT#.o--T--x.oT#%"
-	+"r^d.r-T^T-d.r^d%"
-	+"#.o.o.x.o.x.#.o%"
+					+"r^d.r^d.r^d.r^d%"
+					+"o.oT#.o.#.oTx.x%"
+					+"..r^d.....r^d..%"
+					+"oT#.o--T--x.oT#%"
+					+"r^d.r-T^T-d.r^d%"
+					+"#.o.o.x.o.x.#.o%"
 	)
 	code = '<table border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse;"><tr>'
 	for name in character_sizes.keys():
