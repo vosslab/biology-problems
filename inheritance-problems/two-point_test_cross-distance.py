@@ -52,7 +52,7 @@ def parse_arguments():
 		Namespace: Parsed arguments with attributes `question_type` and `duplicates`.
 	"""
 	parser = argparse.ArgumentParser(description='Process some integers.')
-	question_group = parser.add_mutually_exclusive_group()
+	question_group = parser.add_mutually_exclusive_group(required=True)
 
 	# Add question type argument with choices
 	question_group.add_argument(
@@ -121,12 +121,6 @@ def main():
 	"""
 	args = parse_arguments()
 
-	# Validate question type
-	if args.question_type not in ('num', 'mc'):
-		print("Error: Invalid question type. Please use '-t num' or '--type num' for  "
-			"numeric questions, or '-t mc' or '--type mc' for multiple choice questions.")
-		sys.exit(1)
-
 	# Setup output file
 	script_name = os.path.splitext(os.path.basename(__file__))[0]
 	outfile =  f'bbq-{script_name}-{args.question_type.upper()}-questions.txt'
@@ -138,6 +132,8 @@ def main():
 			N = i + 1  # Question number
 			final_question = generate_question(N, args.question_type)
 			f.write(final_question)
+	if args.question_type == "mc":
+		bptools.print_histogram()
 
 if __name__ == "__main__":
 	main()
