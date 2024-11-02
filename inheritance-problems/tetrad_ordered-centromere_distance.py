@@ -300,24 +300,24 @@ def generate_question(N: int, question_type: str) -> str:
 		important_tip_text = get_important_tip()
 		return bptools.formatBB_NUM_Question(N, full_question + important_tip_text, distance, 0.1, tol_message=False)
 
-
 #=====================
 def main():
 	"""Main function that handles argument parsing, question generation, and file writing."""
 	args = parse_arguments()
 
-	outfile = f'bbq-{os.path.splitext(os.path.basename(__file__))[0]}-{args.question_type.upper()}-questions.txt'
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
 	print(f'Writing to file: {outfile}')
 
-	N = 1
-	# Open the file and generate questions
+	# Open the output file and generate questions
 	with open(outfile, 'w') as f:
-		for i in range(args.duplicates):
+		N = 1  # Question number counter
+		for _ in range(args.duplicates):
 			final_question = generate_question(N, args.question_type)
 			if final_question:
 				N += 1
 				f.write(final_question)
 
+	# Display histogram if question type is multiple choice
 	if args.question_type == "mc":
 		bptools.print_histogram()
 
