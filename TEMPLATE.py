@@ -150,7 +150,7 @@ def main():
 	args = parse_arguments()
 
 	# Setup output file name
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	outfile = f'bbq-{os.path.splitext(os.path.basename(__file__))[0]}-{args.question_type.upper()}-questions.txt'
 	print(f'Writing to file: {outfile}')
 
 	# Open the output file and generate questions
