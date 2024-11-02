@@ -6,10 +6,13 @@ import random
 
 debug = False
 
-
-#====================================
 #====================================
 # Dictionary to describe hypothetical fruit fly phenotypes
+#====================================
+
+# Dictionary that maps various hypothetical phenotypes of fruit flies to their descriptions.
+# Each key in the dictionary is a unique, quirky name describing a phenotype, and each value is a description
+# that elaborates on the visual or behavioral characteristics of that phenotype.
 phenotype_description_dict = {
 	'artsy':   'has wings that are colorful and distinctive patterns.',
 	'bumpy':   'has a skin texture that is not smooth, but rough with small bumps all over.',
@@ -40,25 +43,63 @@ phenotype_description_dict = {
 }
 
 #====================================
+# Generate a dictionary of phenotype names by the first letter
 #====================================
+
+# Create a list of phenotype names by extracting the keys from phenotype_description_dict.
+# Then shuffle the list to randomize the order of phenotype names.
 phenotype_names = list(phenotype_description_dict.keys())
 random.shuffle(phenotype_names)
+
+# Initialize an empty dictionary to map the first letter of each phenotype name to the full name.
 phenotype_dict = {}
 for name in phenotype_names:
+	# Map each phenotype name to its first letter in phenotype_dict.
+	# If multiple phenotypes start with the same letter, this will keep the last one due to overwriting.
 	phenotype_dict[name[0]] = name
+
+# Clean up the temporary list to free up memory, as it's no longer needed after creating phenotype_dict.
 del phenotype_names
 
 #===========================================================
-def get_gene_letters(num_genes_int: int) -> str:
-	lowercase = "abcdefghijklmnpqrsuvwxyz"  # Make sure this has the letters you want
-	gene_letters_set = set()
-	while len(gene_letters_set) < num_genes_int:
-		gene_letters_set.update(random.choice(lowercase))  # Add a randomly chosen letter
+# Function to generate a unique set of gene letters
+#===========================================================
 
-	# Sort after the set has the correct number of elements
+def get_gene_letters(num_genes_int: int) -> str:
+	"""
+	Generates a unique string of lowercase letters representing gene symbols.
+
+	Args:
+		num_genes_int (int): The number of unique gene letters to generate.
+
+	Returns:
+		str: A string containing `num_genes_int` unique, sorted letters chosen randomly.
+	"""
+
+	# Define the set of lowercase letters to choose from.
+	# This set excludes certain letters (like 'o' and 't') which might have specific reasons for exclusion.
+	lowercase = "abcdefghijklmnpqrsuvwxyz"
+
+	# Initialize an empty set to store unique gene letters.
+	gene_letters_set = set()
+
+	# Continuously add random letters to the set until it contains `num_genes_int` unique letters.
+	while len(gene_letters_set) < num_genes_int:
+		# Randomly select a letter from `lowercase` and add it to `gene_letters_set`.
+		# Since sets do not allow duplicates, any repeated letter will be ignored.
+		gene_letters_set.update(random.choice(lowercase))
+
+	# Convert the set of letters to a sorted list.
 	gene_letters_list = sorted(gene_letters_set)
-	gene_letters_str = ''.join(gene_letters_list)  # Create string from sorted list
+
+	# Join the sorted list of letters into a single string.
+	gene_letters_str = ''.join(gene_letters_list)
+
+	# Return the resulting string of unique, sorted gene letters.
 	return gene_letters_str
+
+# Test the function with an assertion to ensure it generates the correct number of letters.
+# This checks that the length of the result is equal to the requested number of genes.
 assert len(get_gene_letters(5)) == 5
 
 #===========================================================
@@ -97,14 +138,31 @@ assert len(generate_genotypes('qrst')) == 16
 #===========================================================
 #===========================================================
 def split_number_in_two(number: int) -> tuple:
+	"""
+	Splits a given integer `number` randomly into two parts (a, b) such that a + b = number.
+
+	Args:
+		number (int): The integer to split.
+
+	Returns:
+		tuple: A tuple (a, b) where a and b are non-negative integers that sum up to `number`.
+	"""
+	# Initialize two counters a and b, which will accumulate values to sum up to `number`.
 	a = 0
 	b = 0
+
+	# Iterate `number` times, assigning each count randomly to either a or b.
 	for i in range(number):
+		# Randomly decide whether to increment a or b.
 		if random.random() < 0.5:
 			a += 1
 		else:
 			b += 1
-	return (a,b)
+
+	# Return the tuple (a, b), which should sum to `number`.
+	return (a, b)
+
+# Test to ensure the function's output always sums to the input `number`.
 assert sum(split_number_in_two(100)) == 100
 
 #===========================================================
@@ -206,7 +264,6 @@ def is_valid_html(html_str: str) -> bool:
 		#print(html_str)
 		return False
 
-
 # Simple assertion test for the function: 'is_valid_html'
 assert is_valid_html("<p>This is a paragraph.</p>") == True
 assert is_valid_html("<p>This is a<br/>paragraph.</p>") == True
@@ -299,8 +356,25 @@ assert minN(2, 3, 1, 2) == 10000
 assert minN(5, 22, 6, 11) == 200
 
 
+#===========================================================
 def minN_INTERFERENCE(x: int, y: int, a: int, b: int) -> int:
+	"""
+	Calculates the minimum value of N needed for certain genetic interference calculations.
+
+	Args:
+		x (int): First distance or parameter in the interference calculation.
+		y (int): Second distance or parameter in the interference calculation.
+		a (int): Numerator of interference ratio.
+		b (int): Denominator of interference ratio.
+
+	Returns:
+		int: The minimum value of N, scaled by the greatest common divisor of the given terms.
+	"""
+	# Calculate the greatest common divisor (GCD) of multiple terms involving x, y, a, and b.
+	# This GCD represents the greatest common factor in the interference calculations.
 	final_gcd = math.gcd(b * x * y, 100 * b * x, 100 * b * y, x * y * (b - a), 10000 * b)
+
+	# Divide 10000 * b by the calculated GCD to get the minimum interference value N.
 	N = 10000 * b // final_gcd
 	return N
 
@@ -500,71 +574,148 @@ assert distance_triplet_generator((9,11), 36) == [(25, 11, 35)]
 #====================================
 #====================================
 def get_all_distance_triplets(max_fraction_int: int=12, max_distance: int=40, msg: bool=True) -> list:
+	"""
+	Generates a list of unique distance triplets based on interference fractions and maximum distance.
+
+	Args:
+		max_fraction_int (int): The maximum integer for the fraction's numerator and denominator.
+		max_distance (int): The maximum allowable distance in each distance triplet.
+		msg (bool): If True, prints a message about the number of distance triplets found.
+
+	Returns:
+		list: A list of valid distance triplets generated by `distance_triplet_generator`.
+	"""
+	# Dictionary to keep track of used numerator/denominator pairs to avoid duplicates.
 	used_values = {}
+
+	# List to store all generated distance triplets.
 	distance_triplet_list = []
-	for numerator_prime  in range(1, max_fraction_int):
-		for denominator_prime in range(numerator_prime+1,max_fraction_int+1):
-			gcd_prime = math.gcd(numerator_prime ,denominator_prime )
+
+	# Iterate over possible values for the numerator and denominator within max_fraction_int.
+	for numerator_prime in range(1, max_fraction_int):
+		for denominator_prime in range(numerator_prime + 1, max_fraction_int + 1):
+			# Calculate the GCD to reduce the fraction (numerator_prime/denominator_prime) to its simplest form.
+			gcd_prime = math.gcd(numerator_prime, denominator_prime)
 			numerator = numerator_prime // gcd_prime
-			denominator= denominator_prime // gcd_prime
-			if used_values.get((numerator,denominator)) is None:
-				used_values[(numerator,denominator)] = True
-				new_distance_triplet_list = distance_triplet_generator((numerator,denominator), max_distance)
+			denominator = denominator_prime // gcd_prime
+
+			# Check if the fraction (numerator, denominator) has been used already.
+			if used_values.get((numerator, denominator)) is None:
+				# Mark this fraction as used.
+				used_values[(numerator, denominator)] = True
+
+				# Generate distance triplets for the current fraction.
+				new_distance_triplet_list = distance_triplet_generator((numerator, denominator), max_distance)
+
+				# If valid triplets were generated, add them to the main list.
 				if new_distance_triplet_list is not None:
 					distance_triplet_list += new_distance_triplet_list
+
+	# If msg is True, print the number of distance triplets found and other parameters.
 	if msg is True:
 		print(f'found {len(distance_triplet_list)} distance tuples '+
 			f'with max distance {max_distance} '+
 			f'from all interference fractions up to denominator {max_fraction_int}')
+
+	# Return the complete list of distance triplets.
 	return distance_triplet_list
 
 # ==============================
 def distance_triplet_generator_INTERFERENCE(interference_tuple: tuple=(0,1), max_dist: int=40) -> list:
-	# Initialize an empty list to store valid distance triplets
+	"""
+	Generates a list of distance triplets based on interference conditions.
+
+	Args:
+		interference_tuple (tuple): A tuple representing the interference fraction (a, b).
+		max_dist (int): The maximum allowable distance for each distance in the triplet.
+
+	Returns:
+		list: A list of valid distance triplets that meet the interference conditions.
+	"""
+	# Initialize an empty list to store valid distance triplets.
 	distance_triplet_list = []
 
-	# Iterate over possible values of x
+	# Iterate over possible values of x (the first distance in the triplet).
 	for x in range(1, max_dist):
-		# Iterate over possible values of y starting from current x to avoid duplicates
+		# Iterate over possible values of y (the second distance), starting from x to avoid duplicates.
 		for y in range(x, max_dist):
-			# Calculate the third distance z using the provided interference tuple
+			# Calculate the minimum N value for interference based on x, y, and interference_tuple (a, b).
 			(a, b) = interference_tuple
 			N = minN_INTERFERENCE(x, y, a, b)
+
+			# Only proceed if N is less than 10000 (a predefined threshold).
 			if N < 10000:
+				# Calculate the expected double crossover occurrence.
 				expected_dco = N * x * y / 10000
+
+				# Skip to the next iteration if expected_dco is not an integer (or close to one).
 				if not is_almost_integer(expected_dco):
 					continue
+
+				# Calculate the third distance z using the provided interference parameters.
 				z = calculate_third_distance(x, y, interference_tuple)
-				# Check if z is an almost integer, within the valid range, and the min difference criteria is met
+
+				# Validate z: it should be almost an integer, within range, and meet minimum difference criteria.
 				if y < z < max_dist and is_almost_integer(z):
-					distance_tuple =(y,x,int(z))
+					distance_tuple = (y, x, int(z))
 					if min_difference(distance_tuple) > 1:
-						# Add the valid triplet to the list
+						# Add the valid triplet to the list.
 						distance_triplet_list.append(distance_tuple)
-	# Sort the list of distance triplets in ascending order before returning
+
+	# Sort the list of distance triplets in ascending order before returning.
 	distance_triplet_list.sort()
 	return distance_triplet_list
-# Example assertion for simple function validation (assuming other functions are defined)
 
 #====================================
 #====================================
 def get_all_distance_triplets_INTERFERENCE(max_fraction_int: int=99, max_distance: int=40, msg: bool=True) -> list:
+	"""
+	Generates a list of unique distance triplets based on interference fractions,
+	with a fixed denominator of 100 for each fraction.
+
+	Args:
+		max_fraction_int (int): The maximum integer for the numerator of the fraction.
+		max_distance (int): The maximum allowable distance in each distance triplet.
+		msg (bool): If True, prints a message about the number of distance triplets found.
+
+	Returns:
+		list: A list of valid distance triplets generated by `distance_triplet_generator`.
+	"""
+	# Dictionary to keep track of used numerator/denominator pairs to avoid duplicates.
 	used_values = {}
+
+	# List to store all generated distance triplets.
 	distance_triplet_list = []
-	for numerator_prime  in range(1, max_fraction_int):
+
+	# Iterate over possible values for the numerator within the range specified by `max_fraction_int`.
+	for numerator_prime in range(1, max_fraction_int):
+		# Fixed denominator of 100 for all fractions in this function.
 		denominator_prime = 100
-		gcd_prime = math.gcd(numerator_prime ,denominator_prime)
+
+		# Calculate the GCD to reduce the fraction (numerator_prime/denominator_prime) to its simplest form.
+		gcd_prime = math.gcd(numerator_prime, denominator_prime)
 		numerator = numerator_prime // gcd_prime
-		denominator= denominator_prime // gcd_prime
-		if used_values.get((numerator,denominator)) is None:
-			used_values[(numerator,denominator)] = True
-			new_distance_triplet_list = distance_triplet_generator((numerator,denominator), max_distance)
+		denominator = denominator_prime // gcd_prime
+
+		# Check if the fraction (numerator, denominator) has been used already.
+		if used_values.get((numerator, denominator)) is None:
+			# Mark this fraction as used.
+			used_values[(numerator, denominator)] = True
+
+			# Generate distance triplets for the current fraction.
+			new_distance_triplet_list = distance_triplet_generator((numerator, denominator), max_distance)
+
+			# If valid triplets were generated, add them to the main list.
 			if new_distance_triplet_list is not None:
 				distance_triplet_list += new_distance_triplet_list
+
+	# If `msg` is True, print the number of distance triplets found and other parameters.
 	if msg is True:
-		print(f'found {len(distance_triplet_list)} distance tuples '+
-			f'with max distance {max_distance} '+
-			f'from all interference fractions up to denominator {max_fraction_int}')
+		print(f'found {len(distance_triplet_list)} distance tuples ' +
+		      f'with max distance {max_distance} ' +
+		      f'from all interference fractions up to numerator {max_fraction_int}')
+
+	# Return the complete list of distance triplets.
 	return distance_triplet_list
 
 #====================================
@@ -621,19 +772,48 @@ def get_general_progeny_size(distances: tuple) -> int:
 #assert get_general_progeny_size([10, 20, 30]) % 20 == 0
 
 #====================================
-#====================================
 def get_progeny_size(distance: int) -> int:
-	return get_general_progeny_size([distance,])
+	"""
+	Calculates the progeny size based on a single distance value.
+
+	Args:
+		distance (int): The genetic distance for which to calculate progeny size.
+
+	Returns:
+		int: The calculated progeny size.
+	"""
+	# Calls an external function `get_general_progeny_size` with a list containing `distance`.
+	# Returns the progeny size based on the distance.
+	return get_general_progeny_size([distance, ])
+
+# Assertion to verify that progeny size is a multiple of 200 for a given distance.
 assert get_progeny_size(10) % 200 == 0
 
 #====================================
-#====================================
 def right_justify_int(num: int, length: int) -> str:
+	"""
+	Right-justifies an integer within a string of specified length by padding with spaces.
+
+	Args:
+		num (int): The integer to right-justify.
+		length (int): The total length of the resulting string, including padding.
+
+	Returns:
+		str: A string representation of `num`, right-justified within the specified `length`.
+	"""
+	# Convert the integer `num` to a string.
 	my_str = f'{num:d}'
+
+	# Add spaces to the left of `my_str` until it reaches the desired `length`.
 	while len(my_str) < length:
-		my_str = ' ' + my_str
+		my_str = ' ' + my_str  # Prepend a space to right-align the integer.
+
+	# Return the right-justified string.
 	return my_str
-assert right_justify_int(7,5) == "    7"
+
+# Test to ensure that the function correctly pads the integer to the specified length.
+# For example, right_justify_int(7,5) should return "    7" (with four leading spaces).
+assert right_justify_int(7, 5) == "    7"
 
 #====================================
 #====================================
