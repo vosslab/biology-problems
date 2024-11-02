@@ -62,7 +62,7 @@ def describe_gene_map(GMC):
 #=====================
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
-	question_group = parser.add_mutually_exclusive_group()
+	question_group = parser.add_mutually_exclusive_group(required=True)
 	# Add question type argument with choices
 	parser.add_argument('-d', '--duplicates', metavar='#', type=int, dest='duplicates',
 		help='number of duplicate runs to do', default=1)

@@ -161,7 +161,7 @@ if __name__ == '__main__':
 	parser.add_argument('-d', '--duplicate-runs', type=int, dest='duplicate_runs',
 		help='number of questions to create', default=199)
 	# Create a mutually exclusive group for question types
-	question_group = parser.add_mutually_exclusive_group()
+	question_group = parser.add_mutually_exclusive_group(required=True)
 	# Add question type argument with choices
 	question_group.add_argument('--desired_result', dest='desired_result', type=str,
 		choices=('accept', 'reject'), help='Set the question type: accept or reject')
@@ -171,10 +171,6 @@ if __name__ == '__main__':
 		const='reject',)
 
 	args = parser.parse_args()
-
-	if args.desired_result is None:
-		parser.print_help()
-		sys.exit(1)
 
 	outfile = ('bbq-' + os.path.splitext(os.path.basename(__file__))[0]
 			+ '-' + args.desired_result.upper()

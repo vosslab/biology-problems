@@ -40,7 +40,7 @@ def get_question_text(question_type='parental', gene_pair=None):
 #=====================
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
-	question_group = parser.add_mutually_exclusive_group()
+	question_group = parser.add_mutually_exclusive_group(required=True)
 	# Add question type argument with choices
 	question_group.add_argument('-t', '--type', dest='question_type', type=str,
 		choices=('num', 'mc'), help='Set the question type: accept or reject')
@@ -51,10 +51,6 @@ if __name__ == "__main__":
 	parser.add_argument('-d', '--duplicates', metavar='#', type=int, dest='duplicates',
 		help='number of duplicate runs to do', default=1)
 	args = parser.parse_args()
-
-	if args.question_type is None:
-		parser.print_help()
-		sys.exit(1)
 
 	outfile = ('bbq-' + os.path.splitext(os.path.basename(__file__))[0]
 		+ f'-{args.question_type.upper()}'

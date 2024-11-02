@@ -254,7 +254,7 @@ def main():
 	parser.add_argument('-n', '--num_choices', type=int, default=5, help="Number of choices to create.")
 
 	# Create a mutually exclusive group for question types
-	question_group = parser.add_mutually_exclusive_group()
+	question_group = parser.add_mutually_exclusive_group(required=True)
 	# Add question type argument with choices
 	question_group.add_argument('-q', '--question-type', dest='question_type', type=str,
 		choices=('mc', 'fib'),

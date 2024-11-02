@@ -155,7 +155,7 @@ if __name__ == '__main__':
 	parser.add_argument('-n', '--num_letters', type=int, default=5, help="Number of letters in the metabolic pathway.")
 
 	# Create a mutually exclusive group for question types
-	course_group = parser.add_mutually_exclusive_group()
+	course_group = parser.add_mutually_exclusive_group(required=True)
 	# Add question type argument with choices
 	course_group.add_argument('-c', '--course', dest='course', type=str,
 		choices=('biol301', 'bchm355'),
@@ -165,7 +165,6 @@ if __name__ == '__main__':
 		help='Set question type to BIOL 301.')
 	course_group.add_argument('--bchm355', dest='course', action='store_const', const='bchm355',
 		help='Set question type to BCHM 355/455.')
-	course_group.set_defaults(course='bchm355')
 
 	args = parser.parse_args()
 
