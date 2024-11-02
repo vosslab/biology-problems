@@ -802,7 +802,7 @@ def right_justify_int(num: int, length: int) -> str:
 		str: A string representation of `num`, right-justified within the specified `length`.
 	"""
 	# Convert the integer `num` to a string.
-	my_str = f'{num:d}'
+	my_str = f'{num:,d}'
 
 	# Add spaces to the left of `my_str` until it reaches the desired `length`.
 	while len(my_str) < length:
@@ -814,6 +814,8 @@ def right_justify_int(num: int, length: int) -> str:
 # Test to ensure that the function correctly pads the integer to the specified length.
 # For example, right_justify_int(7,5) should return "    7" (with four leading spaces).
 assert right_justify_int(7, 5) == "    7"
+assert right_justify_int(1007, 6) == " 1,007"
+
 
 #====================================
 #====================================
