@@ -327,7 +327,7 @@ def parse_arguments():
 	"""
 	parser = argparse.ArgumentParser(description='Generate genetic mapping questions.')
 
-	question_group = parser.add_mutually_exclusive_group()
+	question_group = parser.add_mutually_exclusive_group(required=True)
 	question_group.add_argument(
 		'-t', '--type', dest='question_type', type=str, choices=('num', 'mc'),
 		help="Set the question type: 'num' for numeric or 'mc' for multiple choice"
@@ -394,12 +394,6 @@ def main():
 	Main function that handles generating questions and writing them to an output file.
 	"""
 	args = parse_arguments()
-
-	# Validate question type with a helpful error message
-	if args.question_type not in ('num', 'mc'):
-		print("Error: Invalid question type. Please use '-t num' or '--type num' for numeric questions, "
-		      "or '-t mc' or '--type mc' for multiple choice questions.")
-		sys.exit(1)
 
 	# Generate output filename based on script name and question type
 	script_name = os.path.splitext(os.path.basename(__file__))[0]
