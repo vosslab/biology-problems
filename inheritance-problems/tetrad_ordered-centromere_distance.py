@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
 
+# Standard Library
 import os
+import sys
 import math
 import random
 import argparse
 
+# Local repo modules
 import bptools
+
+# Global debug flag
 debug = False
 
-#=====================
-#=====================
+# Constants
 patterns = (
 	"++++aaaa",
 	"++aa++aa",
@@ -20,7 +24,6 @@ patterns = (
 )
 
 parental_patterns = ('++++aaaa', 'aaaa++++')
-
 
 #=====================
 #=====================
@@ -70,13 +73,12 @@ def get_important_tip():
 
 #=====================
 #=====================
-def split_counts_into_bins(count, bins=2):
-	bin_list = [0 for i in range(bins)]
-	print(count)
-	for i in range(count):
-		bin_num = int(math.floor(random.random()*bins))
+def split_counts_into_bins(count: int, bins: int = 2) -> list:
+	"""Splits a count into random bins and returns a list of counts."""
+	bin_list = [0 for _ in range(bins)]
+	for _ in range(count):
+		bin_num = random.randint(0, bins - 1)
 		bin_list[bin_num] += 1
-	print(bin_list)
 	return bin_list
 
 #=====================
@@ -183,7 +185,6 @@ def get_question_text(gene_letter):
 		)
 	return question_text
 
-
 #=====================
 #=====================
 def values_to_text(values: tuple, total_count:int):
@@ -243,53 +244,84 @@ def make_choices(asci_count_dict):
 	return list(choices_set), answer_text
 
 #=====================
-#=====================
-if __name__ == "__main__":
-	parser = argparse.ArgumentParser()
-	question_group = parser.add_mutually_exclusive_group()
+def parse_arguments():
+	"""Parses command-line arguments for the script."""
+	parser = argparse.ArgumentParser(description="Generate Neurospora genetics questions.")
+	question_group = parser.add_mutually_exclusive_group(required=True)
+
 	# Add question type argument with choices
-	question_group.add_argument('-t', '--type', dest='question_type', type=str,
-		choices=('num', 'mc'), help='Set the question type: accept or reject')
-	question_group.add_argument('-m', '--mc', dest='question_type', action='store_const',
-		const='mc',)
-	question_group.add_argument('-n', '--num', dest='question_type', action='store_const',
-		const='num',)
-	parser.add_argument('-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='number of duplicate runs to do', default=1)
+	question_group.add_argument(
+		'-t', '--type', dest='question_type', type=str, choices=('num', 'mc'),
+		help='Set the question type: num (numeric) or mc (multiple choice)'
+	)
+	question_group.add_argument(
+		'-m', '--mc', dest='question_type', action='store_const', const='mc',
+		help='Set question type to multiple choice'
+	)
+	question_group.add_argument(
+		'-n', '--num', dest='question_type', action='store_const', const='num',
+		help='Set question type to numeric'
+	)
+
+	parser.add_argument(
+		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
+		help='Number of duplicate runs to do', default=1
+	)
+
 	args = parser.parse_args()
-	outfile = ('bbq-' + os.path.splitext(os.path.basename(__file__))[0]
-		+ f'-{args.question_type.upper()}'
-		+ '-questions.txt')
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	N = 0
-	for i in range(args.duplicates):
-		N += 1
-		if args.question_type == 'mc':
-			multiplier = 20
-		else:
-			multiplier = 1
-		base_range = (9, 29)
-		distance = random.randint(base_range[0]*multiplier, base_range[1]*multiplier)/float(multiplier)
-		asci_count_dict = get_asci_counts(distance)
-		if asci_count_dict is None:
-			continue
 
-		background_text = get_background_context()
-		formula = get_formula()
-		gene_letter = random.choice('abcdefghijklmnopqrstuvwxyz')
-		octads_table = get_octads_table(asci_count_dict, gene_letter)
-		question_text = get_question_text(gene_letter)
-		full_question = background_text + octads_table + formula + question_text
+	return args
 
-		if args.question_type == 'mc':
-			choices_list, answer_text = make_choices(asci_count_dict)
-			random.shuffle(choices_list)
-			bb_question = bptools.formatBB_MC_Question(N, full_question, choices_list, answer_text)
-		else:
-			important_tip_text = get_important_tip()
-			bb_question = bptools.formatBB_NUM_Question(N, full_question+important_tip_text, distance, 0.1, tol_message=False)
+#=====================
+def generate_question(N: int, question_type: str) -> str:
+	"""Generates a formatted question string based on the question type and question number."""
+	# Set up the genetic distance and calculate asci counts
+	multiplier = 20 if question_type == 'mc' else 1
+	base_range = (9, 29)
+	distance = random.randint(base_range[0] * multiplier, base_range[1] * multiplier) / float(multiplier)
+	asci_count_dict = get_asci_counts(distance)
+	if asci_count_dict is None:
+		return None  # Skip this question if asci counts are invalid
 
-		f.write(bb_question)
-	f.close()
-	bptools.print_histogram()
+	# Assemble question components
+	background_text = get_background_context()
+	formula = get_formula()
+	gene_letter = random.choice('abcdefghjkmnpqrstwxyz')
+	octads_table = get_octads_table(asci_count_dict, gene_letter)
+	question_text = get_question_text(gene_letter)
+	full_question = background_text + octads_table + formula + question_text
+
+	# Format question based on type
+	if question_type == 'mc':
+		choices_list, answer_text = make_choices(asci_count_dict)
+		random.shuffle(choices_list)
+		return bptools.formatBB_MC_Question(N, full_question, choices_list, answer_text)
+	else:
+		important_tip_text = get_important_tip()
+		return bptools.formatBB_NUM_Question(N, full_question + important_tip_text, distance, 0.1, tol_message=False)
+
+
+#=====================
+def main():
+	"""Main function that handles argument parsing, question generation, and file writing."""
+	args = parse_arguments()
+
+	outfile = f'bbq-{os.path.splitext(os.path.basename(__file__))[0]}-{args.question_type.upper()}-questions.txt'
+	print(f'Writing to file: {outfile}')
+
+	N = 1
+	# Open the file and generate questions
+	with open(outfile, 'w') as f:
+		for i in range(args.duplicates):
+			final_question = generate_question(N, args.question_type)
+			if final_question:
+				N += 1
+				f.write(final_question)
+
+	if args.question_type == "mc":
+		bptools.print_histogram()
+
+if __name__ == "__main__":
+	main()
+
+#THE END
