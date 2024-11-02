@@ -1,15 +1,28 @@
 #!/usr/bin/env python3
 
+
+# Standard Library
 import os
+import sys
 import argparse
 
+# Local repo modules
 import bptools
 import genemapclass as gmc
 
 debug = False
 
-#====================================
+#===========================
 def get_question_text(question_type):
+	"""
+	Generates the question text based on the question type.
+
+	Args:
+		question_type (str): Type of question ('num' or 'mc').
+
+	Returns:
+		str: The formatted question text.
+	"""
 	question_string = ''
 	question_string += '<p>The resulting phenotypes are summarized in the table above.</p> '
 	question_string += '<h6>Question</h6> '
@@ -29,56 +42,104 @@ def get_question_text(question_type):
 		question_string += '</ul> '
 	return question_string
 
-#====================================
-#====================================
-if __name__ == "__main__":
+
+#===========================
+def parse_arguments():
+	"""
+	Parses command-line arguments for the script.
+
+	Returns:
+		Namespace: Parsed arguments with attributes `question_type` and `duplicates`.
+	"""
 	parser = argparse.ArgumentParser(description='Process some integers.')
 	question_group = parser.add_mutually_exclusive_group()
+
 	# Add question type argument with choices
-	question_group.add_argument('-t', '--type', dest='question_type', type=str,
-		choices=('num', 'mc'), help='Set the question type: accept or reject')
-	question_group.add_argument('-m', '--mc', dest='question_type', action='store_const',
-		const='mc',)
-	question_group.add_argument('-n', '--num', dest='question_type', action='store_const',
-		const='num',)
-	parser.add_argument('-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='number of duplicate runs to do', default=1)
-	args = parser.parse_args()
+	question_group.add_argument(
+		'-t', '--type', dest='question_type', type=str, choices=('num', 'mc'),
+		help='Set the question type: num (numeric) or mc (multiple choice)'
+	)
+	question_group.add_argument(
+		'-m', '--mc', dest='question_type', action='store_const', const='mc',
+		help='Set question type to multiple choice'
+	)
+	question_group.add_argument(
+		'-n', '--num', dest='question_type', action='store_const', const='num',
+		help='Set question type to numeric'
+	)
 
-	lowercase = "abcdefghijklmnpqrsuvwxyz"
-	outfile = ('bbq-' + os.path.splitext(os.path.basename(__file__))[0]
-		+ f'-{args.question_type.upper()}'
-		+ '-questions.txt')
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	N = 0
-	for i in range(args.duplicates):
-		N += 1
-		# Gene Mapping Class
-		GMC = gmc.GeneMappingClass(2, N)
-		GMC.debug = False
-		GMC.question_type = args.question_type
-		GMC.setup_question()
-		print(GMC.get_progeny_ascii_table())
-		header = GMC.get_question_header()
-		html_table = GMC.get_progeny_html_table()
-		phenotype_info_text = GMC.get_phenotype_info()
-		distance = GMC.distances_dict[(1,2)]
+	parser.add_argument(
+		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
+		help='Number of duplicate runs to do', default=1
+	)
 
-		question_string = get_question_text(args.question_type)
-		full_question = header + phenotype_info_text + html_table + question_string
-		if args.question_type == 'num':
-			final_question = bptools.formatBB_NUM_Question(N, full_question, distance, 0.1, tol_message=False)
-		elif args.question_type == 'mc':
-			choices_list, answer_text = GMC.make_choices()
-			final_question = bptools.formatBB_MC_Question(N, full_question, choices_list, answer_text)
-		f.write(final_question)
-	f.close()
+	return parser.parse_args()
 
+#===========================
+def generate_question(N: int, question_type: str) -> str:
+	"""
+	Generates a formatted question string based on the type.
 
+	Args:
+		N (int): Question number.
+		question_type (str): Type of question ('num' or 'mc').
 
+	Returns:
+		str: The formatted question string ready to be written to the file.
+	"""
+	# Initialize Gene Mapping Class instance
+	GMC = gmc.GeneMappingClass(2, N)
+	global debug
+	GMC.debug = debug
+	GMC.question_type = question_type
+	GMC.setup_question()
 
+	# Retrieve question data
+	header = GMC.get_question_header()
+	phenotype_info_text = GMC.get_phenotype_info()
+	html_table = GMC.get_progeny_html_table()
+	question_string = get_question_text(question_type)
 
+	# Assemble full question content
+	full_question = header + phenotype_info_text + html_table + question_string
 
+	# Format question based on type
+	if question_type == 'num':
+		distance = GMC.distances_dict[(1, 2)]
+		return bptools.formatBB_NUM_Question(N, full_question, distance, 0.1, tol_message=False)
+	elif question_type == 'mc':
+		choices_list, answer_text = GMC.make_choices()
+		return bptools.formatBB_MC_Question(N, full_question, choices_list, answer_text)
+	else:
+		print("Error: Invalid question type in generate_question.")
+		sys.exit(1)
+
+#===========================
+def main():
+	"""
+	Main function that handles generating questions and writing them to an output file.
+	"""
+	args = parse_arguments()
+
+	# Validate question type
+	if args.question_type not in ('num', 'mc'):
+		print("Error: Invalid question type. Please use '-t num' or '--type num' for  "
+			"numeric questions, or '-t mc' or '--type mc' for multiple choice questions.")
+		sys.exit(1)
+
+	# Setup output file
+	script_name = os.path.splitext(os.path.basename(__file__))[0]
+	outfile =  f'bbq-{script_name}-{args.question_type.upper()}-questions.txt'
+	print(f'Writing to file: {outfile}')
+
+	# Open file and write questions
+	with open(outfile, 'w') as f:
+		for i in range(args.duplicates):
+			N = i + 1  # Question number
+			final_question = generate_question(N, args.question_type)
+			f.write(final_question)
+
+if __name__ == "__main__":
+	main()
 
 #THE END
