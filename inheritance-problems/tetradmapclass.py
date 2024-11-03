@@ -58,6 +58,8 @@ class TetradMappingClass(gmc.GeneMappingClass):
 
 		# Calculate the dynamic width for the "Genotypes of Spore in Tetrads" column
 		genotypes_col_width = 4 * self.num_genes_int + 5  # 4 characters per genotype plus 5 spaces between them
+		if genotypes_col_width < 14:
+			genotypes_col_width = 14
 
 		# Unicode characters for borders
 		horizontal_line = "\u2500"

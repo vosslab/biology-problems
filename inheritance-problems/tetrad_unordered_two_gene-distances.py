@@ -10,10 +10,8 @@ import argparse
 
 # Local repo modules
 import bptools
-import genemapclass as gmc
 import genemaplib as gml
-import genemapclass as gmc
-import pointtestcrosslib as ptcl
+import tetradmapclass as tetmapcls
 
 debug = True
 
@@ -114,7 +112,7 @@ def makeQuestion(basetype, distance, progeny_size):
 
 	if debug is True: print("determine parental type")
 	parental = random.choice(types)
-	if debug is True: print("parental=", parental, ptcl.invert_genotype(parental, basetype))
+	if debug is True: print("parental=", parental, gml.invert_genotype(parental, basetype))
 
 	tetradCount = generateTypeCounts(parental, basetype, progeny_size, distance)
 	if debug is True: print("tetradCount=", tetradCount)
@@ -124,9 +122,9 @@ def makeQuestion(basetype, distance, progeny_size):
 #====================================
 def generateTypeCountsX2(parental_type, basetype, progeny_size, distance):
 	type_counts = {}
-	recombinant_type_1 = ptcl.flip_gene_by_letter(parental_type, geneorder[0], basetype)
+	recombinant_type_1 = gml.flip_gene_by_letter(parental_type, geneorder[0], basetype)
 	if debug is True: print("recombinant type 1=", recombinant_type_1)
-	recombinant_type_2 = ptcl.invert_genotype(recombinant_type_1, basetype)
+	recombinant_type_2 = gml.invert_genotype(recombinant_type_1, basetype)
 	if debug is True: print("recombinant type 2=", recombinant_type_2)
 
 	if debug is True: print("determine recombinant type counts")
@@ -150,7 +148,7 @@ def generateTypeCountsX2(parental_type, basetype, progeny_size, distance):
 
 	if debug is True: print("determine parental type count")
 	total_parent_count = progeny_size - total_recombinant_count
-	if debug is True: print("  ", parental_type, ptcl.invert_genotype(parental_type, basetype), total_parent_count)
+	if debug is True: print("  ", parental_type, gml.invert_genotype(parental_type, basetype), total_parent_count)
 	parent_count_1 = 0
 	parent_count_2 = 0
 	for i in range(total_parent_count):
@@ -165,7 +163,7 @@ def generateTypeCountsX2(parental_type, basetype, progeny_size, distance):
 	
 	type_counts[parental_type] = parent_count_1
 	if debug is True: print("parental count_1=", parent_count_1)
-	type_counts[ptcl.invert_genotype(parental_type, basetype)] = parent_count_2
+	type_counts[gml.invert_genotype(parental_type, basetype)] = parent_count_2
 	if debug is True: print("parental count_2=", parent_count_2)
 
 
@@ -192,9 +190,9 @@ def generateTypeCounts(parental, basetype, progeny_size, distance):
 	# Create Four Genotypes
 	tetradCount = {}
 	parental_type_1 = parental
-	parental_type_2 = ptcl.invert_genotype(parental, basetype)
-	recombinant_type_1 = ptcl.flip_gene_by_letter(parental, basetype[0], basetype)
-	recombinant_type_2 = ptcl.flip_gene_by_letter(parental, basetype[1], basetype)
+	parental_type_2 = gml.invert_genotype(parental, basetype)
+	recombinant_type_1 = gml.flip_gene_by_letter(parental, basetype[0], basetype)
+	recombinant_type_2 = gml.flip_gene_by_letter(parental, basetype[1], basetype)
 
 	#parental ditype (PD)
 	tetradSet = [parental_type_1, parental_type_1, parental_type_2, parental_type_2,]
@@ -275,14 +273,14 @@ def get_question_text(question_type: str) -> str:
 
 #=====================
 #=====================
-def translate_genotype_counts_to_tetrads(GMC):
-	print(GMC.progeny_groups_count_dict)
-	print(GMC.genotype_counts)
+def translate_genotype_counts_to_tetrads(TetradMapCls):
+	print(TetradMapCls.progeny_groups_count_dict)
+	print(TetradMapCls.genotype_counts)
 
 	#shorter variable names
-	gene_letters = GMC.gene_letters_str
-	gene_order = GMC.gene_order_str
-	parent_tuple = GMC.parental_genotypes_tuple
+	gene_letters = TetradMapCls.gene_letters_str
+	gene_order = TetradMapCls.gene_order_str
+	parent_tuple = TetradMapCls.parental_genotypes_tuple
 
 	# Create Six Genotypes
 	tetradCount = {}
@@ -290,7 +288,7 @@ def translate_genotype_counts_to_tetrads(GMC):
 	#(A) No crossing over (NCO), parental ditype (PD)
 	tetradSet = list(parent_tuple) + list(parent_tuple)
 	tetradName = tetradSetToString(tetradSet)
-	tetradCount[tetradName] = GMC.progeny_groups_count_dict['parental']
+	tetradCount[tetradName] = TetradMapCls.progeny_groups_count_dict['parental']
 	print(tetradCount)
 
 	#def crossover_after_index(genotype: str, gene_index: str, gene_order: str) -> str:
@@ -361,29 +359,29 @@ def generate_question(N: int, question_type: str) -> str:
 		str: The formatted question string ready to be written to the file.
 	"""
 	# Initialize Gene Mapping Class instance
-	GMC = gmc.GeneMappingClass(2, N)
-	GMC.debug = debug
-	GMC.question_type = question_type
-	GMC.setup_question()
-	print(GMC.get_progeny_ascii_table())
+	TetradMapCls = tetmapcls.TetradMappingClass(2, N)
+	TetradMapCls.debug = debug
+	TetradMapCls.question_type = question_type
+	TetradMapCls.setup_question()
+	print(TetradMapCls.get_progeny_ascii_table())
 
 	# Retrieve question data
-	header = GMC.get_question_header()
-	phenotype_info_text = GMC.get_phenotype_info()
-	html_table = GMC.get_progeny_html_table()
+	header = TetradMapCls.get_question_header()
+	phenotype_info_text = TetradMapCls.get_phenotype_info()
+	html_table = TetradMapCls.get_progeny_html_table()
 	question_string = get_question_text(question_type)
 
 	# Assemble full question content
 
-	translate_genotype_counts_to_tetrads(GMC)
+	translate_genotype_counts_to_tetrads(TetradMapCls)
 
 	full_question = header + phenotype_info_text + html_table + question_string
 	# Format question based on type
 	if question_type == 'num':
-		distance = GMC.distances_dict[(1, 2)]
+		distance = TetradMapCls.distances_dict[(1, 2)]
 		return bptools.formatBB_NUM_Question(N, full_question, distance, 0.1, tol_message=False)
 	elif question_type == 'mc':
-		choices_list, answer_text = GMC.make_choices()
+		choices_list, answer_text = TetradMapCls.make_choices()
 		return bptools.formatBB_MC_Question(N, full_question, choices_list, answer_text)
 	print("Error: Invalid question type in generate_question.")
 	sys.exit(1)
