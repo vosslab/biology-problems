@@ -1,5 +1,6 @@
 
 import re
+import sys
 import copy
 import math
 import random
@@ -141,25 +142,37 @@ def split_number_in_two(number: int) -> tuple:
 	"""
 	Splits a given integer `number` randomly into two parts (a, b) such that a + b = number.
 
+	This function uses a binomial distribution to approximate a random split.
+	- If Python 3.12 or newer is available, it uses `random.binomialvariate` for a direct binomial distribution.
+	- For older versions of Python, it falls back to a loop-based approximation.
+
 	Args:
 		number (int): The integer to split.
 
 	Returns:
 		tuple: A tuple (a, b) where a and b are non-negative integers that sum up to `number`.
 	"""
-	# Initialize two counters a and b, which will accumulate values to sum up to `number`.
-	a = 0
-	b = 0
+	# Check if the Python version is 3.12 or newer
+	if sys.version_info >= (3, 12):
+		# Python 3.12+ provides a built-in method for binomial distribution in the `random` module.
+		# `random.binomialvariate(number, 0.5)` simulates `number` independent trials where each trial
+		# has a 50% chance of success (p=0.5). The result `a` is the count of "successes"
+		a = random.binomialvariate(number, 0.5)
+	else:
+		# Fallback for Python versions older than 3.12 that do not have `random.binomialvariate`.
+		# We simulate the binomial distribution manually by iterating `number` times and counting
+		# the "successes" (random events where a coin flip comes up heads).
+		a = 0  # Initialize the count for the first part of the split
+		# Loop `number` times, simulating `number` coin flips
+		for _ in range(number):
+			if random.random() < 0.5:
+				a += 1
+		# After the loop, `a` will contain the count of "successes," representing one part of the split.
 
-	# Iterate `number` times, assigning each count randomly to either a or b.
-	for i in range(number):
-		# Randomly decide whether to increment a or b.
-		if random.random() < 0.5:
-			a += 1
-		else:
-			b += 1
+	# Calculate `b` as the remainder of the split
+	b = number - a
 
-	# Return the tuple (a, b), which should sum to `number`.
+	# Return the two parts as a tuple (a, b). Note that a + b should equal the original `number`.
 	return (a, b)
 
 # Test to ensure the function's output always sums to the input `number`.
