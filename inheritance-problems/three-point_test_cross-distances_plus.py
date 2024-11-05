@@ -57,26 +57,6 @@ def get_answer_mapping(gene_order: str, distances_dict: dict) -> list:
 	return answer_map
 assert get_answer_mapping('ab', {(1,2): 3,}) == {'geneorder': ['ab', 'ba'], 'AB': [3]}
 
-#===========================================================
-#===========================================================
-def formatBB_FIB_PLUS_Question(N: int, question: str, answer_map: dict) -> str:
-	crc16 = bptools.getCrc16_FromString(question)
-
-	#FIB_PLUS TAB question text TAB variable1 TAB answer1 TAB answer2 TAB TAB variable2 TAB answer3
-	bb_question = f'FIB_PLUS\t<p>{crc16}</p> {question}'
-	pretty_question = bptools.makeQuestionPretty(question)
-	print('{0}. {1} -- {2}'.format(N, crc16, pretty_question))
-
-	keys_list = sorted(answer_map.keys())
-	for key in keys_list:
-		value_list = answer_map[key]
-		bb_question += f'\t{key}'
-		for value in value_list:
-			bb_question += f'\t{value}'
-		bb_question += '\t'
-	bb_question += '\n'
-	return bb_question
-
 #=====================
 #=====================
 if __name__ == "__main__":
@@ -104,7 +84,7 @@ if __name__ == "__main__":
 		question_string = get_question_text(GMC.gene_letters_str)
 		full_question = header + phenotype_info_text + html_table + question_string
 		answer_map = get_answer_mapping(GMC.gene_order_str, GMC.distances_dict)
-		final_question = formatBB_FIB_PLUS_Question(N, full_question, answer_map)
+		final_question = bptools.formatBB_FIB_PLUS_Question(N, full_question, answer_map)
 		#print(final_question)
 		f.write(final_question)
 		print('\n\n')
