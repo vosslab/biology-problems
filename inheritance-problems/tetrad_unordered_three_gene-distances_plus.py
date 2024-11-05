@@ -42,9 +42,7 @@ def questionText(basetype):
 #=====================
 #=====================
 def tetradSetToString(tetradSet):
-	mystr = ("%s\t%s\t%s\t%s\t"
-		%(tetradSet[0],tetradSet[1],tetradSet[2],tetradSet[3],))
-	return mystr
+	return '\t'.join(tetradSet)
 
 #=====================
 #=====================
