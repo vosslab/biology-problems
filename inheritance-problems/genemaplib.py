@@ -105,6 +105,30 @@ assert len(get_gene_letters(5)) == 5
 
 #===========================================================
 #===========================================================
+def get_random_gene_order(gene_letters_str: str) -> str:
+	"""
+	Sets the order of genes within the map by randomly shuffling `gene_letters_str`.
+
+	The order is minimized lexicographically, ensuring consistency in order representation.
+	"""
+	# Convert the gene letters into a list and shuffle them
+	gene_order_list = list(gene_letters_str)
+	random.shuffle(gene_order_list)
+
+	# Set gene order to the lexicographically smaller of the shuffled order and its reverse
+	gene_order_list = min(gene_order_list, gene_order_list[::-1])
+
+	# Join the list back into a string and assign to `gene_order_str`
+	gene_order_str = ''.join(gene_order_list)
+
+	if debug is True: print(f"gene_order_str = {gene_order_str}")
+	return gene_order_str
+assert ''.join(sorted(get_random_gene_order('abcdefg'))) == 'abcdefg'
+assert get_random_gene_order('ab') in ('ab', 'ba')
+
+
+#===========================================================
+#===========================================================
 def generate_genotypes(gene_letters: str) -> list:
 	"""
 	Generate all possible genotypes for a given string of gene letters.
@@ -800,7 +824,9 @@ def get_progeny_size(distance: int) -> int:
 	return get_general_progeny_size([distance, ])
 
 # Assertion to verify that progeny size is a multiple of 200 for a given distance.
-assert get_progeny_size(10) % 200 == 0
+assert get_progeny_size(7) % 200 == 0
+assert get_progeny_size(11) % 200 == 0
+assert get_progeny_size(13) % 200 == 0
 
 #====================================
 def right_justify_int(num: int, length: int) -> str:
