@@ -24,7 +24,7 @@ This file will no longer be maintained and may be removed in future versions.
 import genemaplib as gml
 
 # Prompt the user for confirmation of the deprecation warning
-print("WARNING: This file is deprecated. ")
+print("WARNING: This file 'pointtestcrosslib.py' is deprecated. ")
 print("Please use 'genemapclass.py' and 'genemaplib.py' instead.")
 response = input("Do you acknowledge this warning? (y/n): ")
 # If the user does not acknowledge, exit the program
