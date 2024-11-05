@@ -890,6 +890,25 @@ def formatBB_FIB_Question(N, question, answers_list):
 	question_count += 1
 	return bb_question + '\n'
 
+#===========================================================
+#===========================================================
+def formatBB_FIB_PLUS_Question(N: int, question: str, answer_map: dict) -> str:
+	global question_count
+	#FIB_PLUS TAB question text TAB variable1 TAB answer1 TAB answer2 TAB TAB variable2 TAB answer3
+	bb_question = ''
+	bb_question += 'FIB_PLUS\t'
+	bb_question += QuestionHeader(question, N)
+	keys_list = sorted(answer_map.keys())
+	for key in keys_list:
+		value_list = answer_map[key]
+		print(f"- KEY [{key}] -> {value_list}")
+		bb_question += f'\t{key}'
+		for value in value_list:
+			bb_question += f'\t{value}'
+		bb_question += '\t'
+	bb_question += '\n'
+	return bb_question
+
 #=====================
 def formatBB_NUM_Question(N, question, answer, tolerance, tol_message=True):
 	global question_count
