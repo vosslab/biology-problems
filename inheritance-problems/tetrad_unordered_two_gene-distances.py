@@ -17,9 +17,7 @@ debug = True
 
 def tetradSetToString(tetradSet):
 	mylist = sorted(tetradSet)
-	mystr = ''
-	for item in mylist:
-		mystr += f'{item}\t'
+	mystr = '\t'.join(mylist)
 	return mystr
 
 #====================================
@@ -29,35 +27,7 @@ def getDistance():
 
 #====================================
 def getProgenySize(distance):
-	if debug is True: print("determine progeny size")
-	gcdfinal = math.gcd(distance, 100)
-	if debug is True: print("Final GCD", gcdfinal)
-	progenybase = 100/gcdfinal
-	minprogeny =  900/progenybase
-	maxprogeny = 6000/progenybase
-	progs = numpy.arange(minprogeny, maxprogeny+1, 1, dtype=numpy.float64)*progenybase
-	#print(progs)
-	numpy.random.shuffle(progs)
-	#print(progs)
-	bases = progs * distance * distance / 1e4
-	#print(bases)
-	devs = (bases - numpy.around(bases, 0))**2
-	#print(devs)
-	argmin = numpy.argmin(devs)
-	progeny_size = int(progs[argmin])
-	if debug is True: print(("total progeny: %d\n"%(progeny_size)))
-	return progeny_size
-
-#====================================
-def lcm(a, b):
-	return abs(a*b) // math.gcd(a, b)
-
-#====================================
-def lcm4(a, b, c, d):
-	gcd1 = math.gcd(a, b)
-	gcd2 = math.gcd(c, d)
-	gcdfinal = math.gcd(gcd1, gcd2)
-	return abs(a*b*c*d) // gcdfinal
+	return gml.get_progeny_size(distance)
 
 #====================================
 def makeProgenyHtmlTable(typemap, progeny_size):
@@ -98,26 +68,6 @@ def makeProgenyAsciiTable(typemap, progeny_size):
 	table +=  "\t\t\t-----\n"
 	table +=  "\t\tTOTAL\t%d\n\n"%(progeny_size)
 	return table
-
-#====================================
-def makeQuestion(basetype, distance, progeny_size):
-	if debug is True: print("------------")
-	answerString = ("%s - %d - %s"
-		%(basetype[0], distance, basetype[1]))
-	print(answerString)
-	if debug is True: print("------------")
-
-	types = ['++', '+'+basetype[1], basetype[0]+'+', basetype[0]+basetype[1]]
-	if debug is True: print("types=", types)
-
-	if debug is True: print("determine parental type")
-	parental = random.choice(types)
-	if debug is True: print("parental=", parental, gml.invert_genotype(parental, basetype))
-
-	tetradCount = generateTypeCounts(parental, basetype, progeny_size, distance)
-	if debug is True: print("tetradCount=", tetradCount)
-
-	return tetradCount
 
 #====================================
 def generateTypeCountsX2(parental_type, basetype, progeny_size, distance):
@@ -345,6 +295,26 @@ def parse_arguments():
 	)
 
 	return parser.parse_args()
+
+#====================================
+def makeQuestion(basetype, distance, progeny_size):
+	if debug is True: print("------------")
+	answerString = ("%s - %d - %s"
+		%(basetype[0], distance, basetype[1]))
+	print(answerString)
+	if debug is True: print("------------")
+
+	types = ['++', '+'+basetype[1], basetype[0]+'+', basetype[0]+basetype[1]]
+	if debug is True: print("types=", types)
+
+	if debug is True: print("determine parental type")
+	parental = random.choice(types)
+	if debug is True: print("parental=", parental, gml.invert_genotype(parental, basetype))
+
+	tetradCount = generateTypeCounts(parental, basetype, progeny_size, distance)
+	if debug is True: print("tetradCount=", tetradCount)
+
+	return tetradCount
 
 #===========================
 def generate_question(N: int, question_type: str) -> str:
