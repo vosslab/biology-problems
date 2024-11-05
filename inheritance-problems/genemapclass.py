@@ -285,18 +285,8 @@ class GeneMappingClass:
 	def set_gene_order(self) -> None:
 		"""
 		Sets the order of genes within the map by randomly shuffling `gene_letters_str`.
-
-		The order is minimized lexicographically, ensuring consistency in order representation.
 		"""
-		# Convert the gene letters into a list and shuffle them
-		gene_order_list = list(self.gene_letters_str)
-		random.shuffle(gene_order_list)
-
-		# Set gene order to the lexicographically smaller of the shuffled order and its reverse
-		gene_order_list = min(gene_order_list, gene_order_list[::-1])
-
-		# Join the list back into a string and assign to `gene_order_str`
-		self.gene_order_str = ''.join(gene_order_list)
+		self.gene_order_str = gml.get_random_gene_order(self.gene_letters_str)
 
 	#===========================================================
 	#===========================================================
