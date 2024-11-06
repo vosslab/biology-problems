@@ -1258,27 +1258,7 @@ class GeneMappingClass:
 	#====================================
 	#====================================
 	def get_phenotype_info(self) -> str:
-		phenotype_info_text = ''
-		phenotype_info_text += '<h6>Characteristics of Recessive Phenotypes</h6>'
-
-		linking_words = ('linked with', 'associated with', 'related to',
-			'connected with', 'analogous to', 'affiliated with', 'correlated with',)
-		phenotype_info_text += '<p><ul>'
-		for i, gene_letter in enumerate(self.gene_letters_str):
-			# Fetch the phenotype string based on the genotype
-			phenotype_name = gml.phenotype_dict[gene_letter]
-			phenotype_description = gml.phenotype_description_dict[phenotype_name]
-			gene_span = f'<span style="color: #{self.dark_colors[i]};">'
-			phenotype_info_text += f"<li><strong>{gene_span}Gene {gene_letter.upper()}</span></strong> is "
-			phenotype_info_text += f'{random.choice(linking_words)} '
-			phenotype_info_text += f"the '{gene_span}<i>{phenotype_name}</i></span>' phenotype. "
-			phenotype_info_text += f'A fruit fly that is homozygous recessive for {gene_span}Gene {gene_letter.upper()}</span> '
-			phenotype_info_text += f'{phenotype_description}</li> '
-		phenotype_info_text += '</ul></p>'
-		if self.is_valid_html(phenotype_info_text) is False:
-			print(phenotype_info_text)
-			raise ValueError
-		return phenotype_info_text
+		return gml.get_phenotype_info(self.gene_letters_str, self.dark_colors)
 
 #===========================================================
 #===========================================================
