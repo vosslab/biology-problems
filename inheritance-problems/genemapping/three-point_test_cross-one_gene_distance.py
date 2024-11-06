@@ -24,33 +24,68 @@ def get_question_text(question_type='parental', gene_pair=None):
 	question_string += f'<p><strong>calculate the genetic distance between the two {gene_pair_text},</strong> '
 	question_string += 'expressing your answer in centimorgans (cM)</p> '
 	if question_type == 'num':
-		question_string += '<ul> '
-		question_string += '<li><i>Important Tip 1:</i> '
-		question_string +=   'Your calculated distance between the genes should be a whole number. '
-		question_string +=   'Finding a decimal in your answer, such as 5.5, indicates a mistake was made. '
-		question_string +=   'Please provide your answer as a complete number without fractions or decimals.</li>'
-		question_string += '<li><i>Important Tip 2:</i> '
-		question_string +=   'Your answer should be written as a numerical value only, '
-		question_string +=   'no spaces, commas, or units such as "cM" or "map units". '
-		question_string +=   'For example, if the distance is fifty one centimorgans, simply write "51". </li> '
-		question_string += '</ul> '
+		question_string += get_important_tips()
 	return question_string
+
+
+#===========================================================
+#===========================================================
+def get_important_tips():
+	"""
+	Returns the HTML formatted hints for solving the problem.
+
+	Returns:
+		str: HTML formatted string with hints.
+	"""
+	tips = '<h6>Important Answer Guidelines</h6>'
+	tips += '<p><ul>'
+	tips += '<li><i>Important Tip 1:</i> '
+	tips += '  Your calculated distance between the pair of genes should be a whole number. '
+	tips += '  Finding a decimal in your answer, such as 5.5, indicates a mistake was made. '
+	tips += '  Please provide your answer as a complete number without fractions or decimals.</li>'
+	tips += '<li><i>Important Tip 2:</i> '
+	tips += '  Your answer should be written as a numerical value only, '
+	tips += '  with no spaces, commas, or units such as "cM" or "map units". '
+	tips += '  For example, if the distance is fifty one centimorgans, simply write "51".</li>'
+	tips += '</ul></p>'
+	if gml.is_valid_html(tips) is False:
+		print(tips)
+		raise ValueError
+	return tips
+
+#=====================
+def parse_arguments():
+	"""Parses command-line arguments for the script."""
+	parser = argparse.ArgumentParser(description="Generate Neurospora genetics questions.")
+	question_group = parser.add_mutually_exclusive_group(required=True)
+
+	# Add question type argument with choices
+	question_group.add_argument(
+		'-t', '--type', dest='question_type', type=str, choices=('num', 'mc'),
+		help='Set the question type: num (numeric) or mc (multiple choice)'
+	)
+	question_group.add_argument(
+		'-m', '--mc', dest='question_type', action='store_const', const='mc',
+		help='Set question type to multiple choice'
+	)
+	question_group.add_argument(
+		'-n', '--num', dest='question_type', action='store_const', const='num',
+		help='Set question type to numeric'
+	)
+
+	parser.add_argument(
+		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
+		help='Number of duplicate runs to do', default=1
+	)
+
+	args = parser.parse_args()
+
+	return args
 
 #=====================
 #=====================
-if __name__ == "__main__":
-	parser = argparse.ArgumentParser()
-	question_group = parser.add_mutually_exclusive_group(required=True)
-	# Add question type argument with choices
-	question_group.add_argument('-t', '--type', dest='question_type', type=str,
-		choices=('num', 'mc'), help='Set the question type: accept or reject')
-	question_group.add_argument('-m', '--mc', dest='question_type', action='store_const',
-		const='mc',)
-	question_group.add_argument('-n', '--num', dest='question_type', action='store_const',
-		const='num',)
-	parser.add_argument('-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='number of duplicate runs to do', default=1)
-	args = parser.parse_args()
+def main():
+	args = parse_arguments()
 
 	outfile = ('bbq-' + os.path.splitext(os.path.basename(__file__))[0]
 		+ f'-{args.question_type.upper()}'
@@ -93,4 +128,8 @@ if __name__ == "__main__":
 	f.close()
 	bptools.print_histogram()
 
+#===========================================================
+#===========================================================
+if __name__ == "__main__":
+	main()
 #THE END
