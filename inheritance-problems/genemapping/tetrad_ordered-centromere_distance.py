@@ -8,6 +8,7 @@ import argparse
 
 # Local repo modules
 import bptools
+import genemaplib as gml
 
 # Global debug flag
 debug = False
@@ -54,21 +55,30 @@ def get_formula():
 	)
 	return formula
 
-#====================================
-def get_important_tip():
-	important_tip_text = ''
-	important_tip_text += '<p>Express your answer in centimorgans (cM)</p> '
-	important_tip_text += '<ul> '
-	important_tip_text += '<li><i>Important Tip 1:</i> '
-	important_tip_text +=   'Your calculated distance between the genes should be a whole number. '
-	important_tip_text +=   'Finding a decimal in your answer, such as 5.5, indicates a mistake was made. '
-	important_tip_text +=   'Please provide your answer as a complete number without fractions or decimals.</li>'
-	important_tip_text += '<li><i>Important Tip 2:</i> '
-	important_tip_text +=   'Your answer should be written as a numerical value only, '
-	important_tip_text +=   'no spaces, commas, or units such as "cM" or "map units". '
-	important_tip_text +=   'For example, if the distance is fifty one centimorgans, simply write "51". </li> '
-	important_tip_text += '</ul> '
-	return important_tip_text
+#===========================================================
+#===========================================================
+def get_important_tips():
+	"""
+	Returns the HTML formatted hints for solving the problem.
+
+	Returns:
+		str: HTML formatted string with hints.
+	"""
+	tips = '<h6>Important Answer Guidelines</h6>'
+	tips += '<p><ul>'
+	tips += '<li><i>Important Tip 1:</i> '
+	tips += '  Your calculated distances between each pair of genes should be a whole number. '
+	tips += '  Finding a decimal in your answer, such as 5.5, indicates a mistake was made. '
+	tips += '  Please provide your answer as a complete number without fractions or decimals.</li>'
+	tips += '<li><i>Important Tip 2:</i> '
+	tips += '  Your answer should be written as a numerical value only, '
+	tips += '  with no spaces, commas, or units such as "cM" or "map units". '
+	tips += '  For example, if the distance is fifty one centimorgans, simply write "51".</li>'
+	tips += '</ul></p>'
+	if gml.is_valid_html(tips) is False:
+		print(tips)
+		raise ValueError
+	return tips
 
 #=====================
 #=====================
@@ -246,9 +256,13 @@ def make_choices(asci_count_dict):
 def generate_question(N: int, question_type: str) -> str:
 	"""Generates a formatted question string based on the question type and question number."""
 	# Set up the genetic distance and calculate asci counts
-	multiplier = 20 if question_type == 'mc' else 1
+	# Set precision step based on question type
+	precision_step = 0.05 if question_type == 'mc' else 1.0
 	base_range = (9, 29)
-	distance = random.randint(base_range[0] * multiplier, base_range[1] * multiplier) / float(multiplier)
+	# Generate a random distance within the base range and round it to the nearest precision step.
+	raw_distance = random.uniform(base_range[0], base_range[1])
+	distance = round(raw_distance / precision_step) * precision_step
+
 	asci_count_dict = get_asci_counts(distance)
 	if asci_count_dict is None:
 		return None  # Skip this question if asci counts are invalid
@@ -256,7 +270,8 @@ def generate_question(N: int, question_type: str) -> str:
 	# Assemble question components
 	background_text = get_background_context()
 	formula = get_formula()
-	gene_letter = random.choice('abcdefghjkmnpqrstwxyz')
+	gene_letter = gml.get_gene_letters(1)
+	#print(f"GENE LETTER = {gene_letter}")
 	octads_table = get_octads_table(asci_count_dict, gene_letter)
 	question_text = get_question_text(gene_letter)
 	full_question = background_text + octads_table + formula + question_text
@@ -267,7 +282,7 @@ def generate_question(N: int, question_type: str) -> str:
 		random.shuffle(choices_list)
 		return bptools.formatBB_MC_Question(N, full_question, choices_list, answer_text)
 	else:
-		important_tip_text = get_important_tip()
+		important_tip_text = get_important_tips()
 		return bptools.formatBB_NUM_Question(N, full_question + important_tip_text, distance, 0.1, tol_message=False)
 
 #=====================
@@ -316,11 +331,15 @@ def main():
 			if final_question:
 				N += 1
 				f.write(final_question)
+	f.close()
 
 	# Display histogram if question type is multiple choice
 	if args.question_type == "mc":
 		bptools.print_histogram()
 
+
+#===========================================================
+#===========================================================
 if __name__ == "__main__":
 	main()
 
