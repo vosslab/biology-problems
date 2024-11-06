@@ -255,7 +255,7 @@ assert get_phenotype_name_for_genotype('++', None) == '<i>wildtype</i>'
 
 import xml.etree.ElementTree as ET
 
-def is_valid_html(html_str: str) -> bool:
+def is_valid_html(html_str: str, debug: bool=True) -> bool:
 	"""
 	Validates if the input HTML string is well-formed by removing entities
 	and wrapping the content in a root element for XML parsing.
@@ -277,16 +277,16 @@ def is_valid_html(html_str: str) -> bool:
 		return True
 	except ET.ParseError as e:
 		# Print detailed error information for debugging
-		print(f"Parse error: {e}")
+		if debug: print(f"Parse error: {e}")
 
 		# Optional: Print a snippet of the HTML around the error
 		error_index = e.position[1] if hasattr(e, 'position') else 0
 		snippet = cleaned_html[max(0, error_index - 40): error_index + 40]
-		print(f"Snippet around error (40 chars before and after):\n{snippet}")
+		if debug: print(f"Snippet around error (40 chars before and after):\n{snippet}")
 
 		# Optional: Print the entire cleaned HTML if debugging further
-		print("Full cleaned HTML (wrapped in root):")
-		print(wrapped_html)
+		if debug: print("Full cleaned HTML (wrapped in root):")
+		if debug: print(wrapped_html)
 
 		return False
 
@@ -294,8 +294,8 @@ def is_valid_html(html_str: str) -> bool:
 assert is_valid_html("<p>This is a paragraph.</p>") == True
 assert is_valid_html("<p>This is a<br/>paragraph.</p>") == True
 assert is_valid_html("<p>This is&nbsp;a paragraph.</p>") == True
-assert is_valid_html("<p>This is a paragraph.</html>") == False
-assert is_valid_html("<span style='no closing quote>This is a paragraph.</span>") == False
+assert is_valid_html("<p>This is a paragraph.</html>", debug=False) == False
+assert is_valid_html("<span style='no closing quote>This is a paragraph.</span>", debug=False) == False
 
 #===========================================================
 #===========================================================
