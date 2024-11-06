@@ -8,6 +8,7 @@ import random
 #local libraries
 import bptools
 import genemaplib as gml
+import phenotypes_for_flies
 
 #===========================================================
 #===========================================================
@@ -196,6 +197,8 @@ class GeneMappingClass:
 		self.parental_genotypes_tuple = None
 		self.genotype_counts = None
 		self.interference_mode = False  # Default interference mode
+
+		self.phenotype_dict = phenotypes_for_flies.phenotype_dict
 
 		# Print initial data if debug mode is enabled
 		if self.debug is True:
@@ -1153,7 +1156,7 @@ class GeneMappingClass:
 			if i % 4 == 0:
 				table += spacer_line
 			# Fetch the phenotype name based on the genotype
-			phenotype_string = gml.get_phenotype_name_for_genotype(genotype)
+			phenotype_string = gml.get_phenotype_name_for_genotype(genotype, self.phenotype_dict)
 			table += "|"
 			# Add genotype to the table
 			for gene in genotype:
@@ -1200,7 +1203,7 @@ class GeneMappingClass:
 		# Loop through each genotype and add a row to the table
 		for genotype in all_genotypes:
 			# Fetch the phenotype string based on the genotype
-			phenotype_string = gml.get_phenotype_name_for_genotype(genotype)
+			phenotype_string = gml.get_phenotype_name_for_genotype(genotype, self.phenotype_dict)
 
 			table += f'<tr><td {td_extra.replace("center", "left")}>&nbsp;{span}{phenotype_string}</span></td>'
 			for i in range(self.num_genes_int):
@@ -1258,7 +1261,7 @@ class GeneMappingClass:
 	#====================================
 	#====================================
 	def get_phenotype_info(self) -> str:
-		return gml.get_phenotype_info(self.gene_letters_str, self.dark_colors)
+		return gml.get_phenotype_info(self.gene_letters_str, self.phenotype_dict, self.dark_colors)
 
 #===========================================================
 #===========================================================
@@ -1274,15 +1277,17 @@ if __name__ == '__main__':
 	a.print_gene_map_data()
 
 	#for i in range(200):
-	a = GeneMappingClass(4, 1)
-	a.debug = False
-	a.setup_question()
-	a.print_gene_map_data()
-
-	#for i in range(200):
 	a = GeneMappingClass(3, 1)
 	a.debug = False
 	a.setup_question()
 	a.print_gene_map_data()
 	print(a.get_question_header())
 	print(a.get_progeny_ascii_table())
+
+	#for i in range(200):
+	"""
+	a = GeneMappingClass(4, 1)
+	a.debug = False
+	a.setup_question()
+	a.print_gene_map_data()
+	"""
