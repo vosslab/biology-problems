@@ -1,350 +1,223 @@
 #!/usr/bin/env python3
 
 import os
-import sys
+#import sys
 import random
 import argparse
+import itertools
 
 import bptools
+import tetradlib
 import genemaplib as gml
-import genemapclass as gmc
+import phenotypes_for_yeast
 
 debug = True
 
-#=====================
-#=====================
-def questionText(basetype):
-	question_string = '<h6>Unordered Tetrad Three Gene Mapping</h6>'
-	question_string += '<p>The yeast <i>Saccharomyces cerevisiae</i> has unordered tetrads. '
-	question_string += 'A cross is made to study the linkage relationships among three genes. '
-	question_string += '<p>Using the table, determine the order of the genes and the distances between them. '
-	question_string += 'Once calculated, fill in the following four blanks: </p><ul>'
-	question_string += '<li>The distance between genes {0} and {1} is [{0}{1}] cM ({0}{1})</li>'.format(basetype[0].upper(),basetype[1].upper())
-	question_string += '<li>The distance between genes {0} and {1} is [{0}{1}] cM ({0}{1})</li>'.format(basetype[0].upper(),basetype[2].upper())
-	question_string += '<li>The distance between genes {0} and {1} is [{0}{1}] cM ({0}{1})</li>'.format(basetype[1].upper(),basetype[2].upper())
-	question_string += '<li>From this the correct order of the genes is [geneorder] (gene order).</li></ul>'
-	question_string += '<p><i>Hint 1:</i> ALL gene distances will be whole numbers, '
-	question_string += ' do NOT enter a decimal; if you have a decimal your calculations are wrong.</p>'
-	question_string += '<p><i>Hint 2:</i> enter your answer in the blank using only letters or numbers '
-	question_string += ' with no spaces or commas. Also, do NOT add units, e.g. cM or m.u.</p>'
-	question_string += '<ul>'
-	question_string += '<li>Step 1: Find the Row for the Parental Type for all three genes.</li>'
-	question_string += '<li>Step 2: Pick any two genes and assign PD, NPD, TT</li>'
-	question_string += '<li>Step 3: Determine if the two genes are linked.</li>'
-	question_string += '<ul><li>PD >> NPD &rarr; linked; PD &approx; NPD &rarr; unlinked</li></ul>'
-	question_string += '<li>Step 4: Determine the map distance between the two genes</li>'
-	question_string += '<ul><li>D = &half; (TT + 6 NPD)/total = (3 NPD + &half;TT)/total</li></ul>'
-	question_string += '<li>Step 5: Go to Step 2 and pick a new pair of genes until all pairs are complete.</li>'
-	question_string += '</ul>'
+#===========================================================
+#===========================================================
+def get_question_header():
+	"""
+	Returns the introductory context of the problem for unordered tetrad three-gene mapping.
+	"""
+	header = '<h5>Unordered Tetrad Three Gene Mapping</h5>'
+	header += '<p>In this problem, you will use unordered tetrads to determine the order of three genes '
+	header += 'and calculate the distances between them. The yeast <i>Saccharomyces cerevisiae</i> is used in this study. '
+	header += 'A cross has been performed to study the linkage relationships among three genes, '
+	header += 'and the resulting genotypes are summarized in the table below.</p>'
+	if gml.is_valid_html(header) is False:
+		print(header)
+		raise ValueError
+	return header
 
-	return question_string
+#===========================================================
+#===========================================================
+def get_question_setup(gene_letters_str):
+	"""
+	Generates the specific part of the question that depends on gene letters.
 
-#=====================
-#=====================
-def tetradSetToString(tetradSet):
-	return '\t'.join(tetradSet)
+	Args:
+		gene_letters_str (str): String containing gene letters, e.g., "akn".
 
-#=====================
-#=====================
-def makeProgenyHtmlTable(typemap, progeny_size):
-	alltypes = list(typemap.keys())
-	alltypes.sort()
-	td_extra = 'align="center" style="border: 1px solid black;"'
-	span = '<span style="font-size: medium;">'
-	table = '<table style="border-collapse: collapse; border: 2px solid black; width: 400px; height: 220px;">'
-	table += '<tr>'
-	table += '  <th {0}>Set #</th>'.format(td_extra)
-	table += '  <th colspan="4" {0}>Tetrad Genotypes</th>'.format(td_extra)
-	table += '  <th {0}>Progeny<br/>Count</th>'.format(td_extra)
-	table += '</tr>'
-	for i,type in enumerate(alltypes):
-		interheader = '</span></td><td {0}>{1}'.format(td_extra, span)
-		html_type = type.strip().replace('\t', interheader)
-		table += '<tr>'
-		table += ' <td {0}>{1}{2}</span></td>'.format(td_extra, span, i+1)
-		table += ' <td {0}>{1}{2}</span></td>'.format(td_extra, span, html_type)
-		table += ' <td {0}>{1}{2:d}</span></td>'.format(td_extra.replace('center', 'right'), span, typemap[type])
-		table += '</tr>'
-	table += '<tr>'
-	table += '  <th colspan="5" {0}">TOTAL =</th>'.format(td_extra.replace('center', 'right'))
-	table += '  <td {0}>{1:d}</td>'.format(td_extra.replace('center', 'right'), progeny_size)
-	table += '</tr>'
-	table += '</table>'
-	return table
+	Returns:
+		str: HTML formatted string with the dynamic question setup.
+	"""
+	setup = '<h6>Question</h6> '
+	setup += '<p>Using the table above, determine the order of the genes and the distances between them. '
+	setup += 'Once calculated, fill in the following four blanks: </p><ul>'
+	#the gene letters ARE sorted, so this okay since it is not the gene order
+	for gene1, gene2 in itertools.combinations(gene_letters_str.upper(), 2):
+		setup += f'<li>The distance between genes {gene1} and {gene2} is [{gene1}{gene2}] cM ({gene1}{gene2})</li>'
+	setup += '<li>From this, the correct order of the genes is [geneorder] (gene order).</li></ul>'
+	if gml.is_valid_html(setup) is False:
+		print(setup)
+		raise ValueError
+	return setup
+
+#===========================================================
+#===========================================================
+def get_important_tips():
+	"""
+	Returns the HTML formatted hints for solving the problem.
+
+	Returns:
+		str: HTML formatted string with hints.
+	"""
+	tips = '<h6>Important Answer Guidelines</h6>'
+	tips += '<p><ul>'
+	tips += '<li><i>Important Tip 1:</i> '
+	tips += '  Your calculated distances between each pair of genes should be a whole number. '
+	tips += '  Finding a decimal in your answer, such as 5.5, indicates a mistake was made. '
+	tips += '  Please provide your answer as a complete number without fractions or decimals.</li>'
+	tips += '<li><i>Important Tip 2:</i> '
+	tips += '  Your answer should be written as a numerical value only, '
+	tips += '  with no spaces, commas, or units such as "cM" or "map units". '
+	tips += '  For example, if the distance is fifty one centimorgans, simply write "51".</li>'
+	tips += '<li><i>Important Tip 3:</i> '
+	tips += '  Your gene order answer should be written as three letters only, '
+	tips += '  with no spaces, commas, hyphens, or other characters allowed. '
+	tips += '  For example, if the gene order is B - A - C, simply write "bac" or "cab".</li>'
+	tips += '</ul></p>'
+	if gml.is_valid_html(tips) is False:
+		print(tips)
+		raise ValueError
+	return tips
+
+#===========================================================
+#===========================================================
+def get_question_footer_steps():
+	"""
+	Returns the HTML formatted step-by-step instructions for solving the problem.
+
+	Returns:
+		str: HTML formatted string with step-by-step instructions.
+	"""
+	steps = '<h6>Step-by-Step Instructions</h6>'
+	steps += '<ul>'
+	steps += ' <li>Step 1: Find the row for the Parental Type for all three genes.</li>'
+	steps += ' <li>Step 2: Pick any two genes and assign PD, NPD, TT.</li>'
+	steps += ' <li>Step 3: Determine if the two genes are linked.</li>'
+	steps += '  <ul><li>PD &gt;&gt; NPD &rarr; linked; PD &approx; NPD &rarr; unlinked</li></ul>'
+	steps += ' <li>Step 4: Determine the map distance between the two genes.</li>'
+	steps += '  <ul><li>D = &half; (TT + 6 NPD) / total = (3 NPD + &half; TT) / total</li></ul>'
+	steps += ' <li>Step 5: Go back to Step 2 and pick a new pair of genes until all pairs are complete.</li>'
+	steps += '</ul>'
+	if gml.is_valid_html(steps) is False:
+		print(steps)
+		raise ValueError
+	return steps
 
 
-#=====================
-#=====================
-def makeProgenyAsciiTable(typemap, progeny_size):
-	alltypes = list(typemap.keys())
-	alltypes.sort()
-	table = ''
-	for type in alltypes:
-		table += ("{0}\t".format(type))
-		table += ("{0:d}\t".format(typemap[type]))
-		table += "\n"
-	table +=  "\t\t\t-----\n"
-	table +=  "\t\tTOTAL\t%d\n\n"%(progeny_size)
-	return table
+#===========================================================
+#===========================================================
+def create_pair_variable(gene1, gene2):
+	"""Helper function to create a variable name from two genes in alphabetical order."""
+	return f"{min(gene1, gene2).upper()}{max(gene1, gene2).upper()}"
 
-#=====================
-#=====================
-def generateTypeCounts(parental, geneorder, distances, progeny_size, basetype, interference_tuple):
-	doublecount = calculate_double_crossovers(distances, progeny_size, interference_tuple)
+#===========================================================
+#===========================================================
+def make_answer_map(gene_order_str, distances):
+	"""
+	Creates a mapping of variable names to their associated distances and gene order.
 
-	firstcount = 2*(int(round(distances[0]*progeny_size/100.)) - 3*(dcount1 + dcount3))
-	secondcount = 2*(int(round(distances[1]*progeny_size/100.)) - 3*(dcount2 + dcount3))
-	parentcount = progeny_size - doublecount - firstcount - secondcount
+	For a given gene order and a list of distances, this function generates a dictionary where:
+	- Each pairwise combination of genes (in alphabetical order) is mapped to a distance.
+	- The full gene order is mapped to both its original and reversed versions.
 
-	# dcount3 controls the third distance
-	# for progeny_size of 1000, each dcount3 = 0.6 distance
-	distance3 = distances[-1]
+	Args:
+		gene_order_str (str): A string of gene letters, e.g., 'abc'.
+		distances (list): A list of distances between each pair of genes, e.g., [5, 10, 15].
 
-	if not distance3.is_integer():
-		return None
-	if firstcount <= 0 or secondcount <= 0:
-		print("two many double cross-overs")
-		return None
-	if firstcount >= parentcount:
-		print("Tetratype larger than Parental Type")
-		return None
-	if secondcount >= parentcount:
-		print("Tetratype larger than Parental Type")
-		return None
+	Returns:
+		dict: A dictionary with variable names as keys and distance or gene order as values.
 
-	# Create Six Genotypes
-	tetradCount = {}
+	Example:
+		>>> make_answer_map('abc', [5, 10, 15])
+		{
+			'AB': [5],
+			'BC': [10],
+			'AC': [15],
+			'geneorder': ['abc', 'cba']
+		}
+	"""
+	# Initialize answer map with pairwise gene combinations
+	answer_map = {
+		create_pair_variable(gene_order_str[0], gene_order_str[1]): [distances[0]],
+		create_pair_variable(gene_order_str[1], gene_order_str[2]): [distances[1]],
+		create_pair_variable(gene_order_str[0], gene_order_str[2]): [distances[2]],
+	}
+	# Add the full gene order and its reverse as a separate entry
+	answer_map['geneorder'] = [gene_order_str, gene_order_str[::-1]]
+	return answer_map
 
-	tetradSet = [parental, parental, gml.invert_genotype(parental, basetype), gml.invert_genotype(parental, basetype),]
-	tetradSet.sort()
-	if debug is True: print(" parental ", tetradSet)
-
-	tetradName = tetradSetToString(tetradSet)
-	tetradCount[tetradName] = parentcount
-
-	#first flip
-	firsttype = gml.flip_gene_by_letter(parental, geneorder[0], basetype)
-
-	#usually TT
-	tetradSet = [firsttype, gml.invert_genotype(firsttype, basetype), parental, gml.invert_genotype(parental, basetype),]
-	tetradSet.sort()
-	tetradName = tetradSetToString(tetradSet)
-	tetradCount[tetradName] = firstcount
-
-	#usually NPD
-	tetradSet = [firsttype, gml.invert_genotype(firsttype, basetype), firsttype, gml.invert_genotype(firsttype, basetype), ]
-	tetradSet.sort()
-	tetradName = tetradSetToString(tetradSet)
-	tetradCount[tetradName] = dcount1
-
-	#second flip
-	secondtype = gml.flip_gene_by_letter(parental, geneorder[2], basetype)
-
-	#usually TT
-	tetradSet = [secondtype, gml.invert_genotype(secondtype, basetype), parental, gml.invert_genotype(parental, basetype),]
-	tetradSet.sort()
-	tetradName = tetradSetToString(tetradSet)
-	tetradCount[tetradName] = secondcount
-
-	#usually NPD
-	tetradSet = [secondtype, gml.invert_genotype(secondtype, basetype), secondtype, gml.invert_genotype(secondtype, basetype),]
-	tetradSet.sort()
-	tetradName = tetradSetToString(tetradSet)
-	tetradCount[tetradName] = dcount2
-
-	#both flips
-	thirdtype = gml.flip_gene_by_letter(gml.flip_gene_by_letter(parental, geneorder[2], basetype), geneorder[0], basetype)
-
-	#usually NPD
-	tetradSet = [thirdtype, gml.invert_genotype(thirdtype, basetype), thirdtype, gml.invert_genotype(thirdtype, basetype),]
-	tetradSet.sort()
-	tetradName = tetradSetToString(tetradSet)
-	tetradCount[tetradName] = dcount3
-
-	return tetradCount
 
 #=====================
-#=====================
-def getVariables(basetype):
-	variable_list = []
-	if basetype[0] < basetype[1]:
-		variable = '{0}{1}'.format(basetype[0].upper(),basetype[1].upper())
-	else:
-		variable = '{0}{1}'.format(basetype[1].upper(),basetype[0].upper())
-	variable_list.append(variable)
-	if basetype[1] < basetype[2]:
-		variable = '{0}{1}'.format(basetype[1].upper(),basetype[2].upper())
-	else:
-		variable = '{0}{1}'.format(basetype[2].upper(),basetype[1].upper())
-	variable_list.append(variable)
-	if basetype[0] < basetype[2]:
-		variable = '{0}{1}'.format(basetype[0].upper(),basetype[2].upper())
-	else:
-		variable = '{0}{1}'.format(basetype[2].upper(),basetype[0].upper())
-	variable_list.append(variable)
-	variable = 'geneorder'
-	variable_list.append(variable)
-	return variable_list
-
-#=====================
-#=====================
-def blackboardFormat(question_string, html_table, variable_list, geneorder, distances):
-	#FIB_PLUS TAB question text TAB variable1 TAB answer1 TAB answer2 TAB TAB variable2 TAB answer3
-	blackboard = 'FIB_PLUS\t'
-	blackboard += html_table
-	blackboard += question_string
-	variable_to_distance = {}
-	for i in range(len(variable_list)-1):
-		variable_to_distance[variable_list[i]] = distances[i]
-	variable_list.sort()
-	for i in range(len(variable_list)-1):
-		variable = variable_list[i]
-		blackboard += '\t{0}\t{1}\t'.format(variable, variable_to_distance[variable])
-	blackboard += '\tgeneorder\t{0}\t{1}\n'.format(geneorder, geneorder[::-1])
-	return blackboard
-
-#=====================
-#=====================
-def formatBB_FIB_PLUS_Question(N, question, variable_list, geneorder, distances):
-	crc16 = bptools.getCrc16_FromString(question)
-
-	#FIB_PLUS TAB question text TAB variable1 TAB answer1 TAB answer2 TAB TAB variable2 TAB answer3
-	bb_question = 'FIB_PLUS\t<p>{0}. {1}</p> {2}'.format(N, crc16, question)
-	pretty_question = bptools.makeQuestionPretty(question)
-	print('{0}. {1} -- {2}'.format(N, crc16, pretty_question))
-
-	variable_to_distance = {}
-	for i in range(len(variable_list)-1):
-		variable_to_distance[variable_list[i]] = distances[i]
-	variable_list.sort()
-	for i in range(len(variable_list)-1):
-		variable = variable_list[i]
-		bb_question += '\t{0}\t{1}\t'.format(variable, variable_to_distance[variable])
-	bb_question += '\tgeneorder\t{0}\t{1}'.format(geneorder, geneorder[::-1])
-	bb_question += '\n'
-	return bb_question
-
-#=====================
-#=====================
-def makeQuestion(basetype, geneorder, distances, progeny_size, interference_tuple):
-	if debug is True: print("------------")
-	answerString = ("%s - %d - %s - %d - %s"
-		%(geneorder[0], distances[0], geneorder[1], distances[1], geneorder[2]))
-	print(answerString)
-	if debug is True: print("------------")
-
-	if debug is True: print("determine double crossovers")
-	doublecross = distances[0]*distances[1]/100.
-	if debug is True: print("doublecross", doublecross*10, 'per 1000')
-
-	if debug is True: print("determine parental type")
-	types = ['+++', '++'+basetype[2], '+'+basetype[1]+'+', '+'+basetype[1]+basetype[2]]
-	parental = random.choice(types)
-
-	tetradCount = generateTypeCounts(parental, geneorder, distances, progeny_size, basetype, interference_tuple)
-	return tetradCount
-
-#=====================
-#=====================
-def translate_genotype_counts_to_tetrads(GMC):
-	print(GMC.progeny_groups_count_dict)
-	print(GMC.genotype_counts)
-	GMC.gene_letters_str
-
-	# Create Six Genotypes
-	tetradCount = {}
-
-	tetradSet = list(GMC.parental_genotypes_tuple) + list(GMC.parental_genotypes_tuple)
-	tetradSet.sort()
-	if debug is True: print(" parental ", tetradSet)
-
-	tetradName = tetradSetToString(tetradSet)
-	tetradCount[tetradName] = GMC.progeny_groups_count_dict['parental']
-
-	print(tetradCount)
-
-	#first flip
-	firsttype1 = gml.flip_gene_by_letter(GMC.parental_genotypes_tuple[0], GMC.gene_order_str[0], GMC.gene_letters_str)
-	firsttype2 = gml.invert_genotype(firsttype1, GMC.gene_letters_str)
-
-	#usually TT
-	tetradSet = list(GMC.parental_genotypes_tuple) + [firsttype1, firsttype2]
-	tetradSet.sort()
-	tetradName = tetradSetToString(tetradSet)
-	tetradCount[tetradName] = firstcount
-
-	#usually NPD for gene 1
-	tetradSet = [firsttype1, firsttype2, firsttype1, firsttype2]
-	tetradSet.sort()
-	tetradName = tetradSetToString(tetradSet)
-	tetradCount[tetradName] = dcount1
-
-	#second flip
-	secondtype = gml.flip_gene_by_letter(parental, geneorder[2], basetype)
-
-	#usually TT
-	tetradSet = [secondtype, gml.invert_genotype(secondtype, basetype), parental, gml.invert_genotype(parental, basetype),]
-	tetradSet.sort()
-	tetradName = tetradSetToString(tetradSet)
-	tetradCount[tetradName] = secondcount
-
-	#usually NPD
-	tetradSet = [secondtype, gml.invert_genotype(secondtype, basetype), secondtype, gml.invert_genotype(secondtype, basetype),]
-	tetradSet.sort()
-	tetradName = tetradSetToString(tetradSet)
-	tetradCount[tetradName] = dcount2
-
-	#both flips
-	thirdtype = gml.flip_gene_by_letter(gml.flip_gene_by_letter(parental, geneorder[2], basetype), geneorder[0], basetype)
-
-	#usually NPD
-	tetradSet = [thirdtype, gml.invert_genotype(thirdtype, basetype), thirdtype, gml.invert_genotype(thirdtype, basetype),]
-	tetradSet.sort()
-	tetradName = tetradSetToString(tetradSet)
-	tetradCount[tetradName] = dcount3
-
-	return tetradCount
-
-#=====================
-#=====================
-if __name__ == "__main__":
-	parser = argparse.ArgumentParser()
-	parser.add_argument('-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='number of duplicate runs to do', default=1)
+def parse_arguments():
+	"""Parses command-line arguments for the script."""
+	parser = argparse.ArgumentParser(description="Generate genetics questions.")
+	parser.add_argument(
+		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
+		help='Number of duplicate runs to do', default=1
+	)
 	args = parser.parse_args()
-	outfile = ('bbq-' + os.path.splitext(os.path.basename(__file__))[0]
-		+ '-questions.txt')
-	print('writing to file: '+outfile)
+
+	return args
+
+#=====================
+#=====================
+def main():
+	args = parse_arguments()
+
+	# Load the distance triplets and question headers
+	distance_triplet_list = gml.get_all_distance_triplets(msg=debug)
+	question_header = get_question_header()
+	footer_steps = get_question_footer_steps()
+	important_tips = get_important_tips()
+	phenotype_dict = phenotypes_for_yeast.phenotype_dict
+
+	# Define output file name
+	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	print('Writing to file:', outfile)
 	f = open(outfile, 'w')
-	N = 0
-	print(N)
-	for i in range(args.duplicates):
-		N += 1
-		GMC = gmc.GeneMappingClass(3, N)
-		GMC.setup_question()
-		print(GMC.get_progeny_ascii_table())
-		header = GMC.get_question_header()
-		html_table = GMC.get_progeny_html_table()
-		phenotype_info_text = GMC.get_phenotype_info()
+	N = 1
 
-		translate_genotype_counts_to_tetrads(GMC)
-		sys.exit(1)
+	for _ in range(args.duplicates):
+		gene_letters_str = gml.get_gene_letters(3)
+		question_setup = get_question_setup(gene_letters_str)
+		phenotype_info_str = gml.get_phenotype_info(gene_letters_str, phenotype_dict)
 
-		genotype_counts_dict = makeQuestion(gene_letters, gene_order, distances, progeny_size, interference_tuple)
-		if genotype_counts_dict is None:
+		gene_order_str = gml.get_random_gene_order(gene_letters_str)
+
+		distances = sorted(random.choice(distance_triplet_list))
+		while distances[1] > 26 and len(set(distances)) == 3:
+			distances = sorted(random.choice(distance_triplet_list))
+		if debug: print(f"Distances: {distances}")
+
+		progeny_size = gml.get_general_progeny_size(distances) * 3
+
+		progeny_tetrads_count_dict = tetradlib.construct_progeny_counts(gene_letters_str, gene_order_str, distances, progeny_size)
+		if progeny_tetrads_count_dict is None:
+			print("Question generation failed")
+			print(f"Distances: {distances}")
 			continue
-		print(f'genotype_counts_dict={genotype_counts_dict}')
 
-		ascii_table = makeProgenyAsciiTable(genotype_counts_dict, progeny_size)
+		ascii_table = tetradlib.get_progeny_ascii_table(3, progeny_tetrads_count_dict, progeny_size)
 		print(ascii_table)
-		html_table = makeProgenyHtmlTable(genotype_counts_dict, progeny_size)
-		#print(html_table)
-		question_string = questionText(gene_letters)
-		variable_list = getVariables(gene_order)
-		complete_question = html_table + question_string
-		#final_question = blackboardFormat(question_string, html_table, variable_list, gene_order, distances)
-		final_question = formatBB_FIB_PLUS_Question(N, complete_question, variable_list, gene_order, distances)
-		#print(final_question)
+		html_table = tetradlib.make_progeny_html_table(progeny_tetrads_count_dict, progeny_size)
+		answer_map = make_answer_map(gene_order_str, distances)
 
-		f.write(final_question)
+		# Combine all parts of the question into a single HTML string
+		complete_question = question_header + phenotype_info_str + html_table + question_setup + footer_steps + important_tips
+		final_question = bptools.formatBB_FIB_PLUS_Question(N, complete_question, answer_map)
+
+		if final_question is not None:
+			N += 1
+			f.write(final_question)
+		else:
+			print("Question generation failed")
+
 	f.close()
+
+#===========================================================
+#===========================================================
+if __name__ == "__main__":
+	main()
