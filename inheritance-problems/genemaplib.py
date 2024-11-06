@@ -52,7 +52,8 @@ assert len(get_gene_letters(5)) == 5
 
 #===========================================================
 #===========================================================
-def get_phenotype_info(gene_letters_str, dark_colors=None, organism="fruit fly") -> str:
+def get_phenotype_info(gene_letters_str, phenotype_dict, dark_colors=None) -> str:
+	organism = phenotype_dict['common name']
 	phenotype_info_text = ''
 	phenotype_info_text += '<h6>Characteristics of Recessive Phenotypes</h6>'
 
@@ -65,7 +66,7 @@ def get_phenotype_info(gene_letters_str, dark_colors=None, organism="fruit fly")
 	for i, gene_letter in enumerate(gene_letters_str):
 		# Fetch the phenotype string based on the genotype
 		phenotype_name = phenotype_dict[gene_letter]
-		phenotype_description = phenotype_description_dict[phenotype_name]
+		phenotype_description = phenotype_dict[phenotype_name]
 		gene_span = f'<span style="color: #{dark_colors[i]};">'
 		phenotype_info_text += f"<li><strong>{gene_span}Gene {gene_letter.upper()}</span></strong> is "
 		phenotype_info_text += f'{random.choice(linking_words)} '
@@ -210,7 +211,7 @@ assert is_almost_integer(5.001)      == False
 
 #===========================================================
 #===========================================================
-def get_phenotype_name_for_genotype(genotype: str) -> str:
+def get_phenotype_name_for_genotype(genotype: str, phenotype_dict: dict) -> str:
 	"""
 	Gets the phenotype from a genotype.
 
@@ -245,9 +246,9 @@ def get_phenotype_name_for_genotype(genotype: str) -> str:
 	return phenotype_string.strip()
 
 # Simple assertion tests for the function: 'get_phenotype_name'
-assert get_phenotype_name_for_genotype('++++') == '<i>wildtype</i>'
-assert get_phenotype_name_for_genotype('+++') == '<i>wildtype</i>'
-assert get_phenotype_name_for_genotype('++') == '<i>wildtype</i>'
+assert get_phenotype_name_for_genotype('++++', None) == '<i>wildtype</i>'
+assert get_phenotype_name_for_genotype('+++', None) == '<i>wildtype</i>'
+assert get_phenotype_name_for_genotype('++', None) == '<i>wildtype</i>'
 
 #===========================================================
 #===========================================================
