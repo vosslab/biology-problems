@@ -42,9 +42,7 @@ def describe_gene_map(GMC):
 	describe_gene_map_string = ''
 	up_genes = GMC.gene_order_str.upper()
 	distances_dict = GMC.distances_dict
-
 	describe_gene_map_string += '<p>The resulting phenotypes are summarized in the table above.</p> '
-
 	describe_gene_map_string += '<p><ul> '
 	describe_gene_map_string += '<li>The distance between genes '
 	describe_gene_map_string += f'{up_genes[0]} and {up_genes[1]} is {distances_dict[(1,2)]} cM</li>'
