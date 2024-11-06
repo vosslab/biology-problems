@@ -347,7 +347,7 @@ def generate_question(N: int, question_type, num_choices) -> str:
 #=====================
 def parse_arguments():
 	"""Parses command-line arguments for the script."""
-	parser = argparse.ArgumentParser(description="Generate Neurospora genetics questions.")
+	parser = argparse.ArgumentParser(description="Generate genetics mapping questions.")
 	question_group = parser.add_mutually_exclusive_group(required=True)
 
 	# Add question type argument with choices
@@ -386,7 +386,7 @@ def main():
 	# Define output file name
 	outfile = (
 		'bbq-' +
-		os.path.splitext(os.path.basename(__file__))[0] +
+		script_name +
 		'-' +
 		args.question_type.upper() +
 		'-questions.txt'
