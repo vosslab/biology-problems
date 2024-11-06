@@ -5,62 +5,9 @@ import copy
 import math
 import random
 
+import bptools
+
 debug = False
-
-#====================================
-# Dictionary to describe hypothetical fruit fly phenotypes
-#====================================
-
-# Dictionary that maps various hypothetical phenotypes of fruit flies to their descriptions.
-# Each key in the dictionary is a unique, quirky name describing a phenotype, and each value is a description
-# that elaborates on the visual or behavioral characteristics of that phenotype.
-phenotype_description_dict = {
-	'artsy':   'has wings that are colorful and distinctive patterns.',
-	'bumpy':   'has a skin texture that is not smooth, but rough with small bumps all over.',
-	'chummy':  'shows behavior where it always maintains a close distance to other flies.',
-	'dewy':    'appears moist, with its body covered in tiny droplets of water.',
-	'eery':    'appears to have something off, crooked limbs and other twisted appendages.',
-	'fuzzy':   'is covered in a dense layer of hairs, giving it a soft appearance.',
-	'gooey':   'is coated with a thick, sticky substance, suggestive of a viscous bodily secretion.',
-	'horsey':  'is quite big and strong-looking, much larger than your typical fruit fly.',
-	'icy':     'has a frosted appearance, with a sheen like a layer of frost.',
-	'jerky':   'moves in rapid and sudden movements, displaying an unpredictable flight pattern.',
-	'kidney':  'has a body shape that is curved, similar to a kidney bean.',
-	'leafy':   'has wings that resemble the shape and pattern of leaves.',
-	'mushy':   'feels soft to the touch and unusually squishy, unlike the usual firmness.',
-	'nerdy':   'has large, prominent eyes that stand out, much like thick-rimmed glasses.',
-	'okra':    'features a long, slender body, resembling the shape of an okra pod.',
-	'prickly': 'is covered with sharp bristles, giving it a spiky texture.',
-	'quacky':  'emits sounds that oddly mimic the quack of a duck.',
-	'rusty':   'has a reddish-brown color, much like rusted iron metal.',
-	'spicy':   'has chemical defense giving a tingling sensation, similar to spicy food.',
-	'tipsy':   'moves in an erratic path, suggesting a lack of coordination, as if intoxicated.',
-	'ugly':    'has dull colors and uneven features different from the typical fruit fly.',
-	'valley':  'shows deep grooves along its body, creating a landscape of peaks and troughs.',
-	'waxy':    'has a thick protective layer that is water resistant and opague.',
-	'xanthic': 'has a fluorescent bright yellow coloring.',
-	'yucky':   'gives off an unpleasant odor and has a generally unappealing look.',
-	'zippy':   'zooms around quickly, darting from one place to another.',
-}
-
-#====================================
-# Generate a dictionary of phenotype names by the first letter
-#====================================
-
-# Create a list of phenotype names by extracting the keys from phenotype_description_dict.
-# Then shuffle the list to randomize the order of phenotype names.
-phenotype_names = list(phenotype_description_dict.keys())
-random.shuffle(phenotype_names)
-
-# Initialize an empty dictionary to map the first letter of each phenotype name to the full name.
-phenotype_dict = {}
-for name in phenotype_names:
-	# Map each phenotype name to its first letter in phenotype_dict.
-	# If multiple phenotypes start with the same letter, this will keep the last one due to overwriting.
-	phenotype_dict[name[0]] = name
-
-# Clean up the temporary list to free up memory, as it's no longer needed after creating phenotype_dict.
-del phenotype_names
 
 #===========================================================
 # Function to generate a unique set of gene letters
@@ -102,6 +49,34 @@ def get_gene_letters(num_genes_int: int) -> str:
 # Test the function with an assertion to ensure it generates the correct number of letters.
 # This checks that the length of the result is equal to the requested number of genes.
 assert len(get_gene_letters(5)) == 5
+
+#===========================================================
+#===========================================================
+def get_phenotype_info(gene_letters_str, dark_colors=None, organism="fruit fly") -> str:
+	phenotype_info_text = ''
+	phenotype_info_text += '<h6>Characteristics of Recessive Phenotypes</h6>'
+
+	linking_words = ('linked with', 'associated with', 'related to',
+		'connected with', 'analogous to', 'affiliated with', 'correlated with',)
+	phenotype_info_text += '<p><ul>'
+	if dark_colors is None:
+		num_genes_int = len(gene_letters_str)
+		light_colors, dark_colors = bptools.light_and_dark_color_wheel(num_genes_int)
+	for i, gene_letter in enumerate(gene_letters_str):
+		# Fetch the phenotype string based on the genotype
+		phenotype_name = phenotype_dict[gene_letter]
+		phenotype_description = phenotype_description_dict[phenotype_name]
+		gene_span = f'<span style="color: #{dark_colors[i]};">'
+		phenotype_info_text += f"<li><strong>{gene_span}Gene {gene_letter.upper()}</span></strong> is "
+		phenotype_info_text += f'{random.choice(linking_words)} '
+		phenotype_info_text += f"the '{gene_span}<i>{phenotype_name}</i></span>' phenotype. "
+		phenotype_info_text += f'A {organism} that is homozygous recessive for {gene_span}Gene {gene_letter.upper()}</span> '
+		phenotype_info_text += f'{phenotype_description}</li> '
+	phenotype_info_text += '</ul></p>'
+	if is_valid_html(phenotype_info_text) is False:
+		print(phenotype_info_text)
+		raise ValueError
+	return phenotype_info_text
 
 #===========================================================
 #===========================================================
@@ -162,36 +137,43 @@ assert len(generate_genotypes('qrst')) == 16
 
 #===========================================================
 #===========================================================
-def split_number_in_two(number: int) -> tuple:
+def split_number_in_two(number: int, probability: float = 0.5) -> tuple:
 	"""
 	Splits a given integer `number` randomly into two parts (a, b) such that a + b = number.
 
-	This function uses a binomial distribution to approximate a random split.
+	This function uses a binomial distribution to approximate a random split based on the given probability.
 	- If Python 3.12 or newer is available, it uses `random.binomialvariate` for a direct binomial distribution.
 	- For older versions of Python, it falls back to a loop-based approximation.
 
 	Args:
-		number (int): The integer to split.
+		number (int): The integer to split. Must be a non-negative integer.
+		probability (float): The probability of "success" for each trial. Defaults to 0.5 (50%).
 
 	Returns:
 		tuple: A tuple (a, b) where a and b are non-negative integers that sum up to `number`.
+
+	Example:
+		>>> split_number_in_two(10, 0.5)
+		(5, 5) or another random split such as (6, 4).
 	"""
-	# Check if the Python version is 3.12 or newer
+
+	# Input validation: ensure `number` is non-negative
+	if number < 2:
+		raise ValueError("`number` must be a non-negative integer greater than 2.")
+
+	# Check if Python version is 3.12 or newer
 	if sys.version_info >= (3, 12):
-		# Python 3.12+ provides a built-in method for binomial distribution in the `random` module.
-		# `random.binomialvariate(number, 0.5)` simulates `number` independent trials where each trial
-		# has a 50% chance of success (p=0.5). The result `a` is the count of "successes"
-		a = random.binomialvariate(number, 0.5)
+		# Use `random.binomialvariate` for a direct binomial distribution.
+		# `a` is the count of "successes" out of `number` trials with a given `probability`
+		a = random.binomialvariate(number, probability)
 	else:
 		# Fallback for Python versions older than 3.12 that do not have `random.binomialvariate`.
-		# We simulate the binomial distribution manually by iterating `number` times and counting
-		# the "successes" (random events where a coin flip comes up heads).
+		# Manually simulate a binomial distribution by iterating `number` times and counting "successes"
 		a = 0  # Initialize the count for the first part of the split
 		# Loop `number` times, simulating `number` coin flips
 		for _ in range(number):
-			if random.random() < 0.5:
+			if random.random() < probability:
 				a += 1
-		# After the loop, `a` will contain the count of "successes," representing one part of the split.
 
 	# Calculate `b` as the remainder of the split
 	b = number - a
@@ -220,10 +202,8 @@ def is_almost_integer(num: float, epsilon: float = 1e-6) -> bool:
 	bool
 		True if the number is close to an integer, False otherwise.
 	"""
-	# Calculate the absolute difference between the number and its nearest integer
-	# Check if the difference is within the given epsilon and return the result
-	difference = abs(num - round(num))
-	return difference < epsilon
+	# Use math.isclose to check if num is close to the nearest integer within epsilon
+	return math.isclose(num, round(num), abs_tol=epsilon)
 # Simple assertion tests for the function: 'is_almost_integer'
 assert is_almost_integer(5.0000001)  == True
 assert is_almost_integer(5.001)      == False
