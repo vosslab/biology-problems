@@ -10,6 +10,7 @@ from itertools import combinations
 
 import bptools
 import genemaplib as gml
+import phenotypes_for_yeast
 #import tetradlib
 
 debug = True
@@ -450,6 +451,7 @@ def main():
 	question_header = get_question_header()
 	footer_steps = get_question_footer_steps()
 	footer_tips = get_question_footer_tips()
+	phenotype_dict = phenotypes_for_yeast.phenotype_dict
 
 	# Define output file name
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
@@ -460,7 +462,7 @@ def main():
 	for i in range(args.duplicates):
 		gene_letters_str = gml.get_gene_letters(3)
 		question_setup = get_question_setup(gene_letters_str)
-		phenotype_info_str = gml.get_phenotype_info(gene_letters_str, organism="S. cerevisiae")
+		phenotype_info_str = gml.get_phenotype_info(gene_letters_str, phenotype_dict)
 
 		gene_order_str = set_gene_order(gene_letters_str)
 
