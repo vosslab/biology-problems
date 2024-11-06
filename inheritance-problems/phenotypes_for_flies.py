@@ -7,7 +7,7 @@
 # Dictionary that maps various hypothetical phenotypes of fruit flies to their descriptions.
 # Each key in the dictionary is a unique, quirky name describing a phenotype, and each value is a description
 # that elaborates on the visual or behavioral characteristics of that phenotype.
-phenotype_description_dict = {
+phenotype_dict = {
 	'artsy':   'has wings that are colorful and distinctive patterns.',
 	'bumpy':   'has a skin texture that is not smooth, but rough with small bumps all over.',
 	'chummy':  'shows behavior where it always maintains a close distance to other flies.',
@@ -34,23 +34,26 @@ phenotype_description_dict = {
 	'xanthic': 'has a fluorescent bright yellow coloring.',
 	'yucky':   'gives off an unpleasant odor and has a generally unappealing look.',
 	'zippy':   'zooms around quickly, darting from one place to another.',
+
+	'common name': 'fruit fly',
+	'genus species': 'Drosophila melanogaster',
 }
+
 
 
 #====================================
 # Generate a dictionary of phenotype names by the first letter
 #====================================
 
-# Create a list of phenotype names by extracting the keys from phenotype_description_dict.
-phenotype_names = list(phenotype_description_dict.keys())
+# have to get names first, because keys will change
+phenotype_names = list(phenotype_dict.keys())
 
 # Initialize an empty dictionary to map the first letter of each phenotype name to the full name.
-phenotype_dict = {}
 for name in phenotype_names:
+	if name in ('common name', 'genus species'):
+		continue
 	# Map each phenotype name to its first letter in phenotype_dict.
 	# If multiple phenotypes start with the same letter, this will keep the last one due to overwriting.
-	phenotype_dict[name[0]] = name
-
-# Clean up the temporary list to free up memory, as it's no longer needed after creating phenotype_dict.
-del phenotype_names
+	first_letter = name[0]
+	phenotype_dict[first_letter] = name
 

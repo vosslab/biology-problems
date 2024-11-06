@@ -1,7 +1,7 @@
 
 
 
-phenotype_description_dict = {
+phenotype_dict = {
 	'amber':     'cells develop a rich yellow-orange pigmentation, giving the colony a warm, amber hue.',
 	'bubbly':    'produces excessive gas bubbles during growth, causing foamy appearance of the media.',
 	'clumpy':    'grows in dense, irregular clusters, with cells clumping together rather than spreading smoothly.',
@@ -28,22 +28,25 @@ phenotype_description_dict = {
 	'xenon':   'cells emit a faint glow under UV light, as if they were fluorescent.',
 	'yolk':      'cells develop a dense, yellowish core that resembles an egg yolk when viewed under a microscope.',
 	'zippy':     'exhibits accelerated growth at elevated temperatures, outpacing other strains under warm conditions.',
+
+	'common name': 'budding yeast',
+	'genus species': 'Saccharomyces cerevisiae',
 }
+
 
 
 #====================================
 # Generate a dictionary of phenotype names by the first letter
 #====================================
 
-# Create a list of phenotype names by extracting the keys from phenotype_description_dict.
-phenotype_names = list(phenotype_description_dict.keys())
+# have to get names first, because keys will change
+phenotype_names = list(phenotype_dict.keys())
 
 # Initialize an empty dictionary to map the first letter of each phenotype name to the full name.
-phenotype_dict = {}
 for name in phenotype_names:
+	if name in ('common name', 'genus species'):
+		continue
 	# Map each phenotype name to its first letter in phenotype_dict.
 	# If multiple phenotypes start with the same letter, this will keep the last one due to overwriting.
-	phenotype_dict[name[0]] = name
-
-# Clean up the temporary list to free up memory, as it's no longer needed after creating phenotype_dict.
-del phenotype_names
+	first_letter = name[0]
+	phenotype_dict[first_letter] = name
