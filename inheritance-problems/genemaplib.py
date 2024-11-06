@@ -261,12 +261,12 @@ def is_valid_html(html_str: str) -> bool:
 	and wrapping the content in a root element for XML parsing.
 
 	Args:
-	html_str (str): The HTML string to validate.
+		html_str (str): The HTML string to validate.
 
 	Returns:
-	bool: True if the HTML is well-formed, False otherwise.
+		bool: True if the HTML is well-formed, False otherwise.
 	"""
-	html_str = html_str.replace('<', '\n<')
+	html_str = html_str.replace('<', '\n<')  # Optional: format the input HTML string for better readability
 	try:
 		# Remove HTML entities by finding '&' followed by alphanumerics or '#' and a semicolon
 		cleaned_html = re.sub(r'&[#a-zA-Z0-9]+;', '', html_str)
@@ -276,10 +276,18 @@ def is_valid_html(html_str: str) -> bool:
 		ET.fromstring(wrapped_html)
 		return True
 	except ET.ParseError as e:
-		# Print the error message for debugging
-		if len(html_str) > 80:
-			print(f"Parse error: {e}")
-		#print(html_str)
+		# Print detailed error information for debugging
+		print(f"Parse error: {e}")
+
+		# Optional: Print a snippet of the HTML around the error
+		error_index = e.position[1] if hasattr(e, 'position') else 0
+		snippet = cleaned_html[max(0, error_index - 40): error_index + 40]
+		print(f"Snippet around error (40 chars before and after):\n{snippet}")
+
+		# Optional: Print the entire cleaned HTML if debugging further
+		print("Full cleaned HTML (wrapped in root):")
+		print(wrapped_html)
+
 		return False
 
 # Simple assertion test for the function: 'is_valid_html'
