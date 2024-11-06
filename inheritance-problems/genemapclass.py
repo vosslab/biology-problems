@@ -1224,6 +1224,7 @@ class GeneMappingClass:
 		table += f'<tr><th colspan="{self.num_genes_int+1}" {th_extra.replace("center", "right")}>{span}TOTAL =</span></th>'
 		table += f'<td {td_extra.replace("center", "right")}>{span}{self.progeny_count_int:,d}</span></td></tr>'
 		table += '</table>'
+		table += '<p>The resulting phenotypes are summarized in the table above.</p> '
 
 		if self.is_valid_html(table) is False:
 			print(table)
