@@ -266,7 +266,9 @@ def is_valid_html(html_str: str, debug: bool=True) -> bool:
 	Returns:
 		bool: True if the HTML is well-formed, False otherwise.
 	"""
-	html_str = html_str.replace('<', '\n<')  # Optional: format the input HTML string for better readability
+	if '\n' in html_str:
+		raise ValueError("Blackboard upload does not support newlines in the HTML code.")
+	html_str = html_str.replace('<', '\n<')  # Optional: format the input HTML string for better readability on error
 	try:
 		# Remove HTML entities by finding '&' followed by alphanumerics or '#' and a semicolon
 		cleaned_html = re.sub(r'&[#a-zA-Z0-9]+;', '', html_str)
@@ -296,6 +298,34 @@ assert is_valid_html("<p>This is a<br/>paragraph.</p>") == True
 assert is_valid_html("<p>This is&nbsp;a paragraph.</p>") == True
 assert is_valid_html("<p>This is a paragraph.</html>", debug=False) == False
 assert is_valid_html("<span style='no closing quote>This is a paragraph.</span>", debug=False) == False
+
+#===========================================================
+#===========================================================
+def format_fraction(numerator: str, denominator: str) -> str:
+	"""
+	Formats the given numerator and denominator as a fraction displayed in a two-cell HTML table.
+
+	Args:
+		numerator (str): The numerator to display in the top cell.
+		denominator (str): The denominator to display in the bottom cell.
+
+	Returns:
+		str: HTML string representing the fraction in a table format.
+	"""
+	# Construct the fraction as a two-row HTML table
+	html_table = (
+		f'<table style="border-collapse: collapse; display: inline-table; vertical-align: middle;">'
+		f'  <tr><td style="border-bottom: 1px solid black; text-align: center;">{numerator}</td></tr>'
+		f'  <tr><td style="text-align: center;">{denominator}</td></tr>'
+		f'</table>'
+	)
+
+	# Optional: Validate the HTML format and raise an error if invalid
+	if is_valid_html(html_table) is False:
+		print(html_table)
+		raise ValueError("Generated HTML is not well-formed.")
+
+	return html_table
 
 #===========================================================
 #===========================================================
