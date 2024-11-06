@@ -522,6 +522,15 @@ class GeneMappingClass:
 
 		If the distance triplet list has already been cached, it randomly selects a triplet from the cache.
 		If interference mode is enabled, it uses a different function to generate triplets.
+
+		interference_mode = True:
+			Generates a list of unique distance triplets based on interference fractions,
+			with a fixed denominator of 100 for each fraction.
+			interference is always a whole number when multiplied by 100
+
+		interference_mode = False:
+			uses a tuple representing the interference fraction (a, b).
+			interference is a rational value or fraction value
 		"""
 		# Return cached triplet list if it exists
 		if cls._distance_triplet_list_cache is not None:
