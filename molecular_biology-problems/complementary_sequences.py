@@ -235,7 +235,7 @@ if __name__ == '__main__':
 		description="A script to set sequence length and number of sequences.")
 
 	# Create a mutually exclusive group for question types
-	question_group = parser.add_mutually_exclusive_group()
+	question_group = parser.add_mutually_exclusive_group(required=True)
 	# Add question type argument with choices
 	question_group.add_argument('-q', '--question-type', dest='question_type', type=str,
 		choices=('mc', 'fib'),
@@ -247,7 +247,7 @@ if __name__ == '__main__':
 		help='Set question type to fill-in-the-blank.')
 
 	# Create a mutually exclusive group for direction modes
-	direction_group = parser.add_mutually_exclusive_group()
+	direction_group = parser.add_mutually_exclusive_group(required=True)
 	# Add direction argument with choices
 	direction_group.add_argument('-d', '--direction', dest='direction_mode', type=str,
 		choices=('directionless', 'prime'),

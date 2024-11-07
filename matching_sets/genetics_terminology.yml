@@ -10,6 +10,24 @@ keys description: genetic terms
 value description: definition
 values description: definitions
 
+replacement_rules:
+    haploid: '<span style="color: #e60000;">haploid</span>' #RED
+    'gene ': '<span style="color: #e65400;">gene</span> ' #DARK ORANGE
+    locus: '<span style="color: #e69100;">locus</span>' #LIGHT ORANGE
+    genomes: '<span style="color: #b3b300;">genomes</span>' #DARK YELLOW
+    'genome ': '<span style="color: #b3b300;">genome</span> ' #DARK YELLOW
+    'single nucleotide polymorphism (SNP)': '<span style="color: #59b300;">single nucleotide polymorphism (SNP)</span>' #LIME GREEN
+    genetics: '<span style="color: #009900;">genetics</span>' #GREEN
+    'homologous chromosomes': '<span style="color: #00b38f;">homologous chromosomes</span>' #TEAL
+    diploid: '<span style="color: #00b3b3;">diploid</span>' #CYAN
+    IIIIIIII: '<span style="color: #0a9bf5;">IIIIIIII</span>' #SKY BLUE
+    'genetic code': '<span style="color: #0039e6;">genetic code</span>' #BLUE
+    KKKKKKKK: '<span style="color: #004d99;">KKKKKKKK</span>' #NAVY
+    'genetic term ': '<span style="color: #7b12a1;">genetic term</span> ' #PURPLE
+    'genetic terms': '<span style="color: #7b12a1;">genetic terms</span>' #PURPLE
+    genomics: '<span style="color: #b30077;">genomics</span>' #MAGENTA
+    NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
+
 #######################
 matching pairs:
   haploid:
@@ -18,7 +36,7 @@ matching pairs:
   diploid:
     - a cell or organism that has paired chromosomes
 
-  gene:
+  'gene ':
     - the unit of inheritance passed from parents to offspring
     - the main elements of heredity
 
@@ -40,7 +58,7 @@ matching pairs:
     - the study of all of the genes in an organism
     - the structure, function, evolution, and mapping of genomes
 
-  genome:
+  'genome ':
     - an organism's complete set of DNA
     - complete set of DNA in an organism
     - complete set of DNA in a cell or organism

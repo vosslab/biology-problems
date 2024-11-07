@@ -10,38 +10,48 @@ import genemapclass as gmc
 #===========================================================
 #===========================================================
 def get_question_text(gene_letters: str) -> str:
-	up_genes = gene_letters.upper()
 	question_string = ''
-	question_string += '<p>The resulting phenotypes are summarized in the table above.</p> '
 	question_string += '<h6>Question</h6> '
 	question_string += '<p>Using the table above, determine the order of the genes and the distances between them. '
-	question_string += 'Once you have calculated them, fill in the following four blanks: </p>'
+	question_string += 'Once calculated, fill in the following four blanks: </p><ul>'
 
 	question_string += '<p><ul> '
 	question_string += '<li>The distance between genes '
-	#question_string += f'{up_genes[0]} and {up_genes[1]} is {} cM</li>'
-	question_string += '<li>The distance between genes {0} and {1} is [{0}{1}] cM ({0}{1})</li>'.format(up_genes[0], up_genes[1])
-	question_string += '<li>The distance between genes {0} and {1} is [{0}{1}] cM ({0}{1})</li>'.format(up_genes[0], up_genes[2])
-	question_string += '<li>The distance between genes {0} and {1} is [{0}{1}] cM ({0}{1})</li>'.format(up_genes[1], up_genes[2])
+	#the gene letters ARE sorted, so this okay since it is not the gene order
+	for gene1, gene2 in itertools.combinations(gene_letters.upper(), 2):
+		question_string += f'<li>The distance between genes {gene1} and {gene2} is [{gene1}{gene2}] cM ({gene1}{gene2})</li>'
 	question_string += '<li>From this the correct order of the genes is [geneorder] (gene order).</li>'
 	question_string += '</ul></p> '
 
-	question_string += '<p><ul> '
-	question_string += '<li><i>Important Tip 1:</i> '
-	question_string +=   'Your calculated distances between each pair of gene should be a whole number. '
-	question_string +=   'Finding a decimal in your answer, such as 5.5, indicates a mistake was made. '
-	question_string +=   'Please provide your answer as a complete number without fractions or decimals.</li>'
-	question_string += '<li><i>Important Tip 2:</i> '
-	question_string +=   'Your answer should be written as a numerical value only, '
-	question_string +=   'no spaces, commas, or units such as "cM" or "map units". '
-	question_string +=   'For example, if the distance is fifty one centimorgans, simply write "51". </li> '
-	question_string += '<li><i>Important Tip 3:</i> '
-	question_string +=   'Your gene order answer should be written as three letters only, '
-	question_string +=   'no spaces, commas, hyphens or other characters are allowed. '
-	question_string +=   'For example, if the gene order is B - A - C, simply write "bac" or "cab". </li> '
-	question_string += '</ul></p> '
-
+	question_string += get_question_footer_tips()
 	return question_string
+
+
+#===========================================================
+#===========================================================
+def get_question_footer_tips():
+	"""
+	Returns the HTML formatted hints for solving the problem.
+
+	Returns:
+		str: HTML formatted string with hints.
+	"""
+	tips = '<h6>Hints</h6>'
+	tips += '<p><ul>'
+	tips += '<li><i>Important Tip 1:</i> '
+	tips += 'Your calculated distances between each pair of genes should be a whole number. '
+	tips += 'Finding a decimal in your answer, such as 5.5, indicates a mistake was made. '
+	tips += 'Please provide your answer as a complete number without fractions or decimals.</li>'
+	tips += '<li><i>Important Tip 2:</i> '
+	tips += 'Your answer should be written as a numerical value only, '
+	tips += 'with no spaces, commas, or units such as "cM" or "map units". '
+	tips += 'For example, if the distance is fifty one centimorgans, simply write "51".</li>'
+	tips += '<li><i>Important Tip 3:</i> '
+	tips += 'Your gene order answer should be written as three letters only, '
+	tips += 'with no spaces, commas, hyphens, or other characters allowed. '
+	tips += 'For example, if the gene order is B - A - C, simply write "bac" or "cab".</li>'
+	tips += '</ul></p>'
+	return tips
 
 #===========================================================
 #===========================================================
@@ -56,26 +66,6 @@ def get_answer_mapping(gene_order: str, distances_dict: dict) -> list:
 		answer_map[gene_letter_pair_str] = [distance,]
 	return answer_map
 assert get_answer_mapping('ab', {(1,2): 3,}) == {'geneorder': ['ab', 'ba'], 'AB': [3]}
-
-#===========================================================
-#===========================================================
-def formatBB_FIB_PLUS_Question(N: int, question: str, answer_map: dict) -> str:
-	crc16 = bptools.getCrc16_FromString(question)
-
-	#FIB_PLUS TAB question text TAB variable1 TAB answer1 TAB answer2 TAB TAB variable2 TAB answer3
-	bb_question = f'FIB_PLUS\t<p>{crc16}</p> {question}'
-	pretty_question = bptools.makeQuestionPretty(question)
-	print('{0}. {1} -- {2}'.format(N, crc16, pretty_question))
-
-	keys_list = sorted(answer_map.keys())
-	for key in keys_list:
-		value_list = answer_map[key]
-		bb_question += f'\t{key}'
-		for value in value_list:
-			bb_question += f'\t{value}'
-		bb_question += '\t'
-	bb_question += '\n'
-	return bb_question
 
 #=====================
 #=====================
@@ -104,7 +94,7 @@ if __name__ == "__main__":
 		question_string = get_question_text(GMC.gene_letters_str)
 		full_question = header + phenotype_info_text + html_table + question_string
 		answer_map = get_answer_mapping(GMC.gene_order_str, GMC.distances_dict)
-		final_question = formatBB_FIB_PLUS_Question(N, full_question, answer_map)
+		final_question = bptools.formatBB_FIB_PLUS_Question(N, full_question, answer_map)
 		#print(final_question)
 		f.write(final_question)
 		print('\n\n')

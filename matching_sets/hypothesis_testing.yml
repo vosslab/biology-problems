@@ -1,0 +1,81 @@
+#YAML file for Matching Questions
+
+items to match per question: 5
+
+#both singular and plural
+key description: hypothesis test
+keys description: hypothesis tests
+
+#both singular and plural
+value description: description
+values description: descriptions
+
+replacement_rules:
+    Benchmark Z-test: '<span style="color: #e60000;">Benchmark Z-test</span>' #RED
+    sample size: '<span style="color: #e65400;">sample size</span>' #DARK ORANGE
+    mean: '<span style="color: #e69100;">mean</span>' #LIGHT ORANGE
+    average: '<span style="color: #e69100;">average</span>' #LIGHT ORANGE
+    Benchmark T-test: '<span style="color: #b3b300;">Benchmark T-test</span>' #DARK YELLOW
+    population: '<span style="color: #59b300;">population</span>' #LIME GREEN
+    samples: '<span style="color: #009900;">samples</span>' #GREEN
+    Two-Sample T-test: '<span style="color: #00b38f;">Two-Sample T-test</span>' #TEAL
+    "standard deviation": '<span style="color: #00b3b3;">standard deviation</span>' #CYAN
+    variability: '<span style="color: #0a9bf5;">variability</span>' #SKY BLUE
+    Two-Sample F-test: '<span style="color: #0039e6;">Two-Sample F-test</span>' #BLUE
+    significantly different: '<span style="color: #004d99;">significantly different</span>' #NAVY
+    unknown: '<span style="color: #7b12a1;">unknown</span>' #PURPLE
+    "Analysis of Variance (ANOVA)": '<span style="color: #b30077;">Analysis of Variance (ANOVA)</span>' #MAGENTA
+    variances: '<span style="color: #cc0066;">variances</span>' #PINK
+
+matching pairs:
+  Benchmark Z-test:
+    - Compares the mean of a sample to a known population mean when the population variance is known.
+    - Used when comparing a sample's mean to a large dataset with a known population standard deviation.
+    - The population mean systolic blood pressure is 120 mmHg with a standard deviation of 3.9 mmHg. You are testing a sample of n = 100 patients to see if the mean blood pressure differs from 120 mmHg.
+    - The population mean gene expression is 200 units with a standard deviation of 5 units. You have a sample of n = 150 treated cells and want to test if the mean gene expression differs from the population mean.
+    - The population mean pH in a wetland is 7.5 with a standard deviation of 0.32. You are sampling n = 50 water samples to check if the average pH has changed over time.
+    - The average heart rate of a healthy adult population is 72 bpm, with a standard deviation of 4 bpm. You have a sample of n = 50 patients and want to test if their average heart rate differs from the population mean.
+    - In a population of bacteria, the average gene expression level for a key metabolic gene is 100 units, with a standard deviation of 6 units. You collect n = 40 treated bacterial samples and want to test if their gene expression level differs from the population mean.
+    - The average temperature in a coastal region is 20&deg;C, with a standard deviation of 1.5&deg;C. You collect n = 35 daily temperature readings from a nearby estuary and want to test if the estuary's average temperature differs from the regional mean.
+
+  Benchmark T-test:
+    - Compares the mean of a sample to a known population mean when the population variance is unknown.
+    - Used when the population variance is unknown, and you have a smaller sample size (n < 30).
+    - The population mean resting heart rate is 70 bpm, but the standard deviation is unknown. You collect a sample of n = 25 patients on a new drug to test if their mean heart rate differs from the population mean.
+    - The population mean protein concentration is 50 mg/mL, but the standard deviation is unknown. You are working with n = 20 samples and want to test if the mean protein concentration differs from the known mean.
+    - The population mean species richness is 25 species per plot, but the standard deviation is unknown. You have a small sample of n = 18 plots and want to test if species richness differs from the population mean.
+    - The average blood sugar level in the population is 90 mg/dL, but the standard deviation is unknown. You collect a sample of n = 20 patients and want to test if their average blood sugar level differs from the population mean.
+    - The average protein concentration in a standard cell line is 50 mg/mL, but the standard deviation is unknown. You collect n = 15 samples from a modified cell line to test if the mean protein concentration differs from the standard.
+    - The average tree height in a natural forest is 12 meters, but the standard deviation is unknown. You collect n = 12 samples from a reforested area to test if the average tree height differs from the natural forest.
+
+  Two-Sample T-test:
+    - Compares the means of two independent groups to determine if they are statistically different from each other.
+    - Used to determine whether the average heights of two different plant species are significantly different.
+    - You are comparing the mean cholesterol levels between two groups, one receiving a placebo and the other a treatment. Each group contains n = 20 participants. You want to test if the means are significantly different.
+    - You are comparing the mean gene expression of two cell lines, one treated and one untreated, with n = 25 samples in each group. You want to test if the means are significantly different.
+    - You want to test if the mean number of species differs between two regions, one pristine and one affected by deforestation, with n = 25 plots in each region.
+    - You are comparing the average recovery times between two groups of patients, one receiving a new drug and one receiving standard care, with n = 25 patients in each group. You want to test if the means are different.
+    - You are comparing the average enzyme activity between two experimental conditions, one treated with a new inhibitor and one with a control, with n = 20 samples in each group. You want to test if the means are different.
+    - You want to compare the average soil pH between two agricultural fields, one using organic fertilizer and one using conventional methods, with n = 30 soil samples from each field. You want to test if the means are significantly different.
+
+  Two-Sample F-test:
+    - Compares the variances of two independent groups to test if the variability between them is significantly different.
+    - Used to test whether two different batches of products have equal variability in their measurements.
+    - You are comparing the variability in blood pressure between two groups, one with n = 25 patients on a standard drug and another with n = 40 patients on an experimental drug. You want to test if the variances are different.
+    - You are comparing the variance of protein concentrations between two experimental batches, each with n = 25 samples, to see if their variability differs.
+    - You are comparing the variability in soil nutrient levels between two areas, one fertilized and one unfertilized, with n = 25 samples in each group. You want to test if the variances differ.
+    - You are comparing the variability in cholesterol levels between two groups, one receiving a diet plan and the other receiving medication, with n = 40 patients in each group. You want to test if the variances are significantly different.
+    - You are comparing the variability in protein yield between two different laboratory protocols, each using n = 25 samples. You want to test if the variances in protein yield are significantly different.
+    - You are comparing the variability in air pollution measurements between two cities, with n = 35 measurements from each city. You want to test if the variances in pollution levels differ significantly.
+
+  "Analysis of Variance (ANOVA)":
+    - Compares the means of more than two groups to determine if at least one group's mean is significantly different from the others.
+    - Used to compare the average exam scores across three different classrooms.
+    - You want to compare the mean blood glucose levels of patients in four drug groups, each group has n = 30 participants. You want to test if at least one group's mean differs significantly.
+    - You are testing if the mean protein abundance differs across four experimental conditions, with n = 25 samples per condition.
+    - You want to compare the mean number of plant species across five habitats, with n = 20 plots in each habitat. You want to test if any habitat shows a significantly different mean.
+    - You want to compare the mean weight loss between patients following four (4) different diet plans, with n = 30 participants in each group. You want to test if there are significant differences in mean weight loss across the groups.
+    - You are testing if the mean DNA replication rate differs across four different temperatures, with n = 20 samples per temperature. You want to test if any group shows significantly different replication rates.
+    - You are studying bird populations across five different habitats. You collect n = 25 bird counts from each habitat and want to test if there is a significant difference in the mean number of birds observed across the habitats.
+
+

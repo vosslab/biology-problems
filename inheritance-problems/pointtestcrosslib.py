@@ -8,135 +8,36 @@ from bs4 import BeautifulSoup
 
 debug = False
 
-#====================================
-#====================================
-phenotype_dict = {
-	'a': 'artsy',
-	'b': 'bumpy',
-	'c': 'chummy',
-	'd': 'dewy',
-	'e': 'electric',
-	'f': 'fuzzy',
-	'g': 'gooey',
-	'h': 'horsey',
-	'i': 'icy',
-	'j': 'jolty',
-	'k': 'kidney',
-	'l': 'leafy',
-	'm': 'mushy',
-	'n': 'nerdy',
-	'o': 'okra',
-	'p': 'prickly',
-	'q': 'quacky',
-	'r': 'rusty',
-	's': 'spicy',
-	't': 'tipsy',
-	'u': 'ugly',
-	'v': 'valley',
-	'w': 'waxy',
-	'x': 'xanthine',
-	'y': 'yucky',
-	'z': 'zippy',
-}
+"""
+===========================================
+WARNING: THIS FILE IS DEPRECATED
+===========================================
+
+Please use the following files instead:
+
+- genemapclass.py
+- genemaplib.py
+
+This file will no longer be maintained and may be removed in future versions.
+"""
+
+import genemaplib as gml
+
+# Prompt the user for confirmation of the deprecation warning
+print("WARNING: This file 'pointtestcrosslib.py' is deprecated. ")
+print("Please use 'genemapclass.py' and 'genemaplib.py' instead.")
+response = input("Do you acknowledge this warning? (y/n): ")
+# If the user does not acknowledge, exit the program
+if not response.lower().startswith('y'):
+	print("Exiting due to lack of acknowledgment of deprecation warning.")
+	raise RuntimeError("Acknowledgment of deprecation warning required to continue.")
 
 #====================================
 #====================================
 # Dictionary to describe hypothetical fruit fly phenotypes
-phenotype_description_dict = {
-	'artsy':   'has wings that are colorful and distinctive patterns.',
-	'bumpy':   'has a skin texture that is not smooth, but rough with small bumps all over.',
-	'chummy':  'shows behavior where it maintains a close distance to other flies.',
-	'dewy':    'appears moist, with its body covered in tiny droplets of water.',
-	'eery':    'appears to have something off, crooked limbs and other appendages.',
-	'fuzzy':   'is covered in a dense layer of hairs, giving it a soft appearance.',
-	'gooey':   'is coated with a thick, sticky substance, suggestive of a viscous bodily secretion.',
-	'horsey':  'is quite big and strong-looking, much larger than your typical fruit fly.',
-	'icy':     'has a frosted appearance, with a sheen like a layer of frost.',
-	'jolty':   'moves in rapid and sudden movements, displaying an unpredictable flight pattern.',
-	'kidney':  'has a body shape that is curved, similar to a kidney bean.',
-	'leafy':    'has wings that resemble the shape and pattern of leaves.',
-	'mushy':    'feels soft to the touch, unusually squishy, unlike the usual firmness.',
-	'nerdy':    'has large, prominent eyes that stand out, much like thick-rimmed glasses.',
-	'okra':     'features a long, slender body, resembling the shape of an okra pod.',
-	'prickly':  'is covered with sharp bristles, giving it a spiky texture.',
-	'quacky':   'emits sounds that oddly mimic the quack of a duck.',
-	'rusty':    'has a reddish-brown color, much like rusted iron metal.',
-	'spicy':    'has chemical defense giving a tingling sensation, similar to spicy food.',
-	'tipsy':    'moves in an erratic path, suggesting a lack of coordination, as if intoxicated.',
-	'ugly':     'has dull colors and uneven features different from the typical fruit fly.',
-	'valley':   'shows deep grooves along its body, creating a landscape of peaks and troughs.',
-	'waxy':     'has a thick protective layer that is water resistant and opague.',
-	'xanthic':  'has a fluorescent bright yellow coloring.',
-	'yucky':    'gives off an unpleasant odor and has a generally unappealing look.',
-	'zippy':    'zooms around quickly, darting from one place to another.',
-}
+phenotype_description_dict = gml.phenotype_description_dict
+phenotype_dict = gml.phenotype_dict
 
-
-#===========================================================
-#===========================================================
-"""
-# Two gene example
-self.num_genes_int = 2
-self.gene_letters_str = 'ab'
-self.gene_order_str = 'ab'
-self.distances_dict = {
-	(1, 2): 12,  # 'ab'
-}
-self.progeny_count_int = 1220
-self.parental_genotypes_tuple = ('++', 'ab')
-self.double_crossover_genotypes_tuple = None
-self.interference_dict = {
-	(1, 2): None,  # adjacent genes: 'ab',
-}
-
-#===========================================================
-#===========================================================
-# Three gene example
-self.num_genes_int = 3
-self.gene_letters_str = 'abc'  # alphabetical
-self.gene_order_str = 'bac'
-self.distances_dict = {  # alphabetical numbering
-	(1, 2): 12,  # 'ab'
-	(1, 3): 16,  # 'ac'
-	(2, 3): 24,  # 'bc'
-}
-self.progeny_count_int = 1220
-self.parental_genotypes_tuple = ('+++', 'abc')
-self.double_crossover_genotypes_tuple = ('a++', '+bc')
-self.interference_dict = {  # alphabetical numbering
-	(1, 2): None,  # adjacent genes: 'ab',
-	(1, 3): None,  # adjacent genes: 'ac',
-	(2, 3): (1, 4),  # max distance: 'bc'
-}
-
-#===========================================================
-#===========================================================
-# Four gene example
-self.num_genes_int = 4
-self.gene_letters_str = 'abcd'  # alphabetical
-self.gene_order_str = 'bacd'
-self.distances_dict = {  # alphabetical numbering
-	(1, 2): 12,  # 'ab' adjacent
-	(1, 3): 16,  # 'ac' adjacent
-	(1, 4): 20,  # 'ad' double
-	(2, 3): 24,  # 'bc' double
-	(2, 4): 30,  # 'bd' triple
-	(3, 4): 8,   # 'cd' adjacent
-}
-self.progeny_count_int = 1220
-self.parental_genotypes_tuple = ('++++', 'abcd')
-self.double_crossover_genotypes_tuple = None
-self.double_crossover_genotypes_dict = None
-self.triple_crossover_genotypes_tuple = ('a++d', '+bc+')
-self.interference_dict = {  # alphabetical numbering
-	(1, 2): None,  # adjacent genes: 'ab',
-	(1, 3): None,  # adjacent genes: 'ac',
-	(1, 4): (1, 4),  # distance: 'acd'
-	(2, 3): (1, 4),  # distance: 'bac'
-	(2, 4): (1, 2),  # distance: 'bacd' = 'acd' + 'bac'?
-	(3, 4): None,   # adjacent genes: 'cd'
-}
-"""
 #===========================================================
 #===========================================================
 class GeneMappingClass:
@@ -473,62 +374,17 @@ class GeneMappingClass:
 #===========================================================
 #===========================================================
 def get_gene_letters(num_genes_int: int) -> str:
-	lowercase = "abcdefghijklmnpqrsuvwxyz"  # Make sure this has the letters you want
-	gene_letters_set = set()
-	while len(gene_letters_set) < num_genes_int:
-		gene_letters_set.update(random.choice(lowercase))  # Add a randomly chosen letter
-
-	# Sort after the set has the correct number of elements
-	gene_letters_list = sorted(gene_letters_set)
-	gene_letters_str = ''.join(gene_letters_list)  # Create string from sorted list
-	return gene_letters_str
-assert len(get_gene_letters(5)) == 5
+	return gml.get_gene_letters(num_genes_int)
 
 #===========================================================
 #===========================================================
 def generate_genotypes(gene_letters: str) -> list:
-	"""
-	Generate all possible genotypes for a given string of gene letters.
-
-	Parameters
-	----------
-	gene_letters : str
-		A string containing gene letter identifiers.
-
-	Returns
-	-------
-	list
-		A list of tuples, each containing a pair representing the genotype.
-
-	Examples
-	--------
-	>>> generate_genotypes('abc')
-	['+++', '++c', '+b+', '+bc', 'a++', 'a+c', 'ab+', 'abc']
-	"""
-	genotypes = []
-	num_genes = len(gene_letters)
-	for i in range(2**num_genes):
-		# Generate a binary representation of i, then pad it with zeros
-		binary_repr = bin(i)[2:].zfill(num_genes)
-		genotype = ''.join(gene_letters[j] if bit == '1' else '+' for j, bit in enumerate(binary_repr))
-		genotypes.append(genotype)
-	return genotypes
-# Use this function to generate genotypes for 'abc'
-assert len(generate_genotypes('abc')) == 8
-assert len(generate_genotypes('qrst')) == 16
+	return gml.generate_genotypes(gene_letters)
 
 #===========================================================
 #===========================================================
 def split_number_in_two(number: int) -> tuple:
-	a = 0
-	b = 0
-	for i in range(number):
-		if random.random() < 0.5:
-			a += 1
-		else:
-			b += 1
-	return (a,b)
-assert sum(split_number_in_two(100)) == 100
+	return gml.split_number_in_two(number)
 
 #===========================================================
 #===========================================================

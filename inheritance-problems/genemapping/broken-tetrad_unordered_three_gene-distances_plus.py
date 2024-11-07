@@ -8,7 +8,6 @@ import argparse
 import bptools
 import genemaplib as gml
 import genemapclass as gmc
-import pointtestcrosslib as ptcl
 
 debug = True
 
@@ -43,9 +42,7 @@ def questionText(basetype):
 #=====================
 #=====================
 def tetradSetToString(tetradSet):
-	mystr = ("%s\t%s\t%s\t%s\t"
-		%(tetradSet[0],tetradSet[1],tetradSet[2],tetradSet[3],))
-	return mystr
+	return '\t'.join(tetradSet)
 
 #=====================
 #=====================
@@ -118,7 +115,7 @@ def generateTypeCounts(parental, geneorder, distances, progeny_size, basetype, i
 	# Create Six Genotypes
 	tetradCount = {}
 
-	tetradSet = [parental, parental, ptcl.invert_genotype(parental, basetype), ptcl.invert_genotype(parental, basetype),]
+	tetradSet = [parental, parental, gml.invert_genotype(parental, basetype), gml.invert_genotype(parental, basetype),]
 	tetradSet.sort()
 	if debug is True: print(" parental ", tetradSet)
 
@@ -126,40 +123,40 @@ def generateTypeCounts(parental, geneorder, distances, progeny_size, basetype, i
 	tetradCount[tetradName] = parentcount
 
 	#first flip
-	firsttype = ptcl.flip_gene_by_letter(parental, geneorder[0], basetype)
+	firsttype = gml.flip_gene_by_letter(parental, geneorder[0], basetype)
 
 	#usually TT
-	tetradSet = [firsttype, ptcl.invert_genotype(firsttype, basetype), parental, ptcl.invert_genotype(parental, basetype),]
+	tetradSet = [firsttype, gml.invert_genotype(firsttype, basetype), parental, gml.invert_genotype(parental, basetype),]
 	tetradSet.sort()
 	tetradName = tetradSetToString(tetradSet)
 	tetradCount[tetradName] = firstcount
 
 	#usually NPD
-	tetradSet = [firsttype, ptcl.invert_genotype(firsttype, basetype), firsttype, ptcl.invert_genotype(firsttype, basetype), ]
+	tetradSet = [firsttype, gml.invert_genotype(firsttype, basetype), firsttype, gml.invert_genotype(firsttype, basetype), ]
 	tetradSet.sort()
 	tetradName = tetradSetToString(tetradSet)
 	tetradCount[tetradName] = dcount1
 
 	#second flip
-	secondtype = ptcl.flip_gene_by_letter(parental, geneorder[2], basetype)
+	secondtype = gml.flip_gene_by_letter(parental, geneorder[2], basetype)
 
 	#usually TT
-	tetradSet = [secondtype, ptcl.invert_genotype(secondtype, basetype), parental, ptcl.invert_genotype(parental, basetype),]
+	tetradSet = [secondtype, gml.invert_genotype(secondtype, basetype), parental, gml.invert_genotype(parental, basetype),]
 	tetradSet.sort()
 	tetradName = tetradSetToString(tetradSet)
 	tetradCount[tetradName] = secondcount
 
 	#usually NPD
-	tetradSet = [secondtype, ptcl.invert_genotype(secondtype, basetype), secondtype, ptcl.invert_genotype(secondtype, basetype),]
+	tetradSet = [secondtype, gml.invert_genotype(secondtype, basetype), secondtype, gml.invert_genotype(secondtype, basetype),]
 	tetradSet.sort()
 	tetradName = tetradSetToString(tetradSet)
 	tetradCount[tetradName] = dcount2
 
 	#both flips
-	thirdtype = ptcl.flip_gene_by_letter(ptcl.flip_gene_by_letter(parental, geneorder[2], basetype), geneorder[0], basetype)
+	thirdtype = gml.flip_gene_by_letter(gml.flip_gene_by_letter(parental, geneorder[2], basetype), geneorder[0], basetype)
 
 	#usually NPD
-	tetradSet = [thirdtype, ptcl.invert_genotype(thirdtype, basetype), thirdtype, ptcl.invert_genotype(thirdtype, basetype),]
+	tetradSet = [thirdtype, gml.invert_genotype(thirdtype, basetype), thirdtype, gml.invert_genotype(thirdtype, basetype),]
 	tetradSet.sort()
 	tetradName = tetradSetToString(tetradSet)
 	tetradCount[tetradName] = dcount3
@@ -283,25 +280,25 @@ def translate_genotype_counts_to_tetrads(GMC):
 	tetradCount[tetradName] = dcount1
 
 	#second flip
-	secondtype = ptcl.flip_gene_by_letter(parental, geneorder[2], basetype)
+	secondtype = gml.flip_gene_by_letter(parental, geneorder[2], basetype)
 
 	#usually TT
-	tetradSet = [secondtype, ptcl.invert_genotype(secondtype, basetype), parental, ptcl.invert_genotype(parental, basetype),]
+	tetradSet = [secondtype, gml.invert_genotype(secondtype, basetype), parental, gml.invert_genotype(parental, basetype),]
 	tetradSet.sort()
 	tetradName = tetradSetToString(tetradSet)
 	tetradCount[tetradName] = secondcount
 
 	#usually NPD
-	tetradSet = [secondtype, ptcl.invert_genotype(secondtype, basetype), secondtype, ptcl.invert_genotype(secondtype, basetype),]
+	tetradSet = [secondtype, gml.invert_genotype(secondtype, basetype), secondtype, gml.invert_genotype(secondtype, basetype),]
 	tetradSet.sort()
 	tetradName = tetradSetToString(tetradSet)
 	tetradCount[tetradName] = dcount2
 
 	#both flips
-	thirdtype = ptcl.flip_gene_by_letter(ptcl.flip_gene_by_letter(parental, geneorder[2], basetype), geneorder[0], basetype)
+	thirdtype = gml.flip_gene_by_letter(gml.flip_gene_by_letter(parental, geneorder[2], basetype), geneorder[0], basetype)
 
 	#usually NPD
-	tetradSet = [thirdtype, ptcl.invert_genotype(thirdtype, basetype), thirdtype, ptcl.invert_genotype(thirdtype, basetype),]
+	tetradSet = [thirdtype, gml.invert_genotype(thirdtype, basetype), thirdtype, gml.invert_genotype(thirdtype, basetype),]
 	tetradSet.sort()
 	tetradName = tetradSetToString(tetradSet)
 	tetradCount[tetradName] = dcount3

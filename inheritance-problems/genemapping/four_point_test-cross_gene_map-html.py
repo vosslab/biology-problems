@@ -8,7 +8,7 @@ import numpy
 import random
 
 import bptools
-import pointtestcrosslib as ptcl
+import genemaplib as ptcl
 
 debug = True
 
