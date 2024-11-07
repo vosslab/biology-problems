@@ -114,6 +114,18 @@ proteins:
         - leu-enkephalin
         - met-enkephalin
         - tuftsin
+	- l-theanine
+	- gamma-Glutamylglycine
+	- DL-Theanine
+	- N-isopropyl-L-glutamine
+	- N-Methyl-DL-glutamine
+	- n5-acetyl-l-ornithine
+	- L-ornithine
+	- L-ornithinium
+	- L-citrulline
+	- N5-hydroxy-L-ornithine
+
+
 
 #==============================================================
 #==============================================================
@@ -322,6 +334,7 @@ carbohydrates:
         - fumarate
         - malate
     similar to glycolysis:
+	- alpha-Ketoisovaleric acid
         - '2,3-bisphosphoglycerate'
         - fructose-1-phosphate
         - 'fructose-2,6-bisphosphate'
@@ -371,6 +384,7 @@ nucleic acids:
         - isoguanine
         - theobromine
         - theophylline
+	- theacrine
     nucleosides:
         - adenosine
         - cytidine
