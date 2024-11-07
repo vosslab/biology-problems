@@ -1,6 +1,6 @@
 #YAML file for Matching Questions
 
-items to match per question: 5
+items to match per question: 4
 
 #both singular and plural
 key description: intercellular junction
