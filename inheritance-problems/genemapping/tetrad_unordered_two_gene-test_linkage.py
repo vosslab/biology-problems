@@ -243,6 +243,11 @@ def generate_question(N: int) -> str:
 
 	# Determine an appropriate progeny size based on the genetic distance
 	progeny_size_int = gml.get_progeny_size(distance_int)
+	print(f'progeny_size_int = {progeny_size_int}')
+	print(f'ratio = {progeny_size_int * distance_int**2 / 40000}')
+	while progeny_size_int * distance_int**2 < 80000:
+		print("INCREASE PROGENY SIZE x 2")
+		progeny_size_int *= 2
 
 	# Construct counts of different tetrad types (Parental Ditype, Non-Parental Ditype, and Tetratype)
 	# This is based on whether the genes are linked or unlinked, the genetic distance, and progeny size
@@ -251,10 +256,8 @@ def generate_question(N: int) -> str:
 	# Assign specific tetrads (genotype combinations) to each count type (PD, NPD, TT) for display in the table
 	progeny_tetrads_count_dict = assign_tetrads(progeny_type_count_dict, gene_letters_str)
 
-	# Verify that we have exactly three distinct tetrad counts (PD, NPD, TT), as expected for this type of question
-	if len(set(progeny_tetrads_count_dict.values())) != 3:
-		print("Question generation failed")
-		print(f"Tetrad counts: {progeny_tetrads_count_dict.values()}")
+	#Check if progeny_tetrads_count_dict are valid
+	if tetradlib.check_if_progeny_counts_are_valid(progeny_tetrads_count_dict) is False:
 		return None
 
 	# Generate a text-based table (ASCII) for debugging and console output

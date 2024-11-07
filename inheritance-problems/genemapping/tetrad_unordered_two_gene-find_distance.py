@@ -312,10 +312,8 @@ def generate_question(N: int, question_type, num_choices) -> str:
 	# Assign specific tetrads (genotype combinations) to each count type (PD, NPD, TT) for display in the table
 	progeny_tetrads_count_dict = assign_tetrads(progeny_type_count_dict, gene_letters_str)
 
-	# Verify that we have exactly three distinct tetrad counts (PD, NPD, TT), as expected for this type of question
-	if len(set(progeny_tetrads_count_dict.values())) != 3:
-		print("Question generation failed")
-		print(f"Tetrad counts: {progeny_tetrads_count_dict.values()}")
+	#Check if progeny_tetrads_count_dict are valid
+	if tetradlib.check_if_progeny_counts_are_valid(progeny_tetrads_count_dict) is False:
 		return None
 
 	# Generate a text-based table (ASCII) for debugging and console output

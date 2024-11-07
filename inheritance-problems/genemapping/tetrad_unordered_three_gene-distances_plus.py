@@ -195,9 +195,8 @@ def main():
 		progeny_size = gml.get_general_progeny_size(distances) * 3
 
 		progeny_tetrads_count_dict = tetradlib.construct_progeny_counts(gene_letters_str, gene_order_str, distances, progeny_size)
-		if progeny_tetrads_count_dict is None:
-			print("Question generation failed")
-			print(f"Distances: {distances}")
+		#Check if progeny_tetrads_count_dict are valid
+		if tetradlib.check_if_progeny_counts_are_valid(progeny_tetrads_count_dict) is False:
 			continue
 
 		ascii_table = tetradlib.get_progeny_ascii_table(3, progeny_tetrads_count_dict, progeny_size)

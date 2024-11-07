@@ -608,6 +608,32 @@ def tetrad_calculation_string(tt_values, npd_values, total) -> str:
 
 	return choice_text, distance_float_val
 
+def check_if_progeny_counts_are_valid(progeny_tetrads_count_dict):
+	if progeny_tetrads_count_dict is None:
+		print("Question generation failed")
+		return False
+
+	single_key = next(iter(progeny_tetrads_count_dict))
+	if len(single_key) != 4:
+		print("Question generation failed, tetrads are not made of 4 genotypes")
+		print(f"Tetrad counts: {progeny_tetrads_count_dict.keys()}")
+		return False
+
+	num_genes_int = len(single_key[0])
+	expected_tetrads = { 2: 3, 3: 6, }
+
+	# Verify that we have exact distinct tetrad counts (PD, NPD, TT), as expected for this type of question
+	if len(set(progeny_tetrads_count_dict.values())) != expected_tetrads[num_genes_int]:
+		print("Question generation failed, not enough diffrent tetrads")
+		print(f"Tetrad counts: {progeny_tetrads_count_dict.values()}")
+		return False
+
+	if min(progeny_tetrads_count_dict.values()) < 2:
+		print("Not enough tetrads in one of the rows")
+		print(f"Tetrad counts: {progeny_tetrads_count_dict.values()}")
+		return False
+
+	return True
 
 #======================================
 def main():
