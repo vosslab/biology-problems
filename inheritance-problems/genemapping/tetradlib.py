@@ -608,31 +608,59 @@ def tetrad_calculation_string(tt_values, npd_values, total) -> str:
 
 	return choice_text, distance_float_val
 
+#======================================
+#======================================
 def check_if_progeny_counts_are_valid(progeny_tetrads_count_dict):
+	"""
+	Checks if the provided progeny tetrads count dictionary is valid for use in a genetics question.
+
+	This function performs the following checks:
+	1. Ensures that `progeny_tetrads_count_dict` is not `None`.
+	2. Confirms that each tetrad has exactly 4 genotypes, as required for this type of question.
+	3. Checks that the number of distinct tetrad counts matches the expected number for the given number of genes.
+	   - For two genes, we expect 3 unique tetrad types: PD, NPD, TT.
+	   - For three genes, we expect 6 unique tetrad types.
+	4. Verifies that each tetrad count has a minimum threshold (at least 2), ensuring that there are enough tetrads for each type.
+
+	Args:
+		progeny_tetrads_count_dict (dict): Dictionary where each key represents a tetrad genotype
+										   (a tuple of 4 elements), and each value represents the count of that genotype.
+
+	Returns:
+		bool: True if `progeny_tetrads_count_dict` is valid, False otherwise. If validation fails,
+			  error messages are printed to indicate the specific issue.
+	"""
+	# Check 1: Ensure the dictionary is not `None`
 	if progeny_tetrads_count_dict is None:
-		print("Question generation failed")
+		print("Question generation failed: No progeny tetrads count dictionary provided.")
 		return False
 
-	single_key = next(iter(progeny_tetrads_count_dict))
+	# Check 2: Confirm that each tetrad is composed of exactly 4 genotypes
+	single_key = next(iter(progeny_tetrads_count_dict))  # Get an arbitrary key from the dictionary
 	if len(single_key) != 4:
-		print("Question generation failed, tetrads are not made of 4 genotypes")
-		print(f"Tetrad counts: {progeny_tetrads_count_dict.keys()}")
+		print("Question generation failed: Each tetrad should be composed of 4 genotypes.")
+		print(f"Tetrad keys provided: {progeny_tetrads_count_dict.keys()}")
 		return False
 
+	# Determine the number of genes by checking the length of each genotype in the tetrad key
 	num_genes_int = len(single_key[0])
-	expected_tetrads = { 2: 3, 3: 6, }
 
-	# Verify that we have exact distinct tetrad counts (PD, NPD, TT), as expected for this type of question
+	# Define the expected number of unique tetrad types based on the number of genes
+	expected_tetrads = {2: 3, 3: 6}  # 3 for 2 genes (PD, NPD, TT), 6 for 3 genes
+
+	# Check 3: Verify that the number of unique tetrad counts matches the expected number for the given gene count
 	if len(set(progeny_tetrads_count_dict.values())) != expected_tetrads[num_genes_int]:
-		print("Question generation failed, not enough diffrent tetrads")
-		print(f"Tetrad counts: {progeny_tetrads_count_dict.values()}")
+		print("Question generation failed: Incorrect number of distinct tetrad counts.")
+		print(f"Tetrad counts provided: {progeny_tetrads_count_dict.values()}")
 		return False
 
+	# Check 4: Ensure each tetrad count has at least a minimum threshold (2 in this case)
 	if min(progeny_tetrads_count_dict.values()) < 2:
-		print("Not enough tetrads in one of the rows")
-		print(f"Tetrad counts: {progeny_tetrads_count_dict.values()}")
+		print("Question generation failed: Not enough tetrads for at least one of the types.")
+		print(f"Tetrad counts provided: {progeny_tetrads_count_dict.values()}")
 		return False
 
+	# If all checks pass, the dictionary is valid
 	return True
 
 #======================================
