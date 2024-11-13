@@ -12,7 +12,6 @@ import bptools
 
 #======================================
 #======================================
-#======================================
 # Helper function to generate chromosomal rearrangement karyotypes
 def get_karyotype():
 	base_karyotype = random.choice(["46,XY", "46,XX"])
@@ -41,7 +40,6 @@ def get_karyotype():
 
 	full_karyotype_str = f"{base_karyotype},{rearrangement}"
 	return full_karyotype_str, karyotype_tuple
-
 
 #======================================
 #======================================
@@ -72,40 +70,106 @@ def get_question_text(karyotype_str) -> str:
 
 #======================================
 #======================================
-def arm_text(arm):
+def arm_text(arm: str) -> str:
+	"""
+	Returns a textual representation of the chromosome arm with HTML color.
+
+	Args:
+		arm (str): The arm identifier ('p' or 'q').
+
+	Returns:
+		str: 'long' for 'q' (long arm), 'short' for 'p' (short arm), with color coding.
+	"""
 	if arm == 'q':
-		return "long"
-	return "short"
+		return "<span style='color: #0039e6;'>long arm</span>"  # BLUE for long arm
+	return "<span style='color: #59b300;'>short arm</span>"  # LIME GREEN for short arm
 
 #======================================
 #======================================
-def rearrangement_text(rearrangement_type):
+def rearrangement_text(rearrangement_type: str) -> str:
+	"""
+	Returns a textual description for a chromosome rearrangement type with HTML color.
+
+	Args:
+		rearrangement_type (str): The type of rearrangement ('t', 'dup', 'del', 'inv').
+
+	Returns:
+		str: A human-readable description of the rearrangement type with color coding.
+
+	Raises:
+		ValueError: If the rearrangement type is unknown.
+	"""
 	if rearrangement_type == 't':
-		return "A translocation"
+		return "<span style='color: #e60000;'>A translocation</span>"  # RED
 	elif rearrangement_type == 'dup':
-		return "A duplication"
+		return "<span style='color: #e65400;'>A duplication</span>"  # DARK ORANGE
 	elif rearrangement_type == 'del':
-		return "A deletion"
+		return "<span style='color: #7b12a1;'>A deletion</span>"  # PURPLE
 	elif rearrangement_type == 'inv':
-		return "An inversion"
+		return "<span style='color: #00b38f;'>An inversion</span>"  # TEAL
 	raise ValueError(f"Unknown rearrangement_type {rearrangement_type}")
 
+#======================================
+#======================================
+def make_choice_text_regular(karyotype_tuple: tuple) -> str:
+	"""
+	Generates descriptive text for a chromosome rearrangement, excluding translocations.
 
-#======================================
-#======================================
-# Helper function to generate the choice text with tolerance for unexpected tuple lengths
-def make_choice_text_regular(karyotype_tuple):
+	Args:
+		karyotype_tuple (tuple): A tuple with 4 elements: (rearrangement_type, chromosome, arm, band).
+
+	Returns:
+		str: A human-readable description of the rearrangement with HTML color.
+
+	Raises:
+		ValueError: If the tuple does not have exactly 4 elements.
+	"""
 	if len(karyotype_tuple) != 4:
 		raise ValueError("length of tuple must be 4 to use make_choice_text_regular()")
+
 	# Unpack mandatory fields
 	rearrangement_type, chromosome, arm, band = karyotype_tuple
+
 	# Non-translocation rearrangement (del, dup, inv)
 	choice_text = f"{rearrangement_text(rearrangement_type)} "
-	choice_text += f"involving the {arm_text(arm)} arm "
-	choice_text += f"of chromosome {chromosome} at band {band}"
+	choice_text += f"involving the {arm_text(arm)} "
+	choice_text += f"of chromosome <span style='color: #004d99;'>{chromosome}</span> "  # NAVY for chromosome
+	choice_text += f"at band <span style='color: #e69100;'>{band}</span>"  # LIGHT ORANGE for band
 	return choice_text
 
 #======================================
+#======================================
+def make_choice_text_translocation(karyotype_tuple: tuple) -> str:
+	"""
+	Generates descriptive text for a translocation rearrangement between two chromosome regions.
+
+	Args:
+		karyotype_tuple (tuple): A tuple with 7 elements:
+			(rearrangement_type, chromosome1, arm1, band1, chromosome2, arm2, band2).
+
+	Returns:
+		str: A human-readable description of the translocation with HTML color.
+
+	Raises:
+		ValueError: If the tuple does not have exactly 7 elements.
+	"""
+	if len(karyotype_tuple) != 7:
+		raise ValueError("length of tuple must be 7 to use make_choice_text_translocation()")
+
+	# Unpack mandatory fields
+	rearrangement_type, chromosome1, arm1, band1, chromosome2, arm2, band2 = karyotype_tuple
+
+	# Translocation rearrangement with color coding for clarity
+	choice_text = f"{rearrangement_text(rearrangement_type)} "  # Color from rearrangement_text
+	choice_text += f"involving the {arm_text(arm1)} "  # Color from arm_text
+	choice_text += f"of <span style='color: #004d99;'>chromosome {chromosome1}</span> "  # NAVY for chromosome1
+	choice_text += f"at <span style='color: #e69100;'>band {band1}</span> "  # LIGHT ORANGE for band1
+	choice_text += f"and the {arm_text(arm2)} "  # Color from arm_text
+	choice_text += f"of <span style='color: #0a9bf5;'>chromosome {chromosome2}</span> "  # SKY BLUE for chromosome2
+	choice_text += f"at <span style='color: #b3b300;'>band {band2}</span>"  # DARK YELLOW for band2
+
+	return choice_text
+
 #======================================
 #======================================
 # Function to generate all possible answer choices
@@ -115,14 +179,15 @@ def generate_choices_regular(karyotype_tuple):
 
 	rearrangement_type, chromosome, arm, band = karyotype_tuple
 
-	# Generate plausible distractors
-	distractors = []
-
 	# Options for generating distractors
 	arm_options = ["p", "q"]
 	rearrangement_options = ["del", "dup", "inv", "t"]
 	# Choose between correct chromosome and placeholder band
 	chromosome_options = [chromosome, band]
+
+	# Generate plausible distractors
+	distractor_diff_type = []
+	distractor_same_type = []
 
 	# Create all possible distractors
 	for type_choice in rearrangement_options:
@@ -132,30 +197,15 @@ def generate_choices_regular(karyotype_tuple):
 				choice_tuple = type_choice, chromosome_choice, arm_choice, band_choice
 				choice_text = make_choice_text_regular(choice_tuple)
 				# Ensure uniqueness and avoid adding the correct answer as a distractor
-				if choice_tuple != karyotype_tuple:
-					distractors.append(choice_text)
-				else:
+				if choice_tuple == karyotype_tuple:
 					answer_text = choice_text
+				elif type_choice == rearrangement_type:
+					distractor_same_type.append(choice_text)
+				else:
+					distractor_diff_type.append(choice_text)
 
-	return distractors, answer_text
+	return distractor_diff_type, distractor_same_type, answer_text
 
-#======================================
-#======================================
-# Helper function to generate the choice text with tolerance for unexpected tuple lengths
-def make_choice_text_translocation(karyotype_tuple):
-	if len(karyotype_tuple) != 7:
-		raise ValueError("length of tuple must be 7 to use make_choice_text_translocation()")
-	# Unpack mandatory fields
-	rearrangement_type, chromosome, arm, band, chromosome2, arm2, band2 = karyotype_tuple
-	# Check if we have additional details for a translocation
-	choice_text = f"{rearrangement_text(rearrangement_type)} "
-	choice_text += f"involving the {arm_text(arm)} arm "
-	choice_text += f"of chromosome {chromosome} at band {band}"
-	choice_text += f" and the {arm_text(arm2)} arm "
-	choice_text += f"of chromosome {chromosome2} at band {band2}"
-	return choice_text
-
-#======================================
 #======================================
 #======================================
 # Function to generate all possible answer choices
@@ -168,13 +218,14 @@ def generate_choices_translocation(karyotype_tuple):
 
 	rearrangement_type, chromosome, arm, band, chromosome2, arm2, band2 = karyotype_tuple
 
-	# Generate plausible distractors
-	distractors = []
-
 	# Options for generating distractors
 	arm_options = ["p", "q"]
 	rearrangement_options = ["del", "dup", "inv", "t"]
 	chromosome_options = [chromosome, band, chromosome2, band2]
+
+	# Generate plausible distractors
+	distractor_diff_type = []
+	distractor_same_type = []
 
 	# Create all possible distractors
 	for type_choice in rearrangement_options:
@@ -183,43 +234,53 @@ def generate_choices_translocation(karyotype_tuple):
 				for _ in range(4):
 					random.shuffle(chromosome_options)
 					chr1, bnd1, chr2, bnd2 = chromosome_options
-					choice_tuple = type_choice, chr1, arm_choice1, bnd1, chr2, arm_choice2, bnd2,
+					choice_tuple = type_choice, chr1, arm_choice1, bnd1, chr2, arm_choice2, bnd2
+					swap_tuple = type_choice, chr2, arm_choice2, bnd2, chr1, arm_choice1, bnd1
 					choice_text = make_choice_text_translocation(choice_tuple)
 
 					# Ensure uniqueness and avoid adding the correct answer as a distractor
-					if choice_tuple != karyotype_tuple:
-						distractors.append(choice_text)
-					else:
+					if choice_tuple == karyotype_tuple:
 						answer_text = choice_text
+					elif swap_tuple == karyotype_tuple:
+						# avoid a confusing choice that could be technically correct
+						continue
+					elif type_choice == rearrangement_type:
+						distractor_same_type.append(choice_text)
+					else:
+						distractor_diff_type.append(choice_text)
 
-	return distractors, answer_text
+	return distractor_diff_type, distractor_same_type, answer_text
 
-#======================================
 #======================================
 #======================================
 # Function to generate all possible answer choices
 def generate_choices(karyotype_tuple, num_choices=4):
 	if len(karyotype_tuple) == 4:
-		distractors, answer_text = generate_choices_regular(karyotype_tuple)
+		distractor_diff_type, distractor_same_type, answer_text = generate_choices_regular(karyotype_tuple)
 	else:
-		distractors, answer_text = generate_choices_translocation(karyotype_tuple)
+		distractor_diff_type, distractor_same_type, answer_text = generate_choices_translocation(karyotype_tuple)
 
 	# Remove duplicates
-	distractors = list(set(distractors))
-	#print(f"Generated {len(distractors)} unique distractors")
+	distractor_diff_type = list(set(distractor_diff_type))
+	distractor_same_type = list(set(distractor_same_type))
 
-	# Limit to requested distractors
-	random.shuffle(distractors)
-	if len(distractors) > num_choices - 1:
-		distractors = distractors[:num_choices - 1]
+	print(f"Generated {len(distractor_same_type)} same and {len(distractor_diff_type)} different unique distractors")
 
-	# Combine the correct answer with distractors and shuffle
-	choices_list = [answer_text] + distractors
+	random.shuffle(distractor_diff_type)
+	random.shuffle(distractor_same_type)
+	choices_list = []
+	while len(choices_list) < num_choices - 1:
+		if len(distractor_same_type) > 0:
+			choices_list.append(distractor_same_type.pop())
+		if len(choices_list) < num_choices - 1:
+			choices_list.append(distractor_diff_type.pop())
+
+	choices_list.append(answer_text)
 	choices_list = list(set(choices_list))
-	random.shuffle(choices_list)
+	#random.shuffle(choices_list)
+	choices_list.sort()
 
 	return choices_list, answer_text
-
 
 #======================================
 #======================================
@@ -251,8 +312,8 @@ def write_question(N: int, num_choices: int) -> str:
 	complete_question = bptools.formatBB_MC_Question(N, question_text, choices_list, answer_text)
 	return complete_question
 
-
-#=====================
+#======================================
+#======================================
 def parse_arguments():
 	"""
 	Parses command-line arguments for the script.

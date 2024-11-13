@@ -251,7 +251,6 @@ def main():
 		N = 1  # Question number counter
 		for _ in range(args.duplicates):
 			complete_question = write_question(N, args.num_choices)
-			continue
 			if complete_question is not None:
 				N += 1
 				f.write(complete_question)
