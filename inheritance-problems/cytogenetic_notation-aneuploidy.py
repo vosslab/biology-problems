@@ -49,18 +49,29 @@ def get_karyotype():
 
 #======================================
 #======================================
+# Function to generate varied question text
 def get_question_text(karyotype_str) -> str:
 	"""
-	Generates and returns the main text for the question on aneuploidy.
+	Generates and returns the main text for the question with varied phrasing.
 
-	Args:
-		karyotype (str): The generated karyotype notation.
+	This function is responsible for creating the base question text,
+	randomly selecting from different ways to ask about the meaning
+	of the cytogenetic notation.
 
 	Returns:
 		str: A string containing the main question text.
 	"""
-	question_text = f'For human karyotypes, what does the cytogenetic notation "{karyotype_str}" '
-	question_text += random.choice(["refer to?", "mean?"])
+	phrases = [
+		f'For human karyotypes, what does the cytogenetic notation "{karyotype_str}" refer to?',
+		f'In human genetics, what does the notation "{karyotype_str}" indicate?',
+		f'In cytogenetic terms, what is meant by the human karyotype "{karyotype_str}"?',
+		f'What does the notation "{karyotype_str}" describe in human karyotypes?',
+		f'What does "{karyotype_str}" signify in a human karyotype?',
+		f'In the context of human karyotypes, what does "{karyotype_str}" mean?',
+		f'How is the notation "{karyotype_str}" interpreted in human genetics?',
+		f'What does "{karyotype_str}" imply in terms of human chromosome structure?',
+	]
+	question_text = random.choice(phrases)
 	return question_text
 
 #======================================
