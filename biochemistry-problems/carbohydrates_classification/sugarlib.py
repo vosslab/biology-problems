@@ -1,7 +1,9 @@
 ### Library for crateing HTML tables of Sugar molecules
 
+import os
 import sys
 #import copy
+import subprocess
 
 ### nomenclature for sugar code
 # A or M - aldose (A) or ketose (M) with a hydroxymethyl group
@@ -9,6 +11,21 @@ import sys
 # L, D - L sugar or D sugar
 # M - nonstereo symmetric carbon, M = Hydroxymethyl group
 # unless specified the following are all D sugars
+
+#==========================
+#==========================
+#==========================
+def get_git_root(path=None):
+	"""Return the absolute path of the repository root."""
+	if path is None:
+		# Use the path of the script
+		path = os.path.dirname(os.path.abspath(__file__))
+	try:
+		base = subprocess.check_output(['git', 'rev-parse', '--show-toplevel'], cwd=path, universal_newlines=True).strip()
+		return base
+	except subprocess.CalledProcessError:
+		# Not inside a git repository
+		return None
 
 class SugarCodes(object):
 	def __init__(self):
@@ -581,7 +598,9 @@ class SugarStructure(object):
 
 	#============================
 	def read_Haworth_pyranose_projection_html(self):
-		f = open('../data/haworth_pyranose_table.html', 'r')
+		git_root = get_git_root()
+		data_file_path = os.path.join(git_root, 'data/haworth_pyranose_table.html')
+		f = open(data_file_path, 'r')
 		table = ''
 		for line in f:
 			table += line.strip()
@@ -666,7 +685,9 @@ class SugarStructure(object):
 
 	#============================
 	def read_Haworth_furanose_projection_html(self):
-		f = open('../data/haworth_furanose_table.html', 'r')
+		git_root = get_git_root()
+		data_file_path = os.path.join(git_root, 'data/haworth_furanose_table.html')
+		f = open(data_file_path, 'r')
 		table = ''
 		for line in f:
 			table += line.strip()
