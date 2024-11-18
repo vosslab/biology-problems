@@ -184,6 +184,47 @@ def insertCommas(my_str: str, separate: int = 3) -> str:
 	chunks = textwrap.wrap(my_str, separate)
 	# Join the chunks with commas
 	return ','.join(chunks)
+assert insertCommas('ABCDEF', 2) == "AB,CD,EF"
+assert insertCommas('ABCDE', 3) == "ABC,DE"
+
+
+def generate_answer_variations(origlist: list[str]) -> list[str]:
+	"""
+	Generates various answer formats based on the original list of genes.
+
+	Args:
+		origlist (list[str]): The original list of genes.
+
+	Returns:
+		list[str]: A list of unique answer variations.
+	"""
+	# Generate the base answer by joining the original list of genes
+	base_answer = ''.join(origlist)
+
+	# Create the reversed base answer
+	base_reversed = base_answer[::-1]
+
+	# Add commas after every 3 characters (normal order)
+	comma_chunks = insertCommas(base_answer, 3)
+
+	# Add commas after every 3 characters starting from the reversed string
+	comma_chunks_rev = insertCommas(base_reversed, 3)
+
+	# Generate comma-separated answers
+	comma_sep = ','.join(origlist)
+	comma_sep_rev = comma_sep[::-1]
+
+	# Collect all possible answer variations
+	answers_list = [
+		base_answer, base_reversed,       # Base and reversed
+		comma_sep, comma_sep_rev,         # Comma-separated and reversed
+		comma_chunks, comma_chunks[::-1], # Chunks of 3 and reversed
+		comma_chunks_rev, comma_chunks_rev[::-1]  # Reversed chunks of 3 and reversed again
+	]
+
+	# Deduplicate by converting to a set and back to a list
+	return list(set(answers_list))
+
 
 #==========================
 def write_question(N: int, num_genes: int, num_choices: int) -> str:
@@ -214,18 +255,8 @@ def write_question(N: int, num_genes: int, num_choices: int) -> str:
 	# Create the question text based on the original and deleted genes
 	question = writeQuestion(origlist, del_set)
 
-	# Generate various answer formats based on the original list of genes
-	answer = ''.join(origlist)
-	answer_with_commas = ','.join(origlist)
-	answer_with_third_commas1 = insertCommas(answer, 3)
-	answer_with_third_commas2 = insertCommas(answer[::-1], 3)
-	answers_list = [
-		answer, answer[::-1],  # Original and reverse
-		answer_with_commas, answer_with_commas[::-1],  # With commas and reversed
-		answer_with_third_commas1, answer_with_third_commas1[::-1],  # With 3-char commas and reversed
-		answer_with_third_commas2, answer_with_third_commas2[::-1],  # With 3-char commas and reversed
-	]
-	answers_list = list(set(answers_list))
+	# Collect all possible answer variations
+	answers_list = generate_answer_variations(origlist)
 
 	# Combine the question and table (if available) into the question text
 	question_text = question + table
