@@ -5,6 +5,10 @@ import sys
 import copy
 import random
 import argparse
+import textwrap
+
+import bptools
+
 
 num2word = {
 	1: 'one', 2: 'two', 3: 'three', 4: 'four', 5: 'five',
@@ -163,48 +167,121 @@ def makeDeletions(num_genes):
 	print("\n##########\n")
 	return origlist, del_set
 
+
 #==========================
-def insertCommas(my_str, separate=3):
-	new_str = ''
-	for i in range(0, len(my_str), separate):
-		new_str += my_str[i:i+separate] + ','
-	return new_str[:-1]
+def insertCommas(my_str: str, separate: int = 3) -> str:
+	"""
+	Inserts commas into a string after every specified number of characters.
 
-#====================
-def makeBlackboard(question, table, origlist):
-	blackboard = ''
-	blackboard += 'FIB\t'
-	blackboard += table
-	blackboard += question
-	blackboard += '\t'
+	Args:
+		my_str (str): The string to modify.
+		separate (int): The number of characters between each comma. Default is 3.
+
+	Returns:
+		str: The modified string with commas inserted.
+	"""
+	# Use textwrap.wrap to split the string into chunks of `separate` length
+	chunks = textwrap.wrap(my_str, separate)
+	# Join the chunks with commas
+	return ','.join(chunks)
+
+#==========================
+def write_question(N: int, num_genes: int, num_choices: int) -> str:
+	"""
+	Creates a single formatted question with various answer formats and tables.
+
+	Args:
+		N (int): The question number.
+		num_genes (int): The total number of genes to work with.
+		num_choices (int): The number of multiple-choice options.
+
+	Returns:
+		str: A formatted question ready to be written to the output file.
+	"""
+	# Generate the original list of genes and the set of deleted genes
+	origlist, del_set = makeDeletions(num_genes)
+
+	# Shuffle the deleted genes randomly for question variability
+	random.shuffle(del_set)
+
+	# Generate an HTML table if the table option is enabled
+	if args.table is True:
+		print("Making TABLE")
+		table = makeHtmlTable(origlist, del_set)
+	else:
+		table = ''
+
+	# Create the question text based on the original and deleted genes
+	question = writeQuestion(origlist, del_set)
+
+	# Generate various answer formats based on the original list of genes
 	answer = ''.join(origlist)
-	blackboard += answer
-	blackboard += '\t'
-	blackboard += answer[::-1]
-	blackboard += '\t'
-	blackboard += insertCommas(answer)
-	blackboard += '\t'
-	blackboard += insertCommas(answer[::-1])
-	blackboard += '\n'
-	return blackboard
+	answer_with_commas = ','.join(origlist)
+	answer_with_third_commas1 = insertCommas(answer, 3)
+	answer_with_third_commas2 = insertCommas(answer[::-1], 3)
+	answers_list = [
+		answer, answer[::-1],  # Original and reverse
+		answer_with_commas, answer_with_commas[::-1],  # With commas and reversed
+		answer_with_third_commas1, answer_with_third_commas1[::-1],  # With 3-char commas and reversed
+		answer_with_third_commas2, answer_with_third_commas2[::-1],  # With 3-char commas and reversed
+	]
+	answers_list = list(set(answers_list))
 
-#====================
-#====================
-if __name__ == '__main__':
+	# Combine the question and table (if available) into the question text
+	question_text = question + table
+
+	# Format the question and answer into the final output structure
+	complete_question = bptools.formatBB_FIB_Question(N, question_text, answers_list)
+
+	return complete_question
+
+#==========================
+def get_arguments() -> argparse.Namespace:
+	"""
+	Parses command-line arguments using argparse.
+
+	Returns:
+		argparse.Namespace: Parsed arguments with all settings for the script.
+	"""
+	# Initialize argument parser for command-line options
 	parser = argparse.ArgumentParser()
+
+	# Argument to specify the number of genes to delete on the chromosome
 	parser.add_argument('-n', '--num-genes', type=int, dest='num_genes',
 		help='number of deleted genes on the chromosome', default=5)
+
+	# Argument to specify the number of questions to generate
 	parser.add_argument('-q', '--num-questions', type=int, dest='num_questions',
 		help='number of questions to create', default=24)
+
+	# Boolean argument to enable table display in the output
 	parser.add_argument('-T', '--table', dest='table', action='store_true')
+
+	# Boolean argument to disable table display in the output
 	parser.add_argument('-F', '--free', '--no-table', dest='table', action='store_false')
+
+	# Set the default behavior for the `table` argument (enabled by default)
 	parser.set_defaults(table=True)
+
+	# Argument to specify the number of choices to provide in the questions
 	parser.add_argument('-c', '--choices', type=int, dest='num_choices',
 		help='number of choices to choose from in the question', default=5)
-	args = parser.parse_args()
 
+	# Parse command-line arguments into the `args` namespace
+	args = parser.parse_args()
+	return args
+
+#==========================
+# Main program execution starts here
+#==========================
+if __name__ == '__main__':
+	# Parse arguments from the command line
+	args = get_arguments()
+
+	# Determine whether the table is disabled based on the parsed arguments
 	no_table = not args.table
 
+	# Validate the number of genes, ensuring it's within the acceptable range
 	if args.num_genes < 4:
 		print("Sorry, you must have at least 4 genes for this program")
 		sys.exit(1)
@@ -212,21 +289,16 @@ if __name__ == '__main__':
 		print("Sorry, you must have less than 20 genes for this program")
 		sys.exit(1)
 
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	for i in range(args.num_questions):
-		origlist, del_set = makeDeletions(args.num_genes)
-		random.shuffle(del_set)
-		if args.table is True:
-			print("Making TABLE")
-			table = makeHtmlTable(origlist, del_set)
-		else:
-			table = ''
-		question = writeQuestion(origlist, del_set)
-		print(question)
-		answer = ''.join(origlist)
-		print(answer)
-		blackboard = makeBlackboard(question, table, origlist)
-		f.write(blackboard)
-	f.close()
+	# Setup output file name
+	outfile = f'bbq-{os.path.splitext(os.path.basename(__file__))[0]}-questions.txt'
+	print(f'Writing to file: {outfile}')
+
+	# Open the output file and generate questions
+	with open(outfile, 'w') as f:
+		N = 1  # Question number counter
+		for _ in range(args.num_questions):
+			# Generate and write each question
+			complete_question = write_question(N, args.num_genes, args.num_choices)
+			if complete_question is not None:
+				N += 1
+				f.write(complete_question)
