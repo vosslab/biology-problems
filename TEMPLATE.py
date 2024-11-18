@@ -127,7 +127,7 @@ def parse_arguments():
 		help='Set question type to multiple choice'
 	)
 	question_group.add_argument(
-		'-n', '--num', dest='question_type', action='store_const', const='num',
+		'-c', '--num', dest='question_type', action='store_const', const='num',
 		help='Set question type to numeric'
 	)
 
