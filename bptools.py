@@ -424,32 +424,80 @@ extra_light_color_wheel = (
 )"""
 
 #==========================
+#==========================
 def get_indices_for_color_wheel(num_colors, color_wheel_length):
-	min_distance = int(math.floor(color_wheel_length / (num_colors+1)))
+	"""
+	Selects `num_colors` indices from a circular list of `color_wheel_length` items while ensuring
+	that the selected indices are evenly spaced or satisfy other constraints depending on edge cases.
 
+	Args:
+		num_colors (int): The number of colors (indices) to select.
+		color_wheel_length (int): The total length of the color wheel.
+
+	Returns:
+		list[int]: A sorted list of selected indices satisfying the constraints.
+
+	Raises:
+		ValueError: If `num_colors` is too large to satisfy the minimum distance requirement
+		or if further indices cannot be selected under the constraints.
+
+	Notes:
+		- If `num_colors` exceeds `color_wheel_length`, the indices wrap around to repeat.
+		- If `num_colors` is greater than half of `color_wheel_length`, random selection is used.
+		- For smaller cases, a minimum spacing (`min_distance`) is enforced to distribute indices evenly.
+		- The `color_wheel_length` is treated as circular, so wrap-around is handled.
+	"""
+
+	# Edge Case 1: If the number of colors exceeds the length of the color wheel
+	# Wrap around by repeating indices in a circular fashion
+	if num_colors > color_wheel_length:
+		selected_indices = [i % color_wheel_length for i in range(num_colors)]
+		return selected_indices
+
+	# Edge Case 2: If there are many colors relative to the color wheel length
+	# Use random selection without enforcing `min_distance` because spacing constraints aren't realistic
+	if num_colors > color_wheel_length // 2 - 1:
+		all_indices = list(range(color_wheel_length))
+		random.shuffle(all_indices)  # Shuffle to randomize the selection
+		selected_indices = all_indices[:num_colors]
+		return sorted(selected_indices)
+
+	# General Case: Calculate minimum spacing between indices
+	# Ensure indices are approximately evenly distributed around the color wheel
+	min_distance = int(math.floor(color_wheel_length / (num_colors + 1)))
+
+	# Check if the desired number of colors can be selected given the `min_distance`
 	if num_colors > color_wheel_length // min_distance:
 		raise ValueError("num_colors too large to satisfy min_distance requirement")
 
-	selected_indices = []
-	available_indices = list(range(color_wheel_length))
+	# Initialize an empty list for selected indices and create a list of all available indices
+	selected_indices = []  # Stores the final selected indices
+	available_indices = list(range(color_wheel_length))  # Indices that can still be selected
 
+	# Select the required number of indices (`num_colors`)
 	for _ in range(num_colors):
+		# If no indices are available, raise an error
 		if not available_indices:
 			raise ValueError("Cannot select further colors within min_distance constraints")
 
-		# Choose a random starting index if this is the first color, else randomize within allowed range
+		# Randomly choose an index from the available indices
 		index = random.choice(available_indices)
 
-		# Add the chosen index to selected_indices
+		# Add the chosen index to the list of selected indices
 		selected_indices.append(index)
 
 		# Remove indices too close to the chosen index
-		for offset in range(-min_distance+1, min_distance):
-			idx_to_remove = (index + offset) % color_wheel_length
+		# The range includes indices `min_distance` away in both directions (wrap-around accounted for)
+		for offset in range(-min_distance + 1, min_distance):
+			idx_to_remove = (index + offset) % color_wheel_length  # Handle circular wrap-around
 			if idx_to_remove in available_indices:
 				available_indices.remove(idx_to_remove)
+
+	# Sort the selected indices for consistency
 	selected_indices = sorted(selected_indices)
 
+	# Check if the selected indices actually meet the `min_distance` constraint
+	# If not, raise an error as a safety check
 	if num_colors > 1 and min_difference(selected_indices) < min_distance:
 		raise ValueError(f'min_difference {min_difference(selected_indices)} < min_distance {min_distance}')
 
@@ -458,6 +506,7 @@ def get_indices_for_color_wheel(num_colors, color_wheel_length):
 #==========================
 def default_color_wheel(num_colors, color_wheel=dark_color_wheel):
 	color_wheel_length = len(color_wheel)
+	print(f"num_colors = {num_colors}; color_wheel_length = {color_wheel_length}")
 	selected_indices = get_indices_for_color_wheel(num_colors, color_wheel_length)
 
 	# Select the colors based on the generated indices
