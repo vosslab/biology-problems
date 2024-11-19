@@ -11,6 +11,8 @@ import tetradlib
 import genemaplib as gml
 import phenotypes_for_yeast
 
+#need this so students can add info to the box
+bptools.use_add_no_click_div = False
 debug = True
 
 #===========================================================

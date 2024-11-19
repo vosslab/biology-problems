@@ -2,9 +2,6 @@
 
 # Standard Library
 import os
-import sys
-import math
-import numpy
 import random
 import argparse
 
@@ -15,15 +12,6 @@ import genemaplib as gml
 import phenotypes_for_yeast
 
 debug = True
-
-#====================================
-def getDistance():
-	#integers
-	return random.randint(2,30)
-
-#====================================
-def getProgenySize(distance):
-	return gml.get_progeny_size(distance)
 
 #===========================
 #===========================
@@ -228,8 +216,11 @@ def generate_question(N: int) -> str:
 	# This alternates the question type for each call, so even questions are "linked" and odd questions are "unlinked"
 	question_type_str = ('linked', 'unlinked')[N % 2]
 
-	# Randomly generate a genetic distance between 2 and 30 centiMorgans for the question
-	distance_int = random.randint(2, 30)
+	# Randomly generate a genetic distance between 12 and 40 centiMorgans for the question
+	if question_type_str == "unlinked":
+		distance_int = random.randint(4, 16)
+	else:
+		distance_int = random.randint(20, 31)
 	if debug: print(f"Distance: {distance_int}")
 
 	# Retrieve the instructions and hints for the question footer

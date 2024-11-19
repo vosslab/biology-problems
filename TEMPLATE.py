@@ -112,7 +112,7 @@ def parse_arguments():
 		help='Number of duplicate runs to do or number of questions to create', default=1
 	)
 	parser.add_argument(
-		'-n', '--num_choices', type=int, default=5,
+		'-c', '--num_choices', type=int, default=5,
 		help="Number of choices to create."
 	)
 
@@ -127,7 +127,7 @@ def parse_arguments():
 		help='Set question type to multiple choice'
 	)
 	question_group.add_argument(
-		'-c', '--num', dest='question_type', action='store_const', const='num',
+		'-n', '--num', dest='question_type', action='store_const', const='num',
 		help='Set question type to numeric'
 	)
 
