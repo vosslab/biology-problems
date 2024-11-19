@@ -3,6 +3,7 @@
 import os
 import sys
 import copy
+import math
 import random
 import argparse
 import textwrap
@@ -10,165 +11,430 @@ import textwrap
 import bptools
 
 
-num2word = {
-	1: 'one', 2: 'two', 3: 'three', 4: 'four', 5: 'five',
-	6: 'six', 7: 'seven', 8: 'eight', 9: 'nine', 10: 'ten',
-	11: 'eleven', 12: 'twelve', 13: 'thirteen', 14: 'fourteen',
-	15: 'fifteen', 16: 'sixteen', 17: 'seventeen', 18: 'eighteen', 19: 'nineteen',
-	20: 'twenty',
-}
+#==========================================================
+#==========================================================
+def generate_background_for_deletions(num_genes: int, table: bool) -> str:
+	"""
+	Generates a background explanation about using deletion mutants to determine the order of genes.
 
-#====================
-def makeHtmlTable(origlist, del_set):
+	Args:
+		num_genes (int): The number of genes involved in the problem.
+		table (bool): Whether additional information about polytene chromosomes is included.
+
+	Returns:
+		str: The background explanation as an HTML string.
+	"""
+	# Convert the number of genes to cardinal text
+	cardinal_text = bptools.number_to_cardinal(num_genes)
+
+	# Start with a header
+	background_text = f'<h4>Using Deletion Mutants to Determine Gene Order</h4>'
+
+	# General introduction about deletion mutants
+	background_text += (
+		f'<p>Deletion mutants are an essential tool in genetics for uncovering the order of '
+		f'{cardinal_text} ({num_genes}) genes on a chromosome. Deletions remove specific regions of '
+		f'the chromosome, allowing researchers to observe the effects of the missing genes '
+		f'on the phenotype of the organism. This approach is particularly useful for identifying the '
+		f'locations of recessive genes, which are only revealed when the corresponding wildtype copies '
+		f'are absent.</p>'
+	)
+
+	# Context-specific explanation of the test cross with deletion mutants
+	background_text += (
+		f'<p>In a test cross involving deletion mutants, one parent carries a full-length wildtype chromosome and '
+		f'a second chromosome with a deletion, while the other parent is homozygous recessive for all '
+		f'{cardinal_text} genes. Offspring inheriting the full-length wildtype chromosome display the dominant phenotype '
+		f'for all {cardinal_text} genes in the test cross. '
+		f'However, offspring inheriting the chromosome with the deletion will display some recessive traits. '
+		'These recessive traits uncover the missing genes in the deleted region. '
+		f'By analyzing which genes are uncovered in a series of different '
+		f'deletion mutants, the linear order of the genes can be determined.</p>'
+	)
+
+	# Expand explanation with polytene chromosomes if table=True
+	if table:
+		background_text += (
+			'<p>In organisms such as <i>Drosophila melanogaster</i>, polytene chromosomes from the salivary '
+			'glands provide a physical map for studying deletions. Polytene chromosomes are giant chromosomes '
+			'with distinct banding patterns, allowing researchers to directly visualize which regions of the '
+			'chromosome are deleted. This visual representation complements the genetic data obtained from test '
+			'crosses.</p>'
+		)
+
+	# Conclude with the problem's goal
+	background_text += (
+		f'<p>For this problem, deletion mutants have been generated for a chromosome containing '
+		f'{cardinal_text} genes. Your goal is to analyze the phenotypic data resulting from these deletions '
+		f'and determine the correct linear order of the genes.</p>'
+	)
+
+	return background_text
+
+#==========================================================
+#==========================================================
+def color_deletion_name(deletion_text: str, deletion_key_str: str, deletion_colors: dict) -> str:
+	"""
+	Applies a unique color to a deletion's text based on its key.
+
+	Args:
+		deletion_text (str): The text to be colored (e.g., "Del #3: A, B, and C").
+		deletion_key_str (str): The string key for the deletion (e.g., "ABC").
+		deletion_colors (dict): A dictionary mapping deletion keys to colors.
+
+	Returns:
+		str: The HTML-formatted string with the appropriate color applied.
+	"""
+	# Wrap the text in a span with the corresponding color
+	return f'<span style="color: #{deletion_colors[deletion_key_str]}; font-weight: bold;">{deletion_text}</span>'
+
+#==========================================================
+#==========================================================
+def make_html_table(gene_order, deletions_list, deletion_colors):
 	table = ''
 	table += '<table style="border-collapse: collapse; border: 2px solid black; '
-	width = 60*(len(origlist) + 1)
-	height = 25*(len(del_set) + 1)
-	table += 'width: {0:d}px; height: {1:d}px;">'.format(width, height)
+	width = 60 * (len(gene_order) + 1)
+	height = 25 * (len(deletions_list) + 1)
+	table += f'width: {width}px; height: {height}px;">'
 	table += '<tr><th> </th>'
-	for i in range(len(origlist)):
-		table += '<th align="center">Gene {0}</th>'.format(i+1)
+
+	# Header for gene labels, gene order is unknown so just numbers
+	for i in range(len(gene_order)):
+		table += '<th align="center">Gene {i+1}</th>'
 	table += '</tr>'
-	colors = ['DarkRed', 'DarkSlateGray', 'DarkGreen', 'Indigo', 'MidnightBlue', 'DarkOliveGreen', ]
-	for i,deletion in enumerate(del_set):
-		table += '<tr><th align="center">Del #{0}</th>'.format(i+1)
-		for gene in origlist:
+
+	# Rows for deletions
+	for i, deletion in enumerate(deletions_list):
+		# Generate a deletion key string (e.g., "ABC")
+		deletion_key_str = ''.join(sorted(deletion))
+
+		# Row header for each deletion
+		colored_deletion_name = color_deletion_name(f"Del #{i+1}", deletion_key_str, deletion_colors)
+		table += f'<tr><th align="center">{colored_deletion_name}</th>'
+
+		for gene in gene_order:
 			if gene in deletion:
-				#black fill
-				table += '<td bgcolor="{0}"> </td>'.format(colors[i % len(colors)])
+				# Use deletion-specific colors for matching cells
+				table += f'<td bgcolor="#{deletion_colors[deletion_key_str]}"> </td>'
 			else:
 				table += '<td bgcolor="#EEEEEE"> </td>'
 		table += '</tr>'
 	table += '</table>'
 	return table
 
-#====================
-def writeQuestion(origlist, del_set):
+#==========================================================
+#==========================================================
+def writeQuestion(gene_order, deletions_list, deletion_colors):
+	"""
+	Writes the question about gene order based on the original list and deletions.
+	"""
 	### write question
 	#Genes a, b, c, d, e, and f are closely linked in a chromosome, but their order is unknown.
 	#Four deletions in the region are found to uncover recessive alleles of the genes as follows:
-	#Deletion?1 uncovers a, d, and f; Deletion?2 uncovers d, e, and f; Deletion?3 uncovers c, d, and e;
-	#Deletion?4 uncovers b and c. Which one of the following is the correct order for the genes?
+	#Deletion 1 uncovers a, d, and f; Deletion?2 uncovers d, e, and f; Deletion?3 uncovers c, d, and e;
+	#Deletion 4 uncovers b and c. Which one of the following is the correct order for the genes?
 
-	sortedlist = copy.copy(origlist)
-	sortedlist.sort()
+	# Create a sorted copy of the original gene list
+	sorted_gene_order = sorted(copy.copy(gene_order))
+	sorted_gene_order_str = list2text(sorted_gene_order)
 
-	question = ''
+	# Number of genes and deletions (in words and digits)
+	num_genes_int = len(gene_order)
+	num_genes_word = f"{bptools.number_to_cardinal(num_genes_int)} ({num_genes_int})"
+	num_deletions_int = len(deletions_list)
+	num_deletions_word = f"{bptools.number_to_cardinal(num_deletions_int)} ({num_deletions_int})"
 
-	sys.stderr.write("\n")
-	question += (("<p>A total of %s genes "%(num2word[len(origlist)]))
-		+list2text(sortedlist)+" are closely linked in a single chromosome, but "
-		+"their order is unknown. ")
-	question += (("A total of %s deletions in the region are found "%(num2word[len(del_set)]))
-		+"to uncover recessive alleles of the genes as follows:</p><ul>  ")
-	for i,deletion in enumerate(del_set):
-		question += ("<li>Deletion #%d uncovers the %s genes %s;</li>  "%(i+1, num2word[len(deletion)], list2text(deletion)))
-	question += ("</ul> <h5>What the correct order for the %s genes?</h5> "%(num2word[len(origlist)]))
-	question += ("<p>Hint 1: the first gene on the end is gene %s.</p> "%(origlist[0]))
-	question += ("<p>Hint 2: enter your answer in the blank using only {0} letters or one comma every 3 letters.</p> ".format(num2word[len(origlist)]))
+	# Start building the question text
+	question = ""
 
-	#sys.stderr.write(question)
+	# Main description
+	question += (
+		f"<p>There are {num_genes_word} genes, "
+		f"{sorted_gene_order_str}, closely linked in a single chromosome. However, "
+		"their order is unknown. "
+	)
+	question += (
+		f"In the region, {num_deletions_word} deletions have been identified. "
+		"These deletions uncover recessive alleles of the genes as follows:</p><ul>"
+	)
 
-	sys.stderr.write("\n")
-	sys.stderr.write("Answer: %s\n"%(list2string(origlist)))
-	sys.stderr.write("\n")
+	# Add details for each deletion
+	for i, deletion in enumerate(deletions_list):
+		# Generate a deletion key string (e.g., "ABC")
+		deletion_key_str = ''.join(sorted(deletion))
+		deletions_word_str = list2text(deletion)
 
-	#sys.stdout.write("Which one of the following is the correct order for the genes?")
+		# Colorize the deletion description
+		colored_deletion = color_deletion_name(
+			f"Deletion #{i+1}: <strong>{deletions_word_str}</strong>",
+			deletion_key_str,
+			deletion_colors
+		)
+		question += f"<li>{colored_deletion}</li>"
 
-	sys.stderr.write("##########\n")
+	# Add the final question and hints
+	question += (
+		f"</ul> <p>What is the correct order for the "
+		f"{num_genes_word} genes?</p> "
+	)
+	question += f"<p>Hint 1: the first gene on the end is <strong>gene {gene_order[0]}</strong>.</p> "
+	question += (
+		f"<p>Hint 2: Enter your answer in the blank using only "
+		f"{num_genes_word} letters or one comma every three (3) letters, but "
+		"do not include any extra commas or spaces in your answer.</p>"
+	)
+
+	# Add the final question and hints
+	question += (
+		f"</ul> <p>What is the correct order of the "
+		f"{num_genes_word} genes?</p> "
+	)
+	question += (
+		f"<p><strong>Hint 1</strong>: The first gene at one end of the chromosome is "
+		f"<strong>{gene_order[0]}</strong>.</p> "
+	)
+	question += (
+		f"<p><strong>Hint 2</strong>: Enter your answer in the blank using only "
+		f"{num_genes_word} letters, or one comma every three (3) letters. Do not include "
+		"extra commas or spaces in your answer.</p>"
+	)
+
+	# Check for invalid newlines in the question
+	if '\n' in question:
+		raise ValueError("New lines are not allowed")
+
 	return question
 
-#====================
-def list2string(mylist):
-	mystring = ""
-	for letter in mylist:
-		mystring += letter
-	return mystring
+#==========================================================
+#==========================================================
+def list2text(mylist: list[str]) -> str:
+	"""
+	Converts a list of strings into a human-readable text format with an Oxford comma.
 
-#====================
-def list2text(mylist):
-	mystring = ""
+	If the list has more than two elements, it adds commas between elements and inserts
+	"and" before the last element, ensuring an Oxford comma is included. For a list of
+	exactly two elements, it joins them with "and". For an empty list or a single element,
+	it returns an empty string or the single element respectively.
+
+	Args:
+		mylist (list[str]): A list of strings to convert into human-readable text.
+
+	Returns:
+		str: The human-readable string representation of the list.
+	"""
+	# Handle lists with more than two elements (include an Oxford comma)
 	if len(mylist) > 2:
-		sublist = mylist[:-1]
-		for letter in sublist:
-			mystring += letter+", "
-		mystring += "and "+mylist[-1]
+		return f"{', '.join(mylist[:-1])}, and {mylist[-1]}"
+
+	# Handle lists with exactly two elements
 	elif len(mylist) == 2:
-		mystring = mylist[0]+" and "+mylist[1]
-	return mystring
+		return f"{mylist[0]} and {mylist[1]}"
+
+	# Return an empty string for empty lists
+	elif len(mylist) == 0:
+		return ""
+
+	# For a single element, return the element itself
+	else:
+		return mylist[0]
 
 #====================
-def makeDeletions(num_genes):
-	charlist = list("ABCDEFGHJKMPQRSTWXYZ")
-	itemlist = charlist[:num_genes]
-	random.shuffle(itemlist)
+# Assertions to verify correctness
+assert list2text(list('abcd')) == "a, b, c, and d", \
+	"Failed test case with more than 2 elements (Oxford comma required)"
+assert list2text(['x', 'y']) == "x and y", \
+	"Failed test case with exactly 2 elements"
+assert list2text(['z']) == "z", \
+	"Failed test case with a single element"
+assert list2text([]) == "", \
+	"Failed test case with an empty list"
 
-	# complicated step to get version of list that is most alphabetical
+#==========================================================
+#==========================================================
+def make_deletions(num_genes: int):
+	"""
+	Generates a random list of genes and a set of gene deletions such that:
+	1. Every gene pair is included in at least one deletion.
+	2. All possible split gene pairs (pairs split by deletions) are represented.
+
+	Args:
+		num_genes (int): The number of genes to include in the original list.
+
+	Returns:
+		tuple: A tuple containing:
+			- gene_order (list[str]): The original ordered list of genes.
+			- deletions_list (list[list[str]]): A list of deletions (each deletion is a sublist of genes).
+	"""
+	# Step 1: Generate and shuffle the list of genes
+	gene_order = generate_gene_list(num_genes)
+
+	# Step 2: Ensure the list is "most alphabetical"
+	answer_gene_order = ensure_most_alphabetical(gene_order)
+
+	# Step 5: Generate deletions until all pairs are covered
+	deletions_list = generate_deletions(gene_order)
+
+	return answer_gene_order, deletions_list
+
+
+#==========================================================
+#==========================================================
+def generate_gene_list(num_genes: int, shuffle: bool=True) -> list[str]:
+	"""
+	Generates a shuffled list of genes of the specified size.
+
+	Args:
+		num_genes (int): The number of genes to include in the list.
+
+	Returns:
+		list[str]: A shuffled list of unique gene identifiers.
+	"""
+	charlist = list("ABCDEFGHJKMPQRSTWXYZ")
+	if shuffle is True:
+		random.shuffle(charlist)
+	itemlist = charlist[:num_genes]
+	#always shuffle the genes
+	random.shuffle(itemlist)
+	return itemlist
+
+#==========================================================
+#==========================================================
+def ensure_most_alphabetical(itemlist: list[str]) -> list[str]:
+	"""
+	Reverses the itemlist if the first element is greater than the last,
+	to ensure the list is in its "most alphabetical" form.
+
+	Args:
+		itemlist (list[str]): A list of gene identifiers.
+
+	Returns:
+		list[str]: The adjusted list.
+	"""
 	if itemlist[0] > itemlist[-1]:
 		itemlist.reverse()
-	origlist = copy.copy(itemlist)
-	print("itemlist", itemlist)
+	return copy.copy(itemlist)
 
-	num_deletions = 5
+#==========================================================
+#==========================================================
+def generate_deletions(gene_order: list[str]) -> list[list[str]]:
+	"""
+	Generates a list of deletions such that:
+	1. All possible neighboring pairs of genes are covered.
+	2. All possible split pairs (pairs split by deletions) are included.
+
+	Args:
+		gene_order (list[str]): The original list of genes in their current order.
+
+	Returns:
+		list[list[str]]: A list of deletions, where each deletion is a sublist of genes.
+	"""
+	# Number of genes in the gene order
+	num_genes = len(gene_order)
+
+	# Total number of neighboring gene pairs to be covered
+	required_gene_pairs = num_genes - 1
+
+	# Minimum and maximum sizes for deletions
 	min_deletion_size = 2
-	max_deletion_size = min(len(itemlist) - 1,5)
+	upper_limit = int(math.sqrt(num_genes)*2) + 1
+	upper_limit = max(5, upper_limit)
+	max_deletion_size = min(num_genes - 1, upper_limit)
 
-	N = len(itemlist)
-	# N permutations 2, P(N, 2) minus three
-	num_sub_sets = N - 1
-	#print("Expect %d del pairs"%(num_sub_sets))
+	# Dictionaries to track progress
+	split_gene_pairs = {}  # Tracks pairs of genes split by deletions
+	used_gene_pairs = {}   # Tracks neighboring pairs of genes within deletions
+	deletions_list = []    # List to store all generated deletions
 
-	i = 0
-	iters = 0
-	del_set = []
-	split_gene_pairs = {}
-	used_gene_pairs = {}
-	while len(split_gene_pairs) < num_sub_sets or len(used_gene_pairs) < num_sub_sets:
-		iters += 1
-		#print("%d of %d gene pairs"%(len(split_gene_pairs), num_sub_sets))
-		if random.random() < 0.1:
-			delsize = random.randint(min_deletion_size, max_deletion_size)
-		elif len(itemlist) > 4 and random.random() < 0.7:
-			delsize = random.randint(min_deletion_size+2, max_deletion_size)
-		else:
-			delsize = random.randint(min_deletion_size+1, max_deletion_size)
-		delstart = random.randint(0, len(itemlist)-delsize)
-		deletion = itemlist[delstart:delstart+delsize]
-		add_value = 0
-		if delstart > 0:
-			key = itemlist[delstart-1]+itemlist[delstart]
-			#print key
-			if split_gene_pairs.get(key) is None:
-				split_gene_pairs[key] =True
-				add_value += 1
-		if delstart+delsize < len(itemlist):
-			key = itemlist[delstart+delsize-1]+itemlist[delstart+delsize]
-			#print key
-			if split_gene_pairs.get(key) is None:
-				split_gene_pairs[key] =True
-				add_value += 1
-		## need to make sure every pair of genes is in a least one deletion
-		for j in range(len(deletion)-1):
-			key = deletion[j]+deletion[j+1]
-			if used_gene_pairs.get(key) is None:
-				used_gene_pairs[key] =True
-				add_value += 1
+	# Iteration counter to avoid infinite loops (can be useful for debugging)
+	iterations = 0
+
+	# Generate deletions until all required pairs are covered
+	while len(split_gene_pairs) < required_gene_pairs or len(used_gene_pairs) < required_gene_pairs:
+		iterations += 1
+
+		# Decide the size of the deletion
+		if random.random() < 0.1:  # 10% chance to use any size within range
+			deletion_size = random.randint(min_deletion_size, max_deletion_size)
+		elif num_genes > 4 and random.random() < 0.7:  # 70% chance for larger deletions
+			deletion_size = random.randint(min_deletion_size + 2, max_deletion_size)
+		else:  # Default case for medium-sized deletions
+			deletion_size = random.randint(min_deletion_size + 1, max_deletion_size)
+
+		# Choose a random starting point for the deletion
+		deletion_start = random.randint(0, num_genes - deletion_size)
+
+		# Extract the genes for the current deletion
+		deletion = gene_order[deletion_start:deletion_start + deletion_size]
+
+		# Call the function
+		new_pairs = add_new_pairs(
+			gene_order, deletion_start, deletion_size, split_gene_pairs, used_gene_pairs
+		)
+
+		# Sort the deletion to ensure consistent order
 		deletion.sort()
-		if add_value > 0 and not deletion in del_set:
-			i+=1
-			del_set.append(deletion)
-			print(("Del %d: %s"%(i, str(deletion))))
-			#print(split_gene_pairs)
-			#print i, len(used_genes), delsize, delstart, deletion
+
+		# Add the deletion to the list if it adds new information and is not a duplicate
+		if new_pairs > 0 and deletion not in deletions_list:
+			deletions_list.append(deletion)
+			print(f"New Deletion #{len(deletions_list)}: {deletion}")
+
+	# Print summary of results
 	print("")
-	print(("Total used gene pairs: %d"%(len(used_gene_pairs))))
-	print(("Total split gene pairs: %d"%(len(split_gene_pairs))))
+	print(f"Total neighboring gene pairs used: {len(used_gene_pairs)}")
+	print(f"Total split gene pairs included: {len(split_gene_pairs)}\n")
 
-	print("\n##########\n")
-	return origlist, del_set
+	return deletions_list
 
+#==========================================================
+#==========================================================
+def add_new_pairs(
+	gene_order: list[str], start: int, size: int,
+	split_gene_pairs: dict, used_gene_pairs: dict
+) -> int:
+	"""
+	Adds both split pairs (pairs split by a deletion) and neighboring pairs (within the deletion)
+	to their respective dictionaries, and tracks how many new pairs were added.
 
-#==========================
+	Args:
+		gene_order (list[str]): The original list of genes.
+		start (int): The starting index of the deletion.
+		size (int): The size of the deletion.
+		split_gene_pairs (dict): Dictionary tracking pairs split by deletions.
+		used_gene_pairs (dict): Dictionary tracking neighboring pairs used in deletions.
+
+	Returns:
+		int: The total number of new pairs (split + neighboring) added to the dictionaries.
+	"""
+	new_pairs = 0
+
+	# Step 1: Add split gene pairs (pairs split by this deletion)
+	# Check the pair before the deletion
+	if start > 0:  # Ensure we don't go out of bounds
+		pair = gene_order[start - 1] + gene_order[start]
+		if pair not in split_gene_pairs:
+			split_gene_pairs[pair] = True
+			new_pairs += 1
+
+	# Check the pair after the deletion
+	if start + size < len(gene_order):  # Ensure we don't go out of bounds
+		pair = gene_order[start + size - 1] + gene_order[start + size]
+		if pair not in split_gene_pairs:
+			split_gene_pairs[pair] = True
+			new_pairs += 1
+
+	# Step 2: Add neighboring pairs within the deletion
+	deletion = gene_order[start:start + size]
+	for i in range(len(deletion) - 1):
+		pair = deletion[i] + deletion[i + 1]
+		if pair not in used_gene_pairs:
+			used_gene_pairs[pair] = True
+			new_pairs += 1
+
+	return new_pairs
+
+#==========================================================
+#==========================================================
 def insertCommas(my_str: str, separate: int = 3) -> str:
 	"""
 	Inserts commas into a string after every specified number of characters.
@@ -187,47 +453,71 @@ def insertCommas(my_str: str, separate: int = 3) -> str:
 assert insertCommas('ABCDEF', 2) == "AB,CD,EF"
 assert insertCommas('ABCDE', 3) == "ABC,DE"
 
-
-def generate_answer_variations(origlist: list[str]) -> list[str]:
+#==========================================================
+#==========================================================
+def generate_fib_answer_variations(gene_order: list[str]) -> list[str]:
 	"""
 	Generates various answer formats based on the original list of genes.
 
 	Args:
-		origlist (list[str]): The original list of genes.
+		gene_order (list[str]): The original list of genes.
 
 	Returns:
-		list[str]: A list of unique answer variations.
+		list[str]: A sorted list of unique answer variations.
 	"""
 	# Generate the base answer by joining the original list of genes
-	base_answer = ''.join(origlist)
+	base_answer = ''.join(gene_order)
 
-	# Create the reversed base answer
-	base_reversed = base_answer[::-1]
-
-	# Add commas after every 3 characters (normal order)
-	comma_chunks = insertCommas(base_answer, 3)
-
-	# Add commas after every 3 characters starting from the reversed string
-	comma_chunks_rev = insertCommas(base_reversed, 3)
-
-	# Generate comma-separated answers
-	comma_sep = ','.join(origlist)
-	comma_sep_rev = comma_sep[::-1]
-
-	# Collect all possible answer variations
-	answers_list = [
-		base_answer, base_reversed,       # Base and reversed
-		comma_sep, comma_sep_rev,         # Comma-separated and reversed
-		comma_chunks, comma_chunks[::-1], # Chunks of 3 and reversed
-		comma_chunks_rev, comma_chunks_rev[::-1]  # Reversed chunks of 3 and reversed again
+	# Generate various base versions
+	base_versions = [
+		base_answer,                        # Original gene order
+		','.join(gene_order),               # Comma-separated
+		insertCommas(base_answer, 3),       # Chunks of 3
+		insertCommas(base_answer[::-1], 3)  # Chunks of 3 in reverse order
 	]
 
-	# Deduplicate by converting to a set and back to a list
-	return list(set(answers_list))
+	# Add the reversed versions of each base version
+	all_variations = base_versions[:]
+	for version in base_versions:
+		all_variations.append(version[::-1])
 
+	# Deduplicate and sort the results
+	return sorted(set(all_variations))
 
-#==========================
-def write_question(N: int, num_genes: int, num_choices: int) -> str:
+#==========================================================
+#==========================================================
+def generate_mc_distractors(gene_order: list[str]) -> list[str]:
+	"""
+	Generates various answer formats based on the original list of genes.
+
+	Args:
+		gene_order (list[str]): The original list of genes.
+
+	Returns:
+		list[str]: A sorted list of unique answer variations.
+	"""
+	# Generate the base answer by joining the original list of genes
+	base_answer = ''.join(gene_order)
+
+	# Generate various base versions
+	base_versions = [
+		base_answer,                        # Original gene order
+		','.join(gene_order),               # Comma-separated
+		insertCommas(base_answer, 3),       # Chunks of 3
+		insertCommas(base_answer[::-1], 3)  # Chunks of 3 in reverse order
+	]
+
+	# Add the reversed versions of each base version
+	all_variations = base_versions[:]
+	for version in base_versions:
+		all_variations.append(version[::-1])
+
+	# Deduplicate and sort the results
+	return sorted(set(all_variations))
+
+#==========================================================
+#==========================================================
+def write_question(N: int, args) -> str:
 	"""
 	Creates a single formatted question with various answer formats and tables.
 
@@ -239,66 +529,103 @@ def write_question(N: int, num_genes: int, num_choices: int) -> str:
 	Returns:
 		str: A formatted question ready to be written to the output file.
 	"""
+	background = generate_background_for_deletions(args.num_genes, args.table)
+
 	# Generate the original list of genes and the set of deleted genes
-	origlist, del_set = makeDeletions(num_genes)
+	answer_gene_order, deletions_list = make_deletions(args.num_genes)
 
 	# Shuffle the deleted genes randomly for question variability
-	random.shuffle(del_set)
+	random.shuffle(deletions_list)
+
+	# Assign colors to genes using the dark_color_wheel
+	color_wheel = bptools.default_color_wheel(len(deletions_list))
+	deletion_colors = {''.join(deletion): color_wheel[i] for i, deletion in enumerate(deletions_list)}
 
 	# Generate an HTML table if the table option is enabled
 	if args.table is True:
 		print("Making TABLE")
-		table = makeHtmlTable(origlist, del_set)
+		table = make_html_table(answer_gene_order, deletions_list, deletion_colors)
 	else:
+		print("Skipping TABLE")
 		table = ''
 
 	# Create the question text based on the original and deleted genes
-	question = writeQuestion(origlist, del_set)
-
-	# Collect all possible answer variations
-	answers_list = generate_answer_variations(origlist)
+	question = writeQuestion(answer_gene_order, deletions_list, deletion_colors)
 
 	# Combine the question and table (if available) into the question text
-	question_text = question + table
+	question_text = background + table + question
 
 	# Format the question and answer into the final output structure
-	complete_question = bptools.formatBB_FIB_Question(N, question_text, answers_list)
+	if args.question_type is 'fib':
+		# Collect all possible answer variations
+		answers_list = generate_fib_answer_variations(answer_gene_order)
+		complete_question = bptools.formatBB_FIB_Question(N, question_text, answers_list)
+	else:
+		# Collect all possible distractor variations
+		choices_list, answer_text = generate_mc_distractors(answer_gene_order)
+		complete_question = bptools.formatBB_MC_Question(N, question_text, choices_list, answer_text)
 
 	return complete_question
 
-#==========================
-def get_arguments() -> argparse.Namespace:
+#=====================
+def parse_arguments():
 	"""
-	Parses command-line arguments using argparse.
+	Parses command-line arguments for the script.
+
+	Defines and handles all arguments for the script, including:
+	- `duplicates`: The number of questions to generate.
+	- `num_choices`: The number of answer choices for each question.
+	- `question_type`: Type of question (numeric or multiple choice).
 
 	Returns:
-		argparse.Namespace: Parsed arguments with all settings for the script.
+		argparse.Namespace: Parsed arguments with attributes `duplicates`,
+		`num_choices`, and `question_type`.
 	"""
 	# Initialize argument parser for command-line options
-	parser = argparse.ArgumentParser()
+	parser = argparse.ArgumentParser(description="Generate questions.")
+
+	parser.add_argument(
+		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
+		help='Number of duplicate runs to do or number of questions to create', default=1
+	)
+	parser.add_argument(
+		'-c', '--num_choices', metavar='#', type=int, default=5,
+		help="Number of choices to create."
+	)
 
 	# Argument to specify the number of genes to delete on the chromosome
-	parser.add_argument('-n', '--num-genes', type=int, dest='num_genes',
+	parser.add_argument(
+		'-g', '--num-genes', metavar='#', type=int, dest='num_genes',
 		help='number of deleted genes on the chromosome', default=5)
 
-	# Argument to specify the number of questions to generate
-	parser.add_argument('-q', '--num-questions', type=int, dest='num_questions',
-		help='number of questions to create', default=24)
-
-	# Boolean argument to enable table display in the output
-	parser.add_argument('-T', '--table', dest='table', action='store_true')
-
-	# Boolean argument to disable table display in the output
-	parser.add_argument('-F', '--free', '--no-table', dest='table', action='store_false')
-
+	# Create a mutually exclusive group for enabling or disabling table display
+	table_group = parser.add_mutually_exclusive_group()
+	table_group.add_argument(
+		'-T', '--table', dest='table', action='store_true',
+		help='Enable table display in the output'
+	)
+	table_group.add_argument(
+		'-F', '--free', '--no-table', dest='table', action='store_false',
+		help='Disable table display in the output'
+	)
 	# Set the default behavior for the `table` argument (enabled by default)
 	parser.set_defaults(table=True)
 
-	# Argument to specify the number of choices to provide in the questions
-	parser.add_argument('-c', '--choices', type=int, dest='num_choices',
-		help='number of choices to choose from in the question', default=5)
+	# Create a mutually exclusive group for question type and make it required
+	question_group = parser.add_mutually_exclusive_group(required=True)
+	question_group.add_argument(
+		'-t', '--type', dest='question_type', type=str, choices=('num', 'mc'),
+		help='Set the question type: num (numeric) or mc (multiple choice)'
+	)
+	question_group.add_argument(
+		'-m', '--mc', dest='question_type', action='store_const', const='mc',
+		help='Set question type to multiple choice'
+	)
+	question_group.add_argument(
+		'-f', '--fib', dest='question_type', action='store_const', const='fib',
+		help='Set question type to fill-in-the-blank (fib)'
+	)
 
-	# Parse command-line arguments into the `args` namespace
 	args = parser.parse_args()
 	return args
 
@@ -307,10 +634,7 @@ def get_arguments() -> argparse.Namespace:
 #==========================
 if __name__ == '__main__':
 	# Parse arguments from the command line
-	args = get_arguments()
-
-	# Determine whether the table is disabled based on the parsed arguments
-	no_table = not args.table
+	args = parse_arguments()
 
 	# Validate the number of genes, ensuring it's within the acceptable range
 	if args.num_genes < 4:
@@ -321,15 +645,16 @@ if __name__ == '__main__':
 		sys.exit(1)
 
 	# Setup output file name
-	outfile = f'bbq-{os.path.splitext(os.path.basename(__file__))[0]}-questions.txt'
+	script_name = os.path.splitext(os.path.basename(__file__))[0]
+	outfile =  f'bbq-{script_name}-{args.question_type.upper()}-questions.txt'
 	print(f'Writing to file: {outfile}')
 
 	# Open the output file and generate questions
 	with open(outfile, 'w') as f:
 		N = 1  # Question number counter
-		for _ in range(args.num_questions):
+		for _ in range(args.duplicates):
 			# Generate and write each question
-			complete_question = write_question(N, args.num_genes, args.num_choices)
+			complete_question = write_question(N, args)
 			if complete_question is not None:
 				N += 1
 				f.write(complete_question)
