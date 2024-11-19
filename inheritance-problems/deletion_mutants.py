@@ -7,6 +7,7 @@ import math
 import random
 import argparse
 import textwrap
+import itertools
 
 import bptools
 
@@ -28,7 +29,7 @@ def generate_background_for_deletions(num_genes: int, table: bool) -> str:
 	cardinal_text = bptools.number_to_cardinal(num_genes)
 
 	# Start with a header
-	background_text = f'<h4>Using Deletion Mutants to Determine Gene Order</h4>'
+	background_text = '<h4>Using Deletion Mutants to Determine Gene Order</h4>'
 
 	# General introduction about deletion mutants
 	background_text += (
@@ -71,6 +72,37 @@ def generate_background_for_deletions(num_genes: int, table: bool) -> str:
 
 	return background_text
 
+#===========================================================
+#===========================================================
+def get_deletion_mutant_steps() -> str:
+	"""
+	Returns the HTML formatted step-by-step instructions for solving deletion mutant problems.
+
+	Returns:
+		str: HTML formatted string with step-by-step instructions.
+	"""
+	steps = '<h6>Step-by-Step Instructions for Solving Deletion Mutant Problems</h6>'
+	steps += '<ul>'
+	steps += ' <li>Step 1: Simplify the information.</li>'
+	steps += '   <ul><li>List the genes and deletions provided in the question.</li>'
+	steps += '   <li>Organize the deletions in a clear table or list format for easier analysis.</li></ul>'
+	steps += ' <li>Step 2: Create a template for the gene order.</li>'
+	steps += '   <ul><li>Start with placeholders for each gene (e.g., _ _ _ _).</li>'
+	steps += '   <li>Insert known genes based on hints (e.g., the first or last gene).</li></ul>'
+	steps += ' <li>Step 3: Identify deletions containing the first gene.</li>'
+	steps += '   <ul><li>Analyze deletions that include the first gene to determine its neighbors.</li>'
+	steps += '   <li>Use deletions that overlap to narrow down adjacent genes.</li></ul>'
+	steps += ' <li>Step 4: Analyze deletions containing the next genes.</li>'
+	steps += '   <ul><li>Look for deletions that include specific pairs of genes.</li>'
+	steps += '   <li>Identify deletions that exclude certain genes to resolve ambiguities.</li></ul>'
+	steps += ' <li>Step 5: Verify the answer using all of the listed deletions.</li>'
+	steps += '   <ul><li>Deletion questions can be hard to solve, but once you have an answer, it is easy to check if it is correct!</li>'
+	steps += '   <li>Go through each deletion and confirm that the proposed gene order matches the genes included in that deletion.</li>'
+	steps += '   <li>If any deletion is inconsistent with the proposed order, your answer is wrong.</li></ul>'
+	steps += '</ul>'
+
+	return steps
+
 #==========================================================
 #==========================================================
 def color_deletion_name(deletion_text: str, deletion_key_str: str, deletion_colors: dict) -> str:
@@ -100,7 +132,7 @@ def make_html_table(gene_order, deletions_list, deletion_colors):
 
 	# Header for gene labels, gene order is unknown so just numbers
 	for i in range(len(gene_order)):
-		table += '<th align="center">Gene {i+1}</th>'
+		table += f'<th align="center">Gene {i+1}</th>'
 	table += '</tr>'
 
 	# Rows for deletions
@@ -124,7 +156,7 @@ def make_html_table(gene_order, deletions_list, deletion_colors):
 
 #==========================================================
 #==========================================================
-def writeQuestion(gene_order, deletions_list, deletion_colors):
+def write_question_text(gene_order, deletions_list, deletion_colors):
 	"""
 	Writes the question about gene order based on the original list and deletions.
 	"""
@@ -174,24 +206,12 @@ def writeQuestion(gene_order, deletions_list, deletion_colors):
 
 	# Add the final question and hints
 	question += (
-		f"</ul> <p>What is the correct order for the "
-		f"{num_genes_word} genes?</p> "
-	)
-	question += f"<p>Hint 1: the first gene on the end is <strong>gene {gene_order[0]}</strong>.</p> "
-	question += (
-		f"<p>Hint 2: Enter your answer in the blank using only "
-		f"{num_genes_word} letters or one comma every three (3) letters, but "
-		"do not include any extra commas or spaces in your answer.</p>"
-	)
-
-	# Add the final question and hints
-	question += (
 		f"</ul> <p>What is the correct order of the "
 		f"{num_genes_word} genes?</p> "
 	)
 	question += (
-		f"<p><strong>Hint 1</strong>: The first gene at one end of the chromosome is "
-		f"<strong>{gene_order[0]}</strong>.</p> "
+		f"<p><strong>Hint 1</strong>: The first gene at start of the chromosome is "
+		f"<strong>gene {gene_order[0]}</strong>.</p> "
 	)
 	question += (
 		f"<p><strong>Hint 2</strong>: Enter your answer in the blank using only "
@@ -486,34 +506,61 @@ def generate_fib_answer_variations(gene_order: list[str]) -> list[str]:
 
 #==========================================================
 #==========================================================
-def generate_mc_distractors(gene_order: list[str]) -> list[str]:
+def format_choice(gene_list: list[str]) -> str:
 	"""
-	Generates various answer formats based on the original list of genes.
+	Formats a gene order into a readable multiple-choice option with a monospace font for the gene sequence.
 
 	Args:
-		gene_order (list[str]): The original list of genes.
+		gene_list (list[str]): A list of genes in a specific order.
 
 	Returns:
-		list[str]: A sorted list of unique answer variations.
+		str: A formatted choice string combining the gene sequence and gene description.
 	"""
-	# Generate the base answer by joining the original list of genes
-	base_answer = ''.join(gene_order)
+	# Monospace font using <span>
+	gene_sequence = "<strong><span style='font-family: monospace;'>"
+	#gene_sequence += f"{insertCommas(''.join(gene_list))}</span><strong>"
+	gene_sequence += f"{''.join(gene_list)}</span><strong>"
+	gene_sequence += f": gene order of {list2text(gene_list)}"
+	return gene_sequence
 
-	# Generate various base versions
-	base_versions = [
-		base_answer,                        # Original gene order
-		','.join(gene_order),               # Comma-separated
-		insertCommas(base_answer, 3),       # Chunks of 3
-		insertCommas(base_answer[::-1], 3)  # Chunks of 3 in reverse order
-	]
+#==========================================================
+#==========================================================
+def generate_mc_distractors(answer_gene_order: list[str], num_choices: int):
+	"""
+	Generates multiple-choice distractors for a gene order question.
 
-	# Add the reversed versions of each base version
-	all_variations = base_versions[:]
-	for version in base_versions:
-		all_variations.append(version[::-1])
+	Args:
+		answer_gene_order (list[str]): The correct order of genes.
+		num_choices (int): The total number of multiple-choice options, including the correct answer.
 
-	# Deduplicate and sort the results
-	return sorted(set(all_variations))
+	Returns:
+		tuple[list[str], str]: A list of formatted multiple-choice options and the correct answer.
+	"""
+	# Generate the correct answer text
+	answer_text = format_choice(answer_gene_order)
+
+	# Generate all valid permutations starting with the first gene
+	choices_list = []
+	for permutation in itertools.permutations(answer_gene_order[1:]):
+		# Keep the first gene fixed as per the hint
+		choice_gene_order = [answer_gene_order[0]] + list(permutation)
+
+		# Avoid adding the correct answer as a distractor
+		if choice_gene_order != answer_gene_order:
+			choice_text = format_choice(choice_gene_order)
+			choices_list.append(choice_text)
+
+	# Shuffle the distractors and select the required number
+	random.shuffle(choices_list)
+	choices_list = choices_list[:num_choices - 1]
+
+	# Add the correct answer to the choices
+	choices_list.append(answer_text)
+
+	# Deduplicate and sort the results for consistent output
+	choices_list = sorted(set(choices_list))
+
+	return choices_list, answer_text
 
 #==========================================================
 #==========================================================
@@ -530,6 +577,7 @@ def write_question(N: int, args) -> str:
 		str: A formatted question ready to be written to the output file.
 	"""
 	background = generate_background_for_deletions(args.num_genes, args.table)
+	steps = get_deletion_mutant_steps()
 
 	# Generate the original list of genes and the set of deleted genes
 	answer_gene_order, deletions_list = make_deletions(args.num_genes)
@@ -550,19 +598,19 @@ def write_question(N: int, args) -> str:
 		table = ''
 
 	# Create the question text based on the original and deleted genes
-	question = writeQuestion(answer_gene_order, deletions_list, deletion_colors)
+	question = write_question_text(answer_gene_order, deletions_list, deletion_colors)
 
 	# Combine the question and table (if available) into the question text
-	question_text = background + table + question
+	question_text = background + table + question + steps
 
 	# Format the question and answer into the final output structure
-	if args.question_type is 'fib':
+	if args.question_type == 'fib':
 		# Collect all possible answer variations
 		answers_list = generate_fib_answer_variations(answer_gene_order)
 		complete_question = bptools.formatBB_FIB_Question(N, question_text, answers_list)
 	else:
 		# Collect all possible distractor variations
-		choices_list, answer_text = generate_mc_distractors(answer_gene_order)
+		choices_list, answer_text = generate_mc_distractors(answer_gene_order, args.num_choices)
 		complete_question = bptools.formatBB_MC_Question(N, question_text, choices_list, answer_text)
 
 	return complete_question
@@ -644,9 +692,20 @@ if __name__ == '__main__':
 		print("Sorry, you must have less than 20 genes for this program")
 		sys.exit(1)
 
+	if args.table:
+		table_str = "TABLE"
+	else:
+		table_str = "FREE"
+
 	# Setup output file name
 	script_name = os.path.splitext(os.path.basename(__file__))[0]
-	outfile =  f'bbq-{script_name}-{args.question_type.upper()}-questions.txt'
+	outfile = (
+		f'bbq-{script_name}'
+		f'-{args.num_genes:02d}_genes'
+		f'-{table_str}'
+		f'-{args.question_type.upper()}'
+		'-questions.txt'
+	)
 	print(f'Writing to file: {outfile}')
 
 	# Open the output file and generate questions
@@ -658,3 +717,8 @@ if __name__ == '__main__':
 			if complete_question is not None:
 				N += 1
 				f.write(complete_question)
+
+	print(f'Wrote to file: {outfile}')
+	if args.question_type == 'mc':
+		bptools.print_histogram()
+
