@@ -14,6 +14,8 @@ import itertools
 import bptools
 import phylolib2
 
+debug = False
+
 # make a gene tree table with 4 leaves, ask students to choose correct one
 
 #===========================================
@@ -134,7 +136,7 @@ def addDistancePairShifts(distance_dict, ordered_genes, answer_code):
 	return distance_dict
 
 #===========================================
-def makeTable_ascii(ordered_genes, distance_dict):
+def print_ascii_distance_table_old(ordered_genes, distance_dict):
 	sorted_genes = list(copy.copy(ordered_genes))
 	sorted_genes.sort()
 	sys.stderr.write('\t')
@@ -152,8 +154,92 @@ def makeTable_ascii(ordered_genes, distance_dict):
 				sys.stderr.write('{0:d}\t'.format(distance))
 		sys.stderr.write('\n')
 
+import copy
+import sys
+
+#===========================================================
+#===========================================================
+def print_ascii_distance_table(ordered_genes, distance_dict):
+	"""
+	Print a formatted ASCII table with Unicode borders for the gene distance matrix.
+
+	Args:
+		ordered_genes (list): The ordered list of gene names.
+		distance_dict (dict): A dictionary mapping gene pairs to distances.
+	"""
+	# Sort the gene names for consistent row/column order
+	sorted_genes = list(copy.copy(ordered_genes))
+	sorted_genes.sort()
+
+	# Calculate the column width dynamically for consistent alignment
+	column_width = 5
+
+	# Unicode characters for table borders
+	horizontal_line = "\u2500"
+	vertical_line = "\u2502"
+	top_left_corner = "\u250C"
+	top_right_corner = "\u2510"
+	bottom_left_corner = "\u2514"
+	bottom_right_corner = "\u2518"
+	middle_top = "\u252C"
+	middle_bottom = "\u2534"
+	middle_left = "\u251C"
+	middle_right = "\u2524"
+	center_cross = "\u253C"
+
+	# Create the table borders
+	# Top border with column headers
+	top_border = f"{top_left_corner}{horizontal_line * column_width}"
+	for _ in sorted_genes:
+		top_border += f"{middle_top}{horizontal_line * column_width}"
+	top_border += f"{top_right_corner}\n"
+
+	# Separator for headers and rows
+	separator = f"{middle_left}{horizontal_line * column_width}"
+	for _ in sorted_genes:
+		separator += f"{center_cross}{horizontal_line * column_width}"
+	separator += f"{middle_right}\n"
+
+	# Bottom border
+	bottom_border = f"{bottom_left_corner}{horizontal_line * column_width}"
+	for _ in sorted_genes:
+		bottom_border += f"{middle_bottom}{horizontal_line * column_width}"
+	bottom_border += f"{bottom_right_corner}\n"
+
+	# Generate the table header
+	header = f"{vertical_line}{' ' * column_width}"  # Empty top-left corner
+	for gene in sorted_genes:
+		header += f"{vertical_line}  {gene}  "
+	header += f"{vertical_line}\n"
+
+	# Start assembling the ASCII table
+	ascii_table = top_border + header + separator
+
+	# Generate the rows
+	for gene1 in sorted_genes:
+		# Row label
+		row = f"{vertical_line}  {gene1}  "
+		for gene2 in sorted_genes:
+			if gene1 == gene2:
+				cell_value = "---"  # Self-distance marked with 'x'
+			else:
+				# Retrieve the distance value
+				gene_tuple = (gene1, gene2)
+				distance = distance_dict.get(gene_tuple, 0)
+				cell_value = f"{distance}"
+			# Add the cell value, centered in the column
+			row += f"{vertical_line} {cell_value.rjust(column_width-2)} "
+		row += f"{vertical_line}\n"
+		ascii_table += row + separator
+
+	# Replace the last separator with the bottom border
+	ascii_table = ascii_table[:-len(separator)] + bottom_border
+
+	# Print the final table to stderr
+	sys.stderr.write(ascii_table)
+
 #===========================================
-def makeTable_html(ordered_genes, distance_dict, distance_list):
+def generate_html_distance_table(ordered_genes, distance_dict, distance_list):
 	sorted_genes = list(copy.copy(ordered_genes))
 	sorted_genes.sort()
 	td_extra = 'align="center" style="border: 1px solid black; background-color: xxxxxx;"'
@@ -201,101 +287,209 @@ def getGoodGenePermutation(gene_permutations, ordered_genes, answer_code):
 		return permuted_genes
 
 #===========================================
-def makeQuestion(N, sorted_genes, num_leaves, num_choices):
-	num_nodes = num_leaves -1
-	genetree = phylolib2.GeneTree()
+def make_question(N: int, num_leaves: int, num_choices: int) -> str:
+	"""
+	Generate a multiple-choice question about gene trees based on a distance matrix.
 
-	### FIND A PARTICULAR GENE ORDER
+	Args:
+		N (int): A unique identifier for the question.
+		num_leaves (int): The number of leaves (genes) in the gene tree.
+		num_choices (int): The total number of answer choices, including the correct one.
+
+	Returns:
+		str: A formatted HTML multiple-choice question that includes a gene distance matrix
+		     and a list of possible gene tree answers.
+	"""
+	# Generate gene names (letters) with "clear" letters (excluding ambiguous ones like 'o' or 'i')
+	gene_letters_str = bptools.generate_gene_letters(num_leaves, clear=True)
+	sorted_genes = sorted(gene_letters_str)  # Sort the gene letters alphabetically
+
+	# The number of nodes in the gene tree equals the number of leaves minus one
+	num_nodes = num_leaves - 1
+	genetree = phylolib2.GeneTree()  # Initialize the GeneTree object for tree generation and manipulation
+
+	#===========================================
+	# FIND A PARTICULAR ORDER FOR THE GENES
+	#===========================================
+	# Get all permutations of the sorted gene letters and shuffle them randomly
 	gene_permutations = comb_safe_permutations(sorted_genes)
 	random.shuffle(gene_permutations)
-	ordered_genes = gene_permutations.pop()
-	print('ordered_genes=',ordered_genes)
 
-	### GET ALL POSSIBLE TREES
+	# Select one gene order for constructing the distance matrix
+	ordered_genes = gene_permutations.pop()
+	print('ordered_genes=', ordered_genes)
+
+	#===========================================
+	# GET ALL POSSIBLE GENE TREES
+	#===========================================
+	# Generate all possible gene tree encodings for the given number of leaves
 	code_choice_list = genetree.make_all_gene_trees_for_leaf_count(num_leaves, sorted_genes)
-	random.shuffle(code_choice_list)
+	random.shuffle(code_choice_list)  # Shuffle the tree encodings to randomize selection
+
+	# Select one tree encoding as the correct answer
 	answer_code = code_choice_list.pop()
 	print("answer_code=", answer_code)
 
-	distance_list = makeRandDistanceList(num_leaves-1)
-	print("distance_list=",distance_list)
+	#===========================================
+	# CREATE RANDOM DISTANCES AND PAIRS
+	#===========================================
+	# Generate a random list of distances for the internal nodes of the tree
+	distance_list = makeRandDistanceList(num_nodes)
+	print("distance_list=", distance_list)
 
+	# Create a distance dictionary mapping gene pairs to distances based on the answer tree
 	distance_dict = makeDistancePairs(ordered_genes, distance_list, answer_code)
-	#print("distance_dict=",distance_dict)
-	makeTable_ascii(ordered_genes, distance_dict)
-	addDistancePairShifts(distance_dict, ordered_genes, answer_code)
-	#print("distance_dict=",distance_dict)
-	makeTable_ascii(ordered_genes, distance_dict)
 
-	### REMOVE ANY CHOICES WITH MATCHING PROFILES
+	# Generate and display an ASCII version of the distance matrix table
+	print("original distance matrix")
+	print_ascii_distance_table(ordered_genes, distance_dict)
+
+	# Modify the distance dictionary to include shifts (random offsets for added complexity)
+	addDistancePairShifts(distance_dict, ordered_genes, answer_code)
+
+	# Display the updated distance dictionary as an ASCII table
+	print("adjusted distance matrix")
+	print_ascii_distance_table(ordered_genes, distance_dict)
+
+	#===========================================
+	# REMOVE CHOICES WITH IDENTICAL PROFILES
+	#===========================================
+	# Generate the "profile" (a structural representation) of the correct answer tree
 	answer_profile = genetree.gene_tree_code_to_profile(answer_code, num_nodes)
+
+	# Group all tree encodings by their profiles
 	profile_groups = genetree.group_gene_trees_by_profile(code_choice_list, num_nodes)
+
+	# Remove any trees with profiles that match the correct answer's profile
 	if profile_groups.get(answer_profile) is not None:
 		del profile_groups[answer_profile]
 
-	### USE MORE SIMILAR TREES FIRST
+	#===========================================
+	# PRIORITIZE MORE SIMILAR TREES FOR CHOICES
+	#===========================================
+	# Sort the remaining profile groups by how similar they are to the correct answer
 	sorted_profile_group_keys = list(profile_groups.keys())
-	#print("UNsorted profiles=", sorted_profile_group_keys[:3])
 	if len(profile_groups) > num_choices:
 		sorted_profile_group_keys = genetree.sort_profiles_by_closeness(profile_groups, answer_profile)
 
+	# Generate the HTML answer choices for the question
 	html_choices_list = []
 	print(answer_profile)
 	print("sorted profiles=", sorted_profile_group_keys[:6])
+
 	for key in sorted_profile_group_keys:
+		# Randomly select one tree encoding from the profile group
 		profile_code_list = profile_groups[key]
 		code_choice = random.choice(profile_code_list)
+
+		# Convert the tree encoding into an HTML representation and add it to the choices
 		html_choice = genetree.get_html_from_code(code_choice)
 		html_choices_list.append(html_choice)
+
+		# Stop when we have enough incorrect choices
 		if len(html_choices_list) >= num_choices - 1:
 			break
+
+	# Add the correct answer as an HTML choice
 	answer_html_choice = genetree.get_html_from_code(answer_code)
 	html_choices_list.append(answer_html_choice)
+
+	# Shuffle the answer choices to randomize their order
 	random.shuffle(html_choices_list)
 
-	#WRITE QUESTION
+	#===========================================
+	# WRITE THE QUESTION
+	#===========================================
+	# Create the HTML table representation of the distance matrix
+	html_table = generate_html_distance_table(ordered_genes, distance_dict, distance_list)
+
+	# Build the question text
 	question = ''
-	html_table = makeTable_html(ordered_genes, distance_dict, distance_list)
 	question += html_table
 	question += '<p></p><h6>Given the gene distance matrix table above, '
-	question += 'which one of the following gene trees correctly fit the data?</h6>'
-	
-	"""
-	f = open('temp.html', 'w')
-	f.write(answer_html_choice+'<br/>')
-	f.write(html_table+'<br/>')
-	for hc in html_choices_list:
-		f.write(hc+'<br/>')
-	f.write(''.join(ordered_genes))
-	f.close()
-	"""
-	
+	question += 'which one of the following gene trees correctly fits the data?</h6>'
+
+	if debug is True:
+		# Uncomment to debug: write question and choices to a temporary HTML file
+		f = open('temp.html', 'w')
+		f.write(answer_html_choice + '<br/>')
+		f.write(html_table + '<br/>')
+		for hc in html_choices_list:
+			f.write(hc + '<br/>')
+		f.write(''.join(ordered_genes))
+		f.close()
+
+	# Format the question for multiple-choice display and return it
 	complete = bptools.formatBB_MC_Question(N, question, html_choices_list, answer_html_choice)
 	return complete
 
-#===========================================
-#===========================================
-if __name__ == '__main__':
-	parser = argparse.ArgumentParser(description='Process some integers.')
-	parser.add_argument('-l', '--leaves', '--num-leaves', type=int, dest='num_leaves',
+#=====================
+def parse_arguments():
+	"""
+	Parses command-line arguments for the script.
+
+	Defines and handles all arguments for the script, including:
+	- `duplicates`: The number of questions to generate.
+	- `num_choices`: The number of answer choices for each question.
+	- `question_type`: Type of question (numeric or multiple choice).
+
+	Returns:
+		argparse.Namespace: Parsed arguments with attributes `duplicates`,
+		`num_choices`, and `question_type`.
+	"""
+	parser = argparse.ArgumentParser(description="Generate questions.")
+	parser.add_argument(
+		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
+		help='Number of duplicate runs to do or number of questions to create', default=1
+	)
+	parser.add_argument(
+		'-c', '--num_choices', type=int, default=5, dest='num_choices',
+		help="Number of choices to create."
+	)
+	parser.add_argument(
+		'-l', '--leaves', '--num_leaves', type=int, dest='num_leaves',
 		help='number of leaves in gene trees', default=5)
-	parser.add_argument('-d', '--duplicate-runs', type=int, dest='duplicate_runs',
-		help='number of questions to create', default=24)
-	parser.add_argument('-c', '--choices', type=int, dest='num_choices',
-		help='number of choices to choose from in the question', default=5)
+
 	args = parser.parse_args()
+	return args
 
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
+#======================================
+#======================================
+def main():
+	"""
+	Main function that orchestrates question generation and file output.
+	"""
+
+	# Parse arguments from the command line
+	args = parse_arguments()
+
+	# Define output file name
+	script_name = os.path.splitext(os.path.basename(__file__))[0]
+	outfile = (
+		'bbq'
+		f'-{script_name}'
+		f'-{args.num_leaves}_leaves'
+		'-questions.txt'
+	)
+	print(f'Writing to file: {outfile}')
 	N = 0
-	for i in range(args.duplicate_runs):
-		sorted_genes = bptools.generate_gene_letters(args.num_leaves)
-		N += 1
-		complete_question = makeQuestion(N, sorted_genes, args.num_leaves, args.num_choices)
 
-		f.write(complete_question)
-	f.close()
-	print("wrote {0} questions to the file {1}".format(N, outfile))
+	# Open the output file and generate questions
+	with open(outfile, 'w') as f:
+		N = 1  # Question number counter
+		for _ in range(args.duplicates):
+			complete_question = make_question(N, args.num_leaves, args.num_choices)
+			if complete_question is not None:
+				N += 1
+				f.write(complete_question)
+
+	# Display histogram
+	print(f"wrote {N} questions to the file {outfile}")
 	bptools.print_histogram()
 
+#======================================
+#======================================
+if __name__ == '__main__':
+	main()
+
+## THE END
