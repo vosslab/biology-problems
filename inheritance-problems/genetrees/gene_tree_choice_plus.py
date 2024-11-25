@@ -3,8 +3,6 @@
 import os
 import sys
 import copy
-import math
-import time
 import random
 import argparse
 import colorsys
@@ -20,33 +18,84 @@ debug = False
 
 #===========================================
 def rgb_to_hex(rgb1):
-	rgb256 = tuple([int(i*255) for i in rgb1])
-	#print(rgb256)
+	"""
+	Convert an RGB color (in float format) to a hexadecimal color string.
+
+	Args:
+		rgb1 (tuple): A tuple of three floats (R, G, B) where each value is in the range [0, 1].
+
+	Returns:
+		str: A hexadecimal string representing the RGB color, in the format `#RRGGBB`.
+	"""
+	# Scale the RGB values from the range [0, 1] to [0, 255].
+	rgb256 = tuple([int(i * 255) for i in rgb1])
+
+	# Convert the scaled RGB values to a hexadecimal color string.
 	return '#%02x%02x%02x' % rgb256
 
 #===========================================
 def distance_to_html_color(distance, distance_list):
+	"""
+	Map a distance value to an HTML color, transitioning from one color to another based on the range of distances.
+
+	Args:
+		distance (float): The specific distance value to map to a color.
+		distance_list (list): A list of all distance values, used to determine the range (min and max distances).
+
+	Returns:
+		str: A hexadecimal string representing the HTML color corresponding to the distance value.
+	"""
+	# Extract the minimum and maximum distances from the sorted distance list.
 	min_dist = distance_list[0]
 	max_dist = distance_list[-1]
-	fraction_diff = (max_dist - distance)/float(max_dist - min_dist)
-	angle = fraction_diff/3.0
-	rgb1 = colorsys.hsv_to_rgb(angle, 0.25, 0.85)
+
+	# Calculate the fraction of the distance range that the current distance represents.
+	# A smaller distance will correspond to a higher fraction_diff.
+	fraction_diff = (max_dist - distance) / float(max_dist - min_dist)
+
+	# Divide the fraction_diff by 3.0 to determine the color angle in the HSV color space.
+	# This restricts the color range (e.g., hue) for better visualization.
+	angle = fraction_diff / 3.0
+
+	# Convert the HSV color (angle, saturation, value) to RGB.
+	# Hue is determined by the angle, saturation is 0.20 for a pastel effect, and value is near 1.0 for brightness.
+	rgb1 = colorsys.hsv_to_rgb(angle, 0.20, 0.999)
+
+	# Convert the RGB values to a hexadecimal HTML color.
 	html_hex = rgb_to_hex(rgb1)
-	#print(html_hex)
+
+	# Return the hexadecimal color string for use in HTML.
 	return html_hex
 
 #===========================================
 def comb_safe_permutations(genes):
-	complete_set = itertools.permutations(genes, len(genes))
-	comb_safe_set = list(complete_set)
-	for p in comb_safe_set:
-		#swap first two elements
-		q = list(p)
-		q[0], q[1] = q[1], q[0]
-		r = tuple(q)
-		comb_safe_set.remove(r)
-	#print(comb_safe_set)
+	"""
+	Generate a list of "safe" permutations, excluding permutations where the
+	first two elements are swapped versions of another.
+
+	Args:
+		genes (list): List of genes to permute.
+
+	Returns:
+		list: A list of "safe" permutations, where swapped permutations are excluded.
+	"""
+	if not isinstance(genes, list):
+		genes = sorted(genes)
+	# Generate all permutations
+	complete_set = list(itertools.permutations(genes, len(genes)))
+
+	# Filter out permutations where the first two elements are swapped
+	comb_safe_set = []
+	for p in complete_set:
+		swapped = (p[1], p[0]) + p[2:]
+		if swapped not in comb_safe_set:  # Only add if the swapped version isn't already included
+			comb_safe_set.append(p)
+
 	return comb_safe_set
+result = comb_safe_permutations('abc')
+assert len(result) == 3, "Test failed: Expected 3 safe permutations"
+assert ("a", "b", "c") in result, "Test failed: ('a', 'b', 'c') should be in the result"
+assert ("b", "a", "c") not in result, "Test failed: ('b', 'a', 'c') should not be in the result (swapped version)"
 
 #===========================================
 def makeRandDistanceList(num_distances):
@@ -135,28 +184,6 @@ def addDistancePairShifts(distance_dict, ordered_genes, answer_code):
 					distance_dict[(gene3, gene2)] -= shift
 	return distance_dict
 
-#===========================================
-def print_ascii_distance_table_old(ordered_genes, distance_dict):
-	sorted_genes = list(copy.copy(ordered_genes))
-	sorted_genes.sort()
-	sys.stderr.write('\t')
-	for gene in sorted_genes:
-		sys.stderr.write('{0}\t'.format(gene))
-	sys.stderr.write('\n')
-	for gene1 in sorted_genes:
-		sys.stderr.write('{0}\t'.format(gene1))
-		for gene2 in sorted_genes:
-			if gene1 == gene2:
-				sys.stderr.write('x\t')
-			else:
-				gene_tuple  = (gene1, gene2)
-				distance = distance_dict[gene_tuple]
-				sys.stderr.write('{0:d}\t'.format(distance))
-		sys.stderr.write('\n')
-
-import copy
-import sys
-
 #===========================================================
 #===========================================================
 def print_ascii_distance_table(ordered_genes, distance_dict):
@@ -240,32 +267,50 @@ def print_ascii_distance_table(ordered_genes, distance_dict):
 
 #===========================================
 def generate_html_distance_table(ordered_genes, distance_dict, distance_list):
-	sorted_genes = list(copy.copy(ordered_genes))
-	sorted_genes.sort()
+	"""
+	Generate an HTML table for a distance matrix with genes as rows and columns.
+
+	Args:
+		ordered_genes (list): Ordered list of gene names.
+		distance_dict (dict): A dictionary mapping gene pairs to distances.
+		distance_list (list): List of distances used for color mapping.
+
+	Returns:
+		str: An HTML string representing the distance matrix as a table.
+	"""
+	sorted_genes = sorted(ordered_genes)  # Sort the gene names alphabetically
 	td_extra = 'align="center" style="border: 1px solid black; background-color: xxxxxx;"'
 	span = '<span style="font-size: medium;">'
 
-	table = '<table style="border-collapse: collapse; border: 2px solid black; width: 460px; height: 150px">'
-	table += '<tr>'
-	table += '  <td {0}>genes</td>'.format(td_extra)
+	# Start the table and add the header row
+	table = (
+		'<table style="border-collapse: collapse; border: 2px solid black; width: 460px; height: 150px">'
+		'<tr>'
+		f'<td {td_extra.replace("xxxxxx", "white")}>genes</td>'
+	)
 	for g in sorted_genes:
-		table += '  <th {0}>{1}{2}</span></th>'.format(td_extra, span, g)
+		table += f'<th {td_extra}>{span}{g}</span></th>'
 	table += '</tr>'
+
+	# Add rows for each gene
 	for g1 in sorted_genes:
 		table += '<tr>'
-		table += '  <th {0}>{1}{2}</span></th>'.format(td_extra, span, g1)
+		table += f'<th {td_extra}>{span}{g1}</span></th>'
 		for g2 in sorted_genes:
 			if g1 == g2:
+				# Self-distance is represented by gray cells
 				my_td_extra = td_extra.replace('xxxxxx', 'gray')
-				table += ' <td {0}>&times;</td>'.format(my_td_extra)
+				table += f'<td {my_td_extra}>&times;</td>'
 			else:
-				#gene_sum = ordered_genes.index(g1) + ordered_genes.index(g2)
-				gene_tuple  = (g1, g2)
+				# Use distance to calculate color and add the value
+				gene_tuple = (g1, g2)
 				distance = distance_dict[gene_tuple]
 				hex_color = distance_to_html_color(distance, distance_list)
 				my_td_extra = td_extra.replace('xxxxxx', hex_color)
-				table += ' <td {0}>{1}{2:d}</span></td>'.format(my_td_extra, span, distance)
+				table += f'<td {my_td_extra}>{span}{distance}</span></td>'
 		table += '</tr>'
+
+	# Close the table
 	table += '</table>'
 	return table
 
@@ -317,7 +362,7 @@ def make_question(N: int, num_leaves: int, num_choices: int) -> str:
 
 	# Select one gene order for constructing the distance matrix
 	ordered_genes = gene_permutations.pop()
-	print('ordered_genes=', ordered_genes)
+	if debug: print('ordered_genes=', ordered_genes)
 
 	#===========================================
 	# GET ALL POSSIBLE GENE TREES
@@ -328,27 +373,27 @@ def make_question(N: int, num_leaves: int, num_choices: int) -> str:
 
 	# Select one tree encoding as the correct answer
 	answer_code = code_choice_list.pop()
-	print("answer_code=", answer_code)
+	if debug: print("answer_code=", answer_code)
 
 	#===========================================
 	# CREATE RANDOM DISTANCES AND PAIRS
 	#===========================================
 	# Generate a random list of distances for the internal nodes of the tree
 	distance_list = makeRandDistanceList(num_nodes)
-	print("distance_list=", distance_list)
+	if debug: print("distance_list=", distance_list)
 
 	# Create a distance dictionary mapping gene pairs to distances based on the answer tree
 	distance_dict = makeDistancePairs(ordered_genes, distance_list, answer_code)
 
 	# Generate and display an ASCII version of the distance matrix table
-	print("original distance matrix")
+	if debug: print("original distance matrix")
 	print_ascii_distance_table(ordered_genes, distance_dict)
 
 	# Modify the distance dictionary to include shifts (random offsets for added complexity)
 	addDistancePairShifts(distance_dict, ordered_genes, answer_code)
 
 	# Display the updated distance dictionary as an ASCII table
-	print("adjusted distance matrix")
+	if debug: print("adjusted distance matrix")
 	print_ascii_distance_table(ordered_genes, distance_dict)
 
 	#===========================================
@@ -374,8 +419,9 @@ def make_question(N: int, num_leaves: int, num_choices: int) -> str:
 
 	# Generate the HTML answer choices for the question
 	html_choices_list = []
-	print(answer_profile)
-	print("sorted profiles=", sorted_profile_group_keys[:6])
+	if debug:
+		print(answer_profile)
+		print("sorted profiles=", sorted_profile_group_keys[:6])
 
 	for key in sorted_profile_group_keys:
 		# Randomly select one tree encoding from the profile group
@@ -401,13 +447,26 @@ def make_question(N: int, num_leaves: int, num_choices: int) -> str:
 	# WRITE THE QUESTION
 	#===========================================
 	# Create the HTML table representation of the distance matrix
-	html_table = generate_html_distance_table(ordered_genes, distance_dict, distance_list)
+	distance_html_table = generate_html_distance_table(ordered_genes, distance_dict, distance_list)
 
-	# Build the question text
-	question = ''
-	question += html_table
-	question += '<p></p><h6>Given the gene distance matrix table above, '
-	question += 'which one of the following gene trees correctly fits the data?</h6>'
+	# Add the descriptive question statement
+	g1 = sorted_genes[0]
+	g2 = sorted_genes[1]
+	g3 = sorted_genes[2]
+	problem_statement = (
+		"<p>The table above represents a distance matrix for the following genes: "
+		f"{', '.join(f'<b>{gene}</b>' for gene in sorted_genes)}. "
+		"The values in the matrix correspond to the genetic distances "
+		"between pairs of genes.</p> "
+		"<p>For example, "
+		f"{gene_text(g1, g2, distance_dict)}. "
+		"Distances are symmetric, meaning that both "
+		f"{gene_text(g2, g3, distance_dict)} and "
+		f"{gene_text(g3, g2, distance_dict)}.</p>"
+		"<h5>Using this distance matrix, determine the most appropriate gene tree that "
+		"accurately reflects the relationships and distances between these genes.</h5>"
+	)
+
 
 	if debug is True:
 		# Uncomment to debug: write question and choices to a temporary HTML file
@@ -420,8 +479,20 @@ def make_question(N: int, num_leaves: int, num_choices: int) -> str:
 		f.close()
 
 	# Format the question for multiple-choice display and return it
-	complete = bptools.formatBB_MC_Question(N, question, html_choices_list, answer_html_choice)
+	# Format and return the complete question
+	full_question = distance_html_table + problem_statement
+	complete = bptools.formatBB_MC_Question(N, full_question, html_choices_list, answer_html_choice)
 	return complete
+
+#======================================
+#======================================
+def gene_text(gene1, gene2, distance_dict):
+	gene_string = (
+		f"the distance between <b>gene {gene1.upper()}</b> and "
+		f"<b>gene {gene2.upper()}</b> is "
+		f"<b>{distance_dict[(gene1, gene2)]}</b>"
+	)
+	return gene_string
 
 #=====================
 def parse_arguments():
@@ -451,6 +522,10 @@ def parse_arguments():
 		help='number of leaves in gene trees', default=5)
 
 	args = parser.parse_args()
+
+	if args.num_leaves < 3:
+		raise ValueError("Program requires a minimum of three (3) genes to work")
+
 	return args
 
 #======================================
