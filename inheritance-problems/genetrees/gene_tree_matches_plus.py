@@ -271,7 +271,7 @@ if __name__ == '__main__':
 		if errors > N > 5:
 			print("TOO MANY ERRORS, QUITTING")
 			sys.exit(1)
-		sorted_genes = bptools.generate_gene_letters(args.num_leaves)
+		sorted_genes = list(bptools.generate_gene_letters(args.num_leaves))
 		if args.style == 'same':
 			complete_question = findSameQuestion(N, sorted_genes, args.num_leaves, args.num_choices)
 		elif args.style == 'different':
