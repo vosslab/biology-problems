@@ -13,7 +13,6 @@ import itertools
 # add font colors to gene labels
 # test new function sort_codes_by_closeness()
 
-
 class GeneTree(object):
 	#==================================
 	def __init__(self):
@@ -959,9 +958,11 @@ code_library = {
 if __name__ == '__main__':
 	a = GeneTree()
 	f = open('html_dump.html', 'w')
-	for name in code_library:
+	tree_names = list(code_library.keys())
+	random.shuffle(tree_names)
+	for name in tree_names:
 		code = code_library[name]
-		if a.code_to_number_of_leaves(code) != 9:
+		if a.code_to_number_of_leaves(code) != 6:
 			continue
 		#new_code = a.permute_code(code)
 		new_code = code
@@ -975,7 +976,7 @@ if __name__ == '__main__':
 			a.make_char_tree(c)
 			a.print_array_ascii()
 			break
-		sys.exit(1)
+		#sys.exit(1)
 
 		a.make_html_tree()
 		#print(a.pair_array)
