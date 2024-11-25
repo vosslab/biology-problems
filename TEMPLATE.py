@@ -157,6 +157,7 @@ def main():
 	with open(outfile, 'w') as f:
 		N = 1  # Question number counter
 		for _ in range(args.duplicates):
+			gene_letters_str = bptools.generate_gene_letters(3)
 			complete_question = write_question(N, args.num_choices)
 			if complete_question is not None:
 				N += 1
