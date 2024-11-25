@@ -149,8 +149,14 @@ def main():
 	# Parse arguments from the command line
 	args = parse_arguments()
 
-	# Setup output file name
-	outfile = f'bbq-{os.path.splitext(os.path.basename(__file__))[0]}-{args.question_type.upper()}-questions.txt'
+	# Define output file name
+	script_name = os.path.splitext(os.path.basename(__file__))[0]
+	outfile = (
+		'bbq' +
+		'-' + script_name +
+		'-' + args.question_type.upper() +
+		'-questions.txt'
+		)
 	print(f'Writing to file: {outfile}')
 
 	# Open the output file and generate questions
