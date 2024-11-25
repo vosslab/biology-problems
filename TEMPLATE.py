@@ -112,7 +112,7 @@ def parse_arguments():
 		help='Number of duplicate runs to do or number of questions to create', default=1
 	)
 	parser.add_argument(
-		'-c', '--num_choices', type=int, default=5, dest='num_choices'
+		'-c', '--num_choices', type=int, default=5, dest='num_choices',
 		help="Number of choices to create."
 	)
 
@@ -147,11 +147,11 @@ def main():
 	# Define output file name
 	script_name = os.path.splitext(os.path.basename(__file__))[0]
 	outfile = (
-		'bbq' +
-		'-' + script_name +
-		'-' + args.question_type.upper() +
+		'bbq'
+		f'-{script_name}'
+		f'-{args.question_type.upper() }'
 		'-questions.txt'
-		)
+	)
 	print(f'Writing to file: {outfile}')
 
 	# Open the output file and generate questions
