@@ -112,7 +112,7 @@ def parse_arguments():
 		help='Number of duplicate runs to do or number of questions to create', default=1
 	)
 	parser.add_argument(
-		'-c', '--num_choices', type=int, default=5,
+		'-c', '--num_choices', type=int, default=5, dest='num_choices'
 		help="Number of choices to create."
 	)
 
