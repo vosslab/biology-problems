@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 #NOTE: phylolib2 is much better, use that when you can
+print("\033[93m\033[1mNOTE: classic_phylolib is deprecated and phylolib2 is much better. Use that when you can.\033[0m")
 
 import sys
 import itertools

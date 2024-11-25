@@ -1,6 +1,7 @@
 #cannot be run on its own, requires phylolib
 
 #NOTE: phylolib2 is much better, use that when you can
+print("\033[93m\033[1mNOTE: classic_phylolib is deprecated and phylolib2 is much better. Use that when you can.\033[0m")
 
 import random
 import phylolib_common as phc
