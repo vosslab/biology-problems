@@ -290,7 +290,7 @@ if __name__ == '__main__':
 	f = open(outfile, 'w')
 	N = 0
 	for i in range(args.duplicate_runs):
-		sorted_genes = bptools.getGeneLetters(args.num_leaves, i)
+		sorted_genes = bptools.generate_gene_letters(args.num_leaves)
 		N += 1
 		complete_question = makeQuestion(N, sorted_genes, args.num_leaves, args.num_choices)
 

@@ -31,36 +31,37 @@ def enzyme_table(metabolites, color_wheel):
 
 
 def make_question(N, num_metabolites):
-	metabolites = bptools.getGeneLetters(num_metabolites, shift=N, upper=True)
-	#print("metabolites letters = ", metabolites)
+	metabolite_letters_lower = bptools.generate_gene_letters(num_metabolites, clear=True)
+	metabolite_letters_upper = metabolite_letters_lower.upper()
+	#print("metabolite_letters_upper = ", metabolite_letters_upper)
 	
-	deg_step = int(round(360./len(metabolites) - 1))
+	deg_step = int(round(360./len(metabolite_letters_upper) - 1))
 	color_amount = 240
 	color_wheel = bptools.make_color_wheel(color_amount, 0, 0, deg_step)
 
 	question = '<p>Look at the metabolic pathway in the table above.</p>'
 	question += '<p>Metabolite '
-	color = color_wheel[len(metabolites)]
-	question += '<span style="color: {0};"><strong>{1}</strong></span>'.format(color, metabolites[-1])
+	color = color_wheel[len(metabolite_letters_upper)]
+	question += f'<span style="color: {color};"><strong>{metabolite_letters_upper[-1]}</strong></span>'
 	question += ' is needed for the bacteria to grow.</p>'
 
-	enzyme_num = random.choice(range(1, len(metabolites)))
+	enzyme_num = random.choice(range(1, len(metabolite_letters_upper)))
 
-	question += '<p>Consider a bacterial strain that is mutant for the gene coding for enzyme {0:d}</p>'.format(enzyme_num)
+	question += f'<p>Consider a bacterial strain that is mutant for the gene coding for enzyme {enzyme_num:d}</p>'
 	question += '<p>Which nutrients, when added to minimal media, will help this bacteria grow?</p>'
 	question += '<p>Multiple answers may be correct.</p>'
 
-	question = enzyme_table(metabolites, color_wheel) + question
+	question = enzyme_table(metabolite_letters_upper, color_wheel) + question
 
 	choices_list = []
 	answers_list = []
 
-	indices = list(range(len(metabolites)))
+	indices = list(range(len(metabolite_letters_upper)))
 	random.shuffle(indices)
 	indices = indices[:2]
 	indices.sort()
-	#for i in range(len(metabolites)):
-	for i,meta in enumerate(metabolites):
+	#for i in range(len(metabolite_letters_upper)):
+	for i,meta in enumerate(metabolite_letters_upper):
 		color_txt = color_wheel[i]
 		meta_txt = '<span style="color: {0};"><strong>{1}</strong></span>'.format(color_txt, meta)
 		choice = "Supplemented with nutrient {0}".format(meta_txt)

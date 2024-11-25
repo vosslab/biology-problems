@@ -14,38 +14,7 @@ debug = False
 #===========================================================
 
 def get_gene_letters(num_genes_int: int) -> str:
-	"""
-	Generates a unique string of lowercase letters representing gene symbols.
-
-	Args:
-		num_genes_int (int): The number of unique gene letters to generate.
-
-	Returns:
-		str: A string containing `num_genes_int` unique, sorted letters chosen randomly.
-	"""
-
-	# Define the set of lowercase letters to choose from.
-	# This set excludes certain letters (like 'o' and 't') which might have specific reasons for exclusion.
-	lowercase = "abcdefghijklmnpqrsuvwxyz"
-
-	# Initialize an empty set to store unique gene letters.
-	gene_letters_set = set()
-
-	# Continuously add random letters to the set until it contains `num_genes_int` unique letters.
-	while len(gene_letters_set) < num_genes_int:
-		# Randomly select a letter from `lowercase` and add it to `gene_letters_set`.
-		# Since sets do not allow duplicates, any repeated letter will be ignored.
-		gene_letters_set.update(random.choice(lowercase))
-
-	# Convert the set of letters to a sorted list.
-	gene_letters_list = sorted(gene_letters_set)
-
-	# Join the sorted list of letters into a single string.
-	gene_letters_str = ''.join(gene_letters_list)
-
-	# Return the resulting string of unique, sorted gene letters.
-	return gene_letters_str
-
+	return bptools.generate_gene_letters(num_genes_int, clear=True)
 # Test the function with an assertion to ensure it generates the correct number of letters.
 # This checks that the length of the result is equal to the requested number of genes.
 assert len(get_gene_letters(5)) == 5

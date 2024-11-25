@@ -649,15 +649,47 @@ def _ryb_to_rgb(r, y, b): # Assumption: r, y, b in [0, 1]
 #=====================
 #=====================
 #=====================
-def getGeneLetters(length, shift=0, upper=False):
-	#all_lowercase = "abcdefghijklmnopqrstuvwxyz"
-	lowercase =     "abcdefghjkmnpqrstuwxyz"
-	shift = shift % (len(lowercase) - length + 1)
-	gene_string = lowercase[shift:shift+length]
-	if upper is True:
-		gene_string = gene_string.upper()
-	gene_list = list(gene_string)
-	return gene_list
+def generate_gene_letters(
+	num_genes: int,
+	shift: int = -1,
+	clear: bool = False,
+) -> str:
+	"""
+	Generate a string of unique gene letters based on deterministic or random selection.
+
+	Args:
+		num_genes (int): The number of unique gene letters to generate.
+		shift (int, optional): The starting index for deterministic selection. If -1, randomization is used. Defaults to -1.
+		clear (bool, optional): If True, uses the `clear_alphabet` (removes ambiguous characters).
+		                        Defaults to False, which uses the full alphabet.
+
+	Returns:
+		str: A string containing `num_genes` unique letters.
+	"""
+	# Define alphabets
+	full_alphabet = "abcdefghijklmnopqrstuvwxyz"
+	ambiguous_letters = "giloqsuvz"  # Ambiguous or easily confused letters
+	clear_alphabet = ''.join(sorted(set(full_alphabet) - set(ambiguous_letters)))
+
+	# Select alphabet based on the `clear` flag
+	alphabet = clear_alphabet if clear else full_alphabet
+
+	# Validate input
+	if num_genes > len(alphabet):
+		raise ValueError(f"num_genes ({num_genes}) cannot exceed the length of the alphabet ({len(alphabet)}).")
+
+	if shift >= 0:
+		# Generate a deterministic sequence with a valid shift
+		shift = shift % (len(alphabet) - num_genes + 1)
+		return alphabet[shift:shift + num_genes]
+	else:
+		# Generate random unique letters
+		return ''.join(sorted(random.sample(alphabet, num_genes)))
+#=====================
+# Tests
+assert generate_gene_letters(5, 3) == "defgh"  # Deterministic with full alphabet
+assert generate_gene_letters(5, 3, clear=True) == "defhj"  # Deterministic with clear alphabet
+assert len(generate_gene_letters(5)) == 5  # Random with full alphabet
 
 #==========================
 #==========================
