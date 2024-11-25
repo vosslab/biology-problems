@@ -139,13 +139,8 @@ def parse_arguments():
 def main():
 	"""
 	Main function that orchestrates question generation and file output.
-
-	This function uses parsed command-line arguments to control the number
-	of questions to generate, the type of question (multiple choice or numeric),
-	and the number of answer choices per question. It creates a formatted output
-	file with all generated questions, and calls a helper function to display
-	a histogram for multiple-choice questions.
 	"""
+
 	# Parse arguments from the command line
 	args = parse_arguments()
 
