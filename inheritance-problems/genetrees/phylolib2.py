@@ -340,7 +340,7 @@ class GeneTree(object):
 		return code_permutations
 
 	#===========================================
-	def make_all_gene_trees_for_leaf_count(self, num_leaves, sorted_nodes=None):
+	def make_all_gene_trees_for_leaf_count(self, num_leaves, sorted_taxa=None):
 		if num_leaves > 7:
 			print("generating the 88,200 trees for 7 leaves takes 5 seconds, 8 leaves takes over 2 minutes to make 1.3M trees")
 			print("too many leaves requested, try a different method for generating trees")
@@ -349,12 +349,12 @@ class GeneTree(object):
 		#if self.make_all_cache.get(num_leaves) is not None:
 		#	return self.make_all_cache.get(num_leaves)
 
-		if sorted_nodes is None:
-			sorted_nodes = sorted(bptools.generate_gene_letters(num_leaves, clear=True))
+		if sorted_taxa is None:
+			sorted_taxa = sorted(bptools.generate_gene_letters(num_leaves, clear=True))
 
 		t0 = time.time()
-		all_node_permutations = get_comb_safe_node_permutations(sorted_nodes)
-		print("len(all_gene_permutations)=", len(all_node_permutations))
+		all_taxa_permutations = get_comb_safe_taxa_permutations(sorted_taxa)
+		print("len(all_gene_permutations)=", len(all_taxa_permutations))
 	
 		sorted_gene_tree_codes = self.get_all_gene_tree_codes_for_leaf_count(num_leaves)
 		print("len(sorted_gene_tree_codes)=", len(sorted_gene_tree_codes))
@@ -365,7 +365,7 @@ class GeneTree(object):
 		for sorted_code in sorted_gene_tree_codes:
 			all_permute_codes = self.get_all_code_permutations(sorted_code)
 			for permuted_code in all_permute_codes:
-				for permuted_nodes in all_node_permutations:
+				for permuted_nodes in all_taxa_permutations:
 					final_code = self.replace_gene_letters(permuted_code, permuted_nodes)
 					if self.is_gene_tree_alpha_sorted(final_code, num_leaves-1) is True:
 						code_choice_list.append(final_code)
@@ -801,11 +801,11 @@ class GeneTree(object):
 #==================================
 
 #===========================================
-def get_comb_safe_node_permutations(nodes):
+def get_comb_safe_taxa_permutations(taxa):
 	# Sort the items to generate consistent permutations
-	node_list = sorted(nodes)
+	taxa_list = sorted(taxa)
 	# Generate all permutations of the items
-	permuations_list = list(itertools.permutations(node_list, len(node_list)))
+	permuations_list = list(itertools.permutations(taxa_list, len(taxa_list)))
 	# Initialize a list to store combination-safe permutations
 	comb_safe_permutations_list = []
 	# Iterate through all permutations
@@ -817,6 +817,10 @@ def get_comb_safe_node_permutations(nodes):
 			# Add the original permutation if it is combination-safe
 			comb_safe_permutations_list.append(p)
 	return comb_safe_permutations_list
+result = get_comb_safe_taxa_permutations('abc')
+assert len(result) == 3, "Test failed: Expected 3 safe permutations"
+assert ("a", "b", "c") in result, "Test failed: ('a', 'b', 'c') should be in the result"
+assert ("b", "a", "c") not in result, "Test failed: ('b', 'a', 'c') should NOT be in the result"
 
 #==================================
 def code_to_number_of_taxa(code):
@@ -862,8 +866,11 @@ def code_to_internal_node_list(code):
 #    being compared. Leaves (e.g., 'a', 'b', 'c') are the endpoints of branches
 #    and do not have child nodes.
 #
-# Taxa: The biological entities (e.g., species, genes, or individuals) represented
-#    by the leaves of the tree. Taxa are the observable units used to build the tree.
+# Taxa: The entities represented by the leaves of the tree, which can refer to
+#    biological classifications such as species, genera, or families. In broader
+#    contexts, taxa can also refer to operational units like populations, genetic
+#    sequences, or other entities being compared in the analysis. Note: Individual
+#    genes or organisms are not themselves taxa but may be grouped within taxa.
 #
 # Branches: The connections between nodes in the tree. Branches represent the
 #    relationships between taxa and internal nodes, such as evolutionary connections
@@ -876,7 +883,7 @@ def code_to_internal_node_list(code):
 #    - 'e' and 'f' are leaves connected at internal node '4'.
 #    - '(e4f)' and 'g' are connected at internal node '5'.
 #    - '(a1b)3(c2d)' and '((e4f)5g)' are connected at internal node '6'.
-#    - The entire tree connects to 'h' at internal node '7'.
+#    - The entire subtree then connects to 'h' at internal node '7'.
 
 code_library = {
 	### Number of types for number of leaves:
