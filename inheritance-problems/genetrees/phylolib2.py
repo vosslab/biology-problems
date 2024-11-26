@@ -8,10 +8,41 @@ import numpy
 import random
 import itertools
 
+import bptools
+
 ### TODO
 # add background colors to gene labels
 # add font colors to gene labels
 # test new function sort_codes_by_closeness()
+
+fake_animals = {
+	'a': 'Ashen',
+	'b': 'Bellen',
+	'c': 'Chimera',
+	'd': 'Dibblet',
+	'e': 'Elwet',
+	'f': 'Faylen',
+	'g': 'Gorret',
+	'h': 'Hydra',
+	'i': 'Inktoad',
+	'j': 'Jackalope',
+	'k': 'Kraken',
+	'l': 'Lystra',
+	'm': 'Manticore',
+	'n': 'Narloc',
+	'o': 'Oclora',
+	'p': 'Phoenix',
+	'q': 'Quokka',
+	'r': 'Rynoth',
+	's': 'Sphinx',
+	't': 'Thorret',
+	'u': 'Unicorn',
+	'v': 'Vyrax',
+	'w': 'Wyvern',
+	'x': 'Xeraph',
+	'y': 'Yawclor',
+	'z': 'Zypher'
+}
 
 class GeneTree(object):
 	#==================================
@@ -21,7 +52,7 @@ class GeneTree(object):
 		self.char_array = None
 		self.html_array = None
 		self.cell_count = 0
-		self.lowercase_letters = "abcdefghjkmnpqrstuwxyz"
+		self.gene_name_map = copy.copy(fake_animals)
 
 		self._load_code_library()
 		self._check_tree_count_theory()
@@ -36,7 +67,7 @@ class GeneTree(object):
 		for name, code in code_library.items():
 			count += 1
 			self.code_to_name[code] = name
-			num_leaves = self.code_to_number_of_leaves(code)
+			num_leaves = code_to_number_of_taxa(code)
 			self.max_leaves = max(self.max_leaves, num_leaves)
 			self.num_leaves_to_tree_set[num_leaves] = self.num_leaves_to_tree_set.get(num_leaves, []) + [code,]
 		print("Processed {0} codes into {1} different sets with max leaves of {2}".format(
@@ -54,25 +85,61 @@ class GeneTree(object):
 		return
 
 	#==================================
-	def replace_gene_letters(self, code, ordered_genes):
-		## assumes existing genes are alphabetical, also assumes ordered genes lag 
+	def replace_gene_letters(self, code, ordered_nodes):
+		# Get the number of leaves in the tree
+		num_leaves = code_to_number_of_taxa(code)
+
+		# Validate input
+		if num_leaves != len(ordered_nodes):
+			raise ValueError(f"Mismatch: {num_leaves} leaves in code but {len(ordered_nodes)} nodes provided.")
+
+		# Extract default gene labels from the tree code
+		default_gene_labels = code_to_taxa_list(code)
+
+		# Create mappings for old labels to placeholders and placeholders to final labels
+		old_to_placeholder_map = {}
+		placeholder_to_new_map = {}
+		for i, (old_label, new_label) in enumerate(zip(default_gene_labels, ordered_nodes)):
+			placeholder_str = f"__PLACEHOLDER_{i}__"  # Unique placeholder for each old label
+			# Add delimiters for multi-character gene names
+			final_new_label = f"|{new_label}|" if len(new_label) > 1 else new_label
+			print(f"Mapping {old_label} -> {new_label} with placeholder {placeholder_str}")
+			old_to_placeholder_map[old_label] = placeholder_str
+			placeholder_to_new_map[placeholder_str] = final_new_label
+
+		# Step 1: Replace old labels with placeholders
+		new_code = copy.copy(code)
+		for old_label, placeholder in old_to_placeholder_map.items():
+			new_code = new_code.replace(old_label, placeholder)
+
+		# Step 2: Replace placeholders with final new labels
+		for placeholder, new_label in placeholder_to_new_map.items():
+			new_code = new_code.replace(placeholder, new_label)
+
+		# Sort the gene tree for consistency
+		new_code = self.sort_alpha_for_gene_tree(new_code, len(ordered_nodes) - 1)
+
+		return new_code
+
+	#==================================
+	def replace_gene_letters_old(self, code, ordered_nodes):
+		## assumes existing nodes are alphabetical, also assumes ordered nodes lag
 		all_lowercase = "abcdefghijklmnopqrstuvwxyz"
-		num_leaves = self.code_to_number_of_leaves(code)
+		num_leaves = code_to_number_of_taxa(code)
 		new_code = copy.copy(code)
 		changed = {}
-		#print("{0} -> {1}".format(all_lowercase[0:num_leaves], ''.join(ordered_genes)))
+		#print("{0} -> {1}".format(all_lowercase[0:num_leaves], ''.join(ordered_nodes)))
 		for i in range(num_leaves, 0, -1):
 			original_letter = all_lowercase[i-1]
-			new_letter = ordered_genes[i-1].upper()
+			new_letter = ordered_nodes[i-1].upper()
 			#print("{0} -> {1}".format(original_letter, new_letter))
 			if changed.get(original_letter) is True:
 				print("WARNING: replace_gene_letters() error")
 				time.sleep(1)
 			changed[new_letter] = True
 			new_code = new_code.replace(original_letter, new_letter)
-		#print("{0} -> {1}".format(code, new_code))
 		new_code = new_code.lower()
-		new_code = self.sort_alpha_for_gene_tree(new_code, len(ordered_genes)-1)
+		new_code = self.sort_alpha_for_gene_tree(new_code, len(ordered_nodes)-1)
 		return new_code
 
 	#==================================
@@ -171,7 +238,7 @@ class GeneTree(object):
 	#==================================
 	def permute_code_by_node(self, code, node_number=None):
 		#rotates tree about a single node, but preserves connections
-		max_nodes = self.code_to_number_of_nodes(code)
+		max_nodes = code_to_number_of_nodes(code)
 		if node_number is None:
 			node_number = random.randint(1,max_nodes)
 		elif node_number == 0:
@@ -185,7 +252,7 @@ class GeneTree(object):
 
 	#==================================
 	def _permute_code_by_node_binary(self, code, node_binary_list):
-		max_nodes = self.code_to_number_of_nodes(code)
+		max_nodes = code_to_number_of_nodes(code)
 		new_code = copy.copy(code)
 		reverse_binary_list = node_binary_list[::-1]
 		for node_number_index in range(max_nodes):
@@ -200,7 +267,7 @@ class GeneTree(object):
 
 	#==================================
 	def get_all_code_permutations(self, code):
-		max_nodes = self.code_to_number_of_nodes(code)
+		max_nodes = code_to_number_of_nodes(code)
 		code_permutations = []
 		for node_binary in range(2**max_nodes):
 			node_binary_list = self.convert_int_to_binary_list(node_binary)
@@ -228,7 +295,7 @@ class GeneTree(object):
 
 	#==================================
 	def get_all_alpha_sorted_code_rotation_permutations(self, code):
-		max_nodes = self.code_to_number_of_nodes(code)
+		max_nodes = code_to_number_of_nodes(code)
 		original_code_permutations = self.get_all_code_permutations(code)
 		alpha_sorted_code_permutations = []
 		for code in original_code_permutations:
@@ -239,7 +306,7 @@ class GeneTree(object):
 
 	#==================================
 	def OLD_OLD_OLD_get_all_alpha_sorted_code_rotation_permutations(self, code):
-		max_nodes = self.code_to_number_of_nodes(code)
+		max_nodes = code_to_number_of_nodes(code)
 		#some nodes can be skipped
 		skip_nodes = []
 		for i in range(max_nodes):
@@ -272,17 +339,8 @@ class GeneTree(object):
 			sys.exit(1)
 		return code_permutations
 
-
-
-
 	#===========================================
-	def get_all_gene_letter_permutations(self, gene_set):
-		all_gene_permutations = itertools.permutations(gene_set, len(gene_set))
-		all_gene_permutations = list(all_gene_permutations)
-		return all_gene_permutations
-
-	#===========================================
-	def make_all_gene_trees_for_leaf_count(self, num_leaves, sorted_genes=None):
+	def make_all_gene_trees_for_leaf_count(self, num_leaves, sorted_nodes=None):
 		if num_leaves > 7:
 			print("generating the 88,200 trees for 7 leaves takes 5 seconds, 8 leaves takes over 2 minutes to make 1.3M trees")
 			print("too many leaves requested, try a different method for generating trees")
@@ -291,12 +349,12 @@ class GeneTree(object):
 		#if self.make_all_cache.get(num_leaves) is not None:
 		#	return self.make_all_cache.get(num_leaves)
 
-		if sorted_genes is None:
-			sorted_genes = list(self.lowercase_letters[:num_leaves])
+		if sorted_nodes is None:
+			sorted_nodes = sorted(bptools.generate_gene_letters(num_leaves, clear=True))
 
 		t0 = time.time()
-		all_gene_permutations = self.get_all_gene_letter_permutations(sorted_genes)
-		print("len(all_gene_permutations)=", len(all_gene_permutations))
+		all_node_permutations = get_comb_safe_node_permutations(sorted_nodes)
+		print("len(all_gene_permutations)=", len(all_node_permutations))
 	
 		sorted_gene_tree_codes = self.get_all_gene_tree_codes_for_leaf_count(num_leaves)
 		print("len(sorted_gene_tree_codes)=", len(sorted_gene_tree_codes))
@@ -307,8 +365,8 @@ class GeneTree(object):
 		for sorted_code in sorted_gene_tree_codes:
 			all_permute_codes = self.get_all_code_permutations(sorted_code)
 			for permuted_code in all_permute_codes:
-				for permuted_genes in all_gene_permutations:
-					final_code = self.replace_gene_letters(permuted_code, permuted_genes)
+				for permuted_nodes in all_node_permutations:
+					final_code = self.replace_gene_letters(permuted_code, permuted_nodes)
 					if self.is_gene_tree_alpha_sorted(final_code, num_leaves-1) is True:
 						code_choice_list.append(final_code)
 		#purge some other duplicates
@@ -326,7 +384,7 @@ class GeneTree(object):
 		Note: if two trees have the same profile, they could be different or same
 		"""
 		if num_nodes is None:
-			num_nodes = self.code_to_number_of_nodes(code)
+			num_nodes = code_to_number_of_nodes(code)
 		code_dict = {}
 		for i in range(num_nodes):
 			node_num = i + 1
@@ -350,7 +408,7 @@ class GeneTree(object):
 	#===========================================
 	def group_gene_trees_by_profile(self, gene_tree_codes, num_nodes):
 		if num_nodes is None:
-			num_nodes = self.code_to_number_of_nodes(gene_tree_codes[0])
+			num_nodes = code_to_number_of_nodes(gene_tree_codes[0])
 		self.gene_tree_profile_groups = {}
 		for code in gene_tree_codes:
 			profile = self.gene_tree_code_to_profile(code, num_nodes)
@@ -383,7 +441,6 @@ class GeneTree(object):
 			print("ERROR: wanted code, but received profile")
 			print(answer_code)
 			sys.exit(1)
-		max_scores = []
 		for code in code_list:
 			score = self.string_match(code, answer_code)
 			similar_scores[code] = score 
@@ -406,8 +463,7 @@ class GeneTree(object):
 	#===========================================
 	def is_gene_tree_alpha_sorted(self, code, num_nodes):
 		if num_nodes is None:
-			num_nodes = self.code_to_number_of_nodes(code)		
-		code_dict = {}
+			num_nodes = code_to_number_of_nodes(code)
 		for i in range(num_nodes):
 			node_num = i + 1
 			node_index = code.find(str(node_num))
@@ -423,9 +479,58 @@ class GeneTree(object):
 
 	#===========================================
 	def sort_alpha_for_gene_tree(self, code, num_nodes):
+		# Validate num_nodes
 		if num_nodes is None:
-			num_nodes = self.code_to_number_of_nodes(code)	
-		code_dict = {}
+			num_nodes = code_to_number_of_nodes(code)
+
+		# Convert code into a mutable list for manipulation
+		new_code_list = list(code)
+
+		# Regex pattern to extract delimited gene labels (e.g., '|geneA|')
+		gene_label_pattern = r"\|[a-zA-Z0-9_]+\|"
+
+		for i in range(num_nodes):
+			node_num = i + 1
+			node_index = code.find(str(node_num))  # Find the position of the node in the string
+
+			if node_index == -1:
+				print(node_index, "not in", code)
+				print("WARNING: sort_alpha_for_gene_tree() error")
+				time.sleep(1)
+				break
+
+			# Extract the full gene label before the node
+			before_match = re.search(gene_label_pattern, code[:node_index][::-1])  # Reverse slice before node
+			char1 = before_match.group(0)[::-1] if before_match else None  # Reverse back to correct order
+
+			# Extract the full gene label after the node
+			after_match = re.search(gene_label_pattern, code[node_index + 1:])
+			char2 = after_match.group(0) if after_match else None
+
+			# Skip if either label is missing
+			if not char1 or not char2:
+				continue
+
+			# Sort the two gene labels
+			if char1 > char2:
+				# Replace in the original string
+				start1 = node_index - len(char1)
+				end1 = node_index
+				start2 = node_index + 1
+				end2 = node_index + 1 + len(char2)
+
+				# Swap positions in the new_code_list
+				new_code_list[start1:end1] = char2
+				new_code_list[start2:end2] = char1
+
+		# Reconstruct and return the updated string
+		new_code_str = ''.join(new_code_list)
+		return new_code_str
+
+	#===========================================
+	def sort_alpha_for_gene_tree_old(self, code, num_nodes):
+		if num_nodes is None:
+			num_nodes = code_to_number_of_nodes(code)
 		new_code_list = list(code)
 		for i in range(num_nodes):
 			node_num = i + 1
@@ -447,10 +552,9 @@ class GeneTree(object):
 		new_code_str = ''.join(new_code_list)
 		return new_code_str
 
-
 	#==================================
 	def get_random_code_permutation(self, code):
-		max_nodes = self.code_to_number_of_nodes(code)
+		max_nodes = code_to_number_of_nodes(code)
 		node_binary = random.randint(0, 2**max_nodes)
 		node_binary_list = self.convert_int_to_binary_list(node_binary)
 		new_code = self._permute_code_by_node_binary(code, node_binary_list)
@@ -458,37 +562,11 @@ class GeneTree(object):
 
 	#==================================
 	def get_random_even_code_permutation(self, code):
-		max_nodes = self.code_to_number_of_nodes(code)
+		max_nodes = code_to_number_of_nodes(code)
 		node_binary = random.randint(0, 2**(max_nodes-1))*2
 		node_binary_list = self.convert_int_to_binary_list(node_binary)
 		new_code = self._permute_code_by_node_binary(code, node_binary_list)
 		return new_code
-
-	#==================================
-	def code_to_number_of_leaves(self, code):
-		return len(self.code_to_char_list(code))
-
-	#==================================
-	def code_to_char_list(self, code):
-		#print(code)
-		re_list = re.split("[^a-zA-Z]*", code)
-		#re_list has extra spaces
-		#char_str = ''.join(re_list)
-		#char_list = list(char_str)
-		char_list = list(filter(None, re_list))
-		return char_list
-
-	#==================================
-	def code_to_number_of_nodes(self, code):
-		return len(self.code_to_node_list(code))
-
-	#==================================
-	def code_to_node_list(self, code):
-		#print(code)
-		re_list = re.split("[^0-9]*", code)
-		num_list = list(filter(None, re_list))
-		#print(num_list)
-		return num_list
 
 	#==================================
 	def create_empty_array(self, leaves=None):
@@ -542,7 +620,7 @@ class GeneTree(object):
 	#==================================
 	def make_edge_number_char_list(self, code):
 		edge_number_char_list = {}
-		char_list = self.code_to_char_list(code)
+		char_list = code_to_taxa_list(code)
 		for i,character in enumerate(char_list):
 			edge_number = self.get_edge_number_for_string(character, code)
 			edge_number_char_list[edge_number] = edge_number_char_list.get(edge_number, []) + [character]
@@ -559,10 +637,10 @@ class GeneTree(object):
 			code = '(((a1b)4((c2d)3e))5f)'
 			code = '(((a3b)5((c1d)4e))6(f2g))'
 		self.code = code
-		self.leaves = self.code_to_number_of_leaves(self.code)
+		self.leaves = code_to_number_of_taxa(self.code)
 		self.char_array = self.create_empty_array(self.leaves)
 
-		char_list = self.code_to_char_list(code)
+		char_list = code_to_taxa_list(code)
 		#print("char_list=", char_list)
 		#char_edge_number = {}
 		char_row_number = {}
@@ -622,7 +700,7 @@ class GeneTree(object):
 		content = content.replace('|', '')
 		content = content.replace('_', '')
 		if len(content) > 0:
-			return self.get_letter_cell(content)
+			return self.get_gene_name_cell(content)
 		#print(cell_code)
 
 		line = ' 3px solid black; '
@@ -641,13 +719,16 @@ class GeneTree(object):
 		return td_cell
 
 	#==================================
-	def get_letter_cell(self, text):
+	def get_gene_name_cell(self, gene_text):
 		white_border = 'border: 0px solid white; '
 		middle = 'vertical-align: middle; '
 		alignspan = ' align="left" rowspan="2" '
 		letter_cell = ' <td style="'+white_border+middle+'"'+alignspan+'>'
 		letter_cell += '&nbsp;<span style="font-size: x-large;">'
-		letter_cell += '{0}</span></td>'.format(text) # value
+		if self.gene_name_map.get(gene_text.lower()) is None:
+			letter_cell += f'{gene_text.replace("|", "")}</span></td>'
+		else:
+			letter_cell += f'{self.gene_name_map[gene_text.lower()]}</span></td>'
 		return letter_cell
 
 	#==================================
@@ -714,6 +795,54 @@ class GeneTree(object):
 			html_table += ''.join(row_list)
 		html_table += '</table>'
 		return html_table
+
+#==================================
+#==================================
+#==================================
+
+#===========================================
+def get_comb_safe_node_permutations(nodes):
+	# Sort the items to generate consistent permutations
+	node_list = sorted(nodes)
+	# Generate all permutations of the items
+	permuations_list = list(itertools.permutations(node_list, len(node_list)))
+	# Initialize a list to store combination-safe permutations
+	comb_safe_permutations_list = []
+	# Iterate through all permutations
+	for p in permuations_list:
+		# Create a swapped version of the first two elements
+		swapped = (p[1], p[0]) + p[2:]
+		# Check if the swapped version is not already in the list
+		if swapped not in comb_safe_permutations_list:
+			# Add the original permutation if it is combination-safe
+			comb_safe_permutations_list.append(p)
+	return comb_safe_permutations_list
+
+#==================================
+def code_to_number_of_taxa(code):
+	# Extract the alphabetic nodes and return their count
+	return len(code_to_taxa_list(code))
+
+#==================================
+def code_to_taxa_list(code):
+	# Split the code by non-alphabetic characters using regex
+	re_list = re.split("[^a-zA-Z]+", code)
+	# Filter out empty strings caused by consecutive non-alphabetic characters
+	taxa_list = list(filter(None, re_list))
+	return taxa_list
+
+#==================================
+def code_to_number_of_nodes(code):
+	# Extract the numeric nodes and return their count
+	return len(code_to_node_list(code))
+
+#==================================
+def code_to_node_list(code):
+	# Split the code by non-numeric characters using regex
+	re_list = re.split("[^0-9]+", code)
+	# Filter out empty strings caused by consecutive non-numeric characters
+	node_list = list(filter(None, re_list))
+	return node_list
 
 #==================================
 #==================================
@@ -962,7 +1091,7 @@ if __name__ == '__main__':
 	random.shuffle(tree_names)
 	for name in tree_names:
 		code = code_library[name]
-		if a.code_to_number_of_leaves(code) != 6:
+		if code_to_number_of_taxa(code) != 6:
 			continue
 		#new_code = a.permute_code(code)
 		new_code = code
