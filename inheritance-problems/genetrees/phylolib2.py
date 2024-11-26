@@ -238,7 +238,7 @@ class GeneTree(object):
 	#==================================
 	def permute_code_by_node(self, code, node_number=None):
 		#rotates tree about a single node, but preserves connections
-		max_nodes = code_to_number_of_nodes(code)
+		max_nodes = code_to_number_of_branches(code)
 		if node_number is None:
 			node_number = random.randint(1,max_nodes)
 		elif node_number == 0:
@@ -252,7 +252,7 @@ class GeneTree(object):
 
 	#==================================
 	def _permute_code_by_node_binary(self, code, node_binary_list):
-		max_nodes = code_to_number_of_nodes(code)
+		max_nodes = code_to_number_of_branches(code)
 		new_code = copy.copy(code)
 		reverse_binary_list = node_binary_list[::-1]
 		for node_number_index in range(max_nodes):
@@ -267,7 +267,7 @@ class GeneTree(object):
 
 	#==================================
 	def get_all_code_permutations(self, code):
-		max_nodes = code_to_number_of_nodes(code)
+		max_nodes = code_to_number_of_branches(code)
 		code_permutations = []
 		for node_binary in range(2**max_nodes):
 			node_binary_list = self.convert_int_to_binary_list(node_binary)
@@ -295,7 +295,7 @@ class GeneTree(object):
 
 	#==================================
 	def get_all_alpha_sorted_code_rotation_permutations(self, code):
-		max_nodes = code_to_number_of_nodes(code)
+		max_nodes = code_to_number_of_branches(code)
 		original_code_permutations = self.get_all_code_permutations(code)
 		alpha_sorted_code_permutations = []
 		for code in original_code_permutations:
@@ -306,7 +306,7 @@ class GeneTree(object):
 
 	#==================================
 	def OLD_OLD_OLD_get_all_alpha_sorted_code_rotation_permutations(self, code):
-		max_nodes = code_to_number_of_nodes(code)
+		max_nodes = code_to_number_of_branches(code)
 		#some nodes can be skipped
 		skip_nodes = []
 		for i in range(max_nodes):
@@ -384,7 +384,7 @@ class GeneTree(object):
 		Note: if two trees have the same profile, they could be different or same
 		"""
 		if num_nodes is None:
-			num_nodes = code_to_number_of_nodes(code)
+			num_nodes = code_to_number_of_branches(code)
 		code_dict = {}
 		for i in range(num_nodes):
 			node_num = i + 1
@@ -408,7 +408,7 @@ class GeneTree(object):
 	#===========================================
 	def group_gene_trees_by_profile(self, gene_tree_codes, num_nodes):
 		if num_nodes is None:
-			num_nodes = code_to_number_of_nodes(gene_tree_codes[0])
+			num_nodes = code_to_number_of_branches(gene_tree_codes[0])
 		self.gene_tree_profile_groups = {}
 		for code in gene_tree_codes:
 			profile = self.gene_tree_code_to_profile(code, num_nodes)
@@ -463,7 +463,7 @@ class GeneTree(object):
 	#===========================================
 	def is_gene_tree_alpha_sorted(self, code, num_nodes):
 		if num_nodes is None:
-			num_nodes = code_to_number_of_nodes(code)
+			num_nodes = code_to_number_of_branches(code)
 		for i in range(num_nodes):
 			node_num = i + 1
 			node_index = code.find(str(node_num))
@@ -481,7 +481,7 @@ class GeneTree(object):
 	def sort_alpha_for_gene_tree(self, code, num_nodes):
 		# Validate num_nodes
 		if num_nodes is None:
-			num_nodes = code_to_number_of_nodes(code)
+			num_nodes = code_to_number_of_branches(code)
 
 		# Convert code into a mutable list for manipulation
 		new_code_list = list(code)
@@ -530,7 +530,7 @@ class GeneTree(object):
 	#===========================================
 	def sort_alpha_for_gene_tree_old(self, code, num_nodes):
 		if num_nodes is None:
-			num_nodes = code_to_number_of_nodes(code)
+			num_nodes = code_to_number_of_branches(code)
 		new_code_list = list(code)
 		for i in range(num_nodes):
 			node_num = i + 1
@@ -554,7 +554,7 @@ class GeneTree(object):
 
 	#==================================
 	def get_random_code_permutation(self, code):
-		max_nodes = code_to_number_of_nodes(code)
+		max_nodes = code_to_number_of_branches(code)
 		node_binary = random.randint(0, 2**max_nodes)
 		node_binary_list = self.convert_int_to_binary_list(node_binary)
 		new_code = self._permute_code_by_node_binary(code, node_binary_list)
@@ -562,7 +562,7 @@ class GeneTree(object):
 
 	#==================================
 	def get_random_even_code_permutation(self, code):
-		max_nodes = code_to_number_of_nodes(code)
+		max_nodes = code_to_number_of_branches(code)
 		node_binary = random.randint(0, 2**(max_nodes-1))*2
 		node_binary_list = self.convert_int_to_binary_list(node_binary)
 		new_code = self._permute_code_by_node_binary(code, node_binary_list)
@@ -832,12 +832,12 @@ def code_to_taxa_list(code):
 	return taxa_list
 
 #==================================
-def code_to_number_of_nodes(code):
+def code_to_number_of_branches(code):
 	# Extract the numeric nodes and return their count
-	return len(code_to_node_list(code))
+	return len(code_to_branch_list(code))
 
 #==================================
-def code_to_node_list(code):
+def code_to_branch_list(code):
 	# Split the code by non-numeric characters using regex
 	re_list = re.split("[^0-9]+", code)
 	# Filter out empty strings caused by consecutive non-numeric characters
