@@ -85,13 +85,13 @@ class GeneTree(object):
 		return
 
 	#==================================
-	def replace_gene_letters(self, code, ordered_nodes):
+	def replace_gene_letters(self, code, ordered_taxa):
 		# Get the number of leaves in the tree
 		num_leaves = code_to_number_of_taxa(code)
 
 		# Validate input
-		if num_leaves != len(ordered_nodes):
-			raise ValueError(f"Mismatch: {num_leaves} leaves in code but {len(ordered_nodes)} nodes provided.")
+		if num_leaves != len(ordered_taxa):
+			raise ValueError(f"Mismatch: {num_leaves} leaves in code but {len(ordered_taxa)} taxa provided.")
 
 		# Extract default gene labels from the tree code
 		default_gene_labels = code_to_taxa_list(code)
@@ -99,7 +99,7 @@ class GeneTree(object):
 		# Create mappings for old labels to placeholders and placeholders to final labels
 		old_to_placeholder_map = {}
 		placeholder_to_new_map = {}
-		for i, (old_label, new_label) in enumerate(zip(default_gene_labels, ordered_nodes)):
+		for i, (old_label, new_label) in enumerate(zip(default_gene_labels, ordered_taxa)):
 			placeholder_str = f"__PLACEHOLDER_{i}__"  # Unique placeholder for each old label
 			# Add delimiters for multi-character gene names
 			final_new_label = f"|{new_label}|" if len(new_label) > 1 else new_label
@@ -117,21 +117,21 @@ class GeneTree(object):
 			new_code = new_code.replace(placeholder, new_label)
 
 		# Sort the gene tree for consistency
-		new_code = self.sort_alpha_for_gene_tree(new_code, len(ordered_nodes) - 1)
+		new_code = self.sort_alpha_for_gene_tree(new_code, len(ordered_taxa) - 1)
 
 		return new_code
 
 	#==================================
-	def replace_gene_letters_old(self, code, ordered_nodes):
-		## assumes existing nodes are alphabetical, also assumes ordered nodes lag
+	def replace_gene_letters_old(self, code, ordered_taxa):
+		## assumes existing taxa are alphabetical, also assumes ordered taxa lag
 		all_lowercase = "abcdefghijklmnopqrstuvwxyz"
 		num_leaves = code_to_number_of_taxa(code)
 		new_code = copy.copy(code)
 		changed = {}
-		#print("{0} -> {1}".format(all_lowercase[0:num_leaves], ''.join(ordered_nodes)))
+		#print("{0} -> {1}".format(all_lowercase[0:num_leaves], ''.join(ordered_taxa)))
 		for i in range(num_leaves, 0, -1):
 			original_letter = all_lowercase[i-1]
-			new_letter = ordered_nodes[i-1].upper()
+			new_letter = ordered_taxa[i-1].upper()
 			#print("{0} -> {1}".format(original_letter, new_letter))
 			if changed.get(original_letter) is True:
 				print("WARNING: replace_gene_letters() error")
@@ -139,7 +139,7 @@ class GeneTree(object):
 			changed[new_letter] = True
 			new_code = new_code.replace(original_letter, new_letter)
 		new_code = new_code.lower()
-		new_code = self.sort_alpha_for_gene_tree(new_code, len(ordered_nodes)-1)
+		new_code = self.sort_alpha_for_gene_tree(new_code, len(ordered_taxa)-1)
 		return new_code
 
 	#==================================
@@ -238,9 +238,9 @@ class GeneTree(object):
 	#==================================
 	def permute_code_by_node(self, code, node_number=None):
 		#rotates tree about a single node, but preserves connections
-		max_nodes = code_to_number_of_branches(code)
+		max_nodes = code_to_number_of_internal_nodes(code)
 		if node_number is None:
-			node_number = random.randint(1,max_nodes)
+			node_number = random.randint(1, max_nodes)
 		elif node_number == 0:
 			return copy.copy(code)
 		elif node_number > max_nodes:
@@ -252,7 +252,7 @@ class GeneTree(object):
 
 	#==================================
 	def _permute_code_by_node_binary(self, code, node_binary_list):
-		max_nodes = code_to_number_of_branches(code)
+		max_nodes = code_to_number_of_internal_nodes(code)
 		new_code = copy.copy(code)
 		reverse_binary_list = node_binary_list[::-1]
 		for node_number_index in range(max_nodes):
@@ -267,7 +267,7 @@ class GeneTree(object):
 
 	#==================================
 	def get_all_code_permutations(self, code):
-		max_nodes = code_to_number_of_branches(code)
+		max_nodes = code_to_number_of_internal_nodes(code)
 		code_permutations = []
 		for node_binary in range(2**max_nodes):
 			node_binary_list = self.convert_int_to_binary_list(node_binary)
@@ -295,7 +295,7 @@ class GeneTree(object):
 
 	#==================================
 	def get_all_alpha_sorted_code_rotation_permutations(self, code):
-		max_nodes = code_to_number_of_branches(code)
+		max_nodes = code_to_number_of_internal_nodes(code)
 		original_code_permutations = self.get_all_code_permutations(code)
 		alpha_sorted_code_permutations = []
 		for code in original_code_permutations:
@@ -306,7 +306,7 @@ class GeneTree(object):
 
 	#==================================
 	def OLD_OLD_OLD_get_all_alpha_sorted_code_rotation_permutations(self, code):
-		max_nodes = code_to_number_of_branches(code)
+		max_nodes = code_to_number_of_internal_nodes(code)
 		#some nodes can be skipped
 		skip_nodes = []
 		for i in range(max_nodes):
@@ -384,7 +384,7 @@ class GeneTree(object):
 		Note: if two trees have the same profile, they could be different or same
 		"""
 		if num_nodes is None:
-			num_nodes = code_to_number_of_branches(code)
+			num_nodes = code_to_number_of_internal_nodes(code)
 		code_dict = {}
 		for i in range(num_nodes):
 			node_num = i + 1
@@ -408,7 +408,7 @@ class GeneTree(object):
 	#===========================================
 	def group_gene_trees_by_profile(self, gene_tree_codes, num_nodes):
 		if num_nodes is None:
-			num_nodes = code_to_number_of_branches(gene_tree_codes[0])
+			num_nodes = code_to_number_of_internal_nodes(gene_tree_codes[0])
 		self.gene_tree_profile_groups = {}
 		for code in gene_tree_codes:
 			profile = self.gene_tree_code_to_profile(code, num_nodes)
@@ -463,7 +463,7 @@ class GeneTree(object):
 	#===========================================
 	def is_gene_tree_alpha_sorted(self, code, num_nodes):
 		if num_nodes is None:
-			num_nodes = code_to_number_of_branches(code)
+			num_nodes = code_to_number_of_internal_nodes(code)
 		for i in range(num_nodes):
 			node_num = i + 1
 			node_index = code.find(str(node_num))
@@ -481,7 +481,7 @@ class GeneTree(object):
 	def sort_alpha_for_gene_tree(self, code, num_nodes):
 		# Validate num_nodes
 		if num_nodes is None:
-			num_nodes = code_to_number_of_branches(code)
+			num_nodes = code_to_number_of_internal_nodes(code)
 
 		# Convert code into a mutable list for manipulation
 		new_code_list = list(code)
@@ -530,7 +530,7 @@ class GeneTree(object):
 	#===========================================
 	def sort_alpha_for_gene_tree_old(self, code, num_nodes):
 		if num_nodes is None:
-			num_nodes = code_to_number_of_branches(code)
+			num_nodes = code_to_number_of_internal_nodes(code)
 		new_code_list = list(code)
 		for i in range(num_nodes):
 			node_num = i + 1
@@ -554,7 +554,7 @@ class GeneTree(object):
 
 	#==================================
 	def get_random_code_permutation(self, code):
-		max_nodes = code_to_number_of_branches(code)
+		max_nodes = code_to_number_of_internal_nodes(code)
 		node_binary = random.randint(0, 2**max_nodes)
 		node_binary_list = self.convert_int_to_binary_list(node_binary)
 		new_code = self._permute_code_by_node_binary(code, node_binary_list)
@@ -562,7 +562,7 @@ class GeneTree(object):
 
 	#==================================
 	def get_random_even_code_permutation(self, code):
-		max_nodes = code_to_number_of_branches(code)
+		max_nodes = code_to_number_of_internal_nodes(code)
 		node_binary = random.randint(0, 2**(max_nodes-1))*2
 		node_binary_list = self.convert_int_to_binary_list(node_binary)
 		new_code = self._permute_code_by_node_binary(code, node_binary_list)
@@ -832,21 +832,52 @@ def code_to_taxa_list(code):
 	return taxa_list
 
 #==================================
-def code_to_number_of_branches(code):
-	# Extract the numeric nodes and return their count
-	return len(code_to_branch_list(code))
+def code_to_number_of_internal_nodes(code):
+	# Extract the numeric internal nodes and return their count
+	return len(code_to_internal_node_list(code))
 
 #==================================
-def code_to_branch_list(code):
+def code_to_internal_node_list(code):
 	# Split the code by non-numeric characters using regex
 	re_list = re.split("[^0-9]+", code)
 	# Filter out empty strings caused by consecutive non-numeric characters
-	node_list = list(filter(None, re_list))
-	return node_list
+	internal_node_list = list(filter(None, re_list))
+	return internal_node_list
 
 #==================================
 #==================================
 #==================================
+
+# Definitions for tree structure terminology:
+#
+# Nodes: The fundamental units of a tree, representing points where branches meet.
+#    Nodes can be internal (intermediate points where branches join) or terminal (leaves).
+#
+# Internal Nodes: Points within the tree where two branches converge. Internal nodes
+#    represent hypothetical common ancestors or groupings of taxa. In the code, they
+#    are labeled by numbers (e.g., '1', '2', '3') to denote the order or hierarchy
+#    of branching events.
+#
+# Leaves: Terminal nodes of the tree, representing the taxa or observed entities
+#    being compared. Leaves (e.g., 'a', 'b', 'c') are the endpoints of branches
+#    and do not have child nodes.
+#
+# Taxa: The biological entities (e.g., species, genes, or individuals) represented
+#    by the leaves of the tree. Taxa are the observable units used to build the tree.
+#
+# Branches: The connections between nodes in the tree. Branches represent the
+#    relationships between taxa and internal nodes, such as evolutionary connections
+#    or shared traits. In the code, branches are implied by the structure of parentheses.
+#
+# Example Explanation for '((((a1b)3(c2d))6((e4f)5g))7h)':
+#    - 'a' and 'b' are leaves connected at internal node '1'.
+#    - 'c' and 'd' are leaves connected at internal node '2'.
+#    - '(a1b)' and '(c2d)' are connected at internal node '3'.
+#    - 'e' and 'f' are leaves connected at internal node '4'.
+#    - '(e4f)' and 'g' are connected at internal node '5'.
+#    - '(a1b)3(c2d)' and '((e4f)5g)' are connected at internal node '6'.
+#    - The entire tree connects to 'h' at internal node '7'.
+
 code_library = {
 	### Number of types for number of leaves:
 	# Wedderburn-Etherington numbers
@@ -1073,13 +1104,6 @@ code_library = {
 	###================================================
 	###================================================
 }
-
-
-#==================================
-#==================================
-#==================================
-
-
 
 #==================================
 #==================================
