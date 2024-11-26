@@ -6,11 +6,11 @@ import copy
 import random
 import argparse
 import colorsys
-import itertools
 
 #local
 import bptools
 import phylolib2
+bptools.use_add_no_click_div = False
 
 debug = False
 
@@ -68,38 +68,8 @@ def distance_to_html_color(distance, distance_list):
 	return html_hex
 
 #===========================================
-def comb_safe_permutations(genes):
-	"""
-	Generate a list of "safe" permutations, excluding permutations where the
-	first two elements are swapped versions of another.
-
-	Args:
-		genes (list): List of genes to permute.
-
-	Returns:
-		list: A list of "safe" permutations, where swapped permutations are excluded.
-	"""
-	if not isinstance(genes, list):
-		genes = sorted(genes)
-	# Generate all permutations
-	complete_set = list(itertools.permutations(genes, len(genes)))
-
-	# Filter out permutations where the first two elements are swapped
-	comb_safe_set = []
-	for p in complete_set:
-		swapped = (p[1], p[0]) + p[2:]
-		if swapped not in comb_safe_set:  # Only add if the swapped version isn't already included
-			comb_safe_set.append(p)
-
-	return comb_safe_set
-result = comb_safe_permutations('abc')
-assert len(result) == 3, "Test failed: Expected 3 safe permutations"
-assert ("a", "b", "c") in result, "Test failed: ('a', 'b', 'c') should be in the result"
-assert ("b", "a", "c") not in result, "Test failed: ('b', 'a', 'c') should not be in the result (swapped version)"
-
-#===========================================
 def makeRandDistanceList(num_distances):
-	###num_distances = math.comb(len(ordered_genes), 2)//2 <- WRONG?
+	###num_distances = math.comb(len(ordered_taxa), 2)//2 <- WRONG?
 	distances = []
 	multiplier = 2
 	while len(distances) < num_distances:
@@ -116,14 +86,14 @@ def makeRandDistanceList(num_distances):
 	return distances
 
 #==================================
-def get_gene_pair_node(code, gene1, gene2):
-	## assumes existing genes are alphabetical, also assumes ordered genes lag
-	index1 = code.find(gene1)
-	index2 = code.find(gene2)
+def get_taxa_pair_node(code, taxa1, taxa2):
+	## assumes existing taxa are alphabetical, also assumes ordered taxa lag
+	index1 = code.find(taxa1)
+	index2 = code.find(taxa2)
 	min_index = min(index1, index2)
 	max_index = max(index1, index2)
 	substring = code[min_index+1:max_index]
-	#print("substring=", gene1, substring, gene2)
+	#print("substring=", taxa1, substring, taxa2)
 	sublist = list(substring)
 	max_node = -1
 	for s in sublist:
@@ -134,69 +104,67 @@ def get_gene_pair_node(code, gene1, gene2):
 	return max_node
 
 #===========================================
-def makeDistancePairs(ordered_genes, distance_list, answer_code):
+def makeDistancePairs(ordered_taxa, distance_list, answer_code):
 	# A-1-B -2-C -3-D
 	distance_dict = {}
-	for i,gene1 in enumerate(ordered_genes):
+	for i, taxa1 in enumerate(ordered_taxa):
 		if i == 0:
 			continue
-		for j,gene2 in enumerate(ordered_genes):
+		for j, taxa2 in enumerate(ordered_taxa):
 			if i <= j:
 				continue
 			# i > j OR j < i
-			max_node = get_gene_pair_node(answer_code, gene1, gene2)
+			max_node = get_taxa_pair_node(answer_code, taxa1, taxa2)
 			distance_index = max_node - 1
-			#print(gene1, gene2, distance_index, distance_list[distance_index])
-			distance_dict[(gene1, gene2)] = distance_list[distance_index]
-			distance_dict[(gene2, gene1)] = distance_list[distance_index]
-	#makeTable_ascii(ordered_genes, distance_dict)
+			distance_dict[(taxa1, taxa2)] = distance_list[distance_index]
+			distance_dict[(taxa2, taxa1)] = distance_list[distance_index]
 	return distance_dict
 
 #===========================================
-def addDistancePairShifts(distance_dict, ordered_genes, answer_code):
+def addDistancePairShifts(distance_dict, ordered_taxa, answer_code):
 	shift_list = [-2,2]
-	for n in range(len(ordered_genes)-2):
+	for n in range(len(ordered_taxa)-2):
 		shift_list.append(0)
 	shift_list.sort()
 	#print("shift_list=", shift_list)
-	for i,gene1 in enumerate(ordered_genes):
-		for j,gene2 in enumerate(ordered_genes):
+	for i,taxa1 in enumerate(ordered_taxa):
+		for j,taxa2 in enumerate(ordered_taxa):
 			if i == j:
 				continue
-			for k,gene3 in enumerate(ordered_genes):
+			for k,taxa3 in enumerate(ordered_taxa):
 				if j == k or i == k:
 					continue
 				# i > j > k OR k < j < i
-				max_node_1_2 = get_gene_pair_node(answer_code, gene1, gene2)
-				max_node_2_3 = get_gene_pair_node(answer_code, gene2, gene3)
-				max_node_1_3 = get_gene_pair_node(answer_code, gene1, gene3)
+				max_node_1_2 = get_taxa_pair_node(answer_code, taxa1, taxa2)
+				max_node_2_3 = get_taxa_pair_node(answer_code, taxa2, taxa3)
+				max_node_1_3 = get_taxa_pair_node(answer_code, taxa1, taxa3)
 
 				if max_node_2_3 == max_node_1_3 and max_node_1_2 < max_node_1_3:
 					# do something
-					#print("genes (", gene1, gene2, ")", gene3)
+					#print("genes (", taxa1, taxa2, ")", taxa3)
 					#print("max_node", max_node_1_2, max_node_2_3, max_node_1_3)
 					#print("DO SOMETHING")
 					#shift = random.randint(-1, 1) * 2
 					shift = random.choice(shift_list)
-					distance_dict[(gene1, gene3)] += shift
-					distance_dict[(gene3, gene1)] += shift
-					distance_dict[(gene2, gene3)] -= shift
-					distance_dict[(gene3, gene2)] -= shift
+					distance_dict[(taxa1, taxa3)] += shift
+					distance_dict[(taxa3, taxa1)] += shift
+					distance_dict[(taxa2, taxa3)] -= shift
+					distance_dict[(taxa3, taxa2)] -= shift
 	return distance_dict
 
 #===========================================================
 #===========================================================
-def print_ascii_distance_table(ordered_genes, distance_dict):
+def print_ascii_distance_table(ordered_taxa, distance_dict):
 	"""
-	Print a formatted ASCII table with Unicode borders for the gene distance matrix.
+	Print a formatted ASCII table with Unicode borders for the taxa distance matrix.
 
 	Args:
-		ordered_genes (list): The ordered list of gene names.
-		distance_dict (dict): A dictionary mapping gene pairs to distances.
+		ordered_taxa (list): The ordered list of taxa names.
+		distance_dict (dict): A dictionary mapping taxa pairs to distances.
 	"""
-	# Sort the gene names for consistent row/column order
-	sorted_genes = list(copy.copy(ordered_genes))
-	sorted_genes.sort()
+	# Sort the taxa names for consistent row/column order
+	sorted_taxa = list(copy.copy(ordered_taxa))
+	sorted_taxa.sort()
 
 	# Calculate the column width dynamically for consistent alignment
 	column_width = 5
@@ -217,42 +185,41 @@ def print_ascii_distance_table(ordered_genes, distance_dict):
 	# Create the table borders
 	# Top border with column headers
 	top_border = f"{top_left_corner}{horizontal_line * column_width}"
-	for _ in sorted_genes:
+	for _ in sorted_taxa:
 		top_border += f"{middle_top}{horizontal_line * column_width}"
 	top_border += f"{top_right_corner}\n"
 
 	# Separator for headers and rows
 	separator = f"{middle_left}{horizontal_line * column_width}"
-	for _ in sorted_genes:
+	for _ in sorted_taxa:
 		separator += f"{center_cross}{horizontal_line * column_width}"
 	separator += f"{middle_right}\n"
 
 	# Bottom border
 	bottom_border = f"{bottom_left_corner}{horizontal_line * column_width}"
-	for _ in sorted_genes:
+	for _ in sorted_taxa:
 		bottom_border += f"{middle_bottom}{horizontal_line * column_width}"
 	bottom_border += f"{bottom_right_corner}\n"
 
 	# Generate the table header
 	header = f"{vertical_line}{' ' * column_width}"  # Empty top-left corner
-	for gene in sorted_genes:
-		header += f"{vertical_line}  {gene}  "
+	for taxa in sorted_taxa:
+		header += f"{vertical_line}  {taxa}  "
 	header += f"{vertical_line}\n"
 
 	# Start assembling the ASCII table
 	ascii_table = top_border + header + separator
 
 	# Generate the rows
-	for gene1 in sorted_genes:
+	for taxa1 in sorted_taxa:
 		# Row label
-		row = f"{vertical_line}  {gene1}  "
-		for gene2 in sorted_genes:
-			if gene1 == gene2:
+		row = f"{vertical_line}  {taxa1}  "
+		for taxa2 in sorted_taxa:
+			if taxa1 == taxa2:
 				cell_value = "---"  # Self-distance marked with 'x'
 			else:
 				# Retrieve the distance value
-				gene_tuple = (gene1, gene2)
-				distance = distance_dict.get(gene_tuple, 0)
+				distance = distance_dict.get((taxa1, taxa2), 0)
 				cell_value = f"{distance}"
 			# Add the cell value, centered in the column
 			row += f"{vertical_line} {cell_value.rjust(column_width-2)} "
@@ -266,19 +233,19 @@ def print_ascii_distance_table(ordered_genes, distance_dict):
 	sys.stderr.write(ascii_table)
 
 #===========================================
-def generate_html_distance_table(ordered_genes, distance_dict, distance_list):
+def generate_html_distance_table(ordered_taxa, distance_dict, distance_list):
 	"""
 	Generate an HTML table for a distance matrix with genes as rows and columns.
 
 	Args:
-		ordered_genes (list): Ordered list of gene names.
+		ordered_taxa (list): Ordered list of gene names.
 		distance_dict (dict): A dictionary mapping gene pairs to distances.
 		distance_list (list): List of distances used for color mapping.
 
 	Returns:
 		str: An HTML string representing the distance matrix as a table.
 	"""
-	sorted_genes = sorted(ordered_genes)  # Sort the gene names alphabetically
+	sorted_taxa = sorted(ordered_taxa)  # Sort the taxa names alphabetically
 	td_extra = 'align="center" style="border: 1px solid black; background-color: xxxxxx;"'
 	span = '<span style="font-size: medium;">'
 
@@ -286,25 +253,24 @@ def generate_html_distance_table(ordered_genes, distance_dict, distance_list):
 	table = (
 		'<table style="border-collapse: collapse; border: 2px solid black; width: 460px; height: 150px">'
 		'<tr>'
-		f'<td {td_extra.replace("xxxxxx", "white")}>genes</td>'
+		f'<td {td_extra.replace("xxxxxx", "white")}>taxa</td>'
 	)
-	for g in sorted_genes:
+	for g in sorted_taxa:
 		table += f'<th {td_extra}>{span}{g}</span></th>'
 	table += '</tr>'
 
-	# Add rows for each gene
-	for g1 in sorted_genes:
+	# Add rows for each taxa
+	for taxa1 in sorted_taxa:
 		table += '<tr>'
-		table += f'<th {td_extra}>{span}{g1}</span></th>'
-		for g2 in sorted_genes:
-			if g1 == g2:
+		table += f'<th {td_extra}>{span}{taxa1}</span></th>'
+		for taxa2 in sorted_taxa:
+			if taxa1 == taxa2:
 				# Self-distance is represented by gray cells
 				my_td_extra = td_extra.replace('xxxxxx', 'gray')
 				table += f'<td {my_td_extra}>&times;</td>'
 			else:
 				# Use distance to calculate color and add the value
-				gene_tuple = (g1, g2)
-				distance = distance_dict[gene_tuple]
+				distance = distance_dict[(taxa1, taxa2)]
 				hex_color = distance_to_html_color(distance, distance_list)
 				my_td_extra = td_extra.replace('xxxxxx', hex_color)
 				table += f'<td {my_td_extra}>{span}{distance}</span></td>'
@@ -315,20 +281,20 @@ def generate_html_distance_table(ordered_genes, distance_dict, distance_list):
 	return table
 
 #===========================================
-def getGoodGenePermutation(gene_permutations, ordered_genes, answer_code):
+def getGoodGenePermutation(gene_permutations, ordered_taxa, answer_code):
 	one_index = answer_code.find('1')
 	first_letter = answer_code[one_index-1]
 	second_letter = answer_code[one_index+1]
-	first_letter_index_pair = (ordered_genes.index(first_letter),  ordered_genes.index(second_letter))
+	first_letter_index_pair = (ordered_taxa.index(first_letter),  ordered_taxa.index(second_letter))
 	random.shuffle(gene_permutations)
 	for permuted_genes in gene_permutations:
-		if permuted_genes == ordered_genes:
+		if permuted_genes == ordered_taxa:
 			continue
 		if permuted_genes.index(first_letter) not in first_letter_index_pair:
 			continue
 		if permuted_genes.index(second_letter) not in first_letter_index_pair:
 			continue
-		#print("PERMUTE", permuted_genes, ordered_genes, first_letter, second_letter)
+		#print("PERMUTE", permuted_genes, ordered_taxa, first_letter, second_letter)
 		return permuted_genes
 
 #===========================================
@@ -342,33 +308,35 @@ def make_question(N: int, num_leaves: int, num_choices: int) -> str:
 		num_choices (int): The total number of answer choices, including the correct one.
 
 	Returns:
-		str: A formatted HTML multiple-choice question that includes a gene distance matrix
+		str: A formatted HTML multiple-choice question that includes a species distance matrix
 		     and a list of possible gene tree answers.
 	"""
-	# Generate gene names (letters) with "clear" letters (excluding ambiguous ones like 'o' or 'i')
-	gene_letters_str = bptools.generate_gene_letters(num_leaves, clear=True)
-	sorted_genes = sorted(gene_letters_str)  # Sort the gene letters alphabetically
+	# Generate node names (letters) with "clear" letters (excluding ambiguous ones like 'o' or 'i')
+	taxa_letters_str = bptools.generate_gene_letters(num_leaves, clear=True).upper()
+	# Sort the node letters alphabetically
+	sorted_taxa = sorted(taxa_letters_str)
 
-	# The number of nodes in the gene tree equals the number of leaves minus one
-	num_nodes = num_leaves - 1
+	# The number of taxa in the gene tree equals the number of leaves minus one
+	# ^^ this makes no sense to me!!!
+	num_taxa = num_leaves - 1
 	genetree = phylolib2.GeneTree()  # Initialize the GeneTree object for tree generation and manipulation
 
 	#===========================================
 	# FIND A PARTICULAR ORDER FOR THE GENES
 	#===========================================
-	# Get all permutations of the sorted gene letters and shuffle them randomly
-	gene_permutations = comb_safe_permutations(sorted_genes)
-	random.shuffle(gene_permutations)
+	# Get all permutations of the sorted node letters and shuffle them randomly
+	all_taxa_permutations = phylolib2.get_comb_safe_taxa_permutations(sorted_taxa)
+	random.shuffle(all_taxa_permutations)
 
-	# Select one gene order for constructing the distance matrix
-	ordered_genes = gene_permutations.pop()
-	if debug: print('ordered_genes=', ordered_genes)
+	# Select one node order for constructing the distance matrix
+	ordered_taxa = all_taxa_permutations.pop()
+	if debug: print('ordered_taxa=', ordered_taxa)
 
 	#===========================================
 	# GET ALL POSSIBLE GENE TREES
 	#===========================================
 	# Generate all possible gene tree encodings for the given number of leaves
-	code_choice_list = genetree.make_all_gene_trees_for_leaf_count(num_leaves, sorted_genes)
+	code_choice_list = genetree.make_all_gene_trees_for_leaf_count(num_leaves, sorted_taxa)
 	random.shuffle(code_choice_list)  # Shuffle the tree encodings to randomize selection
 
 	# Select one tree encoding as the correct answer
@@ -379,31 +347,31 @@ def make_question(N: int, num_leaves: int, num_choices: int) -> str:
 	# CREATE RANDOM DISTANCES AND PAIRS
 	#===========================================
 	# Generate a random list of distances for the internal nodes of the tree
-	distance_list = makeRandDistanceList(num_nodes)
+	distance_list = makeRandDistanceList(num_taxa)
 	if debug: print("distance_list=", distance_list)
 
-	# Create a distance dictionary mapping gene pairs to distances based on the answer tree
-	distance_dict = makeDistancePairs(ordered_genes, distance_list, answer_code)
+	# Create a distance dictionary mapping node pairs to distances based on the answer tree
+	distance_dict = makeDistancePairs(ordered_taxa, distance_list, answer_code)
 
 	# Generate and display an ASCII version of the distance matrix table
 	if debug: print("original distance matrix")
-	print_ascii_distance_table(ordered_genes, distance_dict)
+	print_ascii_distance_table(ordered_taxa, distance_dict)
 
 	# Modify the distance dictionary to include shifts (random offsets for added complexity)
-	addDistancePairShifts(distance_dict, ordered_genes, answer_code)
+	addDistancePairShifts(distance_dict, ordered_taxa, answer_code)
 
 	# Display the updated distance dictionary as an ASCII table
 	if debug: print("adjusted distance matrix")
-	print_ascii_distance_table(ordered_genes, distance_dict)
+	print_ascii_distance_table(ordered_taxa, distance_dict)
 
 	#===========================================
 	# REMOVE CHOICES WITH IDENTICAL PROFILES
 	#===========================================
 	# Generate the "profile" (a structural representation) of the correct answer tree
-	answer_profile = genetree.gene_tree_code_to_profile(answer_code, num_nodes)
+	answer_profile = genetree.gene_tree_code_to_profile(answer_code, num_taxa)
 
 	# Group all tree encodings by their profiles
-	profile_groups = genetree.group_gene_trees_by_profile(code_choice_list, num_nodes)
+	profile_groups = genetree.group_gene_trees_by_profile(code_choice_list, num_taxa)
 
 	# Remove any trees with profiles that match the correct answer's profile
 	if profile_groups.get(answer_profile) is not None:
@@ -447,35 +415,34 @@ def make_question(N: int, num_leaves: int, num_choices: int) -> str:
 	# WRITE THE QUESTION
 	#===========================================
 	# Create the HTML table representation of the distance matrix
-	distance_html_table = generate_html_distance_table(ordered_genes, distance_dict, distance_list)
+	distance_html_table = generate_html_distance_table(ordered_taxa, distance_dict, distance_list)
 
 	# Add the descriptive question statement
-	g1 = sorted_genes[0]
-	g2 = sorted_genes[1]
-	g3 = sorted_genes[2]
+	tax1 = sorted_taxa[0]
+	tax2 = sorted_taxa[1]
+	tax3 = sorted_taxa[2]
 	problem_statement = (
 		"<p>The table above represents a distance matrix for the following genes: "
-		f"{', '.join(f'<b>{gene}</b>' for gene in sorted_genes)}. "
+		f"{', '.join(f'<b>{taxa}</b>' for taxa in sorted_taxa)}. "
 		"The values in the matrix correspond to the genetic distances "
 		"between pairs of genes.</p> "
 		"<p>For example, "
-		f"{gene_text(g1, g2, distance_dict)}. "
+		f"{taxa_text(tax1, tax2, distance_dict)}. "
 		"Distances are symmetric, meaning that both "
-		f"{gene_text(g2, g3, distance_dict)} and "
-		f"{gene_text(g3, g2, distance_dict)}.</p>"
-		"<h5>Using this distance matrix, determine the most appropriate gene tree that "
-		"accurately reflects the relationships and distances between these genes.</h5>"
+		f"{taxa_text(tax2, tax3, distance_dict)} and "
+		f"{taxa_text(tax3, tax2, distance_dict)}.</p>"
+		"<p>Using this distance matrix, determine the most appropriate gene tree that "
+		"accurately reflects the relationships and distances between these genes.</p>"
 	)
-
 
 	if debug is True:
 		# Uncomment to debug: write question and choices to a temporary HTML file
 		f = open('temp.html', 'w')
 		f.write(answer_html_choice + '<br/>')
-		f.write(html_table + '<br/>')
+		f.write(distance_html_table + '<br/>')
 		for hc in html_choices_list:
 			f.write(hc + '<br/>')
-		f.write(''.join(ordered_genes))
+		f.write(''.join(ordered_taxa))
 		f.close()
 
 	# Format the question for multiple-choice display and return it
@@ -486,11 +453,11 @@ def make_question(N: int, num_leaves: int, num_choices: int) -> str:
 
 #======================================
 #======================================
-def gene_text(gene1, gene2, distance_dict):
+def taxa_text(tax1, tax2, distance_dict):
 	gene_string = (
-		f"the distance between <b>gene {gene1.upper()}</b> and "
-		f"<b>gene {gene2.upper()}</b> is "
-		f"<b>{distance_dict[(gene1, gene2)]}</b>"
+		f"the distance between <b>taxa {tax1}</b> and "
+		f"<b>taxa {tax2}</b> is "
+		f"<b>{distance_dict[(tax1, tax2)]}</b>"
 	)
 	return gene_string
 
