@@ -44,15 +44,13 @@ fake_animals = {
 	'z': 'Zypher'
 }
 
-class GeneTree(object):
+class GeneTreeTools(object):
 	#==================================
 	def __init__(self):
 		self.code = None
-		self.leaves = None
+		self.num_leaves = None
 		self.char_array = None
 		self.html_array = None
-		self.cell_count = 0
-		self.gene_name_map = copy.copy(fake_animals)
 
 		self._load_code_library()
 		self._check_tree_count_theory()
@@ -103,7 +101,7 @@ class GeneTree(object):
 			placeholder_str = f"__PLACEHOLDER_{i}__"  # Unique placeholder for each old label
 			# Add delimiters for multi-character gene names
 			final_new_label = f"|{new_label}|" if len(new_label) > 1 else new_label
-			print(f"Mapping {old_label} -> {new_label} with placeholder {placeholder_str}")
+			#print(f"Mapping {old_label} -> {new_label} with placeholder {placeholder_str}")
 			old_to_placeholder_map[old_label] = placeholder_str
 			placeholder_to_new_map[placeholder_str] = final_new_label
 
@@ -354,7 +352,7 @@ class GeneTree(object):
 
 		t0 = time.time()
 		all_taxa_permutations = get_comb_safe_taxa_permutations(sorted_taxa)
-		print("len(all_gene_permutations)=", len(all_taxa_permutations))
+		print("len(all_taxa_permutations)=", len(all_taxa_permutations))
 	
 		sorted_gene_tree_codes = self.get_all_gene_tree_codes_for_leaf_count(num_leaves)
 		print("len(sorted_gene_tree_codes)=", len(sorted_gene_tree_codes))
@@ -568,10 +566,66 @@ class GeneTree(object):
 		new_code = self._permute_code_by_node_binary(code, node_binary_list)
 		return new_code
 
+class GeneTreeHtml(object):
 	#==================================
-	def create_empty_array(self, leaves=None):
-		if leaves is None:
-			leaves = self.leaves
+	def __init__(self):
+		self.td_cell_count = 0
+		self.gene_name_map = copy.copy(fake_animals)
+		pass
+
+	#==================================
+	#==================================
+	def get_internal_node_for_taxon(self, merged_taxa: str, merged_code: str) -> int:
+		#print(f"merged_taxa = {merged_taxa}, merged_code = {merged_code}")
+		# Handle the case where all taxa have been merged
+		if len(merged_taxa) == self.num_leaves:
+			return None
+
+		# Find the index of the taxon in the merged_code
+		index = merged_code.find(merged_taxa)
+		if index == -1:
+			raise ValueError(f"The taxon '{merged_taxa}' was not found in the merged_code.")
+
+		# Get the preceding and following characters
+		node1 = merged_code[index - 1]
+		node2 = merged_code[index + len(merged_taxa)]
+
+		# Check for internal nodes and determine the result
+		if node1.isdigit() and node2.isdigit():
+			# Error if both preceding and following characters are digits
+			print(f"Taxon '{merged_taxa}' has two internal nodes: {node1} and {node2}")
+			raise ValueError(f"Taxon '{merged_taxa}' cannot have two internal nodes.")
+		elif node1.isdigit():
+			return int(node1)
+		elif node2.isdigit():
+			return int(node2)
+		else:
+			# No internal node found
+			print(f"Taxon '{merged_taxa}' has no internal node.")
+			return None
+
+	#==================================
+	def internal_node_number_to_line_length(self, internal_node_number: int):
+		#mapping = {1:4, 2:7, 3:10, 4:13, 5:16, 6:19, 7:22}
+		line_length = 3*internal_node_number + 1
+		return line_length
+
+	#==================================
+	def make_internal_node_number_char_list(self, code: str) -> list:
+		"""
+		generated a mapping of edge numbers to taxa (characters) in a tree.
+		"""
+		raise NotImplementedError("The function 'make_internal_node_number_char_list()' is deprecated.")
+		# Legacy implementation (for reference):
+		internal_node_number_char_list = {}
+		char_list = code_to_taxa_list(code)
+		for i, character in enumerate(char_list):
+			internal_node_number = self.get_internal_node_for_taxon(character, code)
+			internal_node_number_char_list[internal_node_number] = internal_node_number_char_list.get(internal_node_number, []) + [character]
+		return internal_node_number_char_list
+
+	#==================================
+	def create_empty_array(self, leaves: int):
 		#rows: 3->5, 4->7, 5->9 => rows = 2*leaves - 1
 		rows = 2*leaves - 1
 		#cols =
@@ -589,44 +643,6 @@ class GeneTree(object):
 		print("")
 
 	#==================================
-	def get_edge_number_for_string(self, my_str, code):
-		if len(my_str) == self.leaves:
-			return None
-		index = code.find(my_str)
-		digit1 = code[index-1]
-		try:
-			digit2 = code[index+len(my_str)]
-		except IndexError:
-			digit2 = 'None'
-		if digit1.isdigit():
-			if digit2.isdigit():
-				print("character {0} has two edge numbers {1} and {2}".format(my_str, digit1, digit2))
-				raise
-			edge_number = int(digit1)
-		elif digit2.isdigit():
-			edge_number = int(digit2)
-		else:
-			print("character {0} has no edge number".format(my_str))
-			return None
-		return edge_number
-
-	#==================================
-	def edge_number_to_line_length(self, edge_number):
-		#line_length = 3*edge_number + 1
-		#self.edge_number_to_line_length = {1:4, 2:7, 3:10, 4:13, 5:16, 6:19, 7:22}
-		line_length = 3*edge_number + 1
-		return line_length
-
-	#==================================
-	def make_edge_number_char_list(self, code):
-		edge_number_char_list = {}
-		char_list = code_to_taxa_list(code)
-		for i,character in enumerate(char_list):
-			edge_number = self.get_edge_number_for_string(character, code)
-			edge_number_char_list[edge_number] = edge_number_char_list.get(edge_number, []) + [character]
-		return edge_number_char_list
-
-	#==================================
 	def make_char_tree(self, code=None):
 		"""
 		takes code and writes to self.char_array
@@ -637,36 +653,36 @@ class GeneTree(object):
 			code = '(((a1b)4((c2d)3e))5f)'
 			code = '(((a3b)5((c1d)4e))6(f2g))'
 		self.code = code
-		self.leaves = code_to_number_of_taxa(self.code)
-		self.char_array = self.create_empty_array(self.leaves)
+		self.num_leaves = code_to_number_of_taxa(self.code)
+		self.char_array = self.create_empty_array(self.num_leaves)
 
 		char_list = code_to_taxa_list(code)
 		#print("char_list=", char_list)
-		#char_edge_number = {}
+		#char_internal_node_number = {}
 		char_row_number = {}
-		edge_number_char_list = {}
+		internal_node_number_char_list = {}
 		for i,character in enumerate(char_list):
 			row = i*2
 			char_row_number[character] = row
 			self.char_array[row, -1] = character
-			edge_number = self.get_edge_number_for_string(character, code)
-			#char_edge_number[character] = edge_number
-			edge_number_char_list[edge_number] = edge_number_char_list.get(edge_number, []) + [character]
-			line_length = self.edge_number_to_line_length(edge_number)
-			#print(row, edge_number, line_length)
+			internal_node_number = self.get_internal_node_for_taxon(character, code)
+			#char_internal_node_number[character] = internal_node_number
+			internal_node_number_char_list[internal_node_number] = internal_node_number_char_list.get(internal_node_number, []) + [character]
+			line_length = self.internal_node_number_to_line_length(internal_node_number)
+			#print(row, internal_node_number, line_length)
 			self.char_array[row, -line_length-2:-2] = '_'
 
 		newcode = copy.copy(code)
-		#print(edge_number_char_list)
-		for edge_number in range(1, self.leaves):
-			char1 = edge_number_char_list[edge_number][0]
-			char2 = edge_number_char_list[edge_number][1]
-			subcode = "({0}{1}{2})".format(char1,edge_number,char2)
+		#print(internal_node_number_char_list)
+		for internal_node_number in range(1, self.num_leaves):
+			char1 = internal_node_number_char_list[internal_node_number][0]
+			char2 = internal_node_number_char_list[internal_node_number][1]
+			subcode = "({0}{1}{2})".format(char1,internal_node_number,char2)
 			#print(subcode)
 			if not subcode in newcode:
 				#swap order
 				char2, char1 = char1, char2
-				subcode = "({0}{1}{2})".format(char1,edge_number,char2)
+				subcode = "({0}{1}{2})".format(char1,internal_node_number,char2)
 			if not subcode in newcode:
 				print('{0} not found in {1}'.format(subcode, newcode))
 				raise
@@ -677,14 +693,14 @@ class GeneTree(object):
 
 			combined = "{0}{1}".format(char1, char2)
 			newcode = newcode.replace(subcode, combined)
-			new_edge_number = self.get_edge_number_for_string(combined, newcode)
-			if new_edge_number is not None:
-				edge_number_char_list[new_edge_number] = edge_number_char_list.get(new_edge_number, []) + [combined]
+			new_internal_node_number = self.get_internal_node_for_taxon(combined, newcode)
+			if new_internal_node_number is not None:
+				internal_node_number_char_list[new_internal_node_number] = internal_node_number_char_list.get(new_internal_node_number, []) + [combined]
 			char_row_number[combined] = midrow
 
-			line_length = self.edge_number_to_line_length(edge_number)
-			if new_edge_number is not None:
-				next_line_length = self.edge_number_to_line_length(new_edge_number)
+			line_length = self.internal_node_number_to_line_length(internal_node_number)
+			if new_internal_node_number is not None:
+				next_line_length = self.internal_node_number_to_line_length(new_internal_node_number)
 				gap = next_line_length - line_length - 1
 			else:
 				gap = 2
@@ -694,7 +710,7 @@ class GeneTree(object):
 
 	#==================================
 	def get_td_cell(self, cell_code):
-		self.cell_count += 1
+		self.td_cell_count += 1
 		content = copy.copy(cell_code)
 		content = content.replace(' ', '')
 		content = content.replace('|', '')
@@ -711,7 +727,7 @@ class GeneTree(object):
 			td_cell += 'border-left:'+line
 		if '_' in cell_code:
 			td_cell += 'border-bottom:'+line
-		#if self.cell_count % 2 == 1:
+		#if self.td_cell_count % 2 == 1:
 		#	td_cell += 'background-color: silver'
 		td_cell += '">'
 		td_cell += ' '
@@ -782,14 +798,6 @@ class GeneTree(object):
 		html_table = '<table style="border-collapse: collapse; border: 1px solid silver;">'
 		for c in range(cols):
 			html_table += '<colgroup width="30"></colgroup>'
-		"""
-		html_table += '<colgroup width="30"></colgroup>'
-		html_table += '<colgroup width="{0}"></colgroup>'.format((distances[3]-distances[2])*20)
-		html_table += '<colgroup width="{0}"></colgroup>'.format((distances[2]-distances[1])*20)
-		html_table += '<colgroup width="{0}"></colgroup>'.format((distances[1]-distances[0])*20)
-		html_table += '<colgroup width="{0}"></colgroup>'.format(distances[0]*20)
-		html_table += '<colgroup width="30"></colgroup>'
-		"""
 		for r in range(rows):
 			row_list = list(self.html_array[r,:])
 			html_table += ''.join(row_list)
@@ -1116,7 +1124,8 @@ code_library = {
 #==================================
 #==================================
 if __name__ == '__main__':
-	a = GeneTree()
+	gttools = GeneTreeTools()
+	gthtml = GeneTreeHtml()
 	f = open('html_dump.html', 'w')
 	tree_names = list(code_library.keys())
 	random.shuffle(tree_names)
@@ -1127,19 +1136,19 @@ if __name__ == '__main__':
 		#new_code = a.permute_code(code)
 		new_code = code
 		print('=====\n{0}'.format(name))
-		all_codes = a.get_all_code_permutations(code)
+		all_codes = gttools.get_all_code_permutations(code)
 		all_codes.sort()
 		for c in all_codes:
 			if 'b1a' in c:
 				continue
 			print(c)
-			a.make_char_tree(c)
-			a.print_array_ascii()
+			gthtml.make_char_tree(c)
+			gthtml.print_array_ascii()
 			break
 		#sys.exit(1)
 
-		a.make_html_tree()
+		gthtml.make_html_tree()
 		#print(a.pair_array)
 		#print(a.html_array)
-		f.write((a.format_array_html()))
+		f.write((gthtml.format_array_html()))
 	f.close()
