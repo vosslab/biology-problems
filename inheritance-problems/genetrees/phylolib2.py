@@ -7,6 +7,7 @@ import time
 import numpy
 import random
 import itertools
+from collections import defaultdict
 
 import bptools
 
@@ -375,32 +376,49 @@ class GeneTreeTools(object):
 		return code_choice_list
 
 	#===========================================
-	def gene_tree_code_to_profile(self, code, num_nodes=None):
+	def gene_tree_code_to_profile(self, code: str, num_nodes: int = None):
 		"""
-		method to quickly compare two trees by creating a profile
-		if two trees have different profiles, they are different
-		Note: if two trees have the same profile, they could be different or same
+		Generates a profile for a gene tree code.
+
+		This method creates a profile string to compare tree structures efficiently.
+		If two trees have different profiles, they are guaranteed to be different.
+		If two trees have the same profile, they might be the same or different
+		(since the profile is not a unique identifier for tree topology).
+
+		Args:
+			code (str): The gene tree code representing the tree structure.
+			num_nodes (int, optional): The number of internal nodes in the tree.
+				If not provided, it is calculated using `code_to_number_of_internal_nodes`.
+
+		Returns:
+			str: The profile string of the tree.
 		"""
+		# Determine the number of internal nodes if not provided
 		if num_nodes is None:
 			num_nodes = code_to_number_of_internal_nodes(code)
-		code_dict = {}
+
+		# Build a mapping of internal nodes to their associated taxa
+		code_dict = defaultdict(list)  # Default value for new keys is an empty list
 		for i in range(num_nodes):
 			node_num = i + 1
 			node_index = code.find(str(node_num))
-			if code[node_index-1].isalpha():
-				code_dict[node_num] = code_dict.get(node_num, []) + [code[node_index-1],]
-			if code[node_index+1].isalpha():
-				code_dict[node_num] = code_dict.get(node_num, []) + [code[node_index+1],]
-		#print(code, code_dict)
+
+			# Check preceding and following characters for associated taxa
+			if code[node_index - 1].isalpha():
+				code_dict[node_num].append(code[node_index - 1])
+			if code[node_index + 1].isalpha():
+				code_dict[node_num].append(code[node_index + 1])
+
+		# Generate the profile string
 		profile = ""
-		keys = list(code_dict.keys())
-		keys.sort()
+		keys = sorted(code_dict.keys())
 		for key in keys:
 			profile += str(key)
-			values = code_dict[key]
-			values.sort()
+			values = sorted(code_dict[key])
 			profile += ''.join(values)
-		#print(code, profile)
+
+		# Debugging: Uncomment to see the intermediate results
+		# print(f"Code: {code}, Code Dict: {code_dict}, Profile: {profile}")
 		return profile
 	
 	#===========================================
@@ -1133,8 +1151,12 @@ if __name__ == '__main__':
 		code = code_library[name]
 		if code_to_number_of_taxa(code) != 6:
 			continue
-		#new_code = a.permute_code(code)
-		new_code = code
+		profile = gttools.gene_tree_code_to_profile(code)
+		print(f"code = {code}; profile = {profile}")
+		new_code = gttools.permute_code_by_node(code)
+		#new_code = code
+		new_profile = gttools.gene_tree_code_to_profile(new_code)
+		print(f"code = {new_code}; profile = {new_profile}")
 		print('=====\n{0}'.format(name))
 		all_codes = gttools.get_all_code_permutations(code)
 		all_codes.sort()
@@ -1148,7 +1170,7 @@ if __name__ == '__main__':
 		#sys.exit(1)
 
 		gthtml.make_html_tree()
-		#print(a.pair_array)
-		#print(a.html_array)
+		#print(gthtml.pair_array)
+		#print(gthtml.html_array)
 		f.write((gthtml.format_array_html()))
 	f.close()
