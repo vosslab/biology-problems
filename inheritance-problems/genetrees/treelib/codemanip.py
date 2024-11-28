@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 
-import re
 import sys
 import copy
 import time
 import random
 
-from .. import bptools
-import tools
-import treecodes
+from treelib import tools
+from treelib import treecodes
 
 ### TODO
 # add background colors to gene labels
@@ -20,8 +18,6 @@ class GeneTreeManip(object):
 	def __init__(self):
 		self.code = None
 		self.num_leaves = None
-		self.char_array = None
-		self.html_array = None
 
 		self._load_code_library()
 		self._check_tree_count_theory()
@@ -52,43 +48,6 @@ class GeneTreeManip(object):
 		for key in keys:
 			print("leaves=", key, ": trees=", len(self.num_leaves_to_tree_set[key]))
 		return
-
-	#==================================
-	def replace_gene_letters(self, code, ordered_taxa):
-		# Get the number of leaves in the tree
-		num_leaves = tools.code_to_number_of_taxa(code)
-
-		# Validate input
-		if num_leaves != len(ordered_taxa):
-			raise ValueError(f"Mismatch: {num_leaves} leaves in code but {len(ordered_taxa)} taxa provided.")
-
-		# Extract default gene labels from the tree code
-		default_gene_labels = tools.code_to_taxa_list(code)
-
-		# Create mappings for old labels to placeholders and placeholders to final labels
-		old_to_placeholder_map = {}
-		placeholder_to_new_map = {}
-		for i, (old_label, new_label) in enumerate(zip(default_gene_labels, ordered_taxa)):
-			placeholder_str = f"__PLACEHOLDER_{i}__"  # Unique placeholder for each old label
-			# Add delimiters for multi-character gene names
-			final_new_label = f"|{new_label}|" if len(new_label) > 1 else new_label
-			#print(f"Mapping {old_label} -> {new_label} with placeholder {placeholder_str}")
-			old_to_placeholder_map[old_label] = placeholder_str
-			placeholder_to_new_map[placeholder_str] = final_new_label
-
-		# Step 1: Replace old labels with placeholders
-		new_code = copy.copy(code)
-		for old_label, placeholder in old_to_placeholder_map.items():
-			new_code = new_code.replace(old_label, placeholder)
-
-		# Step 2: Replace placeholders with final new labels
-		for placeholder, new_label in placeholder_to_new_map.items():
-			new_code = new_code.replace(placeholder, new_label)
-
-		# Sort the gene tree for consistency
-		new_code = self.sort_alpha_for_gene_tree(new_code, len(ordered_taxa) - 1)
-
-		return new_code
 
 	#==================================
 	def get_tree_name_from_code(self, code):
@@ -273,27 +232,20 @@ class GeneTreeManip(object):
 
 	#==================================
 	def get_all_alpha_sorted_code_rotation_permutations(self, code):
-		max_nodes = tools.code_to_number_of_internal_nodes(code)
 		original_code_permutations = self.get_all_code_permutations(code)
 		alpha_sorted_code_permutations = []
 		for code in original_code_permutations:
-			new_code = self.sort_alpha_for_gene_tree(code, max_nodes)
+			new_code = tools.sort_alpha_for_gene_tree(code)
 			alpha_sorted_code_permutations.append(new_code)
 		code_permutations = list(set(alpha_sorted_code_permutations))
 		return code_permutations
 
 	#===========================================
-	def make_all_gene_trees_for_leaf_count(self, num_leaves, sorted_taxa=None):
+	def make_all_gene_trees_for_leaf_count(self, num_leaves, sorted_taxa):
 		if num_leaves > 7:
 			print("generating the 88,200 trees for 7 leaves takes 5 seconds, 8 leaves takes over 2 minutes to make 1.3M trees")
 			print("too many leaves requested, try a different method for generating trees")
 			sys.exit(1)
-
-		#if self.make_all_cache.get(num_leaves) is not None:
-		#	return self.make_all_cache.get(num_leaves)
-
-		if sorted_taxa is None:
-			sorted_taxa = sorted(bptools.generate_gene_letters(num_leaves, clear=True))
 
 		t0 = time.time()
 		all_taxa_permutations = tools.get_comb_safe_taxa_permutations(sorted_taxa)
@@ -310,7 +262,7 @@ class GeneTreeManip(object):
 			for permuted_code in all_permute_codes:
 				for permuted_nodes in all_taxa_permutations:
 					final_code = self.replace_gene_letters(permuted_code, permuted_nodes)
-					if self.is_gene_tree_alpha_sorted(final_code, num_leaves-1) is True:
+					if tools.is_gene_tree_alpha_sorted(final_code) is True:
 						code_choice_list.append(final_code)
 		#purge some other duplicates
 		code_choice_list = list(set(code_choice_list))
@@ -324,96 +276,16 @@ class GeneTreeManip(object):
 		"""
 		has not been thoroughly tested
 		"""
-		similar_scores = {}
-		if not '(' in answer_code:
-			print("ERROR: wanted code, but received profile")
-			print(answer_code)
-			sys.exit(1)
-		for code in code_list:
-			score = self.string_match(code, answer_code)
-			similar_scores[code] = score 
-		sorted_codes = [k for k in sorted(code_list, key=similar_scores.get, reverse=True)]
+		# Validate that `answer_code` is a code and not a profile
+		if '(' not in answer_code:
+			raise ValueError(f"Invalid `answer_code`: {answer_code}. Expected a gene tree code.")
+		# Calculate similarity scores and sort the codes by score in descending order
+		sorted_codes = sorted(
+			code_list,
+			key=lambda code: tools.string_match(code, answer_code),
+			reverse=True
+		)
 		return sorted_codes
-
-	#===========================================
-	def string_match(self, str1, str2):
-		minlen = min(len(str1), len(str2))
-		count = 0
-		count_step = 10
-		list1 = list(str1)
-		list2 = list(str2)
-		for i in range(minlen):
-			if list1[i] != list2[i]:
-				count_step = 1
-			count += count_step
-		return count
-
-	#===========================================
-	def is_gene_tree_alpha_sorted(self, code, num_nodes):
-		if num_nodes is None:
-			num_nodes = tools.code_to_number_of_internal_nodes(code)
-		for i in range(num_nodes):
-			node_num = i + 1
-			node_index = code.find(str(node_num))
-			char1 = code[node_index-1]
-			if not char1.isalpha():
-				continue
-			char2 = code[node_index+1]
-			if not char2.isalpha():
-				continue
-			if char1 > char2:
-				return False
-		return True
-
-	#===========================================
-	def sort_alpha_for_gene_tree(self, code, num_nodes):
-		# Validate num_nodes
-		if num_nodes is None:
-			num_nodes = tools.code_to_number_of_internal_nodes(code)
-
-		# Convert code into a mutable list for manipulation
-		new_code_list = list(code)
-
-		# Regex pattern to extract delimited gene labels (e.g., '|geneA|')
-		gene_label_pattern = r"\|[a-zA-Z0-9_]+\|"
-
-		for i in range(num_nodes):
-			node_num = i + 1
-			node_index = code.find(str(node_num))  # Find the position of the node in the string
-
-			if node_index == -1:
-				print(node_index, "not in", code)
-				print("WARNING: sort_alpha_for_gene_tree() error")
-				time.sleep(1)
-				break
-
-			# Extract the full gene label before the node
-			before_match = re.search(gene_label_pattern, code[:node_index][::-1])  # Reverse slice before node
-			char1 = before_match.group(0)[::-1] if before_match else None  # Reverse back to correct order
-
-			# Extract the full gene label after the node
-			after_match = re.search(gene_label_pattern, code[node_index + 1:])
-			char2 = after_match.group(0) if after_match else None
-
-			# Skip if either label is missing
-			if not char1 or not char2:
-				continue
-
-			# Sort the two gene labels
-			if char1 > char2:
-				# Replace in the original string
-				start1 = node_index - len(char1)
-				end1 = node_index
-				start2 = node_index + 1
-				end2 = node_index + 1 + len(char2)
-
-				# Swap positions in the new_code_list
-				new_code_list[start1:end1] = char2
-				new_code_list[start2:end2] = char1
-
-		# Reconstruct and return the updated string
-		new_code_str = ''.join(new_code_list)
-		return new_code_str
 
 	#==================================
 	def get_random_code_permutation(self, code):

@@ -4,7 +4,7 @@ import copy
 import numpy
 from collections import defaultdict
 
-import tools
+from treelib import tools
 
 ### TODO
 # add background colors to gene labels

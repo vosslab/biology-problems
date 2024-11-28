@@ -2,9 +2,14 @@ import sys
 import random
 from collections import defaultdict
 
-import tools
 
-#===========================================
+try:
+	from treelib import tools
+except ImportError:
+	import tools
+
+#==================================================================
+#==================================================================
 def gene_tree_code_to_profile(code: str, num_nodes: int = None):
 	"""
 	Generates a profile for a gene tree code.
@@ -50,7 +55,8 @@ def gene_tree_code_to_profile(code: str, num_nodes: int = None):
 	# print(f"Code: {code}, Code Dict: {code_dict}, Profile: {profile}")
 	return profile
 
-#===========================================
+#==================================================================
+#==================================================================
 def group_gene_trees_by_profile(gene_tree_codes, num_nodes):
 	if num_nodes is None:
 		num_nodes = tools.code_to_number_of_internal_nodes(gene_tree_codes[0])
@@ -61,22 +67,28 @@ def group_gene_trees_by_profile(gene_tree_codes, num_nodes):
 	print(f"{len(gene_tree_profile_groups)} profile groups were formed")
 	return gene_tree_profile_groups
 
-#===========================================
-def sort_profiles_by_closeness(profile_groups, answer_profile):
-	similar_scores = {}
+#==================================================================
+#==================================================================
+def sort_profiles_by_closeness(profile_groups: dict, answer_profile: str) -> list:
+	"""
+	Sorts profile group keys by their similarity to a reference profile.
+	"""
+	# Validate that `answer_profile` is a profile and not a code
 	if '(' in answer_profile:
-		print("ERROR: wanted profile, but received code")
-		print(answer_profile)
-		sys.exit(1)
+		raise ValueError(f"Invalid `answer_profile`: {answer_profile}. Expected a profile, not a code.")
+	# Shuffle the profile keys to randomize ordering for equal scores
 	profile_group_keys = list(profile_groups.keys())
 	random.shuffle(profile_group_keys)
-	for profile in profile_groups.keys():
-		score = string_match(profile, answer_profile)
-		similar_scores[profile] = score
-	sorted_profile_group_keys = [k for k in sorted(similar_scores.keys(), key=similar_scores.get, reverse=True)]
+	# Sort profile keys based on similarity scores
+	sorted_profile_group_keys = sorted(
+		profile_group_keys,
+		key=lambda profile: string_match(profile, answer_profile),
+		reverse=True
+	)
 	return sorted_profile_group_keys
 
-#===========================================
+#==================================================================
+#==================================================================
 def sort_codes_by_closeness(code_list, answer_code):
 	"""
 	has not been thoroughly tested
@@ -92,18 +104,39 @@ def sort_codes_by_closeness(code_list, answer_code):
 	sorted_codes = [k for k in sorted(code_list, key=similar_scores.get, reverse=True)]
 	return sorted_codes
 
+#==================================================================
+#==================================================================
+def string_match2(str1: str, str2: str) -> int:
+	"""
+	Calculates a similarity score between two strings.
+
+	Matching characters contribute to the score, with higher rewards for uninterrupted matches.
+	The score decreases incrementally after encountering a mismatch.
+	"""
+	minlen = min(len(str1), len(str2))  # Only compare up to the shorter string's length
+	count = 0
+	count_step = 10
+	for i in range(minlen):
+		if str1[i] != str2[i]:
+			count_step = 1  # Reduce reward after the first mismatch
+		count += count_step
+	return count
+
 #===========================================
 def string_match(str1, str2):
 	minlen = min(len(str1), len(str2))
 	count = 0
-	count_step = 10
+	count_step = 16
 	list1 = list(str1)
 	list2 = list(str2)
 	for i in range(minlen):
 		if list1[i] != list2[i]:
-			count_step = 1
+			count_step = max(count_step//2, 1)
 		count += count_step
 	return count
+assert string_match("abcde", "abcde") == 80, "Matching strings failed"
+assert string_match("abcde", "vwxyz") == 16, "Completely mismatched strings failed"
+assert string_match("abcde", "abcxy") == 60, "Prefix match failed"
 
 if __name__ == '__main__':
 	import treecodes
