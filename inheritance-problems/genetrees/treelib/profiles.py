@@ -2,7 +2,6 @@ import sys
 import random
 from collections import defaultdict
 
-
 try:
 	from treelib import tools
 except ImportError:
