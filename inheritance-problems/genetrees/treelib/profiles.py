@@ -7,6 +7,10 @@ try:
 except ImportError:
 	import tools
 
+### ONLY ALLOWED TO IMPORT tools NOT OTHER TREELIB FILES
+
+raise NotImplementedError("Profiles are not longer useful, upgraded to sorting by distance dicts")
+
 #==================================================================
 #==================================================================
 def gene_tree_code_to_profile(code: str, num_nodes: int = None):
@@ -138,8 +142,8 @@ assert string_match("abcde", "vwxyz") == 16, "Completely mismatched strings fail
 assert string_match("abcde", "abcxy") == 60, "Prefix match failed"
 
 if __name__ == '__main__':
-	import treecodes
-	all_codes = list(treecodes.code_library.values())
+	import definitions
+	all_codes = list(definitions.code_library.values())
 	tree_code = random.choice(all_codes)
 	print(f"tree_code = {tree_code}")
 	profile = gene_tree_code_to_profile(tree_code)
