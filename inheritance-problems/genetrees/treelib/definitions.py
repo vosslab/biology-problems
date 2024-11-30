@@ -1,3 +1,6 @@
+
+### NOT ALLOWED TO IMPORT OTHER TREELIB FILES
+
 #==================================
 #==================================
 #==================================
@@ -74,7 +77,7 @@ code_library = {
 
 	###================================================
 	## 2 leaves -- 1 type / 1 edge-labeled
-	'pair':		'(a1b)',
+	'2comb':	'(a1b)',
 
 	###================================================
 	## 3 leaves -- 1 type / 1 edge-labeled
@@ -240,9 +243,9 @@ code_library = {
 	'5comb+4comb':			'(((((a1b)2c)3d)4e)8(((f5g)6h)7i))', #type 41 / 15 edge-labels
 	'5giraffe+4comb':		'((((a1b)3(c2d))4e)8(((f5g)6h)7i))', #type 42 / 15 edge-labels
 	'3comb+pair+4comb':		'((((a1b)2c)4(d3e))8(((f5g)6h)7i))', #type 43 / 45 edge-labels
-	'5comb+4balanced':		'(((((a1b)2c)3d)4e)8(((f5g)6h)7i))', #type 44 / 15 edge-labels
-	'5giraffe+4balanced':	'((((a1b)3(c2d))4e)8(((f5g)6h)7i))', #type 45 / 15 edge-labels
-	'3comb+pair+4balanced':	'((((a1b)2c)4(d3e))8(((f5g)6h)7i))', #type 46 / 45 edge-labels
+	'5comb+4balanced':		'(((((a1b)2c)3d)4e)8((f5g)7(h6i)))', #type 44 / 15 edge-labels
+	'5giraffe+4balanced':	'((((a1b)3(c2d))4e)8((f5g)7(h6i)))', #type 45 / 15 edge-labels
+	'3comb+pair+4balanced':	'((((a1b)2c)4(d3e))8((f5g)7(h6i)))', #type 46 / 45 edge-labels
 
 	###================================================
 	###================================================

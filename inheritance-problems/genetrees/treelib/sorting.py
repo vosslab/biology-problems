@@ -7,6 +7,8 @@ try:
 except ImportError:
 	import tools
 
+### ONLY ALLOWED TO IMPORT tools NOT OTHER TREELIB FILES
+
 #===========================================================
 #===========================================================
 def get_highest_number(substring):
@@ -117,6 +119,9 @@ def compare_taxa_distance_maps(map1: dict, map2: dict) -> float:
 	if set(map1.keys()) != set(map2.keys()):
 		raise ValueError("The two distance maps must have the same taxon pairs.")
 
+	if map1 == map2:
+		return 1.0
+
 	score = 0
 	for pair in map1:
 		# Calculate the absolute difference in distances for each taxon pair
@@ -189,8 +194,8 @@ def sort_tree_codes_by_taxa_distances(tree_codes: list, answer_code: str) -> lis
 if __name__ == '__main__':
 	import random
 	import pprint
-	import treecodes
-	all_codes = list(treecodes.code_library.values())
+	import definitions
+	all_codes = list(definitions.code_library.values())
 	tree_code = random.choice(all_codes)
 	print(f"tree_code = {tree_code}")
 	taxa_distance_map = generate_taxa_distance_map(tree_code)

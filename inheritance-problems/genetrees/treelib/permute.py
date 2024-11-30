@@ -12,6 +12,8 @@ except:
 	import tools
 	import lookup
 
+### ONLY ALLOWED TO IMPORT tools NOT OTHER TREELIB FILES
+
 #==================================
 def _flip_tree_code(code: str) -> str:
 	"""

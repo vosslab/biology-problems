@@ -3,6 +3,9 @@
 import re
 import copy
 import itertools
+import xml.etree.ElementTree as ET
+
+### NOT ALLOWED TO IMPORT OTHER TREELIB FILES
 
 #===========================================
 #===========================================
@@ -44,9 +47,34 @@ def code_to_number_of_taxa(tree_code):
 	return len(code_to_taxa_list(tree_code))
 assert code_to_number_of_taxa('(((a2b)3c)5((d1e)4f))') == 6
 
+#==================================
+def reset_sort_taxa_in_code(original_tree_code: str) -> str:
+	"""
+	Resets and sorts the taxa in a tree code alphabetically.
+	"""
+	# Step 1: Extract the list of taxa in the original tree code
+	original_taxa_list = code_to_taxa_list(original_tree_code)
+	# Step 2: Create a sorted version of the taxa
+	sorted_taxa_list = "abcdefghijklmnop"[:len(original_taxa_list)]
+	# Step 3: Create intermediate placeholders for replacements
+	placeholders = [f"@PL{i}$" for i in range(len(original_taxa_list))]
+	# Step 4: Replace original taxa with placeholders to avoid collisions
+	placeholder_tree_code = copy.copy(original_tree_code)
+	for taxon, placeholder in zip(original_taxa_list, placeholders):
+		placeholder_tree_code = placeholder_tree_code.replace(taxon, placeholder)
+
+	# Step 5: Replace placeholders with sorted taxa
+	sorted_tree_code = copy.copy(placeholder_tree_code)
+	for placeholder, sorted_taxon in zip(placeholders, sorted_taxa_list):
+		sorted_tree_code = sorted_tree_code.replace(placeholder, sorted_taxon)
+	return sorted_tree_code
+assert reset_sort_taxa_in_code('(((a2b)3c)4(d1e))') == '(((a2b)3c)4(d1e))'
+assert reset_sort_taxa_in_code('(((e2c)3a)4(d1b))') == '(((a2b)3c)4(d1e))'
+assert reset_sort_taxa_in_code('(((Y2Z)4(W3X))5(U1V))') == '(((a2b)4(c3d))5(e1f))'
+
 #===========================================
 #===========================================
-def code_to_internal_node_list(tree_code):
+def code_to_internal_node_list(tree_code: str):
 	# Split the tree_code by non-numeric characters using regex
 	re_list = re.split("[^0-9]+", tree_code)
 	# Filter out empty strings caused by consecutive non-numeric characters
@@ -148,12 +176,211 @@ def replace_gene_letters(tree_code, ordered_taxa):
 	return new_code
 assert replace_gene_letters('(((a1b)2c)4(d3e))', 'ZYXWV') == '(((Y1Z)2X)4(V3W))'
 
+
+#===========================================
+#===========================================
+def check_matching_parens(tree_code: str) -> bool:
+	"""
+	Checks that parentheses in the tree code are balanced and properly nested.
+	"""
+	open_parens = 0
+	for char in tree_code:
+		if char == '(':
+			open_parens += 1
+		elif char == ')':
+			if not open_parens:
+				raise ValueError(f"Unmatched closing parenthesis in tree_code {tree_code}")
+			open_parens -= 1
+	if open_parens:
+		raise ValueError(f"Unmatched opening parenthesis in tree_code {tree_code}")
+	return True
+assert check_matching_parens("((()())())") == True
+
+#===========================================
+#===========================================
+def validate_tree_code_by_reduction(tree_code: str) -> bool:
+	"""
+	Validates a tree code by iteratively reducing valid subtrees to a placeholder.
+
+	Args:
+		tree_code (str): The tree code to validate.
+
+	Returns:
+		bool: True if the tree code is valid, otherwise raises ValueError.
+
+	Raises:
+		ValueError: If the tree code is invalid or cannot be fully reduced.
+	"""
+	if not tree_code or not isinstance(tree_code, str):
+		raise ValueError("Invalid input: tree_code must be a non-empty string.")
+	# Create a mutable copy
+	reduced_tree_code = copy.copy(tree_code)
+	# Placeholder for valid subtrees
+	placeholder = 'Z'
+	# Extract and sort the internal node numerical characters
+	node_list = sorted(code_to_internal_node_list(tree_code))
+	# Iteratively replace valid subtrees with the placeholder
+	for node_num_char in node_list:
+		node_index = reduced_tree_code.find(node_num_char)
+		sub_tree_str = reduced_tree_code[node_index-2:node_index+3]
+		# Debug output for tracking the reduction process
+		#print(f'sub_tree_str = {sub_tree_str}')
+		# Match and replace valid subtrees
+		if not re.fullmatch(r'\([a-zA-Z]\d[a-zA-Z]\)', sub_tree_str):
+			raise ValueError(f"Invalid subtree structure: {sub_tree_str} of {reduced_tree_code}")
+		reduced_tree_code = reduced_tree_code.replace(sub_tree_str, placeholder)
+	# Final check: reduced tree code should collapse to a single placeholder
+	if len(reduced_tree_code) > 1 and reduced_tree_code != placeholder:
+		raise ValueError(f"Invalid tree_code did not reduce: {reduced_tree_code}")
+	return True
+assert validate_tree_code_by_reduction("(a1b)") == True  # Minimal structure
+assert validate_tree_code_by_reduction("(((a2b)3c)4(d1e))") == True
+assert validate_tree_code_by_reduction('(((((a1b)3c)5d)7(e6(f4(g2h))))8i)') == True
+
+#===========================================
+#===========================================
+def validate_tree_code(tree_code: str, base: bool = False, replacement: bool = False) -> bool:
+	"""
+	Validates the structure and contents of a tree code.
+
+	Args:
+		tree_code (str): The tree code to validate.
+		replacement (bool): Indicates if validation allows uppercase and non-consecutive taxa.
+
+	Returns:
+		bool: True if the tree code passes all validation checks.
+
+	Raises:
+		ValueError: If the tree code fails any validation check.
+	"""
+	# Step 0: Basic input validation
+	if not tree_code:
+		raise ValueError("Tree code is empty.")
+	if not isinstance(tree_code, str):
+		raise ValueError("Tree code is not a string.")
+	# Minimum valid structure is "(a1b)"
+	if len(tree_code) < 5:
+		raise ValueError(f"Tree code is too short: {tree_code}")
+	if base and replacement:
+		raise ValueError(f"replacement {replacement} overrides base {base}, only one can be true")
+
+	# Step 1: Check for valid characters
+	if not replacement and not re.fullmatch(r'[a-z0-9()]+', tree_code):
+		raise ValueError(f"Tree code contains invalid characters: {tree_code}")
+	if replacement and not re.fullmatch(r'[a-zA-Z0-9()]+', tree_code):
+		raise ValueError(f"Tree code contains invalid characters: {tree_code}")
+
+	# Step 2: Check for balanced parentheses
+	if tree_code.count('(') != tree_code.count(')'):
+		raise ValueError(f"Unmatched parentheses in tree_code {tree_code}")
+	check_matching_parens(tree_code)
+
+	# Step 3: Extract taxa and internal node lists
+	taxa_list = code_to_taxa_list(tree_code)
+	node_list = code_to_internal_node_list(tree_code)
+
+	# Step 4: Check the relationship between the number of taxa and internal nodes
+	num_taxa = len(taxa_list)
+	num_nodes = len(node_list)
+	if num_taxa != num_nodes + 1:
+		raise ValueError(f"Unmatched taxa {num_taxa} != nodes {num_nodes} + 1 in tree_code {tree_code}")
+
+	# Step 5: Check for duplicate taxa
+	if len(set(taxa_list)) != len(taxa_list):
+		raise ValueError(f"Duplicate taxa found: {taxa_list} in tree_code {tree_code}")
+
+	# Step 6: Validate taxa (lowercase or uppercase in replacement mode)
+	if not replacement:
+		# Ensure all taxa are lowercase and consecutive
+		if not all(taxon.islower() and taxon.isalpha() for taxon in taxa_list):
+			raise ValueError(f"Taxa not all lowercase alphabetic characters: {taxa_list} in tree_code {tree_code}")
+		if sorted(taxa_list) != list('abcdefghijklmn')[:num_taxa]:
+			raise ValueError(f"Taxa are not consecutive: {taxa_list} in tree_code {tree_code} in non-replacement mode")
+		if base and taxa_list != list('abcdefghijklmn')[:num_taxa]:
+			raise ValueError(f"Unsorted Taxa are not consecutive: {taxa_list} in base tree_code {tree_code} in base mode")
+	else:
+		# Ensure all taxa are alphabetic (uppercase or lowercase allowed in replacement mode)
+		if not all(taxon.isalpha() for taxon in taxa_list):
+			raise ValueError(f"Taxa not all alphabetic characters: {taxa_list} in tree_code {tree_code} in replacement mode")
+
+	# Step 7: Check for duplicate internal nodes
+	if len(set(node_list)) != len(node_list):
+		raise ValueError(f"Duplicate numbers found: {node_list} in tree_code {tree_code}")
+
+	# Step 8: Validate nodes (numeric and consecutive)
+	if not all(node.isdigit() for node in node_list):
+		raise ValueError(f"Nodes not all numeric: {node_list} in tree_code {tree_code}")
+	if sorted(node_list) != list('123456789')[:num_nodes]:
+		raise ValueError(f"Nodes are not consecutive: {node_list} in tree_code {tree_code}")
+
+	#Validates a tree code by iteratively reducing valid subtrees to a placeholder.
+	validate_tree_code_by_reduction(tree_code)
+
+	# If all checks pass, the tree code is valid
+	return True
+# Valid tree codes
+assert validate_tree_code("(a1b)") == True  # Minimal structure
+assert validate_tree_code("(((a1b)2c)3d)") == True
+assert validate_tree_code("(((a1b)3(c2d))5(e4f))") == True
+# Valid tree codes in replacement mode
+assert validate_tree_code("(((X1Y)2z)3F)", replacement=True) == True
+# Check base modes
+assert validate_tree_code("(((a1b)2c)3d)", base=True) == True
+assert validate_tree_code("(((a1d)2b)3c)", base=False) == True
+
+
+#===========================================
+#===========================================
+def is_valid_html(html_str: str, debug: bool=True) -> bool:
+	"""
+	Validates if the input HTML string is well-formed by removing entities
+	and wrapping the content in a root element for XML parsing.
+
+	Args:
+		html_str (str): The HTML string to validate.
+
+	Returns:
+		bool: True if the HTML is well-formed, False otherwise.
+	"""
+	if '\n' in html_str:
+		raise ValueError("Blackboard upload does not support newlines in the HTML code.")
+	html_str = html_str.replace('<', '\n<')  # Optional: format the input HTML string for better readability on error
+	try:
+		# Remove HTML entities by finding '&' followed by alphanumerics or '#' and a semicolon
+		cleaned_html = re.sub(r'&[#a-zA-Z0-9]+;', '', html_str)
+		# Wrap in a root tag for XML parsing as XML requires a single root element
+		wrapped_html = f"<root>{cleaned_html}</root>"
+		# Parse the cleaned and wrapped HTML with XML parser
+		ET.fromstring(wrapped_html)
+		return True
+	except ET.ParseError as e:
+		# Print detailed error information for debugging
+		if debug: print(f"Parse error: {e}")
+
+		# Optional: Print a snippet of the HTML around the error
+		error_index = e.position[1] if hasattr(e, 'position') else 0
+		snippet = cleaned_html[max(0, error_index - 40): error_index + 40]
+		if debug: print(f"Snippet around error (40 chars before and after):\n{snippet}")
+
+		# Optional: Print the entire cleaned HTML if debugging further
+		if debug: print("Full cleaned HTML (wrapped in root):")
+		if debug: print(wrapped_html)
+
+		return False
+
+# Simple assertion test for the function: 'is_valid_html'
+assert is_valid_html("<p>This is a paragraph.</p>") == True
+assert is_valid_html("<p>This is a<br/>paragraph.</p>") == True
+assert is_valid_html("<p>This is&nbsp;a paragraph.</p>") == True
+assert is_valid_html("<p>This is a paragraph.</html>", debug=False) == False
+assert is_valid_html("<span style='no closing quote>This is a paragraph.</span>", debug=False) == False
+
 #===========================================
 #===========================================
 if __name__ == '__main__':
 	import random
-	import treecodes
-	all_codes = list(treecodes.code_library.values())
+	import definitions
+	all_codes = list(definitions.code_library.values())
 	tree_code = random.choice(all_codes)
 	print(f"tree_code = {tree_code}")
 	num_taxa = code_to_number_of_taxa(tree_code)
@@ -170,4 +397,5 @@ if __name__ == '__main__':
 	print(f"sorted should be same = {sorted_code == tree_code}")
 	replaced_code = replace_gene_letters(tree_code, 'ZYXWVUTSR'[:num_taxa])
 	print(f"replaced_code = {replaced_code}")
-
+	reset_code = reset_sort_taxa_in_code(replaced_code)
+	print(f"reset_code = {reset_code}")
