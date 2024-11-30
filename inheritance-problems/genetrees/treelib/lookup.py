@@ -7,11 +7,13 @@ from collections import defaultdict
 try:
 	from treelib import tools
 	from treelib import permute
+	from treelib import sorting
 	from treelib import definitions
 	from treelib import treecodeclass
 except ImportError:
 	import tools
 	import permute
+	import sorting
 	import definitions
 	import treecodeclass
 
@@ -136,16 +138,16 @@ def get_all_base_tree_codes_for_leaf_count(num_leaves: int) -> list:
 #===========================================
 
 #===========================================
-def get_all_permuted_tree_codes_for_leaf_count(num_leaves: int, sorted_taxa: list) -> list:
+def get_all_permuted_tree_codes_for_leaf_count(num_leaves: int) -> list:
 	print(f".. running get_all_permuted_tree_codes_for_leaf_count(num_leaves={num_leaves})")
 	if num_leaves > 7:
 		print("generating the 88,200 trees for 7 leaves takes 5 seconds, 8 leaves takes over 2 minutes to make 1.3M trees")
-		raise ValueError("too many leaves requested, try a different method for generating trees")
+		#raise ValueError("too many leaves requested, try a different method for generating trees")
 	base_tree_code_cls_list = get_all_base_tree_codes_for_leaf_count(num_leaves)
 	base_tree_code_str_list = []
 	for base_tree_code_cls in base_tree_code_cls_list:
 		base_tree_code_str_list.append(base_tree_code_cls.tree_code_str)
-	tree_code_str_list = permute.get_all_permuted_tree_codes_from_lists(base_tree_code_str_list, sorted_taxa)
+	tree_code_str_list = permute.get_all_permuted_tree_codes_from_tree_code_list(base_tree_code_str_list)
 	start_time = time.time()
 	treecode_cls_list = []
 	for tree_code_str in tree_code_str_list:
@@ -209,10 +211,54 @@ def get_random_inner_node_permutation_from_tree_code(tree_code):
 		tree_code_str = tree_code.tree_code_str
 	elif isinstance(tree_code, str):
 		tree_code_str = tree_code
-	permute_tree_code_str = permute.get_random_tree_code_permutation(tree_code_str)
+	permute_tree_code_str = permute.get_random_inner_node_permutation_from_tree_code(tree_code_str)
 	permute_treecode_cls = treecodeclass.TreeCode(permute_tree_code_str)
 	return permute_treecode_cls
 
+#===========================================
+# Ported Tools Functions that return tree_code_str
+#===========================================
+
+def replace_taxa_letters(tree_code, ordered_taxa: list):
+	if isinstance(tree_code, treecodeclass.TreeCode):
+		tree_code_str = tree_code.tree_code_str
+	elif isinstance(tree_code, str):
+		tree_code_str = tree_code
+	ordered_tree_str = tools.replace_taxa_letters(tree_code_str, ordered_taxa)
+	#print(f"replace_taxa_letters {tree_code_str} -> {ordered_tree_str}")
+	ordered_treecode_cls = treecodeclass.TreeCode(ordered_tree_str, ordered_taxa)
+	return ordered_treecode_cls
+
+#===========================================
+# Ported Sorting Functions that return List of tree_code_str
+#===========================================
+
+def sort_treecodes_by_taxa_distances(treecode_cls_list: list, answer_treecode_cls: str) -> list:
+	"""
+	Sorts a list of TreeCode objects by their similarity to an answer TreeCode.
+	"""
+	# Verify the type of the answer_treecode_cls
+	if not isinstance(answer_treecode_cls, treecodeclass.TreeCode):
+		raise TypeError("this function requires treecodeclass.TreeCode")
+	# Get the distance map for the answer tree code
+	answer_distance_map = answer_treecode_cls.distance_map
+	# Initialize a list to store valid TreeCode objects with scores
+	good_treecode_cls_list = []
+	# Compute similarity scores for each tree in the input list
+	for treecode_cls in treecode_cls_list:
+		# Compare the distance maps of the current tree and the answer tree
+		answer_score = sorting.compare_taxa_distance_maps(answer_distance_map, treecode_cls.distance_map)
+		#print(f"answer_score = {answer_score:.3f} for a={answer_treecode_cls.tree_code_str}, t={treecode_cls.tree_code_str}")
+		# Filter out exact matches (score = 1.0) and non-matches (score = 0.0)
+		if answer_score < 0.999:
+			# Assign the similarity score to the current TreeCode object
+			treecode_cls.answer_score = answer_score
+			# Add the TreeCode object to the list of valid comparisons
+			good_treecode_cls_list.append(treecode_cls)
+	# Sort the valid TreeCode objects by similarity score in descending order
+	good_treecode_cls_list.sort(key=lambda x: x.answer_score, reverse=True)
+	# Return the sorted list of TreeCode objects
+	return good_treecode_cls_list
 
 #==============================
 # Test Block
@@ -255,9 +301,8 @@ if __name__ == "__main__":
 
 	if num_leaves >= 7:
 		num_leaves = 6
-	sorted_taxa = "abcdefg"[:num_leaves]
 	start_time = time.time()
-	all_codes = get_all_permuted_tree_codes_for_leaf_count(num_leaves, sorted_taxa)
+	all_codes = get_all_permuted_tree_codes_for_leaf_count(num_leaves)
 	if len(all_codes) > 10:
 		print(f"All permuted tree codes for {num_leaves} leaves: {len(all_codes)} different tree_codes")
 	else:
