@@ -24,7 +24,9 @@ class TreeCode:
 		self.distance_map = sorting.generate_taxa_distance_map(self.tree_code_str)
 		self.num_leaves = tools.code_to_number_of_taxa(self.tree_code_str)
 		comb_name = f"{self.num_leaves}comb"
-		self.base_comb_tree_code_str = definitions.code_library[comb_name]
+		self.base_comb_tree_code_str = lookup.get_tree_code_from_common_name(comb_name)
+		if self.base_comb_tree_code_str is None:
+			raise ValueError(f"could not find {comb_name} in definitions")
 		self.base_comb_similarity_score = self._compute_similarity_to_base_comb()
 		self.output_cls = output.GeneTreeOutput()
 

@@ -309,7 +309,6 @@ def replace_gene_letters(tree_code, ordered_taxa):
 	return new_code
 assert replace_gene_letters('(((a1b)2c)4(d3e))', 'ZYXWV') == '(((Y1Z)2X)4(V3W))'
 
-
 #===========================================
 #===========================================
 def check_matching_parens(tree_code: str) -> bool:

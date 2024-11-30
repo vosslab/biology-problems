@@ -8,10 +8,12 @@ try:
 	from treelib import tools
 	from treelib import permute
 	from treelib import definitions
+	from treelib import treecodeclass
 except ImportError:
 	import tools
 	import permute
 	import definitions
+	import treecodeclass
 
 ### ONLY ALLOWED TO IMPORT definitions, permute, and tools NOT OTHER TREELIB FILES
 
@@ -64,20 +66,26 @@ print(output)
 
 #==================================
 
-def get_common_name_from_tree_code(tree_code: str) -> str:
+def get_common_name_from_tree_code(tree_code) -> str:
 	"""
 	Returns the common name for a given tree code. If the tree code does not
 	directly match, it attempts to reset and sort the taxa in the tree code
 	before looking it up.
 	"""
+	if isinstance(tree_code, treecodeclass.TreeCode):
+		tree_code_str = tree_code.tree_code_str
+	elif isinstance(tree_code, str):
+		tree_code_str = tree_code
 	if tree_code in tree_code_to_name:
-		return tree_code_to_name[tree_code]
+		return tree_code_to_name[tree_code_str]
 	# Try resetting and sorting the taxa in the tree code
-	reset_tree_code = tools.reset_sort_taxa_in_code(tree_code)
-	if reset_tree_code in tree_code_to_name:
-		return tree_code_to_name[reset_tree_code]
-	# Raise an error if no match is found
-	raise ValueError(f"Cannot find a common name for this tree code: {tree_code}")
+	reset_tree_code_str = tools.reset_sort_taxa_in_code(tree_code_str)
+	if reset_tree_code_str in tree_code_to_name:
+		return tree_code_to_name[reset_tree_code_str]
+	if isinstance(tree_code, treecodeclass.TreeCode):
+		# this might be None
+		return tree_code.tree_common_name
+	return None
 
 #==================================
 def get_tree_code_from_common_name(common_name: str) -> str:
@@ -100,9 +108,11 @@ def get_random_base_tree_code_for_leaf_count(num_leaves: int) -> str:
 	if num_leaves > max_leaves:
 		raise ValueError(f"Too many leaves requested: {num_leaves} > max {max_leaves}")
 	# Get all tree codes for the given number of leaves
-	good_codes = num_leaves_to_tree_set[num_leaves]
+	sized_tree_codes = num_leaves_to_tree_set[num_leaves]
 	# Return a random choice
-	return random.choice(good_codes)
+	tree_code_str = random.choice(sized_tree_codes)
+	treecode_cls = treecodeclass.TreeCode(tree_code_str)
+	return treecode_cls
 
 #==================================
 def get_all_base_tree_codes_for_leaf_count(num_leaves: int) -> list:
@@ -114,72 +124,144 @@ def get_all_base_tree_codes_for_leaf_count(num_leaves: int) -> list:
 	max_leaves = max(list(num_leaves_to_tree_set.keys()))
 	if num_leaves > max_leaves:
 		raise ValueError(f"Too many leaves requested: {num_leaves} > max {max_leaves}")
-	return num_leaves_to_tree_set[num_leaves]
+	tree_code_str_list = num_leaves_to_tree_set[num_leaves]
+	treecode_cls_list = []
+	for tree_code_str in tree_code_str_list:
+		treecode_cls = treecodeclass.TreeCode(tree_code_str)
+		treecode_cls_list.append(treecode_cls)
+	return treecode_cls_list
 
 #===========================================
-def get_all_permuted_tree_codes_for_leaf_count(num_leaves, sorted_taxa):
+# Ported Permute Functions that return List of tree_code_str
+#===========================================
+
+#===========================================
+def get_all_permuted_tree_codes_for_leaf_count(num_leaves: int, sorted_taxa: list) -> list:
 	print(f".. running get_all_permuted_tree_codes_for_leaf_count(num_leaves={num_leaves})")
 	if num_leaves > 7:
 		print("generating the 88,200 trees for 7 leaves takes 5 seconds, 8 leaves takes over 2 minutes to make 1.3M trees")
 		raise ValueError("too many leaves requested, try a different method for generating trees")
+	base_tree_code_cls_list = get_all_base_tree_codes_for_leaf_count(num_leaves)
+	base_tree_code_str_list = []
+	for base_tree_code_cls in base_tree_code_cls_list:
+		base_tree_code_str_list.append(base_tree_code_cls.tree_code_str)
+	tree_code_str_list = permute.get_all_permuted_tree_codes_from_lists(base_tree_code_str_list, sorted_taxa)
+	start_time = time.time()
+	treecode_cls_list = []
+	for tree_code_str in tree_code_str_list:
+		treecode_cls = treecodeclass.TreeCode(tree_code_str)
+		treecode_cls_list.append(treecode_cls)
+	print(f"get_all_permuted_tree_codes_for_leaf_count() took {time.time() - start_time:.6f} seconds.")
+	return treecode_cls_list
 
-	t0 = time.time()
-	all_taxa_permutations = tools.get_comb_safe_taxa_permutations(sorted_taxa)
-	print("len(all_taxa_permutations)=", len(all_taxa_permutations))
+#==================================
+def get_all_alpha_sorted_code_rotation_permutations(tree_code) -> list:
+	if isinstance(tree_code, treecodeclass.TreeCode):
+		tree_code_str = tree_code.tree_code_str
+	elif isinstance(tree_code, str):
+		tree_code_str = tree_code
+	tree_code_str_list = permute.get_all_alpha_sorted_code_rotation_permutations(tree_code_str)
+	start_time = time.time()
+	treecode_cls_list = []
+	for tree_code_str in tree_code_str_list:
+		treecode_cls = treecodeclass.TreeCode(tree_code_str)
+		treecode_cls_list.append(treecode_cls)
+	print(f"get_all_alpha_sorted_code_rotation_permutations() took {time.time() - start_time:.6f} seconds.")
+	return treecode_cls_list
 
-	base_tree_codes = get_all_base_tree_codes_for_leaf_count(num_leaves)
-	print("len(base_tree_codes)=", len(base_tree_codes))
+#==================================
+def get_all_inner_node_permutations_from_tree_code(tree_code) -> list:
+	if isinstance(tree_code, treecodeclass.TreeCode):
+		tree_code_str = tree_code.tree_code_str
+	elif isinstance(tree_code, str):
+		tree_code_str = tree_code
+	tree_code_str_list = permute.get_all_tree_code_inner_node_permutations(tree_code_str)
+	start_time = time.time()
+	treecode_cls_list = []
+	for tree_code_str in tree_code_str_list:
+		treecode_cls = treecodeclass.TreeCode(tree_code_str)
+		treecode_cls_list.append(treecode_cls)
+	print(f"get_all_inner_node_permutations_from_tree_code() took {time.time() - start_time:.6f} seconds.")
+	return treecode_cls_list
 
-	### ASSEMBLE CODE LIST
-	code_choice_list = []
+#===========================================
+def get_all_permutations_from_tree_code(tree_code) -> list:
+	if isinstance(tree_code, treecodeclass.TreeCode):
+		tree_code_str = tree_code.tree_code_str
+	elif isinstance(tree_code, str):
+		tree_code_str = tree_code
+	tree_code_str_list = permute.get_all_permutations_from_tree_code(tree_code_str)
+	start_time = time.time()
+	treecode_cls_list = []
+	for tree_code_str in tree_code_str_list:
+		treecode_cls = treecodeclass.TreeCode(tree_code_str)
+		treecode_cls_list.append(treecode_cls)
+	print(f"get_all_permutations_from_tree_code() took {time.time() - start_time:.6f} seconds.")
+	return treecode_cls_list
 
-	for base_code in base_tree_codes:
-		all_permute_codes = permute.get_all_code_permutations(base_code)
-		for permuted_code in all_permute_codes:
-			for permuted_nodes in all_taxa_permutations:
-				final_code = tools.replace_gene_letters(permuted_code, permuted_nodes)
-				if tools.is_gene_tree_alpha_sorted(final_code) is True:
-					code_choice_list.append(final_code)
-	#purge some other duplicates
-	code_choice_list = list(set(code_choice_list))
-	print("Created all trees ({0} in total) for {1} leaves in {2:.3f} seconds".format(
-		len(code_choice_list), num_leaves, time.time() - t0))
-	return code_choice_list
+#===========================================
+# Ported Permute Functions that return tree_code_str
+#===========================================
+
+#==================================
+def get_random_inner_node_permutation_from_tree_code(tree_code):
+	if isinstance(tree_code, treecodeclass.TreeCode):
+		tree_code_str = tree_code.tree_code_str
+	elif isinstance(tree_code, str):
+		tree_code_str = tree_code
+	permute_tree_code_str = permute.get_random_tree_code_permutation(tree_code_str)
+	permute_treecode_cls = treecodeclass.TreeCode(permute_tree_code_str)
+	return permute_treecode_cls
+
 
 #==============================
 # Test Block
 #==============================
 if __name__ == "__main__":
 	# Test `get_common_name_from_tree_code`
-	tree_code = random.choice(list(tree_code_to_name.keys()))
-	common_name = get_common_name_from_tree_code(tree_code)
-	print(f"Tree code: {tree_code}")
+	tree_code_str = random.choice(list(tree_code_to_name.keys()))
+	common_name = get_common_name_from_tree_code(tree_code_str)
+	print(f"Tree code: {tree_code_str}")
 	print(f"Common name: {common_name}")
 
 	# Test `get_tree_code_from_common_name`
 	try:
 		tree_code_from_name = get_tree_code_from_common_name(common_name)
 		print(f"Tree code for common name '{common_name}': {tree_code_from_name}")
-	except ValueError as e:
-		print(e)
+	except ValueError:
+		pass
 
-	# Test `get_random_tree_code_for_leaf_count`
+	print("\n.. Test `get_random_tree_code_for_leaf_count`")
 	num_leaves = random.choice(list(num_leaves_to_tree_set.keys()))
-	random_tree_code = get_random_base_tree_code_for_leaf_count(num_leaves)
-	print(f"Random tree code for {num_leaves} leaves: {random_tree_code}")
+	random_tree_code_cls = get_random_base_tree_code_for_leaf_count(num_leaves)
+	tree_code = random_tree_code_cls.tree_code_str
+	print(f"Random tree code for {num_leaves} leaves: {tree_code}")
 
-	# Test `get_all_base_tree_codes_for_leaf_count`
-	all_codes = get_all_base_tree_codes_for_leaf_count(num_leaves)
-	if len(all_codes) > 5:
-		print(f"All tree codes for {num_leaves} leaves: {len(all_codes)} different tree_codes")
+	print("\n.. Test `get_all_permutations_from_tree_code`")
+	treecode_cls_list = get_all_permutations_from_tree_code(random_tree_code_cls)
+	print("\n.. Test `get_all_permutations_from_tree_code (again)`")
+	treecode_cls_list = get_all_permutations_from_tree_code(random_tree_code_cls.tree_code_str)
+	if len(treecode_cls_list) > 5:
+		print(f"Permuted tree codes for {tree_code}: {len(treecode_cls_list)} different tree_codes")
 	else:
-		print(f"All tree codes for {num_leaves} leaves: {all_codes}")
+		print(f"Permuted tree codes for {tree_code}: {[code.tree_code_str for code in treecode_cls_list]}")
+
+	print("\n.. Test `get_all_base_tree_codes_for_leaf_count`")
+	treecode_cls_list = get_all_base_tree_codes_for_leaf_count(num_leaves)
+	if len(treecode_cls_list) > 5:
+		print(f"All tree codes for {num_leaves} leaves: {len(treecode_cls_list)} different tree_codes")
+	else:
+		print(f"All tree codes for {num_leaves} leaves: {[code.tree_code_str for code in treecode_cls_list]}")
 
 	if num_leaves >= 7:
 		num_leaves = 6
 	sorted_taxa = "abcdefg"[:num_leaves]
+	start_time = time.time()
 	all_codes = get_all_permuted_tree_codes_for_leaf_count(num_leaves, sorted_taxa)
 	if len(all_codes) > 10:
 		print(f"All permuted tree codes for {num_leaves} leaves: {len(all_codes)} different tree_codes")
 	else:
 		print(f"All permuted tree codes for {num_leaves} leaves: {all_codes}")
+	print(f"## get_all_permutations_from_tree_code() took {time.time() - start_time:.6f} seconds.")
+
+
