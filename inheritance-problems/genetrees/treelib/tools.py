@@ -272,7 +272,7 @@ assert sort_alpha_for_gene_tree('((b1a)3(d2c))') == '((a1b)3(c2d))'
 
 #===========================================
 #===========================================
-def replace_gene_letters(tree_code, ordered_taxa):
+def replace_taxa_letters(tree_code, ordered_taxa):
 	# Get the number of leaves in the tree
 	num_leaves = code_to_number_of_taxa(tree_code)
 
@@ -281,7 +281,7 @@ def replace_gene_letters(tree_code, ordered_taxa):
 		raise ValueError(f"Mismatch: {num_leaves} leaves in tree_code but {len(ordered_taxa)} taxa provided.")
 
 	# Extract default gene labels from the tree tree_code
-	default_gene_labels = code_to_taxa_list(tree_code)
+	default_gene_labels = sorted(code_to_taxa_list(tree_code))
 
 	# Create mappings for old labels to placeholders and placeholders to final labels
 	old_to_placeholder_map = {}
@@ -307,7 +307,79 @@ def replace_gene_letters(tree_code, ordered_taxa):
 	new_code = sort_alpha_for_gene_tree(new_code)
 
 	return new_code
-assert replace_gene_letters('(((a1b)2c)4(d3e))', 'ZYXWV') == '(((Y1Z)2X)4(V3W))'
+assert replace_taxa_letters('(((a1b)2c)4(d3e))', 'ZYXWV') == '(((Y1Z)2X)4(V3W))'
+assert replace_taxa_letters('(((a1b)2c)4(d3e))', 'VWXYZ') == '(((V1W)2X)4(Y3Z))'
+
+
+#===========================================================
+#===========================================================
+def get_highest_number(substring):
+	"""
+	Extracts the highest number from a string of alphanumeric and parenthesis characters.
+	"""
+	# Use a regex to find all numeric substrings
+	numbers = re.findall(r'\d+', substring)
+
+	# Convert the matches to integers
+	int_numbers = list(map(int, numbers))
+
+	# Return the maximum number, or -1 if the list is empty
+	return max(int_numbers, default=-1)
+assert get_highest_number('))4((g8h)7') == 8
+
+#===========================================================
+#===========================================================
+def find_node_number_for_taxa_pair(tree_code_str, taxon1, taxon2):
+	"""
+	Finds the connecting internal node number (LCA) between two taxa in a tree structure.
+	"""
+
+	# Locate the positions of the two taxa in the tree string
+	index1 = tree_code_str.find(taxon1)
+	index2 = tree_code_str.find(taxon2)
+
+	# Ensure both taxa are found in the string
+	if index1 == -1 or index2 == -1:
+		raise ValueError(f"One or both taxa not found in the tree_code_str: {taxon1}, {taxon2}")
+
+	# Determine the substring between the two taxa
+	min_index = min(index1, index2)
+	max_index = max(index1, index2)
+	substring = tree_code_str[min_index + 1:max_index]
+
+	# Extract the highest internal node number from the substring
+	max_internal_node = get_highest_number(substring)
+
+	return max_internal_node
+assert find_node_number_for_taxa_pair("((a1b)2c)", "a", "c") == 2
+
+#===========================================================
+#===========================================================
+def generate_taxa_distance_map(tree_code: str) -> dict:
+	"""
+	Generates a map of distances between all pairs of taxa in a tree.
+	"""
+	# Extract ordered taxa from the tree code
+	ordered_taxa = code_to_taxa_list(tree_code)
+
+	# Initialize a dictionary to store distances between taxon pairs
+	taxa_distance_map = {}
+
+	# Loop through all pairs of taxa
+	for i, taxon1 in enumerate(ordered_taxa):
+		for j, taxon2 in enumerate(ordered_taxa):
+			# Only consider pairs where taxon1 comes after taxon2
+			if taxon1 <= taxon2:
+				continue
+
+			# Find the internal node connecting the two taxa
+			internal_node_number = find_node_number_for_taxa_pair(tree_code, taxon1, taxon2)
+
+			# Retrieve the distance from the list and store it in both pair directions
+			taxa_distance_map[(taxon2, taxon1)] = internal_node_number
+
+	return taxa_distance_map
+assert generate_taxa_distance_map('(a1b)') == {('a', 'b'): 1}
 
 #===========================================
 #===========================================
@@ -526,7 +598,7 @@ if __name__ == '__main__':
 	print(f"is_gene_tree_alpha_sorted = {is_sorted}")
 	sorted_code = sort_alpha_for_gene_tree(tree_code)
 	print(f"sorted should be same = {sorted_code == tree_code}")
-	replaced_code = replace_gene_letters(tree_code, 'ZYXWVUTSR'[:num_taxa])
+	replaced_code = replace_taxa_letters(tree_code, 'ZYXWVUTSR'[:num_taxa])
 	print(f"replaced_code = {replaced_code}")
 	reset_code = reset_sort_taxa_in_code(replaced_code)
 	print(f"reset_code = {reset_code}")
