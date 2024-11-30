@@ -1,6 +1,3 @@
-import re
-import math
-
 try:
 	from treelib import tools
 	from treelib import lookup
@@ -14,8 +11,6 @@ except ImportError:
 
 ### ALLOWED TO IMPORT ALL OTHER TREELIB FILES
 
-lookup_cls = lookup.GeneTreeLookup()
-
 class TreeCode:
 	def __init__(self, tree_code_str: str):
 		"""
@@ -25,29 +20,29 @@ class TreeCode:
 			tree_code_str (str): The tree_code string.
 		"""
 		self.tree_code_str = tools.sort_alpha_for_gene_tree(tree_code_str)
-		self.tree_common_name = lookup_cls.get_tree_name_from_code(self.tree_code_str)
+		self.tree_common_name = lookup.get_common_name_from_tree_code(self.tree_code_str)
 		self.distance_map = sorting.generate_taxa_distance_map(self.tree_code_str)
 		self.num_leaves = tools.code_to_number_of_taxa(self.tree_code_str)
 		comb_name = f"{self.num_leaves}comb"
-		self.base_tree_code_str = definitions.code_library[comb_name]
-		self.base_similarity_score = self._compute_similarity_to_base()
+		self.base_comb_tree_code_str = definitions.code_library[comb_name]
+		self.base_comb_similarity_score = self._compute_similarity_to_base_comb()
 		self.output_cls = output.GeneTreeOutput()
 
-	def _compute_similarity_to_base(self) -> float:
+	def _compute_similarity_to_base_comb(self) -> float:
 		"""
 		Computes the similarity score to the canonical base tree for the number of leaves.
 
 		Returns:
 			float: The similarity score to the base comb tree.
 		"""
-		# If the tree is the same as the base tree, similarity is perfect
-		if self.base_tree_code_str == self.tree_code_str:
+		# If the tree is the same as the base comb tree, similarity is perfect
+		if self.base_comb_tree_code_str == self.tree_code_str:
 			return 1.0
 
-		# Compute the distance map for the base tree directly
-		base_distance_map = sorting.generate_taxa_distance_map(self.base_tree_code_str)
+		# Compute the distance map for the base comb tree directly
+		base_distance_map = sorting.generate_taxa_distance_map(self.base_comb_tree_code_str)
 
-		# Compare the current tree's distance map to the base tree's distance map
+		# Compare the current tree's distance map to the base comb tree's distance map
 		return sorting.compare_taxa_distance_maps(self.distance_map, base_distance_map)
 
 	def compare_to(self, other_tree) -> float:
@@ -84,9 +79,9 @@ class TreeCode:
 			return self.num_leaves < other_tree.num_leaves
 
 		# Sort by similarity to the base comb tree
-		if self.base_similarity_score != other_tree.base_similarity_score:
+		if self.base_comb_similarity_score != other_tree.base_comb_similarity_score:
 			# use greater than because closer to base comb tree comes first
-			return self.base_similarity_score > other_tree.base_similarity_score
+			return self.base_comb_similarity_score > other_tree.base_comb_similarity_score
 		# Sort by string representation for tie-breaking
 		return self.tree_code_str < other_tree.tree_code_str
 
@@ -113,7 +108,7 @@ class TreeCode:
 
 if __name__ == '__main__':
 	import random
-
+	import definitions
 	# Step 1: Select a random tree_code from the library
 	all_tree_codes = list(definitions.code_library.values())
 	tree_code_str = random.choice(all_tree_codes)
@@ -124,13 +119,13 @@ if __name__ == '__main__':
 	tree_code_obj.print_ascii_tree()
 	print(f"TreeCode object created: {tree_code_obj.tree_code_str}")
 	print(f"Number of leaves: {tree_code_obj.num_leaves}")
-	print(f"Base similarity score: {tree_code_obj.base_similarity_score:.5f}")
+	print(f"Base comb similarity score: {tree_code_obj.base_comb_similarity_score:.5f}")
 
 	# Step 3: Compare the tree_code to its base comb tree
-	base_tree_code_str = tree_code_obj.base_tree_code_str
-	base_tree_code_obj = TreeCode(base_tree_code_str)
-	similarity_score = tree_code_obj.compare_to(base_tree_code_obj)
-	print(f"Similarity to base tree: {similarity_score:.5f}")
+	base_comb_tree_code_str = tree_code_obj.base_comb_tree_code_str
+	base_comb_tree_code_obj = TreeCode(base_comb_tree_code_str)
+	base_comb_similarity_score = tree_code_obj.compare_to(base_comb_tree_code_obj)
+	print(f"Similarity to base comb tree: {base_comb_similarity_score:.5f}")
 
 	# Step 4: Test sorting functionality with multiple TreeCode objects
 	test_tree_codes = random.sample(all_tree_codes, 9)
@@ -138,7 +133,7 @@ if __name__ == '__main__':
 	sorted_trees = sorted(tree_objects)
 	print("Sorted tree_codes based on similarity to base trees:")
 	for i, tree in enumerate(sorted_trees):
-		print(f".. {i+1} Leaves: {tree.num_leaves} Base Score: {tree.base_similarity_score:.3f}, Code: {tree.tree_code_str}, ")
+		print(f".. {i+1} Leaves: {tree.num_leaves} Base Score: {tree.base_comb_similarity_score:.3f}, Code: {tree.tree_code_str}, ")
 
 	# Step 5: Verify equality comparison
 	if tree_objects[0] == tree_objects[0]:

@@ -2,15 +2,12 @@
 
 import sys
 import copy
-import time
 import random
 
 try:
 	from treelib import tools
-	from treelib import lookup
 except:
 	import tools
-	import lookup
 
 ### ONLY ALLOWED TO IMPORT tools NOT OTHER TREELIB FILES
 
@@ -174,38 +171,7 @@ def get_all_alpha_sorted_code_rotation_permutations(code):
 	code_permutations = list(set(alpha_sorted_code_permutations))
 	return code_permutations
 
-#===========================================
-def make_all_gene_trees_for_leaf_count(num_leaves, sorted_taxa):
-	if num_leaves > 7:
-		print("generating the 88,200 trees for 7 leaves takes 5 seconds, 8 leaves takes over 2 minutes to make 1.3M trees")
-		print("too many leaves requested, try a different method for generating trees")
-		sys.exit(1)
 
-	t0 = time.time()
-	all_taxa_permutations = tools.get_comb_safe_taxa_permutations(sorted_taxa)
-	print("len(all_taxa_permutations)=", len(all_taxa_permutations))
-
-	lookup_class = lookup.GeneTreeLookup()
-
-	sorted_tree_codes = lookup_class.get_all_gene_tree_codes_for_leaf_count(num_leaves)
-	print("len(sorted_tree_codes)=", len(sorted_tree_codes))
-
-	### ASSEMBLE CODE LIST
-	code_choice_list = []
-
-	for sorted_code in sorted_tree_codes:
-		all_permute_codes = get_all_code_permutations(sorted_code)
-		for permuted_code in all_permute_codes:
-			for permuted_nodes in all_taxa_permutations:
-				final_code = tools.replace_gene_letters(permuted_code, permuted_nodes)
-				if tools.is_gene_tree_alpha_sorted(final_code) is True:
-					code_choice_list.append(final_code)
-	#purge some other duplicates
-	code_choice_list = list(set(code_choice_list))
-	print("Created all trees ({0} in total) for {1} leaves in {2:.3f} seconds".format(
-		len(code_choice_list), num_leaves, time.time() - t0))
-	print("")
-	return code_choice_list
 
 #==================================
 def get_all_code_permutations(code):

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import re
-import sys
 import copy
 import numpy
 from collections import defaultdict
@@ -287,6 +286,7 @@ class GeneTreeOutput(object):
 		print("")
 
 	#==================================
+	""""
 	def utf8_character_improve(self, utf8_tree_array):
 		return utf8_tree_array
 		find_char_array = numpy.array([['|'],['_'],['|']], dtype=str)
@@ -328,6 +328,7 @@ class GeneTreeOutput(object):
 				line += f'{gene_text} '
 			print(line)
 		print("")
+	"""
 
 	#====================================================================
 	#====================================================================
@@ -350,7 +351,6 @@ class GeneTreeOutput(object):
 		# Combine all the styles into the `<td>` opening tag
 		td_sytle = f'style="{border}{middle}" '
 		td_cell_open = f'<td {td_sytle} {td_values}>'
-
 		# Define font color and size for the text within the cell
 		font_color = f'color: {self.font_colors.get(gene_text, "black")}; '
 		font_size = 'font-size: x-large; '
@@ -399,14 +399,10 @@ class GeneTreeOutput(object):
 		html_tree_array = numpy.empty((html_rows, html_cols), dtype=numpy.chararray)
 		# Decode array to str
 		ascii_tree_array = numpy.char.decode(char_tree_array, 'ascii')
-		final_col_num = ((cols-1)//2)*2
 		for row_num in range(rows):
 			for html_col_num in range(html_cols):
 				col_num = html_col_num*2
-				#print(html_col_num, col_num, cols, final_col_num, ascii_tree_array[row_num, col_num:][:4])
-				#char_pair = ''.join(ascii_tree_array[row_num, col_num:])[:2]
 				char_pair = ''.join(ascii_tree_array[row_num, col_num:col_num+2])
-				#print(f"char_pair = '{char_pair}', {len(char_pair)}")
 				if len(char_pair) == 0:
 					continue
 				td_cell = self.get_td_cell(char_pair)

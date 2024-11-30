@@ -3,13 +3,140 @@
 import re
 import copy
 import itertools
+from functools import lru_cache
 import xml.etree.ElementTree as ET
 
 ### NOT ALLOWED TO IMPORT OTHER TREELIB FILES
 
 #===========================================
 #===========================================
-def get_comb_safe_taxa_permutations(taxa):
+@lru_cache(maxsize=50)
+def expected_number_of_tree_types_for_leaf_count(num_leaves: int) -> int:
+	"""
+	Calculates the expected number of tree types for a given number of leaves.
+
+	Args:
+		num_leaves (int): The number of leaves in the tree.
+
+	Returns:
+		int: The number of tree types for the given leaf count.
+
+	Raises:
+		ValueError: If num_leaves is negative or too large.
+
+	Notes:
+		- Uses the Wedderburn-Etherington numbers (A001190) formula, which counts
+		  the number of unlabeled binary rooted trees with a given number of leaves.
+		- For `n` leaves, there are `n-1` internal nodes.
+		- This sequence grows as the number of possible topologies for binary trees increases.
+
+	References:
+		- Wedderburn-Etherington Numbers: https://oeis.org/A001190
+
+	Example:
+		1. num_leaves = 1: Only one trivial tree: `(a)`
+		2. num_leaves = 2: Only one tree type: `(a1b)`
+		3. num_leaves = 4: Two tree types: `(((a1b)2c)3d)` and `((a1b)3(c2d))`
+	"""
+	if num_leaves < 0:
+		raise ValueError("Number of leaves must be non-negative.")
+	if num_leaves <= 1:
+		return num_leaves  # Base cases: 0 -> 0, 1 -> 1
+	if num_leaves > 15:
+		raise ValueError(f"num_leaves {num_leaves} is too large. Increase limit if needed.")
+
+	midpoint = num_leaves // 2 + num_leaves % 2  # Midpoint for the range
+	tree_types = sum(
+		expected_number_of_tree_types_for_leaf_count(i + 1) *
+		expected_number_of_tree_types_for_leaf_count(num_leaves - 1 - i)
+		for i in range(midpoint - 1)
+	)
+
+	# Additional term for even `num_leaves`
+	if num_leaves % 2 == 0:
+		mid_value = expected_number_of_tree_types_for_leaf_count(midpoint)
+		tree_types += mid_value * (mid_value + 1) // 2
+
+	return tree_types
+#W-E Numbers: https://oeis.org/A001190 1, 1, 1, 2, 3, 6, 11, 23, 46, 98, 207, ...
+assert expected_number_of_tree_types_for_leaf_count(2) == 1
+assert expected_number_of_tree_types_for_leaf_count(3) == 1
+assert expected_number_of_tree_types_for_leaf_count(4) == 2
+assert expected_number_of_tree_types_for_leaf_count(5) == 3
+assert expected_number_of_tree_types_for_leaf_count(8) == 23
+assert expected_number_of_tree_types_for_leaf_count(11) == 207
+
+#===========================================
+#===========================================
+@lru_cache(maxsize=50)
+def expected_number_of_edge_labeled_trees_for_leaf_count(num_leaves: int) -> int:
+	"""
+	Computes the number of edge-labeled trees (Euler numbers) for a given number of leaves.
+
+	Args:
+		num_leaves (int): The number of leaves in the tree.
+
+	Returns:
+		int: The number of edge-labeled trees for the given leaf count.
+
+	Raises:
+		ValueError: If num_leaves is negative or not an integer.
+
+	Notes:
+		- This function calculates Euler or "up/down" numbers (A000111) using Seidel's algorithm.
+		- Edge-labeled trees allow for labeling the edges (not nodes) of the tree.
+		- Euler numbers describe the number of alternating permutations of `n` elements.
+
+	References:
+		- Euler Numbers: https://oeis.org/A000111
+
+	Algorithm:
+		- The calculation relies on Seidel's triangle, which generates Euler numbers iteratively.
+		- Each row of Seidel's triangle corresponds to the cumulative sums of the previous row.
+
+	Examples:
+		- For `num_leaves = 2`: 1 tree (a1b)
+		- For `num_leaves = 3`: 2 trees ((a1b)2c) and (c2(a1b)) or (a2(b1c))
+		- For `num_leaves = 4`: 5 edge-labeled trees.
+			'4comb':		'(((a1b)2c)3d)', #type 1
+			#'4comb*':		'(a3(b2(c1d)))',
+			'4balanced':	'((a1b)3(c2d))', #type 2
+			#'4balanced*':	'((a2b)3(c1d))',
+		- For `num_leaves = 7`: 272 edge-labeled trees.
+	"""
+	if not isinstance(num_leaves, int) or num_leaves < 2:
+		raise ValueError("num_leaves must be a non-negative integer.")
+	if num_leaves > 15:
+		raise ValueError(f"num_leaves {num_leaves} is too large. Increase limit if needed.")
+	# Base cases
+	n = num_leaves - 1
+	if n in (0, 1):
+		return 1
+	# Initialize Seidel's triangle
+	A = {-1: 0, 0: 1}  # Boundary values for triangle
+	k = 0  # Current index in the triangle
+	e = 1  # Direction: 1 = right, -1 = left
+	# Compute Euler numbers iteratively
+	for i in range(n + 1):
+		Am = 0  # Cumulative sum for current row
+		A[k + e] = 0  # Dummy boundary value
+		e = -e  # Reverse direction
+		for _ in range(i + 1):
+			Am += A[k]  # Accumulate sum
+			A[k] = Am  # Update triangle
+			k += e  # Move directionally
+	return Am
+#Euler Numbers: https://oeis.org/A000111 1, 1, 2, 5, 16, 61, 272, 1385, ..
+assert expected_number_of_edge_labeled_trees_for_leaf_count(2) == 1
+assert expected_number_of_edge_labeled_trees_for_leaf_count(3) == 1
+assert expected_number_of_edge_labeled_trees_for_leaf_count(4) == 2
+assert expected_number_of_edge_labeled_trees_for_leaf_count(5) == 5
+assert expected_number_of_edge_labeled_trees_for_leaf_count(8) == 272
+assert expected_number_of_edge_labeled_trees_for_leaf_count(11) == 50521
+
+#===========================================
+#===========================================
+def get_comb_safe_taxa_permutations(taxa: tuple) -> list:
 	# Sort the items to generate consistent permutations
 	taxa_list = sorted(taxa)
 	# Generate all permutations of the items
@@ -32,7 +159,8 @@ assert ("b", "a", "c") not in result, "Test failed: ('b', 'a', 'c') should NOT b
 
 #===========================================
 #===========================================
-def code_to_taxa_list(tree_code):
+@lru_cache(maxsize=150)
+def code_to_taxa_list(tree_code: str) -> list:
 	# Split the tree_code by non-alphabetic characters using regex
 	re_list = re.split("[^a-zA-Z]+", tree_code)
 	# Filter out empty strings caused by consecutive non-alphabetic characters
@@ -42,12 +170,14 @@ assert code_to_taxa_list('(((a2b)3c)4(d1e))') == list('abcde')
 
 #===========================================
 #===========================================
-def code_to_number_of_taxa(tree_code):
+@lru_cache(maxsize=150)
+def code_to_number_of_taxa(tree_code: str) -> int:
 	# Extract the alphabetic nodes and return their count
 	return len(code_to_taxa_list(tree_code))
 assert code_to_number_of_taxa('(((a2b)3c)5((d1e)4f))') == 6
 
-#==================================
+#===========================================
+#===========================================
 def reset_sort_taxa_in_code(original_tree_code: str) -> str:
 	"""
 	Resets and sorts the taxa in a tree code alphabetically.
@@ -74,7 +204,8 @@ assert reset_sort_taxa_in_code('(((Y2Z)4(W3X))5(U1V))') == '(((a2b)4(c3d))5(e1f)
 
 #===========================================
 #===========================================
-def code_to_internal_node_list(tree_code: str):
+@lru_cache(maxsize=150)
+def code_to_internal_node_list(tree_code: str) -> list:
 	# Split the tree_code by non-numeric characters using regex
 	re_list = re.split("[^0-9]+", tree_code)
 	# Filter out empty strings caused by consecutive non-numeric characters
@@ -84,14 +215,16 @@ assert code_to_internal_node_list('((((a1b)2c)4(d3e))5f)') == list('12435')
 
 #===========================================
 #===========================================
-def code_to_number_of_internal_nodes(tree_code):
+@lru_cache(maxsize=150)
+def code_to_number_of_internal_nodes(tree_code: str) -> int:
 	# Extract the numeric internal nodes and return their count
 	return len(code_to_internal_node_list(tree_code))
 assert code_to_number_of_internal_nodes('((((a1b)2c)4(d3e))7((f5g)6h))') == 7
 
 #===========================================
 #===========================================
-def is_gene_tree_alpha_sorted(tree_code):
+@lru_cache(maxsize=150)
+def is_gene_tree_alpha_sorted(tree_code: str) -> bool:
 	internal_nodes_list = code_to_internal_node_list(tree_code)
 	for internal_node_num in internal_nodes_list:
 		internal_node_index = tree_code.find(str(internal_node_num))
@@ -327,7 +460,6 @@ assert validate_tree_code("(((X1Y)2z)3F)", replacement=True) == True
 # Check base modes
 assert validate_tree_code("(((a1b)2c)3d)", base=True) == True
 assert validate_tree_code("(((a1d)2b)3c)", base=False) == True
-
 
 #===========================================
 #===========================================
