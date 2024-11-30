@@ -164,16 +164,17 @@ def _convert_int_to_binary_list(integer: int) -> list:
 #=====================================================
 
 #===========================================
-def get_all_permuted_tree_codes_from_lists(base_tree_code_str_list: list, sorted_taxa: list) -> list:
+def get_all_permuted_tree_codes_from_tree_code_list(base_tree_code_str_list: list) -> list:
 	t0 = time.time()
-	num_leaves = tools.code_to_number_of_taxa(base_tree_code_str_list[0])
+	sorted_taxa = sorted(tools.code_to_taxa_list(base_tree_code_str_list[0]))
+	num_leaves = len(sorted_taxa)
 	#print(f"__ len(base_tree_code_str_list)= {len(base_tree_code_str_list)}")
 	all_taxa_permutations = tools.get_comb_safe_taxa_permutations(sorted_taxa)
 	#print(f"__ len(all_taxa_permutations)= {len(all_taxa_permutations)}")
 	#print(f"__ num_leaves = {num_leaves}")
 	if num_leaves > 7:
 		print("generating the 88,200 trees for 7 leaves takes 5 seconds, 8 leaves takes over 2 minutes to make 1.3M trees")
-		raise ValueError(f"too many leaves requested ({num_leaves}), try a different method for generating trees")
+		#raise ValueError(f"too many leaves requested ({num_leaves}), try a different method for generating trees")
 	### ASSEMBLE CODE LIST
 	tree_code_str_list = []
 	for i, base_tree_code_str in enumerate(base_tree_code_str_list):
@@ -183,7 +184,7 @@ def get_all_permuted_tree_codes_from_lists(base_tree_code_str_list: list, sorted
 		#loop_time = time.time()
 		for permuted_code in all_inner_node_permutated_tree_codes:
 			for permuted_taxa in all_taxa_permutations:
-				final_code = tools.replace_gene_letters(permuted_code, permuted_taxa)
+				final_code = tools.replace_taxa_letters(permuted_code, permuted_taxa)
 				if tools.is_gene_tree_alpha_sorted(final_code) is True:
 					tree_code_str_list.append(final_code)
 		#print(f"__ current {len(tree_code_str_list)} permuted tree codes loop time {time.time()-loop_time:.6f} seconds.")
@@ -332,9 +333,9 @@ if __name__ == '__main__':
 
 	base_tree_code_str_list = [tree_code_str,]
 	base_tree_code_str_list = len_6_tree_codes
-	# Time get_all_permuted_tree_codes_from_lists
+	# Time get_all_permuted_tree_codes_from_tree_code_list
 	permuted_tree_codes1 = time_function(
-		get_all_permuted_tree_codes_from_lists, base_tree_code_str_list, taxa_list
+		get_all_permuted_tree_codes_from_tree_code_list, base_tree_code_str_list
 	)
 
 	# Summary of results
@@ -343,4 +344,4 @@ if __name__ == '__main__':
 	print(f"get_all_inner_node_permutations_from_tree_code: {len(inner_node_permutations)} permutations generated.")
 	print(f"get_all_permutations_from_tree_code: {len(all_permutations)} permutations generated.")
 	print(f"get_random_inner_node_permutation_from_tree_code: {random_inner_node_permutation}")
-	print(f"get_all_permuted_tree_codes_from_lists: {len(permuted_tree_codes1)} permutations generated.")
+	print(f"get_all_permuted_tree_codes_from_tree_code_list: {len(permuted_tree_codes1)} permutations generated.")
