@@ -1,3 +1,5 @@
+import math
+
 try:
 	from treelib import tools
 	from treelib import lookup
@@ -12,7 +14,7 @@ except ImportError:
 ### ALLOWED TO IMPORT ALL OTHER TREELIB FILES
 
 class TreeCode:
-	def __init__(self, tree_code_str: str):
+	def __init__(self, tree_code_str: str, ordered_taxa_tuple: tuple = None):
 		"""
 		Initializes a TreeCode object.
 
@@ -20,13 +22,28 @@ class TreeCode:
 			tree_code_str (str): The tree_code string.
 		"""
 		self.tree_code_str = tools.sort_alpha_for_gene_tree(tree_code_str)
-		self.tree_common_name = lookup.get_common_name_from_tree_code(self.tree_code_str)
-		self.distance_map = sorting.generate_taxa_distance_map(self.tree_code_str)
 		self.num_leaves = tools.code_to_number_of_taxa(self.tree_code_str)
+		if ordered_taxa_tuple is not None:
+			self.taxa_replaced = True
+			if isinstance(ordered_taxa_tuple, list):
+				ordered_taxa_tuple = tuple(ordered_taxa_tuple)
+			elif not isinstance(ordered_taxa_tuple, tuple):
+				raise ValueError(f"ordered_taxa_tuple must be a tuple, not a {type(ordered_taxa_tuple)}")
+			self.ordered_taxa_tuple = ordered_taxa_tuple
+			self.ordered_taxa_str = ''.join(ordered_taxa_tuple)
+		else:
+			self.taxa_replaced = False
+			self.ordered_taxa_str = 'abcdefghijklm'[:self.num_leaves]
+		self.tree_common_name = lookup.get_common_name_from_tree_code(self.tree_code_str)
+		self.distance_map = tools.generate_taxa_distance_map(self.tree_code_str)
+		#self.frozen_map = frozenset(sorted(self.distance_map.items()))
+		self.frozen_map = frozenset(sorted(self.distance_map.items()))
 		comb_name = f"{self.num_leaves}comb"
 		self.base_comb_tree_code_str = lookup.get_tree_code_from_common_name(comb_name)
 		if self.base_comb_tree_code_str is None:
 			raise ValueError(f"could not find {comb_name} in definitions")
+		if self.taxa_replaced is True:
+			self.base_comb_tree_code_str = tools.replace_taxa_letters(self.base_comb_tree_code_str, self.ordered_taxa_tuple)
 		self.base_comb_similarity_score = self._compute_similarity_to_base_comb()
 		self.output_cls = output.GeneTreeOutput()
 
@@ -42,7 +59,7 @@ class TreeCode:
 			return 1.0
 
 		# Compute the distance map for the base comb tree directly
-		base_distance_map = sorting.generate_taxa_distance_map(self.base_comb_tree_code_str)
+		base_distance_map = tools.generate_taxa_distance_map(self.base_comb_tree_code_str)
 
 		# Compare the current tree's distance map to the base comb tree's distance map
 		return sorting.compare_taxa_distance_maps(self.distance_map, base_distance_map)
@@ -87,7 +104,34 @@ class TreeCode:
 		# Sort by string representation for tie-breaking
 		return self.tree_code_str < other_tree.tree_code_str
 
+	def _key(self):
+		"""
+		Generates a tuple of attributes that uniquely identify this TreeCode object.
+		This is used for both hashing and equality checks.
+		"""
+		return (
+			self.num_leaves,
+			self.taxa_replaced,
+			self.ordered_taxa_str,
+			int(round(self.base_comb_similarity_score * 1000)),
+			self.frozen_map,
+		)
+
+	def __hash__(self) -> int:
+		"""
+		Computes a hash value for the TreeCode object based on its key attributes.
+		"""
+		return hash(self._key())
+
 	def __eq__(self, other_tree) -> bool:
+		"""
+		Checks equality between two TreeCode objects based on their key attributes.
+		"""
+		if not isinstance(other_tree, TreeCode):
+			return False
+		return self._key() == other_tree._key()
+
+	def __eq__old(self, other_tree) -> bool:
 		"""
 		Checks equality between two TreeCode objects based on their string representation.
 
@@ -100,9 +144,12 @@ class TreeCode:
 		# faster than comparing distance maps
 		if self.num_leaves != other_tree.num_leaves:
 			return False
-		return self.distance_map == other_tree.distance_map
+		# faster than comparing distance maps
+		if not math.isclose(self.base_comb_similarity_score, other_tree.base_comb_similarity_score, abs_tol=1e-6):
+			return False
+		return self.frozen_map == other_tree.frozen_map
 
-	def get_html_tree(self):
+	def get_html_table(self):
 		return self.output_cls.get_html_from_tree_code(self.tree_code_str)
 
 	def print_ascii_tree(self):
