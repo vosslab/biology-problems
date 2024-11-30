@@ -180,7 +180,7 @@ def get_all_permuted_tree_codes_from_lists(base_tree_code_str_list: list, sorted
 		#print(f"__ tree code {i+1} of {len(base_tree_code_str_list)} -> {base_tree_code_str}")
 		all_inner_node_permutated_tree_codes = get_all_inner_node_permutations_from_tree_code(base_tree_code_str)
 		#print(f"__ processing inner node {len(all_inner_node_permutated_tree_codes)} tree codes and {len(all_taxa_permutations)} taxa orders")
-		loop_time = time.time()
+		#loop_time = time.time()
 		for permuted_code in all_inner_node_permutated_tree_codes:
 			for permuted_taxa in all_taxa_permutations:
 				final_code = tools.replace_gene_letters(permuted_code, permuted_taxa)
@@ -271,19 +271,7 @@ def get_random_inner_node_permutation_from_tree_code(tree_code_str: str) -> str:
 	return alpha_sorted_tree_code_str
 
 if __name__ == '__main__':
-	import random
-	import time
 	import definitions
-
-	# Import functions to test
-	from permute import (
-		get_all_permuted_tree_codes_from_lists,
-		get_all_alpha_sorted_code_rotation_permutations,
-		get_all_inner_node_permutations_from_tree_code,
-		get_all_permutations_from_tree_code,
-		get_random_inner_node_permutation_from_tree_code,
-		make_all_gene_trees_for_leaf_count,
-	)
 
 	def time_function(func, *args, **kwargs):
 		"""
@@ -344,17 +332,10 @@ if __name__ == '__main__':
 
 	base_tree_code_str_list = [tree_code_str,]
 	base_tree_code_str_list = len_6_tree_codes
-
-	# Time get_all_permuted_tree_codes_from_lists
-	permuted_tree_codes2 = time_function(
-		make_all_gene_trees_for_leaf_count, base_tree_code_str_list, taxa_list
-	)
 	# Time get_all_permuted_tree_codes_from_lists
 	permuted_tree_codes1 = time_function(
 		get_all_permuted_tree_codes_from_lists, base_tree_code_str_list, taxa_list
 	)
-
-
 
 	# Summary of results
 	print("\nFunction outputs:")
@@ -363,4 +344,3 @@ if __name__ == '__main__':
 	print(f"get_all_permutations_from_tree_code: {len(all_permutations)} permutations generated.")
 	print(f"get_random_inner_node_permutation_from_tree_code: {random_inner_node_permutation}")
 	print(f"get_all_permuted_tree_codes_from_lists: {len(permuted_tree_codes1)} permutations generated.")
-	print(f"make_all_gene_trees_for_leaf_count: {len(permuted_tree_codes2)} permutations generated.")
