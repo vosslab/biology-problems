@@ -106,7 +106,7 @@ base_background_colors = {
 class GeneTreeOutput(object):
 	#==================================
 	def __init__(self):
-		self.gene_name_map = copy.copy(fake_animals)
+		self.taxa_name_map = copy.copy(fake_animals)
 		self.font_colors = copy.copy(base_font_colors)
 		self.background_colors = copy.copy(base_background_colors)
 		self.replace_names = True
@@ -278,8 +278,8 @@ class GeneTreeOutput(object):
 			gene_text = ascii_tree_array[rownum][-1]
 			if (self.replace_names is True
 			and len(gene_text) == 1
-			and self.gene_name_map.get(gene_text.lower()) is not None):
-				line += f'{self.gene_name_map[gene_text.lower()]} '
+			and self.taxa_name_map.get(gene_text.lower()) is not None):
+				line += f'{self.taxa_name_map[gene_text.lower()]} '
 			else:
 				line += f'{gene_text} '
 			print(line)
@@ -322,8 +322,8 @@ class GeneTreeOutput(object):
 			gene_text = utf8_tree_array[rownum][-1]
 			if (self.replace_names is True
 			and len(gene_text) == 1
-			and self.gene_name_map.get(gene_text.lower()) is not None):
-				line += f'{self.gene_name_map[gene_text.lower()]} '
+			and self.taxa_name_map.get(gene_text.lower()) is not None):
+				line += f'{self.taxa_name_map[gene_text.lower()]} '
 			else:
 				line += f'{gene_text} '
 			print(line)
@@ -353,20 +353,20 @@ class GeneTreeOutput(object):
 		td_cell_open = f'<td {td_sytle} {td_values}>'
 		# Define font color and size for the text within the cell
 		font_color = f'color: {self.font_colors.get(gene_text, "black")}; '
-		font_size = 'font-size: x-large; '
+		font_size = 'font-size: large; '
 		# Combine the font styles into the opening `<span>` tag for the text
 		text_span = f'&nbsp;<span style="{font_color}{font_size}">'
 		# Determine the text content of the cell:
 		if (self.replace_names is True
 			and len(gene_text) == 1
-			and self.gene_name_map.get(gene_text.lower()) is not None):
-			# Replace the gene_text with its mapped name (case insensitive lookup in `gene_name_map`).
-			cell_text = f'{self.gene_name_map[gene_text.lower()]}'
+			and self.taxa_name_map.get(gene_text.lower()) is not None):
+			# Replace the gene_text with its mapped name (case insensitive lookup in `taxa_name_map`).
+			cell_text = f'{self.taxa_name_map[gene_text.lower()]}'
 		else:
 			# Use the original gene_text as the cell content
 			cell_text = f'{gene_text}'
 		# Combine everything to form the complete HTML for the `<td>` cell
-		name_td_cell = f'{td_cell_open}{text_span}{cell_text}</span>&nbsp;</td>'
+		name_td_cell = f'{td_cell_open}{text_span}<strong>{cell_text}</strong></span>&nbsp;</td>'
 		# Return the fully constructed HTML `<td>` cell
 		return name_td_cell
 
