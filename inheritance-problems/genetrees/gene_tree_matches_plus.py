@@ -8,6 +8,8 @@ import argparse
 
 #local
 import bptools
+bptools.use_add_no_click_div = False
+bptools.use_insert_hidden_terms = False
 
 from treelib import tools
 from treelib import lookup
@@ -150,6 +152,8 @@ def find_diff_question(N, num_choices, same_treecode_cls_list, diff_treecode_cls
 	random.shuffle(same_treecode_cls_list)
 	same_treecode_cls = same_treecode_cls_list.pop()  # The reference tree code for the question
 
+	header = '<h2>Find the <span style="color: #ba372a;"><strong>DIFFERENT</strong></span> tree</h2>'
+
 	# Include a background statement to provide context
 	background_statement = get_background_statement()
 
@@ -179,11 +183,11 @@ def find_diff_question(N, num_choices, same_treecode_cls_list, diff_treecode_cls
 	# Add incorrect "same" choices (trees with the same structure)
 	random.shuffle(same_treecode_cls_list)
 	for treecode_cls in same_treecode_cls_list[:num_choices - 1]:
-		html_treecode_table = treecode_cls.get_html_table()
+		html_treecode_table = treecode_cls.get_html_table(caption=False)
 		html_choices_list.append(html_treecode_table)
 
 	# Add the correct "different" choice
-	answer_html_table = answer_treecode_cls.get_html_table()
+	answer_html_table = answer_treecode_cls.get_html_table(caption=False)
 	html_choices_list.append(answer_html_table)
 
 	# Remove duplicates from the choices and shuffle them for randomness
@@ -191,7 +195,7 @@ def find_diff_question(N, num_choices, same_treecode_cls_list, diff_treecode_cls
 	random.shuffle(html_choices_list)
 
 	# Combine the background, question statement, and choices into the full question
-	full_statement = background_statement + question_statement
+	full_statement = header + background_statement + question_statement
 	complete_question = bptools.formatBB_MC_Question(N, full_statement, html_choices_list, answer_html_table)
 
 	# Print a debug message to indicate the question generation is complete
@@ -213,6 +217,8 @@ def find_same_question(N, num_choices, same_treecode_cls_list, diff_treecode_cls
 	random.shuffle(same_treecode_cls_list)
 	same_treecode_cls = same_treecode_cls_list.pop()  # The main tree for the question
 	answer_treecode_cls = same_treecode_cls_list.pop()  # Correct answer among the choices
+
+	header = '<h2>Find the <span style="color: #169179;"><strong>SAME</strong></span> tree</h2>'
 
 	# Include a background statement on phylogenetic trees
 	background_statement = get_background_statement()
@@ -239,17 +245,17 @@ def find_same_question(N, num_choices, same_treecode_cls_list, diff_treecode_cls
 	# Add the incorrect choices (trees with different structures)
 	random.shuffle(same_treecode_cls_list)
 	for treecode_cls in diff_treecode_cls_list[:num_choices - 1]:
-		html_treecode_table = treecode_cls.get_html_table()
+		html_treecode_table = treecode_cls.get_html_table(caption=False)
 		html_choices_list.append(html_treecode_table)
 	# Add the correct choice (answer)
-	answer_html_table = answer_treecode_cls.get_html_table()
+	answer_html_table = answer_treecode_cls.get_html_table(caption=False)
 	html_choices_list.append(answer_html_table)
 	# Remove duplicates from the choices and shuffle them for randomness
 	html_choices_list = list(set(html_choices_list))
 	random.shuffle(html_choices_list)
 
 	# Combine the background, question statement, and choices into the full question
-	full_statement = background_statement + question_statement
+	full_statement = header + background_statement + question_statement
 	complete_question = bptools.formatBB_MC_Question(N, full_statement, html_choices_list, answer_html_table)
 
 	# Print a debug message and return the complete question
@@ -355,7 +361,7 @@ def main():
 	outfile = (
 		'bbq'
 		f'-{script_name}'
-		f'-{args.num_leaves}_leaves'
+		f'-{bptools.number_to_cardinal(args.num_leaves).upper()}_leaves'
 		f'-{args.style.upper()}'
 		'-questions.txt'
 	)
@@ -365,7 +371,7 @@ def main():
 	with open(outfile, 'w') as f:
 		N = 1  # Question number counter
 		errors = 0
-		while(N < args.duplicates and errors < args.duplicates):
+		while(N <= args.duplicates and errors < args.duplicates):
 			complete_question = make_question(N, args)
 			if complete_question is not None:
 				N += 1
