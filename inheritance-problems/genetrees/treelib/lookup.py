@@ -84,6 +84,13 @@ def get_common_name_from_tree_code(tree_code) -> str:
 	reset_tree_code_str = tools.reset_sort_taxa_in_code(tree_code_str)
 	if reset_tree_code_str in tree_code_to_name:
 		return tree_code_to_name[reset_tree_code_str]
+	num_leaves = tools.code_to_number_of_taxa(reset_tree_code_str)
+	if num_leaves < 7:
+		permuted_codes_list = permute.get_all_inner_node_permutations_from_tree_code(reset_tree_code_str)
+		for permuted_code_str in permuted_codes_list:
+			reset_tree_code_str = tools.reset_sort_taxa_in_code(permuted_code_str)
+			if reset_tree_code_str in tree_code_to_name:
+				return tree_code_to_name[reset_tree_code_str]
 	if isinstance(tree_code, treecodeclass.TreeCode):
 		# this might be None
 		return tree_code.tree_common_name

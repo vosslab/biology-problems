@@ -150,7 +150,15 @@ class TreeCode:
 		return self.frozen_map == other_tree.frozen_map
 
 	def get_html_table(self):
-		return self.output_cls.get_html_from_tree_code(self.tree_code_str)
+		caption_tag = None
+		if self.tree_common_name:
+			caption_tag = (
+				'<caption style="caption-side:bottom">'
+				f'<i>tree code common name</i>: {self.tree_common_name}'
+				'</caption>'
+			)
+		html_table = self.output_cls.get_html_from_tree_code(self.tree_code_str, caption_tag)
+		return html_table
 
 	def print_ascii_tree(self):
 		return self.output_cls.print_ascii_tree(self.tree_code_str)

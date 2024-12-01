@@ -414,9 +414,14 @@ class GeneTreeOutput(object):
 		return html_tree_array
 
 	#==================================
-	def format_array_into_html_table(self, html_tree_array):
+	def format_array_into_html_table(self, html_tree_array, caption_tag: str = None):
 		(rows, cols) = html_tree_array.shape
 		html_table = '<table style="border-collapse: collapse; border: 1px solid silver;">'
+		if (caption_tag
+		and len(caption_tag) > 19
+		and caption_tag.startswith('<caption')
+		and caption_tag.endswith('</caption>')):
+			html_table += caption_tag
 		#col 1 and -1 are <tr>
 		for _ in range(cols - 3):
 			html_table += '<colgroup width="30"/>'
@@ -428,10 +433,10 @@ class GeneTreeOutput(object):
 		return html_table
 
 	#==================================
-	def get_html_from_tree_code(self, tree_code):
+	def get_html_from_tree_code(self, tree_code, caption_tag: str = None):
 		char_tree_array = self.make_char_tree_array(tree_code)
 		html_tree_array = self.make_html_tree_array(char_tree_array)
-		html_table = self.format_array_into_html_table(html_tree_array)
+		html_table = self.format_array_into_html_table(html_tree_array, caption_tag)
 		if tools.is_valid_html(html_table) is False:
 			print(html_table)
 			raise ValueError("Generated HTML is not well-formed.")
