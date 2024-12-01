@@ -209,7 +209,7 @@ def get_all_inner_node_permutations_from_tree_code(tree_code) -> list:
 		tree_code_str = tree_code.tree_code_str
 	elif isinstance(tree_code, str):
 		tree_code_str = tree_code
-	tree_code_str_list = permute.get_all_tree_code_inner_node_permutations(tree_code_str)
+	tree_code_str_list = permute.get_all_inner_node_permutations_from_tree_code(tree_code_str)
 	start_time = time.time()
 	treecode_cls_list = []
 	for tree_code_str in tree_code_str_list:
