@@ -149,9 +149,9 @@ class TreeCode:
 			return False
 		return self.frozen_map == other_tree.frozen_map
 
-	def get_html_table(self):
+	def get_html_table(self, caption: bool = True):
 		caption_tag = None
-		if self.tree_common_name:
+		if caption and self.tree_common_name:
 			caption_tag = (
 				'<caption style="caption-side:bottom">'
 				f'<i>tree code common name</i>: {self.tree_common_name}'
