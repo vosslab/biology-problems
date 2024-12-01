@@ -282,6 +282,11 @@ def generate_html_distance_table(sorted_taxa, distance_dict, answer_treecode_cls
 	height = 45 * (len(sorted_taxa) + 1) + 10
 	htmL_table = '<table style="border-collapse: collapse; border: 2px solid black; '
 	htmL_table += f'width: {width}px; height: {height}px">'
+	htmL_table +=  (
+		'<caption style="caption-side:bottom">'
+		f'{len(sorted_taxa)} taxa &times; {len(sorted_taxa)} taxa distance matrix'
+		'</caption>'
+	)
 	for _ in range(len(sorted_taxa) + 1):
 		htmL_table += '<colgroup width="100"/>'
 	htmL_table += '<tr>'
