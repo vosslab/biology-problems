@@ -4,6 +4,7 @@ import os
 import re
 import sys
 import copy
+import time
 import random
 import argparse
 import colorsys
@@ -78,8 +79,8 @@ def make_random_distance_list(num_distances: int) -> list:
 	"""
 	Generates a sorted list of unique random distances.
 	The function creates a list of random even integers such that:
-	  - Each distance is at least 8 units apart from any other.
-	  - The random distances are bounded by `2` and `num_distances * multiplier`.
+	- Each distance is at least 8 units apart from any other.
+	- The random distances are bounded by `2` and `num_distances * multiplier`.
 	"""
 	# Initialize the list of distances
 	distances = []
@@ -140,7 +141,7 @@ def map_taxon_distances(ordered_taxa, distance_list, treecode_cls):
 	#print(treecode_distance_map)
 	taxa_distance_map = {}
 	# Loop through all pairs of taxa
-	for pair_tuple, distance_int  in treecode_distance_map.items():
+	for pair_tuple, distance_int in treecode_distance_map.items():
 		swap_tuple = (pair_tuple[1], pair_tuple[0])
 		distance_index = distance_int - 1
 		taxa_distance_map[pair_tuple] = distance_list[distance_index]
@@ -226,7 +227,7 @@ def print_ascii_distance_table(ordered_taxa, distance_dict):
 	bottom_border += f"{bottom_right_corner}\n"
 
 	# Generate the table header
-	header = f"{vertical_line}{' ' * column_width}"  # Empty top-left corner
+	header = f"{vertical_line}{' ' * column_width}" # Empty top-left corner
 	for taxa in sorted_taxa:
 		header += f"{vertical_line}  {taxa}  "
 	header += f"{vertical_line}\n"
@@ -240,7 +241,7 @@ def print_ascii_distance_table(ordered_taxa, distance_dict):
 		row = f"{vertical_line}  {taxa1}  "
 		for taxa2 in sorted_taxa:
 			if taxa1 == taxa2:
-				cell_value = "---"  # Self-distance marked with 'x'
+				cell_value = "---" # Self-distance marked with 'x'
 			else:
 				# Retrieve the distance value
 				distance = distance_dict.get((taxa1, taxa2), 0)
@@ -306,7 +307,7 @@ def generate_html_distance_table(sorted_taxa, distance_dict, answer_treecode_cls
 		for taxa2 in sorted_taxa:
 			if taxa1 == taxa2:
 				# Self-distance is represented by gray cells
-				my_td_extra = td_extra + f' bgcolor="DarkGray"'
+				my_td_extra = td_extra + ' bgcolor="DarkGray"'
 				htmL_table += f'<td {my_td_extra}>&times;</td>'
 			else:
 				# Use distance to calculate color and add the value
@@ -325,10 +326,10 @@ def generate_html_distance_table(sorted_taxa, distance_dict, answer_treecode_cls
 #===========================================================
 def get_problem_statement(sorted_taxa, distance_dict, answer_treecode_cls):
 	font_colors = answer_treecode_cls.output_cls.font_colors
-	background_colors = answer_treecode_cls.output_cls.background_colors
+	#background_colors = answer_treecode_cls.output_cls.background_colors
 	taxa_name_map = answer_treecode_cls.output_cls.taxa_name_map
 
-	named_taxa = [taxa_name_map.get(taxon.lower(), taxon) for taxon in sorted_taxa]
+	#named_taxa = [taxa_name_map.get(taxon.lower(), taxon) for taxon in sorted_taxa]
 	colored_taxa = [f'<span style="color: {font_colors.get(taxon.lower(), "black")};">{taxa_name_map.get(taxon.lower(), taxon)}</span>' for taxon in sorted_taxa]
 
 	# Add the descriptive question statement
@@ -370,36 +371,40 @@ def taxa_text(taxon1, taxon2, distance_dict, taxa_name_map, font_colors):
 #===========================================================
 #===========================================================
 def get_multiple_choices(ordered_taxa, num_choices):
-	num_leaves = num_taxa = len(ordered_taxa)
-	sorted_taxa = sorted(ordered_taxa)
-
+	num_leaves = len(ordered_taxa)
 	#===========================================
 	# GET ALL POSSIBLE GENE TREES
 	#===========================================
-	base_treecode_cls  = lookup.get_random_base_tree_code_for_leaf_count(num_leaves)
-	pre_answer_treecode_cls  = lookup.get_random_inner_node_permutation_from_tree_code(base_treecode_cls)
+	if debug: print("starting get_multiple_choices()")
+	base_treecode_cls = lookup.get_random_base_tree_code_for_leaf_count(num_leaves)
+	pre_answer_treecode_cls = lookup.get_random_inner_node_permutation_from_tree_code(base_treecode_cls)
 	if debug: pre_answer_treecode_cls.print_ascii_tree()
 
 	global cache_all_treecode_cls_list
 	if len(cache_all_treecode_cls_list) == 0:
-		all_treecode_cls_list = lookup.get_all_permuted_tree_codes_for_leaf_count(num_leaves)
-		cache_all_treecode_cls_list = copy.copy(all_treecode_cls_list)
+		if debug: print("calculating all_permuted_tree_codes")
+		all_treecode_cls_list = lookup.get_all_taxa_permuted_tree_codes_for_leaf_count(num_leaves)
+		if debug: print("shuffling all_permuted_tree_codes")
+		random.shuffle(all_treecode_cls_list)
+		purge_start = time.time()
+		if debug: print("purgine duplicates")
+		unique_treecode_cls_list = list(set(all_treecode_cls_list))
+		if time.time() - purge_start > 10:
+			if debug: print(f"done purging duplicates in {time.time() - purge_start:.1f} seconds")
+			if debug: print(f"unique {len(unique_treecode_cls_list)} treecodes, down from all {len(all_treecode_cls_list)}")
+		cache_all_treecode_cls_list = copy.copy(unique_treecode_cls_list)
 	else:
-		all_treecode_cls_list = copy.copy(cache_all_treecode_cls_list)
-	random.shuffle(all_treecode_cls_list)
-	unique_treecode_cls_list = list(set(all_treecode_cls_list))
-	if debug: print(f"unique {len(unique_treecode_cls_list)} treecodes, down from all {len(all_treecode_cls_list)}")
-	print([cls.tree_code_str for cls in unique_treecode_cls_list])
+		if debug: print("loading unique_treecode_cls_list")
+		unique_treecode_cls_list = copy.copy(cache_all_treecode_cls_list)
+
 	sorted_treecode_cls_list = lookup.sort_treecodes_by_taxa_distances(unique_treecode_cls_list, pre_answer_treecode_cls)
 	if debug: print(f"sorted {len(sorted_treecode_cls_list)} treecodes, down from unique {len(unique_treecode_cls_list)}")
-	#print([cls.tree_code_str for cls in sorted_treecode_cls_list])
 
 	replaced_treecode_cls_list = []
 	for treecode_cls in sorted_treecode_cls_list[:num_choices-1]:
-		permuted_treecode_cls  = lookup.get_random_inner_node_permutation_from_tree_code(treecode_cls)
+		permuted_treecode_cls = lookup.get_random_inner_node_permutation_from_tree_code(treecode_cls)
 		replaced_treecode_cls = lookup.replace_taxa_letters(permuted_treecode_cls, ordered_taxa)
 		replaced_treecode_cls_list.append(replaced_treecode_cls)
-	#print([cls.tree_code_str for cls in replaced_treecode_cls_list])
 
 	answer_treecode_cls = lookup.replace_taxa_letters(pre_answer_treecode_cls, ordered_taxa)
 	if debug:
@@ -421,7 +426,7 @@ def make_question(N: int, num_leaves: int, num_choices: int) -> str:
 
 	Returns:
 		str: A formatted HTML multiple-choice question that includes a species distance matrix
-		     and a list of possible gene tree answers.
+			and a list of possible gene tree answers.
 	"""
 	# Initialize the GeneTree object for tree generation and manipulation
 
@@ -555,7 +560,7 @@ def main():
 
 	# Open the output file and generate questions
 	with open(outfile, 'w') as f:
-		N = 1  # Question number counter
+		N = 1 # Question number counter
 		for _ in range(args.duplicates):
 			complete_question = make_question(N, args.num_leaves, args.num_choices)
 			if complete_question is not None:
