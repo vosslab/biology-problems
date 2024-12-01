@@ -177,9 +177,13 @@ def get_all_permuted_tree_codes_from_tree_code_list(base_tree_code_str_list: lis
 		#raise ValueError(f"too many leaves requested ({num_leaves}), try a different method for generating trees")
 	### ASSEMBLE CODE LIST
 	tree_code_str_list = []
+
+	start_time = time.time()
 	for i, base_tree_code_str in enumerate(base_tree_code_str_list):
 		#print(f"__ tree code {i+1} of {len(base_tree_code_str_list)} -> {base_tree_code_str}")
 		all_inner_node_permutated_tree_codes = get_all_inner_node_permutations_from_tree_code(base_tree_code_str)
+		if time.time() - start_time > 10:
+			print(f".. {i+1:,d} of {len(base_tree_code_str_list):,d} base codes, {time.time() - start_time :.1f} seconds.")
 		#print(f"__ processing inner node {len(all_inner_node_permutated_tree_codes)} tree codes and {len(all_taxa_permutations)} taxa orders")
 		#loop_time = time.time()
 		for permuted_code in all_inner_node_permutated_tree_codes:
@@ -188,6 +192,33 @@ def get_all_permuted_tree_codes_from_tree_code_list(base_tree_code_str_list: lis
 				if tools.is_gene_tree_alpha_sorted(final_code) is True:
 					tree_code_str_list.append(final_code)
 		#print(f"__ current {len(tree_code_str_list)} permuted tree codes loop time {time.time()-loop_time:.6f} seconds.")
+
+	#purge some other duplicates
+	tree_code_str_list = list(set(tree_code_str_list))
+	print("## created all trees ({0:,d} in total) for {1} leaves in {2:.3f} seconds.\n".format(
+		len(tree_code_str_list), num_leaves, time.time() - t0))
+	return tree_code_str_list
+
+#===========================================
+def get_all_taxa_permuted_tree_codes_from_tree_code_list(base_tree_code_str_list: list) -> list:
+	t0 = time.time()
+	sorted_taxa = sorted(tools.code_to_taxa_list(base_tree_code_str_list[0]))
+	num_leaves = len(sorted_taxa)
+	#print(f"__ len(base_tree_code_str_list)= {len(base_tree_code_str_list)}")
+	all_taxa_permutations = tools.get_comb_safe_taxa_permutations(sorted_taxa)
+	#print(f"__ len(all_taxa_permutations)= {len(all_taxa_permutations)}")
+	#print(f"__ num_leaves = {num_leaves}")
+	if num_leaves > 7:
+		print("generating the 88,200 trees for 7 leaves takes 5 seconds, 8 leaves takes over 2 minutes to make 1.3M trees")
+		#raise ValueError(f"too many leaves requested ({num_leaves}), try a different method for generating trees")
+	### ASSEMBLE CODE LIST
+	tree_code_str_list = []
+
+	for i, base_tree_code_str in enumerate(base_tree_code_str_list):
+		for permuted_taxa in all_taxa_permutations:
+			final_code = tools.replace_taxa_letters(base_tree_code_str, permuted_taxa)
+			if tools.is_gene_tree_alpha_sorted(final_code) is True:
+				tree_code_str_list.append(final_code)
 
 	#purge some other duplicates
 	tree_code_str_list = list(set(tree_code_str_list))
@@ -237,14 +268,16 @@ def get_all_permutations_from_tree_code(tree_code_str: str) -> list:
 		raise ValueError(f"too many leaves requested ({num_leaves}), try a different method for generating trees")
 	sorted_taxa = sorted(tools.code_to_taxa_list(tree_code_str))
 	all_taxa_permutations = tools.get_comb_safe_taxa_permutations(sorted_taxa)
-	#print("^^ ^^ len(all_taxa_permutations)=", len(all_taxa_permutations))
+	print("^^ ^^ len(all_taxa_permutations)=", len(all_taxa_permutations))
 
 	### ASSEMBLE CODE LIST
 	tree_code_str_list = []
 	all_inner_node_permutated_tree_codes = get_all_inner_node_permutations_from_tree_code(tree_code_str)
 	#print("^^ ^^ len(all_inner_node_permutated_tree_codes)=", len(all_inner_node_permutated_tree_codes))
-	#print(f"__ processing inner node {len(all_inner_node_permutated_tree_codes)} tree codes and {len(all_taxa_permutations)} taxa orders")
-	for permuted_tree_code in all_inner_node_permutated_tree_codes:
+	print(f"__ processing inner node {len(all_inner_node_permutated_tree_codes)} tree codes and {len(all_taxa_permutations)} taxa orders")
+	for i, permuted_tree_code in enumerate(all_inner_node_permutated_tree_codes):
+		if (i+1) % 100 == 0:
+			print(f".. {i+1:,d} of {len(all_inner_node_permutated_tree_codes):,d}")
 		for permuted_taxa in all_taxa_permutations:
 			final_code = tools.replace_gene_letters(permuted_tree_code, permuted_taxa)
 			if tools.is_gene_tree_alpha_sorted(final_code) is True:

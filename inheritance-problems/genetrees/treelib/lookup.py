@@ -61,9 +61,9 @@ for num_leaves in num_leaves_to_tree_set:
 	if num_tree_codes != num_expected:
 		raise ValueError(f"num_leaves={num_leaves}, num_codes={num_tree_codes}, expected_codes={num_expected}")
 # Generate and print a summary of the script's initialization process.
-output = f"{os.path.basename(__file__).title()}: "  # Add the script name.
-output += f"Processed {len(tree_code_to_name)} of {count} trees codes "  # Include processed count.
-output += f"with max leaves of {max(list(num_leaves_to_tree_set.keys()))}"  # Include the maximum leaf count.
+output = f"{os.path.basename(__file__).title()}: " # Add the script name.
+output += f"Processed {len(tree_code_to_name)} of {count} trees codes " # Include processed count.
+output += f"with max leaves of {max(list(num_leaves_to_tree_set.keys()))}" # Include the maximum leaf count.
 print(output)
 
 #==================================
@@ -149,8 +149,33 @@ def get_all_permuted_tree_codes_for_leaf_count(num_leaves: int) -> list:
 		base_tree_code_str_list.append(base_tree_code_cls.tree_code_str)
 	tree_code_str_list = permute.get_all_permuted_tree_codes_from_tree_code_list(base_tree_code_str_list)
 	start_time = time.time()
+	print(f"converting {len(tree_code_str_list)} tree_codes strings into treecode classes..")
 	treecode_cls_list = []
-	for tree_code_str in tree_code_str_list:
+	for i, tree_code_str in enumerate(tree_code_str_list):
+		if (i+1) % 100000 == 0:
+			print(f".. {i+1:,d} of {len(tree_code_str_list):,d}")
+		treecode_cls = treecodeclass.TreeCode(tree_code_str)
+		treecode_cls_list.append(treecode_cls)
+	print(f"get_all_permuted_tree_codes_for_leaf_count() took {time.time() - start_time:.6f} seconds.")
+	return treecode_cls_list
+
+#===========================================
+def get_all_taxa_permuted_tree_codes_for_leaf_count(num_leaves: int) -> list:
+	print(f".. running get_all_permuted_tree_codes_for_leaf_count(num_leaves={num_leaves})")
+	if num_leaves > 7:
+		print("generating the 88,200 trees for 7 leaves takes 5 seconds, 8 leaves takes over 2 minutes to make 1.3M trees")
+		#raise ValueError("too many leaves requested, try a different method for generating trees")
+	base_tree_code_cls_list = get_all_base_tree_codes_for_leaf_count(num_leaves)
+	base_tree_code_str_list = []
+	for base_tree_code_cls in base_tree_code_cls_list:
+		base_tree_code_str_list.append(base_tree_code_cls.tree_code_str)
+	tree_code_str_list = permute.get_all_taxa_permuted_tree_codes_from_tree_code_list(base_tree_code_str_list)
+	start_time = time.time()
+	print(f"converting {len(tree_code_str_list)} tree_codes strings into treecode classes..")
+	treecode_cls_list = []
+	for i, tree_code_str in enumerate(tree_code_str_list):
+		if (i+1) % 100000 == 0:
+			print(f".. {i+1:,d} of {len(tree_code_str_list):,d}")
 		treecode_cls = treecodeclass.TreeCode(tree_code_str)
 		treecode_cls_list.append(treecode_cls)
 	print(f"get_all_permuted_tree_codes_for_leaf_count() took {time.time() - start_time:.6f} seconds.")
