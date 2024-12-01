@@ -12,6 +12,7 @@ import colorsys
 #local
 import bptools
 bptools.use_add_no_click_div = False
+bptools.use_insert_hidden_terms = False
 
 from treelib import tools
 from treelib import lookup
@@ -558,7 +559,7 @@ def main():
 	outfile = (
 		'bbq'
 		f'-{script_name}'
-		f'-{args.num_leaves}_leaves'
+		f'-{bptools.number_to_cardinal(args.num_leaves).upper()}_leaves'
 		'-questions.txt'
 	)
 	print(f'Writing to file: {outfile}')
