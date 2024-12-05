@@ -118,11 +118,11 @@ def parse_arguments():
 		'-t', '--type', dest='ring_type', type=str, choices=('pyran', 'furan'),
 		help='Set the ring type: pyran (pyranose) or furan (furanose)'
 	)
-	question_group.add_argument(
+	ring_group.add_argument(
 		'-p', '--pyran', '--pyranose', dest='ring_type', action='store_const', const='pyran',
 		help='Set ring type to pyran (pyranose)'
 	)
-	question_group.add_argument(
+	ring_group.add_argument(
 		'-f', '--furan', '--furanose', dest='ring_type', action='store_const', const='furan',
 		help='Set ring type to furan (furanose)'
 	)
@@ -132,14 +132,27 @@ def parse_arguments():
 
 #======================================
 #======================================
-def get_sugar_codes():
+def get_sugar_codes(ring_type):
 	sugar_codes_class = sugarlib.SugarCodes()
 	sugar_names_list = []
-	sugar_names_list = []
-	sugar_names_list += sugar_codes_class.get_sugar_names(7, 'D', 'keto')
-	sugar_names_list += sugar_codes_class.get_sugar_names(7, 'L', 'keto')
+	# Furanose-forming sugars (both D/L types))
+	if ring_type == 'furan':
+		sugar_names_list += sugar_codes_class.get_sugar_names(4, None, 'aldo')  # Aldotetroses
+		sugar_names_list += sugar_codes_class.get_sugar_names(5, None, 'keto')  # Ketopentoses
+
+	# Pyranose and general sugars (shared for both D/L types)
+	sugar_names_list += sugar_codes_class.get_sugar_names(5, None, 'aldo')  # Aldopentoses
+	sugar_names_list += sugar_codes_class.get_sugar_names(6, None, 'aldo')  # Aldohexoses
+	sugar_names_list += sugar_codes_class.get_sugar_names(6, None, 'keto')  # Ketohexoses
+	sugar_names_list += sugar_codes_class.get_sugar_names(7, None, 'aldo')  # Aldoheptoses
+	sugar_names_list += sugar_codes_class.get_sugar_names(7, None, 'keto')  # Ketoheptoses
+
+	# better be no duplicates
+	if len(sugar_names_list) != len(list(set(sugar_names_list))):
+		raise ValueError
+
 	#sugar_names_list += sugar_codes_class.get_sugar_names(6, None, 'aldo')
-	print(f"Retrieved {len(sugar_names_list)} from the sugar library")
+	print(f"Retrieved {len(sugar_names_list)} sugars for the ring type '{ring_type}' from the sugar library.")
 	return sugar_names_list
 
 #======================================
@@ -159,7 +172,7 @@ def main():
 
 	args = parse_arguments()
 
-	sugar_names_list = get_sugar_codes()
+	sugar_names_list = get_sugar_codes(args.ring_type)
 
 	# Open the output file and generate questions
 	with open(outfile, 'w') as f:
