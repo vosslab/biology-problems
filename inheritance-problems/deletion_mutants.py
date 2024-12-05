@@ -7,7 +7,6 @@ import math
 import random
 import argparse
 import textwrap
-import itertools
 
 import bptools
 
@@ -539,16 +538,21 @@ def generate_mc_distractors(answer_gene_order: list[str], num_choices: int):
 	# Generate the correct answer text
 	answer_text = format_choice(answer_gene_order)
 
-	# Generate all valid permutations starting with the first gene
-	choices_list = []
-	for permutation in itertools.permutations(answer_gene_order[1:]):
-		# Keep the first gene fixed as per the hint
-		choice_gene_order = [answer_gene_order[0]] + list(permutation)
+	# Generate permutations starting with the first gene
+	choices_set = set()
+	permuting_genes_list = list(answer_gene_order[1:])
+	while len(choices_set) < num_choices - 1:
+		# Shuffle the genes excluding the first one
+		random.shuffle(permuting_genes_list)
+		choice_gene_order = [answer_gene_order[0]] + permuting_genes_list
 
 		# Avoid adding the correct answer as a distractor
 		if choice_gene_order != answer_gene_order:
 			choice_text = format_choice(choice_gene_order)
-			choices_list.append(choice_text)
+			choices_set.add(choice_text)
+
+	# Convert the set to a list
+	choices_list = list(choices_set)
 
 	# Shuffle the distractors and select the required number
 	random.shuffle(choices_list)
@@ -598,6 +602,7 @@ def write_question(N: int, args) -> str:
 		table = ''
 
 	# Create the question text based on the original and deleted genes
+	print('write_question_text()')
 	question = write_question_text(answer_gene_order, deletions_list, deletion_colors)
 
 	# Combine the question and table (if available) into the question text
@@ -606,10 +611,12 @@ def write_question(N: int, args) -> str:
 	# Format the question and answer into the final output structure
 	if args.question_type == 'fib':
 		# Collect all possible answer variations
+		print('generate_fib_answer_variations()')
 		answers_list = generate_fib_answer_variations(answer_gene_order)
 		complete_question = bptools.formatBB_FIB_Question(N, question_text, answers_list)
 	else:
 		# Collect all possible distractor variations
+		print('generate_mc_distractors()')
 		choices_list, answer_text = generate_mc_distractors(answer_gene_order, args.num_choices)
 		complete_question = bptools.formatBB_MC_Question(N, question_text, choices_list, answer_text)
 

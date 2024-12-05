@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import os
-import sys
 import copy
 import time
 import random
@@ -9,282 +8,384 @@ import argparse
 
 #local
 import bptools
-import phylolib2
+bptools.use_add_no_click_div = False
+bptools.use_insert_hidden_terms = False
+
+from treelib import tools
+from treelib import lookup
 
 debug = False
+
+cache_all_treecode_cls_list = []
 
 ### TODO
 # get most dissimilar in find SAME for quesiton and answer
 # get most dissimilar in find DIFFERENT for quesiton and wrong choices
 
-#=======================
-#=======================
-def findDifferentQuestion(N, sorted_genes, num_leaves, num_choices):
-	""" make a gene tree with N leaves, ask students to find the different one """
-	num_nodes = num_leaves - 1
-	ordered_genes = copy.copy(sorted_genes)
-	random.shuffle(ordered_genes)
-	genetree = phylolib2.GeneTree()
+#===========================================================
+#===========================================================
+#===========================================================
+#===========================================================
+def generate_treecodes_lists(ordered_taxa, num_choices):
+	"""
+	Generate two lists of tree codes:
+	1. A list of tree codes representing "same" phylogenetic trees.
+	2. A list of tree codes representing "different" phylogenetic trees.
+	"""
+	# Determine the number of leaves from the length of the ordered taxa
+	num_leaves = len(ordered_taxa)
 
-	### get all base codes
-	all_base_tree_codes = genetree.get_all_gene_tree_codes_for_leaf_count(num_leaves)
+	#===========================================
+	# Generate the "same" tree codes list
+	#===========================================
+	# Step 1: Get a random base tree code for the given number of leaves
+	same_base_treecode_cls = lookup.get_random_base_tree_code_for_leaf_count(num_leaves)
+	if debug:
+		same_base_treecode_cls.print_ascii_tree()
 
-	### 1a. pick one random base code
-	random.shuffle(all_base_tree_codes)
-	match_code = all_base_tree_codes.pop()
-	match_profile = genetree.gene_tree_code_to_profile(match_code, num_nodes)
-	print("match_code=", match_code, match_profile)
-	question_tree_name = genetree.get_tree_name_from_code(match_code)
-	print("Gene Tree Name: ", question_tree_name)
+	# Step 2: Generate all inner-node permutations of the base tree code
+	same_treecode_cls_list = lookup.get_all_inner_node_permutations_from_tree_code(same_base_treecode_cls)
 
-	### 1b. replace the gene letters
-	replaced_match_code = genetree.replace_gene_letters(match_code, ordered_genes)
-	replaced_match_code = genetree.sort_alpha_for_gene_tree(replaced_match_code, num_nodes)
-	replaced_match_profile = genetree.gene_tree_code_to_profile(replaced_match_code, num_nodes)
-	print("replaced_match_code=", replaced_match_code, replaced_match_profile)
-	#replaced_match_code is just used for generation of the other choices
+	# Step 3: Limit the list to the desired number of choices
+	same_treecode_cls_list = same_treecode_cls_list[:num_choices]
 
+	# Debug: Print the tree codes in the "same" list
+	if debug:
+		for i, treecode_cls in enumerate(same_treecode_cls_list):
+			print(f'SAME {i+1}: {treecode_cls.tree_code_str}')
 
-	### 2. now get the most similar to replaced_match_code but DIFFERENT gene tree from the list
-	### 2a. groups the unused trees
-	profile_groups = genetree.group_gene_trees_by_profile(all_base_tree_codes, num_nodes)
-	print(profile_groups.keys())
-	### 2b. remove the group of gene trees similar to match
-	if profile_groups.get(match_profile) is not None:
-		del profile_groups[match_profile]
-	### 2c. get the most similar to match_code profile
-	sorted_profile_group_keys = genetree.sort_profiles_by_closeness(profile_groups, match_profile)
-	most_similar_different_code_list = profile_groups[sorted_profile_group_keys[0]]
-	most_similar_different_code = random.choice(most_similar_different_code_list)
-	most_similar_different_profile = sorted_profile_group_keys[0]
-	print("most_similar_different_code=", most_similar_different_code, most_similar_different_profile)
-	### 2d. replace the gene letters
-	replaced_most_similar_different_code = genetree.replace_gene_letters(most_similar_different_code, ordered_genes)
-	print("replaced_most_similar_different_code=", replaced_most_similar_different_code)
-	### 2e. rotate the branches of the tree
-	rotated_replaced_most_similar_different_code = genetree.get_random_code_permutation(replaced_most_similar_different_code)
-	rotated_replaced_most_similar_different_code = genetree.sort_alpha_for_gene_tree(rotated_replaced_most_similar_different_code, num_nodes)
-	rotated_replaced_most_similar_profile = genetree.gene_tree_code_to_profile(rotated_replaced_most_similar_different_code, num_nodes)
-	print("rotated_replaced_most_similar_different_code=", rotated_replaced_most_similar_different_code, rotated_replaced_most_similar_profile)
-	### 2f. make sure it's different from original gene tree
-	if rotated_replaced_most_similar_profile == replaced_match_profile:
-		print("ERROR: wrong and correct are the same")
-		sys.exit(1)
-	### 2g. make sure it's different from original gene tree
-	rotated_replaced_most_similar_html_choice = genetree.get_html_from_code(rotated_replaced_most_similar_different_code)
+	# Step 4: Replace the taxa in each tree code with the ordered taxa
+	same_replaced_treecode_cls_list = []
+	for i, treecode_cls in enumerate(same_treecode_cls_list):
+		replaced_treecode_cls = lookup.replace_taxa_letters(treecode_cls, ordered_taxa)
+		same_replaced_treecode_cls_list.append(replaced_treecode_cls)
 
-	### 3. now get the all the matches to the replaced_match_code for other SAME choices
-	### 3a. get all rotation permutations for replaced_match_code
-	choice_codes_list = genetree.get_all_alpha_sorted_code_rotation_permutations(replaced_match_code)
-	choice_codes_list.sort()
-	if debug is True:
-		print("choice_codes_list=", choice_codes_list)
-	print("Created {0} rotation permutations for tree with {1} nodes".format(len(choice_codes_list), num_nodes))
-	### 3b. pick the gene tree to use in the question
-	random.shuffle(choice_codes_list)
-	question_code = choice_codes_list.pop()
-	question_code = genetree.sort_alpha_for_gene_tree(question_code, num_nodes)
-	if question_code in choice_codes_list:
-		choice_codes_list.remove(question_code)
-	### 3c. produce the html for each choice
-	html_choices_list = []
-	selected_choice_codes = {}
-	random.shuffle(choice_codes_list)
-	for choice_code in choice_codes_list:
-		## 3c1. make sure the choice is sorted
-		sorted_choice_code = genetree.sort_alpha_for_gene_tree(choice_code, num_leaves-1)
-		## 3c2. make sure we have not used this choice yet
-		if selected_choice_codes.get(sorted_choice_code) is True:
-			continue
-		selected_choice_codes[sorted_choice_code] = True
-		## 3c3. get the profile
-		choice_profile = genetree.gene_tree_code_to_profile(sorted_choice_code, num_nodes)
-		print("choice_code=", sorted_choice_code, choice_profile)
-		## 3c4. make sure it's different from the rotated_replaced_most_similar_profile
-		if choice_profile == rotated_replaced_most_similar_profile:
-			print("ERROR: what how did we get here?")
-			print(choice_profile,' == ',rotated_replaced_most_similar_profile)
-			sys.exit(1)
-		## 3c5. make sure it's the same as the original
-		if choice_profile != replaced_match_profile:
-			continue
-		## 3c6. make the html
-		html_choice = genetree.get_html_from_code(sorted_choice_code)
-		html_choices_list.append(html_choice)
-		## 3c7. stop when we have enough choices
-		if len(html_choices_list) >= num_choices - 1:
-			break
-	### 3d. check to make sure we got enough choices
-	if len(html_choices_list) != num_choices - 1:
-		print("WARNING: requested choices were not fulfilled")
-		time.sleep(1)
-		### some graphs just don't have enough alternate choices
-		return None
-	### 3e. add the correct choice to the list
-	html_choices_list.append(rotated_replaced_most_similar_html_choice)
-	random.shuffle(html_choices_list)
+	#===========================================
+	# Generate all unique tree codes
+	#===========================================
+	global cache_all_treecode_cls_list
+	if len(cache_all_treecode_cls_list) == 0:
+		# If the cache is empty, generate all tree codes
+		if debug:
+			print("calculating all_permuted_tree_codes")
 
-	### 3f. debug if necessary
-	if debug is True:
-		f = open("temp.html", "w")
-		for html_choice in html_choices_list:
-			f.write(html_choice)
-		f.close()
+		all_treecode_cls_list = lookup.get_all_taxa_permuted_tree_codes_for_leaf_count(num_leaves)
 
-	### 4a. write the question text
-	question = '<p>The tree below Dr. Voss affectionately calls: {0}</p>'.format(question_tree_name)
-	question += genetree.get_html_from_code(question_code)
-	question += '<p></p><h6>All but one of the gene trees below are the same as the gene tree above.</h6>'
-	question += '<h6>Which one of the following represents a '
-	question += '<span style="color: #ba372a;"><strong>DIFFERENT</strong></span> gene tree?</h6>'
-	### 4b. format the question
-	complete = bptools.formatBB_MC_Question(N, question, html_choices_list, rotated_replaced_most_similar_html_choice)
+		if debug:
+			print("shuffling all_permuted_tree_codes")
 
-	print("findDifferentQuestion() is complete for {0} leaves and {1} choices".format(num_leaves, num_choices))
-	return complete
+		random.shuffle(all_treecode_cls_list)
 
-#=======================
-#=======================
-def findSameQuestion(N, sorted_genes, num_leaves, num_choices):
-	""" make a gene tree with N leaves, ask students to find the same one among other wrong ones"""
-	### 0. setup variables
-	num_nodes = num_leaves - 1
-	ordered_genes = copy.copy(sorted_genes)
-	random.shuffle(ordered_genes)
-	genetree = phylolib2.GeneTree()
-	
-	### 1. get all possible gene base codes
-	all_diff_codes = genetree.get_all_gene_tree_codes_for_leaf_count(num_leaves)
-	random.shuffle(all_diff_codes)
+		# Remove duplicate tree codes
+		purge_start = time.time()
+		if debug:
+			print("purging duplicates")
+		unique_treecode_cls_list = list(set(all_treecode_cls_list))
 
-	### 2. select a gene tree, for matching
-	raw_code = all_diff_codes.pop()
-	raw_profile = genetree.gene_tree_code_to_profile(raw_code, num_nodes)
-	print("raw_code=", raw_code, raw_profile)
-	question_tree_name = genetree.get_tree_name_from_code(raw_code)
+		# Debug: Measure the time taken to purge duplicates
+		if time.time() - purge_start > 10:
+			if debug:
+				print(f"done purging duplicates in {time.time() - purge_start:.1f} seconds")
+				print(f"unique {len(unique_treecode_cls_list)} treecodes, down from all {len(all_treecode_cls_list)}")
 
-	### 3. rotation permute the raw code to get the answer gene tree
-	answer_code = genetree.get_random_code_permutation(raw_code)
-	answer_code = genetree.replace_gene_letters(answer_code, ordered_genes)
-	answer_code = genetree.sort_alpha_for_gene_tree(answer_code, num_nodes)
-	answer_profile = genetree.gene_tree_code_to_profile(answer_code, num_nodes)
-	print("answer_code=", answer_code, answer_profile)
+		# Cache the unique tree codes for future use
+		cache_all_treecode_cls_list = copy.copy(unique_treecode_cls_list)
+	else:
+		# Load the cached unique tree codes
+		if debug:
+			print("loading unique_treecode_cls_list")
+		unique_treecode_cls_list = copy.copy(cache_all_treecode_cls_list)
 
-	### 4a. selected a different rotation permutation of the raw code for the question text
-	question_code = answer_code
-	while question_code == answer_code:
-		question_code = genetree.get_random_code_permutation(raw_code)
-		question_code = genetree.replace_gene_letters(question_code, ordered_genes)
-		question_code = genetree.sort_alpha_for_gene_tree(question_code, num_leaves-1)
-	question_profile = genetree.gene_tree_code_to_profile(question_code, num_nodes)
-	print("question_code=", question_code, question_profile)
-	### 4b. double check answer and question are same tree
-	if answer_profile != question_profile:
-		print("ERROR: answer and question have different profiles")
-		sys.exit(1)
+	#===========================================
+	# Generate the "different" tree codes list
+	#===========================================
+	# Step 1: Sort the unique tree codes by similarity to the base tree code
+	sorted_treecode_cls_list = lookup.sort_treecodes_by_taxa_distances(unique_treecode_cls_list, same_base_treecode_cls)
+	if debug:
+		print(f"sorted {len(sorted_treecode_cls_list)} treecodes, down from unique {len(unique_treecode_cls_list)}")
 
-	### 5. take all the unused trees and create the incorrect choices
-	### 5a. sort the unused trees into profile groups
-	profile_groups = genetree.group_gene_trees_by_profile(all_diff_codes, num_nodes)
-	#print("profile_groups.keys()=", profile_groups.keys())
-	### 5b. double-check and remove if necessary the profile group of the answer
-	if profile_groups.get(raw_profile) is not None:
-		del profile_groups[raw_profile]
-	### 5c. sort the remaining profile groups by how similar they are to the answer
-	sorted_profile_group_keys = genetree.sort_profiles_by_closeness(profile_groups, raw_profile)
+	# Step 2: Replace taxa in the sorted tree codes and generate permutations
+	diff_replaced_treecode_cls_list = []
+	for i, treecode_cls in enumerate(sorted_treecode_cls_list[:num_choices]):
+		# Generate a random inner-node permutation for the tree code
+		permuted_treecode_cls = lookup.get_random_inner_node_permutation_from_tree_code(treecode_cls)
 
-	html_choices_list = []
-	print("best sorted profile keys=", sorted_profile_group_keys[:num_choices - 1])
-	### 5d. convert each tree type into an incorrect choice
-	for key in sorted_profile_group_keys:
-		### 5d1. get the list of codes for this profile
-		profile_code_list = profile_groups[key]
-		### 5d2. randomly select one of the codes
-		choice_code = random.choice(profile_code_list)
-		### 5d3. replace the gene letters
-		choice_code = genetree.replace_gene_letters(choice_code, ordered_genes)
-		### 5d4. make sure the tree is alpha sorted
-		choice_code = genetree.sort_alpha_for_gene_tree(choice_code, num_leaves-1)
-		### 5d5. double-check that the profile does not match the answer
-		choice_profile = genetree.gene_tree_code_to_profile(choice_code, num_nodes)
-		if choice_profile == answer_profile or choice_profile == question_profile:
-			continue
-		print("choice_code=", choice_code, choice_profile)
-		### 5d6. convert the gene tree to html
-		html_choice = genetree.get_html_from_code(choice_code)
-		### 5d7. add html to growing list
-		html_choices_list.append(html_choice)
-		### 5d8. stop when we have enough 
-		if len(html_choices_list) >= num_choices - 1:
-			break
+		# Debug: Print the "different" tree codes
+		if debug:
+			print(f'DIFF {i+1}: {permuted_treecode_cls.tree_code_str}')
 
-	### 6a. check to make sure we got enough choices
-	if len(html_choices_list) != num_choices - 1:
-		print("WARNING: requested choices were not fulfilled")
-		time.sleep(1)
+		# Replace the taxa with the ordered taxa
+		replaced_treecode_cls = lookup.replace_taxa_letters(permuted_treecode_cls, ordered_taxa)
+		diff_replaced_treecode_cls_list.append(replaced_treecode_cls)
+
+	# Return both the "same" and "different" lists
+	return same_replaced_treecode_cls_list, diff_replaced_treecode_cls_list
+
+#===========================================================
+#===========================================================
+def get_background_statement() -> str:
+	"""
+	Returns a short paragraph on the importance of phylogenetic trees in genetics research.
+	"""
+	return (
+		"<p><b>Phylogenetic trees</b> are fundamental tools in genetics research, "
+		"enabling scientists to visualize evolutionary relationships "
+		"among species, gene sequences, or populations. "
+		"By tracing shared ancestry, these trees can provide valuable insights into genetic biodiversity. "
+		"Applications of phylogenetic trees include tracking disease evolution, "
+		"identifying conserved genetic sequences, and understanding speciation processes. "
+		"Phylogenetic trees are indispensable for both theoretical and applied genetics.</p>"
+	)
+
+#===========================================================
+#===========================================================
+def find_diff_question(N, num_choices, same_treecode_cls_list, diff_treecode_cls_list):
+	"""
+	Generate a question asking students to identify the different phylogenetic tree.
+	"""
+	# Ensure there are enough tree codes to form the question
+	if len(same_treecode_cls_list) < num_choices:
+		print("Not enough same tree codes for the find different question")
 		return None
 
-	### 6b. add the correct choice to the list
-	answer_html_choice = genetree.get_html_from_code(answer_code)
-	html_choices_list.append(answer_html_choice)
+	# Randomly select a tree code to use as the reference tree for the question
+	random.shuffle(same_treecode_cls_list)
+	same_treecode_cls = same_treecode_cls_list.pop()  # The reference tree code for the question
+
+	header = '<h2>Find the <span style="color: #ba372a;"><strong>DIFFERENT</strong></span> tree</h2>'
+
+	# Include a background statement to provide context
+	background_statement = get_background_statement()
+
+	# Build the question statement introducing the reference tree
+	question_statement = f'<p>The tree diagram below is a phylogenetic tree with {same_treecode_cls.num_leaves} leaves. '
+	question_statement += 'This phylogenetic tree is affectionately named: '
+	question_statement += f'"<i>{same_treecode_cls.tree_common_name}</i>".</p>'
+	question_statement += same_treecode_cls.get_html_table()
+	question_statement += '<p></p>'
+	question_statement += f'<p>Among the {bptools.number_to_cardinal(num_choices)} phylogenetic trees displayed below, '
+	question_statement += 'all but one have the same structure and '
+	question_statement += 'represent the same evolutionary relationships as the tree above.</p>'
+	question_statement += '<p>Your task is to identify the single '
+	question_statement += '<span style="color: #ba372a;">different</span> phylogenetic tree '
+	question_statement += 'that does NOT share the same structure or relationships as the reference tree above.</p>'
+	question_statement += '<p></p>'
+	question_statement += '<p>Which one of the following phylogenetic trees represents a '
+	question_statement += '<span style="color: #ba372a;"><strong>DIFFERENT</strong></span> phylogenetic tree?</p>'
+
+	# Randomly select the correct "different" answer tree
+	random.shuffle(diff_treecode_cls_list)
+	answer_treecode_cls = diff_treecode_cls_list.pop()  # The "different" tree code
+
+	# Initialize the list of HTML representations for the multiple-choice options
+	html_choices_list = []
+
+	# Add incorrect "same" choices (trees with the same structure)
+	random.shuffle(same_treecode_cls_list)
+	for treecode_cls in same_treecode_cls_list[:num_choices - 1]:
+		html_treecode_table = treecode_cls.get_html_table(caption=False)
+		html_choices_list.append(html_treecode_table)
+
+	# Add the correct "different" choice
+	answer_html_table = answer_treecode_cls.get_html_table(caption=False)
+	html_choices_list.append(answer_html_table)
+
+	# Remove duplicates from the choices and shuffle them for randomness
+	html_choices_list = list(set(html_choices_list))
 	random.shuffle(html_choices_list)
 
-	### 6c. debug if necessary
-	if debug is True:
-		f = open("temp.html", "w")
-		for html_choice in html_choices_list:
-			f.write(html_choice)
-		f.close()
+	# Combine the background, question statement, and choices into the full question
+	full_statement = header + background_statement + question_statement
+	complete_question = bptools.formatBB_MC_Question(N, full_statement, html_choices_list, answer_html_table)
 
-	### 7a. write question text
-	question = '<p>The tree below is a {0} leaf gene tree, Dr. Voss affectionatly calls this tree "{1}"</p>'.format(num_leaves, question_tree_name)
-	question += genetree.get_html_from_code(question_code)
-	question += '<p></p><h6>Several gene trees are shown below, but only one is the same as the one above.</h6>'
-	question += '<h6>Which one of the following represents or is equivalent to the '
-	question += '<span style="color: #169179;"><strong>SAME</strong></span> gene tree?</h6>'
-	### 7b. format the question
-	complete = bptools.formatBB_MC_Question(N, question, html_choices_list, answer_html_choice)
+	# Print a debug message to indicate the question generation is complete
+	print(f"find_diff_question() is complete for {num_choices} choices")
+	return complete_question
 
-	print("findSameQuestion() is complete for {0} leaves and {1} choices".format(num_leaves, num_choices))
-	return complete
+#===========================================================
+#===========================================================
+def find_same_question(N, num_choices, same_treecode_cls_list, diff_treecode_cls_list):
+	"""
+	Generate a question asking students to identify the same phylogenetic tree.
+	"""
+	# Ensure there are enough tree codes to create the question
+	if len(diff_treecode_cls_list) < num_choices:
+		print("Not enough different tree codes for the find same question")
+		return None
 
-#===========================================
-#===========================================
-if __name__ == '__main__':
-	parser = argparse.ArgumentParser(description='Process some integers.')
-	parser.add_argument('-l', '--leaves', '--num-leaves', type=int, dest='num_leaves',
-		help='number of leaves in gene trees', default=9)
-	parser.add_argument('-q', '--num-questions', type=int, dest='num_questions',
-		help='number of questions to create', default=24)
-	parser.add_argument('-s', '--style', type=str, dest='style', choices=['same', 'different',],
-		help='matching questions style, find same or find different', required=True)
-	parser.add_argument('-c', '--choices', type=int, dest='num_choices',
-		help='number of choices to choose from in the question', default=5)
+	# Randomly select the primary tree code for the question
+	random.shuffle(same_treecode_cls_list)
+	same_treecode_cls = same_treecode_cls_list.pop()  # The main tree for the question
+	answer_treecode_cls = same_treecode_cls_list.pop()  # Correct answer among the choices
+
+	header = '<h2>Find the <span style="color: #169179;"><strong>SAME</strong></span> tree</h2>'
+
+	# Include a background statement on phylogenetic trees
+	background_statement = get_background_statement()
+
+	# Build the question statement introducing the phylogenetic tree
+	question_statement = f'<p>The tree diagram below is a phylogenetic tree with {same_treecode_cls.num_leaves} leaves. '
+	question_statement += 'This phylogenetic tree is affectionately called: '
+	question_statement += f'"<i>{same_treecode_cls.tree_common_name}</i>".</p>'
+	question_statement += same_treecode_cls.get_html_table()
+	question_statement += '<p></p>'
+	question_statement += '<p></p><p>Several phylogenetic trees are shown below, '
+	question_statement += 'but only one has the SAME structure and '
+	question_statement += 'represents the same relationships as the phylogenetic tree above.</p>'
+	question_statement += '<p>Your task is to identify the single '
+	question_statement += '<span style="color: #169179;">same</span> phylogenetic tree '
+	question_statement += 'that shares the same structure and relationships as the reference tree above.</p>'
+	question_statement += '<p></p>'
+	question_statement += '<p>Which one of the following phylogenetic trees represents the '
+	question_statement += '<span style="color: #169179;"><strong>SAME</strong></span> '
+	question_statement += 'tree relationships or is equivalent to the phylogenetic tree above?</p>'
+
+	# Initialize the list of HTML representations for the multiple-choice options
+	html_choices_list = []
+	# Add the incorrect choices (trees with different structures)
+	random.shuffle(same_treecode_cls_list)
+	for treecode_cls in diff_treecode_cls_list[:num_choices - 1]:
+		html_treecode_table = treecode_cls.get_html_table(caption=False)
+		html_choices_list.append(html_treecode_table)
+	# Add the correct choice (answer)
+	answer_html_table = answer_treecode_cls.get_html_table(caption=False)
+	html_choices_list.append(answer_html_table)
+	# Remove duplicates from the choices and shuffle them for randomness
+	html_choices_list = list(set(html_choices_list))
+	random.shuffle(html_choices_list)
+
+	# Combine the background, question statement, and choices into the full question
+	full_statement = header + background_statement + question_statement
+	complete_question = bptools.formatBB_MC_Question(N, full_statement, html_choices_list, answer_html_table)
+
+	# Print a debug message and return the complete question
+	print(f"find_same_question() is complete for {num_choices} choices")
+	return complete_question
+
+#===========================================================
+#===========================================================
+def make_question(N, args):
+	"""
+	Generate a phylogenetic question based on the specified style.
+	"""
+	# Generate a sorted list of gene letters based on the number of leaves
+	sorted_taxa = sorted(bptools.generate_gene_letters(args.num_leaves))
+
+	# Generate all permutations of the sorted taxa letters, ensuring combination safety
+	all_taxa_permutations = tools.get_comb_safe_taxa_permutations(sorted_taxa)
+
+	# Randomize the order of permutations
+	random.shuffle(all_taxa_permutations)
+
+	# Select one specific taxa order for constructing the distance matrix
+	ordered_taxa = all_taxa_permutations.pop()
+	if debug:
+		print('ordered_taxa=', ordered_taxa)
+
+	# Generate lists of TreeCode objects for "same" and "different" trees
+	same_treecode_cls_list, diff_treecode_cls_list = generate_treecodes_lists(ordered_taxa, args.num_choices)
+
+	# Generate a question based on the specified style ('same' or 'diff')
+	if args.style == 'same':
+		# Find a "same" question where the student identifies the identical tree
+		complete_question = find_same_question(N, args.num_choices, same_treecode_cls_list, diff_treecode_cls_list)
+	else:
+		# Find a "different" question where the student identifies the different tree
+		complete_question = find_diff_question(N, args.num_choices, same_treecode_cls_list, diff_treecode_cls_list)
+
+	# Return the formatted question
+	return complete_question
+
+#===========================================================
+#===========================================================
+def parse_arguments():
+	"""
+	Parses command-line arguments for the script.
+
+	Defines and handles all arguments for the script, including:
+	- `duplicates`: The number of questions to generate.
+	- `num_choices`: The number of answer choices for each question.
+	- `question_type`: Type of question (numeric or multiple choice).
+
+	Returns:
+		argparse.Namespace: Parsed arguments with attributes `duplicates`,
+		`num_choices`, and `question_type`.
+	"""
+	parser = argparse.ArgumentParser(description="Generate questions.")
+	parser.add_argument(
+		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
+		help='Number of duplicate runs to do or number of questions to create', default=1
+	)
+	parser.add_argument(
+		'-c', '--num_choices', type=int, default=5, dest='num_choices',
+		help="Number of choices to create."
+	)
+	parser.add_argument(
+		'-l', '--leaves', '--num_leaves', type=int, dest='num_leaves',
+		help='number of leaves in the gene tree', default=5)
+
+	# Create a mutually exclusive group for question type and make it required
+	style_group = parser.add_mutually_exclusive_group(required=True)
+	style_group.add_argument(
+		'-s', '--style', dest='style', type=str, choices=('same', 'different'),
+		help='matching questions style, find same or find different'
+	)
+	style_group.add_argument(
+		'-S', '--same', dest='style', action='store_const', const='same',
+		help='matching questions style, find same'
+	)
+	style_group.add_argument(
+		'-D', '--different', dest='style', action='store_const', const='different',
+		help='matching questions style, find different'
+	)
+
 	args = parser.parse_args()
 
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	N = 1
-	errors = 0
-	while N <= args.num_questions:
-		if errors > N > 5:
-			print("TOO MANY ERRORS, QUITTING")
-			sys.exit(1)
-		sorted_genes = list(bptools.generate_gene_letters(args.num_leaves))
-		if args.style == 'same':
-			complete_question = findSameQuestion(N, sorted_genes, args.num_leaves, args.num_choices)
-		elif args.style == 'different':
-			complete_question = findDifferentQuestion(N, sorted_genes, args.num_leaves, args.num_choices)
-		else:
-			print("ERROR")
-			sys.exit(1)
-		if complete_question is None:
-			errors += 1
-			continue
+	if args.num_leaves < 3:
+		raise ValueError("Program requires a minimum of three (3) leaves to work")
 
-		f.write(complete_question)
-		N += 1
-	f.close()
-	print("wrote {0} questions to the file {1}".format(N, outfile))
+	return args
+
+#===========================================================
+#===========================================================
+def main():
+	"""
+	Main function that orchestrates question generation and file output.
+	"""
+
+	# Parse arguments from the command line
+	args = parse_arguments()
+
+	# Define output file name
+	script_name = os.path.splitext(os.path.basename(__file__))[0]
+	outfile = (
+		'bbq'
+		f'-{script_name}'
+		f'-{bptools.number_to_cardinal(args.num_leaves).upper()}_leaves'
+		f'-{args.style.upper()}'
+		'-questions.txt'
+	)
+	print(f'Writing to file: {outfile}')
+
+	# Open the output file and generate questions
+	with open(outfile, 'w') as f:
+		N = 1  # Question number counter
+		errors = 0
+		while(N <= args.duplicates and errors < args.duplicates):
+			complete_question = make_question(N, args)
+			if complete_question is not None:
+				N += 1
+				f.write(complete_question)
+			else:
+				errors += 1
+
+	# Display histogram
+	print(f"wrote {N-1} questions to the file {outfile}")
 	bptools.print_histogram()
+
+#===========================================================
+#===========================================================
+if __name__ == '__main__':
+	main()
+
+## THE END
