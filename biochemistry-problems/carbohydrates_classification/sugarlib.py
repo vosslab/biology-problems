@@ -27,6 +27,79 @@ def get_git_root(path=None):
 		# Not inside a git repository
 		return None
 
+
+#==========================
+# Color definitions for different categories
+#==========================
+dark_blue = '#0000b3'
+dark_green = '#008000'
+dark_orange = '#b34700'
+dark_magenta = '#b300b3'
+dark_brown = '#996633'
+
+#==========================
+# Color mappings for choices
+#==========================
+color_choice_mapping = {
+	#dark blue for carbon counts
+	'diose (2)': dark_blue,
+	'triose (3)': dark_blue,
+	'tetrose (4)': dark_blue,
+	'pentose (5)': dark_blue,
+	'hexose (6)': dark_blue,
+	'septose (7)': dark_blue,
+	'octose (8)': dark_blue,
+	'nonose (9)': dark_blue,
+	#dark green for stereo D/L configuration
+	'D-configuration': dark_green,
+	'L-configuration': dark_green,
+	#dark orange for double bond carbon location
+	'aldose': dark_orange,
+	'ketose': dark_orange,
+	'3-ketose': dark_orange,
+	#dark_magenta for ring names
+	'oxetose': dark_magenta,
+	'furanose': dark_magenta,
+	'pyranose': dark_magenta,
+	'oxepinose': dark_magenta,
+	'septanose': dark_magenta,
+	'octanose': dark_magenta,
+	#dark_brown for anomeric configuration
+	'&alpha;-anomer': dark_brown,
+	'&beta;-anomer': dark_brown,
+}
+
+#==========================
+# Helper function to apply colors
+#==========================
+def color_question_choices(choices_list):
+	"""
+	Applies color to the question choices using a mapping dictionary.
+
+	Args:
+		choices_list (list of str): List of plain text choices.
+
+	Returns:
+		list of str: List of HTML-formatted choices with colors applied.
+	"""
+	colored_choices_list = []
+	for choice in choices_list:
+		# Check if the choice exists in the color mapping
+		if choice in color_choice_mapping:
+			if choice in color_choice_mapping:
+				colored = f'<span style="color:{color_choice_mapping[choice]};">{choice}</span>'
+				colored_choices_list.append(colored)
+			else:
+				colored_choices_list.append(choice)
+		else:
+			# Keep uncolored if not found in the mapping
+			colored_choices_list.append(choice)
+	return colored_choices_list
+
+
+#==========================
+# SugarCodes class
+#==========================
 class SugarCodes(object):
 	def __init__(self):
 		self.sugar_code_to_name = {
@@ -390,7 +463,7 @@ class SugarStructure(object):
 		aldose_header += ' <td colspan="2" style="border: solid white 0px; text-align: left;">&nbsp;O</td>'
 		aldose_header += '</tr><tr>'
 		aldose_header += ' <td style="border: solid white 0px;"></td>'
-		aldose_header += ' <td colspan="2" style="border: solid white 0px; text-align: right;">\&nbsp;</td>'
+		aldose_header += r' <td colspan="2" style="border: solid white 0px; text-align: right;">\&nbsp;</td>'
 		aldose_header += ' <td colspan="2" style="border: solid white 0px; text-align: left;">&nbsp;//</td>'
 		aldose_header += ' <td style="border: solid white 0px;"></td>'
 		aldose_header += '</tr><tr>'
