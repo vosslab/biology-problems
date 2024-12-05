@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import time
 import argparse
 
 import bptools
@@ -135,24 +136,29 @@ def parse_arguments():
 def get_sugar_codes(ring_type):
 	sugar_codes_class = sugarlib.SugarCodes()
 	sugar_names_list = []
+	#rings need to have exactly one extra carbon off the end, so D/L can easily be determined.
 	# Furanose-forming sugars (both D/L types))
 	if ring_type == 'furan':
-		sugar_names_list += sugar_codes_class.get_sugar_names(4, None, 'aldo')  # Aldotetroses
-		sugar_names_list += sugar_codes_class.get_sugar_names(5, None, 'keto')  # Ketopentoses
-
-	# Pyranose and general sugars (shared for both D/L types)
-	sugar_names_list += sugar_codes_class.get_sugar_names(5, None, 'aldo')  # Aldopentoses
-	sugar_names_list += sugar_codes_class.get_sugar_names(6, None, 'aldo')  # Aldohexoses
-	sugar_names_list += sugar_codes_class.get_sugar_names(6, None, 'keto')  # Ketohexoses
-	sugar_names_list += sugar_codes_class.get_sugar_names(7, None, 'aldo')  # Aldoheptoses
-	sugar_names_list += sugar_codes_class.get_sugar_names(7, None, 'keto')  # Ketoheptoses
-
+		sub_sugar_names_list = sugar_codes_class.get_sugar_names(5, "all", 'aldo')  # Aldopentoses
+		print(f"Retrieved {len(sub_sugar_names_list)} Aldopentoses sugars from the sugar library.")
+		sugar_names_list += sub_sugar_names_list
+		sub_sugar_names_list = sugar_codes_class.get_sugar_names(6, "all", 'keto')  # Ketohexoses
+		print(f"Retrieved {len(sub_sugar_names_list)} Ketohexoses sugars from the sugar library.")
+		sugar_names_list += sub_sugar_names_list
+	elif ring_type == 'pyran':
+		sub_sugar_names_list = sugar_codes_class.get_sugar_names(6, "all", 'aldo')  # Aldohexoses
+		print(f"Retrieved {len(sub_sugar_names_list)} Aldohexoses sugars from the sugar library.")
+		sugar_names_list += sub_sugar_names_list
+		sub_sugar_names_list = sugar_codes_class.get_sugar_names(7, "all", 'keto')  # Ketoheptoses
+		print(f"Retrieved {len(sub_sugar_names_list)} Ketoheptoses sugars from the sugar library.")
+		sugar_names_list += sub_sugar_names_list
 	# better be no duplicates
 	if len(sugar_names_list) != len(list(set(sugar_names_list))):
 		raise ValueError
 
 	#sugar_names_list += sugar_codes_class.get_sugar_names(6, None, 'aldo')
 	print(f"Retrieved {len(sugar_names_list)} sugars for the ring type '{ring_type}' from the sugar library.")
+	time.sleep(2)
 	return sugar_names_list
 
 #======================================
@@ -161,16 +167,17 @@ def main():
 	"""
 	Main function that orchestrates question generation and file output.
 	"""
+	args = parse_arguments()
+
 	# Define output file name
 	script_name = os.path.splitext(os.path.basename(__file__))[0]
 	outfile = (
 		'bbq'
 		f'-{script_name}'
+		f'-{args.ring_type.upper()}'
 		'-questions.txt'
 	)
 	print(f'Writing to file: {outfile}')
-
-	args = parse_arguments()
 
 	sugar_names_list = get_sugar_codes(args.ring_type)
 
