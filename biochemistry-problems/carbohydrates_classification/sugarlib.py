@@ -69,6 +69,72 @@ color_choice_mapping = {
 	'&beta;-anomer': dark_brown,
 }
 
+
+#============================
+def validate_sugar_code(sugar_code):
+	"""
+	Validates a sugar code to ensure it adheres to the proper format and rules.
+
+	Args:
+		sugar_code (str): The sugar code to validate.
+
+	Returns:
+		bool: True if the sugar code is valid.
+
+	Raises:
+		ValueError: If the sugar code is invalid, with a description of the error and the code.
+	"""
+	print(sugar_code)
+	# Ensure sugar_code ends with "M"
+	if not sugar_code.endswith("M"):
+		raise ValueError(f"Invalid sugar code '{sugar_code}': Must end with 'M'.")
+
+	# Ensure the second-to-last character is "D" or "L"
+	if len(sugar_code) > 3 and sugar_code[-2] not in ("D", "L"):
+		raise ValueError(f"Invalid sugar code '{sugar_code}': The second-to-last character must be 'D' or 'L'.")
+
+	# Check the first character (must be 'A' or 'M')
+	if sugar_code[0] not in ("A", "M"):
+		raise ValueError(f"Invalid sugar code '{sugar_code}': Must start with 'A' (aldose) or 'M' (ketose).")
+
+	# Perform additional count-based validations
+	if sugar_code.count("A") > 1:
+		raise ValueError(f"Sugar code cannot contain more than one 'A' for '{sugar_code}'")
+	if sugar_code.count("K") > 1:
+		raise ValueError(f"Sugar code cannot contain more than one 'K' for '{sugar_code}'")
+	if sugar_code.count("M") > 2:  # One "M" for suffix, another possible for ketoses
+		raise ValueError(f"Sugar code cannot contain more than two 'M's for '{sugar_code}'")
+	if sugar_code.count("D") > 1:  # Only one "D" for absolute configuration
+		raise ValueError(f"Sugar code cannot contain more than one 'D' for '{sugar_code}'")
+
+	# Determine the type of sugar based on the first character
+	if sugar_code[0] == "A":  # Aldose
+		# Aldoses have stereocenters = length - prefix (1) - suffix (2)
+		stereocenter_starting_index = 1
+	elif sugar_code[0] == "M":  # Ketose
+		if sugar_code[1] == "K":
+			# Regular ketose
+			stereocenter_starting_index = 2
+		elif sugar_code[1] in ("R", "L") and sugar_code[2] == "K":  # 3-Keto sugar
+			# 3-Keto sugars have stereocenters = length - prefix (2) - suffix (2)
+			stereocenter_starting_index = 3
+		else:
+			raise ValueError(f"Invalid sugar code '{sugar_code}': Ketose codes must have 'K' as the 2/3 letter.")
+	else:
+		raise ValueError(f"Invalid sugar code '{sugar_code}': Unknown sugar type.")
+
+	# Ensure all stereochemical markers are valid (only R or L)
+	if stereocenter_starting_index < len(sugar_code)-2:
+		for i in range(stereocenter_starting_index, len(sugar_code)-2):
+			print(i, stereocenter_starting_index, len(sugar_code)-2)
+			if sugar_code[i] not in ("R", "L"):
+				raise ValueError(
+					f"Invalid sugar code '{sugar_code}': Invalid stereochemical marker '{sugar_code[i]}' at position {i+1}."
+				)
+
+	# If all checks pass, the sugar code is valid
+	return True
+
 #==========================
 # Helper function to apply colors
 #==========================
@@ -240,30 +306,65 @@ class SugarCodes(object):
 		return D_aldohexose_names
 
 	#============================
-	def get_sugar_names(self, num_carbons=None, configuration=None, types=None):
-		# num_carbons = #, e.g. 6 = hexoses
-		# type = 'aldo', 'keto', or '3-keto'
-		# configuration = 'D' or 'L'
-		sugar_names = []
+	def get_sugar_names(self, num_carbons=None, configuration="all", types="all"):
+		"""
+		Retrieves sugar names based on the specified criteria.
+
+		Args:
+			num_carbons (int or None): Number of carbons in the sugar (e.g., 6 for hexoses).
+				If None, no filtering on carbon count is applied.
+			configuration (str or list): 'D', 'L', or 'all' (default). Can also be a list of configurations.
+				'e.g., ['D', 'L'] for both configurations.
+			types (str or list): 'aldo', 'keto', '3-keto', or 'all' (default). Can also be a list of types.
+
+		Returns:
+			list: List of sugar names matching the criteria.
+		"""
+
+		# Handle configuration: "all" means both 'D' and 'L'
+		if configuration == "all":
+			configuration_list = ["D", "L"]
+		elif isinstance(configuration, str):
+			configuration_list = [configuration]
+		else:
+			configuration_list = configuration  # Assume it's a list
+
+		# Handle types: "all" means 'aldo', 'keto', and '3-keto'
+		if types == "all":
+			type_list = ["aldo", "keto", "3-keto"]
+		elif isinstance(types, str):
+			type_list = [types]
+		else:
+			type_list = types  # Assume it's a list
+
+		sugar_names_list = []
+		# Iterate over sugar codes and filter based on criteria
 		for code in self.sugar_code_to_name:
+			if not validate_sugar_code(code):
+				continue
+
+			# Filter by number of carbons
 			if num_carbons is not None and len(code) != num_carbons:
 				continue
-			if types is not None:
-				if isinstance(types, str):
-					type_list = [types,]
-				else:
-					type_list = types
-				if 'aldo' not in type_list and code[0] == 'A':
-					continue
-				if 'keto' not in type_list and code[1] == 'K':
-					continue
-				if '3-keto' not in type_list and code[2] == 'K':
-					continue
-			if configuration is not None and code[-2] != configuration:
+
+			# Filter by types
+			if code[0] == "A" and "aldo" not in type_list:
 				continue
+			elif code[0] == "M":
+				if code[1] == "K" and "keto" not in type_list:
+					continue
+				if code[2] == "K" and "3-keto" not in type_list:
+					continue
+
+			# Filter by configuration
+			if code[-2] not in configuration_list:
+				continue
+
+			# Add matching sugar name to the result
 			name = self.sugar_code_to_name[code]
-			sugar_names.append(name)
-		return sugar_names
+			sugar_names_list.append(name)
+
+		return sugar_names_list
 
 	#============================
 	def flip_position(self, sugar_code, position):
