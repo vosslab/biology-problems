@@ -84,10 +84,13 @@ def validate_sugar_code(sugar_code):
 	Raises:
 		ValueError: If the sugar code is invalid, with a description of the error and the code.
 	"""
-	print(sugar_code)
 	# Ensure sugar_code ends with "M"
 	if not sugar_code.endswith("M"):
 		raise ValueError(f"Invalid sugar code '{sugar_code}': Must end with 'M'.")
+
+	if sugar_code == 'MRKRM':
+		# the meso 3-ketopentose is an exception to most rules
+		return True
 
 	# Ensure the second-to-last character is "D" or "L"
 	if len(sugar_code) > 3 and sugar_code[-2] not in ("D", "L"):
@@ -104,8 +107,10 @@ def validate_sugar_code(sugar_code):
 		raise ValueError(f"Sugar code cannot contain more than one 'K' for '{sugar_code}'")
 	if sugar_code.count("M") > 2:  # One "M" for suffix, another possible for ketoses
 		raise ValueError(f"Sugar code cannot contain more than two 'M's for '{sugar_code}'")
-	if sugar_code.count("D") > 1:  # Only one "D" for absolute configuration
+	if len(sugar_code) < 7 and sugar_code.count("D") > 1:  # Only one "D" for absolute configuration
 		raise ValueError(f"Sugar code cannot contain more than one 'D' for '{sugar_code}'")
+	if len(sugar_code) == 7 and sugar_code.count("D") > 2:  # Only one "D" for absolute configuration
+		raise ValueError(f"Heptose Sugars code can contain at most two 'D' for '{sugar_code}'")
 
 	# Determine the type of sugar based on the first character
 	if sugar_code[0] == "A":  # Aldose
@@ -121,13 +126,12 @@ def validate_sugar_code(sugar_code):
 		else:
 			raise ValueError(f"Invalid sugar code '{sugar_code}': Ketose codes must have 'K' as the 2/3 letter.")
 	else:
-		raise ValueError(f"Invalid sugar code '{sugar_code}': Unknown sugar type.")
+		raise ValueError(f"Invalid sugar code '{sugar_code}': Unknown sugar type at first letter.")
 
 	# Ensure all stereochemical markers are valid (only R or L)
 	if stereocenter_starting_index < len(sugar_code)-2:
-		for i in range(stereocenter_starting_index, len(sugar_code)-2):
-			print(i, stereocenter_starting_index, len(sugar_code)-2)
-			if sugar_code[i] not in ("R", "L"):
+		for i in range(stereocenter_starting_index, len(sugar_code)-1):
+			if sugar_code[i] not in ("D", "R", "L"):
 				raise ValueError(
 					f"Invalid sugar code '{sugar_code}': Invalid stereochemical marker '{sugar_code[i]}' at position {i+1}."
 				)
@@ -232,50 +236,66 @@ class SugarCodes(object):
 			'MKLRLM': 'L-sorbose',
 			'MKLLLM': 'L-tagatose',
 
-			# aldoheptoses, add extra D to the name
-			'ARRRDDM': 'DD-alloheptose',
-			'ARRLDDM': 'DD-guloheptose',
-			'ARLRDDM': 'DD-glucoheptose',
-			'ARLLDDM': 'DD-galactoheptose',
-			'ALRRDDM': 'DD-altroheptose',
-			'ALRLDDM': 'DD-idoheptose',
-			'ALLRDDM': 'DD-mannoheptose',
-			'ALLLDDM': 'DD-taloheptose',
-			'ARRRLDM': 'LD-alloheptose',
-			'ARRLLDM': 'LD-guloheptose',
-			'ARLRLDM': 'LD-glucoheptose',
-			'ARLLLDM': 'LD-galactoheptose',
-			'ALRRLDM': 'LD-altroheptose',
-			'ALRLLDM': 'LD-idoheptose',
-			'ALLRLDM': 'LD-mannoheptose',
-			'ALLLLDM': 'LD-taloheptose',
+			# D-aldoheptoses, add extra D to the name
+			'ARRRDDM': 'D-glycero-D-allo-heptose', # CID: 25791639 (2R,3R,4R,5R,6R)
+			'ARRLDDM': 'D-glycero-D-gulo-heptose', #CID: 76599 (2R,3R,4S,5R,6R)
+			'ARLRDDM': 'D-glycero-D-gluco-heptose', #CID: 87131842 (2R,3S,4R,5R,6R)
+			'ARLLDDM': 'D-glycero-D-galacto-heptose', #CID: 219662
+			'ALRRDDM': 'D-glycero-D-altro-heptose', #CID: 101415672 (2S,3R,4R,5R,6R)
+			'ALRLDDM': 'D-glycero-D-ido-heptose', #CID: 14188133 (2S,3R,4S,5R,6R)
+			'ALLRDDM': 'D-glycero-D-manno-heptose', #CID: 24802279
+			'ALLLDDM': 'D-glycero-D-talo-heptose', #CID: 57346506 (2S,3S,4S,5R,6R)
+			'ARRRLDM': 'D-glycero-L-allo-heptose',
+			'ARRLLDM': 'D-glycero-L-gulo-heptose', # CID: 129824786 (2S,3S,4R,5S,6R)
+			'ARLRLDM': 'D-glycero-L-gluco-heptose', #CID: 21139463 (2S,3R,4S,5S,6R)
+			'ARLLLDM': 'D-glycero-L-galacto-heptose', #CID: 14188137 (2S,3R,4R,5S,6R)
+			'ALRRLDM': 'D-glycero-L-altro-heptose',
+			'ALRLLDM': 'D-glycero-L-ido-heptose',
+			'ALLRLDM': 'D-glycero-L-manno-heptose', #CID: 71355983 (2R,3R,4S,5S,6R)
+			'ALLLLDM': 'D-glycero-L-talo-heptose',
 
-			# ketoheptose, i.e., heptuloses from aldohexoses
-			'MKRRRDM': 'D-alloheptulose',
-			# altroheptulose is commonly called sedoheptulose
-			'MKLRRDM': 'D-altroheptulose', #natural
-			'MKRLRDM': 'D-glucoheptulose',
-			'MKLLRDM': 'D-mannoheptulose', #natural
-			'MKRRLDM': 'D-guloheptulose',
-			'MKLRLDM': 'D-idoheptulose',
-			'MKRLLDM': 'D-galactoheptulose',
-			'MKLLLDM': 'D-taloheptulose',
+			# L-aldoheptoses, add extra D to the name
+			'ARRRDLM': 'L-glycero-D-allo-heptose',
+			'ARRLDLM': 'L-glycero-D-gulo-heptose', #CID: 87177231 (2R,3R,4S,5R,6S)
+			'ARLRDLM': 'L-glycero-D-gluco-heptose', #CID: 87131843 (2R,3S,4R,5R,6S)
+			'ARLLDLM': 'L-glycero-D-galacto-heptose', #CID: 87088840 (2R,3S,4S,5R,6S)
+			'ALRRDLM': 'L-glycero-D-altro-heptose',
+			'ALRLDLM': 'L-glycero-D-ido-heptose',
+			'ALLRDLM': 'L-glycero-D-manno-heptose',
+			'ALLLDLM': 'L-glycero-D-talo-heptose',
+			'ARRRLLM': 'L-glycero-L-allo-heptose',
+			'ARRLLLM': 'L-glycero-L-gulo-heptose', #CID: 129827929 (2S,3S,4R,5S,6S)
+			'ARLRLLM': 'L-glycero-L-gluco-heptose',
+			'ARLLLLM': 'L-glycero-L-galacto-heptose', #CID: 57375610 (2S,3R,4R,5S,6S)
+			'ALRRLLM': 'L-glycero-L-altro-heptose',
+			'ALRLLLM': 'L-glycero-L-ido-heptose', #CID: 129802805 (2R,3S,4R,5S,6S)
+			'ALLRLLM': 'L-glycero-L-manno-heptose',
+			'ALLLLLM': 'L-glycero-L-talo-heptose',
 
-			# ketoheptose, i.e., heptuloses from aldohexoses
-			'MKRRRLM': 'L-taloheptulose',
-			'MKLRRLM': 'L-galactoheptulose',
-			'MKRLRLM': 'L-idoheptulose',
-			'MKLLRLM': 'L-guloheptulose',
-			'MKRRLLM': 'L-mannoheptulose',
-			'MKLRLLM': 'L-glucoheptulose',
-			'MKRLLLM': 'L-altroheptulose',
-			'MKLLLLM': 'L-alloheptulose',
+			# D-ketoheptose, i.e., heptuloses from aldohexoses
+			'MKRRRDM': 'D-allo-2-heptulose', #natural, sedoheptulose
+			'MKLRRDM': 'D-altro-2-heptulose', #natural, volemulose, CID: 439645
+			'MKRLRDM': 'D-gluco-2-heptulose', #CID: 111066
+			'MKLLRDM': 'D-mann-2-heptulose', #natural, CID: 12600, CID: 102926
+			'MKRRLDM': 'D-gulo-2-heptulose',
+			'MKLRLDM': 'D-ido-2-heptulose', #CID: 129636398
+			'MKRLLDM': 'D-galacto-2-heptulose',
+			'MKLLLDM': 'D-talo-2-heptulose',
+
+			# L-ketoheptose, i.e., heptuloses from aldohexoses
+			'MKRRRLM': 'L-talo-2-heptulose',
+			'MKLRRLM': 'L-galacto-2-heptulose',
+			'MKRLRLM': 'L-ido-2-heptulose',
+			'MKLLRLM': 'L-gulo-2-heptulose',
+			'MKRRLLM': 'L-manno-2-heptulose',
+			'MKLRLLM': 'L-gluco-2-heptulose', #CID: 88431539
+			'MKRLLLM': 'L-altro-2-heptulose',
+			'MKLLLLM': 'L-allo-2-heptulose',
 
 			# the two natural 3-ketoseptoses
 			# two natural heptuloses with K <-> L swapped
-			'MLKRRDM': 'D-altro-3-heptulose',
-			'MLKLRDM': 'D-manno-3-heptulose',
-
+			'MLKRRDM': 'D-altro-3-heptulose', #Coriose CID: 192877
+			'MLKLRDM': 'D-manno-3-heptulose', #CID: 87789691
 		}
 		self.get_names_from_codes()
 		self.carbons_to_sugar = {
@@ -322,7 +342,7 @@ class SugarCodes(object):
 		"""
 
 		# Handle configuration: "all" means both 'D' and 'L'
-		if configuration == "all":
+		if configuration == "all" or configuration is None:
 			configuration_list = ["D", "L"]
 		elif isinstance(configuration, str):
 			configuration_list = [configuration]
@@ -330,7 +350,7 @@ class SugarCodes(object):
 			configuration_list = configuration  # Assume it's a list
 
 		# Handle types: "all" means 'aldo', 'keto', and '3-keto'
-		if types == "all":
+		if types == "all" or types is None:
 			type_list = ["aldo", "keto", "3-keto"]
 		elif isinstance(types, str):
 			type_list = [types]
@@ -353,7 +373,7 @@ class SugarCodes(object):
 			elif code[0] == "M":
 				if code[1] == "K" and "keto" not in type_list:
 					continue
-				if code[2] == "K" and "3-keto" not in type_list:
+				elif code[2] == "K" and "3-keto" not in type_list:
 					continue
 
 			# Filter by configuration
