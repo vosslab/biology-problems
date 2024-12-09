@@ -22,8 +22,14 @@ def get_karyotype():
 	chromosome = random.choice(chromosome_list)  # Random chromosome choice
 
 	# Ensure females cannot "lose" a Y chromosome
-	if ploidy_change == "-" and chromosome == 'Y' and 'Y' not in sex_chromosome_list:
-		chromosome = 'X'  # Switch to X if chromosome loss would be invalid
+	if chromosome in ('X','Y') and ploidy_change == "-":
+		#avoid 45,Y
+		chromosome = 'X'
+		sex_chromosome_list = ['X', 'X']
+	elif chromosome == 'Y' and ploidy_change == "+" and 'Y' not in sex_chromosome_list:
+		# because otherwise question would have wrong sex
+		sex_chromosome_list = ['X', 'Y']
+		chromosome = 'X'
 
 	# Update karyotype based on the ploidy change
 	if ploidy_change == "+":
