@@ -3,6 +3,7 @@
 import os
 import sys
 import random
+import argparse
 
 import bptools
 
@@ -80,15 +81,32 @@ def drawTranslocatedChromosome(chromosome1, chromosome2, color1='red', color2='b
 	table += '</table>'
 	return table
 
-def questionText(segregation_type, chromosome1, chromosome2):
-	question = '<p>{0},{1}: {2}</p>'.format(chromosome1, chromosome2, types[segregation_type])
-	question += '<p>A phenotypically normal prospective couple seeks genetic counseling '
-	question += 'because the man knows that he has a balanced translocation of a portion of his '
-	question += 'chromosome {0} that has been exchanged with a portion of his chromosome {1}.</p>'.format(chromosome1, chromosome2)
-	question += '<p>Which two (2) of the following sets of gametes was formed by '
-	question += '<strong>{0}</strong> segregation in this individual?</p><p></p> '.format(types[segregation_type])
+
+#======================================
+#======================================
+def get_question_statement(segregation_type_index: int, chromosome1: int, chromosome2: int) -> str:
+	"""
+	Generates a question statement for a genetic counseling scenario involving balanced translocations.
+	"""
+	segregation_type = types[segregation_type_index]
+	question = (
+		f'<p>A phenotypically <i>wildtype</i> prospective couple seeks genetic counseling. '
+		f'The man has a <strong>balanced translocation</strong>, '
+		f'between chromosomes {chromosome1} and {chromosome2}.'
+		f'This means that  a segment of chromosome {chromosome1} '
+		f'has been exchanged with a segment of chromosome {chromosome2} without any gain or loss of genetic material. '
+		f'While balanced translocations typically do not affect the individual\'s phenotype, '
+		f'they can result in different types of gametes during reproduction.</p>'
+		f'<p><ul>'
+		f'<li><strong>Chromosome Pair:</strong> {chromosome1}, {chromosome2}</li>'
+		f'<li><strong>Segregation Type:</strong> {segregation_type}</li>'
+		f'</ul></p>'
+	)
 	return question
 
+
+#======================================
+#======================================
 def merge_tables(table_list):
 	table = ''
 	table += '<table style="border-collapse: collapse; border: 0px solid white;">'
@@ -99,16 +117,11 @@ def merge_tables(table_list):
 	table += '</table>'
 	return table
 
-def blackboardFormat(N, segregation_type, chromosome1, chromosome2):
-	question_string = questionText(segregation_type, chromosome1, chromosome2)
-	#print(question_string)
+#======================================
+#======================================
+def get_choices(N, segregation_type_index, chromosome1, chromosome2):
 
 	table1 = ''
-	#A. rob(14; 21)
-	#B. rob(14; 21), +14
-	#C. rob(14; 21), +21
-	#D. -14
-	#E. -21
 
 	table1  = drawChromosome(chromosome1, 'red')
 	table2  = drawChromosome(chromosome2, 'blue')
@@ -116,9 +129,19 @@ def blackboardFormat(N, segregation_type, chromosome1, chromosome2):
 	table21 = drawTranslocatedChromosome(chromosome2, chromosome1, 'blue', 'red')
 	table_merge = merge_tables([table1, table2, table12, table21])
 	#print(table1+table2+table12+table21)
-	question_string += table_merge
-	question_string += '<p>all four of the chromosomes present in a somatic cell are shown above</p><p></p>'
-	question_string += '<p>CHECK TWO BOXES!</p>'
+
+	segregation_type = types[segregation_type_index]
+	question_table = table_merge
+	question_table += '<p>all four of the chromosomes present in a somatic cell are shown above</p><p></p>'
+	question_table += (
+		f'<p>Below are all the possible gametes produced by the man with the translocation.</p> '
+		f'<p>Among the six choices below, only two (2) gametes or two (2) sets of chromosomes '
+		f'are formed by <strong>{segregation_type}</strong> segregation.</p> '
+		f'<p>Your task is to <strong>select the two (2) gametes produced by '
+		f'{segregation_type}</strong> segregation.</p>'
+	)
+	question_table += '<p>CHECK TWO BOXES below!</p>'
+
 	choices = []
 
 	smtab = '<table style="border-collapse: collapse; border: 1px solid silver;">'
@@ -161,40 +184,101 @@ def blackboardFormat(N, segregation_type, chromosome1, chromosome2):
 	choices.append(adjacent2b)
 
 	answers = []
-	if segregation_type == 1:
+	if segregation_type_index == 1:
 		answers.append(adjacent1a)
 		answers.append(adjacent1b)
-	elif segregation_type == 2:
+	elif segregation_type_index == 2:
 		answers.append(adjacent2a)
 		answers.append(adjacent2b)
-	elif segregation_type == 3 or segregation_type == 4:
+	elif segregation_type_index == 3 or segregation_type_index == 4:
 		#happens twice as often
 		answers.append(alternate1)
 		answers.append(alternate2)
 	else:
-		sys.exit(1)
+		raise ValueError
 
+	random.shuffle(choices)
 
-	random.shuffle(choices)	
-	blackboard = bptools.formatBB_MA_Question(N, question_string, choices, answers)
+	return question_table, choices, answers
 
-	return blackboard
-
-if __name__ == "__main__":
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	num_problems = 24
-	N = 0
-	while N < num_problems:
-		segregation_type = random.randint(1,4)
+#======================================
+#======================================
+def write_question(N):
+	segregation_type = random.randint(1,4)
+	chromosome1 = random.randint(1, 22-1)
+	chromosome2 = random.randint(chromosome1+1, 22)
+	while chromosome1 >= chromosome2:
 		chromosome1 = random.randint(1, 22-1)
 		chromosome2 = random.randint(chromosome1+1, 22)
-		if chromosome1 >= chromosome2:
-			continue
-		print("chromosome pair: {0} and {1}".format(chromosome1, chromosome2))
-		N += 1
-		final_question = blackboardFormat(N, segregation_type, chromosome1, chromosome2)
-		f.write(final_question)
-	f.close()
+	print(f"selected chromosome pair: {chromosome1} and {chromosome2}")
+	N += 1
+	question_statement = get_question_statement(segregation_type, chromosome1, chromosome2)
+	question_table, choices_list, answers_list = get_choices(N, segregation_type, chromosome1, chromosome2)
+	question_statement = question_statement + question_table
+	complete_question = bptools.formatBB_MA_Question(N, question_statement, choices_list, answers_list)
+
+	return complete_question
+
+#=====================
+def parse_arguments():
+	"""
+	Parses command-line arguments for the script.
+
+	Defines and handles all arguments for the script, including:
+	- `duplicates`: The number of questions to generate.
+	- `num_choices`: The number of answer choices for each question.
+	- `question_type`: Type of question (numeric or multiple choice).
+
+	Returns:
+		argparse.Namespace: Parsed arguments with attributes `duplicates`,
+		`num_choices`, and `question_type`.
+	"""
+	parser = argparse.ArgumentParser(description="Generate questions.")
+	parser.add_argument(
+		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
+		help='Number of duplicate runs to do or number of questions to create', default=1
+	)
+
+	args = parser.parse_args()
+	return args
+
+
+
+
+#======================================
+#======================================
+def main():
+	"""
+	Main function that orchestrates question generation and file output.
+	"""
+
+	# Parse arguments from the command line
+	args = parse_arguments()
+
+	# Define output file name
+	script_name = os.path.splitext(os.path.basename(__file__))[0]
+	outfile = (
+		'bbq'
+		f'-{script_name}'
+		'-questions.txt'
+	)
+	print(f'Writing to file: {outfile}')
+
+	# Open the output file and generate questions
+	with open(outfile, 'w') as f:
+		N = 1  # Question number counter
+		for _ in range(args.duplicates):
+			complete_question = write_question(N)
+			if complete_question is not None:
+				N += 1
+				f.write(complete_question)
+
+	# Display histogram if question type is multiple choice
 	bptools.print_histogram()
+
+#======================================
+#======================================
+if __name__ == '__main__':
+	main()
+
+## THE END
