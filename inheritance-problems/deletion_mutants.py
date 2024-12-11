@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import os
-import sys
 import copy
 import math
 import random
@@ -155,6 +154,49 @@ def make_html_table(gene_order, deletions_list, deletion_colors):
 
 #==========================================================
 #==========================================================
+def list2text(mylist: list[str]) -> str:
+	"""
+	Converts a list of strings into a human-readable text format with an Oxford comma.
+
+	If the list has more than two elements, it adds commas between elements and inserts
+	"and" before the last element, ensuring an Oxford comma is included. For a list of
+	exactly two elements, it joins them with "and". For an empty list or a single element,
+	it returns an empty string or the single element respectively.
+
+	Args:
+		mylist (list[str]): A list of strings to convert into human-readable text.
+
+	Returns:
+		str: The human-readable string representation of the list.
+	"""
+	# Handle lists with more than two elements (include an Oxford comma)
+	if len(mylist) > 2:
+		return f"{', '.join(mylist[:-1])}, and {mylist[-1]}"
+
+	# Handle lists with exactly two elements
+	elif len(mylist) == 2:
+		return f"{mylist[0]} and {mylist[1]}"
+
+	# Return an empty string for empty lists
+	elif len(mylist) == 0:
+		return ""
+
+	# For a single element, return the element itself
+	else:
+		return mylist[0]
+#====================
+# Assertions to verify correctness
+assert list2text(list('abcd')) == "a, b, c, and d", \
+	"Failed test case with more than 2 elements (Oxford comma required)"
+assert list2text(['x', 'y']) == "x and y", \
+	"Failed test case with exactly 2 elements"
+assert list2text(['z']) == "z", \
+	"Failed test case with a single element"
+assert list2text([]) == "", \
+	"Failed test case with an empty list"
+
+#==========================================================
+#==========================================================
 def write_question_text(gene_order, deletions_list, deletion_colors):
 	"""
 	Writes the question about gene order based on the original list and deletions.
@@ -223,50 +265,6 @@ def write_question_text(gene_order, deletions_list, deletion_colors):
 		raise ValueError("New lines are not allowed")
 
 	return question
-
-#==========================================================
-#==========================================================
-def list2text(mylist: list[str]) -> str:
-	"""
-	Converts a list of strings into a human-readable text format with an Oxford comma.
-
-	If the list has more than two elements, it adds commas between elements and inserts
-	"and" before the last element, ensuring an Oxford comma is included. For a list of
-	exactly two elements, it joins them with "and". For an empty list or a single element,
-	it returns an empty string or the single element respectively.
-
-	Args:
-		mylist (list[str]): A list of strings to convert into human-readable text.
-
-	Returns:
-		str: The human-readable string representation of the list.
-	"""
-	# Handle lists with more than two elements (include an Oxford comma)
-	if len(mylist) > 2:
-		return f"{', '.join(mylist[:-1])}, and {mylist[-1]}"
-
-	# Handle lists with exactly two elements
-	elif len(mylist) == 2:
-		return f"{mylist[0]} and {mylist[1]}"
-
-	# Return an empty string for empty lists
-	elif len(mylist) == 0:
-		return ""
-
-	# For a single element, return the element itself
-	else:
-		return mylist[0]
-
-#====================
-# Assertions to verify correctness
-assert list2text(list('abcd')) == "a, b, c, and d", \
-	"Failed test case with more than 2 elements (Oxford comma required)"
-assert list2text(['x', 'y']) == "x and y", \
-	"Failed test case with exactly 2 elements"
-assert list2text(['z']) == "z", \
-	"Failed test case with a single element"
-assert list2text([]) == "", \
-	"Failed test case with an empty list"
 
 #==========================================================
 #==========================================================
@@ -517,9 +515,11 @@ def format_choice(gene_list: list[str]) -> str:
 	"""
 	# Monospace font using <span>
 	gene_sequence = "<strong><span style='font-family: monospace;'>"
-	#gene_sequence += f"{insertCommas(''.join(gene_list))}</span><strong>"
-	gene_sequence += f"{''.join(gene_list)}</span><strong>"
-	gene_sequence += f": gene order of {list2text(gene_list)}"
+	if len(gene_list) >= 10:
+		gene_sequence += f"{insertCommas(''.join(gene_list), 4)}</span><strong>"
+	else:
+		gene_sequence += f"{''.join(gene_list)}</span><strong>"
+	gene_sequence += f":&nbsp;&nbsp; <i>gene order of {list2text(gene_list)}</i>"
 	return gene_sequence
 
 #==========================================================
@@ -535,36 +535,48 @@ def generate_mc_distractors(answer_gene_order: list[str], num_choices: int):
 	Returns:
 		tuple[list[str], str]: A list of formatted multiple-choice options and the correct answer.
 	"""
+
+	# Generate permutations starting with a random order from the current choices_set
+	choices_set = set([tuple(answer_gene_order),])
+	max_attempts = 1000 # Limit the number of attempts to prevent infinite loops
+	attempts = 0
+
+	while len(choices_set) < num_choices and attempts < max_attempts:
+		# Start with a random choice from the existing set
+		base_gene_order = list(random.choice(list(choices_set)))
+		choice_gene_order = base_gene_order[:]
+
+		# Introduce controlled randomness by swapping adjacent genes
+		index1 = random.randint(2, len(base_gene_order) - 1)  # Avoid the first gene
+		index2 = index1 - 1
+		choice_gene_order[index1], choice_gene_order[index2] = choice_gene_order[index2], choice_gene_order[index1]
+
+		# Add the modified order to the set
+		choices_set.add(tuple(choice_gene_order))
+		attempts += 1
+
+	if len(choices_set) < num_choices:
+		num_genes = len(answer_gene_order)
+		# Fixing the first gene, permute the rest
+		max_choices = math.factorial(num_genes - 1)
+		raise ValueError(f"Only able to generate of {len(choices_set)} of {num_choices} choices with {num_genes} genes after {attempts} attempts. Maximum possible is {max_choices}.")
+
 	# Generate the correct answer text
 	answer_text = format_choice(answer_gene_order)
 
-	# Generate permutations starting with the first gene
-	choices_set = set()
-	permuting_genes_list = list(answer_gene_order[1:])
-	while len(choices_set) < num_choices - 1:
-		# Shuffle the genes excluding the first one
-		random.shuffle(permuting_genes_list)
-		choice_gene_order = [answer_gene_order[0]] + permuting_genes_list
-
-		# Avoid adding the correct answer as a distractor
-		if choice_gene_order != answer_gene_order:
-			choice_text = format_choice(choice_gene_order)
-			choices_set.add(choice_text)
-
-	# Convert the set to a list
-	choices_list = list(choices_set)
-
-	# Shuffle the distractors and select the required number
-	random.shuffle(choices_list)
-	choices_list = choices_list[:num_choices - 1]
-
-	# Add the correct answer to the choices
-	choices_list.append(answer_text)
+	# Convert the set of tuples to a list of formatted strings
+	choices_list = [format_choice(list(choice)) for choice in choices_set]
 
 	# Deduplicate and sort the results for consistent output
 	choices_list = sorted(set(choices_list))
 
 	return choices_list, answer_text
+cl, a = generate_mc_distractors(list("ABCD"), 6)
+assert len(cl) == 6
+assert a == format_choice(list("ABCD"))
+cl, a = generate_mc_distractors(list("ABCDE"), 8)
+assert len(cl) == 8, f"Expected 8 choices, got {len(cl)}."
+assert a == format_choice(list("ABCDE")), "Expected correct answer not obtained"
 
 #==========================================================
 #==========================================================
@@ -669,8 +681,8 @@ def parse_arguments():
 	# Create a mutually exclusive group for question type and make it required
 	question_group = parser.add_mutually_exclusive_group(required=True)
 	question_group.add_argument(
-		'-t', '--type', dest='question_type', type=str, choices=('num', 'mc'),
-		help='Set the question type: num (numeric) or mc (multiple choice)'
+		'-t', '--type', dest='question_type', type=str, choices=('fib', 'mc'),
+		help='Set the question type: fib (numeric) or mc (multiple choice)'
 	)
 	question_group.add_argument(
 		'-m', '--mc', dest='question_type', action='store_const', const='mc',
@@ -682,6 +694,19 @@ def parse_arguments():
 	)
 
 	args = parser.parse_args()
+
+	# Validate the number of genes, ensuring it's within the acceptable range
+	if args.num_genes < 4:
+		raise ValueError("Sorry, you must have at least 4 genes for this program")
+	if args.num_genes > 20:
+		raise ValueError("Sorry, you can have at most 20 genes for this program")
+
+	max_choices = math.factorial(args.num_genes - 1)  # Fixing the first gene, permute the rest
+	if args.num_choices > max_choices:
+		raise ValueError(
+			f"Cannot generate {args.num_choices} choices with {args.num_genes} genes. Maximum possible is {max_choices}."
+		)
+
 	return args
 
 #==========================
@@ -691,13 +716,7 @@ if __name__ == '__main__':
 	# Parse arguments from the command line
 	args = parse_arguments()
 
-	# Validate the number of genes, ensuring it's within the acceptable range
-	if args.num_genes < 4:
-		print("Sorry, you must have at least 4 genes for this program")
-		sys.exit(1)
-	if args.num_genes > 20:
-		print("Sorry, you must have less than 20 genes for this program")
-		sys.exit(1)
+
 
 	if args.table:
 		table_str = "TABLE"
