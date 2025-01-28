@@ -27,9 +27,9 @@ def permuteMatchingPairs(yaml_data, num_choices=None):
 	list_of_complete_questions = []
 
 	#MAT TAB question text TAB answer text TAB matching text TAB answer two text TAB matching two text
-	#"Match the each of the following <keys> with their corresponding <values>"
+	#"Match each of the following <keys> with their corresponding <values>"
 	if yaml_data.get("question override") is None:
-		question = ("<p>Match the each of the following {0} with their corresponding {1}.</p>".format(
+		question = ("<p>Match each of the following {0} with their corresponding {1}.</p>".format(
 			yaml_data['keys description'], yaml_data['values description']))
 	else:
 		question = yaml_data.get("question override")
