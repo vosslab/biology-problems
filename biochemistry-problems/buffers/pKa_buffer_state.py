@@ -81,45 +81,87 @@ def make_complete_question(N, buffer_dict, pH_value):
 	bbformat = bptools.formatBB_MC_Question(N, question_text, choices_list, answer_formula)
 	return bbformat
 
-#============================
-#============================
-#============================
-if __name__ == '__main__':
-	N = 0
-	# Argument Parsing
+
+#=====================
+def parse_arguments():
+	"""
+	Parses command-line arguments for the script.
+
+	Defines and handles all arguments for the script, including:
+	- `duplicates`: The number of questions to generate.
+	- `num_choices`: The number of answer choices for each question.
+	- `question_type`: Type of question (numeric or multiple choice).
+
+	Returns:
+		argparse.Namespace: Parsed arguments with attributes `duplicates`,
+		`num_choices`, and `question_type`.
+	"""
 	parser = argparse.ArgumentParser(description='Generate questions related to buffer protonation states.')
+
+	parser.add_argument(
+		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
+		help='Number of duplicate runs to do or number of questions to create', default=1
+	)
 
 	parser.add_argument('-p', '--proton_count', '--protons', dest='proton_count', type=int, metavar='#',
 		help='Number of removable protons in a buffer (1, 2, 3, 4)',
 		required=True)
-	options = parser.parse_args()
+
+	args = parser.parse_args()
+	return args
+
+
+#======================================
+#======================================
+def main():
+	"""
+	Main function that orchestrates question generation and file output.
+	"""
+
+	# Parse arguments from the command line
+	args = parse_arguments()
 
 	# Conditional Logic based on proton_count
-	if options.proton_count == 1:
+	if args.proton_count == 1:
 		buffer_list = list(bufferslib.monoprotic.values())
-	elif options.proton_count == 2:
+	elif args.proton_count == 2:
 		buffer_list = list(bufferslib.diprotic.values())
-	elif options.proton_count == 3:
+	elif args.proton_count == 3:
 		buffer_list = list(bufferslib.triprotic.values())
-	elif options.proton_count == 4:
+	elif args.proton_count == 4:
 		buffer_list = list(bufferslib.tetraprotic.values())
 	else:
 		print("Error: Invalid proton_count value.")
 		exit(1)
 
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	for buffer_dict in buffer_list:
-		buffer_dict = bufferslib.expand_buffer_dict(buffer_dict)
-		pH_list = get_pH_values(buffer_dict['pKa_list'])
-		for pH_value in pH_list:
-			N += 1
-			bbformat = make_complete_question(N, buffer_dict, pH_value)
-			f.write(bbformat)
-	f.close()
+	# Define output file name
+	script_name = os.path.splitext(os.path.basename(__file__))[0]
+	outfile = (
+		'bbq'
+		f'-{script_name}'
+		f'-{args.proton_count}_protons'
+		'-questions.txt'
+	)
+	print(f'Writing to file: {outfile}')
+
+	# Open the output file and generate questions
+	with open(outfile, 'w') as f:
+		N = 1  # Question number counter
+		for _ in range(args.duplicates):
+			for buffer_dict in buffer_list:
+				buffer_dict = bufferslib.expand_buffer_dict(buffer_dict)
+				pH_list = get_pH_values(buffer_dict['pKa_list'])
+				for pH_value in pH_list:
+					N += 1
+					complete_question = make_complete_question(N, buffer_dict, pH_value)
+					if complete_question is not None:
+						N += 1
+						f.write(complete_question)
 	bptools.print_histogram()
 
-#============================
-#============================
-#============================
+#======================================
+#======================================
+if __name__ == '__main__':
+	main()
+
+## THE END
