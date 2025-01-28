@@ -214,6 +214,31 @@ def _validate(all_buffer_dict):
 #============================
 #============================
 #============================
+def pKa_list_to_words(pKa_list):
+	prefix = 'pK<sub>a</sub> value'
+	if len(pKa_list) == 1:
+		txt1 = '<strong>{0:.2f}</strong>'.format(pKa_list[0])
+		return prefix+' of '+txt1
+	elif len(pKa_list) == 2:
+		txt1 = '<strong>{0:.2f}</strong>'.format(pKa_list[0])
+		txt2 = '<strong>{0:.2f}</strong>'.format(pKa_list[1])
+		return prefix+'s of '+txt1+' and '+txt2
+	elif len(pKa_list) == 3:
+		txt1 = '<strong>{0:.2f}</strong>'.format(pKa_list[0])
+		txt2 = '<strong>{0:.2f}</strong>'.format(pKa_list[1])
+		txt3 = '<strong>{0:.2f}</strong>'.format(pKa_list[2])
+		return prefix+'s of '+txt1+', '+txt2+', and '+txt3
+	elif len(pKa_list) == 4:
+		txt1 = '<strong>{0:.2f}</strong>'.format(pKa_list[0])
+		txt2 = '<strong>{0:.2f}</strong>'.format(pKa_list[1])
+		txt3 = '<strong>{0:.2f}</strong>'.format(pKa_list[2])
+		txt4 = '<strong>{0:.2f}</strong>'.format(pKa_list[3])
+		return prefix+'s of '+txt1+', '+txt2+', '+txt3+', and '+txt4
+	sys.exit(1)
+
+#============================
+#============================
+#============================
 def expand_buffer_dict(buffer_dict):
 	num_pkas = len(buffer_dict['pKa_list'])
 	buffer_dict['protic_name'] = protic_names[num_pkas]

@@ -28,32 +28,6 @@ question_text = ("Carbonic acid is diprotic, with pKa's of 6.35 and 10.33, "
 #============================
 #============================
 #============================
-def pKa_list_to_words(pKa_list):
-	prefix = 'pK<sub>a</sub> value'
-	if len(pKa_list) == 1:
-		txt1 = '<strong>{0:.2f}</strong>'.format(pKa_list[0])
-		return prefix+' of '+txt1
-	elif len(pKa_list) == 2:
-		txt1 = '<strong>{0:.2f}</strong>'.format(pKa_list[0])
-		txt2 = '<strong>{0:.2f}</strong>'.format(pKa_list[1])
-		return prefix+'s of '+txt1+' and '+txt2
-	elif len(pKa_list) == 3:
-		txt1 = '<strong>{0:.2f}</strong>'.format(pKa_list[0])
-		txt2 = '<strong>{0:.2f}</strong>'.format(pKa_list[1])
-		txt3 = '<strong>{0:.2f}</strong>'.format(pKa_list[2])
-		return prefix+'s of '+txt1+', '+txt2+', and '+txt3
-	elif len(pKa_list) == 4:
-		txt1 = '<strong>{0:.2f}</strong>'.format(pKa_list[0])
-		txt2 = '<strong>{0:.2f}</strong>'.format(pKa_list[1])
-		txt3 = '<strong>{0:.2f}</strong>'.format(pKa_list[2])
-		txt4 = '<strong>{0:.2f}</strong>'.format(pKa_list[3])
-		return prefix+'s of '+txt1+', '+txt2+', '+txt3+', and '+txt4
-	sys.exit(1)
-
-
-#============================
-#============================
-#============================
 def get_pH_values(pKa_list):
 	min_pH_diff = 0.51
 	max_pH_diff = 1.9
@@ -83,10 +57,10 @@ def get_pH_values(pKa_list):
 def write_question(buffer_dict, pH_value):
 	question_text = ''
 	question_text += ('<p><strong>' + buffer_dict['acid_name'].capitalize()
-		+ '</strong> and it\'s conjugate base, ' + buffer_dict['base_name']
+		+ '</strong> and its conjugate base, ' + buffer_dict['base_name']
 		+ ', ' + buffer_dict['description'] + '.</p> ')
 	question_text += ('<p>' + buffer_dict['acid_name'].capitalize() + ' is ' + buffer_dict['protic_name']
-		+ ' with '+pKa_list_to_words(buffer_dict['pKa_list'])+'.</p> ')
+		+ ' with '+bufferslib.pKa_list_to_words(buffer_dict['pKa_list'])+'.</p> ')
 	num_states = len(buffer_dict['state_list'])
 	question_text += ('<p>' + buffer_dict['acid_name'].capitalize() + ' has ' + bptools.number_to_cardinal(num_states)
 		+' possible protonation states in the choices below.</p> ')
