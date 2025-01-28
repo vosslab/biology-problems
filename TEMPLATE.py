@@ -24,7 +24,9 @@ def get_question_text() -> str:
 	Returns:
 		str: A string containing the main question text.
 	"""
-	return "This is a hard question?"
+	question_text = ""
+	question_text += "This is a hard question?"
+	return question_text
 
 #======================================
 #======================================
