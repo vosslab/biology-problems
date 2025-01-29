@@ -15,9 +15,9 @@ import xml.etree.ElementTree as ET
 
 #anticheating measures
 use_nocopy_script = False
-use_insert_hidden_terms = True
+use_insert_hidden_terms = False
 hidden_term_density = 0.7
-use_add_no_click_div = True
+use_add_no_click_div = False
 noPrint = True
 noCopy = True
 noScreenshot = False
