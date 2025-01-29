@@ -98,7 +98,7 @@ diprotic = {
 		'base_name':	'oxalate',
 		'description':	'is found in many plants and vegetables and is a product of metabolic processes',
 		'pKa_list':		[1.27, 4.28,],
-		'state_list':	['(COOH)2', 'HOOC-COO-1', 'C2O4-2',],
+		'state_list':	['(COOH)2', '(HOOC)COO-1', '(COO)2-2',],
 	},
 	'succinate':
 	{	'acid_name':	'succinic acid',
@@ -292,7 +292,7 @@ def format_chemical_formula_html(chem_state, color=None):
 				chem_form += '<sup>{0}</sup>'.format(charge)
 			else:
 				chem_form += '<sup>{0}{1}</sup>'.format(character, charge)
-		elif character == '-' or character == '+':
+		elif character in ('-', '+'):
 			charge = character
 		elif character.isalpha():
 			chem_form += character
