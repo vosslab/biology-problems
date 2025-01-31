@@ -16,8 +16,8 @@ import argparse
 # Provides custom functions, such as question formatting and other utilities
 import bptools
 
-#======================================
-#======================================
+#===========================================================
+#===========================================================
 # This function generates and returns the main question text.
 def get_question_text() -> str:
 	"""
@@ -35,8 +35,8 @@ def get_question_text() -> str:
 	# Return the complete question text
 	return question_text
 
-#======================================
-#======================================
+#===========================================================
+#===========================================================
 # This function generates multiple answer choices for a question.
 def generate_choices(num_choices: int) -> (list, str):
 	"""
@@ -77,8 +77,8 @@ def generate_choices(num_choices: int) -> (list, str):
 	# Return the list of choices and the correct answer
 	return choices_list, answer_text
 
-#======================================
-#======================================
+#===========================================================
+#===========================================================
 # This function creates and formats a complete question for output.
 def write_question(N: int, num_choices: int) -> str:
 	"""
@@ -104,7 +104,8 @@ def write_question(N: int, num_choices: int) -> str:
 	# Return the formatted question string
 	return complete_question
 
-#=====================
+#===========================================================
+#===========================================================
 # This function handles the parsing of command-line arguments.
 def parse_arguments():
 	"""
@@ -157,8 +158,8 @@ def parse_arguments():
 	args = parser.parse_args()
 	return args
 
-#======================================
-#======================================
+#===========================================================
+#===========================================================
 # This function serves as the entry point for generating and saving questions.
 def main():
 	"""
@@ -205,8 +206,8 @@ def main():
 	# Print a message indicating how many questions were saved
 	print(f'saved {N} questions to {outfile}')
 
-#======================================
-#======================================
+#===========================================================
+#===========================================================
 # This block ensures the script runs only when executed directly
 if __name__ == '__main__':
 	# Call the main function to run the program
