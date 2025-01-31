@@ -169,6 +169,7 @@ def main():
 	# Display histogram if question type is multiple choice
 	if args.question_type == "mc":
 		bptools.print_histogram()
+	print(f'saved {N} questions to {outfile}')
 
 #======================================
 #======================================
