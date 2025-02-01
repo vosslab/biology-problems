@@ -184,7 +184,7 @@ def main():
 	# Open the output file in write mode
 	with open(outfile, 'w') as f:
 		# Initialize the question number counter
-		N = 1
+		N = 0
 
 		# Generate the specified number of questions
 		for _ in range(args.duplicates):
