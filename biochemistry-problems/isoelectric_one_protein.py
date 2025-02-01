@@ -13,13 +13,14 @@ debug = False
 #======================================
 #======================================
 def parse_protein_file():
-	filename = "../data/protein_isoelectric_points.csv"
-	file_handle = open(filename, "r")
+	git_root = bptools.get_git_root()
+	data_file_path = os.path.join(git_root, 'data/protein_isoelectric_points.csv')
+	file_handle = open(data_file_path, "r")
 	reader = csv.reader(file_handle)
 	protein_tree = []
 	for row in reader:
 		if reader.line_num == 1:
-			header = row
+			#header = row
 			continue
 		try:
 			protein_dict = {
@@ -34,7 +35,6 @@ def parse_protein_file():
 	if debug is True:
 		print("Read data for {0} proteins".format(len(protein_tree)))
 	return protein_tree
-
 
 #======================================
 #======================================
@@ -100,14 +100,49 @@ def write_question(N, protein_dict):
 	complete_question = bptools.formatBB_MC_Question(N, question_text, choices_list, answer_text)
 	return complete_question
 
+#===========================================================
+#===========================================================
+# This function handles the parsing of command-line arguments.
+def parse_arguments():
+	"""
+	Parses command-line arguments for the script.
 
-#======================================
-#======================================
-def main():
-	# Define argparse for command-line options
+	Returns:
+		argparse.Namespace: Parsed arguments with attributes `duplicates`,
+		`num_choices`, and `question_type`.
+	"""
+	# Create an argument parser with a description of the script's functionality
 	parser = argparse.ArgumentParser(description="Generate questions.")
-	parser.add_argument('-d', '--duplicates', type=int, default=1, help="Number of questions to create.")
+
+	# Add an argument to specify the number of duplicate questions to generate
+	parser.add_argument(
+		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
+		help='Number of duplicate runs to do or number of questions to create',
+		default=1
+	)
+
+	# Parse the provided command-line arguments and return them
 	args = parser.parse_args()
+	return args
+
+#===========================================================
+#===========================================================
+# This function serves as the entry point for generating and saving questions.
+def main():
+	"""
+	Main function that orchestrates question generation and file output.
+	"""
+
+	# Parse arguments from the command line
+	args = parse_arguments()
+
+	# Generate the output file name based on the script name and question type
+	script_name = os.path.splitext(os.path.basename(__file__))[0]
+	outfile = (
+		'bbq'
+		f'-{script_name}'  # Add the script name to the file name
+		'-questions.txt'  # Add the file extension
+	)
 
 	# Output file setup
 	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
@@ -115,18 +150,28 @@ def main():
 
 	protein_tree = parse_protein_file()
 
-
-	# Create and write questions to the output file
+	# Open the output file in write mode
 	with open(outfile, 'w') as f:
+		# Initialize the question number counter
 		N = 0
-		for d in range(args.duplicates):
-			for protein_dict in protein_tree:
+
+		# Generate the specified number of questions
+		for _ in range(args.duplicates):
+			protein_dict = random.choice(protein_tree)
+
+			# Generate the complete formatted question
+			complete_question = write_question(N+1, protein_dict)
+
+			# Write the question to the file if it was generated successfully
+			if complete_question is not None:
 				N += 1
-				complete_question = write_question(N, protein_dict)
-				if complete_question is not None:
-					f.write(complete_question)
+				f.write(complete_question)
+
+	# If the question type is multiple choice, print a histogram of results
 	bptools.print_histogram()
 
+	# Print a message indicating how many questions were saved
+	print(f'saved {N} questions to {outfile}')
 
 #======================================
 #======================================
