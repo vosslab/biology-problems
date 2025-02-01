@@ -192,7 +192,7 @@ def main():
 			gene_letters_str = bptools.generate_gene_letters(3)
 
 			# Generate the complete formatted question
-			complete_question = write_question(N, args.num_choices)
+			complete_question = write_question(N+1, args.num_choices)
 
 			# Write the question to the file if it was generated successfully
 			if complete_question is not None:
