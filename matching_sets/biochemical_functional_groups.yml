@@ -1,0 +1,86 @@
+#YAML file for Matching Questions
+
+items to match per question: 4
+
+#both singular and plural
+key description: seven biochemical functional group
+keys description: seven biochemical functional groups
+
+#both singular and plural
+value description: description
+values description: descriptions
+
+replacement_rules:
+    Hydroxl: '<span style="color: #e60000;">Hydroxl</span>' #RED
+    BBBBBBBB: '<span style="color: #e65400;">BBBBBBBB</span>' #DARK ORANGE
+    Phosphate: '<span style="color: #e69100;">Phosphate</span>' #LIGHT ORANGE
+    Sulfhydryl: '<span style="color: #b3b300;">Sulfhydryl</span>' #DARK YELLOW
+    EEEEEEEE: '<span style="color: #59b300;">EEEEEEEE</span>' #LIME GREEN
+    FFFFFFFF: '<span style="color: #009900;">FFFFFFFF</span>' #GREEN
+    Carbonyl: '<span style="color: #00b38f;">Carbonyl</span>' #TEAL
+    HHHHHHHH: '<span style="color: #00b3b3;">HHHHHHHH</span>' #CYAN
+    IIIIIIII: '<span style="color: #0a9bf5;">IIIIIIII</span>' #SKY BLUE
+    Amino: '<span style="color: #0039e6;">Amino</span>' #BLUE
+    KKKKKKKK: '<span style="color: #004d99;">KKKKKKKK</span>' #NAVY
+    Carboxyl: '<span style="color: #7b12a1;">Carboxyl</span>' #PURPLE
+    MMMMMMMM: '<span style="color: #b30077;">MMMMMMMM</span>' #MAGENTA
+    Methyl: '<span style="color: #cc0066;">Methyl</span>' #PINK
+
+matching pairs:
+  Hydroxl:
+    - 'Compound name: Alcohol'
+    - '&mdash;OH'
+    - 'Very common in sugars (e.g., glucose)'
+    - 'Glucose and other sugars contain many of these chemical functional groups'
+
+
+
+  Carbonyl:
+    - 'Compound name: Ketone or aldehyde'
+    - '>C=O'
+    - 'Ketones in sugars (ketoses) and aldehydes (aldoses)'
+
+
+  Carboxyl:
+    - 'Compound name: Organic acid, such as acetic acid'
+    - '&mdash;COOH'
+    - '&mdash;COO<sup>&ndash;</sup>'
+    - 'The chemical functional group at end of fatty acids'
+    - 'Located at the C-terminus of polypeptide chains'
+    - 'Responsible for the "acid" part of the term amino acid'
+
+
+  Amino:
+    - 'Compound name: Amine'
+    - '&mdash;NH<sub>2</sub>'
+    - '&mdash;NH<sub>3</sub><sup>+</sup>'
+    - 'Only one of the seven chemical functional group that can have a positive charge'
+    - 'Located at the N-terminus of polypeptide chains'
+
+
+  Sulfhydryl:
+    - 'Compound name: Thiol'
+    - 'forming a "cross-link" that helps stabilize protein structure'
+    - '&mdash;SH'
+
+
+
+  Phosphate:
+    - 'An organophosphorus compound'
+    - '&mdash;PO<sub>4</sub><sup>3&ndash;</sup>'
+    - '&mdash;HPO<sub>4</sub><sup>2&ndash;</sup>'
+    - '&mdash;H<sub>2</sub>PO<sub>4</sub><sup>&ndash;</sup>'
+    - 'Found in ATP and DNA'
+    - 'Involved in energy transfer in molecules like ATP'
+    - 'Forms the backbone of DNA'
+
+
+
+  Methyl:
+    - 'Compound name: Hydrocarbon'
+    - '&mdash;CH<sub>3</sub>'
+    - 'Only one of the seven chemical functional group that is hydrophobic'
+    - 'Contributes to the nonpolar nature of fatty acid chains'
+
+
+
