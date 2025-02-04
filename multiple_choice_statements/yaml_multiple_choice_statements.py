@@ -245,33 +245,49 @@ def sortStatements(yaml_data, notrue=False, nofalse=False):
 	list_of_complete_questions = bptools.applyReplacementRulesToList(list_of_complete_questions, replacement_rules_dict)
 	return list_of_complete_questions
 
-#=======================
-#=======================
-def printAnswerHistogram():
-	keys = list(answer_histogram.keys())
-	keys.sort()
-	for key in keys:
-		print("{0}: {1}".format(key, answer_histogram[key]))
+#===========================================================
+#===========================================================
+# This function handles the parsing of command-line arguments.
+def parse_arguments():
+	"""
+	Parses command-line arguments for the script.
 
-#=======================
-#=======================
-if __name__ == '__main__':
-	parser = argparse.ArgumentParser(description='Process some integers.')
+	Returns:
+		argparse.Namespace: Parsed arguments with attributes `duplicates`,
+		`num_choices`, and `question_type`.
+	"""
+	# Create an argument parser with a description of the script's functionality
+	parser = argparse.ArgumentParser(description="Generate questions.")
+
 	parser.add_argument('-f', '-y', '--file', metavar='<file>', type=str, dest='input_yaml_file',
 		help='yaml input file to process')
+
+
 	parser.add_argument('--nofalse', '--no-false', action='store_true', dest='nofalse', default=False,
 		help='do not create the false form (which one is false) of the question')
 	parser.add_argument('--notrue', '--no-true', action='store_true', dest='notrue', default=False,
 		help='do not create the true form (which one is true) of the question')
+
 	parser.add_argument('-x', '--max-questions', metavar='#', type=int, dest='max_questions',
 		help='yaml input file to process', default=199)
-	parser.add_argument('-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='number of duplicate runs to do', default=1)
-	args = parser.parse_args()
 
-	#if args.duplicates > 1:
-	#	print('duplicates are not implemented yet')
-	#	sys.exit(0)
+	# Add an argument to specify the number of duplicate questions to generate
+	parser.add_argument(
+		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
+		help='Number of duplicate runs to do or number of questions to create',
+		default=1
+	)
+
+	# Parse the provided command-line arguments and return them
+	args = parser.parse_args()
+	return args
+
+
+#===========================================================
+#===========================================================
+# This function serves as the entry point for generating and saving questions.
+def main():
+	args = parse_arguments()
 
 	if args.input_yaml_file is None or not os.path.isfile(args.input_yaml_file):
 		print("Usage: {0} -y <input_yaml_file>".format(__file__))
@@ -285,9 +301,12 @@ if __name__ == '__main__':
 	list_of_complete_questions = []
 	for i in range(args.duplicates):
 		list_of_complete_questions += sortStatements(yaml_data, notrue=args.notrue, nofalse=args.nofalse)
+		if len(list_of_complete_questions) > 2*args.max_questions:
+			break
+
 	#list_of_complete_questions = list(set(list_of_complete_questions))
 	if len(list_of_complete_questions) > args.max_questions:
-		print("Too many questions, trimming down to {0} questions".format(args.max_questions))
+		print(f"\nToo many questions, trimming down to {args.max_questions} questions.")
 		random.shuffle(list_of_complete_questions)
 		less_questions = list_of_complete_questions[:args.max_questions]
 		less_questions.sort()
@@ -296,16 +315,39 @@ if __name__ == '__main__':
 	#list_of_complete_questions = bptools.applyReplacementRulesToList(list_of_complete_questions,
 	#	yaml_data.get('replacement_rules'))
 
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(args.input_yaml_file))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	N = 0
-	for bbformat_question in list_of_complete_questions:
-		N += 1
-		f.write(bbformat_question)
-	f.close()
-	printAnswerHistogram()
-	print("Wrote {0} questions to file.".format(N))
+	# Generate the output file name based on the script name and question type
+	base_name = os.path.splitext(os.path.basename(args.input_yaml_file))[0]
+	outfile = (
+		'bbq'
+		'-TF'
+		f'-{base_name}'  # Add the script name to the file name
+		'-questions.txt'  # Add the file extension
+	)
+
+	# Print a message indicating where the file will be saved
+	print(f'Writing to file: {outfile}\n')
+
+	# Open the output file in write mode
+	with open(outfile, 'w') as f:
+		# Initialize the question number counter
+		N = 0
+
+		# Generate the specified number of questions
+		for bbformat_question in list_of_complete_questions:
+			N += 1
+			f.write(bbformat_question)
+
+	# print a histogram of results
 	bptools.print_histogram()
 
+	# Print a message indicating how many questions were saved
+	print(f'saved {N} questions to {outfile}')
 
+#===========================================================
+#===========================================================
+# This block ensures the script runs only when executed directly
+if __name__ == '__main__':
+	# Call the main function to run the program
+	main()
+
+## THE END
