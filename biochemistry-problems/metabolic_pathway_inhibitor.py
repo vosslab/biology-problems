@@ -100,7 +100,7 @@ def generateChoices(letters: list, question_type_id: int) -> (list, str):
 		'proteomic pothole',
 		]
 	random.shuffle(wrong_choices_list)
-	choices_list.extend(wrong_choices_list[:2])
+	choices_list.extend(wrong_choices_list[:1])
 
 	# Shuffle choices for presentation
 	random.shuffle(choices_list)
@@ -151,7 +151,7 @@ def writeQuestion(N: int, num_letters: int, course_name: str) -> str:
 if __name__ == '__main__':
 	# Define argparse for command-line options
 	parser = argparse.ArgumentParser(description="Generate questions about metabolic pathways.")
-	parser.add_argument('-d', '--duplicates', type=int, default=95, help="Number of questions to create.")
+	parser.add_argument('-d', '--duplicates', type=int, default=99, help="Number of questions to create.")
 	parser.add_argument('-n', '--num_letters', type=int, default=5, help="Number of letters in the metabolic pathway.")
 
 	# Create a mutually exclusive group for question types
@@ -168,19 +168,29 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	# Output file setup
-	outfile = ('bbq-'
-		+ args.course.upper()
-		+ os.path.splitext(os.path.basename(__file__))[0]
-		+ '-questions.txt')
+	# Generate the output file name based on the script name and question type
+	script_name = os.path.splitext(os.path.basename(__file__))[0]
+	outfile = (
+		'bbq'
+		f'-{args.course.upper()}'
+		f'-{script_name}'  # Add the script name to the file name
+		'-questions.txt'  # Add the file extension
+	)
+
 	print(f'writing to file: {outfile}')
 
-	# Create and write questions to the output file
+	# Open the output file in write mode
 	with open(outfile, 'w') as f:
+		# Initialize the question number counter
 		N = 0
-		for d in range(args.duplicates):
-			N += 1
-			complete_question = writeQuestion(N, args.num_letters, args.course)
-			f.write(complete_question)
-			#print(complete_question)
+		# Generate the specified number of questions
+		for _ in range(args.duplicates):
+			# Generate the complete formatted question
+			complete_question = writeQuestion(N+1, args.num_letters, args.course)
+			# Write the question to the file if it was generated successfully
+			if complete_question is not None:
+				N += 1
+				f.write(complete_question)
 	bptools.print_histogram()
+	# Print a message indicating how many questions were saved
+	print(f'saved {N} questions to {outfile}')

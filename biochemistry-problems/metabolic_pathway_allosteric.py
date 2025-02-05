@@ -40,23 +40,50 @@ def writeQuestion(N, num_letters=4):
 #======================================
 #======================================
 # Main function that serves as the entry point of the program
-if __name__ == '__main__':
+def main():
 	# Define argparse for command-line options
 	parser = argparse.ArgumentParser(description="Generate questions about metabolic pathways.")
-	parser.add_argument('-d', '--duplicates', type=int, default=95, help="Number of questions to create.")
+	parser.add_argument('-d', '--duplicates', type=int, default=99, help="Number of questions to create.")
 	parser.add_argument('-n', '--num_letters', type=int, default=6, help="Number of letters in the metabolic pathway.")
 	args = parser.parse_args()
 
-	# Output file setup
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print(f'writing to file: {outfile}')
+	# Generate the output file name based on the script name and question type
+	script_name = os.path.splitext(os.path.basename(__file__))[0]
+	outfile = (
+		'bbq'
+		f'-{script_name}'  # Add the script name to the file name
+		'-questions.txt'  # Add the file extension
+	)
 
-	# Create and write questions to the output file
+	# Print a message indicating where the file will be saved
+	print(f'Writing to file: {outfile}')
+
+	# Open the output file in write mode
 	with open(outfile, 'w') as f:
+		# Initialize the question number counter
 		N = 0
-		for d in range(args.duplicates):
-			N += 1
-			complete_question = writeQuestion(N, args.num_letters)
-			f.write(complete_question)
-			#print(complete_question)
+
+		# Generate the specified number of questions
+		for _ in range(args.duplicates):
+			# Generate the complete formatted question
+			complete_question = writeQuestion(N+1, args.num_letters)
+
+			# Write the question to the file if it was generated successfully
+			if complete_question is not None:
+				N += 1
+				f.write(complete_question)
+
 	bptools.print_histogram()
+
+	# Print a message indicating how many questions were saved
+	print(f'saved {N} questions to {outfile}')
+
+#===========================================================
+#===========================================================
+# This block ensures the script runs only when executed directly
+if __name__ == '__main__':
+	# Call the main function to run the program
+	main()
+
+## THE END
+
