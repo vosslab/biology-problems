@@ -10,6 +10,23 @@ keys description: terms related to enzyme catalysis
 value description: definition
 values description: definitions
 
+replacement_rules:
+    Substrate: '<span style="color: #e60000;">Substrate</span>' #RED
+    Reagent: '<span style="color: #e65400;">Reagent</span>' #DARK ORANGE
+    Reactant: '<span style="color: #e69100;">Reactant</span>' #LIGHT ORANGE
+    Product: '<span style="color: #b3b300;">Product</span>' #DARK YELLOW
+    Transition state: '<span style="color: #59b300;">Transition state</span>' #LIME GREEN
+    Enzyme: '<span style="color: #009900;">Enzyme</span>' #GREEN
+    Ribozyme: '<span style="color: #00b38f;">Ribozyme</span>' #TEAL
+    Active site: '<span style="color: #00b3b3;">Active site</span>' #CYAN
+    Ligand: '<span style="color: #0a9bf5;">Ligand</span>' #SKY BLUE
+    Ligand-binding site: '<span style="color: #0a9bf5;">Ligand-binding site</span>' #BLUE
+    Prosthetic group: '<span style="color: #0039e6;">Prosthetic group</span>' #BLUE
+    Cofactor: '<span style="color: #004d99;">Cofactor</span>' #NAVY
+    Coenzyme: '<span style="color: #7b12a1;">Coenzyme</span>' #PURPLE
+    Holoenzyme: '<span style="color: #b30077;">Holoenzyme</span>' #MAGENTA
+    Apoenzyme: '<span style="color: #cc0066;">Apoenzyme</span>' #PINK
+
 matching pairs:
   Substrate:
     - a molecule (reactant) that is acted upon by an enzyme
@@ -78,5 +95,7 @@ matching pairs:
     - an inactive enzyme that missing its cofactors
 
 exclude pairs:
-  - [Coenzyme, Cofactor, Prosthetic group]
-  - [Ligand, Ligand binding site]
+  - [Coenzyme, Cofactor]
+  - [Coenzyme, Prosthetic group]
+  - [Cofactor, Prosthetic group]
+  - [Ligand, Ligand-binding site]
