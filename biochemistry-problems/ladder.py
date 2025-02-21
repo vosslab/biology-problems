@@ -29,66 +29,96 @@ label_prefix = ""
 
 row_count = 0
 
-def spacer_row(height):
-	if random.random() < 0.02 and height == band_height:
-		spacer_row = (
-			'<!-- White Spacer -->'
-			f'<tr><td style="height: {height}px; background-color: #34a7e5;"></td></tr>'
-		)
-	else:
-		spacer_row = (
-			'<!-- White Spacer -->'
-			f'<tr><td style="height: {height}px;"></td></tr>'
-		)
-	return spacer_row
+#====================================================================
+def gen_spacer_cell(height: int, width: int=None):
+	spacer_cell_html = ''
+	#spacer_cell_html += '<!-- Empty White Cell -->'
+	spacer_cell_html += f'<td style="'
+	spacer_cell_html += f' height: {height}px; '
+	if width is not None:
+		spacer_cell_html += f' width: {width}px; '
+	spacer_cell_html += f' background-color: #ddd; '
+	spacer_cell_html += '"></td>'
+	return spacer_cell_html
 
-def gen_band_rows(mw, gap_height, mw_color_map):
+#====================================================================
+def gen_spacer_row(height: int, columns: int=5) -> str:
+	"""
+	Generate an HTML spacer row with a specified height.
+	"""
 	global row_count
+	spacer_cell_html = gen_spacer_cell(height)
+	spacer_row_html = (
+		f'\n<!-- Row of Empty White Spacers; Row Count {row_count} -->'
+		'<tr>'
+	)
+	for _ in range(columns):
+		spacer_row_html += spacer_cell_html
+	spacer_row_html += '</tr>\n'
+	row_count += 1
+	return spacer_row_html
+
+#====================================================================
+def gen_band_rows(mw, gap_height, mw_color_map):
 	rgb_color = mw_color_map[mw]
 	quotient, remainder = divmod(gap_height, band_height)
-	band_row = ""
+	band_spacer_row_html = gen_spacer_row(band_height)
+	band_spacer_cell_html = gen_spacer_cell(band_height)
+
+	gel_bands_html = ""
 	for _ in range(quotient):
-		row_count += 1
-		band_row += spacer_row(band_height)
-	band_row += spacer_row(remainder)
-	row_count += 1
-	band_row += (
-		f'<!-- Band = {mw} kD -->'
+		gel_bands_html += band_spacer_row_html
+	gel_bands_html += gen_spacer_row(remainder)
+
+	global row_count
+	gel_bands_html += (
+		f'\n<!-- Band Row = {mw} kD; Row Count {row_count} -->'
 		'<tr>'
+		f'{band_spacer_cell_html}'
 		f'  <td style="width: {band_width}px; height: {band_height}px; '
 		f'    background-color: {rgb_color};"></td>'
-		f'  <td rowspan="3" style="width: {label_width}px; vertical-align: top;" align="left">'
+		f'{band_spacer_cell_html}'
+		f'  <td style="width: {label_width}px; vertical-align: top;" align="left">'
 		f'    {label_prefix}{mw}</td>'
-		'</tr>'
+		f'{band_spacer_cell_html}'
+		'</tr>\n'
 	)
+	print(f'1row_count = {row_count}')
 	row_count += 1
-	#print(f".. pre_row_count = {row_count}")
-	return band_row
+	print(f'2row_count = {row_count}')
+	return gel_bands_html
 
-
+#====================================================================
 def gen_kaleidoscope_table(mw_values, mw_color_map, table_height):
 	global row_count
-	row_count = 0
 	scale_constant = (table_height - 2*spacer_height - len(mw_values)*band_height)
 	num_rows = 3 * len(mw_values) + 1
 	num_rows = scale_constant // band_height + 20
 	#print(f"num_rows = {num_rows}")
 	table_width = label_width + band_width + spacer_width*3
-
+	while_cell_html = gen_spacer_cell(band_height, spacer_width)
 	html_table = (
-		f'<table cellspacing="0" cellpadding="0" width="{table_width}" height="{table_height}" '
+		f'<table cellspacing="0" cellpadding="0" border="1" width="{table_width}" height="{table_height}" '
 		 ' style="border-spacing: 0; border-collapse: collapse; border: 2px solid black; display: inline-block;">'
-		 '<!-- First and Third Columns Span All Rows -->\n'
+	)
+	html_table += f'<tr><td colspan="5" style="height: {spacer_height}; background-color: #ddd;"></td>'
+	html_table += (
 		 '<tr>'
-		f'  <td rowspan="{num_rows}" style="width: {spacer_width}px;"></td> <!-- Left White Column -->'
-		f'  <td style="width: 50px; height: {spacer_height}px;"></td> <!-- White Spacer -->'
-		f'  <td rowspan="{num_rows}" style="width: {spacer_width}px;"></td> <!-- Gap White Column -->'
-		f'  <td rowspan="3" style="width: {label_width}px; vertical-align: middle;" align="left">'
-		f'     {label_prefix}{mw_values[0]}</td> <!-- Right Label Column -->'
-		f'  <td rowspan="{num_rows}" style="width: {spacer_width}px;"></td> <!-- Right White Column -->'
-		 '</tr>\n'
-		f'<tr><td style="width: {band_width}px; height: {band_height}px; '
-		f'  background-color: {mw_color_map[mw_values[0]]};"></td></tr>'
+		f'{while_cell_html}'
+		f'{gen_spacer_cell(band_height, band_width)}'
+		f'{while_cell_html}'
+		f'  <td rowspan="2" style="width: {label_width}px; vertical-align: bottom;" align="left">'
+		f'     {label_prefix}{mw_values[0]}</td>'
+		f'{while_cell_html}'
+		 '</tr>'
+
+		 '<tr>'
+		f'{while_cell_html}'
+		f'<td style="height: {band_height}px; width: {band_width}px; '
+		f'  background-color: {mw_color_map[mw_values[0]]};"></td>'
+		f'{while_cell_html}'
+		f'{while_cell_html}'
+		'</tr>'
 	)
 	row_count += 2
 	gaps = calculate_mw_gaps(mw_values, scale_constant)
@@ -97,8 +127,6 @@ def gen_kaleidoscope_table(mw_values, mw_color_map, table_height):
 		gap_height = gaps[i]
 		html_table += gen_band_rows(mw, gap_height, mw_color_map)
 	html_table += (
-		 '<!-- White Spacer -->'
-		f'<tr><td style="height: {spacer_height//2}px;"></td></tr>'
 		 '<!-- Final White All Column Spacer to Clean Up Border -->'
 		f'<tr><td colspan="5" style="height: {spacer_height//2}px;"></td></tr>'
 	)
@@ -107,7 +135,7 @@ def gen_kaleidoscope_table(mw_values, mw_color_map, table_height):
 	#print(f"row_count = {row_count}")
 	return html_table
 
-
+#====================================================================
 def calculate_mw_gaps(mw_values, scale_constant):
 	"""
 	Takes a list of molecular weights (mw_values), computes the log, differences,
@@ -145,7 +173,7 @@ def calculate_mw_gaps(mw_values, scale_constant):
 	return rounded_scaled
 assert calculate_mw_gaps([100, 50, 10], 100) == [30, 70]
 
-
+#====================================================================
 def main():
 	# Example usage:
 	mw_values = [250, 150, 100, 75, 50, 37, 25, 20, 15, 10]
@@ -168,5 +196,7 @@ def main():
 		f.write(html_table)
 	os.system(f"open {output_file}")
 
+#====================================================================
+#====================================================================
 if __name__ == "__main__":
 	main()
