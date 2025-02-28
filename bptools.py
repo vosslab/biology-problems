@@ -8,6 +8,8 @@ import yaml
 import random
 import colorsys
 import subprocess
+
+
 import num2words #pip
 import crcmod.predefined #pip
 
@@ -119,6 +121,35 @@ def is_valid_html(html_str: str) -> bool:
 			print(f"Parse error: {e}")
 		#print(html_str)
 		return False
+
+def makeQuestionPretty(question):
+	pretty_question = copy.copy(question)
+	#print(len(pretty_question))
+	pretty_question = re.sub(r'\<table .+\<\/table\>', '\n[TABLE]\n', pretty_question)
+	pretty_question = re.sub(r'\<table .*\<\/table\>', '\n[TABLE]\n', pretty_question)
+	if '<table' in pretty_question or '</table' in pretty_question:
+				print("MISSED A TABLE")
+				print(pretty_question)
+				sys.exit(1)
+				pass
+	#print(len(pretty_question))
+	pretty_question = re.sub('&nbsp;', ' ', pretty_question)
+	pretty_question = re.sub(r'h[0-9]\>', 'p>', pretty_question)
+	pretty_question = re.sub('<br/>', '\n', pretty_question)
+	pretty_question = re.sub('<li>', '\n* ', pretty_question)
+	pretty_question = re.sub('<span [^>]*>', ' ', pretty_question)
+	pretty_question = re.sub(r'<\/?strong>', ' ', pretty_question)
+	pretty_question = re.sub('</span>', '', pretty_question)
+	pretty_question = re.sub(r'\<hr\/\>', '', pretty_question)
+	pretty_question = re.sub(r'\<\/p\>\s*\<p\>', '\n', pretty_question)
+	pretty_question = re.sub(r'\<p\>\s*\<\/p\>', '\n', pretty_question)
+	pretty_question = re.sub(r'\n\<\/p\>', '', pretty_question)
+	pretty_question = re.sub(r'\n\<p\>', '\n', pretty_question)
+	pretty_question = re.sub('\n\n', '\n', pretty_question)
+	pretty_question = re.sub('  *', ' ', pretty_question)
+
+	#print(len(pretty_question))
+	return pretty_question
 
 #==========================
 #==========================
@@ -720,38 +751,9 @@ def getCrc16_FromString(mystr):
 		crc16.update(mystr.encode('ascii', errors='strict'))
 	except UnicodeEncodeError:
 		checkAscii(mystr)
-		sys.exit(1)
+		raise ValueError
 	return crc16.hexdigest().lower()
 
-#==========================
-def makeQuestionPretty(question):
-	pretty_question = copy.copy(question)
-	#print(len(pretty_question))
-	pretty_question = re.sub(r'\<table .+\<\/table\>', '\n[TABLE]\n', pretty_question)
-	pretty_question = re.sub(r'\<table .*\<\/table\>', '\n[TABLE]\n', pretty_question)
-	if '<table' in pretty_question or '</table' in pretty_question:
-		print("MISSED A TABLE")
-		print(pretty_question)
-		sys.exit(1)
-		pass
-	#print(len(pretty_question))
-	pretty_question = re.sub('&nbsp;', ' ', pretty_question)
-	pretty_question = re.sub(r'h[0-9]\>', 'p>', pretty_question)
-	pretty_question = re.sub('<br/>', '\n', pretty_question)
-	pretty_question = re.sub('<li>', '\n* ', pretty_question)
-	pretty_question = re.sub('<span [^>]*>', ' ', pretty_question)
-	pretty_question = re.sub(r'<\/?strong>', ' ', pretty_question)
-	pretty_question = re.sub('</span>', '', pretty_question)
-	pretty_question = re.sub(r'\<hr\/\>', '', pretty_question)
-	pretty_question = re.sub(r'\<\/p\>\s*\<p\>', '\n', pretty_question)
-	pretty_question = re.sub(r'\<p\>\s*\<\/p\>', '\n', pretty_question)
-	pretty_question = re.sub(r'\n\<\/p\>', '', pretty_question)
-	pretty_question = re.sub(r'\n\<p\>', '\n', pretty_question)
-	pretty_question = re.sub('\n\n', '\n', pretty_question)
-	pretty_question = re.sub('  *', ' ', pretty_question)
-
-	#print(len(pretty_question))
-	return pretty_question
 
 #==========================
 def generate_js_function():
@@ -833,19 +835,22 @@ def ChoiceHeader(choice_text):
 #==========================
 #==========================
 #==========================
-def formatBB_MC_Question(N, question, choices_list, answer):
+def formatBB_MC_Question(N, question, choices_list, answer_text):
 	global question_count
 	if len(choices_list) <= 1:
-		print("not enough choices to choose from, you need two choices for multiple choice")
-		print("answer=", answer)
-		print("choices_list=", choices_list)
-		sys.exit(1)
+		raise ValueError("not enough choices to choose from, you need two choices for multiple choice")
+	if answer_text not in choices_list:
+		raise ValueError("Error: The correct answer is not in the list of choices.")
+	if choices_list.count(answer_text) > 1:
+		raise ValueError("Error: The correct answer appears more than once in list of choices.")
+	if len(choices_list) > len(set(choices_list)):
+		raise ValueError("Error: Duplicate choices.")
 
 	bb_question = ''
 	#number = "{0}. ".format(N)
 
 	bb_question += 'MC\t'
-	big_question = question + ' '.join(choices_list) + answer
+	big_question = question + ' '.join(choices_list) + answer_text
 	bb_question += QuestionHeader(question, N, big_question)
 
 	answer_count = 0
@@ -855,7 +860,7 @@ def formatBB_MC_Question(N, question, choices_list, answer):
 		labeled_choice_text = '{0}.  {1}&nbsp; '.format(letters[i], choice_text)
 		noisy_choice_text = ChoiceHeader(labeled_choice_text)
 		bb_question += '\t'+noisy_choice_text
-		if choice_text == answer:
+		if choice_text == answer_text:
 			prefix = 'x'
 			bb_question += '\tCorrect'
 			answer_count += 1
