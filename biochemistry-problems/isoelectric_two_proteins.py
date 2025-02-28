@@ -139,8 +139,11 @@ def generate_isoelectric_point_problem(protein1: dict, protein2: dict, pH: float
 	Returns:
 		An HTML string presenting the question.
 	"""
-	question = (
+	question_text= (
 		"<h6>Isoelectric Point Problem</h6> "
+		"<p>A protein's isoelectric point (pI) is the pH at which it carries no net charge. "
+		"When placed in a pH environment different from its pI, the protein will acquire a net charge "
+		"and migrate in an electric field accordingly.</p>"
 		"<p>A mixture of two proteins are to be separated by isoelectric focusing.</p> "
 		'<table cellpadding="2" cellspacing="2" style="text-align:center; border: 1px solid black;">'
 		"<tr><th>Protein<br/>Name</th><th>Isoelectric<br/>Point (pI)</th><th>Molecular<br/>Weight</th></tr>"
@@ -157,7 +160,7 @@ def generate_isoelectric_point_problem(protein1: dict, protein2: dict, pH: float
 		f"<b>pH {pH:.1f}</b>?</p>"
 	)
 
-	return question
+	return question_text
 
 #===========================================================
 #===========================================================
