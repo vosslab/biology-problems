@@ -32,8 +32,8 @@ matching pairs:
   'requires&nbsp;energy&nbsp;input':
     - anabolic
     - endergonic
-    - '&Delta;G > 0'
-    - '&Delta;G&deg;&prime; > 0'
+    - '&Delta;G &gt; 0'
+    - '&Delta;G&deg;&prime; &gt; 0'
     - Gibbs free energy greater than zero
     - non-spontaneous
     - dehydration reactions
@@ -50,8 +50,8 @@ matching pairs:
   'releases&nbsp;energy':
     - catabolic
     - exergonic
-    - '&Delta;G < 0'
-    - '&Delta;G&deg;&prime; < 0'
+    - '&Delta;G &lt; 0'
+    - '&Delta;G&deg;&prime; &lt; 0'
     - Gibbs free energy less than zero
     - spontaneous
     - hydrolysis reactions

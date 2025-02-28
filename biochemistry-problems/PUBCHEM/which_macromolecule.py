@@ -129,7 +129,6 @@ def get_question_text(molecule_name, pcl):
 
 	return question_text
 
-
 #======================================
 #======================================
 def get_random_molecule_name(macro_type, macro_data) -> str:

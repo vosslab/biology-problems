@@ -52,7 +52,7 @@ def get_question_text(protein_dict, pH) -> str:
 	question += "</table>"
 	question += '<p>The protein in the table (above) is placed in a buffer solution with a pH of {0:.1f}.</p> '.format(pH)
 	#question += '<p>Check all of the answers below that apply. </p> '
-	question += '<p>What is the correct net charge on the {0} protein at <b>pH of {1:.1f}</b>? '.format(protein_dict['abbr'], pH)
+	question += '<p>What is the correct net charge on the {0} protein at <b>pH of {1:.1f}</b></p>? '.format(protein_dict['abbr'], pH)
 	return question
 
 #======================================
