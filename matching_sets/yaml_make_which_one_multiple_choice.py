@@ -132,8 +132,11 @@ def makeQuestions2(yaml_data, num_choices=None, flip=False):
 				choices_list.append(choice)
 			choices_list.sort()
 			answer = value
-		question = ("<p>Which one of the following {0} correspond to the {1} <span style='font-size: 1em;''><strong>'{2}'</strong></span>.</p>".format(
-			plural_choice_description, singular_item_description, item_name))
+		question = (
+			f"<p>Which one of the following {plural_choice_description} "
+			f"correspond to the {singular_item_description} "
+			f"<span style='font-size: 1em;'><strong>'{item_name}'</strong></span>.</p>"
+		)
 		N += 1
 		question = bptools.applyReplacementRulesToText(question, yaml_data.get('replacement_rules'))
 		choices_list = bptools.applyReplacementRulesToList(choices_list, yaml_data.get('replacement_rules'))
