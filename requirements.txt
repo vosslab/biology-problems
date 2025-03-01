@@ -1,3 +1,12 @@
+beautifulsoup4
+biopython
 crcmod
+lxml
+matplotlib
 num2words
-
+numpy
+pillow
+pyyaml
+requests
+scipy
+xmltodict
