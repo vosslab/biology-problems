@@ -3,7 +3,7 @@
 import os
 import copy
 import random
-import dihybridcrosslib
+import hybridcrosslib as dihybridcrosslib
 
 #===================
 #===================

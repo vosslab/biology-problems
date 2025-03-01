@@ -5,7 +5,7 @@ import re
 import sys
 import copy
 import random
-import dihybridcrosslib
+import hybridcrosslib as dihybridcrosslib
 import crcmod.predefined
 
 

@@ -3,8 +3,7 @@
 import os
 import copy
 import random
-import crossinglib
-
+import hybridcrosslib as crossinglib
 
 #===================
 #===================
@@ -21,7 +20,6 @@ def questionContent(gene_id):
 	question += '<p><strong>What type of gene interaction is being shown?</strong></p>'
 	print(question)
 	return question
-
 
 #===================
 #===================
