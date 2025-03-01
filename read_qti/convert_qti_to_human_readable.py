@@ -18,35 +18,6 @@ def XML2dict(filename):
 	xml_dict = xmltodict.parse(raw_xml_content)
 	return xml_dict, raw_xml_content
 
-#==========================
-def format_question(N, question, choices_list, answer):
-	formatted_question = ''
-
-	formatted_question += '{0:03d}. {1}\n'.format(N, question)
-	pretty_question = bptools.makeQuestionPretty(question)
-	print('{0:03d}. {1}'.format(N, pretty_question))
-
-	answer_count = 0
-
-	letters = 'ABCDEFGHJKMNPQRSTUWXYZ'
-	for i, choice in enumerate(choices_list):
-		if choice == answer:
-			prefix = '*'
-			formatted_question += prefix
-			answer_count += 1
-			bptools.answer_histogram[letters[i]] = bptools.answer_histogram.get(letters[i], 0) + 1
-		else:
-			prefix = ' '
-			#formatted_question += prefix
-		formatted_question += '{0}. {1}\n'.format(letters[i], choice)
-
-		print("- [{0}] {1}. {2}".format(prefix, letters[i], bptools.makeQuestionPretty(choice)))
-	print("")
-	if answer_count != 1:
-		print("Too many or few answers count {0}".format(answer_count))
-		sys.exit(1)
-	return formatted_question + '\n'
-
 #===============================
 def processQuestion(N, filename):
 	xmldict, raw_xml_content = XML2dict(filename)
@@ -102,10 +73,8 @@ def processQuestion(N, filename):
 		print(answer_index)
 		sys.exit(1)
 	#print(answer_text)
-	
 	random.shuffle(choices_list)
-	formatted_question = format_question(N, question_text, choices_list, answer_text)
-	return formatted_question
+	return question_text, choices_list, answer_text
 
 #===============================
 #===============================
