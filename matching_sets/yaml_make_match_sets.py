@@ -20,7 +20,7 @@ N = 0
 #=======================
 #=======================
 #=======================
-def permuteMatchingPairs(yaml_data, num_choices=None):
+def permuteMatchingPairs(yaml_data, num_choices=None, max_questions=None):
 	matching_pairs_dict = yaml_data['matching pairs']
 	exclude_pairs_list = yaml_data.get('exclude pairs', [])
 
@@ -77,6 +77,8 @@ def permuteMatchingPairs(yaml_data, num_choices=None):
 		matching_list = bptools.append_clear_font_space_to_list(matching_list)
 		complete_question = bptools.formatBB_MAT_Question(N, question, answers_list, matching_list)
 		list_of_complete_questions.append(complete_question)
+		if len(list_of_complete_questions) > max_questions*10:
+			break
 
 	#list_of_complete_questions = bptools.applyReplacementRulesToList(list_of_complete_questions, yaml_data.get('replacement_rules'))
 	return list_of_complete_questions
@@ -104,7 +106,7 @@ if __name__ == '__main__':
 
 	list_of_complete_questions = []
 	for i in range(args.duplicate_runs):
-		list_of_complete_questions += permuteMatchingPairs(yaml_data, args.num_choices)
+		list_of_complete_questions += permuteMatchingPairs(yaml_data, args.num_choices, args.max_questions)
 
 	if len(list_of_complete_questions) > args.max_questions:
 		print("Too many questions ({0}), trimming down to {1} questions".format(len(list_of_complete_questions), args.max_questions))
