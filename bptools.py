@@ -113,7 +113,7 @@ def print_histogram():
 #===================================================================================
 #===================================================================================
 
-def formatBB_MC_Question(N, question_text, choices_list, answer_text):
+def formatBB_MC_Question(N: int, question_text: str, choices_list, answer_text):
 	# deal with item classes
 	item_cls = item_types.MC(question_text, choices_list, answer_text)
 	item_cls.item_number = N
@@ -132,7 +132,7 @@ def formatBB_MC_Question(N, question_text, choices_list, answer_text):
 	return bb_question_text
 
 #=====================
-def formatBB_MA_Question(N, question_text, choices_list, answers_list):
+def formatBB_MA_Question(N: int, question_text: str, choices_list, answers_list):
 	# deal with item classes
 	item_cls = item_types.MA(question_text, choices_list, answers_list)
 	item_cls.item_number = N
@@ -151,7 +151,7 @@ def formatBB_MA_Question(N, question_text, choices_list, answers_list):
 	return bb_question_text
 
 #=====================
-def formatBB_MAT_Question(N, question, prompts_list, choices_list):
+def formatBB_MAT_Question(N: int, question_text: str, prompts_list, choices_list):
 	# deal with item classes
 	item_cls = item_types.MATCH(question_text, prompts_list, choices_list)
 	item_cls.item_number = N
@@ -166,7 +166,7 @@ def formatBB_MAT_Question(N, question, prompts_list, choices_list):
 	return bb_question_text
 
 #=====================
-def formatBB_FIB_Question(N, question_text, answers_list):
+def formatBB_FIB_Question(N: int, question_text: str, answers_list):
 	# deal with item classes
 	item_cls = item_types.FIB(question_text, answers_list)
 	item_cls.item_number = N
@@ -198,7 +198,7 @@ def formatBB_FIB_PLUS_Question(N: int, question_text: str, answer_map: dict) -> 
 	return bb_question_text
 
 #=====================
-def formatBB_NUM_Question(N, question_text, answer_float, tolerance_float, tol_message=True):
+def formatBB_NUM_Question(N: int, question_text: str, answer_float, tolerance_float, tol_message=True):
 	# deal with item classes
 	item_cls = item_types.NUM(question_text, answer_float, tolerance_float, tol_message)
 	item_cls.item_number = N
@@ -214,7 +214,7 @@ def formatBB_NUM_Question(N, question_text, answer_float, tolerance_float, tol_m
 	return bb_question_text
 
 #=====================
-def formatBB_ORD_Question(N, question_text, ordered_answers_list):
+def formatBB_ORD_Question(N: int, question_text: str, ordered_answers_list):
 	# deal with item classes
 	item_cls = item_types.ORDER(question_text, ordered_answers_list)
 	item_cls.item_number = N
