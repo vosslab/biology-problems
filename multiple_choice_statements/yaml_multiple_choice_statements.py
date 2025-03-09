@@ -319,7 +319,7 @@ def main():
 	base_name = os.path.splitext(os.path.basename(args.input_yaml_file))[0]
 	outfile = (
 		'bbq'
-		'-TF'
+		'-TFMS'
 		f'-{base_name}'  # Add the script name to the file name
 		'-questions.txt'  # Add the file extension
 	)
