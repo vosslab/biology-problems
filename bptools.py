@@ -15,7 +15,7 @@ from qti_package_maker.assessment_items import item_types
 from qti_package_maker.engines.bbq_text_upload import write_item as bbq_write_item
 from qti_package_maker.engines.human_readable import write_item as human_write_item
 
-ict(int)
+answer_histogram = defaultdict(int)
 question_count = 0
 letters = 'ABCDEFGHJKMNPQRSTUWXYZ'
 crc16_dict = {}
