@@ -4,11 +4,16 @@ import re
 import sys
 import random
 import subprocess
+from collections import defaultdict
 
 from qti_package_maker.common import yaml_tools
 from qti_package_maker.common import color_wheel
 from qti_package_maker.common import string_functions
 from qti_package_maker.assessment_items import validator
+from qti_package_maker.assessment_items import item_types
+from qti_package_maker.engines.bbq_text_upload import write_item as bbq_write_item
+from qti_package_maker.engines.human_readable import write_item as human_write_item
+
 
 #anticheating measures
 use_nocopy_script = False
@@ -21,7 +26,7 @@ noScreenshot = False
 autoBlur = True
 
 hidden_term_bank = None
-answer_histogram = {}
+answer_histogram = defaultdict(int)
 question_count = 0
 crc16_dict = {}
 
@@ -192,73 +197,32 @@ def print_histogram():
 #===================================================================================
 #===================================================================================
 
-def formatBB_MC_Question(N, question, choices_list, answer_text):
+def formatBB_MC_Question(N, question_text, choices_list, answer_text):
 	global question_count
-	validator.validate_MC(question, choices_list, answer_text)
-
-	bb_question = ''
-	#number = "{0}. ".format(N)
-
-	bb_question += 'MC\t'
-	big_question = question + ' '.join(choices_list) + answer_text
-	bb_question += QuestionHeader(question, N, big_question)
-
-	answer_count = 0
-
+	item_cls = item_types.MC(question_text, choices_list, answer_text)
 	letters = 'ABCDEFGHJKMNPQRSTUWXYZ'
 	for i, choice_text in enumerate(choices_list):
-		labeled_choice_text = '{0}.  {1}&nbsp; '.format(letters[i], choice_text)
-		noisy_choice_text = ChoiceHeader(labeled_choice_text)
-		bb_question += '\t'+noisy_choice_text
 		if choice_text == answer_text:
-			prefix = 'x'
-			bb_question += '\tCorrect'
-			answer_count += 1
-			answer_histogram[letters[i]] = answer_histogram.get(letters[i], 0) + 1
-		else:
-			prefix = ' '
-			bb_question += '\tIncorrect'
-		print("- [{0}] {1}. {2}".format(prefix, letters[i], makeQuestionPretty(choice_text)))
-	print("")
-	if answer_count != 1:
-		print("Too many or few answers count {0}".format(answer_count))
-		sys.exit(1)
+			answer_histogram[letters[i]] += 1
+	human_readable_text = human_write_item.MC(item_cls)
+	bb_question_text = bbq_write_item.MC(item_cls)
+	print(human_readable_text)
 	question_count += 1
-	return bb_question + '\n'
+	return bb_question_text
 
 #=====================
-def formatBB_MA_Question(N, question, choices_list, answers_list):
+def formatBB_MA_Question(N, question_text, choices_list, answers_list):
 	global question_count
-	validator.validate_MA(question, choices_list, answers_list)
-
-	bb_question = ''
-	#number = "{0}. ".format(N)
-	bb_question += 'MA\t'
-	big_question = question + ' '.join(choices_list) + ' '.join(answers_list)
-	bb_question += QuestionHeader(question, N, big_question)
-
-	answer_count = 0
-
+	item_cls = item_types.MA(question_text, choices_list, answers_list)
 	letters = 'ABCDEFGHJKMNPQRSTUWXYZ'
 	for i, choice_text in enumerate(choices_list):
-		labeled_choice_text = '{0}.  {1}&nbsp; '.format(letters[i], choice_text)
-		noisy_choice_text = ChoiceHeader(labeled_choice_text)
-		bb_question += '\t'+noisy_choice_text
 		if choice_text in answers_list:
-			prefix = 'x'
-			bb_question += '\tCorrect'
-			answer_count += 1
-			answer_histogram[letters[i]] = answer_histogram.get(letters[i], 0) + 1
-		else:
-			prefix = ' '
-			bb_question += '\tIncorrect'
-		print("- [{0}] {1}. {2}".format(prefix, letters[i], makeQuestionPretty(choice_text)))
-	print("")
-	if answer_count == 0:
-		print("No answer count {0}".format(answer_count))
-		sys.exit(1)
+			answer_histogram[letters[i]] += 1
+	human_readable_text = human_write_item.MA(item_cls)
+	bb_question_text = bbq_write_item.MA(item_cls)
+	print(human_readable_text)
 	question_count += 1
-	return bb_question + '\n'
+	return bb_question_text
 
 #=====================
 def formatBB_FIB_Question(N, question, answers_list):
