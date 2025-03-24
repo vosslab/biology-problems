@@ -1,0 +1,57 @@
+---
+
+#Which one of the following statements is FALSE/TRUE <connection word> <topic>
+topic: the structure of DNA
+
+#UNCOMMENT ONE OR BOTH FOR THIS TO WORK
+override_question_true: ~
+override_question_false: ~
+
+RED: #e60000;
+DARK ORANGE: #e65400;
+LIGHT ORANGE: #e69100;
+DARK YELLOW: #b3b300;
+LIME GREEN: #59b300;
+GREEN: #009900;
+TEAL: #00b38f;
+CYAN: #00b3b3;
+SKY BLUE: #0a9bf5;
+BLUE: #0039e6;
+NAVY: #004d99;
+PURPLE: #7b12a1;
+MAGENTA: #b30077;
+PINK: #cc0066;
+
+replacement_rules:
+    AAAAAAAA: '<span style="color: #e60000;">AAAAAAAA</span>' #RED
+    BBBBBBBB: '<span style="color: #e65400;">BBBBBBBB</span>' #DARK ORANGE
+    CCCCCCCC: '<span style="color: #e69100;">CCCCCCCC</span>' #LIGHT ORANGE
+    DDDDDDDD: '<span style="color: #b3b300;">DDDDDDDD</span>' #DARK YELLOW
+    EEEEEEEE: '<span style="color: #59b300;">EEEEEEEE</span>' #LIME GREEN
+    FFFFFFFF: '<span style="color: #009900;">FFFFFFFF</span>' #GREEN
+    GGGGGGGG: '<span style="color: #00b38f;">GGGGGGGG</span>' #TEAL
+    HHHHHHHH: '<span style="color: #00b3b3;">HHHHHHHH</span>' #CYAN
+    IIIIIIII: '<span style="color: #0a9bf5;">IIIIIIII</span>' #SKY BLUE
+    JJJJJJJJ: '<span style="color: #0039e6;">JJJJJJJJ</span>' #BLUE
+    KKKKKKKK: '<span style="color: #004d99;">KKKKKKKK</span>' #NAVY
+    LLLLLLLL: '<span style="color: #7b12a1;">LLLLLLLL</span>' #PURPLE
+    MMMMMMMM: '<span style="color: #b30077;">MMMMMMMM</span>' #MAGENTA
+    NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
+
+connection_words: ~
+
+true_statements:
+  truth1a: the backbone contains only phosphate and sugar
+
+
+false_statements:
+  false1a: the backbone contains only phosphate and nucleobase
+  false1b: the backbone contains only nucleobase and sugar
+
+
+# conflicts, means that the statements cannot appear together
+# add ': True' to each line, so the program runs a faster lookup 
+conflict_rules: ~  
+    
+    
+    
