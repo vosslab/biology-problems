@@ -1,11 +1,11 @@
 ---
 
 #Which one of the following statements is FALSE/TRUE <connection word> <topic>
-topic: the structure of DNA
+topic: the enzyme function of Chymotrypsin
 
 #UNCOMMENT ONE OR BOTH FOR THIS TO WORK
-override_question_true: ~
-override_question_false: ~
+#override_question_true: ~
+#override_question_false: ~
 
 RED: #e60000;
 DARK ORANGE: #e65400;
@@ -26,14 +26,14 @@ replacement_rules:
     AAAAAAAA: '<span style="color: #e60000;">AAAAAAAA</span>' #RED
     BBBBBBBB: '<span style="color: #e65400;">BBBBBBBB</span>' #DARK ORANGE
     CCCCCCCC: '<span style="color: #e69100;">CCCCCCCC</span>' #LIGHT ORANGE
-    DDDDDDDD: '<span style="color: #b3b300;">DDDDDDDD</span>' #DARK YELLOW
+    Chymotrypsin: '<span style="color: #b3b300;">Chymotrypsin</span>' #DARK YELLOW
     EEEEEEEE: '<span style="color: #59b300;">EEEEEEEE</span>' #LIME GREEN
     FFFFFFFF: '<span style="color: #009900;">FFFFFFFF</span>' #GREEN
     GGGGGGGG: '<span style="color: #00b38f;">GGGGGGGG</span>' #TEAL
     HHHHHHHH: '<span style="color: #00b3b3;">HHHHHHHH</span>' #CYAN
     IIIIIIII: '<span style="color: #0a9bf5;">IIIIIIII</span>' #SKY BLUE
     JJJJJJJJ: '<span style="color: #0039e6;">JJJJJJJJ</span>' #BLUE
-    KKKKKKKK: '<span style="color: #004d99;">KKKKKKKK</span>' #NAVY
+    S1 pocket: '<span style="color: #004d99;">S1 pocket</span>' #NAVY
     LLLLLLLL: '<span style="color: #7b12a1;">LLLLLLLL</span>' #PURPLE
     MMMMMMMM: '<span style="color: #b30077;">MMMMMMMM</span>' #MAGENTA
     NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
@@ -41,12 +41,62 @@ replacement_rules:
 connection_words: ~
 
 true_statements:
-  truth1a: the backbone contains only phosphate and sugar
+  truth1a: Chymotrypsin prefers to cleave after large aromatic amino acids.
 
+  truth2a: The shape of the S1 pocket of Chymotrypsin helps determine which residues are cut.
+  truth2b: The amino acid tyrosine fits well into the S1 pocket of Chymotrypsin.
+  truth2c: The amino acid phenylalanine fits well into the S1 pocket of Chymotrypsin.
+  truth2d: The amino acid tryptophan fits well into the S1 pocket of Chymotrypsin.
+
+  truth3a: The S1 pocket of Chymotrypsin is designed to bind hydrophobic side chains.
+  truth3b: The S1 pocket of Chymotrypsin is deep and hydrophobic.
+  truth3c: The substrate specificity of Chymotrypsin is mostly due to the properties of its S1 pocket.
+
+  truth4a: Chymotrypsin helps break down dietary proteins into smaller peptides.
+  truth4b: Chymotrypsin is used to digest proteins in the small intestine.
+
+  truth5a: Chymotrypsin sometimes cleaves after hydrophobic amino acids, leucine and methionine.
+
+  truth6a: Chymotrypsin works in two main phases, cutting and resetting.
+  truth6b: The free Chymotrypsin enzyme is regenerated using water in the second phase of the reaction.
+
+  truth21a: Chymotrypsin contains a cleft where peptide bonds are broken.
 
 false_statements:
-  false1a: the backbone contains only phosphate and nucleobase
-  false1b: the backbone contains only nucleobase and sugar
+  false1a: Chymotrypsin prefers to cleave after positively charged amino acids.
+  false1b: Chymotrypsin cleaves randomly along the protein backbone.
+  false1c: Chymotrypsin prefers to cleave after negatively charged amino acids.
+  false1d: Chymotrypsin prefers to cleave after small, polar amino acids.
+  false1e: Chymotrypsin cleaves only at the N-terminus of peptides.
+
+  false3a: The S1 pocket of Chymotrypsin is shallow and positively charged.
+  false3b: The S1 pocket of Chymotrypsin is shallow and negatively charged.
+  false3c: The S1 pocket of Chymotrypsin is deep and positively charged.
+  false3d: The S1 pocket of Chymotrypsin is deep and negatively charged.
+  false3e: The S1 pocket of Chymotrypsin prefers charged polar side chains.
+
+  false4a: Chymotrypsin only acts on carbohydrate side chains.
+  false4b: Chymotrypsin only acts on triglyceride fatty acid side chains.
+  false4c: Chymotrypsin works to break down polysaccharides.
+  false4d: Chymotrypsin assembles peptide chains from free amino acids.
+  false4e: Chymotrypsin digests carbohydrates in the stomach.
+  false4f: Chymotrypsin digests fats and oils in the stomach.
+  false4g: Chymotrypsin is primarily used to digest nucleic acids.
+  false4h: Chymotrypsin is active in the acidic environment of the stomach.
+
+  false5a: Chymotrypsin sometimes cleaves after small amino acids, glycine and alanine.
+  false5b: Chymotrypsin sometimes cleaves after polar amino acids, serine and threonine.
+  false5c: Chymotrypsin sometimes cleaves after the negatively charged amino acid, glutamine.
+  false5d: Chymotrypsin sometimes cleaves after the positively charged amino acid, lysine.
+
+  false6a: Chymotrypsin cuts proteins all at once, without forming intermediates.
+
+  false11a: Water has no role in the enzyme function of Chymotrypsin.
+  false11b: Chymotrypsin does not require water at any point in its mechanism.
+
+  false12a: Chymotrypsin requires ATP to cleave peptide bonds.
+
+  false13a: The S1 pocket of Chymotrypsin binds metal ions to stabilize the substrate.
 
 
 # conflicts, means that the statements cannot appear together
