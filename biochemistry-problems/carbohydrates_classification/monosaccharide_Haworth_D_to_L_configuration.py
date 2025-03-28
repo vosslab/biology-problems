@@ -3,10 +3,13 @@
 import os
 import sys
 import random
+
+import bptools
 import sugarlib
 
-def makeQuestion(sugar_name, anomeric):
-	sugar_code = sugar_codes_class.sugar_name_to_code[sugar_name]
+def write_question(N, sugar_name, anomeric, sugar_codes_cls):
+	print("\n\n")
+	sugar_code = sugar_codes_cls.sugar_name_to_code[sugar_name]
 	if len(sugar_code) == 5 and sugar_code[0] == 'A':
 		#aldo pentose
 		ring='furan'
@@ -20,37 +23,40 @@ def makeQuestion(sugar_name, anomeric):
 		#keto pentose
 		ring='pyran'
 	else:
-		print(sugar_code)
-		sys.exit(1)
+		raise ValueError(f"not sure how to cyclize this sugar code {sugar_code}")
 
 	sugar_struct = sugarlib.SugarStructure(sugar_code)
-	#print(sugar_struct.structural_part_txt())
+
+	print("name:", sugar_name)
+	print("length:", len(sugar_code))
+	print("code:", sugar_code)
+	print("structure:", sugar_struct)
+
 	haworth = sugar_struct.Haworth_projection_html(ring=ring, anomeric=anomeric)
 
-	question = ''
-	question += 'Above is a Haworth projection of the monosaccharide &{0};-{1}. '.format(anomeric, sugar_name)
+	question_text = ''
+	question_text += '<p>Above is a Haworth projection of the monosaccharide &{0};-{1}. '.format(anomeric, sugar_name)
 	L_sugar_name = sugar_name.replace('D-', 'L-')
-	question += 'Which one of the following Haworth projections is of the monosaccharide &{0};-{1}? '.format(anomeric, L_sugar_name)
-	enantiomer_code = sugar_codes_class.get_enantiomer_code_from_code(sugar_code)
+	question_text += 'Which one of the following Haworth projections is of the monosaccharide &{0};-{1}?</p> '.format(anomeric, L_sugar_name)
+	enantiomer_code = sugar_codes_cls.get_enantiomer_code_from_code(sugar_code)
 	answer_code = enantiomer_code
+
 	choice_codes = [(answer_code, anomeric), ]
 	if anomeric == 'alpha':
 		other_anomeric = 'beta'
 	elif anomeric == 'beta':
 		other_anomeric = 'alpha'
 	choice_codes += [(answer_code, other_anomeric), ]
-	if sugar_code[0] == 'A':
-		first_stereocarbon = 2
-	else:
-		first_stereocarbon = 3
 
 	extra_choices = []
-	for i in range(first_stereocarbon, first_stereocarbon+1+1):
-		wrong = sugar_codes_class.flip_position(sugar_code, i)
+	for position in range(2, len(sugar_code)):
+		if sugar_code[position-1] == "K":
+			continue
+		wrong = sugar_codes_cls.flip_position(sugar_code, position)
 		extra_choices.append((wrong, anomeric))
 		extra_choices.append((wrong, other_anomeric))
 
-		wrong = sugar_codes_class.flip_position(enantiomer_code, i)
+		wrong = sugar_codes_cls.flip_position(enantiomer_code, position)
 		extra_choices.append((wrong, anomeric))
 		extra_choices.append((wrong, other_anomeric))
 
@@ -67,47 +73,84 @@ def makeQuestion(sugar_name, anomeric):
 		print("Lost some choices {0} -> {1}".format(prelen, postlen))
 		sys.exit(1)
 
-	content = 'MC\t<p>&{0};-{1}</p> '.format(anomeric, sugar_name)
-	content += haworth
-	content += question
+	# Build full HTML content for the question
+	sugar_name_line = f"<p>&{anomeric};-{sugar_name}</p>"
+	full_question_content = sugar_name_line + haworth + question_text
 
+	html_choices_list = []
 	random.shuffle(choice_codes)
-	for s,a in choice_codes:
+	for s, a in choice_codes:
 		my_sugar_struct = sugarlib.SugarStructure(s)
 		my_haworth = my_sugar_struct.Haworth_projection_html(ring=ring, anomeric=a)
-		content += "\t"+my_haworth
-		if s == answer_code and a == anomeric:
-			content += "\tCorrect"
-		else:
-			content += "\tIncorrect"
-	return content
+		html_choices_list.append(my_haworth)
+		if s == answer_code:
+			html_answer_text = my_haworth
 
+	# Format the question for Blackboard
+	complete_question = bptools.formatBB_MC_Question(
+		N, full_question_content, html_choices_list, html_answer_text
+	)
+	return complete_question
+
+
+#======================================
+#======================================
+def parse_arguments():
+	"""
+	Parses command-line arguments for the script.
+	"""
+	parser = argparse.ArgumentParser(description="Generate questions.")
+
+	args = parser.parse_args()
+	return args
+
+#======================================
+#======================================
+def get_sugar_codes(sugar_codes_cls):
+	sugar_names_list = []
+	sugar_names_list += sugar_codes_cls.get_sugar_names(5, 'D', 'aldo')
+	sugar_names_list += sugar_codes_cls.get_sugar_names(6, 'D', 'keto')
+	sugar_names_list += sugar_codes_cls.get_sugar_names(6, 'D', 'aldo')
+	sugar_names_list += sugar_codes_cls.get_sugar_names(7, 'D', 'keto')
+	sugar_names_list.remove('D-fructose')
+	sugar_names_list.remove('D-glucose')
+	sugar_names_list = list(set(sugar_names_list))
+	print(f"Retrieved {len(sugar_names_list)} from the sugar library")
+	return sugar_names_list
+
+#======================================
+#======================================
+def main():
+
+	# Define output file name
+	script_name = os.path.splitext(os.path.basename(__file__))[0]
+	outfile = (
+		'bbq'
+		f'-{script_name}'
+		'-questions.txt'
+	)
+	print(f'Writing to file: {outfile}')
+
+	sugar_codes_cls = sugarlib.SugarCodes()
+
+	sugar_names_list = get_sugar_codes(sugar_codes_cls)
+
+	# Open the output file and generate questions
+	with open(outfile, 'w') as f:
+		N = 1  # Question number counter
+		for anomeric in ('alpha', 'beta'):
+			for sugar_name in sugar_names_list:
+				complete_question = write_question(N, sugar_name, anomeric, sugar_codes_cls)
+				if complete_question is not None:
+					N += 1
+					f.write(complete_question)
+
+	# Display histogram if question type is multiple choice
+	bptools.print_histogram()
+
+#======================================
+#======================================
 if __name__ == '__main__':
-	sugar_codes_class = sugarlib.SugarCodes()
-	D_sugars = []
-	D_sugars += sugar_codes_class.get_sugar_names(5, 'D', 'aldo')
-	#print(D_sugars)
-	D_sugars += sugar_codes_class.get_sugar_names(6, 'D', 'keto')
-	#print(D_sugars)
-	D_sugars += sugar_codes_class.get_sugar_names(6, 'D', 'aldo')
-	#print(D_sugars)
-	D_sugars += sugar_codes_class.get_sugar_names(7, 'D', 'keto')
-	#print(D_sugars)
-	D_sugars.remove('D-ribose')
-	D_sugars.remove('D-fructose')
-	D_sugars.remove('D-glucose')
-	D_sugars.remove('D-galactose')
-	D_sugars.remove('D-idose')
-	D_sugars.remove('D-tagatose')
+	main()
 
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	for anomeric in ('alpha', 'beta'):
-		for sugar_name in D_sugars:
-			#random.shuffle(D_hexose_names)
-			#sugar_name = D_hexose_names.pop()
-			print(sugar_name)
-			content = makeQuestion(sugar_name, anomeric)
-			f.write(content+'\n')
-	f.close()
+## THE END
