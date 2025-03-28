@@ -84,6 +84,9 @@ def write_question(N, sugar_name):
 	question_content += fischer_projection_html_str  # Add Fischer projection diagram
 	question_content += question  # Add question description and instructions
 
+	if len(colored_answers_list) != 3:
+		raise ValueError("must be exactly three answers")
+
 	# Format the question for Blackboard
 	complete_question = bptools.formatBB_MA_Question(
 		N, question_content, colored_choices_list, colored_answers_list
