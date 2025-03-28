@@ -125,7 +125,8 @@ def formatBB_MC_Question(N: int, question_text: str, choices_list, answer_text):
 	# get format
 	human_readable_text = human_write_item.MC(item_cls)
 	bb_question_text = bbq_write_item.MC(nocheat_item_cls)
-	print(human_readable_text)
+	if human_readable_text is not None:
+		print(human_readable_text)
 	# update counter and return
 	global question_count
 	question_count += 1
@@ -144,7 +145,8 @@ def formatBB_MA_Question(N: int, question_text: str, choices_list, answers_list)
 	# get format
 	human_readable_text = human_write_item.MA(item_cls)
 	bb_question_text = bbq_write_item.MA(nocheat_item_cls)
-	print(human_readable_text)
+	if human_readable_text is not None:
+		print(human_readable_text)
 	# update counter and return
 	global question_count
 	question_count += 1
@@ -159,7 +161,8 @@ def formatBB_MAT_Question(N: int, question_text: str, prompts_list, choices_list
 	# get format
 	human_readable_text = human_write_item.MATCH(item_cls)
 	bb_question_text = bbq_write_item.MATCH(nocheat_item_cls)
-	print(human_readable_text)
+	if human_readable_text is not None:
+		print(human_readable_text)
 	# update counter and return
 	global question_count
 	question_count += 1
@@ -175,7 +178,8 @@ def formatBB_FIB_Question(N: int, question_text: str, answers_list):
 	# get format
 	human_readable_text = human_write_item.FIB(item_cls)
 	bb_question_text = bbq_write_item.FIB(nocheat_item_cls)
-	print(human_readable_text)
+	if human_readable_text is not None:
+		print(human_readable_text)
 	# update counter and return
 	global question_count
 	question_count += 1
@@ -191,7 +195,8 @@ def formatBB_FIB_PLUS_Question(N: int, question_text: str, answer_map: dict) -> 
 	# get format
 	human_readable_text = human_write_item.MULTI_FIB(item_cls)
 	bb_question_text = bbq_write_item.MULTI_FIB(nocheat_item_cls)
-	print(human_readable_text)
+	if human_readable_text is not None:
+		print(human_readable_text)
 	# update counter and return
 	global question_count
 	question_count += 1
@@ -207,7 +212,8 @@ def formatBB_NUM_Question(N: int, question_text: str, answer_float, tolerance_fl
 	# get format
 	human_readable_text = human_write_item.NUM(item_cls)
 	bb_question_text = bbq_write_item.NUM(nocheat_item_cls)
-	print(human_readable_text)
+	if human_readable_text is not None:
+		print(human_readable_text)
 	# update counter and return
 	global question_count
 	question_count += 1
@@ -223,7 +229,8 @@ def formatBB_ORD_Question(N: int, question_text: str, ordered_answers_list):
 	# get format
 	human_readable_text = human_write_item.ORDER(item_cls)
 	bb_question_text = bbq_write_item.ORDER(nocheat_item_cls)
-	print(human_readable_text)
+	if human_readable_text is not None:
+		print(human_readable_text)
 	# update counter and return
 	global question_count
 	question_count += 1
