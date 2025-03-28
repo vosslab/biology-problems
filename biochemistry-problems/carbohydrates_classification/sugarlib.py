@@ -482,6 +482,7 @@ class SugarStructure(object):
 
 	#============================
 	def sugar_summary(self):
+		print("SUGAR SUMMARY")
 		print(self.molecular_formula_txt())
 		print(self.structural_part_txt())
 		print(self.Fischer_projection_html())
@@ -690,6 +691,7 @@ class SugarStructure(object):
 		#last_carbon
 		if last_carbon == "M":
 			table += self._hydroxymethyl_html_cap()
+		table += '</tbody>'
 		table += '</table>'
 		return table
 
