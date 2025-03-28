@@ -1,0 +1,147 @@
+trioses:
+  ADM: D-glyceraldehyde
+  ALM: L-glyceraldehyde
+  MKM: dihydroxacetone
+
+D-aldotetroses:
+  ARDM: D-erythrose
+  ALDM: D-threose
+
+L-aldotetroses:
+  ARLM: L-threose
+  ALLM: L-erythrose
+
+ketotetroses:
+  MKDM: D-erythrulose
+  MKLM: L-erythrulose
+
+# FYI: 3-ketotetroses are just backwards 2-ketotetroses
+
+D-aldopentoses:
+  ARRDM: D-ribose
+  ALRDM: D-arabinaose
+  ARLDM: D-xylose
+  ALLDM: D-lyxose
+
+L-aldopentoses:
+  ARRLM: L-lyxose
+  ALRLM: L-xylose
+  ARLLM: L-arabinaose
+  ALLLM: L-ribose
+
+ketopentoses:
+  MKRDM: D-ribulose
+  MKLDM: D-xylulose
+  MKRLM: L-xylulose
+  MKLLM: L-ribulose
+
+3-ketopentoses:
+  MRKRM: meso 3-ketopentose
+  MLKDM: D-3-ketopentose
+  MRKLM: L-3-ketopentose
+
+D-aldohexoses:
+  ARRRDM: D-allose
+  ARRLDM: D-gulose
+  ARLRDM: D-glucose
+  ARLLDM: D-galactose
+  ALRRDM: D-altrose
+  ALRLDM: D-idose
+  ALLRDM: D-mannose
+  ALLLDM: D-talose
+
+L-aldohexoses:
+  ARRRLM: L-talose
+  ARRLLM: L-mannose
+  ARLRLM: L-idose
+  ARLLLM: L-altrose
+  ALRRLM: L-galactose
+  ALRLLM: L-glucose
+  ALLRLM: L-gulose
+  ALLLLM: L-allose
+
+D-ketohexoses:
+  MKRRDM: D-tagatose
+  MKRLDM: D-sorbose
+  MKLRDM: D-fructose
+  MKLLDM: D-psicose
+
+L-ketohexoses:
+  MKRRLM: L-psicose
+  MKRLLM: L-fructose
+  MKLRLM: L-sorbose
+  MKLLLM: L-tagatose
+
+3-ketohexoses:
+  MRKRDM: D-3-keto-allose
+  MRKLDM: D-3-keto-altrose
+  MLKRDM: D-3-keto-glucose  # CID: 440537
+  MLKLDM: D-3-keto-mannose  # CID: 71307354
+  MRKRLM: L-3-keto-allose
+  MRKLLM: L-3-keto-altrose
+  MLKRLM: L-3-keto-glucose  # CID: 71307355
+  MLKLLM: L-3-keto-mannose  # CID: 440538
+
+DD-aldoheptoses:
+  ARRRRDM: D-glycero-D-allo-heptose # CID: 25791639 (2R,3R,4R,5R,6R)
+  ARRLRDM: D-glycero-D-gulo-heptose # CID: 76599 (2R,3R,4S,5R,6R)
+  ARLRRDM: D-glycero-D-gluco-heptose # CID: 87131842 (2R,3S,4R,5R,6R)
+  ARLLRDM: D-glycero-D-galacto-heptose # CID: 219662
+  ALRRRDM: D-glycero-D-altro-heptose # CID: 101415672 (2S,3R,4R,5R,6R)
+  ALRLRDM: D-glycero-D-ido-heptose # CID: 14188133 (2S,3R,4S,5R,6R)
+  ALLRRDM: D-glycero-D-manno-heptose # CID: 24802279
+  ALLLRDM: D-glycero-D-talo-heptose # CID: 57346506 (2S,3S,4S,5R,6R)
+
+DL-aldoheptoses:
+  ARRRLDM: D-glycero-L-allo-heptose
+  ARRLLDM: D-glycero-L-gulo-heptose # CID: 129824786 (2S,3S,4R,5S,6R)
+  ARLRLDM: D-glycero-L-gluco-heptose # CID: 21139463 (2S,3R,4S,5S,6R)
+  ARLLLDM: D-glycero-L-galacto-heptose # CID: 14188137 (2S,3R,4R,5S,6R)
+  ALRRLDM: D-glycero-L-altro-heptose
+  ALRLLDM: D-glycero-L-ido-heptose
+  ALLRLDM: D-glycero-L-manno-heptose # CID: 71355983 (2R,3R,4S,5S,6R)
+  ALLLLDM: D-glycero-L-talo-heptose
+
+LD-aldoheptoses:
+  ARRRRLM: L-glycero-D-allo-heptose
+  ARRLRLM: L-glycero-D-gulo-heptose # CID: 87177231 (2R,3R,4S,5R,6S)
+  ARLRRLM: L-glycero-D-gluco-heptose # CID: 87131843 (2R,3S,4R,5R,6S)
+  ARLLRLM: L-glycero-D-galacto-heptose # CID: 87088840 (2R,3S,4S,5R,6S)
+  ALRRRLM: L-glycero-D-altro-heptose
+  ALRLRLM: L-glycero-D-ido-heptose
+  ALLRRLM: L-glycero-D-manno-heptose
+  ALLLRLM: L-glycero-D-talo-heptose
+
+LL-aldoheptoses:
+  ARRRLLM: L-glycero-L-allo-heptose
+  ARRLLLM: L-glycero-L-gulo-heptose # CID: 129827929 (2S,3S,4R,5S,6S)
+  ARLRLLM: L-glycero-L-gluco-heptose
+  ARLLLLM: L-glycero-L-galacto-heptose # CID: 57375610 (2S,3R,4R,5S,6S)
+  ALRRLLM: L-glycero-L-altro-heptose
+  ALRLLLM: L-glycero-L-ido-heptose # CID: 129802805 (2R,3S,4R,5S,6S)
+  ALLRLLM: L-glycero-L-manno-heptose
+  ALLLLLM: L-glycero-L-talo-heptose
+
+D-ketoheptoses:
+  MKRRRDM: D-allo-2-heptulose # natural, sedoheptulose
+  MKLRRDM: D-altro-2-heptulose # natural, volemulose, CID: 439645
+  MKRLRDM: D-gluco-2-heptulose # CID: 111066
+  MKLLRDM: D-mann-2-heptulose # natural, CID: 12600, CID: 102926
+  MKRRLDM: D-gulo-2-heptulose
+  MKLRLDM: D-ido-2-heptulose # CID: 129636398
+  MKRLLDM: D-galacto-2-heptulose
+  MKLLLDM: D-talo-2-heptulose
+
+L-ketoheptoses:
+  MKRRRLM: L-talo-2-heptulose
+  MKLRRLM: L-galacto-2-heptulose
+  MKRLRLM: L-ido-2-heptulose
+  MKLLRLM: L-gulo-2-heptulose
+  MKRRLLM: L-manno-2-heptulose
+  MKLRLLM: L-gluco-2-heptulose # CID: 88431539
+  MKRLLLM: L-altro-2-heptulose
+  MKLLLLM: L-allo-2-heptulose
+
+natural 3-ketoheptoses:
+  MLKRRDM: D-altro-3-heptulose # Coriose CID: 192877
+  MLKLRDM: D-manno-3-heptulose # CID: 87789691

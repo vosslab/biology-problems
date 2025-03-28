@@ -1,9 +1,12 @@
 ### Library for crateing HTML tables of Sugar molecules
 
 import os
+import re
 import sys
 #import copy
 import subprocess
+
+from qti_package_maker.common import yaml_tools
 
 ### nomenclature for sugar code
 # A or M - aldose (A) or ketose (M) with a hydroxymethyl group
@@ -26,7 +29,6 @@ def get_git_root(path=None):
 	except subprocess.CalledProcessError:
 		# Not inside a git repository
 		return None
-
 
 #==========================
 # Color definitions for different categories
@@ -71,72 +73,46 @@ color_choice_mapping = {
 
 
 #============================
-def validate_sugar_code(sugar_code):
+def validate_sugar_code(sugar_code: str) -> bool:
 	"""
-	Validates a sugar code to ensure it adheres to the proper format and rules.
+	Validates a sugar code using step-wise checks.
+
+	Rules:
+	1. Must start with 'A', 'MK', or 'M[RL]K'
+	2. Must end in '[DL]M', unless it's a known meso exception ('MKM', 'MRKRM')
+	3. 'D' may not appear anywhere else in the code
+	4. All characters must be from the allowed set
 
 	Args:
-		sugar_code (str): The sugar code to validate.
-
-	Returns:
-		bool: True if the sugar code is valid.
+		sugar_code (str): e.g. 'ARLRRDM'
 
 	Raises:
-		ValueError: If the sugar code is invalid, with a description of the error and the code.
-	"""
-	# Ensure sugar_code ends with "M"
-	if not sugar_code.endswith("M"):
-		raise ValueError(f"Invalid sugar code '{sugar_code}': Must end with 'M'.")
+		ValueError: if the code fails any validation rule
 
-	if sugar_code == 'MRKRM':
-		# the meso 3-ketopentose is an exception to most rules
+	Returns:
+		bool: True if valid
+	"""
+	# 1. Check valid prefix
+	if not re.match(r'^(A|MK|M[RL]K)', sugar_code):
+		raise ValueError(f"Invalid prefix in sugar code: {sugar_code}")
+
+	# 2. Pass the meso exceptions without D- or L-
+	meso_exceptions = {'MKM', 'MRKRM'}
+	if sugar_code in meso_exceptions:
 		return True
 
-	# Ensure the second-to-last character is "D" or "L"
-	if len(sugar_code) > 3 and sugar_code[-2] not in ("D", "L"):
-		raise ValueError(f"Invalid sugar code '{sugar_code}': The second-to-last character must be 'D' or 'L'.")
+	# 3. Check valid suffix
+	if not re.search(r'[DL]M$', sugar_code):
+		raise ValueError(f"Invalid suffix in sugar code: {sugar_code} (must end in 'DM' or 'LM')")
 
-	# Check the first character (must be 'A' or 'M')
-	if sugar_code[0] not in ("A", "M"):
-		raise ValueError(f"Invalid sugar code '{sugar_code}': Must start with 'A' (aldose) or 'M' (ketose).")
+	# 4. 'D' may only appear in the penultimate position
+	penultimate_index = len(sugar_code) - 2
+	if sugar_code.count('D') > int(sugar_code[penultimate_index] == 'D'):
+		raise ValueError(f"'D' can only appear in penultimate position: {sugar_code}")
 
-	# Perform additional count-based validations
-	if sugar_code.count("A") > 1:
-		raise ValueError(f"Sugar code cannot contain more than one 'A' for '{sugar_code}'")
-	if sugar_code.count("K") > 1:
-		raise ValueError(f"Sugar code cannot contain more than one 'K' for '{sugar_code}'")
-	if sugar_code.count("M") > 2:  # One "M" for suffix, another possible for ketoses
-		raise ValueError(f"Sugar code cannot contain more than two 'M's for '{sugar_code}'")
-	if len(sugar_code) < 7 and sugar_code.count("D") > 1:  # Only one "D" for absolute configuration
-		raise ValueError(f"Sugar code cannot contain more than one 'D' for '{sugar_code}'")
-	if len(sugar_code) == 7 and sugar_code.count("D") > 2:  # Only one "D" for absolute configuration
-		raise ValueError(f"Heptose Sugars code can contain at most two 'D' for '{sugar_code}'")
+	if not re.search(r'^(A|MK|M[RL]K)[RL]*[DL]M$', sugar_code):
+		raise ValueError(f"Invalid character '{c}' in sugar code: {sugar_code}")
 
-	# Determine the type of sugar based on the first character
-	if sugar_code[0] == "A":  # Aldose
-		# Aldoses have stereocenters = length - prefix (1) - suffix (2)
-		stereocenter_starting_index = 1
-	elif sugar_code[0] == "M":  # Ketose
-		if sugar_code[1] == "K":
-			# Regular ketose
-			stereocenter_starting_index = 2
-		elif sugar_code[1] in ("R", "L") and sugar_code[2] == "K":  # 3-Keto sugar
-			# 3-Keto sugars have stereocenters = length - prefix (2) - suffix (2)
-			stereocenter_starting_index = 3
-		else:
-			raise ValueError(f"Invalid sugar code '{sugar_code}': Ketose codes must have 'K' as the 2/3 letter.")
-	else:
-		raise ValueError(f"Invalid sugar code '{sugar_code}': Unknown sugar type at first letter.")
-
-	# Ensure all stereochemical markers are valid (only R or L)
-	if stereocenter_starting_index < len(sugar_code)-2:
-		for i in range(stereocenter_starting_index, len(sugar_code)-1):
-			if sugar_code[i] not in ("D", "R", "L"):
-				raise ValueError(
-					f"Invalid sugar code '{sugar_code}': Invalid stereochemical marker '{sugar_code[i]}' at position {i+1}."
-				)
-
-	# If all checks pass, the sugar code is valid
 	return True
 
 #==========================
@@ -172,131 +148,7 @@ def color_question_choices(choices_list):
 #==========================
 class SugarCodes(object):
 	def __init__(self):
-		self.sugar_code_to_name = {
-			'ADM': 'D-glyceraldehyde',
-			'ALM': 'L-glyceraldehyde',
-			'MKM': 'dihydroxacetone',
-
-			# D-aldotetroses
-			'ARDM': 'D-erythrose',
-			'ALDM': 'D-threose',
-			# L-aldotetroses
-			'ARLM': 'L-threose',
-			'ALLM': 'L-erythrose',
-			# ketotetroses
-			'MKDM': 'D-erythrulose',
-			'MKLM': 'L-erythrulose',
-
-			# D-aldopentoses
-			'ARRDM': 'D-ribose',
-			'ALRDM': 'D-arabinaose',
-			'ARLDM': 'D-xylose',
-			'ALLDM': 'D-lyxose',
-			# L-aldopentoses
-			'ARRLM': 'L-lyxose',
-			'ALRLM': 'L-xylose',
-			'ARLLM': 'L-arabinaose',
-			'ALLLM': 'L-ribose',
-			# ketopentoses
-			'MKRDM': 'D-ribulose',
-			'MKLDM': 'D-xylulose',
-			'MKRLM': 'L-xylulose',
-			'MKLLM': 'L-ribulose',
-			# 3-ketopentoses
-			'MRKRM': 'meso 3-ketopentose',
-			'MLKDM': 'D-3-ketopentose',
-			'MRKLM': 'L-3-ketopentose',
-
-			# D-aldohexoses
-			'ARRRDM': 'D-allose',
-			'ARRLDM': 'D-gulose',
-			'ARLRDM': 'D-glucose',
-			'ARLLDM': 'D-galactose',
-			'ALRRDM': 'D-altrose',
-			'ALRLDM': 'D-idose',
-			'ALLRDM': 'D-mannose',
-			'ALLLDM': 'D-talose',
-			# L-aldohexoses
-			'ARRRLM': 'L-talose',
-			'ARRLLM': 'L-mannose',
-			'ARLRLM': 'L-idose',
-			'ARLLLM': 'L-altrose',
-			'ALRRLM': 'L-galactose',
-			'ALRLLM': 'L-glucose',
-			'ALLRLM': 'L-gulose',
-			'ALLLLM': 'L-allose',
-			# D-ketohexoses
-			'MKRRDM': 'D-tagatose',
-			'MKRLDM': 'D-sorbose',
-			'MKLRDM': 'D-fructose',
-			'MKLLDM': 'D-psicose',
-			# L-ketohexoses
-			'MKRRLM': 'L-psicose',
-			'MKRLLM': 'L-fructose',
-			'MKLRLM': 'L-sorbose',
-			'MKLLLM': 'L-tagatose',
-
-			# D-aldoheptoses, add extra D to the name
-			'ARRRDDM': 'D-glycero-D-allo-heptose', # CID: 25791639 (2R,3R,4R,5R,6R)
-			'ARRLDDM': 'D-glycero-D-gulo-heptose', #CID: 76599 (2R,3R,4S,5R,6R)
-			'ARLRDDM': 'D-glycero-D-gluco-heptose', #CID: 87131842 (2R,3S,4R,5R,6R)
-			'ARLLDDM': 'D-glycero-D-galacto-heptose', #CID: 219662
-			'ALRRDDM': 'D-glycero-D-altro-heptose', #CID: 101415672 (2S,3R,4R,5R,6R)
-			'ALRLDDM': 'D-glycero-D-ido-heptose', #CID: 14188133 (2S,3R,4S,5R,6R)
-			'ALLRDDM': 'D-glycero-D-manno-heptose', #CID: 24802279
-			'ALLLDDM': 'D-glycero-D-talo-heptose', #CID: 57346506 (2S,3S,4S,5R,6R)
-			'ARRRLDM': 'D-glycero-L-allo-heptose',
-			'ARRLLDM': 'D-glycero-L-gulo-heptose', # CID: 129824786 (2S,3S,4R,5S,6R)
-			'ARLRLDM': 'D-glycero-L-gluco-heptose', #CID: 21139463 (2S,3R,4S,5S,6R)
-			'ARLLLDM': 'D-glycero-L-galacto-heptose', #CID: 14188137 (2S,3R,4R,5S,6R)
-			'ALRRLDM': 'D-glycero-L-altro-heptose',
-			'ALRLLDM': 'D-glycero-L-ido-heptose',
-			'ALLRLDM': 'D-glycero-L-manno-heptose', #CID: 71355983 (2R,3R,4S,5S,6R)
-			'ALLLLDM': 'D-glycero-L-talo-heptose',
-
-			# L-aldoheptoses, add extra D to the name
-			'ARRRDLM': 'L-glycero-D-allo-heptose',
-			'ARRLDLM': 'L-glycero-D-gulo-heptose', #CID: 87177231 (2R,3R,4S,5R,6S)
-			'ARLRDLM': 'L-glycero-D-gluco-heptose', #CID: 87131843 (2R,3S,4R,5R,6S)
-			'ARLLDLM': 'L-glycero-D-galacto-heptose', #CID: 87088840 (2R,3S,4S,5R,6S)
-			'ALRRDLM': 'L-glycero-D-altro-heptose',
-			'ALRLDLM': 'L-glycero-D-ido-heptose',
-			'ALLRDLM': 'L-glycero-D-manno-heptose',
-			'ALLLDLM': 'L-glycero-D-talo-heptose',
-			'ARRRLLM': 'L-glycero-L-allo-heptose',
-			'ARRLLLM': 'L-glycero-L-gulo-heptose', #CID: 129827929 (2S,3S,4R,5S,6S)
-			'ARLRLLM': 'L-glycero-L-gluco-heptose',
-			'ARLLLLM': 'L-glycero-L-galacto-heptose', #CID: 57375610 (2S,3R,4R,5S,6S)
-			'ALRRLLM': 'L-glycero-L-altro-heptose',
-			'ALRLLLM': 'L-glycero-L-ido-heptose', #CID: 129802805 (2R,3S,4R,5S,6S)
-			'ALLRLLM': 'L-glycero-L-manno-heptose',
-			'ALLLLLM': 'L-glycero-L-talo-heptose',
-
-			# D-ketoheptose, i.e., heptuloses from aldohexoses
-			'MKRRRDM': 'D-allo-2-heptulose', #natural, sedoheptulose
-			'MKLRRDM': 'D-altro-2-heptulose', #natural, volemulose, CID: 439645
-			'MKRLRDM': 'D-gluco-2-heptulose', #CID: 111066
-			'MKLLRDM': 'D-mann-2-heptulose', #natural, CID: 12600, CID: 102926
-			'MKRRLDM': 'D-gulo-2-heptulose',
-			'MKLRLDM': 'D-ido-2-heptulose', #CID: 129636398
-			'MKRLLDM': 'D-galacto-2-heptulose',
-			'MKLLLDM': 'D-talo-2-heptulose',
-
-			# L-ketoheptose, i.e., heptuloses from aldohexoses
-			'MKRRRLM': 'L-talo-2-heptulose',
-			'MKLRRLM': 'L-galacto-2-heptulose',
-			'MKRLRLM': 'L-ido-2-heptulose',
-			'MKLLRLM': 'L-gulo-2-heptulose',
-			'MKRRLLM': 'L-manno-2-heptulose',
-			'MKLRLLM': 'L-gluco-2-heptulose', #CID: 88431539
-			'MKRLLLM': 'L-altro-2-heptulose',
-			'MKLLLLM': 'L-allo-2-heptulose',
-
-			# the two natural 3-ketoseptoses
-			# two natural heptuloses with K <-> L swapped
-			'MLKRRDM': 'D-altro-3-heptulose', #Coriose CID: 192877
-			'MLKLRDM': 'D-manno-3-heptulose', #CID: 87789691
-		}
+		self.sugar_code_to_name = self.load_sugar_code_dict_from_yaml()
 		self.get_names_from_codes()
 		self.carbons_to_sugar = {
 			2: 'diose', 3: 'triose', 4: 'tetrose',
@@ -307,6 +159,32 @@ class SugarCodes(object):
 			'oxetose': 4, 'furanose': 5, 'pyranose': 6,
 			'oxepinose': 7, 'septanose': 7, 'octanose': 8,
 		}
+
+
+	#=======================
+	def load_sugar_code_dict_from_yaml(self, yaml_path: str="sugar_codes.yml") -> dict:
+		"""
+		Reads a grouped sugar code YAML file and returns a flat sugar_code_to_name dictionary.
+		Uses a custom YAML loader to detect duplicate keys.
+
+		Args:
+			yaml_path (str): Path to the YAML file
+
+		Returns:
+			dict: Flattened sugar code dictionary {code: name}
+		"""
+		grouped_dict = yaml_tools.read_yaml_file(yaml_path, msg=False)
+		flat_dict = {}
+		for group, group_mapping in grouped_dict.items():
+			if not isinstance(group_mapping, dict):
+				raise ValueError(f"Group '{group}' must be a mapping, got: {type(group_mapping)}")
+			for code, name in group_mapping.items():
+				if not validate_sugar_code(code):
+					raise ValueError(f"Invalid sugar code {code}")
+				if code in flat_dict:
+					raise ValueError(f"Duplicate sugar code detected across groups: {code}")
+				flat_dict[code] = name
+		return flat_dict
 
 	#============================
 	def get_names_from_codes(self):
@@ -387,26 +265,33 @@ class SugarCodes(object):
 		return sugar_names_list
 
 	#============================
-	def flip_position(self, sugar_code, position):
-		#position starts at 1 for the carbon number, not the string index
-		flipped_code = list(sugar_code)
-		length = len(sugar_code)
-		if position == 1 or position == length:
-			print("Um, the first and last carbon aren't stereosymmetric")
-			return None
-		elif position == length-1:
-			#configuration carbon
-			if sugar_code[position-1] == 'D':
-				flipped_code[position-1] = 'L'
-			elif sugar_code[position-1] == 'L':
-				flipped_code[position-1] = 'D'
-		else:
-			if sugar_code[position-1] == 'R':
-				flipped_code[position-1] = 'L'
-			elif sugar_code[position-1] == 'L':
-				flipped_code[position-1] = 'R'
-		#print("Flipped {0} to {1} at position {2:d}".format(sugar_code[position-1], flipped_code[position-1], position))
-		return ''.join(flipped_code)
+	def flip_position(self, sugar_code: str, position: int) -> str:
+		"""
+		Flips the stereochemistry at a given carbon position in the sugar code.
+		"""
+		code_chars = list(sugar_code)
+		code_len = len(code_chars)
+		# convert carbon number to 0-based index
+		index = position - 1
+		# First and last positions are not stereocenters
+		if position == 1 or position == code_len:
+			raise ValueError(f"Position {position} is not stereogenic in sugar_code '{sugar_code}'")
+		char = code_chars[index]
+		if char not in {'R', 'L', 'D'}:
+			raise ValueError(f"Cannot flip non-stereocenter '{char}' at position {position} in '{sugar_code}'")
+		# Flip D <-> L (penultimate configuration carbon)
+		if position == code_len - 1:
+			if char == 'D':
+				code_chars[index] = 'L'
+			elif char == 'L':
+				code_chars[index] = 'D'
+		# Flip R <-> L (internal stereocenters)
+		elif char == 'R':
+			code_chars[index] = 'L'
+		elif char == 'L':
+			code_chars[index] = 'R'
+
+		return ''.join(code_chars)
 
 	#============================
 	def get_enantiomer_code_from_name(self, sugar_name):
@@ -476,9 +361,23 @@ def fructose():
 class SugarStructure(object):
 	#============================
 	def __init__(self, sugar_code):
+		self.color_OH = True
 		self.sugar_code = sugar_code
 		self.molecular_formula_ready = False
 		self.structural_parts = []
+		if self.color_OH is True:
+			# blue-ish
+			self.H_text =  '<span style="color: #0052cc;">H</span>'
+			# orange-ish
+			self.OH_text = '<span style="color: #995c00;">OH</span>'
+			self.HO_text = '<span style="color: #995c00;">HO</span>'
+			# purple-ish
+			self.CH2OH_text = '<span style="color: #8f246b;">CH<sub>2</sub>OH</span>'
+		else:
+			self.H_text = 'H'
+			self.OH_text = 'OH'
+			self.HO_text = 'HO'
+			self.CH2OH_text = 'CH<sub>2</sub>OH'
 
 	#============================
 	def sugar_summary(self):
@@ -609,7 +508,7 @@ class SugarStructure(object):
 		hydrogen_cap += '<tr>'
 		hydrogen_cap += ' <td style="border: solid white 0px;"></td>'
 		hydrogen_cap += ' <td style="border: solid white 0px;"></td>'
-		hydrogen_cap += ' <td colspan="2" style="border: solid white 0px; text-align: center;">H</td>'
+		hydrogen_cap += f' <td colspan="2" style="border: solid white 0px; text-align: center;">{self.H_text}</td>'
 		hydrogen_cap += ' <td style="border: solid white 0px;"></td>'
 		hydrogen_cap += ' <td style="border: solid white 0px;"></td>'
 		hydrogen_cap += '</tr>'
@@ -621,7 +520,7 @@ class SugarStructure(object):
 		hydroxymethyl_cap += '<tr>'
 		hydroxymethyl_cap += ' <td style="border: solid white 0px;"></td>'
 		hydroxymethyl_cap += ' <td style="border: solid white 0px;"></td>'
-		hydroxymethyl_cap += ' <td colspan="4" style="border: solid white 0px; text-align: left;">CH<sub>2</sub>OH</td>'
+		hydroxymethyl_cap += f' <td colspan="4" style="border: solid white 0px; text-align: left;">{self.CH2OH_text}</td>'
 		hydroxymethyl_cap += '</tr>'
 		return hydroxymethyl_cap
 
@@ -643,17 +542,17 @@ class SugarStructure(object):
 	#============================
 	def _html_bottom_content(self, configuration='D'):
 		if configuration.upper() == 'D' or configuration.upper() == 'R':
-			content = ['H', 'OH']
+			content = [self.H_text, self.OH_text]
 		elif configuration.upper() == 'L':
-			content = ['HO', 'H']
+			content = [self.HO_text, self.H_text]
 		bottom_content = ''
 		bottom_content += '<tr>'
-		bottom_content += ' <td rowspan="2" style="border: solid white 0px; text-align: right;">{0}</td>'.format(content[0])
+		bottom_content += f' <td rowspan="2" style="border: solid white 0px; text-align: right;">{content[0]}</td>'
 		bottom_content += ' <td style="border: solid white 0px; border-bottom: solid black 1px;"></td>'
 		bottom_content += ' <td style="border: solid white 0px; border-right: solid black 1px; border-bottom: solid black 1px;"></td>'
 		bottom_content += ' <td style="border: solid white 0px; border-left: solid black 1px; border-bottom: solid black 1px;"></td>'
 		bottom_content += ' <td style="border: solid white 0px; border-bottom: solid black 1px;"></td>'
-		bottom_content += ' <td rowspan="2" style="border: solid white 0px; text-align: left;">{0}</td>'.format(content[1])
+		bottom_content += f' <td rowspan="2" style="border: solid white 0px; text-align: left;">{content[1]}</td>'
 		bottom_content += '</tr>'
 		return bottom_content
 
@@ -718,6 +617,19 @@ class SugarStructure(object):
 			sys.exit(1)
 
 	#============================
+	def flip_direction(self, text: str) -> str:
+		"""
+		Flips HTML strings like HO <-> OH while preserving HTML tags and styling.
+		"""
+		if text == self.H_text:
+			return self.H_text
+		elif text == self.HO_text:
+			return self.OH_text
+		elif text == self.OH_text:
+			return self.HO_text
+		return text
+
+	#============================
 	def Haworth_pyranose_projection_html(self, anomeric='alpha'):
 		if len(self.sugar_code) < 5:
 			# 5 carbons and 1 oxygen
@@ -731,24 +643,24 @@ class SugarStructure(object):
 		first_carbon = code_list.pop(0)
 		penultimate_carbon = self.sugar_code[-2]
 
-		c1_end = 'H'
+		c1_end = self.H_text
 		if first_carbon == 'M':
 			second_carbon = code_list.pop(0)
 			if second_carbon == 'K':
-				c1_end = 'CH<sub>2</sub>OH'
+				c1_end = self.CH2OH_text
 			else:
 				code_list.pop(0) # third_carbon
 				print('3-ketose error')
-				c1_end = 'CHOH<br/>|<br/>CH<sub>2</sub>OH'
+				c1_end = f'CHOH<br/>|<br/>{self.CH2OH_text}'
 
 		if ((penultimate_carbon == 'D' and anomeric == 'alpha')
 				or (penultimate_carbon == 'L' and anomeric == 'beta')):
-			bottom = 'OH'
+			bottom = self.OH_text
 			top = c1_end
 		elif ((penultimate_carbon == 'D' and anomeric == 'beta')
 				or (penultimate_carbon == 'L' and anomeric == 'alpha')):
 			bottom = c1_end
-			top = 'OH'
+			top = self.OH_text
 
 		table = table.replace('X1U', top)
 		table = table.replace('X1D', bottom)
@@ -756,38 +668,38 @@ class SugarStructure(object):
 		for i in range(3):
 			code = code_list.pop(0)
 			if code == "L":
-				bottom = 'H'
-				top = 'OH'
+				bottom = self.H_text
+				top = self.OH_text
 			elif code == "R":
-				bottom = 'OH'
-				top = 'H'
+				bottom = self.OH_text
+				top = self.H_text
 			if i % 2 == 0:
-				top = top[::-1]
-				bottom = bottom[::-1]
+				top = self.flip_direction(top)
+				bottom = self.flip_direction(bottom)
 			carbon_up = "X{0:d}U".format(i+2)
 			carbon_down = "X{0:d}D".format(i+2)
 			table = table.replace(carbon_up, top)
 			table = table.replace(carbon_down, bottom)
 
 		if len(code_list) == 1:
-			top = 'H'
-			bottom = 'H'
+			top = self.H_text
+			bottom = self.H_text
 		elif len(code_list) == 2:
 			penultimate_carbon = code_list.pop(0)
 			if penultimate_carbon == 'D':
-				top = 'CH<sub>2</sub>OH'
-				bottom = 'H'
+				top = self.CH2OH_text
+				bottom = self.H_text
 			elif penultimate_carbon == 'L':
-				top = 'H'
-				bottom = 'CH<sub>2</sub>OH'
+				top = self.H_text
+				bottom = self.CH2OH_text
 		elif len(code_list) == 3:
 			next_carbon = code_list.pop(0)
 			if next_carbon == 'R':
-				top = 'CH<sub>2</sub>OH<br/>|<br/>CHOH'
-				bottom = 'H'
+				top = f'{self.CH2OH_text}<br/>|<br/>CHOH'
+				bottom = self.H_text
 			elif next_carbon == 'L':
-				top = 'H'
-				bottom = 'CHOH<br/>|<br/>CH<sub>2</sub>OH'
+				top = self.H_text
+				bottom = f'CHOH<br/>|<br/>{self.CH2OH_text}'
 		table = table.replace('X5U', top)
 		table = table.replace('X5D', bottom)
 		return table
@@ -817,24 +729,24 @@ class SugarStructure(object):
 		first_carbon = code_list.pop(0)
 		penultimate_carbon = self.sugar_code[-2]
 
-		c1_end = 'H'
+		c1_end = self.H_text
 		if first_carbon == 'M':
 			second_carbon = code_list.pop(0)
 			if second_carbon == 'K':
-				c1_end = 'CH<sub>2</sub>OH'
+				c1_end = self.CH2OH_text
 			else:
 				code_list.pop(0) # third_carbon
 				print('3-ketose error')
-				c1_end = 'CHOH<br/>|<br/>CH<sub>2</sub>OH'
+				c1_end = f'CHOH<br/>|<br/>{self.CH2OH_text}'
 
 		if ((penultimate_carbon == 'D' and anomeric == 'alpha')
 				or (penultimate_carbon == 'L' and anomeric == 'beta')):
-			bottom = 'OH'
+			bottom = self.OH_text
 			top = c1_end
 		elif ((penultimate_carbon == 'D' and anomeric == 'beta')
 				or (penultimate_carbon == 'L' and anomeric == 'alpha')):
 			bottom = c1_end
-			top = 'OH'
+			top = self.OH_text
 
 		table = table.replace('X1U', top)
 		table = table.replace('X1D', bottom)
@@ -842,14 +754,14 @@ class SugarStructure(object):
 		for i in range(2):
 			code = code_list.pop(0)
 			if code == "L":
-				bottom = 'H'
-				top = 'OH'
+				bottom = self.H_text
+				top = self.OH_text
 			elif code == "R":
-				bottom = 'OH'
-				top = 'H'
+				bottom = self.OH_text
+				top = self.H_text
 			if i % 2 == 0:
-				top = top[::-1]
-				bottom = bottom[::-1]
+				top = self.flip_direction(top)
+				bottom = self.flip_direction(bottom)
 			carbon_up = "X{0:d}U".format(i+2)
 			carbon_down = "X{0:d}D".format(i+2)
 			table = table.replace(carbon_up, top)
@@ -857,24 +769,24 @@ class SugarStructure(object):
 
 		#print(code_list)
 		if len(code_list) == 1:
-			top = 'H'
-			bottom = 'H'
+			top = self.H_text
+			bottom = self.H_text
 		elif len(code_list) == 2:
 			penultimate_carbon = code_list.pop(0)
 			if penultimate_carbon == 'D':
-				top = 'CH<sub>2</sub>OH'
-				bottom = 'H'
+				top = self.CH2OH_text
+				bottom = self.H_text
 			elif penultimate_carbon == 'L':
-				top = 'H'
-				bottom = 'CH<sub>2</sub>OH'
+				top = self.H_text
+				bottom = self.CH2OH_text
 		elif len(code_list) == 3:
 			next_carbon = code_list.pop(0)
 			if next_carbon == 'R':
-				top = 'CH<sub>2</sub>OH<br/>|<br/>CHOH'
-				bottom = 'H'
+				top = f'{self.CH2OH_text}<br/>|<br/>CHOH'
+				bottom = self.H_text
 			elif next_carbon == 'L':
-				top = 'H'
-				bottom = 'CHOH<br/>|<br/>CH<sub>2</sub>OH'
+				top = self.H_text
+				bottom = f'CHOH<br/>|<br/>{self.CH2OH_text}'
 		table = table.replace('X4U', top)
 		table = table.replace('X4D', bottom)
 		return table
