@@ -43,7 +43,7 @@ def write_question(N, sugar_name):
 	choice_codes = list(set(choice_codes))
 	postlen = len(choice_codes)
 	if prelen != postlen:
-		sys.exit(1)
+		raise ValueError("prelen != postlen")
 
 	sugar_names_text = f"<p>{sugar_name}&xrarr;{L_sugar_name}</p>"
 	question_content = sugar_names_text + fischer + question
@@ -78,16 +78,19 @@ def parse_arguments():
 #======================================
 def get_sugar_codes():
 	sugar_codes_class = sugarlib.SugarCodes()
-	D_hexose_names = sugar_codes_class.get_D_hexoses()
-	#D_hexose_names.remove('D-ribose')
-	D_hexose_names.remove('D-fructose')
-	D_hexose_names.remove('D-glucose')
-	D_hexose_names.remove('D-galactose')
-	D_hexose_names.remove('D-idose')
+	sugar_names_list = []
+	#sugar_names_list += sugar_codes_class.get_sugar_names(5, configuration='D', types='aldo')
+	sugar_names_list += sugar_codes_class.get_sugar_names(6, configuration='D')
+	sugar_names_list += sugar_codes_class.get_sugar_names(7, configuration='D')
+	sugar_names_list = list(set(sugar_names_list))
 
-	#D_hexose_names = sugar_codes_class.get_D_aldohexoses()
-	print(f"Retrieved {len(D_hexose_names)} from the sugar library")
-	return D_hexose_names
+	#sugar_names_list.remove('D-ribose')
+	sugar_names_list.remove('D-fructose')
+	sugar_names_list.remove('D-glucose')
+	sugar_names_list.remove('D-galactose')
+	sugar_names_list.remove('D-idose')
+	print(f"Retrieved {len(sugar_names_list)} from the sugar library")
+	return sugar_names_list
 
 #======================================
 #======================================
