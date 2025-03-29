@@ -15,6 +15,8 @@ from qti_package_maker.common import yaml_tools
 # M - nonstereo symmetric carbon, M = Hydroxymethyl group
 # unless specified the following are all D sugars
 
+hidden_char = '<span style="visibility: hidden">.</span>'
+
 #==========================
 #==========================
 #==========================
@@ -480,19 +482,19 @@ class SugarStructure(object):
 		aldose_header = ''
 		aldose_header += '<tr>'
 		aldose_header += ' <td colspan="2" style="border: solid white 0px; padding: 0; text-align: right;">H&nbsp;</td>'
-		aldose_header += ' <td colspan="2" style="border: solid white 0px; padding: 0;"></td>'
+		aldose_header += f' <td colspan="2" style="border: solid white 0px; padding: 0;">{hidden_char}</td>'
 		aldose_header += ' <td colspan="2" style="border: solid white 0px; padding: 0; text-align: left;">&nbsp;O</td>'
 		aldose_header += '</tr><tr>'
-		aldose_header += ' <td style="border: solid white 0px; padding: 0;"></td>'
+		aldose_header += f' <td style="border: solid white 0px; padding: 0;">{hidden_char}</td>'
 		aldose_header += r' <td colspan="2" style="border: solid white 0px; padding: 0; text-align: right;">\&nbsp;</td>'
 		aldose_header += ' <td colspan="2" style="border: solid white 0px; padding: 0; text-align: left;">&nbsp;//</td>'
-		aldose_header += ' <td style="border: solid white 0px; padding: 0;"></td>'
+		aldose_header += f' <td style="border: solid white 0px; padding: 0;">{hidden_char}</td>'
 		aldose_header += '</tr><tr>'
-		aldose_header += ' <td style="border: solid white 0px; padding: 0;"></td>'
-		aldose_header += ' <td style="border: solid white 0px; padding: 0;"></td>'
+		aldose_header += f' <td style="border: solid white 0px; padding: 0;">{hidden_char}</td>'
+		aldose_header += f' <td style="border: solid white 0px; padding: 0;">{hidden_char}</td>'
 		aldose_header += ' <td colspan="2" style="border: solid white 0px; padding: 0; text-align: center;">C</td>'
-		aldose_header += ' <td style="border: solid white 0px; padding: 0;"></td>'
-		aldose_header += ' <td style="border: solid white 0px; padding: 0;"></td>'
+		aldose_header += f' <td style="border: solid white 0px; padding: 0;">{hidden_char}</td>'
+		aldose_header += f' <td style="border: solid white 0px; padding: 0;">{hidden_char}</td>'
 		aldose_header += '</tr>'
 		return aldose_header
 
@@ -506,11 +508,11 @@ class SugarStructure(object):
 	def _hydrogen_html_cap(self):
 		hydrogen_cap = ''
 		hydrogen_cap += '<tr>'
-		hydrogen_cap += ' <td style="border: solid white 0px; padding: 0;"></td>'
-		hydrogen_cap += ' <td style="border: solid white 0px; padding: 0;"></td>'
+		hydrogen_cap += f' <td style="border: solid white 0px; padding: 0;">{hidden_char}</td>'
+		hydrogen_cap += f' <td style="border: solid white 0px; padding: 0;">{hidden_char}</td>'
 		hydrogen_cap += f' <td colspan="2" style="border: solid white 0px; padding: 0; text-align: center;">{self.H_text}</td>'
-		hydrogen_cap += ' <td style="border: solid white 0px; padding: 0;"></td>'
-		hydrogen_cap += ' <td style="border: solid white 0px; padding: 0;"></td>'
+		hydrogen_cap += f' <td style="border: solid white 0px; padding: 0;">{hidden_char}</td>'
+		hydrogen_cap += f' <td style="border: solid white 0px; padding: 0;">{hidden_char}</td>'
 		hydrogen_cap += '</tr>'
 		return hydrogen_cap
 
@@ -518,8 +520,8 @@ class SugarStructure(object):
 	def _hydroxymethyl_html_cap(self):
 		hydroxymethyl_cap = ''
 		hydroxymethyl_cap += '<tr>'
-		hydroxymethyl_cap += ' <td style="border: solid white 0px; padding: 0;"></td>'
-		hydroxymethyl_cap += ' <td style="border: solid white 0px; padding: 0;"></td>'
+		hydroxymethyl_cap += f' <td style="border: solid white 0px; padding: 0;">{hidden_char}</td>'
+		hydroxymethyl_cap += f' <td style="border: solid white 0px; padding: 0;">{hidden_char}</td>'
 		hydroxymethyl_cap += f' <td colspan="4" style="border: solid white 0px; padding: 0; text-align: left;">{self.CH2OH_text}</td>'
 		hydroxymethyl_cap += '</tr>'
 		return hydroxymethyl_cap
@@ -529,13 +531,13 @@ class SugarStructure(object):
 		top_connector = ''
 		top_connector += '<tr>'
 		if extra_columns is True:
-			top_connector += ' <td style="border: solid white 0px; padding: 0;"></td>'
-		top_connector += ' <td style="border: solid white 0px; padding: 0; border-top: solid black 1px;"></td>'
-		top_connector += ' <td style="border: solid white 0px; padding: 0; border-right: solid black 1px; border-top: solid black 1px;"></td>'
-		top_connector += ' <td style="border: solid white 0px; padding: 0; border-left: solid black 1px; border-top: solid black 1px;"></td>'
-		top_connector += ' <td style="border: solid white 0px; padding: 0; border-top: solid black 1px;"></td>'
+			top_connector += f' <td style="border: solid white 0px; padding: 0;">{hidden_char}</td>'
+		top_connector += f' <td style="border: solid white 0px; padding: 0; border-top: 2px solid black;">{hidden_char}</td>'
+		top_connector += f' <td style="border: solid white 0px; padding: 0; border-right: 2px solid black; border-top: 2px solid black;">{hidden_char}</td>'
+		top_connector += f' <td style="border: solid white 0px; padding: 0; border-left: 2px solid black; border-top: 2px solid black;">{hidden_char}</td>'
+		top_connector += f' <td style="border: solid white 0px; padding: 0; border-top: 2px solid black;">{hidden_char}</td>'
 		if extra_columns is True:
-			top_connector += ' <td style="border: solid white 0px; padding: 0;"></td>'
+			top_connector += f' <td style="border: solid white 0px; padding: 0;">{hidden_char}</td>'
 		top_connector += '</tr>'
 		return top_connector
 
@@ -547,12 +549,12 @@ class SugarStructure(object):
 			content = [self.HO_text, self.H_text]
 		bottom_content = ''
 		bottom_content += '<tr>'
-		bottom_content += f' <td rowspan="2" style="border: solid white 0px; padding: 0; text-align: right;">{content[0]}</td>'
-		bottom_content += ' <td style="border: solid white 0px; padding: 0; border-bottom: solid black 1px;"></td>'
-		bottom_content += ' <td style="border: solid white 0px; padding: 0; border-right: solid black 1px; border-bottom: solid black 1px;"></td>'
-		bottom_content += ' <td style="border: solid white 0px; padding: 0; border-left: solid black 1px; border-bottom: solid black 1px;"></td>'
-		bottom_content += ' <td style="border: solid white 0px; padding: 0; border-bottom: solid black 1px;"></td>'
-		bottom_content += f' <td rowspan="2" style="border: solid white 0px; padding: 0; text-align: left;">{content[1]}</td>'
+		bottom_content += f' <td rowspan="2" style="border: solid white 0px; padding: 0; text-align: right; vertical-align: middle;">{content[0]}</td>'
+		bottom_content += f' <td style="border: solid white 0px; padding: 0; border-bottom: 2px solid black;">{hidden_char}</td>'
+		bottom_content += f' <td style="border: solid white 0px; padding: 0; border-right: 2px solid black; border-bottom: 2px solid black;">{hidden_char}</td>'
+		bottom_content += f' <td style="border: solid white 0px; padding: 0; border-left: 2px solid black; border-bottom: 2px solid black;">{hidden_char}</td>'
+		bottom_content += f' <td style="border: solid white 0px; padding: 0; border-bottom: 2px solid black;">{hidden_char}</td>'
+		bottom_content += f' <td rowspan="2" style="border: solid white 0px; padding: 0; text-align: left; vertical-align: middle;">{content[1]}</td>'
 		bottom_content += '</tr>'
 		return bottom_content
 
@@ -560,8 +562,8 @@ class SugarStructure(object):
 	def _html_carboxyl(self):
 		bottom_content = ''
 		bottom_content += '<tr>'
-		bottom_content += ' <td style="border: solid white 0px; padding: 0; border-right: solid black 1px;" colspan="3"></td>'
-		bottom_content += ' <td style="border: solid white 0px; padding: 0; border-left: solid black 1px;" colspan="3">'
+		bottom_content += f' <td style="border: solid white 0px; padding: 0; border-right: 2px solid black;" colspan="3">{hidden_char}</td>'
+		bottom_content += ' <td style="border: solid white 0px; padding: 0; border-left: 2px solid black;" colspan="3">'
 		bottom_content += '  <span style="font-size: medium;">==</span>O<span style="font-size: x-large;">&nbsp;</span></td>'
 		bottom_content += '</tr>'
 		return bottom_content

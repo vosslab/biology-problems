@@ -135,7 +135,7 @@ def get_sugar_codes(ring_type, sugar_codes_cls):
 
 	#sugar_names_list += sugar_codes_cls.get_sugar_names(6, None, 'aldo')
 	print(f"Retrieved {len(sugar_names_list)} sugars for the ring type '{ring_type}' from the sugar library.")
-	time.sleep(2)
+	time.sleep(0.5)
 	return sugar_names_list
 
 
