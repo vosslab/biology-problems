@@ -140,9 +140,9 @@ def makeQuestions2(yaml_data, num_choices=None, flip=False):
 		N += 1
 		question = bptools.applyReplacementRulesToText(question, yaml_data.get('replacement_rules'))
 		choices_list = bptools.applyReplacementRulesToList(choices_list, yaml_data.get('replacement_rules'))
-		choices_list = bptools.append_clear_font_space_to_list(choices_list)
+		#choices_list = bptools.append_clear_font_space_to_list(choices_list)
 		answer = bptools.applyReplacementRulesToText(answer, yaml_data.get('replacement_rules'))
-		answer = bptools.append_clear_font_space_to_text(answer)
+		#answer = bptools.append_clear_font_space_to_text(answer)
 		complete_question = bptools.formatBB_MC_Question(N, question, choices_list, answer)
 
 		list_of_complete_questions.append(complete_question)
