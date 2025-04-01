@@ -43,6 +43,7 @@ matching pairs:
     - A functional group removes a proton to activate a nearby nucleophilic residue.
     - Transfer of a proton improves the departure of an unstable leaving group.
     - Movement of a hydrogen atom influences the readiness of atoms to make or break bonds.
+    - Has reactions involving electron pairs, commonly involving a proton exchange.
 
     Active Site Microenvironment:
     - Local polarity and charge are tuned to create favorable reaction conditions.
@@ -73,6 +74,7 @@ matching pairs:
     - Substrates are oriented in a geometry that enhances the chance of chemical change.
     - The reaction site arranges substrate components to ensure correct position for reaction.
     - Local concentration of substrates is effectively increased by spatial confinement.
+    - When two substrates are brought into close proximity with one another.
 
     Covalent Catalysis:
     - A temporary link is formed between the substrate and the enzyme.
@@ -83,6 +85,7 @@ matching pairs:
     - The substrate and enzyme form an intermediate complex before completing the reaction.
     - The enzyme forms a bond with the substrate that facilitates conversion into the product.
     - The reaction proceeds through a stage where the substrate is attached to the enzyme.
+    - Creates a new reaction pathway, i.e., adds an additional step in the reaction
 
     Metal Ion and Electrostatic Catalysis:
     - A positively charged ion attracts or repels electrons to promote the reaction.
@@ -94,6 +97,8 @@ matching pairs:
     - An ion in the active site interacts with the substrate to support the reaction.
     - A charged ion helps stabilize unstable intermediates during the reaction.
     - Ions help organize the charges of important groups in the reaction.
+    - Uses a special cation to stabilize a negative charge in the active site
+    - uses an ion that can also act to stabilize the charges on the intermediates in the reaction.
 
 exclude pairs:
   - [Metal Ion and Electrostatic Catalysis, Active Site Microenvironment]
