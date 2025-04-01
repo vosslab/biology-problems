@@ -1,0 +1,127 @@
+---
+
+#Which one of the following statements is FALSE/TRUE <connection word> <topic>
+topic: Enzyme Catalytic Strategies and Methods for Lowering Activation Energy
+
+#UNCOMMENT ONE OR BOTH FOR THIS TO WORK
+#override_question_true: ~
+#override_question_false: ~
+
+RED: #e60000;
+DARK ORANGE: #e65400;
+LIGHT ORANGE: #e69100;
+DARK YELLOW: #b3b300;
+LIME GREEN: #59b300;
+GREEN: #009900;
+TEAL: #00b38f;
+CYAN: #00b3b3;
+SKY BLUE: #0a9bf5;
+BLUE: #0039e6;
+NAVY: #004d99;
+PURPLE: #7b12a1;
+MAGENTA: #b30077;
+PINK: #cc0066;
+
+replacement_rules:
+   Acid-base catalysis: '<span style="color: #e60000;">Acid-base catalysis</span>' #RED
+   acid-base catalysis: '<span style="color: #e60000;">acid-base catalysis</span>' #RED
+
+   BBBBBBBB: '<span style="color: #e65400;">BBBBBBBB</span>' #DARK ORANGE
+   ATP hydrolysis: '<span style="color: #e69100;">ATP hydrolysis</span>' #LIGHT ORANGE
+
+   DDDDDDDD: '<span style="color: #b3b300;">DDDDDDDD</span>' #DARK YELLOW
+   Catalysis by approximation: '<span style="color: #59b300;">Catalysis by approximation</span>' #LIME GREEN
+
+   FFFFFFFF: '<span style="color: #009900;">FFFFFFFF</span>' #GREEN
+   Metal ion catalysis: '<span style="color: #00b38f;">Metal ion catalysis</span>' #TEAL
+   metal ion catalysis: '<span style="color: #00b38f;">metal ion catalysis</span>' #TEAL
+
+   Metal ions: '<span style="color: #00b3b3;">Metal ions</span>' #CYAN
+   metal ions: '<span style="color: #00b3b3;">metal ions</span>' #CYAN
+   Metal ion cofactors: '<span style="color: #00b3b3;">Metal ion cofactors</span>' #CYAN
+
+   IIIIIIII: '<span style="color: #0a9bf5;">IIIIIIII</span>' #SKY BLUE
+   strain: '<span style="color: #0039e6;">strain</span>' #BLUE
+   'distort ': '<span style="color: #0039e6;">distort</span>' #BLUE
+   distortion: '<span style="color: #0039e6;">distortion</span>' #BLUE
+
+   KKKKKKKK: '<span style="color: #004d99;">KKKKKKKK</span>' #NAVY
+   Covalent catalysis: '<span style="color: #7b12a1;">Covalent catalysis</span>' #PURPLE
+   covalent catalysis: '<span style="color: #7b12a1;">covalent catalysis</span>' #PURPLE
+
+   active site microenvironment: '<span style="color: #b30077;">active site microenvironment</span>' #MAGENTA
+   NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
+
+connection_words: ~
+
+true_statements:
+   truth1a: Acid-base catalysis involves amino acid side chains donating or accepting protons.
+   truth1b: Amino acid side chains can participate in proton transfers during catalysis.
+   truth1c: Amino acid side chains in enzyme active sites often act as proton donors or acceptors.
+
+   truth2a: ATP hydrolysis is used by certain enzymes to drive conformational changes or reaction steps.
+
+   truth3a: Catalysis by approximation involves binding two or more substrates in close proximity.
+   truth3b: Enzymes enhance catalysis by holding multiple substrates close together and properly aligned.
+   truth3c: Enzymes increase reaction rates by holding substrates in close proximity and correct orientation.
+   truth3d: Many enzymes enhance reaction rates by positioning multiple substrates near each other.
+   truth3f: Orientation of substrate reactive groups by enzyme residues facilitates selective bond formation.
+
+   truth4a: Covalent catalysis involves transient covalent bonds between enzyme and substrate.
+   truth4b: A transient covalent bond may form between enzyme and substrate to create a reactive intermediate.
+   truth4c: Covalent bonds between catalytic residues and substrates can form during some reaction mechanisms.
+   truth4d: In covalent catalysis, the enzyme acts as a temporary electron sink to stabilize intermediates.
+   truth4e: Nucleophilic residues may form covalent intermediates with the substrate.
+
+   truth5a: Metal ions in the active site stabilize negative charges or mediate redox reactions.
+   truth5b: Metal ions stabilize negative charges or assist in redox reactions.
+   truth5c: Electrostatic interactions in the active site can stabilize charged intermediates.
+   truth5d: In metal ion catalysis, the metal ions can help position water molecules for nucleophilic attack.
+   truth5e: Positively charged side chains or bound metal ions can stabilize anionic transition states.
+
+   truth6a: Enzymes may use local changes in pH or polarity to provide a favorable active site microenvironment.
+
+   truth7a: Enzymes can distort substrate bonds to resemble the transition state, lowering the activation energy.
+   truth7b: Enzymes can strain substrate bonds to help lower the activation energy.
+
+false_statements:
+   false1a: Acid-base catalysis is a mechanism where water is always the proton donor or acceptor.
+   false1b: Acid-base catalysis is when an enzyme uses a metal ion to coordinate charges in the active site.
+   false1c: Acid-base catalysis requires the active site to be completely nonpolar.
+   false1d: Acid-base catalysis requires the substrate to donate a proton to the enzyme.
+   false1e: Acid-base catalysis requires the substrate to protonate the enzyme.
+   false1f: In acid-base catalysis, the substrate serves as the proton donor to activate the enzyme.
+
+   false2a: ATP hydrolysis directly powers the chemical step of all enzymatic reactions.
+   false2b: ATP hydrolysis is required for enzyme-catalyzed reactions.
+
+   false3a: Catalysis by approximation brings in a strong nucleophile and electrophile for catalysis.
+   false3b: Catalysis by approximation decreases the local concentration of reactants.
+   false3c: Catalysis by approximation functions by randomly increasing substrate diffusion.
+   false3d: Catalysis by approximation increases entropy to drive reactions.
+   false3e: Catalysis by approximation involves aligning enzyme functional groups, not substrates.
+
+   false4a: All enzyme-catalyzed reactions proceed through a covalent enzyme-substrate intermediate.
+   false4b: Covalent bonding in the active site permanently links the enzyme to the product.
+   false4c: Covalent catalysis avoids charged intermediates by eliminating electron transfer steps.
+   false4d: Covalent catalysis eliminates the need for nucleophilic residues in the active site.
+   false4e: Covalent catalysis involves stable covalent bonds that permanently link enzyme to product.
+   false4f: Covalent catalysis prevents the formation of any charged intermediates.
+
+   false5a: Metal ion catalysis eliminates the need for substrate binding specificity.
+   false5b: Metal ion catalysis is effective only in acidic conditions.
+   false5c: Metal ion catalysis is effective only when metal ions form covalent bonds with substrates.
+   false5d: Metal ion cofactors in enzymes only serve structural roles.
+   false5e: The catalytic role of metal ions is limited to maintaining structural stability.
+   false5f: The only function of metal ions is to stabilize the tertiary structure of the enzyme.
+
+   false6a: The active site microenvironment cannot influence charge stabilization.
+
+   false7a: Substrate strain slows down enzymatic reactions by destabilizing intermediates.
+   false7b: Substrate distortion slows down enzymatic reactions by destabilizing intermediates.
+
+
+# conflicts, means that the statements cannot appear together
+# add ': True' to each line, so the program runs a faster lookup
+conflict_rules: ~
+
