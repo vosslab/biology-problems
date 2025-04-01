@@ -1,0 +1,88 @@
+#YAML file for Matching Questions
+
+items to match per question: 4
+
+
+#both singular and plural
+key description: stage in the central dogma of biology
+keys description: stages in the central dogma of biology
+
+#both singular and plural
+value description: concept
+values description: concepts
+
+replacement_rules:
+   Acid-base catalysis: '<span style="color: #e60000;">Acid-base catalysis</span>' #RED
+
+   BBBBBBBB: '<span style="color: #e65400;">BBBBBBBB</span>' #DARK ORANGE
+   ATP Hydrolysis: '<span style="color: #e69100;">ATP Hydrolysis</span>' #LIGHT ORANGE
+
+   DDDDDDDD: '<span style="color: #b3b300;">DDDDDDDD</span>' #DARK YELLOW
+   Catalysis by Approximation: '<span style="color: #59b300;">Catalysis by Approximation</span>' #LIME GREEN
+
+   FFFFFFFF: '<span style="color: #009900;">FFFFFFFF</span>' #GREEN
+   Metal Ion Catalysis: '<span style="color: #00b38f;">Metal Ion Catalysis</span>' #TEAL
+
+   Metal ionsxx: '<span style="color: #00b3b3;">Metal ions</span>' #CYAN
+
+   IIIIIIII: '<span style="color: #0a9bf5;">IIIIIIII</span>' #SKY BLUE
+   Bond Strain or Distortion: '<span style="color: #0039e6;">Bond Strain or Distortion</span>' #BLUE
+
+   KKKKKKKK: '<span style="color: #004d99;">KKKKKKKK</span>' #NAVY
+   Covalent Catalysis: '<span style="color: #7b12a1;">Covalent Catalysis</span>' #PURPLE
+
+   Active Site Microenvironment: '<span style="color: #b30077;">Active Site Microenvironment</span>' #MAGENTA
+   NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
+
+matching pairs:
+
+   Acid-base catalysis:
+   - Proton transfer involving amino acid side chains that donate or accept protons.
+   - A catalytic mechanism where enzyme residues act as acids or bases to facilitate the reaction.
+   - Involves side chains stabilizing intermediates through donation or removal of protons.
+   - Uses functional groups in the active site to act as general acids or bases in a chemical step.
+   - A strategy where non-water proton donors or acceptors accelerate reaction steps.
+
+   Active Site Microenvironment:
+   - Local changes in pH, charge, or polarity in the active site to favor reactivity.
+   - The chemical surroundings of the active site are tuned to stabilize charged intermediates.
+   - The active site adjusts conditions like polarity or electrostatics to facilitate catalysis.
+   - Active site residues and cofactors create a specialized environment for optimal reactivity.
+   - Reaction rates are enhanced by localized chemical environments favoring the transition state.
+
+   ATP Hydrolysis:
+   - Provides energy for conformational changes or coupling to drive endergonic steps.
+   - Supplies energy to power mechanical or chemical transitions in enzyme function.
+   - Often drives reactions forward by coupling an unfavorable step with ATP breakdown.
+   - Used to activate enzymes or substrates by phosphoryl transfer or energy input.
+   - ATP cleavage provides thermodynamic driving force for energetically costly reactions.
+
+   Bond Strain or Distortion:
+   - Enzyme stresses the substrate toward its transition-state conformation.
+   - Stresses the substrate to make substrate geometry resemble the transition state.
+   - Binding causes substrate deformation that lowers the energy required for bond breaking.
+   - Active site interactions pull on bonds to destabilize its structure.
+   - Reaction barriers are lowered by forcing substrates into strained configurations.
+
+   Catalysis by Approximation:
+   - Brings two or more substrates close together in optimal orientation for reaction.
+   - Enhances catalysis by aligning reactive groups of bound substrates.
+   - Substrate binding increases local concentration and proper spatial orientation.
+   - Reactive molecules are positioned next to each other to facilitate interaction.
+   - The enzyme acts as a scaffold that brings multiple reactants into proximity.
+
+   Covalent Catalysis:
+   - Formation of a transient covalent bond between enzyme and substrate.
+   - Involves nucleophilic attack by an active site residue forming a covalent intermediate.
+   - A catalytic strategy using a temporary covalent linkage to stabilize the transition state.
+   - Reaction proceeds through a new pathway involving enzyme-substrate covalent interaction.
+   - An enzyme residue forms a reactive intermediate via bond formation with the substrate.
+
+   Metal Ion Catalysis:
+   - Stabilization of negative charges or participation in redox via metal cofactors.
+   - Metal ions aid catalysis by coordinating substrates or stabilizing charge build-up.
+   - Catalysis involving electron transfer or electrostatic shielding by metal ions.
+   - Metal cofactors orient substrates or promote reactions through charge interactions.
+   - A mechanism where metal ions serve as Lewis acids or redox agents during catalysis.
+
+
