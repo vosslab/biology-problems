@@ -1,12 +1,27 @@
 #!/usr/bin/env python3
+# ^^ Specifies the Python3 environment to use for script execution
 
+# Import built-in Python modules
+# Provides functions for interacting with the operating system
 import os
+# Provides functions to generate random numbers and selections
+import random
+# Provides tools to parse command-line arguments
+import argparse
 import sys
 import copy
-import random
-import bptools
 import itertools
 
+# Import external modules (pip-installed)
+# No external modules are used here currently
+
+# Import local modules from the project
+# Provides custom functions, such as question formatting and other utilities
+import bptools
+
+
+#===========================================================
+#===========================================================
 def enzyme_table(metabolites, color_wheel):
 	htmltext = ""
 	tdopen_top = '<td align="center" valign="top" >'
@@ -29,8 +44,9 @@ def enzyme_table(metabolites, color_wheel):
 	htmltext += '</table>'
 	return htmltext
 
-
-def make_question(N, num_metabolites):
+#===========================================================
+#===========================================================
+def write_question(N, num_metabolites):
 	metabolite_letters_lower = bptools.generate_gene_letters(num_metabolites, clear=True)
 	metabolite_letters_upper = metabolite_letters_lower.upper()
 	#print("metabolite_letters_upper = ", metabolite_letters_upper)
@@ -39,19 +55,19 @@ def make_question(N, num_metabolites):
 	color_amount = 240
 	color_wheel = bptools.make_color_wheel(color_amount, 0, 0, deg_step)
 
-	question = '<p>Look at the metabolic pathway in the table above.</p>'
-	question += '<p>Metabolite '
+	question_text = '<p>Look at the metabolic pathway in the table above.</p>'
+	question_text += '<p>Metabolite '
 	color = color_wheel[len(metabolite_letters_upper)]
-	question += f'<span style="color: {color};"><strong>{metabolite_letters_upper[-1]}</strong></span>'
-	question += ' is needed for the bacteria to grow.</p>'
+	question_text += f'<span style="color: {color};"><strong>{metabolite_letters_upper[-1]}</strong></span>'
+	question_text += ' is needed for the bacteria to grow.</p>'
 
-	enzyme_num = random.choice(range(1, len(metabolite_letters_upper)))
+	enzyme_num = random.choice(range(1, len(metabolite_letters_upper)-1))
 
-	question += f'<p>Consider a bacterial strain that is mutant for the gene coding for enzyme {enzyme_num:d}</p>'
-	question += '<p>Which nutrients, when added to minimal media, will help this bacteria grow?</p>'
-	question += '<p>Multiple answers may be correct.</p>'
+	question_text += f'<p>Consider a bacterial strain that is mutant for the gene coding for enzyme {enzyme_num:d}</p>'
+	question_text += '<p>Which nutrients, when added to minimal media, will help this bacteria grow?</p>'
+	question_text += '<p>Multiple answers may be correct.</p>'
 
-	question = enzyme_table(metabolite_letters_upper, color_wheel) + question
+	question_text = enzyme_table(metabolite_letters_upper, color_wheel) + question_text
 
 	choices_list = []
 	answers_list = []
@@ -69,26 +85,94 @@ def make_question(N, num_metabolites):
 		if i >= enzyme_num:
 			answers_list.append(choice)
 
-	bbformat_question = bptools.formatBB_MA_Question(N, question, choices_list, answers_list)
+	bbformat_question = bptools.formatBB_MA_Question(N, question_text, choices_list, answers_list)
 	#bbformat_question = bptools.formatBB_MC_Question(N, question, choices_list, answer)
 	return bbformat_question
 
+#===========================================================
+#===========================================================
+# This function handles the parsing of command-line arguments.
+def parse_arguments():
+	"""
+	Parses command-line arguments for the script.
+
+	Returns:
+		argparse.Namespace: Parsed arguments with attributes `duplicates`,
+		`num_choices`, and `question_type`.
+	"""
+	# Create an argument parser with a description of the script's functionality
+	parser = argparse.ArgumentParser(description="Generate questions.")
+
+	# Add an argument to specify the number of duplicate questions to generate
+	parser.add_argument(
+		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
+		help='Number of duplicate runs to do or number of questions to create',
+		default=1
+	)
+
+	# Add an argument to specify the number of answer choices for each question
+	parser.add_argument(
+		'-c', '--num-metabolites', type=int, default=5, dest='num_metabolites',
+		help="Number of choices to create."
+	)
+	# Parse the provided command-line arguments and return them
+	args = parser.parse_args()
+	return args
+
+#===========================================================
+#===========================================================
+# This function serves as the entry point for generating and saving questions.
+def main():
+	"""
+	Main function that orchestrates question generation and file output.
+	"""
+
+	# Parse arguments from the command line
+	args = parse_arguments()
+
+	# Generate the output file name based on the script name and question type
+	script_name = os.path.splitext(os.path.basename(__file__))[0]
+	outfile = (
+		'bbq'
+		f'-{script_name}'  # Add the script name to the file name
+		f'-{args.num_metabolites}_metabolites'
+
+		'-questions.txt'  # Add the file extension
+	)
+
+	# Print a message indicating where the file will be saved
+	print(f'Writing to file: {outfile}')
+
+	# Open the output file in write mode
+	with open(outfile, 'w') as f:
+		# Initialize the question number counter
+		N = 0
+
+		# Generate the specified number of questions
+		for _ in range(args.duplicates):
+			# Generate a unique identifier for the question (e.g., gene letters)
+			gene_letters_str = bptools.generate_gene_letters(3)
+
+			# Generate the complete formatted question
+			complete_question = write_question(N+1, args.num_metabolites)
+
+			# Write the question to the file if it was generated successfully
+			if complete_question is not None:
+				N += 1
+				f.write(complete_question)
+
+	# If the question type is multiple choice, print a histogram of results
+	bptools.print_histogram()
+
+	# Print a message indicating how many questions were saved
+	print(f'saved {N} questions to {outfile}')
+
+#===========================================================
+#===========================================================
+# This block ensures the script runs only when executed directly
 if __name__ == '__main__':
-	if len(sys.argv) >= 2:
-		num_metabolites = int(sys.argv[1])
-	else:
-		num_metabolites = 4
+	# Call the main function to run the program
+	main()
 
-	duplicates = 24
-
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	for i in range(duplicates):
-		N = i + 1
-		bbformat_question = make_question(N, num_metabolites)
-		f.write(bbformat_question)
-	f.close()	
-
-	
+## THE END
 
