@@ -109,7 +109,7 @@ def makeQuestions2(yaml_data, num_choices=None, flip=False):
 		while not key in comb:
 			comb = random.choice(all_combs)
 			count += 1
-			if count > 20:
+			if count > 200:
 				print("something probably wrong, too many combinations searched")
 				sys.exit(1)
 		if flip is False:
