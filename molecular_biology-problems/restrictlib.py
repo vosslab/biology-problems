@@ -119,66 +119,92 @@ def get_web_data(enzyme_class):
 
 
 #========================================
-def check_for_good_ending(item):
-	#not used / not useful
+def check_for_good_ending(item: str) -> bool:
+	"""
+	Check if the given string ends with a good suffix.
+
+	Good suffixes include Roman numerals or mutation markers like '_mut1' or '_3'.
+	"""
 	if item.endswith("I"):
 		return True
 	if item.endswith("V"):
 		return True
 	if item.endswith("X"):
 		return True
-	if re.search("_mut[0-9]$", item):
+	# Match strings ending in _mut followed by a single digit (e.g., '_mut3')
+	if re.search(r"_mut[0-9]$", item):
 		return True
-	if re.search("_[0-9]$", item):
+	# Match strings ending in underscore + digit (e.g., '_1')
+	if re.search(r"_[0-9]$", item):
 		return True
 	return False
 
+
 #========================================
-def has_strict_sequence(enzyme_class):
-	m = re.search('^[ACGT]+$', enzyme_class.site)
-	if not m:
+def has_strict_sequence(enzyme_class) -> bool:
+	"""
+	Check if the enzyme has a strict recognition site and elucidation pattern.
+
+	Returns:
+		bool: True if both site and elucidate() match strict ACGT rules.
+	"""
+	# Match sequences that only contain A, C, G, or T (strict DNA bases)
+	if not re.search(r'^[ACGT]+$', enzyme_class.site):
 		return False
-	return True
-	# not needed use enzyme_class.fst3 == 0:
-	if enzyme_class.fst3 == 0:
+
+	# Elucidated cut site must also contain only ACGT and optional underscore or caret
+	if not re.search(r'^[ACGT_\^]+$', enzyme_class.elucidate()):
 		return False
-	m = re.search('^[ACGT_\^]+$', enzyme_class.elucidate())
-	if not m:
-		return False
+
 	return True
 
 #========================================
-def get_enzyme_list():
+def get_enzyme_list() -> list:
+	"""
+	Build a filtered list of enzymes that are:
+	- Properly named (starts with [A-Z][a-z][a-z])
+	- Palindromic
+	- Cut once
+	- Non-ambiguous
+	- Known
+	- Have a strict recognition sequence
+
+	Returns:
+		list: List of valid enzyme names
+	"""
 	dir_result = dir(Restriction)
 	enzymes = []
+
 	for item in dir_result:
-		if not re.match("^[A-Z][a-z][a-z]", item):
-			#print(item)
+		# Match enzyme names like 'Eco', 'Bam', etc.
+		if not re.match(r"^[A-Z][a-z][a-z]", item):
 			continue
+
 		enzyme_class = enzyme_name_to_class(item)
+
 		if not hasattr(enzyme_class, 'site'):
-			#print(item)
 			continue
+
 		if enzyme_class.is_palindromic() is False:
-			#print("{0} - {1}".format(item, enzyme_class.site))
 			continue
+
 		if enzyme_class.cut_once() is False:
-			#print("{0} - {1}".format(item, enzyme_class.elucidate()))
 			continue
+
 		if enzyme_class.is_ambiguous() is True:
-			#print("{0} - {1}".format(item, enzyme_class.elucidate()))
 			continue
+
 		if enzyme_class.is_unknown() is True:
-			#print("{0} - {1}".format(item, enzyme_class.elucidate()))
 			continue
+
 		if enzyme_class.fst3 == 0:
-			#print("{0} - {1}".format(item, enzyme_class.elucidate()))
 			continue
+
 		if has_strict_sequence(enzyme_class) is False:
-			#print("{0} - {1}".format(item, enzyme_class.site))
 			continue
 
 		enzymes.append(item)
+
 	#print("Found {0:d} enzymes".format(len(enzymes)))
 	for enzyme in enzymes:
 		#print(enzyme)
