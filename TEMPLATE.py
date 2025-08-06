@@ -175,6 +175,7 @@ def main():
 		'bbq'
 		f'-{script_name}'  # Add the script name to the file name
 		f'-{args.question_type.upper()}'  # Add the question type in uppercase
+		f'-{args.num_choices}_choices'
 		'-questions.txt'  # Add the file extension
 	)
 
