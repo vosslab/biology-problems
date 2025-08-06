@@ -150,8 +150,6 @@ def main():
 
 		# Generate the specified number of questions
 		for _ in range(args.duplicates):
-			# Generate a unique identifier for the question (e.g., gene letters)
-			gene_letters_str = bptools.generate_gene_letters(3)
 
 			# Generate the complete formatted question
 			complete_question = write_question(N+1, args.num_metabolites)
