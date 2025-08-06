@@ -1,13 +1,24 @@
 #!/usr/bin/env python3
+# ^^ Specifies the Python3 environment to use for script execution
 
+# Import built-in Python modules
+# Provides functions for interacting with the operating system
 import os
+# Provides functions to generate random numbers and selections
+import random
+# Provides tools to parse command-line arguments
+import argparse
 import sys
 import copy
-import random
 
-#local
-import seqlib
+# Import external modules (pip-installed)
+# No external modules are used here currently
+
+# Import local modules from the project
+# Provides custom functions, such as question formatting and other utilities
 import bptools
+import seqlib
+
 
 def complement(seq):
 	newseq = copy.copy(seq)
@@ -49,7 +60,7 @@ def fiveLetters(choice):
 	return question
 
 
-def writeQuestion(N):
+def write_question(N):
 	nt1 = random.choice(('A', 'C', 'T', 'G'))
 	nt2 = complement(nt1)
 
@@ -109,15 +120,82 @@ def writeQuestion(N):
 	bbformat = bptools.formatBB_MAT_Question(N, question_text, answers_table_list, matching_table_list)
 	return bbformat
 
-if __name__ == '__main__':
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
+#===========================================================
+#===========================================================
+# This function handles the parsing of command-line arguments.
+def parse_arguments():
+	"""
+	Parses command-line arguments for the script.
 
-	num_questions = 98
-	for i in range(num_questions):
-		N = i + 1
-		bbformat = writeQuestion(N)
-		f.write(bbformat)
-	f.close()
+	Returns:
+		argparse.Namespace: Parsed arguments with attributes `duplicates`,
+		`num_choices`, and `question_type`.
+	"""
+	# Create an argument parser with a description of the script's functionality
+	parser = argparse.ArgumentParser(description="Generate questions.")
+
+	# Add an argument to specify the number of duplicate questions to generate
+	parser.add_argument(
+		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
+		help='Number of duplicate runs to do or number of questions to create',
+		default=1
+	)
+
+	# Parse the provided command-line arguments and return them
+	args = parser.parse_args()
+	return args
+
+#===========================================================
+#===========================================================
+# This function serves as the entry point for generating and saving questions.
+def main():
+	"""
+	Main function that orchestrates question generation and file output.
+	"""
+
+	# Parse arguments from the command line
+	args = parse_arguments()
+
+	# Generate the output file name based on the script name and question type
+	script_name = os.path.splitext(os.path.basename(__file__))[0]
+	outfile = (
+		'bbq'
+		f'-{script_name}'  # Add the script name to the file name
+		'-questions.txt'  # Add the file extension
+	)
+
+	# Print a message indicating where the file will be saved
+	print(f'Writing to file: {outfile}')
+
+	# Open the output file in write mode
+	with open(outfile, 'w') as f:
+
+		# Initialize the question number counter
+		N = 0
+
+		# Generate the specified number of questions
+		for _ in range(args.duplicates):
+
+			# Generate the complete formatted question
+			complete_question = write_question(N+1)
+
+			# Write the question to the file if it was generated successfully
+			if complete_question is not None:
+				N += 1
+				f.write(complete_question)
+
+	# If the question type is multiple choice, print a histogram of results
 	bptools.print_histogram()
+
+	# Print a message indicating how many questions were saved
+	print(f'saved {N} questions to {outfile}')
+
+#===========================================================
+#===========================================================
+# This block ensures the script runs only when executed directly
+if __name__ == '__main__':
+	# Call the main function to run the program
+	main()
+
+## THE END
+
