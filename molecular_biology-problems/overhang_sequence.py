@@ -143,19 +143,20 @@ def makeMultipleChoiceQuestion(N, enzyme_class, num_choices):
 	choices_list.append(answer_text)
 
 	#==========================
-	random.shuffle(choices_list)
+	#random.shuffle(choices_list)
+	choices_list.sort()
+
 	bb_question = bptools.formatBB_MC_Question(N, question_text, choices_list, answer_text)
 	return bb_question
 
-
 #=====================
 #=====================
-def write_question(N, enzyme_name, num_choices, question_type)
+def write_question(N, enzyme_name, num_choices, question_type):
 	enzyme_class = restrictlib.enzyme_name_to_class(enzyme_name)
-	if not enzyme_class.overhang().endswith('overhang')
+	if not enzyme_class.overhang().endswith('overhang'):
 		raise ValueError(f"NON OVERHANG FOUND: {enzyme_name} -- {enzyme_class.overhang()}")
 	if question_type == "mc":
-		bb_question = makeMultipleChoiceQuestion(N, enzyme_class)
+		bb_question = makeMultipleChoiceQuestion(N, enzyme_class, num_choices)
 	else:
 		bb_question = makeFillInBlankQuestion(N, enzyme_class)
 	return bb_question
@@ -235,7 +236,7 @@ def main():
 		'-questions.txt'  # Add the file extension
 	)
 
-	enzyme_names = restrictlib.get_enzyme_list()
+	enzyme_names = restrictlib.get_enzyme_list(include_blunt=False)
 	print(f"Found {len(enzyme_names)} valid restriction enzymes...")
 	random.shuffle(enzyme_names)
 
@@ -275,51 +276,4 @@ if __name__ == '__main__':
 	main()
 
 ## THE END
-
-def new_main():
-
-
-	question_number = 1
-	for enzyme_name in enzymes:
-		enzyme_class = restrictlib.enzyme_name_to_class(enzyme_name)
-		overhang = enzyme_class.overhang()
-		if not overhang.endswith('overhang'):
-			continue
-		if multiple_choice:
-			makeMultipleChoiceQuestion(enzyme_class, question_number)
-			bb_question = bptools.formatBB_MC_Question(question_number, "Your MC Question", ["Choice1", "Choice2"], "Answer")
-		else:
-			makeFillInBlankQuestion(enzyme_class, question_number)
-			bb_question = bptools.formatBB_FIB_Question(question_number, "Your FIB Question", ["Answer1", "Answer2"])
-		question_number += 1
-		print(bb_question)
-
-def old_main():
-	if len(sys.argv) >= 2:
-		multiple_choice = True
-	else:
-		multiple_choice = False
-
-	enzymes = restrictlib.get_enzyme_list()
-	#print(len(enzymes))
-	#enzyme_class = restrictlib.random_enzyme_with_overhang(enzymes)
-
-	random.shuffle(enzymes)
-	
-	question_number = 1
-	for enzyme_name in enzymes:
-		enzyme_class = restrictlib.enzyme_name_to_class(enzyme_name)
-		overhang = enzyme_class.overhang()
-		if not overhang.endswith('overhang'):
-			continue
-		if multiple_choice is False:
-			makeFillInBlankQuestion(enzyme_class, question_number)
-		else:
-			makeMultipleChoiceQuestion(enzyme_class, question_number)
-		question_number += 1
-		#sys.exit(1)
-		print("")
-
-if __name__ == '__main__':
-	old_main()
 
