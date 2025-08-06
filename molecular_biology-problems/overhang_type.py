@@ -1,9 +1,19 @@
 #!/usr/bin/env python3
+# ^^ Specifies the Python3 environment to use for script execution
 
-import sys
+# Import built-in Python modules
+# Provides functions for interacting with the operating system
+import os
+# Provides functions to generate random numbers and selections
 import random
+# Provides tools to parse command-line arguments
 import argparse
 
+# Import external modules (pip-installed)
+# No external modules are used here currently
+
+# Import local modules from the project
+# Provides custom functions, such as question formatting and other utilities
 import bptools
 import restrictlib
 
@@ -35,9 +45,21 @@ def explore_object(obj, depth=1, max_depth=5):
 			elif not isinstance(attr_value, (int, float, str, list, tuple, dict)):
 				explore_object(attr_value, depth + 1)
 
+choice_color_map = {
+	"5' overhang": '<span style="color: #e60000;">5&prime; overhang</span>', #RED
+	"3' overhang": '<span style="color: #0039e6;">3&prime; overhang</span>', #BLUE
+	'blunt': '<span style="color: #009900;">blunt</span>', #GREEN
+
+	'sticky end': '<span style="color: #b30077;">sticky end</span>', #MAGENTA
+	'blunt end': '<span style="color: #009900;">blunt end</span>', #GREEN
+	'hanger end': '<span style="color: #0a9bf5;">hanger end</span>', #SKY BLUE
+	'straight edge': '<span style="color: #004d99;">straight edge</span>', #NAVY
+	'overhang end': '<span style="color: #e65400;">overhang end</span>', #DARK ORANGE
+}
+
 #=====================
 #=====================
-def writeQuestion(N, enzyme_class, use_overhang_type):
+def write_question(N, enzyme_class, use_overhang_type):
 	name = restrictlib.html_monospace(enzyme_class.__name__)
 	cut_description = restrictlib.html_monospace(restrictlib.format_enzyme(enzyme_class))
 	web_data = restrictlib.get_web_data(enzyme_class)
@@ -57,56 +79,118 @@ def writeQuestion(N, enzyme_class, use_overhang_type):
 
 	overhang = enzyme_class.overhang()
 
-	answer = None
+	answer_text = None
 	choices_list = []
 	if use_overhang_type is True:
-		answer = overhang
+		answer_text = overhang
 		choices_list = ["5' overhang", "3' overhang", "blunt"]
+		choices_list.sort()
 	else:
 		if overhang.endswith("overhang"):
-			answer = "sticky end"
+			answer_text = "sticky end"
 		elif overhang == "blunt":
-			answer = "blunt end"
+			answer_text = "blunt end"
 		# actual choices
 		choices_list = ["sticky end", "blunt end"]
 		# wrong choices
 		choices_list.extend(["hanger end", "straight edge", "overhang end", ])
-	
-	if answer is None:
-		print("ERROR")
-		sys.exit(1)
+		random.shuffle(choices_list)
 
-	#print(question)
-	
-	random.shuffle(choices_list)
-	bbquestion = bptools.formatBB_MC_Question(N, question, choices_list, answer)
+	styled_choices_list = [choice_color_map[choice_key] for choice_key in choices_list]
+	styled_answer_text = choice_color_map[answer_text]
+	bbquestion = bptools.formatBB_MC_Question(N, question, styled_choices_list, styled_answer_text)
 	return bbquestion
 
-#=====================
-#=====================
-def main():
+
+#===========================================================
+#===========================================================
+# This function handles the parsing of command-line arguments.
+def parse_arguments():
+	"""
+	Parses command-line arguments for the script.
+
+	Returns:
+		argparse.Namespace: Parsed arguments with attributes `duplicates`,
+		`num_choices`, and `question_type`.
+	"""
+	# Create an argument parser with a description of the script's functionality
 	parser = argparse.ArgumentParser(description="Generate restriction enzyme questions.")
+
+	# Add an argument to specify the number of duplicate questions to generate
+	parser.add_argument(
+		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
+		help='Number of duplicate runs to do or number of questions to create',
+		default=1
+	)
+
 	parser.add_argument("-o", "--overhang_type", default=True, dest='use_overhang_type',
 		action="store_true", help="Whether to use overhang type or use end type.")
-	parser.add_argument("-e", "--end_type", default=True, dest='use_end_type',
+
+	parser.add_argument("-e", "--end_type", default=True, dest='use_overhang_type',
 		action="store_false", help="Whether to use overhang type or use end type.")
 
+	# Parse the provided command-line arguments and return them
 	args = parser.parse_args()
+	return args
+
+#===========================================================
+#===========================================================
+# This function serves as the entry point for generating and saving questions.
+def main():
+	"""
+	Main function that orchestrates question generation and file output.
+	"""
+
+	# Parse arguments from the command line
+	args = parse_arguments()
+
+	# Generate the output file name based on the script name and question type
+	script_name = os.path.splitext(os.path.basename(__file__))[0]
+	suffix = 'overhang_type' if args.use_overhang_type else 'end_type'
+	outfile = (
+		'bbq'
+		f'-{script_name}'  # Add the script name to the file name
+		f'-{suffix}'
+		'-questions.txt'  # Add the file extension
+	)
 
 	enzyme_names = restrictlib.get_enzyme_list()
-	N = 0
+	print(f"Found {len(enzyme_names)} valid restriction enzymes...")
 	random.shuffle(enzyme_names)
-	for enzyme_name in enzyme_names:
-		N += 1
-		enzyme_class = restrictlib.enzyme_name_to_class(enzyme_name)
-		writeQuestion(N, enzyme_class, args.use_overhang_type)
-		break
 
-#=====================
-#=====================
+	# Print a message indicating where the file will be saved
+	print(f'Writing to file: {outfile}')
+
+	# Open the output file in write mode
+	with open(outfile, 'w') as f:
+		# Initialize the question number counter
+		N = 0
+
+		# Generate the specified number of questions
+		for _ in range(args.duplicates):
+			enzyme_name = enzyme_names[N % (len(enzyme_names))]
+			enzyme_class = restrictlib.enzyme_name_to_class(enzyme_name)
+
+			# Generate the complete formatted question
+			complete_question = write_question(N+1, enzyme_class, args.use_overhang_type)
+
+			# Write the question to the file if it was generated successfully
+			if complete_question is not None:
+				N += 1
+				f.write(complete_question)
+
+	# If the question type is multiple choice, print a histogram of results
+	bptools.print_histogram()
+
+	# Print a message indicating how many questions were saved
+	print(f'saved {N} questions to {outfile}')
+
+#===========================================================
+#===========================================================
+# This block ensures the script runs only when executed directly
 if __name__ == '__main__':
+	# Call the main function to run the program
 	main()
 
+## THE END
 
-
-	#A. 5'-TGCA-3' B. 5'-CTGCA-3' C. 5'-TGCAG-3' D. 5'-ACGT-3'
