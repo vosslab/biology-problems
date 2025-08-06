@@ -10,6 +10,12 @@ keys description: genetic disorders
 value description: description
 values description: descriptions
 
+replacement_rules:
+   disorder:       '<span style="color: DarkGreen;">disorder</span>'
+   genetic:        '<span style="color: MediumVioletRed;">genetic</span>'
+   metabolic:      '<span style="color: Indigo;">metabolic</span>'
+   chromosome:     '<span style="color: SteelBlue;">chromosome</span>'
+
 matching pairs:
   Achondroplasia:
     - impairs the growth of bone in the limbs and causes abnormal growth in the spine and skull
@@ -51,7 +57,7 @@ matching pairs:
     - a genetic disorder caused by a loss of function of specific genes on chromosome 15
     - disorder that is due to a missing piece (deletion) of a specific part of chromosome 15
   Cri du chat syndrome:
-    - usually include a high-pitched cat-like cry, mental disablity, delayed development, distinctive facial features, widely-spaced eyes
+    - usually include a high-pitched cat-like cry, mental disability, delayed development, distinctive facial features, widely-spaced eyes
     - disorder that is due to a missing piece (deletion) of a specific part of chromosome 5
     - disorder caused when a small part of chromosome 5 is missing
   DiGeorge syndrome:
@@ -93,9 +99,3 @@ matching pairs:
     - genetic condition caused by a deletion of a group of genes located on chromosome number 4
     - disorder caused when a small part of chromosome 4 is missing
     - disorder that is due to a missing piece (deletion) of a specific part of chromosome 4
-
-replacement_rules:
-   disorder:       '<span style=color: DarkGreen;>disorder</span>'
-   genetic:        '<span style=color: MediumVioletRed;>genetic</span>'
-   metabolic:      '<span style=color: Indigo;>metabolic</span>'
-   chromosome:     '<span style=color: SteelBlue;>chromosome</span>'
