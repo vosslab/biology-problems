@@ -159,7 +159,7 @@ def has_strict_sequence(enzyme_class) -> bool:
 	return True
 
 #========================================
-def get_enzyme_list() -> list:
+def get_enzyme_list(include_blunt=True) -> list:
 	"""
 	Build a filtered list of enzymes that are:
 	- Properly named (starts with [A-Z][a-z][a-z])
@@ -201,6 +201,9 @@ def get_enzyme_list() -> list:
 			continue
 
 		if has_strict_sequence(enzyme_class) is False:
+			continue
+
+		if include_blunt is False and not enzyme_class.overhang().endswith('overhang'):
 			continue
 
 		enzymes.append(item)
