@@ -190,20 +190,15 @@ def insertCommas(my_str, separate=3):
 	return new_str[:-1]
 
 #=========================
-def complement(seq):
-	newseq = copy.copy(seq)
-	newseq = newseq.replace('A', 'x')
-	newseq = newseq.replace('T', 'A')
-	newseq = newseq.replace('x', 'T')
-	newseq = newseq.replace('G', 'x')
-	newseq = newseq.replace('C', 'G')
-	newseq = newseq.replace('x', 'C')
-	return newseq
+def complement(seq: str) -> str:
+	"""Return the complement of a DNA sequence (A<->T, G<->C)."""
+	trans_table = str.maketrans("ATGC", "TACG")
+	return seq.translate(trans_table)
 
 #=========================
-def flip(seq):
-	newseq = copy.copy(seq)
-	return newseq[::-1]
+def flip(seq: str) -> str:
+	"""Return the reversed sequence (not reverse complement)."""
+	return seq[::-1]
 
 #=========================
 def makeSequence(seqlen=10):
