@@ -1,9 +1,19 @@
 #!/usr/bin/env python3
+# ^^ Specifies the Python3 environment to use for script execution
 
+# Import built-in Python modules
+# Provides functions for interacting with the operating system
 import os
-import sys
+# Provides functions to generate random numbers and selections
 import random
+# Provides tools to parse command-line arguments
+import argparse
 
+# Import external modules (pip-installed)
+# No external modules are used here currently
+
+# Import local modules from the project
+# Provides custom functions, such as question formatting and other utilities
 import bptools
 
 #========================================
@@ -22,16 +32,16 @@ nt2name = {
 
 #========================================
 canonical = {
-	'A':	'Ade',
-	'C':	'Cyt',
-	'G':	'Gua',
-	'T':	'Thy',
-	'U':	'Ura',
-	'Ade':	'Ade',
-	'Cyt':	'Cyt',
-	'Gua':	'Gua',
-	'Thy':	'Thy',
-	'Ura':	'Ura',
+	'a':	'Ade',
+	'c':	'Cyt',
+	'g':	'Gua',
+	't':	'Thy',
+	'u':	'Ura',
+	'ade':	'Ade',
+	'cyt':	'Cyt',
+	'gua':	'Gua',
+	'thy':	'Thy',
+	'ura':	'Ura',
 	'adenine':	'Ade',
 	'cytosine':	'Cyt',
 	'guanine':	'Gua',
@@ -95,7 +105,7 @@ def printChoice(nts, valuelist):
 
 #========================================
 #========================================
-def makeQuestion(N):
+def write_question(N, num_choices, override_nt):
 	global colormap
 	if random.random() < 0.5:
 		percent = random.randint(1,23)
@@ -103,11 +113,10 @@ def makeQuestion(N):
 		percent = random.randint(27,49)
 
 	nt1 = None
-	if len(sys.argv) > 2:
-		text = sys.argv[2].strip()
-		keys = list(canonical.keys())
-		if text in keys:
-			nt1 = canonical[text]
+	if override_nt is not None:
+		nt1 = canonical.get(override_nt.lower())
+		if nt1 is None:
+			raise ValueError(f"Invalid nucleotide override: {override_nt}")
 
 	nts = ['Ade', 'Cyt', 'Thy', 'Gua']
 	random.shuffle(nts)
@@ -160,16 +169,102 @@ def makeQuestion(N):
 	complete_question = bptools.formatBB_MC_Question(N, question, choices_list, answer_text)
 	return complete_question
 
-#========================================
-#========================================
-if __name__ == '__main__':
-	num_questions = 199
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	for i in range(num_questions):
-		complete_question = makeQuestion(i+1)
-		f.write(complete_question)
-	f.close()
+#===========================================================
+#===========================================================
+# This function handles the parsing of command-line arguments.
+def parse_arguments():
+	"""
+	Parses command-line arguments for the script.
 
-	
+	Returns:
+		argparse.Namespace: Parsed arguments with attributes `duplicates`,
+		`num_choices`, and `question_type`.
+	"""
+	# Create an argument parser with a description of the script's functionality
+	parser = argparse.ArgumentParser(description="Generate questions.")
+
+	# Add an argument to specify the number of duplicate questions to generate
+	parser.add_argument(
+		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
+		help='Number of duplicate runs to do or number of questions to create',
+		default=1
+	)
+
+	# Add an argument to specify the number of answer choices for each question
+	parser.add_argument(
+		'-c', '--num_choices', type=int, default=5, dest='num_choices',
+		help="Number of choices to create."
+	)
+
+	# Mutually exclusive group for nucleotide override methods
+	nt_group = parser.add_mutually_exclusive_group()
+	nt_group.add_argument('--A', action='store_const', const='A', dest='override_nt',
+		help='Force nucleotide A (Adenine)')
+	nt_group.add_argument('--T', action='store_const', const='T', dest='override_nt',
+		help='Force nucleotide T (Thymine)')
+	nt_group.add_argument('--C', action='store_const', const='C', dest='override_nt',
+		help='Force nucleotide C (Cytosine)')
+	nt_group.add_argument('--G', action='store_const', const='G', dest='override_nt',
+		help='Force nucleotide G (Guanine)')
+	nt_group.add_argument('--U', action='store_const', const='U', dest='override_nt',
+		help='Force nucleotide U (Uracil)')
+	nt_group.add_argument('--override-nt', type=str, dest='override_nt',
+		help='Specify nucleotide by name or letter (e.g., A, adenine, guanine, Gua)')
+
+
+	# Parse the provided command-line arguments and return them
+	args = parser.parse_args()
+	return args
+
+#===========================================================
+#===========================================================
+# This function serves as the entry point for generating and saving questions.
+def main():
+	"""
+	Main function that orchestrates question generation and file output.
+	"""
+
+	# Parse arguments from the command line
+	args = parse_arguments()
+
+	# Generate the output file name based on the script name and question type
+	script_name = os.path.splitext(os.path.basename(__file__))[0]
+	outfile = (
+		'bbq'
+		f'-{script_name}'  # Add the script name to the file name
+		f'-{args.num_choices}_choices'
+		'-questions.txt'  # Add the file extension
+	)
+
+	# Print a message indicating where the file will be saved
+	print(f'Writing to file: {outfile}')
+
+	# Open the output file in write mode
+	with open(outfile, 'w') as f:
+		# Initialize the question number counter
+		N = 0
+
+		# Generate the specified number of questions
+		for _ in range(args.duplicates):
+			# Generate the complete formatted question
+			complete_question = write_question(N+1, args.num_choices, args.override_nt)
+
+			# Write the question to the file if it was generated successfully
+			if complete_question is not None:
+				N += 1
+				f.write(complete_question)
+
+	# If the question type is multiple choice, print a histogram of results
+	bptools.print_histogram()
+
+	# Print a message indicating how many questions were saved
+	print(f'saved {N} questions to {outfile}')
+
+#===========================================================
+#===========================================================
+# This block ensures the script runs only when executed directly
+if __name__ == '__main__':
+	# Call the main function to run the program
+	main()
+
+## THE END
