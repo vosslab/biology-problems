@@ -18,6 +18,13 @@ COMPLEXITY_STYLES = {
 	'hard': {'num_suspects': 9, 'num_bands': 36,}
 }
 
+#================
+def init_gel_params(style):
+	if style not in COMPLEXITY_STYLES:
+		print(f"Error: Style '{style}' not recognized. Available styles are {', '.join(COMPLEXITY_STYLES.keys())}.")
+		sys.exit(1)
+	return COMPLEXITY_STYLES[style]
+
 class RFLPClass:
 	#=====================================
 	"""Initialize RFLPClass"""
@@ -316,7 +323,7 @@ class RFLPClass:
 	def make_suspects_PNG_image(self, N=1):
 		gel_class = gellib.GelClassImage()
 		gel_class.setTextColumn("Suspect #5")
-		gel_class.createBandTree(params['num_bands'])
+		gel_class.createBandTree(self.num_bands)
 
 		gel_class.blankLane()
 		if self.debug is True:
@@ -350,7 +357,7 @@ class RFLPClass:
 	#================
 	def make_suspects_HTML_table(self):
 		gel_class = gellib.GelClassHtml()
-		gel_class.createBandTree(params['num_bands'])
+		gel_class.createBandTree(self.num_bands)
 
 		table = ""
 		table += gel_class.tableWidths()
@@ -384,15 +391,8 @@ class RFLPClass:
 		return table, killer_index
 
 #================
-def init_gel_params(style):
-	if style not in COMPLEXITY_STYLES:
-		print(f"Error: Style '{style}' not recognized. Available styles are {', '.join(COMPLEXITY_STYLES.keys())}.")
-		sys.exit(1)
-	return COMPLEXITY_STYLES[style]
-
 #================
-#================
-def writeQuestion(N, params, debug):
+def write_question(N, params, debug):
 	# Initialization
 	rflp_class = RFLPClass(params['num_bands'])
 	rflp_class.debug = debug
@@ -442,32 +442,129 @@ def writeQuestion(N, params, debug):
 	bb_question = bptools.formatBB_MC_Question(N, full_question, choices_list, answer_string)
 	return bb_question
 
+#===========================================================
+#===========================================================
+# This function handles the parsing of command-line arguments.
+def parse_arguments():
+	"""
+	Parses command-line arguments for the script.
 
-#================
-#================
-if __name__ == '__main__':
-	# Command-line argument parsing moved here
+	Returns:
+		argparse.Namespace: Parsed arguments with attributes `duplicates`,
+		`num_choices`, and `question_type`.
+	"""
+	# Create an argument parser with a description of the script's functionality
 	parser = argparse.ArgumentParser(description="Generate DNA gel questions.")
-	parser.add_argument('-s', '--style', type=str, default='medium',
-		help='The complexity style for generating questions (easy, medium, hard)')
-	parser.add_argument('-d', '--debug', dest='debug', action='store_true',
+
+	# Add an argument to specify the number of duplicate questions to generate
+	parser.add_argument(
+		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
+		help='Number of duplicate runs to do or number of questions to create',
+		default=1
+	)
+
+	parser.add_argument('-D', '--debug', dest='debug', action='store_true',
 		help='Enable debug mode, which changes the question output.')
-	parser.add_argument('-x', '--max_questions', dest='max_questions', type=int, default=3,
-		help='Number of questions to write')
 	parser.set_defaults(debug=False)
 
+	# Add an argument to specify the number of answer choices for each question
+	parser.add_argument(
+		'-c', '--num_choices', type=int, default=None, dest='num_choices',
+		help="Number of choices to create."
+	)
+
+	# Create a mutually exclusive group for style selection
+	# This group allows only one complexity style to be specified at a time
+	style_group = parser.add_mutually_exclusive_group()
+
+	# Add an option to manually set the style
+	style_group.add_argument(
+		'-s', '--style', dest='style', type=str,
+		choices=('easy', 'medium', 'hard'),
+		help='Set the complexity style for generating questions: easy, medium, or hard'
+	)
+
+	# Add a shortcut option to set style to easy
+	style_group.add_argument(
+		'-E', '--easy', dest='style', action='store_const', const='easy',
+		help='Set question style to easy'
+	)
+
+	# Add a shortcut option to set style to medium
+	style_group.add_argument(
+		'-M', '--medium', dest='style', action='store_const', const='medium',
+		help='Set question style to medium'
+	)
+
+	# Add a shortcut option to set style to hard
+	style_group.add_argument(
+		'-H', '--hard', dest='style', action='store_const', const='hard',
+		help='Set question style to hard'
+	)
+
+	# Parse the provided command-line arguments and return them
 	args = parser.parse_args()
+	return args
+
+#===========================================================
+#===========================================================
+# This function serves as the entry point for generating and saving questions.
+def main():
+	"""
+	Main function that orchestrates question generation and file output.
+	"""
+
+	# Parse arguments from the command line
+	args = parse_arguments()
+
 	params = init_gel_params(args.style)
 
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print(f'writing to file: {outfile}')
+	# override the number of choices
+	if args.num_choices is not None:
+		params['num_suspects'] = args.num_choices
+
+	# Generate the output file name based on the script name and question type
+	script_name = os.path.splitext(os.path.basename(__file__))[0]
+	outfile = (
+		'bbq'
+		f'-{script_name}'  # Add the script name to the file name
+		f'-{args.style.upper()}'  # Add the question type in uppercase
+		f'-{params['num_suspects']}_suspects'
+		'-questions.txt'  # Add the file extension
+	)
+
+	# Print a message indicating where the file will be saved
+	print(f'Writing to file: {outfile}')
+
+	# Open the output file in write mode
 	with open(outfile, 'w') as f:
-		for i in range(args.max_questions):
-			N = i + 1
-			print(f"\nQuestion {N} of {args.max_questions}")
-			bb_question = writeQuestion(N, params, args.debug)
-			if bb_question is None:
-				continue
-			f.write(bb_question)
-		f.write("\n")
+		# Initialize the question number counter
+		N = 0
+
+		# Generate the specified number of questions
+		while N < args.duplicates:
+			print(f"\n  Question {N+1} of {args.duplicates}")
+
+			# Generate the complete formatted question
+			complete_question = write_question(N+1, params, args.debug)
+
+			# Write the question to the file if it was generated successfully
+			if complete_question is not None:
+				N += 1
+				f.write(complete_question)
+
+	# If the question type is multiple choice, print a histogram of results
 	bptools.print_histogram()
+
+	# Print a message indicating how many questions were saved
+	print(f'saved {N} questions to {outfile}')
+
+#===========================================================
+#===========================================================
+# This block ensures the script runs only when executed directly
+if __name__ == '__main__':
+	# Call the main function to run the program
+	main()
+
+## THE END
+
