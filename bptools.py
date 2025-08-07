@@ -71,8 +71,8 @@ extra_light_color_wheel = color_wheel.extra_light_color_wheel
 def get_indices_for_color_wheel(num_colors, color_wheel_length):
 	return color_wheel.get_indices_for_color_wheel(num_colors, color_wheel_length)
 #==========================
-def default_color_wheel(num_colors, color_wheel=dark_color_wheel):
-	return color_wheel.default_color_wheel(num_colors, color_wheel)
+def default_color_wheel(num_colors, my_color_wheel=dark_color_wheel):
+	return color_wheel.default_color_wheel(num_colors, my_color_wheel)
 #==========================
 def default_color_wheel2(num_colors, random_shift=True):
 	return color_wheel.default_color_wheel2(num_colors, random_shift)
