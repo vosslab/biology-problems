@@ -111,9 +111,9 @@ color_translate = {
 	'peru': 'tan',
 	'goldenrod': 'tan',
 	'lightgreen': 'light green',
-	'salmon': 'pink',
-	'lightsalmon': 'pink',
-	'lightcoral': 'pink',
+	'salmon': 'redish pink',
+	'lightsalmon': 'redish pink',
+	'lightcoral': 'redish pink',
 	'plum': 'purple',
 	'palegreen': 'green',
 	'lightskyblue': 'light blue',
@@ -175,7 +175,7 @@ def formatHeterozygoes(gene_type, letter, color_set):
 #===================
 #===================
 def createSingleGeneTable(gene_type, letter, color_set, title=None):
-	table = '<table border=1 style="border: 1px solid black; border-collapse: collapse; ">'
+	table = '<table style="border: 1px solid black; border-collapse: collapse; ">'
 	table += '<colgroup width="60"></colgroup> '
 	table += '<colgroup width="60"></colgroup> '
 	table += '<colgroup width="80"></colgroup> '

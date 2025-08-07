@@ -1,11 +1,24 @@
 #!/usr/bin/env python3
+# ^^ Specifies the Python3 environment to use for script execution
 
+# Import built-in Python modules
+# Provides functions for interacting with the operating system
 import os
+# Provides functions to generate random numbers and selections
 import random
+# Provides tools to parse command-line arguments
+import argparse
 
-phenotypes = ['O', 'A', 'B', 'AB',]
-alleles = ['O', 'A', 'B',]
-genotypes = ['OO', 'AO', 'BO', 'AB',]
+# Import external modules (pip-installed)
+# No external modules are used here currently
+
+# Import local modules from the project
+# Provides custom functions, such as question formatting and other utilities
+import bptools
+
+#===========================================================
+phenotypes = ['O', 'A', 'B', 'AB']
+alleles = ['O', 'A', 'B']
 pmap = {
 	'O': 'OO',
 	'A': 'AO',
@@ -31,123 +44,143 @@ gmap = {
 }
 
 
-def getPossibleMomTypes(dad_geno, kid_geno):
+#===========================================================
+def get_possible_mom_genotypes(dad_geno: str, kid_geno: str) -> set[str]:
+	"""
+	Find all possible maternal genotypes consistent with given father and child genotypes.
+
+	Args:
+		dad_geno (str): Genotype of the father (e.g., 'AO').
+		kid_geno (str): Genotype of the child (e.g., 'AB').
+
+	Returns:
+		set[str]: Set of maternal genotypes that could explain the child's genotype.
+	"""
 	answers = set()
-	geno_set = set()
 	kid_list = list(kid_geno)
+
 	for dad_allele in dad_geno:
-		if not dad_allele in kid_list:
-			continue
-		kid_list.remove(dad_allele)
-	#print("Dad removed"+str(kid_list))
+		if dad_allele in kid_list:
+			kid_list.remove(dad_allele)
+
 	if len(kid_list) == 2:
 		return set()
-	elif len(kid_list) == 1:
-		#mom must have this allele
-		required = kid_list[0]
-	else:
-		required = None
-	#print(required)
+
+	required = kid_list[0] if len(kid_list) == 1 else None
+
 	for dad_allele in dad_geno:
-		#print(dad_allele)
 		kid_list = list(kid_geno)
-		if not dad_allele in kid_list:
+		if dad_allele not in kid_list:
 			continue
 		kid_list.remove(dad_allele)
-		if required is not None and kid_list[0] != required:
+
+		if required and kid_list[0] != required:
 			continue
-		#print(kid_list)
+
 		kid_allele = kid_list[0]
 		for mom_allele in alleles:
-			if kid_allele < mom_allele:
-				geno = kid_allele+mom_allele
-			else:
-				geno = mom_allele+kid_allele
-			pheno = gmap[geno]
-			simple_geno = pmap[pheno]
-			geno_set.add(geno)
-			answers.add(pheno)
-	#print('{0} + X -> {1} ... {2}'.format(dad_geno, kid_geno, geno_set))
-	return geno_set
+			geno = ''.join(sorted([mom_allele, kid_allele]))
+			answers.add(geno)
 
-if __name__ == '__main__':
-	#print(getPossibleMomTypes('AO', 'AO'))
-	#sys.exit(1)
+	return answers
+
+#===========================================================
+def get_possible_mom_phenotypes(dad_pheno: str, kid_pheno: str) -> list[str]:
+	"""
+	Given phenotypes of dad and child, return list of valid maternal phenotypes.
+
+	Args:
+		dad_pheno (str): Blood type of the father.
+		kid_pheno (str): Blood type of the child.
+
+	Returns:
+		list[str]: Valid maternal phenotypes (e.g., ['A', 'B'])
+	"""
+	possible_phenos = set()
+	dad_genos = pmaplist[dad_pheno]
+	kid_genos = pmaplist[kid_pheno]
+
+	for dad_geno in dad_genos:
+		for kid_geno in kid_genos:
+			mom_genos = get_possible_mom_genotypes(dad_geno, kid_geno)
+			for geno in mom_genos:
+				pheno = gmap[geno]
+				possible_phenos.add(pheno)
+
+	return sorted(list(possible_phenos))
+
+#===========================================================
+def write_question(N: int, dad_pheno: str, kid_pheno: str) -> str:
+	"""
+	Generate a formatted multiple-answer question string.
+
+	Args:
+		N (int): Question number.
+		dad_pheno (str): Blood type of the father.
+		kid_pheno (str): Blood type of the child.
+
+	Returns:
+		str: Formatted question string.
+	"""
+	offspring = random.choice(('daughter &female;', 'son &male;'))
+
+	question_text = ''
+	question_text += (
+		"<p>For the ABO blood group in humans, the i<sup>A</sup> and i<sup>B</sup> alleles are codominant "
+		"and the i allele is recessive.</p>"
+	)
+	question_text += (
+		f"<p>A father &male; with <u>blood type {dad_pheno}</u> has a {offspring} with "
+		f"<u>blood type {kid_pheno}</u>.</p>"
+	)
+	question_text += (
+		"<p>Which of the following blood types could the mother &female; possibly have? "
+		"Check all that apply.</p>"
+	)
+
+	# Generate choices and correct answers
+	choices_list = [f"Type {pheno} blood" for pheno in phenotypes]
+	correct_phenos = get_possible_mom_phenotypes(dad_pheno, kid_pheno)
+	answer_list = [f"Type {pheno} blood" for pheno in correct_phenos]
+
+	# If no valid types, add "None of the above" as correct
+	none_choice = (
+		"None of the above are possible; the father &male; is not related to his " + offspring
+	)
+	if not answer_list:
+		answer_list = [none_choice]
+	choices_list.append(none_choice)
+
+	# Format question using bptools
+	question = bptools.formatBB_MA_Question(N, question_text, choices_list, answer_list, min_answers_required=1)
+	return question
+
+
+#===========================================================
+def main():
+	"""
+	Generates all combinations of father/child blood types as multiple-answer questions.
+	"""
+	script_name = os.path.splitext(os.path.basename(__file__))[0]
+	outfile = f'bbq-{script_name}-questions.txt'
+	print(f'writing to file: {outfile}')
 
 	N = 0
-	"""
-	choices = []
-	for pheno in phenotypes:
-		choice = "Type {0} blood".format(pheno)
-		choices.append(choice)
-	print(choices)
-	"""
-	letters = "ABCDEF"
+	with open(outfile, 'w') as f:
+		for dad_pheno in phenotypes:
+			for kid_pheno in phenotypes:
+				N += 1
+				question = write_question(N, dad_pheno, kid_pheno)
+				f.write(question + "\n")
+	bptools.print_histogram()
 
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	for dad_pheno in phenotypes:
-		for kid_pheno in phenotypes:
+	print(f'saved {N} questions to {outfile}')
 
-			N += 1
-			number = "{0}. ".format(N)
-			question = '<span style="font-family: times new roman, times; font-size: large;">'
-			question += 'For the ABO blood group in humans, the i<sup>A</sup> and i<sup>B</sup> alleles are codominant and the i allele is recessive. '
-			offspring = random.choice(('daughter &female;', 'son &male;'))
-			question += 'A father &male; who has <u>blood type {0}</u> has a {1} who has <u>blood type {2}</u>, '.format(dad_pheno, offspring, kid_pheno)
-			question += "which of the following blood types could the mother &female; possibly have? "
-			question += "Check all that apply.</span>"
+#===========================================================
+#===========================================================
+# This block ensures the script runs only when executed directly
+if __name__ == '__main__':
+	# Call the main function to run the program
+	main()
 
-			answers = set()
-			dad_genos = pmaplist[dad_pheno]
-			kid_genos = pmaplist[kid_pheno]
-			for dad_geno in dad_genos:
-				for kid_geno in kid_genos:
-					new_answers = getPossibleMomTypes(dad_geno, kid_geno)
-					answers = answers.union(new_answers)
-
-
-			#print(answers)
-			#print('Summary {0} + X -> {1} ... {2}'.format(dad_pheno, kid_pheno, answers))
-			answer_pheno_dict = {}
-			for genotype in answers:
-				pheno = gmap[genotype]
-				answer_pheno_dict[pheno] = True
-
-
-
-
-			print(number+question)
-			f.write("MA\t"+question+"\t")
-			answermap = {}
-			i = 0
-			choices = []
-			for pheno in phenotypes:
-				choice = "Type {0} blood".format(pheno)
-				choices.append(choice)
-				f.write(choice+"\t")
-				if answer_pheno_dict.get(pheno) is True:
-					answermap[choice] = True
-					f.write("Correct\t")
-					prefix = '*'
-				else:
-					answermap[choice] = False
-					prefix = ''
-					f.write("Incorrect\t")
-				print("{0}{1}. {2}".format(prefix, letters[i], choice))
-				i += 1
-			choice = "None of the above are possible; the father &male; is not related to his {0}".format(offspring)
-			f.write(choice+"\t")
-			if len(answers) == 0:
-				answermap[choice] = True
-				f.write("Correct\t")
-				prefix = '*'
-			else:
-				answermap[choice] = False
-				prefix = ''
-				f.write("Incorrect\t")
-			print("{0}{1}. {2}".format(prefix, letters[i], choice))
-			print("\n")
-			f.write("\n")
-	f.close()
+## THE END
