@@ -133,9 +133,9 @@ def formatBB_MC_Question(N: int, question_text: str, choices_list, answer_text):
 	return bb_question_text
 
 #=====================
-def formatBB_MA_Question(N: int, question_text: str, choices_list, answers_list):
+def formatBB_MA_Question(N: int, question_text: str, choices_list, answers_list, min_answers_required: int=2):
 	# deal with item classes
-	item_cls = item_types.MA(question_text, choices_list, answers_list)
+	item_cls = item_types.MA(question_text, choices_list, answers_list, min_answers_required)
 	item_cls.item_number = N
 	nocheat_item_cls = nocheater.modify_item_cls(item_cls)
 	# update histogram
