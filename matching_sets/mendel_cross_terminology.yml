@@ -19,11 +19,11 @@ values description: descriptions
 
 replacement_rules:
     test&nbsp;cross:         '<span style="color: #e60000;">test cross</span>' #RED
-    F<sub>1</sub>:      '<span style="color: #e65400;">F<sub>1</sub></span>' #DARK ORANGE
+    F<sub>1</sub>:      '<span style="color: #e65400;">F<sub>1</sub> generation</span>' #DARK ORANGE
     inheritance:         '<span style="color: #e69100;">inheritance</span>' #LIGHT ORANGE
     homozygous:         '<span style="color: #b3b300;">homozygous</span>' #DARK YELLOW
     backcross:          '<span style="color: #59b300;">backcross</span>' #LIME GREEN
-    F<sub>2</sub>:      '<span style="color: #009900;">F<sub>2</sub></span>' #GREEN
+    F<sub>2</sub>:      '<span style="color: #009900;">F<sub>2</sub> generation</span>' #GREEN
     recessive:          '<span style="color: #00b38f;">recessive</span>' #TEAL
     hybrid&nbsp;cross:       '<span style="color: #00b3b3;">hybrid cross</span>' #CYAN
     genotypes:           '<span style="color: #0a9bf5;">genotype</span>' #SKY BLUE
@@ -31,7 +31,7 @@ replacement_rules:
     dominant:           '<span style="color: #0039e6;">dominant</span>' #BLUE
     parental:           '<span style="color: #004d99;">parental</span>' #NAVY
     reciprocal&nbsp;cross:   '<span style="color: #7b12a1;">reciprocal cross</span>' #PURPLE
-    P&num;:            '<span style="color: #b30077;">P</span>' #MAGENTA
+    P&num;:            '<span style="color: #b30077;">P generation</span>' #MAGENTA
     phenotypes:          '<span style="color: #cc0066;">phenotype</span>' #PINK
     phenotype:          '<span style="color: #cc0066;">phenotype</span>' #PINK
 
