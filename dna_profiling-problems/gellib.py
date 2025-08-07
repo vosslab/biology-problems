@@ -1,5 +1,6 @@
 
 
+import os
 import sys
 import copy
 import random
@@ -37,8 +38,20 @@ class GelClassImage(GelClass):
 		self.max_distance = None
 		self.xshift = None
 		self.basefontsize = 18
-		self.fontfile = '/Users/vosslab/Library/Fonts/LiberationSansNarrow-Regular.ttf'
-		#self.fontfile = '/Applications/LibreOffice.app/Contents/Resources/fonts/truetype/LiberationSansNarrow-Regular.ttf'
+		self.fontfile = None
+		possible_font_paths = [
+			os.path.expandvars('$HOME/Library/Fonts/LiberationSansNarrow-Regular.ttf'),  # User font
+			'/Applications/LibreOffice.app/Contents/Resources/fonts/truetype/LiberationSansNarrow-Regular.ttf',  # LibreOffice install
+			'/System/Library/Fonts/Supplemental/Arial Narrow.ttf',  # macOS default narrow fallback
+			'/System/Library/Fonts/Supplemental/PTSans.ttc',  # PT Sans Narrow in TTC
+		]
+		for fontpath in possible_font_paths:
+			if os.path.isfile(fontpath):
+				self.fontfile = fontpath
+				break
+		if self.fontfile is None:
+			raise FileNotFoundError("Could not find a valid font file")
+		#print(f"Using font: {os.path.basename(self.fontfile)}")
 
 	def setTextColumn(self, biggesttext):
 		"""Set the text column based on the biggest text."""
