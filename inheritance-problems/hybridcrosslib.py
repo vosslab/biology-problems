@@ -2,8 +2,27 @@
 import copy
 import random
 
+# List of letters used to label genes in table diagrams (used by dihybrid cross drawing functions)
 gene_letters = list('ADEGRT')
 
+# List of possible single-gene inheritance types (randomized at import for variation in question wording)
+single_gene_types = [
+	'incomplete dominance',
+	'codominance',
+	'complete dominance',
+]
+random.shuffle(single_gene_types)
+
+# Mapping of integers to their English word equivalents (used for spelling out phenotypic ratios in text)
+num2word = {
+	1: 'one', 2: 'two', 3: 'three', 4: 'four', 5: 'five',
+	6: 'six', 7: 'seven', 8: 'eight', 9: 'nine', 10: 'ten',
+	11: 'eleven', 12: 'twelve', 13: 'thirteen', 14: 'fourteen',
+	15: 'fifteen', 16: 'sixteen', 17: 'seventeen', 18: 'eighteen', 19: 'nineteen',
+	20: 'twenty',
+}
+
+# Mapping of real gene interaction type IDs (0–6) to their descriptive names (used in question text and answer choices)
 gene_interaction_names = {
 	0: 'digenic inheritance',
 	1: 'recessive epistasis',
@@ -14,6 +33,7 @@ gene_interaction_names = {
 	6: 'dominant and recessive epistasis',
 }
 
+# Mapping of extended gene interaction type IDs (0–10) including hypothetical/fake types for distractors
 gene_interaction_names_plus = {
 	0: 'digenic inheritance',
 	1: 'recessive epistasis',
@@ -28,21 +48,7 @@ gene_interaction_names_plus = {
 	10: 'second recessive epistasis',
 }
 
-single_gene_types = [
-	'incomplete dominance',
-	'codominance',
-	'complete dominance',
-]
-random.shuffle(single_gene_types)
-
-num2word = {
-	1: 'one', 2: 'two', 3: 'three', 4: 'four', 5: 'five',
-	6: 'six', 7: 'seven', 8: 'eight', 9: 'nine', 10: 'ten',
-	11: 'eleven', 12: 'twelve', 13: 'thirteen', 14: 'fourteen',
-	15: 'fifteen', 16: 'sixteen', 17: 'seventeen', 18: 'eighteen', 19: 'nineteen',
-	20: 'twenty',
-}
-
+# Mapping of gene interaction type IDs to their explanatory descriptions (used in choice text and feedback)
 gene_type_description = {
 	0: 'Interaction of two genes affect the phenotypic expression of a single trait',
 	1: 'When the first gene is homozygous recessive, it hides the phenotype of the second gene',
@@ -57,6 +63,7 @@ gene_type_description = {
 	10: 'When the second gene is homozygous recessive, it hides the phenotype of the first gene',
 }
 
+# Mapping of gene interaction type IDs to their phenotypic ratios (used in question text and table labels)
 gene_type_ratios = {
 	0: '9:3:3:1',
 	1: '9:3:4',
@@ -71,6 +78,7 @@ gene_type_ratios = {
 	10: '9:4:3',
 }
 
+# Mapping of gene interaction type IDs to the number of distinct phenotype colors expected (used to select plausible distractors)
 gene_type_num_colors = {
 	0: 4, #'9:3:3:1',
 	1: 3, #'9:3:4',
@@ -367,7 +375,7 @@ def dihybridAssignColorsModified(gene_id, color_set):
 #===================
 #===================
 def createDiHybridTable(letter1, letter2, assigned_colors, title=None):
-	table = '<table border=1 style="border: 1px solid black; border-collapse: collapse; ">'
+	table = '<table style="border: 1px solid black; border-collapse: collapse; ">'
 	table += '<colgroup width="60"></colgroup> '
 	table += '<colgroup width="60"></colgroup> '
 	table += '<colgroup width="80"></colgroup> '
@@ -435,7 +443,7 @@ def createDiHybridTable(letter1, letter2, assigned_colors, title=None):
 #===================
 #===================
 def createTestCrossTable(letter1, letter2, assigned_colors, title=None):
-	table = '<table border=1 style="border: 1px solid black; border-collapse: collapse; ">'
+	table = '<table style="border: 1px solid black; border-collapse: collapse; ">'
 	table += '<colgroup width="60"></colgroup> '
 	table += '<colgroup width="60"></colgroup> '
 	table += '<colgroup width="80"></colgroup> '
