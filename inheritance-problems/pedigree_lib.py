@@ -108,7 +108,7 @@ def makeCharacterTD_Cell(character_name):
 def makeTD_Cell(comment_text, character_unicode, fontsize):
 	html_text = ''
 	if comment_text is not None:
-		html_text += '<!--- {0} ---> '.format(comment_text)
+		html_text += '<!-- {0} --> '.format(comment_text)
 	html_text += '<td align="center" style="'
 	if fontsize is not None:
 		html_text += 'font-size: {0:d}pt; '.format(fontsize)
@@ -158,7 +158,7 @@ def tabelEdgeTD_Cell(location_binary, edge_binary):
 def makeShapeNameTableTD_Cell(shape_name):
 	binary_edges = shape_binary_edges[shape_name]
 	shape_html_text = ''
-	shape_html_text += '<! --- START {0} --->'.format(shape_name)
+	shape_html_text += '<!-- START {0} -->'.format(shape_name)
 	shape_html_text += '<td align="center" style="vertical-align: middle; padding: 0; margin: 0; line-height: 0px; "> '
 	shape_html_text += '<table border="0" cellpadding="0" cellspacing="0" '
 	shape_html_text += ' style="padding: 0; margin: 0; width: {0}px; height: {0}px; border-collapse: collapse; border-style: hidden;"> '.format(table_cell_dimension)
@@ -169,7 +169,7 @@ def makeShapeNameTableTD_Cell(shape_name):
 	shape_html_text += tabelEdgeTD_Cell('10', binary_edges)
 	shape_html_text += tabelEdgeTD_Cell('11', binary_edges)
 	shape_html_text += '</tr></tbody></table></td> '
-	shape_html_text += '<! --- END {0} --->'.format(shape_name)
+	shape_html_text += '<!-- END {0} -->'.format(shape_name)
 	return shape_html_text
 
 #===============================
