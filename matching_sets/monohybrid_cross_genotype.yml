@@ -14,7 +14,7 @@ replacement_rules:
     'AA*': '<strong><span style="color: #ba372a;">AA</span></strong>'
     'Aa*': '<strong><span style="color: #843fa1;">Aa</span></strong>'
     'aa*': '<strong><span style="color: #236fa1;">aa</span></strong>'
-    ' xx ': '&times;'
+    ' xx ': '&nbsp;&times;&nbsp;'
 
 matching pairs:
   'AA* xx AA*':
