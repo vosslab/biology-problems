@@ -159,6 +159,16 @@ def parse_arguments():
 		help='Set question type to numeric'
 	)
 
+	parser.add_argument(
+		'--hint', dest='hint', action='store_true',
+		help='Include a hint in the question'
+	)
+	parser.add_argument(
+		'--no-hint', dest='hint', action='store_false',
+		help='Do not include a hint in the question'
+	)
+	parser.set_defaults(hint=True)  # Set default value for hint
+
 	# Parse the provided command-line arguments and return them
 	args = parser.parse_args()
 	return args
@@ -184,10 +194,12 @@ def main():
 
 	# Generate the output file name based on the script name and arguments
 	script_name = os.path.splitext(os.path.basename(__file__))[0]
+	hint_mode = 'with_hint' if args.hint else 'no_hint'
 	outfile = (
 		'bbq'
 		f'-{script_name}'              # Add the script name to the file name
 		f'-{args.question_type.upper()}'  # Append question type in uppercase (e.g., MC, MA)
+		f'-{hint_mode}'  	# Append question type in uppercase (e.g., MC, MA)
 		f'-{args.num_choices}_choices' # Append number of choices
 		'-questions.txt'               # File extension
 	)
@@ -224,15 +236,17 @@ def main():
 		question_bank_list = question_bank_list[:args.max_questions]
 
 	# Announce where output is going
-	print(f'\nWriting {N} question to file: {outfile}')
+	print(f'\nWriting {len(question_bank_list)} question to file: {outfile}')
 
 	# Write all questions to file
+	write_count = 0
 	with open(outfile, 'w') as f:
 		for complete_question in question_bank_list:
+			write_count += 1
 			f.write(complete_question)
 
 	# Final status message
-	print(f'... saved {N} questions to {outfile}\n')
+	print(f'... saved {write_count} questions to {outfile}\n')
 
 #===========================================================
 #===========================================================
