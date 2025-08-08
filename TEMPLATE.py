@@ -125,6 +125,11 @@ def parse_arguments():
 		default=1
 	)
 
+	parser.add_argument(
+		'-x', '--max-questions', type=int, dest='max_questions',
+		default=99, help='Max number of questions'
+	)
+
 	# Add an argument to specify the number of answer choices for each question
 	parser.add_argument(
 		'-c', '--num_choices', type=int, default=5, dest='num_choices',
@@ -164,48 +169,70 @@ def parse_arguments():
 def main():
 	"""
 	Main function that orchestrates question generation and file output.
+
+	Workflow:
+	1. Parse command-line arguments.
+	2. Generate the output filename using script name and args.
+	3. Generate formatted questions using write_question().
+	4. Shuffle and trim the list if exceeding max_questions.
+	5. Write all formatted questions to output file.
+	6. Print stats and status.
 	"""
 
 	# Parse arguments from the command line
 	args = parse_arguments()
 
-	# Generate the output file name based on the script name and question type
+	# Generate the output file name based on the script name and arguments
 	script_name = os.path.splitext(os.path.basename(__file__))[0]
 	outfile = (
 		'bbq'
-		f'-{script_name}'  # Add the script name to the file name
-		f'-{args.question_type.upper()}'  # Add the question type in uppercase
-		f'-{args.num_choices}_choices'
-		'-questions.txt'  # Add the file extension
+		f'-{script_name}'              # Add the script name to the file name
+		f'-{args.question_type.upper()}'  # Append question type in uppercase (e.g., MC, MA)
+		f'-{args.num_choices}_choices' # Append number of choices
+		'-questions.txt'               # File extension
 	)
 
-	# Print a message indicating where the file will be saved
-	print(f'Writing to file: {outfile}')
+	# Store all complete formatted questions
+	question_bank_list = []
 
-	# Open the output file in write mode
-	with open(outfile, 'w') as f:
-		# Initialize the question number counter
-		N = 0
+	# Initialize question counter
+	N = 0
 
-		# Generate the specified number of questions
-		for _ in range(args.duplicates):
-			# Generate a unique identifier for the question (e.g., gene letters)
-			gene_letters_str = bptools.generate_gene_letters(3)
+	# Create the specified number of questions
+	for _ in range(args.duplicates):
+		# Generate gene letters (if needed by question logic)
+		gene_letters_str = bptools.generate_gene_letters(3)
 
-			# Generate the complete formatted question
-			complete_question = write_question(N+1, args.num_choices)
+		# Create a full formatted question (Blackboard format)
+		complete_question = write_question(N+1, args.num_choices)
 
-			# Write the question to the file if it was generated successfully
-			if complete_question is not None:
-				N += 1
-				f.write(complete_question)
+		# Append question if successfully generated
+		if complete_question is not None:
+			N += 1
+			question_bank_list.append(complete_question)
 
-	# If the question type is multiple choice, print a histogram of results
-	if args.question_type == "mc":
+		if N >= args.max_questions:
+			break
+
+	# Show a histogram of answer distributions for MC/MA types
+	if args.question_type == "mc" or args.question_type == "ma":
 		bptools.print_histogram()
 
-	# Print a message indicating how many questions were saved
-	print(f'saved {N} questions to {outfile}')
+	# Shuffle and limit the number of questions if over max
+	if len(question_bank_list) > args.max_questions:
+		random.shuffle(question_bank_list)
+		question_bank_list = question_bank_list[:args.max_questions]
+
+	# Announce where output is going
+	print(f'\nWriting {N} question to file: {outfile}')
+
+	# Write all questions to file
+	with open(outfile, 'w') as f:
+		for complete_question in question_bank_list:
+			f.write(complete_question)
+
+	# Final status message
+	print(f'... saved {N} questions to {outfile}\n')
 
 #===========================================================
 #===========================================================
