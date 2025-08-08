@@ -32,7 +32,6 @@ QUESTION_PROMPTS = [
 	("Choose the parental genotype pairing that gives rise to", "in the offspring."),
 ]
 
-
 QUESTION_BANK = [
 	("a <b>1:1 ratio of two genotypes</b>",
 	("AA x Aa", "Aa x aa")),
@@ -89,6 +88,31 @@ ALL_CROSSES_SET = set([
 
 #===========================================================
 #===========================================================
+def format_html_cross(cross_text: str) -> str:
+	"""
+	Formats a monohybrid cross string into styled HTML using color and bold.
+
+	Args:
+		cross_text (str): The original cross string (e.g., "Aa x aa")
+
+	Returns:
+		str: HTML-formatted string with colored alleles and multiplication symbol
+	"""
+	prefix = '<strong><span style="font-family: monospace; font-size: 1.5em; color: '
+
+
+	# Apply formatting rules in order
+	cross_html = cross_text
+	cross_html = cross_html.replace('AA', prefix + '#ba372a;">AA</span></strong>')
+	cross_html = cross_html.replace('Aa', prefix + '#843fa1;">Aa</span></strong>')
+	cross_html = cross_html.replace('aa', prefix + '#236fa1;">aa</span></strong>')
+	cross_html = cross_html.replace(' x ', ' &nbsp;&times;&nbsp; ')
+
+	return cross_html
+
+
+#===========================================================
+#===========================================================
 # This function generates and returns the main question text.
 def get_question_text(question_root) -> str:
 	"""
@@ -120,10 +144,15 @@ def write_question(N: int, question_statement: str, answer_cross_text: str, choi
 
 	# Generate answer choices and the correct answer
 	#choices_list, answer_text = generate_choices(num_choices)
-	choices_list = sorted(choice_pool_set)
+	formatted_choices_list = []
+	for choice_text in sorted(choice_pool_set):
+		formatted_choice_text = format_html_cross(choice_text)
+		formatted_choices_list.append(formatted_choice_text)
+
+	formatted_answer_text = format_html_cross(answer_cross_text)
 
 	# Format the question using a helper function from the bptools module
-	complete_question = bptools.formatBB_MC_Question(N, question_text, choices_list, answer_cross_text)
+	complete_question = bptools.formatBB_MC_Question(N, question_text, formatted_choices_list, formatted_answer_text)
 
 	# Return the formatted question string
 	return complete_question
