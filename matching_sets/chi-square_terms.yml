@@ -1,6 +1,6 @@
 #YAML file for Matching Questions
 
-items to match per question: 5
+items to match per question: 4
 
 #both singular and plural
 key description: chi2 term
@@ -53,6 +53,9 @@ matching pairs:
 
   dof:
     - most often this number is one less than the number of observations (rows in our table)
+    - represents how many independent values can vary in the calculation after constraints are applie
+    - in a chi2 test, it is usually the number of categories minus one
+    - this value determines which row of the chi2 critval table you should use
 
 
 replacement_rules:
