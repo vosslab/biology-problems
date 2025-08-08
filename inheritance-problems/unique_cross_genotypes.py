@@ -71,7 +71,7 @@ def generate_choices(total_genotypes, num_genes, max_choices, hint_flag):
 
 
 # Function to write a genotype-based question
-def write_genotype_question(N, num_genes, max_choices, hint_flag):
+def write_question(N, num_genes, max_choices, hint_flag):
 	# Initialize the question string
 	question = ""
 
@@ -135,43 +135,136 @@ def write_genotype_question(N, num_genes, max_choices, hint_flag):
 	return bbformat
 
 
+#===========================================================
+#===========================================================
+# This function handles the parsing of command-line arguments.
+def parse_arguments():
+	"""
+	Parses command-line arguments for the script.
 
-if __name__ == '__main__':
-	# Initialize argparse for command line arguments
-	parser = argparse.ArgumentParser(description='Generate blackboard questions.')
+	Returns:
+		argparse.Namespace: Parsed arguments with attributes `duplicates`,
+		`num_choices`, and `question_type`.
+	"""
+	# Create an argument parser with a description of the script's functionality
+	parser = argparse.ArgumentParser(description="Generate questions.")
+
+
+
+	# Add an argument to specify the number of duplicate questions to generate
+	parser.add_argument(
+		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
+		help='Number of duplicate runs to do or number of questions to create',
+		default=1
+	)
+
+	parser.add_argument(
+		'-x', '--max-questions', type=int, dest='max_questions',
+		default=99, help='Max number of questions'
+	)
+
+	# Add an argument to specify the number of answer choices for each question
+	parser.add_argument(
+		'-c', '--num_choices', type=int, default=5, dest='num_choices',
+		help="Number of choices to create."
+	)
+
+	parser.add_argument(
+		'--hint', dest='hint', action='store_true',
+		help='Include a hint in the question'
+	)
+	parser.add_argument(
+		'--no-hint', dest='hint', action='store_false',
+		help='Do not include a hint in the question'
+	)
+	parser.set_defaults(hint=True)  # Set default value for hint
 
 	# Add command line options for number of genes and number of questions
 	parser.add_argument('-n', '--num_genes', type=int, default=6, help='Number of genes')
-	parser.add_argument('-x', '--num_questions', type=int, default=24, help='Number of questions')
-	parser.add_argument('-c', '--max_choices', type=int, default=5, help='Number of choices')
-	parser.add_argument('--hint', dest='hint', action='store_true', help='Include a hint in the question')
-	parser.add_argument('--no-hint', dest='hint', action='store_false', help='Do not include a hint in the question')
-	parser.set_defaults(hint=True)  # Set default value for hint
 
 	# Parse the command line arguments
 	args = parser.parse_args()
 
-	# Assign parsed arguments to variables
-	num_genes = args.num_genes
-	num_questions = args.num_questions
-	max_choices = args.max_choices
-	hint_flag = args.hint
+	return args
+
+#===========================================================
+#===========================================================
+# This function serves as the entry point for generating and saving questions.
+def main():
+	"""
+	Main function that orchestrates question generation and file output.
+
+	Workflow:
+	1. Parse command-line arguments.
+	2. Generate the output filename using script name and args.
+	3. Generate formatted questions using write_question().
+	4. Shuffle and trim the list if exceeding max_questions.
+	5. Write all formatted questions to output file.
+	6. Print stats and status.
+	"""
+
+	# Parse arguments from the command line
+	args = parse_arguments()
+
+	# Generate the output file name based on the script name and arguments
+	script_name = os.path.splitext(os.path.basename(__file__))[0]
+	hint_mode = 'with_hint' if args.hint else 'no_hint'
+	outfile = (
+		'bbq'
+		f'-{script_name}'              # Add the script name to the file name
+		f'-{hint_mode}'  	# Append question type in uppercase (e.g., MC, MA)
+		f'-{args.num_genes}_genes' # Append number of choices
+		'-questions.txt'               # File extension
+	)
+
+	# Store all complete formatted questions
+	question_bank_list = []
 
 	# Initialize question counter
 	N = 0
 
-	# Construct output file name based on script name
-	output_filename = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	# Create the specified number of questions
+	for _ in range(args.duplicates):
+		# Generate gene letters (if needed by question logic)
+		gene_letters_str = bptools.generate_gene_letters(3)
 
-	# Notify the user about the output file
-	print('writing to file: ' + output_filename)
+		# Create a full formatted question (Blackboard format)
+		complete_question = write_question(N+1, args.num_genes, args.num_choices, args.hint)
 
-	# Open the output file for writing using a context manager
-	with open(output_filename, 'w') as output_file:
-		# Loop through to write each question
-		for i in range(num_questions):
-			N += 1  # Increment the question number
-			formatted_question = write_genotype_question(N, num_genes, max_choices, hint_flag)  # Generate the question
-			output_file.write(formatted_question)  # Write the question to the file
+		# Append question if successfully generated
+		if complete_question is not None:
+			N += 1
+			question_bank_list.append(complete_question)
+
+		if N >= args.max_questions:
+			break
+
 	bptools.print_histogram()
+
+	# Shuffle and limit the number of questions if over max
+	if len(question_bank_list) > args.max_questions:
+		random.shuffle(question_bank_list)
+		question_bank_list = question_bank_list[:args.max_questions]
+
+	# Announce where output is going
+	print(f'\nWriting {N} question to file: {outfile}')
+
+	# Write all questions to file
+	with open(outfile, 'w') as f:
+		for complete_question in question_bank_list:
+			f.write(complete_question)
+
+	# Final status message
+	print(f'... saved {N} questions to {outfile}\n')
+
+#===========================================================
+#===========================================================
+# This block ensures the script runs only when executed directly
+if __name__ == '__main__':
+	# Call the main function to run the program
+	main()
+
+## THE END
+
+
 

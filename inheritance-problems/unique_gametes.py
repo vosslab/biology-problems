@@ -1,10 +1,19 @@
 #!/usr/bin/env python3
+# ^^ Specifies the Python3 environment to use for script execution
 
-# Import required libraries
+# Import built-in Python modules
+# Provides functions for interacting with the operating system
 import os
+# Provides functions to generate random numbers and selections
+import random
+# Provides tools to parse command-line arguments
 import argparse
 
-# Import custom modules
+# Import external modules (pip-installed)
+# No external modules are used here currently
+
+# Import local modules from the project
+# Provides custom functions, such as question formatting and other utilities
 import bptools
 import genotypelib
 
@@ -56,8 +65,21 @@ def write_gametes_question(N, num_genes, hint_flag):
 	return bbformat
 
 
-# Main execution starts here
-if __name__ == '__main__':
+#===========================================================
+#===========================================================
+# This function serves as the entry point for generating and saving questions.
+def main():
+	"""
+	Main function that orchestrates question generation and file output.
+
+	Workflow:
+	1. Parse command-line arguments.
+	2. Generate the output filename using script name and args.
+	3. Generate formatted questions using write_question().
+	4. Shuffle and trim the list if exceeding max_questions.
+	5. Write all formatted questions to output file.
+	6. Print stats and status.
+	"""
 	# Initialize argparse for command line arguments
 	parser = argparse.ArgumentParser(description='Generate blackboard questions.')
 
@@ -71,26 +93,37 @@ if __name__ == '__main__':
 	# Parse the command line arguments
 	args = parser.parse_args()
 
-	# Assign parsed arguments to variables
-	num_genes = args.num_genes
-	num_questions = args.num_questions
-	hint_flag = args.hint
-
 	# Initialize question counter
 	N = 0
 
-	# Construct output file name based on script name
-	output_filename = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	# Generate the output file name based on the script name and arguments
+	script_name = os.path.splitext(os.path.basename(__file__))[0]
+	hint_mode = 'with_hint' if args.hint else 'no_hint'
+	outfile = (
+		'bbq'
+		f'-{script_name}'              # Add the script name to the file name
+		f'-{hint_mode}'  	# Append question type in uppercase (e.g., MC, MA)
+		f'-{args.num_genes}_genes' # Append number of choices
+		'-questions.txt'               # File extension
+	)
 
 	# Notify the user about the output file
-	print('writing to file: ' + output_filename)
+	print('writing to file: ' + outfile)
 
 	# Open the output file for writing using a context manager
-	with open(output_filename, 'w') as output_file:
+	with open(outfile, 'w') as output_file:
 		# Loop through to write each question
-		for i in range(num_questions):
+		for i in range(args.num_questions):
 			N += 1  # Increment the question number
-			formatted_question = write_gametes_question(N, num_genes, hint_flag)  # Generate the question
+			formatted_question = write_gametes_question(N, args.num_genes, args.hint)  # Generate the question
 			output_file.write(formatted_question)  # Write the question to the file
 	bptools.print_histogram()
 
+#===========================================================
+#===========================================================
+# This block ensures the script runs only when executed directly
+if __name__ == '__main__':
+	# Call the main function to run the program
+	main()
+
+## THE END
