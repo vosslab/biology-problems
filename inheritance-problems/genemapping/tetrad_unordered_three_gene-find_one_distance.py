@@ -279,8 +279,8 @@ def main():
 		)
 	print('Writing to file:', outfile)
 	f = open(outfile, 'w')
-	N = 1
-	for _ in range(args.duplicates):
+	N = 0
+	while N < args.duplicates:
 		gene_letters_str = gml.get_gene_letters(3)
 		phenotype_info_str = gml.get_phenotype_info(gene_letters_str, phenotype_dict)
 

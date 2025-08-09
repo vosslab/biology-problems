@@ -19,7 +19,7 @@ def get_question_text():
 	question_string += 'of the alleles on the parental chromosomes. '
 	question_string += 'Determine whether the alleles for the two genes are in a '
 	question_string += '<strong><i>cis</i></strong> (on the same chromosome) or '
-	question_string += '<strong><i>trans</i></strong> (on different chromosomes) configuration. '
+	question_string += '<strong><i>trans</i></strong> (on different chromosomes) configuration.</p> '
 
 	return question_string
 

@@ -326,7 +326,7 @@ def main():
 	# Open file and write questions
 	N = 0
 	with open(outfile, 'w') as f:
-		for _ in range(args.duplicates):
+		while N < args.duplicates:
 			final_question = generate_question(N, args.question_type, args.num_choices)
 			if final_question is not None:
 				N += 1

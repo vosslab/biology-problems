@@ -961,18 +961,20 @@ class GeneMappingClass:
 		Returns:
 			str: A formatted HTML string showing the calculated genetic distance in cM.
 		"""
-		choice_text = '<sup>'
+		# Sum recombinant counts
 		val_sum = sum(values)
 
-		# Format the counts as a sum if there are multiple values
+		# Build numerator text: either a sum (e.g., 3,100 + 2,400) or the single value
 		if len(values) > 1:
-			choice_text += '('
-			val_list = sorted(values)
-			for val in val_list:
-				choice_text += f'{val:,d} + '
-			choice_text = choice_text[:-3]
-			choice_text += ')'
-			choice_text += f'</sup>/<sub>{self.progeny_count_int:,d}</sub> = '
+			numerator_str = '(' + ' + '.join(f'{v:,d}' for v in sorted(values)) + ')'
+		else:
+			numerator_str = f'{val_sum:,d}'
+
+		# Start with the fraction using proper <sup>/<sub> pairing
+		total_str = f'{self.progeny_count_int:,d}'
+		choice_text = (
+			f'<sup>{numerator_str}</sup>/<sub>{total_str}</sub> = '
+		)
 
 		# Add the total recombinant count to the numerator and format the fraction
 		choice_text += f'<sup>{val_sum:,d}</sup>/<sub>{self.progeny_count_int:,d}</sub> = '
@@ -982,7 +984,7 @@ class GeneMappingClass:
 		choice_text += f'{float_val:.4f} = '  # Show the fraction as a decimal
 
 		# Display the final genetic distance in cM
-		choice_text += f'<strong>{float_val*100:.2f} cM<strong>'
+		choice_text += f'<strong>{float_val*100:.2f} cM</strong>'
 
 		return choice_text
 
