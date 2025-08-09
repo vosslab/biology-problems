@@ -38,6 +38,20 @@ organism_list = [
 	'frogs',
 ]
 
+fictional_diseases = [
+    'cooties',
+    'homework-itis',
+    'snackmania',
+    'the giggle pox',
+    'boardom syndrome',
+    'midterm madness',
+    'deadline delirium',
+    'the freshman five',
+    'finals fever',
+    'powerpoint poisoning',
+    'zoom fatigue',
+]
+
 #=========================
 def get_values(p=None):
 	if p is None:
@@ -77,9 +91,15 @@ def get_good_F(p):
 
 #=========================
 def add_note():
+	numbers = [2, 3, 4, 5, 6, 7, 8]
+	random.shuffle(numbers)
+	digits = ''.join(map(str, numbers[:3]))
 	note_text = ''
-	note_text += '<p>Note: Do not use a percentage, if the answer is 42.3%, use 0.423 on the blank. '
-	note_text += 'Your answer will be greater than zero and less than one.</p>'
+	note_text += "<p>Note: "
+	note_text += "Do not enter a percentage on the blank. "
+	note_text += f"For example, if the answer is {digits[0:2]}.{digits[2]}%, "
+	note_text += f"enter 0.{digits} on the blank. "
+	note_text += "Your answer will be a decimal value between 0 and 1.</p>"
 	return note_text
 
 #=========================
@@ -127,7 +147,7 @@ def makeType1Table(organism, colors, counts):
 	table += '</tr><tr>'
 	table += '  <th colspan="2" align="right">SUM</th>'
 	table += '  <th align="right">{0:,d}</th>'.format(sum(counts))
-	table += '</tr></table>'
+	table += '</tr></table> '
 	return table
 
 #=========================
@@ -164,10 +184,10 @@ def makeType1Question(p, phenotype=None):
 	if abs(Fsum - 1.0) > 0.01:
 		print("sum error")
 		return None
-	print("p={0:.2f} AND q={1:.2f} AND F={2:.2f}".format(p,q,F))
-	print(" p2={0:.4f},  2pq={1:.4f},  q2={2:.4f},  sum={3:.4f}".format(p2, twopq, q2, sum))
-	print("Fp2={0:.4f}, F2pq={1:.4f}, Fq2={2:.4f}, Fsum={3:.4f}".format(Fp2, Ftwopq, Fq2, Fsum))
-	print("")
+	#print("p={0:.2f} AND q={1:.2f} AND F={2:.2f}".format(p,q,F))
+	#print(" p2={0:.4f},  2pq={1:.4f},  q2={2:.4f},  sum={3:.4f}".format(p2, twopq, q2, sum))
+	#print("Fp2={0:.4f}, F2pq={1:.4f}, Fq2={2:.4f}, Fsum={3:.4f}".format(Fp2, Ftwopq, Fq2, Fsum))
+	#print("")
 	if Fq2 < 0:
 		print("negative q2")
 		return None
@@ -201,8 +221,8 @@ def makeType1Question(p, phenotype=None):
 
 	actual_q = (homo_recessive*2 + heterozygote)/(2.0*total)
 	actual_p = 1.0 - actual_q
-	print("p={0:.2f}; actual_p={1:.5f}, diff={2:.8f}".format(p, actual_p, abs(p - actual_p)))
-	print("q={0:.2f}; actual_q={1:.5f}, diff={2:.8f}".format(q, actual_q, abs(q - actual_q)))
+	#print("p={0:.2f}; actual_p={1:.5f}, diff={2:.8f}".format(p, actual_p, abs(p - actual_p)))
+	#print("q={0:.2f}; actual_q={1:.5f}, diff={2:.8f}".format(q, actual_q, abs(q - actual_q)))
 	if abs(q - actual_q) > 0.001 or abs(p - actual_p) > 0.001:
 		print("ERROR VALUES ARE OFF")
 		sys.exit(1)
@@ -270,35 +290,47 @@ def makeType2bQuestion(p):
 #=========================
 def makeType3aQuestion(p):
 	p, q, p2, twopq, q2 = get_values(p)
-
 	answer = p
 
-	boys_count = int(p*1e4)
-	girls_count = int((p2 + twopq)*1e4)
-	girls_numerator, denominator = make_interesting_fraction(girls_count, 10000)
+	boys_count = int(p * 1e4)
+	girls_count = int((p2 + twopq) * 1e4)
+	girls_numerator, denominator = make_interesting_fraction(
+		girls_count, 10000
+	)
 	boys_numerator = int(p * denominator)
 	total_kids = denominator * 2
 
-	#print(girls_numerator, boys_numerator, denominator)
+	disease = random.choice(fictional_diseases)
 
-	#'In a small village, {0:,d} out of {1:,d} people '.format(numerator, denominator)
+	question_text = (
+		f'<p>It was recently discovered that <i>{disease}</i> '
+		'is a dominant X-linked disease that displays complete '
+		'dominance.</p> '
+		'<p>At local high schools, '
+		f'{total_kids:,d} students were tested for <i>{disease}</i>. '
+		f'It was found that {boys_numerator:,d} of {denominator:,d} boys '
+		f'and {girls_numerator:,d} of {denominator:,d} girls had '
+		f'<i>{disease}</i>. '
+	)
 
+	if disease == 'cooties':
+		question_text += (
+			'Further supporting the theory that girls have more '
+			f'<i>{disease}</i> than boys. '
+			'<a href="https://www.pnas.org/content/105/46/17994.full">'
+			'[1]</a> '
+			'<a href="https://www.collegian.psu.edu/archives/'
+			'article_14ddb2bf-895d-5208-bdba-53db8062f01c.html">'
+			'[2]</a> '
+		)
 
-	question_text = ''
-	question_text += '<p>It was recently discovered that <i>cooties</i> is a dominant X-linked disease that '
-	question_text += 'displays complete dominance.</p> '
-	question_text += '<p>At local elementary schools, '
-	question_text += '{0:d} children were tested for <i>cooties</i>. '.format(total_kids)
-	question_text += 'It was found that {0:d} of {1:d} boys '.format(boys_numerator, denominator)
-	question_text += 'and {0:d} of {1:d} girls had cooties. '.format(girls_numerator, denominator)
-	question_text += 'Further supporting the theory that girls have more <i>cooties</i> than boys. '
-	question_text += '<a href="{0}">[1]</a> '.format('https://www.pnas.org/content/105/46/17994.full')
-	question_text += '<a href="{0}">[2]</a> '.format('https://www.collegian.psu.edu/archives/article_14ddb2bf-895d-5208-bdba-53db8062f01c.html')
-	question_text += '</p> '
+	question_text += (
+		'</p> '
+		'<p>Based on the data above, what is the allele frequency '
+		f'(p) for the dominant <i>{disease}</i> allele? '
+		'Assume the Hardy-Weinberg model applies.</p>'
+	)
 
-	question_text += '<p>Based on the data above, what is the '
-	question_text += 'allele frequency (p) for the dominant <i>cooties</i> allele?'
-	question_text += 'Assume the Hardy-Weinberg model applies.</p>'
 	question_text += add_note()
 
 	#print(question_text)
@@ -380,31 +412,31 @@ def parse_arguments():
 
 	variant_group = parser.add_mutually_exclusive_group(required=True)
 
-	VARIANT_SHORT_HELP = {
-		"1a": "HWE with inbreeding F; compute dominant allele frequency from counts",
-		"1b": "HWE with inbreeding F; compute recessive allele frequency from counts",
-		"2a": "HWE from recessive disease prevalence; compute allele frequency",
-		"2b": "HWE from dominant phenotype rate; compute allele frequency",
-		"3a": "X-linked dominant trait; infer p from boys and girls",
+	VARIANT_LONG_HELP = {
+		"1a": "From phenotype counts with incomplete dominance, compute dominant allele frequency (p).",
+		"1b": "From phenotype counts with incomplete dominance, compute recessive allele frequency (q).",
+		"2a": "Given recessive disorder prevalence (q^2), compute p or q as specified.",
+		"2b": "Given dominant phenotype proportion (1−q^2), compute p or q as specified.",
+		"3a": "Use X-linked dominant model with sex-specific rates to estimate allele frequency p.",
 	}
 
 	variant_group.add_argument(
-		"-v", "--variant", dest="qvariant", type=str,
-		choices=tuple(VARIANT_SHORT_HELP.keys()),
+		"-v", "--variant", dest="variant", type=str,
+		choices=tuple(VARIANT_LONG_HELP.keys()),
 		help="Select question template variant"
 	)
 
 	# Optional direct flags
-	variant_group.add_argument("--1a", dest="qvariant", action="store_const", const="1a",
-		help=VARIANT_SHORT_HELP["1a"])
-	variant_group.add_argument("--1b", dest="qvariant", action="store_const", const="1b",
-		help=VARIANT_SHORT_HELP["1b"])
-	variant_group.add_argument("--2a", dest="qvariant", action="store_const", const="2a",
-		help=VARIANT_SHORT_HELP["2a"])
-	variant_group.add_argument("--2b", dest="qvariant", action="store_const", const="2b",
-		help=VARIANT_SHORT_HELP["2b"])
-	variant_group.add_argument("--3a", dest="qvariant", action="store_const", const="3a",
-		help=VARIANT_SHORT_HELP["3a"])
+	variant_group.add_argument("--1a", dest="variant", action="store_const", const="1a",
+		help=VARIANT_LONG_HELP["1a"])
+	variant_group.add_argument("--1b", dest="variant", action="store_const", const="1b",
+		help=VARIANT_LONG_HELP["1b"])
+	variant_group.add_argument("--2a", dest="variant", action="store_const", const="2a",
+		help=VARIANT_LONG_HELP["2a"])
+	variant_group.add_argument("--2b", dest="variant", action="store_const", const="2b",
+		help=VARIANT_LONG_HELP["2b"])
+	variant_group.add_argument("--3a", dest="variant", action="store_const", const="3a",
+		help=VARIANT_LONG_HELP["3a"])
 
 	args = parser.parse_args()
 
@@ -433,7 +465,6 @@ def main():
 
 	# Generate the output file name based on the script name and arguments
 	script_name = os.path.splitext(os.path.basename(__file__))[0]
-	hint_mode = 'with_hint' if args.hint else 'no_hint'
 	outfile = (
 		'bbq'
 		f'-{script_name}'              # Add the script name to the file name
@@ -446,7 +477,9 @@ def main():
 	f = open(outfile, 'w')
 
 	count = 0
-	for rawp in range(40, 100, 2):
+	for _ in range(args.duplicates):
+		rawp = random.randint(20, 50) * 2
+		#for rawp in range(40, 100, 2):
 		p = rawp/100.
 		#p = get_good_p()
 		blackboard_text = makeQuestion(args.variant, p)
@@ -454,7 +487,7 @@ def main():
 			continue
 		count += 1
 		f.write(blackboard_text)
-		print(count, blackboard_text)
+		print(count, "\n", bptools.makeQuestionPretty(blackboard_text))
 		#break
 	print("wrote", count, "questions to", outfile)
 	f.close()
