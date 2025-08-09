@@ -266,7 +266,7 @@ def find_same_question(N, num_choices, same_treecode_cls_list, diff_treecode_cls
 #===========================================================
 def make_question(N, args):
 	"""
-	Generate a phylogenetic question based on the specified style.
+	Generate a phylogenetic question based on the specified mode.
 	"""
 	# Generate a sorted list of gene letters based on the number of leaves
 	sorted_taxa = sorted(bptools.generate_gene_letters(args.num_leaves))
@@ -285,8 +285,8 @@ def make_question(N, args):
 	# Generate lists of TreeCode objects for "same" and "different" trees
 	same_treecode_cls_list, diff_treecode_cls_list = generate_treecodes_lists(ordered_taxa, args.num_choices)
 
-	# Generate a question based on the specified style ('same' or 'diff')
-	if args.style == 'same':
+	# Generate a question based on the specified mode ('same' or 'diff')
+	if args.mode == 'same':
 		# Find a "same" question where the student identifies the identical tree
 		complete_question = find_same_question(N, args.num_choices, same_treecode_cls_list, diff_treecode_cls_list)
 	else:
@@ -327,27 +327,27 @@ def parse_arguments():
 	# MODE: same vs different (required, mutually exclusive shortcuts allowed)
 	mode_group = parser.add_mutually_exclusive_group(required=True)
 	mode_group.add_argument("-m", "--mode", dest="mode", type=str,
-							choices=("same", "different"),
-							help="Question mode: same or different")
+		choices=("same", "different"),
+		help="Question mode: same or different")
 	mode_group.add_argument("-S", "--same", dest="mode", action="store_const", const="same",
-							help="Question mode: find same")
+		help="Question mode: find same")
 	mode_group.add_argument("-D", "--different", dest="mode", action="store_const", const="different",
-							help="Question mode: find different")
+		help="Question mode: find different")
 
 	# DIFFICULTY: easy < medium < rigorous
 	# Use one argument with choices, plus optional shortcuts if you want
 	parser.add_argument("-d", "--difficulty", dest="difficulty", type=str,
-						choices=("easy", "medium", "rigorous"), default="medium",
-						help="Difficulty: easy, medium, or rigorous")
+		choices=("easy", "medium", "rigorous"), default="medium",
+		help="Difficulty: easy, medium, or rigorous")
 
 	# Optional difficulty shortcuts
 	diff_group = parser.add_mutually_exclusive_group()
 	diff_group.add_argument("-E", "--easy",      dest="difficulty", action="store_const", const="easy",
-							help="Set difficulty to easy")
+		help="Set difficulty to easy")
 	diff_group.add_argument("-M", "--medium",    dest="difficulty", action="store_const", const="medium",
-							help="Set difficulty to medium")
+		help="Set difficulty to medium")
 	diff_group.add_argument("-R", "--rigorous",  dest="difficulty", action="store_const", const="rigorous",
-							help="Set difficulty to rigorous")
+		help="Set difficulty to rigorous")
 
 	args = parser.parse_args()
 
@@ -372,7 +372,8 @@ def main():
 		'bbq'
 		f'-{script_name}'
 		f'-{bptools.number_to_cardinal(args.num_leaves).upper()}_leaves'
-		f'-{args.style.upper()}'
+		f'-{args.mode.upper()}'
+		f'-{args.difficulty.upper()}'
 		'-questions.txt'
 	)
 	print(f'Writing to file: {outfile}')

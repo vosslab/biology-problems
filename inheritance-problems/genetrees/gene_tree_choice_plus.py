@@ -575,6 +575,7 @@ def main():
 		'bbq'
 		f'-{script_name}'
 		f'-{bptools.number_to_cardinal(args.num_leaves).upper()}_leaves'
+		f'-{args.difficulty.upper()}'
 		'-questions.txt'
 	)
 	print(f'Writing to file: {outfile}')
