@@ -313,16 +313,16 @@ def makeType3aQuestion(p):
 
 
 #=========================
-def makeQuestion(type, p):
-	if type == '1a':
+def makeQuestion(variant, p):
+	if variant == '1a':
 		blackboard_text = makeType1Question(p, 'dominant')
-	elif type == '1b':
+	elif variant == '1b':
 		blackboard_text = makeType1Question(p, 'recessive')
-	elif type == '2a':
+	elif variant == '2a':
 		blackboard_text = makeType2aQuestion(p)
-	elif type == '2b':
+	elif variant == '2b':
 		blackboard_text = makeType2bQuestion(p)
-	elif type == '3a':
+	elif variant == '3a':
 		blackboard_text = makeType3aQuestion(p)
 	return blackboard_text
 
@@ -449,7 +449,7 @@ def main():
 	for rawp in range(40, 100, 2):
 		p = rawp/100.
 		#p = get_good_p()
-		blackboard_text = makeQuestion(type, p)
+		blackboard_text = makeQuestion(args.variant, p)
 		if blackboard_text is None:
 			continue
 		count += 1
