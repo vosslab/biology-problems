@@ -537,25 +537,49 @@ def parse_arguments():
 		'-l', '--leaves', '--num_leaves', type=int, dest='num_leaves',
 		help='number of leaves in the gene tree', default=5)
 
+	# Difficulty levels as integers 1–5
+	diff_group = parser.add_mutually_exclusive_group()
+	diff_group.add_argument("--level", "-L", dest="difficulty", type=int,
+		choices=range(1, 6),
+		help="Difficulty level: 1 (easiest) to 5 (hardest)")
+
+	# Optional numeric shortcuts
+	diff_group.add_argument("--lvl1", dest="difficulty", action="store_const", const=1,
+		help="Set difficulty to level 1")
+	diff_group.add_argument("--lvl2", dest="difficulty", action="store_const", const=2,
+		help="Set difficulty to level 2")
+	diff_group.add_argument("--lvl3", dest="difficulty", action="store_const", const=3,
+		help="Set difficulty to level 3")
+	diff_group.add_argument("--lvl4", dest="difficulty", action="store_const", const=4,
+		help="Set difficulty to level 4")
+	diff_group.add_argument("--lvl5", dest="difficulty", action="store_const", const=5,
+		help="Set difficulty to level 5")
+
+	parser.set_defaults(difficulty=None)
+
 	args = parser.parse_args()
 
-	# DIFFICULTY: easy < medium < rigorous
-	# Use one argument with choices, plus optional shortcuts if you want
-	parser.add_argument("-d", "--difficulty", dest="difficulty", type=str,
-		choices=("easy", "medium", "rigorous"), default="medium",
-		help="Difficulty: easy, medium, or rigorous")
-
-	# Optional difficulty shortcuts
-	diff_group = parser.add_mutually_exclusive_group()
-	diff_group.add_argument("-E", "--easy",      dest="difficulty", action="store_const", const="easy",
-		help="Set difficulty to easy")
-	diff_group.add_argument("-M", "--medium",    dest="difficulty", action="store_const", const="medium",
-		help="Set difficulty to medium")
-	diff_group.add_argument("-R", "--rigorous",  dest="difficulty", action="store_const", const="rigorous",
-		help="Set difficulty to rigorous")
+	if args.difficulty == 1:
+		args.num_leaves = 3
+		args.num_choices = 3
+	elif args.difficulty == 2:
+		args.num_leaves = 4
+		args.num_choices = 5
+	elif args.difficulty == 3:
+		args.num_leaves = 5
+		args.num_choices = 5
+	elif args.difficulty == 4:
+		args.num_leaves = 6
+		args.num_choices = 10
+	elif args.difficulty == 5:
+		args.num_leaves = 7
+		args.num_choices = 10
 
 	if args.num_leaves < 3:
 		raise ValueError("Program requires a minimum of three (3) leaves to work")
+
+	if args.num_leaves > 8:
+		raise ValueError("Program not tested beyond eight (8) leaves")
 
 	return args
 
@@ -571,11 +595,16 @@ def main():
 
 	# Define output file name
 	script_name = os.path.splitext(os.path.basename(__file__))[0]
+	if args.difficulty is not None:
+		difficulty_suffix = f"-LEVEL_{args.difficulty}"
+	else:
+		difficulty_suffix = f'-{args.num_leaves}_leaves-{args.num_choices}_choices'
+
 	outfile = (
 		'bbq'
 		f'-{script_name}'
-		f'-{bptools.number_to_cardinal(args.num_leaves).upper()}_leaves'
-		f'-{args.difficulty.upper()}'
+		f'-TABLE_mode'
+		f"{difficulty_suffix}"
 		'-questions.txt'
 	)
 	print(f'Writing to file: {outfile}')
@@ -584,7 +613,10 @@ def main():
 	with open(outfile, 'w') as f:
 		N = 1 # Question number counter
 		for _ in range(args.duplicates):
+			t0 = time.time()
 			complete_question = make_question(N, args.num_leaves, args.num_choices)
+			if time.time() - t0 > 1:
+				print(f"Question {N} complete in {time.time() - t0:.1f} seconds")
 			if complete_question is not None:
 				N += 1
 				f.write(complete_question)

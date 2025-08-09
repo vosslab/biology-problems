@@ -199,7 +199,8 @@ def find_diff_question(N, num_choices, same_treecode_cls_list, diff_treecode_cls
 	complete_question = bptools.formatBB_MC_Question(N, full_statement, html_choices_list, answer_html_table)
 
 	# Print a debug message to indicate the question generation is complete
-	print(f"find_diff_question() is complete for {num_choices} choices")
+	print(f"Q{N} find_diff_question() is complete for {num_choices} choices")
+
 	return complete_question
 
 #===========================================================
@@ -259,7 +260,7 @@ def find_same_question(N, num_choices, same_treecode_cls_list, diff_treecode_cls
 	complete_question = bptools.formatBB_MC_Question(N, full_statement, html_choices_list, answer_html_table)
 
 	# Print a debug message and return the complete question
-	print(f"find_same_question() is complete for {num_choices} choices")
+	print(f"Q{N} find_same_question() is complete for {num_choices} choices")
 	return complete_question
 
 #===========================================================
@@ -326,7 +327,7 @@ def parse_arguments():
 
 	# MODE: same vs different (required, mutually exclusive shortcuts allowed)
 	mode_group = parser.add_mutually_exclusive_group(required=True)
-	mode_group.add_argument("-m", "--mode", dest="mode", type=str,
+	mode_group.add_argument("--mode", dest="mode", type=str,
 		choices=("same", "different"),
 		help="Question mode: same or different")
 	mode_group.add_argument("-S", "--same", dest="mode", action="store_const", const="same",
@@ -336,7 +337,7 @@ def parse_arguments():
 
 	# DIFFICULTY: easy < medium < rigorous
 	# Use one argument with choices, plus optional shortcuts if you want
-	parser.add_argument("-d", "--difficulty", dest="difficulty", type=str,
+	parser.add_argument("--difficulty", dest="difficulty", type=str,
 		choices=("easy", "medium", "rigorous"), default="medium",
 		help="Difficulty: easy, medium, or rigorous")
 
@@ -348,11 +349,31 @@ def parse_arguments():
 		help="Set difficulty to medium")
 	diff_group.add_argument("-R", "--rigorous",  dest="difficulty", action="store_const", const="rigorous",
 		help="Set difficulty to rigorous")
+	parser.set_defaults(difficulty=None)
 
 	args = parser.parse_args()
 
+	if args.difficulty == "easy":
+		args.num_choices = 5
+		if args.mode == "same":
+			args.num_leaves = 5
+		elif args.mode == "different":
+			args.num_leaves = 6
+	elif args.difficulty == "medium":
+		args.num_choices = 6
+		if args.mode == "same":
+			args.num_leaves = 6
+		elif args.mode == "different":
+			args.num_leaves = 7
+	elif args.difficulty == "rigorous":
+		args.num_choices = 8
+		args.num_leaves = 8
+
 	if args.num_leaves < 3:
 		raise ValueError("Program requires a minimum of three (3) leaves to work")
+
+	if args.num_leaves > 8:
+		raise ValueError("Program not tested beyond eight (8) leaves")
 
 	return args
 
@@ -368,12 +389,16 @@ def main():
 
 	# Define output file name
 	script_name = os.path.splitext(os.path.basename(__file__))[0]
+	if args.difficulty is not None:
+		difficulty_suffix = f"-{args.difficulty.upper()}_level"
+	else:
+		difficulty_suffix = f'-{args.num_leaves}_leaves-{args.num_choices}_choices'
+
 	outfile = (
 		'bbq'
 		f'-{script_name}'
-		f'-{bptools.number_to_cardinal(args.num_leaves).upper()}_leaves'
-		f'-{args.mode.upper()}'
-		f'-{args.difficulty.upper()}'
+		f'-{args.mode.upper()}_mode'
+		f"{difficulty_suffix}"
 		'-questions.txt'
 	)
 	print(f'Writing to file: {outfile}')
@@ -383,7 +408,10 @@ def main():
 		N = 1  # Question number counter
 		errors = 0
 		while(N <= args.duplicates and errors < args.duplicates):
+			t0 = time.time()
 			complete_question = make_question(N, args)
+			if time.time() - t0 > 1:
+				print(f"Question {N} complete in {time.time() - t0:.1f} seconds")
 			if complete_question is not None:
 				N += 1
 				f.write(complete_question)
