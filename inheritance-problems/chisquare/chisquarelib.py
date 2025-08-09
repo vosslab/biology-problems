@@ -3,7 +3,6 @@ import math
 import random
 from scipy.stats.distributions import chi2
 
-
 #===============
 #===============
 def get_p_value(chisq: float, df: int) -> float:
@@ -239,7 +238,7 @@ def create_data_table(stats_list: list, title: str = None) -> str:
 	numcol = len(stats_list[0])
 
 	# Initialize HTML table structure with border and styles.
-	table = '<table border=1 style="border: 1px solid black; border-collapse: collapse; ">'
+	table = '<table style="border: 1px solid black; border-collapse: collapse; ">'
 
 	# Add column widths.
 	table += '<colgroup width="160"></colgroup> '

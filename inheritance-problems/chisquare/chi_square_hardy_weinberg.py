@@ -145,7 +145,7 @@ def normalGoodStats(p, F, N):
 #===================
 def createDataTable(stats_list, title=None):
 	numcol = len(stats_list[0])
-	table = '<table border=1 style="border: 1px solid black; border-collapse: collapse; ">'
+	table = '<table style="border: 1px solid black; border-collapse: collapse; ">'
 	table += '<colgroup width="100"></colgroup> '
 	table += '<colgroup width="80"></colgroup> '
 	table += '<colgroup width="80"></colgroup> '
@@ -193,7 +193,7 @@ def createDataTable(stats_list, title=None):
 def make_chi_square_table():
 	max_df = 4
 	p_values = [0.95, 0.90, 0.75, 0.5, 0.25, 0.1, 0.05, 0.01]
-	table = '<table border=1 style="border: 1px solid gray; border-collapse: collapse; ">'
+	table = '<table style="border: 1px solid gray; border-collapse: collapse; ">'
 	table += '<colgroup width="100"></colgroup> '
 	for p in p_values:
 		table += '<colgroup width="60"></colgroup> '

@@ -331,11 +331,10 @@ def makeQuestion(error_type):
 
 	return complete_question
 
-#===================
-#===================
-#===================
-#===================
-if __name__ == '__main__':
+#===========================================================
+#===========================================================
+# This function serves as the entry point for generating and saving questions.
+def main():
 	parser = argparse.ArgumentParser(description='Chi Square Question')
 	parser.add_argument('-d', '--duplicate-runs', type=int, dest='duplicate_runs',
 		help='number of questions to create', default=199)
@@ -347,7 +346,7 @@ if __name__ == '__main__':
 	print('writing to file: '+outfile)
 	f = open(outfile, 'w')
 	N = 0
-	for i in range(args.duplicate_runs):
+	while N < args.duplicate_runs:
 		error_type = random.randint(0, max_error_types-1)
 		complete_question = makeQuestion(error_type)
 		answer_index = error2choice[error_type]
@@ -358,3 +357,13 @@ if __name__ == '__main__':
 		bbformat = bptools.formatBB_MC_Question(N, complete_question, choices_list_copy, answer)
 		f.write(bbformat)
 	bptools.print_histogram()
+
+
+#===========================================================
+#===========================================================
+# This block ensures the script runs only when executed directly
+if __name__ == '__main__':
+	# Call the main function to run the program
+	main()
+
+## THE END

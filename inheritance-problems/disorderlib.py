@@ -2,10 +2,9 @@
 
 import os
 import re
-import sys
-import copy
 import yaml
 import random
+import bptools
 
 #sample question:
 #  A man (&male;) with both hemophilia and Huntington's disease marries
@@ -33,7 +32,8 @@ import random
 class MultiDisorderClass(object):
 	#=====================
 	def __init__(self):
-		yaml_data_file = '../data/genetic_disorders.yml'
+		git_root = bptools.get_git_root()
+		yaml_data_file = os.path.join(git_root, 'data/genetic_disorders.yml')
 		raw_disorder_data = self.readYaml(yaml_data_file)
 		self.disorder_data = self.filterDisorderData(raw_disorder_data)
 		pass
@@ -87,7 +87,7 @@ class MultiDisorderClass(object):
 			split_list = locus.split('q')
 		locus_dict['chromosome'] = split_list[0]
 		band = split_list[1]
-		band = re.sub('\-.*$', '', band)
+		band = re.sub(r'\-.*$', '', band)
 		locus_dict['band'] = band
 		return locus_dict
 
@@ -139,31 +139,8 @@ class MultiDisorderClass(object):
 
 	#=====================
 	def makeQuestionPretty(self, question):
-		pretty_question = copy.copy(question)
-		pretty_question = re.sub('\<\/p\>\s*\<p\>', '\n\n', pretty_question)
-		return pretty_question
+		return bptools.makeQuestionPretty(question)
 
-	#=====================
-	def formatBB_Question(self, N, question, choices_list, answer):
-		bb_question = ''
-
-		number = "{0}. ".format(N)
-		bb_question += 'MC\t<p>{0}. {1}'.format(N, question)
-		pretty_question = self.makeQuestionPretty(question)
-		print('{0}. {1}'.format(N, pretty_question))
-
-		letters = 'ABCDEFGH'
-		for i, choice in enumerate(choices_list):
-			bb_question += '\t{0}'.format(choice)
-			if choice == answer:
-				prefix = 'x'
-				bb_question += '\tCorrect'
-			else:
-				prefix = ' '
-				bb_question += '\tIncorrect'
-			print("- [{0}] {1}. {2}".format(prefix, letters[i], choice))
-		print("")
-		return bb_question
 
 #=====================
 #=====================

@@ -39,7 +39,7 @@ def normalGoodStats(ratio, observed=None):
 #===================
 def createDataTableWithMissing(stats_list, title=None):
 	numcol = len(stats_list[0])
-	table = '<table border=1 style="border: 1px solid black; border-collapse: collapse; ">'
+	table = '<table style="border: 1px solid black; border-collapse: collapse; ">'
 	table += '<colgroup width="200"></colgroup> '
 	table += '<colgroup width="100"></colgroup> '
 	table += '<colgroup width="100"></colgroup> '

@@ -1,9 +1,24 @@
 #!/usr/bin/env python3
+# ^^ Specifies the Python3 environment to use for script execution
 
+# Import built-in Python modules
+# Provides functions for interacting with the operating system
 import os
-import math
+# Provides functions to generate random numbers and selections
 import random
+# Provides tools to parse command-line arguments
+import argparse
+import math
 
+# Import external modules (pip-installed)
+# No external modules are used here currently
+
+# Import local modules from the project
+# Provides custom functions, such as question formatting and other utilities
+import bptools
+
+#===========================================================
+#===========================================================
 def choose(n, r):
 	f = math.factorial
 	nint = int(n)
@@ -11,6 +26,8 @@ def choose(n, r):
 	c =  f(nint) // (f(rint) * f(nint - rint))
 	return c
 
+#===========================================================
+#===========================================================
 num2txt = {
 	1: 'one',
 	2: 'two',
@@ -21,31 +38,38 @@ num2txt = {
 	7: 'seven',
 	8: 'eight',
 	9: 'nine',
+	10: 'ten',
 }
 
+#===========================================================
+#===========================================================
 def makeChoose(n, r):
 	choose = ""
-	choose += "<table border=1 style='border-collapse: collapse; border: 1px solid white;'>"
+	choose += "<table style='border-collapse: collapse; border: 1px solid white;'>"
 	choose += "<tr>"
-	choose += " <td rowspan=2 style='text-align: center; vertical-align: middle;'>"
+	choose += " <td rowspan='2' style='text-align: center; vertical-align: middle;'>"
 	choose += "  <span style='font-size: x-large;'>&lpar;</span></td>"
 	choose += " <td style='text-align: center; vertical-align: middle;'>{0}</td>".format(n)
-	choose += " <td rowspan=2 style='text-align: center; vertical-align: middle;'>"
+	choose += " <td rowspan='2' style='text-align: center; vertical-align: middle;'>"
 	choose += "  <span style='font-size: x-large;'>&rpar;</span></td>"
 	choose += "</tr><tr>"
 	choose += " <td style='text-align: center; vertical-align: middle;'>{0}</td>".format(r)
 	choose += "</tr></table>"
 	return choose
 
+#===========================================================
+#===========================================================
 def makeChooseLong(n, r):
 	numerator = "{0}!".format(n)
 	denominator = "({0}&ndash;{1})!&nbsp;&sdot;&nbsp;{1}!".format(n, r)
 	fraction = makeFraction(numerator, denominator)
 	return fraction
 
+#===========================================================
+#===========================================================
 def makeFraction(numerator, denominator):
 	fraction = ""
-	fraction += "<table border=1 style='border-collapse: collapse; border: 1px solid white;'>"
+	fraction += "<table style='border-collapse: collapse; border: 1px solid white;'>"
 	fraction += "<tr>"
 	fraction += " <td style='text-align: center; vertical-align: middle; border-bottom: 1px solid black;'>"
 	fraction += "&nbsp;"+numerator+"&nbsp;"
@@ -57,6 +81,8 @@ def makeFraction(numerator, denominator):
 	fraction += "</tr></table>"
 	return fraction
 
+#===========================================================
+#===========================================================
 def decimal_to_fraction_parts(p):
 	if abs(p - 1/3.) < 1e-4:
 		a = 1
@@ -68,6 +94,8 @@ def decimal_to_fraction_parts(p):
 		a, b = (p).as_integer_ratio()
 	return a, b
 
+#===========================================================
+#===========================================================
 def combinePowerFractions(p, s, q, t):
 	a, b = decimal_to_fraction_parts(p)
 	c, d = decimal_to_fraction_parts(q)
@@ -89,6 +117,8 @@ def combinePowerFractions(p, s, q, t):
 	fraction = makeFraction(numerator, denominator)
 	return fraction
 
+#===========================================================
+#===========================================================
 def makeChooseCancelled(n, r):
 	numerator = ""
 	if n == r:
@@ -116,6 +146,8 @@ def makeChooseCancelled(n, r):
 	#fraction += "{0}&ndash;{1}".format(n, r)
 	return fraction
 
+#===========================================================
+#===========================================================
 def percent_to_fraction(p):
 	if abs(p - 0.5) < 1e-4:
 		ptxt = "<span style='font-size: large;'>&frac12;</span>"
@@ -133,6 +165,8 @@ def percent_to_fraction(p):
 		ptxt = "{0:.2f}".format(p)
 	return ptxt
 
+#===========================================================
+#===========================================================
 def makeFormula(n, s, t, p, q):
 	###
 	# n = total
@@ -141,7 +175,7 @@ def makeFormula(n, s, t, p, q):
 	# p = prob. of s
 	# q = prob. of t
 	final_value = choose(n, s) * p**s * q**t
-	formula = "<table border=1 style='border-collapse: collapse; border: 1px solid white;'>"
+	formula = "<table style='border-collapse: collapse; border: 1px solid white;'>"
 	formula += "<tr>"
 	formula += " <td>"
 	formula += makeChoose(n, s)
@@ -195,77 +229,172 @@ def makeFormula(n, s, t, p, q):
 	#print(formula)
 	return formula
 
+#===========================================================
+#===========================================================
+def write_question(N, min_offspring, max_offspring):
+	total_offspring = random.randint(min_offspring, max_offspring)
+	female_offspring = random.randint(2, total_offspring-2)
+	male_offspring = total_offspring - female_offspring
 
-def writeQuestion(girls, boys):
-	total = girls + boys
-	question = ""
-	question += 'A women has {0} ({1}) children, '.format(num2txt[total], total)
-	question += 'what is the probability that she has exactly '
-	question += '{0} ({1}) boys and '.format(num2txt[boys], boys)
-	question += '{0} ({1}) girls? '.format(num2txt[girls], girls)
-	print(question)
-	choices = []
-	answer = makeFormula(total, boys, girls, 0.5, 0.5)
-	choices.append(answer)
-	#print(answer)
-	wrong1 = makeFormula(total, boys, girls, 0.75, 0.25)
-	#print(wrong1)
-	choices.append(wrong1)
+	question_text = ""
+	question_text += f"<p>A woman has {num2txt[total_offspring]} ({total_offspring}) children, "
+	question_text += f"what is the probability that she has exactly "
+	question_text += f"{num2txt[male_offspring]} ({male_offspring}) boys and "
+	question_text += f"{num2txt[female_offspring]} ({female_offspring}) girls?</p>"
 
-	wrong2 = makeFormula(total, boys, girls, 0.25, 0.75)
-	#print(wrong2)
-	choices.append(wrong2)
+	# Initialize the list of answer choices
+	choices_list = []
 
-	if boys > girls:
-		wrong3 = makeFormula(boys, girls, boys, 0.5, 0.5)
-		wrong4 = makeFormula(boys, boys, girls, 0.5, 0.5)
-	else:
-		wrong3 = makeFormula(girls, boys, girls, 0.5, 0.5)
-		wrong4 = makeFormula(girls, girls, boys, 0.5, 0.5)
-	#print(wrong3)
-	choices.append(wrong3)
-	#print(wrong4)
-	choices.append(wrong4)
-	random.shuffle(choices)
+	# Correct answer: probability with equal 0.5 chance for each sex
+	answer_text = makeFormula(total_offspring, male_offspring, female_offspring, 0.5, 0.5)
+	choices_list.append(answer_text)
 
-	complete_text = ""
+	# Wrong choice: probability assuming 0.75 male, 0.25 female
+	wrong1 = makeFormula(total_offspring, male_offspring, female_offspring, 0.75, 0.25)
+	choices_list.append(wrong1)
 
-	complete_text += "MC\t{0}".format(question)
-	for choice in choices:
-		if choice == answer:
-			status = "Correct"
-		else:
-			status = "Incorrect"
-		complete_text += "\t{0}\t{1}".format(choice, status)
-	return complete_text
+	# Wrong choice: probability assuming 0.25 male, 0.75 female
+	wrong2 = makeFormula(total_offspring, male_offspring, female_offspring, 0.25, 0.75)
+	choices_list.append(wrong2)
 
+	# Pick the larger and smaller counts to avoid branching on sex
+	big = max(male_offspring, female_offspring)
+	small = min(male_offspring, female_offspring)
+
+	# Always-generate wrong3; wrong4 only if counts are unequal
+	wrong3 = makeFormula(big, small, big, 0.5, 0.5)
+	choices_list.append(wrong3)
+	if male_offspring != female_offspring:
+		wrong4 = makeFormula(big, big, small, 0.5, 0.5)
+		choices_list.append(wrong4)
+
+	# Randomly shuffle the final list of choices
+	random.shuffle(choices_list)
+
+	complete_question = bptools.formatBB_MC_Question(N, question_text, choices_list, answer_text)
+
+	return complete_question
+
+#===========================================================
+#===========================================================
+# This function handles the parsing of command-line arguments.
+def parse_arguments():
+	"""
+	Parses command-line arguments for the script.
+
+	Returns:
+		argparse.Namespace: Parsed arguments with attributes `duplicates`,
+		`num_choices`, and `question_type`.
+	"""
+	# Create an argument parser with a description of the script's functionality
+	parser = argparse.ArgumentParser(description="Generate questions.")
+
+	# Add an argument to specify the number of duplicate questions to generate
+	parser.add_argument(
+		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
+		help='Number of duplicate runs to do or number of questions to create',
+		default=1
+	)
+
+	parser.add_argument(
+		'-x', '--max-questions', type=int, dest='max_questions',
+		default=99, help='Max number of questions'
+	)
+
+	# Add argument for minimum offspring total
+	parser.add_argument(
+		'--min', '--min-offspring', type=int, dest='min_offspring',
+		default=5, help='Minimum total number of offspring to consider.'
+	)
+
+	# Add argument for maximum offspring total
+	parser.add_argument(
+		'--max', '--max-offspring', type=int, dest='max_offspring',
+		default=10, help='Maximum total number of offspring to consider.'
+	)
+
+	# Parse the provided command-line arguments and return them
+	args = parser.parse_args()
+	return args
+
+#===========================================================
+#===========================================================
+# This function serves as the entry point for generating and saving questions.
+def main():
+	"""
+	Main function that orchestrates question generation and file output.
+
+	Workflow:
+	1. Parse command-line arguments.
+	2. Generate the output filename using script name and args.
+	3. Generate formatted questions using write_question().
+	4. Shuffle and trim the list if exceeding max_questions.
+	5. Write all formatted questions to output file.
+	6. Print stats and status.
+	"""
+
+	# Parse arguments from the command line
+	args = parse_arguments()
+
+	# Generate the output file name based on the script name and arguments
+	script_name = os.path.splitext(os.path.basename(__file__))[0]
+	outfile = (
+		'bbq'
+		f'-{script_name}'              # Add the script name to the file name
+		'-questions.txt'               # File extension
+	)
+
+	# Store all complete formatted questions
+	question_bank_list = []
+
+	# Initialize question counter
+	N = 0
+
+	# Create the specified number of questions
+	for _ in range(args.duplicates):
+		# Generate gene letters (if needed by question logic)
+		gene_letters_str = bptools.generate_gene_letters(3)
+
+		# Create a full formatted question (Blackboard format)
+		complete_question = write_question(N+1, args.min_offspring, args.max_offspring)
+
+		# Append question if successfully generated
+		if complete_question is not None:
+			N += 1
+			question_bank_list.append(complete_question)
+
+		if N >= args.max_questions:
+			break
+
+	# Show a histogram of answer distributions for MC/MA types
+	bptools.print_histogram()
+
+	# Shuffle and limit the number of questions if over max
+	if len(question_bank_list) > args.max_questions:
+		random.shuffle(question_bank_list)
+		question_bank_list = question_bank_list[:args.max_questions]
+
+	# Announce where output is going
+	print(f'\nWriting {len(question_bank_list)} question to file: {outfile}')
+
+	# Write all questions to file
+	write_count = 0
+	with open(outfile, 'w') as f:
+		for complete_question in question_bank_list:
+			write_count += 1
+			f.write(complete_question)
+
+	# Final status message
+	print(f'... saved {write_count} questions to {outfile}\n')
+
+#===========================================================
+#===========================================================
+# This block ensures the script runs only when executed directly
 if __name__ == '__main__':
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')	
+	# Call the main function to run the program
+	main()
 
-	"""
-	total = random.randint(5,9)
-	boys = girls = 0
-	while boys == girls:
-		boys = random.randint(2,total-2)
-		girls = total - boys
-	"""
-
-	count = 0
-	for total in range(5, 10):
-		for boys in range(2, total-1):
-			girls = total - boys
-			if boys == girls:
-				continue
-			count += 1
-			complete_text = writeQuestion(girls, boys)
-			if total == 9 and boys == 5:
-				print(complete_text)
-			f.write("{0}\n".format(complete_text))
-	print("Wrote {0} quesitons".format(count))
-	f.close()
-
+## THE END
 
 
 
