@@ -136,27 +136,24 @@ def parse_arguments():
 		help="Number of choices to create."
 	)
 
-	# Create a mutually exclusive group for question type selection
+	# Create a mutually exclusive group for question format selection
 	# The group ensures only one of these options can be chosen at a time
 	question_group = parser.add_mutually_exclusive_group(required=True)
-
-	# Add an option to manually set the question type
+	# Add an option to manually set the question format
 	question_group.add_argument(
-		'-t', '--type', dest='question_type', type=str,
+		'-f', '--format', dest='question_format', type=str,
 		choices=('num', 'mc'),
-		help='Set the question type: num (numeric) or mc (multiple choice)'
+		help='Set the question format: num (numeric) or mc (multiple choice)'
 	)
-
-	# Add a shortcut option to set the question type to multiple choice
+	# Add a shortcut option to set the question format to multiple choice
 	question_group.add_argument(
-		'-m', '--mc', dest='question_type', action='store_const', const='mc',
-		help='Set question type to multiple choice'
+		'-m', '--mc', dest='question_format', action='store_const', const='mc',
+		help='Set question format to multiple choice'
 	)
-
-	# Add a shortcut option to set the question type to numeric
+	# Add a shortcut option to set the question format to numeric
 	question_group.add_argument(
-		'-n', '--num', dest='question_type', action='store_const', const='num',
-		help='Set question type to numeric'
+		'-n', '--num', dest='question_format', action='store_const', const='num',
+		help='Set question format to numeric'
 	)
 
 	parser.add_argument(
@@ -198,7 +195,7 @@ def main():
 	outfile = (
 		'bbq'
 		f'-{script_name}'              # Add the script name to the file name
-		f'-{args.question_type.upper()}'  # Append question type in uppercase (e.g., MC, MA)
+		f'-{args.question_format.upper()}'  # Append question type in uppercase (e.g., MC, MA)
 		f'-{hint_mode}'  	# Append question type in uppercase (e.g., MC, MA)
 		f'-{args.num_choices}_choices' # Append number of choices
 		'-questions.txt'               # File extension
@@ -216,7 +213,10 @@ def main():
 		gene_letters_str = bptools.generate_gene_letters(3)
 
 		# Create a full formatted question (Blackboard format)
+		t0 = time.time()
 		complete_question = write_question(N+1, args.num_choices)
+		if time.time() - t0 > 1:
+			print(f"Question {N+1} complete in {time.time() - t0:.1f} seconds")
 
 		# Append question if successfully generated
 		if complete_question is not None:
