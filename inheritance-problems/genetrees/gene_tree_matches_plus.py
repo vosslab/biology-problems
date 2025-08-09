@@ -324,20 +324,30 @@ def parse_arguments():
 		'-l', '--leaves', '--num_leaves', type=int, dest='num_leaves',
 		help='number of leaves in the gene tree', default=5)
 
-	# Create a mutually exclusive group for question type and make it required
-	style_group = parser.add_mutually_exclusive_group(required=True)
-	style_group.add_argument(
-		'-s', '--style', dest='style', type=str, choices=('same', 'different'),
-		help='matching questions style, find same or find different'
-	)
-	style_group.add_argument(
-		'-S', '--same', dest='style', action='store_const', const='same',
-		help='matching questions style, find same'
-	)
-	style_group.add_argument(
-		'-D', '--different', dest='style', action='store_const', const='different',
-		help='matching questions style, find different'
-	)
+	# MODE: same vs different (required, mutually exclusive shortcuts allowed)
+	mode_group = parser.add_mutually_exclusive_group(required=True)
+	mode_group.add_argument("-m", "--mode", dest="mode", type=str,
+							choices=("same", "different"),
+							help="Question mode: same or different")
+	mode_group.add_argument("-S", "--same", dest="mode", action="store_const", const="same",
+							help="Question mode: find same")
+	mode_group.add_argument("-D", "--different", dest="mode", action="store_const", const="different",
+							help="Question mode: find different")
+
+	# DIFFICULTY: easy < medium < rigorous
+	# Use one argument with choices, plus optional shortcuts if you want
+	parser.add_argument("-d", "--difficulty", dest="difficulty", type=str,
+						choices=("easy", "medium", "rigorous"), default="medium",
+						help="Difficulty: easy, medium, or rigorous")
+
+	# Optional difficulty shortcuts
+	diff_group = parser.add_mutually_exclusive_group()
+	diff_group.add_argument("-E", "--easy",      dest="difficulty", action="store_const", const="easy",
+							help="Set difficulty to easy")
+	diff_group.add_argument("-M", "--medium",    dest="difficulty", action="store_const", const="medium",
+							help="Set difficulty to medium")
+	diff_group.add_argument("-R", "--rigorous",  dest="difficulty", action="store_const", const="rigorous",
+							help="Set difficulty to rigorous")
 
 	args = parser.parse_args()
 

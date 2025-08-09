@@ -539,6 +539,21 @@ def parse_arguments():
 
 	args = parser.parse_args()
 
+	# DIFFICULTY: easy < medium < rigorous
+	# Use one argument with choices, plus optional shortcuts if you want
+	parser.add_argument("-d", "--difficulty", dest="difficulty", type=str,
+		choices=("easy", "medium", "rigorous"), default="medium",
+		help="Difficulty: easy, medium, or rigorous")
+
+	# Optional difficulty shortcuts
+	diff_group = parser.add_mutually_exclusive_group()
+	diff_group.add_argument("-E", "--easy",      dest="difficulty", action="store_const", const="easy",
+		help="Set difficulty to easy")
+	diff_group.add_argument("-M", "--medium",    dest="difficulty", action="store_const", const="medium",
+		help="Set difficulty to medium")
+	diff_group.add_argument("-R", "--rigorous",  dest="difficulty", action="store_const", const="rigorous",
+		help="Set difficulty to rigorous")
+
 	if args.num_leaves < 3:
 		raise ValueError("Program requires a minimum of three (3) leaves to work")
 
