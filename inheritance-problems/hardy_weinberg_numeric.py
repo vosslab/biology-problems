@@ -1,9 +1,21 @@
 #!/usr/bin/env python3
+# ^^ Specifies the Python3 environment to use for script execution
 
+# Import built-in Python modules
+# Provides functions for interacting with the operating system
 import os
-import sys
-import math
+# Provides functions to generate random numbers and selections
 import random
+# Provides tools to parse command-line arguments
+import argparse
+import math
+
+# Import external modules (pip-installed)
+# No external modules are used here currently
+
+# Import local modules from the project
+# Provides custom functions, such as question formatting and other utilities
+import bptools
 
 #NUM TAB question_text TAB answer TAB [optional]tolerance
 
@@ -297,8 +309,6 @@ def makeType3aQuestion(p):
 	blackboard_text += '0.0099\n'
 
 	#sys.exit(1)
-
-
 	return blackboard_text
 
 
@@ -316,14 +326,124 @@ def makeQuestion(type, p):
 		blackboard_text = makeType3aQuestion(p)
 	return blackboard_text
 
-#=========================
-#=========================
-if __name__ == '__main__':
-	type = '1a'
+#===========================================================
+#===========================================================
+# This function handles the parsing of command-line arguments.
+def parse_arguments():
+	"""
+	Parses command-line arguments for the script.
 
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + ('-type_{0}-questions.txt'.format(type))
+	Returns:
+		argparse.Namespace: Parsed arguments with attributes `duplicates`,
+		`num_choices`, and `question_type`.
+	"""
+	# Create an argument parser with a description of the script's functionality
+	parser = argparse.ArgumentParser(description="Generate questions.")
+
+	# Add an argument to specify the number of duplicate questions to generate
+	parser.add_argument(
+		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
+		help='Number of duplicate runs to do or number of questions to create',
+		default=1
+	)
+
+	parser.add_argument(
+		'-x', '--max-questions', type=int, dest='max_questions',
+		default=99, help='Max number of questions'
+	)
+
+	# Add an argument to specify the number of answer choices for each question
+	parser.add_argument(
+		'-c', '--num_choices', type=int, default=5, dest='num_choices',
+		help="Number of choices to create."
+	)
+
+	# Create a mutually exclusive group for question format selection
+	# The group ensures only one of these options can be chosen at a time
+	question_group = parser.add_mutually_exclusive_group(required=True)
+	# Add an option to manually set the question format
+	question_group.add_argument(
+		'-f', '--format', dest='question_format', type=str,
+		choices=('num', 'mc'),
+		help='Set the question format: num (numeric) or mc (multiple choice)'
+	)
+	# Add a shortcut option to set the question format to multiple choice
+	question_group.add_argument(
+		'-m', '--mc', dest='question_format', action='store_const', const='mc',
+		help='Set question format to multiple choice'
+	)
+	# Add a shortcut option to set the question format to numeric
+	question_group.add_argument(
+		'-n', '--num', dest='question_format', action='store_const', const='num',
+		help='Set question format to numeric'
+	)
+
+	variant_group = parser.add_mutually_exclusive_group(required=True)
+
+	VARIANT_SHORT_HELP = {
+		"1a": "HWE with inbreeding F; compute dominant allele frequency from counts",
+		"1b": "HWE with inbreeding F; compute recessive allele frequency from counts",
+		"2a": "HWE from recessive disease prevalence; compute allele frequency",
+		"2b": "HWE from dominant phenotype rate; compute allele frequency",
+		"3a": "X-linked dominant trait; infer p from boys and girls",
+	}
+
+	variant_group.add_argument(
+		"-v", "--variant", dest="qvariant", type=str,
+		choices=tuple(VARIANT_SHORT_HELP.keys()),
+		help="Select question template variant"
+	)
+
+	# Optional direct flags
+	variant_group.add_argument("--1a", dest="qvariant", action="store_const", const="1a",
+		help=VARIANT_SHORT_HELP["1a"])
+	variant_group.add_argument("--1b", dest="qvariant", action="store_const", const="1b",
+		help=VARIANT_SHORT_HELP["1b"])
+	variant_group.add_argument("--2a", dest="qvariant", action="store_const", const="2a",
+		help=VARIANT_SHORT_HELP["2a"])
+	variant_group.add_argument("--2b", dest="qvariant", action="store_const", const="2b",
+		help=VARIANT_SHORT_HELP["2b"])
+	variant_group.add_argument("--3a", dest="qvariant", action="store_const", const="3a",
+		help=VARIANT_SHORT_HELP["3a"])
+
+	args = parser.parse_args()
+
+	# Parse the provided command-line arguments and return them
+	args = parser.parse_args()
+	return args
+
+#===========================================================
+#===========================================================
+# This function serves as the entry point for generating and saving questions.
+def main():
+	"""
+	Main function that orchestrates question generation and file output.
+
+	Workflow:
+	1. Parse command-line arguments.
+	2. Generate the output filename using script name and args.
+	3. Generate formatted questions using write_question().
+	4. Shuffle and trim the list if exceeding max_questions.
+	5. Write all formatted questions to output file.
+	6. Print stats and status.
+	"""
+
+	# Parse arguments from the command line
+	args = parse_arguments()
+
+	# Generate the output file name based on the script name and arguments
+	script_name = os.path.splitext(os.path.basename(__file__))[0]
+	hint_mode = 'with_hint' if args.hint else 'no_hint'
+	outfile = (
+		'bbq'
+		f'-{script_name}'              # Add the script name to the file name
+		f'-{args.question_format.upper()}'  # Append question type in uppercase (e.g., MC, MA)
+		f'-{args.num_choices}_choices' # Append number of choices
+		'-questions.txt'               # File extension
+	)
+
 	print('writing to file: '+outfile)
-	f = open(outfile, 'a')
+	f = open(outfile, 'w')
 
 	count = 0
 	for rawp in range(40, 100, 2):
@@ -338,3 +458,12 @@ if __name__ == '__main__':
 		#break
 	print("wrote", count, "questions to", outfile)
 	f.close()
+
+#===========================================================
+#===========================================================
+# This block ensures the script runs only when executed directly
+if __name__ == '__main__':
+	# Call the main function to run the program
+	main()
+
+## THE END
