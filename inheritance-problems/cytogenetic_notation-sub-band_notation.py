@@ -83,6 +83,7 @@ def generate_choices(num_choices: int) -> (list, str):
 			- str: The correct answer text.
 	"""
 	# Define possible correct choices and incorrect choices
+	raise NotImplementedError
 	choices_list = [
 		'competitive inhibitor',
 		'non-competitive inhibitor',
@@ -118,8 +119,8 @@ def write_question(N: int, num_choices: int) -> str:
 		str: A formatted question string suitable for output, containing
 		the question text, answer choices, and correct answer.
 	"""
-	# Generate the question text
-	question_text = get_question_text()
+	karyotype = get_karyotype()
+	question_text = get_question_text(karyotype)
 
 	# Generate answer choices and correct answer
 	choices_list, answer_text = generate_choices(num_choices)
@@ -147,8 +148,10 @@ def parse_arguments():
 		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
 		help='Number of duplicate runs to do or number of questions to create', default=1
 	)
+
+	# Add an argument to specify the number of answer choices for each question
 	parser.add_argument(
-		'-n', '--num_choices', type=int, default=5,
+		'-c', '--num_choices', type=int, default=5, dest='num_choices',
 		help="Number of choices to create."
 	)
 
@@ -178,10 +181,6 @@ def main():
 	with open(outfile, 'w') as f:
 		N = 1  # Question number counter
 		for _ in range(args.duplicates):
-			karyotype = get_karyotype()
-			question_text = get_question_text(karyotype)
-			print(question_text)
-			continue
 			complete_question = write_question(N, args.num_choices)
 			if complete_question is not None:
 				N += 1
