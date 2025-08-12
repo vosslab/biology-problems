@@ -6,6 +6,7 @@ import math
 import random
 import argparse
 import textwrap
+import time
 
 import bptools
 
@@ -516,9 +517,9 @@ def format_choice(gene_list: list[str]) -> str:
 	# Monospace font using <span>
 	gene_sequence = "<strong><span style='font-family: monospace;'>"
 	if len(gene_list) >= 10:
-		gene_sequence += f"{insertCommas(''.join(gene_list), 4)}</span><strong>"
+		gene_sequence += f"{insertCommas(''.join(gene_list), 4)}</span></strong>"
 	else:
-		gene_sequence += f"{''.join(gene_list)}</span><strong>"
+		gene_sequence += f"{''.join(gene_list)}</span></strong>"
 	gene_sequence += f":&nbsp;&nbsp; <i>gene order of {list2text(gene_list)}</i>"
 	return gene_sequence
 
@@ -602,7 +603,14 @@ def write_question(N: int, args) -> str:
 	random.shuffle(deletions_list)
 
 	# Assign colors to genes using the dark_color_wheel
-	color_wheel = bptools.default_color_wheel(len(deletions_list))
+	color_wheel = None
+	while color_wheel is None:
+		try:
+			color_wheel = bptools.default_color_wheel(len(deletions_list))
+		except ValueError:
+			print("COLOR WHEEL FAIL")
+			time.sleep(0.5)
+
 	deletion_colors = {''.join(deletion): color_wheel[i] for i, deletion in enumerate(deletions_list)}
 
 	# Generate an HTML table if the table option is enabled
@@ -715,8 +723,6 @@ def parse_arguments():
 if __name__ == '__main__':
 	# Parse arguments from the command line
 	args = parse_arguments()
-
-
 
 	if args.table:
 		table_str = "TABLE"
