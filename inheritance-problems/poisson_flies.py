@@ -56,7 +56,6 @@ def cross_experiment(female_genotype, male_genotype, progeny_size=400):
 		offspring.sort()
 		offspring_str = offspring[0]+offspring[1]
 		distribution[offspring_str] = distribution.get(offspring_str, 0) + 1
-	#sys.exit(1)
 	return distribution
 
 #===========================================================
@@ -114,7 +113,6 @@ def write_question(N, female_genotype, male_genotype, progeny_size):
 
 	post_question = "<p><strong>What are the genotypes of the parents in this cross?</strong></p>"
 
-
 	#print(female_genotype)
 	#print(male_genotype)
 	distribution = cross_experiment(female_genotype, male_genotype, progeny_size)
@@ -135,41 +133,6 @@ def write_question(N, female_genotype, male_genotype, progeny_size):
 	random.shuffle(choices_list)
 	bbformat = bptools.formatBB_MC_Question(N, question_txt, choices_list, answer_txt)
 	return bbformat
-
-
-def old_func():
-	# Initialize argparse for command line arguments
-	parser = argparse.ArgumentParser(description='Generate blackboard questions.')
-	# Add command line options for number of genes and number of questions
-	parser.add_argument('-x', '--num_questions', type=int, default=24, help='Number of questions')
-	# Parse the command line arguments
-	args = parser.parse_args()
-
-	N = 0
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	female_genotype = random.choice(("++", "+w", "ww"))
-	male_genotype = random.choice(("+-", "w-"))
-	progeny_size_selection = (160, 200, 400, 600,)
-	female_types = ("++", "+w", "ww")
-	male_types = ("+-", "w-")
-	for i in range(args.num_questions):
-		progeny_size = random.choice(progeny_size_selection)
-		female_genotype = random.choice(female_types)
-		if female_genotype == '++':
-			male_genotype = 'w-'
-		else:
-			male_genotype = random.choice(male_types)
-		N += 1
-		bbformat = make_question(N, female_genotype, male_genotype, progeny_size)
-		if bbformat is not None:
-			#only about 60-75% questions are not None
-			f.write(bbformat)
-	f.close()
-	bptools.print_histogram()
-
-
 
 #===========================================================
 #===========================================================
