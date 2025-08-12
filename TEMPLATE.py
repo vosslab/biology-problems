@@ -4,6 +4,7 @@
 # Import built-in Python modules
 # Provides functions for interacting with the operating system
 import os
+import time
 # Provides functions to generate random numbers and selections
 import random
 # Provides tools to parse command-line arguments
