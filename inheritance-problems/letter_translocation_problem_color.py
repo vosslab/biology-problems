@@ -29,7 +29,8 @@ def color_html(text, rgb_color):
 	html += '</span>'
 	return html
 
-telomere_symbols = ['&#x25C0;', '&#x25B6;']
+telomere_symbols = ['&#x2738;', '&#x2738;'] # 8 pointed stars
+telomere_symbols = ['&#x25C0;', '&#x25B6;'] # triangles
 
 #============================================
 #============================================
@@ -348,8 +349,6 @@ def make_chromosomes(min_chromosome_size: int, min_fragment_size: int):
 	chromosome1_size = len(chromosome1_seq)
 	chromosome2_size = len(chromosome2_seq)
 
-	# Set smallest allowed fragment size
-	min_fragment_size = 3
 	# Choose a valid internal cut for chromosome 1
 	chromosome1_cut = random.randint(
 		min_fragment_size, chromosome1_size - min_fragment_size
