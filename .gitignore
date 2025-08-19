@@ -1,5 +1,7 @@
 # output files
 bbq-*.txt
+qti*.zip
+selftest-*.html
 .DS_Store
 
 # Byte-compiled / optimized / DLL files
