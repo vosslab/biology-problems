@@ -122,16 +122,20 @@ def color_deletion_name(deletion_text: str, deletion_key_str: str, deletion_colo
 #==========================================================
 #==========================================================
 def make_html_table(gene_order, deletions_list, deletion_colors):
+	CELL_W = 60
+	ROW_H = 25
+
 	table = ''
 	table += '<table style="border-collapse: collapse; border: 2px solid black; '
-	width = 60 * (len(gene_order) + 1)
-	height = 25 * (len(deletions_list) + 1)
-	table += f'width: {width}px; height: {height}px;">'
+	width = CELL_W * (len(gene_order) + 1)
+	height = ROW_H * (len(deletions_list) + 1)
+	#table += f'width: {width}px; height: {height}px;'
+	table += '">'
 	table += '<tr><th> </th>'
 
 	# Header for gene labels, gene order is unknown so just numbers
 	for i in range(len(gene_order)):
-		table += f'<th align="center">Gene {i+1}</th>'
+		table += f'<th style="text-align: center; width: {CELL_W}px;">Gene {i+1}</th>'
 	table += '</tr>'
 
 	# Rows for deletions
@@ -141,14 +145,12 @@ def make_html_table(gene_order, deletions_list, deletion_colors):
 
 		# Row header for each deletion
 		colored_deletion_name = color_deletion_name(f"Del #{i+1}", deletion_key_str, deletion_colors)
-		table += f'<tr><th align="center">{colored_deletion_name}</th>'
+		table += f'<tr><th style="text-align: center;">{colored_deletion_name}</th>'
 
 		for gene in gene_order:
-			if gene in deletion:
-				# Use deletion-specific colors for matching cells
-				table += f'<td bgcolor="#{deletion_colors[deletion_key_str]}"> </td>'
-			else:
-				table += '<td bgcolor="#EEEEEE"> </td>'
+			bg = deletion_colors[deletion_key_str] if gene in deletion else "EEEEEE"
+			table += f'<td style="background-color: #{bg}; height: {ROW_H}px;">&nbsp;</td>'
+
 		table += '</tr>'
 	table += '</table>'
 	return table
