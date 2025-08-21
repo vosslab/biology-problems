@@ -131,6 +131,8 @@ def formatBB_MC_Question(N: int, question_text: str, choices_list, answer_text):
 	item_cls = item_types.MC(question_text, choices_list, answer_text)
 	item_cls.item_number = N
 	nocheat_item_cls = nocheater.modify_item_cls(item_cls)
+	nocheat_item_cls.answer_text = nocheat_item_cls.choices_list[nocheat_item_cls.answer_index]
+	nocheat_item_cls._validate()
 	# update histogram
 	for i, choice_text in enumerate(choices_list):
 		if choice_text == answer_text:
@@ -140,7 +142,7 @@ def formatBB_MC_Question(N: int, question_text: str, choices_list, answer_text):
 	bb_question_text = bbq_write_item.MC(nocheat_item_cls)
 	if human_readable_text is not None:
 		print(human_readable_text)
-	# update counter and return
+	# update countr and return
 	global question_count
 	question_count += 1
 	return bb_question_text
@@ -152,6 +154,11 @@ def formatBB_MA_Question(N: int, question_text: str, choices_list, answers_list,
 	item_cls = item_types.MA(question_text, choices_list, answers_list, min_answers_required, allow_all_correct)
 	item_cls.item_number = N
 	nocheat_item_cls = nocheater.modify_item_cls(item_cls)
+	nocheat_item_cls.answers_list = []
+	for idx in nocheat_item_cls.answer_index_list:
+		answer_text = nocheat_item_cls.choices_list[idx]
+		nocheat_item_cls.answers_list.append(answer_text)
+	nocheat_item_cls._validate()
 	# update histogram
 	for i, choice_text in enumerate(choices_list):
 		if choice_text in answers_list:
@@ -172,6 +179,7 @@ def formatBB_MAT_Question(N: int, question_text: str, prompts_list, choices_list
 	item_cls = item_types.MATCH(question_text, prompts_list, choices_list)
 	item_cls.item_number = N
 	nocheat_item_cls = nocheater.modify_item_cls(item_cls)
+	nocheat_item_cls._validate()
 	# get format
 	human_readable_text = human_write_item.MATCH(item_cls)
 	bb_question_text = bbq_write_item.MATCH(nocheat_item_cls)
@@ -189,6 +197,7 @@ def formatBB_FIB_Question(N: int, question_text: str, answers_list):
 	item_cls.item_number = N
 	nocheater.use_no_click_div = False
 	nocheat_item_cls = nocheater.modify_item_cls(item_cls)
+	nocheat_item_cls._validate()
 	# get format
 	human_readable_text = human_write_item.FIB(item_cls)
 	bb_question_text = bbq_write_item.FIB(nocheat_item_cls)
@@ -206,6 +215,7 @@ def formatBB_FIB_PLUS_Question(N: int, question_text: str, answer_map: dict) -> 
 	item_cls.item_number = N
 	nocheater.use_no_click_div = False
 	nocheat_item_cls = nocheater.modify_item_cls(item_cls)
+	nocheat_item_cls._validate()
 	# get format
 	human_readable_text = human_write_item.MULTI_FIB(item_cls)
 	bb_question_text = bbq_write_item.MULTI_FIB(nocheat_item_cls)
@@ -223,6 +233,7 @@ def formatBB_NUM_Question(N: int, question_text: str, answer_float, tolerance_fl
 	item_cls.item_number = N
 	nocheater.use_no_click_div = False
 	nocheat_item_cls = nocheater.modify_item_cls(item_cls)
+	nocheat_item_cls._validate()
 	# get format
 	human_readable_text = human_write_item.NUM(item_cls)
 	bb_question_text = bbq_write_item.NUM(nocheat_item_cls)
@@ -240,6 +251,7 @@ def formatBB_ORD_Question(N: int, question_text: str, ordered_answers_list):
 	item_cls.item_number = N
 	nocheater.use_no_click_div = False
 	nocheat_item_cls = nocheater.modify_item_cls(item_cls)
+	nocheat_item_cls._validate()
 	# get format
 	human_readable_text = human_write_item.ORDER(item_cls)
 	bb_question_text = bbq_write_item.ORDER(nocheat_item_cls)
