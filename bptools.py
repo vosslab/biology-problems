@@ -141,7 +141,8 @@ def formatBB_MC_Question(N: int, question_text: str, choices_list, answer_text):
 	human_readable_text = human_write_item.MC(item_cls)
 	bb_question_text = bbq_write_item.MC(nocheat_item_cls)
 	if human_readable_text is not None:
-		print(N, human_readable_text)
+		print(f"{N:3d}. {human_readable_text}")
+
 	# update countr and return
 	global question_count
 	question_count += 1
@@ -167,7 +168,8 @@ def formatBB_MA_Question(N: int, question_text: str, choices_list, answers_list,
 	human_readable_text = human_write_item.MA(item_cls)
 	bb_question_text = bbq_write_item.MA(nocheat_item_cls)
 	if human_readable_text is not None:
-		print(N, human_readable_text)
+		print(f"{N:3d}. {human_readable_text}")
+
 	# update counter and return
 	global question_count
 	question_count += 1
@@ -184,7 +186,7 @@ def formatBB_MAT_Question(N: int, question_text: str, prompts_list, choices_list
 	human_readable_text = human_write_item.MATCH(item_cls)
 	bb_question_text = bbq_write_item.MATCH(nocheat_item_cls)
 	if human_readable_text is not None:
-		print(N, human_readable_text)
+		print(f"{N:3d}. {human_readable_text}")
 	# update counter and return
 	global question_count
 	question_count += 1
@@ -203,7 +205,8 @@ def formatBB_FIB_Question(N: int, question_text: str, answers_list):
 	human_readable_text = human_write_item.FIB(item_cls)
 	bb_question_text = bbq_write_item.FIB(nocheat_item_cls)
 	if human_readable_text is not None:
-		print(N, human_readable_text)
+		print(f"{N:3d}. {human_readable_text}")
+
 	# update counter and return
 	global question_count
 	question_count += 1
@@ -222,7 +225,8 @@ def formatBB_FIB_PLUS_Question(N: int, question_text: str, answer_map: dict) -> 
 	human_readable_text = human_write_item.MULTI_FIB(item_cls)
 	bb_question_text = bbq_write_item.MULTI_FIB(nocheat_item_cls)
 	if human_readable_text is not None:
-		print(N, human_readable_text)
+		print(f"{N:3d}. {human_readable_text}")
+
 	# update counter and return
 	global question_count
 	question_count += 1
@@ -240,7 +244,8 @@ def formatBB_NUM_Question(N: int, question_text: str, answer_float, tolerance_fl
 	human_readable_text = human_write_item.NUM(item_cls)
 	bb_question_text = bbq_write_item.NUM(nocheat_item_cls)
 	if human_readable_text is not None:
-		print(N, human_readable_text)
+		print(f"{N:3d}. {human_readable_text}")
+
 	# update counter and return
 	global question_count
 	question_count += 1
@@ -258,7 +263,8 @@ def formatBB_ORD_Question(N: int, question_text: str, ordered_answers_list):
 	human_readable_text = human_write_item.ORDER(item_cls)
 	bb_question_text = bbq_write_item.ORDER(nocheat_item_cls)
 	if human_readable_text is not None:
-		print(N, human_readable_text)
+		print(f"{N:3d}. {human_readable_text}")
+
 	# update counter and return
 	global question_count
 	question_count += 1
