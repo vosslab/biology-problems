@@ -69,9 +69,10 @@ def makeFillInBlankQuestion(N, enzyme_class):
 	answer1 = enzyme_class.ovhgseq
 	answer2 = f"5'-{answer1}-3'"
 	answer3 = f"5&prime;-{answer1}-3&prime;"
+	#answer4 = f"5′-{answer1}-3′"
 	answer_list = [answer1, answer2, answer3]
 
-	bb_question = bptools.formatBB_FIB_Question(N, question_text, [answer_list])
+	bb_question = bptools.formatBB_FIB_Question(N, question_text, answer_list)
 	return bb_question
 
 
@@ -175,12 +176,11 @@ def parse_arguments():
 	# Create an argument parser with a description of the script's functionality
 	parser = argparse.ArgumentParser(description="Generate questions.")
 
-	# Add an argument to specify the number of duplicate questions to generate
 	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='Number of duplicate runs to do or number of questions to create',
-		default=1
+		'-x', '--max-questions', type=int, dest='max_questions',
+		default=199, help='Max number of questions'
 	)
+
 
 	# Add an argument to specify the number of answer choices for each question
 	parser.add_argument(
@@ -195,7 +195,7 @@ def parse_arguments():
 	# Add an option to manually set the question type
 	question_group.add_argument(
 		'-t', '--type', dest='question_type', type=str,
-		choices=('num', 'mc'),
+		choices=('fib', 'mc'),
 		help='Set the question type: num (numeric) or mc (multiple choice)'
 	)
 
@@ -207,8 +207,8 @@ def parse_arguments():
 
 	# Add a shortcut option to set the question type to numeric
 	question_group.add_argument(
-		'-n', '--num', dest='question_type', action='store_const', const='num',
-		help='Set question type to numeric'
+		'-f', '--fib', dest='question_type', action='store_const', const='fib',
+		help='Set question type to fill-in-the-blank'
 	)
 
 	# Parse the provided command-line arguments and return them
@@ -232,7 +232,6 @@ def main():
 		'bbq'
 		f'-{script_name}'  # Add the script name to the file name
 		f'-{args.question_type.upper()}'  # Add the question type in uppercase
-		f'-{args.num_choices}_choices'
 		'-questions.txt'  # Add the file extension
 	)
 
@@ -250,8 +249,7 @@ def main():
 		N = 0
 
 		# Generate the specified number of questions
-		for _ in range(args.duplicates):
-			enzyme_name = enzyme_names[N % (len(enzyme_names))]
+		for enzyme_name in enzyme_names:
 
 			# Generate the complete formatted question
 			complete_question = write_question(N+1, enzyme_name, args.num_choices, args.question_type)
@@ -260,6 +258,9 @@ def main():
 			if complete_question is not None:
 				N += 1
 				f.write(complete_question)
+
+			if N > args.max_questions:
+				break
 
 	# If the question type is multiple choice, print a histogram of results
 	if args.question_type == "mc":
