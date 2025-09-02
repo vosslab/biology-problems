@@ -197,6 +197,7 @@ def formatBB_FIB_Question(N: int, question_text: str, answers_list):
 	item_cls.item_number = N
 	nocheater.use_no_click_div = False
 	nocheat_item_cls = nocheater.modify_item_cls(item_cls)
+	nocheat_item_cls.answers_list = item_cls.answers_list
 	nocheat_item_cls._validate()
 	# get format
 	human_readable_text = human_write_item.FIB(item_cls)
@@ -215,6 +216,7 @@ def formatBB_FIB_PLUS_Question(N: int, question_text: str, answer_map: dict) -> 
 	item_cls.item_number = N
 	nocheater.use_no_click_div = False
 	nocheat_item_cls = nocheater.modify_item_cls(item_cls)
+	#nocheat_item_cls.answer_map = item_cls.answer_map
 	nocheat_item_cls._validate()
 	# get format
 	human_readable_text = human_write_item.MULTI_FIB(item_cls)
