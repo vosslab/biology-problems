@@ -144,7 +144,7 @@ def main():
 
 	# Generate the output file name based on the script name and question type
 	script_name = os.path.splitext(os.path.basename(__file__))[0]
-	suffix = 'overhang_type' if args.use_overhang_type else 'end_type'
+	suffix = '5_3_blunt' if args.use_overhang_type else 'blunt_v_sticky'
 	outfile = (
 		'bbq'
 		f'-{script_name}'  # Add the script name to the file name
