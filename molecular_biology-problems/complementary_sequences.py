@@ -268,6 +268,9 @@ if __name__ == '__main__':
 	# Parse the command-line arguments
 	args = parser.parse_args()
 
+	if args.direction_mode == "prime" and args.question_type == "mc":
+		raise NotImplementedError("this mode is broken and needs fixed")
+
 	#===========================
 	# Check for Invalid Inputs
 	#===========================
