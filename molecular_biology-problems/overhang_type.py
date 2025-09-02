@@ -116,11 +116,9 @@ def parse_arguments():
 	# Create an argument parser with a description of the script's functionality
 	parser = argparse.ArgumentParser(description="Generate restriction enzyme questions.")
 
-	# Add an argument to specify the number of duplicate questions to generate
 	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='Number of duplicate runs to do or number of questions to create',
-		default=1
+		'-x', '--max-questions', type=int, dest='max_questions',
+		default=299, help='Max number of questions'
 	)
 
 	parser.add_argument("-o", "--overhang_type", default=True, dest='use_overhang_type',
@@ -167,8 +165,7 @@ def main():
 		N = 0
 
 		# Generate the specified number of questions
-		for _ in range(args.duplicates):
-			enzyme_name = enzyme_names[N % (len(enzyme_names))]
+		for enzyme_name in enzyme_names:
 			enzyme_class = restrictlib.enzyme_name_to_class(enzyme_name)
 
 			# Generate the complete formatted question
@@ -178,6 +175,9 @@ def main():
 			if complete_question is not None:
 				N += 1
 				f.write(complete_question)
+
+			if N > args.max_questions:
+				break
 
 	# If the question type is multiple choice, print a histogram of results
 	bptools.print_histogram()
