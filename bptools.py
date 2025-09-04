@@ -155,10 +155,7 @@ def formatBB_MA_Question(N: int, question_text: str, choices_list, answers_list,
 	item_cls = item_types.MA(question_text, choices_list, answers_list, min_answers_required, allow_all_correct)
 	item_cls.item_number = N
 	nocheat_item_cls = nocheater.modify_item_cls(item_cls)
-	nocheat_item_cls.answers_list = []
-	for idx in nocheat_item_cls.answer_index_list:
-		answer_text = nocheat_item_cls.choices_list[idx]
-		nocheat_item_cls.answers_list.append(answer_text)
+	nocheat_item_cls.answers_list = [nocheat_item_cls.choices_list[idx] for idx in nocheat_item_cls.answer_index_list]
 	nocheat_item_cls._validate()
 	# update histogram
 	for i, choice_text in enumerate(choices_list):
