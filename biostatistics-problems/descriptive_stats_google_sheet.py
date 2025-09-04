@@ -109,6 +109,13 @@ def get_question_text(data) -> str:
 	data_html = "<br/>".join(f"{x:d}" for x in data)
 
 	question_text = ""
+
+	question_text += "<p><b>Purpose:</b> "
+	question_text += "This assignment will help you practice making your own copy of a  "
+	question_text += "Google Sheet template and using with for statistical calculations. "
+	question_text += "Throughout this course, we will use Google Sheets regularly. "
+	question_text += "Take some time to look at the formulas in the sheet and notice how they work.</p>"
+
 	question_text += "<p>Follow these steps carefully:</p> "
 	question_text += "<p>(1) Open the Google Sheet Template: "
 	question_text += "<a href='https://docs.google.com/spreadsheets/d/"
