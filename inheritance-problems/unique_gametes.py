@@ -46,8 +46,10 @@ def write_gametes_question(N, num_genes, hint_flag):
 		genotype_code, gamete_count = genotypelib.createGenotype(num_genes)
 
 	# Add genotype to the question
-	monospace_genotype_code = bptools.html_monospace(genotype_code)
-	question += f'<p><strong>Genotype:</strong>{monospace_genotype_code}</p>'
+	question += '<p><strong>Genotype:</strong>&nbsp;'
+	question += '<span style="font-family: monospace; font-size: 1.3em; '
+	question += 'background-color: #f0f0f0; padding: 3px 6px; border-radius: 4px;">'
+	question += f'{genotype_code}</span></p>'
 
 	# Create a list of answer choices
 	choices_list = []
