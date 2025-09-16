@@ -18,7 +18,7 @@ def genotype_code_format_text(mystr):
 	html = ''
 	html += '<span style="font-family: monospace; font-size: 1.3em; '
 	html += 'background-color: #f0f0f0; padding: 3px 6px; border-radius: 4px;">'
-	html += f'{mystr}</span></p>'
+	html += f'{mystr}</span>'
 	return html
 
 

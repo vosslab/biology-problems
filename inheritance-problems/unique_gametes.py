@@ -48,6 +48,7 @@ def write_gametes_question(N, num_genes, hint_flag):
 	# Add genotype to the question
 	question += '<p><strong>Genotype:</strong>&nbsp;'
 	question += genotypelib.genotype_code_format_text(genotype_code)
+	question += '</p>'
 
 	# Create a list of answer choices
 	choices_list = []
