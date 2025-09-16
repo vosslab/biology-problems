@@ -103,8 +103,8 @@ def write_question(N, num_genes, max_choices, hint_flag):
 	total_genotypes = genotypelib.countGenotypesForCross(gene_list1, gene_list2)
 
 	# Randomly order parent genotypes
-	monospace_geno1 = bptools.html_monospace(geno1)
-	monospace_geno2 = bptools.html_monospace(geno2)
+	monospace_geno1 = genotypelib.genotype_code_format_text(geno1)
+	monospace_geno2 = genotypelib.genotype_code_format_text(geno2)
 
 	# Randomly decide the order of genotypes for male and female
 	male_row = "<tr><td style='padding-left: 10px; padding-right: 10px;'>Male (&male;)</td>"
