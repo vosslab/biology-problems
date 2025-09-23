@@ -40,7 +40,7 @@ matching pairs:
 
   Benchmark T-test:
     - Compares the mean of a sample to a known population mean when the population variance is unknown.
-    - Used when the population variance is unknown, and you have a smaller sample size (n < 30).
+    - Used when the population variance is unknown, and you have a smaller sample size (n &lt; 30).
     - The population mean resting heart rate is 70 bpm, but the standard deviation is unknown. You collect a sample of n = 25 patients on a new drug to test if their mean heart rate differs from the population mean.
     - The population mean protein concentration is 50 mg/mL, but the standard deviation is unknown. You are working with n = 20 samples and want to test if the mean protein concentration differs from the known mean.
     - The population mean species richness is 25 species per plot, but the standard deviation is unknown. You have a small sample of n = 18 plots and want to test if species richness differs from the population mean.
