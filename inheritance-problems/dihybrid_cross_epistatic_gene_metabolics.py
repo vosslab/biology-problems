@@ -170,16 +170,30 @@ def dominant_epistasis(color_set):
 	#assigned_colors = hybridcrosslib.dihybridAssignColors(2, color_set)
 	#print(hybridcrosslib.createDiHybridTable('A', 'B', assigned_colors, 'dominant epistasis'))
 
-	description = table+'<br/>'
-	description += 'A two step metabolic pathway determines the pigment color.<li> '
-	description += '<uL>When gene 1 is dominant, the gene expresses an enzyme that inhibits another enzyme '
-	description += 'that converts the {0} precursor pigment into the {1} pigment.</ul> '.format(AB_color, ab_color)
-	description += '<uL>When gene 2 is dominant, the gene expresses an enzyme that converts the {0} pigment into the {1} pigment.</ul> '.format(ab_color, Ab_color)
-	description += '<uL>When both genes are dominant, the dominant allele of gene 1 inhibits '
-	description += 'the production of the {0} color, so it will remain the {1} precursor color.</ul> '.format(ab_color, AB_color)
-	description += '<uL>When both of the genes are homozygous recessive, then the first enzyme is active (not inhibited) and '
-	description += 'the {0} precursor pigment is converted to the {1} pigment and '.format(AB_color, ab_color)
-	description += 'it will remain the final pigment, as the second enzyme is inactive.</ul></li> '
+	description = table + '<br/>\n'
+	description += (
+		'A two step metabolic pathway determines the pigment color.<li> '
+	)
+	description += (
+		f'<ul>When gene 1 is dominant, the gene expresses an enzyme that '
+		f'inhibits another enzyme that converts the {AB_color} precursor '
+		f'pigment into the {ab_color} pigment.</ul> '
+	)
+	description += (
+		f'<ul>When gene 2 is dominant, the gene expresses an enzyme that '
+		f'converts the {ab_color} pigment into the {Ab_color} pigment.</ul> '
+	)
+	description += (
+		f'<ul>When both genes are dominant, the dominant allele of gene 1 '
+		f'inhibits the production of the {ab_color} color, so it will remain '
+		f'the {AB_color} precursor color.</ul> '
+	)
+	description += (
+		f'<ul>When both of the genes are homozygous recessive, then the first '
+		f'enzyme is active (not inhibited) and the {AB_color} precursor '
+		f'pigment is converted to the {ab_color} pigment and it will remain '
+		'the final pigment, as the second enzyme is inactive.</ul></li> '
+	)
 	return description
 
 #===================
