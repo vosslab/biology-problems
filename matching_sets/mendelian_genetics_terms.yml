@@ -32,20 +32,20 @@ replacement_rules:
 #######################
 matching pairs:
   character:
-    - heritable feature that varies among individuals, such as seed shape
-    - heritable feature that varies among individuals, such as seed color
-    - heritable feature that varies among individuals, such as flower position
-    - heritable feature that varies among individuals, such as stem length
-    - heritable feature that varies among individuals, such as eye color
-    - a feature that can be inherited and varies among organisms, like seed shape
-    - a feature that can be inherited and varies among organisms, like seed color
-    - a feature that can be inherited and varies among organisms, like flower position
-    - a feature that can be inherited and varies among organisms, like stem length
-    - a feature that can be inherited and varies among organisms, like eye color
-    - an observable feature of a particular group of organisms, such as flower color
-    - an observable feature of a particular group of organisms, such as hair color
-    - an observable feature of a particular group of organisms, such as seed color
-    - a feature, such as hair color, noticeable in a particular organismal group
+    - a single heritable feature that varies among individuals, such as seed shape
+    - a single heritable feature that varies among individuals, such as seed color
+    - a single heritable feature that varies among individuals, such as flower position
+    - a single heritable feature that varies among individuals, such as stem length
+    - a single heritable feature that varies among individuals, such as eye color
+    - a single feature that can be inherited and varies among organisms, like seed shape
+    - a single feature that can be inherited and varies among organisms, like seed color
+    - a single feature that can be inherited and varies among organisms, like flower position
+    - a single feature that can be inherited and varies among organisms, like stem length
+    - a single feature that can be inherited and varies among organisms, like eye color
+    - one observable feature category of a group of organisms, such as flower color
+    - one observable feature category of a group of organisms, such as hair color
+    - one observable feature category of a group of organisms, such as seed color
+    - a single feature, such as hair color, noticeable in a particular organismal group
 
   trait:
     - each variant for a character, such as purple or white color for flowers
@@ -71,21 +71,22 @@ matching pairs:
     - DNA composition affecting a certain phenotype
 
   phenotype:
-    - the observable traits of an organism
-    - the observable traits of an individual, such as eye color and blood type
-    - the observable traits of an individual, such as height and blood type
-    - the observable traits of an individual, such as height and eye color
-    - the observable expression of DNA
-    - the physical traits of an organism
-    - observable traits due to how its genes interact with the environment
     - all the observable traits of an organism
+    - all the observable traits of an individual, such as eye color and blood type
+    - all the observable traits of an individual, such as height and blood type
+    - all the observable traits of an individual, such as height and eye color
+    - the observable expression of DNA in an organism
+    - all the physical traits of an organism
+    - all observable traits due to how its genes interact with the environment
+    - the complete set of observable traits of an organism
     - Mendel referred to this as the <i>"external resemblance"</i> of an organism
-    - traits that can be observed in an organism
-    - specific observable traits like eye color or blood type
-    - observable traits such as height or blood type in an individual
-    - manifestation of DNA as observable traits
-    - physical expression of an organism's genetic content
+    - traits that can all be observed in an organism
+    - specific observable traits, like eye color or blood type, taken together
+    - observable traits such as height or blood type in an individual, considered as a whole
+    - the manifestation of DNA as all observable traits
+    - the physical expression of an organism's entire genetic content
     - Mendel described this as an organism's "external appearance"
+
 
   alleles:
     - different versions of the same gene, such as <strong>A</strong> or <strong>a</strong>
