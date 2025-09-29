@@ -65,8 +65,7 @@ def autoAddConflictRules(yaml_data):
 		is_number[str(n)] = True
 	true_statement_tree = yaml_data['true_statements']
 	false_statement_tree = yaml_data['false_statements']
-	if yaml_data['conflict_rules'] is None:
-		yaml_data['conflict_rules'] = {}
+	yaml_data['conflict_rules'] = {}
 	statement_keys = list(true_statement_tree.keys())
 	statement_keys += list(false_statement_tree.keys())
 	rule_bases = set()
