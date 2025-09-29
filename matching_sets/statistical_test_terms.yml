@@ -18,6 +18,7 @@ replacement_rules:
     stattests: '<span style="color: #e69100;">statistical tests</span>' #LIGHT ORANGE
     dof: '<span style="color: #b3b300;">degrees of freedom</span>' #DARK YELLOW
     EEEEEEEE: '<span style="color: #59b300;">EEEEEEEE</span>' #LIME GREEN
+    'accept ': '<span style="color: #009900;">accept</span> ' #GREEN
     accepted: '<span style="color: #009900;">accepted</span>' #GREEN
     teststat: '<span style="color: #00b38f;">test statistic</span>' #TEAL
     nullhyp: '<span style="color: #00b3b3;">null hypothesis, H<sub>0</sub></span>' #CYAN

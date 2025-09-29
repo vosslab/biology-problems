@@ -1,0 +1,104 @@
+---
+
+#Which one of the following statements is FALSE/TRUE <connection word> <topic>
+topic: stattests
+
+#override_question_true: ~
+override_question_false: ~
+
+replacement_rules:
+    'reject ':   '<span style="color: #e60000;">reject</span> ' #RED
+    rejected:    '<span style="color: #e60000;">rejected</span>' #RED
+    althyp:      '<span style="color: #e65400;">alternative hypothesis, H<sub>a</sub></span>' #DARK ORANGE
+    'stattest ': '<span style="color: #e69100;">statistical test</span> ' #LIGHT ORANGE
+    stattests:   '<span style="color: #e69100;">statistical tests</span>' #LIGHT ORANGE
+    dof:         '<span style="color: #b3b300;">degrees of freedom</span>' #DARK YELLOW
+    EEEEEEEE:    '<span style="color: #59b300;">EEEEEEEE</span>' #LIME GREEN
+    accepted:    '<span style="color: #009900;">accepted</span>' #GREEN
+    'accept ':   '<span style="color: #009900;">accept</span> ' #GREEN
+    favor:       '<span style="color: #009900;">FAVOR</span>' #GREEN
+    teststat:    '<span style="color: #00b38f;">test statistic</span>' #TEAL
+    nullhyp:     '<span style="color: #00b3b3;">null hypothesis, H<sub>0</sub></span>' #CYAN
+    IIIIIIII:    '<span style="color: #0a9bf5;">IIIIIIII</span>' #SKY BLUE
+    critval:     '<span style="color: #0039e6;">critical value(s)</span>' #BLUE
+    KKKKKKKK:    '<span style="color: #004d99;">KKKKKKKK</span>' #NAVY
+    losa:        '<span style="color: #7b12a1;">level of significance, &alpha;</span>' #PURPLE
+    p-value:     '<span style="color: #b30077;">p-value</span>' #MAGENTA
+    NNNNNNNN:    '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
+    ' inside ':  ' <strong>inside</strong> '
+    ' outside ': ' <strong>outside</strong> '
+    'more extreme than': '<strong>more extreme than</strong>'
+    'less than': '<strong>less than</strong>'
+    'larger than': '<strong>larger than</strong>'
+
+
+connection_words: ~
+
+true_statements:
+  truth1a: the nullhyp is accepted if the teststat is inside the critval region
+  truth1b: the nullhyp is rejected if the teststat is more extreme than the critval
+  truth1c: the nullhyp is rejected if the teststat is outside the critval region
+
+
+  truth2a: the nullhyp is accepted if the p-value is larger than the losa
+  truth2b: the nullhyp is rejected if the p-value is less than the losa
+
+  truth3a: evidence in favor of the althyp occurs when the teststat is more extreme than the critval
+  truth3b: evidence against the althyp occurs when the teststat is inside the critval region
+  truth3c: evidence in favor of the althyp occurs when the teststat is outside the critval region
+
+
+  truth4a: evidence in favor of the althyp occurs when the p-value is less than the losa
+  truth4b: evidence against the althyp occurs when the p-value is larger than the losa
+
+false_statements:
+  # proper comparison, wrong direction
+  false1a: the nullhyp is rejected if the teststat is inside the critval region
+  false1b: the nullhyp is accepted if the teststat is more extreme than the critval
+  false1c: the nullhyp is accepted if the teststat is outside the critval region
+
+  # proper comparison, wrong direction
+  false2b: the nullhyp is rejected if the p-value is larger than the losa
+  false2c: the nullhyp is accepted if the p-value is less than the losa
+
+  # proper comparison, wrong direction
+  false3a: evidence in favor of the althyp occurs when the teststat is inside the critval region
+  false3b: evidence against the althyp occurs when the teststat is more extreme than the critval
+  false3c: evidence against the althyp occurs when the teststat is outside the critval region
+
+  # proper comparison, wrong direction
+  false4a: evidence in favor of the althyp occurs when the p-value is larger than the losa
+  false4b: evidence against the althyp occurs when the p-value is less than the losa
+
+  #---
+  # improper comparison, both directions
+  false5a: the nullhyp is accepted if the teststat is less than the losa
+  false5b: the nullhyp is accepted if the teststat is larger than the losa
+  false5c: the nullhyp is rejected if the teststat is larger than the losa
+  false5d: the nullhyp is rejected if the teststat is less than the losa
+
+  # improper comparison, both directions
+  false6a: the nullhyp is accepted if the p-value is more extreme than the critval
+  false6b: the nullhyp is accepted if the p-value is outside the critval region
+  false6c: the nullhyp is accepted if the p-value is inside the critval region
+  false6d: the nullhyp is rejected if the p-value is more extreme than the critval
+  false6e: the nullhyp is rejected if the p-value is outside the critval region
+  false6f: the nullhyp is rejected if the p-value is inside the critval region
+
+  # improper comparison, both directions
+  false7a: evidence in favor of the althyp occurs when the teststat is less than the losa
+  false7b: evidence in favor of the althyp occurs when the teststat is larger than the losa
+  false7c: evidence against the althyp occurs when the teststat is less than the losa
+  false7d: evidence against the althyp occurs when the teststat is larger than the losa
+
+  # improper comparison, both directions
+  false8a: evidence in favor of the althyp occurs when the p-value is inside the critval region
+  false8b: evidence in favor of the althyp occurs when the p-value is more extreme than the critval
+  false8c: evidence in favor of the althyp occurs when the p-value is outside the critval region
+  false8d: evidence against the althyp occurs when the p-value is inside the critval region
+  false8e: evidence against the althyp occurs when the p-value is more extreme than the critval
+  false8f: evidence against the althyp occurs when the p-value is outside the critval region
+
+# conflicts, means that the statements cannot appear together
+# add ': True' to each line, so the program runs a faster lookup
+conflict_rules: ~
