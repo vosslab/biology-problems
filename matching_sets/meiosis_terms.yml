@@ -10,6 +10,22 @@ keys description: Meiosis terms
 value description: definition
 values description: definitions
 
+replacement_rules:
+    homologous chromosomes: '<span style="color: #e60000;">homologous chromosomes</span>' #RED
+    BBBBBBBB: '<span style="color: #e65400;">BBBBBBBB</span>' #DARK ORANGE
+    CCCCCCCC: '<span style="color: #e69100;">CCCCCCCC</span>' #LIGHT ORANGE
+    DDDDDDDD: '<span style="color: #b3b300;">DDDDDDDD</span>' #DARK YELLOW
+    EEEEEEEE: '<span style="color: #59b300;">EEEEEEEE</span>' #LIME GREEN
+    FFFFFFFF: '<span style="color: #009900;">FFFFFFFF</span>' #GREEN
+    GGGGGGGG: '<span style="color: #00b38f;">GGGGGGGG</span>' #TEAL
+    homologousx: '<span style="color: #00b3b3;">homologous</span>' #CYAN
+    IIIIIIII: '<span style="color: #0a9bf5;">IIIIIIII</span>' #SKY BLUE
+    JJJJJJJJ: '<span style="color: #0039e6;">JJJJJJJJ</span>' #BLUE
+    KKKKKKKK: '<span style="color: #004d99;">KKKKKKKK</span>' #NAVY
+    LLLLLLLL: '<span style="color: #7b12a1;">LLLLLLLL</span>' #PURPLE
+    MMMMMMMM: '<span style="color: #b30077;">MMMMMMMM</span>' #MAGENTA
+    NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
+
 #######################
 matching pairs:
   homologous chromosomes:
@@ -21,7 +37,7 @@ matching pairs:
     - two chromosomes containing identical genetic loci although possibly different allelic forms
     - chromosome pairs (one from each parent) that are similar in length, gene position, and centromere location
 
-  homologous:
+  homologousx:
     - not an exact copy but having the same structural features and pattern of genes
     - corresponding or similar in position, value, structure, or function
     - similar in structure and evolutionary origin, though not necessarily in function
@@ -48,17 +64,17 @@ matching pairs:
     - two identical copies of one chromosome specifically created for cell division
 
   crossing over:
-    - the exchange of genes between homologous chromosomes, resulting in a mixture of parental characteristics in offspring
+    - the exchange of genes between homologous chromosomes, resulting in a mixture of parental characteristics
     - two homologous chromosomes line up and parts of the chromosomes can be exchanged
-    - the exchange of genes between two chromosomes, resulting in a mixture of parental characteristics in offspring
+    - the exchange of genes between two homologous chromosomes, resulting in a mixture of parental characteristics
     - the exchange of genetic material between homologous chromosomes
     - the actual exchange of segments between homologous chromosomes
     - a process by which parts of homologous chromosomes are interchanged
 
   chiasmata:
-    - the point of contact (or physical link) between two homologous chromosomes where crossing over occurs
-    - the point of contact between paired chromatids where crossing over occurs
+    - the physical link between non-sister chromatids of homologous chromosomes that remain after crossing over
+    - the point of contact between paired chromatids that marks a crossover site
     - specialized chromatin structures that link homologous chromosomes together
-    - the point of contact, the physical link, between two (non-sister) chromatids belonging to homologous chromosomes
-    - the region of crossing over between two non-sisters chromatids of two homologous chromosomes
-    - a point of overlap of paired chromatids at which fusion and exchange of genetic material take place
+    - the visible link between two (non-sister) chromatids belonging to homologous chromosomes
+    - the region where homologous chromosomes stay connected after crossing over
+    - a point of overlap of paired chromatids at which exchange of genetic material has taken place
