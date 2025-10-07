@@ -201,15 +201,15 @@ def wrongNullHypothesis():
 def chiSquareResults(chisq, critical_value, flip):
 	if flip is False:
 		if chisq > critical_value:
-			results = ("greater", "rejected")
+			results = ("greater", "been rejected")
 		elif chisq <= critical_value:
-			results = ("less", "accepted")
+			results = ("less", "failed to be rejected")
 	else:
 		# this is WRONG
 		if chisq > critical_value:
-			results = ("greater", "accepted")
+			results = ("greater", "failed to be rejected")
 		elif chisq <= critical_value:
-			results = ("less", "rejected")
+			results = ("less", "been rejected")
 	return results
 
 #===================
@@ -265,7 +265,7 @@ def questionContent(chisq: float, df: int=3, alpha: float=0.05, flip: bool=False
 	# Build the last part of the question string based on the results of the chi-squared test
 	# Complete the question string with chi-squared test results
 	question += f"<p>Since the chi-squared value of {chisq:.2f} is {results[0]} than the "
-	question += f"critical value of {critical_value:.2f}, the null hypothesis is {results[1].upper()}.</p>"
+	question += f"critical value of {critical_value:.2f}, the null hypothesis has {results[1].upper()}.</p>"
 
 	# Separate different sections of the question
 	question += "<hr/> "

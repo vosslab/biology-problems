@@ -106,7 +106,7 @@ def questionContent():
 	question = ''
 	question += "<p>Complete the table and calculate the chi-squared (&chi;<sup>2</sup>) value.</p> "
 	question += "<p><i>Even though not part of the question, ask yourself whether you would "
-	question += "reject or accept the null hypothesis</i></p> "
+	question += "reject or fail to reject the null hypothesis</i></p> "
 
 	return question
 
@@ -186,7 +186,7 @@ if __name__ == '__main__':
 		if complete_question is None:
 			i -= 1
 			continue
-		tolerance = final_chisq * 0.02
+		tolerance = round(max(final_chisq * 0.02, 0.01), 2)
 		N = i+1
 		bbq_content = bptools.formatBB_NUM_Question(N, complete_question, final_chisq, tolerance)
 		f.write(bbq_content)

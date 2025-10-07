@@ -30,7 +30,7 @@ error_types = {
 	2: 'forget to square the top divide by observed',
 }
 
-accept_str = '<span style="color: #009900;"><strong>ACCEPT</strong></span>' #GREEN
+accept_str = '<span style="color: #009900;"><strong>FAIL to REJECT</strong></span>' #GREEN
 reject_str = '<span style="color: #e60000;"><strong>REJECT</strong></span>' #RED
 tables_list = [
 		'<span style="color: #e69100;"><strong>Table 1</strong></span>', #LIGHT ORANGE
@@ -203,7 +203,7 @@ def questionContent():
 	question += "they did it three (3) different ways.</p> "
 
 	question += "<p>Before you ask your instructor for a new lab partner, "
-	question += "<b>tell them which table is correct AND whether they can accept or reject "
+	question += "<b>tell them which table is correct AND whether they can reject or fail to reject "
 	question += "the null hypothesis</b> using the information provided.</p> "
 	return question
 

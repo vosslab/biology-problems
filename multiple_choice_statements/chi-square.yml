@@ -7,8 +7,11 @@ topic: chi-square (&chi;&sup2;) tests
 override_question_false: ~
 
 replacement_rules:
-    rejected:   '<span style="color: #e60000;">REJECTED</span>' #RED
-    accepted:   '<span style="color: #009900;">ACCEPTED</span>' #GREEN
+    'is rejected':      'is <span style="color: #d9534f;">REJECTED</span>'
+    'is not rejected':  'is <span style="color: #5bc0de;">NOT REJECTED</span>'
+    'is supported':     'is <span style="color: #5cb85c;">SUPPORTED</span>'
+    'is not supported': 'is <span style="color: #f0ad4e;">NOT SUPPORTED</span>'
+
     c2s:        '<span style="color: #004d99;">chi-square (&chi;&sup2;) statistic</span>' #NAVY
     p-value:    '<span style="color: #b3b300;">p-value</span>' #DARK YELLOW
     losa:       '<span style="color: #e65400;">level of significance, &alpha;</span>' #DARK ORANGE
@@ -17,6 +20,7 @@ replacement_rules:
     althyp:     '<span style="color: #b30077;">alternative hypothesis, H<sub>a</sub></span>' #MAGENTA
     less than:   '<strong>less than</strong>'
     larger than: '<strong>larger than</strong>'
+
     EEEEEEEE: '<span style="color: #59b300;">EEEEEEEE</span>' #LIME GREEN
     GGGGGGGG: '<span style="color: #00b38f;">GGGGGGGG</span>' #TEAL
     HHHHHHHH: '<span style="color: #00b3b3;">HHHHHHHH</span>' #CYAN
@@ -27,50 +31,52 @@ replacement_rules:
 connection_words: ~
 
 true_statements:
-  truth1a: the nullhyp is accepted if the c2s is less than the critval
+  truth1a: the nullhyp is not rejected if the c2s is less than the critval
   truth1b: the nullhyp is rejected if the c2s is larger than the critval
 
-  truth2a: the nullhyp is accepted if the p-value is larger than the losa
+  truth2a: the nullhyp is not rejected if the p-value is larger than the losa
   truth2b: the nullhyp is rejected if the p-value is less than the losa
 
-  truth3a: the althyp is accepted if the c2s is larger than the critval
+  truth3a: the althyp is supported if the c2s is larger than the critval
+  truth3b: the althyp is not supported if the c2s is less than the critval
 
-  truth4a: the althyp is accepted if the p-value is less than the losa
+  truth4a: the althyp is supported if the p-value is less than the losa
+  truth4b: the althyp is not supported if the p-value is larger than the losa
 
 false_statements:
-  #false1a: the nullhyp is accepted if the c2s is less than the critval
+  #false1a: the nullhyp is not rejected if the c2s is less than the critval
   false1b: the nullhyp is rejected if the c2s is less than the critval
-  false1c: the nullhyp is accepted if the c2s is larger than the critval
+  false1c: the nullhyp is not rejected if the c2s is larger than the critval
 
-  #false2a: the nullhyp is accepted if the p-value is larger than the losa
+  #false2a: the nullhyp is not rejected if the p-value is larger than the losa
   false2b: the nullhyp is rejected if the p-value is larger than the losa
-  false2c: the nullhyp is accepted if the p-value is less than the losa
+  false2c: the nullhyp is not rejected if the p-value is less than the losa
 
-  false3a: the althyp is accepted if the c2s is less than the critval
+  false3a: the althyp is supported if the c2s is less than the critval
 
-  false4a: the althyp is accepted if the p-value is larger than the losa
+  false4a: the althyp is supported if the p-value is larger than the losa
 
   #---
 
-  false5a: the nullhyp is accepted if the c2s is less than the losa
-  false5b: the nullhyp is accepted if the c2s is larger than the losa
+  false5a: the nullhyp is not rejected if the c2s is less than the losa
+  false5b: the nullhyp is not rejected if the c2s is larger than the losa
   false5c: the nullhyp is rejected if the c2s is larger than the losa
   false5d: the nullhyp is rejected if the c2s is less than the losa
 
-  false6a: the nullhyp is accepted if the p-value is larger than the critval
-  false6b: the nullhyp is accepted if the p-value is less than the critval
+  false6a: the nullhyp is not rejected if the p-value is larger than the critval
+  false6b: the nullhyp is not rejected if the p-value is less than the critval
   false6c: the nullhyp is rejected if the p-value is larger than the critval
   false6d: the nullhyp is rejected if the p-value is less than the critval
 
-  false7a: the althyp is accepted if the c2s is less than the losa
-  false7b: the althyp is accepted if the c2s is larger than the losa
-  false7c: the althyp is rejected if the c2s is less than the losa
-  false7d: the althyp is rejected if the c2s is larger than the losa
+  false7a: the althyp is supported if the c2s is less than the losa
+  false7b: the althyp is supported if the c2s is larger than the losa
+  false7c: the althyp is not supported if the c2s is less than the losa
+  false7d: the althyp is not supported if the c2s is larger than the losa
 
-  false8a: the althyp is accepted if the p-value is less than the critval
-  false8b: the althyp is accepted if the p-value is larger than the critval
-  false8c: the althyp is rejected if the p-value is less than the critval
-  false8d: the althyp is rejected if the p-value is larger than the critval
+  false8a: the althyp is supported if the p-value is less than the critval
+  false8b: the althyp is supported if the p-value is larger than the critval
+  false8c: the althyp is not supported if the p-value is less than the critval
+  false8d: the althyp is not supported if the p-value is larger than the critval
 
 # conflicts, means that the statements cannot appear together
 # add ': True' to each line, so the program runs a faster lookup
