@@ -21,6 +21,8 @@ letters = 'ABCDEFGHJKMNPQRSTUWXYZ'
 crc16_dict = {}
 
 nocheater = anti_cheat.AntiCheat()
+nocheater.use_insert_hidden_terms = True
+nocheater.use_no_click_div = True
 
 #==========================
 def get_git_root(path=None):
