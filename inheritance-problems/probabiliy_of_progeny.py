@@ -44,17 +44,44 @@ num2txt = {
 #===========================================================
 #===========================================================
 def makeChoose(n, r):
+	"""
+	Create an inline HTML table representing (n over r) with flattened parentheses.
+
+	- Enlarged and lightened parentheses.
+	- Adds slightly more horizontal spacing (~3/4 character) between parentheses and numbers.
+	- ASCII-safe with HTML numeric entities.
+	"""
 	choose = ""
-	choose += "<table style='border-collapse: collapse; border: 1px solid white;'>"
+	choose += (
+		"<table style='display:inline-table;vertical-align:middle;"
+		"border-collapse:collapse;border:0;position:relative;top:-0.2em;'>"
+	)
+
+	# First row: left paren and top number with wider spacing
 	choose += "<tr>"
-	choose += " <td rowspan='2' style='text-align: center; vertical-align: middle;'>"
-	choose += "  <span style='font-size: x-large;'>&lpar;</span></td>"
-	choose += " <td style='text-align: center; vertical-align: middle;'>{0}</td>".format(n)
-	choose += " <td rowspan='2' style='text-align: center; vertical-align: middle;'>"
-	choose += "  <span style='font-size: x-large;'>&rpar;</span></td>"
-	choose += "</tr><tr>"
-	choose += " <td style='text-align: center; vertical-align: middle;'>{0}</td>".format(r)
-	choose += "</tr></table>"
+	choose += (
+		" <td rowspan='2' style='text-align:center;vertical-align:middle;padding:0;"
+		"margin-right:0.05em;'>"
+		"<span style='font-size:xx-large;"
+		"transform:scale(1.35);display:inline-block;margin-right:0.05em;'>"
+		"&#10222;</span>&nbsp;</td>"
+	)
+	choose += f" <td style='text-align:center;vertical-align:bottom;padding:0;'>{n}</td>"
+	choose += (
+		" <td rowspan='2' style='text-align:center;vertical-align:middle;padding:0;"
+		"margin-left:0.05em;'>"
+		"&nbsp;<span style='font-size:xx-large;"
+		"transform:scale(1.35);display:inline-block;margin-left:0.05em;'>"
+		"&#10223;</span></td>"
+	)
+	choose += "</tr>"
+
+	# Second row: bottom number with same spacing
+	choose += "<tr>"
+	choose += f" <td style='text-align:center;vertical-align:top;padding:0;'>{r}</td>"
+	choose += "</tr>"
+
+	choose += "</table>"
 	return choose
 
 #===========================================================
@@ -68,6 +95,20 @@ def makeChooseLong(n, r):
 #===========================================================
 #===========================================================
 def makeFraction(numerator, denominator):
+	if numerator == 1:
+		if denominator == 2:
+			return "&frac12;"
+		elif denominator == 3:
+			return "&frac13;"
+		elif denominator == 4:
+			return "&frac14;"
+	elif numerator == 2:
+		if denominator == 3:
+			return "&frac23;"
+	elif numerator == 3:
+		if denominator == 4:
+			return "&frac34;"
+
 	fraction = ""
 	fraction += "<table style='border-collapse: collapse; border: 1px solid white;'>"
 	fraction += "<tr>"
@@ -168,32 +209,53 @@ def percent_to_fraction(p):
 #===========================================================
 #===========================================================
 def makeFormula(n, s, t, p, q):
-	###
-	# n = total
-	# s = # of p
-	# t = # of q
-	# p = prob. of s
-	# q = prob. of t
+	"""
+	Generate the full HTML formula for the binomial probability calculation.
+
+	Args:
+		n (int): total number of trials.
+		s (int): number of successes.
+		t (int): number of failures.
+		p (float): probability of success.
+		q (float): probability of failure.
+
+	Returns:
+		str: HTML string containing a formatted equation showing the
+		     binomial computation step by step.
+	"""
+	# Calculate the final probability value
 	final_value = choose(n, s) * p**s * q**t
-	formula = "<table style='border-collapse: collapse; border: 1px solid white;'>"
+
+	# Start the HTML table for displaying the full equation
+	formula = f"<table style='border-collapse: collapse; border: 1px solid white;'>"
 	formula += "<tr>"
+
+	# First term: choose function C(n, s)
 	formula += " <td>"
 	formula += makeChoose(n, s)
 	formula += "</td><td>"
+
+	# Add p^s and q^t components
 	ptxt = percent_to_fraction(p)
-	formula += "({0})<sup>{1}</sup>".format(ptxt, s)
+	formula += f"({ptxt})<sup>{s}</sup>"
 	qtxt = percent_to_fraction(q)
-	formula += "&sdot;({0})<sup>{1}</sup>".format(qtxt, t)
+	formula += f"&sdot;({qtxt})<sup>{t}</sup>"
+
+	# Begin showing expanded equality steps
 	formula += "</td><td>"
 	formula += "&nbsp;=&nbsp;"
 	formula += "</td><td>"
 	formula += makeChooseLong(n, s)
 	formula += "</td><td>"
+
+	# Show power terms depending on whether p and q are equal
 	if abs(p - q) < 1e-4:
-		formula += "({0})<sup>{1}</sup>".format(ptxt, n)
+		formula += f"({ptxt})<sup>{n}</sup>"
 	else:
-		formula += "({0})<sup>{1}</sup>".format(ptxt, s)
-		formula += "&sdot;({0})<sup>{1}</sup>".format(qtxt, t)
+		formula += f"({ptxt})<sup>{s}</sup>"
+		formula += f"&sdot;({qtxt})<sup>{t}</sup>"
+
+	# Continue equality chain
 	formula += "</td><td>"
 	formula += "&nbsp;=&nbsp;"
 	formula += "</td><td>"
@@ -201,33 +263,88 @@ def makeFormula(n, s, t, p, q):
 	formula += "</td><td>"
 	formula += "&times;"
 	formula += "</td><td>"
+
+	# Multiply the fraction components
 	if abs(p - q) < 1e-4:
 		formula += combinePowerFractions(p, n, 1, 1)
 	else:
 		formula += combinePowerFractions(p, s, q, t)
+
 	formula += "</td><td>"
 	formula += "&nbsp;=&nbsp;"
 	formula += "</td><td>"
+
+	# Compute numeric combination and fraction breakdown
 	c = choose(n, s)
-	#formula += "{0:d}".format(c)
-	#formula += "</td><td>"
 	a, b = decimal_to_fraction_parts(p**s * q**t)
+
+	# Display fractions in simplified or raw form
 	if 1 < a < 1000:
-		formula += makeFraction(str(c)+"&times;"+str(a), str(b))
+		formula += makeFraction(f"{c}&times;{a}", f"{b}")
 	elif a == 1:
-		formula += makeFraction(str(c), str(b))
+		formula += makeFraction(f"{c}", f"{b}")
+
+	# Display final numeric and percentage results
 	formula += "</td><td>"
 	formula += "&nbsp;=&nbsp;"
 	formula += "</td><td>"
-	formula += "{0:.4f}".format(final_value)
+	formula += f"{final_value:.4f}"
 	formula += "</td><td>"
 	formula += "<strong>&nbsp;=&nbsp;</strong>"
 	formula += "</td><td>"
-	formula += "<strong>{0:.1f}%</strong>".format(final_value*100)
+	formula += f"<strong>{final_value * 100:.1f}%</strong>"
 	formula += "</td>"
 	formula += "</tr></table>"
-	#print(formula)
+
+	# Return the complete formula HTML
 	return formula
+
+#============================================================
+#============================================================
+def get_question_text(male_offspring: int, female_offspring: int,
+	total_offspring: int) -> str:
+	"""
+	Generate the HTML question text with assumptions, model cue, and color legend.
+
+	Args:
+		male_offspring (int): Number of boys.
+		female_offspring (int): Number of girls.
+		total_offspring (int): Total number of children.
+
+	Returns:
+		str: HTML string for the question stem.
+	"""
+
+	# Color choices for emphasis (dark cyan for boys, dark pink for girls)
+	color_boys = "#0086b3"
+	color_girls = "#b30086"
+
+	question_text = ""
+
+	# Model badge with symbolic parameters only
+	question_text += f"<p style='margin:2px 0;color:#444;'>"
+	question_text += f"<strong>Model:</strong> Binomial &rarr; "
+	question_text += f"{makeChoose('n', 'k')}&sdot;p<sup>k</sup>&sdot;q<sup>n-k</sup>"
+	question_text += f"</p>"
+
+	question_text += f"<p>"
+	question_text += f"In this scenario, assume that each child is born independently "
+	question_text += f"with the same chance of being either sex. The event outcomes "
+	question_text += f"are mutually exclusive, so we can apply the binomial model to "
+	question_text += f"determine the probability of a specific combination.</p>"
+
+	# Main question stem
+	question_text += f"<p>"
+	question_text += f"A woman has <strong>{num2txt[total_offspring]} "
+	question_text += f"({total_offspring})</strong> children. "
+	question_text += f"What is the probability that she has exactly "
+	question_text += f"<span style='color:{color_boys};'><strong>{num2txt[male_offspring]} "
+	question_text += f"({male_offspring}) boys &male;</strong></span> and "
+	question_text += f"<span style='color:{color_girls};'><strong>{num2txt[female_offspring]} "
+	question_text += f"({female_offspring}) girls &female;</strong></span>? "
+	question_text += f"</p>"
+
+	return question_text
 
 #===========================================================
 #===========================================================
@@ -236,11 +353,7 @@ def write_question(N, min_offspring, max_offspring):
 	female_offspring = random.randint(2, total_offspring-2)
 	male_offspring = total_offspring - female_offspring
 
-	question_text = ""
-	question_text += f"<p>A woman has {num2txt[total_offspring]} ({total_offspring}) children, "
-	question_text += f"what is the probability that she has exactly "
-	question_text += f"{num2txt[male_offspring]} ({male_offspring}) boys and "
-	question_text += f"{num2txt[female_offspring]} ({female_offspring}) girls?</p>"
+	question_text = get_question_text(male_offspring, female_offspring, total_offspring)
 
 	# Initialize the list of answer choices
 	choices_list = []

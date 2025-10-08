@@ -7,60 +7,15 @@ key description: chi2 term
 keys description: chi2 terms
 
 #both singular and plural
-value description: defintion
-values description: defintions
-
-matching pairs:
-  critval:
-    - found in a table for a given degrees of freedom and losa
-    - the boundary of how extreme a test statistic we need to reject the nullhyp
-    - the cutoff used to compare against the observed chi2 test statistic
-    - a measure of the discrepancy between the observed and expected data sets
-    - the sum of the normalized square difference between observed and expected data
-
-  chi2 test statistic:
-    - if this value is large, then there is stronger evidence in favor of the althyp
-    - if this value is large, then there is stronger evidence in against of the nullhyp
-    - the bigger this number, the smaller the p-value
-
-  losa:
-    - the statistical cutoff of the result for the nullhyp to be true or false
-    - a constant probability that provides a cutoff for falsification of the nullhyp
-    - the fixed probability for elimination of nullhyp
-    - a fixed probability cutoff whether the nullhyp is assumed to be accepted or rejected
-    - the cutoff of how small a p-value we need to reject the nullhyp
-    - standard cutoff probability used to determine statistic significance
-    - biologists use a probability of 0.05 (5%) for this value
-
-  p-value:
-    - the probability of getting a result that is either the same or more extreme than the actual observations
-    - represents the probability of occurrence of the given observations
-    - if this value is small, then there is stronger evidence in favor of the althyp
-    - if this value is small, then there is stronger evidence in against of the nullhyp
-    - the smaller this number, the bigger the chi2 test statistic
-    - if this value is small, it suggests that the observed data are not consistent with the nullhyp
-
-  nullhyp:
-    - we attempt to find evidence against this hypothesis in our chi2 test
-    - we want to reject this hypothesis in our chi2 test
-    - this hypothesis makes it easier to calculate the expected values
-
-  althyp:
-    - we are attempting to demonstrate this hypothesis in an indirect way by using the chi2 test
-    - if the nullhyp is disproved, then this opposing hypothesis gets accepted
-    - we want to accept this hypothesis in our chi2 test
-    - for this hypothesis, the expected values may be impossible to calculate
-
-  dof:
-    - most often this number is one less than the number of observations (rows in our table)
-    - represents how many independent values can vary in the calculation after constraints are applie
-    - in a chi2 test, it is usually the number of categories minus one
-    - this value determines which row of the chi2 critval table you should use
-
+value description: definition
+values description: definitions
 
 replacement_rules:
   rejected:   '<span style="color: #FE2712;">rejected</span>'
-  accepted:   '<span style="color: #66B032;">accepted</span>'
+  rejection:  '<span style="color: #FE2712;">rejection</span>'
+  'reject ':  '<span style="color: #FE2712;">reject</span> '
+  supported:  '<span style="color: #66B032;">supported</span>'
+  'support ': '<span style="color: #66B032;">support</span> '
   chi2:       '<span style="color: #FB9902;">chi-square (&chi;&sup2;)</span>'
   p-value:    '<span style="color: #C21460;">p-value</span>'
   losa:       '<span style="color: #8601AF;">level of significance, &alpha;</span>'
@@ -68,3 +23,51 @@ replacement_rules:
   nullhyp:    '<span style="color: #0247FE;">null hypothesis, H<sub>0</sub></span>'
   althyp:     '<span style="color: #FC600A;">alternative hypothesis, H<sub>a</sub></span>'
   dof:        '<span style="color: #B2D732;">degrees of freedom</span>'
+
+matching pairs:
+  critval:
+    - found in a table for a given degrees of freedom and losa
+    - the boundary of how extreme a test statistic we need to reject the nullhyp
+    - the cutoff used to compare against the observed chi2 test statistic
+
+  chi2 test statistic:
+    - if this value is large, then there is stronger evidence to support the althyp
+    - if this value is large, then there is stronger evidence to reject the nullhyp
+    - the bigger this number, the smaller the p-value
+    - the sum of the normalized square difference between observed and expected data
+    - a measure of the discrepancy between the observed and expected data sets
+
+  losa:
+    - the statistical cutoff of the result for the nullhyp to be rejected or not
+    - a constant probability that provides a cutoff for falsification of the nullhyp
+    - the fixed probability for rejection of nullhyp
+    - a fixed probability cutoff whether the nullhyp can be rejected
+    - the cutoff of how small a p-value we need to reject the nullhyp
+    - standard cutoff probability used to determine statistic significance
+    - biologists use a probability of 0.05 (5%) for this value
+
+  p-value:
+    - the probability of getting a result that is either the same or more extreme than the actual observations
+    - if this value is small, then there is stronger evidence to support the althyp
+    - if this value is small, then there is stronger evidence to reject the nullhyp
+    - the smaller this number, the bigger the chi2 test statistic
+    - a small value suggests the observed data are not consistent with the nullhyp
+
+  nullhyp:
+    - we attempt to find evidence against this hypothesis in our chi2 test
+    - we want to reject this hypothesis in our chi2 test
+    - this hypothesis makes it easier to calculate the expected values
+
+  althyp:
+    - we are attempting to support this hypothesis indirectly by using the chi2 test
+    - if the nullhyp is rejected, then this opposing hypothesis is supported
+    - this hypothesis represents a deviation or bias from the expected pattern
+    - for this hypothesis, the expected values are often impossible to calculate
+    - we aim to support this hypothesis in our chi2 test
+
+  dof:
+    - usually one less than the number of observed categories (rows in the table)
+    - represents how many independent values can vary after constraints are applied
+    - in most chi2 tests, it is the number of observed categories (rows in the table) minus one
+    - this number determines which row of the chi2 critval table you should use
+
