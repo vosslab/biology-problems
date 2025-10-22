@@ -48,9 +48,6 @@ def get_important_tips():
 	tips += '  with no spaces, commas, or units such as "cM" or "map units". '
 	tips += '  For example, if the distance is fifty one centimorgans, simply write "51".</li>'
 	tips += '</ul></p>'
-	if gml.is_valid_html(tips) is False:
-		print(tips)
-		raise ValueError
 	return tips
 
 #=====================

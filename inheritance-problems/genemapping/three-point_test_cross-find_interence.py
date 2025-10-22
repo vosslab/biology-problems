@@ -271,7 +271,7 @@ def generate_question(N, question_type, num_choices):
 		GMC.is_valid_html(full_question)
 
 		# Format the final question in numeric format (Fill-in-the-Blank) and return it.
-		final_question = bptools.formatBB_NUM_Question(N, full_question, answer, tolerance=0.1, tol_message=False)
+		final_question = bptools.formatBB_NUM_Question(N, full_question, answer, tolerance_float=0.1, tol_message=False)
 		return final_question
 
 #=====================

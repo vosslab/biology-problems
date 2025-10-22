@@ -15,17 +15,17 @@ def get_question_text(gene_letters: str) -> str:
 	question_string += '<p>Using the table above, determine the order of the genes and the distances between them. '
 	question_string += 'Once calculated, fill in the following four blanks: </p><ul>'
 
-	question_string += '<p><ul> '
-	question_string += '<li>The distance between genes '
+	# FIXED: removed the illegal <p><ul> nesting and stray <li>
+	# question_string += '<ul>'  # REMOVE THIS LINE
 	#the gene letters ARE sorted, so this okay since it is not the gene order
 	for gene1, gene2 in itertools.combinations(gene_letters.upper(), 2):
-		question_string += f'<li>The distance between genes {gene1} and {gene2} is [{gene1}{gene2}] cM ({gene1}{gene2})</li>'
+		question_string += f'<li>The distance between genes {gene1} and {gene2} is '
+		question_string += f'[{gene1}{gene2}] cM ({gene1}{gene2})</li>'
 	question_string += '<li>From this the correct order of the genes is [geneorder] (gene order).</li>'
-	question_string += '</ul></p> '
+	question_string += '</ul>'
 
 	question_string += get_question_footer_tips()
 	return question_string
-
 
 #===========================================================
 #===========================================================
@@ -37,7 +37,7 @@ def get_question_footer_tips():
 		str: HTML formatted string with hints.
 	"""
 	tips = '<h6>Hints</h6>'
-	tips += '<p><ul>'
+	tips += '<ul>'
 	tips += '<li><i>Important Tip 1:</i> '
 	tips += 'Your calculated distances between each pair of genes should be a whole number. '
 	tips += 'Finding a decimal in your answer, such as 5.5, indicates a mistake was made. '
@@ -50,7 +50,7 @@ def get_question_footer_tips():
 	tips += 'Your gene order answer should be written as three letters only, '
 	tips += 'with no spaces, commas, hyphens, or other characters allowed. '
 	tips += 'For example, if the gene order is B - A - C, simply write "bac" or "cab".</li>'
-	tips += '</ul></p>'
+	tips += '</ul>'
 	return tips
 
 #===========================================================
@@ -63,9 +63,9 @@ def get_answer_mapping(gene_order: str, distances_dict: dict) -> list:
 		gene_pair = (gene_order[gene_index_pair[0]-1], gene_order[gene_index_pair[1]-1])
 		gene_letter_pair_str = ''.join(sorted(gene_pair)).upper()
 		distance = distances_dict[tuple(gene_index_pair)]
-		answer_map[gene_letter_pair_str] = [distance,]
+		answer_map[gene_letter_pair_str] = [str(distance),]
 	return answer_map
-assert get_answer_mapping('ab', {(1,2): 3,}) == {'geneorder': ['ab', 'ba'], 'AB': [3]}
+assert get_answer_mapping('ab', {(1,2): 3,}) == {'geneorder': ['ab', 'ba'], 'AB': ['3']}
 
 #=====================
 #=====================
@@ -94,6 +94,7 @@ if __name__ == "__main__":
 		question_string = get_question_text(GMC.gene_letters_str)
 		full_question = header + phenotype_info_text + html_table + question_string
 		answer_map = get_answer_mapping(GMC.gene_order_str, GMC.distances_dict)
+		print(answer_map)
 		final_question = bptools.formatBB_FIB_PLUS_Question(N, full_question, answer_map)
 		#print(final_question)
 		f.write(final_question)
