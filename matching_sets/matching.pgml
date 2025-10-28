@@ -1,0 +1,295 @@
+DOCUMENT();
+
+loadMacros(
+    'PGstandard.pl',
+    'PGML.pl',
+    'PGchoicemacros.pl',
+    'PGgraders.pl',
+    'unionTables.pl',
+    'PGcourse.pl'
+);
+
+# ================================
+# Full matching data
+# ================================
+%match_data = (
+  "character" => [
+    "a single heritable feature that varies among individuals, such as seed shape",
+    "a single heritable feature that varies among individuals, such as seed color",
+    "a single heritable feature that varies among individuals, such as flower position",
+    "a single heritable feature that varies among individuals, such as stem length",
+    "a single heritable feature that varies among individuals, such as eye color",
+    "a single feature that can be inherited and varies among organisms, like seed shape",
+    "a single feature that can be inherited and varies among organisms, like seed color",
+    "a single feature that can be inherited and varies among organisms, like flower position",
+    "a single feature that can be inherited and varies among organisms, like stem length",
+    "a single feature that can be inherited and varies among organisms, like eye color",
+    "one observable feature category of a group of organisms, such as flower color",
+    "one observable feature category of a group of organisms, such as hair color",
+    "one observable feature category of a group of organisms, such as seed color",
+    "a single feature, such as hair color, noticeable in a particular organismal group",
+  ],
+  "trait" => [
+    "each variant for a character, such as purple or white color for flowers",
+    "each variant for a character, such as green or yellow color for seeds",
+    "each variant for a character, such as round or wrinkled seeds in flowers",
+    "a distinct variant of a character of an organism, such as purple or white color for flowers",
+    "a distinct variant of a character of an organism, such as short or long stems in flowers",
+    "a single variation in an inherited character",
+    "a specific form of a heritable feature, like purple color in flowers",
+    "green or yellow as specific forms of the seed color character",
+    "examples of a character's form include round or wrinkled seeds in plants",
+    "specific expression of a character, such as short or long stem lengths in plants",
+  ],
+  "genotype" => [
+    "the genetic constitution of an organism",
+    "combination of alleles that determines a specific trait",
+    "genetic content of an organism that contributes to a specific trait",
+    "chemical makeup of DNA that factors into a particular phenotype",
+    "Mendel referred to this as the <i>internal nature</i> of an organism",
+    "Mendel labeled this as an organism's internal makeup",
+    "allele combinations that specify a trait",
+    "the genetic makeup contributing to particular traits",
+    "DNA composition affecting a certain phenotype",
+  ],
+  "phenotype" => [
+    "all the observable traits of an organism",
+    "all the observable traits of an individual, such as eye color and blood type",
+    "all the observable traits of an individual, such as height and blood type",
+    "all the observable traits of an individual, such as height and eye color",
+    "the observable expression of DNA in an organism",
+    "all the physical traits of an organism",
+    "all observable traits due to how its genes interact with the environment",
+    "the complete set of observable traits of an organism",
+    "Mendel referred to this as the <i>external resemblance</i> of an organism",
+    "all traits that can all be observed in an organism",
+    "all observable traits, like eye color or blood type",
+    "all observable traits such as height or blood type in an individual",
+    "the manifestation of DNA as all observable traits",
+    "the physical expression of an organism's entire genetic content",
+    "Mendel described this as an organism's external appearance",
+  ],
+  "alleles" => [
+    "different versions of the same gene, such as <strong>A</strong> or <strong>a</strong>",
+    "one of two or more versions of DNA sequence at a given genomic location",
+    "one of two or more alternative forms of a gene at the same site in a chromosome",
+    "alternative forms of a specific gene",
+    "variants of the gene",
+    "alternative DNA sequences at a locus",
+    "variations at one gene locus",
+    "variants at a gene locus that code for specific traits",
+    "variants of a gene, for example <strong>A</strong> or <strong>a</strong>",
+    "one version among multiple DNA sequences at a locus",
+    "different gene forms at the same chromosomal location",
+    "alternatives of a specific gene",
+    "variants of a specific gene located at a locus",
+    "alternative versions of DNA at a gene site",
+    "different forms at a single gene locus",
+  ],
+  "gamete" => [
+    "a haploid reproductive cell having the half number of chromosomes",
+    "a general term for either male (sperm) or female (egg) germ cells, which unite to form the zygote",
+    "a haploid cell (e.g., sperm or egg) that fuses with another haploid cell during fertilization in organisms",
+    "sex, or reproductive, cell containing only one set of dissimilar chromosomes",
+    "reproductive cells carrying only one copy of each chromosome in preparation for fertilization",
+    "a reproductive cell with half the chromosome number",
+    "either a male sperm or female egg cell that forms a zygote upon fusion",
+    "haploid cells like sperm or egg that merge during fertilization",
+    "reproductive cells with a single set of non-identical chromosomes",
+  ],
+  "heterozygous" => [
+    "when two copies of a gene are different",
+    "different alleles at one or more corresponding chromosomal loci",
+    "two different alleles of a given gene",
+    "different inherited versions of a gene from each biological parent",
+    "possession of a pair of differing alleles",
+    "presence of two different gene copies",
+    "two unalike alleles for a particular gene",
+    "two different alleles for a gene",
+  ],
+  "homozygous" => [
+    "the two copies of a gene are identical",
+    "identical alleles at one or more corresponding chromosomal loci",
+    "two identical alleles of a given gene",
+    "identical inherited versions of a gene from each biological parent",
+    "possession of a pair of identical alleles",
+    "both gene copies are the same",
+    "identical forms of a gene at corresponding chromosome locations",
+    "two of the same allele for a specific gene",
+    "same version of a gene inherited from each parent",
+    "identical alleles for a gene",
+  ],
+  "dominant" => [
+    "describes a trait that masks the expression of another trait when both versions of the gene are present",
+    "describes a trait that masks the expression of another trait when the alleles for both traits are present",
+    "if two copies of a gene are different, this allele will be expressed",
+    "an allele that masks another allele in the presence of both alleles",
+    "masks another trait's expression when both alleles are present",
+  ],
+  "recessive" => [
+    "describes a trait whose expression is masked by another trait when both versions of the gene are present",
+    "describes a trait whose expression is masked by another trait when the alleles for both traits are present",
+    "if two copies of a gene are different, this allele will be masked",
+    "an allele masked by another allele in the presence of both alleles",
+    "this allele is masked if both alleles differ",
+    "this allele is hidden by another allele when both alleles are present",
+  ],
+);
+
+# -------------------------------
+# Select N random terms
+# -------------------------------
+my $n = 5;
+@all_terms = keys %match_data;
+
+#TEXT("DEBUG: # terms available = " . scalar(@all_terms) . "$BR");
+#TEXT("DEBUG: All terms = " . join(", ", @all_terms) . "$BR");
+
+# we do not need to keep @all_terms, it is never used again
+
+# uses PG's shuffle macro from PGchoicemacros.pl
+#my @indices = shuffle(scalar(@all_terms));
+my @indices = NchooseK(scalar(@all_terms), $n);
+my @selected_terms = @all_terms[@indices[0..$n-1]];
+
+#TEXT("DEBUG: # Selected terms = " . scalar(@selected_terms) . "$BR");
+#TEXT("DEBUG: Selected indices = " . join(", ", @indices) . "$BR");
+#TEXT("DEBUG: Selected terms = " . join(", ", @selected_terms) . "$BR");
+
+# -------------------------------
+# Build (Q, A, Q, A, ...) array
+# -------------------------------
+@qa_list = ();
+@indices = ();
+%answer_map = ();  # for debug/solution output
+foreach my $term (@selected_terms) {
+  my $descriptions_ref = $match_data{$term};
+  my $i = random(0, $#$descriptions_ref, 1);  # pick random index
+  my $desc = $descriptions_ref->[$i];
+  push @qa_list, $term, $desc;
+  push @indices, $i;
+  $answer_map{$term} = $desc;
+}
+
+#TEXT("DEBUG: Description indices = " . join(", ", @indices) . "$BR");
+#TEXT("DEBUG: QA list = " . join("', '", @qa_list) . "$BR");
+#TEXT("DEBUG: QA pairs:$BR");
+#for (my $i = 0; $i < @qa_list; $i += 2) {
+#  TEXT(" - $qa_list[$i] → $qa_list[$i+1]$BR");
+#}
+
+# -------------------------------
+# Create match list
+# -------------------------------
+$ml = new_match_list();
+
+# -------------------------------
+# Override question formatting
+# -------------------------------
+sub custom_pop_up_list_print_q {
+    my $self = shift;
+    my (@questions) = @_;
+    my @list = @{$self->{ra_pop_up_list}};
+    my $out = "";
+    if ($main::displayMode =~ /^HTML/) {
+        my $i = 1;
+        foreach my $quest (@questions) {
+            $out .= qq!<div style="margin-bottom: 0.75em; white-space: nowrap;">!
+                  . qq!<strong>$i.</strong>&nbsp;$quest&nbsp;!
+                  . pop_up_list(@list)
+                  . qq!</div>!;
+            $i++;
+        }
+    } else {
+        # fallback to the built-in PG macro for TeX, PTX, etc.
+        return pop_up_list_print_q($self, @questions);
+    }
+    return $out;
+}
+
+$ml->rf_print_q(~~&custom_pop_up_list_print_q);
+
+# -------------------------------
+# Override answer formatting
+# -------------------------------
+sub my_print_a {
+  my $self = shift;
+  my(@array) = @_;
+  my @alpha = ('A'..'Z', 'AA'..'ZZ');
+  my $out = "<BLOCKQUOTE>";
+  for my $i (0..$#array) {
+    my $letter = $alpha[$i];
+    my $elem = $array[$i];
+    $out .= "<div style='margin-bottom: 1em;'><b>$letter.</b> $elem</div>";
+  }
+  $out .= "</BLOCKQUOTE>";
+  return $out;
+}
+
+# Then register it for your Match list:
+$ml->rf_print_a(~~&my_print_a);
+
+# -------------------------------
+# Dynamically generate popup choices (A to N)
+# -------------------------------
+my @letters = ('A' .. 'Z');
+my @popup_list = ('No answer', '?');
+for my $i (0 .. $n - 1) {
+  push @popup_list, $letters[$i], $letters[$i];  # flat list: label, value
+}
+$ml->ra_pop_up_list([@popup_list]);
+#TEXT("DEBUG: Popup list = " . join("', '", @popup_list) . "$BR");
+
+# -------------------------------
+# Insert generated Q/A pairs
+# -------------------------------
+$ml->qa(@qa_list);  # Insert generated Q/A pairs
+$ml->choose($n);    # Select and shuffle the same number as generated
+
+# -------------------------------
+# Render the question
+# -------------------------------
+BEGIN_PGML
+Match each of the following Mendelian genetics terms with their corresponding definitions.
+Note: Each choice will be used exactly once.
+
+[@ ColumnMatchTable($ml) @]***
+END_PGML
+
+# -------------------------------
+# Dynamic Partial Credit Based on $n
+# -------------------------------
+# Show only final score, not which are correct
+$showPartialCorrectAnswers = 0;
+#install_problem_grader(~~&std_problem_grader);
+
+#install_problem_grader(~~&custom_problem_grader_fluid);
+# Generate dynamic thresholds
+my @thresholds;
+my @scores;
+for (my $i = 1; $i <= $n; $i++) {
+  push @thresholds, $i;
+  push @scores, sprintf("%.2f", $i / $n);  # Rounded partial score
+}
+
+#TEXT("DEBUG: thresholds = " . join(", ", @thresholds) . "$BR");
+#TEXT("DEBUG: scores = " . join(", ", @scores) . "$BR");
+
+install_problem_grader(~~&custom_problem_grader_fluid);
+$ENV{grader_numright} = [@thresholds];
+$ENV{grader_scores}   = [@scores];
+$ENV{grader_message} = 'You can earn partial credit.';
+
+# -------------------------------
+# Grading
+# -------------------------------
+ANS(str_cmp($ml->ra_correct_ans));
+
+@correct      = @{ $ml->ra_correct_ans() };
+$answerstring = join(', ', @correct);
+
+BEGIN_PGML_SOLUTION
+The correct answers are [$answerstring].
+END_PGML_SOLUTION
+
+ENDDOCUMENT();
