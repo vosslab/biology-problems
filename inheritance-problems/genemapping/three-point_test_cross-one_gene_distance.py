@@ -102,15 +102,18 @@ def main():
 		html_table = GMC.get_progeny_html_table()
 		phenotype_info_text = GMC.get_phenotype_info()
 
-		genes_list = list(GMC.gene_letters_str)
-		gene_indices = list(range(1,4))
-		random.shuffle(gene_indices)
-		gene1_index = gene_indices.pop()
-		gene2_index = gene_indices.pop()
-		gene_index_tuple = tuple(sorted([gene1_index, gene2_index]))
+		genes_list = list(GMC.gene_order_str)
+		gene_indices = random.sample(list(range(1,4)), 2)
+		gene_index_tuple = tuple(sorted(gene_indices))
 		gene_pair = (genes_list[gene_index_tuple[0]-1], genes_list[gene_index_tuple[1]-1])
 
 		answer_distance = GMC.distances_dict[gene_index_tuple]
+		print(gene_pair, gene_index_tuple)
+
+		assert gene_pair == (
+			GMC.gene_order_str[gene_index_tuple[0]-1],
+			GMC.gene_order_str[gene_index_tuple[1]-1]
+		), "gene_pair does not match gene_order_str at gene_index_tuple"
 
 		question_string = get_question_text(args.question_type, gene_pair)
 		full_question = header + phenotype_info_text + html_table + question_string
