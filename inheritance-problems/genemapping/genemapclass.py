@@ -4,6 +4,7 @@
 import copy
 import math
 import random
+import itertools
 
 #local libraries
 import bptools
@@ -1040,7 +1041,77 @@ class GeneMappingClass:
 
 	#=====================
 	#=====================
-	def make_choices(self, gene_pair: tuple = None):
+	def add_combinations(self, k: int, choices_set: set, max_choices: int = None):
+		"""
+		Helper for make_choices().
+		Add combinations of genotypes of length k as distractors, preferring
+		a diverse spread of fractions when max_choices is set.
+
+		Args:
+			k (int): Size of genotype combination (2, 3, 4, etc.).
+			choices_set (set): Existing set of genotype tuples to avoid duplicates.
+			max_choices (int, optional): Cap on number of new choices to return.
+
+		Returns:
+			set: New HTML-formatted choices generated in this call.
+
+		Modifies: choices_set
+		"""
+		candidates = []
+		all_genotypes = list(self.genotype_counts.keys())
+
+		for combo in itertools.combinations(all_genotypes, k):
+			combo_tuple = tuple(sorted(combo))
+			if combo_tuple in choices_set:
+				continue
+			values_list = [self.genotype_counts[gt] for gt in combo_tuple]
+			frac = sum(values_list) / float(self.progeny_count_int)
+			if frac > 0.51:
+				continue
+			candidates.append((frac, combo_tuple, values_list))
+
+		# Nothing to add
+		if not candidates:
+			return set()
+
+		# If no cap, return all
+		if max_choices is None or max_choices >= len(candidates):
+			new_texts = set()
+			for frac, combo_tuple, values_list in candidates:
+				choices_set.add(combo_tuple)
+				new_texts.add(self.values_to_text(values_list))
+			return new_texts
+
+		# Greedy diverse selection on fraction space
+		candidates.sort(key=lambda x: x[0])  # sort by frac
+		selected = []
+
+		# seed with extremes
+		selected.append(candidates[0])
+		if len(selected) < max_choices and len(candidates) > 1:
+			selected.append(candidates[-1])
+
+		# pick next items maximizing min distance to selected set
+		def min_dist_to_selected(f):
+			return min(abs(f - s[0]) for s in selected)
+
+		while len(selected) < max_choices and len(selected) < len(candidates):
+			best = max(
+				(c for c in candidates if c not in selected),
+				key=lambda c: min_dist_to_selected(c[0])
+			)
+			selected.append(best)
+
+		# Emit results
+		new_texts = set()
+		for frac, combo_tuple, values_list in selected:
+			choices_set.add(combo_tuple)
+			new_texts.add(self.values_to_text(values_list))
+		return new_texts
+
+	#=====================
+	#=====================
+	def make_choices(self, gene_pair: tuple = None, num_choices: int = 6):
 		"""
 		Generates a list of possible answer choices for the genetic distance question.
 
@@ -1048,6 +1119,9 @@ class GeneMappingClass:
 		1. Identifies the correct answer by calculating the recombinant fraction for the specified gene pair.
 		2. Generates random incorrect choices by selecting random genotype counts and calculating their fractions.
 		3. Ensures each choice is formatted as a genetic distance in centiMorgans (cM).
+
+		This emphasizes distractors that sum the same count of genotypes
+		as the true recombinant numerator by swapping items in and out.
 
 		Args:
 			gene_pair (tuple, optional): A tuple specifying the gene pair for which choices are generated.
@@ -1070,58 +1144,48 @@ class GeneMappingClass:
 		elif gene_pair is None:
 			raise ValueError('Need input gene_pair')
 
+		choices_text_set = set()  # Use a set to ensure unique choices
 		choices_set = set()  # Use a set to ensure unique choices
 
 		# Calculate the correct answer based on recombinant genotypes
 		recomb_genotypes = self.get_all_recombinants_for_gene_pair(gene_pair)
+		recomb_set = set(recomb_genotypes)
 		recomb_counts = self.get_counts_from_genotype_list(recomb_genotypes)
 		answer_text = self.values_to_text(recomb_counts)
 		print(f'answer_text={answer_text}')
-		choices_set.add(answer_text)
+		choices_set.add(tuple(sorted(recomb_set)))
+		choices_text_set.add(answer_text)
 
-		# Calculate the parental fraction and add as an incorrect choice
+		# Calculate the parental fraction and add as an incorrect distractor choice
 		parent_values = self.get_counts_from_genotype_list(self.parental_genotypes_tuple)
 		parent_text = self.values_to_text(parent_values)
 		print(f'parent_text={parent_text}')
-		choices_set.add(parent_text)
+		choices_set.add(tuple(sorted(self.parental_genotypes_tuple)))
+		choices_text_set.add(parent_text)
 
 		# Generate random incorrect choices
 		if self.num_genes_int == 2:
-			max_items = 2
+			# All 2-item pairs of genotypes
+			needed_choices = num_choices - len(choices_text_set)
+			choices_text_set |= self.add_combinations(2, choices_set, needed_choices)
+			# If still short, add singles with small fractions
+			if len(choices_text_set) < num_choices:
+				needed_choices = num_choices - len(choices_text_set)
+				choices_text_set |= self.add_combinations(1, choices_set, needed_choices)
 		elif self.num_genes_int == 3:
-			max_items = 6
-		all_genotypes = list(self.genotype_counts.keys())
-		loop_count = 0
+			# All 2-item pairs of genotypes
+			needed_choices = num_choices - len(choices_text_set)
+			choices_text_set |= self.add_combinations(4, choices_set, needed_choices)
+			# If still short, add triples with small fractions
+			if len(choices_text_set) < num_choices:
+				needed_choices = num_choices - len(choices_text_set)
+				choices_text_set |= self.add_combinations(3, choices_set, needed_choices)
+			# If still short, add pairs with small fractions
+			if len(choices_text_set) < num_choices:
+				needed_choices = num_choices - len(choices_text_set)
+				choices_text_set |= self.add_combinations(2, choices_set, needed_choices)
 
-		# Create random choices by summing counts from random genotypes
-		while len(choices_set) < 6:
-			loop_count += 1
-			num_items = random.randint(1, max_items)  # Randomly decide how many genotypes to sum
-			genotypes_set = set()
-
-			# Select random genotypes to generate a unique incorrect choice
-			while len(genotypes_set) < num_items:
-				genotype = random.choice(all_genotypes)
-				genotypes_set.add(genotype)
-
-			# Sum the counts for the selected genotypes and calculate the fraction
-			values_list = [self.genotype_counts[genotype] for genotype in genotypes_set]
-			float_val = sum(values_list) / float(self.progeny_count_int)
-
-			# Skip this choice if the fraction is greater than 0.49 (too close to 50% or parental)
-			if float_val > 0.49:
-				continue
-
-			# Format the choice and add it to the set
-			choice_text = self.values_to_text(values_list)
-			print(f'choice_text={choice_text}')
-			choices_set.add(choice_text)
-
-			# Break if the loop iterates too many times without finding enough choices
-			if loop_count > 100:
-				break
-
-		return list(choices_set), answer_text
+		return sorted(choices_text_set), answer_text
 
 	#====================================
 	#====================================
@@ -1235,7 +1299,7 @@ class GeneMappingClass:
 		table += f'<tr><th colspan="{self.num_genes_int+1}" {th_extra.replace("center", "right")}>{span}TOTAL =</span></th>'
 		table += f'<td {td_extra.replace("center", "right")}>{span}{self.progeny_count_int:,d}</span></td></tr>'
 		table += '</table>'
-		table += '<p>The resulting phenotypes are summarized in the table above.</p> '
+		#table += '<p>The resulting phenotypes are summarized in the table above.</p> '
 
 		if self.is_valid_html(table) is False:
 			print(table)
