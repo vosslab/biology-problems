@@ -67,15 +67,26 @@ def get_question_text(karyotype_str) -> str:
 	Returns:
 		str: A string containing the main question text.
 	"""
+	# Emphasized karyotype styling
+	styled_karyotype = (
+		f'<span style="'
+		f'font-family: monospace; '
+		f'font-weight: bold; '
+		f'background-color: #eef3fa; '
+		f'padding: 2px 5px; '
+		'">'
+		f'{karyotype_str}'
+		f'</span>'
+	)
 	phrases = [
-		f'For human karyotypes, what does the cytogenetic notation "{karyotype_str}" refer to?',
-		f'In human genetics, what does the notation "{karyotype_str}" indicate?',
-		f'In cytogenetic terms, what is meant by the human karyotype "{karyotype_str}"?',
-		f'What does the notation "{karyotype_str}" describe in human karyotypes?',
-		f'What does "{karyotype_str}" signify in a human karyotype?',
-		f'In the context of human karyotypes, what does "{karyotype_str}" mean?',
-		f'How is the notation "{karyotype_str}" interpreted in human genetics?',
-		f'What does "{karyotype_str}" imply in terms of human chromosome structure?',
+		f'For human karyotypes, what does the cytogenetic notation {styled_karyotype} refer to?',
+		f'In human genetics, what does the notation {styled_karyotype} indicate?',
+		f'In cytogenetic terms, what is meant by the human karyotype {styled_karyotype}?',
+		f'What does the notation {styled_karyotype} describe in human karyotypes?',
+		f'What does {styled_karyotype} signify in a human karyotype?',
+		f'In the context of human karyotypes, what does {styled_karyotype} mean?',
+		f'How is the notation {styled_karyotype} interpreted in human genetics?',
+		f'What does {styled_karyotype} imply in terms of human chromosome structure?',
 	]
 	question_text = random.choice(phrases)
 	return question_text
@@ -84,8 +95,8 @@ def get_question_text(karyotype_str) -> str:
 #======================================
 def sex_chromosomes_to_gender(sex_chromosome_list):
 	if 'Y' in sex_chromosome_list:
-		return 'male'
-	return 'female'
+		return '<span style="color: #004d99;">male (&male;)</span>'
+	return '<span style="color: #99004d;">female (&female;)</span>'
 
 import random
 
@@ -97,8 +108,10 @@ def ploidy_change_to_text(ploidy_change):
 	"""
 	if ploidy_change == '+':
 		base_text = random.choice(['with an extra', 'with an additional', 'with an added'])
+		base_text = f'<span style="color: #00994d;">{base_text}</span>'
 	else:
 		base_text = random.choice(['with a missing', 'lacking', 'with an absent'])
+		base_text = f'<span style="color: #994d00;">{base_text}</span>'
 	#optional "copy of" at the end.
 	base_text += random.choice([' copy of', ''])
 	return base_text
@@ -110,8 +123,12 @@ def wrong_ploidy_change_to_text(ploidy_change):
 	Generates text describing incorrect or misleading ploidy change options for distractors.
 	"""
 	if ploidy_change == '+':
-		return random.choice(['with an extra pair of', 'with a partial duplication of', 'with two extra copies of'])
-	return random.choice(['with a partial deletion of',])
+		base_text = random.choice(['with an extra pair of', 'with a partial duplication of', 'with two extra copies of'])
+		base_text = f'<span style="color: #4d0099;">{base_text}</span>'
+	else:
+		base_text = random.choice(['with a partial deletion of',])
+		base_text = f'<span style="color: #4d0099;">{base_text}</span>'
+	return base_text
 
 
 #======================================
@@ -135,7 +152,7 @@ def generate_choices(karyotype_tuple: tuple, num_choices: int) -> (list, str):
 	ploidy_text = ploidy_change_to_text(ploidy_change)
 
 
-	gender_choices = ['male', 'female']
+	gender_choices = [sex_chromosomes_to_gender('XX'), sex_chromosomes_to_gender('XY')]
 	ploidy_choices = ['+', '-']
 	#chromosome_choices = [str(i) for i in range(1, 23) if str(i) != chromosome] + ['X', 'Y']
 
@@ -155,7 +172,6 @@ def generate_choices(karyotype_tuple: tuple, num_choices: int) -> (list, str):
 			wrong_ploidy_text = wrong_ploidy_change_to_text(ploidy)
 			choice_text = f"This indicates a {gender} human karyotype {wrong_ploidy_text} chromosome {chromosome}."
 			distractors.append(choice_text)
-
 
 	if answer_text is None:
 		raise ValueError("Something went wrong: answer text not created.")
