@@ -9,23 +9,40 @@ keys description: categories of chromosome shape
 value description: shape description
 values description: shape descriptions
 
-
 replacement_rules:
-   chromosome:      '<span style="color: #793AAA;">chromosome</span>'
-   centromere:      '<span style="color: #b45918;"> centromere</span>'
-   'centromere</span>s':      'centromeres</span>'
+    Acentric: '<span style="color: #e60000;">Acentric</span>' #RED
+    centromeres: '<span style="color: #e65400;">centromeres</span>' #DARK ORANGE
+    'centromere ': '<span style="color: #e65400;">centromere</span> ' #DARK ORANGE
+    'centromerex': '<span style="color: #e65400;">centromere</span> ' #DARK ORANGE
+
+    CCCCCCCC: '<span style="color: #e69100;">CCCCCCCC</span>' #LIGHT ORANGE
+    DDDDDDDD: '<span style="color: #b3b300;">DDDDDDDD</span>' #DARK YELLOW
+    EEEEEEEE: '<span style="color: #59b300;">EEEEEEEE</span>' #LIME GREEN
+    Acrocentric: '<span style="color: #009900;">Acrocentric</span>' #GREEN
+    GGGGGGGG: '<span style="color: #00b38f;">GGGGGGGG</span>' #TEAL
+    HHHHHHHH: '<span style="color: #00b3b3;">HHHHHHHH</span>' #CYAN
+    Dicentric: '<span style="color: #0a9bf5;">Dicentric</span>' #SKY BLUE
+    KkKKKKKKK: '<span style="color: #0039e6;">KkKKKKKKK</span>' #BLUE
+    Metacentric: '<span style="color: #004d99;">Metacentric</span>' #NAVY
+    chromosomes: '<span style="color: #7b12a1;">chromosomes</span>' #PURPLE
+    'chromosome ': '<span style="color: #7b12a1;">chromosome</span> ' #PURPLE
+    chromosomex: '<span style="color: #7b12a1;">chromosome</span>' #PURPLE
+
+    Submetacentric: '<span style="color: #b30077;">Submetacentric</span>' #MAGENTA
+    NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
 
 matching pairs:
   Acentric:
-    - an abnormal chromosome that lacks a centromere
+    - an abnormal chromosome that lacks a centromerex
     - spindle fibers cannot attach and the chromosome is lost when the cell divides
     - an unstable chromosome lacking spindle fiber attachment
-    - an unstable chromosome with no centromere
+    - an unstable chromosome with no centromerex
+    - an unstable chromosome lacking a centromerex
 
   Acrocentric:
     - the short arm of the chromosome is so short that it is hard to observe
     - the chromosome most resembles the letter V during metaphase before anaphase separation
-    - the centromere is located very close to one end of the chromosome
+    - the centromere is located very close to one end of the chromosomex
     - the chromosome most resembles the letter I after anaphase separation
     - the centromere is closer to the end rather than the center
     - the centromere is very offset from the center leading to a very short arm
@@ -35,15 +52,15 @@ matching pairs:
     - an abnormal chromosome that has two centromeres that often appear in cancer cells
     - an abnormal chromosome with two centromeres that often appear in cancer cells
     - an unstable chromosome due to unpredictable spindle fiber attachment
-    - a chromosome with formed through the fusion of two chromosome segments, each with a centromere
-    - genomic rearrangements placing two centromeres on the same chromosome
+    - a chromosome with formed through the fusion of two chromosome segments, each with a centromerex
+    - genomic rearrangements placing two centromeres on the same chromosomex
 
   Metacentric:
     - the two arms of the chromosomes are almost equal
     - the chromosome most resembles the letter V after anaphase separation
     - the chromosome most resembles a perfect letter X during metaphase
-    - the centromere is located midway between the ends of the chromosome
-    - a chromosome with a centrally placed centromere
+    - the centromere is located midway between the ends of the chromosomex
+    - a chromosome with a centromere placed in the center
     - the centromere divides the chromosome into two arms with equal length
     - a chromosome with two arms of equal length
 
