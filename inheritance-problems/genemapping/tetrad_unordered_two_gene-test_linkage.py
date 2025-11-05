@@ -179,7 +179,7 @@ def get_choices():
 	# Good choices: valid, sensible options
 	good_choices_list = [
 		f'The two genes are <strong {linked_style}>LINKED</strong> and on the <strong {same_style}>SAME</strong> chromosome.',
-		f'The two genes are <strong {unlinked_style}>UNLINKED</strong> and likely on <strong {different_style}>DIFFERENT</strong> chromosomes.',
+		f'The two genes are <strong {unlinked_style}>UNLINKED</strong> but may be on either the <strong {same_style}>SAME</strong> or <strong {different_style}>DIFFERENT</strong> chromosomes.'
 	]
 
 	# Wrong choices: nonsensical or logically incorrect options
@@ -187,7 +187,6 @@ def get_choices():
 		f'The two genes are <strong {neither_style}>NEITHER</strong> <strong>linked</strong> NOR <strong>unlinked</strong>.',
 		f'The two genes are <strong {both_style}>BOTH</strong> <strong>linked</strong> AND <strong>unlinked</strong>.',
 		f'The two genes are <strong {linked_style}>LINKED</strong> but are likely on <strong {different_style}>DIFFERENT</strong> chromosomes.',
-		f'The two genes are <strong {unlinked_style}>UNLINKED</strong> and on the <strong {same_style}>SAME</strong> chromosome.',
 	]
 
 	# Combine good and wrong choices into one list
