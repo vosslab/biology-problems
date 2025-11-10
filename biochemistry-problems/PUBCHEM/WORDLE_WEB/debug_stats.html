@@ -45,6 +45,8 @@
 	/* global getUtcDayKey, loadStats, saveStats,
 	          previousDayKey, updateStatsOnGameEnd, renderStats */
 
+	const STATS_KEY = "wordle_peptides_stats_v1";
+
 	(function initDateInput() {
 		var today = new Date().toISOString().slice(0, 10);
 		var sd = document.getElementById("stats-date");
@@ -99,11 +101,20 @@
 	document.getElementById("btn-reset-stats").addEventListener("click", function () {
 		var out = document.getElementById("stats-debug-output");
 		try {
-			window.localStorage.removeItem("wordle_peptides_stats_v1");
-			out.textContent = "Stats key removed from localStorage.";
+			if (typeof STATS_KEY === "string") {
+				window.localStorage.removeItem(STATS_KEY);
+			} else {
+				window.localStorage.removeItem("wordle_peptides_stats_v1");
+			}
 			if (typeof renderStats === "function") {
 				renderStats();
 			}
+			// show both the derived stats object and the raw localStorage value
+			var raw = window.localStorage.getItem(STATS_KEY);
+			out.textContent =
+				"Stats key removed.\n" +
+				"localStorage[" + STATS_KEY + "] = " + String(raw) + "\n\n" +
+				"loadStats() -> " + JSON.stringify(loadStats(), null, 2);
 		} catch (e) {
 			out.textContent = "Failed to clear stats: " + e;
 		}
