@@ -41,19 +41,26 @@ function previousDayKey(dayKey) {
 function updateStatsOnGameEnd(win, dayKey) {
     const stats = loadStats();
 
-    if (stats.lastDayKey !== dayKey) {
-        stats.gamesPlayed += 1;
+    // If we already recorded a result for this day, do not double count
+    if (stats.lastDayKey === dayKey && stats.lastResult !== null) {
+        return;
     }
 
+    // New result for this day
+    stats.gamesPlayed += 1;
+
     if (win) {
+        // Streak logic: consecutive winning days
         if (stats.lastDayKey === previousDayKey(dayKey) && stats.lastResult === "win") {
             stats.currentStreak += 1;
         } else {
             stats.currentStreak = 1;
         }
         stats.wins += 1;
+        stats.lastResult = "win";
     } else {
         stats.currentStreak = 0;
+        stats.lastResult = "loss";
     }
 
     if (stats.currentStreak > stats.maxStreak) {
@@ -61,7 +68,6 @@ function updateStatsOnGameEnd(win, dayKey) {
     }
 
     stats.lastDayKey = dayKey;
-    stats.lastResult = win ? "win" : "loss";
     saveStats(stats);
 }
 
