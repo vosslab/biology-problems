@@ -168,7 +168,7 @@ function drawPeptideOnCanvas(word, canvas, highlightPeptide = true) {
     const name = "peptide_" + code16(word);
 
     const mdetails = {
-        //legend: name,
+        // legend: name,
         explicitMethyl: true
     };
 
@@ -178,7 +178,14 @@ function drawPeptideOnCanvas(word, canvas, highlightPeptide = true) {
         mdetails.highlightColour = [0, 1, 0];
     }
 
-    mol.draw_to_canvas_with_highlights(canvas, JSON.stringify(mdetails));
+    // light gray card background, #cccccc = 0.8
+    mdetails.backgroundColour = [0.8, 0.8, 0.8];
+    mdetails.clearBackground = true;
+
+    mol.draw_to_canvas_with_highlights(
+        canvas,
+        JSON.stringify(mdetails)
+    );
 }
 
 //=================================================
@@ -199,7 +206,7 @@ function renderSequence(word, containerId = "peptide") {
     const canvas = document.createElement("canvas");
     canvas.id = "canvas_" + code16(word);
     canvas.width = 800;
-    canvas.height = 500;
+    canvas.height = 450;
 
     container.appendChild(canvas);
 
