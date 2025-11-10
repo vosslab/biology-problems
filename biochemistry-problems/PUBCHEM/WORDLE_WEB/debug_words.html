@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>wordle_words.js debug</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<script src="wordle_words.js"></script>
+
+	<style>
+		body { font-family: system-ui, Arial, sans-serif; margin: 20px; }
+		section { margin-bottom: 24px; border: 1px solid #ddd; padding: 10px; }
+		label { display: inline-block; min-width: 140px; }
+		input, button { font: inherit; }
+		pre { background: #f3f3f3; padding: 8px; white-space: pre-wrap; }
+	</style>
+</head>
+<body>
+	<h2>wordle_words.js debug</h2>
+
+	<section>
+		<h3>WORD_LIST summary</h3>
+		<button id="btn-wordlist-info" type="button">Show list summary</button>
+		<pre id="wordlist-output"></pre>
+	</section>
+
+	<section>
+		<h3>Daily functions</h3>
+		<label for="date-key">UTC date:</label>
+		<input id="date-key" type="date">
+		<button id="btn-daily" type="button">Compute daily word</button>
+		<pre id="daily-output"></pre>
+	</section>
+
+	<section>
+		<h3>hashString32</h3>
+		<label for="hash-input">String:</label>
+		<input id="hash-input" value="2025-11-09">
+		<button id="btn-hash" type="button">Hash</button>
+		<pre id="hash-output"></pre>
+	</section>
+
+	<script>
+	/* global WORD_LIST,
+	          getUtcDayKey, hashString32, getDailyIndex, getDailyWord */
+
+	(function initDateInput() {
+		var today = new Date().toISOString().slice(0, 10);
+		var dk = document.getElementById("date-key");
+		if (dk) dk.value = today;
+	}());
+
+	// WORD_LIST info
+	document.getElementById("btn-wordlist-info").addEventListener("click", function () {
+		var out = document.getElementById("wordlist-output");
+		if (typeof WORD_LIST === "undefined") {
+			out.textContent = "WORD_LIST is not defined.";
+			return;
+		}
+		var n = WORD_LIST.length;
+		var first = WORD_LIST.slice(0, 10);
+		var last = WORD_LIST.slice(Math.max(0, n - 10));
+		var validLength = WORD_LIST.every(function (w) { return typeof w === "string" && w.length === 5; });
+		var allUpper = WORD_LIST.every(function (w) { return /^[A-Z]{5}$/.test(w); });
+
+		out.textContent =
+			"Length: " + n + "\n" +
+			"All 5 letters: " + validLength + "\n" +
+			"All uppercase A Z: " + allUpper + "\n" +
+			"First 10: " + first.join(", ") + "\n" +
+			"Last 10:  " + last.join(", ");
+	});
+
+	// Daily functions
+	document.getElementById("btn-daily").addEventListener("click", function () {
+		var out = document.getElementById("daily-output");
+		if (typeof getUtcDayKey !== "function" ||
+		    typeof hashString32 !== "function" ||
+		    typeof getDailyIndex !== "function" ||
+		    typeof getDailyWord !== "function") {
+			out.textContent = "Some daily functions are not defined.";
+			return;
+		}
+		var dateStr = document.getElementById("date-key").value;
+		if (!dateStr) {
+			out.textContent = "Please pick a date.";
+			return;
+		}
+		var d = new Date(dateStr + "T00:00:00Z");
+		var key = getUtcDayKey(d);
+		var h = hashString32(key);
+		var idx = getDailyIndex(d);
+		var word = getDailyWord(d);
+
+		out.textContent =
+			"dayKey: " + key + "\n" +
+			"hashString32(dayKey): " + h + "\n" +
+			"getDailyIndex: " + idx + "\n" +
+			"getDailyWord: " + word;
+	});
+
+	// hashString32 direct
+	document.getElementById("btn-hash").addEventListener("click", function () {
+		var out = document.getElementById("hash-output");
+		if (typeof hashString32 !== "function") {
+			out.textContent = "hashString32 is not defined.";
+			return;
+		}
+		var s = document.getElementById("hash-input").value;
+		var h = hashString32(s);
+		out.textContent = "hashString32(\"" + s + "\") = " + h;
+	});
+	</script>
+</body>
+</html>

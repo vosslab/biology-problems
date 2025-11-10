@@ -59,30 +59,86 @@ const sideChains = {
 };
 
 //=================================================
+// Template for a pentapeptide backbone with R1..R5 placeholders
+//=================================================
+const POLYPEPTIDE_SMILES_TEMPLATE =
+"[NH3+][C@@H]R1(C(=O)N[C@@H]R2(C(=O)N[C@@H]R3(C(=O)N[C@@H]R4(C(=O)N[C@@H]R5(C(=O)[O-])))))";
+
+//=================================================
 //=================================================
 function makePolypeptideSmilesFromSequence(seq) {
-    let polypeptideSmiles =
-    '[NH3+][C@@H]R1(C(=O)N[C@@H]R2(C(=O)N[C@@H]R3(C(=O)N[C@@H]R4(C(=O)N[C@@H]R5(C(=O)[O-])))))';
+    /**
+     * Build a pentapeptide SMILES from a 1 letter sequence.
+     *
+     * Args:
+     *   seq: String of length 5, using only aminoAcidMapping keys (A C D E ... Y).
+     *
+     * Returns:
+     *   SMILES string with side chains substituted.
+     *
+     * Throws:
+     *   Error if length is not 5 or any letter is not a known amino acid.
+     */
 
-    const chars = seq.toUpperCase().split('');
+    const chars = String(seq || "").toUpperCase().split("");
+
+    if (chars.length !== 5) {
+        throw new Error(
+            "makePolypeptideSmilesFromSequence: sequence must be length 5, got " +
+            chars.length
+        );
+    }
+
+    // Work on a fresh copy so the template is never mutated
+    let polypeptideSmiles = POLYPEPTIDE_SMILES_TEMPLATE;
 
     for (let i = 0; i < chars.length; i += 1) {
         const aa = chars[i];
+
         const threeLetterCode = aminoAcidMapping[aa];
+        if (!threeLetterCode) {
+            throw new Error(
+                "makePolypeptideSmilesFromSequence: invalid residue '" + aa +
+                "' at position " + (i + 1)
+            );
+        }
+
         const sideChain = sideChains[threeLetterCode];
-        polypeptideSmiles = polypeptideSmiles.replace('R' + (i + 1), sideChain);
+        if (typeof sideChain === "undefined") {
+            throw new Error(
+                "makePolypeptideSmilesFromSequence: no side chain defined for " +
+                threeLetterCode + " (from '" + aa + "')"
+            );
+        }
+
+        polypeptideSmiles = polypeptideSmiles.replace("R" + (i + 1), sideChain);
+    }
+
+    // Sanity check: no unsubstituted R placeholders should remain
+    if (/R[1-9]/.test(polypeptideSmiles)) {
+        throw new Error(
+            "makePolypeptideSmilesFromSequence: internal error, leftover R placeholders."
+        );
     }
 
     return polypeptideSmiles;
 }
 
-// 16 bit deterministic code for naming
+
+// 16 bit deterministic code for naming, with stronger mixing
 function code16(str) {
-    let h = 5381;
+    let h = 1779033703 ^ str.length;
     for (let i = 0; i < str.length; i += 1) {
-        h = ((h << 5) + h) ^ str.charCodeAt(i);
+        h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
+        h = (h << 13) | (h >>> 19);
     }
-    return (h & 0xffff).toString(16).padStart(4, '0');
+    h = Math.imul(h ^ (h >>> 16), 2246822507);
+    h = Math.imul(h ^ (h >>> 13), 3266489909);
+    h ^= h >>> 16;
+
+    // fold to 16 bits
+    const h16 = ((h >>> 16) ^ h) & 0xffff;
+    return h16.toString(16).padStart(4, "0");
 }
 
 //=================================================
@@ -144,8 +200,8 @@ function renderSequence(word, containerId = "out") {
 
     const canvas = document.createElement("canvas");
     canvas.id = "canvas_" + code16(word);
-    canvas.width = 480;
-    canvas.height = 512;
+    canvas.width = 800;
+    canvas.height = 500;
 
     container.appendChild(h);
     container.appendChild(canvas);

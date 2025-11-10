@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>wordle_stats.js debug</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<script src="wordle_words.js"></script>
+	<script src="wordle_stats.js"></script>
+
+	<style>
+		body { font-family: system-ui, Arial, sans-serif; margin: 20px; }
+		section { margin-bottom: 24px; border: 1px solid #ddd; padding: 10px; }
+		label { display: inline-block; min-width: 160px; }
+		input, button { font: inherit; }
+		pre { background: #f3f3f3; padding: 8px; white-space: pre-wrap; }
+	</style>
+</head>
+<body>
+	<h2>wordle_stats.js debug</h2>
+
+	<section>
+		<h3>Stats object and renderStats</h3>
+		<div>
+			<button id="btn-show-stats" type="button">Show stats (loadStats)</button>
+			<button id="btn-win-today" type="button">Record win today</button>
+			<button id="btn-loss-today" type="button">Record loss today</button>
+			<button id="btn-reset-stats" type="button">Reset stats (clear localStorage)</button>
+		</div>
+		<h4>renderStats output</h4>
+		<div id="stats"></div>
+		<h4>Raw stats JSON</h4>
+		<pre id="stats-debug-output"></pre>
+	</section>
+
+	<section>
+		<h3>previousDayKey</h3>
+		<label for="stats-date">Day key (YYYY-MM-DD):</label>
+		<input id="stats-date" type="date">
+		<button id="btn-prev-day" type="button">Compute previousDayKey</button>
+		<pre id="prevday-output"></pre>
+	</section>
+
+	<script>
+	/* global getUtcDayKey, loadStats, saveStats,
+	          previousDayKey, updateStatsOnGameEnd, renderStats */
+
+	(function initDateInput() {
+		var today = new Date().toISOString().slice(0, 10);
+		var sd = document.getElementById("stats-date");
+		if (sd) sd.value = today;
+	}());
+
+	function showRawStats() {
+		var out = document.getElementById("stats-debug-output");
+		if (typeof loadStats !== "function") {
+			out.textContent = "loadStats is not defined.";
+			return;
+		}
+		var stats = loadStats();
+		out.textContent = JSON.stringify(stats, null, 2);
+	}
+
+	document.getElementById("btn-show-stats").addEventListener("click", function () {
+		showRawStats();
+		if (typeof renderStats === "function") {
+			renderStats();
+		}
+	});
+
+	document.getElementById("btn-win-today").addEventListener("click", function () {
+		var out = document.getElementById("stats-debug-output");
+		if (typeof updateStatsOnGameEnd !== "function") {
+			out.textContent = "updateStatsOnGameEnd is not defined.";
+			return;
+		}
+		var dayKey = typeof getUtcDayKey === "function" ? getUtcDayKey() : new Date().toISOString().slice(0, 10);
+		updateStatsOnGameEnd(true, dayKey);
+		showRawStats();
+		if (typeof renderStats === "function") {
+			renderStats();
+		}
+	});
+
+	document.getElementById("btn-loss-today").addEventListener("click", function () {
+		var out = document.getElementById("stats-debug-output");
+		if (typeof updateStatsOnGameEnd !== "function") {
+			out.textContent = "updateStatsOnGameEnd is not defined.";
+			return;
+		}
+		var dayKey = typeof getUtcDayKey === "function" ? getUtcDayKey() : new Date().toISOString().slice(0, 10);
+		updateStatsOnGameEnd(false, dayKey);
+		showRawStats();
+		if (typeof renderStats === "function") {
+			renderStats();
+		}
+	});
+
+	document.getElementById("btn-reset-stats").addEventListener("click", function () {
+		var out = document.getElementById("stats-debug-output");
+		try {
+			window.localStorage.removeItem("wordle_peptides_stats_v1");
+			out.textContent = "Stats key removed from localStorage.";
+			if (typeof renderStats === "function") {
+				renderStats();
+			}
+		} catch (e) {
+			out.textContent = "Failed to clear stats: " + e;
+		}
+	});
+
+	document.getElementById("btn-prev-day").addEventListener("click", function () {
+		var out = document.getElementById("prevday-output");
+		if (typeof previousDayKey !== "function") {
+			out.textContent = "previousDayKey is not defined.";
+			return;
+		}
+		var dateStr = document.getElementById("stats-date").value;
+		if (!dateStr) {
+			out.textContent = "Please pick a date.";
+			return;
+		}
+		var prev = previousDayKey(dateStr);
+		out.textContent = "previousDayKey(" + dateStr + ") = " + prev;
+	});
+	</script>
+</body>
+</html>

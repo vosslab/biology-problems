@@ -58,8 +58,14 @@
 	// SMILES test
 	document.getElementById("btn-smiles").addEventListener("click", function () {
 		var seq = document.getElementById("seq-smiles").value.trim();
-		var smiles = makePolypeptideSmilesFromSequence(seq);
-		document.getElementById("smiles-output").textContent = smiles;
+		var out = document.getElementById("smiles-output");
+
+		try {
+			var smiles = makePolypeptideSmilesFromSequence(seq);
+			out.textContent = smiles;
+		} catch (e) {
+			out.textContent = "Error: " + (e && e.message ? e.message : String(e));
+		}
 	});
 
 	// code16 test
