@@ -1,4 +1,29 @@
+"use strict";
 
+// Letters not allowed for amino acid guesses
+const INVALID_LETTERS = {
+    B: true,
+    X: true,
+    Z: true,
+    J: true,
+    O: true,
+    U: true,
+    P: true  // Proline excluded by design
+};
+
+// Simple letter state for keyboard colouring
+const LETTER_STATE = {};
+
+(function initLetterState() {
+    var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    for (var i = 0; i < letters.length; i += 1) {
+        LETTER_STATE[letters[i]] = "unknown";
+    }
+}());
+
+//=================================================
+// Scoring and validation
+//=================================================
 function scoreGuess(guess, answer) {
     const len = answer.length;
     const result = new Array(len).fill("absent");
@@ -31,62 +56,44 @@ function scoreGuess(guess, answer) {
 }
 
 function isValidGuess(guess, wordList) {
-    if (guess.length !== 5) return false;
-    if (!/^[A-Z]{5}$/.test(guess)) return false;
+    if (guess.length !== 5) {
+        return false;
+    }
+    if (!/^[A-Z]{5}$/.test(guess)) {
+        return false;
+    }
     return wordList.indexOf(guess) !== -1;
 }
 
-function setupGame() {
-    const dayKey = getUtcDayKey();
-    const answer = getDailyWord(); // uppercase
-    const maxGuesses = 6;
-
-    renderSequence(answer, "peptide"); // from wordle_peptides.js
-    renderStats();
-
-    const form = document.getElementById("guess-form");
-    const input = document.getElementById("guess");
-    const message = document.getElementById("message");
-    const board = document.getElementById("board");
-
-    let guesses = [];
-    let finished = false;
-
-    form.addEventListener("submit", function (evt) {
-        evt.preventDefault();
-        if (finished) return;
-
-                          let guess = input.value.trim().toUpperCase();
-        if (!isValidGuess(guess, WORD_LIST)) {
-            message.textContent = "Not a valid word.";
-            return;
+function isValidPeptideGuess(guess) {
+    if (guess.length !== 5) {
+        return false;
+    }
+    if (!/^[A-Z]{5}$/.test(guess)) {
+        return false;
+    }
+    for (let i = 0; i < guess.length; i += 1) {
+        const ch = guess[i];
+        // block letters you decided are not allowed in this model
+        if (INVALID_LETTERS[ch]) {
+            return false;
         }
-        input.value = "";
-
-        const result = scoreGuess(guess, answer);
-        guesses.push({ guess: guess, result: result });
-        renderBoard(board, guesses);
-
-        if (result.every(function (x) { return x === "correct"; })) {
-            message.textContent = "Correct.";
-            updateStatsOnGameEnd(true, dayKey);
-            renderStats();
-            finished = true;
-        } else if (guesses.length >= maxGuesses) {
-            message.textContent = "Out of guesses. Answer was " + answer + ".";
-            updateStatsOnGameEnd(false, dayKey);
-            renderStats();
-            finished = true;
-        } else {
-            message.textContent = "";
+        // require that there is an amino acid mapping
+        if (!aminoAcidMapping[ch]) {
+            return false;
         }
-    });
+    }
+    return true;
 }
 
+//=================================================
+// Board rendering
+//=================================================
 function renderBoard(container, guesses) {
     container.innerHTML = "";
     for (let i = 0; i < guesses.length; i += 1) {
         const row = document.createElement("div");
+        row.className = "row";
         const item = guesses[i];
         for (let j = 0; j < item.guess.length; j += 1) {
             const cell = document.createElement("span");
@@ -99,32 +106,14 @@ function renderBoard(container, guesses) {
     }
 }
 
-// Letters not allowed for amino acid guesses
-const INVALID_LETTERS = {
-    B: true,
-    X: true,
-    Z: true,
-    J: true,
-    O: true,
-    U: true,
-    P: true  // Proline excluded by design
-};
-
-// Simple letter state for keyboard colouring
-const LETTER_STATE = {};
-
-(function initLetterState() {
-    var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    for (var i = 0; i < letters.length; i += 1) {
-        LETTER_STATE[letters[i]] = "unknown";
-    }
-}());
-
+//=================================================
+// Keyboard state and rendering
+//=================================================
 function updateLetterState(guess, result, letterState) {
-    for (var i = 0; i < guess.length; i += 1) {
-        var ch = guess[i];
-        var res = result[i];
-        var current = letterState[ch] || "unknown";
+    for (let i = 0; i < guess.length; i += 1) {
+        const ch = guess[i];
+        const res = result[i];
+        const current = letterState[ch] || "unknown";
 
         if (res === "correct") {
             letterState[ch] = "correct";
@@ -141,24 +130,24 @@ function updateLetterState(guess, result, letterState) {
 }
 
 function renderKeyboard(letterState) {
-    var container = document.getElementById("keyboard");
+    const container = document.getElementById("keyboard");
     if (!container) {
         return;
     }
     container.innerHTML = "";
 
-    var rows = [
+    const rows = [
         "QWERTYUIOP",
         "ASDFGHJKL",
         "ZXCVBNM"
     ];
 
     function createRow(letters, isBottom) {
-        var rowEl = document.createElement("div");
+        const rowEl = document.createElement("div");
         rowEl.className = "kb-row";
 
         if (isBottom) {
-            var enterKey = document.createElement("button");
+            const enterKey = document.createElement("button");
             enterKey.type = "button";
             enterKey.className = "kb-key wide";
             enterKey.textContent = "Enter";
@@ -166,17 +155,17 @@ function renderKeyboard(letterState) {
             rowEl.appendChild(enterKey);
         }
 
-        for (var i = 0; i < letters.length; i += 1) {
-            var ch = letters[i];
-            var key = document.createElement("button");
+        for (let i = 0; i < letters.length; i += 1) {
+            const ch = letters[i];
+            const key = document.createElement("button");
             key.type = "button";
 
-            var cls = "kb-key";
+            let cls = "kb-key";
             if (INVALID_LETTERS[ch]) {
                 cls += " invalid";
                 key.disabled = true;
             } else {
-                var state = letterState[ch];
+                const state = letterState[ch];
                 if (state === "correct") {
                     cls += " correct";
                 } else if (state === "present") {
@@ -192,10 +181,10 @@ function renderKeyboard(letterState) {
         }
 
         if (isBottom) {
-            var backKey = document.createElement("button");
+            const backKey = document.createElement("button");
             backKey.type = "button";
             backKey.className = "kb-key wide";
-            backKey.textContent = "?";
+            backKey.textContent = "DEL";
             backKey.dataset.key = "BACKSPACE";
             rowEl.appendChild(backKey);
         }
@@ -208,3 +197,165 @@ function renderKeyboard(letterState) {
     container.appendChild(createRow(rows[2], true));
 }
 
+//=================================================
+// Toast messages
+//=================================================
+function showToast(text, durationMs) {
+    const container = document.getElementById("toast-container");
+    if (!container) {
+        return;
+    }
+    const d = durationMs || 1500;
+
+    const el = document.createElement("div");
+    el.className = "toast";
+    el.textContent = text;
+    container.appendChild(el);
+
+    // force layout so transition applies
+    void el.offsetWidth;
+    el.classList.add("show");
+
+    setTimeout(function () {
+        el.classList.remove("show");
+        setTimeout(function () {
+            if (el.parentNode === container) {
+                container.removeChild(el);
+            }
+        }, 200);
+    }, d);
+}
+
+//=================================================
+// Game setup and main loop
+//=================================================
+function setupGame() {
+    const dayKey = getUtcDayKey();
+    let answer = getDailyWord(); // uppercase
+
+    // Optional override from URL: ?seq=ACRID
+    if (window.WORDLE_OVERRIDE) {
+        answer = window.WORDLE_OVERRIDE.toUpperCase();
+    }
+
+    const maxGuesses = 6;
+
+    renderSequence(answer, "peptide"); // from wordle_peptides.js
+    renderStats();
+
+    const form = document.getElementById("guess-form");
+    const input = document.getElementById("guess");
+    const message = document.getElementById("message");
+    const board = document.getElementById("board");
+
+    let guesses = [];
+    let finished = false;
+
+    renderBoard(board, guesses);
+    renderKeyboard(LETTER_STATE);
+
+    function submitGuessFromInput() {
+        if (finished) {
+            return;
+        }
+        let guess = input.value.trim().toUpperCase();
+
+        if (guess.length !== 5) {
+            showToast("Guess must be 5 letters.");
+            return;
+        }
+        if (!isValidPeptideGuess(guess, WORD_LIST)) {
+            showToast("Not a valid word.");
+            return;
+        }
+        input.value = "";
+
+        const result = scoreGuess(guess, answer);
+        guesses.push({ guess: guess, result: result });
+        renderBoard(board, guesses);
+        updateLetterState(guess, result, LETTER_STATE);
+        renderKeyboard(LETTER_STATE);
+
+        if (result.every(function (x) { return x === "correct"; })) {
+            message.textContent = "Correct.";
+            showToast("Correct.");
+            updateStatsOnGameEnd(true, dayKey);
+            renderStats();
+            finished = true;
+            return;
+        }
+        if (guesses.length >= maxGuesses) {
+            message.textContent = "Out of guesses. Answer was " + answer + ".";
+            showToast("Answer was " + answer + ".");
+            updateStatsOnGameEnd(false, dayKey);
+            renderStats();
+            finished = true;
+            return;
+        }
+        message.textContent = "";
+    }
+
+    // Hidden form still handles Enter
+    form.addEventListener("submit", function (evt) {
+        evt.preventDefault();
+        submitGuessFromInput();
+    });
+
+    // On screen keyboard
+    const keyboard = document.getElementById("keyboard");
+    if (keyboard) {
+        keyboard.addEventListener("click", function (evt) {
+            const target = evt.target;
+            if (!target.classList.contains("kb-key")) {
+                return;
+            }
+            const k = target.dataset.key;
+            if (!k) {
+                return;
+            }
+            if (k === "ENTER") {
+                submitGuessFromInput();
+            } else if (k === "BACKSPACE") {
+                input.value = input.value.slice(0, -1);
+            } else if (/^[A-Z]$/.test(k)) {
+                if (INVALID_LETTERS[k]) {
+                    return;
+                }
+                if (!finished && input.value.length < 5) {
+                    input.value += k;
+                }
+            }
+        });
+    }
+
+    // Physical keyboard
+    document.addEventListener("keydown", function (evt) {
+        if (!input || finished) {
+            return;
+        }
+
+        // ignore browser shortcuts: Cmd, Ctrl, Alt etc.
+        if (evt.metaKey || evt.ctrlKey || evt.altKey) {
+            return;
+        }
+
+        const key = evt.key;
+        if (key === "Enter") {
+            evt.preventDefault();
+            submitGuessFromInput();
+        } else if (key === "Backspace") {
+            evt.preventDefault();
+            input.value = input.value.slice(0, -1);
+        } else if (/^[a-zA-Z]$/.test(key)) {
+            const ch = key.toUpperCase();
+            if (INVALID_LETTERS[ch]) {
+                evt.preventDefault();
+                return;
+            }
+            if (input.value.length < 5) {
+                input.value += ch;
+                evt.preventDefault();
+            }
+        }
+    });
+}

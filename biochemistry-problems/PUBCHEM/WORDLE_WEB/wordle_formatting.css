@@ -48,7 +48,7 @@
 
 /* Hidden text form, we drive input from keyboard */
 #pw-root #guess-form {
-	display: none;
+	display: visible;
 }
 
 #pw-root #guess {
