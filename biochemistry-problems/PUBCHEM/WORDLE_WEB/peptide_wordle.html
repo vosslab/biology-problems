@@ -10,6 +10,8 @@
 
 	<!-- Your code files (order matters) -->
 	<script src="wordle_peptides.js"></script>
+	<script src="wordle_words.js"></script>
+	<script src="wordle_stats.js"></script>
 	<script src="wordle_game.js"></script>
 
 	<style>
@@ -29,18 +31,39 @@
 		#stats {
 			font-size: 0.9rem;
 		}
+
+		/* Peptide canvas at top, widescreen 16:10 */
+		#peptide {
+			margin-bottom: 16px;
+			text-align: center;
+		}
+		#peptide canvas {
+			border: 1px solid #ccc;
+			display: block;
+			margin: 0 auto;
+			max-width: 800px;
+			width: 100%;
+			aspect-ratio: 16 / 10;
+			height: auto;
+		}
+
 		#message {
 			min-height: 1.4em;
 			margin-bottom: 8px;
+			text-align: center;
 		}
+
+		/* Hide the old text input form, we drive input by keyboard */
 		#guess-form {
-			margin-bottom: 12px;
+			display: none;
 		}
 		#guess {
 			text-transform: uppercase;
 		}
+
 		#board {
-			margin-bottom: 20px;
+			margin-bottom: 16px;
+			text-align: center;
 		}
 		.row {
 			margin-bottom: 4px;
@@ -71,14 +94,84 @@
 			color: #ffffff;
 			border-color: #787c7e;
 		}
-		#peptide canvas {
-			border: 1px solid #ccc;
-			margin-top: 8px;
+
+		/* On screen keyboard */
+		#keyboard {
+			margin-top: 12px;
+			user-select: none;
+			text-align: center;
 		}
+		.kb-row {
+			display: flex;
+			justify-content: center;
+			margin-bottom: 4px;
+		}
+		.kb-key {
+			min-width: 2.4em;
+			padding: 8px 6px;
+			margin: 0 2px;
+			text-align: center;
+			font-weight: bold;
+			border-radius: 4px;
+			border: 1px solid #ccc;
+			cursor: pointer;
+			background: #d3d6da;
+			color: #000000;
+			font-size: 0.9rem;
+		}
+		.kb-key.wide {
+			min-width: 3.4em;
+		}
+		.kb-key.correct {
+			background: #6aaa64;
+			border-color: #6aaa64;
+			color: #ffffff;
+		}
+		.kb-key.present {
+			background: #c9b458;
+			border-color: #c9b458;
+			color: #ffffff;
+		}
+		.kb-key.absent {
+			background: #787c7e;
+			border-color: #787c7e;
+			color: #ffffff;
+		}
+		.kb-key.invalid {
+			background: #e0e0e0;
+			border-color: #cccccc;
+			color: #888888;
+			cursor: not-allowed;
+		}
+
+		/* Toast messages */
+		#toast-container {
+			position: fixed;
+			top: 12px;
+			left: 50%;
+			transform: translateX(-50%);
+			z-index: 1000;
+			pointer-events: none;
+		}
+		.toast {
+			background: rgba(0, 0, 0, 0.85);
+			color: #ffffff;
+			padding: 8px 14px;
+			margin-top: 4px;
+			border-radius: 4px;
+			font-size: 0.9rem;
+			opacity: 0;
+			transition: opacity 0.15s ease;
+		}
+		.toast.show {
+			opacity: 1;
+		}
+
 		#footer-note {
 			margin-top: 20px;
 			font-size: 0.85rem;
 			color: #555555;
+			text-align: center;
 		}
 	</style>
 </head>
@@ -88,8 +181,12 @@
 		<div id="stats"></div>
 	</div>
 
+	<!-- Peptide canvas at top -->
+	<div id="peptide"></div>
+
 	<div id="message"></div>
 
+	<!-- Hidden form, used internally by JS -->
 	<form id="guess-form" autocomplete="off">
 		<label for="guess">Guess:</label>
 		<input id="guess" maxlength="5">
@@ -98,7 +195,9 @@
 
 	<div id="board"></div>
 
-	<div id="peptide"></div>
+	<div id="keyboard"></div>
+
+	<div id="toast-container"></div>
 
 	<div id="footer-note">
 		Daily answer is fixed per UTC day. Use <code>?seq=ACRID</code> in the URL for testing override if enabled in the script.
