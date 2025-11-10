@@ -13,10 +13,11 @@ const INVALID_LETTERS = {
 
 // Simple letter state for keyboard colouring
 const LETTER_STATE = {};
+const MAX_GUESSES = 3;
 
 (function initLetterState() {
-    var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    for (var i = 0; i < letters.length; i += 1) {
+    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    for (let i = 0; i < letters.length; i += 1) {
         LETTER_STATE[letters[i]] = "unknown";
     }
 }());
@@ -55,16 +56,7 @@ function scoreGuess(guess, answer) {
     return result; // array of "correct" | "present" | "absent"
 }
 
-function isValidGuess(guess, wordList) {
-    if (guess.length !== 5) {
-        return false;
-    }
-    if (!/^[A-Z]{5}$/.test(guess)) {
-        return false;
-    }
-    return wordList.indexOf(guess) !== -1;
-}
-
+// peptide specific validator: any valid amino acid sequence of length 5
 function isValidPeptideGuess(guess) {
     if (guess.length !== 5) {
         return false;
@@ -74,11 +66,9 @@ function isValidPeptideGuess(guess) {
     }
     for (let i = 0; i < guess.length; i += 1) {
         const ch = guess[i];
-        // block letters you decided are not allowed in this model
         if (INVALID_LETTERS[ch]) {
             return false;
         }
-        // require that there is an amino acid mapping
         if (!aminoAcidMapping[ch]) {
             return false;
         }
@@ -87,21 +77,49 @@ function isValidPeptideGuess(guess) {
 }
 
 //=================================================
-// Board rendering
+// Board rendering: show previous guesses + currentGuess + empty rows
 //=================================================
-function renderBoard(container, guesses) {
+function renderBoard(container, guesses, currentGuess, maxRows) {
+    const rows = maxRows || 3;
+    const wordLen = 5;
+
     container.innerHTML = "";
-    for (let i = 0; i < guesses.length; i += 1) {
+
+    for (let rowIndex = 0; rowIndex < rows; rowIndex += 1) {
         const row = document.createElement("div");
         row.className = "row";
-        const item = guesses[i];
-        for (let j = 0; j < item.guess.length; j += 1) {
+
+        let text = "";
+        let result = null;
+        let state = "empty";
+
+        if (rowIndex < guesses.length) {
+            // past guess, already scored
+            text = guesses[rowIndex].guess;
+            result = guesses[rowIndex].result;
+        } else if (rowIndex === guesses.length && currentGuess) {
+            // active guess being typed
+            text = currentGuess;
+            state = "pending";
+        }
+
+        for (let col = 0; col < wordLen; col += 1) {
             const cell = document.createElement("span");
-            cell.textContent = item.guess[j];
-            const status = item.result[j]; // "correct" | "present" | "absent"
-            cell.className = "cell " + status;
+            let ch = text[col] || "";
+            cell.textContent = ch;
+
+            let cls = "cell";
+            if (result) {
+                cls += " " + result[col]; // correct | present | absent
+            } else if (state === "pending" && ch) {
+                cls += " pending";
+            } else {
+                cls += " empty";
+            }
+            cell.className = cls;
             row.appendChild(cell);
         }
+
         container.appendChild(row);
     }
 }
@@ -212,7 +230,6 @@ function showToast(text, durationMs) {
     el.textContent = text;
     container.appendChild(el);
 
-    // force layout so transition applies
     void el.offsetWidth;
     el.classList.add("show");
 
@@ -238,7 +255,7 @@ function setupGame() {
         answer = window.WORDLE_OVERRIDE.toUpperCase();
     }
 
-    const maxGuesses = 6;
+    const maxGuesses = MAX_GUESSES;
 
     renderSequence(answer, "peptide"); // from wordle_peptides.js
     renderStats();
@@ -250,29 +267,34 @@ function setupGame() {
 
     let guesses = [];
     let finished = false;
+    let currentGuess = "";
 
-    renderBoard(board, guesses);
+    // keep hidden input in sync but it is not shown
+    input.value = "";
+
+    renderBoard(board, guesses, currentGuess, maxGuesses);
     renderKeyboard(LETTER_STATE);
 
-    function submitGuessFromInput() {
+    function submitGuess() {
         if (finished) {
             return;
         }
-        let guess = input.value.trim().toUpperCase();
+        const guess = currentGuess.toUpperCase();
 
         if (guess.length !== 5) {
             showToast("Guess must be 5 letters.");
             return;
         }
-        if (!isValidPeptideGuess(guess, WORD_LIST)) {
-            showToast("Not a valid word.");
+        if (!isValidPeptideGuess(guess)) {
+            showToast("Not a valid peptide sequence.");
             return;
         }
-        input.value = "";
 
         const result = scoreGuess(guess, answer);
         guesses.push({ guess: guess, result: result });
-        renderBoard(board, guesses);
+        currentGuess = "";
+        input.value = "";
+        renderBoard(board, guesses, currentGuess, maxGuesses);
         updateLetterState(guess, result, LETTER_STATE);
         renderKeyboard(LETTER_STATE);
 
@@ -295,10 +317,10 @@ function setupGame() {
         message.textContent = "";
     }
 
-    // Hidden form still handles Enter
+    // Hidden form, in case someone actually hits Enter in it
     form.addEventListener("submit", function (evt) {
         evt.preventDefault();
-        submitGuessFromInput();
+        submitGuess();
     });
 
     // On screen keyboard
@@ -314,15 +336,19 @@ function setupGame() {
                 return;
             }
             if (k === "ENTER") {
-                submitGuessFromInput();
+                submitGuess();
             } else if (k === "BACKSPACE") {
-                input.value = input.value.slice(0, -1);
+                currentGuess = currentGuess.slice(0, -1);
+                input.value = currentGuess;
+                renderBoard(board, guesses, currentGuess, maxGuesses);
             } else if (/^[A-Z]$/.test(k)) {
                 if (INVALID_LETTERS[k]) {
                     return;
                 }
-                if (!finished && input.value.length < 5) {
-                    input.value += k;
+                if (!finished && currentGuess.length < 5) {
+                    currentGuess += k;
+                    input.value = currentGuess;
+                    renderBoard(board, guesses, currentGuess, maxGuesses);
                 }
             }
         });
@@ -333,27 +359,29 @@ function setupGame() {
         if (!input || finished) {
             return;
         }
-
-        // ignore browser shortcuts: Cmd, Ctrl, Alt etc.
+        // do not eat browser shortcuts like Cmd+R, Ctrl+R
         if (evt.metaKey || evt.ctrlKey || evt.altKey) {
             return;
         }
-
         const key = evt.key;
         if (key === "Enter") {
             evt.preventDefault();
-            submitGuessFromInput();
+            submitGuess();
         } else if (key === "Backspace") {
             evt.preventDefault();
-            input.value = input.value.slice(0, -1);
+            currentGuess = currentGuess.slice(0, -1);
+            input.value = currentGuess;
+            renderBoard(board, guesses, currentGuess, maxGuesses);
         } else if (/^[a-zA-Z]$/.test(key)) {
             const ch = key.toUpperCase();
             if (INVALID_LETTERS[ch]) {
                 evt.preventDefault();
                 return;
             }
-            if (input.value.length < 5) {
-                input.value += ch;
+            if (currentGuess.length < 5) {
+                currentGuess += ch;
+                input.value = currentGuess;
+                renderBoard(board, guesses, currentGuess, maxGuesses);
                 evt.preventDefault();
             }
         }
