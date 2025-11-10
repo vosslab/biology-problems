@@ -1,0 +1,187 @@
+/* Root container so styles stay mostly self contained */
+#pw-root {
+	max-width: 900px;
+	margin: 0 auto;
+	padding: 20px;
+	font-family: system-ui, Arial, sans-serif;
+	box-sizing: border-box;
+}
+
+/* Basic layout */
+#pw-root h1 {
+	margin-top: 0;
+}
+
+#pw-root #top-bar {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	margin-bottom: 10px;
+}
+
+#pw-root #stats {
+	font-size: 0.9rem;
+}
+
+/* Peptide canvas at top, widescreen ~16:10 */
+#pw-root #peptide {
+	margin-bottom: 16px;
+	text-align: center;
+}
+
+#pw-root #peptide canvas {
+	border: 1px solid #ccc;
+	display: block;
+	margin: 0 auto;
+	max-width: 800px;
+	width: 100%;
+	aspect-ratio: 16 / 10;
+	height: auto;
+}
+
+/* Messages */
+#pw-root #message {
+	min-height: 1.4em;
+	margin-bottom: 8px;
+	text-align: center;
+}
+
+/* Hidden text form, we drive input from keyboard */
+#pw-root #guess-form {
+	display: none;
+}
+
+#pw-root #guess {
+	text-transform: uppercase;
+}
+
+/* Board */
+#pw-root #board {
+	margin-bottom: 16px;
+	text-align: center;
+}
+
+#pw-root .row {
+	margin-bottom: 4px;
+}
+
+#pw-root .cell {
+	display: inline-block;
+	width: 2.2em;
+	height: 2.2em;
+	line-height: 2.2em;
+	text-align: center;
+	margin-right: 3px;
+	border: 1px solid #ccc;
+	font-weight: bold;
+	text-transform: uppercase;
+	box-sizing: border-box;
+}
+
+#pw-root .cell.correct {
+	background: #6aaa64;
+	color: #ffffff;
+	border-color: #6aaa64;
+}
+
+#pw-root .cell.present {
+	background: #c9b458;
+	color: #ffffff;
+	border-color: #c9b458;
+}
+
+#pw-root .cell.absent {
+	background: #787c7e;
+	color: #ffffff;
+	border-color: #787c7e;
+}
+
+/* On screen keyboard */
+#pw-root #keyboard {
+	margin-top: 12px;
+	user-select: none;
+	text-align: center;
+}
+
+#pw-root .kb-row {
+	display: flex;
+	justify-content: center;
+	margin-bottom: 4px;
+}
+
+#pw-root .kb-key {
+	min-width: 2.4em;
+	padding: 8px 6px;
+	margin: 0 2px;
+	text-align: center;
+	font-weight: bold;
+	border-radius: 4px;
+	border: 1px solid #ccc;
+	cursor: pointer;
+	background: #d3d6da;
+	color: #000000;
+	font-size: 0.9rem;
+	box-sizing: border-box;
+}
+
+#pw-root .kb-key.wide {
+	min-width: 3.4em;
+}
+
+#pw-root .kb-key.correct {
+	background: #6aaa64;
+	border-color: #6aaa64;
+	color: #ffffff;
+}
+
+#pw-root .kb-key.present {
+	background: #c9b458;
+	border-color: #c9b458;
+	color: #ffffff;
+}
+
+#pw-root .kb-key.absent {
+	background: #787c7e;
+	border-color: #787c7e;
+	color: #ffffff;
+}
+
+#pw-root .kb-key.invalid {
+	background: #e0e0e0;
+	border-color: #cccccc;
+	color: #888888;
+	cursor: not-allowed;
+}
+
+/* Toast messages */
+#pw-root #toast-container {
+	position: fixed;
+	top: 12px;
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 1000;
+	pointer-events: none;
+}
+
+#pw-root .toast {
+	background: rgba(0, 0, 0, 0.85);
+	color: #ffffff;
+	padding: 8px 14px;
+	margin-top: 4px;
+	border-radius: 4px;
+	font-size: 0.9rem;
+	opacity: 0;
+	transition: opacity 0.15s ease;
+}
+
+#pw-root .toast.show {
+	opacity: 1;
+}
+
+/* Footer */
+#pw-root #footer-note {
+	margin-top: 20px;
+	font-size: 0.85rem;
+	color: #555555;
+	text-align: center;
+}
