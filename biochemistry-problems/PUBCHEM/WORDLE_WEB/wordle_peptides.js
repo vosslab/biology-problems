@@ -1,0 +1,154 @@
+
+// Amino acid mapping: 1-letter code to 3-letter code
+const aminoAcidMapping = {
+    A: 'Ala',  // Alanine
+    C: 'Cys',  // Cysteine
+    D: 'Asp',  // Aspartic Acid
+    E: 'Glu',  // Glutamic Acid
+    F: 'Phe',  // Phenylalanine
+    G: 'Gly',  // Glycine
+    H: 'His',  // Histidine
+    I: 'Ile',  // Isoleucine
+    K: 'Lys',  // Lysine
+    L: 'Leu',  // Leucine
+    M: 'Met',  // Methionine
+    N: 'Asn',  // Asparagine
+    P: 'Pro',  // Proline
+    Q: 'Gln',  // Glutamine
+    R: 'Arg',  // Arginine
+    S: 'Ser',  // Serine
+    T: 'Thr',  // Threonine
+    V: 'Val',  // Valine
+    W: 'Trp',  // Tryptophan
+    Y: 'Tyr'   // Tyrosine
+};
+
+// Side chain SMILES fragments for each residue
+const sideChains = {
+    // smallest
+    Gly: '([H])',              // Glycine
+    Gly2: '',                  // Glycine variant
+    Ala: '(C)',                // Alanine
+    // polar
+    Ser: '(CO)',               // Serine
+    Thr: '([C@H](O)C)',        // Threonine
+    // Asn, Gln
+    Asn: '(CC(=O)N)',          // Asparagine
+    Gln: '(CCC(=O)N)',         // Glutamine
+    // negative charge
+    Asp: '(CC(=O)[O-])',       // Aspartate
+    Glu: '(CCC(=O)[O-])',      // Glutamate
+    // positive charge
+    Lys: '(CCCC[NH3+])',       // Lysine
+    Arg: '(CCCNC(=[NH2+])N)',  // Arginine
+    His: '(CC1=C[NH]C=N1)',    // Histidine delta tautomer at pH 7
+    His2: '(CC1=CN=C[NH]1)',   // Histidine epsilon tautomer at pH 7
+    His3: '(CC1=C[NH]C=[NH+]1)',  // Histidine delta tautomer at pH 5
+    His4: '(CC1=C[NH+]=C[NH]1)',  // Histidine epsilon tautomer at pH 5
+    // branched chain
+    Val: '(C(C)C)',            // Valine
+    Leu: '(CC(C)C)',           // Leucine
+    Ile: '([C@H](CC)C)',       // Isoleucine
+    Met: '(CCSC)',             // Methionine
+    // aromatic
+    Phe: '(Cc1ccccc1)',        // Phenylalanine
+    Tyr: '(Cc1ccc(O)cc1)',     // Tyrosine
+    Trp: '(CC1=CC=C2C(=C1)C(=CN2))', // Tryptophan
+    // special
+    Cys: '(CS)'                // Cysteine
+};
+
+//=================================================
+//=================================================
+function makePolypeptideSmilesFromSequence(seq) {
+    let polypeptideSmiles =
+    '[NH3+][C@@H]R1(C(=O)N[C@@H]R2(C(=O)N[C@@H]R3(C(=O)N[C@@H]R4(C(=O)N[C@@H]R5(C(=O)[O-])))))';
+
+    const chars = seq.toUpperCase().split('');
+
+    for (let i = 0; i < chars.length; i += 1) {
+        const aa = chars[i];
+        const threeLetterCode = aminoAcidMapping[aa];
+        const sideChain = sideChains[threeLetterCode];
+        polypeptideSmiles = polypeptideSmiles.replace('R' + (i + 1), sideChain);
+    }
+
+    return polypeptideSmiles;
+}
+
+// 16 bit deterministic code for naming
+function code16(str) {
+    let h = 5381;
+    for (let i = 0; i < str.length; i += 1) {
+        h = ((h << 5) + h) ^ str.charCodeAt(i);
+    }
+    return (h & 0xffff).toString(16).padStart(4, '0');
+}
+
+//=================================================
+// Peptide bond finder for highlighting
+//=================================================
+function getPeptideBonds(mol) {
+    const pattern = "CC(=O)NC";
+    const qmol = window.RDKitModule.get_qmol(pattern);
+    const matches = JSON.parse(mol.get_substruct_matches(qmol));
+    const aggregatedBonds = [];
+    for (let i = 0; i < matches.length; i += 1) {
+        const match = matches[i];
+        if (Array.isArray(match.bonds)) {
+            // peptide C-N bond is the second to last bond
+            aggregatedBonds.push(match.bonds.slice(-2)[0]);
+        }
+    }
+    return aggregatedBonds;
+}
+
+//=================================================
+// Draw a peptide for a given sequence on an existing canvas
+//=================================================
+function drawPeptideOnCanvas(word, canvas, highlightPeptide = true) {
+    const smiles = makePolypeptideSmilesFromSequence(word);
+    const mol = RDKitModule.get_mol(smiles);
+    const name = "peptide_" + code16(word);
+
+    const mdetails = {
+        legend: name,
+        explicitMethyl: true
+    };
+
+    if (highlightPeptide === true) {
+        mdetails.bonds = getPeptideBonds(mol);
+        mdetails.atoms = [0];
+        mdetails.highlightColour = [0, 1, 0];
+    }
+
+    mol.draw_to_canvas_with_highlights(canvas, JSON.stringify(mdetails));
+}
+
+//=================================================
+// High level: create header + canvas in a container and draw
+//=================================================
+function renderSequence(word, containerId = "out") {
+    const container = document.getElementById(containerId);
+    if (!container) {
+        console.error("renderSequence: container id not found:", containerId);
+        return;
+    }
+
+    container.innerHTML = "";
+
+    const name = "peptide_" + code16(word);
+
+    const h = document.createElement("h4");
+    h.textContent = name;
+
+    const canvas = document.createElement("canvas");
+    canvas.id = "canvas_" + code16(word);
+    canvas.width = 480;
+    canvas.height = 512;
+
+    container.appendChild(h);
+    container.appendChild(canvas);
+
+    drawPeptideOnCanvas(word, canvas, true);
+}

@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>wordle_peptides.js debug</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<!-- RDKit from CDN -->
+	<script src="https://unpkg.com/@rdkit/rdkit/dist/RDKit_minimal.js"></script>
+
+	<!-- Your peptide code -->
+	<script src="wordle_peptides.js"></script>
+
+	<style>
+		body { font-family: system-ui, Arial, sans-serif; margin: 20px; }
+		section { margin-bottom: 24px; }
+		label { display: inline-block; width: 130px; }
+		input { font: inherit; }
+		button { font: inherit; }
+		#smiles-output { margin-top: 8px; font-family: monospace; white-space: pre-wrap; }
+		#code-output { margin-top: 8px; font-family: monospace; }
+		#rdkit-status { margin-bottom: 8px; }
+		#peptide { margin-top: 10px; }
+	</style>
+</head>
+<body>
+	<h2>wordle_peptides.js debug</h2>
+
+	<section>
+		<h3>Test makePolypeptideSmilesFromSequence</h3>
+		<label for="seq-smiles">Sequence:</label>
+		<input id="seq-smiles" value="ACDEG" maxlength="5">
+		<button id="btn-smiles" type="button">Generate SMILES</button>
+		<div id="smiles-output"></div>
+	</section>
+
+	<section>
+		<h3>Test code16</h3>
+		<label for="code-input">String:</label>
+		<input id="code-input" value="ACDEG">
+		<button id="btn-code" type="button">Hash</button>
+		<div id="code-output"></div>
+	</section>
+
+	<section>
+		<h3>Test renderSequence (RDKit drawing)</h3>
+		<div id="rdkit-status">RDKit loading</div>
+		<label for="seq-draw">Sequence:</label>
+		<input id="seq-draw" value="ACDEG" maxlength="5">
+		<button id="btn-draw" type="button" disabled>Draw peptide</button>
+		<div id="peptide"></div>
+	</section>
+
+	<script>
+	/* global RDKitModule, initRDKitModule,
+	          makePolypeptideSmilesFromSequence, code16, renderSequence */
+
+	// SMILES test
+	document.getElementById("btn-smiles").addEventListener("click", function () {
+		var seq = document.getElementById("seq-smiles").value.trim();
+		var smiles = makePolypeptideSmilesFromSequence(seq);
+		document.getElementById("smiles-output").textContent = smiles;
+	});
+
+	// code16 test
+	document.getElementById("btn-code").addEventListener("click", function () {
+		var s = document.getElementById("code-input").value;
+		var h = code16(s);
+		document.getElementById("code-output").textContent = "code16 = " + h;
+	});
+
+	// RDKit drawing test
+	var statusEl = document.getElementById("rdkit-status");
+	var btnDraw = document.getElementById("btn-draw");
+
+	initRDKitModule().then(function (instance) {
+		window.RDKitModule = instance;
+		statusEl.textContent = "RDKit ready: " + RDKitModule.version();
+		btnDraw.disabled = false;
+
+		btnDraw.addEventListener("click", function () {
+			var seq = document.getElementById("seq-draw").value.trim().toUpperCase();
+			if (!seq) {
+				return;
+			}
+			renderSequence(seq, "peptide");
+		});
+	}).catch(function (e) {
+		statusEl.textContent = "RDKit failed to load";
+		console.error(e);
+	});
+	</script>
+</body>
+</html>

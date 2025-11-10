@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Polypeptide Wordle</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<!-- RDKit from CDN -->
+	<script src="https://unpkg.com/@rdkit/rdkit/dist/RDKit_minimal.js"></script>
+
+	<!-- Your code files (order matters) -->
+	<script src="wordle_peptides.js"></script>
+	<script src="wordle_game.js"></script>
+
+	<style>
+		body {
+			font-family: system-ui, Arial, sans-serif;
+			margin: 20px;
+		}
+		h1 {
+			margin-top: 0;
+		}
+		#top-bar {
+			display: flex;
+			justify-content: space-between;
+			align-items: baseline;
+			margin-bottom: 10px;
+		}
+		#stats {
+			font-size: 0.9rem;
+		}
+		#message {
+			min-height: 1.4em;
+			margin-bottom: 8px;
+		}
+		#guess-form {
+			margin-bottom: 12px;
+		}
+		#guess {
+			text-transform: uppercase;
+		}
+		#board {
+			margin-bottom: 20px;
+		}
+		.row {
+			margin-bottom: 4px;
+		}
+		.cell {
+			display: inline-block;
+			width: 2.2em;
+			height: 2.2em;
+			line-height: 2.2em;
+			text-align: center;
+			margin-right: 3px;
+			border: 1px solid #ccc;
+			font-weight: bold;
+			text-transform: uppercase;
+		}
+		.cell.correct {
+			background: #6aaa64;
+			color: #ffffff;
+			border-color: #6aaa64;
+		}
+		.cell.present {
+			background: #c9b458;
+			color: #ffffff;
+			border-color: #c9b458;
+		}
+		.cell.absent {
+			background: #787c7e;
+			color: #ffffff;
+			border-color: #787c7e;
+		}
+		#peptide canvas {
+			border: 1px solid #ccc;
+			margin-top: 8px;
+		}
+		#footer-note {
+			margin-top: 20px;
+			font-size: 0.85rem;
+			color: #555555;
+		}
+	</style>
+</head>
+<body>
+	<div id="top-bar">
+		<h1>Polypeptide Wordle</h1>
+		<div id="stats"></div>
+	</div>
+
+	<div id="message"></div>
+
+	<form id="guess-form" autocomplete="off">
+		<label for="guess">Guess:</label>
+		<input id="guess" maxlength="5">
+		<button type="submit">Enter</button>
+	</form>
+
+	<div id="board"></div>
+
+	<div id="peptide"></div>
+
+	<div id="footer-note">
+		Daily answer is fixed per UTC day. Use <code>?seq=ACRID</code> in the URL for testing override if enabled in the script.
+	</div>
+
+	<script>
+	/* global initRDKitModule, RDKitModule, setupGame */
+	document.addEventListener("DOMContentLoaded", function () {
+		var messageEl = document.getElementById("message");
+
+		// Optional override via URL: ?seq=ACRID
+		try {
+			var params = new URLSearchParams(window.location.search);
+			var overrideSeq = params.get("seq");
+			if (overrideSeq) {
+				window.WORDLE_OVERRIDE = overrideSeq.toUpperCase();
+			}
+		} catch (e) {
+			console.error("URL parameter parse error", e);
+		}
+
+		initRDKitModule().then(function (instance) {
+			window.RDKitModule = instance;
+			console.log("RDKit " + RDKitModule.version());
+			if (typeof setupGame === "function") {
+				setupGame();
+			} else {
+				messageEl.textContent = "Error: setupGame is not defined in wordle_game.js.";
+			}
+		}).catch(function (e) {
+			console.error("RDKit init failed", e);
+			messageEl.textContent = "Error: RDKit could not be loaded.";
+		});
+	});
+	</script>
+</body>
+</html>

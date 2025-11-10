@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>wordle_game.js debug</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<!-- RDKit and peptide code only needed if setupGame uses renderSequence -->
+	<script src="https://unpkg.com/@rdkit/rdkit/dist/RDKit_minimal.js"></script>
+	<script src="wordle_peptides.js"></script>
+
+	<!-- Game logic under test -->
+	<script src="wordle_game.js"></script>
+
+	<style>
+		body { font-family: system-ui, Arial, sans-serif; margin: 20px; }
+		section { margin-bottom: 24px; border: 1px solid #ddd; padding: 10px; }
+		section h3 { margin-top: 0; }
+		label { display: inline-block; min-width: 140px; }
+		input, button { font: inherit; }
+		pre { background: #f3f3f3; padding: 8px; white-space: pre-wrap; }
+		#board-test .cell { display: inline-block; width: 1.4em; text-align: center; margin-right: 2px; border: 1px solid #ccc; }
+		#board-test .correct { background: #6aaa64; color: white; }
+		#board-test .present { background: #c9b458; color: white; }
+		#board-test .absent { background: #787c7e; color: white; }
+	</style>
+</head>
+<body>
+	<h2>wordle_game.js debug</h2>
+
+	<section>
+		<h3>WORD_LIST info</h3>
+		<button id="btn-wordlist-info" type="button">Show list summary</button>
+		<pre id="wordlist-output"></pre>
+	</section>
+
+	<section>
+		<h3>getUtcDayKey, hashString32, getDailyIndex, getDailyWord</h3>
+		<label for="date-key">UTC date:</label>
+		<input id="date-key" type="date">
+		<button id="btn-daily" type="button">Compute</button>
+		<pre id="daily-output"></pre>
+	</section>
+
+	<section>
+		<h3>scoreGuess</h3>
+		<label for="answer-score">Answer:</label>
+		<input id="answer-score" value="ACRID" maxlength="5">
+		<br>
+		<label for="guess-score">Guess:</label>
+		<input id="guess-score" value="ARISE" maxlength="5">
+		<button id="btn-score" type="button">Score guess</button>
+		<pre id="score-output"></pre>
+	</section>
+
+	<section>
+		<h3>isValidGuess</h3>
+		<label for="guess-valid">Guess:</label>
+		<input id="guess-valid" value="ACRID" maxlength="5">
+		<button id="btn-valid" type="button">Check</button>
+		<pre id="valid-output"></pre>
+	</section>
+
+	<section>
+		<h3>Stats: loadStats, saveStats, previousDayKey, updateStatsOnGameEnd, renderStats</h3>
+		<div>
+			<button id="btn-show-stats" type="button">Show stats (loadStats)</button>
+			<button id="btn-win-today" type="button">Record win today</button>
+			<button id="btn-loss-today" type="button">Record loss today</button>
+			<button id="btn-reset-stats" type="button">Reset stats (clear localStorage)</button>
+		</div>
+		<div style="margin-top:8px;">
+			<label for="stats-date">Day key (YYYY-MM-DD):</label>
+			<input id="stats-date" type="date">
+			<button id="btn-prev-day" type="button">previousDayKey</button>
+		</div>
+		<h4>Raw stats JSON (from loadStats)</h4>
+		<pre id="stats-debug-output"></pre>
+		<h4>previousDayKey result</h4>
+		<pre id="prevday-output"></pre>
+	</section>
+
+	<section>
+		<h3>renderBoard</h3>
+		<p>This uses a fixed example array of guesses.</p>
+		<button id="btn-board-test" type="button">Render example board</button>
+		<div id="board-test"></div>
+	</section>
+
+	<section>
+		<h3>setupGame smoke test</h3>
+		<p>This creates minimal game DOM and calls setupGame once.</p>
+		<button id="btn-setup-game" type="button">Run setupGame</button>
+		<div id="game-root" style="margin-top:10px; border-top:1px dashed #ccc; padding-top:8px;">
+			<div id="message"></div>
+			<div id="stats"></div>
+			<form id="guess-form" autocomplete="off">
+				<label for="guess">Guess:</label>
+				<input id="guess" maxlength="5">
+				<button type="submit">Enter</button>
+			</form>
+			<div id="board"></div>
+			<div id="peptide"></div>
+		</div>
+	</section>
+
+	<script>
+	/* global WORD_LIST,
+	          getUtcDayKey, hashString32, getDailyIndex, getDailyWord,
+	          scoreGuess, isValidGuess,
+	          loadStats, saveStats, previousDayKey, updateStatsOnGameEnd,
+	          renderStats, renderBoard, setupGame,
+	          initRDKitModule, RDKitModule */
+
+	// Set default date to today in UTC
+	(function initDateInputs() {
+		var today = new Date().toISOString().slice(0, 10);
+		var dk = document.getElementById("date-key");
+		if (dk) dk.value = today;
+		var sd = document.getElementById("stats-date");
+		if (sd) sd.value = today;
+	})();
+
+	// WORD_LIST info
+	document.getElementById("btn-wordlist-info").addEventListener("click", function () {
+		var out = document.getElementById("wordlist-output");
+		if (typeof WORD_LIST === "undefined") {
+			out.textContent = "WORD_LIST is not defined.";
+			return;
+		}
+		var n = WORD_LIST.length;
+		var first = WORD_LIST.slice(0, 10);
+		var last = WORD_LIST.slice(Math.max(0, n - 10));
+		var validLength = WORD_LIST.every(function (w) { return typeof w === "string" && w.length === 5; });
+		var allUpper = WORD_LIST.every(function (w) { return /^[A-Z]{5}$/.test(w); });
+
+		out.textContent =
+			"Length: " + n + "\n" +
+			"All 5 letters: " + validLength + "\n" +
+			"All uppercase A Z: " + allUpper + "\n" +
+			"First 10: " + first.join(", ") + "\n" +
+			"Last 10:  " + last.join(", ");
+	});
+
+	// Daily functions: getUtcDayKey, hashString32, getDailyIndex, getDailyWord
+	document.getElementById("btn-daily").addEventListener("click", function () {
+		var out = document.getElementById("daily-output");
+		if (typeof getUtcDayKey !== "function" ||
+		    typeof hashString32 !== "function" ||
+		    typeof getDailyIndex !== "function" ||
+		    typeof getDailyWord !== "function") {
+			out.textContent = "Some daily functions are not defined.";
+			return;
+		}
+		var dateStr = document.getElementById("date-key").value;
+		if (!dateStr) {
+			out.textContent = "Please pick a date.";
+			return;
+		}
+		var d = new Date(dateStr + "T00:00:00Z");
+		var key = getUtcDayKey(d);
+		var h = hashString32(key);
+		var idx = getDailyIndex(d);
+		var word = getDailyWord(d);
+
+		out.textContent =
+			"dayKey: " + key + "\n" +
+			"hashString32(dayKey): " + h + "\n" +
+			"getDailyIndex: " + idx + "\n" +
+			"getDailyWord: " + word;
+	});
+
+	// scoreGuess
+	document.getElementById("btn-score").addEventListener("click", function () {
+		var out = document.getElementById("score-output");
+		if (typeof scoreGuess !== "function") {
+			out.textContent = "scoreGuess is not defined.";
+			return;
+		}
+		var answer = document.getElementById("answer-score").value.trim().toUpperCase();
+		var guess = document.getElementById("guess-score").value.trim().toUpperCase();
+		if (answer.length !== 5 || guess.length !== 5) {
+			out.textContent = "Both guess and answer must be 5 letters.";
+			return;
+		}
+		var result = scoreGuess(guess, answer);
+		out.textContent =
+			"answer: " + answer + "\n" +
+			"guess:  " + guess + "\n" +
+			"score:  " + JSON.stringify(result);
+	});
+
+	// isValidGuess
+	document.getElementById("btn-valid").addEventListener("click", function () {
+		var out = document.getElementById("valid-output");
+		if (typeof isValidGuess !== "function") {
+			out.textContent = "isValidGuess is not defined.";
+			return;
+		}
+		if (typeof WORD_LIST === "undefined") {
+			out.textContent = "WORD_LIST is not defined.";
+			return;
+		}
+		var guess = document.getElementById("guess-valid").value.trim().toUpperCase();
+		var ok = isValidGuess(guess, WORD_LIST);
+		out.textContent = "Guess: " + guess + "\nValid: " + ok;
+	});
+
+	// Stats functions
+	function showRawStats() {
+		var out = document.getElementById("stats-debug-output");
+		if (typeof loadStats !== "function") {
+			out.textContent = "loadStats is not defined.";
+			return;
+		}
+		var stats = loadStats();
+		out.textContent = JSON.stringify(stats, null, 2);
+	}
+
+	document.getElementById("btn-show-stats").addEventListener("click", function () {
+		showRawStats();
+		if (typeof renderStats === "function") {
+			renderStats(); // will draw into #stats inside game-root if setupGame has run
+		}
+	});
+
+	document.getElementById("btn-win-today").addEventListener("click", function () {
+		var out = document.getElementById("stats-debug-output");
+		if (typeof updateStatsOnGameEnd !== "function" || typeof getUtcDayKey !== "function") {
+			out.textContent = "updateStatsOnGameEnd or getUtcDayKey not defined.";
+			return;
+		}
+		var dayKey = getUtcDayKey();
+		updateStatsOnGameEnd(true, dayKey);
+		showRawStats();
+		if (typeof renderStats === "function") {
+			renderStats();
+		}
+	});
+
+	document.getElementById("btn-loss-today").addEventListener("click", function () {
+		var out = document.getElementById("stats-debug-output");
+		if (typeof updateStatsOnGameEnd !== "function" || typeof getUtcDayKey !== "function") {
+			out.textContent = "updateStatsOnGameEnd or getUtcDayKey not defined.";
+			return;
+		}
+		var dayKey = getUtcDayKey();
+		updateStatsOnGameEnd(false, dayKey);
+		showRawStats();
+		if (typeof renderStats === "function") {
+			renderStats();
+		}
+	});
+
+	document.getElementById("btn-reset-stats").addEventListener("click", function () {
+		var out = document.getElementById("stats-debug-output");
+		try {
+			window.localStorage.removeItem("wordle_peptides_stats_v1");
+			out.textContent = "Stats key removed from localStorage.";
+			if (typeof renderStats === "function") {
+				renderStats();
+			}
+		} catch (e) {
+			out.textContent = "Failed to clear stats: " + e;
+		}
+	});
+
+	document.getElementById("btn-prev-day").addEventListener("click", function () {
+		var out = document.getElementById("prevday-output");
+		if (typeof previousDayKey !== "function") {
+			out.textContent = "previousDayKey is not defined.";
+			return;
+		}
+		var dateStr = document.getElementById("stats-date").value;
+		if (!dateStr) {
+			out.textContent = "Please pick a date.";
+			return;
+		}
+		var key = dateStr; // assume YYYY-MM-DD
+		var prev = previousDayKey(key);
+		out.textContent = "previousDayKey(" + key + ") = " + prev;
+	});
+
+	// renderBoard test
+	document.getElementById("btn-board-test").addEventListener("click", function () {
+		var container = document.getElementById("board-test");
+		container.innerHTML = "";
+		if (typeof renderBoard !== "function") {
+			container.textContent = "renderBoard is not defined.";
+			return;
+		}
+		var exampleGuesses = [
+			{ guess: "ARISE", result: ["present", "present", "absent", "absent", "correct"] },
+			{ guess: "ACRID", result: ["correct", "correct", "correct", "correct", "correct"] }
+		];
+		renderBoard(container, exampleGuesses);
+	});
+
+	// setupGame smoke test
+	document.getElementById("btn-setup-game").addEventListener("click", function () {
+		var btn = this;
+		if (typeof setupGame !== "function") {
+			alert("setupGame is not defined in wordle_game.js");
+			return;
+		}
+		// If your setupGame uses RDKit/renderSequence, make sure RDKitModule exists
+		if (typeof initRDKitModule === "function" && typeof RDKitModule === "undefined") {
+			initRDKitModule().then(function (instance) {
+				window.RDKitModule = instance;
+				console.log("RDKit " + RDKitModule.version());
+				setupGame();
+				btn.disabled = true;
+			}).catch(function (e) {
+				console.error("RDKit init failed for setupGame test", e);
+				setupGame();
+				btn.disabled = true;
+			});
+		} else {
+			setupGame();
+			btn.disabled = true;
+		}
+	});
+	</script>
+</body>
+</html>
