@@ -3,15 +3,14 @@
 document.addEventListener("DOMContentLoaded", function () {
     var messageEl = document.getElementById("message");
 
-    // Optional override via URL: ?seq=ACRID
-    try {
-        var params = new URLSearchParams(window.location.search);
-        var overrideSeq = params.get("seq");
-        if (overrideSeq) {
-            window.WORDLE_OVERRIDE = overrideSeq.toUpperCase();
-        }
-    } catch (e) {
-        console.error("URL parameter parse error", e);
+    // Help button scrolls to instructions
+    var helpButton = document.getElementById("help-button");
+    var details = document.getElementById("instructions-details");
+    if (helpButton && details) {
+        helpButton.addEventListener("click", function () {
+            details.open = true;
+            details.scrollIntoView({ behavior: "smooth" });
+        });
     }
 
     if (typeof initRDKitModule !== "function") {
