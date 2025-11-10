@@ -168,7 +168,7 @@ function drawPeptideOnCanvas(word, canvas, highlightPeptide = true) {
     const name = "peptide_" + code16(word);
 
     const mdetails = {
-        legend: name,
+        //legend: name,
         explicitMethyl: true
     };
 
@@ -182,9 +182,9 @@ function drawPeptideOnCanvas(word, canvas, highlightPeptide = true) {
 }
 
 //=================================================
-// High level: create header + canvas in a container and draw
+// High level: create canvas in a container and draw
 //=================================================
-function renderSequence(word, containerId = "out") {
+function renderSequence(word, containerId = "peptide") {
     const container = document.getElementById(containerId);
     if (!container) {
         console.error("renderSequence: container id not found:", containerId);
@@ -193,18 +193,17 @@ function renderSequence(word, containerId = "out") {
 
     container.innerHTML = "";
 
+    // name is only used as legend in drawPeptideOnCanvas, not as a header
     const name = "peptide_" + code16(word);
-
-    const h = document.createElement("h4");
-    h.textContent = name;
 
     const canvas = document.createElement("canvas");
     canvas.id = "canvas_" + code16(word);
     canvas.width = 800;
     canvas.height = 500;
 
-    container.appendChild(h);
     container.appendChild(canvas);
 
+    // drawPeptideOnCanvas reads RDKitModule and uses `name` as legend
+    // via code16(word); it does NOT require an <h4> element
     drawPeptideOnCanvas(word, canvas, true);
 }
