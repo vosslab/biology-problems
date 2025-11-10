@@ -35,38 +35,42 @@
 	margin: 0 auto;
 	max-width: 800px;
 	width: 100%;
-	aspect-ratio: 16 / 10;
 	height: auto;
 }
 
 /* Messages */
 #pw-root #message {
-	min-height: 1.4em;
+	min-height: 0;
 	margin-bottom: 8px;
 	text-align: center;
+	font-size: 0.95rem;
 }
 
-/* Hidden text form, we drive input from keyboard */
+/* keep the hidden form, it stores state but is not shown */
 #pw-root #guess-form {
-	display: visible;
+display: none;
 }
 
 #pw-root #guess {
 	text-transform: uppercase;
 }
 
-/* Board */
+/* board layout */
 #pw-root #board {
-	margin-bottom: 16px;
+	margin: 8px auto 8px;
 	text-align: center;
 }
 
 #pw-root .row {
+	display: flex;
+	justify-content: center;
 	margin-bottom: 4px;
 }
 
 #pw-root .cell {
 	display: inline-block;
+	align-items: center;
+	justify-content: center;
 	width: 2.2em;
 	height: 2.2em;
 	line-height: 2.2em;
@@ -76,6 +80,16 @@
 	font-weight: bold;
 	text-transform: uppercase;
 	box-sizing: border-box;
+}
+
+/* unused squares */
+#pw-root .cell.empty {
+	border-color: #d3d6da;
+}
+
+/* current guess, not yet submitted */
+#pw-root .cell.pending {
+	border-color: #878a8c;
 }
 
 #pw-root .cell.correct {
@@ -184,4 +198,59 @@
 	font-size: 0.85rem;
 	color: #555555;
 	text-align: center;
+}
+
+#pw-root #help-row {
+	margin: 8px auto 0;
+	text-align: center;
+}
+
+#pw-root #help-button {
+	padding: 4px 10px;
+	font-size: 0.9rem;
+	cursor: pointer;
+}
+
+#pw-root #instructions {
+	max-width: 800px;
+	margin: 24px auto 0;
+	font-size: 0.95rem;
+	text-align: left;
+}
+
+#pw-root #instructions summary {
+	cursor: pointer;
+	margin-bottom: 8px;
+}
+
+/* dark mode override */
+@media (prefers-color-scheme: dark) {
+	#pw-root {
+		background-color: #121212;
+		color: #f0f0f0;
+	}
+
+	#pw-root #peptide canvas {
+		border-color: #555555;
+	}
+
+	#pw-root .cell.empty {
+		border-color: #555555;
+	}
+
+	#pw-root .kb-key {
+		background: #3a3a3c;
+		color: #f0f0f0;
+		border-color: #3a3a3c;
+	}
+
+	#pw-root .kb-key.invalid {
+		background: #27272a;
+		color: #888888;
+		border-color: #27272a;
+	}
+
+	#pw-root #instructions {
+		color: #e0e0e0;
+	}
 }
