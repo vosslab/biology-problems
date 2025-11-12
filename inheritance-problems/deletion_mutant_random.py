@@ -163,7 +163,7 @@ def write_question(N: int, args) -> str:
 				deletion_colors, False, args.first_letter)
 
 	# Combine the question and table (if available) into the question text
-	question_text = background + table + question + steps
+	question_text = background + steps + table + question
 
 	# Format the question and answer into the final output structure
 	if args.question_type == 'fib':
