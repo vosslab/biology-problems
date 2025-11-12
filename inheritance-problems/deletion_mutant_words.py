@@ -1,50 +1,62 @@
 #!/usr/bin/env python3
+# ^^ Specifies the Python3 environment to use for script execution
 
+# Import built-in Python modules
+# Provides functions for interacting with the operating system
 import os
-import math
 import time
 import random
-import argparse
 
+# Import external modules (pip-installed)
+# No external modules are used here currently
+
+# Import local modules from the project
+# Provides custom functions, such as question formatting and other utilities
 import bptools
 import deletionlib
 
-
 #==========================================================
 #==========================================================
-def get_anagrams_for_word(query_word: str, wordlist_path: str = None) -> list[str]:
+def get_anagrams_for_word(query_word: str, wordlist_path: str = None) -> set[str]:
 	"""
 	Find all anagrams of a given word in a word list file.
+
+	Args:
+		query_word (str): The word to find anagrams for.
+		wordlist_path (str, optional): Path to the wordlist file.
+			Defaults to 'enable2k.txt' under data directory.
+
+	Returns:
+		set[str]: Unique lowercase anagrams of the given word.
 	"""
+	# Determine default word list path
 	if wordlist_path is None:
 		git_path = bptools.get_git_root()
 		large_file = "enable2k.txt"
 		wordlist_path = os.path.join(git_path, "data", large_file)
 
-	target = query_word.strip()
+	# Normalize the query word
+	target = query_word.strip().lower()
 	if not target:
-		return []
+		return set()
 
-	target_norm = target.lower()
-	target_len = len(target_norm)
-	target_key = ''.join(sorted(target_norm))
+	target_len = len(target)
+	target_key = ''.join(sorted(target))
 
-	anagrams: list[str] = []
+	# Collect anagrams in a set for uniqueness
+	anagram_set: set[str] = set()
 
 	with open(wordlist_path, 'r', encoding='ascii') as handle:
 		for line in handle:
 			word = line.strip().lower()
 			if not word or word.startswith('#'):
 				continue
-
 			if len(word) != target_len:
 				continue
+			if ''.join(sorted(word)) == target_key:
+				anagram_set.add(word)
 
-			key = ''.join(sorted(word))
-			if key == target_key:
-				anagrams.append(word)
-
-	return anagrams
+	return anagram_set
 
 #==========================================================
 #==========================================================
@@ -55,7 +67,7 @@ def find_anagram_words(wordlist_path: str, min_anagrams: int, word_length: int, 
 	anagram_groups: dict = {}
 	with open(wordlist_path, 'r', encoding='ascii') as handle:
 		for line in handle:
-			word = line.strip()
+			word = line.strip().lower()
 			if not word or word.startswith('#'):
 				continue
 			if len(word) != word_length:
@@ -77,6 +89,30 @@ def find_anagram_words(wordlist_path: str, min_anagrams: int, word_length: int, 
 			for word in group:
 				result_words.append(word)
 	return result_words
+
+#==========================================================
+#==========================================================
+def make_deletions(num_genes: int):
+	"""
+	Generates a random list of genes and a set of gene deletions such that:
+	1. Every gene pair is included in at least one deletion.
+	2. All possible split gene pairs (pairs split by deletions) are represented.
+
+	Args:
+		num_genes (int): The number of genes to include in the original list.
+
+	Returns:
+		tuple: A tuple containing:
+			- gene_order (list[str]): The original ordered list of genes.
+			- deletions_list (list[list[str]]): A list of deletions (each deletion is a sublist of genes).
+	"""
+	# Step 1: Generate and shuffle the list of genes
+	answer_gene_order = generate_gene_list(num_genes)
+
+	# Step 5: Generate deletions until all pairs are covered
+	deletions_list = deletionlib.generate_deletions(answer_gene_order)
+
+	return answer_gene_order, deletions_list
 
 #==========================================================
 #==========================================================
@@ -172,29 +208,6 @@ def get_gene_word_bank(num_genes: int, min_word_bank_size: int) -> list[str]:
 
 	raise ValueError("Could not find enough candidate words for gene list")
 
-#==========================================================
-#==========================================================
-def make_deletions(num_genes: int):
-	"""
-	Generates a random list of genes and a set of gene deletions such that:
-	1. Every gene pair is included in at least one deletion.
-	2. All possible split gene pairs (pairs split by deletions) are represented.
-
-	Args:
-		num_genes (int): The number of genes to include in the original list.
-
-	Returns:
-		tuple: A tuple containing:
-			- gene_order (list[str]): The original ordered list of genes.
-			- deletions_list (list[list[str]]): A list of deletions (each deletion is a sublist of genes).
-	"""
-	# Step 1: Generate and shuffle the list of genes
-	answer_gene_order = generate_gene_list(num_genes)
-
-	# Step 5: Generate deletions until all pairs are covered
-	deletions_list = deletionlib.generate_deletions(answer_gene_order)
-
-	return answer_gene_order, deletions_list
 
 #==========================================================
 #==========================================================
@@ -204,66 +217,85 @@ def generate_mc_distractors(answer_gene_order: list[str], num_choices: int):
 
 	Args:
 		answer_gene_order (list[str]): The correct order of genes.
-		num_choices (int): The total number of multiple-choice options, including the correct answer.
+		num_choices (int): Total number of choices including the correct answer.
 
 	Returns:
-		tuple[list[str], str]: A list of formatted multiple-choice options and the correct answer.
+		tuple[list[str], str]: Formatted choice list and the correct answer.
 	"""
 
-	answer_word = ''.join(answer_gene_order)
-	anagrams = get_anagrams_for_word(answer_word)
-	if 0 < len(anagrams) < 10:
-		print(f"ANAGRAMS: {', '.join(anagrams)}")
-	first_letter = answer_gene_order[0]
+	# Combine gene letters into a single word
+	answer_word = ''.join(answer_gene_order).lower()
+
+	# Find all anagrams for this word
+	anagram_set = get_anagrams_for_word(answer_word)
+	anagram_set.discard(answer_word)
+
+	# Debug print for short anagram lists
+	if 0 < len(anagram_set) < 15:
+		print(f"ANAGRAMS: {', '.join(sorted(anagram_set))}")
+
+	# Separate anagrams that share the same first letter
+	first_letter = answer_gene_order[0].lower()
 	good_anagrams = []
-	for anagram in anagrams:
+	other_anagrams = []
+	for anagram in sorted(anagram_set):
 		if anagram.startswith(first_letter):
 			good_anagrams.append(anagram)
-	if 0 < len(good_anagrams) < 10:
+		else:
+			other_anagrams.append(anagram)
+
+	# Debug print for short good-anagram lists
+	if 0 < len(good_anagrams) < 15:
 		print(f"GOOD ANAGRAMS: {', '.join(good_anagrams)}")
-	print(f"Found {len(anagrams)} anagrams and {len(good_anagrams)} good anagrams for our gene word {answer_word}.\n\n")
 
-	# Generate permutations starting with a random order from the current choices_set
-	choices_set = set([tuple(answer_gene_order),])
-	max_attempts = 1000 # Limit the number of attempts to prevent infinite loops
-	attempts = 0
+	# Summary diagnostic output
+	print(
+		f"Found {len(anagram_set)} anagrams and {len(good_anagrams)} good anagrams "
+		f"for {answer_word}.\n"
+	)
 
-	while len(choices_set) < num_choices and attempts < max_attempts:
-		# Start with a random choice from the existing set
-		base_gene_order = list(random.choice(list(choices_set)))
-		choice_gene_order = base_gene_order[:]
+	# Generate formatted correct answer text
+	answer_formatted_text = deletionlib.format_choice(answer_gene_order)
 
-		# Introduce controlled randomness by swapping adjacent genes
-		index1 = random.randint(2, len(base_gene_order) - 1)  # Avoid the first gene
-		index2 = index1 - 1
-		choice_gene_order[index1], choice_gene_order[index2] = choice_gene_order[index2], choice_gene_order[index1]
+	# Collect all formatted choices
+	choices_list: list[str] = []
 
-		# Add the modified order to the set
-		choices_set.add(tuple(choice_gene_order))
-		attempts += 1
+	# Fill the distractor choices from similar (good) anagrams
+	for word in good_anagrams:
+		formatted_choice_text = deletionlib.format_choice(list(word))
+		choices_list.append(formatted_choice_text)
+		if len(choices_list) == num_choices - 1:
+			break
 
-	if len(choices_set) < num_choices:
-		num_genes = len(answer_gene_order)
-		# Fixing the first gene, permute the rest
-		max_choices = math.factorial(num_genes - 1)
-		raise ValueError(f"Only able to generate of {len(choices_set)} of {num_choices} choices with {num_genes} genes after {attempts} attempts. Maximum possible is {max_choices}.")
+	# Fill remaining slots from other anagrams if needed
+	if len(choices_list) < num_choices - 1:
+		for word in other_anagrams:
+			formatted_choice_text = deletionlib.format_choice(list(word))
+			choices_list.append(formatted_choice_text)
+			if len(choices_list) == num_choices - 1:
+				break
 
-	# Generate the correct answer text
-	answer_text = deletionlib.format_choice(answer_gene_order)
+	# Add the correct answer to the choice list
+	choices_list.append(answer_formatted_text)
 
-	# Convert the set of tuples to a list of formatted strings
-	choices_list = [deletionlib.format_choice(list(choice)) for choice in choices_set]
-
-	# Deduplicate and sort the results for consistent output
+	# Deduplicate and sort for consistent output
 	choices_list = sorted(set(choices_list))
 
-	return choices_list, answer_text
-cl, a = generate_mc_distractors(list("ABCD"), 6)
-assert len(cl) == 6
-assert a == deletionlib.format_choice(list("ABCD"))
-cl, a = generate_mc_distractors(list("ABCDE"), 8)
-assert len(cl) == 8, f"Expected 8 choices, got {len(cl)}."
-assert a == deletionlib.format_choice(list("ABCDE")), "Expected correct answer not obtained"
+	# Return the final set of choices and the correct answer
+	return choices_list, answer_formatted_text
+
+# Simple words with clear anagrams
+# "stop" -> stop, post, spot, tops, opts, pots
+cl, a = generate_mc_distractors(list("STOP"), 6)
+assert len(cl) == 6, f"Expected 6 choices, got {len(cl)}"
+assert a == deletionlib.format_choice(list("STOP")), "Answer formatting mismatch"
+assert a in cl, "Correct answer not present"
+assert len(cl) == len(set(cl)), "Duplicate choices found"
+
+# "stone" -> stone, tones, seton, onset, steno, etons
+cl, a = generate_mc_distractors(list("STONE"), 6)
+assert len(cl) == 6, f"Expected 6 choices, got {len(cl)}"
+assert a in cl, "Correct answer missing from choice list"
 
 #==========================================================
 #==========================================================
@@ -304,10 +336,11 @@ def write_question(N: int, args) -> str:
 
 	# Create the question text based on the original and deleted genes
 	print('write_question_text()')
-	question = deletionlib.write_question_text(answer_gene_order, deletions_list, deletion_colors)
+	question = deletionlib.write_question_text(answer_gene_order, deletions_list,
+				deletion_colors, True, args.first_letter)
 
-	# Combine the question and table (if available) into the question text
-	question_text = background + table + question + steps
+	# Combine the question and table into the question text
+	question_text = background + steps + table + question
 
 	# Format the question and answer into the final output structure
 	if args.question_type == 'fib':
@@ -323,97 +356,66 @@ def write_question(N: int, args) -> str:
 
 	return complete_question
 
-#=====================
-def parse_arguments():
+#==========================================================
+#==========================================================
+def main() -> None:
 	"""
-	Parses command-line arguments for the script.
+	Main function that orchestrates question generation and file output.
 
-	Defines and handles all arguments for the script, including:
-	- `duplicates`: The number of questions to generate.
-	- `num_choices`: The number of answer choices for each question.
-	- `question_type`: Type of question (numeric or multiple choice).
-
-	Returns:
-		argparse.Namespace: Parsed arguments with attributes `duplicates`,
-		`num_choices`, and `question_type`.
+	Workflow:
+	1. Parse command line arguments.
+	2. Build output filename from script name and args.
+	3. Generate formatted questions with write_question().
+	4. Shuffle and trim to max_questions.
+	5. Write all questions to the output file.
+	6. Print stats and status.
 	"""
-	# Initialize argument parser for command-line options
-	parser = argparse.ArgumentParser(description="Generate questions.")
+	args = deletionlib.parse_arguments()
 
-	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='Number of duplicate runs to do or number of questions to create', default=1
-	)
-	parser.add_argument(
-		'-c', '--num_choices', metavar='#', type=int, default=5,
-		help="Number of choices to create."
-	)
-
-	# Argument to specify the number of genes to delete on the chromosome
-	parser.add_argument(
-		'-g', '--num-genes', metavar='#', type=int, dest='num_genes',
-		help='number of deleted genes on the chromosome', default=5)
-
-	# Create a mutually exclusive group for question type and make it required
-	question_group = parser.add_mutually_exclusive_group(required=True)
-	question_group.add_argument(
-		'-t', '--type', dest='question_type', type=str, choices=('fib', 'mc'),
-		help='Set the question type: fib (numeric) or mc (multiple choice)'
-	)
-	question_group.add_argument(
-		'-m', '--mc', dest='question_type', action='store_const', const='mc',
-		help='Set question type to multiple choice'
-	)
-	question_group.add_argument(
-		'-f', '--fib', dest='question_type', action='store_const', const='fib',
-		help='Set question type to fill-in-the-blank (fib)'
-	)
-
-	args = parser.parse_args()
-
-	# Validate the number of genes, ensuring it's within the acceptable range
-	if args.num_genes < 4:
-		raise ValueError("Sorry, you must have at least 4 genes for this program")
-	if args.num_genes > 20:
-		raise ValueError("Sorry, you can have at most 20 genes for this program")
-
-	max_choices = math.factorial(args.num_genes - 1)  # Fixing the first gene, permute the rest
-	if args.num_choices > max_choices:
-		raise ValueError(
-			f"Cannot generate {args.num_choices} choices with {args.num_genes} genes. Maximum possible is {max_choices}."
-		)
-
-	return args
-
-#==========================
-# Main program execution starts here
-#==========================
-if __name__ == '__main__':
-	# Parse arguments from the command line
-	args = parse_arguments()
-
-	# Setup output file name
 	script_name = os.path.splitext(os.path.basename(__file__))[0]
 	outfile = (
 		f'bbq-{script_name}'
 		f'-{args.num_genes:02d}_genes'
-		f'-words'
 		f'-{args.question_type.upper()}'
 		'-questions.txt'
 	)
-	print(f'Writing to file: {outfile}')
 
-	# Open the output file and generate questions
-	with open(outfile, 'w') as f:
-		N = 1  # Question number counter
-		for _ in range(args.duplicates):
-			# Generate and write each question
-			complete_question = write_question(N, args)
-			if complete_question is not None:
-				N += 1
-				f.write(complete_question)
+	question_bank_list: list[str] = []
+	N = 0
 
-	print(f'Wrote to file: {outfile}')
+	for _ in range(args.duplicates):
+		t0 = time.time()
+		complete_question = write_question(N + 1, args)
+		elapsed = time.time() - t0
+		if elapsed > 1:
+			print(f"Question {N + 1} complete in {elapsed:.1f} seconds")
+
+		if complete_question is not None:
+			N += 1
+			question_bank_list.append(complete_question)
+
+		if N >= args.max_questions:
+			break
+
 	if args.question_type == 'mc':
 		bptools.print_histogram()
+
+	if len(question_bank_list) > args.max_questions:
+		random.shuffle(question_bank_list)
+		question_bank_list = question_bank_list[:args.max_questions]
+
+	print(f'\nWriting {len(question_bank_list)} question to file: {outfile}')
+
+	write_count = 0
+	with open(outfile, 'w') as f:
+		for q in question_bank_list:
+			write_count += 1
+			f.write(q)
+
+	print(f'... saved {write_count} questions to {outfile}\n')
+
+#==========================================================
+#==========================================================
+if __name__ == '__main__':
+	main()
 

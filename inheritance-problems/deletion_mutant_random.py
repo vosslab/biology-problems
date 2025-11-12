@@ -1,15 +1,20 @@
 #!/usr/bin/env python3
+# ^^ Specifies the Python3 environment to use for script execution
 
+# Import built-in Python modules
+# Provides functions for interacting with the operating system
 import os
 import math
 import time
 import random
-import argparse
 
+# Import external modules (pip-installed)
+# No external modules are used here currently
+
+# Import local modules from the project
+# Provides custom functions, such as question formatting and other utilities
 import bptools
 import deletionlib
-
-
 
 #==========================================================
 #==========================================================
@@ -129,7 +134,7 @@ def write_question(N: int, args) -> str:
 	Returns:
 		str: A formatted question ready to be written to the output file.
 	"""
-	background = deletionlib.generate_background_for_deletions(args.num_genes, args.table)
+	background = deletionlib.generate_background_for_deletions(args.num_genes)
 	steps = deletionlib.get_deletion_mutant_steps()
 
 	# Generate the original list of genes and the set of deleted genes
@@ -149,13 +154,13 @@ def write_question(N: int, args) -> str:
 
 	deletion_colors = {''.join(deletion): color_wheel[i] for i, deletion in enumerate(deletions_list)}
 
-	# Generate an HTML table if the table option is enabled
 	print("Making TABLE")
 	table = deletionlib.make_html_table(answer_gene_order, deletions_list, deletion_colors)
 
 	# Create the question text based on the original and deleted genes
 	print('write_question_text()')
-	question = deletionlib.write_question_text(answer_gene_order, deletions_list, deletion_colors)
+	question = deletionlib.write_question_text(answer_gene_order, deletions_list,
+				deletion_colors, False, args.first_letter)
 
 	# Combine the question and table (if available) into the question text
 	question_text = background + table + question + steps
@@ -174,115 +179,68 @@ def write_question(N: int, args) -> str:
 
 	return complete_question
 
-#=====================
-def parse_arguments():
+
+#==========================================================
+#==========================================================
+def main() -> None:
 	"""
-	Parses command-line arguments for the script.
+	Main function that orchestrates question generation and file output.
 
-	Defines and handles all arguments for the script, including:
-	- `duplicates`: The number of questions to generate.
-	- `num_choices`: The number of answer choices for each question.
-	- `question_type`: Type of question (numeric or multiple choice).
-
-	Returns:
-		argparse.Namespace: Parsed arguments with attributes `duplicates`,
-		`num_choices`, and `question_type`.
+	Workflow:
+	1. Parse command line arguments.
+	2. Build output filename from script name and args.
+	3. Generate formatted questions with write_question().
+	4. Shuffle and trim to max_questions.
+	5. Write all questions to the output file.
+	6. Print stats and status.
 	"""
-	# Initialize argument parser for command-line options
-	parser = argparse.ArgumentParser(description="Generate questions.")
+	args = deletionlib.parse_arguments()
 
-	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='Number of duplicate runs to do or number of questions to create', default=1
-	)
-	parser.add_argument(
-		'-c', '--num_choices', metavar='#', type=int, default=5,
-		help="Number of choices to create."
-	)
-
-	# Argument to specify the number of genes to delete on the chromosome
-	parser.add_argument(
-		'-g', '--num-genes', metavar='#', type=int, dest='num_genes',
-		help='number of deleted genes on the chromosome', default=5)
-
-	# Create a mutually exclusive group for enabling or disabling table display
-	table_group = parser.add_mutually_exclusive_group()
-	table_group.add_argument(
-		'-T', '--table', dest='table', action='store_true',
-		help='Enable table display in the output'
-	)
-	table_group.add_argument(
-		'-F', '--free', '--no-table', dest='table', action='store_false',
-		help='Disable table display in the output'
-	)
-	# Set the default behavior for the `table` argument (enabled by default)
-	parser.set_defaults(table=True)
-
-	# Create a mutually exclusive group for question type and make it required
-	question_group = parser.add_mutually_exclusive_group(required=True)
-	question_group.add_argument(
-		'-t', '--type', dest='question_type', type=str, choices=('fib', 'mc'),
-		help='Set the question type: fib (numeric) or mc (multiple choice)'
-	)
-	question_group.add_argument(
-		'-m', '--mc', dest='question_type', action='store_const', const='mc',
-		help='Set question type to multiple choice'
-	)
-	question_group.add_argument(
-		'-f', '--fib', dest='question_type', action='store_const', const='fib',
-		help='Set question type to fill-in-the-blank (fib)'
-	)
-
-	args = parser.parse_args()
-
-	# Validate the number of genes, ensuring it's within the acceptable range
-	if args.num_genes < 4:
-		raise ValueError("Sorry, you must have at least 4 genes for this program")
-	if args.num_genes > 20:
-		raise ValueError("Sorry, you can have at most 20 genes for this program")
-
-	max_choices = math.factorial(args.num_genes - 1)  # Fixing the first gene, permute the rest
-	if args.num_choices > max_choices:
-		raise ValueError(
-			f"Cannot generate {args.num_choices} choices with {args.num_genes} genes. Maximum possible is {max_choices}."
-		)
-
-	return args
-
-#==========================
-# Main program execution starts here
-#==========================
-if __name__ == '__main__':
-	# Parse arguments from the command line
-	args = parse_arguments()
-
-	if args.table:
-		table_str = "TABLE"
-	else:
-		table_str = "FREE"
-
-	# Setup output file name
 	script_name = os.path.splitext(os.path.basename(__file__))[0]
 	outfile = (
 		f'bbq-{script_name}'
 		f'-{args.num_genes:02d}_genes'
-		f'-{table_str}'
 		f'-{args.question_type.upper()}'
 		'-questions.txt'
 	)
-	print(f'Writing to file: {outfile}')
 
-	# Open the output file and generate questions
-	with open(outfile, 'w') as f:
-		N = 1  # Question number counter
-		for _ in range(args.duplicates):
-			# Generate and write each question
-			complete_question = write_question(N, args)
-			if complete_question is not None:
-				N += 1
-				f.write(complete_question)
+	question_bank_list: list[str] = []
+	N = 0
 
-	print(f'Wrote to file: {outfile}')
+	for _ in range(args.duplicates):
+		t0 = time.time()
+		complete_question = write_question(N + 1, args)
+		elapsed = time.time() - t0
+		if elapsed > 1:
+			print(f"Question {N + 1} complete in {elapsed:.1f} seconds")
+
+		if complete_question is not None:
+			N += 1
+			question_bank_list.append(complete_question)
+
+		if N >= args.max_questions:
+			break
+
 	if args.question_type == 'mc':
 		bptools.print_histogram()
+
+	if len(question_bank_list) > args.max_questions:
+		random.shuffle(question_bank_list)
+		question_bank_list = question_bank_list[:args.max_questions]
+
+	print(f'\nWriting {len(question_bank_list)} question to file: {outfile}')
+
+	write_count = 0
+	with open(outfile, 'w') as f:
+		for q in question_bank_list:
+			write_count += 1
+			f.write(q)
+
+	print(f'... saved {write_count} questions to {outfile}\n')
+
+#==========================================================
+#==========================================================
+if __name__ == '__main__':
+	main()
+
 

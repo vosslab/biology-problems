@@ -1,8 +1,17 @@
+
+# Import built-in Python modules
+# Provides functions for interacting with the operating system
 import copy
 import math
 import random
 import textwrap
+import argparse
 
+# Import external modules (pip-installed)
+# No external modules are used here currently
+
+# Import local modules from the project
+# Provides custom functions, such as question formatting and other utilities
 import bptools
 
 #==========================================================
@@ -352,11 +361,9 @@ def format_choice(gene_list: list[str]) -> str:
 	gene_sequence += f":&nbsp;&nbsp; <i>gene order of {list2text(gene_list)}</i>"
 	return gene_sequence
 
-
-
 #==========================================================
 #==========================================================
-def write_question_text(gene_order, deletions_list, deletion_colors):
+def write_question_text(gene_order, deletions_list, deletion_colors, english_word, first_letter=False):
 	"""
 	Writes the question about gene order based on the original list and deletions.
 	"""
@@ -403,20 +410,38 @@ def write_question_text(gene_order, deletions_list, deletion_colors):
 			deletion_colors
 		)
 		question += f"<li>{colored_deletion}</li>"
+	# Close the deletion list
+	question += "</ul><br/>"
 
-	# Add the final question and hints
+	# Add the standard requirement
 	question += (
-		f"</ul> <p>What is the correct order of the "
-		f"{num_genes_word} genes?</p> "
-	)
-	question += (
-		f"<p><strong>Hint 1</strong>: The first gene at start of the chromosome is "
-		f"<strong>gene {gene_order[0]}</strong>.</p> "
-	)
-	question += (
-		f"<p><strong>Hint 2</strong>: Enter your answer in the blank using only "
+		f"<p><strong>Requirement</strong>: Enter your answer in the blank using only "
 		f"{num_genes_word} letters, or one comma every three (3) letters. Do not include "
 		"extra commas or spaces in your answer.</p>"
+	)
+
+	# Add the first-letter hint if enabled
+	if first_letter is True:
+		question += (
+			f"<p><strong>Hint</strong>: The first gene at the start of the chromosome is "
+			f"<strong>Gene {gene_order[0].upper()}</strong>.</p>"
+		)
+
+	# Add the word-type hint
+	if english_word:
+		question += (
+			"<p><strong>Hint</strong>: The correct answer is an "
+			f"<em>English dictionary word</em> of length {num_genes_word}.</p> "
+		)
+	else:
+		question += (
+			"<p><strong>Hint</strong>: The correct answer is a "
+			f"<em>random sequence of {num_genes_word} letters</em>.</p> "
+		)
+
+	# Add the final question prompt
+	question += (
+		f"<p>What is the correct order of the {num_genes_word} genes?</p>"
 	)
 
 	# Check for invalid newlines in the question
@@ -478,3 +503,87 @@ def generate_fib_answer_variations(gene_order: list[str]) -> list[str]:
 
 	# Deduplicate and sort the results
 	return sorted(set(all_variations))
+
+
+#=====================
+def parse_arguments():
+	"""
+	Parses command-line arguments for the script.
+
+	Defines and handles all arguments for the script, including:
+	- `duplicates`: The number of questions to generate.
+	- `num_choices`: The number of answer choices for each question.
+	- `question_type`: Type of question (numeric or multiple choice).
+
+	Returns:
+		argparse.Namespace: Parsed arguments with attributes `duplicates`,
+		`num_choices`, and `question_type`.
+	"""
+	# Initialize argument parser for command-line options
+	parser = argparse.ArgumentParser(description="Generate questions.")
+
+	# Add an argument to specify the number of duplicate questions to generate
+	parser.add_argument(
+		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
+		help='Number of duplicate runs to do or number of questions to create',
+		default=1
+	)
+
+	parser.add_argument(
+		'-x', '--max-questions', type=int, dest='max_questions',
+		default=99, help='Max number of questions'
+	)
+
+
+	# Add an argument to specify the number of answer choices for each question
+	parser.add_argument(
+		'-c', '--num_choices', type=int, default=5, dest='num_choices',
+		help="Number of choices to create."
+	)
+
+	# Argument to specify the number of genes to delete on the chromosome
+	parser.add_argument(
+		'-g', '--num-genes', metavar='#', type=int, dest='num_genes',
+		help='number of deleted genes on the chromosome', default=5)
+
+	# Argument to control whether to give a hint about the first letter in the gene sequence
+	parser.add_argument(
+		'-F', '--first-letter', dest='first_letter', action='store_true',
+		help='give a hint about the first letter in the gene sequence')
+	parser.add_argument(
+		'-N', '--no-first-letter', dest='first_letter', action='store_false',
+		help='do not give a hint about the first letter in the gene sequence')
+	parser.set_defaults(first_letter=False)
+
+	# Create a mutually exclusive group for question type and make it required
+	# The group ensures only one of these options can be chosen at a time
+	question_group = parser.add_mutually_exclusive_group(required=True)
+	question_group.add_argument(
+		'-t', '--type', dest='question_type', type=str, choices=('fib', 'mc'),
+		help='Set the question type: fib (numeric) or mc (multiple choice)'
+	)
+	# Add a shortcut option to set the question format to multiple choice
+	question_group.add_argument(
+		'-m', '--mc', dest='question_type', action='store_const', const='mc',
+		help='Set question format to multiple choice'
+	)
+	question_group.add_argument(
+		'-f', '--fib', dest='question_type', action='store_const', const='fib',
+		help='Set question type to fill-in-the-blank (fib)'
+	)
+
+	args = parser.parse_args()
+
+	# Validate the number of genes, ensuring it's within the acceptable range
+	if args.num_genes < 4:
+		raise ValueError("Sorry, you must have at least 4 genes for this program")
+	if args.num_genes > 20:
+		raise ValueError("Sorry, you can have at most 20 genes for this program")
+
+	max_choices = math.factorial(args.num_genes - 1)  # Fixing the first gene, permute the rest
+	if args.num_choices > max_choices:
+		raise ValueError(
+			f"Cannot generate {args.num_choices} choices with {args.num_genes} genes. Maximum possible is {max_choices}."
+		)
+
+	return args
