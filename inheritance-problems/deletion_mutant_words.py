@@ -3,271 +3,176 @@
 import os
 import copy
 import math
+import time
 import random
 import argparse
 import textwrap
-import time
 
 import bptools
 
 
 #==========================================================
 #==========================================================
-def generate_background_for_deletions(num_genes: int, table: bool) -> str:
+def get_anagrams_for_word(query_word: str, wordlist_path: str = None) -> list[str]:
 	"""
-	Generates a background explanation about using deletion mutants to determine the order of genes.
+	Find all anagrams of a given word in a word list file.
+	"""
+	if wordlist_path is None:
+		git_path = bptools.get_git_root()
+		large_file = "enable2k.txt"
+		wordlist_path = os.path.join(git_path, "data", large_file)
 
+	target = query_word.strip()
+	if not target:
+		return []
+
+	target_norm = target.lower()
+	target_len = len(target_norm)
+	target_key = ''.join(sorted(target_norm))
+
+	anagrams: list[str] = []
+
+	with open(wordlist_path, 'r', encoding='ascii') as handle:
+		for line in handle:
+			word = line.strip().lower()
+			if not word or word.startswith('#'):
+				continue
+
+			if len(word) != target_len:
+				continue
+
+			key = ''.join(sorted(word))
+			if key == target_key:
+				anagrams.append(word)
+
+	return anagrams
+
+#==========================================================
+#==========================================================
+def find_anagram_words(wordlist_path: str, min_anagrams: int, word_length: int, first_letter: bool = False) -> list:
+	"""
+	Find words of a given length that have at least a given number of anagrams.
+	"""
+	anagram_groups: dict = {}
+	with open(wordlist_path, 'r', encoding='ascii') as handle:
+		for line in handle:
+			word = line.strip()
+			if not word or word.startswith('#'):
+				continue
+			if len(word) != word_length:
+				continue
+			# skip words that have repeated letters
+			if len(set(word)) != word_length:
+				continue
+			if first_letter is True:
+				key = word[0] + ''.join(sorted(word[1:]))
+			else:
+				key = ''.join(sorted(word))
+			if key not in anagram_groups:
+				anagram_groups[key] = []
+			anagram_groups[key].append(word)
+	result_words: list = []
+	for key in anagram_groups:
+		group = anagram_groups[key]
+		if len(group) - 1 >= min_anagrams:
+			for word in group:
+				result_words.append(word)
+	return result_words
+
+
+#==========================================================
+#==========================================================
+def generate_gene_list(num_genes: int) -> list[str]:
+	"""
+	Generates a list of genes of the specified size that forms a word
 	Args:
-		num_genes (int): The number of genes involved in the problem.
-		table (bool): Whether additional information about polytene chromosomes is included.
+		num_genes (int): The number of genes to include in the list.
 
 	Returns:
-		str: The background explanation as an HTML string.
+		list[str]: A shuffled list of unique gene identifiers.
 	"""
-	# Convert the number of genes to cardinal text
-	cardinal_text = bptools.number_to_cardinal(num_genes)
+	min_word_bank_size = 10
+	word_bank = get_gene_word_bank(num_genes, min_word_bank_size)
+	print(f"Final word bank size of {len(word_bank)} words.\n")
+	gene_order_word = random.choice(word_bank)
+	gene_list = list(gene_order_word)
+	return gene_list
 
-	# Start with a header
-	background_text = '<h4>Using Deletion Mutants to Determine Gene Order</h4>'
+#==========================================================
+#==========================================================
+def get_gene_word_bank(num_genes: int, min_word_bank_size: int) -> list[str]:
+	"""
+	Build a word bank of candidate gene order words.
 
-	# General introduction about deletion mutants
-	background_text += (
-		f'<p>Deletion mutants are an essential tool in genetics for uncovering the order of '
-		f'{cardinal_text} ({num_genes}) genes on a chromosome. Deletions remove specific regions of '
-		f'the chromosome, allowing researchers to observe the effects of the missing genes '
-		f'on the phenotype of the organism. This approach is particularly useful for identifying the '
-		f'locations of recessive genes, which are only revealed when the corresponding wildtype copies '
-		f'are absent.</p>'
-	)
+	Each word has length num_genes and has at least a minimum number
+	of anagrams in the source word lists.
 
-	# Context-specific explanation of the test cross with deletion mutants
-	background_text += (
-		f'<p>In a test cross involving deletion mutants, one parent carries a full-length wildtype chromosome and '
-		f'a second chromosome with a deletion, while the other parent is homozygous recessive for all '
-		f'{cardinal_text} genes. Offspring inheriting the full-length wildtype chromosome display the dominant phenotype '
-		f'for all {cardinal_text} genes in the test cross. '
-		f'However, offspring inheriting the chromosome with the deletion will display some recessive traits. '
-		'These recessive traits uncover the missing genes in the deleted region. '
-		f'By analyzing which genes are uncovered in a series of different '
-		f'deletion mutants, the linear order of the genes can be determined.</p>'
-	)
+	Args:
+		num_genes:
+			Length of each candidate word.
+		min_word_bank_size:
+			Minimum number of candidate words required.
 
-	# Expand explanation with polytene chromosomes if table=True
-	if table:
-		background_text += (
-			'<p>In organisms such as <i>Drosophila melanogaster</i>, polytene chromosomes from the salivary '
-			'glands provide a physical map for studying deletions. Polytene chromosomes are giant chromosomes '
-			'with distinct banding patterns, allowing researchers to directly visualize which regions of the '
-			'chromosome are deleted. This visual representation complements the genetic data obtained from test '
-			'crosses.</p>'
+	Returns:
+		A list of candidate words.
+
+	Raises:
+		ValueError:
+			If no suitable word bank can be constructed.
+	"""
+	git_path = bptools.get_git_root()
+	small_file = "SCOWL-words_with_friends-intersection.txt"
+	small_path = os.path.join(git_path, "data", small_file)
+	#large_file = "words_with_friends_dictionary.txt"
+	large_file = "enable2k.txt"
+	large_path = os.path.join(git_path, "data", large_file)
+
+	for min_anagrams in (5, 4, 3, 2):
+		print(
+			f"DEBUG get_gene_word_bank: trying SMALL list, "
+			f"min_anagrams={min_anagrams}, num_genes={num_genes}"
 		)
-
-	# Conclude with the problem's goal
-	background_text += (
-		f'<p>For this problem, deletion mutants have been generated for a chromosome containing '
-		f'{cardinal_text} genes. Your goal is to analyze the phenotypic data resulting from these deletions '
-		f'and determine the correct linear order of the genes.</p>'
-	)
-
-	return background_text
-
-#===========================================================
-#===========================================================
-def get_deletion_mutant_steps() -> str:
-	"""
-	Returns the HTML formatted step-by-step instructions for solving deletion mutant problems.
-
-	Returns:
-		str: HTML formatted string with step-by-step instructions.
-	"""
-	steps = '<h6>Step-by-Step Instructions for Solving Deletion Mutant Problems</h6>'
-	steps += '<ul>'
-	steps += ' <li>Step 1: Simplify the information.</li>'
-	steps += '   <ul><li>List the genes and deletions provided in the question.</li>'
-	steps += '   <li>Organize the deletions in a clear table or list format for easier analysis.</li></ul>'
-	steps += ' <li>Step 2: Create a template for the gene order.</li>'
-	steps += '   <ul><li>Start with placeholders for each gene (e.g., _ _ _ _).</li>'
-	steps += '   <li>Insert known genes based on hints (e.g., the first or last gene).</li></ul>'
-	steps += ' <li>Step 3: Identify deletions containing the first gene.</li>'
-	steps += '   <ul><li>Analyze deletions that include the first gene to determine its neighbors.</li>'
-	steps += '   <li>Use deletions that overlap to narrow down adjacent genes.</li></ul>'
-	steps += ' <li>Step 4: Analyze deletions containing the next genes.</li>'
-	steps += '   <ul><li>Look for deletions that include specific pairs of genes.</li>'
-	steps += '   <li>Identify deletions that exclude certain genes to resolve ambiguities.</li></ul>'
-	steps += ' <li>Step 5: Verify the answer using all of the listed deletions.</li>'
-	steps += '   <ul><li>Deletion questions can be hard to solve, but once you have an answer, it is easy to check if it is correct!</li>'
-	steps += '   <li>Go through each deletion and confirm that the proposed gene order matches the genes included in that deletion.</li>'
-	steps += '   <li>If any deletion is inconsistent with the proposed order, your answer is wrong.</li></ul>'
-	steps += '</ul>'
-
-	return steps
-
-#==========================================================
-#==========================================================
-def color_deletion_name(deletion_text: str, deletion_key_str: str, deletion_colors: dict) -> str:
-	"""
-	Applies a unique color to a deletion's text based on its key.
-
-	Args:
-		deletion_text (str): The text to be colored (e.g., "Del #3: A, B, and C").
-		deletion_key_str (str): The string key for the deletion (e.g., "ABC").
-		deletion_colors (dict): A dictionary mapping deletion keys to colors.
-
-	Returns:
-		str: The HTML-formatted string with the appropriate color applied.
-	"""
-	# Wrap the text in a span with the corresponding color
-	return f'<span style="color: #{deletion_colors[deletion_key_str]}; font-weight: bold;">{deletion_text}</span>'
-
-#==========================================================
-#==========================================================
-def make_html_table(gene_order, deletions_list, deletion_colors):
-	CELL_W = 60
-	ROW_H = 25
-
-	table = ''
-	table += '<table style="border-collapse: collapse; border: 2px solid black; '
-	width = CELL_W * (len(gene_order) + 1)
-	height = ROW_H * (len(deletions_list) + 1)
-	#table += f'width: {width}px; height: {height}px;'
-	table += '">'
-	table += '<tr><th> </th>'
-
-	# Header for gene labels, gene order is unknown so just numbers
-	for i in range(len(gene_order)):
-		table += f'<th style="text-align: center; width: {CELL_W}px;">Gene {i+1}</th>'
-	table += '</tr>'
-
-	# Rows for deletions
-	for i, deletion in enumerate(deletions_list):
-		# Generate a deletion key string (e.g., "ABC")
-		deletion_key_str = ''.join(sorted(deletion))
-
-		# Row header for each deletion
-		colored_deletion_name = color_deletion_name(f"Del #{i+1}", deletion_key_str, deletion_colors)
-		table += f'<tr><th style="text-align: center;">{colored_deletion_name}</th>'
-
-		for gene in gene_order:
-			bg = deletion_colors[deletion_key_str] if gene in deletion else "EEEEEE"
-			table += f'<td style="background-color: #{bg}; height: {ROW_H}px;">&nbsp;</td>'
-
-		table += '</tr>'
-	table += '</table>'
-	return table
-
-#==========================================================
-#==========================================================
-def list2text(mylist: list[str]) -> str:
-	"""
-	Converts a list of strings into a human-readable text format with an Oxford comma.
-
-	If the list has more than two elements, it adds commas between elements and inserts
-	"and" before the last element, ensuring an Oxford comma is included. For a list of
-	exactly two elements, it joins them with "and". For an empty list or a single element,
-	it returns an empty string or the single element respectively.
-
-	Args:
-		mylist (list[str]): A list of strings to convert into human-readable text.
-
-	Returns:
-		str: The human-readable string representation of the list.
-	"""
-	# Handle lists with more than two elements (include an Oxford comma)
-	if len(mylist) > 2:
-		return f"{', '.join(mylist[:-1])}, and {mylist[-1]}"
-
-	# Handle lists with exactly two elements
-	elif len(mylist) == 2:
-		return f"{mylist[0]} and {mylist[1]}"
-
-	# Return an empty string for empty lists
-	elif len(mylist) == 0:
-		return ""
-
-	# For a single element, return the element itself
-	else:
-		return mylist[0]
-#====================
-# Assertions to verify correctness
-assert list2text(list('abcd')) == "a, b, c, and d", \
-	"Failed test case with more than 2 elements (Oxford comma required)"
-assert list2text(['x', 'y']) == "x and y", \
-	"Failed test case with exactly 2 elements"
-assert list2text(['z']) == "z", \
-	"Failed test case with a single element"
-assert list2text([]) == "", \
-	"Failed test case with an empty list"
-
-#==========================================================
-#==========================================================
-def write_question_text(gene_order, deletions_list, deletion_colors):
-	"""
-	Writes the question about gene order based on the original list and deletions.
-	"""
-	### write question
-	#Genes a, b, c, d, e, and f are closely linked in a chromosome, but their order is unknown.
-	#Four deletions in the region are found to uncover recessive alleles of the genes as follows:
-	#Deletion 1 uncovers a, d, and f; Deletion?2 uncovers d, e, and f; Deletion?3 uncovers c, d, and e;
-	#Deletion 4 uncovers b and c. Which one of the following is the correct order for the genes?
-
-	# Create a sorted copy of the original gene list
-	sorted_gene_order = sorted(copy.copy(gene_order))
-	sorted_gene_order_str = list2text(sorted_gene_order)
-
-	# Number of genes and deletions (in words and digits)
-	num_genes_int = len(gene_order)
-	num_genes_word = f"{bptools.number_to_cardinal(num_genes_int)} ({num_genes_int})"
-	num_deletions_int = len(deletions_list)
-	num_deletions_word = f"{bptools.number_to_cardinal(num_deletions_int)} ({num_deletions_int})"
-
-	# Start building the question text
-	question = ""
-
-	# Main description
-	question += (
-		f"<p>There are {num_genes_word} genes, "
-		f"{sorted_gene_order_str}, closely linked in a single chromosome. However, "
-		"their order is unknown. "
-	)
-	question += (
-		f"In the region, {num_deletions_word} deletions have been identified. "
-		"These deletions uncover recessive alleles of the genes as follows:</p><ul>"
-	)
-
-	# Add details for each deletion
-	for i, deletion in enumerate(deletions_list):
-		# Generate a deletion key string (e.g., "ABC")
-		deletion_key_str = ''.join(sorted(deletion))
-		deletions_word_str = list2text(deletion)
-
-		# Colorize the deletion description
-		colored_deletion = color_deletion_name(
-			f"Deletion #{i+1}: <strong>{deletions_word_str}</strong>",
-			deletion_key_str,
-			deletion_colors
+		found_words = find_anagram_words(small_path, min_anagrams, num_genes, first_letter=True)
+		print(
+			f"DEBUG get_gene_word_bank: SMALL list, "
+			f"min_anagrams={min_anagrams}, found_words={len(found_words)}"
 		)
-		question += f"<li>{colored_deletion}</li>"
+		if len(found_words) >= min_word_bank_size:
+			print(
+				f"DEBUG get_gene_word_bank: using SMALL list, "
+				f"min_anagrams={min_anagrams}"
+			)
+			return found_words
+		found_words = find_anagram_words(small_path, min_anagrams+1, num_genes, first_letter=False)
+		print(
+			f"DEBUG get_gene_word_bank: SMALL list, "
+			f"min_anagrams={min_anagrams}, found_words={len(found_words)}"
+		)
+		if len(found_words) >= min_word_bank_size:
+			print(
+				f"DEBUG get_gene_word_bank: using SMALL list, "
+				f"min_anagrams={min_anagrams}"
+			)
+			return found_words
 
-	# Add the final question and hints
-	question += (
-		f"</ul> <p>What is the correct order of the "
-		f"{num_genes_word} genes?</p> "
-	)
-	question += (
-		f"<p><strong>Hint 1</strong>: The first gene at start of the chromosome is "
-		f"<strong>gene {gene_order[0]}</strong>.</p> "
-	)
-	question += (
-		f"<p><strong>Hint 2</strong>: Enter your answer in the blank using only "
-		f"{num_genes_word} letters, or one comma every three (3) letters. Do not include "
-		"extra commas or spaces in your answer.</p>"
-	)
+	for min_anagrams in (4, 3, 2, 1, 0):
+		print(
+			f"DEBUG get_gene_word_bank: trying LARGE list, "
+			f"min_anagrams={min_anagrams}, num_genes={num_genes}"
+		)
+		found_words = find_anagram_words(large_path, min_anagrams, num_genes)
+		print(
+			f"DEBUG get_gene_word_bank: LARGE list, "
+			f"min_anagrams={min_anagrams}, found_words={len(found_words)}"
+		)
+		if len(found_words) >= min_word_bank_size:
+			print(
+				f"DEBUG get_gene_word_bank: using LARGE list, "
+				f"min_anagrams={min_anagrams}"
+			)
+			return found_words
 
-	# Check for invalid newlines in the question
-	if '\n' in question:
-		raise ValueError("New lines are not allowed")
-
-	return question
+	raise ValueError("Could not find enough candidate words for gene list")
 
 #==========================================================
 #==========================================================
@@ -297,25 +202,7 @@ def make_deletions(num_genes: int):
 	return answer_gene_order, deletions_list
 
 
-#==========================================================
-#==========================================================
-def generate_gene_list(num_genes: int, shuffle: bool=True) -> list[str]:
-	"""
-	Generates a shuffled list of genes of the specified size.
 
-	Args:
-		num_genes (int): The number of genes to include in the list.
-
-	Returns:
-		list[str]: A shuffled list of unique gene identifiers.
-	"""
-	charlist = list("ABCDEFGHJKMPQRSTWXYZ")
-	if shuffle is True:
-		random.shuffle(charlist)
-	itemlist = charlist[:num_genes]
-	#always shuffle the genes
-	random.shuffle(itemlist)
-	return itemlist
 
 #==========================================================
 #==========================================================
@@ -455,6 +342,267 @@ def add_new_pairs(
 
 #==========================================================
 #==========================================================
+def generate_background_for_deletions(num_genes: int) -> str:
+	"""
+	Generates a background explanation about using deletion mutants to determine the order of genes.
+
+	Args:
+		num_genes (int): The number of genes involved in the problem.
+
+	Returns:
+		str: The background explanation as an HTML string.
+	"""
+	# Convert the number of genes to cardinal text
+	cardinal_text = bptools.number_to_cardinal(num_genes)
+
+	# Start with a header
+	background_text = '<h4>Using Deletion Mutants to Determine Gene Order</h4>'
+
+	# General introduction about deletion mutants
+	background_text += (
+		f'<p>Deletion mutants are an essential tool in genetics for uncovering the order of '
+		f'{cardinal_text} ({num_genes}) genes on a chromosome. Deletions remove specific regions of '
+		f'the chromosome, allowing researchers to observe the effects of the missing genes '
+		f'on the phenotype of the organism. This approach is particularly useful for identifying the '
+		f'locations of recessive genes, which are only revealed when the corresponding wildtype copies '
+		f'are absent.</p>'
+	)
+
+	# Context-specific explanation of the test cross with deletion mutants
+	background_text += (
+		f'<p>In a test cross involving deletion mutants, one parent carries a full-length wildtype chromosome and '
+		f'a second chromosome with a deletion, while the other parent is homozygous recessive for all '
+		f'{cardinal_text} genes. Offspring inheriting the full-length wildtype chromosome display the dominant phenotype '
+		f'for all {cardinal_text} genes in the test cross. '
+		f'However, offspring inheriting the chromosome with the deletion will display some recessive traits. '
+		'These recessive traits uncover the missing genes in the deleted region. '
+		f'By analyzing which genes are uncovered in a series of different '
+		f'deletion mutants, the linear order of the genes can be determined.</p>'
+	)
+
+	background_text += (
+		'<p>In organisms such as <i>Drosophila melanogaster</i>, polytene chromosomes from the salivary '
+		'glands provide a physical map for studying deletions. Polytene chromosomes are giant chromosomes '
+		'with distinct banding patterns, allowing researchers to directly visualize which regions of the '
+		'chromosome are deleted. This visual representation complements the genetic data obtained from test '
+		'crosses.</p>'
+	)
+
+	# Conclude with the problem's goal
+	background_text += (
+		f'<p>For this problem, deletion mutants have been generated for a chromosome containing '
+		f'{cardinal_text} genes. Your goal is to analyze the phenotypic data resulting from these deletions '
+		f'and determine the correct linear order of the genes.</p>'
+	)
+
+	return background_text
+
+#===========================================================
+#===========================================================
+def get_deletion_mutant_steps() -> str:
+	"""
+	Returns the HTML formatted step-by-step instructions for solving deletion mutant problems.
+
+	Returns:
+		str: HTML formatted string with step-by-step instructions.
+	"""
+	steps = '<h6>Step-by-Step Instructions for Solving Deletion Mutant Problems</h6>'
+	steps += '<ul>'
+	steps += ' <li>Step 1: Simplify the information.</li>'
+	steps += '   <ul><li>List the genes and deletions provided in the question.</li>'
+	steps += '   <li>Organize the deletions in a clear table or list format for easier analysis.</li></ul>'
+	steps += ' <li>Step 2: Create a template for the gene order.</li>'
+	steps += '   <ul><li>Start with placeholders for each gene (e.g., _ _ _ _).</li>'
+	steps += '   <li>Insert known genes based on hints (e.g., the first or last gene).</li></ul>'
+	steps += ' <li>Step 3: Identify deletions containing the first gene.</li>'
+	steps += '   <ul><li>Analyze deletions that include the first gene to determine its neighbors.</li>'
+	steps += '   <li>Use deletions that overlap to narrow down adjacent genes.</li></ul>'
+	steps += ' <li>Step 4: Analyze deletions containing the next genes.</li>'
+	steps += '   <ul><li>Look for deletions that include specific pairs of genes.</li>'
+	steps += '   <li>Identify deletions that exclude certain genes to resolve ambiguities.</li></ul>'
+	steps += ' <li>Step 5: Verify the answer using all of the listed deletions.</li>'
+	steps += '   <ul><li>Deletion questions can be hard to solve, but once you have an answer, it is easy to check if it is correct!</li>'
+	steps += '   <li>Go through each deletion and confirm that the proposed gene order matches the genes included in that deletion.</li>'
+	steps += '   <li>If any deletion is inconsistent with the proposed order, your answer is wrong.</li></ul>'
+	steps += '</ul>'
+
+	return steps
+
+#==========================================================
+#==========================================================
+def color_deletion_name(deletion_text: str, deletion_key_str: str, deletion_colors: dict) -> str:
+	"""
+	Applies a unique color to a deletion's text based on its key.
+
+	Args:
+		deletion_text (str): The text to be colored (e.g., "Del #3: A, B, and C").
+		deletion_key_str (str): The string key for the deletion (e.g., "ABC").
+		deletion_colors (dict): A dictionary mapping deletion keys to colors.
+
+	Returns:
+		str: The HTML-formatted string with the appropriate color applied.
+	"""
+	# Wrap the text in a span with the corresponding color
+	return f'<span style="color: #{deletion_colors[deletion_key_str]}; font-weight: bold;">{deletion_text}</span>'
+
+#==========================================================
+#==========================================================
+def make_html_table(gene_order, deletions_list, deletion_colors):
+	CELL_W = 60
+	ROW_H = 25
+
+	table = ''
+	table += '<table style="border-collapse: collapse; border: 2px solid black; '
+	#width = CELL_W * (len(gene_order) + 1)
+	#height = ROW_H * (len(deletions_list) + 1)
+	#table += f'width: {width}px; height: {height}px;'
+	table += '">'
+	table += '<tr><th> </th>'
+
+	# Header for gene labels, gene order is unknown so just numbers
+	for i in range(len(gene_order)):
+		table += f'<th style="text-align: center; width: {CELL_W}px;">Gene {i+1}</th>'
+	table += '</tr>'
+
+	# Rows for deletions
+	for i, deletion in enumerate(deletions_list):
+		# Generate a deletion key string (e.g., "ABC")
+		deletion_key_str = ''.join(sorted(deletion))
+
+		# Row header for each deletion
+		colored_deletion_name = color_deletion_name(f"Del #{i+1}", deletion_key_str, deletion_colors)
+		table += f'<tr><th style="text-align: center;">{colored_deletion_name}</th>'
+
+		for gene in gene_order:
+			bg = deletion_colors[deletion_key_str] if gene in deletion else "EEEEEE"
+			table += (
+				f'<td style="background-color: #{bg}; '
+				f'height: {ROW_H}px; '
+				f'border: 1px solid #ddd;">&nbsp;</td>'
+			)
+			#table += f'<td style="background-color: #{bg}; height: {ROW_H}px;">&nbsp;</td>'
+
+		table += '</tr>'
+	table += '</table>'
+	return table
+
+#==========================================================
+#==========================================================
+def list2text(mylist: list[str]) -> str:
+	"""
+	Converts a list of strings into a human-readable text format with an Oxford comma.
+
+	If the list has more than two elements, it adds commas between elements and inserts
+	"and" before the last element, ensuring an Oxford comma is included. For a list of
+	exactly two elements, it joins them with "and". For an empty list or a single element,
+	it returns an empty string or the single element respectively.
+
+	Args:
+		mylist (list[str]): A list of strings to convert into human-readable text.
+
+	Returns:
+		str: The human-readable string representation of the list.
+	"""
+	# Handle lists with more than two elements (include an Oxford comma)
+	if len(mylist) > 2:
+		return f"{', '.join(mylist[:-1])}, and {mylist[-1]}"
+
+	# Handle lists with exactly two elements
+	elif len(mylist) == 2:
+		return f"{mylist[0]} and {mylist[1]}"
+
+	# Return an empty string for empty lists
+	elif len(mylist) == 0:
+		return ""
+
+	# For a single element, return the element itself
+	else:
+		return mylist[0]
+#====================
+# Assertions to verify correctness
+assert list2text(list('abcd')) == "a, b, c, and d", \
+	"Failed test case with more than 2 elements (Oxford comma required)"
+assert list2text(['x', 'y']) == "x and y", \
+	"Failed test case with exactly 2 elements"
+assert list2text(['z']) == "z", \
+	"Failed test case with a single element"
+assert list2text([]) == "", \
+	"Failed test case with an empty list"
+
+#==========================================================
+#==========================================================
+def write_question_text(gene_order, deletions_list, deletion_colors):
+	"""
+	Writes the question about gene order based on the original list and deletions.
+	"""
+	### write question
+	#Genes a, b, c, d, e, and f are closely linked in a chromosome, but their order is unknown.
+	#Four deletions in the region are found to uncover recessive alleles of the genes as follows:
+	#Deletion 1 uncovers a, d, and f; Deletion?2 uncovers d, e, and f; Deletion?3 uncovers c, d, and e;
+	#Deletion 4 uncovers b and c. Which one of the following is the correct order for the genes?
+
+	# Create a sorted copy of the original gene list
+	sorted_gene_order = sorted(copy.copy(gene_order))
+	sorted_gene_order_str = list2text(sorted_gene_order)
+
+	# Number of genes and deletions (in words and digits)
+	num_genes_int = len(gene_order)
+	num_genes_word = f"{bptools.number_to_cardinal(num_genes_int)} ({num_genes_int})"
+	num_deletions_int = len(deletions_list)
+	num_deletions_word = f"{bptools.number_to_cardinal(num_deletions_int)} ({num_deletions_int})"
+
+	# Start building the question text
+	question = ""
+
+	# Main description
+	question += (
+		f"<p>There are {num_genes_word} genes, "
+		f"{sorted_gene_order_str}, closely linked in a single chromosome. However, "
+		"their order is unknown. "
+	)
+	question += (
+		f"In the region, {num_deletions_word} deletions have been identified. "
+		"These deletions uncover recessive alleles of the genes as follows:</p><ul>"
+	)
+
+	# Add details for each deletion
+	for i, deletion in enumerate(deletions_list):
+		# Generate a deletion key string (e.g., "ABC")
+		deletion_key_str = ''.join(sorted(deletion))
+		deletions_word_str = list2text(deletion)
+
+		# Colorize the deletion description
+		colored_deletion = color_deletion_name(
+			f"Deletion #{i+1}: <strong>{deletions_word_str}</strong>",
+			deletion_key_str,
+			deletion_colors
+		)
+		question += f"<li>{colored_deletion}</li>"
+
+	# Add the final question and hints
+	question += (
+		f"</ul> <p>What is the correct order of the "
+		f"{num_genes_word} genes?</p> "
+	)
+	question += (
+		f"<p><strong>Hint 1</strong>: The first gene at start of the chromosome is "
+		f"<strong>gene {gene_order[0]}</strong>.</p> "
+	)
+	question += (
+		f"<p><strong>Hint 2</strong>: Enter your answer in the blank using only "
+		f"{num_genes_word} letters, or one comma every three (3) letters. Do not include "
+		"extra commas or spaces in your answer.</p>"
+	)
+
+	# Check for invalid newlines in the question
+	if '\n' in question:
+		raise ValueError("New lines are not allowed")
+
+	return question
+
+
+#==========================================================
+#==========================================================
 def insertCommas(my_str: str, separate: int = 3) -> str:
 	"""
 	Inserts commas into a string after every specified number of characters.
@@ -539,6 +687,19 @@ def generate_mc_distractors(answer_gene_order: list[str], num_choices: int):
 		tuple[list[str], str]: A list of formatted multiple-choice options and the correct answer.
 	"""
 
+	answer_word = ''.join(answer_gene_order)
+	anagrams = get_anagrams_for_word(answer_word)
+	if 0 < len(anagrams) < 10:
+		print(f"ANAGRAMS: {', '.join(anagrams)}")
+	first_letter = answer_gene_order[0]
+	good_anagrams = []
+	for anagram in anagrams:
+		if anagram.startswith(first_letter):
+			good_anagrams.append(anagram)
+	if 0 < len(good_anagrams) < 10:
+		print(f"GOOD ANAGRAMS: {', '.join(good_anagrams)}")
+	print(f"Found {len(anagrams)} anagrams and {len(good_anagrams)} good anagrams for our gene word {answer_word}.\n\n")
+
 	# Generate permutations starting with a random order from the current choices_set
 	choices_set = set([tuple(answer_gene_order),])
 	max_attempts = 1000 # Limit the number of attempts to prevent infinite loops
@@ -595,7 +756,7 @@ def write_question(N: int, args) -> str:
 	Returns:
 		str: A formatted question ready to be written to the output file.
 	"""
-	background = generate_background_for_deletions(args.num_genes, args.table)
+	background = generate_background_for_deletions(args.num_genes)
 	steps = get_deletion_mutant_steps()
 
 	# Generate the original list of genes and the set of deleted genes
@@ -615,13 +776,8 @@ def write_question(N: int, args) -> str:
 
 	deletion_colors = {''.join(deletion): color_wheel[i] for i, deletion in enumerate(deletions_list)}
 
-	# Generate an HTML table if the table option is enabled
-	if args.table is True:
-		print("Making TABLE")
-		table = make_html_table(answer_gene_order, deletions_list, deletion_colors)
-	else:
-		print("Skipping TABLE")
-		table = ''
+	print("Making TABLE")
+	table = make_html_table(answer_gene_order, deletions_list, deletion_colors)
 
 	# Create the question text based on the original and deleted genes
 	print('write_question_text()')
@@ -675,19 +831,6 @@ def parse_arguments():
 		'-g', '--num-genes', metavar='#', type=int, dest='num_genes',
 		help='number of deleted genes on the chromosome', default=5)
 
-	# Create a mutually exclusive group for enabling or disabling table display
-	table_group = parser.add_mutually_exclusive_group()
-	table_group.add_argument(
-		'-T', '--table', dest='table', action='store_true',
-		help='Enable table display in the output'
-	)
-	table_group.add_argument(
-		'-F', '--free', '--no-table', dest='table', action='store_false',
-		help='Disable table display in the output'
-	)
-	# Set the default behavior for the `table` argument (enabled by default)
-	parser.set_defaults(table=True)
-
 	# Create a mutually exclusive group for question type and make it required
 	question_group = parser.add_mutually_exclusive_group(required=True)
 	question_group.add_argument(
@@ -726,17 +869,12 @@ if __name__ == '__main__':
 	# Parse arguments from the command line
 	args = parse_arguments()
 
-	if args.table:
-		table_str = "TABLE"
-	else:
-		table_str = "FREE"
-
 	# Setup output file name
 	script_name = os.path.splitext(os.path.basename(__file__))[0]
 	outfile = (
 		f'bbq-{script_name}'
 		f'-{args.num_genes:02d}_genes'
-		f'-{table_str}'
+		f'-words'
 		f'-{args.question_type.upper()}'
 		'-questions.txt'
 	)
