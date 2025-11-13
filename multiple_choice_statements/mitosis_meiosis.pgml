@@ -1,0 +1,130 @@
+DOCUMENT();
+
+loadMacros(
+  "PGstandard.pl",
+  "PGchoicemacros.pl",
+  "PGML.pl",
+  "parserRadioButtons.pl",
+);
+
+TEXT(beginproblem());
+$showPartialCorrectAnswers = 1;
+
+########################################################
+# TRUE/FALSE POOLS  (from YAML)
+########################################################
+
+$topic = 'mitosis and meiosis cell division';
+
+@true_statements = (
+    'Each daughter cell formed by mitosis has the same kinds of chromosomes as the parent cell',
+    'Each daughter cell formed by meiosis has half the number of chromosomes as the parent cell',
+    'In mitosis, the parent cell and the daughter cells are genetically identical',
+    'The daughter cells produced at the end of meiosis are genetically different from the original parent cell',
+    'Meiosis daughter cells contain half of the genetic material which is a mix of both the maternal and paternal genes',
+    'Mitosis is cell division that produces two (2) daughter cells',
+    'Meiosis is cell division that produces four (4) daughter cells',
+    'In diploid organisms, the final cells resulting from meiosis cell division are haploid',
+    'In diploid organisms, the final cells resulting from mitosis cell division are diploid',
+    'Both meiosis and mitosis start with one cell',
+    'Mitosis produces new cells to help organisms grow in size and repair damaged tissue',
+    'Meiosis produces new gamete cells, such as sperm and egg',
+    'Mitosis goes through cytokinesis cell division once',
+    'Meiosis goes through cytokinesis cell division twice',
+    'Cross-over regularly happens in meiosis, but not in mitosis',
+    'Mitosis almost never involves crossing over of the chromosomes',
+    'Mitosis normally occurs in somatic cells of organisms and facilitates growth and development',
+    'Meiosis occurs only in specialized germline cells and facilitates sexual reproduction',
+    'Meiosis occurs only in specialized germline cells and produces gametes.',
+    'Meiosis occurs in two phases, that is, meiosis I and meiosis II',
+    'During the process of meiosis several processes occur that cause genetic variation among organisms',
+    'Meiosis I is the only stage where homologous chromosomes pair up and exchange genetic material',
+    'Only sexually reproductive organisms utilize meiosis',
+    'Meiosis is a special type of cell division that produces sex cells for reproduction',
+    'Both sexual and asexual organisms go through the process of mitosis',
+);
+
+@false_statements = (
+    'Each daughter cell formed by meiosis has the same kinds of chromosomes as the parent cell',
+    'Each daughter cell formed by mitosis has half the number of chromosomes as the parent cell',
+    'In meiosis, the parent cell and the daughter cells are genetically identical',
+    'The daughter cells produced at the end of mitosis are completely different from the original parent cell',
+    'Meiosis is cell division that produces two (2) daughter cells',
+    'Mitosis is cell division that produces four (4) daughter cells',
+    'In diploid organisms, the final cells resulting from meiosis cell division are diploid',
+    'In diploid organisms, the final cells resulting from mitosis cell division are haploid',
+    'Meiosis starts with two cells and mitosis starts with only one cell',
+    'Mitosis starts with two cells and meiosis starts with only one cell',
+    'Meiosis produces new cells to help organisms grow in size and repair damaged tissue',
+    'Mitosis produces new gamete cells, such as sperm and egg',
+    'Meiosis goes through cytokinesis cell division once',
+    'Mitosis goes through cytokinesis cell division twice',
+    'Cross-over regularly happens in mitosis, but not in meiosis',
+    'Meiosis does not involve crossing over of the chromosomes',
+    'Meiosis normally occurs in somatic cells of organisms and facilitates growth and development',
+    'Mitosis occurs only in specialized germline cells and facilitates sexual reproduction',
+    'Mitosis occurs in two phases, that is, mitosis I and mitosis II',
+    'During the process of mitosis several processes occur that cause genetic variation among organisms',
+    'Mitosis I is the only stage where homologous chromosomes pair up and exchange genetic material',
+    'Mitosis II is the only stage where homologous chromosomes pair up and exchange genetic material',
+    'Meiosis I is the only stage where sister chromatids pair up and exchange genetic material',
+    'Meiosis II is the only stage where sister chromatids pair up and exchange genetic material',
+    'Meiosis II is the only stage where homologous chromosomes pair up and exchange genetic material',
+    'Only sexually reproductive organisms utilize mitosis',
+    'Mitosis is a special type of cell division that produces sex cells for reproduction',
+    'Both sexual and asexual organisms go through the process of meiosis',
+);
+
+########################################################
+# Pick mode: TRUE question or FALSE question
+########################################################
+
+$mode = list_random("TRUE", "FALSE");
+
+if ($mode eq "TRUE") {
+    $correct = list_random(@true_statements);
+    @pool    = @false_statements;  # distractors must be FALSE
+} else {
+    $correct = list_random(@false_statements);
+    @pool    = @true_statements;   # distractors must be TRUE
+}
+
+########################################################
+# Pick 4 distinct distractors (dynamic)
+########################################################
+
+$num_distractors = 4;
+my @indices = NchooseK(scalar(@pool), $num_distractors);
+my @distractors = @pool[@indices];
+
+########################################################
+# Build choices list
+########################################################
+
+@choices = ($correct, @distractors);
+
+########################################################
+# Build RadioButtons
+########################################################
+
+$rb = RadioButtons(
+  [@choices],     # array ref of choices
+  $correct,       # correct answer
+  labels        => 'ABC',
+  displayLabels => 1,
+  separator     => '<div style="margin-bottom: 0.7em;"></div>',
+  uncheckable   => 0,
+  randomize     => 0,
+);
+
+BEGIN_PGML
+
+Which one of the following statements is [$mode] about [$topic]?
+
+[@ $rb->buttons() @]*
+
+END_PGML
+
+ANS( $rb->cmp() );
+
+ENDDOCUMENT();
