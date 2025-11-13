@@ -19,10 +19,11 @@ $topic = 'mitosis and meiosis cell division';
 /*
 @true_statements = (
     @list1 = (
-    'Each daughter cell formed by mitosis has the same kinds of chromosomes as the parent cell';
-    'Each daughter cell formed by mitosis has the same kinds of chromosomes as the parent cell';
-    ),
-    @list2 = (
+        'Each daughter cell formed by mitosis has the same kinds of chromosomes as the parent cell',
+        'Each daughter cell formed by mitosis has the same kinds of chromosomes as the parent cell',
+        ),
+    @list2 = ()
+);
 */
 
 @true_statements = (
