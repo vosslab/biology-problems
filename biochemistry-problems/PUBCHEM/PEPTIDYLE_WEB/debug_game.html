@@ -2,17 +2,17 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>wordle_game.js debug</title>
+	<title>peptidyle_game.js debug</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
 	<!-- RDKit for setupGame renderSequence path -->
 	<script src="https://unpkg.com/@rdkit/rdkit/dist/RDKit_minimal.js"></script>
 
 	<!-- Your code under test -->
-	<script src="wordle_peptides.js"></script>
-	<script src="wordle_words.js"></script>
-	<script src="wordle_stats.js"></script>
-	<script src="wordle_game.js"></script>
+	<script src="peptidyle_peptides.js"></script>
+	<script src="peptidyle_words.js"></script>
+	<script src="peptidyle_stats.js"></script>
+	<script src="peptidyle_game.js"></script>
 
 	<style>
 		body { font-family: system-ui, Arial, sans-serif; margin: 20px; }
@@ -38,7 +38,7 @@
 	</style>
 </head>
 <body>
-	<h2>wordle_game.js debug</h2>
+	<h2>peptidyle_game.js debug</h2>
 
 	<section>
 		<h3>scoreGuess</h3>
@@ -52,7 +52,7 @@
 	</section>
 
 	<section>
-		<h3>isValidGuess</h3>
+		<h3>isValidPeptideGuess</h3>
 		<label for="guess-valid">Guess:</label>
 		<input id="guess-valid" value="ACRID" maxlength="5">
 		<button id="btn-valid" type="button">Check</button>
@@ -114,11 +114,11 @@
 			"score:  " + JSON.stringify(result);
 	});
 
-	// isValidGuess
+	// isValidPeptideGuess
 	document.getElementById("btn-valid").addEventListener("click", function () {
 		var out = document.getElementById("valid-output");
-		if (typeof isValidGuess !== "function") {
-			out.textContent = "isValidGuess is not defined.";
+		if (typeof isValidPeptideGuess !== "function") {
+			out.textContent = "isValidPeptideGuess is not defined.";
 			return;
 		}
 		if (typeof WORD_LIST === "undefined") {
@@ -126,7 +126,7 @@
 			return;
 		}
 		var guess = document.getElementById("guess-valid").value.trim().toUpperCase();
-		var ok = isValidGuess(guess, WORD_LIST);
+		var ok = isValidPeptideGuess(guess, WORD_LIST);
 		out.textContent = "Guess: " + guess + "\nValid: " + ok;
 	});
 
@@ -149,7 +149,7 @@
 	document.getElementById("btn-setup-game").addEventListener("click", function () {
 		var btn = this;
 		if (typeof setupGame !== "function") {
-			alert("setupGame is not defined in wordle_game.js");
+			alert("setupGame is not defined in peptidyle_game.js");
 			return;
 		}
 		if (typeof initRDKitModule === "function" && typeof RDKitModule === "undefined") {

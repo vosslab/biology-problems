@@ -251,13 +251,13 @@ function setupGame() {
     let answer = getDailyWord(); // uppercase
 
     // Optional override from URL: ?seq=ACRID
-    if (window.WORDLE_OVERRIDE) {
-        answer = window.WORDLE_OVERRIDE.toUpperCase();
+    if (window.PEPTIDYL_OVERRIDE) {
+        answer = window.PEPTIDYL_OVERRIDE.toUpperCase();
     }
 
     const maxGuesses = MAX_GUESSES;
 
-    renderSequence(answer, "peptide"); // from wordle_peptides.js
+    renderSequence(answer, "peptide"); // from peptidyl_peptides.js
     renderStats();
 
     const form = document.getElementById("guess-form");

@@ -12,12 +12,27 @@
 	margin-top: 0;
 }
 
+
 #pw-root #top-bar {
 	display: flex;
 	justify-content: space-between;
 	align-items: baseline;
 	margin-bottom: 10px;
 }
+
+
+#pw-root #top-bar .subtitle {
+margin: -6px 0 0;
+font-size: 0.95rem;
+color: #555555;
+}
+
+@media (prefers-color-scheme: dark) {
+	#pw-root #top-bar .subtitle {
+	color: #cccccc;
+	}
+}
+
 
 #pw-root #stats {
 	font-size: 0.9rem;

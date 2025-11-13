@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>wordle_stats.js debug</title>
+	<title>peptidyle_stats.js debug</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<script src="wordle_words.js"></script>
-	<script src="wordle_stats.js"></script>
+	<script src="peptidyle_words.js"></script>
+	<script src="peptidyle_stats.js"></script>
 
 	<style>
 		body { font-family: system-ui, Arial, sans-serif; margin: 20px; }
@@ -17,7 +17,7 @@
 	</style>
 </head>
 <body>
-	<h2>wordle_stats.js debug</h2>
+	<h2>peptidyle_stats.js debug</h2>
 
 	<section>
 		<h3>Stats object and renderStats</h3>
@@ -45,7 +45,7 @@
 	/* global getUtcDayKey, loadStats, saveStats,
 	          previousDayKey, updateStatsOnGameEnd, renderStats */
 
-	const STATS_KEY = "wordle_peptides_stats_v1";
+	const STATS_KEY = "peptidyle_peptides_stats_v1";
 
 	(function initDateInput() {
 		var today = new Date().toISOString().slice(0, 10);
@@ -104,7 +104,7 @@
 			if (typeof STATS_KEY === "string") {
 				window.localStorage.removeItem(STATS_KEY);
 			} else {
-				window.localStorage.removeItem("wordle_peptides_stats_v1");
+				window.localStorage.removeItem("peptidyle_peptides_stats_v1");
 			}
 			if (typeof renderStats === "function") {
 				renderStats();

@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (typeof setupGame === "function") {
             setupGame();
         } else {
-            messageEl.textContent = "Error: setupGame is not defined in wordle_game.js.";
+            messageEl.textContent = "Error: setupGame is not defined in peptidyle_game.js.";
         }
     }).catch(function (e) {
         console.error("RDKit init failed", e);

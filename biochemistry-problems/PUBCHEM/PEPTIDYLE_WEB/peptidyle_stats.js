@@ -1,6 +1,6 @@
-// wordle_stats.js
+// peptidyle_stats.js
 
-const STATS_KEY = "wordle_peptides_stats_v1";
+const STATS_KEY = "peptidyle_stats_v1";
 
 function loadStats() {
     const raw = window.localStorage.getItem(STATS_KEY);

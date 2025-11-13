@@ -2,27 +2,29 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>Polypeptide Wordle</title>
+	<title>Daily Peptidyle Puzzle</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<link rel="stylesheet" href="wordle_formatting.css">
+	<link rel="stylesheet" href="peptidyle_formatting.css">
 
 	<!-- RDKit from CDN -->
 	<script src="https://unpkg.com/@rdkit/rdkit/dist/RDKit_minimal.js"></script>
 
 	<!-- Your code files (order matters) -->
-	<script src="wordle_peptides.js"></script>
-	<script src="wordle_words.js"></script>
-	<script src="wordle_stats.js"></script>
-	<script src="wordle_game.js"></script>
+	<script src="peptidyle_peptides.js"></script>
+	<script src="peptidyle_words.js"></script>
+	<script src="peptidyle_stats.js"></script>
+	<script src="peptidyle_game.js"></script>
 </head>
 <body>
 	<div id="pw-root">
 		<div id="top-bar">
-			<h1>Polypeptide Wordle</h1>
+			<div>
+				<h1>Peptidyle</h1>
+				<p class="subtitle">Deduce the pentapeptide sequence</p>
+			</div>
 			<div id="stats"></div>
 		</div>
-
 		<div id="peptide"></div>
 
 		<div id="help-row">
@@ -97,6 +99,6 @@
 	</details>
 </div>
 	</div>
-	<script src="wordle_bootstrap.js"></script>
+	<script src="peptidyle_bootstrap.js"></script>
 </body>
 </html>
