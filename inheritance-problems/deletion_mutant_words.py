@@ -27,7 +27,7 @@ def get_anagrams_for_word(query_word: str, wordlist_path: str = None) -> set[str
 			Defaults to 'enable2k.txt' under data directory.
 
 	Returns:
-		set[str]: Unique lowercase anagrams of the given word.
+		set[str]: Unique uppercase anagrams of the given word.
 	"""
 	# Determine default word list path
 	if wordlist_path is None:
@@ -36,7 +36,7 @@ def get_anagrams_for_word(query_word: str, wordlist_path: str = None) -> set[str
 		wordlist_path = os.path.join(git_path, "data", large_file)
 
 	# Normalize the query word
-	target = query_word.strip().lower()
+	target = query_word.strip().upper()
 	if not target:
 		return set()
 
@@ -48,7 +48,7 @@ def get_anagrams_for_word(query_word: str, wordlist_path: str = None) -> set[str
 
 	with open(wordlist_path, 'r', encoding='ascii') as handle:
 		for line in handle:
-			word = line.strip().lower()
+			word = line.strip().upper()
 			if not word or word.startswith('#'):
 				continue
 			if len(word) != target_len:
@@ -67,7 +67,7 @@ def find_anagram_words(wordlist_path: str, min_anagrams: int, word_length: int, 
 	anagram_groups: dict = {}
 	with open(wordlist_path, 'r', encoding='ascii') as handle:
 		for line in handle:
-			word = line.strip().lower()
+			word = line.strip().upper()
 			if not word or word.startswith('#'):
 				continue
 			if len(word) != word_length:
@@ -128,7 +128,7 @@ def generate_gene_list(num_genes: int) -> list[str]:
 	min_word_bank_size = 10
 	word_bank = get_gene_word_bank(num_genes, min_word_bank_size)
 	print(f"Final word bank size of {len(word_bank)} words.\n")
-	gene_order_word = random.choice(word_bank)
+	gene_order_word = random.choice(word_bank).upper()
 	gene_list = list(gene_order_word)
 	return gene_list
 
@@ -224,7 +224,7 @@ def generate_mc_distractors(answer_gene_order: list[str], num_choices: int):
 	"""
 
 	# Combine gene letters into a single word
-	answer_word = ''.join(answer_gene_order).lower()
+	answer_word = ''.join(answer_gene_order).upper()
 
 	# Find all anagrams for this word
 	anagram_set = get_anagrams_for_word(answer_word)
@@ -235,7 +235,7 @@ def generate_mc_distractors(answer_gene_order: list[str], num_choices: int):
 		print(f"ANAGRAMS: {', '.join(sorted(anagram_set))}")
 
 	# Separate anagrams that share the same first letter
-	first_letter = answer_gene_order[0].lower()
+	first_letter = answer_gene_order[0].upper()
 	good_anagrams = []
 	other_anagrams = []
 	for anagram in sorted(anagram_set):
