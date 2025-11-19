@@ -34,6 +34,16 @@ def ensure_most_alphabetical(itemlist: list[str]) -> list[str]:
 #==========================================================
 #==========================================================
 def generate_deletions(gene_order: list[str]) -> list[list[str]]:
+	min_deletions_list = None
+	for i in range(3):
+		deletions_list = generate_deletions_sub(gene_order)
+		if min_deletions_list is None or len(deletions_list) < len(min_deletions_list):
+			min_deletions_list = deletions_list
+	return min_deletions_list
+
+#==========================================================
+#==========================================================
+def generate_deletions_sub(gene_order: list[str]) -> list[list[str]]:
 	"""
 	Generates a list of deletions such that:
 	1. All possible neighboring pairs of genes are covered.
