@@ -104,12 +104,12 @@ def generate_deletions_sub(gene_order: list[str]) -> list[list[str]]:
 		# Add the deletion to the list if it adds new information and is not a duplicate
 		if new_pairs > 0 and deletion not in deletions_list:
 			deletions_list.append(deletion)
-			print(f"New Deletion #{len(deletions_list)}: {deletion}")
+			#print(f"New Deletion #{len(deletions_list)}: {deletion}")
 
 	# Print summary of results
-	print("")
-	print(f"Total neighboring gene pairs used: {len(used_gene_pairs)}")
-	print(f"Total split gene pairs included: {len(split_gene_pairs)}\n")
+	#print("")
+	#print(f"Total neighboring gene pairs used: {len(used_gene_pairs)}")
+	#print(f"Total split gene pairs included: {len(split_gene_pairs)}\n")
 
 	return deletions_list
 
