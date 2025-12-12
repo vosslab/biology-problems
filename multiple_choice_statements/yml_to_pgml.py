@@ -1,239 +1,231 @@
 #!/usr/bin/env python3
-# Standard Library
-import re
-import pathlib
-import argparse
-
-# PIP3 modules
+import sys
 import yaml
+import re
+from pathlib import Path
+
+def group_statements(block):
+    """
+    Groups truth1a, truth1b... into:
+       { 1: ["statement A", "statement B"], 2: [...] }
+    """
+    grouped = {}
+
+    for key, value in block.items():
+        # Extract the digits from keys like truth3a → 3
+        m = re.search(r'(\d+)', key)
+        if not m:
+            continue
+        group_num = int(m.group(1))
+
+        if group_num not in grouped:
+            grouped[group_num] = []
+
+        grouped[group_num].append(value)
+
+    # Return list ordered by group index
+    return [grouped[k] for k in sorted(grouped.keys())]
 
 
-#============================================
-def group_statements(block: dict) -> list:
-	"""
-	Group truth or false statement keys into ordered groups.
-
-	Args:
-		block (dict): Mapping of statement keys to text values.
-
-	Returns:
-		list: Ordered list of grouped statement lists.
-	"""
-	# Build grouped statements by numeric suffix.
-	grouped = {}
-	for key, value in block.items():
-		# Extract the digits from keys like truth3a.
-		match = re.search(r"(\d+)", key)
-		if match:
-			group_number = int(match.group(1))
-			if group_number not in grouped:
-				grouped[group_number] = []
-			grouped[group_number].append(value)
-	# Return list ordered by group index.
-	return [grouped[index] for index in sorted(grouped.keys())]
+def perl_array(name, groups):
+    """
+    Convert Python list-of-lists into Perl array syntax.
+    """
+    out = f"@{name} = (\n"
+    for g in groups:
+        out += "    [\n"
+        for stmt in g:
+            safe = stmt.replace('"', '\\"')
+            out += f'      "{safe}",\n'
+        out += "    ],\n"
+    out += ");\n\n"
+    return out
 
 
-# Simple assertion test for the function: 'group_statements'
-assert group_statements({"truth1a": "A", "truth1b": "B", "truth2a": "C"}) == [
-	["A", "B"],
-	["C"],
-]
+def escape_perl_string(s):
+    """
+    Escape a string for use in Perl double quotes.
+    """
+    if s is None:
+        return ""
+    return s.replace('\\', '\\\\').replace('"', '\\"').replace('$', '\\$').replace('@', '\\@')
 
 
-#============================================
-def perl_array(name: str, groups: list) -> str:
-	"""
-	Convert grouped statements into Perl array syntax.
+def main():
+    if len(sys.argv) != 2:
+        print("Usage: python3 yml_to_pgml.py input.yml")
+        sys.exit(1)
 
-	Args:
-		name (str): Target Perl array name.
-		groups (list): List of grouped statement lists.
+    yml_path = Path(sys.argv[1])
+    if not yml_path.exists():
+        print("File not found:", yml_path)
+        sys.exit(1)
 
-	Returns:
-		str: Perl array definition string.
-	"""
-	# Build Perl array text.
-	perl_text = f"@{name} = (\n"
-	for group in groups:
-		perl_text += "    [\n"
-		for statement in group:
-			safe = statement.replace('"', '\\"')
-			perl_text += f'      "{safe}",\n'
-		perl_text += "    ],\n"
-	perl_text += ");\n\n"
-	return perl_text
+    data = yaml.safe_load(yml_path.read_text())
 
+    # Extract topic
+    topic = data.get("topic", "this topic")
+    
+    # Extract override questions (can be None or ~)
+    override_true = data.get("override_question_true")
+    override_false = data.get("override_question_false")
+    
+    # Convert None or empty to empty string for Perl
+    override_true_escaped = escape_perl_string(override_true) if override_true else ""
+    override_false_escaped = escape_perl_string(override_false) if override_false else ""
 
-# Simple assertion test for the function: 'perl_array'
-assert '@demo = (\n    [\n      "one",\n    ],\n);\n\n' in perl_array("demo", [["one"]])
+    # Handle naming variations: true_statements / false_statements
+    true_block = data.get("true_statements", {})
+    false_block = data.get("false_statements", {})
 
+    # Convert dicts -> grouped lists
+    true_groups = group_statements(true_block)
+    false_groups = group_statements(false_block)
 
-#============================================
-def build_pgml(topic: str, perl_true: str, perl_false: str) -> str:
-	"""
-	Assemble the PGML output content.
+    # Convert to Perl arrays
+    perl_true = perl_array("true_groups", true_groups)
+    perl_false = perl_array("false_groups", false_groups)
+    
+    # Build the PGML question text
+    # If override exists, use it; otherwise use default format
+    if override_true or override_false:
+        # At least one override exists - need to build conditional question
+        # We'll set variables and use conditional in PGML
+        question_setup = ""
+        if override_true and override_false:
+            # Both overrides exist
+            question_setup = f"""
+# Question text with overrides
+$question_true = "{override_true_escaped}";
+$question_false = "{override_false_escaped}";
+"""
+            pgml_question = """[@ $mode eq "TRUE" ? $question_true : $question_false @]*"""
+        elif override_true:
+            # Only true override
+            question_setup = f"""
+# Question text with TRUE override
+$question_true = "{override_true_escaped}";
+"""
+            pgml_question = """[@ $mode eq "TRUE" ? $question_true : "Which one of the following statements is <strong>FALSE</strong> about $topic?" @]*"""
+        else:
+            # Only false override
+            question_setup = f"""
+# Question text with FALSE override
+$question_false = "{override_false_escaped}";
+"""
+            pgml_question = """[@ $mode eq "TRUE" ? "Which one of the following statements is <strong>TRUE</strong> about $topic?" : $question_false @]*"""
+    else:
+        # No overrides, use default format with HTML bold
+        question_setup = ""
+        pgml_question = """[@ "Which one of the following statements is <strong>$mode</strong> about $topic?" @]*"""
 
-	Args:
-		topic (str): Topic description for the problem.
-		perl_true (str): Perl array text for true groups.
-		perl_false (str): Perl array text for false groups.
+    # Full PGML template with override support
+    pgml_template = f"""
+DOCUMENT();
 
-	Returns:
-		str: Complete PGML content.
-	"""
-	# Assemble PGML content with concatenation.
-	pgml_content = ""
-	pgml_content += "DOCUMENT();\n\n"
-	pgml_content += "loadMacros(\n"
-	pgml_content += '  "PGstandard.pl",\n'
-	pgml_content += '  "PGML.pl",\n'
-	pgml_content += '  "PGchoicemacros.pl",\n'
-	pgml_content += '  "parserRadioButtons.pl",\n'
-	pgml_content += ");\n\n"
-	pgml_content += "TEXT(beginproblem());\n"
-	pgml_content += "$showPartialCorrectAnswers = 1;\n\n"
-	pgml_content += "########################################################\n"
-	pgml_content += "# AUTO-GENERATED GROUPS FROM YAML\n"
-	pgml_content += "########################################################\n\n"
-	pgml_content += perl_true
-	pgml_content += perl_false
-	pgml_content += "########################################################\n"
-	pgml_content += "# GLOBAL SETTINGS\n"
-	pgml_content += "########################################################\n\n"
-	pgml_content += f'$topic = "{topic}";\n'
-	pgml_content += '$mode  = list_random("TRUE","FALSE");\n'
-	pgml_content += "$num_distractors = 4;\n\n"
-	pgml_content += "########################################################\n"
-	pgml_content += "# SELECT GROUP\n"
-	pgml_content += "########################################################\n\n"
-	pgml_content += "my (@selected_group, @opposite_groups);\n\n"
-	pgml_content += 'if ($mode eq "TRUE") {\n'
-	pgml_content += "    $group_index      = random(0, scalar(@true_groups)-1, 1);\n"
-	pgml_content += "    @selected_group   = @{ $true_groups[$group_index] };\n"
-	pgml_content += "    @opposite_groups  = @false_groups;\n"
-	pgml_content += "} else {\n"
-	pgml_content += "    $group_index      = random(0, scalar(@false_groups)-1, 1);\n"
-	pgml_content += "    @selected_group   = @{ $false_groups[$group_index] };\n"
-	pgml_content += "    @opposite_groups  = @true_groups;\n"
-	pgml_content += "}\n\n"
-	pgml_content += "########################################################\n"
-	pgml_content += "# PICK CORRECT + DISTRACTORS (MAINTAINING GROUP STRUCTURE)\n"
-	pgml_content += "########################################################\n\n"
-	pgml_content += "$correct = list_random(@selected_group);\n\n"
-	pgml_content += "# Generate random group indices to pull distractors from\n"
-	pgml_content += "my @available_group_indices = (0 .. $#opposite_groups);\n"
-	pgml_content += "my @selected_distractor_indices = ();\n\n"
-	pgml_content += "# Randomly select which groups to pull from (need $num_distractors groups)\n"
-	pgml_content += "while (@selected_distractor_indices < $num_distractors && "
-	pgml_content += "@available_group_indices > 0) {\n"
-	pgml_content += "    my $random_index = random(0, scalar(@available_group_indices)-1, 1);\n"
-	pgml_content += (
-		"    push @selected_distractor_indices, splice(@available_group_indices, "
-		"$random_index, 1);\n"
-	)
-	pgml_content += "}\n\n"
-	pgml_content += "# Pull one random statement from each selected group\n"
-	pgml_content += "@distractors = ();\n"
-	pgml_content += "foreach my $group_idx (@selected_distractor_indices) {\n"
-	pgml_content += "    my @group = @{ $opposite_groups[$group_idx] };\n"
-	pgml_content += "    my $distractor = list_random(@group);\n"
-	pgml_content += "    push @distractors, $distractor;\n"
-	pgml_content += "}\n\n"
-	pgml_content += "@choices = ($correct, @distractors);\n\n"
-	pgml_content += "########################################################\n"
-	pgml_content += "# RADIO BUTTONS WITH A/B/C/D/E LABELS\n"
-	pgml_content += "########################################################\n\n"
-	pgml_content += "$rb = RadioButtons(\n"
-	pgml_content += "  [@choices],\n"
-	pgml_content += "  $correct,\n"
-	pgml_content += "  labels        => ['A','B','C','D','E'],\n"
-	pgml_content += "  displayLabels => 1,\n"
-	pgml_content += "  randomize     => 1,\n"
-	pgml_content += "  separator     => '<div style=\"margin-bottom: 0.7em;\"></div>',\n"
-	pgml_content += ");\n\n"
-	pgml_content += "########################################################\n"
-	pgml_content += "# PGML\n"
-	pgml_content += "########################################################\n\n"
-	pgml_content += "BEGIN_PGML\n\n"
-	pgml_content += "Which one of the following statements is "
-	pgml_content += "[@ \"<span style='font-weight: bold;'>$mode</span>\" @]* "
-	pgml_content += "about [$topic]?\n\n"
-	pgml_content += "[@ $rb->buttons() @]*\n\n"
-	pgml_content += "END_PGML\n\n"
-	pgml_content += "ANS($rb->cmp());\n\n"
-	pgml_content += "ENDDOCUMENT();\n"
-	return pgml_content
+loadMacros(
+  "PGstandard.pl",
+  "PGML.pl",
+  "PGchoicemacros.pl",
+  "parserRadioButtons.pl",
+);
 
+TEXT(beginproblem());
+$showPartialCorrectAnswers = 1;
 
-#============================================
-def parse_args() -> argparse.Namespace:
-	"""
-	Parse command-line arguments.
+########################################################
+# AUTO-GENERATED GROUPS FROM YAML
+########################################################
 
-	Returns:
-		argparse.Namespace: Parsed arguments.
-	"""
-	# Configure CLI arguments.
-	parser = argparse.ArgumentParser(
-		description="Convert YAML multiple-choice statements into a PGML file."
-	)
-	parser.add_argument(
-		"-i",
-		"--input",
-		dest="input_path",
-		required=True,
-		help="Path to the input YAML file",
-	)
-	parser.add_argument(
-		"-o",
-		"--output",
-		dest="output_path",
-		required=False,
-		help="Path for the generated PG file",
-	)
-	return parser.parse_args()
+{perl_true}
+{perl_false}
 
+########################################################
+# GLOBAL SETTINGS
+########################################################
 
-#============================================
-def main() -> None:
-	"""
-	Load YAML statements and write PGML output.
-	"""
-	# Parse CLI options.
-	args = parse_args()
-	# Resolve input path.
-	yml_path = pathlib.Path(args.input_path)
-	# Validate that the input exists.
-	if not yml_path.exists():
-		raise FileNotFoundError(f"File not found: {yml_path}")
-	# Read YAML content.
-	yml_text = yml_path.read_text(encoding="utf-8")
-	# Parse YAML data.
-	data = yaml.safe_load(yml_text)
-	# Extract topic with fallback.
-	topic = data.get("topic", "this topic")
-	# Handle naming variations.
-	true_block = data.get("true_statements", {})
-	false_block = data.get("false_statements", {})
-	# Convert dicts to grouped lists.
-	true_groups = group_statements(true_block)
-	false_groups = group_statements(false_block)
-	# Convert to Perl arrays.
-	perl_true = perl_array("true_groups", true_groups)
-	perl_false = perl_array("false_groups", false_groups)
-	# Assemble PGML content.
-	pgml_template = build_pgml(topic, perl_true, perl_false)
-	# Determine output path.
-	output_path = (
-		pathlib.Path(args.output_path)
-		if args.output_path
-		else yml_path.with_suffix(".pg")
-	)
-	# Write output file.
-	output_path.write_text(pgml_template, encoding="utf-8")
-	# Report generation path.
-	print(f"Generated: {output_path}")
+$topic = "{topic}";
+$mode  = list_random("TRUE","FALSE");
+$num_distractors = 4;
+{question_setup}
+########################################################
+# SELECT GROUP
+########################################################
+
+my (@selected_group, @opposite_groups);
+
+if ($mode eq "TRUE") {{
+    $group_index      = random(0, scalar(@true_groups)-1, 1);
+    @selected_group   = @{{ $true_groups[$group_index] }};
+    @opposite_groups  = @false_groups;
+}} else {{
+    $group_index      = random(0, scalar(@false_groups)-1, 1);
+    @selected_group   = @{{ $false_groups[$group_index] }};
+    @opposite_groups  = @true_groups;
+}}
+
+########################################################
+# PICK CORRECT + DISTRACTORS (MAINTAINING GROUP STRUCTURE)
+########################################################
+
+$correct = list_random(@selected_group);
+
+# Generate random group indices to pull distractors from
+my @available_group_indices = (0 .. $#opposite_groups);
+my @selected_distractor_indices = ();
+
+# Randomly select which groups to pull from (need $num_distractors groups)
+while (@selected_distractor_indices < $num_distractors && @available_group_indices > 0) {{
+    my $random_index = random(0, scalar(@available_group_indices)-1, 1);
+    push @selected_distractor_indices, splice(@available_group_indices, $random_index, 1);
+}}
+
+# Pull one random statement from each selected group
+@distractors = ();
+foreach my $group_idx (@selected_distractor_indices) {{
+    my @group = @{{ $opposite_groups[$group_idx] }};
+    my $distractor = list_random(@group);
+    push @distractors, $distractor;
+}}
+
+@choices = ($correct, @distractors);
+
+########################################################
+# RADIO BUTTONS WITH A/B/C/D/E LABELS
+########################################################
+
+$rb = RadioButtons(
+  [@choices],
+  $correct,
+  labels        => ['A','B','C','D','E'],
+  displayLabels => 1,
+  randomize     => 1,
+  separator     => '<div style="margin-bottom: 0.7em;"></div>',
+);
+
+########################################################
+# PGML
+########################################################
+
+BEGIN_PGML
+
+{pgml_question}
+
+[@ $rb->buttons() @]*
+
+END_PGML
+
+ANS($rb->cmp());
+
+ENDDOCUMENT();
+"""
+
+    # Write output file
+    output_path = yml_path.with_suffix(".pg")
+    output_path.write_text(pgml_template.strip() + "\n")
+
+    print("Generated:", output_path)
 
 
 if __name__ == "__main__":
-	main()
+    main()
