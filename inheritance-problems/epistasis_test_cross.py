@@ -253,7 +253,7 @@ def parse_arguments():
 	parser = bptools.make_arg_parser(description="Generate epistasis test-cross ratio questions.")
 	parser = bptools.add_choice_args(parser, default=6)
 
-	direction_group = parser.add_mutually_exclusive_group(required=True)
+	direction_group = parser.add_mutually_exclusive_group(required=False)
 
 	direction_group.add_argument(
 		'-t', '--type', dest='direction', type=str,
@@ -271,6 +271,7 @@ def parse_arguments():
 		help='Set question type to inverse'
 	)
 
+	parser.set_defaults(direction='forward')
 
 	args = parser.parse_args()
 	return args
@@ -294,4 +295,3 @@ if __name__ == '__main__':
 	main()
 
 ## THE END
-

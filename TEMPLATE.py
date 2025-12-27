@@ -112,7 +112,7 @@ def parse_arguments():
 
 	Returns:
 		argparse.Namespace: Parsed arguments with attributes `duplicates`,
-		`max_questions`, `num_choices`, and `question_format`.
+		`max_questions`, `num_choices`, and `question_type`.
 	"""
 	# Create an argument parser with a description of the script's functionality
 	parser = bptools.make_arg_parser()
@@ -147,7 +147,7 @@ def main():
 	script_name = os.path.splitext(os.path.basename(__file__))[0]
 	hint_mode = 'with_hint' if args.hint else 'no_hint'
 	outfile = bptools.make_outfile(
-		args.question_format.upper(),
+		args.question_type.upper(),
 		hint_mode,
 		f"{args.num_choices}_choices"
 	)

@@ -2,12 +2,8 @@
 # ^^ Specifies the Python3 environment to use for script execution
 
 # Import built-in Python modules
-# Provides functions for interacting with the operating system
-import os
 # Provides functions to generate random numbers and selections
 import random
-# Provides tools to parse command-line arguments
-import argparse
 import copy
 
 # Import external modules (pip-installed)
@@ -35,12 +31,12 @@ def bbFormatMatchingQuestion(N, question_text, prompts_list, choices_list, max_c
 	return bb_output_format
 
 #=======================
-def matchingQuestionSet():
+def matchingQuestionSet(start_num=1):
 	bb_output_format_list = []
 	question_text = "<p>Match the following pedigrees to their most likely inheritance type.</p> "
 	question_text += "<p>Note: <i>each inheritance type will only be used ONCE.</i></p> "
 	choices_list = ['autosomal dominant', 'autosomal recessive', 'x-linked dominant', 'x-linked recessive', 'y-linked']
-	N = 0
+	N = start_num - 1
 	for ad in pedigree_code_strings.autosomal_dominant:
 		for ar in pedigree_code_strings.autosomal_recessive:			
 			for xd in pedigree_code_strings.x_linked_dominant:
@@ -69,6 +65,10 @@ def matchingQuestionSet():
 
 	return bb_output_format_list
 
+#=======================
+def write_question_batch(N: int, args) -> list[str]:
+	return matchingQuestionSet(N)
+
 
 #===========================================================
 #===========================================================
@@ -81,23 +81,7 @@ def parse_arguments():
 		argparse.Namespace: Parsed arguments with attributes `duplicates`,
 		`num_choices`, and `question_type`.
 	"""
-	# Create an argument parser with a description of the script's functionality
-	parser = argparse.ArgumentParser(description="Generate questions.")
-
-	# Add an argument to specify the number of duplicate questions to generate
-	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='Number of duplicate runs to do or number of questions to create',
-		default=1
-	)
-
-	parser.add_argument(
-		'-x', '--max-questions', type=int, dest='max_questions',
-		default=99, help='Max number of questions'
-	)
-
-
-	# Parse the provided command-line arguments and return them
+	parser = bptools.make_arg_parser(description="Generate pedigree matching questions.", batch=True)
 	args = parser.parse_args()
 	return args
 
@@ -120,56 +104,9 @@ def main():
 	# Parse arguments from the command line
 	args = parse_arguments()
 
-	# Generate the output file name based on the script name and arguments
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
-	outfile = (
-		'bbq'
-		f'-{script_name}'              # Add the script name to the file name
-		'-questions.txt'               # File extension
-	)
-
-	# Store all complete formatted questions
-	question_bank_list = []
-
-	# Initialize question counter
-	N = 0
-
-	# Create the specified number of questions
-	for _ in range(args.duplicates):
-		# Generate gene letters (if needed by question logic)
-		gene_letters_str = bptools.generate_gene_letters(3)
-
-		# Create a full formatted question (Blackboard format)
-		bb_output_format_list = matchingQuestionSet()
-
-		# Append question if successfully generated
-		if bb_output_format_list is not None:
-			N += len(bb_output_format_list)
-			question_bank_list += bb_output_format_list
-
-		if N >= args.max_questions:
-			break
-
-	# Show a histogram of answer distributions for MC/MA types
-	bptools.print_histogram()
-
-	# Shuffle and limit the number of questions if over max
-	if len(question_bank_list) > args.max_questions:
-		random.shuffle(question_bank_list)
-		question_bank_list = question_bank_list[:args.max_questions]
-
-	# Announce where output is going
-	print(f'\nWriting {len(question_bank_list)} question to file: {outfile}')
-
-	# Write all questions to file
-	write_count = 0
-	with open(outfile, 'w') as f:
-		for complete_question in question_bank_list:
-			write_count += 1
-			f.write(complete_question)
-
-	# Final status message
-	print(f'... saved {write_count} questions to {outfile}\n')
+	outfile = bptools.make_outfile()
+	questions = bptools.collect_question_batches(write_question_batch, args)
+	bptools.write_questions_to_file(questions, outfile)
 
 #===========================================================
 #===========================================================

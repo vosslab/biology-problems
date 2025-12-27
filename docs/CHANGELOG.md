@@ -198,3 +198,29 @@
   scenario selection in [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md).
 - Added a migration note about converting stdout-based question scripts to
   helper-based MC/FIB formatting in [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md).
+- Refactored [molecular_biology-problems/overhang_sequence.py](molecular_biology-problems/overhang_sequence.py)
+  to use batch helpers, shared argparse defaults, and unified outfile naming.
+- Refactored [inheritance-problems/pedigree_match.py](inheritance-problems/pedigree_match.py)
+  to use batch helpers and start-numbered matching sets.
+- Refactored [biochemistry-problems/Henderson-Hasselbalch.py](biochemistry-problems/Henderson-Hasselbalch.py)
+  to use shared argparse defaults and helper-based question collection.
+- Added a migration note about start-numbering for batch-generated lists in
+  [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md).
+- Set defaults for question format/direction in
+  [molecular_biology-problems/complementary_sequences.py](molecular_biology-problems/complementary_sequences.py)
+  and [inheritance-problems/epistasis_test_cross.py](inheritance-problems/epistasis_test_cross.py)
+  so they run without required flags.
+- Set default question formats in
+  [molecular_biology-problems/overhang_sequence.py](molecular_biology-problems/overhang_sequence.py)
+  and [biochemistry-problems/Henderson-Hasselbalch.py](biochemistry-problems/Henderson-Hasselbalch.py)
+  so they run without required flags.
+- Set defaults for `alpha_helix_h-bonds.py` question type and
+  `pKa_buffer_state.py` proton count, and fixed the overhang script to use the
+  `question_type` dest so it runs without required flags.
+- Fixed `add_question_format_args()` to always use `question_type` and updated
+  callers (`complementary_sequences`, `overhang_sequence`, `alpha_helix_h-bonds`,
+  `mutant_screen`, and `TEMPLATE.py`) to stop overriding dest.
+- Fixed an indentation error in
+  [biochemistry-problems/alpha_helix_h-bonds.py](biochemistry-problems/alpha_helix_h-bonds.py).
+- Fixed duplicate argparse base-arg registration in
+  [inheritance-problems/unique_gametes.py](inheritance-problems/unique_gametes.py).

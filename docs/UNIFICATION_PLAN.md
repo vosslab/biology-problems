@@ -226,6 +226,9 @@ Batch generators:
     - `N` is the next successful question number (1-based).
     - For batch writers, `N` is the starting number for the batch.
   - Do not change `-d/--duplicates` or `-x/--max-questions` semantics.
+- For batch lists that return pre-numbered questions (for example, matching
+  sets), add a `start_num` parameter to the helper that creates the list so the
+  numbering can begin at the batch start `N`.
 
 ## Legacy patterns to modernize
 These are common in older scripts and are the first candidates for cleanup

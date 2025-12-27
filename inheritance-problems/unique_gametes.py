@@ -64,8 +64,6 @@ def write_question(N, args):
 #===========================================================
 def parse_arguments():
 	parser = bptools.make_arg_parser()
-	# Add shared argument bundles
-	parser = bptools.add_base_args(parser)
 	parser = bptools.add_hint_args(parser)
 	# Add command line options for number of genes
 	parser.add_argument('-n', '--num_genes', type=int, default=7, help='Number of genes')

@@ -2,13 +2,8 @@
 # ^^ Specifies the Python3 environment to use for script execution
 
 # Import built-in Python modules
-# Provides functions for interacting with the operating system
-import os
-import sys
 # Provides functions to generate random numbers and selections
 import random
-# Provides tools to parse command-line arguments
-import argparse
 
 # Import external modules (pip-installed)
 # No external modules are used here currently
@@ -162,6 +157,28 @@ def write_question(N, enzyme_name, num_choices, question_type):
 		bb_question = makeFillInBlankQuestion(N, enzyme_class)
 	return bb_question
 
+#=====================
+def write_question_batch(N: int, args) -> list[str]:
+	questions = []
+	question_num = N
+	enzyme_names = restrictlib.get_enzyme_list(include_blunt=False)
+	for enzyme_name in enzyme_names:
+		if args.max_questions is not None and question_num > args.max_questions:
+			break
+		enzyme_class = restrictlib.enzyme_name_to_class(enzyme_name)
+		if not enzyme_class.overhang().endswith('overhang'):
+			continue
+		complete_question = write_question(
+			question_num,
+			enzyme_name,
+			args.num_choices,
+			args.question_type
+		)
+		if complete_question is not None:
+			questions.append(complete_question)
+			question_num += 1
+	return questions
+
 #===========================================================
 #===========================================================
 # This function handles the parsing of command-line arguments.
@@ -173,45 +190,14 @@ def parse_arguments():
 		argparse.Namespace: Parsed arguments with attributes `duplicates`,
 		`num_choices`, and `question_type`.
 	"""
-	# Create an argument parser with a description of the script's functionality
-	parser = argparse.ArgumentParser(description="Generate questions.")
-
-	parser.add_argument(
-		'-x', '--max-questions', type=int, dest='max_questions',
-		default=199, help='Max number of questions'
+	parser = bptools.make_arg_parser(description="Generate restriction enzyme overhang questions.", batch=True)
+	parser = bptools.add_choice_args(parser, default=5)
+	parser = bptools.add_question_format_args(
+		parser,
+		types_list=['fib', 'mc'],
+		required=False,
+		default='mc'
 	)
-
-
-	# Add an argument to specify the number of answer choices for each question
-	parser.add_argument(
-		'-c', '--num_choices', type=int, default=5, dest='num_choices',
-		help="Number of choices to create."
-	)
-
-	# Create a mutually exclusive group for question type selection
-	# The group ensures only one of these options can be chosen at a time
-	question_group = parser.add_mutually_exclusive_group(required=True)
-
-	# Add an option to manually set the question type
-	question_group.add_argument(
-		'-t', '--type', dest='question_type', type=str,
-		choices=('fib', 'mc'),
-		help='Set the question type: num (numeric) or mc (multiple choice)'
-	)
-
-	# Add a shortcut option to set the question type to multiple choice
-	question_group.add_argument(
-		'-m', '--mc', dest='question_type', action='store_const', const='mc',
-		help='Set question type to multiple choice'
-	)
-
-	# Add a shortcut option to set the question type to numeric
-	question_group.add_argument(
-		'-f', '--fib', dest='question_type', action='store_const', const='fib',
-		help='Set question type to fill-in-the-blank'
-	)
-
-	# Parse the provided command-line arguments and return them
 	args = parser.parse_args()
 	return args
 
@@ -226,48 +212,9 @@ def main():
 	# Parse arguments from the command line
 	args = parse_arguments()
 
-	# Generate the output file name based on the script name and question type
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
-	outfile = (
-		'bbq'
-		f'-{script_name}'  # Add the script name to the file name
-		f'-{args.question_type.upper()}'  # Add the question type in uppercase
-		'-questions.txt'  # Add the file extension
-	)
-
-	enzyme_names = restrictlib.get_enzyme_list(include_blunt=False)
-	print(f"Found {len(enzyme_names)} valid restriction enzymes...")
-	random.shuffle(enzyme_names)
-
-
-	# Print a message indicating where the file will be saved
-	print(f'Writing to file: {outfile}')
-
-	# Open the output file in write mode
-	with open(outfile, 'w') as f:
-		# Initialize the question number counter
-		N = 0
-
-		# Generate the specified number of questions
-		for enzyme_name in enzyme_names:
-
-			# Generate the complete formatted question
-			complete_question = write_question(N+1, enzyme_name, args.num_choices, args.question_type)
-
-			# Write the question to the file if it was generated successfully
-			if complete_question is not None:
-				N += 1
-				f.write(complete_question)
-
-			if N > args.max_questions:
-				break
-
-	# If the question type is multiple choice, print a histogram of results
-	if args.question_type == "mc":
-		bptools.print_histogram()
-
-	# Print a message indicating how many questions were saved
-	print(f'saved {N} questions to {outfile}')
+	outfile = bptools.make_outfile(None, args.question_type)
+	questions = bptools.collect_question_batches(write_question_batch, args)
+	bptools.write_questions_to_file(questions, outfile)
 
 #===========================================================
 #===========================================================
@@ -277,4 +224,3 @@ if __name__ == '__main__':
 	main()
 
 ## THE END
-

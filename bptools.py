@@ -261,14 +261,13 @@ def add_hint_args(parser, hint_default=True, dest='hint'):
 	return parser
 
 #==========================
-def add_question_format_args(parser, types_list=None, dest='question_format', required=True, default=None):
+def add_question_format_args(parser, types_list=None, required=True, default=None):
 	"""
 	Add standard question format arguments.
 
 	Args:
 		parser (argparse.ArgumentParser): Argument parser to extend.
 		types_list (list): Allowed question formats (ma, mc, num, fib).
-		dest (str): Destination name for the parsed value.
 		required (bool): Require one of the options.
 		default (str | None): Default when not required.
 
@@ -291,6 +290,7 @@ def add_question_format_args(parser, types_list=None, dest='question_format', re
 		clean_types.append(format_text)
 	if len(clean_types) == 0:
 		raise ValueError("No valid question formats were provided.")
+	dest = 'question_type'
 	question_group = parser.add_mutually_exclusive_group(required=required)
 	question_group.add_argument(
 		'--format', dest=dest, type=str,

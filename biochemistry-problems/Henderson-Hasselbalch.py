@@ -2,12 +2,8 @@
 # ^^ Specifies the Python3 environment to use for script execution
 
 # Import built-in Python modules
-# Provides functions for interacting with the operating system
-import os
 # Provides functions to generate random numbers and selections
 import random
-# Provides tools to parse command-line arguments
-import argparse
 
 # Import external modules (pip-installed)
 # No external modules are used here currently
@@ -214,6 +210,17 @@ def write_equation_question(N: int) -> str:
 
 #===========================================================
 #===========================================================
+def write_question(N: int, args) -> str:
+	if args.question_type == 'equation':
+		return write_equation_question(N)
+	if args.question_type == 'ratio':
+		question_text = get_question_text()
+		choices_list, answer_text = generate_choices(args.num_choices)
+		return bptools.formatBB_MC_Question(N, question_text, choices_list, answer_text)
+	raise NotImplementedError("question_type is not implemented in this script.")
+
+#===========================================================
+#===========================================================
 # This function handles the parsing of command-line arguments.
 def parse_arguments():
 	"""
@@ -223,25 +230,9 @@ def parse_arguments():
 		argparse.Namespace: Parsed arguments with attributes `duplicates`,
 		`num_choices`, and `question_type`.
 	"""
-	# Create an argument parser with a description of the script's functionality
-	parser = argparse.ArgumentParser(description="Generate questions.")
-
-	# Add an argument to specify the number of duplicate questions to generate
-	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='Number of duplicate runs to do or number of questions to create',
-		default=1
-	)
-
-	# Add an argument to specify the number of answer choices for each question
-	parser.add_argument(
-		'-c', '--num_choices', type=int, default=4, dest='num_choices',
-		help="Number of choices to create."
-	)
-
-	# Create a mutually exclusive group for question type selection
-	# The group ensures only one of these options can be chosen at a time
-	question_group = parser.add_mutually_exclusive_group(required=True)
+	parser = bptools.make_arg_parser(description="Generate Henderson-Hasselbalch questions.")
+	parser = bptools.add_choice_args(parser, default=4)
+	question_group = parser.add_mutually_exclusive_group(required=False)
 
 	# Add an option to manually set the question type
 	question_group.add_argument(
@@ -273,6 +264,7 @@ def parse_arguments():
 		'-r', '--ratio', dest='question_type', action='store_const', const='ratio',
 		help='Set question type to ratio'
 	)
+	parser.set_defaults(question_type='equation')
 
 	# Parse the provided command-line arguments and return them
 	args = parser.parse_args()
@@ -289,43 +281,10 @@ def main():
 	# Parse arguments from the command line
 	args = parse_arguments()
 
-	# Generate the output file name based on the script name and question type
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
-	outfile = (
-		'bbq'
-		f'-{script_name}'  # Add the script name to the file name
-		f'-{args.question_type.upper()}'  # Add the question type in uppercase
-		'-questions.txt'  # Add the file extension
-	)
 	if args.question_type == 'equation' and args.duplicates > 16:
 		args.duplicates = 16
-
-	# Print a message indicating where the file will be saved
-	print(f'Writing to file: {outfile}')
-
-	# Open the output file in write mode
-	with open(outfile, 'w') as f:
-		# Initialize the question number counter
-		N = 0
-
-		# Generate the specified number of questions
-		for _ in range(args.duplicates):
-			if args.question_type == 'equation':
-				complete_question = write_equation_question(N+1)
-			elif args.question_type == 'ratio':
-				complete_question = write_question(N+1, args.num_choices)
-
-			# Write the question to the file if it was generated successfully
-			if complete_question is not None:
-				N += 1
-				f.write(complete_question)
-
-	# If the question type is multiple choice, print a histogram of results
-	if args.question_type == "mc":
-		bptools.print_histogram()
-
-	# Print a message indicating how many questions were saved
-	print(f'saved {N} questions to {outfile}')
+	outfile = bptools.make_outfile(None, args.question_type)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #===========================================================
 #===========================================================

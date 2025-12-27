@@ -252,11 +252,11 @@ def parse_arguments():
 	parser = bptools.add_question_format_args(
 		parser,
 		types_list=['mc', 'fib'],
-		dest='question_type',
-		required=True
+		required=False,
+		default='mc'
 	)
 
-	direction_group = parser.add_mutually_exclusive_group(required=True)
+	direction_group = parser.add_mutually_exclusive_group(required=False)
 	direction_group.add_argument('--direction', dest='direction_mode', type=str,
 		choices=('directionless', 'prime'),
 		help="Set the sequence direction: 'directionless' or 'prime' for 5' and 3' ends.")
@@ -265,6 +265,7 @@ def parse_arguments():
 		help="Set the sequence direction to 'directionless'.")
 	direction_group.add_argument('--prime', dest='direction_mode', action='store_const',
 		const='prime', help="Set the sequence direction to 'prime' for 5' and 3' ends.")
+	parser.set_defaults(direction_mode='directionless')
 
 	parser.add_argument('-s', '--seqlen', dest='seqlen', type=int, default=9,
 		help='Set the length of the sequence. Default is 9.')

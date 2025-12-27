@@ -115,7 +115,7 @@ def parse_arguments():
 	)
 	parser.add_argument('-p', '--proton_count', '--protons', dest='proton_count', type=int, metavar='#',
 		help='Number of removable protons in a buffer (1, 2, 3, 4)',
-		required=True)
+		default=2)
 
 	args = parser.parse_args()
 	return args

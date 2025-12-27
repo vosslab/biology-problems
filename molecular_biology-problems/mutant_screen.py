@@ -72,7 +72,7 @@ def write_question(N: int, args) -> str:
 	question_text, metabolic_text = build_question_text(ordered, metabolites, classes)
 	answer = "".join(metabolites)
 
-	if args.question_format == 'fib':
+	if args.question_type == 'fib':
 		example_text = answer
 		while example_text == answer:
 			example = copy.copy(ordered)
@@ -113,10 +113,9 @@ def parse_arguments():
 #===========================================================
 def main():
 	args = parse_arguments()
-	outfile = bptools.make_outfile(None, f"{args.question_format}", f"{args.num_metabolites}_metabolites")
+	outfile = bptools.make_outfile(None, f"{args.question_type}", f"{args.num_metabolites}_metabolites")
 	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #===========================================================
 if __name__ == '__main__':
 	main()
-
