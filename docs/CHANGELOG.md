@@ -144,7 +144,8 @@
   to use shared helpers, and moved the `--max-length` short flag from `-x` to `-M`
   to avoid conflict with `-x/--max-questions`.
 - Updated [biochemistry-problems/chymotrypsin_substrate.py](biochemistry-problems/chymotrypsin_substrate.py)
-  to color amino acids using a RasMol-style palette.
+  to map RasMol families to the custom palette, keep RasMol for the “weird”
+  residues, and darken gray residues for white backgrounds.
 - Added a migration note about `-x` short-flag conflicts in
   [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md).
 - Simplified `bptools.add_choice_args()` to a fixed API with a single `default=`

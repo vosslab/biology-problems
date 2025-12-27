@@ -25,27 +25,27 @@ regular_aminos = ['Gly', 'Ala', 'Asn', 'Ser', 'Thr', 'Gln', 'Glu', 'Asp', 'Cys',
 # avoid these for confusion purposes
 bad_aminos = ['Pro', 'His', 'Ile', 'Val', ]
 
-rasmol_amino_colors = {
-	'Ala': 'c8c8c8',
-	'Arg': '145aff',
-	'Asn': '00dcdc',
-	'Asp': 'e60a0a',
-	'Cys': 'e6e600',
-	'Gln': '00dcdc',
-	'Glu': 'e60a0a',
-	'Gly': 'ebebeb',
+amino_acid_colors = {
+	'Ala': '666666',
+	'Arg': '0039e6',
+	'Asn': '00b3b3',
+	'Asp': 'e60000',
+	'Cys': 'b3b300',
+	'Gln': '00b3b3',
+	'Glu': 'e60000',
+	'Gly': '707070',
 	'His': '8282d2',
-	'Ile': '0f820f',
-	'Leu': '0f820f',
-	'Lys': '145aff',
-	'Met': 'e6e600',
-	'Phe': '3232aa',
-	'Pro': 'dc9682',
-	'Ser': 'fa9600',
-	'Thr': 'fa9600',
-	'Trp': 'b45ab4',
-	'Tyr': '3232aa',
-	'Val': '0f820f',
+	'Ile': '009900',
+	'Leu': '009900',
+	'Lys': '0039e6',
+	'Met': 'b3b300',
+	'Phe': '004d99',
+	'Pro': 'cc0066',
+	'Ser': 'e69100',
+	'Thr': 'e69100',
+	'Trp': '7b12a1',
+	'Tyr': '004d99',
+	'Val': '009900',
 }
 #===========================================================
 #===========================================================
@@ -88,7 +88,7 @@ def peptide_sequence_to_html_str(peptide_sequence: list) -> str:
 	for amino_acid in peptide_sequence:
 		amino_acid_html = bptools.colorHTMLText(
 			amino_acid,
-			rasmol_amino_colors[amino_acid]
+			amino_acid_colors[amino_acid]
 		)
 		peptide_html_list.append(amino_acid_html)
 	# Join the amino acids with HTML em-dash separators, and add N/C-termini
@@ -162,11 +162,11 @@ def format_choice_text(index: int, peptide_sequence: list) -> str:
 	# Convert each amino acid to its color-coded HTML representation
 	amino_acid_1_html = bptools.colorHTMLText(
 		amino_acid_1,
-		rasmol_amino_colors[amino_acid_1]
+		amino_acid_colors[amino_acid_1]
 	)
 	amino_acid_2_html = bptools.colorHTMLText(
 		amino_acid_2,
-		rasmol_amino_colors[amino_acid_2]
+		amino_acid_colors[amino_acid_2]
 	)
 
 	# Concatenate the formatted amino acids with an HTML em-dash between them
