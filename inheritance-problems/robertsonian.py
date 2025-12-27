@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import os
 import random
 
 import bptools
@@ -127,21 +126,39 @@ def blackboardFormat(N, chromosome1, chromosome2):
 
 	return blackboard
 
-if __name__ == "__main__":
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
+def write_question_batch(start_num: int, args) -> list:
 	acrocentric_chromosomes = [13, 14, 15, 21, 22]
-	duplicates = 2
-	N = 0
-	for i in range(duplicates):
-		for chromosome1 in acrocentric_chromosomes:
-			for chromosome2 in acrocentric_chromosomes:
-				if chromosome1 >= chromosome2:
-					continue
-				print("chromosome pair: {0} and {1}".format(chromosome1, chromosome2))
-				N += 1
-				final_question = blackboardFormat(N, chromosome1, chromosome2)
-				f.write(final_question)
-	f.close()
-	bptools.print_histogram()
+	questions = []
+	remaining = None
+	if args.max_questions is not None:
+		remaining = args.max_questions - (start_num - 1)
+		if remaining <= 0:
+			return questions
+	N = start_num
+	for chromosome1 in acrocentric_chromosomes:
+		for chromosome2 in acrocentric_chromosomes:
+			if chromosome1 >= chromosome2:
+				continue
+			final_question = blackboardFormat(N, chromosome1, chromosome2)
+			questions.append(final_question)
+			N += 1
+			if remaining is not None and len(questions) >= remaining:
+				return questions
+	return questions
+
+def parse_arguments():
+	parser = bptools.make_arg_parser(
+		description="Generate Robertsonian translocation questions.",
+		batch=True
+	)
+	args = parser.parse_args()
+	return args
+
+def main():
+	args = parse_arguments()
+	outfile = bptools.make_outfile(None)
+	questions = bptools.collect_question_batches(write_question_batch, args)
+	bptools.write_questions_to_file(questions, outfile)
+
+if __name__ == "__main__":
+	main()

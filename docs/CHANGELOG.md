@@ -224,3 +224,111 @@
   [biochemistry-problems/alpha_helix_h-bonds.py](biochemistry-problems/alpha_helix_h-bonds.py).
 - Fixed duplicate argparse base-arg registration in
   [inheritance-problems/unique_gametes.py](inheritance-problems/unique_gametes.py).
+- Added a max-questions early-exit check to
+  [molecular_biology-problems/overhang_sequence.py](molecular_biology-problems/overhang_sequence.py)
+  to avoid long full-list runs when `-x` is set.
+- Refactored [laboratory-problems/molar_solution_using_mw_numeric.py](laboratory-problems/molar_solution_using_mw_numeric.py)
+  to use shared argparse defaults and helper-based question collection.
+- Refactored [molecular_biology-problems/translate_genetic_code.py](molecular_biology-problems/translate_genetic_code.py)
+  to use shared argparse defaults, cached data reads, and helper-based question collection.
+- Refactored [biochemistry-problems/fret_overlap_colors.py](biochemistry-problems/fret_overlap_colors.py)
+  to use shared argparse defaults, MC formatting helpers, and randomized question selection.
+- Added migration notes about replacing custom `-q/--num-questions` flags and
+  about using repo data helpers in [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md).
+- Refactored biochemistry scripts to use shared argparse defaults and helper-based
+  question collection:
+  [biochemistry-problems/buffers/optimal_buffering_range.py](biochemistry-problems/buffers/optimal_buffering_range.py),
+  [biochemistry-problems/fatty_acid_naming.py](biochemistry-problems/fatty_acid_naming.py),
+  [biochemistry-problems/fret_permute_colors.py](biochemistry-problems/fret_permute_colors.py),
+  [biochemistry-problems/isoelectric_one_protein.py](biochemistry-problems/isoelectric_one_protein.py),
+  [biochemistry-problems/metabolic_pathway_allosteric.py](biochemistry-problems/metabolic_pathway_allosteric.py),
+  [biochemistry-problems/metabolic_pathway_inhibitor.py](biochemistry-problems/metabolic_pathway_inhibitor.py),
+  [biochemistry-problems/michaelis_menten_table-inhibition.py](biochemistry-problems/michaelis_menten_table-inhibition.py),
+  [biochemistry-problems/michaelis_menten_table-Km.py](biochemistry-problems/michaelis_menten_table-Km.py),
+  [biochemistry-problems/optimal_enzyme-type_1.py](biochemistry-problems/optimal_enzyme-type_1.py),
+  [biochemistry-problems/optimal_enzyme-type_2.py](biochemistry-problems/optimal_enzyme-type_2.py),
+  [biochemistry-problems/optimal_enzyme-type_3.py](biochemistry-problems/optimal_enzyme-type_3.py),
+  [biochemistry-problems/photosynthetic_light_pigments.py](biochemistry-problems/photosynthetic_light_pigments.py),
+  [biochemistry-problems/protein_gel_migration.py](biochemistry-problems/protein_gel_migration.py),
+  [biochemistry-problems/which_hydrophobic-simple.py](biochemistry-problems/which_hydrophobic-simple.py).
+- Refactored biostatistics scripts to use shared argparse defaults and helper-based
+  question collection:
+  [biostatistics-problems/babies_two_sample_t_test.py](biostatistics-problems/babies_two_sample_t_test.py),
+  [biostatistics-problems/busse_woods_one_sample_tests.py](biostatistics-problems/busse_woods_one_sample_tests.py),
+  [biostatistics-problems/busse_woods_two_sample_t_test.py](biostatistics-problems/busse_woods_two_sample_t_test.py),
+  [biostatistics-problems/population_test_google_sheet.py](biostatistics-problems/population_test_google_sheet.py),
+  [biostatistics-problems/z_score_google_sheet.py](biostatistics-problems/z_score_google_sheet.py),
+  [biostatistics-problems/z_score_table_interp.py](biostatistics-problems/z_score_table_interp.py).
+- Refactored DNA profiling scripts to use shared argparse defaults, helper-based
+  question collection, and parameter wrappers:
+  [dna_profiling-problems/blood_type_agglutination_test.py](dna_profiling-problems/blood_type_agglutination_test.py),
+  [dna_profiling-problems/who_father_html.py](dna_profiling-problems/who_father_html.py),
+  [dna_profiling-problems/who_killer_html.py](dna_profiling-problems/who_killer_html.py).
+- Refactored inheritance scripts to use shared argparse defaults and helper-based
+  question collection or batch helpers:
+  [inheritance-problems/blood_type_mother.py](inheritance-problems/blood_type_mother.py),
+  [inheritance-problems/chisquare/chi_square_calculated.py](inheritance-problems/chisquare/chi_square_calculated.py),
+  [inheritance-problems/chisquare/chi_square_choices.py](inheritance-problems/chisquare/chi_square_choices.py),
+  [inheritance-problems/chisquare/chi_square_hardy_weinberg.py](inheritance-problems/chisquare/chi_square_hardy_weinberg.py),
+  [inheritance-problems/cytogenetic_notation-rearrangements.py](inheritance-problems/cytogenetic_notation-rearrangements.py),
+  [inheritance-problems/cytogenetic_notation-sub-band_notation.py](inheritance-problems/cytogenetic_notation-sub-band_notation.py),
+  [inheritance-problems/deletion_mutant_random.py](inheritance-problems/deletion_mutant_random.py),
+  [inheritance-problems/deletion_mutant_words.py](inheritance-problems/deletion_mutant_words.py),
+  [inheritance-problems/dominant_and_X-linked_recessive.py](inheritance-problems/dominant_and_X-linked_recessive.py),
+  [inheritance-problems/hardy_weinberg_mc_type.py](inheritance-problems/hardy_weinberg_mc_type.py),
+  [inheritance-problems/hardy_weinberg_numeric.py](inheritance-problems/hardy_weinberg_numeric.py),
+  [inheritance-problems/horses.py](inheritance-problems/horses.py),
+  [inheritance-problems/letter_translocation_problem_color.py](inheritance-problems/letter_translocation_problem_color.py),
+  [inheritance-problems/monohybrid_degrees_of_dominance.py](inheritance-problems/monohybrid_degrees_of_dominance.py),
+  [inheritance-problems/monohybrid_genotype_statements.py](inheritance-problems/monohybrid_genotype_statements.py),
+  [inheritance-problems/old_deletion_mutants.py](inheritance-problems/old_deletion_mutants.py),
+  [inheritance-problems/pedigree_choice.py](inheritance-problems/pedigree_choice.py),
+  [inheritance-problems/polyploid-gametes.py](inheritance-problems/polyploid-gametes.py),
+  [inheritance-problems/punnett_choice.py](inheritance-problems/punnett_choice.py),
+  [inheritance-problems/robertsonian.py](inheritance-problems/robertsonian.py),
+  [inheritance-problems/translocation_meiosis_table.py](inheritance-problems/translocation_meiosis_table.py).
+- Refactored laboratory scripts to use shared argparse defaults and helper-based
+  question collection:
+  [laboratory-problems/dilution_factor_aliquot_numeric.py](laboratory-problems/dilution_factor_aliquot_numeric.py),
+  [laboratory-problems/dilution_factor_diluent_numeric.py](laboratory-problems/dilution_factor_diluent_numeric.py),
+  [laboratory-problems/dilution_factor_mc.py](laboratory-problems/dilution_factor_mc.py),
+  [laboratory-problems/mass_solution_numeric.py](laboratory-problems/mass_solution_numeric.py),
+  [laboratory-problems/orders_of_magnitude_mc.py](laboratory-problems/orders_of_magnitude_mc.py),
+  [laboratory-problems/pipet_size_mc.py](laboratory-problems/pipet_size_mc.py),
+  [laboratory-problems/weight-vol_solution_numeric.py](laboratory-problems/weight-vol_solution_numeric.py).
+- Refactored molecular biology scripts to use shared argparse defaults and helper-based
+  question collection:
+  [molecular_biology-problems/amplicon_copies.py](molecular_biology-problems/amplicon_copies.py),
+  [molecular_biology-problems/beadle_tatum-metabolic_pathway.py](molecular_biology-problems/beadle_tatum-metabolic_pathway.py),
+  [molecular_biology-problems/chargaff_dna_percent.py](molecular_biology-problems/chargaff_dna_percent.py),
+  [molecular_biology-problems/consensus_sequence_FIB-arbitrary_code.py](molecular_biology-problems/consensus_sequence_FIB-arbitrary_code.py),
+  [molecular_biology-problems/consensus_sequence_FIB-easy.py](molecular_biology-problems/consensus_sequence_FIB-easy.py),
+  [molecular_biology-problems/consensus_sequence_FIB-hard.py](molecular_biology-problems/consensus_sequence_FIB-hard.py),
+  [molecular_biology-problems/dna_gel-closest_farthest_MC.py](molecular_biology-problems/dna_gel-closest_farthest_MC.py),
+  [molecular_biology-problems/dna_gel-estimate_size-MC_or_NUM.py](molecular_biology-problems/dna_gel-estimate_size-MC_or_NUM.py),
+  [molecular_biology-problems/dna_melting_temp.py](molecular_biology-problems/dna_melting_temp.py),
+  [molecular_biology-problems/enhancer_gene_expression.py](molecular_biology-problems/enhancer_gene_expression.py),
+  [molecular_biology-problems/exon_splicing.py](molecular_biology-problems/exon_splicing.py),
+  [molecular_biology-problems/inverse_pcr_design.py](molecular_biology-problems/inverse_pcr_design.py),
+  [molecular_biology-problems/linear_digest.py](molecular_biology-problems/linear_digest.py),
+  [molecular_biology-problems/nested_pcr_design.py](molecular_biology-problems/nested_pcr_design.py),
+  [molecular_biology-problems/overhang_type.py](molecular_biology-problems/overhang_type.py),
+  [molecular_biology-problems/palindrome_sequence_match.py](molecular_biology-problems/palindrome_sequence_match.py),
+  [molecular_biology-problems/rna_transcribe_prime_fill_blank.py](molecular_biology-problems/rna_transcribe_prime_fill_blank.py),
+  [molecular_biology-problems/rna_transcribe_prime.py](molecular_biology-problems/rna_transcribe_prime.py),
+  [molecular_biology-problems/RT-qPCR.py](molecular_biology-problems/RT-qPCR.py).
+- Implemented a working RT-qPCR numeric generator in
+  [molecular_biology-problems/RT-qPCR.py](molecular_biology-problems/RT-qPCR.py),
+  including randomized Ct tables and fold-change calculations.
+- Added difficulty presets for parameter-heavy restriction digest generation in
+  [molecular_biology-problems/linear_digest.py](molecular_biology-problems/linear_digest.py).
+- Added difficulty presets for parameter-heavy generators:
+  [molecular_biology-problems/nested_pcr_design.py](molecular_biology-problems/nested_pcr_design.py),
+  [inheritance-problems/deletion_mutant_words.py](inheritance-problems/deletion_mutant_words.py),
+  [inheritance-problems/deletion_mutant_random.py](inheritance-problems/deletion_mutant_random.py),
+  [dna_profiling-problems/hla_genotype.py](dna_profiling-problems/hla_genotype.py),
+  [biochemistry-problems/PUBCHEM/polypeptide_mc_sequence.py](biochemistry-problems/PUBCHEM/polypeptide_mc_sequence.py).
+- Removed non-generator utilities from the phase-1 upgrade list and tracked them
+  as utilities instead: 
+  [inheritance-problems/pedigree_code_strings.py](inheritance-problems/pedigree_code_strings.py),
+  [inheritance-problems/population_logistic_map_chaos.py](inheritance-problems/population_logistic_map_chaos.py).

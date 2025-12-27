@@ -2,12 +2,8 @@
 # ^^ Specifies the Python3 environment to use for script execution
 
 # Import built-in Python modules
-# Provides functions for interacting with the operating system
-import os
 # Provides functions to generate random numbers and selections
 import random
-# Provides tools to parse command-line arguments
-import argparse
 
 # Import external modules (pip-installed)
 # No external modules are used here currently
@@ -161,20 +157,33 @@ def main():
 	"""
 	Generates all combinations of father/child blood types as multiple-answer questions.
 	"""
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
-	outfile = f'bbq-{script_name}-questions.txt'
-	print(f'writing to file: {outfile}')
+	parser = bptools.make_arg_parser(
+		description="Generate blood type mother questions.",
+		batch=True
+	)
+	args = parser.parse_args()
 
-	N = 0
-	with open(outfile, 'w') as f:
-		for dad_pheno in phenotypes:
-			for kid_pheno in phenotypes:
-				N += 1
-				question = write_question(N, dad_pheno, kid_pheno)
-				f.write(question + "\n")
-	bptools.print_histogram()
+	outfile = bptools.make_outfile(None)
+	questions = bptools.collect_question_batches(write_question_batch, args)
+	bptools.write_questions_to_file(questions, outfile)
 
-	print(f'saved {N} questions to {outfile}')
+#===========================================================
+def write_question_batch(start_num: int, args) -> list:
+	questions = []
+	remaining = None
+	if args.max_questions is not None:
+		remaining = args.max_questions - (start_num - 1)
+		if remaining <= 0:
+			return questions
+	N = start_num
+	for dad_pheno in phenotypes:
+		for kid_pheno in phenotypes:
+			question = write_question(N, dad_pheno, kid_pheno)
+			questions.append(question)
+			N += 1
+			if remaining is not None and len(questions) >= remaining:
+				return questions
+	return questions
 
 #===========================================================
 #===========================================================

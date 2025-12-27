@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 
-import os
 import csv
 import math
 import random
-import argparse
 
 import bptools
 
 debug = False
+_protein_tree_cache = None
 
 #======================================
 #======================================
@@ -79,7 +78,19 @@ def generate_choices(isoelectric_point_pI, pH):
 
 #======================================
 #======================================
-def write_question(N, protein_dict):
+#======================================
+#======================================
+def get_protein_tree() -> list:
+	global _protein_tree_cache
+	if _protein_tree_cache is None:
+		_protein_tree_cache = parse_protein_file()
+	return _protein_tree_cache
+
+#======================================
+#======================================
+def write_question(N, args):
+	protein_tree = get_protein_tree()
+	protein_dict = random.choice(protein_tree)
 	pI = protein_dict['pI']
 
 	pH_values = []
@@ -99,78 +110,26 @@ def write_question(N, protein_dict):
 	complete_question = bptools.formatBB_MC_Question(N, question_text, choices_list, answer_text)
 	return complete_question
 
-#===========================================================
-#===========================================================
-# This function handles the parsing of command-line arguments.
 def parse_arguments():
 	"""
 	Parses command-line arguments for the script.
 
 	Returns:
-		argparse.Namespace: Parsed arguments with attributes `duplicates`,
-		`num_choices`, and `question_type`.
+		argparse.Namespace: Parsed arguments with duplicates and max_questions.
 	"""
-	# Create an argument parser with a description of the script's functionality
-	parser = argparse.ArgumentParser(description="Generate questions.")
-
-	# Add an argument to specify the number of duplicate questions to generate
-	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='Number of duplicate runs to do or number of questions to create',
-		default=1
-	)
-
-	# Parse the provided command-line arguments and return them
+	parser = bptools.make_arg_parser(description="Generate isoelectric point questions.")
 	args = parser.parse_args()
 	return args
 
 #===========================================================
 #===========================================================
-# This function serves as the entry point for generating and saving questions.
 def main():
 	"""
 	Main function that orchestrates question generation and file output.
 	"""
-
-	# Parse arguments from the command line
 	args = parse_arguments()
-
-	# Generate the output file name based on the script name and question type
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
-	outfile = (
-		'bbq'
-		f'-{script_name}'  # Add the script name to the file name
-		'-questions.txt'  # Add the file extension
-	)
-
-	# Output file setup
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print(f'writing to file: {outfile}')
-
-	protein_tree = parse_protein_file()
-
-	# Open the output file in write mode
-	with open(outfile, 'w') as f:
-		# Initialize the question number counter
-		N = 0
-
-		# Generate the specified number of questions
-		for _ in range(args.duplicates):
-			protein_dict = random.choice(protein_tree)
-
-			# Generate the complete formatted question
-			complete_question = write_question(N+1, protein_dict)
-
-			# Write the question to the file if it was generated successfully
-			if complete_question is not None:
-				N += 1
-				f.write(complete_question)
-
-	# If the question type is multiple choice, print a histogram of results
-	bptools.print_histogram()
-
-	# Print a message indicating how many questions were saved
-	print(f'saved {N} questions to {outfile}')
+	outfile = bptools.make_outfile(None)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #======================================
 #======================================

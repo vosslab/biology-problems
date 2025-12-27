@@ -2,221 +2,179 @@
 
 import os
 import re
-import sys
 import random
-import argparse
-import subprocess
+import functools
 
-import seqlib
 import bptools
+import seqlib
 
 #==========================
-#==========================
-def makeInverseGeneticCode():
+@functools.lru_cache
+def make_inverse_genetic_code():
 	inverse_genetic_code = {}
-	for codon,amino_acid in seqlib.genetic_code.items():
-		inverse_genetic_code[amino_acid] = inverse_genetic_code.get(amino_acid, []) + [codon,]
+	for codon, amino_acid in seqlib.genetic_code.items():
+		inverse_genetic_code[amino_acid] = inverse_genetic_code.get(amino_acid, []) + [codon]
 	return inverse_genetic_code
 
 #==========================
+@functools.lru_cache
+def read_wordle_list():
+	bad_letters = list("BJOUXZ")
+	wordle_file = bptools.get_repo_data_path("real_wordles.txt")
+	wordle_list = []
+	with open(wordle_file, "r") as f:
+		for line in f:
+			word = line.strip().upper()
+			if len(word) != 5:
+				continue
+			if any(letter in word for letter in bad_letters):
+				continue
+			wordle_list.append(word)
+	return wordle_list
+
 #==========================
-def makeRandomPeptide(peptide_length):
-	peptide_sequence = 'M'
+def make_random_peptide(peptide_length):
+	peptide_sequence = "M"
 	nucleotide_sequence = "AUG"
 
-	inverse_genetic_code = makeInverseGeneticCode()
+	inverse_genetic_code = make_inverse_genetic_code()
 	amino_acid_list = list(inverse_genetic_code.keys())
-	#remove stop codon
-	amino_acid_list.remove('_')
+	amino_acid_list.remove("_")
 	amino_acid_list.sort()
 
-	for i in range(peptide_length-1):
+	for _ in range(peptide_length - 1):
 		amino_acid = random.choice(amino_acid_list)
 		peptide_sequence += amino_acid
 		codon = random.choice(inverse_genetic_code[amino_acid])
 		nucleotide_sequence += codon
 
-	print("nucleotide_sequence = ",nucleotide_sequence)
-	peptide_sequence_calc = seqlib.translate(nucleotide_sequence)
-	print("peptide_sequence = ", peptide_sequence)
-	print("peptide_sequence_calc = ", peptide_sequence_calc)
-
 	return peptide_sequence, nucleotide_sequence
 
-
 #==========================
-#==========================
-def readWordleList():
-	bad_letters = list('BJOUXZ')
-	f = open('real_wordles.txt', 'r')
-	wordle_list = []
-	total_words = 0
-	for line in f:
-		sline = line.strip().upper()
-		if len(sline) != 5:
-			continue
-		total_words += 1
-		skip = False
-		for ltr in bad_letters:
-			if ltr in sline:
-				skip = True
-		if skip is True:
-			continue
-		wordle_list.append(sline.upper())
-	print("read {0} of {1} valid words from file.".format(len(wordle_list), total_words))
-	return wordle_list
+def make_wordle_peptide(peptide_length):
+	wordle_list = read_wordle_list()
+	m_wordle_list = [word for word in wordle_list if word.startswith("M")]
+	if len(m_wordle_list) == 0:
+		return make_random_peptide(peptide_length)
 
-#==========================
-#==========================
-def makeWordlePeptide(peptide_length):
-	wordle_list = readWordleList()
-
-	m_wordle_list = []
-	for word in wordle_list:
-		if word.startswith('M'):
-			m_wordle_list.append(word)
-	print("read {0} of {1} valid words that start with 'M'.".format(len(m_wordle_list), len(wordle_list)))
-
-	m_word1 = random.choice(m_wordle_list)
-	peptide_sequence = m_word1
-
-	more_wordles_to_add = peptide_length//5 - 1
-	for i in range(more_wordles_to_add):
-		word = random.choice(wordle_list)
-		peptide_sequence += word
+	peptide_sequence = random.choice(m_wordle_list)
+	more_wordles_to_add = peptide_length // 5 - 1
+	for _ in range(more_wordles_to_add):
+		peptide_sequence += random.choice(wordle_list)
 	nucleotide_sequence = "AUG"
 
-	inverse_genetic_code = makeInverseGeneticCode()
-
-	for i,amino_acid in enumerate(list(peptide_sequence)):
+	inverse_genetic_code = make_inverse_genetic_code()
+	for i, amino_acid in enumerate(list(peptide_sequence)):
 		if i == 0:
-			if amino_acid != 'M':
-				print("protein fail")
-				sys.exit(1)
-			nucleotide_sequence = "AUG"
 			continue
-		try:
-			codon = random.choice(inverse_genetic_code[amino_acid])
-		except KeyError:
-			print("peptide_sequence = ", peptide_sequence)
-			print("amino_acid = ", amino_acid)
-			sys.exit(1)
+		codon = random.choice(inverse_genetic_code[amino_acid])
 		nucleotide_sequence += codon
-
-	print("nucleotide_sequence = ",nucleotide_sequence)
-	peptide_sequence_calc = seqlib.translate(nucleotide_sequence)
-	print("peptide_sequence = ", peptide_sequence)
-	print("peptide_sequence_calc = ", peptide_sequence_calc)
 
 	return peptide_sequence, nucleotide_sequence
 
-
 #==========================
-#==========================
-def readGeneticCode():
-	genetic_code_html_table = ''
-	f = open('genetic_code.html', 'r')
-	for line in f:
-		# no newlines for blackboard upload
-		sline = line.strip()
-		req = re.search('\>([AGCU]{3})\<', sline)
-		if req:
-			nt_sequence = req.groups()[0]
-			nt_table = seqlib.Single_Strand_Table_No_Primes(nt_sequence)
-			sline = re.sub(nt_sequence, nt_table, sline)
-		genetic_code_html_table += sline
+@functools.lru_cache
+def read_genetic_code():
+	genetic_code_html_table = ""
+	code_path = os.path.join(os.path.dirname(__file__), "genetic_code.html")
+	with open(code_path, "r") as f:
+		for line in f:
+			sline = line.strip()
+			match = re.search(r">([AGCU]{3})<", sline)
+			if match:
+				nt_sequence = match.groups()[0]
+				nt_table = seqlib.Single_Strand_Table_No_Primes(nt_sequence)
+				sline = re.sub(nt_sequence, nt_table, sline)
+			genetic_code_html_table += sline
 	return genetic_code_html_table
 
 #==========================
-#==========================
-def makeCompleteQuestion(N, peptide_length, extra=False):
+def make_complete_question(N, peptide_length, extra=False):
 	if peptide_length % 5 == 0:
-		print("using wordle sequence")
 		wordle = True
-		peptide_sequence, nucleotide_sequence = makeWordlePeptide(peptide_length)
+		peptide_sequence, nucleotide_sequence = make_wordle_peptide(peptide_length)
 	else:
-		print("using random sequence")
 		wordle = False
-		peptide_sequence, nucleotide_sequence = makeRandomPeptide(peptide_length)
+		peptide_sequence, nucleotide_sequence = make_random_peptide(peptide_length)
 
-	#add a stop codon
-	stop_codons = ('UAA', 'UAG', 'UGA')
+	stop_codons = ("UAA", "UAG", "UGA")
 	nucleotide_sequence += random.choice(stop_codons)
 
 	if extra is True:
-		print("using extra mode")
-		n = random.choice( (2,4,5,7,8) )
-		front_nts = 'AUG'
-		while 'AUG' in front_nts:
+		n = random.choice((2, 4, 5, 7, 8))
+		front_nts = "AUG"
+		while "AUG" in front_nts:
 			front_nts = seqlib.transcribe(seqlib.makeSequence(n))
 		n = random.randint(2, 7)
-		back_nts = 'AUG'
-		while 'AUG' in back_nts:
+		back_nts = "AUG"
+		while "AUG" in back_nts:
 			back_nts = seqlib.transcribe(seqlib.makeSequence(n))
 		nucleotide_sequence = front_nts + nucleotide_sequence + back_nts
 
-	question = ''
-	genetic_code_html_table = readGeneticCode()
-	question += genetic_code_html_table
-	question += '<p>Using the Genetic Code table above, '
-	question += 'translate the following {0} nucleotide mRNA sequence '.format(len(nucleotide_sequence))
-	question += 'into the single-letter peptide code.</p>'
+	question = ""
+	question += read_genetic_code()
+	question += "<p>Using the Genetic Code table above, "
+	question += f"translate the following {len(nucleotide_sequence)} nucleotide mRNA sequence "
+	question += "into the single-letter peptide code.</p>"
 	if extra is True:
 		nt_table = seqlib.Single_Strand_Table(nucleotide_sequence, separate=4)
 	else:
 		nt_table = seqlib.Single_Strand_Table(nucleotide_sequence, separate=3)
 	question += nt_table
-	question += '<p>Note:<ul>'
+	question += "<p>Note:<ul>"
 	if extra is True:
-		question += '<li>Remember that translation begins at a particular mRNA sequence.</li>'
+		question += "<li>Remember that translation begins at a particular mRNA sequence.</li>"
 	if wordle is True:
 		wordle_count = peptide_length // 5
 		if wordle_count == 1:
-			question += '<li>Your answer will spell a five-letter word'.format(wordle_count)
-			question += ' that is also a valid Wordle&trade; answer.</li>'
-		elif wordle_count >= 2:
-			question += '<li>Your answer will spell a combination of {0} five-letter words'.format(wordle_count)
-			question += ' (that are also valid Wordle&trade; answers).</li>'
+			question += "<li>Your answer will spell a five-letter word"
+			question += " that is also a valid Wordle&trade; answer.</li>"
 		else:
-			print(error)
-			sys.exit(1)
+			question += f"<li>Your answer will spell a combination of {wordle_count} five-letter words"
+			question += " (that are also valid Wordle&trade; answers).</li>"
 	else:
-		question += '<li>Your answer will be a random string of {0} amino acid letters.</li>'.format(peptide_length)
-	question += '<li>Enter your answer in the blank with no punctuation, only letters.</li>'
-	question += '</ul></p>'
-	f = open('temp.html', 'w')
-	f.write(question)
-	f.close()
-	#print(question)
+		question += f"<li>Your answer will be a random string of {peptide_length} amino acid letters.</li>"
+	question += "<li>Enter your answer in the blank with no punctuation, only letters.</li>"
+	question += "</ul></p>"
 
 	sep3 = seqlib.insertCommas(peptide_sequence, separate=3)
 	sep5 = seqlib.insertCommas(peptide_sequence, separate=5)
 	answers_list = [peptide_sequence, sep3, sep5]
 
-	bbformat = bptools.formatBB_FIB_Question(N, question, answers_list)
-
-	return bbformat
+	return bptools.formatBB_FIB_Question(N, question, answers_list)
 
 #==========================
+def write_question(N, args):
+	return make_complete_question(N, args.peptide_length, args.extra)
+
 #==========================
-if __name__ == '__main__':
-	parser = argparse.ArgumentParser()
-	parser.add_argument('-n', '--peptide-length', type=int, dest='peptide_length',
-		help='length of the peptide to translate', default=10)
-	parser.add_argument('-q', '--num-questions', type=int, dest='num_questions',
-		help='number of questions to create', default=24)
-	parser.add_argument('-X', '--extra', dest='extra', action='store_true',
-		help='add extra nts to front and back of mRNA', default=False)
+def parse_arguments():
+	parser = bptools.make_arg_parser(description="Generate genetic code translation questions.")
+	parser.add_argument(
+		"-n",
+		"--peptide-length",
+		type=int,
+		dest="peptide_length",
+		help="Length of the peptide to translate.",
+		default=10,
+	)
+	parser.add_argument(
+		"-X",
+		"--extra",
+		dest="extra",
+		action="store_true",
+		help="Add extra nts to front and back of mRNA.",
+		default=False,
+	)
 	args = parser.parse_args()
+	return args
 
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	for i in range(args.num_questions):
-		N = i+1
-		bbformat = makeCompleteQuestion(N, args.peptide_length, args.extra)
-		f.write(bbformat)
-		f.write('\n')
-	f.close()
-	proc = subprocess.Popen("sleep 1; open temp.html", shell=True)
-	bptools.print_histogram()
+#==========================
+def main():
+	args = parse_arguments()
+	outfile = bptools.make_outfile(None, f"{args.peptide_length}_aa", "extra" if args.extra else None)
+	bptools.collect_and_write_questions(write_question, args, outfile)
+
+#==========================
+if __name__ == "__main__":
+	main()

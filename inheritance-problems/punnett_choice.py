@@ -2,12 +2,8 @@
 # ^^ Specifies the Python3 environment to use for script execution
 
 # Import built-in Python modules
-# Provides functions for interacting with the operating system
-import os
 # Provides functions to generate random numbers and selections
 import random
-# Provides tools to parse command-line arguments
-import argparse
 
 # Import external modules (pip-installed)
 # No external modules are used here currently
@@ -183,40 +179,35 @@ def main():
 	Main function that orchestrates question generation and file output.
 	"""
 
-	# Generate the output file name based on the script name and question type
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
-	outfile = (
-		'bbq'
-		f'-{script_name}'  # Add the script name to the file name
-		'-questions.txt'  # Add the file extension
-	)
+	args = parse_arguments()
+	outfile = bptools.make_outfile(None)
+	questions = bptools.collect_question_batches(write_question_batch, args)
+	bptools.write_questions_to_file(questions, outfile)
 
-	# Print a message indicating where the file will be saved
-	print(f'Writing to file: {outfile}')
+#===========================================================
+def parse_arguments():
+	parser = bptools.make_arg_parser(description="Generate Punnett square questions.", batch=True)
+	args = parser.parse_args()
+	return args
 
+#===========================================================
+def write_question_batch(start_num: int, args) -> list:
 	all_punnett_squares_html_dict = generate_choices()
-
-	# Open the output file in write mode
-	with open(outfile, 'w') as f:
-		# Initialize the question number counter
-		N = 0
-
-		# Generate the specified number of questions
-		for _ in range(len(PUNNETT_CONTEXTS)):
-
-			# Generate the complete formatted question
-			complete_question = write_question(N+1, all_punnett_squares_html_dict)
-
-			# Write the question to the file if it was generated successfully
-			if complete_question is not None:
-				N += 1
-				f.write(complete_question)
-
-	# If the question type is multiple choice, print a histogram of results
-	bptools.print_histogram()
-
-	# Print a message indicating how many questions were saved
-	print(f'saved {N} questions to {outfile}')
+	questions = []
+	remaining = None
+	if args.max_questions is not None:
+		remaining = args.max_questions - (start_num - 1)
+		if remaining <= 0:
+			return questions
+	N = start_num
+	for _ in range(len(PUNNETT_CONTEXTS)):
+		complete_question = write_question(N, all_punnett_squares_html_dict)
+		if complete_question is not None:
+			questions.append(complete_question)
+			N += 1
+			if remaining is not None and len(questions) >= remaining:
+				return questions
+	return questions
 
 #===========================================================
 #===========================================================

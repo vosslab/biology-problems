@@ -1,16 +1,13 @@
 #!/usr/bin/env python3
 
-import os
-import sys
 import math
 import time
 import random
-import argparse
 
 import bptools
 import restrictlib
 
-debug = True
+debug = False
 
 #============================================
 #============================================
@@ -147,7 +144,11 @@ def getRandList(size, total_length, include_ends=False):
 
 #============================================
 #============================================
-def write_question(N=1, length=10, num_sites=2, dna_type='fragment', max_fragment_size=7):
+def write_question(N, args):
+	length = args.length
+	num_sites = args.num_sites
+	dna_type = args.dna_type
+	max_fragment_size = args.max_fragment_size
 	enzymes = restrictlib.get_enzyme_list()
 	enzyme_class1 = restrictlib.random_enzyme_one_end(enzymes)
 	enzyme_name1 = enzyme_class1.__name__
@@ -278,45 +279,71 @@ def write_question(N=1, length=10, num_sites=2, dna_type='fragment', max_fragmen
 
 #===========================================================
 #===========================================================
-# This function handles the parsing of command-line arguments.
+def apply_difficulty_defaults(args):
+	presets = {
+		'easy': {
+			'length': 10,
+			'num_sites': 2,
+			'dna_type': 'fragment',
+		},
+		'medium': {
+			'length': 12,
+			'num_sites': 2,
+			'dna_type': 'fragment',
+		},
+		'rigorous': {
+			'length': 16,
+			'num_sites': 3,
+			'dna_type': 'strand',
+		},
+	}
+	preset = presets.get(args.difficulty, presets['medium'])
+
+	if args.length is None:
+		args.length = preset['length']
+	if args.dna_type is None:
+		args.dna_type = preset['dna_type']
+	if args.num_sites is None:
+		if args.dna_type == 'strand':
+			args.num_sites = 3
+		elif args.dna_type == 'fragment':
+			args.num_sites = 2
+		else:
+			args.num_sites = preset['num_sites']
+	return args
+
+#===========================================================
+#===========================================================
 def parse_arguments():
-	"""
-	Parses command-line arguments for the script.
-
-	Returns:
-		argparse.Namespace: Parsed arguments with attributes `duplicates`,
-		`num_choices`, and `question_type`.
-	"""
-	# Create an argument parser with a description of the script's functionality
-	parser = argparse.ArgumentParser(description="Generate questions.")
-
-	# Add an argument to specify the number of duplicate questions to generate
-	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='Number of duplicate runs to do or number of questions to create',
-		default=1
-	)
+	parser = bptools.make_arg_parser(description="Generate restriction digest questions.")
+	parser = bptools.add_difficulty_args(parser)
 
 	# Argument for the length
-	parser.add_argument('-n', '--length', type=int, default=12,
-						help='Length of the DNA sequence.')
+	parser.add_argument(
+		'-n', '--length', type=int, default=None,
+		help='Length of the DNA sequence.'
+	)
 
 	# Argument for the number of sites
 	parser.add_argument(
-		'-s', '--num_sites', type=int, default=None,
+		'-s', '--num-sites', '--num_sites', type=int, default=None, dest='num_sites',
 		help='Number of sites in the DNA sequence.'
 	)
 
 	# Argument for maximum fragment size
-	parser.add_argument('--max_fragment_size', type=int, default=None,
-						help='Maximum size of the DNA fragment.')
+	parser.add_argument(
+		'--max-fragment-size', '--max_fragment_size', type=int,
+		default=None, dest='max_fragment_size',
+		help='Maximum size of the DNA fragment.'
+	)
 
 	# Create a mutually exclusive group for DNA type
 	dna_group = parser.add_mutually_exclusive_group()
 
 	# Long-form explicit argument
 	dna_group.add_argument(
-		'-T', '--dna_type', dest='dna_type', choices=['fragment', 'strand'], type=str,
+		'-T', '--dna-type', '--dna_type', dest='dna_type',
+		choices=['fragment', 'strand'], type=str,
 		help='Type of DNA sequence to use. Choices: fragment or strand.'
 	)
 
@@ -332,15 +359,12 @@ def parse_arguments():
 		help='Use full DNA strands'
 	)
 
-	# Set default after the group is defined
-	parser.set_defaults(dna_type='fragment')
-
 	# Parse the provided command-line arguments and return them
 	args = parser.parse_args()
+	args = apply_difficulty_defaults(args)
 
 	if args.max_fragment_size is None:
 		args.max_fragment_size = math.ceil(args.length // 2 + 1)
-
 
 	#==========================
 	# Validate number of sites based on DNA type
@@ -359,56 +383,15 @@ def parse_arguments():
 
 #===========================================================
 #===========================================================
-# This function serves as the entry point for generating and saving questions.
 def main():
-	"""
-	Main function that orchestrates question generation and file output.
-	"""
-
-	# Parse arguments from the command line
 	args = parse_arguments()
-
-	# Generate the output file name based on the script name and question type
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
-	outfile = (
-		'bbq'
-		f'-{script_name}'  # Add the script name to the file name
-		f'-length_{args.length}'
-		f'-sites_{args.num_sites}'
-		f'-{args.dna_type}'
-		'-questions.txt'  # Add the file extension
+	outfile = bptools.make_outfile(
+		__file__,
+		f"length_{args.length}",
+		f"sites_{args.num_sites}",
+		args.dna_type
 	)
-
-	print(f"Number of questions: {args.duplicates}")
-	print(f"Length: {args.length}")
-	print(f"Number of sites: {args.num_sites}")
-	print(f"DNA type: {args.dna_type}")
-	print(f"Maximum fragment size: {args.max_fragment_size}")
-
-	# Print a message indicating where the file will be saved
-	print(f'Writing to file: {outfile}')
-
-	# Open the output file in write mode
-	with open(outfile, 'w') as f:
-		# Initialize the question number counter
-		N = 0
-
-		# Generate the specified number of questions
-		while N < args.duplicates:
-
-			# Generate the complete formatted question
-			complete_question = write_question(N+1, args.length, args.num_sites, args.dna_type, args.max_fragment_size)
-
-			# Write the question to the file if it was generated successfully
-			if complete_question is not None:
-				N += 1
-				f.write(complete_question)
-
-	# If the question type is multiple choice, print a histogram of results
-	bptools.print_histogram()
-
-	# Print a message indicating how many questions were saved
-	print(f'saved {N} questions to {outfile}')
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #===========================================================
 #===========================================================
@@ -418,5 +401,3 @@ if __name__ == '__main__':
 	main()
 
 ## THE END
-
-

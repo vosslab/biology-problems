@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import os
 import random
 
 import bptools
@@ -22,6 +21,21 @@ tridecaploid (13 sets), tetradecaploid (14 sets), etc.[29][30][31][32]
 
 Some higher ploidies include hexadecaploid (16 sets), dotriacontaploid (32 sets), and tetrahexacontaploid (64 sets)
 """
+
+ploidies = [4, 6, 8, 10, 12, 14, 16]
+polyploid_names = {
+	4: 'a tetraploid',
+	6: 'a hexaploid',
+	8: 'an octaploid',
+	10: 'a decaploid',
+	12: 'a dodecaploid',
+	14: 'a tetradecaploid',
+	16: 'a hexadecaploid',
+	18: 'an octadecaploid',
+	32: 'a dotriacontaploid',
+	64: 'a tetrahexacontaploid'
+}
+monoploid_sizes = [4, 5, 6, 7, 8, 9, 10, 11]
 
 def makeQuestion(N, ploidy, monoploid):
 	total_chromosomes = monoploid * ploidy
@@ -93,33 +107,38 @@ def makeQuestion(N, ploidy, monoploid):
 	bb_question = bptools.formatBB_MC_Question(N, question, choices_list, answer)
 	return bb_question
 
-if __name__ == '__main__':
-	ploidies = [4, 6, 8, 10, 12, 14, 16]
-	polyploid_names = {
-		4: 'a tetraploid',
-		6: 'a hexaploid',
-		8: 'an octaploid',
-		10: 'a decaploid',
-		12: 'a dodecaploid',
-		14: 'a tetradecaploid',
-		16: 'a hexadecaploid',
-		18: 'an octadecaploid',
-		32: 'a dotriacontaploid',
-		64: 'a tetrahexacontaploid'
-	}
-	monoploid_sizes = [4, 5, 6, 7, 8, 9, 10, 11, ]
-
-	num_genes = 7
-	N = 0
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
+def write_question_batch(start_num: int, args) -> list:
+	questions = []
+	remaining = None
+	if args.max_questions is not None:
+		remaining = args.max_questions - (start_num - 1)
+		if remaining <= 0:
+			return questions
+	N = start_num
 	for ploidy in ploidies:
 		for monoploid in monoploid_sizes:
-			N += 1
 			bb_question = makeQuestion(N, ploidy, monoploid)
 			if bb_question is None:
 				continue
-			f.write(bb_question)
-	f.close()
-	bptools.print_histogram()
+			questions.append(bb_question)
+			N += 1
+			if remaining is not None and len(questions) >= remaining:
+				return questions
+	return questions
+
+def parse_arguments():
+	parser = bptools.make_arg_parser(
+		description="Generate polyploid gamete questions.",
+		batch=True
+	)
+	args = parser.parse_args()
+	return args
+
+def main():
+	args = parse_arguments()
+	outfile = bptools.make_outfile(None)
+	questions = bptools.collect_question_batches(write_question_batch, args)
+	bptools.write_questions_to_file(questions, outfile)
+
+if __name__ == '__main__':
+	main()

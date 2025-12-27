@@ -2,10 +2,9 @@
 # ^^ Specifies the Python3 environment to use for script execution
 
 # Import built-in Python modules
-# Provides functions for interacting with the operating system
-import os
 import time
 import random
+import math
 
 # Import external modules (pip-installed)
 # No external modules are used here currently
@@ -356,6 +355,37 @@ def write_question(N: int, args) -> str:
 
 #==========================================================
 #==========================================================
+def apply_difficulty_defaults(args):
+	presets = {
+		'easy': {
+			'num_genes': 4,
+			'num_choices': 5,
+			'first_letter': True,
+		},
+		'medium': {
+			'num_genes': 5,
+			'num_choices': 5,
+			'first_letter': False,
+		},
+		'rigorous': {
+			'num_genes': 6,
+			'num_choices': 6,
+			'first_letter': False,
+		},
+	}
+	preset = presets.get(args.difficulty, presets['medium'])
+
+	if args.num_genes is None:
+		args.num_genes = preset['num_genes']
+	if args.num_choices is None:
+		args.num_choices = preset['num_choices']
+	if args.first_letter is None:
+		args.first_letter = preset['first_letter']
+
+	return args
+
+#==========================================================
+#==========================================================
 def main() -> None:
 	"""
 	Main function that orchestrates question generation and file output.
@@ -368,49 +398,53 @@ def main() -> None:
 	5. Write all questions to the output file.
 	6. Print stats and status.
 	"""
-	args = deletionlib.parse_arguments()
-
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
-	outfile = (
-		f'bbq-{script_name}'
-		f'-{args.num_genes:02d}_genes'
-		f'-{args.question_type.upper()}'
-		'-questions.txt'
+	args = parse_arguments()
+	outfile = bptools.make_outfile(
+		None,
+		f"{args.num_genes:02d}_genes",
+		args.question_type.upper()
 	)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
-	question_bank_list: list[str] = []
-	N = 0
+#==========================================================
+def parse_arguments():
+	parser = bptools.make_arg_parser(description="Generate deletion mutant word questions.")
+	parser = bptools.add_choice_args(parser, default=None)
+	parser = bptools.add_difficulty_args(parser)
+	parser.add_argument(
+		'-g', '--num-genes', metavar='#', type=int, dest='num_genes',
+		help='number of deleted genes on the chromosome', default=None
+	)
+	parser.add_argument(
+		'-F', '--first-letter', dest='first_letter', action='store_true',
+		help='give a hint about the first letter in the gene sequence'
+	)
+	parser.add_argument(
+		'-N', '--no-first-letter', dest='first_letter', action='store_false',
+		help='do not give a hint about the first letter in the gene sequence'
+	)
+	parser.set_defaults(first_letter=None)
+	parser = bptools.add_question_format_args(
+		parser,
+		types_list=['fib', 'mc'],
+		required=False,
+		default='mc'
+	)
+	args = parser.parse_args()
+	args = apply_difficulty_defaults(args)
 
-	for _ in range(args.duplicates):
-		t0 = time.time()
-		complete_question = write_question(N + 1, args)
-		elapsed = time.time() - t0
-		if elapsed > 1:
-			print(f"Question {N + 1} complete in {elapsed:.1f} seconds")
+	if args.num_genes < 4:
+		raise ValueError("Sorry, you must have at least 4 genes for this program")
+	if args.num_genes > 20:
+		raise ValueError("Sorry, you can have at most 20 genes for this program")
 
-		if complete_question is not None:
-			N += 1
-			question_bank_list.append(complete_question)
-
-		if N >= args.max_questions:
-			break
-
-	if args.question_type == 'mc':
-		bptools.print_histogram()
-
-	if len(question_bank_list) > args.max_questions:
-		random.shuffle(question_bank_list)
-		question_bank_list = question_bank_list[:args.max_questions]
-
-	print(f'\nWriting {len(question_bank_list)} question to file: {outfile}')
-
-	write_count = 0
-	with open(outfile, 'w') as f:
-		for q in question_bank_list:
-			write_count += 1
-			f.write(q)
-
-	print(f'... saved {write_count} questions to {outfile}\n')
+	max_choices = math.factorial(args.num_genes - 1)
+	if args.num_choices > max_choices:
+		raise ValueError(
+			f"Cannot generate {args.num_choices} choices with {args.num_genes} genes. "
+			f"Maximum possible is {max_choices}."
+		)
+	return args
 
 #==========================================================
 #==========================================================

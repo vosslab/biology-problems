@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
+import random
 
+import bptools
 overo_text = (
 	"<p>In the American Paint Horse, the Overo gene, Ov, produces a white splotch pattern on the coat. "
 	+"The overo phenotype is seen only when a horse has one Ov copy, Ovov. "
@@ -112,10 +114,56 @@ question_text = (
 	+"Only count phenotypes for offspring expected to live past one week of age.</p>"
 )
 
-#print(overo_table+'\n')
-print(overo_text+'\n')
-#print(leopard_table+'\n')
-print(leopard_text+'\n')
-#print(merge_table+'\n')
-print(merge_text+'\n')
-print(question_text+'\n')
+phenotype_counts = {
+	"fewspot": 3,
+	"pintaloosa": 4,
+	"overo": 2,
+	"leopard": 2,
+	"solid": 1,
+}
+
+#======================================
+def write_question(N: int, args) -> str:
+	phenotype = random.choice(list(phenotype_counts.keys()))
+	answer_count = phenotype_counts[phenotype]
+
+	full_text = ""
+	full_text += overo_text + overo_table
+	full_text += leopard_text + leopard_table
+	full_text += merge_text + merge_table
+	full_text += question_text
+	full_text += (
+		f"<p><strong>How many {phenotype} offspring</strong> are expected "
+		f"out of 16?</p>"
+	)
+
+	choices = []
+	answer_text = f"{answer_count} of 16"
+	choices.append(answer_text)
+
+	other_counts = [i for i in range(0, 17) if i != answer_count]
+	random.shuffle(other_counts)
+	for count in other_counts:
+		if len(choices) >= args.num_choices:
+			break
+		choices.append(f"{count} of 16")
+
+	random.shuffle(choices)
+	complete_question = bptools.formatBB_MC_Question(N, full_text, choices, answer_text)
+	return complete_question
+
+#======================================
+def parse_arguments():
+	parser = bptools.make_arg_parser(description="Generate horse phenotype questions.")
+	parser = bptools.add_choice_args(parser, default=5)
+	args = parser.parse_args()
+	return args
+
+#======================================
+def main():
+	args = parse_arguments()
+	outfile = bptools.make_outfile(None)
+	bptools.collect_and_write_questions(write_question, args, outfile)
+
+if __name__ == '__main__':
+	main()

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-import os
 import random
 import seqlib
+import bptools
 
 """
                                                 3'  GGCATCGACCTCCCT  5'
@@ -61,8 +61,6 @@ def getPrimerChoices(top_sequence, primer_len):
 				return False, answer_set
 
 	primer_set.sort()
-	print(primer_set)
-	print(answer_set)
 
 	convert_set = []
 	for primer in primer_set:
@@ -71,8 +69,6 @@ def getPrimerChoices(top_sequence, primer_len):
 		subprimer = primer.replace('C', 'G')
 		convert_set.append(subprimer)
 	if len(list(set(convert_set))) < 16:
-		print("BAD PRIMERS")
-		#sys.exit(1)
 		return False, answer_set
 	return primer_set, answer_set
 
@@ -108,64 +104,112 @@ def makeChoices(primer_set, answer_set):
 		if c1 != c2:
 			choices.add((c1, c2))
 	choices_list = list(choices)
-	print(choices_list)
 	random.shuffle(choices_list)
 	return choices_list
 
 #=====================
+def write_question(N, args):
+	sequence_tuple, primer_set, answer_set = getSequence(
+		args.sequence_len,
+		args.round1_primer_len,
+		args.round2_primer_len
+	)
+	old_primer1 = sequence_tuple[0]
+	old_primer2 = seqlib.flip(seqlib.complement(sequence_tuple[2]))
+
+	question = (
+		"<p>The amplicon sequence of DNA shown above was replicated using 30 cycles of PCR, "
+		+ "using the primers 5&prime;-{0}-3&prime; and 5&prime;-{1}-3&prime;.</p>".format(
+			old_primer1, old_primer2
+		)
+		+ "<p>But the first PCR run contained significant contamination due to mispriming. "
+		+ "Probably from using too short of primers "
+		+ f"that were only {args.round1_primer_len} nucleotide in length.</p>"
+		+ "<p>Choose the correct pair of RNA primers that will amplify the remaining region of DNA "
+		+ "inside the old primers using <strong>nested PCR</strong>. "
+		+ f"The nested RNA primers are {args.round2_primer_len} bases in length.</p>"
+		+ "<p>Pay close attention to the 5&prime; and 3&prime; ends of the primers.</p>"
+	)
+
+	answer_tuple = tuple(answer_set)
+	table = BIG_Table(sequence_tuple)
+	choices = makeChoices(primer_set, answer_set)
+
+	choice_tables = []
+	answer_text = None
+	for choice in choices:
+		choice_text = '{0} AND {1}'.format(
+			seqlib.Primer_Table(choice[0]),
+			seqlib.Primer_Table(choice[1])
+		)
+		choice_tables.append(choice_text)
+		if choice == answer_tuple:
+			answer_text = choice_text
+	if answer_text is None:
+		return None
+	bb_question = bptools.formatBB_MC_Question(N, table + question, choice_tables, answer_text)
+	return bb_question
+
+
 #=====================
+def apply_difficulty_defaults(args):
+	presets = {
+		'easy': {
+			'sequence_len': 18,
+			'round1_primer_len': 6,
+			'round2_primer_len': 5,
+		},
+		'medium': {
+			'sequence_len': 24,
+			'round1_primer_len': 6,
+			'round2_primer_len': 6,
+		},
+		'rigorous': {
+			'sequence_len': 30,
+			'round1_primer_len': 7,
+			'round2_primer_len': 7,
+		},
+	}
+	preset = presets.get(args.difficulty, presets['medium'])
+
+	if args.sequence_len is None:
+		args.sequence_len = preset['sequence_len']
+	if args.round1_primer_len is None:
+		args.round1_primer_len = preset['round1_primer_len']
+	if args.round2_primer_len is None:
+		args.round2_primer_len = preset['round2_primer_len']
+
+	return args
+
+
 #=====================
+def parse_arguments():
+	parser = bptools.make_arg_parser(description="Generate nested PCR primer questions.")
+	parser = bptools.add_difficulty_args(parser)
+	parser.add_argument(
+		'-s', '--sequence-length', type=int, dest='sequence_len',
+		default=None, help='Length of the known sequence.'
+	)
+	parser.add_argument(
+		'-p', '--round1-primer-length', type=int, dest='round1_primer_len',
+		default=None, help='Length of the round 1 primers.'
+	)
+	parser.add_argument(
+		'-q', '--round2-primer-length', type=int, dest='round2_primer_len',
+		default=None, help='Length of the round 2 primers.'
+	)
+	args = parser.parse_args()
+	args = apply_difficulty_defaults(args)
+	return args
+
+
+#=====================
+def main():
+	args = parse_arguments()
+	outfile = bptools.make_outfile(__file__, f"len_{args.sequence_len}")
+	bptools.collect_and_write_questions(write_question, args, outfile)
+
+
 #=====================
 if __name__ == '__main__':
-	sequence_len = 24
-	round1_primer_len = 6
-	round2_primer_len = 6
-	num_questions = 6
-
-	N = 0
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	for i in range(num_questions):
-		N += 1
-		number = "{0}. ".format(N)
-		sequence_tuple, primer_set, answer_set = getSequence(sequence_len, round1_primer_len, round2_primer_len)
-		old_primer1 = sequence_tuple[0]
-		old_primer2 = seqlib.flip(seqlib.complement(sequence_tuple[2]))
-
-		question = ("<p>The amplicon sequence of DNA shown above was replicated using 30 cycles of PCR, "
-		+"using the primers 5&prime;-{0}-3&prime; and 5&prime;-{1}-3&prime;.</p>".format(old_primer1, old_primer2)
-		+"<p>But the first PCR run contained significant contamination due to mispriming. "
-		+"Probably from using too short of primers "
-		+"that were only {0} nucleotide in length.</p>".format(round1_primer_len)
-		+"<p>Choose the correct pair of RNA primers that will amplify the remaining region of DNA "
-		+"inside the old primers using <strong>nested PCR</strong>. "
-		+"The nested RNA primers are {0} bases in length.</p>".format(round2_primer_len)
-		+"<p>Pay close attention to the 5&prime; and 3&prime; ends of the primers.</p>" )
-
-		answer_tuple = tuple(answer_set)
-		table = BIG_Table(sequence_tuple)
-		choices = makeChoices(primer_set, answer_set)
-
-		top_sequence = sequence_tuple[0] + "-" + sequence_tuple[1] + "-" + sequence_tuple[2]
-		bottom_sequence = seqlib.complement(top_sequence)
-		
-		f.write("MC\t{0}\t".format(number + table + question))
-		print("5'-" + top_sequence + "-3'")
-		print("3'-" + bottom_sequence + "-5'")
-		print("{0}. {1}".format(N, question))
-
-		letters = "ABCDEF"
-		for i, choice in enumerate(choices):
-			f.write('{0} AND {1}\t'.format(seqlib.Primer_Table(choice[0]), seqlib.Primer_Table(choice[1])))
-			if choice == answer_tuple:
-				prefix = 'x'
-				f.write('Correct\t')
-			else:
-				prefix = ' '
-				f.write('Incorrect\t')
-			print("- [{0}] {1}. 5'-{2}-3' AND 5'-{3}-3'".format(prefix, letters[i], choice[0], choice[1]))
-		print("")
-		f.write('\n')
-	f.close()
-
+	main()

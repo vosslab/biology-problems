@@ -2,12 +2,8 @@
 # ^^ Specifies the Python3 environment to use for script execution
 
 # Import built-in Python modules
-# Provides functions for interacting with the operating system
-import os
 # Provides functions to generate random numbers and selections
 import random
-# Provides tools to parse command-line arguments
-import argparse
 
 # Import external modules (pip-installed)
 # No external modules are used here currently
@@ -282,15 +278,18 @@ def format_blood_type_code(blood_type_code: str) -> str:
 #===========================================================
 #===========================================================
 # This function creates and formats a complete question for output.
-def write_question(N: int, blood_type_code: str, num_choices: int) -> str:
+def write_question(N: int, args) -> str:
 	"""
 	Creates a complete formatted question for output.
 	"""
+	blood_type_codes = list(code2type.keys())
+	blood_type_code = blood_type_codes[(N - 1) % len(blood_type_codes)]
+
 	# Generate the main question text
 	question_text = get_question_text(blood_type_code)
 
 	# Generate answer choices
-	choices_list, answer_code = generate_choices(blood_type_code, num_choices)
+	choices_list, answer_code = generate_choices(blood_type_code, args.num_choices)
 
 	formatted_choices_list = []
 	for choice_code in choices_list:
@@ -318,20 +317,8 @@ def parse_arguments():
 		`num_choices`, and `question_type`.
 	"""
 	# Create an argument parser with a description of the script's functionality
-	parser = argparse.ArgumentParser(description="Generate questions.")
-
-	# Add an argument to specify the number of duplicate questions to generate
-	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='Number of duplicate runs to do or number of questions to create',
-		default=1
-	)
-
-	# Add an argument to specify the number of answer choices for each question
-	parser.add_argument(
-		'-c', '--num_choices', type=int, default=5, dest='num_choices',
-		help="Number of choices to create."
-	)
+	parser = bptools.make_arg_parser(description="Generate questions.")
+	parser = bptools.add_choice_args(parser, default=5)
 
 	# Parse the provided command-line arguments and return them
 	args = parser.parse_args()
@@ -349,40 +336,8 @@ def main():
 	args = parse_arguments()
 
 
-	# Generate the output file name based on the script name and question type
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
-	outfile = (
-		'bbq'
-		f'-{script_name}'  # Add the script name to the file name
-		'-questions.txt'  # Add the file extension
-	)
-
-	# Print a message indicating where the file will be saved
-	print(f'Writing to file: {outfile}')
-
-	blood_type_codes = list(code2type.keys())
-	# Open the output file in write mode
-	with open(outfile, 'w') as f:
-		# Initialize the question number counter
-		N = 0
-
-		# Generate the specified number of questions
-		for _ in range(args.duplicates):
-			blood_type_code = blood_type_codes[N % len(blood_type_codes)]
-
-			# Generate the complete formatted question
-			complete_question = write_question(N+1, blood_type_code, args.num_choices)
-
-			# Write the question to the file if it was generated successfully
-			if complete_question is not None:
-				N += 1
-				f.write(complete_question)
-
-	# If the question type is multiple choice, print a histogram of results
-	bptools.print_histogram()
-
-	# Print a message indicating how many questions were saved
-	print(f'saved {N} questions to {outfile}')
+	outfile = bptools.make_outfile(None)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #===========================================================
 #===========================================================

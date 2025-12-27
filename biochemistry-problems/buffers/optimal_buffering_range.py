@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 
 # built-in python modules
-import os
 import random
-import argparse
 
 # external pip modules
 
@@ -34,6 +32,20 @@ def get_question_text(buffer_dict) -> str:
 	question_text += "<p>Which one of the following pH values falls outside the optimal buffering range"
 	question_text += f"of {buffer_dict['acid_name'].capitalize()}?</p>"
 	return question_text
+
+#======================================
+#======================================
+def get_buffer_list() -> list:
+	"""
+	Build and return the list of buffer dictionaries.
+
+	Returns:
+		list: List of buffer dictionaries.
+	"""
+	buffer_list = []
+	buffer_list += list(bufferslib.triprotic.values())
+	buffer_list += list(bufferslib.tetraprotic.values())
+	return buffer_list
 
 #======================================
 #======================================
@@ -127,7 +139,7 @@ def generate_choices(buffer_dict, num_choices: int) -> (list, str):
 
 #======================================
 #======================================
-def write_question(N: int, buffer_dict: dict, num_choices: int) -> str:
+def write_question(N: int, args) -> str:
 	"""
 	Creates a complete formatted question for output.
 
@@ -137,17 +149,18 @@ def write_question(N: int, buffer_dict: dict, num_choices: int) -> str:
 
 	Args:
 		N (int): The question number, used for labeling the question.
-		num_choices (int): The number of answer choices to include.
+		args (argparse.Namespace): Parsed arguments with num_choices.
 
 	Returns:
 		str: A formatted question string suitable for output, containing
 		the question text, answer choices, and correct answer.
 	"""
-	# Generate the question text
-	question_text = get_question_text(buffer_dict)
+	buffer_list = get_buffer_list()
+	buffer_dict = random.choice(buffer_list)
+	buffer_dict = bufferslib.expand_buffer_dict(buffer_dict)
 
-	# Generate answer choices and correct answer
-	choices_list, answer_text = generate_choices(buffer_dict, num_choices)
+	question_text = get_question_text(buffer_dict)
+	choices_list, answer_text = generate_choices(buffer_dict, args.num_choices)
 
 	# Format the complete question with the specified module function
 	complete_question = bptools.formatBB_MC_Question(N, question_text, choices_list, answer_text)
@@ -161,21 +174,13 @@ def parse_arguments():
 	Defines and handles all arguments for the script, including:
 	- `duplicates`: The number of questions to generate.
 	- `num_choices`: The number of answer choices for each question.
-	- `question_type`: Type of question (numeric or multiple choice).
 
 	Returns:
-		argparse.Namespace: Parsed arguments with attributes `duplicates`,
-		`num_choices`, and `question_type`.
+		argparse.Namespace: Parsed arguments with attributes `duplicates`
+		and `num_choices`.
 	"""
-	parser = argparse.ArgumentParser(description="Generate questions.")
-	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='Number of duplicate runs to do or number of questions to create', default=1
-	)
-	parser.add_argument(
-		'-c', '--num_choices', type=int, default=5, dest='num_choices',
-		help="Number of choices to create."
-	)
+	parser = bptools.make_arg_parser(description="Generate questions.")
+	parser = bptools.add_choice_args(parser, default=5)
 
 	args = parser.parse_args()
 	return args
@@ -186,37 +191,12 @@ def main():
 	"""
 	Main function that orchestrates question generation and file output.
 	"""
-
-	# Parse arguments from the command line
 	args = parse_arguments()
+	outfile = bptools.make_outfile(None)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
-	# Define output file name
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
-	outfile = (
-		'bbq'
-		f'-{script_name}'
-		'-questions.txt'
-	)
-	print(f'Writing to file: {outfile}')
-
-	buffer_list = []
-	buffer_list += list(bufferslib.triprotic.values())
-	buffer_list += list(bufferslib.tetraprotic.values())
-
-	# Open the output file and generate questions
-	with open(outfile, 'w') as f:
-		N = 1  # Question number counter
-		for _ in range(args.duplicates):
-			gene_letters_str = bptools.generate_gene_letters(3)
-			buffer_dict = random.choice(buffer_list)
-			buffer_dict = bufferslib.expand_buffer_dict(buffer_dict)
-			complete_question = write_question(N, buffer_dict, args.num_choices)
-			if complete_question is not None:
-				N += 1
-				f.write(complete_question)
-
-	# Display histogram if question type is multiple choice
-	bptools.print_histogram()
+if __name__ == '__main__':
+	main()
 
 #======================================
 #======================================

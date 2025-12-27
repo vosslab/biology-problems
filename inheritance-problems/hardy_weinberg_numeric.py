@@ -2,12 +2,8 @@
 # ^^ Specifies the Python3 environment to use for script execution
 
 # Import built-in Python modules
-# Provides functions for interacting with the operating system
-import os
 # Provides functions to generate random numbers and selections
 import random
-# Provides tools to parse command-line arguments
-import argparse
 import math
 
 # Import external modules (pip-installed)
@@ -369,48 +365,15 @@ def parse_arguments():
 		argparse.Namespace: Parsed arguments with attributes `duplicates`,
 		`num_choices`, and `question_type`.
 	"""
-	# Create an argument parser with a description of the script's functionality
-	parser = argparse.ArgumentParser(description="Generate questions.")
-
-	# Add an argument to specify the number of duplicate questions to generate
-	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='Number of duplicate runs to do or number of questions to create',
-		default=1
+	parser = bptools.make_arg_parser(description="Generate questions.")
+	parser = bptools.add_choice_args(parser, default=5)
+	parser = bptools.add_question_format_args(
+		parser,
+		types_list=['num', 'mc'],
+		required=False,
+		default='num'
 	)
-
-	parser.add_argument(
-		'-x', '--max-questions', type=int, dest='max_questions',
-		default=99, help='Max number of questions'
-	)
-
-	# Add an argument to specify the number of answer choices for each question
-	parser.add_argument(
-		'-c', '--num_choices', type=int, default=5, dest='num_choices',
-		help="Number of choices to create."
-	)
-
-	# Create a mutually exclusive group for question format selection
-	# The group ensures only one of these options can be chosen at a time
-	question_group = parser.add_mutually_exclusive_group(required=True)
-	# Add an option to manually set the question format
-	question_group.add_argument(
-		'-f', '--format', dest='question_format', type=str,
-		choices=('num', 'mc'),
-		help='Set the question format: num (numeric) or mc (multiple choice)'
-	)
-	# Add a shortcut option to set the question format to multiple choice
-	question_group.add_argument(
-		'-m', '--mc', dest='question_format', action='store_const', const='mc',
-		help='Set question format to multiple choice'
-	)
-	# Add a shortcut option to set the question format to numeric
-	question_group.add_argument(
-		'-n', '--num', dest='question_format', action='store_const', const='num',
-		help='Set question format to numeric'
-	)
-
-	variant_group = parser.add_mutually_exclusive_group(required=True)
+	variant_group = parser.add_mutually_exclusive_group(required=False)
 
 	VARIANT_LONG_HELP = {
 		"1a": "From phenotype counts with incomplete dominance, compute dominant allele frequency (p).",
@@ -438,9 +401,7 @@ def parse_arguments():
 	variant_group.add_argument("--3a", dest="variant", action="store_const", const="3a",
 		help=VARIANT_LONG_HELP["3a"])
 
-	args = parser.parse_args()
-
-	# Parse the provided command-line arguments and return them
+	parser.set_defaults(variant="1a")
 	args = parser.parse_args()
 	return args
 
@@ -463,34 +424,19 @@ def main():
 	# Parse arguments from the command line
 	args = parse_arguments()
 
-	# Generate the output file name based on the script name and arguments
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
-	outfile = (
-		'bbq'
-		f'-{script_name}'              # Add the script name to the file name
-		f'-{args.question_format.upper()}'  # Append question type in uppercase (e.g., MC, MA)
-		f'-{args.num_choices}_choices' # Append number of choices
-		'-questions.txt'               # File extension
+	outfile = bptools.make_outfile(
+		None,
+		args.question_type.upper(),
+		f"{args.num_choices}_choices"
 	)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-
-	count = 0
-	for _ in range(args.duplicates):
-		rawp = random.randint(20, 50) * 2
-		#for rawp in range(40, 100, 2):
-		p = rawp/100.
-		#p = get_good_p()
-		blackboard_text = makeQuestion(args.variant, p)
-		if blackboard_text is None:
-			continue
-		count += 1
-		f.write(blackboard_text)
-		print(count, "\n", bptools.makeQuestionPretty(blackboard_text))
-		#break
-	print("wrote", count, "questions to", outfile)
-	f.close()
+#===========================================================
+def write_question(N, args):
+	rawp = random.randint(20, 50) * 2
+	p = rawp / 100.0
+	blackboard_text = makeQuestion(args.variant, p)
+	return blackboard_text
 
 #===========================================================
 #===========================================================

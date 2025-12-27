@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import os
 import random
 
 import bptools
@@ -8,7 +7,7 @@ import enzymelib
 
 
 #======================================
-def writeQuestion1(N):
+def write_question(N, args):
 	enzyme_tree = enzymelib.makeEnzymeTree(N)
 	html_table = enzymelib.makeEnzymeHTMLTable(enzyme_tree)
 
@@ -66,18 +65,17 @@ def writeQuestion1(N):
 #======================================
 #======================================
 #======================================
+def parse_arguments():
+	parser = bptools.make_arg_parser(description="Generate enzyme activity questions.")
+	args = parser.parse_args()
+	return args
+
 #======================================
+#======================================
+def main():
+	args = parse_arguments()
+	outfile = bptools.make_outfile(None)
+	bptools.collect_and_write_questions(write_question, args, outfile)
+
 if __name__ == '__main__':
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	duplicates = 95
-
-	for d in range(duplicates):
-		complete_question = writeQuestion1(d+1)
-		if complete_question is not None:
-			f.write(complete_question)
-	f.close()
-
-
-
+	main()

@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 
-import os
 import sys
 import random
-import argparse
 
 import bptools
 import chisquarelib
@@ -334,31 +332,23 @@ def makeQuestion(error_type: int, desired_result: str) -> tuple:
 #===========================================================
 # This function serves as the entry point for generating and saving questions.
 def main():
-	parser = argparse.ArgumentParser(description='Chi Square Question')
-	parser.add_argument('-d', '--duplicate-runs', type=int, dest='duplicate_runs',
-		help='number of questions to create', default=199)
+	parser = bptools.make_arg_parser(description='Chi Square Question')
 	args = parser.parse_args()
+	outfile = bptools.make_outfile(None)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
-	letters = "ABCDEFGHI"
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	N = 0
-	while N < args.duplicate_runs:
-		# three (3) types
-		error_type = random.choice(list(error_types.keys()))
-		# two (2) outcomes
-		desired_result = random.choice(('accept', 'reject'))
-		print(f"desired_result={desired_result} error_type={error_type}")
-		complete_question, answer_num, edit_choices_list = makeQuestion(error_type, desired_result)
-		if complete_question is None:
-			continue
-		answer_str = edit_choices_list[answer_num]
-		N += 1
-		bbformat = bptools.formatBB_MC_Question(N, complete_question, edit_choices_list, answer_str)
-		f.write(bbformat)
-	f.close()
-	bptools.print_histogram()
+#===========================================================
+def write_question(N, args):
+	# three (3) types
+	error_type = random.choice(list(error_types.keys()))
+	# two (2) outcomes
+	desired_result = random.choice(('accept', 'reject'))
+	complete_question, answer_num, edit_choices_list = makeQuestion(error_type, desired_result)
+	if complete_question is None:
+		return None
+	answer_str = edit_choices_list[answer_num]
+	bbformat = bptools.formatBB_MC_Question(N, complete_question, edit_choices_list, answer_str)
+	return bbformat
 
 
 #===========================================================

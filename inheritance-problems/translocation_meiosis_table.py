@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 
-import os
 import sys
 import random
-import argparse
 
 import bptools
 
@@ -203,7 +201,7 @@ def get_choices(N, segregation_type_index, chromosome1, chromosome2):
 
 #======================================
 #======================================
-def write_question(N):
+def write_question(N, args):
 	segregation_type = random.randint(1,4)
 	chromosome1 = random.randint(1, 22-1)
 	chromosome2 = random.randint(chromosome1+1, 22)
@@ -233,11 +231,7 @@ def parse_arguments():
 		argparse.Namespace: Parsed arguments with attributes `duplicates`,
 		`num_choices`, and `question_type`.
 	"""
-	parser = argparse.ArgumentParser(description="Generate questions.")
-	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='Number of duplicate runs to do or number of questions to create', default=1
-	)
+	parser = bptools.make_arg_parser(description="Generate questions.")
 
 	args = parser.parse_args()
 	return args
@@ -255,26 +249,8 @@ def main():
 	# Parse arguments from the command line
 	args = parse_arguments()
 
-	# Define output file name
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
-	outfile = (
-		'bbq'
-		f'-{script_name}'
-		'-questions.txt'
-	)
-	print(f'Writing to file: {outfile}')
-
-	# Open the output file and generate questions
-	with open(outfile, 'w') as f:
-		N = 1  # Question number counter
-		for _ in range(args.duplicates):
-			complete_question = write_question(N)
-			if complete_question is not None:
-				N += 1
-				f.write(complete_question)
-
-	# Display histogram if question type is multiple choice
-	bptools.print_histogram()
+	outfile = bptools.make_outfile(None)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #======================================
 #======================================

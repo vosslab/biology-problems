@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-import os
-import sys
 import random
+
+import bptools
 
 x = 'margin:0; padding:0; letter-spacing:0px; '
 double_low_line = '&#8215;'
@@ -89,35 +89,27 @@ def omegas2deltas(chain_length, omegas):
 	deltas.sort()
 	return deltas
 
-def makeOmegaQuestion():
-	return makeQuestion('omega')
-
-def makeDeltaQuestion():
-	return makeQuestion('delta')
-
-def list2string(items, type):
-	string = '<h5>&{0};&ndash;'.format(type) + ','.join(map(str, items)) + '</h5>'
+def list2string(items, notation_type):
+	string = '<h5>&{0};&ndash;'.format(notation_type) + ','.join(map(str, items)) + '</h5>'
 	return string
 
-def makeQuestion(type):
+def build_question(notation_type):
 	chain_length = random.randint(14,22)
 	#chain_length = random.randint(7,11)*2
 	#chain_length = 10
 	fatty_acid, omegas = randomFattyAcid(chain_length)
 	deltas = omegas2deltas(chain_length, omegas)
 
-	question = "<h4>What is the correct &{1}; ({1}) notation for the {0} carbon fatty acid pictured above?</h4>".format(chain_length, type)
-	#question = "<h4>What is the correct &{0}; ({0}) notation for the fatty acid pictured above?</h4>".format(type)
+	question = "<h4>What is the correct &{1}; ({1}) notation for the {0} carbon fatty acid pictured above?</h4>".format(chain_length, notation_type)
 	choices = []
-	if type == 'omega':
-		answer = list2string(omegas, type)
-		wrong = list2string(deltas, type)
-	elif type == 'Delta':
-		wrong = list2string(omegas, type)
-		answer = list2string(deltas, type)
+	if notation_type == 'omega':
+		answer = list2string(omegas, notation_type)
+		wrong = list2string(deltas, notation_type)
+	elif notation_type == 'Delta':
+		wrong = list2string(omegas, notation_type)
+		answer = list2string(deltas, notation_type)
 	else:
-		print("unknown type:", type)
-		sys.exit(1)
+		raise ValueError(f"Unknown notation type: {notation_type}")
 	choices.append(answer)
 	choices.append(wrong)
 
@@ -129,9 +121,9 @@ def makeQuestion(type):
 		badomegas.append(omegas[i] + itemslessone - i)
 		baddeltas.append(deltas[i] + itemslessone - i)
 		justcount.append(i+1)
-	choices.append(list2string(badomegas, type))
-	choices.append(list2string(baddeltas, type))
-	choices.append(list2string(justcount, type))
+	choices.append(list2string(badomegas, notation_type))
+	choices.append(list2string(baddeltas, notation_type))
+	choices.append(list2string(justcount, notation_type))
 
 	random.shuffle(choices)
 	random.shuffle(choices)
@@ -140,19 +132,8 @@ def makeQuestion(type):
 	if len(no_dups) < 5:
 		print('duplicate choices error', len(no_dups), '\n')
 		return None
-
-	complete = 'MC\t'
-	complete += '<p>' + fatty_acid + '</p>'
-	complete += question
-	for c in choices:
-		complete += '\t'+c
-		if c == answer:
-			complete += "\tCorrect"
-		else:
-			complete += "\tIncorrect"
-	complete += '\n'
-	print(complete)
-	return complete
+	question_text = '<p>' + fatty_acid + '</p>' + question
+	return question_text, choices, answer
 
 def randomFattyAcid(chain_length=None):
 	if chain_length is None:
@@ -172,19 +153,44 @@ def randomFattyAcid(chain_length=None):
 		print(fatty_acid)
 	return fatty_acid, omegas
 
+#======================================
+#======================================
+def parse_arguments():
+	"""
+	Parse command-line arguments.
+	"""
+	parser = bptools.make_arg_parser(description="Generate fatty acid notation questions.")
+	parser.add_argument(
+		'-t', '--type', dest='notation_type', type=str,
+		choices=('omega', 'delta'),
+		help='Select omega or delta notation.'
+	)
+	parser.set_defaults(notation_type='omega')
+	args = parser.parse_args()
+	return args
+
+#======================================
+#======================================
+def write_question(N: int, args):
+	"""
+	Write one question using the requested notation type.
+	"""
+	notation_type = args.notation_type
+	if notation_type.lower().startswith('delta'):
+		notation_type = 'Delta'
+	question_parts = build_question(notation_type)
+	if question_parts is None:
+		return None
+	question_text, choices, answer = question_parts
+	complete_question = bptools.formatBB_MC_Question(N, question_text, choices, answer)
+	return complete_question
+
+#======================================
+#======================================
+def main():
+	args = parse_arguments()
+	outfile = bptools.make_outfile(None)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 if __name__ == '__main__':
-	type = 'omega'
-	if len(sys.argv) > 1:
-		type = sys.argv[1].strip()
-	if type.lower().startswith('delta'):
-		type = 'Delta' #capital is key
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	duplicates = 92
-	for i in range(duplicates):
-		complete = makeQuestion(type)
-		if complete is not None:
-			f.write(complete)
-	f.close()
+	main()

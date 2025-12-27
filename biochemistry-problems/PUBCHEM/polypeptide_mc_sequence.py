@@ -2,11 +2,7 @@
 
 
 # general built-in/pip libraries
-import os
-import re
-import sys
 import random
-import argparse
 
 # local libraries
 import bptools
@@ -176,32 +172,45 @@ def generate_complete_question(N, num_amino_acids, num_choices, debug=False):
 	return bbformat
 
 #=====================
+def write_question(N, args):
+	return generate_complete_question(N, args.num_amino, args.num_choices)
+
+#=====================
+def apply_difficulty_defaults(args):
+	presets = {
+		'easy': {
+			'num_amino': 2,
+			'num_choices': 4,
+		},
+		'medium': {
+			'num_amino': 2,
+			'num_choices': 5,
+		},
+		'rigorous': {
+			'num_amino': 4,
+			'num_choices': 6,
+		},
+	}
+	preset = presets.get(args.difficulty, presets['medium'])
+
+	if args.num_amino is None:
+		args.num_amino = preset['num_amino']
+	if args.num_choices is None:
+		args.num_choices = preset['num_choices']
+
+	return args
+
+#=====================
 def parse_arguments():
-	"""
-	Parses command-line arguments for the script.
-
-	Defines and handles all arguments for the script, including:
-	- `duplicates`: The number of questions to generate.
-	- `num_choices`: The number of answer choices for each question.
-	- `question_type`: Type of question (numeric or multiple choice).
-
-	Returns:
-		argparse.Namespace: Parsed arguments with attributes `duplicates`,
-		`num_choices`, and `question_type`.
-	"""
-	parser = argparse.ArgumentParser(description="Generate questions.")
+	parser = bptools.make_arg_parser(description="Generate polypeptide sequence questions.")
+	parser = bptools.add_choice_args(parser, default=None)
+	parser = bptools.add_difficulty_args(parser)
 	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='Number of duplicate runs to do or number of questions to create', default=1
+		'-n', '--num-amino', type=int, dest='num_amino',
+		default=None, help='Number of amino acids in polypeptides.'
 	)
-	parser.add_argument(
-		'-c', '--num_choices', type=int, default=5, dest='num_choices',
-		help="Number of choices to create."
-	)
-	parser.add_argument('-n', '--num_amino', type=int, default=2,
-		help="Number of amino acids in polypeptides.")
-
 	args = parser.parse_args()
+	args = apply_difficulty_defaults(args)
 	return args
 
 #======================================
@@ -214,24 +223,8 @@ def main():
 	args = parse_arguments()
 
 	# Generate the output filename
-	outfile = ('bbq-'
-		+ f'{args.num_amino}_amino_acids-'
-		+ os.path.splitext(os.path.basename(__file__))[0]
-		+ '-questions.txt')
-	print(f'Writing to file: {outfile}')
-
-	# Open the output file and generate questions
-	with open(outfile, 'w') as f:
-		N = 1  # Question number counter
-		for _ in range(args.duplicates):
-			complete_question = generate_complete_question(N, args.num_amino, args.num_choices)
-			if complete_question is not None:
-				N += 1
-				f.write(complete_question)
-
-	# Display histogram if question type is multiple choice
-	bptools.print_histogram()
-	print(f'saved {N} questions to {outfile}')
+	outfile = bptools.make_outfile(__file__, f"{args.num_amino}_amino_acids")
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #===============================
 #===============================

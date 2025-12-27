@@ -1,13 +1,7 @@
 #!/usr/bin/env python3
 # ^^ Specifies the Python3 environment to use for script execution
 
-# Import built-in Python modules
-# Provides functions for interacting with the operating system
-import os
-# Provides functions to generate random numbers and selections
 import random
-# Provides tools to parse command-line arguments
-import argparse
 
 # Import external modules (pip-installed)
 # No external modules are used here currently
@@ -102,88 +96,60 @@ def write_question(N, enzyme_class, use_overhang_type):
 	return bbquestion
 
 
-#===========================================================
-#===========================================================
-# This function handles the parsing of command-line arguments.
 def parse_arguments():
-	"""
-	Parses command-line arguments for the script.
-
-	Returns:
-		argparse.Namespace: Parsed arguments with attributes `duplicates`,
-		`num_choices`, and `question_type`.
-	"""
-	# Create an argument parser with a description of the script's functionality
-	parser = argparse.ArgumentParser(description="Generate restriction enzyme questions.")
-
-	parser.add_argument(
-		'-x', '--max-questions', type=int, dest='max_questions',
-		default=299, help='Max number of questions'
+	parser = bptools.make_arg_parser(
+		description="Generate restriction enzyme overhang questions.",
+		batch=True
 	)
 
-	parser.add_argument("-o", "--overhang_type", default=True, dest='use_overhang_type',
-		action="store_true", help="Whether to use overhang type or use end type.")
+	parser.add_argument(
+		'-o', '--overhang-type', '--overhang_type', dest='use_overhang_type',
+		action='store_true', help='Use overhang type choices.'
+	)
+	parser.add_argument(
+		'-e', '--end-type', '--end_type', dest='use_overhang_type',
+		action='store_false', help='Use end type choices.'
+	)
+	parser.set_defaults(use_overhang_type=True)
 
-	parser.add_argument("-e", "--end_type", default=True, dest='use_overhang_type',
-		action="store_false", help="Whether to use overhang type or use end type.")
-
-	# Parse the provided command-line arguments and return them
 	args = parser.parse_args()
 	return args
 
+
+#===========================================================
+def write_question_batch(start_num, args):
+	questions = []
+	question_num = start_num
+	for enzyme_class in args.enzyme_classes:
+		if args.max_questions is not None and question_num > args.max_questions:
+			break
+		question_text = write_question(
+			question_num,
+			enzyme_class,
+			args.use_overhang_type
+		)
+		if question_text is None:
+			continue
+		questions.append(question_text)
+		question_num += 1
+	return questions
+
+
+#===========================================================
 #===========================================================
 #===========================================================
 # This function serves as the entry point for generating and saving questions.
 def main():
-	"""
-	Main function that orchestrates question generation and file output.
-	"""
-
-	# Parse arguments from the command line
 	args = parse_arguments()
 
-	# Generate the output file name based on the script name and question type
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
 	suffix = '5_3_blunt' if args.use_overhang_type else 'blunt_v_sticky'
-	outfile = (
-		'bbq'
-		f'-{script_name}'  # Add the script name to the file name
-		f'-{suffix}'
-		'-questions.txt'  # Add the file extension
-	)
+	outfile = bptools.make_outfile(__file__, suffix)
 
 	enzyme_names = restrictlib.get_enzyme_list()
-	print(f"Found {len(enzyme_names)} valid restriction enzymes...")
 	random.shuffle(enzyme_names)
-
-	# Print a message indicating where the file will be saved
-	print(f'Writing to file: {outfile}')
-
-	# Open the output file in write mode
-	with open(outfile, 'w') as f:
-		# Initialize the question number counter
-		N = 0
-
-		# Generate the specified number of questions
-		for enzyme_name in enzyme_names:
-			enzyme_class = restrictlib.enzyme_name_to_class(enzyme_name)
-
-			# Generate the complete formatted question
-			complete_question = write_question(N+1, enzyme_class, args.use_overhang_type)
-
-			# Write the question to the file if it was generated successfully
-			if complete_question is not None:
-				N += 1
-				f.write(complete_question)
-
-			if N > args.max_questions:
-				break
-
-	# If the question type is multiple choice, print a histogram of results
-	bptools.print_histogram()
-
-	# Print a message indicating how many questions were saved
-	print(f'saved {N} questions to {outfile}')
+	args.enzyme_classes = [restrictlib.enzyme_name_to_class(name) for name in enzyme_names]
+	questions = bptools.collect_question_batches(write_question_batch, args)
+	bptools.write_questions_to_file(questions, outfile)
 
 #===========================================================
 #===========================================================
@@ -193,4 +159,3 @@ if __name__ == '__main__':
 	main()
 
 ## THE END
-

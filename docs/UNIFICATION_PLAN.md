@@ -229,6 +229,19 @@ Batch generators:
 - For batch lists that return pre-numbered questions (for example, matching
   sets), add a `start_num` parameter to the helper that creates the list so the
   numbering can begin at the batch start `N`.
+- When upgrading scripts that used custom signatures (for example
+  `write_question(N, seqlen)` or class methods), either update the signature to
+  `write_question(N, args)` or add a thin wrapper that forwards `args` fields.
+- Scripts that emit multiple questions per attempt (for example paired
+  highest/lowest prompts) should use `write_question_batch(...)` with
+  `collect_question_batches(...)`, then write via `write_questions_to_file(...)`.
+- For scripts that iterate over a fixed item list (for example restriction
+  enzymes), build and shuffle the list once in `main()`, store it on `args`,
+  and let `write_question_batch(...)` consume it so batch caps apply cleanly.
+- Helper/plot utilities and explicitly broken scripts should be removed from
+  phase-1 upgrade lists and tracked separately (for example
+  `inheritance-problems/pedigree_code_strings.py`,
+  `inheritance-problems/population_logistic_map_chaos.py`).
 
 ## Legacy patterns to modernize
 These are common in older scripts and are the first candidates for cleanup
@@ -243,6 +256,13 @@ when a file is otherwise being edited.
 - Scripts that embed both attempts and cap logic in nested loops that are hard
   to scan (the helper handles this).
 - Batch scripts that generate large fixed lists without a default `-x` cap.
+- Scripts that hard-code `--num-questions` (or `-q`) should be migrated to the
+  shared `-d/--duplicates` and `-x/--max-questions` flags to keep defaults
+  consistent across the repo.
+- Scripts that read local data assets (HTML tables, word lists, CSVs) should
+  use `bptools.get_repo_data_path(...)` when the file is in `data/`, or a
+  `__file__`-relative path when the asset lives beside the script. Cache large
+  reads so per-question generation does not re-open the file.
 
 ## Open questions
 - Should helpers accept a `start_index` override for special cases?

@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
-import os
 import math
 import random
+
+import bptools
 
 
 """
@@ -12,8 +13,6 @@ b. 750 bp
 c. 2,000 bp
 *d. 5,000 bp
 """
-
-answer_hist = {}
 
 #==================================================
 def getNearestValidDNA_Size(num_base_pairs):
@@ -53,7 +52,7 @@ def writeChoice(band_size):
 	return choice
 
 #==================================================
-def writeQuestion(N):
+def write_question(N, args):
 	type1 = "migrate closest to "
 	type2 = "travel furthest from "
 	chosen_type = random.randint(1, 2)
@@ -64,44 +63,36 @@ def writeQuestion(N):
 		type_text = type2
 		correct_id = 0
 	
-	question = ("Which one of the following fragments of DNA would  "
-	  +"{0} the wells during agarose gel electrophoresis?".format(type_text))
+	question = (
+		"Which one of the following fragments of DNA would "
+		+ "{0} the wells during agarose gel electrophoresis?".format(type_text)
+	)
 	
 	bands = getDNA_Bands()
 	#print(bands)
 	correct_band = bands[correct_id]
-	
-	letters = "ABCDEF"
-	complete_question = "MC\t{0}\t".format(question)
-	print("{0}. {1}".format(N, question))
-	for i, band_size in enumerate(bands):
-		choice = writeChoice(band_size)
-		complete_question += choice+'\t'
-		if band_size == correct_band:
-			prefix = 'x'
-			complete_question += 'Correct\t'
-			answer_hist[letters[i]] = answer_hist.get(letters[i], 0) + 1
-		else:
-			prefix = ' '
-			complete_question += 'Incorrect\t'
-		print('- [{0}] {1}. {2}'.format(prefix, letters[i], choice))
-	print("")
-	return complete_question
+	answer_text = writeChoice(correct_band)
+	choices_list = [writeChoice(band_size) for band_size in bands]
+
+	bb_question = bptools.formatBB_MC_Question(N, question, choices_list, answer_text)
+	return bb_question
 
 
 #==================================================
+def parse_arguments():
+	parser = bptools.make_arg_parser(description="Generate DNA gel migration questions.")
+	args = parser.parse_args()
+	return args
 
 
+#==================================================
+def main():
+	args = parse_arguments()
+	outfile = bptools.make_outfile(__file__)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
+
+#==================================================
 if __name__ == '__main__':
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	duplicates = 199
-	for i in range(duplicates):
-		complete_question = writeQuestion(i+1)
-		f.write(complete_question)
-		f.write('\n')
-	f.close()
-	print(answer_hist)
+	main()
 	

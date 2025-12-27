@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 
 # external python/pip modules
-import os
 import math
 import random
-import argparse
 
 import bptools
 import proteinlib
+
+_gel_migration_cache = None
 
 class GelMigration(object):
 	def __init__(self):
@@ -247,46 +247,37 @@ class GelMigration(object):
 
 #======================================
 #======================================
+def get_gel_migration():
+	global _gel_migration_cache
+	if _gel_migration_cache is None:
+		_gel_migration_cache = GelMigration()
+	return _gel_migration_cache
+
+#======================================
+#======================================
+def write_question(N: int, args):
+	gelm = get_gel_migration()
+	complete_question = gelm.write_question(N, args.num_choices, args.question_type)
+	return complete_question
+
+#======================================
+#======================================
 def main():
-	# Define argparse for command-line options
-	parser = argparse.ArgumentParser(description="Generate questions.")
-	parser.add_argument('-d', '--duplicates', type=int, default=95, help="Number of questions to create.")
-	parser.add_argument('-n', '--num_choices', type=int, default=5, help="Number of choices to create.")
-
-	# Create a mutually exclusive group for question types
-	question_group = parser.add_mutually_exclusive_group(required=True)
-	# Add question type argument with choices
-	question_group.add_argument('-q', '--question-type', dest='question_type', type=str,
-		choices=('mc', 'fib'),
-		help='Set the question type: multiple choice (mc) or fill-in-the-blank (fib).')
-	# Add flags for multiple-choice and fill-in-the-blank question types
-	question_group.add_argument('--mc', dest='question_type', action='store_const', const='mc',
-		help='Set question type to multiple choice.')
-	question_group.add_argument('--fib', dest='question_type', action='store_const', const='fib',
-		help='Set question type to fill-in-the-blank.')
-	question_group.set_defaults(question_type='mc')
-
+	parser = bptools.make_arg_parser(description="Generate protein gel migration questions.")
+	parser = bptools.add_choice_args(parser, default=5)
+	parser = bptools.add_question_format_args(
+		parser,
+		types_list=['mc', 'num'],
+		required=False,
+		default='mc'
+	)
 	args = parser.parse_args()
 
-	# Output file setup
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print(f'writing to file: {outfile}')
-
-	gelm = GelMigration()
-
-	# Create and write questions to the output file
-	with open(outfile, 'w') as f:
-		N = 1
-		for d in range(args.duplicates):
-			complete_question = gelm.write_question(N, args.num_choices, args.question_type)
-			if complete_question is not None:
-				N += 1
-				f.write(complete_question)
-	bptools.print_histogram()
+	outfile = bptools.make_outfile(None)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 
 #======================================
 #======================================
 if __name__ == '__main__':
 	main()
-

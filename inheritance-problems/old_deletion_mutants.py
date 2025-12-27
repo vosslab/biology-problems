@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 
-import os
 import copy
 import math
 import random
-import argparse
 import textwrap
 import time
 
@@ -659,16 +657,8 @@ def parse_arguments():
 		`num_choices`, and `question_type`.
 	"""
 	# Initialize argument parser for command-line options
-	parser = argparse.ArgumentParser(description="Generate questions.")
-
-	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='Number of duplicate runs to do or number of questions to create', default=1
-	)
-	parser.add_argument(
-		'-c', '--num_choices', metavar='#', type=int, default=5,
-		help="Number of choices to create."
-	)
+	parser = bptools.make_arg_parser(description="Generate questions.")
+	parser = bptools.add_choice_args(parser, default=5)
 
 	# Argument to specify the number of genes to delete on the chromosome
 	parser.add_argument(
@@ -689,18 +679,11 @@ def parse_arguments():
 	parser.set_defaults(table=True)
 
 	# Create a mutually exclusive group for question type and make it required
-	question_group = parser.add_mutually_exclusive_group(required=True)
-	question_group.add_argument(
-		'-t', '--type', dest='question_type', type=str, choices=('fib', 'mc'),
-		help='Set the question type: fib (numeric) or mc (multiple choice)'
-	)
-	question_group.add_argument(
-		'-m', '--mc', dest='question_type', action='store_const', const='mc',
-		help='Set question type to multiple choice'
-	)
-	question_group.add_argument(
-		'-f', '--fib', dest='question_type', action='store_const', const='fib',
-		help='Set question type to fill-in-the-blank (fib)'
+	parser = bptools.add_question_format_args(
+		parser,
+		types_list=['fib', 'mc'],
+		required=False,
+		default='mc'
 	)
 
 	args = parser.parse_args()
@@ -722,37 +705,16 @@ def parse_arguments():
 #==========================
 # Main program execution starts here
 #==========================
-if __name__ == '__main__':
-	# Parse arguments from the command line
+def main():
 	args = parse_arguments()
-
-	if args.table:
-		table_str = "TABLE"
-	else:
-		table_str = "FREE"
-
-	# Setup output file name
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
-	outfile = (
-		f'bbq-{script_name}'
-		f'-{args.num_genes:02d}_genes'
-		f'-{table_str}'
-		f'-{args.question_type.upper()}'
-		'-questions.txt'
+	table_str = "TABLE" if args.table else "FREE"
+	outfile = bptools.make_outfile(
+		None,
+		f"{args.num_genes:02d}_genes",
+		table_str,
+		args.question_type.upper()
 	)
-	print(f'Writing to file: {outfile}')
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
-	# Open the output file and generate questions
-	with open(outfile, 'w') as f:
-		N = 1  # Question number counter
-		for _ in range(args.duplicates):
-			# Generate and write each question
-			complete_question = write_question(N, args)
-			if complete_question is not None:
-				N += 1
-				f.write(complete_question)
-
-	print(f'Wrote to file: {outfile}')
-	if args.question_type == 'mc':
-		bptools.print_histogram()
-
+if __name__ == '__main__':
+	main()

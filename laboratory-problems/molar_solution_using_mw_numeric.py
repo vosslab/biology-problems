@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-import os
 import random
+
 import bptools
 
 
@@ -36,30 +36,29 @@ def question_text(solute, volume, concentration):
 	if full_name is None:
 		merge_name = solute
 	else:
-		merge_name = "{0} ({1})".format(full_name.lower(), solute)
-	question = "<p>How many milligrams (mg) of {0} would you need to make ".format(merge_name)
-	question += "<strong>{1} mL of a {2} mM</strong> {0} solution?</p> ".format(solute, volume, concentration)
+		merge_name = f"{full_name.lower()} ({solute})"
+	question = f"<p>How many milligrams (mg) of {merge_name} would you need to make "
+	question += f"<strong>{volume} mL of a {concentration} mM</strong> {solute} solution?</p> "
 	mw = molecular_weights[solute]
-	question += "<p>The molecular weight of {0} is {1:.2f} g/mol. ".format(merge_name, mw)
-	question += "{0} is a solid powder at room temperature.</p> ".format(solute)
+	question += f"<p>The molecular weight of {merge_name} is {mw:.2f} g/mol. "
+	question += f"{solute} is a solid powder at room temperature.</p> "
 
 	return question
 
 #==================================================
 def get_vol_conc_answer(solute):
 	valid_values = []
-	valid_values += range(1,10)
-	valid_values += range(10,900,10)
+	valid_values += range(1, 10)
+	valid_values += range(10, 900, 10)
 
 	volume = random.choice(valid_values)
-	#concentration = random.randint(2, 10)
 	mw = molecular_weights[solute]
 
 	min_remainer = 1
 	min_concentration_value = -1
 	for concentration in valid_values:
 		# mL   x   mmol / L   x  mg / mmol  x   1/ 1000
-		answer = volume * concentration * mw / 1000.
+		answer = volume * concentration * mw / 1000.0
 		if answer < 10:
 			continue
 		if answer > 980:
@@ -70,33 +69,35 @@ def get_vol_conc_answer(solute):
 			min_concentration_value = concentration
 	if min_remainer > 0.1:
 		return None, None, None
-	else:
-		concentration = min_concentration_value
-
-
+	concentration = min_concentration_value
 	#answer should be a whole number
 	# there for the numbers 2, 2, 5, 5 need to be in the numbers
-	answer = volume * concentration * mw / 1000.
+	answer = volume * concentration * mw / 1000.0
 	return volume, concentration, answer
 
 #==================================================
+def write_question(N, args):
+	solutes = list(molecular_weights.keys())
+	solute = random.choice(solutes)
+	volume, concentration, answer = get_vol_conc_answer(solute)
+	if concentration is None:
+		return None
+	question = question_text(solute, volume, concentration)
+	tolerance = 0.9
+	return bptools.formatBB_NUM_Question(N, question, answer, tolerance)
+
+#==================================================
+def parse_arguments():
+	parser = bptools.make_arg_parser(description="Generate molar solution problems.")
+	args = parser.parse_args()
+	return args
+
+#==================================================
+def main():
+	args = parse_arguments()
+	outfile = bptools.make_outfile()
+	bptools.collect_and_write_questions(write_question, args, outfile)
+
+#==================================================
 if __name__ == '__main__':
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	powders = list(molecular_weights.keys())
-	duplicates = 99 // len(powders) + 1
-	#duplicates = 1
-	N = 0
-	for solute in powders:
-		for i in range(duplicates):
-			volume, concentration, answer = get_vol_conc_answer(solute)
-			if concentration is None:
-				continue
-			N += 1
-			q = question_text(solute, volume, concentration)
-			tolerance = 0.9
-			bbf = bptools.formatBB_NUM_Question(N, q, answer, tolerance)
-			f.write(bbf)
-	f.close()
-	bptools.print_histogram()
+	main()

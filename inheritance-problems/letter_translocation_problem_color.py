@@ -3,12 +3,9 @@
 
 # Import built-in Python modules
 # Provides functions for interacting with the operating system
-import os
-import time
 # Provides functions to generate random numbers and selections
 import random
 # Provides tools to parse command-line arguments
-import argparse
 import itertools
 
 # Import external modules (pip-installed)
@@ -514,19 +511,7 @@ def parse_arguments():
 		`num_choices`, and `question_type`.
 	"""
 	# Create an argument parser with a description of the script's functionality
-	parser = argparse.ArgumentParser(description="Generate questions.")
-
-	# Add an argument to specify the number of duplicate questions to generate
-	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='Number of duplicate runs to do or number of questions to create',
-		default=1
-	)
-
-	parser.add_argument(
-		'-x', '--max-questions', type=int, dest='max_questions',
-		default=99, help='Max number of questions'
-	)
+	parser = bptools.make_arg_parser(description="Generate questions.")
 
 	# Add an argument to specify the number of answer choices for each question
 	parser.add_argument(
@@ -572,56 +557,8 @@ def main():
 	# Parse arguments from the command line
 	args = parse_arguments()
 
-	# Generate the output file name based on the script name and arguments
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
-	outfile = (
-		'bbq'
-		f'-{script_name}'              # Add the script name to the file name
-		'-questions.txt'               # File extension
-	)
-
-	# Store all complete formatted questions
-	question_bank_list = []
-
-	# Initialize question counter
-	N = 0
-
-	# Create the specified number of questions
-	for _ in range(args.duplicates):
-
-		# Create a full formatted question (Blackboard format)
-		t0 = time.time()
-		complete_question = write_question(N+1, args)
-		if time.time() - t0 > 1:
-			print(f"Question {N+1} complete in {time.time() - t0:.1f} seconds")
-
-		# Append question if successfully generated
-		if complete_question is not None:
-			N += 1
-			question_bank_list.append(complete_question)
-
-		if N >= args.max_questions:
-			break
-
-	bptools.print_histogram()
-
-	# Shuffle and limit the number of questions if over max
-	if len(question_bank_list) > args.max_questions:
-		random.shuffle(question_bank_list)
-		question_bank_list = question_bank_list[:args.max_questions]
-
-	# Announce where output is going
-	print(f'\nWriting {len(question_bank_list)} question to file: {outfile}')
-
-	# Write all questions to file
-	write_count = 0
-	with open(outfile, 'w') as f:
-		for complete_question in question_bank_list:
-			write_count += 1
-			f.write(complete_question)
-
-	# Final status message
-	print(f'... saved {write_count} questions to {outfile}\n')
+	outfile = bptools.make_outfile(None)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #===========================================================
 #===========================================================

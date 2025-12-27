@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import os
 import random
 import locale
 import bptools
@@ -53,16 +52,6 @@ def question_text(value, first_prefix, unit):
 
 #==================================================
 #==================================================
-def MC_format_for_blackboard(question, answer, choices):
-	bbtext = "MC\t{0}".format(question)
-	for choice in choices:
-		status = "Incorrect"
-		if choice == answer:
-			status = "Correct"
-		bbtext += "\t{0}\t{1}".format(choice, status)
-	bbtext += "\n"
-	return bbtext
-
 #==================================================
 #==================================================
 def format_value(value, prefix, unit):
@@ -93,7 +82,6 @@ def make_choices(value, first_prefix, second_prefix, unit):
 	factor = order_factors[first_prefix] - order_factors[second_prefix]
 	mult_factor = 10**factor
 	answer_value = value*mult_factor
-	print(value, factor, mult_factor, answer_value)
 	answer_str = format_value(answer_value, second_prefix, unit)
 
 	inverse_factor = 10**-factor
@@ -120,30 +108,52 @@ def make_choices(value, first_prefix, second_prefix, unit):
 
 #==================================================
 #==================================================
-if __name__ == '__main__':
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
+def write_question_batch(start_num: int, args) -> list:
+	questions = []
+	remaining = None
+	if args.max_questions is not None:
+		remaining = args.max_questions - (start_num - 1)
+		if remaining <= 0:
+			return questions
+	N = start_num
 	for unit in units:
 		for value in down_values:
 			for i in range(2, len(unit_orders[unit])):
 				first_prefix = unit_orders[unit][i-1]
 				second_prefix = unit_orders[unit][i]
 				q = question_text(value, first_prefix, unit)
-				print(q)
 				choices, answer = make_choices(value, first_prefix, second_prefix, unit)
-				print(answer)
-				bbf = MC_format_for_blackboard(q, answer, choices)
-				f.write(bbf+'\n')
+				bbf = bptools.formatBB_MC_Question(N, q, choices, answer)
+				questions.append(bbf)
+				N += 1
+				if remaining is not None and len(questions) >= remaining:
+					return questions
 		for value in up_values:
 			for i in range(2, len(unit_orders[unit])):
 				first_prefix = unit_orders[unit][i]
 				second_prefix = unit_orders[unit][i-1]
 				q = question_text(value, first_prefix, unit)
-				print(q)
 				choices, answer = make_choices(value, first_prefix, second_prefix, unit)
-				print(answer)
-				bbf = MC_format_for_blackboard(q, answer, choices)
-				f.write(bbf+'\n')
-	f.close()
-	bptools.print_histogram()
+				bbf = bptools.formatBB_MC_Question(N, q, choices, answer)
+				questions.append(bbf)
+				N += 1
+				if remaining is not None and len(questions) >= remaining:
+					return questions
+	return questions
+
+def parse_arguments():
+	parser = bptools.make_arg_parser(
+		description="Generate orders of magnitude questions.",
+		batch=True
+	)
+	args = parser.parse_args()
+	return args
+
+def main():
+	args = parse_arguments()
+	outfile = bptools.make_outfile(None)
+	questions = bptools.collect_question_batches(write_question_batch, args)
+	bptools.write_questions_to_file(questions, outfile)
+
+if __name__ == '__main__':
+	main()

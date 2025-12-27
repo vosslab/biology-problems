@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import os
 import random
 import bptools
 
@@ -42,7 +41,7 @@ def get_volume(pipet):
 		volume -= volume % 1
 	if volume > 100:
 		volume -= volume % 10
-	rawdigits = get_raw_digits(volume)
+	rawdigits = get_raw_digits(volume, pipet)
 	if rawdigits % 10 == 0:
 		volume = get_volume(pipet)
 	return volume
@@ -67,7 +66,7 @@ def pipetstr(pipet, rawdigits):
 	return pipetstr
 	
 ##=========================
-def get_raw_digits(volume):
+def get_raw_digits(volume, pipet):
 	rawdigits = int(volume * pipet_volume_multiplier[pipet])
 	return rawdigits
 	
@@ -81,7 +80,7 @@ def question_text(volume):
 	return question
 
 ##=========================
-def get_wrong_choices(volume):
+def get_wrong_choices(volume, pipet):
 	#if volume < 10:
 	#	volume2 = volume * 100
 	#elif volume < 100:
@@ -89,11 +88,11 @@ def get_wrong_choices(volume):
 	#else:
 	#	volume2 = volume // 10
 	choices = []
-	rawdigits1 = get_raw_digits(volume)
+	rawdigits1 = get_raw_digits(volume, pipet)
 	if rawdigits1 < 100:
-		rawdigits2 = get_raw_digits(volume*10)
+		rawdigits2 = get_raw_digits(volume*10, pipet)
 	else:
-		rawdigits2 = get_raw_digits(volume//10)
+		rawdigits2 = get_raw_digits(volume//10, pipet)
 	
 	for pipet in pipet_choices:
 		for value in (rawdigits1, rawdigits2):
@@ -104,29 +103,47 @@ def get_wrong_choices(volume):
 	
 
 ##=========================
+def write_question_batch(start_num: int, args) -> list:
+	questions = []
+	remaining = None
+	if args.max_questions is not None:
+		remaining = args.max_questions - (start_num - 1)
+		if remaining <= 0:
+			return questions
+	N = start_num
+	for pipet in pipet_choices:
+		volume = get_volume(pipet)
+		rawdigits = get_raw_digits(volume, pipet)
+		question = question_text(volume)
+		choices = get_wrong_choices(volume, pipet)
+		choices_list = []
+		for choice in choices:
+			if choice['pipet'] == pipet and choice['rawdigits'] == rawdigits:
+				answer = choice['text']
+			choices_list.append(choice['text'])
+		bb_format = bptools.formatBB_MC_Question(N, question, choices_list, answer)
+		questions.append(bb_format)
+		N += 1
+		if remaining is not None and len(questions) >= remaining:
+			return questions
+	return questions
+
+def parse_arguments():
+	parser = bptools.make_arg_parser(
+		description="Generate pipet size questions.",
+		batch=True
+	)
+	args = parser.parse_args()
+	return args
+
+def main():
+	args = parse_arguments()
+	outfile = bptools.make_outfile(None)
+	questions = bptools.collect_question_batches(write_question_batch, args)
+	bptools.write_questions_to_file(questions, outfile)
+
 if __name__ == '__main__':
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	N = 0
-	duplicates = 30
-	for i in range(duplicates):
-		for pipet in pipet_choices:
-			N += 1
-			volume = get_volume(pipet)
-			rawdigits = get_raw_digits(volume)
-			print(pipet, volume, rawdigits)
-			question = question_text(volume)
-			choices = get_wrong_choices(volume)
-			choices_list = []
-			for choice in choices:
-				if choice['pipet'] == pipet and choice['rawdigits'] == rawdigits:
-					answer = choice['text']
-				choices_list.append(choice['text'])
-			bb_format = bptools.formatBB_MC_Question(N, question, choices_list, answer)
-			f.write(bb_format)
-	f.close()
-	bptools.print_histogram()
+	main()
 
 			
 

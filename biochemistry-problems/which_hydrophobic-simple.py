@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
-import os
 import random
-import argparse
 
 import bptools
 
@@ -56,7 +54,7 @@ def get_question_text() -> str:
 
 #======================================
 #======================================
-def write_question(N: int, num_choices: int) -> str:
+def write_question(N: int, args) -> str:
 	"""Creates a complete formatted question.
 
 	Args:
@@ -67,13 +65,13 @@ def write_question(N: int, num_choices: int) -> str:
 		str: The complete formatted question.
 	"""
 	assert N > 0, "Question number must be positive"
-	assert num_choices >= 2, "Number of choices must be at least 2"
+	assert args.num_choices >= 2, "Number of choices must be at least 2"
 
 	# Add more to the question based on the given letters
 	question_text = get_question_text()
 
 	# Choices and answers
-	choices_list, answer_text = generate_choices(num_choices)
+	choices_list, answer_text = generate_choices(args.num_choices)
 
 	# Complete the question formatting
 	complete_question = bptools.formatBB_MC_Question(N, question_text, choices_list, answer_text)
@@ -82,24 +80,12 @@ def write_question(N: int, num_choices: int) -> str:
 #======================================
 #======================================
 def main():
-	# Define argparse for command-line options
-	parser = argparse.ArgumentParser(description="Generate questions.")
-	parser.add_argument('-d', '--duplicates', type=int, default=49, help="Number of questions to create.")
-	parser.add_argument('-n', '--num_choices', type=int, default=5, help="Number of choices to create.")
+	parser = bptools.make_arg_parser(description="Generate hydrophobic compound questions.")
+	parser = bptools.add_choice_args(parser, default=5)
 	args = parser.parse_args()
 
-	# Output file setup
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print(f'writing to file: {outfile}')
-
-	# Create and write questions to the output file
-	with open(outfile, 'w') as f:
-		N = 0
-		for d in range(args.duplicates):
-			N += 1
-			complete_question = write_question(N, args.num_choices)
-			f.write(complete_question)
-	bptools.print_histogram()
+	outfile = bptools.make_outfile(None)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 
 #======================================

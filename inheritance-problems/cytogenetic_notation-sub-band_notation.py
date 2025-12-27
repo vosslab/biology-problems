@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 
 # built-in python modules
-import os
 import random
-import argparse
 
 # external pip modules
 
@@ -22,8 +20,12 @@ def get_karyotype():
 	chromosome = random.choice(chromosome_list)  # Random chromosome choice
 
 	# Ensure females cannot "lose" a Y chromosome
-	if ploidy_change == "-" and chromosome == 'Y' and 'Y' not in sex_chromosome_list:
-		chromosome = 'X'  # Switch to X if chromosome loss would be invalid
+	if chromosome in ('X', 'Y') and ploidy_change == "-" and 'Y' not in sex_chromosome_list:
+		chromosome = 'X'
+		sex_chromosome_list = ['X', 'X']
+	elif chromosome == 'Y' and ploidy_change == "+" and 'Y' not in sex_chromosome_list:
+		sex_chromosome_list = ['X', 'Y']
+		chromosome = 'X'
 
 	# Update karyotype based on the ploidy change
 	if ploidy_change == "+":
@@ -44,7 +46,8 @@ def get_karyotype():
 	# Sort and join sex chromosomes
 	sex_chromosome_str = ''.join(sorted(sex_chromosome_list))
 	full_karyotype = f'{base_karyotype},{sex_chromosome_str}'
-	return full_karyotype
+	karyotype_tuple = (chromosome_count, sex_chromosome_list, ploidy_change, chromosome)
+	return full_karyotype, karyotype_tuple
 
 #======================================
 #======================================
@@ -64,7 +67,37 @@ def get_question_text(karyotype) -> str:
 
 #======================================
 #======================================
-def generate_choices(num_choices: int) -> (list, str):
+def sex_chromosomes_to_gender(sex_chromosome_list):
+	if 'Y' in sex_chromosome_list:
+		return '<span style="color: #004d99;">male (&male;)</span>'
+	return '<span style="color: #99004d;">female (&female;)</span>'
+
+#======================================
+#======================================
+def ploidy_change_to_text(ploidy_change):
+	if ploidy_change == '+':
+		base_text = random.choice(['with an extra', 'with an additional', 'with an added'])
+		base_text = f'<span style="color: #00994d;">{base_text}</span>'
+	else:
+		base_text = random.choice(['with a missing', 'lacking', 'with an absent'])
+		base_text = f'<span style="color: #994d00;">{base_text}</span>'
+	base_text += random.choice([' copy of', ''])
+	return base_text
+
+#======================================
+#======================================
+def wrong_ploidy_change_to_text(ploidy_change):
+	if ploidy_change == '+':
+		base_text = random.choice(['with an extra pair of', 'with a partial duplication of', 'with two extra copies of'])
+		base_text = f'<span style="color: #4d0099;">{base_text}</span>'
+	else:
+		base_text = random.choice(['with a partial deletion of',])
+		base_text = f'<span style="color: #4d0099;">{base_text}</span>'
+	return base_text
+
+#======================================
+#======================================
+def generate_choices(karyotype_tuple: tuple, num_choices: int) -> (list, str):
 	"""
 	Generates a list of answer choices along with the correct answer.
 
@@ -82,28 +115,43 @@ def generate_choices(num_choices: int) -> (list, str):
 			- list: A list of answer choices (mixed correct and incorrect).
 			- str: The correct answer text.
 	"""
-	# Define possible correct choices and incorrect choices
-	raise NotImplementedError
-	choices_list = [
-		'competitive inhibitor',
-		'non-competitive inhibitor',
-	]
-	answer_text = random.choice(choices_list)
-	wrong_choices_list = [
-		'molecular stopper',
-		'metabolic blocker',
-	]
-	random.shuffle(wrong_choices_list)
-	choices_list.extend(wrong_choices_list[:num_choices - len(choices_list)])
+	(chromosome_count, sex_chromosome_list, ploidy_change, chromosome) = karyotype_tuple
+	answer_gender = sex_chromosomes_to_gender(sex_chromosome_list)
 
-	# Shuffle choices for random ordering
+	gender_choices = [sex_chromosomes_to_gender(['X', 'X']), sex_chromosomes_to_gender(['X', 'Y'])]
+	ploidy_choices = ['+', '-']
+
+	answer_text = None
+	distractors = []
+	for gender in gender_choices:
+		for ploidy in ploidy_choices:
+			ploidy_text = ploidy_change_to_text(ploidy)
+			choice_text = f"This indicates a {gender} human karyotype {ploidy_text} chromosome {chromosome}."
+			if gender == answer_gender and ploidy == ploidy_change:
+				answer_text = choice_text
+			else:
+				distractors.append(choice_text)
+			wrong_ploidy_text = wrong_ploidy_change_to_text(ploidy)
+			choice_text = f"This indicates a {gender} human karyotype {wrong_ploidy_text} chromosome {chromosome}."
+			distractors.append(choice_text)
+
+	if answer_text is None:
+		raise ValueError("Something went wrong: answer text not created.")
+
+	distractors = list(set(distractors))
+	random.shuffle(distractors)
+	if len(distractors) > num_choices - 1:
+		distractors = distractors[:num_choices - 1]
+
+	choices_list = [answer_text] + distractors
+	choices_list = list(set(choices_list))
 	random.shuffle(choices_list)
 
 	return choices_list, answer_text
 
 #======================================
 #======================================
-def write_question(N: int, num_choices: int) -> str:
+def write_question(N: int, args) -> str:
 	"""
 	Creates a complete formatted question for output.
 
@@ -119,11 +167,11 @@ def write_question(N: int, num_choices: int) -> str:
 		str: A formatted question string suitable for output, containing
 		the question text, answer choices, and correct answer.
 	"""
-	karyotype = get_karyotype()
+	karyotype, karyotype_tuple = get_karyotype()
 	question_text = get_question_text(karyotype)
 
 	# Generate answer choices and correct answer
-	choices_list, answer_text = generate_choices(num_choices)
+	choices_list, answer_text = generate_choices(karyotype_tuple, args.num_choices)
 
 	# Format the complete question with the specified module function
 	complete_question = bptools.formatBB_MC_Question(N, question_text, choices_list, answer_text)
@@ -143,17 +191,8 @@ def parse_arguments():
 		argparse.Namespace: Parsed arguments with attributes `duplicates`,
 		`num_choices`, and `question_type`.
 	"""
-	parser = argparse.ArgumentParser(description="Generate questions.")
-	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='Number of duplicate runs to do or number of questions to create', default=1
-	)
-
-	# Add an argument to specify the number of answer choices for each question
-	parser.add_argument(
-		'-c', '--num_choices', type=int, default=5, dest='num_choices',
-		help="Number of choices to create."
-	)
+	parser = bptools.make_arg_parser(description="Generate questions.")
+	parser = bptools.add_choice_args(parser, default=5)
 
 	args = parser.parse_args()
 	return args
@@ -173,21 +212,8 @@ def main():
 	# Parse arguments from the command line
 	args = parse_arguments()
 
-	# Setup output file name
-	outfile = f'bbq-{os.path.splitext(os.path.basename(__file__))[0]}-questions.txt'
-	print(f'Writing to file: {outfile}')
-
-	# Open the output file and generate questions
-	with open(outfile, 'w') as f:
-		N = 1  # Question number counter
-		for _ in range(args.duplicates):
-			complete_question = write_question(N, args.num_choices)
-			if complete_question is not None:
-				N += 1
-				f.write(complete_question)
-
-	# Display histogram if question type is multiple choice
-	bptools.print_histogram()
+	outfile = bptools.make_outfile(None)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #======================================
 #======================================

@@ -1,19 +1,13 @@
 #!/usr/bin/env python3
 
-import os
-import sys
-import csv
 import math
-#import numpy
 import random
-import bptools
 
-num_choices = 5
+import bptools
 
 class GelMigration(object):
 	def __init__(self):
 		self.debug = False
-		self.multiple_choice = False
 
 		self.slope = 0.8 * self.random_average(10)
 		self.min_mw = 100
@@ -39,8 +33,7 @@ class GelMigration(object):
 	def molecular_weight_to_distance(self, mw):
 		dist = self.intercept - math.log(mw)*self.slope
 		if dist <= 0:
-			print("distance less than zero")
-			sys.exit(1)
+			raise ValueError("Distance less than zero.")
 		return dist
 
 	#==================================================
@@ -109,8 +102,7 @@ class GelMigration(object):
 		
 		unknown_dist = adj_rand*(high_dist - low_dist) + low_dist
 		if unknown_dist < 0:
-			print("distance less than zero")
-			sys.exit(1)
+			raise ValueError("Distance less than zero.")
 		unknown_mw = self.distance_to_molecular_weight(unknown_dist)
 		#just clean up the numbers
 		unknown_mw = self.getNearestValidDNA_Size(unknown_mw)
@@ -129,10 +121,12 @@ class GelMigration(object):
 
 
 	#==================================================
-	def writeProblem(self, N=44):
+	def writeProblem(self, N=44, question_type='num', num_choices=5):
 
 		gel_set = self.get_marker_set_for_gel()
-		unknown_mw, unknown_dist, mw_range, gap = self.get_unknown(gel_set)
+		max_gap = min(len(gel_set) - 1, num_choices)
+		unknown_gap = random.randint(1, max_gap)
+		unknown_mw, unknown_dist, mw_range, gap = self.get_unknown(gel_set, unknown_gap)
 
 		question = ''
 		question += " <h6>Gel Migration Problem</h6> "
@@ -150,11 +144,12 @@ class GelMigration(object):
 		question += '<p>The standard DNA ladder and unknown DNA strand listed in the table were separated using an agarose gel</p>'
 		question += '<p><b>Estimate the number of base pairs of the unknown DNA strand.</b></p>'
 
-		if self.multiple_choice is True:
+		if question_type == 'mc':
 			#print(question)
 			choices_list = []
 			answer = '{0} base pairs (bp)'.format(unknown_mw)
-			for i in range(num_choices):
+			choice_count = min(num_choices, len(gel_set) - 1)
+			for i in range(choice_count):
 				j = i+1
 				if j == gap:
 					choices_list.append(answer)
@@ -165,30 +160,35 @@ class GelMigration(object):
 			bb_format = bptools.formatBB_MC_Question(N, question, choices_list, answer)
 		else:
 			bb_format = bptools.formatBB_NUM_Question(N, question, unknown_mw, mw_range)
-			print(bb_format)
 
 		return bb_format
 
-	#==================================================
-	def format_MC_for_blackboard(self, question, choice_str):
-		#https://experts.missouristate.edu/plugins/servlet/mobile?contentId=63486780#content/view/63486780
-		#"NUM TAB question text TAB answer TAB [optional]tolerance"
-		return ("MC\t{0}\t{1}".format(question, choice_str))
-
+def write_question(N, args):
+	return args.gelm.writeProblem(N, args.question_type, args.num_choices)
 
 
 #==================================================
+def parse_arguments():
+	parser = bptools.make_arg_parser(description="Generate gel migration questions.")
+	parser = bptools.add_choice_args(parser, default=5)
+	parser = bptools.add_question_format_args(
+		parser,
+		types_list=['mc', 'num'],
+		required=False,
+		default='num'
+	)
+	args = parser.parse_args()
+	return args
+
+
+#==================================================
+def main():
+	args = parse_arguments()
+	args.gelm = GelMigration()
+	outfile = bptools.make_outfile(__file__, args.question_type)
+	bptools.collect_and_write_questions(write_question, args, outfile)
+
+
 #==================================================
 if __name__ == '__main__':
-	total_problems = 24
-	gelm = GelMigration()
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	for question_count in range(total_problems):
-		bb_format = gelm.writeProblem(question_count+1)
-		f.write(bb_format+'\n')
-	f.close()
-
-
-
+	main()

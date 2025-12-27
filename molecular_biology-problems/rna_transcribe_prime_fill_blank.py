@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 
-import os
-import sys
 import random
 import seqlib
 import bptools
 
-def write_question(N, seqlen):
+def write_question(N, args):
 	#============================
-	seq = seqlib.makeSequence(seqlen)
+	seq = seqlib.makeSequence(args.sequence_len)
 	
 	#============================
 	question = "<p>What is the transcribed RNA sequence to the "
@@ -25,7 +23,7 @@ def write_question(N, seqlen):
 	question = table + question
 
 	question += "<p><i> you may include a comma every 3 letters, but "
-	question += "do NOT include any extra commas or spaces in your answer. </i>"
+	question += "do NOT include any extra commas or spaces in your answer. </i></p>"
 
 	question += "<p>Write your nucleotide sequence only in the 5&prime; -> 3&prime; direction</p>"
 
@@ -42,24 +40,23 @@ def write_question(N, seqlen):
 
 
 #============================
+def parse_arguments():
+	parser = bptools.make_arg_parser(description="Generate RNA transcription fill-in-blank questions.")
+	parser.add_argument(
+		'-s', '--sequence-length', dest='sequence_len',
+		type=int, default=9, help='Length of the DNA sequence.'
+	)
+	args = parser.parse_args()
+	return args
+
+
 #============================
-#============================
+def main():
+	args = parse_arguments()
+	outfile = bptools.make_outfile(__file__, f"len_{args.sequence_len}")
+	bptools.collect_and_write_questions(write_question, args, outfile)
+
+
 #============================
 if __name__ == '__main__':
-	if len(sys.argv) >= 2:
-		seqlen = int(sys.argv[1])
-	else:
-		seqlen = 9
-	if len(sys.argv) >= 3:
-		num_sequences = int(sys.argv[2])
-	else:
-		num_sequences = 19
-
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	for i in range(num_sequences):
-		N = i + 1
-		bbtext = write_question(N, seqlen)
-		f.write(bbtext)
-	f.close()	
+	main()

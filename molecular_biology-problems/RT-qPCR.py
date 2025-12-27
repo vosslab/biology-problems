@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
-import os
 import random
-import seqlib
+import bptools
 
 raw_table = """
 <table border="1" style="border-collapse: collapse;">
@@ -59,68 +58,82 @@ raw_table = """
 </table>
 """
 
+def _mean(values):
+	return sum(values) / float(len(values))
+
+
+def _make_ct_values(mean_value, spread=0.8):
+	values = []
+	for _ in range(3):
+		ct = mean_value + random.uniform(-spread, spread)
+		values.append(round(ct, 1))
+	return values
+
+
+def _format_table(ct_values):
+	table = raw_table
+	for key, value in ct_values.items():
+		table = table.replace(key, f"{value:.1f}")
+	return table
 
 def makeDataTable():
-	return "x"
+	while True:
+		hk_untreated_mean = random.uniform(17.0, 22.0)
+		goi_untreated_mean = hk_untreated_mean + random.uniform(3.0, 8.0)
+		hk_treated_mean = hk_untreated_mean + random.uniform(-0.5, 0.5)
+		goi_treated_mean = goi_untreated_mean + random.uniform(-4.0, 4.0)
+
+		w_vals = _make_ct_values(hk_untreated_mean)
+		x_vals = _make_ct_values(goi_untreated_mean)
+		y_vals = _make_ct_values(hk_treated_mean)
+		z_vals = _make_ct_values(goi_treated_mean)
+
+		mean1 = round(_mean(w_vals), 1)
+		mean2 = round(_mean(x_vals), 1)
+		mean3 = round(_mean(y_vals), 1)
+		mean4 = round(_mean(z_vals), 1)
+
+		delta_ct_untreated = mean2 - mean1
+		delta_ct_treated = mean4 - mean3
+		delta_delta = delta_ct_treated - delta_ct_untreated
+		if abs(delta_delta) < 0.5:
+			continue
+
+		ct_values = {
+			"w1": w_vals[0], "w2": w_vals[1], "w3": w_vals[2],
+			"x1": x_vals[0], "x2": x_vals[1], "x3": x_vals[2],
+			"y1": y_vals[0], "y2": y_vals[1], "y3": y_vals[2],
+			"z1": z_vals[0], "z2": z_vals[1], "z3": z_vals[2],
+			"mean1": mean1, "mean2": mean2, "mean3": mean3, "mean4": mean4
+		}
+		table = _format_table(ct_values)
+		fold_change = round(2 ** abs(delta_delta), 2)
+		return table, fold_change
 
 
-def makeCompleteQuestion():
-	table = makeDataTable()
-	question = "<p>Given the data in the table above calculate the fold change (2<sup>|&Delta;&Delta;Ct|</sup>) value for the effect of the drug on the cells.</p>"
-	bb_format = 'NUM\t' + table + question
-	max_power = 3
-	answer_choices = []
-	for n in range(-max_power, max_power+1):
-		if n != 0:
-			answer_choices.append(2**n)
-	answer = random.choice(answer_choices)
-	print(answer_choices)
-	tolerance = 0.01
-	return bb_format
+def write_question(N, args):
+	table, fold_change = makeDataTable()
+	question = (
+		"<p>Given the data in the table above calculate the fold change "
+		"(2<sup>|&Delta;&Delta;Ct|</sup>) value for the effect of the drug on the cells.</p>"
+	)
+	tolerance = 0.05
+	return bptools.formatBB_NUM_Question(N, table + question, fold_change, tolerance)
 
 #=====================
+def parse_arguments():
+	parser = bptools.make_arg_parser(description="Generate RT-qPCR fold change questions.")
+	args = parser.parse_args()
+	return args
+
+
 #=====================
-#=====================
+def main():
+	args = parse_arguments()
+	outfile = bptools.make_outfile(__file__)
+	bptools.collect_and_write_questions(write_question, args, outfile)
+
+
 #=====================
 if __name__ == '__main__':
-	sequence_len = 36
-	primer_len = 9
-	num_questions = 199
-	makeCompleteQuestion()
-	sys.exit(1)
-	N = 0
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	for i in range(num_questions):
-		N += 1
-		number = "{0}. ".format(N)
-		#header = "{0} primer design".format(N)
-		question = ("<p>Choose the correct pair of RNA primers that will amplify the entire region of DNA shown above using PCR. "
-		+"The RNA primers are {0} bases in length.</p> ".format(primer_len)
-		+"<p>Pay close attention to the 5&prime; and 3&prime; ends of the primers.</p> " )
-
-		top_sequence, primer_set, answer_set = getSequence(sequence_len, primer_len)
-		answer_tuple = tuple(answer_set)
-		table = seqlib.DNA_Table(top_sequence)
-		choices = makeChoices(primer_set, answer_set)
-
-		bottom_sequence = seqlib.complement(top_sequence)
-		f.write("MC\t{0}\t".format(number + table + question))
-		print("5'-" + top_sequence + "-3'")
-		print("3'-" + bottom_sequence + "-5'")
-		print("{0}. {1}".format(N, question))
-
-		letters = "ABCDEF"
-		for i, choice in enumerate(choices):
-			f.write('{0} AND {1}\t'.format(seqlib.Primer_Table(choice[0]), seqlib.Primer_Table(choice[1])))
-			if choice == answer_tuple:
-				prefix = 'x'
-				f.write('Correct\t')
-			else:
-				prefix = ' '
-				f.write('Incorrect\t')
-			print("- [{0}] {1}. 5'-{2}-3' AND 5'-{3}-3'".format(prefix, letters[i], choice[0], choice[1]))
-		print("")
-		f.write('\n')
-	f.close()
+	main()

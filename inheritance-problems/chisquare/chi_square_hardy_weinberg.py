@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 
-import os
 import re
 import sys
 import copy
 import math
 import random
 from scipy.stats.distributions import chi2
+
+import bptools
 
 ### types of errors
 # show only real answer table of chi square calculations
@@ -223,7 +224,7 @@ def make_chi_square_table():
 def questionContent(p):
 	question = ''
 	question += "<p>You finally have a new competent lab partner that you trust.</p>"
-	question += 'This lab partner calculated the allele frequencies of p={0:.2f} and q={1:.2f}. '.format(p, 1-p)
+	question += '<p>This lab partner calculated the allele frequencies of p={0:.2f} and q={1:.2f}. '.format(p, 1-p)
 	question += 'Then they did a chi-squared (&chi;<sup>2</sup>) test for your Hardy-Weinberg data.</p>'
 
 	question += "<p>They need you to decide whether you reject or accept "
@@ -256,7 +257,7 @@ def makeQuestion(desired_result):
 	chi_square_table = make_chi_square_table()
 
 	answer_stats = normalGoodStats(p, F, N)
-	numbers_table = createDataTable(answer_stats, "Table {0}".format(i+1))
+	numbers_table = createDataTable(answer_stats, "Table 1")
 
 	#use the real values
 	final_chisq = float(answer_stats[-1])
@@ -300,25 +301,39 @@ def makeBBText(desired_result):
 	return blackboard_text
 
 #===================
-#===================
-#===================
-#===================
-if __name__ == '__main__':
-	duplicates = 72
-	letters = "ABCDEFGHI"
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	count = 0
-	for i in range(duplicates):
-		#for desired_result in ('accept', 'reject'):
-		for desired_result in ('reject',):
-			print("")
-			print(desired_result.upper())
-			blackboard_text = makeBBText(desired_result)
-			f.write(blackboard_text + "\n")
-			count += 1
-	print("wrote {0} questions".format(count))
-	f.close()
+def write_question(N, args):
+	desired_result = args.desired_result
+	question_text = makeQuestion(desired_result)
+	answer = choice2answer(desired_result)
+	choices_copy = copy.copy(choices)
+	random.shuffle(choices_copy)
+	complete_question = bptools.formatBB_MC_Question(
+		N,
+		question_text,
+		choices_copy,
+		answer
+	)
+	return complete_question
 
-#exit
+#===================
+def parse_arguments():
+	parser = bptools.make_arg_parser(description='Chi Square Hardy-Weinberg Question')
+	question_group = parser.add_mutually_exclusive_group(required=False)
+	question_group.add_argument('--desired_result', dest='desired_result', type=str,
+		choices=('accept', 'reject'), help='Set the question type: accept or reject')
+	question_group.add_argument('-a', '--accept', dest='desired_result', action='store_const',
+		const='accept',)
+	question_group.add_argument('-r', '--reject', dest='desired_result', action='store_const',
+		const='reject',)
+	parser.set_defaults(desired_result='reject')
+	args = parser.parse_args()
+	return args
+
+#===================
+def main():
+	args = parse_arguments()
+	outfile = bptools.make_outfile(None)
+	bptools.collect_and_write_questions(write_question, args, outfile)
+
+if __name__ == '__main__':
+	main()

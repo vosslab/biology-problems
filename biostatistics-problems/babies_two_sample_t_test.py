@@ -2,11 +2,8 @@
 # ^^ Specifies the Python3 environment to use for script execution
 
 # Standard Library
-import os
 import math
-import time
 import random
-import argparse
 import statistics
 
 # local repo modules
@@ -192,7 +189,7 @@ def format_question_html(group1: list[float], group2: list[float], tails: int) -
 
 
 #============================================
-def write_question(N: int, tails: int) -> str:
+def write_question(N: int, args) -> str:
 	"""
 	Create one Blackboard numeric question row for a two-sample t-test.
 
@@ -206,6 +203,7 @@ def write_question(N: int, tails: int) -> str:
 	base_mu = 7.5
 	sigma = 1.5
 
+	tails = args.tails
 	n1 = random.randint(25, 39)
 	n2 = random.randint(25, 39)
 	#bring numbers closer together
@@ -265,15 +263,7 @@ def parse_arguments():
 	Returns:
 		argparse.Namespace: args with duplicates, max_questions, tails.
 	"""
-	parser = argparse.ArgumentParser(description="Generate two-sample t-test questions.")
-	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		default=1, help='Number of questions to create.'
-	)
-	parser.add_argument(
-		'-x', '--max-questions', type=int, dest='max_questions',
-		default=99, help='Max number of questions.'
-	)
+	parser = bptools.make_arg_parser(description="Generate two-sample t-test questions.")
 	parser.add_argument(
 		'-q', '--tails', type=int, dest='tails',
 		choices=(1, 2), default=1, help='1 for one-tailed, 2 for two-tailed.'
@@ -296,41 +286,8 @@ def main():
 	"""
 	args = parse_arguments()
 
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
-	outfile = (
-		'bbq'
-		f'-{script_name}'
-		f'-tails{args.tails}'
-		'-questions.txt'
-	)
-
-	question_bank_list = []
-	N = 0
-
-	for _ in range(args.duplicates):
-		t0 = time.time()
-		complete_question = write_question(N + 1, args.tails)
-		if time.time() - t0 > 1.0:
-			print(f"Question {N+1} complete in {time.time() - t0:.1f} seconds")
-
-		if complete_question is not None:
-			N += 1
-			question_bank_list.append(complete_question)
-
-		if N >= args.max_questions:
-			break
-
-	if len(question_bank_list) > args.max_questions:
-		random.shuffle(question_bank_list)
-		question_bank_list = question_bank_list[:args.max_questions]
-
-	print(f'\nWriting {len(question_bank_list)} question to file: {outfile}')
-	write_count = 0
-	with open(outfile, 'w') as f:
-		for complete_question in question_bank_list:
-			write_count += 1
-			f.write(complete_question)
-	print(f'... saved {write_count} questions to {outfile}\n')
+	outfile = bptools.make_outfile(None, f"tails{args.tails}")
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 
 #============================================

@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 
-import os
 import sys
 import math
 import random
-import argparse
 
 import bptools
 import gellib
@@ -442,6 +440,13 @@ def write_question(N, params, debug):
 	bb_question = bptools.formatBB_MC_Question(N, full_question, choices_list, answer_string)
 	return bb_question
 
+#================
+def write_question_wrapper(N, args):
+	"""
+	Wrapper for collect_and_write_questions that uses precomputed params.
+	"""
+	return write_question(N, args.params, args.debug)
+
 #===========================================================
 #===========================================================
 # This function handles the parsing of command-line arguments.
@@ -454,24 +459,14 @@ def parse_arguments():
 		`num_choices`, and `question_type`.
 	"""
 	# Create an argument parser with a description of the script's functionality
-	parser = argparse.ArgumentParser(description="Generate DNA gel questions.")
-
-	# Add an argument to specify the number of duplicate questions to generate
-	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='Number of duplicate runs to do or number of questions to create',
-		default=1
-	)
+	parser = bptools.make_arg_parser(description="Generate DNA gel questions.")
 
 	parser.add_argument('-D', '--debug', dest='debug', action='store_true',
 		help='Enable debug mode, which changes the question output.')
 	parser.set_defaults(debug=False)
 
 	# Add an argument to specify the number of answer choices for each question
-	parser.add_argument(
-		'-c', '--num_choices', type=int, default=None, dest='num_choices',
-		help="Number of choices to create."
-	)
+	parser = bptools.add_choice_args(parser, default=None)
 
 	# Create a mutually exclusive group for style selection
 	# This group allows only one complexity style to be specified at a time
@@ -502,6 +497,7 @@ def parse_arguments():
 		help='Set question style to hard'
 	)
 
+	parser.set_defaults(style='medium')
 	# Parse the provided command-line arguments and return them
 	args = parser.parse_args()
 	return args
@@ -518,46 +514,16 @@ def main():
 	args = parse_arguments()
 
 	params = init_gel_params(args.style)
-
-	# override the number of choices
 	if args.num_choices is not None:
 		params['num_suspects'] = args.num_choices
+	args.params = params
 
-	# Generate the output file name based on the script name and question type
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
-	outfile = (
-		'bbq'
-		f'-{script_name}'  # Add the script name to the file name
-		f'-{args.style.upper()}'  # Add the question type in uppercase
-		f'-{params['num_suspects']}_suspects'
-		'-questions.txt'  # Add the file extension
+	outfile = bptools.make_outfile(
+		None,
+		args.style.upper(),
+		f"{params['num_suspects']}_suspects"
 	)
-
-	# Print a message indicating where the file will be saved
-	print(f'Writing to file: {outfile}')
-
-	# Open the output file in write mode
-	with open(outfile, 'w') as f:
-		# Initialize the question number counter
-		N = 0
-
-		# Generate the specified number of questions
-		while N < args.duplicates:
-			print(f"\n  Question {N+1} of {args.duplicates}")
-
-			# Generate the complete formatted question
-			complete_question = write_question(N+1, params, args.debug)
-
-			# Write the question to the file if it was generated successfully
-			if complete_question is not None:
-				N += 1
-				f.write(complete_question)
-
-	# If the question type is multiple choice, print a histogram of results
-	bptools.print_histogram()
-
-	# Print a message indicating how many questions were saved
-	print(f'saved {N} questions to {outfile}')
+	bptools.collect_and_write_questions(write_question_wrapper, args, outfile)
 
 #===========================================================
 #===========================================================
@@ -567,4 +533,3 @@ if __name__ == '__main__':
 	main()
 
 ## THE END
-

@@ -152,16 +152,39 @@ def write_question(N, args):
 
 #===============================
 #===============================
+def apply_difficulty_defaults(args):
+	presets = {
+		'easy': {
+			'num_markers': 2,
+		},
+		'medium': {
+			'num_markers': 2,
+		},
+		'rigorous': {
+			'num_markers': 3,
+		},
+	}
+	preset = presets.get(args.difficulty, presets['medium'])
+
+	if args.num_markers is None:
+		args.num_markers = preset['num_markers']
+
+	return args
+
+#===============================
+#===============================
 def parse_arguments():
 	parser = bptools.make_arg_parser(description='Generate HLA genotype questions.')
+	parser = bptools.add_difficulty_args(parser)
 	parser.add_argument('-n', '--num-markers', type=int, dest='num_markers',
-		default=2, help='Number of markers.')
+		default=None, help='Number of markers.')
 	parser.add_argument('-c', '--color', dest='use_color', action='store_true',
 		help='Use colored markers in the question and choices.')
 	parser.add_argument('-b', '--bw', '--black-white', dest='use_color', action='store_false',
 		help='Use black and white marker text.')
 	parser.set_defaults(use_color=True)
 	args = parser.parse_args()
+	args = apply_difficulty_defaults(args)
 	return args
 
 #===============================

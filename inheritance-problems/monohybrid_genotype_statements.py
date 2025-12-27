@@ -2,12 +2,8 @@
 # ^^ Specifies the Python3 environment to use for script execution
 
 # Import built-in Python modules
-# Provides functions for interacting with the operating system
-import os
 # Provides functions to generate random numbers and selections
 import random
-# Provides tools to parse command-line arguments
-import argparse
 
 # Import external modules (pip-installed)
 # No external modules are used here currently
@@ -170,17 +166,7 @@ def parse_arguments():
 		`num_choices`, and `question_type`.
 	"""
 	# Create an argument parser with a description of the script's functionality
-	parser = argparse.ArgumentParser(description="Generate questions.")
-
-	# Add an argument to specify the number of duplicate questions to generate
-	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='Number of duplicate runs to do or number of questions to create',
-		default=1
-	)
-
-	parser.add_argument('-x', '--max-questions', type=int, dest='max_questions',
-		default=99, help='Max number of questions')
+	parser = bptools.make_arg_parser(description="Generate questions.", batch=True)
 
 	# Parse the provided command-line arguments and return them
 	args = parser.parse_args()
@@ -188,7 +174,7 @@ def parse_arguments():
 
 #===========================================================
 # Writes questions to the file until max_questions is reached
-def write_question_batch(f, args) -> int:
+def write_question_batch(start_num: int, args) -> list:
 	"""
 	Generates and writes questions to file.
 
@@ -199,25 +185,29 @@ def write_question_batch(f, args) -> int:
 	Returns:
 		int: Total number of questions written
 	"""
-	N = 0  # question count
-	for _ in range(args.duplicates):
-		for question_statement, answers in QUESTION_BANK:
-			answers_set = set(answers)
-			if not answers_set.issubset(ALL_CROSSES_SET):
-				raise ValueError(
-					"QUESTION_BANK answer set contains an unknown cross: "
-					f"{sorted(list(answers_set - ALL_CROSSES_SET))}"
-				)
-			for answer_cross in answers_set:
-				choice_pool_set = (ALL_CROSSES_SET - answers_set) | {answer_cross}
-				complete_question = write_question(N + 1, question_statement, answer_cross, choice_pool_set)
-
-				if complete_question:
-					f.write(complete_question)
-					N += 1
-					if N >= args.max_questions:
-						return N
-	return N
+	N = start_num
+	questions = []
+	remaining = None
+	if args.max_questions is not None:
+		remaining = args.max_questions - (start_num - 1)
+		if remaining <= 0:
+			return questions
+	for question_statement, answers in QUESTION_BANK:
+		answers_set = set(answers)
+		if not answers_set.issubset(ALL_CROSSES_SET):
+			raise ValueError(
+				"QUESTION_BANK answer set contains an unknown cross: "
+				f"{sorted(list(answers_set - ALL_CROSSES_SET))}"
+			)
+		for answer_cross in answers_set:
+			choice_pool_set = (ALL_CROSSES_SET - answers_set) | {answer_cross}
+			complete_question = write_question(N, question_statement, answer_cross, choice_pool_set)
+			if complete_question:
+				questions.append(complete_question)
+				N += 1
+				if remaining is not None and len(questions) >= remaining:
+					return questions
+	return questions
 
 
 #===========================================================
@@ -231,25 +221,9 @@ def main():
 	# Parse arguments from the command line
 	args = parse_arguments()
 
-	# Generate the output file name based on the script name and question type
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
-	outfile = (
-		'bbq'
-		f'-{script_name}'  # Add the script name to the file name
-		'-questions.txt'  # Add the file extension
-	)
-
-	# Print a message indicating where the file will be saved
-	print(f'Writing to file: {outfile}')
-
-	with open(outfile, 'w') as f:
-		N = write_question_batch(f, args)
-
-	# If the question type is multiple choice, print a histogram of results
-	bptools.print_histogram()
-
-	# Print a message indicating how many questions were saved
-	print(f'saved {N} questions to {outfile}')
+	outfile = bptools.make_outfile(None)
+	questions = bptools.collect_question_batches(write_question_batch, args)
+	bptools.write_questions_to_file(questions, outfile)
 
 #===========================================================
 #===========================================================

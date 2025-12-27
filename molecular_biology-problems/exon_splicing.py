@@ -1,11 +1,7 @@
 #!/usr/bin/env python3
 
-import os
-import sys
 import copy
 import random
-import argparse
-import subprocess
 
 import bptools
 
@@ -28,8 +24,7 @@ def getGenePartSizes(num_exons):
 	min_part_size = 7
 	max_part_size = 21
 	if (1 + max_part_size - min_part_size) <= total_gene_parts:
-		print("Part size range is too small!!")
-		sys.exit(1)
+		raise ValueError("Part size range is too small.")
 	while len(part_sizes_set) < total_gene_parts:
 		part_size = random.randint(min_part_size, max_part_size) * 10
 		part_sizes_set.add(part_size)
@@ -49,9 +44,7 @@ def make_color_wheel_from_part_sizes(part_sizes): # Assumption: r, g, b in [0, 2
 #==========================
 def makeHtmlTable(pre_mRNA_tree):
 	if not isinstance(pre_mRNA_tree, list):
-		print(pre_mRNA_tree)
-		print("Got wrong type in makeHtmlTable()")
-		sys.exit(1)
+		raise ValueError("Got wrong type in makeHtmlTable().")
 
 	table = ''
 	table += '<table style="border-collapse: collapse; border: 0px solid white; table-layout: fixed;">'
@@ -62,9 +55,9 @@ def makeHtmlTable(pre_mRNA_tree):
 	for mRNA_part in pre_mRNA_tree:
 		html_name = mRNA_part['name'].replace(' ', '&nbsp;')
 		if mRNA_part.get('type') == 'exon':
-			table += '<td bgcolor="{0}" align="center" rowspan=2 '.format(mRNA_part['color'])
+			table += '<td bgcolor="{0}" align="center" rowspan="2" '.format(mRNA_part['color'])
 			table += 'style="vertical-align: middle; border: 4px solid black;"> '
-			table += '{0}<br/><font size=-2>{1} bp</font></td> '.format(html_name, mRNA_part['size'])
+			table += '{0}<br/><font size="-2">{1} bp</font></td> '.format(html_name, mRNA_part['size'])
 		else:
 			table += '<td bgcolor="{0}" align="center" '.format(mRNA_part['color'])
 			table += 'style="border-bottom: 8px solid black; border-top: 0px solid white;">'
@@ -74,7 +67,7 @@ def makeHtmlTable(pre_mRNA_tree):
 		if mRNA_part.get('type') != 'exon':
 			table += '<td bgcolor="{0}" align="center" '.format('white')
 			table += 'style="border-bottom: 0px solid white; border-top: 8px solid black;"> '
-			table += '<font size=-2>{0} bp</font></td> '.format(mRNA_part['size'])
+			table += '<font size="-2">{0} bp</font></td> '.format(mRNA_part['size'])
 	table += '</tr>'
 	table += '</table><br/>'
 	#print(table)
@@ -195,13 +188,7 @@ def makeCompleteQuestion(N, num_exons, min_exons):
 	choices_list += [answer, ]
 	random.shuffle(choices_list)
 
-	f = open("temp.html", "w")
 	pre_mRNA_table = makeHtmlTable(pre_mRNA_tree)
-	f.write(pre_mRNA_table)
-	for choice in choices_list:
-		f.write(choice)
-	f.close()
-
 	question = ''
 	question += '<p>The eukaryotic pre-mRNA shown above can be alternatively spliced in a number of different ways.</p>'
 	question += '<h5>Which one of the following is NOT a possible processed mRNA?</h5>'
@@ -211,28 +198,36 @@ def makeCompleteQuestion(N, num_exons, min_exons):
 	return bbformat
 
 #==========================
+def write_question(N, args):
+	return makeCompleteQuestion(N, args.num_exons, args.min_exons)
+
+
 #==========================
-if __name__ == '__main__':
-	parser = argparse.ArgumentParser()
-	parser.add_argument('-n', '--num-exons', type=int, dest='num_exons',
-		help='number of total exons in the gene', default=4)
-	parser.add_argument('-m', '--min-exons', type=int, dest='min_exons',
-		help='number of exons in the choices', default=None)
-	parser.add_argument('-q', '--num-questions', type=int, dest='num_questions',
-		help='number of questions to create', default=24)
+def parse_arguments():
+	parser = bptools.make_arg_parser(description="Generate exon splicing questions.")
+	parser.add_argument(
+		'-n', '--num-exons', type=int, dest='num_exons',
+		help='number of total exons in the gene', default=4
+	)
+	parser.add_argument(
+		'-m', '--min-exons', type=int, dest='min_exons',
+		help='number of exons in the choices', default=None
+	)
 	args = parser.parse_args()
 
 	if args.min_exons is None:
 		args.min_exons = args.num_exons - 1
 
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	for i in range(args.num_questions):
-		N = i+1
-		bbformat = makeCompleteQuestion(N, args.num_exons, args.min_exons)
-		f.write(bbformat)
-		f.write('\n')
-	f.close()
-	proc = subprocess.Popen("open temp.html", shell=True)
-	bptools.print_histogram()
+	return args
+
+
+#==========================
+def main():
+	args = parse_arguments()
+	outfile = bptools.make_outfile(__file__)
+	bptools.collect_and_write_questions(write_question, args, outfile)
+
+
+#==========================
+if __name__ == '__main__':
+	main()

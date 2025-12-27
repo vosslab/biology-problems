@@ -6,7 +6,6 @@ import sys
 import math
 import random
 import string
-import argparse
 
 # pip modules
 import yaml
@@ -16,7 +15,7 @@ import bptools
 import disorderlib
 
 
-yaml_file = "organism_data.yml"
+yaml_file = os.path.join(os.path.dirname(__file__), "organism_data.yml")
 with open(yaml_file, 'r') as file:
 	organism_data = yaml.safe_load(file)
 #import pprint
@@ -384,32 +383,25 @@ def generate_hw_problem():
 
 #====================================
 #====================================
-if __name__ == "__main__":
-	parser = argparse.ArgumentParser()
-	# Add question type argument with choices
-	parser.add_argument('-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='number of duplicate runs to do', default=1)
-	args = parser.parse_args()
-
+def write_question(N, args):
 	choices_list = list(choices_dict.values())
-	#print(choices_list)
+	question_string, answer_string = generate_hw_problem()
+	if len(question_string) < 5:
+		return None
+	final_question = bptools.formatBB_MC_Question(N, question_string, choices_list, answer_string)
+	return final_question
 
-	outfile = ('bbq-' + os.path.splitext(os.path.basename(__file__))[0]
-		+ '-questions.txt')
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	N = 0
-	for i in range(args.duplicates):
-		N += 1
+def parse_arguments():
+	parser = bptools.make_arg_parser(description="Generate Hardy-Weinberg MC questions.")
+	args = parser.parse_args()
+	return args
 
-		question_string, answer_string = generate_hw_problem()
-		if len(question_string) < 5:
-			continue
+def main():
+	args = parse_arguments()
+	outfile = bptools.make_outfile(None)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
-		final_question = bptools.formatBB_MC_Question(N, question_string, choices_list, answer_string)
-
-		f.write(final_question)
-	f.close()
-	bptools.print_histogram()
+if __name__ == "__main__":
+	main()
 
 #THE END

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import os
 import random
 import bptools
 
@@ -62,22 +61,40 @@ def get_vol_conc_answer(solute):
 	return volume, concentration, answer
 
 #==================================================
-if __name__ == '__main__':
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
+def write_question_batch(start_num: int, args) -> list:
 	powders = list(molecular_weights.keys())
-	duplicates = 99 // len(powders) + 1
-	#duplicates = 1
-	N = 0
+	questions = []
+	remaining = None
+	if args.max_questions is not None:
+		remaining = args.max_questions - (start_num - 1)
+		if remaining <= 0:
+			return questions
+	N = start_num
 	for solute in powders:
-		for i in range(duplicates):
-			N += 1
-			volume, concentration, answer = get_vol_conc_answer(solute)
-			if concentration is None:
-				continue
-			q = question_text(solute, volume, concentration)
-			bbf = bptools.formatBB_NUM_Question(N, q, answer, 0.9)
-			f.write(bbf)
-	f.close()
-	bptools.print_histogram()
+		volume, concentration, answer = get_vol_conc_answer(solute)
+		if concentration is None:
+			continue
+		q = question_text(solute, volume, concentration)
+		bbf = bptools.formatBB_NUM_Question(N, q, answer, 0.9)
+		questions.append(bbf)
+		N += 1
+		if remaining is not None and len(questions) >= remaining:
+			return questions
+	return questions
+
+def parse_arguments():
+	parser = bptools.make_arg_parser(
+		description="Generate mass solution numeric questions.",
+		batch=True
+	)
+	args = parser.parse_args()
+	return args
+
+def main():
+	args = parse_arguments()
+	outfile = bptools.make_outfile(None)
+	questions = bptools.collect_question_batches(write_question_batch, args)
+	bptools.write_questions_to_file(questions, outfile)
+
+if __name__ == '__main__':
+	main()

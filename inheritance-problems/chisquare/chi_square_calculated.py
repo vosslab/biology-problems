@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 
-import os
-import sys
 import random
-import argparse
 
 import bptools
 import chisquarelib
@@ -156,40 +153,33 @@ def makeQuestion( desired_result):
 #===================
 #===================
 #===================
-if __name__ == '__main__':
-	parser = argparse.ArgumentParser(description='Chi Square Question')
-	parser.add_argument('-d', '--duplicate-runs', type=int, dest='duplicate_runs',
-		help='number of questions to create', default=199)
-	# Create a mutually exclusive group for question types
-	question_group = parser.add_mutually_exclusive_group(required=True)
-	# Add question type argument with choices
+def write_question(N, args):
+	complete_question, final_chisq = makeQuestion(args.desired_result)
+	if complete_question is None:
+		return None
+	tolerance = round(max(final_chisq * 0.02, 0.01), 2)
+	bbq_content = bptools.formatBB_NUM_Question(N, complete_question, final_chisq, tolerance)
+	return bbq_content
+
+#===================
+def parse_arguments():
+	parser = bptools.make_arg_parser(description='Chi Square Question')
+	question_group = parser.add_mutually_exclusive_group(required=False)
 	question_group.add_argument('--desired_result', dest='desired_result', type=str,
 		choices=('accept', 'reject'), help='Set the question type: accept or reject')
 	question_group.add_argument('-a', '--accept', dest='desired_result', action='store_const',
 		const='accept',)
 	question_group.add_argument('-r', '--reject', dest='desired_result', action='store_const',
 		const='reject',)
-
+	parser.set_defaults(desired_result='accept')
 	args = parser.parse_args()
+	return args
 
-	outfile = ('bbq-' + os.path.splitext(os.path.basename(__file__))[0]
-			+ '-' + args.desired_result.upper()
-			+ '-questions.txt'
-			)
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	for i in range(args.duplicate_runs):
-		sys.stderr.write(".")
-		if i % 80 == 0:
-			sys.stderr.write("\n")
-		complete_question, final_chisq = makeQuestion(args.desired_result)
-		if complete_question is None:
-			i -= 1
-			continue
-		tolerance = round(max(final_chisq * 0.02, 0.01), 2)
-		N = i+1
-		bbq_content = bptools.formatBB_NUM_Question(N, complete_question, final_chisq, tolerance)
-		f.write(bbq_content)
-	sys.stderr.write("\n")
-	print('writing to file: '+outfile)
-	#bptools.print_histogram()
+#===================
+def main():
+	args = parse_arguments()
+	outfile = bptools.make_outfile(None, args.desired_result.upper())
+	bptools.collect_and_write_questions(write_question, args, outfile)
+
+if __name__ == '__main__':
+	main()

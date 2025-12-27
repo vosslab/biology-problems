@@ -3,11 +3,8 @@
 
 # Import built-in Python modules
 # Provides functions for interacting with the operating system
-import os
 # Provides functions to generate random numbers and selections
 import random
-# Provides tools to parse command-line arguments
-import argparse
 import sys
 import copy
 import itertools
@@ -46,7 +43,8 @@ def enzyme_table(metabolites, color_wheel):
 
 #===========================================================
 #===========================================================
-def write_question(N, num_metabolites):
+def write_question(N, args):
+	num_metabolites = args.num_metabolites
 	metabolite_letters_lower = bptools.generate_gene_letters(num_metabolites, clear=True)
 	metabolite_letters_upper = metabolite_letters_lower.upper()
 	#print("metabolite_letters_upper = ", metabolite_letters_upper)
@@ -101,19 +99,10 @@ def parse_arguments():
 		`num_choices`, and `question_type`.
 	"""
 	# Create an argument parser with a description of the script's functionality
-	parser = argparse.ArgumentParser(description="Generate questions.")
-
-	# Add an argument to specify the number of duplicate questions to generate
-	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='Number of duplicate runs to do or number of questions to create',
-		default=1
-	)
-
-	# Add an argument to specify the number of answer choices for each question
+	parser = bptools.make_arg_parser(description="Generate questions.")
 	parser.add_argument(
 		'-c', '--num-metabolites', type=int, default=5, dest='num_metabolites',
-		help="Number of choices to create."
+		help="Number of metabolites in the pathway."
 	)
 	# Parse the provided command-line arguments and return them
 	args = parser.parse_args()
@@ -130,40 +119,8 @@ def main():
 	# Parse arguments from the command line
 	args = parse_arguments()
 
-	# Generate the output file name based on the script name and question type
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
-	outfile = (
-		'bbq'
-		f'-{script_name}'  # Add the script name to the file name
-		f'-{args.num_metabolites}_metabolites'
-
-		'-questions.txt'  # Add the file extension
-	)
-
-	# Print a message indicating where the file will be saved
-	print(f'Writing to file: {outfile}')
-
-	# Open the output file in write mode
-	with open(outfile, 'w') as f:
-		# Initialize the question number counter
-		N = 0
-
-		# Generate the specified number of questions
-		for _ in range(args.duplicates):
-
-			# Generate the complete formatted question
-			complete_question = write_question(N+1, args.num_metabolites)
-
-			# Write the question to the file if it was generated successfully
-			if complete_question is not None:
-				N += 1
-				f.write(complete_question)
-
-	# If the question type is multiple choice, print a histogram of results
-	bptools.print_histogram()
-
-	# Print a message indicating how many questions were saved
-	print(f'saved {N} questions to {outfile}')
+	outfile = bptools.make_outfile(None, f"{args.num_metabolites}_metabolites")
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #===========================================================
 #===========================================================
@@ -173,4 +130,3 @@ if __name__ == '__main__':
 	main()
 
 ## THE END
-

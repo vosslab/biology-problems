@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-import os
 import random
 import seqlib
+import bptools
 
 """
                                                 3'  GGCATCGACCTCCCT  5'
@@ -75,8 +75,6 @@ def getInversePrimerChoices(top_sequence, primer_len):
 				return False, answer_set
 
 	primer_set.sort()
-	print(primer_set)
-	print(answer_set)
 
 	convert_set = []
 	for primer in primer_set:
@@ -85,8 +83,6 @@ def getInversePrimerChoices(top_sequence, primer_len):
 		subprimer = primer.replace('C', 'G')
 		convert_set.append(subprimer)
 	if len(list(set(convert_set))) < 16:
-		print("BAD PRIMERS")
-		#sys.exit(1)
 		return False, answer_set
 	return primer_set, answer_set
 
@@ -123,56 +119,62 @@ def makeChoices(primer_set, answer_set):
 		if c1 != c2:
 			choices.add((c1, c2))
 	choices_list = list(choices)
-	print(choices_list)
 	random.shuffle(choices_list)
 	return choices_list
 
 
 #=====================
+def write_question(N, args):
+	question = (
+		"<p>Choose the correct pair of RNA primers that will amplify the "
+		+ "both the known and unknown region of DNA shown above using <strong>inverse PCR</strong>.</p> "
+		+ f"<p>The RNA primers are {args.primer_len} bases in length.</p> "
+		+ "<p>Pay close attention to the 5&prime; and 3&prime; ends of the primers.</p> "
+	)
+
+	sequence_tuple, primer_set, answer_set = getSequence(args.sequence_len, args.primer_len)
+	answer_tuple = tuple(answer_set)
+	table = BIG_Table(sequence_tuple)
+	choices = makeChoices(primer_set, answer_set)
+
+	choice_tables = []
+	answer_text = None
+	for choice in choices:
+		choice_text = '{0} AND {1}'.format(
+			seqlib.Primer_Table(choice[0]),
+			seqlib.Primer_Table(choice[1])
+		)
+		choice_tables.append(choice_text)
+		if choice == answer_tuple:
+			answer_text = choice_text
+	if answer_text is None:
+		return None
+	bb_question = bptools.formatBB_MC_Question(N, table + question, choice_tables, answer_text)
+	return bb_question
+
+
 #=====================
+def parse_arguments():
+	parser = bptools.make_arg_parser(description="Generate inverse PCR primer questions.")
+	parser.add_argument(
+		'-s', '--sequence-length', type=int, dest='sequence_len',
+		default=15, help='Length of the known sequence.'
+	)
+	parser.add_argument(
+		'-p', '--primer-length', type=int, dest='primer_len',
+		default=6, help='Length of each primer.'
+	)
+	args = parser.parse_args()
+	return args
+
+
 #=====================
+def main():
+	args = parse_arguments()
+	outfile = bptools.make_outfile(__file__, f"len_{args.sequence_len}")
+	bptools.collect_and_write_questions(write_question, args, outfile)
+
+
 #=====================
 if __name__ == '__main__':
-	sequence_len = 15
-	primer_len = 6
-	num_questions = 6
-
-	N = 0
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	for i in range(num_questions):
-		N += 1
-		number = "{0}. ".format(N)
-		question = ("<p>Choose the correct pair of RNA primers that will amplify the "
-		+"both the known and unknown region of DNA shown above using <strong>inverse PCR</strong>.</p> "
-		+"<p>The RNA primers are {0} bases in length.</p> ".format(primer_len)
-		+"<p>Pay close attention to the 5&prime; and 3&prime; ends of the primers.</p> " )
-
-		sequence_tuple, primer_set, answer_set = getSequence(sequence_len, primer_len)
-		answer_tuple = tuple(answer_set)
-		table = BIG_Table(sequence_tuple)
-		choices = makeChoices(primer_set, answer_set)
-
-		top_sequence = sequence_tuple[0] + "-" + sequence_tuple[1] + "-" + sequence_tuple[2]
-		bottom_sequence = seqlib.complement(top_sequence)
-		
-		f.write("MC\t{0}\t".format(number + table + question))
-		print("5'-" + top_sequence + "-3'")
-		print("3'-" + bottom_sequence + "-5'")
-		print("{0}. {1}".format(N, question))
-
-		letters = "ABCDEF"
-		for i, choice in enumerate(choices):
-			f.write('{0} AND {1}\t'.format(seqlib.Primer_Table(choice[0]), seqlib.Primer_Table(choice[1])))
-			if choice == answer_tuple:
-				prefix = 'x'
-				f.write('Correct\t')
-			else:
-				prefix = ' '
-				f.write('Incorrect\t')
-			print("- [{0}] {1}. 5'-{2}-3' AND 5'-{3}-3'".format(prefix, letters[i], choice[0], choice[1]))
-		print("")
-		f.write('\n')
-	f.close()
-
+	main()

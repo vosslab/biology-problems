@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 
 # external python/pip modules
-import os
 import random
-import argparse
+
 # local repo modules
 import bptools
 import metaboliclib
@@ -108,7 +107,7 @@ def generateChoices(letters: list, question_type_id: int) -> (list, str):
 	return choices_list, answer_text
 
 #==========================
-def writeQuestion(N: int, num_letters: int, course_name: str) -> str:
+def write_question(N: int, args) -> str:
 	"""
 	Create a metabolic pathway question.
 
@@ -124,15 +123,15 @@ def writeQuestion(N: int, num_letters: int, course_name: str) -> str:
 	str
 	    Fully formatted question for display.
 	"""
-	if course_name == 'bchm355':
+	if args.course == 'bchm355':
 		# BCHM 355/455
 		question_type_id = (N-1)%4 #random.randint(0, 3)
 	else:
 		# BIOL 301
 		question_type_id = (N-1)%2 #random.randint(0, 3)
 
-	letters = metaboliclib.get_letters(num_letters, N)
-	metabolic_table = metaboliclib.generate_metabolic_pathway(num_letters, N)
+	letters = metaboliclib.get_letters(args.num_letters, N)
+	metabolic_table = metaboliclib.generate_metabolic_pathway(args.num_letters, N)
 
 	# Add more to the question based on the given letters
 	question_text = generateQuestionText(letters, metabolic_table, question_type_id)
@@ -146,51 +145,36 @@ def writeQuestion(N: int, num_letters: int, course_name: str) -> str:
 
 #======================================
 #======================================
-#======================================
-#======================================
-if __name__ == '__main__':
-	# Define argparse for command-line options
-	parser = argparse.ArgumentParser(description="Generate questions about metabolic pathways.")
-	parser.add_argument('-d', '--duplicates', type=int, default=99, help="Number of questions to create.")
-	parser.add_argument('-n', '--num_letters', type=int, default=5, help="Number of letters in the metabolic pathway.")
-
-	# Create a mutually exclusive group for question types
-	course_group = parser.add_mutually_exclusive_group(required=True)
-	# Add question type argument with choices
-	course_group.add_argument('-c', '--course', dest='course', type=str,
-		choices=('biol301', 'bchm355'),
-		help='Set the course: biol301 or bchm355.')
-	# Add flags for multiple-choice and fill-in-the-blank question types
-	course_group.add_argument('--biol301', dest='course', action='store_const', const='biol301',
-		help='Set question type to BIOL 301.')
-	course_group.add_argument('--bchm355', dest='course', action='store_const', const='bchm355',
-		help='Set question type to BCHM 355/455.')
-
-	args = parser.parse_args()
-
-	# Generate the output file name based on the script name and question type
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
-	outfile = (
-		'bbq'
-		f'-{args.course.upper()}'
-		f'-{script_name}'  # Add the script name to the file name
-		'-questions.txt'  # Add the file extension
+def parse_arguments():
+	parser = bptools.make_arg_parser(description="Generate questions about metabolic pathways.")
+	parser.add_argument(
+		'-n', '--num-letters', type=int, default=5, dest='num_letters',
+		help="Number of letters in the metabolic pathway."
 	)
+	course_group = parser.add_mutually_exclusive_group(required=False)
+	course_group.add_argument(
+		'-c', '--course', dest='course', type=str,
+		choices=('biol301', 'bchm355'),
+		help='Set the course: biol301 or bchm355.'
+	)
+	course_group.add_argument(
+		'--biol301', dest='course', action='store_const', const='biol301',
+		help='Set question type to BIOL 301.'
+	)
+	course_group.add_argument(
+		'--bchm355', dest='course', action='store_const', const='bchm355',
+		help='Set question type to BCHM 355/455.'
+	)
+	parser.set_defaults(course='biol301')
+	args = parser.parse_args()
+	return args
 
-	print(f'writing to file: {outfile}')
+#======================================
+#======================================
+def main():
+	args = parse_arguments()
+	outfile = bptools.make_outfile(None, args.course.upper())
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
-	# Open the output file in write mode
-	with open(outfile, 'w') as f:
-		# Initialize the question number counter
-		N = 0
-		# Generate the specified number of questions
-		for _ in range(args.duplicates):
-			# Generate the complete formatted question
-			complete_question = writeQuestion(N+1, args.num_letters, args.course)
-			# Write the question to the file if it was generated successfully
-			if complete_question is not None:
-				N += 1
-				f.write(complete_question)
-	bptools.print_histogram()
-	# Print a message indicating how many questions were saved
-	print(f'saved {N} questions to {outfile}')
+if __name__ == '__main__':
+	main()

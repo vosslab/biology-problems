@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 
-import os
 import copy
 import random
 import bptools
-import argparse
 from itertools import combinations
 
 letters = list("ABCDFGHJKMPQRSTUWXYZ")
@@ -41,9 +39,9 @@ def enhancer_block(color_name, letter):
 
 #========================================
 def spacer_block():
-    length = random.randint(20, 80)
-    block = f'<td bgcolor=""#e8e8e8"" style="width: {length}px; border: 1px solid #232323;">&nbsp;</td>'
-    return block
+	length = random.randint(20, 80)
+	block = f'<td bgcolor="#e8e8e8" style="width: {length}px; border: 1px solid #232323;">&nbsp;</td>'
+	return block
 
 #========================================
 def empty_block(length=20):
@@ -67,7 +65,6 @@ def parse_colors():
     color_names = reorder_list(color_names)
     color_names = color_names[::2]
     color_names.append(random.choice(list(colors.keys())))
-    print(color_names)
     random.shuffle(color_names)
     random.shuffle(letters)
     enhancer_dict = {}
@@ -138,7 +135,6 @@ def enhancer_sets_activated(enhancer_sets, activator_set):
     for enhancer_set in enhancer_sets:
         num_unbound_enhancers = is_enhancer_set_activated(enhancer_set, activator_set)
         solutions.append(num_unbound_enhancers)
-    print(solutions)
     if solutions.count(1) > 0:
         return False
     elif solutions.count(0) > 3:
@@ -182,11 +178,10 @@ def post_text():
     return html_text
 
 #========================================
-def write_question(N):
+def write_question(N, args):
     result = False
     while result is False:
         result = setup_question()
-    print('')
     enhancer_dict, enhancer_sets, activator_set = result
 
     #print(use_subsets)
@@ -210,15 +205,17 @@ def write_question(N):
     return bbformat
 
 #========================================
+def parse_arguments():
+	parser = bptools.make_arg_parser(description="Generate enhancer gene expression questions.")
+	args = parser.parse_args()
+	return args
+
+
+#========================================
 def main():
-	num_questions = 19
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	for i in range(num_questions):
-		complete_question = write_question(i+1)
-		f.write(complete_question)
-	f.close()
+	args = parse_arguments()
+	outfile = bptools.make_outfile(__file__)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 
 #========================================

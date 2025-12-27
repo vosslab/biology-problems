@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 
 # Standard Library
-import os
 import random
-import argparse
 import sys
 
 # Local repo modules
@@ -20,8 +18,6 @@ def get_question_text(question_type: str) -> str:
 		"data provided below, which village shows the "
 		f"<strong>{question_type.upper()}</strong> level of biodiversity overall?"
 	)
-
-import random
 
 #==============
 def select_villages(num_requested) -> list:
@@ -378,7 +374,7 @@ def generate_choices(villages: list, z_scores: dict, totals: dict, question_type
 	return choices, correct_village
 
 #==============
-def write_question(N: int, num_choices: int) -> str:
+def write_question(N: int, args) -> str:
 	"""
 	Creates a formatted multiple-choice question.
 
@@ -390,7 +386,7 @@ def write_question(N: int, num_choices: int) -> str:
 		str: Formatted question string.
 	"""
 	question_type = random.choice(("highest", "lowest"))
-	villages = select_villages(num_choices)
+	villages = select_villages(args.num_choices)
 	random.shuffle(villages)
 	z_scores = generate_z_scores(villages)
 	totals = {village: sum_z_scores(z_scores[village]) for village in villages}
@@ -406,24 +402,12 @@ def write_question(N: int, num_choices: int) -> str:
 
 #==============
 def main():
-	# Define argparse for command-line options
-	parser = argparse.ArgumentParser(description="Generate biodiversity questions.")
-	parser.add_argument('-d', '--duplicates', type=int, default=1, help="Number of questions to create.")
-	parser.add_argument('-n', '--num_choices', type=int, default=4, help="Number of choices to present.")
+	parser = bptools.make_arg_parser(description="Generate biodiversity questions.")
+	parser = bptools.add_choice_args(parser, default=4)
 	args = parser.parse_args()
 
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print(f'Writing to file: {outfile}')
-
-	with open(outfile, 'w') as f:
-		N = 1
-		for _ in range(args.duplicates):
-			complete_question = write_question(N, args.num_choices)
-			if complete_question is not None:
-				N += 1
-				f.write(complete_question)
-
-	bptools.print_histogram()
+	outfile = bptools.make_outfile(None)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #==============
 if __name__ == '__main__':

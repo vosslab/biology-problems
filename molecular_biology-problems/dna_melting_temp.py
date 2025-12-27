@@ -1,26 +1,12 @@
 #!/usr/bin/env python3
 
-import os
 import random
 import seqlib
 
 """
 give the user four different primers and have them choose which one has the lowest/highest melting temp
 """
-
-#=====================
-#=====================
-def getATcontent(seq):
-	at_content = 0
-	at_content += seq.count('A')
-	at_content += seq.count('T')
-
-#=====================
-#=====================
-def getCGcontent(seq):
-	at_content = 0
-	at_content += seq.count('C')
-	at_content += seq.count('G')
+import bptools
 
 #=====================
 #=====================
@@ -54,53 +40,70 @@ def makeChoices(sequence_len, answer_num_at_bases):
 	return choices_list, answer
 
 #=====================
+def make_question(question_num, question_type, sequence_len, num_off_bases):
+	question = (
+		"Which one of the following DNA sequences below will have the "
+		+ "<strong>{0}</strong> melting point (T<sub>m</sub>).".format(
+			question_type.upper()
+		)
+	)
+	question += '<p><i>Hint: I tried to make this question pretty easy and it does not require a calculator.</i></p>'
+
+	if question_type == 'highest':
+		answer_num_at_bases = num_off_bases
+	elif question_type == 'lowest':
+		answer_num_at_bases = sequence_len - num_off_bases
+	else:
+		return None
+
+	choices_list, answer = makeChoices(sequence_len, answer_num_at_bases)
+	table_list = [seqlib.DNA_Table(choice_seq) for choice_seq in choices_list]
+	answer_table = seqlib.DNA_Table(answer)
+	bb_question = bptools.formatBB_MC_Question(question_num, question, table_list, answer_table)
+	return bb_question
+
+
+#=====================
+def write_question_batch(start_num, args):
+	questions = []
+	for offset, question_type in enumerate(('highest', 'lowest')):
+		question_num = start_num + offset
+		question = make_question(
+			question_num,
+			question_type,
+			args.sequence_len,
+			args.num_off_bases
+		)
+		if question is None:
+			continue
+		questions.append(question)
+	return questions
+
+
 #=====================
 #=====================
+def parse_arguments():
+	parser = bptools.make_arg_parser(description="Generate DNA melting temperature questions.", batch=True)
+	parser.add_argument(
+		'-s', '--sequence-length', type=int, dest='sequence_len',
+		default=12, help='Length of each DNA sequence.'
+	)
+	parser.add_argument(
+		'-o', '--num-off-bases', type=int, dest='num_off_bases',
+		default=3, help='Number of off bases to bias the correct answer.'
+	)
+	args = parser.parse_args()
+	return args
+
+
+#=====================
+def main():
+	args = parse_arguments()
+	outfile = bptools.make_outfile(__file__, f"len_{args.sequence_len}")
+	questions = bptools.collect_question_batches(write_question_batch, args)
+	bptools.write_questions_to_file(questions, outfile)
+
+
 #=====================
 if __name__ == '__main__':
-	sequence_len = 12
-	num_off_bases = 3
-	num_questions = 199
-
-	N = 0
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	for i in range(num_questions//2):
-		for question_type in ('highest', 'lowest'):
-			N += 1
-			number = "{0}. ".format(N)
-			#header = "{0} primer design".format(N)
-			question = ("Which one of the following DNA sequences below will have the "
-				+"<strong>{0}</strong> melting point (T<sub>m</sub>).</p>".format(
-				question_type.upper()
-			))
-			question += '<p><i>Hint: I tried to make this question pretty easy and it does not require a calculator.</i></p>'
-
-			if question_type == 'highest':
-				answer_num_at_bases = num_off_bases
-			elif question_type == 'lowest':
-				answer_num_at_bases = sequence_len - num_off_bases
-
-			choices_list, answer = makeChoices(sequence_len, answer_num_at_bases)
-
-			f.write("MC\t<p>{0}\t".format(number + question))
-			print("{0}. {1}".format(N, question))
-
-			letters = "ABCDEF"
-			for i, choice_seq in enumerate(choices_list):
-				f.write('{0}\t'.format(seqlib.DNA_Table(choice_seq)))
-				if choice_seq == answer:
-					prefix = 'x'
-					f.write('Correct\t')
-				else:
-					prefix = ' '
-					f.write('Incorrect\t')
-				bottom_sequence = seqlib.complement(choice_seq)
-				print("- [{0}] {1}. 5'-{2}-3'".format(prefix, letters[i], choice_seq))
-				print("-        3'-{0}-5'".format(bottom_sequence))
-				print("")
-			print("")
-			f.write('\n')
-	f.close()
-
+	main()

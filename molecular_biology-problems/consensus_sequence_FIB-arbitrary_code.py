@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-import os
 import sys
 import random
+import bptools
 import seqlib
 
 num_sequence = 10 #fixed for easy
@@ -129,19 +129,17 @@ def makeCompleteQuestion():
 	print('')
 	return bbquestion
 
+def write_question(N, args):
+	return makeCompleteQuestion()
+
 
 #==========================
 #==========================
 if __name__ == '__main__':
-	duplicates = 6
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	for i in range(duplicates):
-		complete_question = makeCompleteQuestion()
-		f.write(complete_question)
-		f.write('\n')
-	f.close()
+	parser = bptools.make_arg_parser(description="Generate consensus sequence FIB questions.")
+	args = parser.parse_args()
+	outfile = bptools.make_outfile(None)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #==========================
 #==========================

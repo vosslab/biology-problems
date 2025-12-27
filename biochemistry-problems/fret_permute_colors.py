@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
-import os
-import sys
 import random
 import itertools
+
+import bptools
 
 colors = ('violet (410 nm)', 'indigo (430 nm)', 'blue (460 nm)', 'green (530 nm)', 'yellow (580 nm)', 'orange (600 nm)', 'red (700 nm)')
 html_colors = ('#9d159d', '#4a0080', '#000080', '#006600', '#b3b300', '#e63900', '#990000')
@@ -26,10 +26,7 @@ def writeChoice(donor_absorb_id, fret_color_id, acceptor_emit_id):
 
 #==================================
 #==================================
-if __name__ == '__main__':
-	answer_hist = {}
-	num_duplicates = 2
-	#==================================
+def get_filtered_color_sets() -> list:
 	indices = list(range(7))
 	set_indices = list(itertools.combinations(indices, 3))
 	filtered_set_indices = []
@@ -38,53 +35,55 @@ if __name__ == '__main__':
 			#make sure the colors are not next to one another
 			continue
 		filtered_set_indices.append(color_set)
-	print("There are {0} possible color combinations after filtering".format(len(filtered_set_indices)))
-	#print(set_indices)
+	return filtered_set_indices
 
-	#==================================
-	N = 0
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-		
-	for color_set in filtered_set_indices:
-		if color_set[1] - color_set[0] == 1 or color_set[2] - color_set[1] == 1:
-			#make sure the colors are not next to one another
-			continue
-		donor_absorb = colors[color_set[0]]
-		fret_color = colors[color_set[1]]
-		acceptor_emit = colors[color_set[2]]
-		print(donor_absorb, fret_color, acceptor_emit)
-		N += 1
-		number = "{0}. ".format(N)
-		question = ""
-		question += "F&ouml;rster resonance energy transfer (FRET) requires both an acceptor fluorescent protein and a donor fluorescent protein. "
-		question += "Which one of the following color combinations would be an effective FRET setup? "
+#==================================
+def build_question(color_set):
+	question_text = ""
+	question_text += "F&ouml;rster resonance energy transfer (FRET) requires both an acceptor fluorescent protein and a donor fluorescent protein. "
+	question_text += "Which one of the following color combinations would be an effective FRET setup? "
+	permuations = list(itertools.permutations(color_set))
+	random.shuffle(permuations)
+	choices = []
+	answer = None
+	for color_permute in permuations:
+		choice = writeChoice(color_permute[0], color_permute[1], color_permute[2])
+		choices.append(choice)
+		if color_permute == color_set:
+			answer = choice
+	return question_text, choices, answer
 
-		letters = "ABCDEF"
+#==================================
+def write_question_batch(start_num: int, args) -> list:
+	color_sets = get_filtered_color_sets()
+	if args.max_questions is not None:
+		remaining = args.max_questions - (start_num - 1)
+		if remaining <= 0:
+			return []
+		color_sets = color_sets[:remaining]
+	questions = []
+	for offset, color_set in enumerate(color_sets):
+		question_text, choices, answer = build_question(color_set)
+		complete_question = bptools.formatBB_MC_Question(start_num + offset, question_text, choices, answer)
+		questions.append(complete_question)
+	return questions
 
-		permuations = list(itertools.permutations(color_set))
-		random.shuffle(permuations)
-		#print(permuations)
-		
-		for d in range(num_duplicates):
-			random.shuffle(permuations)
-			f.write("MC\t{0}\t".format(question))
-			print("{0}. {1}".format(N, question))
-			for i, color_permute in enumerate(permuations):
-				choice = writeChoice(color_permute[0], color_permute[1], color_permute[2])
-				f.write(choice+'\t')
-				if color_permute == color_set:
-					prefix = 'x'
-					f.write('Correct\t')
-					answer_hist[letters[i]] = answer_hist.get(letters[i], 0) + 1
-				else:
-					prefix = ' '
-					f.write('Incorrect\t')
-				print('- [{0}] {1}. {2}'.format(prefix, letters[i], choice))
-			print("")
-			f.write('\n')
-	f.close()
-	print(answer_hist)
+#==================================
+def parse_arguments():
+	parser = bptools.make_arg_parser(
+		description="Generate FRET color permutation questions.",
+		batch=True
+	)
+	args = parser.parse_args()
+	return args
 
+#==================================
+def main():
+	args = parse_arguments()
+	outfile = bptools.make_outfile(None)
+	questions = bptools.collect_question_batches(write_question_batch, args)
+	bptools.write_questions_to_file(questions, outfile)
+
+if __name__ == '__main__':
+	main()
 

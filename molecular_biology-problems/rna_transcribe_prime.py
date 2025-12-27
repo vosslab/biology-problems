@@ -1,17 +1,15 @@
 #!/usr/bin/env python3
 
-import os
-import sys
 import random
 
 #local
 import seqlib
 import bptools
 
-def write_question(N, seqlen):
+def write_question(N, args):
 	#============================
 	#sequence is 5' -> 3'
-	question_seq = seqlib.makeSequence(seqlen)
+	question_seq = seqlib.makeSequence(args.sequence_len)
 
 	if random.randint(1,2) == 1:
 		question_table = seqlib.Single_Strand_Table(question_seq, fivetothree=True)
@@ -37,7 +35,7 @@ def write_question(N, seqlen):
 
 	#============================
 	choice_list = []
-	half = int(seqlen//2)
+	half = int(args.sequence_len//2)
 
 	#choice 1
 	choice_list.append(question_seq)
@@ -71,24 +69,23 @@ def write_question(N, seqlen):
 	return bbformat
 
 #============================
+def parse_arguments():
+	parser = bptools.make_arg_parser(description="Generate RNA transcription multiple choice questions.")
+	parser.add_argument(
+		'-s', '--sequence-length', dest='sequence_len',
+		type=int, default=9, help='Length of the DNA sequence.'
+	)
+	args = parser.parse_args()
+	return args
+
+
 #============================
-#============================
+def main():
+	args = parse_arguments()
+	outfile = bptools.make_outfile(__file__, f"len_{args.sequence_len}")
+	bptools.collect_and_write_questions(write_question, args, outfile)
+
+
 #============================
 if __name__ == '__main__':
-	if len(sys.argv) >= 2:
-		seqlen = int(sys.argv[1])
-	else:
-		seqlen = 9
-	if len(sys.argv) >= 3:
-		num_sequences = int(sys.argv[2])
-	else:
-		num_sequences = 19
-
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	for i in range(num_sequences):
-		N = i + 1
-		bbtext = write_question(N, seqlen)
-		f.write(bbtext)
-	f.close()
+	main()

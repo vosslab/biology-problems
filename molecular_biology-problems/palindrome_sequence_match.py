@@ -1,14 +1,7 @@
 #!/usr/bin/env python3
 # ^^ Specifies the Python3 environment to use for script execution
 
-# Import built-in Python modules
-# Provides functions for interacting with the operating system
-import os
-# Provides functions to generate random numbers and selections
 import random
-# Provides tools to parse command-line arguments
-import argparse
-import sys
 import copy
 
 # Import external modules (pip-installed)
@@ -120,75 +113,22 @@ def write_question(N):
 	bbformat = bptools.formatBB_MAT_Question(N, question_text, answers_table_list, matching_table_list)
 	return bbformat
 
+def write_question_wrapper(N, args):
+	return write_question(N)
+
+
 #===========================================================
-#===========================================================
-# This function handles the parsing of command-line arguments.
 def parse_arguments():
-	"""
-	Parses command-line arguments for the script.
-
-	Returns:
-		argparse.Namespace: Parsed arguments with attributes `duplicates`,
-		`num_choices`, and `question_type`.
-	"""
-	# Create an argument parser with a description of the script's functionality
-	parser = argparse.ArgumentParser(description="Generate questions.")
-
-	# Add an argument to specify the number of duplicate questions to generate
-	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='Number of duplicate runs to do or number of questions to create',
-		default=1
-	)
-
-	# Parse the provided command-line arguments and return them
+	parser = bptools.make_arg_parser(description="Generate palindrome matching questions.")
 	args = parser.parse_args()
 	return args
 
+
 #===========================================================
-#===========================================================
-# This function serves as the entry point for generating and saving questions.
 def main():
-	"""
-	Main function that orchestrates question generation and file output.
-	"""
-
-	# Parse arguments from the command line
 	args = parse_arguments()
-
-	# Generate the output file name based on the script name and question type
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
-	outfile = (
-		'bbq'
-		f'-{script_name}'  # Add the script name to the file name
-		'-questions.txt'  # Add the file extension
-	)
-
-	# Print a message indicating where the file will be saved
-	print(f'Writing to file: {outfile}')
-
-	# Open the output file in write mode
-	with open(outfile, 'w') as f:
-
-		# Initialize the question number counter
-		N = 0
-
-		# Generate the specified number of questions
-		for _ in range(args.duplicates):
-
-			# Generate the complete formatted question
-			complete_question = write_question(N+1)
-
-			# Write the question to the file if it was generated successfully
-			if complete_question is not None:
-				N += 1
-				f.write(complete_question)
-
-	# If the question type is multiple choice, print a histogram of results
-	bptools.print_histogram()
-
-	# Print a message indicating how many questions were saved
-	print(f'saved {N} questions to {outfile}')
+	outfile = bptools.make_outfile(__file__)
+	bptools.collect_and_write_questions(write_question_wrapper, args, outfile)
 
 #===========================================================
 #===========================================================
@@ -198,4 +138,3 @@ if __name__ == '__main__':
 	main()
 
 ## THE END
-

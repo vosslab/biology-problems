@@ -3,13 +3,9 @@
 
 # Import built-in Python modules
 # Provides functions for interacting with the operating system
-import os
 import math
-import time
 # Provides functions to generate random numbers and selections
 import random
-# Provides tools to parse command-line arguments
-import argparse
 import statistics
 
 # Import external modules (pip-installed)
@@ -287,7 +283,7 @@ def format_question_html(values: list, mu: float, sigma: float, method: str, tai
 
 #===========================================================
 #===========================================================
-def write_question(N: int, method: str) -> str:
+def write_question(N: int, args) -> str:
 	"""
 	Create a complete formatted question for output.
 
@@ -301,6 +297,7 @@ def write_question(N: int, method: str) -> str:
 	mu = 4.0
 	sigma = 0.6
 
+	method = args.test_method
 	if method == 'ztest':
 		tail = 'two'
 	else:
@@ -346,22 +343,10 @@ def parse_arguments():
 	Returns:
 		argparse.Namespace: Parsed args.
 	"""
-	parser = argparse.ArgumentParser(
+	parser = bptools.make_arg_parser(
 		description="Generate Busse Woods diversity questions."
 	)
-
-	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='Number of questions to create',
-		default=1
-	)
-
-	parser.add_argument(
-		'-x', '--max-questions', type=int, dest='max_questions',
-		default=99, help='Max number of questions'
-	)
-
-	test_group = parser.add_mutually_exclusive_group(required=True)
+	test_group = parser.add_mutually_exclusive_group(required=False)
 	test_group.add_argument(
 		'-m', '--method', dest='test_method', type=str,
 		choices=('ztest', 'ttest'),
@@ -377,7 +362,7 @@ def parse_arguments():
 		action='store_const', const='ttest',
 		help='Use one sample t test with H1 mean < 4.0'
 	)
-
+	parser.set_defaults(test_method='ztest')
 	args = parser.parse_args()
 	return args
 
@@ -396,46 +381,8 @@ def main():
 	6. Print status.
 	"""
 	args = parse_arguments()
-
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
-	outfile = (
-		'bbq'
-		f'-{script_name}'
-		f'-{args.test_method}'
-		'-questions.txt'
-	)
-
-	question_bank_list: list[str] = []
-	N = 0
-
-	for _ in range(args.duplicates):
-		gene_letters_str = bptools.generate_gene_letters(3)
-
-		t0 = time.time()
-		complete_question = write_question(N + 1, args.test_method)
-		if time.time() - t0 > 1.0:
-			print(f"Question {N+1} complete in {time.time() - t0:.1f} seconds")
-
-		if complete_question is not None:
-			N += 1
-			question_bank_list.append(complete_question)
-
-		if N >= args.max_questions:
-			break
-
-	if len(question_bank_list) > args.max_questions:
-		random.shuffle(question_bank_list)
-		question_bank_list = question_bank_list[:args.max_questions]
-
-	print(f'\nWriting {len(question_bank_list)} question to file: {outfile}')
-
-	write_count = 0
-	with open(outfile, 'w') as f:
-		for q in question_bank_list:
-			write_count += 1
-			f.write(q)
-
-	print(f'... saved {write_count} questions to {outfile}\n')
+	outfile = bptools.make_outfile(None, args.test_method)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #===========================================================
 #===========================================================

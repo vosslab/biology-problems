@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import os
 import sys
 import math
 import copy
@@ -227,25 +226,21 @@ def makeCompleteProblem(N, xvals, Km, Vmax, inhibition):
 #=============================
 #=============================
 #=============================
-if __name__ == '__main__':
-	### things don't change
+#=============================
+def write_question_batch(start_num: int, args) -> list:
 	#acceptable range: >40, <200, multiple of 20
 	Vmax_choices = [40, 60, 80, 100, 120, 140, 160, 180, 200]
-
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-
-	### things that do change
-	#Vmax = random.choice(Vmax_choices)
-	#Km = random.choice(Km_choices)
 	inhibition_types = ['competitive', 'un-competitive', 'non-competitive']
-	#inhibition_types = ['competitive']
-	#inhibition_types = ['un-competitive']
-	#inhibition_types = ['non-competitive']
-
 	mode = 1
-	N = 1
+
+	questions = []
+	remaining = None
+	if args.max_questions is not None:
+		remaining = args.max_questions - (start_num - 1)
+		if remaining <= 0:
+			return questions
+
+	N = start_num
 	for inhibition in inhibition_types:
 		for Vmax in Vmax_choices:
 			xvals = makeXvals(mode)
@@ -253,7 +248,27 @@ if __name__ == '__main__':
 			for Km in Km_choices:
 				bb_question = makeCompleteProblem(N, xvals, Km, Vmax, inhibition)
 				if bb_question is not None:
-					f.write("{0}\n".format(bb_question))
+					questions.append(bb_question)
 					N += 1
-	f.close()
-	bptools.print_histogram()
+					if remaining is not None and len(questions) >= remaining:
+						return questions
+	return questions
+
+#=============================
+def parse_arguments():
+	parser = bptools.make_arg_parser(
+		description="Generate Michaelis-Menten inhibition table questions.",
+		batch=True
+	)
+	args = parser.parse_args()
+	return args
+
+#=============================
+def main():
+	args = parse_arguments()
+	outfile = bptools.make_outfile(None)
+	questions = bptools.collect_question_batches(write_question_batch, args)
+	bptools.write_questions_to_file(questions, outfile)
+
+if __name__ == '__main__':
+	main()

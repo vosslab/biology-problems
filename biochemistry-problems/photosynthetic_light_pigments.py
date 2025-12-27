@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import os
 import random
 
 import bptools
@@ -54,81 +53,84 @@ def colorDescription(leaf_color):
 
 #==================================
 #==================================
+#==================================
+def build_question(leaf_color):
+	color_desc = colorDescription(leaf_color)
+	question = ""
+	question += "<p>A plant with unique photosynthetic pigments has leaves that appear {0}.</p>".format(color_desc)
+	question += "<p>Which one of the following wavelengths of visible light "
+	question += "would most effectively be absorbed by this pigment?</p>"
+
+	wrong_colors = leaf_colors[leaf_color]
+	good_color_map = [True] * len(base_colors)
+	for color in wrong_colors:
+		color_index = base_colors.index(color)
+		if color_index - 1 > 0:
+			good_color_map[color_index - 1] = False
+		good_color_map[color_index] = False
+		if color_index + 1 < len(good_color_map):
+			good_color_map[color_index + 1] = False
+
+	answer_colors = []
+	for i, v in enumerate(good_color_map):
+		if v is True:
+			answer_colors.append(base_colors[i])
+
+	indices = random.sample(range(len(answer_colors)), 2)
+	indices.sort()
+	a1 = answer_colors[indices[0]]
+	a2 = answer_colors[indices[1]]
+	answer = writeChoice(a1, a2)
+
+	choices_list = []
+	for i in range(10):
+		names = [random.choice(answer_colors), random.choice(wrong_colors)]
+		random.shuffle(names)
+		wrong_choice = writeChoice(names[0], names[1])
+		choices_list.append(wrong_choice)
+	choices_list = list(set(choices_list))
+	random.shuffle(choices_list)
+	choices_list = choices_list[:3]
+	choices_list.append(answer)
+	random.shuffle(choices_list)
+	return question, choices_list, answer
+
+#==================================
+def write_question_batch(start_num: int, args) -> list:
+	leaf_color_list = list(leaf_colors.keys())
+	if args.max_questions is not None:
+		remaining = args.max_questions - (start_num - 1)
+		if remaining <= 0:
+			return []
+		leaf_color_list = leaf_color_list[:remaining]
+	questions = []
+	for offset, leaf_color in enumerate(leaf_color_list):
+		question_text, choices_list, answer = build_question(leaf_color)
+		complete_question = bptools.formatBB_MC_Question(
+			start_num + offset,
+			question_text,
+			choices_list,
+			answer
+		)
+		questions.append(complete_question)
+	return questions
+
+#==================================
+def parse_arguments():
+	parser = bptools.make_arg_parser(
+		description="Generate photosynthetic light pigment questions.",
+		batch=True
+	)
+	args = parser.parse_args()
+	return args
+
+#==================================
+def main():
+	args = parse_arguments()
+	outfile = bptools.make_outfile(None)
+	questions = bptools.collect_question_batches(write_question_batch, args)
+	bptools.write_questions_to_file(questions, outfile)
+
 if __name__ == '__main__':
-	answer_hist = {}
-	num_duplicates = 2
-	#==================================
-	indices = list(range(7))
-	set_indices = list(itertools.combinations(indices, 3))
-	filtered_set_indices = []
-	for color_set in set_indices:
-		if color_set[1] - color_set[0] == 1 or color_set[2] - color_set[1] == 1:
-			#make sure the colors are not next to one another
-			continue
-		filtered_set_indices.append(color_set)
-	print("There are {0} possible color combinations after filtering".format(len(filtered_set_indices)))
-	#print(set_indices)
-
-	#==================================
-	N = 0
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	
-	duplicates = 10
-	
-	for i in range(duplicates):
-		for leaf_color in leaf_colors.keys():
-			N += 1
-			number = "{0}. ".format(N)
-			color_desc = colorDescription(leaf_color)
-			question = ""
-			question += "<p>A plant with unique photosynthetic pigments has leaves that appear {0}.</p>".format(color_desc)
-			question += "<p>Which one of the following wavelengths of visible light "
-			question += "would most effectively be absorbed by this pigment?</p>"
-	
-			wrong_colors = leaf_colors[leaf_color]
-	
-			good_color_map = [True] * len(base_colors)
-			for color in wrong_colors:
-				color_index = base_colors.index(color)
-				if color_index-1 > 0:
-					good_color_map[color_index-1] = False
-				good_color_map[color_index] = False
-				if color_index+1 < len(good_color_map):
-					good_color_map[color_index+1] = False
-			#print(good_color_map)
-	
-			answer_colors = []		
-			for i, v in enumerate(good_color_map):
-				if v is True:
-					answer_colors.append(base_colors[i])
-			#print(answer_colors)
-			
-			
-			indices = random.sample(range(len(answer_colors)), 2)
-			indices.sort()
-			a1 = answer_colors[indices[0]]
-			a2 = answer_colors[indices[1]]
-			answer = writeChoice(a1, a2)
-	
-			choices_list = []
-			for i in range(10):
-				names = [random.choice(answer_colors), random.choice(wrong_colors), ]
-				random.shuffle(names)
-				wrong_choice = writeChoice(names[0], names[1])
-				choices_list.append(wrong_choice)
-			choices_list = list(set(choices_list))
-			random.shuffle(choices_list)
-			choices_list = choices_list[:3]
-	
-			choices_list.append(answer)
-			random.shuffle(choices_list)
-	
-			bbformat = bptools.formatBB_MC_Question(N, question, choices_list, answer)
-			f.write(bbformat)
-
-	f.close()
-	bptools.print_histogram()
-
+	main()
 

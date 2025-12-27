@@ -2,12 +2,8 @@
 # ^^ Specifies the Python3 environment to use for script execution
 
 # Import built-in Python modules
-# Provides functions for interacting with the operating system
-import os
 # Provides functions to generate random numbers and selections
 import random
-# Provides tools to parse command-line arguments
-import argparse
 import copy
 
 # Import external modules (pip-installed)
@@ -21,13 +17,13 @@ import pedigree_code_strings
 
 
 #=======================
-def multipleChoiceQuestionSet():
+def multipleChoiceQuestionSet(start_num: int):
 	bb_output_format_list = []
 	choices_list = ['autosomal dominant', 'autosomal recessive', 'x-linked dominant', 'x-linked recessive', 'y-linked']
 	question_text = ("<p>Examine the pedigree above. "
 	+"Which one of the following patterns of inheritance is most likely demonstrated in the above pedigree inheritance?</p> "
 	)
-	N = 0
+	N = start_num - 1
 	for ad in pedigree_code_strings.autosomal_dominant:
 		if random.random() < 0.5:
 			ad = pedigree_lib.mirrorPedigree(ad)
@@ -84,19 +80,7 @@ def parse_arguments():
 		`num_choices`, and `question_type`.
 	"""
 	# Create an argument parser with a description of the script's functionality
-	parser = argparse.ArgumentParser(description="Generate questions.")
-
-	# Add an argument to specify the number of duplicate questions to generate
-	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='Number of duplicate runs to do or number of questions to create',
-		default=1
-	)
-
-	parser.add_argument(
-		'-x', '--max-questions', type=int, dest='max_questions',
-		default=99, help='Max number of questions'
-	)
+	parser = bptools.make_arg_parser(description="Generate questions.", batch=True)
 
 
 	# Parse the provided command-line arguments and return them
@@ -122,56 +106,20 @@ def main():
 	# Parse arguments from the command line
 	args = parse_arguments()
 
-	# Generate the output file name based on the script name and arguments
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
-	outfile = (
-		'bbq'
-		f'-{script_name}'              # Add the script name to the file name
-		'-questions.txt'               # File extension
-	)
+	outfile = bptools.make_outfile(None)
+	questions = bptools.collect_question_batches(write_question_batch, args)
+	bptools.write_questions_to_file(questions, outfile)
 
-	# Store all complete formatted questions
-	question_bank_list = []
-
-	# Initialize question counter
-	N = 0
-
-	# Create the specified number of questions
-	for _ in range(args.duplicates):
-		# Generate gene letters (if needed by question logic)
-		gene_letters_str = bptools.generate_gene_letters(3)
-
-		# Create a full formatted question (Blackboard format)
-		bb_output_format_list = multipleChoiceQuestionSet()
-
-		# Append question if successfully generated
-		if bb_output_format_list is not None:
-			N += len(bb_output_format_list)
-			question_bank_list += bb_output_format_list
-
-		if N >= args.max_questions:
-			break
-
-	# Show a histogram of answer distributions for MC/MA types
-	bptools.print_histogram()
-
-	# Shuffle and limit the number of questions if over max
-	if len(question_bank_list) > args.max_questions:
-		random.shuffle(question_bank_list)
-		question_bank_list = question_bank_list[:args.max_questions]
-
-	# Announce where output is going
-	print(f'\nWriting {len(question_bank_list)} question to file: {outfile}')
-
-	# Write all questions to file
-	write_count = 0
-	with open(outfile, 'w') as f:
-		for complete_question in question_bank_list:
-			write_count += 1
-			f.write(complete_question)
-
-	# Final status message
-	print(f'... saved {write_count} questions to {outfile}\n')
+#===========================================================
+def write_question_batch(start_num: int, args) -> list:
+	questions = multipleChoiceQuestionSet(start_num)
+	if args.max_questions is not None:
+		remaining = args.max_questions - (start_num - 1)
+		if remaining <= 0:
+			return []
+		if len(questions) > remaining:
+			questions = questions[:remaining]
+	return questions
 
 #===========================================================
 #===========================================================
