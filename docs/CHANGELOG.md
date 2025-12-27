@@ -192,6 +192,8 @@
   dilution variants).
 - Removed `duplicates_default` override support from `bptools.add_base_args`,
   `add_base_args_batch`, and `make_arg_parser`, keeping a fixed default of 2.
+- Removed `max_questions_default` override support from `bptools` parser helpers,
+  keeping a fixed default of None for single-question scripts and 99 for batch.
 - Documented how to switch batch scripts from fixed cycles to individual
   scenario selection in [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md).
 - Added a migration note about converting stdout-based question scripts to

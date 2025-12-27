@@ -83,8 +83,8 @@ Writers should accept the full `args` namespace for consistency.
   - Standardizes status messages and pluralization.
 
 ### Batch script defaults
-- Batch generators that return large fixed lists should set
-  `max_questions_default=99` when calling `add_base_args(...)`.
+- Batch generators that return large fixed lists should rely on the batch
+  parser default cap of 99.
 - Keep the global default `duplicate_runs=2` for quick testing.
 
 ### Histogram printing

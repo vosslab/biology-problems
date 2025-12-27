@@ -155,13 +155,12 @@ def print_histogram():
 #===================================================================================
 
 #==========================
-def add_base_args(parser, max_questions_default=None):
+def add_base_args(parser):
 	"""
 	Add base CLI arguments for common generators.
 
 	Args:
 		parser (argparse.ArgumentParser): Argument parser to extend.
-		max_questions_default (int): Default value for max questions.
 
 	Returns:
 		argparse.ArgumentParser: The updated parser.
@@ -173,37 +172,35 @@ def add_base_args(parser, max_questions_default=None):
 	)
 	parser.add_argument(
 		'-x', '--max-questions', type=int, dest='max_questions',
-		default=max_questions_default, help='Maximum number of questions to keep.'
+		default=None, help='Maximum number of questions to keep.'
 	)
 	return parser
 
 #==========================
-def add_base_args_batch(parser, max_questions_default=99):
+def add_base_args_batch(parser):
 	"""
 	Add base CLI arguments for batch generators with a default cap.
 
 	Args:
 		parser (argparse.ArgumentParser): Argument parser to extend.
-		max_questions_default (int): Default value for max questions.
 
 	Returns:
 		argparse.ArgumentParser: The updated parser.
 	"""
 	parser = add_base_args(
-		parser,
-		max_questions_default=max_questions_default
+		parser
 	)
+	parser.set_defaults(max_questions=99)
 	return parser
 
 #==========================
-def make_arg_parser(description=None, batch=False, max_questions_default=None):
+def make_arg_parser(description=None, batch=False):
 	"""
 	Create a standard argument parser with base args.
 
 	Args:
 		description (str): Optional parser description.
 		batch (bool): Use batch defaults when True.
-		max_questions_default (int | None): Override max_questions default.
 
 	Returns:
 		argparse.ArgumentParser: Configured parser.
@@ -212,16 +209,12 @@ def make_arg_parser(description=None, batch=False, max_questions_default=None):
 		description = "Generate blackboard questions."
 	parser = argparse.ArgumentParser(description=description)
 	if batch:
-		if max_questions_default is None:
-			max_questions_default = 99
 		parser = add_base_args_batch(
-			parser,
-			max_questions_default=max_questions_default
+			parser
 		)
 	else:
 		parser = add_base_args(
-			parser,
-			max_questions_default=max_questions_default
+			parser
 		)
 	return parser
 
