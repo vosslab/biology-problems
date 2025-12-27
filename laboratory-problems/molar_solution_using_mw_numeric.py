@@ -37,8 +37,10 @@ def question_text(solute, volume, concentration):
 		merge_name = solute
 	else:
 		merge_name = f"{full_name.lower()} ({solute})"
+	volume_text = f"<span style='font-family: monospace;'>{volume} mL</span>"
+	concentration_text = f"<span style='font-family: monospace;'>{concentration} mM</span>"
 	question = f"<p>How many milligrams (mg) of {merge_name} would you need to make "
-	question += f"<strong>{volume} mL of a {concentration} mM</strong> {solute} solution?</p> "
+	question += f"<strong>{volume_text} of a {concentration_text}</strong> {solute} solution?</p> "
 	mw = molecular_weights[solute]
 	question += f"<p>The molecular weight of {merge_name} is {mw:.2f} g/mol. "
 	question += f"{solute} is a solid powder at room temperature.</p> "
@@ -84,7 +86,8 @@ def write_question(N, args):
 		return None
 	question = question_text(solute, volume, concentration)
 	tolerance = 0.9
-	return bptools.formatBB_NUM_Question(N, question, answer, tolerance)
+	bbf = bptools.formatBB_NUM_Question(N, question, answer, tolerance)
+	return bbf
 
 #==================================================
 def parse_arguments():

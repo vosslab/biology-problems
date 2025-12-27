@@ -6,7 +6,7 @@ import bptools
 #==================================================
 #==================================================
 def make_question_text(volume, df_value):
-	return (
+	question = (
 		"<p>Dilution factors are used in biology labs to make solutions at precise "
 		"concentrations, ensure consistency across experiments, and preserve valuable "
 		"samples while still meeting volume requirements. For example, if a student "
@@ -14,13 +14,15 @@ def make_question_text(volume, df_value):
 		"aliquot from a concentrated stock and add water to reach the final volume "
 		"than to prepare the solution from scratch each time.</p>"
 		f"<p>You are preparing a new solution with a dilution factor of DF={df_value}.</p>"
-		f"<p>How much liquid do you add to make a total of {volume:.1f} mL?</p>"
+		f"<p>How much liquid do you add to make a total of "
+		f"<span style='font-family: monospace;'>{volume:.1f} mL</span>?</p>"
 	)
+	return question
 
 #==================================================
 #==================================================
 def format_volumes(vol1, vol2):
-	return (
+	choice_text = (
 		f"<span style='color: #e65400;'>"
 		f"<span style='font-family: monospace;'>{vol1:.1f} mL</span> "
 		f"stock solution (aliquot)</span><br/>&nbsp;&nbsp;"
@@ -28,6 +30,7 @@ def format_volumes(vol1, vol2):
 		f"<span style='font-family: monospace;'>{vol2:.1f} mL</span> "
 		f"distilled water (diluent)</span>"
 	)
+	return choice_text
 
 #==================================================
 #==================================================
@@ -101,7 +104,8 @@ def write_question(N, args):
 	choices, answer_text = make_choices(df_value, volume_mL, args.num_choices)
 	if answer_text not in choices:
 		return None
-	return bptools.formatBB_MC_Question(N, q, choices, answer_text)
+	bbf = bptools.formatBB_MC_Question(N, q, choices, answer_text)
+	return bbf
 
 #==================================================
 #==================================================

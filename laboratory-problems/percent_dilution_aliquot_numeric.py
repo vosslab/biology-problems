@@ -48,8 +48,12 @@ def question_text(solute, volume, conc1, conc2):
 	unit1 = 'microliters (&mu;L)'
 	unit2 = 'milliliters (mL)'
 	unit = random.choice((unit1,unit2))
+	if unit == unit1:
+		volume_text = f"<span style='font-family: monospace;'>{volume} &mu;L</span>"
+	else:
+		volume_text = f"<span style='font-family: monospace;'>{volume} mL</span>"
 	question += '<p>You have an already prepared stock solution of {0}% {1} on the shelf.</p>'.format(conc2, solute)
-	question += '<p>Prepare {0} {1} of {2}% {3} solution using the stock solution.</p>'.format(volume, unit, conc1, solute)
+	question += '<p>Prepare {0} of {1}% {2} solution using the stock solution ({3}).</p>'.format(volume_text, conc1, solute, unit)
 	full_name = solute_full_names.get(solute, solute)
 	mw = molecular_weights[solute]
 	question += "<p>The molecular weight of {0} ({1}) is {2:.2f} g/mol.</p>".format(full_name.lower(), solute, mw)
@@ -69,29 +73,22 @@ def df_ratio_to_values(df_ratio):
 
 #==================================================
 #==================================================
-def write_question_batch(start_num, args):
-	question_list = []
-	question_num = start_num
-	for solute in solute_full_names.keys():
-		for df_ratio in df_ratios:
-			if df_ratio[1] < 3:
-				continue
-			volume, df1, df2 = df_ratio_to_values(df_ratio)
-			q = question_text(solute, volume, df1, df2)
-			aliquot = volume * df_ratio[1] / df_ratio[0]
-			answer = aliquot
-			tolerance = 0.9
-			bbf = bptools.formatBB_NUM_Question(question_num, q, answer, tolerance)
-			question_list.append(bbf)
-			question_num += 1
-	return question_list
+def write_question(N: int, args) -> str:
+	valid_ratios = [ratio for ratio in df_ratios if ratio[1] >= 3]
+	df_ratio = random.choice(valid_ratios)
+	solute = random.choice(list(solute_full_names.keys()))
+	volume, df1, df2 = df_ratio_to_values(df_ratio)
+	q = question_text(solute, volume, df1, df2)
+	aliquot = volume * df_ratio[1] / df_ratio[0]
+	tolerance = 0.9
+	bbf = bptools.formatBB_NUM_Question(N, q, aliquot, tolerance)
+	return bbf
 
 #==================================================
 #==================================================
 def parse_arguments():
 	parser = bptools.make_arg_parser(
-		description='Generate percent dilution aliquot numeric questions.',
-		batch=True
+		description='Generate percent dilution aliquot numeric questions.'
 	)
 	args = parser.parse_args()
 	return args
@@ -101,8 +98,7 @@ def parse_arguments():
 def main():
 	args = parse_arguments()
 	outfile = bptools.make_outfile()
-	questions = bptools.collect_question_batches(write_question_batch, args)
-	bptools.write_questions_to_file(questions, outfile)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #==================================================
 #==================================================

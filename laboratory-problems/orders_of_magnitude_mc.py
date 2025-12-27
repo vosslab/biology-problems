@@ -43,6 +43,24 @@ order_factors = {
 }
 
 #==================================================
+def build_scenarios():
+	scenarios = []
+	for unit in units:
+		for value in down_values:
+			for i in range(2, len(unit_orders[unit])):
+				first_prefix = unit_orders[unit][i-1]
+				second_prefix = unit_orders[unit][i]
+				scenarios.append((value, first_prefix, second_prefix, unit))
+		for value in up_values:
+			for i in range(2, len(unit_orders[unit])):
+				first_prefix = unit_orders[unit][i]
+				second_prefix = unit_orders[unit][i-1]
+				scenarios.append((value, first_prefix, second_prefix, unit))
+	return scenarios
+
+SCENARIOS = build_scenarios()
+
+#==================================================
 #==================================================
 def question_text(value, first_prefix, unit):
 	formed_str = format_value(value, first_prefix, unit)
@@ -108,43 +126,16 @@ def make_choices(value, first_prefix, second_prefix, unit):
 
 #==================================================
 #==================================================
-def write_question_batch(start_num: int, args) -> list:
-	questions = []
-	remaining = None
-	if args.max_questions is not None:
-		remaining = args.max_questions - (start_num - 1)
-		if remaining <= 0:
-			return questions
-	N = start_num
-	for unit in units:
-		for value in down_values:
-			for i in range(2, len(unit_orders[unit])):
-				first_prefix = unit_orders[unit][i-1]
-				second_prefix = unit_orders[unit][i]
-				q = question_text(value, first_prefix, unit)
-				choices, answer = make_choices(value, first_prefix, second_prefix, unit)
-				bbf = bptools.formatBB_MC_Question(N, q, choices, answer)
-				questions.append(bbf)
-				N += 1
-				if remaining is not None and len(questions) >= remaining:
-					return questions
-		for value in up_values:
-			for i in range(2, len(unit_orders[unit])):
-				first_prefix = unit_orders[unit][i]
-				second_prefix = unit_orders[unit][i-1]
-				q = question_text(value, first_prefix, unit)
-				choices, answer = make_choices(value, first_prefix, second_prefix, unit)
-				bbf = bptools.formatBB_MC_Question(N, q, choices, answer)
-				questions.append(bbf)
-				N += 1
-				if remaining is not None and len(questions) >= remaining:
-					return questions
-	return questions
+def write_question(N: int, args) -> str:
+	value, first_prefix, second_prefix, unit = random.choice(SCENARIOS)
+	q = question_text(value, first_prefix, unit)
+	choices, answer = make_choices(value, first_prefix, second_prefix, unit)
+	bbf = bptools.formatBB_MC_Question(N, q, choices, answer)
+	return bbf
 
 def parse_arguments():
 	parser = bptools.make_arg_parser(
-		description="Generate orders of magnitude questions.",
-		batch=True
+		description="Generate orders of magnitude questions."
 	)
 	args = parser.parse_args()
 	return args
@@ -152,8 +143,7 @@ def parse_arguments():
 def main():
 	args = parse_arguments()
 	outfile = bptools.make_outfile(None)
-	questions = bptools.collect_question_batches(write_question_batch, args)
-	bptools.write_questions_to_file(questions, outfile)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 if __name__ == '__main__':
 	main()

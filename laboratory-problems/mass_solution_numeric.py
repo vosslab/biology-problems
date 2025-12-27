@@ -37,8 +37,10 @@ def question_text(solute, volume, concentration):
 		merge_name = solute
 	else:
 		merge_name = "{0} ({1})".format(full_name.lower(), solute)
+	volume_text = f"<span style='font-family: monospace;'>{volume:.1f} mL</span>"
+	concentration_text = f"<span style='font-family: monospace;'>{concentration:.1f} mg/mL</span>"
 	question = "<p>How many milligrams (mg) of {0} would you need to make ".format(merge_name)
-	question += "<strong>{1} mL of a {2} mg/mL</strong> {0} solution?</p> ".format(solute, volume, concentration)
+	question += "<strong>{1} of a {2}</strong> {0} solution?</p> ".format(solute, volume_text, concentration_text)
 	mw = molecular_weights[solute]
 	question += "<p>The molecular weight of {0} is {1:.2f} g/mol. ".format(merge_name, mw)
 	question += "{0} is a solid powder at room temperature.</p> ".format(full_name)
@@ -61,31 +63,19 @@ def get_vol_conc_answer(solute):
 	return volume, concentration, answer
 
 #==================================================
-def write_question_batch(start_num: int, args) -> list:
+def write_question(N: int, args) -> str:
 	powders = list(molecular_weights.keys())
-	questions = []
-	remaining = None
-	if args.max_questions is not None:
-		remaining = args.max_questions - (start_num - 1)
-		if remaining <= 0:
-			return questions
-	N = start_num
-	for solute in powders:
-		volume, concentration, answer = get_vol_conc_answer(solute)
-		if concentration is None:
-			continue
-		q = question_text(solute, volume, concentration)
-		bbf = bptools.formatBB_NUM_Question(N, q, answer, 0.9)
-		questions.append(bbf)
-		N += 1
-		if remaining is not None and len(questions) >= remaining:
-			return questions
-	return questions
+	solute = random.choice(powders)
+	volume, concentration, answer = get_vol_conc_answer(solute)
+	if concentration is None:
+		return None
+	q = question_text(solute, volume, concentration)
+	bbf = bptools.formatBB_NUM_Question(N, q, answer, 0.9)
+	return bbf
 
 def parse_arguments():
 	parser = bptools.make_arg_parser(
-		description="Generate mass solution numeric questions.",
-		batch=True
+		description="Generate mass solution numeric questions."
 	)
 	args = parser.parse_args()
 	return args
@@ -93,8 +83,7 @@ def parse_arguments():
 def main():
 	args = parse_arguments()
 	outfile = bptools.make_outfile(None)
-	questions = bptools.collect_question_batches(write_question_batch, args)
-	bptools.write_questions_to_file(questions, outfile)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 if __name__ == '__main__':
 	main()

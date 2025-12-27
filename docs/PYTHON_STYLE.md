@@ -24,9 +24,22 @@ Language Model guide to Neil python3 programming
 - Use f-strings, in older code I used `.format()` or `'%'` system, update to f-strings.
 - I prefer string concatenation `'+='` over multiline strings.
 - Start off python3 programs with the line `#!/usr/bin/env python3` to make them executable
-- return statements should be simple and not perform calculations, or fill out a dict, calculations and values should be stored in a variable and then return the variable.
+- Return statements should be simple and should not perform calculations, fill out a dict, or build strings. Store computed values and assembled strings in variables first, including any multiline HTML or text, then return the variable.
 - add comments within the code to describe what different lines are doing, to make for better readability later. especially for complex lines!
 - Please only use ascii characters in the script, if utf characters are need they should be escape e.g. `&alpha;` `&lrarr;`
+
+## QUOTING
+* Avoid backslash escaping quotes inside strings when possible.
+* Prefer alternating quote styles instead:
+* Use double quotes on the outside with single quotes inside.
+* Or use single quotes on the outside with double quotes inside.
+* This is especially useful for HTML like "<span style='...'>text</span>".
+
+## HTML UNITS IN MONOSPACE
+* When generating HTML for lab problems, render numeric values and their units in monospace for readability and alignment.
+* Use a span like:
+
+volume_text = f"<span style='font-family: monospace;'>{vol1:.1f} mL</span>"
 
 ## TESTING
 

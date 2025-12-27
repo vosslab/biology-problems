@@ -19,8 +19,10 @@ molecular_weights = {
 }
 
 def question_text(solute, volume, concentration):
+	volume_text = f"<span style='font-family: monospace;'>{volume} mL</span>"
+	concentration_text = f"<span style='font-family: monospace;'>{concentration}% (v/v)</span>"
 	question = f"<p>How many milliliters (mL) of {solute} you would need to make "
-	question += f"{volume} mL of a {concentration}% (v/v) {solute} solution?</p> "
+	question += f"{volume_text} of a {concentration_text} {solute} solution?</p> "
 	mw = molecular_weights[solute]
 	question += f"<p>The molecular weight of {solute} is {mw:.2f} g/mol. "
 	question += f"{solute.title()} is a liquid at room temperature.</p> "
@@ -41,23 +43,18 @@ def get_vol_conc_answer():
 	answer = int(volume * concentration / 100.)
 	return volume, concentration, answer
 
-def write_question_batch(N, args):
-	question_list = []
-	question_number = N
-	for solute in liquids:
-		volume, concentration, answer = get_vol_conc_answer()
-		q = question_text(solute, volume, concentration)
-		tolerance = 0.9
-		bbf = bptools.formatBB_NUM_Question(question_number, q, answer, tolerance)
-		question_list.append(bbf)
-		question_number += 1
-	return question_list
+def write_question(N: int, args) -> str:
+	solute = random.choice(liquids)
+	volume, concentration, answer = get_vol_conc_answer()
+	q = question_text(solute, volume, concentration)
+	tolerance = 0.9
+	bbf = bptools.formatBB_NUM_Question(N, q, answer, tolerance)
+	return bbf
 
 #==================================================
 def parse_arguments():
 	parser = bptools.make_arg_parser(
-		description='Generate volume/volume numeric questions.',
-		batch=True
+		description='Generate volume/volume numeric questions.'
 	)
 	args = parser.parse_args()
 	return args
@@ -66,8 +63,7 @@ def parse_arguments():
 def main():
 	args = parse_arguments()
 	outfile = bptools.make_outfile()
-	questions = bptools.collect_question_batches(write_question_batch, args)
-	bptools.write_questions_to_file(questions, outfile)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #==================================================
 if __name__ == '__main__':

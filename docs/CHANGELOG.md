@@ -117,6 +117,20 @@
   to use shared argparse defaults and helper-based question collection.
 - Added a migration note for fixed-grid batch scripts in
   [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md).
+- Converted laboratory generators from batch to per-question writers (Option 2
+  selection) in:
+  [laboratory-problems/mass_solution_numeric.py](laboratory-problems/mass_solution_numeric.py),
+  [laboratory-problems/orders_of_magnitude_mc.py](laboratory-problems/orders_of_magnitude_mc.py),
+  [laboratory-problems/percent_dilution_aliquot_numeric.py](laboratory-problems/percent_dilution_aliquot_numeric.py),
+  [laboratory-problems/pipet_size_mc.py](laboratory-problems/pipet_size_mc.py),
+  [laboratory-problems/serial_dilution_factor_diluent_numeric.py](laboratory-problems/serial_dilution_factor_diluent_numeric.py),
+  [laboratory-problems/serial_dilution_factor_mc.py](laboratory-problems/serial_dilution_factor_mc.py),
+  [laboratory-problems/vol-vol_solution_numeric.py](laboratory-problems/vol-vol_solution_numeric.py),
+  [laboratory-problems/weight-vol_solution_numeric.py](laboratory-problems/weight-vol_solution_numeric.py).
+- Added monospace formatting for numeric volumes/units across laboratory question
+  text and choices (including dilution factor, percent dilution, mass/volume,
+  molar solution, pipet, and serial dilution scripts).
+- Removed unused [logger_config.py](logger_config.py).
 - Fixed HTML quoting in [molecular_biology-problems/seqlib.py](molecular_biology-problems/seqlib.py)
   to avoid invalid inline style attributes.
 - Added max-questions early-stop handling in

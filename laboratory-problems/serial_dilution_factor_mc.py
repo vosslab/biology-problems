@@ -15,8 +15,11 @@ df_ratios = [
 #==================================================
 #==================================================
 def question_text(volume, df1, df2):
-	question = "<p>Using a previous diluted sample at DF={0}, create a new dilution with a final dilution of DF={1}.</p>".format(df1, df2)
-	question += "<p>How much liquid do you add to make a total of {0} &mu;L?</p>".format(volume)
+	volume_text = f"<span style='font-family: monospace;'>{volume} &mu;L</span>"
+	question = (
+		f"<p>Using a previous diluted sample at DF={df1}, create a new dilution with a final dilution of DF={df2}.</p>"
+		f"<p>How much liquid do you add to make a total of {volume_text}?</p>"
+	)
 	return question
 
 #==================================================
@@ -33,9 +36,12 @@ def df_ratio_to_values(df_ratio):
 #==================================================
 #==================================================
 def format_volumes(vol1, vol2):
-	choice_text = ''
-	choice_text += '{0:.1f} mL previously diluted sample (aliquot) and<br/>&nbsp;&nbsp;'.format(vol1)
-	choice_text += '<span style="color: darkblue;">{0:.0f} mL distilled water (diluent)</span>'.format(vol2)
+	choice_text = (
+		f"<span style='font-family: monospace;'>{vol1:.1f} mL</span> "
+		f"previously diluted sample (aliquot)<br/>&nbsp;&nbsp;"
+		f"<span style='color: darkblue;'><span style='font-family: monospace;'>{vol2:.0f} mL</span> "
+		f"distilled water (diluent)</span>"
+	)
 	return choice_text
 #==================================================
 #==================================================
@@ -109,26 +115,20 @@ def make_choices(df_ratio, volume):
 
 #==================================================
 #==================================================
-def write_question_batch(start_num, args):
-	question_list = []
-	question_num = start_num
-	for df_ratio in df_ratios:
-		if df_ratio[1] < 3:
-			continue
-		volume, df1, df2 = df_ratio_to_values(df_ratio)
-		q = question_text(volume, df1, df2)
-		choices, answer = make_choices(df_ratio, volume)
-		bbf = bptools.formatBB_MC_Question(question_num, q, choices, answer)
-		question_list.append(bbf)
-		question_num += 1
-	return question_list
+def write_question(N: int, args) -> str:
+	valid_ratios = [ratio for ratio in df_ratios if ratio[1] >= 3]
+	df_ratio = random.choice(valid_ratios)
+	volume, df1, df2 = df_ratio_to_values(df_ratio)
+	q = question_text(volume, df1, df2)
+	choices, answer = make_choices(df_ratio, volume)
+	bbf = bptools.formatBB_MC_Question(N, q, choices, answer)
+	return bbf
 
 #==================================================
 #==================================================
 def parse_arguments():
 	parser = bptools.make_arg_parser(
-		description='Generate serial dilution factor MC questions.',
-		batch=True
+		description='Generate serial dilution factor MC questions.'
 	)
 	args = parser.parse_args()
 	return args
@@ -138,8 +138,7 @@ def parse_arguments():
 def main():
 	args = parse_arguments()
 	outfile = bptools.make_outfile()
-	questions = bptools.collect_question_batches(write_question_batch, args)
-	bptools.write_questions_to_file(questions, outfile)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #==================================================
 #==================================================

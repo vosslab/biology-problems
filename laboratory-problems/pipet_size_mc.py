@@ -73,10 +73,12 @@ def get_raw_digits(volume, pipet):
 ##=========================
 def question_text(volume):
 	# <p>Which pipet and setting would you use to pipet 230 &mu;L using only one step?</p>
+	volume_text = f"<span style='font-family: monospace;'>{volume:.1f} &mu;L</span>"
 	if volume > 10:
-		question = "Which pipet and setting would you use to pipet {0:.0f} &mu;L using only one step?".format(volume)
+		volume_text = f"<span style='font-family: monospace;'>{volume:.0f} &mu;L</span>"
+		question = "Which pipet and setting would you use to pipet {0} using only one step?".format(volume_text)
 	else:
-		question = "Which pipet and setting would you use to pipet {0:.1f} &mu;L using only one step?".format(volume)
+		question = "Which pipet and setting would you use to pipet {0} using only one step?".format(volume_text)
 	return question
 
 ##=========================
@@ -103,35 +105,26 @@ def get_wrong_choices(volume, pipet):
 	
 
 ##=========================
-def write_question_batch(start_num: int, args) -> list:
-	questions = []
-	remaining = None
-	if args.max_questions is not None:
-		remaining = args.max_questions - (start_num - 1)
-		if remaining <= 0:
-			return questions
-	N = start_num
-	for pipet in pipet_choices:
-		volume = get_volume(pipet)
-		rawdigits = get_raw_digits(volume, pipet)
-		question = question_text(volume)
-		choices = get_wrong_choices(volume, pipet)
-		choices_list = []
-		for choice in choices:
-			if choice['pipet'] == pipet and choice['rawdigits'] == rawdigits:
-				answer = choice['text']
-			choices_list.append(choice['text'])
-		bb_format = bptools.formatBB_MC_Question(N, question, choices_list, answer)
-		questions.append(bb_format)
-		N += 1
-		if remaining is not None and len(questions) >= remaining:
-			return questions
-	return questions
+def write_question(N: int, args) -> str:
+	pipet = random.choice(pipet_choices)
+	volume = get_volume(pipet)
+	rawdigits = get_raw_digits(volume, pipet)
+	question = question_text(volume)
+	choices = get_wrong_choices(volume, pipet)
+	choices_list = []
+	answer = None
+	for choice in choices:
+		if choice['pipet'] == pipet and choice['rawdigits'] == rawdigits:
+			answer = choice['text']
+		choices_list.append(choice['text'])
+	if answer is None:
+		return None
+	bbf = bptools.formatBB_MC_Question(N, question, choices_list, answer)
+	return bbf
 
 def parse_arguments():
 	parser = bptools.make_arg_parser(
-		description="Generate pipet size questions.",
-		batch=True
+		description="Generate pipet size questions."
 	)
 	args = parser.parse_args()
 	return args
@@ -139,8 +132,7 @@ def parse_arguments():
 def main():
 	args = parse_arguments()
 	outfile = bptools.make_outfile(None)
-	questions = bptools.collect_question_batches(write_question_batch, args)
-	bptools.write_questions_to_file(questions, outfile)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 if __name__ == '__main__':
 	main()

@@ -6,10 +6,15 @@ import bptools
 #==================================================
 #==================================================
 def make_question_text(aliquot_mL, diluent_mL):
-	question = ''
-	question += "<p>You are preparing a new solution.</p>"
-	question += "<p>You dilute {0} mL of stock solution into {1} mL distilled water to make a dilution.</p>".format(aliquot_mL, diluent_mL)
-	question += '<p>What is the dilution factor?</p>'
+	aliquot_text = f"<span style='font-family: monospace;'>{aliquot_mL:.1f} mL</span>"
+	diluent_text = f"<span style='font-family: monospace;'>{diluent_mL:.1f} mL</span>"
+	question = (
+		"<p>You are preparing a new solution.</p>"
+		+ "<p>You dilute {0} of stock solution into {1} distilled water to make a dilution.</p>".format(
+			aliquot_text, diluent_text
+		)
+		+ "<p>What is the dilution factor?</p>"
+	)
 	return question
 
 #==================================================

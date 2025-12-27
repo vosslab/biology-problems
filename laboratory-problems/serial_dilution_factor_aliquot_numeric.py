@@ -15,9 +15,12 @@ df_ratios = [
 #==================================================
 #==================================================
 def question_text(volume, df1, df2):
-	question = "<p>Using a previous diluted sample at DF={0}, ".format(df1)
-	question += "create a new dilution with a final dilution of DF={0} and a total volume of {1}&nbsp;&mu;L.</p>".format(df2, volume)
-	question += "<p>What volume of aliquot in microliters (&mu;L) do you add to distilled water to make the dilution?</p>"
+	volume_text = f"<span style='font-family: monospace;'>{volume} &mu;L</span>"
+	question = (
+		f"<p>Using a previous diluted sample at DF={df1}, "
+		f"create a new dilution with a final dilution of DF={df2} and a total volume of {volume_text}.</p>"
+		"<p>What volume of aliquot in microliters (&mu;L) do you add to distilled water to make the dilution?</p>"
+	)
 	return question
 
 #==================================================

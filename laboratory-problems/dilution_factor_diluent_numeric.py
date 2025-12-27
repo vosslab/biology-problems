@@ -6,9 +6,11 @@ import bptools
 #==================================================
 #==================================================
 def make_question_text(volume, df_value):
-	question = ''
-	question += "<p>You are preparing {0}&nbsp;mL of a new solution with a dilution factor of DF={1}.</p>".format(volume, df_value)
-	question += "<p>What volume of diluent in milliliters (mL) do you add to the aliquoted sample?</p>"
+	volume_text = f"<span style='font-family: monospace;'>{volume:.1f} mL</span>"
+	question = (
+		f"<p>You are preparing {volume_text} of a new solution with a dilution factor of DF={df_value}.</p>"
+		"<p>What volume of diluent in milliliters (mL) do you add to the aliquoted sample?</p>"
+	)
 	return question
 
 #==================================================
@@ -31,7 +33,8 @@ def write_question(N, args):
 	diluent_mL = volume_mL - aliquot_uL / 1000.0
 	answer = diluent_mL
 	tolerance = 0.9
-	return bptools.formatBB_NUM_Question(N, q, answer, tolerance)
+	bbf = bptools.formatBB_NUM_Question(N, q, answer, tolerance)
+	return bbf
 
 def parse_arguments():
 	parser = bptools.make_arg_parser(description="Generate dilution factor diluent questions.")
