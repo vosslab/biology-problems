@@ -61,8 +61,10 @@
   and combinatorics helpers for cross problems.
 - `inheritance-problems/hybridcrosslib.py`: dihybrid/epistasis utilities, ratio
   dictionaries, and table construction for interaction problems.
-- `inheritance-problems/pedigrees/pedigree_smartlib.py`: higher-level pedigree
+- `inheritance-problems/pedigrees/pedigree_template_gen_lib.py`: higher-level pedigree
   scenario picker that selects mode-specific templates and returns code strings.
+- `inheritance-problems/pedigrees/pedigree_code_templates.py`: curated pedigree
+  code-string templates grouped by inheritance mode.
 - `inheritance-problems/pedigrees/pedigree_validate_lib.py`: pedigree code
   validation helpers for checking allowed symbols and row structure.
 - `inheritance-problems/pedigrees/pedigree_code_lib.py`: pedigree code constants
@@ -72,7 +74,11 @@
 - `inheritance-problems/pedigrees/pedigree_png_lib.py`: PNG rendering for
   pedigree code strings.
 - `inheritance-problems/pedigrees/pedigree_graph_lib.py`: graph-based pedigree
-  generator that outputs code strings from randomized family structures.
+  types and layout helpers for graph-based pedigrees and code-string rendering.
+- `inheritance-problems/pedigrees/pedigree_skeleton_lib.py`: procedural pedigree
+  skeleton generation (founders, children, marriages).
+- `inheritance-problems/pedigrees/pedigree_inheritance_lib.py`: inheritance-mode
+  phenotype assignment for graph-based pedigrees.
 - `inheritance-problems/pedigrees/pedigree_mode_validate_lib.py`: inheritance
   mode validation layered on parsed pedigree graphs.
 - `inheritance-problems/pedigrees/preview_pedigree.py`: CLI helper for generating

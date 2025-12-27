@@ -13,7 +13,7 @@ import random
 import bptools
 import pedigree_html_lib
 import pedigree_code_lib
-import pedigree_code_strings
+import pedigree_code_templates
 
 
 #=======================
@@ -24,7 +24,7 @@ def multipleChoiceQuestionSet(start_num: int):
 	+"Which one of the following patterns of inheritance is most likely demonstrated in the above pedigree inheritance?</p> "
 	)
 	N = start_num - 1
-	for ad in pedigree_code_strings.autosomal_dominant:
+	for ad in pedigree_code_templates.autosomal_dominant:
 		if random.random() < 0.5:
 			ad = pedigree_code_lib.mirror_pedigree(ad)
 		adc = pedigree_html_lib.translateCode(ad)
@@ -32,7 +32,7 @@ def multipleChoiceQuestionSet(start_num: int):
 		N += 1
 		bb_output_format = bptools.formatBB_MC_Question(N, adc+question_text, choices_list, answer)
 		bb_output_format_list.append(bb_output_format)
-	for ar in pedigree_code_strings.autosomal_recessive:			
+	for ar in pedigree_code_templates.autosomal_recessive:			
 		if random.random() < 0.5:
 			ar = pedigree_code_lib.mirror_pedigree(ar)
 		arc = pedigree_html_lib.translateCode(ar)
@@ -40,7 +40,7 @@ def multipleChoiceQuestionSet(start_num: int):
 		N += 1
 		bb_output_format = bptools.formatBB_MC_Question(N, arc+question_text, choices_list, answer)
 		bb_output_format_list.append(bb_output_format)
-	for xd in pedigree_code_strings.x_linked_dominant:
+	for xd in pedigree_code_templates.x_linked_dominant:
 		if random.random() < 0.5:
 			xd = pedigree_code_lib.mirror_pedigree(xd)
 		xdc = pedigree_html_lib.translateCode(xd)
@@ -48,7 +48,7 @@ def multipleChoiceQuestionSet(start_num: int):
 		N += 1
 		bb_output_format = bptools.formatBB_MC_Question(N, xdc+question_text, choices_list, answer)
 		bb_output_format_list.append(bb_output_format)
-	for xr in pedigree_code_strings.x_linked_recessive:
+	for xr in pedigree_code_templates.x_linked_recessive:
 		if random.random() < 0.5:
 			xr = pedigree_code_lib.mirror_pedigree(xr)
 		xrc = pedigree_html_lib.translateCode(xr)
@@ -56,7 +56,7 @@ def multipleChoiceQuestionSet(start_num: int):
 		N += 1
 		bb_output_format = bptools.formatBB_MC_Question(N, xrc+question_text, choices_list, answer)
 		bb_output_format_list.append(bb_output_format)
-	for yl in pedigree_code_strings.y_linked:
+	for yl in pedigree_code_templates.y_linked:
 		if random.random() < 0.5:
 			yl = pedigree_code_lib.mirror_pedigree(yl)
 		ylc = pedigree_html_lib.translateCode(yl)

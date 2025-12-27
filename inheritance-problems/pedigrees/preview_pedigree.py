@@ -9,7 +9,8 @@ import random
 import pedigree_graph_lib
 import pedigree_html_lib
 import pedigree_png_lib
-import pedigree_smartlib
+import pedigree_template_gen_lib
+import pedigree_validate_lib
 
 
 #===============================
@@ -88,9 +89,16 @@ def main():
 	index_lines.append("<html><head><meta charset='UTF-8'></head><body>")
 	index_lines.append(f"<h1>Pedigree previews: {args.mode}</h1>")
 
-	for idx in range(1, args.count + 1):
+	attempts = 0
+	generated = 0
+	max_attempts = args.count * 20
+	max_width_cells = 60
+	max_height_cells = 20
+
+	while generated < args.count and attempts < max_attempts:
+		attempts += 1
 		if args.generator == 'template':
-			code_string = pedigree_smartlib.make_pedigree_code(
+			code_string = pedigree_template_gen_lib.make_pedigree_code(
 				args.mode,
 				generations=args.generations,
 				allow_mirror=True,
@@ -104,6 +112,17 @@ def main():
 				rng=rng,
 				show_carriers=args.show_carriers,
 			)
+
+		errors = pedigree_validate_lib.validate_code_string_strict(
+			code_string,
+			max_width_cells=max_width_cells,
+			max_height_cells=max_height_cells
+		)
+		if errors:
+			continue
+
+		generated += 1
+		idx = generated
 		html_text = pedigree_html_lib.make_pedigree_html(code_string)
 		png_name = f"preview_{idx:03d}.png"
 		txt_name = f"preview_{idx:03d}.txt"
@@ -122,6 +141,8 @@ def main():
 	with open(index_path, 'w') as index_handle:
 		index_handle.write("\n".join(index_lines))
 
+	if generated < args.count:
+		print(f"WARNING: generated {generated} of {args.count} previews after {attempts} attempts.")
 	print(f"Saved previews to {args.outdir}")
 
 

@@ -41,6 +41,270 @@ def validate_code_string(code_string: str, strict: bool = False) -> list[str]:
 
 
 #===============================
+def _get_connection_mask(char: str) -> list[bool] | None:
+	"""
+	Return [up, down, left, right] connectivity for connector glyphs.
+
+	Args:
+		char (str): Pedigree code character.
+
+	Returns:
+		list[bool] | None: Connectivity mask or None if not a connector glyph.
+	"""
+	name = pedigree_code_lib.short_hand_lookup.get(char)
+	if name is None:
+		return None
+
+	binary_edges = pedigree_code_lib.shape_binary_edges.get(name)
+	if binary_edges is None:
+		return None
+
+	mask = [edge != '0' for edge in binary_edges]
+	return mask
+
+
+#===============================
+def _is_person_cell(char: str) -> bool:
+	"""
+	Check whether a character represents a person glyph.
+
+	Args:
+		char (str): Pedigree code character.
+
+	Returns:
+		bool: True if a person glyph, otherwise False.
+	"""
+	name = pedigree_code_lib.short_hand_lookup.get(char, '')
+	is_person = 'SQUARE' in name or 'CIRCLE' in name
+	return is_person
+
+
+#===============================
+def _get_code_grid(code_string: str) -> list[str]:
+	"""
+	Return code rows, excluding empty rows.
+
+	Args:
+		code_string (str): Pedigree code string.
+
+	Returns:
+		list[str]: Code rows.
+	"""
+	rows = pedigree_code_lib.get_code_rows(code_string)
+	return rows
+
+
+#===============================
+def validate_connector_adjacency(code_string: str) -> list[str]:
+	"""
+	Validate connector glyphs for required adjacency.
+
+	Args:
+		code_string (str): Pedigree code string.
+
+	Returns:
+		list[str]: Validation error messages.
+	"""
+	errors: list[str] = []
+	rows = _get_code_grid(code_string)
+	if not rows:
+		errors.append("Code string contains no rows.")
+		return errors
+
+	max_len = max(len(row) for row in rows)
+	padded_rows = [row.ljust(max_len, '.') for row in rows]
+	row_count = len(padded_rows)
+	col_count = max_len
+
+	for row_index, row in enumerate(padded_rows):
+		for col_index, char in enumerate(row):
+			mask = _get_connection_mask(char)
+			if mask is None:
+				continue
+
+			for direction, requires in enumerate(mask):
+				if not requires:
+					continue
+
+				neighbor_row = row_index + (-1 if direction == 0 else 1 if direction == 1 else 0)
+				neighbor_col = col_index + (-1 if direction == 2 else 1 if direction == 3 else 0)
+
+				if neighbor_row < 0 or neighbor_row >= row_count:
+					errors.append(f"Dangling connector at row {row_index + 1}, col {col_index + 1}.")
+					continue
+				if neighbor_col < 0 or neighbor_col >= col_count:
+					errors.append(f"Dangling connector at row {row_index + 1}, col {col_index + 1}.")
+					continue
+
+				neighbor_char = padded_rows[neighbor_row][neighbor_col]
+				neighbor_mask = _get_connection_mask(neighbor_char)
+				if neighbor_mask is not None:
+					opposite = 1 if direction == 0 else 0 if direction == 1 else 3 if direction == 2 else 2
+					if not neighbor_mask[opposite]:
+						errors.append(
+							f"Connector mismatch at row {row_index + 1}, col {col_index + 1}."
+						)
+				elif not _is_person_cell(neighbor_char):
+					errors.append(f"Connector does not terminate on a person at row {row_index + 1}, col {col_index + 1}.")
+
+	return errors
+
+
+#===============================
+def validate_connector_components(code_string: str) -> list[str]:
+	"""
+	Validate that connector components terminate on people.
+
+	Args:
+		code_string (str): Pedigree code string.
+
+	Returns:
+		list[str]: Validation error messages.
+	"""
+	errors: list[str] = []
+	rows = _get_code_grid(code_string)
+	if not rows:
+		errors.append("Code string contains no rows.")
+		return errors
+
+	max_len = max(len(row) for row in rows)
+	padded_rows = [row.ljust(max_len, '.') for row in rows]
+	row_count = len(padded_rows)
+	col_count = max_len
+	visited: set[tuple[int, int]] = set()
+
+	for row_index in range(row_count):
+		for col_index in range(col_count):
+			if (row_index, col_index) in visited:
+				continue
+			mask = _get_connection_mask(padded_rows[row_index][col_index])
+			if mask is None:
+				continue
+
+			stack = [(row_index, col_index)]
+			component_cells: list[tuple[int, int]] = []
+			component_terminals: set[tuple[int, int]] = set()
+			visited.add((row_index, col_index))
+
+			while stack:
+				cell_row, cell_col = stack.pop()
+				component_cells.append((cell_row, cell_col))
+				for delta_row, delta_col in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+					neighbor_row = cell_row + delta_row
+					neighbor_col = cell_col + delta_col
+					if neighbor_row < 0 or neighbor_row >= row_count:
+						continue
+					if neighbor_col < 0 or neighbor_col >= col_count:
+						continue
+
+					neighbor_char = padded_rows[neighbor_row][neighbor_col]
+					if _is_person_cell(neighbor_char):
+						component_terminals.add((neighbor_row, neighbor_col))
+						continue
+
+					neighbor_mask = _get_connection_mask(neighbor_char)
+					if neighbor_mask is None:
+						continue
+					if (neighbor_row, neighbor_col) in visited:
+						continue
+					visited.add((neighbor_row, neighbor_col))
+					stack.append((neighbor_row, neighbor_col))
+
+			if len(component_terminals) < 2:
+				row_label = component_cells[0][0] + 1
+				col_label = component_cells[0][1] + 1
+				errors.append(
+					f"Connector component near row {row_label}, col {col_label} touches fewer than 2 people."
+				)
+
+	return errors
+
+
+#===============================
+def validate_bounding_box(code_string: str, max_width_cells: int | None, max_height_cells: int | None) -> list[str]:
+	"""
+	Validate the bounding box of non-empty cells.
+
+	Args:
+		code_string (str): Pedigree code string.
+		max_width_cells (int | None): Optional maximum width.
+		max_height_cells (int | None): Optional maximum height.
+
+	Returns:
+		list[str]: Validation error messages.
+	"""
+	errors: list[str] = []
+	rows = _get_code_grid(code_string)
+	if not rows:
+		errors.append("Code string contains no rows.")
+		return errors
+
+	max_len = max(len(row) for row in rows)
+	padded_rows = [row.ljust(max_len, '.') for row in rows]
+
+	min_row = None
+	max_row = None
+	min_col = None
+	max_col = None
+
+	for row_index, row in enumerate(padded_rows):
+		for col_index, char in enumerate(row):
+			if char == '.':
+				continue
+			if min_row is None:
+				min_row = row_index
+				max_row = row_index
+				min_col = col_index
+				max_col = col_index
+				continue
+			min_row = min(min_row, row_index)
+			max_row = max(max_row, row_index)
+			min_col = min(min_col, col_index)
+			max_col = max(max_col, col_index)
+
+	if min_row is None:
+		errors.append("Code string contains no non-empty cells.")
+		return errors
+
+	width_cells = max_col - min_col + 1
+	height_cells = max_row - min_row + 1
+
+	if max_width_cells is not None and width_cells > max_width_cells:
+		errors.append(f"Bounding box width {width_cells} exceeds {max_width_cells} cells.")
+	if max_height_cells is not None and height_cells > max_height_cells:
+		errors.append(f"Bounding box height {height_cells} exceeds {max_height_cells} cells.")
+
+	return errors
+
+
+#===============================
+def validate_code_string_strict(
+	code_string: str,
+	max_width_cells: int | None = None,
+	max_height_cells: int | None = None
+) -> list[str]:
+	"""
+	Run strict validation with adjacency and bounding-box checks.
+
+	Args:
+		code_string (str): Pedigree code string.
+		max_width_cells (int | None): Optional maximum width.
+		max_height_cells (int | None): Optional maximum height.
+
+	Returns:
+		list[str]: Validation error messages.
+	"""
+	errors = validate_code_string(code_string, strict=False)
+	if errors:
+		return errors
+
+	box_errors = validate_bounding_box(code_string, max_width_cells, max_height_cells)
+	errors.extend(box_errors)
+
+	return errors
+
+
+#===============================
 def is_valid_code_string(code_string: str, strict: bool = False) -> bool:
 	"""
 	Check whether a pedigree code string is valid.

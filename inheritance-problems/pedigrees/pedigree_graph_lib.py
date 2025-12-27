@@ -45,204 +45,6 @@ def _new_id(prefix: str, counter: int) -> str:
 
 
 #===============================
-def _make_founder_couples(starting_couples: int, rng: random.Random) -> tuple[dict[str, Individual], list[Couple]]:
-	individuals: dict[str, Individual] = {}
-	couples: list[Couple] = []
-	person_counter = 1
-	couple_counter = 1
-	for _ in range(starting_couples):
-		male_id = _new_id('M', person_counter)
-		person_counter += 1
-		female_id = _new_id('F', person_counter)
-		person_counter += 1
-		individuals[male_id] = Individual(
-			id=male_id,
-			sex='male',
-			phenotype='unaffected',
-			generation=1,
-		)
-		individuals[female_id] = Individual(
-			id=female_id,
-			sex='female',
-			phenotype='unaffected',
-			generation=1,
-		)
-		couple_id = _new_id('C', couple_counter)
-		couple_counter += 1
-		couples.append(Couple(
-			id=couple_id,
-			partner_a=male_id,
-			partner_b=female_id,
-			generation=1,
-			children=[],
-		))
-	return individuals, couples
-
-
-#===============================
-def _add_children(
-	individuals: dict[str, Individual],
-	couples: list[Couple],
-	generation: int,
-	person_counter: int,
-	rng: random.Random,
-	min_children: int,
-	max_children: int,
-) -> tuple[list[str], int]:
-	children_ids: list[str] = []
-	for couple in [c for c in couples if c.generation == generation]:
-		num_children = rng.randint(min_children, max_children)
-		for _ in range(num_children):
-			sex = rng.choice(['male', 'female'])
-			child_id = _new_id('P', person_counter)
-			person_counter += 1
-			individuals[child_id] = Individual(
-				id=child_id,
-				sex=sex,
-				phenotype='unaffected',
-				generation=generation + 1,
-				father_id=couple.partner_a,
-				mother_id=couple.partner_b,
-			)
-			couple.children.append(child_id)
-			children_ids.append(child_id)
-	return children_ids, person_counter
-
-
-#===============================
-def _pair_children(
-	individuals: dict[str, Individual],
-	children_ids: list[str],
-	generation: int,
-	person_counter: int,
-	couple_counter: int,
-	rng: random.Random,
-	marry_in_rate: float,
-) -> tuple[list[Couple], int, int]:
-	new_couples: list[Couple] = []
-	for child_id in children_ids:
-		if rng.random() > marry_in_rate:
-			continue
-		child = individuals[child_id]
-		spouse_sex = 'female' if child.sex == 'male' else 'male'
-		spouse_id = _new_id('S', person_counter)
-		person_counter += 1
-		individuals[spouse_id] = Individual(
-			id=spouse_id,
-			sex=spouse_sex,
-			phenotype='unaffected',
-			generation=generation,
-		)
-		couple_id = _new_id('C', couple_counter)
-		couple_counter += 1
-		if child.sex == 'male':
-			partner_a = child_id
-			partner_b = spouse_id
-		else:
-			partner_a = spouse_id
-			partner_b = child_id
-		new_couples.append(Couple(
-			id=couple_id,
-			partner_a=partner_a,
-			partner_b=partner_b,
-			generation=generation,
-			children=[],
-		))
-	return new_couples, person_counter, couple_counter
-
-
-#===============================
-def _assign_autosomal_dominant(graph: PedigreeGraph, rng: random.Random) -> None:
-	founders = [ind for ind in graph.individuals.values() if ind.generation == 1]
-	affected_founder = rng.choice(founders)
-	affected_founder.phenotype = 'affected'
-	for couple in graph.couples:
-		parent_a = graph.individuals[couple.partner_a]
-		parent_b = graph.individuals[couple.partner_b]
-		for child_id in couple.children:
-			child = graph.individuals[child_id]
-			inherit_a = parent_a.phenotype == 'affected' and rng.random() < 0.5
-			inherit_b = parent_b.phenotype == 'affected' and rng.random() < 0.5
-			child.phenotype = 'affected' if (inherit_a or inherit_b) else 'unaffected'
-
-
-#===============================
-def _assign_autosomal_recessive(graph: PedigreeGraph, rng: random.Random, show_carriers: bool) -> None:
-	for ind in graph.individuals.values():
-		if ind.generation == 1:
-			if rng.random() < 0.6:
-				ind.phenotype = 'carrier' if show_carriers else 'unaffected'
-			else:
-				ind.phenotype = 'unaffected'
-	for couple in graph.couples:
-		parent_a = graph.individuals[couple.partner_a]
-		parent_b = graph.individuals[couple.partner_b]
-		for child_id in couple.children:
-			child = graph.individuals[child_id]
-			parent_a_carrier = parent_a.phenotype in ('carrier', 'affected')
-			parent_b_carrier = parent_b.phenotype in ('carrier', 'affected')
-			if parent_a_carrier and parent_b_carrier and rng.random() < 0.25:
-				child.phenotype = 'affected'
-			elif parent_a_carrier or parent_b_carrier:
-				child.phenotype = 'carrier' if show_carriers else 'unaffected'
-			else:
-				child.phenotype = 'unaffected'
-
-
-#===============================
-def _assign_x_linked_recessive(graph: PedigreeGraph, rng: random.Random, show_carriers: bool) -> None:
-	for ind in graph.individuals.values():
-		if ind.generation == 1:
-			if ind.sex == 'female' and rng.random() < 0.4:
-				ind.phenotype = 'carrier' if show_carriers else 'unaffected'
-			elif ind.sex == 'male' and rng.random() < 0.2:
-				ind.phenotype = 'affected'
-	for couple in graph.couples:
-		mother = graph.individuals[couple.partner_b]
-		father = graph.individuals[couple.partner_a]
-		for child_id in couple.children:
-			child = graph.individuals[child_id]
-			if child.sex == 'male':
-				if mother.phenotype in ('carrier', 'affected') and rng.random() < 0.5:
-					child.phenotype = 'affected'
-				else:
-					child.phenotype = 'unaffected'
-			else:
-				if father.phenotype == 'affected' and mother.phenotype in ('carrier', 'affected'):
-					child.phenotype = 'affected' if rng.random() < 0.5 else ('carrier' if show_carriers else 'unaffected')
-				elif mother.phenotype in ('carrier', 'affected') and rng.random() < 0.5:
-					child.phenotype = 'carrier' if show_carriers else 'unaffected'
-				else:
-					child.phenotype = 'unaffected'
-
-
-#===============================
-def _assign_y_linked(graph: PedigreeGraph, rng: random.Random) -> None:
-	founder_males = [ind for ind in graph.individuals.values() if ind.generation == 1 and ind.sex == 'male']
-	if founder_males:
-		rng.choice(founder_males).phenotype = 'affected'
-	for couple in graph.couples:
-		father = graph.individuals[couple.partner_a]
-		for child_id in couple.children:
-			child = graph.individuals[child_id]
-			if child.sex == 'male' and father.phenotype == 'affected':
-				child.phenotype = 'affected'
-
-
-#===============================
-def assign_phenotypes(graph: PedigreeGraph, mode: str, rng: random.Random, show_carriers: bool) -> None:
-	mode_value = mode.strip().lower()
-	if mode_value in ('autosomal dominant', 'ad'):
-		_assign_autosomal_dominant(graph, rng)
-	elif mode_value in ('autosomal recessive', 'ar'):
-		_assign_autosomal_recessive(graph, rng, show_carriers)
-	elif mode_value in ('x-linked recessive', 'xr'):
-		_assign_x_linked_recessive(graph, rng, show_carriers)
-	elif mode_value in ('y-linked', 'yl'):
-		_assign_y_linked(graph, rng)
-
-
-#===============================
 def generate_pedigree_graph(
 	mode: str,
 	generations: int = 4,
@@ -258,59 +60,60 @@ def generate_pedigree_graph(
 	"""
 	if rng is None:
 		rng = random.Random()
-	individuals, couples = _make_founder_couples(starting_couples, rng)
-	person_counter = len(individuals) + 1
-	couple_counter = len(couples) + 1
-	for gen in range(1, generations):
-		children_ids, person_counter = _add_children(
-			individuals,
-			couples,
-			gen,
-			person_counter,
-			rng,
-			min_children,
-			max_children,
-		)
-		if gen + 1 > generations:
-			continue
-		new_couples, person_counter, couple_counter = _pair_children(
-			individuals,
-			children_ids,
-			gen + 1,
-			person_counter,
-			couple_counter,
-			rng,
-			marry_in_rate,
-		)
-		couples.extend(new_couples)
-	graph = PedigreeGraph(
-		individuals=individuals,
-		couples=couples,
+	import pedigree_inheritance_lib
+	import pedigree_skeleton_lib
+	graph = pedigree_skeleton_lib.generate_skeleton_graph(
 		generations=generations,
 		starting_couples=starting_couples,
+		rng=rng,
+		min_children=min_children,
+		max_children=max_children,
+		marry_in_rate=marry_in_rate,
 	)
-	assign_phenotypes(graph, mode, rng, show_carriers)
+	pedigree_inheritance_lib.assign_phenotypes(graph, mode, rng, show_carriers)
 	return graph
 
 
 #===============================
 def _assign_slots(graph: PedigreeGraph) -> int:
 	max_slots = 0
+	parent_index: dict[str, int] = {}
 	for gen in range(1, graph.generations + 1):
 		gen_couples = [c for c in graph.couples if c.generation == gen]
+		def couple_key(couple: Couple) -> tuple[int, str]:
+			index_a = parent_index.get(couple.partner_a, 0)
+			index_b = parent_index.get(couple.partner_b, 0)
+			return (min(index_a, index_b), couple.id)
+
+		gen_couples.sort(key=couple_key)
 		gen_individuals = [i for i in graph.individuals.values() if i.generation == gen]
 		couple_ids = {c.partner_a for c in gen_couples} | {c.partner_b for c in gen_couples}
 		unpaired = [i for i in gen_individuals if i.id not in couple_ids]
-		unpaired.sort(key=_sort_by_id)
-		slot_cursor = 0
+		unpaired.sort(key=lambda ind: (parent_index.get(ind.id, 0), ind.id))
+
+		units: list[tuple[tuple[int, str], str, Individual | Couple]] = []
 		for couple in gen_couples:
-			graph.individuals[couple.partner_a].slot = slot_cursor
-			graph.individuals[couple.partner_b].slot = slot_cursor + 1
-			slot_cursor += 3
+			units.append((couple_key(couple), 'couple', couple))
 		for single in unpaired:
-			graph.individuals[single.id].slot = slot_cursor
-			slot_cursor += 2
+			units.append(((parent_index.get(single.id, 0), single.id), 'single', single))
+		units.sort(key=lambda item: item[0])
+
+		slot_cursor = 0
+		for _, unit_type, payload in units:
+			if unit_type == 'couple':
+				couple = payload
+				graph.individuals[couple.partner_a].slot = slot_cursor
+				graph.individuals[couple.partner_b].slot = slot_cursor + 1
+				slot_cursor += 3
+			else:
+				single = payload
+				graph.individuals[single.id].slot = slot_cursor
+				slot_cursor += 2
 		max_slots = max(max_slots, slot_cursor)
+
+		for index, couple in enumerate(gen_couples):
+			for child_id in couple.children:
+				parent_index[child_id] = index
 	return max_slots
 
 

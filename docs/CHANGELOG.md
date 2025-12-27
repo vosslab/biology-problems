@@ -7,7 +7,7 @@
 - Added [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md) to outline generator
   refactoring and helper adoption steps.
 - Added a higher-level pedigree scenario helper in
-  [inheritance-problems/pedigrees/pedigree_smartlib.py](inheritance-problems/pedigrees/pedigree_smartlib.py)
+  [inheritance-problems/pedigrees/pedigree_template_gen_lib.py](inheritance-problems/pedigrees/pedigree_template_gen_lib.py)
   to select inheritance-specific templates and return pedigree code strings.
 - Added pedigree PNG rendering alongside HTML output in
   [inheritance-problems/pedigrees/pedigree_png_lib.py](inheritance-problems/pedigrees/pedigree_png_lib.py).
@@ -22,11 +22,31 @@
   [inheritance-problems/pedigrees/pedigree_mode_validate_lib.py](inheritance-problems/pedigrees/pedigree_mode_validate_lib.py).
 - Added a preview helper for HTML/PNG pedigree output in
   [inheritance-problems/pedigrees/preview_pedigree.py](inheritance-problems/pedigrees/preview_pedigree.py).
+- Renamed pedigree template helpers for clarity:
+  [inheritance-problems/pedigrees/pedigree_template_gen_lib.py](inheritance-problems/pedigrees/pedigree_template_gen_lib.py)
+  and [inheritance-problems/pedigrees/pedigree_code_templates.py](inheritance-problems/pedigrees/pedigree_code_templates.py).
+- Added strict CodeString validation (syntax checks plus bounding-box limits) and
+  preview gating in
+  [inheritance-problems/pedigrees/pedigree_validate_lib.py](inheritance-problems/pedigrees/pedigree_validate_lib.py)
+  and [inheritance-problems/pedigrees/preview_pedigree.py](inheritance-problems/pedigrees/preview_pedigree.py).
+- Simplified [inheritance-problems/pedigrees/preview_pedigree.py](inheritance-problems/pedigrees/preview_pedigree.py)
+  CLI by baking in the strict validation defaults for width/height and attempts.
 - Renamed pedigree question generators for clarity:
   [inheritance-problems/pedigrees/write_pedigree_choice.py](inheritance-problems/pedigrees/write_pedigree_choice.py) and
   [inheritance-problems/pedigrees/write_pedigree_match.py](inheritance-problems/pedigrees/write_pedigree_match.py).
 - Added a graph-based pedigree generator in
   [inheritance-problems/pedigrees/pedigree_graph_lib.py](inheritance-problems/pedigrees/pedigree_graph_lib.py).
+- Split graph generation concerns into
+  [inheritance-problems/pedigrees/pedigree_skeleton_lib.py](inheritance-problems/pedigrees/pedigree_skeleton_lib.py)
+  and [inheritance-problems/pedigrees/pedigree_inheritance_lib.py](inheritance-problems/pedigrees/pedigree_inheritance_lib.py),
+  leaving `pedigree_graph_lib.py` as the IR and layout helper.
+- Improved pedigree layout ordering to group siblings by parent index and reduce
+  long connector spans in
+  [inheritance-problems/pedigrees/pedigree_graph_lib.py](inheritance-problems/pedigrees/pedigree_graph_lib.py).
+- Added a basic three-generation layout smoke test helper in
+  [inheritance-problems/pedigrees/pedigree_skeleton_lib.py](inheritance-problems/pedigrees/pedigree_skeleton_lib.py)
+  and a small runner in
+  [inheritance-problems/pedigrees/layout_smoke_test.py](inheritance-problems/pedigrees/layout_smoke_test.py).
 - Added a local pipeline note in
   [inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md](inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md).
 - Expanded [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md) with decision points
@@ -396,5 +416,5 @@
   [biochemistry-problems/PUBCHEM/polypeptide_mc_sequence.py](biochemistry-problems/PUBCHEM/polypeptide_mc_sequence.py).
 - Removed non-generator utilities from the phase-1 upgrade list and tracked them
   as utilities instead: 
-  [inheritance-problems/pedigree_code_strings.py](inheritance-problems/pedigree_code_strings.py),
+  [inheritance-problems/pedigrees/pedigree_code_templates.py](inheritance-problems/pedigrees/pedigree_code_templates.py),
   [inheritance-problems/population_logistic_map_chaos.py](inheritance-problems/population_logistic_map_chaos.py).

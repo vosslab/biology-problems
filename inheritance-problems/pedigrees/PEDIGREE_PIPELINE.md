@@ -106,3 +106,26 @@ Generate -> label -> validate -> score -> accept if above threshold.
 ## Compatibility
 - CodeString rendering and HTML/PNG outputs remain stable across generator changes.
 - PedigreeGraph and inheritance assignment can evolve independently of renderers.
+
+## Library roles (current files)
+Each library is intentionally narrow and maps to a pipeline layer or cross-cutting
+validation. These names are stable in code; rename suggestions are listed after.
+
+- `pedigree_graph_lib.py`: pedigree graph types and layout helpers for code-string rendering.
+- `pedigree_skeleton_lib.py`: procedural skeleton generation (structure only).
+- `pedigree_inheritance_lib.py`: inheritance-mode phenotype assignment.
+- `pedigree_code_lib.py`: CodeSpec, code alphabet, mirroring, and encode/decode helpers.
+- `pedigree_validate_lib.py`: CodeString syntax validation.
+- `pedigree_mode_validate_lib.py`: inheritance-mode validation (PedigreeGraph-first).
+- `pedigree_html_lib.py`: HTML renderer (CodeString -> HTML).
+- `pedigree_png_lib.py`: PNG renderer (CodeString -> PNG).
+- `pedigree_template_gen_lib.py`: template-based pedigree selection (CodeString output).
+- `pedigree_code_templates.py`: template library (static CodeStrings).
+- `preview_pedigree.py`: CLI for batch preview (HTML/PNG/code strings).
+
+## Possible naming improvements
+These are suggestions only; they are not required by the pipeline.
+
+- `pedigree_graph_lib.py` -> `pedigree_skeleton_lib.py` (if it stays focused on
+  structure generation).
+- `preview_pedigree.py` -> `cli_preview_pedigree.py` (distinguish CLI entry points).

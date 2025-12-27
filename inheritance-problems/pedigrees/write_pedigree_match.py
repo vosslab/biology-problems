@@ -13,7 +13,7 @@ import random
 import bptools
 import pedigree_html_lib
 import pedigree_code_lib
-import pedigree_code_strings
+import pedigree_code_templates
 
 #=======================
 def bbFormatMatchingQuestion(N, question_text, prompts_list, choices_list, max_choices=5):
@@ -37,11 +37,11 @@ def matchingQuestionSet(start_num=1, max_questions=None):
 	question_text += "<p>Note: <i>each inheritance type will only be used ONCE.</i></p> "
 	choices_list = ['autosomal dominant', 'autosomal recessive', 'x-linked dominant', 'x-linked recessive', 'y-linked']
 	N = start_num - 1
-	for ad in pedigree_code_strings.autosomal_dominant:
-		for ar in pedigree_code_strings.autosomal_recessive:			
-			for xd in pedigree_code_strings.x_linked_dominant:
-				for xr in pedigree_code_strings.x_linked_recessive:
-					for yl in pedigree_code_strings.y_linked:
+	for ad in pedigree_code_templates.autosomal_dominant:
+		for ar in pedigree_code_templates.autosomal_recessive:			
+			for xd in pedigree_code_templates.x_linked_dominant:
+				for xr in pedigree_code_templates.x_linked_recessive:
+					for yl in pedigree_code_templates.y_linked:
 						if max_questions is not None and N >= max_questions:
 							return bb_output_format_list
 						if random.random() < 0.5:

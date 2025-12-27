@@ -6,7 +6,7 @@ import random
 
 # Local repo modules
 import pedigree_code_lib
-import pedigree_code_strings
+import pedigree_code_templates
 
 
 #===============================
@@ -66,11 +66,11 @@ def build_templates() -> list[PedigreeTemplate]:
 	"""
 	templates: list[PedigreeTemplate] = []
 	mode_lists = {
-		'autosomal dominant': pedigree_code_strings.autosomal_dominant,
-		'autosomal recessive': pedigree_code_strings.autosomal_recessive,
-		'x-linked dominant': pedigree_code_strings.x_linked_dominant,
-		'x-linked recessive': pedigree_code_strings.x_linked_recessive,
-		'y-linked': pedigree_code_strings.y_linked,
+		'autosomal dominant': pedigree_code_templates.autosomal_dominant,
+		'autosomal recessive': pedigree_code_templates.autosomal_recessive,
+		'x-linked dominant': pedigree_code_templates.x_linked_dominant,
+		'x-linked recessive': pedigree_code_templates.x_linked_recessive,
+		'y-linked': pedigree_code_templates.y_linked,
 	}
 	for mode_name, code_list in mode_lists.items():
 		for code in code_list:
