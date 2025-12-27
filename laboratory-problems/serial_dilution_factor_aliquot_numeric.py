@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import os
 import random
 import bptools
 
@@ -24,7 +23,6 @@ def question_text(volume, df1, df2):
 #==================================================
 #==================================================
 def df_ratio_to_values(df_ratio):
-	print(df_ratio)
 	#dfsum = df_ratio[0] + df_ratio[1]
 	max_int = 100 // df_ratio[0]
 	volume = df_ratio[0] * random.randint(1, max_int) * 10
@@ -35,25 +33,40 @@ def df_ratio_to_values(df_ratio):
 
 #==================================================
 #==================================================
+def write_question_batch(N: int, args) -> list[str]:
+	questions = []
+	question_num = N
+	for df_ratio in df_ratios:
+		if df_ratio[1] < 3:
+			continue
+		volume, df1, df2 = df_ratio_to_values(df_ratio)
+		q = question_text(volume, df1, df2)
+		aliquot = volume * df_ratio[1] / df_ratio[0]
+		answer = aliquot
+		tolerance = 0.9
+		complete_question = bptools.formatBB_NUM_Question(question_num, q, answer, tolerance)
+		questions.append(complete_question)
+		question_num += 1
+	return questions
+
+#==================================================
+def parse_arguments():
+	duplicates_default = max(1, 99 // len(df_ratios))
+	parser = bptools.make_arg_parser(
+		description="Generate serial dilution aliquot questions.",
+		batch=True,
+		duplicates_default=duplicates_default
+	)
+	args = parser.parse_args()
+	return args
+
+#==================================================
+def main():
+	args = parse_arguments()
+	outfile = bptools.make_outfile()
+	questions = bptools.collect_question_batches(write_question_batch, args)
+	bptools.write_questions_to_file(questions, outfile)
+
+#==================================================
 if __name__ == '__main__':
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	duplicates = 99 // len(df_ratios)
-	#duplicates = 1
-	N = 0
-	for i in range(duplicates):
-		for df_ratio in df_ratios:
-			if df_ratio[1] < 3:
-				continue
-			N += 1
-			volume, df1, df2 = df_ratio_to_values(df_ratio)
-			q = question_text(volume, df1, df2)
-			aliquot = volume * df_ratio[1] / df_ratio[0]
-			diluent = volume - aliquot
-			answer = aliquot
-			tolerance = 0.9
-			bbf = bptools.formatBB_NUM_Question(N, q, answer, tolerance)
-			f.write(bbf+'\n')
-	f.close()
-	bptools.print_histogram()
+	main()

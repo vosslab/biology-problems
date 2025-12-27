@@ -213,6 +213,9 @@ Batch generators:
   offering MC vs FIB outputs) should switch to `add_question_format_args(...)`
   and return a formatted Blackboard string via `bptools.formatBB_MC_Question`
   or `bptools.formatBB_FIB_Question`.
+- Batch scripts that previously computed their own run count to land near a
+  target total (for example `99 // len(list)`) should keep that behavior by
+  setting `duplicates_default` in `make_arg_parser(batch=True, ...)`.
 
 ## Legacy patterns to modernize
 These are common in older scripts and are the first candidates for cleanup

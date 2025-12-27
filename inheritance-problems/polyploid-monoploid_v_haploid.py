@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import os
 import random
 
 """
@@ -15,43 +14,41 @@ D. m=20; h=20
 Specific terms are triploid (3 sets), tetraploid (4 sets), pentaploid (5 sets), hexaploid (6 sets), heptaploid[2] or septaploid[3] (7 sets), octoploid (8 sets), nonaploid (9 sets), decaploid (10 sets), undecaploid (11 sets), dodecaploid (12 sets), tridecaploid (13 sets), tetradecaploid (14 sets), etc.[29][30][31][32] Some higher ploidies include hexadecaploid (16 sets), dotriacontaploid (32 sets), and tetrahexacontaploid (64 sets)
 """
 
-if __name__ == '__main__':
-	ploidies = [4, 6, 8, 10, 12, 14, 16]
-	polyploid_names = {
-		3: 'a triploid',
-		4: 'a tetraploid',
-		5: 'a pentaploid',
-		6: 'a hexaploid',
-		7: 'a heptaploid',
-		8: 'an octaploid',
-		9: 'a nonaploid',
-		10: 'a decaploid',
-		11: 'a undecaploid',
-		12: 'a dodecaploid',
-		13: 'a tridecaploid',
-		14: 'a tetradecaploid',
-		15: 'a pentadecaploid',
-		16: 'a hexadecaploid',
-		17: 'a heptadecaploid',
-		18: 'an octadecaploid',
-		32: 'a dotriacontaploid',
-		64: 'a tetrahexacontaploid'
-	}
-	monoploid_sizes = [4, 5, 6, 7, 8, 9, 10, 11, ]
+import bptools
 
-	num_genes = 7
-	N = 0
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')	
+ploidies = [4, 6, 8, 10, 12, 14, 16]
+polyploid_names = {
+	3: 'a triploid',
+	4: 'a tetraploid',
+	5: 'a pentaploid',
+	6: 'a hexaploid',
+	7: 'a heptaploid',
+	8: 'an octaploid',
+	9: 'a nonaploid',
+	10: 'a decaploid',
+	11: 'a undecaploid',
+	12: 'a dodecaploid',
+	13: 'a tridecaploid',
+	14: 'a tetradecaploid',
+	15: 'a pentadecaploid',
+	16: 'a hexadecaploid',
+	17: 'a heptadecaploid',
+	18: 'an octadecaploid',
+	32: 'a dotriacontaploid',
+	64: 'a tetrahexacontaploid'
+}
+monoploid_sizes = [4, 5, 6, 7, 8, 9, 10, 11]
+
+#=====================
+def write_question_batch(N: int, args) -> list[str]:
+	questions = []
+	question_num = N
 	for ploidy in ploidies:
 		for monoploid in monoploid_sizes:
-			N += 1
 			total_chromosomes = monoploid * ploidy
 			haploid = total_chromosomes // 2
 			if haploid == monoploid:
 				continue
-			number = "{0}. ".format(N)
 			question = ""
 			question += "<p>A certain plant is found to be "
 			question += polyploid_names[ploidy] + ' '
@@ -78,18 +75,27 @@ if __name__ == '__main__':
 			choices.append(wrong)
 
 			random.shuffle(choices)
+			complete_question = bptools.formatBB_MC_Question(question_num, question, choices, answer)
+			questions.append(complete_question)
+			question_num += 1
+	return questions
 
-			print("{0}. {1}".format(N, question))
+#=====================
+def parse_arguments():
+	parser = bptools.make_arg_parser(
+		description="Generate monoploid vs haploid questions.",
+		batch=True
+	)
+	args = parser.parse_args()
+	return args
 
-			complete_text = "MC\t{0}".format(question)
-			for choice in choices:
-				print(".."+choice)
-				if choice == answer:
-					status = "Correct"
-				else:
-					status = "Incorrect"
-				complete_text += "\t{0}\t{1}".format(choice, status)
-			f.write(complete_text+'\n')
-			print("")
-		f.write('\n')
-	f.close()
+#=====================
+def main():
+	args = parse_arguments()
+	outfile = bptools.make_outfile()
+	questions = bptools.collect_question_batches(write_question_batch, args)
+	bptools.write_questions_to_file(questions, outfile)
+
+#=====================
+if __name__ == '__main__':
+	main()

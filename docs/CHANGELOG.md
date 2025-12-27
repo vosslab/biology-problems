@@ -173,5 +173,13 @@
   to use shared argparse defaults, MC/FIB format flags, and helper-based output.
 - Fixed the mutant screen HTML table to quote the width attribute for valid XML
   in [molecular_biology-problems/mutant_screen.py](molecular_biology-problems/mutant_screen.py).
+- Refactored [molecular_biology-problems/pcr_design.py](molecular_biology-problems/pcr_design.py)
+  to use shared argparse defaults and helper-based MC formatting.
+- Refactored [inheritance-problems/polyploid-monoploid_v_haploid.py](inheritance-problems/polyploid-monoploid_v_haploid.py)
+  to use batch helpers and shared argparse defaults.
+- Refactored [laboratory-problems/serial_dilution_factor_aliquot_numeric.py](laboratory-problems/serial_dilution_factor_aliquot_numeric.py)
+  to use batch helpers and a computed default duplicate count.
+- Added a migration note about preserving computed duplicate defaults for batch
+  scripts in [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md).
 - Added a migration note about converting stdout-based question scripts to
   helper-based MC/FIB formatting in [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md).

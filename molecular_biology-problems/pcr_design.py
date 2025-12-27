@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-import os
 import random
 import seqlib
+import bptools
 
 """
                                                 3'  GGCATCGACCTCCCT  5'
@@ -52,8 +52,6 @@ def getPrimerChoices(top_sequence, primer_len):
 		subprimer = primer.replace('C', 'G')
 		convert_set.append(subprimer)
 	if len(list(set(convert_set))) < 16:
-		print("BAD PRIMERS")
-		#sys.exit(1)
 		return False, answer_set
 	return primer_set, answer_set
 
@@ -86,7 +84,6 @@ def makeChoices(primer_set, answer_set):
 		if c1 != c2:
 			choices.add((c1, c2))
 	choices_list = list(choices)
-	print(choices_list)
 	random.shuffle(choices_list)
 	return choices_list
 
@@ -95,45 +92,51 @@ def makeChoices(primer_set, answer_set):
 #=====================
 #=====================
 #=====================
+def write_question(N: int, args) -> str:
+	question_text = (
+		"<p>Choose the correct pair of RNA primers that will amplify the entire region of DNA "
+		"shown above using PCR. The RNA primers are {0} bases in length.</p> "
+		"<p>Pay close attention to the 5&prime; and 3&prime; ends of the primers.</p> "
+	).format(args.primer_len)
+
+	top_sequence, primer_set, answer_set = getSequence(args.sequence_len, args.primer_len)
+	answer_tuple = tuple(answer_set)
+	table = seqlib.DNA_Table(top_sequence)
+	choices = makeChoices(primer_set, answer_set)
+
+	choices_list = []
+	answer_text = None
+	for choice in choices:
+		choice_text = '{0} AND {1}'.format(seqlib.Primer_Table(choice[0]), seqlib.Primer_Table(choice[1]))
+		choices_list.append(choice_text)
+		if choice == answer_tuple:
+			answer_text = choice_text
+	if answer_text is None:
+		return None
+
+	complete_question = bptools.formatBB_MC_Question(N, table + question_text, choices_list, answer_text)
+	return complete_question
+
+#=====================
+def parse_arguments():
+	parser = bptools.make_arg_parser(description="Generate PCR primer design questions.")
+	parser.add_argument(
+		'-s', '--sequence-len', dest='sequence_len', type=int,
+		default=36, help='Length of the template DNA sequence.'
+	)
+	parser.add_argument(
+		'-p', '--primer-len', dest='primer_len', type=int,
+		default=9, help='Length of each primer.'
+	)
+	args = parser.parse_args()
+	return args
+
+#=====================
+def main():
+	args = parse_arguments()
+	outfile = bptools.make_outfile(None, f"{args.sequence_len}_bp", f"{args.primer_len}_primer")
+	bptools.collect_and_write_questions(write_question, args, outfile)
+
+#=====================
 if __name__ == '__main__':
-	sequence_len = 36
-	primer_len = 9
-	num_questions = 199
-
-	N = 0
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	for i in range(num_questions):
-		N += 1
-		number = "{0}. ".format(N)
-		#header = "{0} primer design".format(N)
-		question = ("<p>Choose the correct pair of RNA primers that will amplify the entire region of DNA shown above using PCR. "
-		+"The RNA primers are {0} bases in length.</p> ".format(primer_len)
-		+"<p>Pay close attention to the 5&prime; and 3&prime; ends of the primers.</p> " )
-
-		top_sequence, primer_set, answer_set = getSequence(sequence_len, primer_len)
-		answer_tuple = tuple(answer_set)
-		table = seqlib.DNA_Table(top_sequence)
-		choices = makeChoices(primer_set, answer_set)
-
-		bottom_sequence = seqlib.complement(top_sequence)
-		f.write("MC\t{0}\t".format(number + table + question))
-		print("5'-" + top_sequence + "-3'")
-		print("3'-" + bottom_sequence + "-5'")
-		print("{0}. {1}".format(N, question))
-
-		letters = "ABCDEF"
-		for i, choice in enumerate(choices):
-			f.write('{0} AND {1}\t'.format(seqlib.Primer_Table(choice[0]), seqlib.Primer_Table(choice[1])))
-			if choice == answer_tuple:
-				prefix = 'x'
-				f.write('Correct\t')
-			else:
-				prefix = ' '
-				f.write('Incorrect\t')
-			print("- [{0}] {1}. 5'-{2}-3' AND 5'-{3}-3'".format(prefix, letters[i], choice[0], choice[1]))
-		print("")
-		f.write('\n')
-	f.close()
-
+	main()
