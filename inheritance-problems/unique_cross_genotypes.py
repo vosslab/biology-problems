@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 
 # Import required libraries
-import os
 import random
-import argparse
 
 # Import custom modules
 import bptools
@@ -71,7 +69,7 @@ def generate_choices(total_genotypes, num_genes, max_choices, hint_flag):
 
 
 # Function to write a genotype-based question
-def write_question(N, num_genes, max_choices, hint_flag):
+def write_question(N, args):
 	# Initialize the question string
 	question = ""
 
@@ -82,7 +80,7 @@ def write_question(N, num_genes, max_choices, hint_flag):
 
 	question += "<p>Assume that all genes sort independently and display complete dominance.</p>"
 
-	if hint_flag:
+	if args.hint:
 		question += '<p><i>Hint: For each gene pair from the parents, you can get 1, 2, or 3 unique genotypes.'
 		question += '<br/>This is based on the combinations: homozygous x homozygous (1), '
 		question += 'homozygous x heterozygous (2), and heterozygous x heterozygous (3).</i></p>'
@@ -94,11 +92,11 @@ def write_question(N, num_genes, max_choices, hint_flag):
 	# Generate genotypes and counts for two parents, within specified range
 	gamete_count1 = 1
 	while gamete_count1 < 2 or gamete_count1 > 16:
-		gene_list1 = genotypelib.createGenotypeList(num_genes)
+		gene_list1 = genotypelib.createGenotypeList(args.num_genes)
 		geno1, gamete_count1 = genotypelib.createGenotypeStringFromList(gene_list1)
 	gamete_count2 = 1
 	while gamete_count2 < 2 or gamete_count2 > 16:
-		gene_list2= genotypelib.createGenotypeList(num_genes)
+		gene_list2 = genotypelib.createGenotypeList(args.num_genes)
 		geno2, gamete_count2 = genotypelib.createGenotypeStringFromList(gene_list2)
 	total_genotypes = genotypelib.countGenotypesForCross(gene_list1, gene_list2)
 
@@ -127,7 +125,12 @@ def write_question(N, num_genes, max_choices, hint_flag):
 	question += table
 
 	# Create multiple choice options
-	choices_list, answer_string = generate_choices(total_genotypes, num_genes, max_choices, hint_flag)
+	choices_list, answer_string = generate_choices(
+		total_genotypes,
+		args.num_genes,
+		args.num_choices,
+		args.hint
+	)
 
 	# Format question for Blackboard and write to file
 	bbformat = bptools.formatBB_MC_Question(N, question, choices_list, answer_string)
@@ -144,40 +147,12 @@ def parse_arguments():
 
 	Returns:
 		argparse.Namespace: Parsed arguments with attributes `duplicates`,
-		`num_choices`, and `question_type`.
+		`max_questions`, `num_choices`, `num_genes`, and `hint`.
 	"""
 	# Create an argument parser with a description of the script's functionality
-	parser = argparse.ArgumentParser(description="Generate questions.")
-
-
-
-	# Add an argument to specify the number of duplicate questions to generate
-	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='Number of duplicate runs to do or number of questions to create',
-		default=1
-	)
-
-	parser.add_argument(
-		'-x', '--max-questions', type=int, dest='max_questions',
-		default=99, help='Max number of questions'
-	)
-
-	# Add an argument to specify the number of answer choices for each question
-	parser.add_argument(
-		'-c', '--num_choices', type=int, default=5, dest='num_choices',
-		help="Number of choices to create."
-	)
-
-	parser.add_argument(
-		'--hint', dest='hint', action='store_true',
-		help='Include a hint in the question'
-	)
-	parser.add_argument(
-		'--no-hint', dest='hint', action='store_false',
-		help='Do not include a hint in the question'
-	)
-	parser.set_defaults(hint=True)  # Set default value for hint
+	parser = bptools.make_arg_parser()
+	parser = bptools.add_choice_args(parser)
+	parser = bptools.add_hint_args(parser)
 
 	# Add command line options for number of genes and number of questions
 	parser.add_argument('-n', '--num_genes', type=int, default=6, help='Number of genes')
@@ -197,65 +172,18 @@ def main():
 	Workflow:
 	1. Parse command-line arguments.
 	2. Generate the output filename using script name and args.
-	3. Generate formatted questions using write_question().
-	4. Shuffle and trim the list if exceeding max_questions.
-	5. Write all formatted questions to output file.
-	6. Print stats and status.
+	3. Generate and write formatted questions using shared helpers.
+	4. Print status.
 	"""
 
 	# Parse arguments from the command line
 	args = parse_arguments()
 
-	# Generate the output file name based on the script name and arguments
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
 	hint_mode = 'with_hint' if args.hint else 'no_hint'
-	outfile = (
-		'bbq'
-		f'-{script_name}'              # Add the script name to the file name
-		f'-{hint_mode}'  	# Append question type in uppercase (e.g., MC, MA)
-		f'-{args.num_genes}_genes' # Append number of choices
-		'-questions.txt'               # File extension
-	)
+	outfile = bptools.make_outfile(hint_mode, f"{args.num_genes}_genes")
 
-	# Store all complete formatted questions
-	question_bank_list = []
-
-	# Initialize question counter
-	N = 0
-
-	# Create the specified number of questions
-	for _ in range(args.duplicates):
-		# Generate gene letters (if needed by question logic)
-		gene_letters_str = bptools.generate_gene_letters(3)
-
-		# Create a full formatted question (Blackboard format)
-		complete_question = write_question(N+1, args.num_genes, args.num_choices, args.hint)
-
-		# Append question if successfully generated
-		if complete_question is not None:
-			N += 1
-			question_bank_list.append(complete_question)
-
-		if N >= args.max_questions:
-			break
-
-	bptools.print_histogram()
-
-	# Shuffle and limit the number of questions if over max
-	if len(question_bank_list) > args.max_questions:
-		random.shuffle(question_bank_list)
-		question_bank_list = question_bank_list[:args.max_questions]
-
-	# Announce where output is going
-	print(f'\nWriting {N} question to file: {outfile}')
-
-	# Write all questions to file
-	with open(outfile, 'w') as f:
-		for complete_question in question_bank_list:
-			f.write(complete_question)
-
-	# Final status message
-	print(f'... saved {N} questions to {outfile}\n')
+	# Collect and write questions using shared helper
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #===========================================================
 #===========================================================
@@ -265,6 +193,3 @@ if __name__ == '__main__':
 	main()
 
 ## THE END
-
-
-

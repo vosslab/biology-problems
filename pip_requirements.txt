@@ -11,3 +11,4 @@ qti_package_maker
 rdkit
 requests
 scipy
+tabulate

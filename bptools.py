@@ -3,8 +3,11 @@ import os
 import re
 import sys
 import random
+import argparse
 import subprocess
 from collections import defaultdict
+
+import tabulate
 
 from qti_package_maker.common import anti_cheat
 from qti_package_maker.common import yaml_tools
@@ -118,11 +121,478 @@ def print_histogram():
 	keys = list(answer_histogram.keys())
 	keys.sort()
 	total_answers = 0
+	values_row = []
 	for key in keys:
-		total_answers += answer_histogram[key]
-		sys.stderr.write("{0}: {1},  ".format(key, answer_histogram[key]))
-	sys.stderr.write("\n")
+		count = answer_histogram[key]
+		total_answers += count
+		values_row.append(count)
+	headers = list(keys)
+	headers.append("TOTAL")
+	values_row.append(total_answers)
+	table_text = tabulate.tabulate(
+		[values_row],
+		headers=headers,
+		tablefmt="fancy_grid"
+	)
+	print(table_text, file=sys.stderr)
 	sys.stderr.write("Total Questions = {0:d}; Total Answers = {1:d}\n".format(question_count, total_answers))
+
+#===================================================================================
+#===================================================================================
+#===================================================================================
+
+#==========================
+def add_base_args(parser, duplicates_default=2, max_questions_default=None):
+	"""
+	Add base CLI arguments for common generators.
+
+	Args:
+		parser (argparse.ArgumentParser): Argument parser to extend.
+		duplicates_default (int): Default value for duplicates.
+		max_questions_default (int): Default value for max questions.
+
+	Returns:
+		argparse.ArgumentParser: The updated parser.
+	"""
+	parser.add_argument(
+		'-d', '--duplicate-runs', '--duplicates', metavar='#', type=int, dest='duplicates',
+		help='Number of duplicate runs (attempts) to generate questions.',
+		default=duplicates_default
+	)
+	parser.add_argument(
+		'-x', '--max-questions', type=int, dest='max_questions',
+		default=max_questions_default, help='Maximum number of questions to keep.'
+	)
+	return parser
+
+#==========================
+def add_base_args_batch(parser, duplicates_default=2, max_questions_default=99):
+	"""
+	Add base CLI arguments for batch generators with a default cap.
+
+	Args:
+		parser (argparse.ArgumentParser): Argument parser to extend.
+		duplicates_default (int): Default value for duplicate runs.
+		max_questions_default (int): Default value for max questions.
+
+	Returns:
+		argparse.ArgumentParser: The updated parser.
+	"""
+	parser = add_base_args(
+		parser,
+		duplicates_default=duplicates_default,
+		max_questions_default=max_questions_default
+	)
+	return parser
+
+#==========================
+def make_arg_parser(description=None, batch=False, duplicates_default=None, max_questions_default=None):
+	"""
+	Create a standard argument parser with base args.
+
+	Args:
+		description (str): Optional parser description.
+		batch (bool): Use batch defaults when True.
+		duplicates_default (int | None): Override duplicate_runs default.
+		max_questions_default (int | None): Override max_questions default.
+
+	Returns:
+		argparse.ArgumentParser: Configured parser.
+	"""
+	if description is None:
+		description = "Generate blackboard questions."
+	parser = argparse.ArgumentParser(description=description)
+	if batch:
+		if duplicates_default is None:
+			duplicates_default = 2
+		if max_questions_default is None:
+			max_questions_default = 99
+		parser = add_base_args_batch(
+			parser,
+			duplicates_default=duplicates_default,
+			max_questions_default=max_questions_default
+		)
+	else:
+		if duplicates_default is None:
+			duplicates_default = 2
+		parser = add_base_args(
+			parser,
+			duplicates_default=duplicates_default,
+			max_questions_default=max_questions_default
+		)
+	return parser
+
+#==========================
+def add_choice_args(parser, num_choices_default=5, dest='num_choices', help_text=None):
+	"""
+	Add a standard number-of-choices argument.
+
+	Args:
+		parser (argparse.ArgumentParser): Argument parser to extend.
+		num_choices_default (int): Default number of choices.
+		dest (str): Destination name for the parsed value.
+		help_text (str): Optional help text override.
+
+	Returns:
+		argparse.ArgumentParser: The updated parser.
+	"""
+	if help_text is None:
+		help_text = "Number of choices to create."
+	parser.add_argument(
+		'-c', '--num-choices', metavar='#', type=int, dest=dest,
+		help=help_text, default=num_choices_default
+	)
+	return parser
+
+#==========================
+def add_hint_args(parser, hint_default=True, dest='hint'):
+	"""
+	Add standard hint and no-hint boolean flags.
+
+	Args:
+		parser (argparse.ArgumentParser): Argument parser to extend.
+		hint_default (bool): Default hint setting.
+		dest (str): Destination name for the parsed value.
+
+	Returns:
+		argparse.ArgumentParser: The updated parser.
+	"""
+	parser.add_argument(
+		'--hint', dest=dest, action='store_true',
+		help='Include a hint in the question'
+	)
+	parser.add_argument(
+		'--no-hint', dest=dest, action='store_false',
+		help='Do not include a hint in the question'
+	)
+	parser.set_defaults(**{dest: hint_default})
+	return parser
+
+#==========================
+def add_question_format_args(parser, types_list=None, dest='question_format', required=True, default=None):
+	"""
+	Add standard question format arguments.
+
+	Args:
+		parser (argparse.ArgumentParser): Argument parser to extend.
+		types_list (list): Allowed question formats (ma, mc, num, fib).
+		dest (str): Destination name for the parsed value.
+		required (bool): Require one of the options.
+		default (str | None): Default when not required.
+
+	Returns:
+		argparse.ArgumentParser: The updated parser.
+	"""
+	if types_list is None:
+		types_list = ['mc', 'num']
+	allowed_types = ['ma', 'mc', 'num', 'fib']
+	clean_types = []
+	for format_name in types_list:
+		format_text = str(format_name).lower()
+		if format_text not in allowed_types:
+			sys.stderr.write(
+				"WARNING: unknown question format ignored ({0})\n".format(format_text)
+			)
+			continue
+		if format_text in clean_types:
+			continue
+		clean_types.append(format_text)
+	if len(clean_types) == 0:
+		raise ValueError("No valid question formats were provided.")
+	question_group = parser.add_mutually_exclusive_group(required=required)
+	question_group.add_argument(
+		'--format', dest=dest, type=str,
+		choices=tuple(clean_types),
+		help='Set the question format.'
+	)
+	if 'mc' in clean_types:
+		question_group.add_argument(
+			'--mc', dest=dest, action='store_const', const='mc',
+			help='Set question format to multiple choice'
+		)
+		question_group.add_argument(
+			'--multiple-choice', dest=dest, action='store_const', const='mc',
+			help='Set question format to multiple choice'
+		)
+	if 'ma' in clean_types:
+		question_group.add_argument(
+			'--ma', dest=dest, action='store_const', const='ma',
+			help='Set question format to multiple answer'
+		)
+		question_group.add_argument(
+			'--multiple-answer', dest=dest, action='store_const', const='ma',
+			help='Set question format to multiple answer'
+		)
+	if 'num' in clean_types:
+		question_group.add_argument(
+			'--num', dest=dest, action='store_const', const='num',
+			help='Set question format to numeric'
+		)
+		question_group.add_argument(
+			'--numeric', dest=dest, action='store_const', const='num',
+			help='Set question format to numeric'
+		)
+	if 'fib' in clean_types:
+		question_group.add_argument(
+			'--fib', dest=dest, action='store_const', const='fib',
+			help='Set question format to fill in the blank'
+		)
+		question_group.add_argument(
+			'--fill-in-blank', dest=dest, action='store_const', const='fib',
+			help='Set question format to fill in the blank'
+		)
+	if required is False and default is not None:
+		parser.set_defaults(**{dest: default})
+	return parser
+
+#==========================
+def add_difficulty_args(parser, dest='difficulty', default='medium'):
+	"""
+	Add standard difficulty arguments (easy/medium/rigorous).
+
+	Args:
+		parser (argparse.ArgumentParser): Argument parser to extend.
+		dest (str): Destination name for the parsed value.
+		default (str): Default difficulty.
+
+	Returns:
+		argparse.ArgumentParser: The updated parser.
+	"""
+	difficulty_group = parser.add_mutually_exclusive_group(required=False)
+	difficulty_group.add_argument(
+		'--difficulty', dest=dest, type=str,
+		choices=('easy', 'medium', 'rigorous'),
+		help='Set difficulty level'
+	)
+	difficulty_group.add_argument(
+		'--easy', dest=dest, action='store_const', const='easy',
+		help='Set difficulty to easy'
+	)
+	difficulty_group.add_argument(
+		'--medium', dest=dest, action='store_const', const='medium',
+		help='Set difficulty to medium'
+	)
+	difficulty_group.add_argument(
+		'--rigorous', dest=dest, action='store_const', const='rigorous',
+		help='Set difficulty to rigorous'
+	)
+	parser.set_defaults(**{dest: default})
+	return parser
+
+#==========================
+def _warn_shortfall(question_count: int, args):
+	"""
+	Warn when fewer than max_questions were generated.
+
+	Args:
+		question_count (int): Number of accepted questions.
+		args (argparse.Namespace): Parsed args with duplicates and max_questions.
+	"""
+	if args.max_questions is None:
+		return
+	if question_count >= args.max_questions:
+		return
+	sys.stderr.write(
+		"WARNING: generated {0} of {1} questions after {2} attempts\n".format(
+			question_count, args.max_questions, args.duplicates
+		)
+	)
+
+#==========================
+def _prepare_question_text(question_text: str, question_label: str):
+	"""
+	Validate and normalize a question string.
+
+	Args:
+		question_text (str): Question string or None.
+		question_label (str): Label for warnings (usually question number).
+
+	Returns:
+		str | None: Normalized question string or None to skip.
+	"""
+	if question_text is None:
+		return None
+	if not isinstance(question_text, str):
+		sys.stderr.write(
+			"WARNING: non-string question skipped ({0})\n".format(question_label)
+		)
+		return None
+	if len(question_text.strip()) == 0:
+		sys.stderr.write(
+			"WARNING: empty question skipped ({0})\n".format(question_label)
+		)
+		return None
+	check_text = question_text
+	if check_text.endswith("\n"):
+		check_text = check_text[:-1]
+	if "\n" in check_text or "\r" in check_text:
+		sys.stderr.write(
+			"WARNING: internal newline skipped ({0})\n".format(question_label)
+		)
+		return None
+	if question_text.endswith("\n") is False:
+		question_text += "\n"
+	return question_text
+
+#==========================
+def _should_print_histogram(questions_list: list) -> bool:
+	"""
+	Check whether questions include MC/MA prefixes.
+
+	Args:
+		questions_list (list): List of question strings.
+
+	Returns:
+		bool: True when MC/MA questions are present.
+	"""
+	for question_text in questions_list:
+		if question_text.startswith("MC\t") or question_text.startswith("MA\t"):
+			return True
+	return False
+
+#==========================
+def collect_questions(write_question, args, print_histogram_flag=True) -> list:
+	"""
+	Collect questions from a single-question writer.
+
+	Args:
+		write_question (callable): Function that returns a question string or None.
+		args (argparse.Namespace): Parsed arguments with duplicates and max_questions.
+		print_histogram_flag (bool): Print histogram when MC/MA questions are present.
+
+	Returns:
+		list: List of question strings.
+	"""
+	questions = []
+	n = 0
+	max_questions = args.max_questions
+	for _ in range(args.duplicates):
+		question_text = write_question(n + 1, args)
+		if isinstance(question_text, list):
+			sys.stderr.write(
+				"WARNING: write_question returned a list; use collect_question_batches\n"
+			)
+			continue
+		prepared_question = _prepare_question_text(question_text, str(n + 1))
+		if prepared_question is None:
+			continue
+		questions.append(prepared_question)
+		n += 1
+		if max_questions is not None and n >= max_questions:
+			break
+	if print_histogram_flag and _should_print_histogram(questions):
+		print_histogram()
+	_warn_shortfall(n, args)
+	return questions
+
+#==========================
+def collect_question_batches(write_question_batch, args, print_histogram_flag=True) -> list:
+	"""
+	Collect questions from a batch writer.
+
+	Args:
+		write_question_batch (callable): Function that returns a list of questions.
+		args (argparse.Namespace): Parsed arguments with duplicates and max_questions.
+		print_histogram_flag (bool): Print histogram when MC/MA questions are present.
+
+	Returns:
+		list: List of question strings.
+	"""
+	questions = []
+	n = 0
+	max_questions = args.max_questions
+	for _ in range(args.duplicates):
+		batch = write_question_batch(n + 1, args)
+		if batch is None:
+			sys.stderr.write(
+				"WARNING: write_question_batch returned None; expected list\n"
+			)
+			continue
+		if not isinstance(batch, list):
+			sys.stderr.write(
+				"WARNING: write_question_batch did not return a list; skipped\n"
+			)
+			continue
+		if len(batch) == 0:
+			continue
+		for question_text in batch:
+			prepared_question = _prepare_question_text(question_text, str(n + 1))
+			if prepared_question is None:
+				continue
+			questions.append(prepared_question)
+			n += 1
+			if max_questions is not None and n >= max_questions:
+				break
+		if max_questions is not None and n >= max_questions:
+			break
+	if print_histogram_flag and _should_print_histogram(questions):
+		print_histogram()
+	_warn_shortfall(n, args)
+	return questions
+
+#==========================
+def make_outfile(script_path: str = None, *parts) -> str:
+	"""
+	Build a bbq output filename with optional suffix parts.
+
+	Args:
+		script_path (str): Script path used to derive the base name.
+		parts (tuple): Optional suffix parts to append to the filename.
+
+	Returns:
+		str: Output filename.
+	"""
+	if script_path is None:
+		script_path = sys.argv[0]
+	if script_path is None or len(script_path) == 0:
+		script_name = "script"
+	else:
+		script_name = os.path.splitext(os.path.basename(script_path))[0]
+	suffix = ""
+	for part in parts:
+		if part is None:
+			continue
+		part_text = str(part)
+		if len(part_text) == 0:
+			continue
+		suffix += f"-{part_text}"
+	outfile = f"bbq-{script_name}{suffix}-questions.txt"
+	return outfile
+
+#==========================
+def write_questions_to_file(questions: list, outfile: str):
+	"""
+	Write questions to a file and print status messages.
+
+	Args:
+		questions (list): List of question strings.
+		outfile (str): Output filename.
+	"""
+	question_count = len(questions)
+	word = "question" if question_count == 1 else "questions"
+	print(f"\nWriting {question_count} {word} to file: {outfile}")
+	with open(outfile, "w") as f:
+		for question_text in questions:
+			f.write(question_text)
+	print(f"... saved {question_count} {word} to {outfile}\n")
+
+#==========================
+def collect_and_write_questions(write_question, args, outfile, print_histogram_flag=True) -> list:
+	"""
+	Collect questions and write them to a file.
+
+	Args:
+		write_question (callable): Function that returns a question string or None.
+		args (argparse.Namespace): Parsed arguments with duplicates and max_questions.
+		outfile (str): Output filename.
+		print_histogram_flag (bool): Print histogram when MC/MA questions are present.
+
+	Returns:
+		list: List of question strings.
+	"""
+	questions = collect_questions(write_question, args, print_histogram_flag)
+	write_questions_to_file(questions, outfile)
+	return questions
 
 #===================================================================================
 #===================================================================================

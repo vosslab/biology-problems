@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 
 # external python/pip modules
-import os
 import random
-import argparse
 
 # local repo modules
 import bptools
@@ -43,54 +41,52 @@ def generate_choices(num_choices: int) -> (list, str):
 	random.shuffle(two_aas)
 	answer_text = f"{two_aas[0].title()} and {two_aas[1].title()}"
 
-	negative_aa = random.choice(negative_amino_acids)
-	other_aa = random.choice(other_amino_acids)
-	two_aas = [other_aa, negative_aa]
-	neg_only = f"{two_aas[0].title()} and {two_aas[1].title()}"
+	wrong_choices = set()
+	while len(wrong_choices) < max(4, num_choices - 1):
+		negative_aa = random.choice(negative_amino_acids)
+		other_aa = random.choice(other_amino_acids)
+		two_aas = [other_aa, negative_aa]
+		wrong_choices.add(f"{two_aas[0].title()} and {two_aas[1].title()}")
 
-	positive_aa = random.choice(positive_amino_acids)
-	other_aa = random.choice(other_amino_acids)
-	two_aas = [other_aa, positive_aa]
-	pos_only = f"{two_aas[0].title()} and {two_aas[1].title()}"
+		positive_aa = random.choice(positive_amino_acids)
+		other_aa = random.choice(other_amino_acids)
+		two_aas = [other_aa, positive_aa]
+		wrong_choices.add(f"{two_aas[0].title()} and {two_aas[1].title()}")
 
-	other_aa1 = random.choice(other_amino_acids)
-	other_aa2 = other_aa1
-	while other_aa2 == other_aa1:
-		other_aa2 = random.choice(other_amino_acids)
-	other_only1 = f"{other_aa1.title()} and {other_aa2.title()}"
+		other_aa1 = random.choice(other_amino_acids)
+		other_aa2 = other_aa1
+		while other_aa2 == other_aa1:
+			other_aa2 = random.choice(other_amino_acids)
+		wrong_choices.add(f"{other_aa1.title()} and {other_aa2.title()}")
 
-	other_aa1 = random.choice(other_amino_acids)
-	other_aa2 = other_aa1
-	while other_aa2 == other_aa1:
-		other_aa2 = random.choice(other_amino_acids)
-	other_only2 = f"{other_aa1.title()} and {other_aa2.title()}"
-
-	choices_list = [answer_text, neg_only, pos_only, other_only1, other_only2]
-	# Shuffle choices for presentation
+	wrong_choices.discard(answer_text)
+	wrong_choices_list = list(wrong_choices)
+	random.shuffle(wrong_choices_list)
+	choices_list = [answer_text] + wrong_choices_list[:max(0, num_choices - 1)]
 	random.shuffle(choices_list)
 
 	return choices_list, answer_text
 
 #======================================
 #======================================
-def write_question(N: int, num_choices: int) -> str:
+def write_question(N: int, args) -> str:
 	"""Creates a complete formatted question.
 
 	Args:
 		N (int): The question number.
-		num_choices (int): The number of choices for the question.
+		args (argparse.Namespace): Parsed arguments.
 
 	Returns:
 		str: The complete formatted question.
 	"""
 	assert N > 0, "Question number must be positive"
-	assert num_choices >= 2, "Number of choices must be at least 2"
+	assert args.num_choices >= 2, "Number of choices must be at least 2"
 
 	# Add more to the question based on the given letters
 	question_text = get_question_text()
 
 	# Choices and answers
-	choices_list, answer_text = generate_choices(num_choices)
+	choices_list, answer_text = generate_choices(args.num_choices)
 
 	# Complete the question formatting
 	complete_question = bptools.formatBB_MC_Question(N, question_text, choices_list, answer_text)
@@ -98,25 +94,33 @@ def write_question(N: int, num_choices: int) -> str:
 
 #======================================
 #======================================
-def main():
-	# Define argparse for command-line options
-	parser = argparse.ArgumentParser(description="Generate questions.")
-	parser.add_argument('-d', '--duplicates', type=int, default=95, help="Number of questions to create.")
-	parser.add_argument('-n', '--num_choices', type=int, default=5, help="Number of choices to create.")
+#======================================
+#======================================
+def parse_arguments():
+	"""
+	Parses command-line arguments for the script.
+
+	Returns:
+		argparse.Namespace: Parsed arguments with attributes `duplicates`,
+		`max_questions`, and `num_choices`.
+	"""
+	parser = bptools.make_arg_parser()
+	parser = bptools.add_choice_args(parser)
+
 	args = parser.parse_args()
+	return args
+
+#======================================
+#======================================
+def main():
+	# Parse arguments from the command line
+	args = parse_arguments()
 
 	# Output file setup
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print(f'writing to file: {outfile}')
+	outfile = bptools.make_outfile()
 
-	# Create and write questions to the output file
-	with open(outfile, 'w') as f:
-		N = 0
-		for d in range(args.duplicates):
-			N += 1
-			complete_question = write_question(N, args.num_choices)
-			f.write(complete_question)
-	bptools.print_histogram()
+	# Collect and write questions using shared helper
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 
 #======================================

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-import os
 import random
+import bptools
 
 carbs = [
 	"glycogen",
@@ -152,42 +152,52 @@ choices = [
 	'Proteins',
 ]
 
-def writeQuestion(macro, answer):
-	question = "MC\t"
-	question += "<b>{0}</b> ".format(macro)
+#======================================
+#======================================
+def write_question(N, macro, answer):
+	question = "<p><b>{0}</b> ".format(macro)
 	if macro.endswith('s'):
 		question += "are "
 	else:
 		question += "is "
-	question += "is most appropriately associated with this macromolecular category."
-	random.shuffle(choices)
-	for choice in choices:
-		question += '\t' + choice
-		if choice == answer:
-			question += '\tCorrect'
-		else:
-			question += '\tIncorrect'
-	return question
-	
-	
-	
-if __name__ == '__main__':
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
+	question += "most appropriately associated with this macromolecular category.</p>"
+	choices_list = list(choices)
+	random.shuffle(choices_list)
+	complete_question = bptools.formatBB_MC_Question(N, question, choices_list, answer)
+	return complete_question
+
+#======================================
+#======================================
+def write_question_batch(N, args):
+	questions = []
 	for item in carbs:
-		complete_question = writeQuestion(item, 'Carbohydrates')
-		f.write(complete_question+'\n')
+		questions.append(write_question(N, item, 'Carbohydrates'))
+		N += 1
 	for item in lipids:
-		complete_question = writeQuestion(item, 'Lipids')
-		f.write(complete_question+'\n')
+		questions.append(write_question(N, item, 'Lipids'))
+		N += 1
 	for item in protein:
-		complete_question = writeQuestion(item, 'Proteins')		
-		f.write(complete_question+'\n')
+		questions.append(write_question(N, item, 'Proteins'))
+		N += 1
 	for item in nucleic_acids:
-		complete_question = writeQuestion(item, 'Nucleic acids')
-		f.write(complete_question+'\n')
-	f.close()
-	
-	
-	
+		questions.append(write_question(N, item, 'Nucleic acids'))
+		N += 1
+	return questions
+
+#======================================
+#======================================
+def parse_arguments():
+	parser = bptools.make_arg_parser(batch=True)
+	args = parser.parse_args()
+	return args
+
+#======================================
+#======================================
+def main():
+	args = parse_arguments()
+	outfile = bptools.make_outfile()
+	questions = bptools.collect_question_batches(write_question_batch, args)
+	bptools.write_questions_to_file(questions, outfile)
+
+if __name__ == '__main__':
+	main()

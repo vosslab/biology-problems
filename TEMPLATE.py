@@ -7,8 +7,6 @@ import os
 import time
 # Provides functions to generate random numbers and selections
 import random
-# Provides tools to parse command-line arguments
-import argparse
 
 # Import external modules (pip-installed)
 # No external modules are used here currently
@@ -81,13 +79,13 @@ def generate_choices(num_choices: int) -> (list, str):
 #===========================================================
 #===========================================================
 # This function creates and formats a complete question for output.
-def write_question(N: int, num_choices: int) -> str:
+def write_question(N: int, args) -> str:
 	"""
 	Creates a complete formatted question for output.
 
 	Args:
 		N (int): The question number, used for labeling the question.
-		num_choices (int): The number of answer choices to include.
+		args (argparse.Namespace): Parsed command-line arguments.
 
 	Returns:
 		str: A formatted question string containing the question text,
@@ -97,7 +95,7 @@ def write_question(N: int, num_choices: int) -> str:
 	question_text = get_question_text()
 
 	# Generate answer choices and the correct answer
-	choices_list, answer_text = generate_choices(num_choices)
+	choices_list, answer_text = generate_choices(args.num_choices)
 
 	# Format the question using a helper function from the bptools module
 	complete_question = bptools.formatBB_MC_Question(N, question_text, choices_list, answer_text)
@@ -114,58 +112,15 @@ def parse_arguments():
 
 	Returns:
 		argparse.Namespace: Parsed arguments with attributes `duplicates`,
-		`num_choices`, and `question_type`.
+		`max_questions`, `num_choices`, and `question_format`.
 	"""
 	# Create an argument parser with a description of the script's functionality
-	parser = argparse.ArgumentParser(description="Generate questions.")
+	parser = bptools.make_arg_parser()
 
-	# Add an argument to specify the number of duplicate questions to generate
-	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='Number of duplicate runs to do or number of questions to create',
-		default=1
-	)
-
-	parser.add_argument(
-		'-x', '--max-questions', type=int, dest='max_questions',
-		default=99, help='Max number of questions'
-	)
-
-	# Add an argument to specify the number of answer choices for each question
-	parser.add_argument(
-		'-c', '--num_choices', type=int, default=5, dest='num_choices',
-		help="Number of choices to create."
-	)
-
-	# Create a mutually exclusive group for question format selection
-	# The group ensures only one of these options can be chosen at a time
-	question_group = parser.add_mutually_exclusive_group(required=True)
-	# Add an option to manually set the question format
-	question_group.add_argument(
-		'-f', '--format', dest='question_format', type=str,
-		choices=('num', 'mc'),
-		help='Set the question format: num (numeric) or mc (multiple choice)'
-	)
-	# Add a shortcut option to set the question format to multiple choice
-	question_group.add_argument(
-		'-m', '--mc', dest='question_format', action='store_const', const='mc',
-		help='Set question format to multiple choice'
-	)
-	# Add a shortcut option to set the question format to numeric
-	question_group.add_argument(
-		'-n', '--num', dest='question_format', action='store_const', const='num',
-		help='Set question format to numeric'
-	)
-
-	parser.add_argument(
-		'--hint', dest='hint', action='store_true',
-		help='Include a hint in the question'
-	)
-	parser.add_argument(
-		'--no-hint', dest='hint', action='store_false',
-		help='Do not include a hint in the question'
-	)
-	parser.set_defaults(hint=True)  # Set default value for hint
+	# Add standard argument bundles
+	parser = bptools.add_choice_args(parser)
+	parser = bptools.add_hint_args(parser)
+	parser = bptools.add_question_format_args(parser, required=True)
 
 	# Parse the provided command-line arguments and return them
 	args = parser.parse_args()
@@ -181,10 +136,8 @@ def main():
 	Workflow:
 	1. Parse command-line arguments.
 	2. Generate the output filename using script name and args.
-	3. Generate formatted questions using write_question().
-	4. Shuffle and trim the list if exceeding max_questions.
-	5. Write all formatted questions to output file.
-	6. Print stats and status.
+	3. Generate and write formatted questions using shared helpers.
+	4. Print status.
 	"""
 
 	# Parse arguments from the command line
@@ -193,61 +146,14 @@ def main():
 	# Generate the output file name based on the script name and arguments
 	script_name = os.path.splitext(os.path.basename(__file__))[0]
 	hint_mode = 'with_hint' if args.hint else 'no_hint'
-	outfile = (
-		'bbq'
-		f'-{script_name}'              # Add the script name to the file name
-		f'-{args.question_format.upper()}'  # Append question type in uppercase (e.g., MC, MA)
-		f'-{hint_mode}'  	# Append question type in uppercase (e.g., MC, MA)
-		f'-{args.num_choices}_choices' # Append number of choices
-		'-questions.txt'               # File extension
+	outfile = bptools.make_outfile(
+		args.question_format.upper(),
+		hint_mode,
+		f"{args.num_choices}_choices"
 	)
 
-	# Store all complete formatted questions
-	question_bank_list = []
-
-	# Initialize question counter
-	N = 0
-
-	# Create the specified number of questions
-	for _ in range(args.duplicates):
-		# Generate gene letters (if needed by question logic)
-		gene_letters_str = bptools.generate_gene_letters(3)
-
-		# Create a full formatted question (Blackboard format)
-		t0 = time.time()
-		complete_question = write_question(N+1, args.num_choices)
-		if time.time() - t0 > 1:
-			print(f"Question {N+1} complete in {time.time() - t0:.1f} seconds")
-
-		# Append question if successfully generated
-		if complete_question is not None:
-			N += 1
-			question_bank_list.append(complete_question)
-
-		if N >= args.max_questions:
-			break
-
-	# Show a histogram of answer distributions for MC/MA types
-	if args.question_type == "mc" or args.question_type == "ma":
-		bptools.print_histogram()
-
-	# Shuffle and limit the number of questions if over max
-	if len(question_bank_list) > args.max_questions:
-		random.shuffle(question_bank_list)
-		question_bank_list = question_bank_list[:args.max_questions]
-
-	# Announce where output is going
-	print(f'\nWriting {len(question_bank_list)} question to file: {outfile}')
-
-	# Write all questions to file
-	write_count = 0
-	with open(outfile, 'w') as f:
-		for complete_question in question_bank_list:
-			write_count += 1
-			f.write(complete_question)
-
-	# Final status message
-	print(f'... saved {write_count} questions to {outfile}\n')
+	# Collect and write questions using shared helper
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #===========================================================
 #===========================================================
