@@ -2,6 +2,7 @@
 
 # Local repo modules
 import pedigree_code_lib
+import pedigree_label_lib
 
 
 #===============================
@@ -13,7 +14,7 @@ def makeCharacterTD_Cell(character_name):
 
 
 #===============================
-def makeTD_Cell(comment_text, character_unicode, fontsize):
+def makeTD_Cell(comment_text, character_unicode, fontsize, line_height="0px"):
 	html_text = ''
 	if comment_text is not None:
 		html_text += f'<!-- {comment_text} --> '
@@ -21,11 +22,80 @@ def makeTD_Cell(comment_text, character_unicode, fontsize):
 	if fontsize is not None:
 		html_text += f'font-size: {fontsize:d}pt; '
 	html_text += (
-		'padding: 0; margin: 0; line-height: 0px; vertical-align: middle; '
+		f'padding: 0; margin: 0; line-height: {line_height}; vertical-align: middle; '
 		f'width: {pedigree_code_lib.table_cell_dimension}px; '
 		f'height: {pedigree_code_lib.table_cell_dimension}px;">'
 	)
 	html_text += f'{character_unicode}</td>'
+	return html_text
+
+
+#===============================
+def _make_person_span(shape_name, label_text):
+	cell_size = pedigree_code_lib.table_cell_dimension
+	border_width = 2
+	font_size = max(8, int(cell_size * 0.6))
+	label = label_text if label_text else '&nbsp;'
+	is_circle = shape_name.endswith('CIRCLE')
+	is_black = shape_name.startswith('BLACK')
+	is_left_half = shape_name.startswith('LEFT-HALF')
+	is_right_half = shape_name.startswith('RIGHT-HALF')
+
+	outer_styles = [
+		'display: inline-block',
+		'position: relative',
+		f'width: {cell_size}px',
+		f'height: {cell_size}px',
+		f'line-height: {cell_size}px',
+		'text-align: center',
+		'font-weight: bold',
+		f'font-size: {font_size}px',
+		f'border: {border_width}px solid #000',
+		'box-sizing: border-box',
+		'overflow: hidden',
+	]
+	if is_circle:
+		outer_styles.append('border-radius: 50%')
+
+	text_color = '#000000'
+	background_color = '#ffffff'
+	if is_black:
+		background_color = '#000000'
+		text_color = '#ffffff'
+
+	if not (is_left_half or is_right_half):
+		outer_styles.append(f'background-color: {background_color}')
+		outer_styles.append(f'color: {text_color}')
+		return (
+			f"<span style=\"{' ; '.join(outer_styles)}\">"
+			f"<span style='position: relative; z-index: 1;'>{label}</span>"
+			"</span>"
+		)
+
+	outer_styles.append('color: #000000')
+	half_left_color = '#000000' if is_left_half else '#ffffff'
+	half_right_color = '#000000' if is_right_half else '#ffffff'
+	return (
+		f"<span style=\"{' ; '.join(outer_styles)}\">"
+		f"<span style='position: absolute; left: 0; top: 0; width: 50%; height: 100%; background: {half_left_color};'></span>"
+		f"<span style='position: absolute; right: 0; top: 0; width: 50%; height: 100%; background: {half_right_color};'></span>"
+		f"<span style='position: relative; z-index: 1;'>{label}</span>"
+		"</span>"
+	)
+
+
+#===============================
+def makePersonTD_Cell(shape_name, label_text):
+	html_text = ''
+	html_text += f'<!-- {shape_name} --> '
+	html_text += '<td align="center" style="'
+	html_text += (
+		'padding: 0; margin: 0; vertical-align: middle; '
+		f'width: {pedigree_code_lib.table_cell_dimension}px; '
+		f'height: {pedigree_code_lib.table_cell_dimension}px;">'
+	)
+	html_text += _make_person_span(shape_name, label_text)
+	html_text += '</td>'
 	return html_text
 
 
@@ -93,21 +163,32 @@ def makeShapeNameTableTD_Cell(shape_name):
 
 
 #===============================
-def translateCode(code_string):
+def translateCode(code_string, label_string=None):
 	max_num_col = 0
 	num_row = 0
 	num_col = 0
 	html_code = ''
 	if not code_string.endswith('%'):
 		code_string += '%'
-	for char in list(code_string):
+	label_chars = None
+	if label_string is not None:
+		if not label_string.endswith('%'):
+			label_string += '%'
+		label_chars = list(label_string)
+
+	for idx, char in enumerate(list(code_string)):
 		if char != '%':
 			num_col += 1
 		char_name = pedigree_code_lib.short_hand_lookup[char]
 		if char_name.endswith('SHAPE'):
 			html_code += makeShapeNameTableTD_Cell(char_name)
 		elif char_name.endswith('CIRCLE') or char_name.endswith('SQUARE'):
-			html_code += makeCharacterTD_Cell(char_name)
+			label_text = ''
+			if label_chars is not None and idx < len(label_chars):
+				label_candidate = label_chars[idx]
+				if label_candidate != '.':
+					label_text = label_candidate
+			html_code += makePersonTD_Cell(char_name, label_text)
 		elif char_name == 'SPACE':
 			html_code += makeTD_Cell(None, '&nbsp;', 1)
 		elif char_name == 'NEW LINE':
@@ -128,17 +209,22 @@ def translateCode(code_string):
 
 
 #===============================
-def make_pedigree_html(code_string: str) -> str:
+def make_pedigree_html(code_string: str, label_string: str | None = None) -> str:
 	"""
 	Translate a pedigree code string into HTML markup.
 
 	Args:
 		code_string (str): Pedigree code string.
+		label_string (str | None): Optional label string aligned to code_string.
 
 	Returns:
 		str: HTML table markup.
 	"""
-	html_text = translateCode(code_string)
+	if label_string is not None:
+		errors = pedigree_label_lib.validate_label_string(label_string, code_string)
+		if errors:
+			raise ValueError("Invalid label string: " + "; ".join(errors))
+	html_text = translateCode(code_string, label_string)
 	return html_text
 
 

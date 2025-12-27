@@ -3,9 +3,11 @@
 # PIP3 modules
 import PIL.Image
 import PIL.ImageDraw
+import PIL.ImageFont
 
 # Local repo modules
 import pedigree_code_lib
+import pedigree_label_lib
 
 
 #===============================
@@ -90,13 +92,21 @@ def _draw_edge_cell(draw, cell_box, edge_binary, line_width):
 
 
 #===============================
-def make_pedigree_png(code_string: str, scale: float = 1.0) -> PIL.Image.Image:
+def _label_color(shape_name: str) -> str:
+	if shape_name.startswith('BLACK'):
+		return '#ffffff'
+	return '#000000'
+
+
+#===============================
+def make_pedigree_png(code_string: str, scale: float = 1.0, label_string: str | None = None) -> PIL.Image.Image:
 	"""
 	Render a pedigree code string into a PNG image.
 
 	Args:
 		code_string (str): Pedigree code string.
 		scale (float): Scaling factor for the output image size.
+		label_string (str | None): Optional label string aligned to code_string.
 
 	Returns:
 		PIL.Image.Image: Rendered pedigree image.
@@ -106,6 +116,12 @@ def make_pedigree_png(code_string: str, scale: float = 1.0) -> PIL.Image.Image:
 		raise ValueError("Empty pedigree code string.")
 
 	max_cols = max(len(row) for row in rows)
+	label_rows = None
+	if label_string is not None:
+		errors = pedigree_label_lib.validate_label_string(label_string, code_string)
+		if errors:
+			raise ValueError("Invalid label string: " + "; ".join(errors))
+		label_rows = pedigree_code_lib.get_code_rows(label_string)
 	cell_size = max(8, int(pedigree_code_lib.table_cell_dimension * scale))
 	width = max_cols * cell_size
 	height = len(rows) * cell_size
@@ -113,6 +129,7 @@ def make_pedigree_png(code_string: str, scale: float = 1.0) -> PIL.Image.Image:
 	image = PIL.Image.new("RGB", (width, height), "#ffffff")
 	draw = PIL.ImageDraw.Draw(image)
 	line_width = max(2, int(cell_size * 0.05))
+	font = PIL.ImageFont.load_default()
 
 	for row_idx, row in enumerate(rows):
 		for col_idx, char in enumerate(row):
@@ -129,6 +146,16 @@ def make_pedigree_png(code_string: str, scale: float = 1.0) -> PIL.Image.Image:
 				_draw_edge_cell(draw, cell_box, edge_binary, line_width)
 			elif shape_name.endswith('CIRCLE') or shape_name.endswith('SQUARE'):
 				_draw_shape_cell(draw, cell_box, shape_name, line_width)
+				if label_rows is not None and row_idx < len(label_rows) and col_idx < len(label_rows[row_idx]):
+					label_char = label_rows[row_idx][col_idx]
+					if label_char != '.':
+						text_color = _label_color(shape_name)
+						bbox = draw.textbbox((0, 0), label_char, font=font)
+						text_w = bbox[2] - bbox[0]
+						text_h = bbox[3] - bbox[1]
+						text_x = x0 + (cell_size - text_w) / 2
+						text_y = y0 + (cell_size - text_h) / 2
+						draw.text((text_x, text_y), label_char, fill=text_color, font=font)
 			else:
 				continue
 
@@ -136,7 +163,7 @@ def make_pedigree_png(code_string: str, scale: float = 1.0) -> PIL.Image.Image:
 
 
 #===============================
-def save_pedigree_png(code_string: str, output_file: str, scale: float = 1.0) -> None:
+def save_pedigree_png(code_string: str, output_file: str, scale: float = 1.0, label_string: str | None = None) -> None:
 	"""
 	Render and save a pedigree PNG image.
 
@@ -144,8 +171,9 @@ def save_pedigree_png(code_string: str, output_file: str, scale: float = 1.0) ->
 		code_string (str): Pedigree code string.
 		output_file (str): Output file path.
 		scale (float): Scaling factor for the output image size.
+		label_string (str | None): Optional label string aligned to code_string.
 	"""
-	image = make_pedigree_png(code_string, scale)
+	image = make_pedigree_png(code_string, scale, label_string)
 	image.save(output_file, format="PNG")
 
 

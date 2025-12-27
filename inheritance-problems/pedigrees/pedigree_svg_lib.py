@@ -114,7 +114,14 @@ def _draw_edge_cell(svg_parts, cell_box, edge_binary, line_width):
 
 
 #===============================
-def make_pedigree_svg(code_string: str, scale: float = 1.0, show_grid: bool = False) -> str:
+def _label_color(shape_name: str) -> str:
+	if shape_name.startswith('BLACK'):
+		return '#ffffff'
+	return '#000000'
+
+
+#===============================
+def make_pedigree_svg(code_string: str, scale: float = 1.0, show_grid: bool = False, label_string: str | None = None) -> str:
 	"""
 	Render a pedigree code string into an SVG image.
 
@@ -122,6 +129,7 @@ def make_pedigree_svg(code_string: str, scale: float = 1.0, show_grid: bool = Fa
 		code_string (str): Pedigree code string.
 		scale (float): Scaling factor for the output image size.
 		show_grid (bool): Whether to draw faint grid lines.
+		label_string (str | None): Optional label string aligned to code_string.
 
 	Returns:
 		str: Rendered SVG content.
@@ -131,6 +139,13 @@ def make_pedigree_svg(code_string: str, scale: float = 1.0, show_grid: bool = Fa
 		raise ValueError('Empty pedigree code string.')
 
 	max_cols = max(len(row) for row in rows)
+	label_rows = None
+	if label_string is not None:
+		import pedigree_label_lib
+		errors = pedigree_label_lib.validate_label_string(label_string, code_string)
+		if errors:
+			raise ValueError('Invalid label string: ' + '; '.join(errors))
+		label_rows = pedigree_code_lib.get_code_rows(label_string)
 	rows = [row.ljust(max_cols, '.') for row in rows]
 	cell_size = max(8, int(pedigree_code_lib.table_cell_dimension * scale))
 	width = max_cols * cell_size
@@ -170,6 +185,17 @@ def make_pedigree_svg(code_string: str, scale: float = 1.0, show_grid: bool = Fa
 				_draw_edge_cell(svg_parts, cell_box, edge_binary, line_width)
 			elif shape_name.endswith('CIRCLE') or shape_name.endswith('SQUARE'):
 				_draw_shape_cell(svg_parts, defs_parts, cell_box, shape_name, line_width, clip_id_prefix)
+				if label_rows is not None and row_idx < len(label_rows) and col_idx < len(label_rows[row_idx]):
+					label_char = label_rows[row_idx][col_idx]
+					if label_char != '.':
+						fill = _label_color(shape_name)
+						text_x = x0 + cell_size / 2
+						text_y = y0 + cell_size / 2
+						font_size = max(8, int(cell_size * 0.5))
+						svg_parts.append(
+							f"<text x='{text_x}' y='{text_y}' text-anchor='middle' dominant-baseline='middle' "
+							f"font-size='{font_size}' font-weight='bold' fill='{fill}'>{label_char}</text>"
+						)
 
 	if defs_parts:
 		svg_parts.insert(1, '<defs>' + ''.join(defs_parts) + '</defs>')
@@ -179,7 +205,7 @@ def make_pedigree_svg(code_string: str, scale: float = 1.0, show_grid: bool = Fa
 
 
 #===============================
-def save_pedigree_svg(code_string: str, output_file: str, scale: float = 1.0) -> None:
+def save_pedigree_svg(code_string: str, output_file: str, scale: float = 1.0, label_string: str | None = None) -> None:
 	"""
 	Render and save a pedigree SVG image.
 
@@ -187,8 +213,9 @@ def save_pedigree_svg(code_string: str, output_file: str, scale: float = 1.0) ->
 		code_string (str): Pedigree code string.
 		output_file (str): Output file path.
 		scale (float): Scaling factor for the output image size.
+		label_string (str | None): Optional label string aligned to code_string.
 	"""
-	svg_text = make_pedigree_svg(code_string, scale)
+	svg_text = make_pedigree_svg(code_string, scale, label_string=label_string)
 	with open(output_file, 'w') as handle:
 		handle.write(svg_text)
 

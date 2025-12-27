@@ -43,6 +43,9 @@
   couples) to match the standard midpoint convention.
 - Pedigree pipeline improvements now yield clean minimal examples (`#To`, `r^d`)
   with stable row parity and corrected descent validation.
+- Added label support for pedigrees via
+  [inheritance-problems/pedigrees/pedigree_label_lib.py](inheritance-problems/pedigrees/pedigree_label_lib.py)
+  and optional `label_string` rendering in HTML/PNG/SVG.
 - Fixed vertical descent validation to check column-specific endpoints instead of
   flagging any connector row beneath a couple midpoint.
 - Refined vertical descent validation to use per-glyph edge masks (only connectors

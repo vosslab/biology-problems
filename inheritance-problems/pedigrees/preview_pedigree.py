@@ -8,6 +8,7 @@ import random
 # Local repo modules
 import pedigree_graph_parse_lib
 import pedigree_html_lib
+import pedigree_label_lib
 import pedigree_png_lib
 import pedigree_template_gen_lib
 import pedigree_validate_lib
@@ -145,14 +146,27 @@ def main():
 		generated += 1
 		idx = generated
 		print(f"Accepted {generated}/{args.count} after {attempts} attempts.")
-		html_text = pedigree_html_lib.make_pedigree_html(code_string)
+		label_positions: dict[tuple[int, int], str] = {}
+		rows = pedigree_graph_parse_lib._get_code_rows(code_string)
+		label_chars = pedigree_label_lib.assign_labels(len(rows))
+		label_cursor = 0
+		for row_index, row in enumerate(rows):
+			for col_index, char in enumerate(row):
+				name = pedigree_graph_parse_lib._lookup_shape_name(char)
+				if 'SQUARE' in name or 'CIRCLE' in name:
+					if label_cursor < len(label_chars):
+						label_positions[(row_index, col_index)] = label_chars[label_cursor]
+						label_cursor += 1
+		label_string = pedigree_label_lib.make_label_string(code_string, label_positions)
+
+		html_text = pedigree_html_lib.make_pedigree_html(code_string, label_string=label_string)
 		png_name = f"preview_{idx:03d}.png"
 		txt_name = f"preview_{idx:03d}.txt"
 		png_path = os.path.join(args.outdir, png_name)
 		txt_path = os.path.join(args.outdir, txt_name)
 
 		print(f"Rendering HTML/PNG for preview_{idx:03d}...")
-		pedigree_png_lib.save_pedigree_png(code_string, png_path, scale=args.scale)
+		pedigree_png_lib.save_pedigree_png(code_string, png_path, scale=args.scale, label_string=label_string)
 		with open(txt_path, 'w') as txt_handle:
 			txt_handle.write(code_string)
 

@@ -128,6 +128,14 @@ CodeSpec defines the CodeString alphabet and rules for parsing and encoding.
 - Version identifier to keep legacy strings decodable.
 - Allowed transforms at this layer (mirror only, unless explicitly expanded).
 
+## Optional label strings
+Labels are stored as a parallel grid with the same row/column structure as the
+CodeString. A label grid uses `.` for empty cells and `A-Z` (and optionally
+`a-z`) for person labels. Labels must align with person cells only.
+
+Renderers (HTML/PNG/SVG) accept an optional `label_string` and draw labels inside
+person shapes.
+
 ### Simple, valid CodeString examples
 These examples are intentionally small and are valid under the row-parity rules
 below. Rows are separated by `%`. A trailing `%` is not required.
