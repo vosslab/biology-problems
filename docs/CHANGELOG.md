@@ -15,6 +15,40 @@
   [inheritance-problems/pedigrees/pedigree_svg_lib.py](inheritance-problems/pedigrees/pedigree_svg_lib.py).
 - Added pedigree code validators in
   [inheritance-problems/pedigrees/pedigree_validate_lib.py](inheritance-problems/pedigrees/pedigree_validate_lib.py).
+- Enforced minimal union partner tokens in pedigree graph specs (parents omit sex,
+  inferred from known partners) and documented the rule in
+  [inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md](inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md).
+- Expanded pedigree graph specs to allow multiple generation-1 individuals in `F:`
+  (first two define the main couple) and switched validation to treat `F:` as the
+  generation-1 anchor list (outside spouses inherit generation from their partner).
+- Clarified founder validation: `F:` must list partners from unions where both partners
+  have unspecified parents (outside spouses paired with a child are not founders).
+- Normalized union partner ordering to male-first during graph spec parsing while
+  accepting either order in input specs.
+- Graph spec formatter now lists founders based on parentless couples (both partners
+  lack parents), avoiding over-specifying marry-in spouses in `F:`.
+- CodeString rendering now preserves empty rows as `.` to keep people/connector row
+  parity stable during validation and rendering.
+- Adjusted pedigree layout to keep child order stable (no sorting) and removed a
+  duplicate vertical-edge insertion in graph-to-code rendering.
+- Restored couple placement to adjacent partner slots and added explicit midpoint
+  `T` insertion for couples with children (clean `#To` patterns).
+- Switched layout slots to map directly to grid columns (no *2 spacing), enabling
+  true midpoint child placement and cleaner compact CodeStrings.
+- Refined connector routing: midpoints only draw upward edges; child columns draw
+  downward edges (eliminates `+++` bars for two-child cases).
+- Updated sibship bar routing to use elbows at bar ends, yielding compact `r^d`
+  patterns for two-child cases.
+- Always place `T` between partners in compiled CodeStrings (even for childless
+  couples) to match the standard midpoint convention.
+- Pedigree pipeline improvements now yield clean minimal examples (`#To`, `r^d`)
+  with stable row parity and corrected descent validation.
+- Fixed vertical descent validation to check column-specific endpoints instead of
+  flagging any connector row beneath a couple midpoint.
+- Refined vertical descent validation to use per-glyph edge masks (only connectors
+  with down-edges must terminate on a person).
+- Added minimal valid CodeString examples to
+  [inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md](inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md).
 - Split pedigree tooling into focused libraries:
   [inheritance-problems/pedigrees/pedigree_code_lib.py](inheritance-problems/pedigrees/pedigree_code_lib.py),
   [inheritance-problems/pedigrees/pedigree_html_lib.py](inheritance-problems/pedigrees/pedigree_html_lib.py),
@@ -62,6 +96,8 @@
   [inheritance-problems/pedigrees/pedigree_validate_lib.py](inheritance-problems/pedigrees/pedigree_validate_lib.py).
 - Added progress logging and rejection summaries to
   [inheritance-problems/pedigrees/preview_pedigree.py](inheritance-problems/pedigrees/preview_pedigree.py).
+- Updated [inheritance-problems/pedigrees/preview_pedigree.py](inheritance-problems/pedigrees/preview_pedigree.py)
+  to print the graph spec and CodeString for each accepted preview.
 - Documented pedigree CodeString symbols in
   [inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md](inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md).
 - Documented CodeString semantics (row parity, couple/offspring encoding, and
@@ -81,6 +117,21 @@
 - Switched the graph generator to emit pedigree graph spec strings and added a
   compile step from graph spec to CodeString in
   [inheritance-problems/pedigrees/pedigree_graph_parse_lib.py](inheritance-problems/pedigrees/pedigree_graph_parse_lib.py).
+- Fixed graph spec generation to emit single-letter IDs so parsing works with
+  the compact graph spec grammar.
+- Added a trim step in graph spec generation to cap graph size at 26 people for
+  the single-letter spec format.
+- Fixed generation assignment for graph specs so outside spouses inherit the
+  partner generation (instead of defaulting to founders).
+- Ensured single-founder previews map the founder couple to `A`/`B` so the graph
+  spec begins with `F:AfBm`.
+- Updated pedigree graph spec parsing/formatting so `F:` only lists generation-1
+  founders (and founders cannot appear as children).
+- Enforced graph spec rules: `F:` contains exactly two people (main couple),
+  unions require at least one child, and sex can be inferred for outside
+  spouses.
+- Generator now omits childless unions when emitting graph specs to comply with
+  the “couples must have children” rule.
 - Clarified the internal role of PedigreeGraph in
   [inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md](inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md).
 - Added a compact pedigree graph spec parser/serializer in

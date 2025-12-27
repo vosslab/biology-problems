@@ -351,20 +351,35 @@ def validate_row_parity_semantics(code_string: str) -> list[str]:
 
 	for row_index in range(1, len(rows), 2):
 		connector_row = rows[row_index]
-		has_vertical = '|' in connector_row or '^' in connector_row
-		if not has_vertical:
-			continue
-		if row_index - 1 >= 0:
-			upper_row = rows[row_index - 1]
-			if 'T' in upper_row:
+		for col_index, char in enumerate(connector_row):
+			mask = _get_connection_mask(char)
+			if mask is None:
+				continue
+			needs_up = mask[0]
+			needs_down = mask[1]
+			if not (needs_up or needs_down):
+				continue
+			upper_ok = False
+			lower_ok = False
+			if needs_up and row_index - 1 >= 0:
+				upper_row = rows[row_index - 1]
+				if col_index < len(upper_row):
+					upper_char = upper_row[col_index]
+					if upper_char in ('T', '=') or _is_person_cell(upper_char):
+						upper_ok = True
+			if needs_down and row_index + 1 < len(rows):
+				lower_row = rows[row_index + 1]
+				if col_index < len(lower_row):
+					lower_char = lower_row[col_index]
+					if _is_person_cell(lower_char):
+						lower_ok = True
+			if needs_up and not upper_ok:
 				errors.append(
-					f"Vertical descent at connector row {row_index + 1} must terminate on a person, not a couple midpoint in row {row_index}."
+					f"Vertical descent at connector row {row_index + 1}, col {col_index + 1} must connect upward to a couple midpoint or person."
 				)
-		if row_index + 1 < len(rows):
-			lower_row = rows[row_index + 1]
-			if 'T' in lower_row:
+			if needs_down and not lower_ok:
 				errors.append(
-					f"Vertical descent at connector row {row_index + 1} must terminate on a person, not a couple midpoint in row {row_index + 2}."
+					f"Vertical descent at connector row {row_index + 1}, col {col_index + 1} must connect downward to a person."
 				)
 
 	return errors

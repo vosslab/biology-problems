@@ -78,6 +78,42 @@ def generate_pedigree_graph(
 
 
 #===============================
+def _trim_graph_to_limit(graph: PedigreeGraph, max_people: int) -> PedigreeGraph:
+	ordered = sorted(graph.individuals.values(), key=lambda ind: (ind.generation, ind.id))
+	keep_ids = {ind.id for ind in ordered[:max_people]}
+	if len(keep_ids) == len(graph.individuals):
+		return graph
+
+	individuals = {pid: ind for pid, ind in graph.individuals.items() if pid in keep_ids}
+	couples: list[Couple] = []
+	for couple in graph.couples:
+		if couple.partner_a not in keep_ids or couple.partner_b not in keep_ids:
+			continue
+		children = [child_id for child_id in couple.children if child_id in keep_ids]
+		couples.append(Couple(
+			id=couple.id,
+			partner_a=couple.partner_a,
+			partner_b=couple.partner_b,
+			generation=couple.generation,
+			children=children,
+		))
+
+	for person_id, person in individuals.items():
+		if person.father_id and person.father_id not in keep_ids:
+			person.father_id = None
+		if person.mother_id and person.mother_id not in keep_ids:
+			person.mother_id = None
+
+	graph = PedigreeGraph(
+		individuals=individuals,
+		couples=couples,
+		generations=graph.generations,
+		starting_couples=graph.starting_couples,
+	)
+	return graph
+
+
+#===============================
 def _assign_slots(graph: PedigreeGraph) -> int:
 	SIB_GAP = 1
 	COMPONENT_GUTTER = 3
@@ -101,13 +137,12 @@ def _assign_slots(graph: PedigreeGraph) -> int:
 			return width_cache[couple_id]
 		couple = couples_by_id[couple_id]
 		children = list(couple.children)
-		children.sort()
 		if not children:
-			width_cache[couple_id] = 2
-			return 2
+			width_cache[couple_id] = 3
+			return 3
 		child_widths = [_measure_child_width(child_id) for child_id in children]
 		child_block_width = sum(child_widths) + SIB_GAP * (len(child_widths) - 1)
-		width_cache[couple_id] = max(2, child_block_width)
+		width_cache[couple_id] = max(3, child_block_width)
 		return width_cache[couple_id]
 
 	placed_couples: set[str] = set()
@@ -118,7 +153,6 @@ def _assign_slots(graph: PedigreeGraph) -> int:
 		placed_couples.add(couple_id)
 		couple = couples_by_id[couple_id]
 		children = list(couple.children)
-		children.sort()
 		couple_width = width_cache.get(couple_id, 2)
 		if children:
 			child_widths = [_measure_child_width(child_id) for child_id in children]
@@ -134,7 +168,7 @@ def _assign_slots(graph: PedigreeGraph) -> int:
 				cursor += child_width + SIB_GAP
 			mid_slot = block_left + child_block_width // 2
 		else:
-			mid_slot = left_slot
+			mid_slot = left_slot + couple_width // 2
 
 		partner_a = graph.individuals[couple.partner_a]
 		partner_b = graph.individuals[couple.partner_b]
@@ -142,11 +176,11 @@ def _assign_slots(graph: PedigreeGraph) -> int:
 		right_id = couple.partner_b
 		if partner_a.sex == 'female' and partner_b.sex == 'male':
 			left_id, right_id = right_id, left_id
-		graph.individuals[left_id].slot = mid_slot
+		graph.individuals[left_id].slot = mid_slot - 1
 		graph.individuals[right_id].slot = mid_slot + 1
 
 	root_couples = [c for c in graph.couples if c.generation == 1]
-	root_couples.sort(key=lambda couple: couple.id)
+	root_couples.sort(key=lambda couple: (couple.partner_a, couple.partner_b))
 	for couple in root_couples:
 		_measure_couple_width(couple.id)
 
@@ -179,7 +213,7 @@ def _sort_by_id(item: Individual) -> str:
 
 #===============================
 def _slot_to_col(slot: int, col_shift: int) -> int:
-	col = slot * 2 + col_shift
+	col = slot + col_shift
 	return col
 
 
@@ -192,10 +226,9 @@ def _compute_col_shift(graph: PedigreeGraph, min_slot: int, max_slot: int) -> in
 	top_couple = top_couples[0]
 	partner_a = graph.individuals[top_couple.partner_a]
 	partner_b = graph.individuals[top_couple.partner_b]
-	top_mid_col = (partner_a.slot or 0) * 2 + (partner_b.slot or 0) * 2
-	top_mid_col = top_mid_col // 2
-	col_min = min_slot * 2
-	col_max = max_slot * 2
+	top_mid_col = ((partner_a.slot or 0) + (partner_b.slot or 0)) // 2
+	col_min = min_slot
+	col_max = max_slot
 	current_center = (col_min + col_max) // 2
 	col_shift = current_center - top_mid_col
 	min_shifted = col_min + col_shift
@@ -229,7 +262,7 @@ def render_graph_to_code(graph: PedigreeGraph, show_carriers: bool = False) -> s
 	max_slot = max(ind.slot for ind in graph.individuals.values() if ind.slot is not None)
 	col_shift = _compute_col_shift(graph, min_slot, max_slot)
 	num_rows = graph.generations * 2 - 1
-	num_cols = max(3, max_slot * 2 + col_shift + 1)
+	num_cols = max(3, max_slot + col_shift + 1)
 
 	grid = [['.' for _ in range(num_cols)] for _ in range(num_rows)]
 	edge_cells: dict[tuple[int, int], dict[str, bool]] = {}
@@ -249,9 +282,12 @@ def render_graph_to_code(graph: PedigreeGraph, show_carriers: bool = False) -> s
 		if col_left + 1 <= col_right - 1:
 			for col in range(col_left + 1, col_right):
 				edge_cells.setdefault((row, col), {}).update({'l': True, 'r': True})
+		if 0 <= row < num_rows and 0 <= mid_col < num_cols:
+			grid[row][mid_col] = 'T'
 
 		if not couple.children:
 			continue
+		edge_cells.setdefault((row, mid_col), {}).update({'l': True, 'r': True, 'd': True})
 		child_row = row + 2
 		connector_row = row + 1
 		child_cols = []
@@ -262,14 +298,22 @@ def render_graph_to_code(graph: PedigreeGraph, show_carriers: bool = False) -> s
 			continue
 		min_col = min(child_cols)
 		max_col = max(child_cols)
-		for col in range(min_col, max_col + 1):
-			if col % 2 == 1 or col == min_col or col == max_col:
-				edge_cells.setdefault((connector_row, col), {}).update({'l': True, 'r': True})
-		edge_cells.setdefault((connector_row, mid_col), {}).update({'u': True, 'd': True})
+		if len(child_cols) > 1:
+			for col in range(min_col, max_col + 1):
+				edges: dict[str, bool] = {}
+				if col == min_col:
+					edges['r'] = True
+				elif col == max_col:
+					edges['l'] = True
+				else:
+					edges['l'] = True
+					edges['r'] = True
+				edge_cells.setdefault((connector_row, col), {}).update(edges)
+		edge_cells.setdefault((connector_row, mid_col), {}).update({'u': True})
 		for col in child_cols:
-			edge_cells.setdefault((connector_row, col), {}).update({'u': True, 'd': True})
-			if child_row < num_rows:
-				edge_cells.setdefault((child_row - 1, col), {}).update({'u': True, 'd': True})
+			edge_cells.setdefault((connector_row, col), {}).update({'d': True})
+			if col == mid_col:
+				edge_cells.setdefault((connector_row, col), {}).update({'u': True})
 
 	for (row, col), edges in edge_cells.items():
 		if row < 0 or row >= num_rows or col < 0 or col >= num_cols:
@@ -277,8 +321,13 @@ def render_graph_to_code(graph: PedigreeGraph, show_carriers: bool = False) -> s
 		if grid[row][col] == '.':
 			grid[row][col] = _edges_to_char(edges)
 
-	code_lines = [''.join(row).rstrip('.') for row in grid]
-	code_string = '%'.join(line for line in code_lines if line)
+	code_lines: list[str] = []
+	for row in grid:
+		line = ''.join(row).rstrip('.')
+		if not line:
+			line = '.'
+		code_lines.append(line)
+	code_string = '%'.join(code_lines)
 	return code_string
 
 
@@ -287,26 +336,79 @@ def _graph_to_graph_spec(graph: PedigreeGraph, include_carriers: bool) -> pedigr
 	people: dict[str, pedigree_graph_spec_lib.IndividualIR] = {}
 	unions: list[pedigree_graph_spec_lib.UnionIR] = []
 
-	for person_id, individual in graph.individuals.items():
+	main_couple_ids: tuple[str, str] | None = None
+	main_couple_people: tuple[str, str] | None = None
+	if graph.starting_couples == 1:
+		founder_couples = [c for c in graph.couples if c.generation == 1]
+		if founder_couples:
+			founder_couples.sort(key=lambda couple: couple.id)
+			founder = founder_couples[0]
+			partner_a = graph.individuals[founder.partner_a]
+			partner_b = graph.individuals[founder.partner_b]
+			if partner_a.sex == 'female':
+				female = partner_a
+				male = partner_b
+			else:
+				female = partner_b
+				male = partner_a
+			main_couple_ids = ('A', 'B')
+			main_couple_people = (female.id, male.id)
+
+	referenced_ids: set[str] = set()
+	for couple in graph.couples:
+		if not couple.children:
+			continue
+		referenced_ids.add(couple.partner_a)
+		referenced_ids.add(couple.partner_b)
+		referenced_ids.update(couple.children)
+	if main_couple_people is not None:
+		referenced_ids.update(main_couple_people)
+
+	individuals_sorted = sorted(
+		[ind for ind in graph.individuals.values() if ind.id in referenced_ids],
+		key=lambda ind: (ind.generation, ind.id),
+	)
+	if len(individuals_sorted) > 26:
+		raise ValueError("Graph spec supports up to 26 individuals (single-letter IDs).")
+	letter_ids = [chr(ord('A') + idx) for idx in range(len(individuals_sorted))]
+	id_map: dict[str, str] = {}
+	if main_couple_people is not None:
+		id_map[main_couple_people[0]] = 'A'
+		id_map[main_couple_people[1]] = 'B'
+
+	next_letter_index = 0
+	for letter in letter_ids:
+		if letter in ('A', 'B') and graph.starting_couples == 1:
+			continue
+		while next_letter_index < len(individuals_sorted) and individuals_sorted[next_letter_index].id in id_map:
+			next_letter_index += 1
+		if next_letter_index >= len(individuals_sorted):
+			break
+		id_map[individuals_sorted[next_letter_index].id] = letter
+		next_letter_index += 1
+
+	for individual in individuals_sorted:
 		status = None
 		if individual.phenotype == 'affected':
 			status = 'infected'
 		elif individual.phenotype == 'carrier' and include_carriers:
 			status = 'carrier'
-		people[person_id] = pedigree_graph_spec_lib.IndividualIR(
-			person_id=person_id,
+		people[id_map[individual.id]] = pedigree_graph_spec_lib.IndividualIR(
+			person_id=id_map[individual.id],
 			sex=individual.sex,
 			status=status,
 		)
 
 	for couple in graph.couples:
+		if not couple.children:
+			continue
 		unions.append(pedigree_graph_spec_lib.UnionIR(
-			partner_a=couple.partner_a,
-			partner_b=couple.partner_b,
-			children=list(couple.children),
+			partner_a=id_map[couple.partner_a],
+			partner_b=id_map[couple.partner_b],
+			children=[id_map[child_id] for child_id in couple.children],
 		))
 
-	return pedigree_graph_spec_lib.PedigreeGraphSpec(people=people, unions=unions)
+	return pedigree_graph_spec_lib.PedigreeGraphSpec(people=people, unions=unions, main_couple=main_couple_ids)
 
 
 #===============================
@@ -323,6 +425,7 @@ def generate_pedigree_graph_spec(
 	"""
 	Generate a pedigree graph spec string from a graph-based generator.
 	"""
+	max_people = 26
 	graph = generate_pedigree_graph(
 		mode,
 		generations=generations,
@@ -333,6 +436,7 @@ def generate_pedigree_graph_spec(
 		marry_in_rate=marry_in_rate,
 		show_carriers=show_carriers,
 	)
+	graph = _trim_graph_to_limit(graph, max_people)
 	spec = _graph_to_graph_spec(graph, include_carriers=show_carriers)
 	return pedigree_graph_spec_lib.format_pedigree_graph_spec(spec)
 
@@ -340,22 +444,44 @@ def generate_pedigree_graph_spec(
 #===============================
 def _assign_generations_from_unions(spec: pedigree_graph_spec_lib.PedigreeGraphSpec) -> dict[str, int]:
 	child_ids = set()
+	partner_ids = set()
 	for union in spec.unions:
 		child_ids.update(union.children)
-	founders = [pid for pid in spec.people if pid not in child_ids]
-	if not founders:
-		raise ValueError('No founders detected in graph spec.')
+		partner_ids.add(union.partner_a)
+		partner_ids.add(union.partner_b)
 	generations: dict[str, int] = {}
-	for founder_id in founders:
-		generations[founder_id] = 1
+
+	for union in spec.unions:
+		if union.partner_a in child_ids or union.partner_b in child_ids:
+			continue
+		generations[union.partner_a] = 1
+		generations[union.partner_b] = 1
+
+	for person_id in spec.people:
+		if person_id in child_ids:
+			continue
+		if person_id in partner_ids:
+			continue
+		generations[person_id] = 1
+
+	if not generations:
+		raise ValueError('No founders detected in graph spec.')
 
 	progress = True
 	while progress:
 		progress = False
 		for union in spec.unions:
-			if union.partner_a not in generations or union.partner_b not in generations:
+			parent_a = union.partner_a
+			parent_b = union.partner_b
+			if parent_a in generations and parent_b not in generations:
+				generations[parent_b] = generations[parent_a]
+				progress = True
+			if parent_b in generations and parent_a not in generations:
+				generations[parent_a] = generations[parent_b]
+				progress = True
+			if parent_a not in generations or parent_b not in generations:
 				continue
-			parent_gen = max(generations[union.partner_a], generations[union.partner_b])
+			parent_gen = max(generations[parent_a], generations[parent_b])
 			for child_id in union.children:
 				child_gen = parent_gen + 1
 				if child_id in generations and generations[child_id] != child_gen:

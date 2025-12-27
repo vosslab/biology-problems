@@ -107,6 +107,7 @@ def main():
 				rng=rng,
 			)
 		else:
+			print(f"Generating graph spec {attempts}...")
 			graph_spec = pedigree_graph_parse_lib.generate_pedigree_graph_spec(
 				args.mode,
 				generations=args.generations,
@@ -114,10 +115,15 @@ def main():
 				rng=rng,
 				show_carriers=args.show_carriers,
 			)
+			print("Graph spec:")
+			print(graph_spec)
+			print("Compiling code string...")
 			code_string = pedigree_graph_parse_lib.compile_graph_spec_to_code(
 				graph_spec,
 				show_carriers=args.show_carriers,
 			)
+			print("Code string:")
+			print(code_string)
 
 		errors = pedigree_validate_lib.validate_code_string_strict(
 			code_string,
@@ -145,6 +151,7 @@ def main():
 		png_path = os.path.join(args.outdir, png_name)
 		txt_path = os.path.join(args.outdir, txt_name)
 
+		print(f"Rendering HTML/PNG for preview_{idx:03d}...")
 		pedigree_png_lib.save_pedigree_png(code_string, png_path, scale=args.scale)
 		with open(txt_path, 'w') as txt_handle:
 			txt_handle.write(code_string)

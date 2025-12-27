@@ -25,6 +25,7 @@ class UnionIR:
 class PedigreeGraphSpec:
 	people: dict[str, IndividualIR]
 	unions: list[UnionIR]
+	main_couple: tuple[str, str] | None = None
 
 
 #===============================
@@ -56,6 +57,13 @@ def _parse_person_token(token: str, require_sex: bool) -> tuple[str, str | None,
 	if require_sex and sex is None:
 		raise ValueError(f"Missing sex for token '{token}'.")
 	return person_id, sex, status
+
+
+#===============================
+def _parse_union_partner_token(token: str) -> tuple[str, str | None, str | None]:
+	if len(token) > 1 and token[1] in ('m', 'f'):
+		raise ValueError(f"Union partner '{token}' must omit sex (use minimal tokens).")
+	return _parse_person_token(token, require_sex=False)
 
 
 #===============================
@@ -113,31 +121,28 @@ def parse_pedigree_graph_spec(spec_string: str) -> PedigreeGraphSpec:
 	child_parent: dict[str, str] = {}
 
 	founder_segment = segments[0][2:]
-	for person_id, sex, status in _scan_people_tokens(founder_segment, require_sex=True):
+	founder_tokens = _scan_people_tokens(founder_segment, require_sex=True)
+	if len(founder_tokens) < 2:
+		raise ValueError("Founder segment must contain at least two people.")
+	founder_ids: list[str] = []
+	for person_id, sex, status in founder_tokens:
 		_add_or_update_person(people, person_id, sex, status)
+		founder_ids.append(person_id)
+	main_couple = (founder_tokens[0][0], founder_tokens[1][0])
 
 	for union_segment in segments[1:]:
 		if ':' not in union_segment:
 			raise ValueError(f"Union segment missing ':' -> '{union_segment}'.")
 		parents_part, children_part = union_segment.split(':', 1)
+		if children_part == '':
+			raise ValueError(f"Union segment has no children -> '{union_segment}'.")
 		if '-' not in parents_part:
 			raise ValueError(f"Union segment missing '-' -> '{union_segment}'.")
 		parent_a_str, parent_b_str = parents_part.split('-', 1)
-		parent_a_id, parent_a_sex, parent_a_status = _parse_person_token(parent_a_str, require_sex=False)
-		parent_b_id, parent_b_sex, parent_b_status = _parse_person_token(parent_b_str, require_sex=False)
+		parent_a_id, parent_a_sex, parent_a_status = _parse_union_partner_token(parent_a_str)
+		parent_b_id, parent_b_sex, parent_b_status = _parse_union_partner_token(parent_b_str)
 		_add_or_update_person(people, parent_a_id, parent_a_sex, parent_a_status)
 		_add_or_update_person(people, parent_b_id, parent_b_sex, parent_b_status)
-
-		parent_a = people[parent_a_id]
-		parent_b = people[parent_b_id]
-		if parent_a.sex is None and parent_b.sex is not None:
-			parent_a.sex = 'female' if parent_b.sex == 'male' else 'male'
-		if parent_b.sex is None and parent_a.sex is not None:
-			parent_b.sex = 'female' if parent_a.sex == 'male' else 'male'
-		if parent_a.sex is None or parent_b.sex is None:
-			raise ValueError(f"Cannot infer sex for union '{union_segment}'.")
-		if parent_a.sex == parent_b.sex:
-			raise ValueError(f"Union partners must be opposite sex in '{union_segment}'.")
 
 		children_tokens = _scan_people_tokens(children_part, require_sex=True)
 		children_ids: list[str] = []
@@ -154,7 +159,137 @@ def parse_pedigree_graph_spec(spec_string: str) -> PedigreeGraphSpec:
 			children=children_ids,
 		))
 
-	return PedigreeGraphSpec(people=people, unions=unions)
+	founder_id_set = set(founder_ids)
+	for founder_id in founder_id_set:
+		if founder_id in child_parent:
+			raise ValueError(f"Founder '{founder_id}' appears as a child in a union.")
+
+	progress = True
+	while progress:
+		progress = False
+		for union in unions:
+			parent_a = people[union.partner_a]
+			parent_b = people[union.partner_b]
+			if parent_a.sex is None and parent_b.sex is not None:
+				parent_a.sex = 'female' if parent_b.sex == 'male' else 'male'
+				progress = True
+			if parent_b.sex is None and parent_a.sex is not None:
+				parent_b.sex = 'female' if parent_a.sex == 'male' else 'male'
+				progress = True
+
+	for union in unions:
+		parent_a = people[union.partner_a]
+		parent_b = people[union.partner_b]
+		if parent_a.sex is None or parent_b.sex is None:
+			raise ValueError(f"Cannot infer sex for union '{union.partner_a}-{union.partner_b}'.")
+		if parent_a.sex == parent_b.sex:
+			raise ValueError(f"Union partners must be opposite sex in '{union.partner_a}-{union.partner_b}'.")
+
+	normalized_unions: list[UnionIR] = []
+	for union in unions:
+		parent_a = people[union.partner_a]
+		parent_b = people[union.partner_b]
+		partner_a = union.partner_a
+		partner_b = union.partner_b
+		if parent_a.sex == 'female' and parent_b.sex == 'male':
+			partner_a, partner_b = partner_b, partner_a
+		normalized_unions.append(UnionIR(
+			partner_a=partner_a,
+			partner_b=partner_b,
+			children=union.children,
+		))
+	unions = normalized_unions
+
+	founder_partner_ids: set[str] = set()
+	for union in unions:
+		if union.partner_a in child_parent or union.partner_b in child_parent:
+			continue
+		founder_partner_ids.add(union.partner_a)
+		founder_partner_ids.add(union.partner_b)
+
+	if founder_id_set != founder_partner_ids:
+		missing = sorted(founder_partner_ids - founder_id_set)
+		extra = sorted(founder_id_set - founder_partner_ids)
+		if missing:
+			raise ValueError(f"Founder segment missing founder partners: {', '.join(missing)}.")
+		if extra:
+			raise ValueError(f"Founder segment includes non-founders: {', '.join(extra)}.")
+
+	generations: dict[str, int] = {founder_id: 1 for founder_id in founder_id_set}
+	progress = True
+	while progress:
+		progress = False
+		for union in unions:
+			parent_a = union.partner_a
+			parent_b = union.partner_b
+			gen_a = generations.get(parent_a)
+			gen_b = generations.get(parent_b)
+			if gen_a is not None and gen_b is None:
+				generations[parent_b] = gen_a
+				progress = True
+			elif gen_b is not None and gen_a is None:
+				generations[parent_a] = gen_b
+				progress = True
+			elif gen_a is not None and gen_b is not None and gen_a != gen_b:
+				raise ValueError(f"Union partners must be same generation in '{parent_a}-{parent_b}'.")
+			parent_gen = generations.get(parent_a) or generations.get(parent_b)
+			if parent_gen is not None:
+				for child_id in union.children:
+					child_gen = generations.get(child_id)
+					if child_gen is None:
+						generations[child_id] = parent_gen + 1
+						progress = True
+					elif child_gen != parent_gen + 1:
+						raise ValueError(f"Child '{child_id}' has inconsistent generation.")
+
+	missing_generation = sorted(person_id for person_id in people if person_id not in generations)
+	if missing_generation:
+		raise ValueError(
+			"Could not assign generation for: " + ', '.join(missing_generation)
+		)
+
+	main_union = None
+	for union in unions:
+		if {union.partner_a, union.partner_b} == set(main_couple):
+			main_union = union
+			break
+	if main_union is None or not main_union.children:
+		raise ValueError("Main couple must appear as a union with children.")
+
+	return PedigreeGraphSpec(people=people, unions=unions, main_couple=main_couple)
+
+
+#===============================
+def validate_pedigree_graph_spec(spec_string: str) -> list[str]:
+	"""
+	Validate a pedigree graph spec string.
+
+	Args:
+		spec_string (str): Pedigree graph spec string.
+
+	Returns:
+		list[str]: Validation error messages (empty means valid).
+	"""
+	try:
+		parse_pedigree_graph_spec(spec_string)
+	except Exception as exc:
+		return [str(exc)]
+	return []
+
+
+#===============================
+def is_valid_pedigree_graph_spec(spec_string: str) -> bool:
+	"""
+	Check whether a pedigree graph spec string is valid.
+
+	Args:
+		spec_string (str): Pedigree graph spec string.
+
+	Returns:
+		bool: True if valid, otherwise False.
+	"""
+	errors = validate_pedigree_graph_spec(spec_string)
+	return len(errors) == 0
 
 
 #===============================
@@ -162,7 +297,7 @@ def format_pedigree_graph_spec(pedigree: PedigreeGraphSpec) -> str:
 	"""
 	Serialize a pedigree graph spec to a compact string.
 	"""
-	def format_person(person: IndividualIR) -> str:
+	def format_person(person: IndividualIR, include_sex: bool = True) -> str:
 		if person.sex is None:
 			raise ValueError(f"Person '{person.person_id}' missing sex.")
 		sex_char = 'm' if person.sex == 'male' else 'f'
@@ -171,16 +306,56 @@ def format_pedigree_graph_spec(pedigree: PedigreeGraphSpec) -> str:
 			status_char = 'i'
 		elif person.status == 'carrier':
 			status_char = 'c'
-		return f"{person.person_id}{sex_char}{status_char}"
+		if include_sex:
+			return f"{person.person_id}{sex_char}{status_char}"
+		if status_char:
+			return f"{person.person_id}{status_char}"
+		return f"{person.person_id}"
 
-	people_tokens = [format_person(pedigree.people[person_id]) for person_id in sorted(pedigree.people)]
-	segments = [f"F:{''.join(people_tokens)}"]
+	child_ids = set()
+	for union in pedigree.unions:
+		child_ids.update(union.children)
+
+	founder_id_set: set[str] = set()
+	for union in pedigree.unions:
+		if union.partner_a in child_ids or union.partner_b in child_ids:
+			continue
+		founder_id_set.add(union.partner_a)
+		founder_id_set.add(union.partner_b)
+	founder_ids = sorted(founder_id_set)
+	if not founder_ids:
+		founder_ids = sorted(pedigree.people)
+
+	main_couple = pedigree.main_couple
+	if main_couple is None and len(founder_ids) >= 2:
+		main_couple = (founder_ids[0], founder_ids[1])
+
+	ordered_founders: list[str] = []
+	if main_couple is not None:
+		for founder_id in main_couple:
+			if founder_id in founder_ids and founder_id not in ordered_founders:
+				ordered_founders.append(founder_id)
+	for founder_id in founder_ids:
+		if founder_id not in ordered_founders:
+			ordered_founders.append(founder_id)
+
+	founder_tokens = [
+		format_person(pedigree.people[founder_id], include_sex=True)
+		for founder_id in ordered_founders
+	]
+	segments = [f"F:{''.join(founder_tokens)}"]
+
 	for union in pedigree.unions:
 		parent_a = pedigree.people[union.partner_a]
 		parent_b = pedigree.people[union.partner_b]
-		parent_a_token = format_person(parent_a)
-		parent_b_token = format_person(parent_b)
-		children_tokens = [format_person(pedigree.people[child_id]) for child_id in union.children]
+		parent_a_token = format_person(parent_a, include_sex=False)
+		parent_b_token = format_person(parent_b, include_sex=False)
+		if parent_a.sex == 'female' and parent_b.sex == 'male':
+			parent_a_token, parent_b_token = parent_b_token, parent_a_token
+		children_tokens = [
+			format_person(pedigree.people[child_id], include_sex=True)
+			for child_id in union.children
+		]
 		segments.append(f"{parent_a_token}-{parent_b_token}:{''.join(children_tokens)}")
 	return ';'.join(segments)
 
