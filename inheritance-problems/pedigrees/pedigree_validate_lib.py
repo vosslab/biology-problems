@@ -298,8 +298,74 @@ def validate_code_string_strict(
 	if errors:
 		return errors
 
+	semantics_errors = validate_row_parity_semantics(code_string)
+	errors.extend(semantics_errors)
+	if errors:
+		return errors
+
 	box_errors = validate_bounding_box(code_string, max_width_cells, max_height_cells)
 	errors.extend(box_errors)
+
+	return errors
+
+
+#===============================
+def validate_row_parity_semantics(code_string: str) -> list[str]:
+	"""
+	Validate row parity semantics for people vs connector rows.
+
+	Args:
+		code_string (str): Pedigree code string.
+
+	Returns:
+		list[str]: Validation error messages.
+	"""
+	errors: list[str] = []
+	rows = _get_code_grid(code_string)
+	if not rows:
+		errors.append("Code string contains no rows.")
+		return errors
+
+	people_row_connectors = {'-', 'T', '='}
+	for row_index, row in enumerate(rows):
+		row_is_people = row_index % 2 == 0
+		for col_index, char in enumerate(row):
+			if char == '.':
+				continue
+			if row_is_people and _get_connection_mask(char) is not None:
+				if char not in people_row_connectors:
+					errors.append(
+						f"Connector symbol '{char}' on people row {row_index + 1}, col {col_index + 1}."
+					)
+				else:
+					left_ok = col_index > 0 and _is_person_cell(row[col_index - 1])
+					right_ok = col_index + 1 < len(row) and _is_person_cell(row[col_index + 1])
+					if not (left_ok and right_ok):
+						errors.append(
+							f"Connector '{char}' on people row {row_index + 1}, col {col_index + 1} must sit between two people."
+						)
+			if (not row_is_people) and _is_person_cell(char):
+				errors.append(
+					f"Person symbol '{char}' on connector row {row_index + 1}, col {col_index + 1}."
+				)
+
+	for row_index in range(1, len(rows), 2):
+		connector_row = rows[row_index]
+		has_vertical = '|' in connector_row or '^' in connector_row
+		if not has_vertical:
+			continue
+		if row_index - 1 >= 0:
+			upper_row = rows[row_index - 1]
+			if 'T' in upper_row:
+				errors.append(
+					f"Vertical descent at connector row {row_index + 1} must terminate on a person, not a couple midpoint in row {row_index}."
+				)
+		if row_index + 1 < len(rows):
+			lower_row = rows[row_index + 1]
+			if 'T' in lower_row:
+				errors.append(
+					f"Vertical descent at connector row {row_index + 1} must terminate on a person, not a couple midpoint in row {row_index + 2}."
+				)
 
 	return errors
 

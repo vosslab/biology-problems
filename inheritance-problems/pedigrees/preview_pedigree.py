@@ -6,7 +6,7 @@ import os
 import random
 
 # Local repo modules
-import pedigree_graph_lib
+import pedigree_graph_parse_lib
 import pedigree_html_lib
 import pedigree_png_lib
 import pedigree_template_gen_lib
@@ -94,6 +94,8 @@ def main():
 	max_attempts = args.count * 20
 	max_width_cells = 60
 	max_height_cells = 20
+	rejected = 0
+	reject_reasons: dict[str, int] = {}
 
 	while generated < args.count and attempts < max_attempts:
 		attempts += 1
@@ -105,7 +107,7 @@ def main():
 				rng=rng,
 			)
 		else:
-			code_string = pedigree_graph_lib.generate_pedigree_code(
+			code_string = pedigree_graph_parse_lib.generate_pedigree_code(
 				args.mode,
 				generations=args.generations,
 				starting_couples=args.starting_couples,
@@ -119,10 +121,20 @@ def main():
 			max_height_cells=max_height_cells
 		)
 		if errors:
+			rejected += 1
+			for error in errors:
+				reject_reasons[error] = reject_reasons.get(error, 0) + 1
+			if rejected % 25 == 0:
+				top_reason = max(reject_reasons, key=reject_reasons.get)
+				print(
+					f"Rejected {rejected} so far; accepted {generated}/{args.count}; "
+					f"attempts {attempts}. Top reason: {top_reason}"
+				)
 			continue
 
 		generated += 1
 		idx = generated
+		print(f"Accepted {generated}/{args.count} after {attempts} attempts.")
 		html_text = pedigree_html_lib.make_pedigree_html(code_string)
 		png_name = f"preview_{idx:03d}.png"
 		txt_name = f"preview_{idx:03d}.txt"
@@ -143,6 +155,11 @@ def main():
 
 	if generated < args.count:
 		print(f"WARNING: generated {generated} of {args.count} previews after {attempts} attempts.")
+	if reject_reasons:
+		top_items = sorted(reject_reasons.items(), key=lambda item: item[1], reverse=True)[:3]
+		print("Top rejection reasons:")
+		for reason, count in top_items:
+			print(f"- {count}: {reason}")
 	print(f"Saved previews to {args.outdir}")
 
 

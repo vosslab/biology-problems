@@ -11,6 +11,8 @@
   to select inheritance-specific templates and return pedigree code strings.
 - Added pedigree PNG rendering alongside HTML output in
   [inheritance-problems/pedigrees/pedigree_png_lib.py](inheritance-problems/pedigrees/pedigree_png_lib.py).
+- Added pedigree SVG rendering alongside HTML/PNG output in
+  [inheritance-problems/pedigrees/pedigree_svg_lib.py](inheritance-problems/pedigrees/pedigree_svg_lib.py).
 - Added pedigree code validators in
   [inheritance-problems/pedigrees/pedigree_validate_lib.py](inheritance-problems/pedigrees/pedigree_validate_lib.py).
 - Split pedigree tooling into focused libraries:
@@ -35,18 +37,53 @@
   [inheritance-problems/pedigrees/write_pedigree_choice.py](inheritance-problems/pedigrees/write_pedigree_choice.py) and
   [inheritance-problems/pedigrees/write_pedigree_match.py](inheritance-problems/pedigrees/write_pedigree_match.py).
 - Added a graph-based pedigree generator in
-  [inheritance-problems/pedigrees/pedigree_graph_lib.py](inheritance-problems/pedigrees/pedigree_graph_lib.py).
+  [inheritance-problems/pedigrees/pedigree_graph_parse_lib.py](inheritance-problems/pedigrees/pedigree_graph_parse_lib.py).
 - Split graph generation concerns into
   [inheritance-problems/pedigrees/pedigree_skeleton_lib.py](inheritance-problems/pedigrees/pedigree_skeleton_lib.py)
   and [inheritance-problems/pedigrees/pedigree_inheritance_lib.py](inheritance-problems/pedigrees/pedigree_inheritance_lib.py),
-  leaving `pedigree_graph_lib.py` as the IR and layout helper.
+  leaving `pedigree_graph_parse_lib.py` as the IR and layout helper.
 - Improved pedigree layout ordering to group siblings by parent index and reduce
   long connector spans in
-  [inheritance-problems/pedigrees/pedigree_graph_lib.py](inheritance-problems/pedigrees/pedigree_graph_lib.py).
+  [inheritance-problems/pedigrees/pedigree_graph_parse_lib.py](inheritance-problems/pedigrees/pedigree_graph_parse_lib.py).
 - Added a basic three-generation layout smoke test helper in
   [inheritance-problems/pedigrees/pedigree_skeleton_lib.py](inheritance-problems/pedigrees/pedigree_skeleton_lib.py)
   and a small runner in
   [inheritance-problems/pedigrees/layout_smoke_test.py](inheritance-problems/pedigrees/layout_smoke_test.py).
+- Added a simple CodeString renderer in
+  [inheritance-problems/pedigrees/code_render.py](inheritance-problems/pedigrees/code_render.py)
+  for HTML/PNG output from a provided code string.
+- Extended [inheritance-problems/pedigrees/code_render.py](inheritance-problems/pedigrees/code_render.py)
+  to support SVG output.
+- Added semantic validation in
+  [inheritance-problems/pedigrees/code_render.py](inheritance-problems/pedigrees/code_render.py)
+  so invalid CodeStrings fail fast before rendering.
+- Added a validation rule that vertical descent cannot terminate on a couple
+  midpoint (`T`) in
+  [inheritance-problems/pedigrees/pedigree_validate_lib.py](inheritance-problems/pedigrees/pedigree_validate_lib.py).
+- Added progress logging and rejection summaries to
+  [inheritance-problems/pedigrees/preview_pedigree.py](inheritance-problems/pedigrees/preview_pedigree.py).
+- Documented pedigree CodeString symbols in
+  [inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md](inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md).
+- Documented CodeString semantics (row parity, couple/offspring encoding, and
+  padding rules) in
+  [inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md](inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md).
+- Added row-parity semantics validation in
+  [inheritance-problems/pedigrees/pedigree_validate_lib.py](inheritance-problems/pedigrees/pedigree_validate_lib.py).
+- Tightened pedigree layout packing (component grouping and compact spacing) in
+  [inheritance-problems/pedigrees/pedigree_graph_parse_lib.py](inheritance-problems/pedigrees/pedigree_graph_parse_lib.py),
+  and refined row-parity semantics to allow spouse connectors on people rows.
+- Centered the top-generation couple in rendered layouts by applying a column
+  shift during CodeString rendering in
+  [inheritance-problems/pedigrees/pedigree_graph_parse_lib.py](inheritance-problems/pedigrees/pedigree_graph_parse_lib.py).
+- Implemented subtree-centered slot assignment for graph layouts in
+  [inheritance-problems/pedigrees/pedigree_graph_parse_lib.py](inheritance-problems/pedigrees/pedigree_graph_parse_lib.py)
+  to keep siblings contiguous and reduce long connector runs.
+- Added a compact pedigree graph spec parser/serializer in
+  [inheritance-problems/pedigrees/pedigree_graph_spec_lib.py](inheritance-problems/pedigrees/pedigree_graph_spec_lib.py)
+  and documented the pedigree graph spec format in
+  [inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md](inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md).
+- Clarified in [inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md](inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md)
+  that graph parsing/compilation is an internal, non-persisted step.
 - Added a local pipeline note in
   [inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md](inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md).
 - Expanded [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md) with decision points

@@ -73,12 +73,16 @@
   pedigree code strings.
 - `inheritance-problems/pedigrees/pedigree_png_lib.py`: PNG rendering for
   pedigree code strings.
-- `inheritance-problems/pedigrees/pedigree_graph_lib.py`: graph-based pedigree
+- `inheritance-problems/pedigrees/pedigree_svg_lib.py`: SVG rendering for
+  pedigree code strings.
+- `inheritance-problems/pedigrees/pedigree_graph_parse_lib.py`: graph-based pedigree
   types and layout helpers for graph-based pedigrees and code-string rendering.
 - `inheritance-problems/pedigrees/pedigree_skeleton_lib.py`: procedural pedigree
   skeleton generation (founders, children, marriages).
 - `inheritance-problems/pedigrees/pedigree_inheritance_lib.py`: inheritance-mode
   phenotype assignment for graph-based pedigrees.
+- `inheritance-problems/pedigrees/pedigree_graph_spec_lib.py`: parse/serialize helpers
+  for the compact pedigree IR string format.
 - `inheritance-problems/pedigrees/pedigree_mode_validate_lib.py`: inheritance
   mode validation layered on parsed pedigree graphs.
 - `inheritance-problems/pedigrees/preview_pedigree.py`: CLI helper for generating

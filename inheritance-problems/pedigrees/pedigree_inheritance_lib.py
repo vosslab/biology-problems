@@ -4,7 +4,7 @@
 import random
 
 # Local repo modules
-from pedigree_graph_lib import PedigreeGraph
+from pedigree_graph_parse_lib import PedigreeGraph
 
 
 #===============================

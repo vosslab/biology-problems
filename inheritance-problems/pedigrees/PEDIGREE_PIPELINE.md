@@ -59,6 +59,11 @@ PedigreeGraph should never encode layout or rendering details.
 	- Output: HTML or PNG.
 	- Renderers are pure transforms and never change genetics or structure.
 
+Pipeline shorthand
+- generator -> pedigree_graph_spec -> pedigree_code_string -> HTML/PNG
+- The graph parse/compile step is an internal transformation and is not
+  persisted as a pipeline artifact.
+
 ## Validation split
 Validation is intentionally layered.
 
@@ -92,6 +97,92 @@ CodeSpec defines the CodeString alphabet and rules for parsing/encoding.
 - Version identifier to keep legacy strings decodable.
 - Allowed transforms at this layer (mirror only, unless explicitly expanded).
 
+## Pedigree code symbols (CodeString alphabet)
+Symbols are single-character cells in the grid. Carrier symbols are only
+meaningful when carriers are shown; when carriers are hidden they render as
+unaffected shapes.
+
+People
+- `#` = WHITE SQUARE (unaffected male)
+- `x` = BLACK SQUARE (affected male)
+- `[` = LEFT-HALF BLACK SQUARE (carrier male)
+- `]` = RIGHT-HALF BLACK SQUARE (carrier male)
+- `o` = WHITE CIRCLE (unaffected female)
+- `*` = BLACK CIRCLE (affected female)
+- `(` = LEFT-HALF BLACK CIRCLE (carrier female)
+- `)` = RIGHT-HALF BLACK CIRCLE (carrier female)
+
+Connectors
+- `-` = HORIZONTAL LINE SHAPE
+- `|` = VERTICAL LINE SHAPE
+- `+` = PLUS SHAPE
+- `T` = T SHAPE
+- `=` = INCEST T SHAPE
+- `^` = PERPENDICULAR TENT SHAPE
+- `L` = UP-RIGHT ELBOW SHAPE
+- `u` = UP-LEFT ELBOW SHAPE
+- `r` = DOWN-RIGHT ELBOW SHAPE
+- `d` = DOWN-LEFT ELBOW SHAPE
+
+Layout
+- `.` = SPACE (empty cell)
+- `%` = NEW LINE (row separator; not a cell)
+
+## CodeString semantics (row parity and offspring encoding)
+These rules define which symbols can appear where and how descent is encoded.
+
+Row parity
+- Rows alternate meaning: even rows (0, 2, 4, ...) are people rows; odd rows
+  (1, 3, 5, ...) are connector rows.
+- Person symbols appear only on people rows.
+- Connector symbols appear on connector rows, except for spouse connectors
+  (`-`, `T`, `=`) which may appear between two people on a people row.
+
+Couple and offspring encoding
+- A couple is two adjacent person cells with connector cells between them on the
+  same people row (e.g., `#-o` or `#To`).
+- `T` marks the couple midpoint and is the attachment point for descent.
+- If a couple has children, `T` must have a down edge into the connector row.
+- Offspring are encoded by a vertical line from the couple midpoint down to a
+  sibship bar, then vertical drops to each child.
+- A vertical descent line may terminate on a single person cell, but never on
+  another `T` (no “couple gives birth to couple”).
+
+Rendering rule
+- All rows are padded to equal length with `.` before rendering to HTML/PNG.
+
+## Pedigree graph spec string format
+This is a compact, self-delimiting pedigree graph spec (union-based) string.
+
+Syntax
+- Segments are separated by `;`.
+- Segment 1 is the sex-anchor list: `F:` followed by person tokens.
+- Segment 2+ are unions: `ParentA-ParentB:Children`.
+
+Person tokens
+- Format: `X` + `m|f` + optional `i|c`
+  - `m`/`f` = sex (required for children and founders).
+  - `i` = infected, `c` = carrier (optional).
+- Outside spouses may omit sex; the sex is inferred from the known partner.
+- Children must always include sex, with optional status.
+
+Examples
+- `F:AmBfCmDfEfGfHmIf;A-B:CmDfEf;C-G:HmIf`
+
+Naming bundle
+- Concept name (docs): pedigree graph spec
+- String form: `pedigree_graph_spec_str` or `pedigree_graph_spec_string`
+- Parsed object: `PedigreeGraphSpec` (class) or `pedigree_graph_spec` (dict)
+- Codec module: `pedigree_graph_spec_lib.py`
+- Functions:
+  - `parse_pedigree_graph_spec(s) -> PedigreeGraph`
+  - `format_pedigree_graph_spec(graph) -> str`
+  - `hash_pedigree_graph_spec(s) -> str`
+
+Terminology consistency
+- Use `pedigree_code_string` for the grid/layout encoding.
+- Use `pedigree_graph_spec` for the union-based formalism.
+
 ## Quality knobs and scoring
 Randomness is easy; diagnostic clarity is hard. Use scoring and rejection.
 
@@ -111,7 +202,8 @@ Generate -> label -> validate -> score -> accept if above threshold.
 Each library is intentionally narrow and maps to a pipeline layer or cross-cutting
 validation. These names are stable in code; rename suggestions are listed after.
 
-- `pedigree_graph_lib.py`: pedigree graph types and layout helpers for code-string rendering.
+- `pedigree_graph_parse_lib.py`: internal graph types plus compile step from
+  graph spec to code-string layout (intermediate only).
 - `pedigree_skeleton_lib.py`: procedural skeleton generation (structure only).
 - `pedigree_inheritance_lib.py`: inheritance-mode phenotype assignment.
 - `pedigree_code_lib.py`: CodeSpec, code alphabet, mirroring, and encode/decode helpers.
@@ -126,6 +218,6 @@ validation. These names are stable in code; rename suggestions are listed after.
 ## Possible naming improvements
 These are suggestions only; they are not required by the pipeline.
 
-- `pedigree_graph_lib.py` -> `pedigree_skeleton_lib.py` (if it stays focused on
+- `pedigree_graph_parse_lib.py` -> `pedigree_skeleton_lib.py` (if it stays focused on
   structure generation).
 - `preview_pedigree.py` -> `cli_preview_pedigree.py` (distinguish CLI entry points).
