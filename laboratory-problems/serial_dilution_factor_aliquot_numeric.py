@@ -33,29 +33,39 @@ def df_ratio_to_values(df_ratio):
 
 #==================================================
 #==================================================
-def write_question_batch(N: int, args) -> list[str]:
-	questions = []
-	question_num = N
-	for df_ratio in df_ratios:
-		if df_ratio[1] < 3:
-			continue
-		volume, df1, df2 = df_ratio_to_values(df_ratio)
-		q = question_text(volume, df1, df2)
-		aliquot = volume * df_ratio[1] / df_ratio[0]
-		answer = aliquot
-		tolerance = 0.9
-		complete_question = bptools.formatBB_NUM_Question(question_num, q, answer, tolerance)
-		questions.append(complete_question)
-		question_num += 1
-	return questions
+scenario_list = [df_ratio for df_ratio in df_ratios if df_ratio[1] >= 3]
+
+#==================================================
+def _select_scenario_index(N: int, count: int, mode: str) -> int:
+	if mode == 'cycle':
+		return (N - 1) % count
+	if mode == 'modmix':
+		return (N * 2654435761) % count
+	if mode == 'random':
+		return random.randrange(count)
+	raise ValueError("Unknown scenario selection mode.")
+
+#==================================================
+def write_question(N: int, args) -> str:
+	idx = _select_scenario_index(N, len(scenario_list), args.scenario_select)
+	df_ratio = scenario_list[idx]
+	volume, df1, df2 = df_ratio_to_values(df_ratio)
+	q = question_text(volume, df1, df2)
+	aliquot = volume * df_ratio[1] / df_ratio[0]
+	answer = aliquot
+	tolerance = 0.9
+	complete_question = bptools.formatBB_NUM_Question(N, q, answer, tolerance)
+	return complete_question
 
 #==================================================
 def parse_arguments():
-	duplicates_default = max(1, 99 // len(df_ratios))
 	parser = bptools.make_arg_parser(
-		description="Generate serial dilution aliquot questions.",
-		batch=True,
-		duplicates_default=duplicates_default
+		description="Generate serial dilution aliquot questions."
+	)
+	parser.add_argument(
+		'--scenario-select', dest='scenario_select', type=str,
+		choices=('cycle', 'modmix', 'random'),
+		default='modmix', help='Scenario selection mode.'
 	)
 	args = parser.parse_args()
 	return args
@@ -64,8 +74,7 @@ def parse_arguments():
 def main():
 	args = parse_arguments()
 	outfile = bptools.make_outfile()
-	questions = bptools.collect_question_batches(write_question_batch, args)
-	bptools.write_questions_to_file(questions, outfile)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #==================================================
 if __name__ == '__main__':

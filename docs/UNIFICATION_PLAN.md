@@ -86,9 +86,6 @@ Writers should accept the full `args` namespace for consistency.
 - Batch generators that return large fixed lists should set
   `max_questions_default=99` when calling `add_base_args(...)`.
 - Keep the global default `duplicate_runs=2` for quick testing.
-- If a legacy script computed `duplicates` from list size to target a specific
-  total count (for example, `99 // len(items)`), keep that behavior by passing
-  `duplicates_default=...` into `make_arg_parser(batch=True, ...)`.
 
 ### Histogram printing
 Helpers may print the answer histogram when MC/MA questions are present, instead
@@ -188,8 +185,8 @@ Batch generators:
   `write_question_batch(start_num, args)` and return a list so `main()` stays
   minimal and the helper can cap output.
 - Scripts that previously computed their own default run count to hit an
-  approximate total can preserve that default by setting
-  `duplicates_default=...` when creating the parser.
+  approximate total should now rely on the default of 2 and let users set `-d`
+  explicitly when they want more.
 - When a script manually constructs Blackboard text (for example `"MC\t..."`),
   replace that block with `bptools.formatBB_MC_Question(...)` so numbering,
   histogram tracking, and formatting stay consistent.
@@ -213,9 +210,22 @@ Batch generators:
   offering MC vs FIB outputs) should switch to `add_question_format_args(...)`
   and return a formatted Blackboard string via `bptools.formatBB_MC_Question`
   or `bptools.formatBB_FIB_Question`.
-- Batch scripts that previously computed their own run count to land near a
-  target total (for example `99 // len(list)`) should keep that behavior by
-  setting `duplicates_default` in `make_arg_parser(batch=True, ...)`.
+- Scripts that select from a fixed scenario list can expose
+  `--scenario-select {cycle,modmix,random}` with `modmix` as the preferred
+  non-cycling default for upgraded scripts. Use a stable mix (for example
+  `N * 2654435761`) before modulo to avoid simple round-robin cycling.
+- Switching a batch script (fixed cycle) to an individual-question script:
+  - Option 1 (current): deterministic round-robin over a fixed scenario list:
+    - `scenario = scenarios[(N - 1) % len(scenarios)]`
+  - Option 2a (modulo N): still deterministic, use a direct modulo mapping:
+    - `idx = (N - 1) % len(scenarios)`
+    - `scenario = scenarios[idx]`
+  - Option 2b (random): pick a scenario at random each time:
+    - `scenario = random.choice(scenarios)`
+  - Keep `N` meaning unchanged:
+    - `N` is the next successful question number (1-based).
+    - For batch writers, `N` is the starting number for the batch.
+  - Do not change `-d/--duplicates` or `-x/--max-questions` semantics.
 
 ## Legacy patterns to modernize
 These are common in older scripts and are the first candidates for cleanup

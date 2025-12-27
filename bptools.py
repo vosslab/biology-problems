@@ -155,13 +155,12 @@ def print_histogram():
 #===================================================================================
 
 #==========================
-def add_base_args(parser, duplicates_default=2, max_questions_default=None):
+def add_base_args(parser, max_questions_default=None):
 	"""
 	Add base CLI arguments for common generators.
 
 	Args:
 		parser (argparse.ArgumentParser): Argument parser to extend.
-		duplicates_default (int): Default value for duplicates.
 		max_questions_default (int): Default value for max questions.
 
 	Returns:
@@ -170,7 +169,7 @@ def add_base_args(parser, duplicates_default=2, max_questions_default=None):
 	parser.add_argument(
 		'-d', '--duplicate-runs', '--duplicates', metavar='#', type=int, dest='duplicates',
 		help='Number of duplicate runs (attempts) to generate questions.',
-		default=duplicates_default
+		default=2
 	)
 	parser.add_argument(
 		'-x', '--max-questions', type=int, dest='max_questions',
@@ -179,13 +178,12 @@ def add_base_args(parser, duplicates_default=2, max_questions_default=None):
 	return parser
 
 #==========================
-def add_base_args_batch(parser, duplicates_default=2, max_questions_default=99):
+def add_base_args_batch(parser, max_questions_default=99):
 	"""
 	Add base CLI arguments for batch generators with a default cap.
 
 	Args:
 		parser (argparse.ArgumentParser): Argument parser to extend.
-		duplicates_default (int): Default value for duplicate runs.
 		max_questions_default (int): Default value for max questions.
 
 	Returns:
@@ -193,20 +191,18 @@ def add_base_args_batch(parser, duplicates_default=2, max_questions_default=99):
 	"""
 	parser = add_base_args(
 		parser,
-		duplicates_default=duplicates_default,
 		max_questions_default=max_questions_default
 	)
 	return parser
 
 #==========================
-def make_arg_parser(description=None, batch=False, duplicates_default=None, max_questions_default=None):
+def make_arg_parser(description=None, batch=False, max_questions_default=None):
 	"""
 	Create a standard argument parser with base args.
 
 	Args:
 		description (str): Optional parser description.
 		batch (bool): Use batch defaults when True.
-		duplicates_default (int | None): Override duplicate_runs default.
 		max_questions_default (int | None): Override max_questions default.
 
 	Returns:
@@ -216,21 +212,15 @@ def make_arg_parser(description=None, batch=False, duplicates_default=None, max_
 		description = "Generate blackboard questions."
 	parser = argparse.ArgumentParser(description=description)
 	if batch:
-		if duplicates_default is None:
-			duplicates_default = 2
 		if max_questions_default is None:
 			max_questions_default = 99
 		parser = add_base_args_batch(
 			parser,
-			duplicates_default=duplicates_default,
 			max_questions_default=max_questions_default
 		)
 	else:
-		if duplicates_default is None:
-			duplicates_default = 2
 		parser = add_base_args(
 			parser,
-			duplicates_default=duplicates_default,
 			max_questions_default=max_questions_default
 		)
 	return parser

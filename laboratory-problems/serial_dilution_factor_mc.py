@@ -126,11 +126,9 @@ def write_question_batch(start_num, args):
 #==================================================
 #==================================================
 def parse_arguments():
-	duplicates_default = 99 // len(df_ratios)
 	parser = bptools.make_arg_parser(
 		description='Generate serial dilution factor MC questions.',
-		batch=True,
-		duplicates_default=duplicates_default
+		batch=True
 	)
 	args = parser.parse_args()
 	return args

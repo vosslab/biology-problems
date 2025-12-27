@@ -38,53 +38,67 @@ polyploid_names = {
 	64: 'a tetrahexacontaploid'
 }
 monoploid_sizes = [4, 5, 6, 7, 8, 9, 10, 11]
+scenario_list = []
+
+for ploidy in ploidies:
+	for monoploid in monoploid_sizes:
+		total_chromosomes = monoploid * ploidy
+		haploid = total_chromosomes // 2
+		if haploid == monoploid:
+			continue
+		scenario_list.append((ploidy, monoploid, haploid, total_chromosomes))
 
 #=====================
-def write_question_batch(N: int, args) -> list[str]:
-	questions = []
-	question_num = N
-	for ploidy in ploidies:
-		for monoploid in monoploid_sizes:
-			total_chromosomes = monoploid * ploidy
-			haploid = total_chromosomes // 2
-			if haploid == monoploid:
-				continue
-			question = ""
-			question += "<p>A certain plant is found to be "
-			question += polyploid_names[ploidy] + ' '
-			question += '({0}n) '.format(ploidy)
-			question += "with {0} chromosomes in total.</p>".format(total_chromosomes)
-			question += '<h5>What are the monoploid (m) and haploid (h) numbers for this plant?</h5>'
-			if random.random() < 0.5:
-				question += "<p><i>Note: {0}/{1} = {2} and {0}/2 = {3}</i></p>".format(total_chromosomes, ploidy, monoploid, haploid)
-			else:
-				question += "<p><i>Note: {0}/2 = {3} and {0}/{1} = {2}</i></p>".format(total_chromosomes, ploidy, monoploid, haploid)
+def _select_scenario_index(N: int, count: int, mode: str) -> int:
+	if mode == 'cycle':
+		return (N - 1) % count
+	if mode == 'modmix':
+		return (N * 2654435761) % count
+	if mode == 'random':
+		return random.randrange(count)
+	raise ValueError("Unknown scenario selection mode.")
 
-			choices = []
-			answer = '<p>monoploid, m = {0} and haploid, h = {1}</p>'.format(monoploid, haploid)
-			choices.append(answer)
-			wrong = '<p>monoploid, m = {0} and haploid, h = {1}</p>'.format(haploid, monoploid)
-			choices.append(wrong)
-			wrong = '<p>monoploid, m = {0} and haploid, h = {1}</p>'.format(monoploid, monoploid)
-			choices.append(wrong)
-			wrong = '<p>monoploid, m = {0} and haploid, h = {1}</p>'.format(haploid, haploid)
-			choices.append(wrong)
-			wrong = '<p>monoploid, m = {0} and haploid, h = {1}</p>'.format(total_chromosomes, monoploid)
-			choices.append(wrong)
-			wrong = '<p>monoploid, m = {0} and haploid, h = {1}</p>'.format(total_chromosomes, haploid)
-			choices.append(wrong)
+#=====================
+def write_question(N: int, args) -> str:
+	idx = _select_scenario_index(N, len(scenario_list), args.scenario_select)
+	ploidy, monoploid, haploid, total_chromosomes = scenario_list[idx]
 
-			random.shuffle(choices)
-			complete_question = bptools.formatBB_MC_Question(question_num, question, choices, answer)
-			questions.append(complete_question)
-			question_num += 1
-	return questions
+	question = ""
+	question += "<p>A certain plant is found to be "
+	question += polyploid_names[ploidy] + ' '
+	question += '({0}n) '.format(ploidy)
+	question += "with {0} chromosomes in total.</p>".format(total_chromosomes)
+	question += '<h5>What are the monoploid (m) and haploid (h) numbers for this plant?</h5>'
+	if random.random() < 0.5:
+		question += "<p><i>Note: {0}/{1} = {2} and {0}/2 = {3}</i></p>".format(total_chromosomes, ploidy, monoploid, haploid)
+	else:
+		question += "<p><i>Note: {0}/2 = {3} and {0}/{1} = {2}</i></p>".format(total_chromosomes, ploidy, monoploid, haploid)
+
+	choices = []
+	answer = '<p>monoploid, m = {0} and haploid, h = {1}</p>'.format(monoploid, haploid)
+	choices.append(answer)
+	wrong = '<p>monoploid, m = {0} and haploid, h = {1}</p>'.format(haploid, monoploid)
+	choices.append(wrong)
+	wrong = '<p>monoploid, m = {0} and haploid, h = {1}</p>'.format(monoploid, monoploid)
+	choices.append(wrong)
+	wrong = '<p>monoploid, m = {0} and haploid, h = {1}</p>'.format(haploid, haploid)
+	choices.append(wrong)
+	wrong = '<p>monoploid, m = {0} and haploid, h = {1}</p>'.format(total_chromosomes, monoploid)
+	choices.append(wrong)
+	wrong = '<p>monoploid, m = {0} and haploid, h = {1}</p>'.format(total_chromosomes, haploid)
+	choices.append(wrong)
+
+	random.shuffle(choices)
+	complete_question = bptools.formatBB_MC_Question(N, question, choices, answer)
+	return complete_question
 
 #=====================
 def parse_arguments():
-	parser = bptools.make_arg_parser(
-		description="Generate monoploid vs haploid questions.",
-		batch=True
+	parser = bptools.make_arg_parser(description="Generate monoploid vs haploid questions.")
+	parser.add_argument(
+		'--scenario-select', dest='scenario_select', type=str,
+		choices=('cycle', 'modmix', 'random'),
+		default='modmix', help='Scenario selection mode.'
 	)
 	args = parser.parse_args()
 	return args
@@ -93,8 +107,7 @@ def parse_arguments():
 def main():
 	args = parse_arguments()
 	outfile = bptools.make_outfile()
-	questions = bptools.collect_question_batches(write_question_batch, args)
-	bptools.write_questions_to_file(questions, outfile)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #=====================
 if __name__ == '__main__':

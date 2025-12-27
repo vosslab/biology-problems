@@ -91,8 +91,7 @@ def write_question_batch(start_num, args):
 def parse_arguments():
 	parser = bptools.make_arg_parser(
 		description='Generate percent dilution aliquot numeric questions.',
-		batch=True,
-		duplicates_default=1
+		batch=True
 	)
 	args = parser.parse_args()
 	return args

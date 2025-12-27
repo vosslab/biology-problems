@@ -181,5 +181,18 @@
   to use batch helpers and a computed default duplicate count.
 - Added a migration note about preserving computed duplicate defaults for batch
   scripts in [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md).
+- Switched [inheritance-problems/polyploid-monoploid_v_haploid.py](inheritance-problems/polyploid-monoploid_v_haploid.py)
+  and [laboratory-problems/serial_dilution_factor_aliquot_numeric.py](laboratory-problems/serial_dilution_factor_aliquot_numeric.py)
+  to non-batch question generation with scenario selection modes.
+- Set the default duplicates for
+  [laboratory-problems/serial_dilution_factor_aliquot_numeric.py](laboratory-problems/serial_dilution_factor_aliquot_numeric.py)
+  back to 2 for quick testing.
+- Removed per-script `duplicates_default` overrides so scripts consistently use
+  the shared default of 2 (including buffers, percent dilution, and serial
+  dilution variants).
+- Removed `duplicates_default` override support from `bptools.add_base_args`,
+  `add_base_args_batch`, and `make_arg_parser`, keeping a fixed default of 2.
+- Documented how to switch batch scripts from fixed cycles to individual
+  scenario selection in [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md).
 - Added a migration note about converting stdout-based question scripts to
   helper-based MC/FIB formatting in [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md).
