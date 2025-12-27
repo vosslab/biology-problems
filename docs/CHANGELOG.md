@@ -22,6 +22,9 @@
   [inheritance-problems/pedigrees/pedigree_mode_validate_lib.py](inheritance-problems/pedigrees/pedigree_mode_validate_lib.py).
 - Added a preview helper for HTML/PNG pedigree output in
   [inheritance-problems/pedigrees/preview_pedigree.py](inheritance-problems/pedigrees/preview_pedigree.py).
+- Renamed pedigree question generators for clarity:
+  [inheritance-problems/pedigrees/write_pedigree_choice.py](inheritance-problems/pedigrees/write_pedigree_choice.py) and
+  [inheritance-problems/pedigrees/write_pedigree_match.py](inheritance-problems/pedigrees/write_pedigree_match.py).
 - Added a graph-based pedigree generator in
   [inheritance-problems/pedigrees/pedigree_graph_lib.py](inheritance-problems/pedigrees/pedigree_graph_lib.py).
 - Added a local pipeline note in
@@ -171,7 +174,7 @@
 - Corrected outfile suffix selection in
   [inheritance-problems/hardy_weinberg_numeric.py](inheritance-problems/hardy_weinberg_numeric.py).
 - Added max-questions early-stop handling in
-  [inheritance-problems/pedigree_match.py](inheritance-problems/pedigree_match.py).
+  [inheritance-problems/pedigrees/write_pedigree_match.py](inheritance-problems/pedigrees/write_pedigree_match.py).
 - Improved dilution factor MC choices and formatting (clarified labels, background
   explanation, colored aliquot/diluent with monospace values, and standardized
   `--num-choices`) in
@@ -263,7 +266,7 @@
   helper-based MC/FIB formatting in [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md).
 - Refactored [molecular_biology-problems/overhang_sequence.py](molecular_biology-problems/overhang_sequence.py)
   to use batch helpers, shared argparse defaults, and unified outfile naming.
-- Refactored [inheritance-problems/pedigree_match.py](inheritance-problems/pedigree_match.py)
+- Refactored [inheritance-problems/pedigrees/write_pedigree_match.py](inheritance-problems/pedigrees/write_pedigree_match.py)
   to use batch helpers and start-numbered matching sets.
 - Refactored [biochemistry-problems/Henderson-Hasselbalch.py](biochemistry-problems/Henderson-Hasselbalch.py)
   to use shared argparse defaults and helper-based question collection.
@@ -345,7 +348,7 @@
   [inheritance-problems/monohybrid_degrees_of_dominance.py](inheritance-problems/monohybrid_degrees_of_dominance.py),
   [inheritance-problems/monohybrid_genotype_statements.py](inheritance-problems/monohybrid_genotype_statements.py),
   [inheritance-problems/old_deletion_mutants.py](inheritance-problems/old_deletion_mutants.py),
-  [inheritance-problems/pedigree_choice.py](inheritance-problems/pedigree_choice.py),
+  [inheritance-problems/pedigrees/write_pedigree_choice.py](inheritance-problems/pedigrees/write_pedigree_choice.py),
   [inheritance-problems/polyploid-gametes.py](inheritance-problems/polyploid-gametes.py),
   [inheritance-problems/punnett_choice.py](inheritance-problems/punnett_choice.py),
   [inheritance-problems/robertsonian.py](inheritance-problems/robertsonian.py),
