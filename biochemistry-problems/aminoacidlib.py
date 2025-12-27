@@ -1,6 +1,5 @@
 ### Library for crateing HTML tables of Amino Acid molecules
 
-import sys
 #import copy
 
 #============================
@@ -108,7 +107,7 @@ class AminoAcidStructure(object):
 		aldose_header += ' <td colspan="2" style="border: solid white 0px; text-align: left;">&nbsp;O</td>'
 		aldose_header += '</tr><tr>'
 		aldose_header += ' <td style="border: solid white 0px;"></td>'
-		aldose_header += ' <td colspan="2" style="border: solid white 0px; text-align: right;">\&nbsp;</td>'
+		aldose_header += ' <td colspan="2" style="border: solid white 0px; text-align: right;">&nbsp;</td>'
 		aldose_header += ' <td colspan="2" style="border: solid white 0px; text-align: left;">&nbsp;//</td>'
 		aldose_header += ' <td style="border: solid white 0px;"></td>'
 		aldose_header += '</tr><tr>'

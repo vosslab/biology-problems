@@ -1,8 +1,6 @@
 
 
 import os
-import sys
-import copy
 import random
 from PIL import Image
 from PIL import ImageDraw

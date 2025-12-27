@@ -1,7 +1,6 @@
 
 import csv
 import math
-import random
 
 debug = False
 
@@ -13,7 +12,7 @@ def parse_protein_file():
 	protein_tree = []
 	for row in reader:
 		if reader.line_num == 1:
-			header = row
+			_ = row
 			continue
 		try:
 			protein_dict = {

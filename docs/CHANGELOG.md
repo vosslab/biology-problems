@@ -115,3 +115,15 @@
   to use shared argparse defaults and helper-based question collection.
 - Added a migration note for fixed-grid batch scripts in
   [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md).
+- Cleaned unused imports and a redundant global in [bptools.py](bptools.py) to
+  satisfy pyflakes.
+- Fixed a pyflakes warning in
+  [biochemistry-problems/buffers/bufferslib.py](biochemistry-problems/buffers/bufferslib.py)
+  by validating pKa values without unused variables.
+- Fixed a bad error message variable in
+  [biochemistry-problems/carbohydrates_classification/sugarlib.py](biochemistry-problems/carbohydrates_classification/sugarlib.py).
+- Removed an unused import and a bad escape sequence in
+  [biochemistry-problems/aminoacidlib.py](biochemistry-problems/aminoacidlib.py).
+- Removed unused imports/vars in
+  [biochemistry-problems/proteinlib.py](biochemistry-problems/proteinlib.py) and
+  [dna_profiling-problems/gellib.py](dna_profiling-problems/gellib.py).

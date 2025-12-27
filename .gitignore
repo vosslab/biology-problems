@@ -1,4 +1,6 @@
 # output files
+*.html
+*.od?
 bbq-*.txt
 qti*.zip
 selftest-*.html
