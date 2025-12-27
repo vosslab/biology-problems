@@ -136,6 +136,15 @@
   debug prints.
 - Added a migration note about preserving cyclic scenario selection in
   [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md).
+- Refactored [biochemistry-problems/buffers/pKa_buffer_state.py](biochemistry-problems/buffers/pKa_buffer_state.py)
+  to use batch helpers and a shared parser while preserving proton-count logic.
+- Refactored [inheritance-problems/poisson_flies.py](inheritance-problems/poisson_flies.py)
+  to use shared argparse defaults and helper-based question collection.
+- Refactored [biochemistry-problems/chymotrypsin_substrate.py](biochemistry-problems/chymotrypsin_substrate.py)
+  to use shared helpers, and moved the `--max-length` short flag from `-x` to `-M`
+  to avoid conflict with `-x/--max-questions`.
+- Added a migration note about `-x` short-flag conflicts in
+  [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md).
 - Simplified `bptools.add_choice_args()` to a fixed API with a single `default=`
   parameter, and updated scripts to use that form.
 - Set `biochemistry-problems/alpha_helix_h-bonds.py` to use

@@ -2,12 +2,8 @@
 # ^^ Specifies the Python3 environment to use for script execution
 
 # Import built-in Python modules
-# Provides functions for interacting with the operating system
-import os
 # Provides functions to generate random numbers and selections
 import random
-# Provides tools to parse command-line arguments
-import argparse
 
 # Import external modules (pip-installed)
 # No external modules are used here currently
@@ -29,35 +25,27 @@ regular_aminos = ['Gly', 'Ala', 'Asn', 'Ser', 'Thr', 'Gln', 'Glu', 'Asp', 'Cys',
 # avoid these for confusion purposes
 bad_aminos = ['Pro', 'His', 'Ile', 'Val', ]
 
-dark_color_wheel = {
-	'red': 'b30000',
-	'brown': '663300',
-	'gold': 'b37100',
-	'yellow': '999900',
-	'green': '008000',
-	'cyan': '008080',
-	'blue': '002db3',
-	'magenta': '800055',
-}
-
-amino_acid_colors = {
-    'Tyr': 'cyan',
-    'Trp': 'cyan',
-    'Phe': 'cyan',
-    'Leu': 'green',
-    'Met': 'green',
-
-	 'Gly': 'brown',
-    'Ala': 'brown',
-    'Asn': 'magenta',
-    'Ser': 'magenta',
-    'Thr': 'magenta',
-    'Gln': 'magenta',
-    'Glu': 'red',
-    'Asp': 'red',
-    'Cys': 'gold',
-    'Lys': 'blue',
-    'Arg': 'blue',
+rasmol_amino_colors = {
+	'Ala': 'c8c8c8',
+	'Arg': '145aff',
+	'Asn': '00dcdc',
+	'Asp': 'e60a0a',
+	'Cys': 'e6e600',
+	'Gln': '00dcdc',
+	'Glu': 'e60a0a',
+	'Gly': 'ebebeb',
+	'His': '8282d2',
+	'Ile': '0f820f',
+	'Leu': '0f820f',
+	'Lys': '145aff',
+	'Met': 'e6e600',
+	'Phe': '3232aa',
+	'Pro': 'dc9682',
+	'Ser': 'fa9600',
+	'Thr': 'fa9600',
+	'Trp': 'b45ab4',
+	'Tyr': '3232aa',
+	'Val': '0f820f',
 }
 #===========================================================
 #===========================================================
@@ -100,7 +88,7 @@ def peptide_sequence_to_html_str(peptide_sequence: list) -> str:
 	for amino_acid in peptide_sequence:
 		amino_acid_html = bptools.colorHTMLText(
 			amino_acid,
-			dark_color_wheel[amino_acid_colors[amino_acid]]
+			rasmol_amino_colors[amino_acid]
 		)
 		peptide_html_list.append(amino_acid_html)
 	# Join the amino acids with HTML em-dash separators, and add N/C-termini
@@ -174,11 +162,11 @@ def format_choice_text(index: int, peptide_sequence: list) -> str:
 	# Convert each amino acid to its color-coded HTML representation
 	amino_acid_1_html = bptools.colorHTMLText(
 		amino_acid_1,
-		dark_color_wheel[amino_acid_colors[amino_acid_1]]
+		rasmol_amino_colors[amino_acid_1]
 	)
 	amino_acid_2_html = bptools.colorHTMLText(
 		amino_acid_2,
-		dark_color_wheel[amino_acid_colors[amino_acid_2]]
+		rasmol_amino_colors[amino_acid_2]
 	)
 
 	# Concatenate the formatted amino acids with an HTML em-dash between them
@@ -223,7 +211,7 @@ def generate_choices(num_choices: int, peptide_sequence: list, cleavage_site_ind
 #===========================================================
 #===========================================================
 # This function creates and formats a complete question for output.
-def write_question(N: int, num_choices: int, peptide_length: int) -> str:
+def build_question(N: int, num_choices: int, peptide_length: int) -> str:
 	"""
 	Creates a complete formatted question for output.
 	"""
@@ -243,6 +231,13 @@ def write_question(N: int, num_choices: int, peptide_length: int) -> str:
 
 #===========================================================
 #===========================================================
+def write_question(N: int, args) -> str:
+	peptide_length = random.randint(args.min_length, args.max_length)
+	complete_question = build_question(N, args.num_choices, peptide_length)
+	return complete_question
+
+#===========================================================
+#===========================================================
 #============================================================
 #============================================================
 # This function handles the parsing of command-line arguments.
@@ -257,22 +252,8 @@ def parse_arguments():
 			- min_length (int): Minimum peptide sequence length (inclusive).
 			- max_length (int): Maximum peptide sequence length (inclusive).
 	"""
-	# Create an argument parser with a description of the script's functionality
-	parser = argparse.ArgumentParser(description="Generate peptide digestion questions.")
-
-	# Add an argument to specify how many questions to generate
-	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='Number of duplicate runs to do or number of questions to create',
-		default=99
-	)
-
-	# Add an argument to specify the number of answer choices for each question
-	parser.add_argument(
-		'-c', '--num-choices', type=int, dest='num_choices',
-		help="Number of choices to create.",
-		default=5
-	)
+	parser = bptools.make_arg_parser(description="Generate peptide digestion questions.")
+	parser = bptools.add_choice_args(parser, default=5)
 
 	# Add an argument for minimum peptide length
 	parser.add_argument(
@@ -283,7 +264,7 @@ def parse_arguments():
 
 	# Add an argument for maximum peptide length
 	parser.add_argument(
-		'-x', '--max-length', type=int, dest='max_length',
+		'-M', '--max-length', type=int, dest='max_length',
 		help="Maximum peptide sequence length (inclusive).",
 		default=11
 	)
@@ -303,39 +284,8 @@ def main():
 	# Parse arguments from the command line
 	args = parse_arguments()
 
-	# Generate the output file name based on the script name and question type
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
-	outfile = (
-		'bbq'
-		f'-{script_name}'  # Add the script name to the file name
-		'-questions.txt'  # Add the file extension
-	)
-
-	# Print a message indicating where the file will be saved
-	print(f'Writing to file: {outfile}')
-
-	# Open the output file in write mode
-	with open(outfile, 'w') as f:
-		# Initialize the question number counter
-		count = 0
-
-		# Generate the specified number of questions
-		for _ in range(args.duplicates):
-			peptide_length = random.randint(args.min_length,args.max_length)
-
-			# Generate the complete formatted question
-			complete_question = write_question(count+1, args.num_choices, peptide_length)
-
-			# Write the question to the file if it was generated successfully
-			if complete_question is not None:
-				count += 1
-				f.write(complete_question)
-
-	# print a histogram of results
-	bptools.print_histogram()
-
-	# Print a message indicating how many questions were saved
-	print(f'saved {count} questions to {outfile}')
+	outfile = bptools.make_outfile()
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #===========================================================
 #===========================================================
@@ -345,4 +295,3 @@ if __name__ == '__main__':
 	main()
 
 ## THE END
-

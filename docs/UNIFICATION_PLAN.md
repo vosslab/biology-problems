@@ -203,6 +203,9 @@ Batch generators:
 - Scripts that previously cycled through a fixed list of scenarios (for example,
   using `N % len(list)`) should preserve that behavior inside
   `write_question(N, args)` to keep coverage evenly distributed.
+- Scripts that already use `-x` for a different option (for example
+  `--max-length`) should move that short flag to avoid colliding with the
+  unified `-x/--max-questions` base arg. Prefer a nearby alternative like `-M`.
 
 ## Legacy patterns to modernize
 These are common in older scripts and are the first candidates for cleanup
