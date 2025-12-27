@@ -2,12 +2,8 @@
 # ^^ Specifies the Python3 environment to use for script execution
 
 # Import built-in Python modules
-# Provides functions for interacting with the operating system
-import os
 # Provides functions to generate random numbers and selections
 import random
-# Provides tools to parse command-line arguments
-import argparse
 import copy
 
 # Import external modules (pip-installed)
@@ -440,7 +436,7 @@ def gene_id_to_choice_html(gene_id: int, color_set: list, two_letters: list) -> 
 
 #===================
 #===================
-def write_question(N: int, answer_gene_id: str, color_set: list, num_choices: int) -> str:
+def build_question(N: int, answer_gene_id: str, color_set: list, num_choices: int) -> str:
 	"""
 	Creates a formatted MC question about gene interaction types.
 	"""
@@ -448,9 +444,6 @@ def write_question(N: int, answer_gene_id: str, color_set: list, num_choices: in
 	letter_pool = copy.copy(hybridcrosslib.gene_letters)
 	random.shuffle(letter_pool)
 	two_letters = sorted([letter_pool.pop(), letter_pool.pop()])
-
-	# Debug: show which gene interaction ID is considered the correct answer
-	print('answer_gene_id=', answer_gene_id)
 
 	# Build the main question text for the Blackboard item, based on the correct gene interaction
 	question_text = makeQuestion(answer_gene_id, color_set)
@@ -468,9 +461,6 @@ def write_question(N: int, answer_gene_id: str, color_set: list, num_choices: in
 	if answer_gene_id == 1:
 		all_plus_gene_ids.remove(10)
 
-	# Debug: show the list of gene IDs after removing any special-case redundancies
-	print('all_plus_gene_ids=', all_plus_gene_ids)
-
 	# Start an empty list of "wrong" gene IDs (distractors)
 	wrong_gene_ids = []
 
@@ -487,15 +477,9 @@ def write_question(N: int, answer_gene_id: str, color_set: list, num_choices: in
 		wrong_gene_ids.append(random.choice(all_plus_gene_ids))
 		wrong_gene_ids = list(set(wrong_gene_ids))
 
-	# Debug: show the final list of wrong answer IDs
-	print('wrong_gene_ids=', wrong_gene_ids)
-
 	# Build answer and choices
 	answer_text = gene_id_to_choice_html(answer_gene_id, color_set, two_letters)
 	wrong_gene_ids.append(answer_gene_id)
-
-	# Debug: show the final list of wrong answer IDs
-	print('wrong_gene_ids=', wrong_gene_ids)
 
 	choices_list = []
 	for sub_gene_id in wrong_gene_ids:
@@ -519,6 +503,19 @@ method_list = [
 	dominant_and_recessive_epistasis,
 ]
 
+all_gene_ids = list(hybridcrosslib.gene_interaction_names.keys())
+all_color_sets = hybridcrosslib.get_four_color_sets()
+
+#===========================================================
+#===========================================================
+def write_question(N: int, args) -> str:
+	"""
+	Create a single epistatic gene interaction question.
+	"""
+	gene_id = all_gene_ids[(N - 1) % len(all_gene_ids)]
+	color_set = random.choice(all_color_sets)
+	complete_question = build_question(N, gene_id, color_set, args.num_choices)
+	return complete_question
 
 
 #===========================================================
@@ -527,36 +524,11 @@ method_list = [
 def parse_arguments():
 	"""
 	Parses command-line arguments for the script.
-
-	Returns:
-		argparse.Namespace: Parsed arguments with attributes `duplicates`,
-		`num_choices`, and `question_type`.
 	"""
-	# Create an argument parser with a description of the script's functionality
-	parser = argparse.ArgumentParser(description="Generate questions.")
-
-	# Add an argument to specify the number of duplicate questions to generate
-	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='Number of duplicate runs to do or number of questions to create',
-		default=1
-	)
-
-	parser.add_argument(
-		'-x', '--max-questions', type=int, dest='max_questions',
-		default=99, help='Max number of questions'
-	)
-
-	# Add an argument to specify the number of answer choices for each question
-	parser.add_argument(
-		'-c', '--num_choices', type=int, default=4, choices=range(2, 10), dest='num_choices',
-		help="Number of choices to create."
-	)
-
-	# Parse the provided command-line arguments and return them
+	parser = bptools.make_arg_parser(description="Generate epistatic gene interaction questions.")
+	parser = bptools.add_choice_args(parser, default=4)
 	args = parser.parse_args()
 	return args
-
 
 #===================
 #===================
@@ -564,7 +536,7 @@ def parse_arguments():
 #===================
 def old_function():
 	duplicates = 1
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
+	outfile = bptools.make_outfile()
 	print('writing to file: '+outfile)
 	file_handle = open(outfile, 'w')
 	N = 0
@@ -572,7 +544,7 @@ def old_function():
 		for color_set in hybridcrosslib.get_four_color_sets():
 			for gene_id in hybridcrosslib.gene_interaction_names:
 				N += 1
-				complete_bb_question = writeQuestion(N, gene_id, color_set)
+				complete_bb_question = build_question(N, gene_id, color_set, 4)
 				file_handle.write(complete_bb_question)
 	file_handle.close()
 
@@ -583,63 +555,8 @@ def main():
 	# Parse arguments from the command line
 	args = parse_arguments()
 
-	# Generate the output file name based on the script name and arguments
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
-	outfile = (
-		'bbq'
-		f'-{script_name}'              # Add the script name to the file name
-		f'-{args.num_choices}_choices' # Append number of choices
-		'-questions.txt'               # File extension
-	)
-
-	# Store all complete formatted questions
-	question_bank_list = []
-
-	# Initialize question counter
-	N = 0
-
-	# Mapping of real gene interaction type IDs (0–6) to their descriptive names (used in question text and answer choices)
-	# these are just numbers
-	all_gene_ids = list(hybridcrosslib.gene_interaction_names.keys())
-
-	# Debug: show the full list of possible gene IDs before any filtering
-	print('all_gene_ids=', all_gene_ids)
-
-	all_color_sets = hybridcrosslib.get_four_color_sets()
-	#print(all_color_sets)
-
-	# Create the specified number of questions
-	for _ in range(args.duplicates):
-		# really all_gene_ids[N % len(all_gene_ids)] is same
-		gene_id = N % len(all_gene_ids)
-		color_set = random.choice(all_color_sets)
-
-		# Create a full formatted question (Blackboard format)
-		complete_question = write_question(N+1, gene_id, color_set, args.num_choices)
-
-		# Append question if successfully generated
-		if complete_question is not None:
-			N += 1
-			question_bank_list.append(complete_question)
-
-	# Show a histogram of answer distributions for MC/MA types
-	bptools.print_histogram()
-
-	# Shuffle and limit the number of questions if over max
-	if len(question_bank_list) > args.max_questions:
-		random.shuffle(question_bank_list)
-		question_bank_list = question_bank_list[:args.max_questions]
-
-	# Announce where output is going
-	print(f'\nWriting {N} question to file: {outfile}')
-
-	# Write all questions to file
-	with open(outfile, 'w') as f:
-		for complete_question in question_bank_list:
-			f.write(complete_question)
-
-	# Final status message
-	print(f'... saved {N} questions to {outfile}\n')
+	outfile = bptools.make_outfile(None, f"{args.num_choices}_choices")
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #===========================================================
 #===========================================================

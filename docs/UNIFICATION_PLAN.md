@@ -124,7 +124,7 @@ Use a batch-specific helper so large fixed lists are capped by default:
 These can be added later to reduce boilerplate, without forcing all scripts to
 adopt them at once.
 
-- `add_choice_args(parser)`
+- `add_choice_args(parser, default=5)`
   - Adds `-c/--num-choices` with a standard help string and default.
 
 - `add_hint_args(parser)`
@@ -200,6 +200,9 @@ Batch generators:
   phenotype pairs) should be modeled as batch writers: move the nested loops
   into `write_question_batch(start_num, args)` and return the full list so
   `main()` stays minimal and batch caps apply consistently.
+- Scripts that previously cycled through a fixed list of scenarios (for example,
+  using `N % len(list)`) should preserve that behavior inside
+  `write_question(N, args)` to keep coverage evenly distributed.
 
 ## Legacy patterns to modernize
 These are common in older scripts and are the first candidates for cleanup

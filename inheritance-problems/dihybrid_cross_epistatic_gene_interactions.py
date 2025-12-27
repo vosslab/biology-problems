@@ -136,7 +136,7 @@ def parse_arguments():
 		argparse.Namespace: Parsed arguments with base args and `num_choices`.
 	"""
 	parser = bptools.make_arg_parser(description="Generate epistatic gene interaction questions.")
-	parser = bptools.add_choice_args(parser, num_choices_default=4)
+	parser = bptools.add_choice_args(parser, default=4)
 	args = parser.parse_args()
 	return args
 

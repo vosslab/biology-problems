@@ -233,7 +233,7 @@ def parse_arguments():
 		`num_choices`, and `question_type`.
 	"""
 	parser = bptools.make_arg_parser(description="Generate cytogenetic notation questions.")
-	parser = bptools.add_choice_args(parser, num_choices_default=5)
+	parser = bptools.add_choice_args(parser, default=5)
 	args = parser.parse_args()
 	return args
 

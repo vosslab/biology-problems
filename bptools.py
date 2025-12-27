@@ -220,24 +220,20 @@ def make_arg_parser(description=None, batch=False, duplicates_default=None, max_
 	return parser
 
 #==========================
-def add_choice_args(parser, num_choices_default=5, dest='num_choices', help_text=None):
+def add_choice_args(parser, default=5):
 	"""
 	Add a standard number-of-choices argument.
 
 	Args:
 		parser (argparse.ArgumentParser): Argument parser to extend.
-		num_choices_default (int): Default number of choices.
-		dest (str): Destination name for the parsed value.
-		help_text (str): Optional help text override.
+		default (int | None): Default number of choices.
 
 	Returns:
 		argparse.ArgumentParser: The updated parser.
 	"""
-	if help_text is None:
-		help_text = "Number of choices to create."
 	parser.add_argument(
-		'-c', '--num-choices', metavar='#', type=int, dest=dest,
-		help=help_text, default=num_choices_default
+		'-c', '--num-choices', metavar='#', type=int, dest='num_choices',
+		help="Number of choices to create.", default=default
 	)
 	return parser
 

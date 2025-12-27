@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import os
 import random
 import bptools
 
@@ -27,21 +26,34 @@ def get_random_values():
 
 #==================================================
 #==================================================
+def write_question(N: int, args) -> str:
+	df_value, volume_mL, aliquot_uL = get_random_values()
+	aliquot_mL = aliquot_uL / 1000.0
+	diluent_mL = volume_mL - aliquot_mL
+	question_text = make_question_text(aliquot_mL, diluent_mL)
+	answer = df_value
+	tolerance = 0.9
+	complete_question = bptools.formatBB_NUM_Question(N, question_text, answer, tolerance)
+	return complete_question
+
+#==================================================
+#==================================================
+def parse_arguments():
+	"""
+	Parse command-line arguments.
+	"""
+	parser = bptools.make_arg_parser(description="Generate dilution factor numeric questions.")
+	args = parser.parse_args()
+	return args
+
+#==================================================
+#==================================================
+def main():
+	args = parse_arguments()
+	outfile = bptools.make_outfile()
+	bptools.collect_and_write_questions(write_question, args, outfile)
+
+#==================================================
+#==================================================
 if __name__ == '__main__':
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	duplicates = 99
-	N = 0
-	for i in range(duplicates):
-		N += 1
-		df_value, volume_mL, aliquot_uL = get_random_values()
-		aliquot_mL = aliquot_uL / 1000.
-		diluent_mL = volume_mL - aliquot_mL
-		q = make_question_text(aliquot_mL, diluent_mL)
-		answer = df_value
-		tolerance = 0.9
-		bbf = bptools.formatBB_NUM_Question(N, q, answer, tolerance)
-		f.write(bbf+'\n')
-	f.close()
-	bptools.print_histogram()
+	main()

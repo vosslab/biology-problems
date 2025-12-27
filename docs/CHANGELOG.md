@@ -127,3 +127,16 @@
 - Removed unused imports/vars in
   [biochemistry-problems/proteinlib.py](biochemistry-problems/proteinlib.py) and
   [dna_profiling-problems/gellib.py](dna_profiling-problems/gellib.py).
+- Refactored [laboratory-problems/dilution_factor_calc_numeric.py](laboratory-problems/dilution_factor_calc_numeric.py)
+  to use shared argparse defaults and helper-based question collection.
+- Refactored [biochemistry-problems/which_lipid-chemical_formula.py](biochemistry-problems/which_lipid-chemical_formula.py)
+  to use `bptools` MC formatting and shared helpers instead of manual text output.
+- Refactored [inheritance-problems/dihybrid_cross_epistatic_gene_metabolics.py](inheritance-problems/dihybrid_cross_epistatic_gene_metabolics.py)
+  to use shared argparse defaults, helper-based question collection, and remove
+  debug prints.
+- Added a migration note about preserving cyclic scenario selection in
+  [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md).
+- Simplified `bptools.add_choice_args()` to a fixed API with a single `default=`
+  parameter, and updated scripts to use that form.
+- Set `biochemistry-problems/alpha_helix_h-bonds.py` to use
+  `add_choice_args(..., default=4)`.

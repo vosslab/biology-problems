@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
-import os
 import copy
 import random
+
+import bptools
 
 lipids = {
 	'DHA':	{'C':22,'H':32,'O':2},
@@ -85,40 +86,26 @@ def create_new_entries(mol_dict):
 			mol_dict[k1+'-'+k2] = merge_dict
 	return mol_dict
 
-def writeQuestion():
+def write_question(N: int, args) -> str:
 	#============================
-	question_txt = "Based on only their molecular formula, "
-	question_txt += "which one of the following compounds is most likely a lipid?"
-	print("01. "+question_txt)
-
-	letters = "ABCDEFG"
-	complete_question = 'MC\t'
-	complete_question += question_txt
+	question_text = "Based on only their molecular formula, "
+	question_text += "which one of the following compounds is most likely a lipid?"
 
 	newlipids = {}
 	newlipids.update(lipids)
-	preadd = len(newlipids)
-	hydrophillics = create_new_entries(newlipids)
-	postadd = len(newlipids)
-	print("Created {0} new entries {1} -> {2}".format(postadd-preadd, preadd, postadd))
+	create_new_entries(newlipids)
 	answer_key = random.choice(list(newlipids.keys()))
-	print(answer_key)
 
 	hydrophillics = {}
 	hydrophillics.update(sugars)
 	hydrophillics.update(nucleobases)
 	hydrophillics.update(nucleotides)
 	hydrophillics.update(amino_acids)
-	preadd = len(hydrophillics)
-	hydrophillics = create_new_entries(hydrophillics)
-	postadd = len(hydrophillics)
-	print("Created {0} new entries {1} -> {2}".format(postadd-preadd, preadd, postadd))
+	create_new_entries(hydrophillics)
 
-	choices = []
-	choices.append(answer_key)
-	for i in range(4):
-		wrong = random.choice(list(hydrophillics.keys()))
-		choices.append(wrong)
+	choices = [answer_key]
+	wrong_keys = random.sample(list(hydrophillics.keys()), 4)
+	choices.extend(wrong_keys)
 
 	complete_dict = {}
 	complete_dict.update(hydrophillics)
@@ -126,29 +113,30 @@ def writeQuestion():
 
 	random.shuffle(choices)
 
-	for i,choice_key in enumerate(choices):
-		molecule_string  = dict2html(complete_dict[choice_key])
-		complete_question += '\t'+molecule_string
-		if choice_key == answer_key:
-			prefix = '*'
-			complete_question += '\tCorrect'
-		else:
-			prefix = ''
-			complete_question += '\tIncorrect'
-		print("{0}{1}. {2} -- {3}".format(prefix, letters[i], choice_key, molecule_string))
-	complete_question += '\n'
-	print("")
+	choices_list = []
+	for choice_key in choices:
+		molecule_string = dict2html(complete_dict[choice_key])
+		choices_list.append(molecule_string)
+	answer_text = dict2html(complete_dict[answer_key])
+
+	complete_question = bptools.formatBB_MC_Question(N, question_text, choices_list, answer_text)
 	return complete_question
 
+#==================================================
+def parse_arguments():
+	"""
+	Parse command-line arguments.
+	"""
+	parser = bptools.make_arg_parser(description="Generate lipid identification questions.")
+	args = parser.parse_args()
+	return args
 
+#==================================================
+def main():
+	args = parse_arguments()
+	outfile = bptools.make_outfile()
+	bptools.collect_and_write_questions(write_question, args, outfile)
+
+#==================================================
 if __name__ == '__main__':
-
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	duplicates = 95
-
-	for d in range(duplicates):
-		complete_question = writeQuestion()
-		f.write(complete_question)
-	f.close()
+	main()
