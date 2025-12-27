@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
-import os
 import random
+
+import bptools
 
 num2cardinal = {
 	1: 'one', 2: 'two', 3: 'three', 4: 'four', 5: 'five',
@@ -20,49 +21,63 @@ num2ordinal = {
 }
 
 
-def wrtieQuestion(chain_length, num_double_bonds):
+def write_question(chain_length, num_double_bonds, question_num):
 	cl = chain_length
 	ndb = num_double_bonds
-	question = 'The notation {0}:{1} indicates '.format(cl, ndb)
+	question = f'The notation {cl}:{ndb} indicates '
 	question += 'which of the following about a fatty acid?'
 
 	choices = []
-	answer = 'There are {0} carbons in the chain with {1} double bond(s).'.format(cl, ndb)
+	answer = f'There are {cl} carbons in the chain with {ndb} double bond(s).'
 	choices.append(answer)
-	choice = 'There are {0} {1}-carbon chains in this lipid molecule.'.format(num2cardinal[ndb], cl)
+	choice = f'There are {num2cardinal[ndb]} {cl}-carbon chains in this lipid molecule.'
 	choices.append(choice)
-	choice = 'There are {0} carbons in the chain and the {1} carbon has a double bond.'.format(cl, num2ordinal[ndb])
+	choice = f'There are {cl} carbons in the chain and the {num2ordinal[ndb]} carbon has a double bond.'
 	choices.append(choice)
-	choice = 'The {0} carbon in the fatty acid has {1} double bond(s).'.format(num2ordinal[cl], ndb)
+	choice = f'The {num2ordinal[cl]} carbon in the fatty acid has {ndb} double bond(s).'
 	choices.append(choice)
-	choice = 'The {0} and {1} carbons in the fatty acid chain have double bonds.'.format(num2ordinal[ndb], num2ordinal[cl],)
+	choice = f'The {num2ordinal[ndb]} and {num2ordinal[cl]} carbons in the fatty acid chain have double bonds.'
 	choices.append(choice)
 
 	random.shuffle(choices)
 
-	complete_question = 'MC\t'
-	complete_question += question
-	for c in choices:
-		complete_question += '\t'+c
-		if c == answer:
-			complete_question += '\tCorrect'
-		else:
-			complete_question += '\tIncorrect'
-	complete_question += '\n'
-	print(complete_question)
+	complete_question = bptools.formatBB_MC_Question(question_num, question, choices, answer)
 	return complete_question
 
-
-if __name__ == '__main__':
-	possible_chain_lengths = [12,14,16,18,20,22,24]
-	possible_num_double_bonds = [1,2,3,4]
-
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
+#=========================================
+#=========================================
+def write_question_batch(start_num, args):
+	question_list = []
+	question_num = start_num
+	possible_chain_lengths = [12, 14, 16, 18, 20, 22, 24]
+	possible_num_double_bonds = [1, 2, 3, 4]
 
 	for chain_length in possible_chain_lengths:
 		for num_double_bonds in possible_num_double_bonds:
-			complete_question = wrtieQuestion(chain_length, num_double_bonds)
-			f.write(complete_question)
-	f.close()
+			complete_question = write_question(chain_length, num_double_bonds, question_num)
+			question_list.append(complete_question)
+			question_num += 1
+	return question_list
+
+#=========================================
+#=========================================
+def parse_arguments():
+	parser = bptools.make_arg_parser(
+		description='Generate fatty acid notation questions.',
+		batch=True
+	)
+	args = parser.parse_args()
+	return args
+
+#=========================================
+#=========================================
+def main():
+	args = parse_arguments()
+	outfile = bptools.make_outfile()
+	questions = bptools.collect_question_batches(write_question_batch, args)
+	bptools.write_questions_to_file(questions, outfile)
+
+#=========================================
+#=========================================
+if __name__ == '__main__':
+	main()

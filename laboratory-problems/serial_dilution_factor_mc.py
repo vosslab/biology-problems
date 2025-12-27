@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-import os
 import random
+
 import bptools
 
 df_ratios = [
@@ -21,20 +21,7 @@ def question_text(volume, df1, df2):
 
 #==================================================
 #==================================================
-def MC_format_for_blackboard(question, answer, choices):
-	bbtext = "MC\t{0}".format(question)
-	for choice in choices:
-		status = "Incorrect"
-		if choice == answer:
-			status = "Correct"
-		bbtext += "\t{0}\t{1}".format(choice, status)
-	bbtext += "\n"
-	return bbtext
-
-#==================================================
-#==================================================
 def df_ratio_to_values(df_ratio):
-	print(df_ratio)
 	#dfsum = df_ratio[0] + df_ratio[1]
 	max_int = 100 // df_ratio[0]
 	volume = df_ratio[0] * random.randint(1, max_int) * 10
@@ -122,23 +109,41 @@ def make_choices(df_ratio, volume):
 
 #==================================================
 #==================================================
+def write_question_batch(start_num, args):
+	question_list = []
+	question_num = start_num
+	for df_ratio in df_ratios:
+		if df_ratio[1] < 3:
+			continue
+		volume, df1, df2 = df_ratio_to_values(df_ratio)
+		q = question_text(volume, df1, df2)
+		choices, answer = make_choices(df_ratio, volume)
+		bbf = bptools.formatBB_MC_Question(question_num, q, choices, answer)
+		question_list.append(bbf)
+		question_num += 1
+	return question_list
+
+#==================================================
+#==================================================
+def parse_arguments():
+	duplicates_default = 99 // len(df_ratios)
+	parser = bptools.make_arg_parser(
+		description='Generate serial dilution factor MC questions.',
+		batch=True,
+		duplicates_default=duplicates_default
+	)
+	args = parser.parse_args()
+	return args
+
+#==================================================
+#==================================================
+def main():
+	args = parse_arguments()
+	outfile = bptools.make_outfile()
+	questions = bptools.collect_question_batches(write_question_batch, args)
+	bptools.write_questions_to_file(questions, outfile)
+
+#==================================================
+#==================================================
 if __name__ == '__main__':
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	duplicates = 99 // len(df_ratios)
-	#duplicates = 1
-	N = 1
-	for i in range(duplicates):
-		for df_ratio in df_ratios:
-			if df_ratio[1] < 3:
-				continue
-			N += 1
-			volume, df1, df2 = df_ratio_to_values(df_ratio)
-			q = question_text(volume, df1, df2)
-			choices, answer = make_choices(df_ratio, volume)
-			bbf = bptools.formatBB_MC_Question(N, q, choices, answer)
-			#bbf = MC_format_for_blackboard(q, answer, choices)
-			f.write(bbf)
-	f.close()
-	bptools.print_histogram()
+	main()

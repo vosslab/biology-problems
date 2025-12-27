@@ -1,8 +1,6 @@
 #General Toosl for These Problems
 import os
-import re
 import sys
-import random
 import argparse
 import subprocess
 from collections import defaultdict
@@ -116,7 +114,6 @@ def make_color_wheel(r, g, b, degree_step=40):
 
 #==========================
 def print_histogram():
-	global question_count
 	sys.stderr.write("=== Answer Choice Histogram ===\n")
 	keys = list(answer_histogram.keys())
 	keys.sort()

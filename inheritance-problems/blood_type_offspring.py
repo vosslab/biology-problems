@@ -1,17 +1,6 @@
 #!/usr/bin/env python3
 # ^^ Specifies the Python3 environment to use for script execution
 
-# Import built-in Python modules
-# Provides functions for interacting with the operating system
-import os
-# Provides functions to generate random numbers and selections
-import random
-# Provides tools to parse command-line arguments
-import argparse
-
-# Import external modules (pip-installed)
-# No external modules are used here currently
-
 # Import local modules from the project
 # Provides custom functions, such as question formatting and other utilities
 import bptools
@@ -66,7 +55,7 @@ def get_possible_child_phenotypes(mom_pheno: str, dad_pheno: str) -> list[str]:
 	return sorted(list(phenos))
 
 #===========================================================
-def write_question(N: int, mom_pheno: str, dad_pheno: str) -> str:
+def build_question(N: int, mom_pheno: str, dad_pheno: str) -> str:
 	"""
 	Creates a complete formatted multiple-answer question string.
 
@@ -100,24 +89,47 @@ def write_question(N: int, mom_pheno: str, dad_pheno: str) -> str:
 	return question
 
 #===========================================================
+def write_question_batch(N: int, args) -> list[str]:
+	"""
+	Create a batch of blood type questions for all parent phenotype combinations.
+
+	Args:
+		N (int): Starting question number.
+		args (argparse.Namespace): Parsed command-line arguments.
+
+	Returns:
+		list[str]: List of formatted question strings.
+	"""
+	questions = []
+	question_num = N
+	for mom_pheno in phenotypes:
+		for dad_pheno in phenotypes:
+			question = build_question(question_num, mom_pheno, dad_pheno)
+			questions.append(question)
+			question_num += 1
+	return questions
+
+#===========================================================
+def parse_arguments():
+	"""
+	Parse command-line arguments.
+	"""
+	parser = bptools.make_arg_parser(
+		description="Generate ABO blood type offspring questions.",
+		batch=True
+	)
+	args = parser.parse_args()
+	return args
+
+#===========================================================
 def main():
 	"""
 	Generates all combinations of mother/father blood types as multiple-answer questions.
 	"""
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
-	outfile = f'bbq-{script_name}-questions.txt'
-	print(f'writing to file: {outfile}')
-
-	N = 0
-	with open(outfile, 'w') as f:
-		for mom_pheno in phenotypes:
-			for dad_pheno in phenotypes:
-				N += 1
-				question = write_question(N, mom_pheno, dad_pheno)
-				f.write(question + "\n")
-
-	bptools.print_histogram()
-	print(f'saved {N} questions to {outfile}')
+	args = parse_arguments()
+	outfile = bptools.make_outfile()
+	questions = bptools.collect_question_batches(write_question_batch, args)
+	bptools.write_questions_to_file(questions, outfile)
 
 #===========================================================
 # This block ensures the script runs only when executed directly

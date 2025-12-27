@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+
 class BoxPlot:
 	"""Represents the structure of a box plot with elements such as whiskers, box edges, median, and mean."""
 
@@ -346,7 +347,6 @@ def generate_boxplot_html(box_plot):
 
 
 #==============
-
 if __name__ == "__main__":
 	# Example usage
 	box_plot = BoxPlot(10, 11, 12, 13, 16, 17, 25, 22)

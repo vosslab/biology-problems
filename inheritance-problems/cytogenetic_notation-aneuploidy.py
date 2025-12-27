@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 
 # built-in python modules
-import os
 import random
-import argparse
 
 # external pip modules
 
@@ -97,8 +95,6 @@ def sex_chromosomes_to_gender(sex_chromosome_list):
 	if 'Y' in sex_chromosome_list:
 		return '<span style="color: #004d99;">male (&male;)</span>'
 	return '<span style="color: #99004d;">female (&female;)</span>'
-
-import random
 
 #======================================
 #======================================
@@ -194,7 +190,7 @@ def generate_choices(karyotype_tuple: tuple, num_choices: int) -> (list, str):
 
 #======================================
 #======================================
-def write_question(N: int, num_choices: int) -> str:
+def write_question(N: int, args) -> str:
 	"""
 	Creates a complete formatted question for output.
 
@@ -216,7 +212,7 @@ def write_question(N: int, num_choices: int) -> str:
 	question_text = get_question_text(karyotype_str)
 
 	# Generate answer choices and correct answer
-	choices_list, answer_text = generate_choices(karyotype_tuple, num_choices)
+	choices_list, answer_text = generate_choices(karyotype_tuple, args.num_choices)
 
 	# Format the complete question with the specified module function
 	complete_question = bptools.formatBB_MC_Question(N, question_text, choices_list, answer_text)
@@ -236,16 +232,8 @@ def parse_arguments():
 		argparse.Namespace: Parsed arguments with attributes `duplicates`,
 		`num_choices`, and `question_type`.
 	"""
-	parser = argparse.ArgumentParser(description="Generate questions.")
-	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='Number of duplicate runs to do or number of questions to create', default=1
-	)
-	parser.add_argument(
-		'-c', '--num_choices', type=int, default=5,
-		help="Number of choices to create."
-	)
-
+	parser = bptools.make_arg_parser(description="Generate cytogenetic notation questions.")
+	parser = bptools.add_choice_args(parser, num_choices_default=5)
 	args = parser.parse_args()
 	return args
 
@@ -264,21 +252,8 @@ def main():
 	# Parse arguments from the command line
 	args = parse_arguments()
 
-	# Setup output file name
-	outfile = f'bbq-{os.path.splitext(os.path.basename(__file__))[0]}-questions.txt'
-	print(f'Writing to file: {outfile}')
-
-	# Open the output file and generate questions
-	with open(outfile, 'w') as f:
-		N = 1  # Question number counter
-		for _ in range(args.duplicates):
-			complete_question = write_question(N, args.num_choices)
-			if complete_question is not None:
-				N += 1
-				f.write(complete_question)
-
-	# Display histogram if question type is multiple choice
-	bptools.print_histogram()
+	outfile = bptools.make_outfile(f"{args.num_choices}_choices")
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #======================================
 #======================================

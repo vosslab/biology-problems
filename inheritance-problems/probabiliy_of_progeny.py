@@ -2,12 +2,8 @@
 # ^^ Specifies the Python3 environment to use for script execution
 
 # Import built-in Python modules
-# Provides functions for interacting with the operating system
-import os
 # Provides functions to generate random numbers and selections
 import random
-# Provides tools to parse command-line arguments
-import argparse
 import math
 
 # Import external modules (pip-installed)
@@ -348,8 +344,8 @@ def get_question_text(male_offspring: int, female_offspring: int,
 
 #===========================================================
 #===========================================================
-def write_question(N, min_offspring, max_offspring):
-	total_offspring = random.randint(min_offspring, max_offspring)
+def write_question(N: int, args) -> str:
+	total_offspring = random.randint(args.min_offspring, args.max_offspring)
 	female_offspring = random.randint(2, total_offspring-2)
 	male_offspring = total_offspring - female_offspring
 
@@ -394,39 +390,16 @@ def write_question(N, min_offspring, max_offspring):
 def parse_arguments():
 	"""
 	Parses command-line arguments for the script.
-
-	Returns:
-		argparse.Namespace: Parsed arguments with attributes `duplicates`,
-		`num_choices`, and `question_type`.
 	"""
-	# Create an argument parser with a description of the script's functionality
-	parser = argparse.ArgumentParser(description="Generate questions.")
-
-	# Add an argument to specify the number of duplicate questions to generate
-	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='Number of duplicate runs to do or number of questions to create',
-		default=1
-	)
-
-	parser.add_argument(
-		'-x', '--max-questions', type=int, dest='max_questions',
-		default=99, help='Max number of questions'
-	)
-
-	# Add argument for minimum offspring total
+	parser = bptools.make_arg_parser(description="Generate probability of progeny questions.")
 	parser.add_argument(
 		'--min', '--min-offspring', type=int, dest='min_offspring',
 		default=5, help='Minimum total number of offspring to consider.'
 	)
-
-	# Add argument for maximum offspring total
 	parser.add_argument(
 		'--max', '--max-offspring', type=int, dest='max_offspring',
 		default=10, help='Maximum total number of offspring to consider.'
 	)
-
-	# Parse the provided command-line arguments and return them
 	args = parser.parse_args()
 	return args
 
@@ -439,66 +412,16 @@ def main():
 
 	Workflow:
 	1. Parse command-line arguments.
-	2. Generate the output filename using script name and args.
+	2. Generate the output filename.
 	3. Generate formatted questions using write_question().
-	4. Shuffle and trim the list if exceeding max_questions.
-	5. Write all formatted questions to output file.
-	6. Print stats and status.
+	4. Write all formatted questions to the output file.
 	"""
 
 	# Parse arguments from the command line
 	args = parse_arguments()
 
-	# Generate the output file name based on the script name and arguments
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
-	outfile = (
-		'bbq'
-		f'-{script_name}'              # Add the script name to the file name
-		'-questions.txt'               # File extension
-	)
-
-	# Store all complete formatted questions
-	question_bank_list = []
-
-	# Initialize question counter
-	N = 0
-
-	# Create the specified number of questions
-	for _ in range(args.duplicates):
-		# Generate gene letters (if needed by question logic)
-		gene_letters_str = bptools.generate_gene_letters(3)
-
-		# Create a full formatted question (Blackboard format)
-		complete_question = write_question(N+1, args.min_offspring, args.max_offspring)
-
-		# Append question if successfully generated
-		if complete_question is not None:
-			N += 1
-			question_bank_list.append(complete_question)
-
-		if N >= args.max_questions:
-			break
-
-	# Show a histogram of answer distributions for MC/MA types
-	bptools.print_histogram()
-
-	# Shuffle and limit the number of questions if over max
-	if len(question_bank_list) > args.max_questions:
-		random.shuffle(question_bank_list)
-		question_bank_list = question_bank_list[:args.max_questions]
-
-	# Announce where output is going
-	print(f'\nWriting {len(question_bank_list)} question to file: {outfile}')
-
-	# Write all questions to file
-	write_count = 0
-	with open(outfile, 'w') as f:
-		for complete_question in question_bank_list:
-			write_count += 1
-			f.write(complete_question)
-
-	# Final status message
-	print(f'... saved {write_count} questions to {outfile}\n')
+	outfile = bptools.make_outfile()
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #===========================================================
 #===========================================================
@@ -508,8 +431,6 @@ if __name__ == '__main__':
 	main()
 
 ## THE END
-
-
 
 
 

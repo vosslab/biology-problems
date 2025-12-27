@@ -205,7 +205,7 @@ def _validate(all_buffer_dict):
 		# test floats
 		for pKa_value in buffer_dict['pKa_list']:
 			try:
-				pKa_string = 'pKa_value = {0:.2f}'.format(pKa_value)
+				float(pKa_value)
 			except ValueError:
 				print(pKa_value, 'is not a float')
 				sys.exit(1)

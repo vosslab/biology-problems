@@ -113,7 +113,7 @@ def validate_sugar_code(sugar_code: str) -> bool:
 		raise ValueError(f"'D' can only appear in penultimate position: {sugar_code}")
 
 	if not re.search(r'^(A|MK|M[RL]K)[RL]*[DL]M$', sugar_code):
-		raise ValueError(f"Invalid character '{c}' in sugar code: {sugar_code}")
+		raise ValueError(f"Invalid character in sugar code: {sugar_code}")
 
 	return True
 

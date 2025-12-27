@@ -87,3 +87,31 @@
   [molecular_biology-problems/seqlib.py](molecular_biology-problems/seqlib.py).
 - Added short descriptions for all `*lib.py` modules in
   [docs/FILE_STRUCTURE.md](docs/FILE_STRUCTURE.md).
+- Refactored [biochemistry-problems/quick_fatty_acid_colon_system.py](biochemistry-problems/quick_fatty_acid_colon_system.py)
+  to use batch helpers and `bptools` formatting.
+- Refactored [inheritance-problems/cytogenetic_notation-aneuploidy.py](inheritance-problems/cytogenetic_notation-aneuploidy.py)
+  to use shared argparse, question helpers, and unified output handling.
+- Refactored [laboratory-problems/serial_dilution_factor_mc.py](laboratory-problems/serial_dilution_factor_mc.py)
+  to use batch helpers and a computed default duplicate count.
+- Added migration notes for batch upgrades in
+  [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md).
+- Refactored [molecular_biology-problems/rna_transcribe_fill_blank.py](molecular_biology-problems/rna_transcribe_fill_blank.py)
+  to use shared argparse helpers and question collection.
+- Kept [biostatistics-problems/make_html_box_plot.py](biostatistics-problems/make_html_box_plot.py)
+  as a helper-only HTML utility (not a question generator).
+- Refactored [laboratory-problems/serial_dilution_factor_diluent_numeric.py](laboratory-problems/serial_dilution_factor_diluent_numeric.py)
+  to use batch helpers and a computed default duplicate count.
+- Added a migration note for raw HTML emitters in
+  [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md).
+- Refactored [laboratory-problems/percent_dilution_aliquot_numeric.py](laboratory-problems/percent_dilution_aliquot_numeric.py)
+  to use batch helpers and a fixed default duplicate count.
+- Fixed an HTML paragraph nesting error in
+  [laboratory-problems/percent_dilution_aliquot_numeric.py](laboratory-problems/percent_dilution_aliquot_numeric.py).
+- Refactored [inheritance-problems/blood_type_offspring.py](inheritance-problems/blood_type_offspring.py)
+  to use batch helpers with a shared parser and outfile builder.
+- Refactored [inheritance-problems/probabiliy_of_progeny.py](inheritance-problems/probabiliy_of_progeny.py)
+  to use shared argparse defaults and helper-based question collection.
+- Refactored [inheritance-problems/chisquare/chi_square_errors.py](inheritance-problems/chisquare/chi_square_errors.py)
+  to use shared argparse defaults and helper-based question collection.
+- Added a migration note for fixed-grid batch scripts in
+  [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md).

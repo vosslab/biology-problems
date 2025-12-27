@@ -86,6 +86,9 @@ Writers should accept the full `args` namespace for consistency.
 - Batch generators that return large fixed lists should set
   `max_questions_default=99` when calling `add_base_args(...)`.
 - Keep the global default `duplicate_runs=2` for quick testing.
+- If a legacy script computed `duplicates` from list size to target a specific
+  total count (for example, `99 // len(items)`), keep that behavior by passing
+  `duplicates_default=...` into `make_arg_parser(batch=True, ...)`.
 
 ### Histogram printing
 Helpers may print the answer histogram when MC/MA questions are present, instead
@@ -175,6 +178,28 @@ Batch generators:
 - YAML-driven tools that batch-generate across many files may keep their own flow.
 - Scripts that write directly to file inside loops can move to list returns over
   time when convenient.
+- Helper-only scripts that generate standalone HTML assets (for example,
+  `biostatistics-problems/make_html_box_plot.py`) should be excluded from the
+  upgrade list and left as utilities rather than wrapped in question helpers.
+
+## Migration notes from recent upgrades
+- Some scripts build questions from cross-products (for example, lists of chain
+  lengths and bond counts). Move those nested loops into
+  `write_question_batch(start_num, args)` and return a list so `main()` stays
+  minimal and the helper can cap output.
+- Scripts that previously computed their own default run count to hit an
+  approximate total can preserve that default by setting
+  `duplicates_default=...` when creating the parser.
+- When a script manually constructs Blackboard text (for example `"MC\t..."`),
+  replace that block with `bptools.formatBB_MC_Question(...)` so numbering,
+  histogram tracking, and formatting stay consistent.
+- For scripts that emit pure HTML (not an MC/MA/NUM/FIB Blackboard line), use
+  `collect_questions(..., print_histogram_flag=False)` and write the raw HTML
+  strings without a question formatter.
+- Scripts that generate a full grid of combinations (for example all parent
+  phenotype pairs) should be modeled as batch writers: move the nested loops
+  into `write_question_batch(start_num, args)` and return the full list so
+  `main()` stays minimal and batch caps apply consistently.
 
 ## Legacy patterns to modernize
 These are common in older scripts and are the first candidates for cleanup

@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 
-import os
 import copy
 import random
-import argparse
 
 import bptools
 import chisquarelib
@@ -333,30 +331,36 @@ def makeQuestion(error_type):
 
 #===========================================================
 #===========================================================
-# This function serves as the entry point for generating and saving questions.
-def main():
-	parser = argparse.ArgumentParser(description='Chi Square Question')
-	parser.add_argument('-d', '--duplicate-runs', type=int, dest='duplicate_runs',
-		help='number of questions to create', default=199)
-	args = parser.parse_args()
-
-	letters = "ABCDEFGHI"
+def write_question(N: int, args) -> str:
+	"""
+	Generate a formatted multiple-choice question for chi-square errors.
+	"""
 	max_error_types = len(error2choice)
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	N = 0
-	while N < args.duplicate_runs:
-		error_type = random.randint(0, max_error_types-1)
-		complete_question = makeQuestion(error_type)
-		answer_index = error2choice[error_type]
-		answer = choices[answer_index]
-		choices_list_copy = copy.copy(choices)
-		random.shuffle(choices_list_copy)
-		N += 1
-		bbformat = bptools.formatBB_MC_Question(N, complete_question, choices_list_copy, answer)
-		f.write(bbformat)
-	bptools.print_histogram()
+	error_type = random.randint(0, max_error_types - 1)
+	complete_question = makeQuestion(error_type)
+	answer_index = error2choice[error_type]
+	answer = choices[answer_index]
+	choices_list_copy = copy.copy(choices)
+	random.shuffle(choices_list_copy)
+	bbformat = bptools.formatBB_MC_Question(N, complete_question, choices_list_copy, answer)
+	return bbformat
+
+#===========================================================
+#===========================================================
+def parse_arguments():
+	"""
+	Parse command-line arguments.
+	"""
+	parser = bptools.make_arg_parser(description="Generate chi-square error questions.")
+	args = parser.parse_args()
+	return args
+
+#===========================================================
+#===========================================================
+def main():
+	args = parse_arguments()
+	outfile = bptools.make_outfile()
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 
 #===========================================================
