@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 
-import os
-import time
 import copy
 import random
 import seqlib
+import bptools
 
 dna_letters = ['A', 'C', 'G', 'T']
 
@@ -60,11 +59,9 @@ def make_choices(consensus_sequence, sequence_list):
 	scores = {}
 	max_score = 0
 	wrong_choices = []
-	print('========')
 	for i in range(num_sequences):
 		seq = sequence_list[i]
 		score = compare_sequence(consensus_sequence, seq)
-		print(seq, score)
 		if score > max_score and score != length:
 			max_score = score
 		scores[seq] = score
@@ -96,10 +93,6 @@ def make_choices(consensus_sequence, sequence_list):
 
 	choices = list(set(choices))
 	choices = sorted(choices, key=lambda k: -compare_sequence(k, consensus_sequence))
-	print('========')
-	for seq in choices:
-		score = compare_sequence(consensus_sequence, seq)
-		print(seq, score)
 	choices = choices[:5]
 
 	random.shuffle(choices)
@@ -127,7 +120,7 @@ def make_question(sequence_list):
 
 #============================
 #============================
-def make_alignment_sequences(consensus_sequence):
+def make_alignment_sequences(consensus_sequence, num_sequences):
 	sequence_list = []
 	for i in range(num_sequences):
 		sequence_list.append(consensus_sequence)
@@ -137,51 +130,44 @@ def make_alignment_sequences(consensus_sequence):
 
 #============================
 #============================
-def write_question(length, num_sequences):
-	consensus_sequence = make_sequence(length)
-	print("consensus_sequence", consensus_sequence)
-
-
-	sequence_list = make_alignment_sequences(consensus_sequence)
+def write_question(N, args):
+	consensus_sequence = make_sequence(args.length)
+	sequence_list = make_alignment_sequences(consensus_sequence, args.num_sequences)
 	while consensus_sequence in sequence_list:
-		print("WOAH")
-		time.sleep(1)
-		sequence_list = make_alignment_sequences(consensus_sequence)
-	
-	choices = make_choices(consensus_sequence, sequence_list)	
-	print('========')
-		
+		sequence_list = make_alignment_sequences(consensus_sequence, args.num_sequences)
+	choices = make_choices(consensus_sequence, sequence_list)
 	question = make_question(sequence_list)
-	bbtext = "MC\t{0}".format(question)
+
+	choices_list = []
 	for choice in choices:
-		status = "Incorrect"
-		if choice == consensus_sequence:
-			status = "Correct"
 		formed_choice = "<table>{0}</table> ".format(sequence_to_table_row(choice))
-		bbtext += "\t{0}\t{1}".format(formed_choice, status)
-	bbtext += "\n"
+		choices_list.append(formed_choice)
+
+	answer_text = "<table>{0}</table> ".format(sequence_to_table_row(consensus_sequence))
+	bbtext = bptools.formatBB_MC_Question(N, question, choices_list, answer_text)
 	return bbtext
 
 #============================
 #============================
 #============================
 #============================
+def parse_arguments():
+	parser = bptools.make_arg_parser(description='Generate consensus sequence questions.')
+	parser.add_argument('-l', '--length', type=int, dest='length', default=9,
+		help='Length of the aligned sequences.')
+	parser.add_argument('-n', '--num-sequences', type=int, dest='num_sequences', default=4,
+		help='Number of aligned sequences to show.')
+	args = parser.parse_args()
+	return args
+
+#============================
+def main():
+	args = parse_arguments()
+	outfile = bptools.make_outfile()
+	bptools.collect_and_write_questions(write_question, args, outfile)
+
+#============================
 if __name__ == '__main__':
-	length = 9
-	num_sequences = 4
-
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	for i in range(90):
-		bbtext = write_question(length, num_sequences)
-		f.write(bbtext)
-	f.close()
-
-
-		
-		
-		
-		
+	main()
 		
 	

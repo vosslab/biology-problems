@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import os
 import random
 import bptools
 
@@ -20,11 +19,11 @@ molecular_weights = {
 }
 
 def question_text(solute, volume, concentration):
-	question = "<p>How many milliliters (mL) of {0} you would need to make ".format(solute)
-	question += "{1} mL of a {2}% (v/v) {0} solution?</p> ".format(solute, volume, concentration)
+	question = f"<p>How many milliliters (mL) of {solute} you would need to make "
+	question += f"{volume} mL of a {concentration}% (v/v) {solute} solution?</p> "
 	mw = molecular_weights[solute]
-	question += "<p>The molecular weight of {0} is {1:.2f} g/mol. ".format(solute, mw)
-	question += "{0} is a liquid at room temperature.</p> ".format(solute.title())
+	question += f"<p>The molecular weight of {solute} is {mw:.2f} g/mol. "
+	question += f"{solute.title()} is a liquid at room temperature.</p> "
 	return question
 
 #==================================================
@@ -42,18 +41,34 @@ def get_vol_conc_answer():
 	answer = int(volume * concentration / 100.)
 	return volume, concentration, answer
 
-if __name__ == '__main__':
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	N = 0
+def write_question_batch(N, args):
+	question_list = []
+	question_number = N
 	for solute in liquids:
-		for i in range(13):
-			N += 1
-			volume, concentration, answer = get_vol_conc_answer()
-			q = question_text(solute, volume, concentration)
-			tolerance = 0.9
-			bbf = bptools.formatBB_NUM_Question(N, q, answer, tolerance)
-			f.write(bbf)
-	f.close()
-	bptools.print_histogram()
+		volume, concentration, answer = get_vol_conc_answer()
+		q = question_text(solute, volume, concentration)
+		tolerance = 0.9
+		bbf = bptools.formatBB_NUM_Question(question_number, q, answer, tolerance)
+		question_list.append(bbf)
+		question_number += 1
+	return question_list
+
+#==================================================
+def parse_arguments():
+	parser = bptools.make_arg_parser(
+		description='Generate volume/volume numeric questions.',
+		batch=True
+	)
+	args = parser.parse_args()
+	return args
+
+#==================================================
+def main():
+	args = parse_arguments()
+	outfile = bptools.make_outfile()
+	questions = bptools.collect_question_batches(write_question_batch, args)
+	bptools.write_questions_to_file(questions, outfile)
+
+#==================================================
+if __name__ == '__main__':
+	main()

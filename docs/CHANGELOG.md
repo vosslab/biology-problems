@@ -55,3 +55,35 @@
 - Switched `inheritance-problems/unique_cross_genotypes.py` and
   `inheritance-problems/unique_cross_phenotypes.py` to `make_arg_parser()`.
 - Added `tabulate` to [pip_requirements.txt](pip_requirements.txt).
+- Refactored [dna_profiling-problems/hla_genotype.py](dna_profiling-problems/hla_genotype.py)
+  to use standard argparse helpers and `collect_and_write_questions`.
+- Refactored [cell_biology-problems/cell_surf-to-vol_ratio.py](cell_biology-problems/cell_surf-to-vol_ratio.py)
+  to use standard argparse helpers and `collect_and_write_questions`.
+- Refactored [laboratory-problems/vol-vol_solution_numeric.py](laboratory-problems/vol-vol_solution_numeric.py)
+  to use batch helpers and rely on `-d/--duplicate-runs` for per-liquid repeats.
+- Added a legacy-modernization checklist section to
+  [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md).
+- Refactored [biostatistics-problems/descriptive_stats_google_sheet.py](biostatistics-problems/descriptive_stats_google_sheet.py)
+  to use shared argparse and helper-driven question collection.
+- Refactored [molecular_biology-problems/consensus_sequence_MC.py](molecular_biology-problems/consensus_sequence_MC.py)
+  to use shared helpers, standardized args, and Blackboard MC formatting.
+- Refactored [inheritance-problems/dihybrid_cross_epistatic_gene_interactions.py](inheritance-problems/dihybrid_cross_epistatic_gene_interactions.py)
+  to use shared helpers and standardized args.
+- Fixed prime-mode complementary sequence answers to use reverse complements and
+  consistent 5'->3' display in
+  [molecular_biology-problems/complementary_sequences.py](molecular_biology-problems/complementary_sequences.py).
+- Added `reverse_complement()` to
+  [molecular_biology-problems/seqlib.py](molecular_biology-problems/seqlib.py).
+- Added an answer check script at
+  [tests/check_complementary_sequences_prime.py](tests/check_complementary_sequences_prime.py).
+- Refactored [molecular_biology-problems/complementary_sequences.py](molecular_biology-problems/complementary_sequences.py)
+  to use the shared argparse and helper workflow.
+- Updated `complementary_sequences.py` to use `-d/--duplicate-runs` and
+  `-x/--max-questions` instead of a custom `--num-sequences` argument.
+- Added inline HTML style presets in
+  [molecular_biology-problems/seqlib.py](molecular_biology-problems/seqlib.py)
+  for consistent table borders and monospace cells.
+- Added simple assertion tests for core helpers in
+  [molecular_biology-problems/seqlib.py](molecular_biology-problems/seqlib.py).
+- Added short descriptions for all `*lib.py` modules in
+  [docs/FILE_STRUCTURE.md](docs/FILE_STRUCTURE.md).

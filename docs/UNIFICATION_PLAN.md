@@ -176,6 +176,20 @@ Batch generators:
 - Scripts that write directly to file inside loops can move to list returns over
   time when convenient.
 
+## Legacy patterns to modernize
+These are common in older scripts and are the first candidates for cleanup
+when a file is otherwise being edited.
+
+- Direct-to-file loops in `main()` instead of returning question strings and
+  using helpers.
+- Custom `argparse` flags for `duplicates`/`max_questions` (or missing them),
+  which creates inconsistent defaults and warnings.
+- Manual outfile construction in `main()` that repeats the bbq naming logic.
+- Histogram printing scattered across scripts instead of using the helper.
+- Scripts that embed both attempts and cap logic in nested loops that are hard
+  to scan (the helper handles this).
+- Batch scripts that generate large fixed lists without a default `-x` cap.
+
 ## Open questions
 - Should helpers accept a `start_index` override for special cases?
 - Should histogram printing be toggled by a helper flag or always auto-detected?

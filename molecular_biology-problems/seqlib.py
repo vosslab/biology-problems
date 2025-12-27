@@ -2,6 +2,13 @@ import sys
 import copy
 import random
 
+# Inline style presets for Blackboard-safe HTML
+TABLE_STYLE = "border-collapse: collapse; border: 1px solid #999;"
+INLINE_TABLE_STYLE = "border-collapse: collapse; border: 1px solid #999; display:inline-table;"
+CELL_STYLE = "border: 1px solid #999; padding: 2px 6px; text-align: center; font-family: monospace; font-size: 12pt;"
+PRIME_CELL_STYLE = "border: 1px solid #999; padding: 2px 6px; text-align: center; font-family: monospace; font-size: 12pt;"
+COMMA_CELL_STYLE = "border: 1px solid #999; padding: 2px 6px; text-align: center; font-family: monospace; font-size: 12pt;"
+
 arbitrary_codes = {
 	'A': ('A'),
 	'B': ('C', 'G', 'T',), # not A
@@ -90,32 +97,32 @@ def colorNucleotideForeground(nt):
 #==========================
 def DNA_Table(top_sequence, bottom_sequence=None, left_primes=True, right_primes=True):
 	table = '<!-- {0} --> '.format(''.join(top_sequence))
-	table += ' <table style="border-collapse: collapse; border: 1px solid silver;"> '
+	table += ' <table style="{0}"> '.format(TABLE_STYLE)
 	#===========
 	table += ' <tr>'
 	if left_primes is True:
-		table += '<td>5&prime;&ndash;</td>'
+		table += '<td style="{0}">5&prime;&ndash;</td>'.format(PRIME_CELL_STYLE)
 	else:
-		table += '<td>&ndash;</td>'
+		table += '<td style="{0}">&ndash;</td>'.format(PRIME_CELL_STYLE)
 	table += makeHtmlTDRow(top_sequence)
 	if right_primes is True:
-		table += '<td>&ndash;3&prime;</td>'
+		table += '<td style="{0}">&ndash;3&prime;</td>'.format(PRIME_CELL_STYLE)
 	else:
-		table += '<td>&ndash;</td>'
+		table += '<td style="{0}">&ndash;</td>'.format(PRIME_CELL_STYLE)
 	table += '</tr> '
 	#===========
 	if bottom_sequence is None:
 		bottom_sequence = complement(top_sequence)
 	table += ' <tr>'
 	if left_primes is True:
-		table += '<td>3&prime;&ndash;</td>'
+		table += '<td style="{0}">3&prime;&ndash;</td>'.format(PRIME_CELL_STYLE)
 	else:
-		table += '<td>&ndash;</td>'
+		table += '<td style="{0}">&ndash;</td>'.format(PRIME_CELL_STYLE)
 	table += makeHtmlTDRow(bottom_sequence)
 	if right_primes is True:
-		table += '<td>&ndash;5&prime;</td>'
+		table += '<td style="{0}">&ndash;5&prime;</td>'.format(PRIME_CELL_STYLE)
 	else:
-		table += '<td>&ndash;</td>'
+		table += '<td style="{0}">&ndash;</td>'.format(PRIME_CELL_STYLE)
 	table += '</tr> '
 	#===========
 	table += '</table> '
@@ -125,18 +132,18 @@ def DNA_Table(top_sequence, bottom_sequence=None, left_primes=True, right_primes
 #=====================
 def Single_Strand_Table(ss_sequence_str, fivetothree=True, separate=3):
 	table = '<!-- {0} --> '.format(''.join(ss_sequence_str))
-	table += '&nbsp;<table style="border-collapse: collapse; border: 0px; display:inline-table"> '
+	table += '&nbsp;<table style="{0}"> '.format(INLINE_TABLE_STYLE)
 	table += ' <tr>'
 	if fivetothree is True:
-		table += '<td>5&prime;&ndash;</td>'
+		table += '<td style="{0}">5&prime;&ndash;</td>'.format(PRIME_CELL_STYLE)
 	else:
-		table += '<td>3&prime;&ndash;</td>'
+		table += '<td style="{0}">3&prime;&ndash;</td>'.format(PRIME_CELL_STYLE)
 	ss_sequence_list = list(ss_sequence_str)
 	table += makeHtmlTDRow(ss_sequence_list, separate)
 	if fivetothree is True:
-		table += '<td>&ndash;3&prime;</td>'
+		table += '<td style="{0}">&ndash;3&prime;</td>'.format(PRIME_CELL_STYLE)
 	else:
-		table += '<td>&ndash;5&prime;</td>'
+		table += '<td style="{0}">&ndash;5&prime;</td>'.format(PRIME_CELL_STYLE)
 	table += '</tr> '
 	table += '</table> '
 	return table
@@ -145,7 +152,7 @@ def Single_Strand_Table(ss_sequence_str, fivetothree=True, separate=3):
 #=====================
 def Single_Strand_Table_No_Primes(ss_sequence_str, separate=3):
 	table = '<!-- {0} --> '.format(''.join(ss_sequence_str))
-	table += '&nbsp;<table style="border-collapse: collapse; border: 0px; display:inline-table"> '
+	table += '&nbsp;<table style="{0}"> '.format(INLINE_TABLE_STYLE)
 	table += ' <tr>'
 	ss_sequence_list = list(ss_sequence_str)
 	table += makeHtmlTDRow(ss_sequence_list, separate)
@@ -161,7 +168,7 @@ def Primer_Table(primer):
 #==========================
 def makeHtmlTable(sequence_list, separate=3):
 	table = '<!-- {0} --> '.format(''.join(sequence_list))
-	table += '<table style="border-collapse: collapse; border: 1px solid silver;"> '
+	table += '<table style="{0}"> '.format(TABLE_STYLE)
 	for j in range(len(sequence_list)):
 		table += ' <tr>'
 		table += makeHtmlTDRow(sequence_list[j], separate)
@@ -175,11 +182,12 @@ def makeHtmlTDRow(sequence, separate=3):
 	#print(sequence)
 	for i in range(len(sequence)):
 		if i > 0 and i % separate == 0:
-			htmlrow += "<td>&nbsp;,&nbsp;</td> "
+			htmlrow += "<td style=\"{0}\">&nbsp;,&nbsp;</td> ".format(COMMA_CELL_STYLE)
 		nt = sequence[i]
-		htmlrow += "<td {1}>&nbsp;{0}&nbsp;</td> ".format(
+		htmlrow += "<td style=\"{2}\" {1}>&nbsp;{0}&nbsp;</td> ".format(
 			colorNucleotideForeground(nt),
-			colorNucleotideBackground(nt))
+			colorNucleotideBackground(nt),
+			CELL_STYLE)
 	return htmlrow
 
 #==========================
@@ -194,6 +202,11 @@ def complement(seq: str) -> str:
 	"""Return the complement of a DNA sequence (A<->T, G<->C)."""
 	trans_table = str.maketrans("ATGC", "TACG")
 	return seq.translate(trans_table)
+
+#=========================
+def reverse_complement(seq: str) -> str:
+	"""Return the reverse complement of a DNA sequence."""
+	return flip(complement(seq))
 
 #=========================
 def flip(seq: str) -> str:
@@ -318,3 +331,10 @@ def translate(rna):
 		peptide += amino_acid
 	return peptide
 
+# Simple assertion tests for core helpers
+assert complement("ATGC") == "TACG"
+assert flip("ATGC") == "CGTA"
+assert reverse_complement("ATGC") == "GCAT"
+assert insertCommas("ATGC", separate=2) == "AT,GC"
+assert transcribe("ATGC") == "AUGC"
+assert translate("AUGGCU") == "MA"

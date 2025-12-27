@@ -1,11 +1,6 @@
 #!/usr/bin/env python3
 
-import os
-import sys
-import math
-import time
 import random
-import argparse
 
 import bptools
 
@@ -152,7 +147,7 @@ def makeChoices(cells):
 
 #======================================
 #======================================
-def writeQuestion(N):
+def write_question(N, args):
 	cells = None
 	while cells is None:
 		cells = makeCells()
@@ -173,24 +168,23 @@ def writeQuestion(N):
 #======================================
 #======================================
 #======================================
-if __name__ == "__main__":
-	parser = argparse.ArgumentParser(description='Process some integers.')
-	parser.add_argument('-n', '--num-questions', metavar='#', type=int, dest='num_questions',
-		help='number of questions to create', default=199)
+def parse_arguments():
+	parser = bptools.make_arg_parser(description='Generate surface area to volume questions.')
 	args = parser.parse_args()
+	return args
 
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	N = 0
-	for i in range(args.num_questions):
-		bb_question = writeQuestion(N)
-		if bb_question is not None:
-			N += 1
-			f.write(bb_question)
-	f.close()
-	bptools.print_histogram()
-	print("Wrote", N, "of", args.num_questions, "questions")
+#======================================
+#======================================
+def main():
+	args = parse_arguments()
+	outfile = bptools.make_outfile()
+	bptools.collect_and_write_questions(write_question, args, outfile)
+
+
+#======================================
+#======================================
+if __name__ == "__main__":
+	main()
 
 
 #======================================

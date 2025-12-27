@@ -2,13 +2,8 @@
 # ^^ Specifies the Python3 environment to use for script execution
 
 # Import built-in Python modules
-# Provides functions for interacting with the operating system
-import os
-# Provides functions to generate random numbers and selections
-import random
-# Provides tools to parse command-line arguments
-import argparse
 import copy
+import random
 
 # Import external modules (pip-installed)
 # No external modules are used here currently
@@ -62,40 +57,6 @@ def makeQuestion(gene_id, color_set, letter1, letter2):
 
 #===================
 #===================
-def writeQuestion(N, gene_id, color_set):
-	# make the question
-	letter_pool = copy.copy(crossinglib.gene_letters)
-	random.shuffle(letter_pool)
-	two_letters = [letter_pool.pop(), letter_pool.pop()]
-	two_letters.sort()
-	letter1 = two_letters[0]
-	letter2 = two_letters[1]
-	question_text = makeQuestion(gene_id, color_set, letter1, letter2)
-
-
-
-	# write the question
-	choice_letters = "ABCDEFGHI"
-	file_handle.write("MC\t{0}".format(question_text))
-	answer = gene_id
-	gene_ids = list(crossinglib.gene_interaction_names.keys())
-	random.shuffle(gene_ids)
-	for k, sub_gene_id in enumerate(gene_ids):
-		if sub_gene_id == answer:
-			prefix = "*"
-			status = "Correct"
-		else:
-			prefix = ""
-			status = "Incorrect"
-		name = crossinglib.gene_interaction_names[sub_gene_id]
-		description = crossinglib.gene_type_description[sub_gene_id]
-		choice_text = "These two genes show <strong>{0}</strong>. {1}.".format(name, description)
-		file_handle.write("\t{0}\t{1}".format(choice_text, status))
-		print("{0}{1}. {2}".format(prefix, choice_letters[k], choice_text))
-	file_handle.write("\n")
-
-#===================
-#===================
 def gene_id_to_choice_text(gene_id: str) -> str:
 	"""
 	Converts a gene interaction ID to a formatted choice text.
@@ -113,7 +74,7 @@ def gene_id_to_choice_text(gene_id: str) -> str:
 
 #===================
 #===================
-def write_question(N: int, answer_gene_id: str, color_set: list, num_choices: int) -> str:
+def build_question(N: int, answer_gene_id: str, color_set: list, num_choices: int) -> str:
 	"""
 	Creates a formatted MC question about gene interaction types.
 
@@ -154,6 +115,16 @@ def write_question(N: int, answer_gene_id: str, color_set: list, num_choices: in
 	complete_question = bptools.formatBB_MC_Question(N, question_text, choices_list, answer_text)
 	return complete_question
 
+#===================
+#===================
+def write_question(N: int, args) -> str:
+	all_gene_ids = list(crossinglib.gene_interaction_names.keys())
+	all_color_sets = crossinglib.get_four_color_sets()
+	gene_id = all_gene_ids[(N - 1) % len(all_gene_ids)]
+	color_set = random.choice(all_color_sets)
+	complete_question = build_question(N, gene_id, color_set, args.num_choices)
+	return complete_question
+
 #===========================================================
 #===========================================================
 # This function handles the parsing of command-line arguments.
@@ -162,31 +133,10 @@ def parse_arguments():
 	Parses command-line arguments for the script.
 
 	Returns:
-		argparse.Namespace: Parsed arguments with attributes `duplicates`,
-		`num_choices`, and `question_type`.
+		argparse.Namespace: Parsed arguments with base args and `num_choices`.
 	"""
-	# Create an argument parser with a description of the script's functionality
-	parser = argparse.ArgumentParser(description="Generate questions.")
-
-	# Add an argument to specify the number of duplicate questions to generate
-	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='Number of duplicate runs to do or number of questions to create',
-		default=1
-	)
-
-	parser.add_argument(
-		'-x', '--max-questions', type=int, dest='max_questions',
-		default=99, help='Max number of questions'
-	)
-
-	# Add an argument to specify the number of answer choices for each question
-	parser.add_argument(
-		'-c', '--num_choices', type=int, default=4, dest='num_choices',
-		help="Number of choices to create."
-	)
-
-	# Parse the provided command-line arguments and return them
+	parser = bptools.make_arg_parser(description="Generate epistatic gene interaction questions.")
+	parser = bptools.add_choice_args(parser, num_choices_default=4)
 	args = parser.parse_args()
 	return args
 
@@ -197,57 +147,8 @@ def main():
 	# Parse arguments from the command line
 	args = parse_arguments()
 
-	# Generate the output file name based on the script name and arguments
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
-	outfile = (
-		'bbq'
-		f'-{script_name}'              # Add the script name to the file name
-		f'-{args.num_choices}_choices' # Append number of choices
-		'-questions.txt'               # File extension
-	)
-
-	# Store all complete formatted questions
-	question_bank_list = []
-
-	# Initialize question counter
-	N = 0
-
-	# these are just numbers
-	all_gene_ids = list(crossinglib.gene_interaction_names.keys())
-	all_color_sets = crossinglib.get_four_color_sets()
-	#print(all_color_sets)
-
-	# Create the specified number of questions
-	for _ in range(args.duplicates):
-		gene_id = N % len(all_gene_ids)
-		color_set = random.choice(all_color_sets)
-
-		# Create a full formatted question (Blackboard format)
-		complete_question = write_question(N+1, gene_id, color_set, args.num_choices)
-
-		# Append question if successfully generated
-		if complete_question is not None:
-			N += 1
-			question_bank_list.append(complete_question)
-
-	# Show a histogram of answer distributions for MC/MA types
-	bptools.print_histogram()
-
-	# Shuffle and limit the number of questions if over max
-	if len(question_bank_list) > args.max_questions:
-		random.shuffle(question_bank_list)
-		question_bank_list = question_bank_list[:args.max_questions]
-
-	# Announce where output is going
-	print(f'\nWriting {N} question to file: {outfile}')
-
-	# Write all questions to file
-	with open(outfile, 'w') as f:
-		for complete_question in question_bank_list:
-			f.write(complete_question)
-
-	# Final status message
-	print(f'... saved {N} questions to {outfile}\n')
+	outfile = bptools.make_outfile(f"{args.num_choices}_choices")
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #===========================================================
 #===========================================================
@@ -257,7 +158,3 @@ if __name__ == '__main__':
 	main()
 
 ## THE END
-
-
-
-

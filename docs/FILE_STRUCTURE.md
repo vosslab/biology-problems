@@ -25,6 +25,52 @@
 - `TEMPLATE.py`: starting point for new generators (argparse + output pattern).
 - `find_all_imports.py`: helper for scanning Python imports when updating deps.
 
+## Library modules (`*lib.py`)
+- `biochemistry-problems/aminoacidlib.py`: amino acid structure helpers for building
+  HTML formulas and structural parts used in amino acid questions.
+- `biochemistry-problems/buffers/bufferslib.py`: buffer system data and utilities
+  (pKa ranges, states, and color sets) used by buffer-range and buffer-state items.
+- `biochemistry-problems/carbohydrates_classification/sugarlib.py`: carbohydrate
+  nomenclature and HTML table helpers for sugar structures and classification.
+- `biochemistry-problems/enzymelib.py`: generates enzyme pH/temperature tables and
+  randomized enzyme sets for activity and optimization questions.
+- `biochemistry-problems/metaboliclib.py`: colored letter utilities for labeling
+  metabolic pathway steps and mapping questions.
+- `biochemistry-problems/proteinlib.py`: parses protein pI/MW data and provides
+  helpers for isoelectric point and protein comparison questions.
+- `biochemistry-problems/PUBCHEM/aminoacidlib.py`: amino acid formula parsing and
+  similarity helpers used with PubChem-derived data and CRC utilities.
+- `biochemistry-problems/PUBCHEM/moleculelib.py`: SMILES/CRC helpers and inline
+  HTML scaffolding for molecule rendering (RDKit JS).
+- `biochemistry-problems/PUBCHEM/pubchemlib.py`: PubChem REST client with YAML
+  caching for molecule lookups and metadata retrieval.
+- `dna_profiling-problems/gellib.py`: gel electrophoresis band generation and
+  image helpers built on PIL for profiling questions.
+- `inheritance-problems/chisquare/chisquarelib.py`: chi-square helpers (p-values
+  and critical values) used by statistics and genetics tests.
+- `inheritance-problems/deletionlib.py`: deletion mapping and ordering helpers
+  used in mutant analysis problems.
+- `inheritance-problems/disorderlib.py`: genetic disorder scenario generator that
+  loads `data/genetic_disorders.yml` and builds multi-disorder cases.
+- `inheritance-problems/genemapping/genemaplib.py`: gene mapping helpers, colored
+  phenotype tables, and recombination utilities.
+- `inheritance-problems/genemapping/tetradlib.py`: tetrad analysis table helpers
+  layered on `genemaplib` for meiosis mapping questions.
+- `inheritance-problems/genetrees/Deprecated/classic_phylolib/phylolib.py`:
+  deprecated phylogeny helper (classic phylolib wrappers).
+- `inheritance-problems/genotypelib.py`: genotype formatting, letter generation,
+  and combinatorics helpers for cross problems.
+- `inheritance-problems/hybridcrosslib.py`: dihybrid/epistasis utilities, ratio
+  dictionaries, and table construction for interaction problems.
+- `inheritance-problems/pedigree_lib.py`: pedigree symbols, HTML glyph mappings,
+  and diagram helpers for pedigree questions.
+- `inheritance-problems/pointtestcrosslib.py`: deprecated point-testcross helper
+  (use `genemaplib.py` and `genemapclass.py` instead).
+- `molecular_biology-problems/restrictlib.py`: restriction enzyme lookup and
+  analysis helpers built on Biopython and web queries.
+- `molecular_biology-problems/seqlib.py`: DNA/RNA sequence utilities for
+  complements, transcription/translation, and HTML table rendering.
+
 ## Data and content banks
 - `data/`: YAML/CSV/HTML/text inputs and reference tables used by generators.
 - `matching_sets/`: YAML banks and templates for matching questions.

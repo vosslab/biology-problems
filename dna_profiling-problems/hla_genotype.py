@@ -2,21 +2,10 @@
 # ^^ Specifies the Python3 environment to use for script execution
 
 # Import built-in Python modules
-# Provides functions for interacting with the operating system
-import os
-# Provides functions to generate random numbers and selections
-import random
-# Provides tools to parse command-line arguments
-import argparse
-import sys
 import copy
-
-# Import external modules (pip-installed)
-# No external modules are used here currently
+import random
 
 # Import local modules from the project
-# Provides custom functions, such as question formatting and other utilities
-
 import bptools
 
 #===============================
@@ -132,62 +121,58 @@ def generateQuestion(marker_collection):
 
 #===============================
 #===============================
-def main():
-	parser = argparse.ArgumentParser(description='Generate HLA genotype questions.')
-	parser.add_argument('-n', '--num_markers', type=int, default=2, help='Number of markers.')
-	parser.add_argument('-x', '--max_questions', type=int, default=25, help='Maximum number of questions to generate.')
-	parser.add_argument('-c', '--color', dest='use_color', action='store_true', default=True, help='Add color to choices.')
-	parser.add_argument('-b', '--bw', dest='use_color', action='store_false', default=True, help='Black and White (default).')
-	args = parser.parse_args()
-	num_markers = min(args.num_markers, 7)  # Restricting num_markers to a maximum of 7
+def write_question(N, args):
+	used_markers = {}
+	mom1 = createMarker(args.num_markers, used_markers)
+	mom2 = createMarker(args.num_markers, used_markers)
+	dad1 = createMarker(args.num_markers, used_markers)
+	dad2 = createMarker(args.num_markers, used_markers)
+	bw_marker_collection = [mom1, mom2, dad1, dad2]
 
-	# Generate the output file name based on the script name and parameters
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
-	color_mode = 'color' if args.use_color else 'black'
-	outfile = (
-		f'bbq-{script_name}'                  # script name
-		f'-{num_markers}_markers'             # number of markers
-		f'-{color_mode}'                     # color or bw
-		'-questions.txt'                     # file extension
+	if args.use_color:
+		colors = bptools.default_color_wheel(num_colors=4)
+		mom1c = addColorToMarkers(mom1, colors[0])
+		mom2c = addColorToMarkers(mom2, colors[1])
+		dad1c = addColorToMarkers(dad1, colors[2])
+		dad2c = addColorToMarkers(dad2, colors[3])
+		marker_collection = [mom1c, mom2c, dad1c, dad2c]
+	else:
+		marker_collection = bw_marker_collection
+
+	question_string = generateQuestion(marker_collection)
+	answer_str, choices_list = generateChoices(marker_collection)
+
+	complete_question = bptools.formatBB_MC_Question(
+		N,
+		question_string,
+		choices_list,
+		answer_str
 	)
+	return complete_question
 
-	print(f'writing to file: {outfile}')
+#===============================
+#===============================
+def parse_arguments():
+	parser = bptools.make_arg_parser(description='Generate HLA genotype questions.')
+	parser.add_argument('-n', '--num-markers', type=int, dest='num_markers',
+		default=2, help='Number of markers.')
+	parser.add_argument('-c', '--color', dest='use_color', action='store_true',
+		help='Use colored markers in the question and choices.')
+	parser.add_argument('-b', '--bw', '--black-white', dest='use_color', action='store_false',
+		help='Use black and white marker text.')
+	parser.set_defaults(use_color=True)
+	args = parser.parse_args()
+	return args
 
-	N = 0  # Initialize question counter
-	with open(outfile, 'w') as f:  # Using 'with' for better file handling
-		for i in range(args.max_questions):
-			used_markers = {}
-			N += 1  # Increment question counter
-			mom1 = createMarker(num_markers, used_markers)
-			mom2 = createMarker(num_markers, used_markers)
-			dad1 = createMarker(num_markers, used_markers)
-			dad2 = createMarker(num_markers, used_markers)
-			bw_marker_collection = [mom1, mom2, dad1, dad2]
-			colors = bptools.default_color_wheel(num_colors=4)
-			mom1c = addColorToMarkers(mom1, colors[0])
-			mom2c = addColorToMarkers(mom2, colors[1])
-			dad1c = addColorToMarkers(dad1, colors[2])
-			dad2c = addColorToMarkers(dad2, colors[3])
-			color_marker_collection = [mom1c, mom2c, dad1c, dad2c]
+#===============================
+#===============================
+def main():
+	args = parse_arguments()
+	args.num_markers = min(args.num_markers, 7)
 
-			question_string = generateQuestion(color_marker_collection)
-			if args.use_color is True:
-				answer_str, choices_list = generateChoices(color_marker_collection)
-			else:
-				answer_str, choices_list = generateChoices(bw_marker_collection)
-
-			complete_question = bptools.formatBB_MC_Question(N, question_string, choices_list, answer_str)
-
-			# Write the question to the file if it was generated successfully
-			if complete_question is not None:
-				N += 1
-				f.write(complete_question)
-
-	# If the question type is multiple choice, print a histogram of results
-	bptools.print_histogram()
-
-	# Print a message indicating how many questions were saved
-	print(f'saved {N} questions to {outfile}')
+	color_mode = 'color' if args.use_color else 'black'
+	outfile = bptools.make_outfile(f"{args.num_markers}_markers", color_mode)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #===========================================================
 #===========================================================

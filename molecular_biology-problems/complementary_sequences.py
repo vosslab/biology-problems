@@ -1,13 +1,9 @@
 #!/usr/bin/env python3
 
-import os
-import sys
 import random
-import argparse
 
-#local
-import seqlib
 import bptools
+import seqlib
 
 #============================
 #============================
@@ -124,14 +120,31 @@ def write_directionless_mc_question(N, seqlen):
 #============================
 #============================
 #============================
+def prime_answer_sequence(question_seq):
+	return seqlib.reverse_complement(question_seq)
+
+#============================
+#============================
+def prime_fib_answers(answer_seq):
+	answer1 = answer_seq
+	answer1c = seqlib.insertCommas(answer1)
+	answer2 = "5'-{0}-3'".format(answer1)
+	answer2c = "5'-{0}-3'".format(answer1c)
+	answer3 = "5&prime;-{0}-3&prime;".format(answer1)
+	answer3c = "5&prime;-{0}-3&prime;".format(answer1c)
+	answers_list = [answer1, answer2, answer1c, answer2c, answer3, answer3c]
+	return answers_list
+
+#============================
+#============================
 def write_prime_fib_question(N, seqlen):
 	#============================
 	question_seq = seqlib.makeSequence(seqlen)
-	answer_seq = seqlib.complement(question_seq)
+	answer_seq = prime_answer_sequence(question_seq)
 	if random.randint(1,2) == 1:
-		question_table = seqlib.Single_Strand_Table(question_seq, fivetothree=False)
+		question_table = seqlib.Single_Strand_Table(question_seq, fivetothree=True)
 	else:
-		question_table = seqlib.Single_Strand_Table(seqlib.flip(question_seq), fivetothree=True)
+		question_table = seqlib.Single_Strand_Table(seqlib.flip(question_seq), fivetothree=False)
 
 	question_text = dna_complement_context()
 	question_text += question_table
@@ -141,14 +154,7 @@ def write_prime_fib_question(N, seqlen):
 	question_text += "<p>Write your answer in the 5&prime; -> 3&prime; direction only.</p>"
 
 	#============================
-	answer1 = answer_seq
-	answer1c = seqlib.insertCommas(answer1)
-	answer2 = "5'-{0}-3'".format(answer1)
-	answer2c = "5'-{0}-3'".format(answer1c)
-	answer3 = "5&prime;-{0}-3&prime;".format(answer1)
-	answer3c = "5&prime;-{0}-3&prime;".format(answer1c)
-
-	answers_list = [answer1, answer2, answer1c, answer2c, answer3, answer3c]
+	answers_list = prime_fib_answers(answer_seq)
 
 	bbformat = bptools.formatBB_FIB_Question(N, question_text, answers_list)
 	return bbformat
@@ -173,8 +179,11 @@ def write_prime_mc_question(N, seqlen):
 	else:
 		choice_fivetothree = False
 
-	answer_seq = seqlib.complement(question_seq)
-	answer_table = seqlib.Single_Strand_Table(answer_seq, choice_fivetothree)
+	answer_seq = prime_answer_sequence(question_seq)
+	if choice_fivetothree is True:
+		answer_table = seqlib.Single_Strand_Table(answer_seq, True)
+	else:
+		answer_table = seqlib.Single_Strand_Table(seqlib.flip(answer_seq), False)
 
 	question_text = dna_complement_context()
 	question_text += question_table
@@ -200,7 +209,11 @@ def write_prime_mc_question(N, seqlen):
 
 	choice_table_list = []
 	for choice in choice_list:
-		choice_table = seqlib.Single_Strand_Table(choice, choice_fivetothree)
+		if choice_fivetothree is True:
+			display_choice = choice
+		else:
+			display_choice = seqlib.flip(choice)
+		choice_table = seqlib.Single_Strand_Table(display_choice, choice_fivetothree)
 		choice_table_list.append(choice_table)
 
 	#============================
@@ -229,74 +242,48 @@ def choose_question(N, seqlen, question_type, direction_mode):
 #============================
 #============================
 #============================
-if __name__ == '__main__':
-	# Initialize the argparse object with a description
-	parser = argparse.ArgumentParser(
-		description="A script to set sequence length and number of sequences.")
+def write_question(N, args):
+	return choose_question(N, args.seqlen, args.question_type, args.direction_mode)
 
-	# Create a mutually exclusive group for question types
-	question_group = parser.add_mutually_exclusive_group(required=True)
-	# Add question type argument with choices
-	question_group.add_argument('-q', '--question-type', dest='question_type', type=str,
-		choices=('mc', 'fib'),
-		help='Set the question type: multiple choice (mc) or fill-in-the-blank (fib).')
-	# Add flags for multiple-choice and fill-in-the-blank question types
-	question_group.add_argument('--mc', dest='question_type', action='store_const', const='mc',
-		help='Set question type to multiple choice.')
-	question_group.add_argument('--fib', dest='question_type', action='store_const', const='fib',
-		help='Set question type to fill-in-the-blank.')
+#============================
+#============================
+def parse_arguments():
+	parser = bptools.make_arg_parser(description="Generate complementary sequence questions.")
+	parser = bptools.add_question_format_args(
+		parser,
+		types_list=['mc', 'fib'],
+		dest='question_type',
+		required=True
+	)
 
-	# Create a mutually exclusive group for direction modes
 	direction_group = parser.add_mutually_exclusive_group(required=True)
-	# Add direction argument with choices
-	direction_group.add_argument('-d', '--direction', dest='direction_mode', type=str,
+	direction_group.add_argument('--direction', dest='direction_mode', type=str,
 		choices=('directionless', 'prime'),
 		help="Set the sequence direction: 'directionless' or 'prime' for 5' and 3' ends.")
-	# Quick flags for direction mode
-	direction_group.add_argument('--none', '--directionless', dest='direction_mode',
+	direction_group.add_argument('--directionless', dest='direction_mode',
 		action='store_const', const='directionless',
 		help="Set the sequence direction to 'directionless'.")
 	direction_group.add_argument('--prime', dest='direction_mode', action='store_const',
 		const='prime', help="Set the sequence direction to 'prime' for 5' and 3' ends.")
 
-	# Add other individual arguments here
 	parser.add_argument('-s', '--seqlen', dest='seqlen', type=int, default=9,
 		help='Set the length of the sequence. Default is 9.')
-	parser.add_argument('-n', '--num-sequences', dest='num_sequences', type=int, default=24,
-		help='Set the number of sequences. Default is 24.')
 
-	# Parse the command-line arguments
 	args = parser.parse_args()
+	return args
 
-	if args.direction_mode == "prime" and args.question_type == "mc":
-		raise NotImplementedError("this mode is broken and needs fixed")
+#============================
+#============================
+def main():
+	args = parse_arguments()
 
-	#===========================
-	# Check for Invalid Inputs
-	#===========================
-	# Check if the sequence length is too long
 	if args.seqlen > 18:
-		print('sequence length too long', args.seqlen)
-		sys.exit(1)
+		raise ValueError(f"Sequence length too long: {args.seqlen}")
 
-	#=====================
-	# Main Processing
-	#=====================
-	# Generate output file name
-	outfile = ('bbq-'
-		+ os.path.splitext(os.path.basename(__file__))[0]
-		+ "-" + args.question_type
-		+ "-" + args.direction_mode
-		+ '-questions.txt')
-	print('writing to file: ' + outfile)
+	outfile = bptools.make_outfile(args.question_type, args.direction_mode)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
-	# Open output file for writing using 'with' statement
-	with open(outfile, 'w') as f:
-		# Loop to write questions based on parsed arguments
-		for i in range(args.num_sequences):
-			N = i + 1
-			bbformat = choose_question(N, args.seqlen, args.question_type, args.direction_mode)
-			f.write(bbformat)
-
-	# Print histogram (assumed to be a function in bptools)
-	bptools.print_histogram()
+#============================
+#============================
+if __name__ == '__main__':
+	main()

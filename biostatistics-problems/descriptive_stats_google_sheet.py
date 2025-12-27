@@ -2,14 +2,7 @@
 # ^^ Specifies the Python3 environment to use for script execution
 
 # Import built-in Python modules
-# Provides functions for interacting with the operating system
-import os
-import time
-# Provides functions to generate random numbers and selections
 import random
-# Provides tools to parse command-line arguments
-import argparse
-# Provides custom functions, such as question formatting and other utilities
 import statistics
 
 # Import external modules (pip-installed)
@@ -50,8 +43,6 @@ def get_raw_data() -> list[int]:
 
 	#fix half median values
 	#print(f"median_value: {(data[4] + data[5])/2.0:.1f}")
-	print(data)
-
 	if (data[4] + data[5]) % 2 == 1:
 		data[5] += 1
 		# preserve strict increase and avoid a new duplicate
@@ -79,8 +70,6 @@ def get_raw_data() -> list[int]:
 	unique_count = len(set(data))
 	mode_count = max({x: data.count(x) for x in data}.values())
 	mode_key = max({x: data.count(x) for x in data}, key=lambda k: data.count(k))
-
-	print(data)
 
 	# basic assertions within 100 chars
 	assert len(data) == 10
@@ -140,9 +129,6 @@ def generate_answer_map(data: list) -> dict:
 	Generates the FIB_PLUS answer map by computing
 	descriptive statistics from the dataset.
 
-	Args:
-		num_choices (int): Unused for FIB_PLUS, but kept for compatibility.
-
 	Returns:
 		dict: Mapping of variable names to lists of accepted answers.
 	"""
@@ -155,13 +141,12 @@ def generate_answer_map(data: list) -> dict:
 	return answer_map
 
 #============================================
-def write_question(N: int) -> str:
+def write_question(N: int, args) -> str:
 	"""
 	Creates a complete formatted FIB_PLUS question row.
 
 	Args:
 		N (int): Question number.
-		num_choices (int): Kept for API compatibility.
 
 	Returns:
 		str: Formatted Blackboard FIB_PLUS question row.
@@ -180,25 +165,11 @@ def parse_arguments():
 	Parses command-line arguments for the script.
 
 	Returns:
-		argparse.Namespace: Parsed arguments with attributes `duplicates`,
-		`num_choices`, and `question_type`.
+		argparse.Namespace: Parsed arguments with base duplicate and max settings.
 	"""
-	# Create an argument parser with a description of the script's functionality
-	parser = argparse.ArgumentParser(description="Generate questions.")
-
-	# Add an argument to specify the number of duplicate questions to generate
-	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='Number of duplicate runs to do or number of questions to create',
-		default=1
+	parser = bptools.make_arg_parser(
+		description="Generate descriptive statistics Google Sheet questions."
 	)
-
-	parser.add_argument(
-		'-x', '--max-questions', type=int, dest='max_questions',
-		default=99, help='Max number of questions'
-	)
-
-	# Parse the provided command-line arguments and return them
 	args = parser.parse_args()
 	return args
 
@@ -221,56 +192,8 @@ def main():
 	# Parse arguments from the command line
 	args = parse_arguments()
 
-	# Generate the output file name based on the script name and arguments
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
-	outfile = (
-		'bbq'
-		f'-{script_name}'              # Add the script name to the file name
-		'-questions.txt'               # File extension
-	)
-
-	# Store all complete formatted questions
-	question_bank_list = []
-
-	# Initialize question counter
-	N = 0
-
-	# Create the specified number of questions
-	for _ in range(args.duplicates):
-		# Generate gene letters (if needed by question logic)
-		gene_letters_str = bptools.generate_gene_letters(3)
-
-		# Create a full formatted question (Blackboard format)
-		t0 = time.time()
-		complete_question = write_question(N+1)
-		if time.time() - t0 > 1:
-			print(f"Question {N+1} complete in {time.time() - t0:.1f} seconds")
-
-		# Append question if successfully generated
-		if complete_question is not None:
-			N += 1
-			question_bank_list.append(complete_question)
-
-		if N >= args.max_questions:
-			break
-
-	# Shuffle and limit the number of questions if over max
-	if len(question_bank_list) > args.max_questions:
-		random.shuffle(question_bank_list)
-		question_bank_list = question_bank_list[:args.max_questions]
-
-	# Announce where output is going
-	print(f'\nWriting {len(question_bank_list)} question to file: {outfile}')
-
-	# Write all questions to file
-	write_count = 0
-	with open(outfile, 'w') as f:
-		for complete_question in question_bank_list:
-			write_count += 1
-			f.write(complete_question)
-
-	# Final status message
-	print(f'... saved {write_count} questions to {outfile}\n')
+	outfile = bptools.make_outfile()
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #===========================================================
 #===========================================================
