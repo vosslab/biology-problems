@@ -4,6 +4,9 @@
 import dataclasses
 import random
 
+# Local repo modules
+import pedigree_graph_spec_lib
+
 
 
 
@@ -280,7 +283,34 @@ def render_graph_to_code(graph: PedigreeGraph, show_carriers: bool = False) -> s
 
 
 #===============================
-def generate_pedigree_code(
+def _graph_to_graph_spec(graph: PedigreeGraph, include_carriers: bool) -> pedigree_graph_spec_lib.PedigreeGraphSpec:
+	people: dict[str, pedigree_graph_spec_lib.IndividualIR] = {}
+	unions: list[pedigree_graph_spec_lib.UnionIR] = []
+
+	for person_id, individual in graph.individuals.items():
+		status = None
+		if individual.phenotype == 'affected':
+			status = 'infected'
+		elif individual.phenotype == 'carrier' and include_carriers:
+			status = 'carrier'
+		people[person_id] = pedigree_graph_spec_lib.IndividualIR(
+			person_id=person_id,
+			sex=individual.sex,
+			status=status,
+		)
+
+	for couple in graph.couples:
+		unions.append(pedigree_graph_spec_lib.UnionIR(
+			partner_a=couple.partner_a,
+			partner_b=couple.partner_b,
+			children=list(couple.children),
+		))
+
+	return pedigree_graph_spec_lib.PedigreeGraphSpec(people=people, unions=unions)
+
+
+#===============================
+def generate_pedigree_graph_spec(
 	mode: str,
 	generations: int = 4,
 	starting_couples: int = 1,
@@ -291,7 +321,7 @@ def generate_pedigree_code(
 	show_carriers: bool = False,
 ) -> str:
 	"""
-	Generate a pedigree code string from a graph-based generator.
+	Generate a pedigree graph spec string from a graph-based generator.
 	"""
 	graph = generate_pedigree_graph(
 		mode,
@@ -303,6 +333,104 @@ def generate_pedigree_code(
 		marry_in_rate=marry_in_rate,
 		show_carriers=show_carriers,
 	)
+	spec = _graph_to_graph_spec(graph, include_carriers=show_carriers)
+	return pedigree_graph_spec_lib.format_pedigree_graph_spec(spec)
+
+
+#===============================
+def _assign_generations_from_unions(spec: pedigree_graph_spec_lib.PedigreeGraphSpec) -> dict[str, int]:
+	child_ids = set()
+	for union in spec.unions:
+		child_ids.update(union.children)
+	founders = [pid for pid in spec.people if pid not in child_ids]
+	if not founders:
+		raise ValueError('No founders detected in graph spec.')
+	generations: dict[str, int] = {}
+	for founder_id in founders:
+		generations[founder_id] = 1
+
+	progress = True
+	while progress:
+		progress = False
+		for union in spec.unions:
+			if union.partner_a not in generations or union.partner_b not in generations:
+				continue
+			parent_gen = max(generations[union.partner_a], generations[union.partner_b])
+			for child_id in union.children:
+				child_gen = parent_gen + 1
+				if child_id in generations and generations[child_id] != child_gen:
+					raise ValueError(f"Inconsistent generation for '{child_id}'.")
+				if child_id not in generations:
+					generations[child_id] = child_gen
+					progress = True
+
+	missing = [pid for pid in spec.people if pid not in generations]
+	if missing:
+		raise ValueError(f"Unassigned generations for: {', '.join(sorted(missing))}.")
+	return generations
+
+
+#===============================
+def parse_graph_spec_to_graph(spec_string: str) -> PedigreeGraph:
+	"""
+	Parse a pedigree graph spec string into an internal PedigreeGraph.
+	"""
+	spec = pedigree_graph_spec_lib.parse_pedigree_graph_spec(spec_string)
+	generations = _assign_generations_from_unions(spec)
+
+	individuals: dict[str, Individual] = {}
+	for person_id, person in spec.people.items():
+		phenotype = 'unaffected'
+		if person.status == 'infected':
+			phenotype = 'affected'
+		elif person.status == 'carrier':
+			phenotype = 'carrier'
+		individuals[person_id] = Individual(
+			id=person_id,
+			sex=person.sex or 'unknown',
+			phenotype=phenotype,
+			generation=generations[person_id],
+		)
+
+	couples: list[Couple] = []
+	for union in spec.unions:
+		partner_a = individuals[union.partner_a]
+		partner_b = individuals[union.partner_b]
+		if partner_a.sex == partner_b.sex:
+			raise ValueError(f"Union partners must be opposite sex: {union.partner_a}-{union.partner_b}")
+		if partner_a.sex == 'female' and partner_b.sex == 'male':
+			partner_a_id = union.partner_b
+			partner_b_id = union.partner_a
+		else:
+			partner_a_id = union.partner_a
+			partner_b_id = union.partner_b
+		couple = Couple(
+			id=f"C_{partner_a_id}_{partner_b_id}",
+			partner_a=partner_a_id,
+			partner_b=partner_b_id,
+			generation=generations[partner_a_id],
+			children=list(union.children),
+		)
+		for child_id in union.children:
+			individuals[child_id].father_id = couple.partner_a
+			individuals[child_id].mother_id = couple.partner_b
+		couples.append(couple)
+
+	graph = PedigreeGraph(
+		individuals=individuals,
+		couples=couples,
+		generations=max(generations.values()),
+		starting_couples=0,
+	)
+	return graph
+
+
+#===============================
+def compile_graph_spec_to_code(spec_string: str, show_carriers: bool = True) -> str:
+	"""
+	Compile a pedigree graph spec string to a pedigree code string.
+	"""
+	graph = parse_graph_spec_to_graph(spec_string)
 	code_string = render_graph_to_code(graph, show_carriers=show_carriers)
 	return code_string
 
@@ -311,7 +439,7 @@ def generate_pedigree_code(
 #===============================
 if __name__ == '__main__':
 	default_rng = random.Random(7)
-	code_string = generate_pedigree_code('autosomal recessive', rng=default_rng)
-	print(code_string)
+	spec_string = generate_pedigree_graph_spec('autosomal recessive', rng=default_rng)
+	print(spec_string)
 
 ## THE END

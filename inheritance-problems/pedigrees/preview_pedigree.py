@@ -107,11 +107,15 @@ def main():
 				rng=rng,
 			)
 		else:
-			code_string = pedigree_graph_parse_lib.generate_pedigree_code(
+			graph_spec = pedigree_graph_parse_lib.generate_pedigree_graph_spec(
 				args.mode,
 				generations=args.generations,
 				starting_couples=args.starting_couples,
 				rng=rng,
+				show_carriers=args.show_carriers,
+			)
+			code_string = pedigree_graph_parse_lib.compile_graph_spec_to_code(
+				graph_spec,
 				show_carriers=args.show_carriers,
 			)
 

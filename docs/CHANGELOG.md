@@ -78,6 +78,11 @@
 - Implemented subtree-centered slot assignment for graph layouts in
   [inheritance-problems/pedigrees/pedigree_graph_parse_lib.py](inheritance-problems/pedigrees/pedigree_graph_parse_lib.py)
   to keep siblings contiguous and reduce long connector runs.
+- Switched the graph generator to emit pedigree graph spec strings and added a
+  compile step from graph spec to CodeString in
+  [inheritance-problems/pedigrees/pedigree_graph_parse_lib.py](inheritance-problems/pedigrees/pedigree_graph_parse_lib.py).
+- Clarified the internal role of PedigreeGraph in
+  [inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md](inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md).
 - Added a compact pedigree graph spec parser/serializer in
   [inheritance-problems/pedigrees/pedigree_graph_spec_lib.py](inheritance-problems/pedigrees/pedigree_graph_spec_lib.py)
   and documented the pedigree graph spec format in

@@ -21,6 +21,12 @@ Relationships
 
 PedigreeGraph should never encode layout or rendering details.
 
+Role in the pipeline
+- PedigreeGraph is an internal, non-persisted structure used to compile a
+  pedigree graph spec into a CodeString layout.
+- Generators should emit pedigree graph spec strings; PedigreeGraph is created
+  only during the compile step.
+
 ## Pipeline stages
 1) **Skeleton engine**
 	- Input: generations, starting couples, sibling range, marriage rate,
@@ -63,6 +69,10 @@ Pipeline shorthand
 - generator -> pedigree_graph_spec -> pedigree_code_string -> HTML/PNG
 - The graph parse/compile step is an internal transformation and is not
   persisted as a pipeline artifact.
+
+Implementation note
+- `pedigree_graph_parse_lib.compile_graph_spec_to_code()` performs the internal
+  graph-spec parse and layout compile to CodeString.
 
 ## Validation split
 Validation is intentionally layered.
