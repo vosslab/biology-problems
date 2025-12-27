@@ -25,7 +25,7 @@ Generated artifacts (do not commit): `bbq-*.txt`, `qti*.zip`, `selftest-*.html` 
 
 ## Coding Style & Naming Conventions
 
-- Python: follow `PYTHON_STYLE.md` (tabs for indentation; prefer Python ~3.12).
+- Python: follow `docs/PYTHON_STYLE.md` (tabs for indentation; prefer Python ~3.12).
 - Prefer executable scripts with `#!/usr/bin/env python3`, a `main()` entrypoint, and `if __name__ == '__main__': main()`.
 - Use `argparse` with both short and long flags (e.g., `-d/--duplicates`), and keep output filenames predictable (often `bbq-<script>-...`).
 - Keep comments ASCII-only; prefer f-strings; avoid `import *`.
@@ -40,3 +40,7 @@ Generated artifacts (do not commit): `bbq-*.txt`, `qti*.zip`, `selftest-*.html` 
 
 - Git history uses short, imperative, free-form subjects (no Conventional Commits); keep subjects brief and specific (e.g., “fix wording”, “formatting tweaks”).
 - PRs should describe the problem set affected (`inheritance-problems/`, `biochemistry-problems/`, etc.), how to reproduce (`python3 ...`), and include a small sample of expected output (or a screenshot if HTML/image rendering changes).
+See Markdown style in docs/MARKDOWN_STYLE.md.
+When making edits, document them in docs/CHANGELOG.md.
+See repo style in docs/REPO_STYLE.md.
+Agents may run programs in the tests folder, including smoke tests and pyflakes/mypy runner scripts.

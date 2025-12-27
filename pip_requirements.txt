@@ -1,0 +1,13 @@
+biopython
+bs4
+classic_phylolib
+crcmod
+importlib_metadata
+matplotlib
+numpy
+pillow
+pyyaml
+qti_package_maker
+rdkit
+requests
+scipy
