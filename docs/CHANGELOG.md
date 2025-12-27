@@ -6,6 +6,26 @@
   and generation flow.
 - Added [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md) to outline generator
   refactoring and helper adoption steps.
+- Added a higher-level pedigree scenario helper in
+  [inheritance-problems/pedigrees/pedigree_smartlib.py](inheritance-problems/pedigrees/pedigree_smartlib.py)
+  to select inheritance-specific templates and return pedigree code strings.
+- Added pedigree PNG rendering alongside HTML output in
+  [inheritance-problems/pedigrees/pedigree_png_lib.py](inheritance-problems/pedigrees/pedigree_png_lib.py).
+- Added pedigree code validators in
+  [inheritance-problems/pedigrees/pedigree_validate_lib.py](inheritance-problems/pedigrees/pedigree_validate_lib.py).
+- Split pedigree tooling into focused libraries:
+  [inheritance-problems/pedigrees/pedigree_code_lib.py](inheritance-problems/pedigrees/pedigree_code_lib.py),
+  [inheritance-problems/pedigrees/pedigree_html_lib.py](inheritance-problems/pedigrees/pedigree_html_lib.py),
+  [inheritance-problems/pedigrees/pedigree_png_lib.py](inheritance-problems/pedigrees/pedigree_png_lib.py).
+- Removed the unused compatibility shim `inheritance-problems/pedigrees/pedigree_lib.py`.
+- Added inheritance mode validation in
+  [inheritance-problems/pedigrees/pedigree_mode_validate_lib.py](inheritance-problems/pedigrees/pedigree_mode_validate_lib.py).
+- Added a preview helper for HTML/PNG pedigree output in
+  [inheritance-problems/pedigrees/preview_pedigree.py](inheritance-problems/pedigrees/preview_pedigree.py).
+- Added a graph-based pedigree generator in
+  [inheritance-problems/pedigrees/pedigree_graph_lib.py](inheritance-problems/pedigrees/pedigree_graph_lib.py).
+- Added a local pipeline note in
+  [inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md](inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md).
 - Expanded [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md) with decision points
   for return contracts, shortfalls, newline policy, and argparse composition.
 - Added question collection helpers and shared CLI args to [bptools.py](bptools.py).

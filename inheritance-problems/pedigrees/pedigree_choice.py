@@ -4,7 +4,6 @@
 # Import built-in Python modules
 # Provides functions to generate random numbers and selections
 import random
-import copy
 
 # Import external modules (pip-installed)
 # No external modules are used here currently
@@ -12,7 +11,8 @@ import copy
 # Import local modules from the project
 # Provides custom functions, such as question formatting and other utilities
 import bptools
-import pedigree_lib
+import pedigree_html_lib
+import pedigree_code_lib
 import pedigree_code_strings
 
 
@@ -26,40 +26,40 @@ def multipleChoiceQuestionSet(start_num: int):
 	N = start_num - 1
 	for ad in pedigree_code_strings.autosomal_dominant:
 		if random.random() < 0.5:
-			ad = pedigree_lib.mirrorPedigree(ad)
-		adc = pedigree_lib.translateCode(ad)
+			ad = pedigree_code_lib.mirror_pedigree(ad)
+		adc = pedigree_html_lib.translateCode(ad)
 		answer = 'autosomal dominant'
 		N += 1
 		bb_output_format = bptools.formatBB_MC_Question(N, adc+question_text, choices_list, answer)
 		bb_output_format_list.append(bb_output_format)
 	for ar in pedigree_code_strings.autosomal_recessive:			
 		if random.random() < 0.5:
-			ar = pedigree_lib.mirrorPedigree(ar)
-		arc = pedigree_lib.translateCode(ar)
+			ar = pedigree_code_lib.mirror_pedigree(ar)
+		arc = pedigree_html_lib.translateCode(ar)
 		answer = 'autosomal recessive'
 		N += 1
 		bb_output_format = bptools.formatBB_MC_Question(N, arc+question_text, choices_list, answer)
 		bb_output_format_list.append(bb_output_format)
 	for xd in pedigree_code_strings.x_linked_dominant:
 		if random.random() < 0.5:
-			xd = pedigree_lib.mirrorPedigree(xd)
-		xdc = pedigree_lib.translateCode(xd)
+			xd = pedigree_code_lib.mirror_pedigree(xd)
+		xdc = pedigree_html_lib.translateCode(xd)
 		answer = 'x-linked dominant'
 		N += 1
 		bb_output_format = bptools.formatBB_MC_Question(N, xdc+question_text, choices_list, answer)
 		bb_output_format_list.append(bb_output_format)
 	for xr in pedigree_code_strings.x_linked_recessive:
 		if random.random() < 0.5:
-			xr = pedigree_lib.mirrorPedigree(xr)
-		xrc = pedigree_lib.translateCode(xr)
+			xr = pedigree_code_lib.mirror_pedigree(xr)
+		xrc = pedigree_html_lib.translateCode(xr)
 		answer = 'x-linked recessive'
 		N += 1
 		bb_output_format = bptools.formatBB_MC_Question(N, xrc+question_text, choices_list, answer)
 		bb_output_format_list.append(bb_output_format)
 	for yl in pedigree_code_strings.y_linked:
 		if random.random() < 0.5:
-			yl = pedigree_lib.mirrorPedigree(yl)
-		ylc = pedigree_lib.translateCode(yl)
+			yl = pedigree_code_lib.mirror_pedigree(yl)
+		ylc = pedigree_html_lib.translateCode(yl)
 		answer = 'y-linked'
 		N += 1
 		bb_output_format = bptools.formatBB_MC_Question(N, ylc+question_text, choices_list, answer)

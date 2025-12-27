@@ -21,7 +21,6 @@
 
 ## Shared code and templates
 - `bptools.py`: shared formatting and utility helpers used by many generators.
-- `logger_config.py`: optional logging setup for scripts that need it.
 - `TEMPLATE.py`: starting point for new generators (argparse + output pattern).
 - `find_all_imports.py`: helper for scanning Python imports when updating deps.
 
@@ -62,8 +61,24 @@
   and combinatorics helpers for cross problems.
 - `inheritance-problems/hybridcrosslib.py`: dihybrid/epistasis utilities, ratio
   dictionaries, and table construction for interaction problems.
-- `inheritance-problems/pedigree_lib.py`: pedigree symbols, HTML glyph mappings,
-  and diagram helpers for pedigree questions.
+- `inheritance-problems/pedigrees/pedigree_smartlib.py`: higher-level pedigree
+  scenario picker that selects mode-specific templates and returns code strings.
+- `inheritance-problems/pedigrees/pedigree_validate_lib.py`: pedigree code
+  validation helpers for checking allowed symbols and row structure.
+- `inheritance-problems/pedigrees/pedigree_code_lib.py`: pedigree code constants
+  and helpers for mirroring and generation counting.
+- `inheritance-problems/pedigrees/pedigree_html_lib.py`: HTML rendering for
+  pedigree code strings.
+- `inheritance-problems/pedigrees/pedigree_png_lib.py`: PNG rendering for
+  pedigree code strings.
+- `inheritance-problems/pedigrees/pedigree_graph_lib.py`: graph-based pedigree
+  generator that outputs code strings from randomized family structures.
+- `inheritance-problems/pedigrees/pedigree_mode_validate_lib.py`: inheritance
+  mode validation layered on parsed pedigree graphs.
+- `inheritance-problems/pedigrees/preview_pedigree.py`: CLI helper for generating
+  HTML/PNG preview sets with saved code strings.
+- `inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md`: local architecture note
+  describing the pedigree graph to layout to rendering pipeline.
 - `inheritance-problems/pointtestcrosslib.py`: deprecated point-testcross helper
   (use `genemaplib.py` and `genemapclass.py` instead).
 - `molecular_biology-problems/restrictlib.py`: restriction enzyme lookup and

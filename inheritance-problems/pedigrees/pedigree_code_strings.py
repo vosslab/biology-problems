@@ -170,39 +170,40 @@ y_linked = [
 ]
 
 if __name__ == '__main__':
-	import pedigree_lib
+	import pedigree_code_lib
+	import pedigree_html_lib
 	for i in autosomal_dominant:
 		print("autosomal_dominant<br/>")
-		print(pedigree_lib.translateCode(i))
-		print(pedigree_lib.translateCode(pedigree_lib.mirrorPedigree(i)))
+		print(pedigree_html_lib.translateCode(i))
+		print(pedigree_html_lib.translateCode(pedigree_code_lib.mirror_pedigree(i)))
 		print("affected males &male; = {0}<br/>".format(i.count('x')))
 		print("affected females &female; = {0}<br/>".format(i.count('*')))
 		print("autosomal_dominant<br/>")
 	for i in autosomal_recessive:
 		print("autosomal_recessive<br/>")
-		print(pedigree_lib.translateCode(i))
-		print(pedigree_lib.translateCode(pedigree_lib.mirrorPedigree(i)))
+		print(pedigree_html_lib.translateCode(i))
+		print(pedigree_html_lib.translateCode(pedigree_code_lib.mirror_pedigree(i)))
 		print("affected males &male; = {0}<br/>".format(i.count('x')))
 		print("affected females &female; = {0}<br/>".format(i.count('*')))
 		print("autosomal_recessive<br/>")
 	for i in x_linked_dominant:
 		print("x_linked_dominant<br/>")
-		print(pedigree_lib.translateCode(i))
-		print(pedigree_lib.translateCode(pedigree_lib.mirrorPedigree(i)))
+		print(pedigree_html_lib.translateCode(i))
+		print(pedigree_html_lib.translateCode(pedigree_code_lib.mirror_pedigree(i)))
 		print("affected males &male; = {0}<br/>".format(i.count('x')))
 		print("affected females &female; = {0}<br/>".format(i.count('*')))
 		print("x_linked_dominant<br/>")
 	for i in x_linked_recessive:
 		print("x_linked_recessive<br/>")
-		print(pedigree_lib.translateCode(i))
-		print(pedigree_lib.translateCode(pedigree_lib.mirrorPedigree(i)))
+		print(pedigree_html_lib.translateCode(i))
+		print(pedigree_html_lib.translateCode(pedigree_code_lib.mirror_pedigree(i)))
 		print("affected males &male; = {0}<br/>".format(i.count('x')))
 		print("affected females &female; = {0}<br/>".format(i.count('*')))
 		print("x_linked_recessive<br/>")
 	for i in y_linked:
 		print("y-linked<br/>")
-		print(pedigree_lib.translateCode(i))
-		print(pedigree_lib.translateCode(pedigree_lib.mirrorPedigree(i)))
+		print(pedigree_html_lib.translateCode(i))
+		print(pedigree_html_lib.translateCode(pedigree_code_lib.mirror_pedigree(i)))
 		print("affected males &male; = {0}<br/>".format(i.count('x')))
 		print("affected females &female; = {0}<br/>".format(i.count('*')))
 		print("y-linked<br/>")
