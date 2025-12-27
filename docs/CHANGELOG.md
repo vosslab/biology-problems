@@ -87,6 +87,8 @@
   [molecular_biology-problems/seqlib.py](molecular_biology-problems/seqlib.py).
 - Added short descriptions for all `*lib.py` modules in
   [docs/FILE_STRUCTURE.md](docs/FILE_STRUCTURE.md).
+- Added [docs/TODO.md](docs/TODO.md) to track backlog items (including a possible
+  `make_outfile_from_args()` helper).
 - Refactored [biochemistry-problems/quick_fatty_acid_colon_system.py](biochemistry-problems/quick_fatty_acid_colon_system.py)
   to use batch helpers and `bptools` formatting.
 - Refactored [inheritance-problems/cytogenetic_notation-aneuploidy.py](inheritance-problems/cytogenetic_notation-aneuploidy.py)
@@ -115,6 +117,33 @@
   to use shared argparse defaults and helper-based question collection.
 - Added a migration note for fixed-grid batch scripts in
   [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md).
+- Fixed HTML quoting in [molecular_biology-problems/seqlib.py](molecular_biology-problems/seqlib.py)
+  to avoid invalid inline style attributes.
+- Added max-questions early-stop handling in
+  [molecular_biology-problems/overhang_type.py](molecular_biology-problems/overhang_type.py).
+- Fixed malformed HTML attributes in
+  [molecular_biology-problems/enhancer_gene_expression.py](molecular_biology-problems/enhancer_gene_expression.py).
+- Fixed paragraph nesting in
+  [inheritance-problems/chisquare/chi_square_hardy_weinberg.py](inheritance-problems/chisquare/chi_square_hardy_weinberg.py).
+- Implemented missing choice generation in
+  [inheritance-problems/cytogenetic_notation-sub-band_notation.py](inheritance-problems/cytogenetic_notation-sub-band_notation.py).
+- Fixed HTML entity formatting in
+  [biochemistry-problems/fatty_acid_naming.py](biochemistry-problems/fatty_acid_naming.py).
+- Fixed HTML paragraph closure in
+  [molecular_biology-problems/rna_transcribe_prime_fill_blank.py](molecular_biology-problems/rna_transcribe_prime_fill_blank.py).
+- Quoted HTML attribute values in
+  [molecular_biology-problems/exon_splicing.py](molecular_biology-problems/exon_splicing.py)
+  to satisfy XML parsing.
+- Corrected outfile suffix selection in
+  [inheritance-problems/hardy_weinberg_numeric.py](inheritance-problems/hardy_weinberg_numeric.py).
+- Added max-questions early-stop handling in
+  [inheritance-problems/pedigree_match.py](inheritance-problems/pedigree_match.py).
+- Improved dilution factor MC choices and formatting (clarified labels, background
+  explanation, colored aliquot/diluent with monospace values, and standardized
+  `--num-choices`) in
+  [laboratory-problems/dilution_factor_mc.py](laboratory-problems/dilution_factor_mc.py).
+- De-duplicated numeric pH choices to avoid repeated labels in
+  [biochemistry-problems/buffers/optimal_buffering_range.py](biochemistry-problems/buffers/optimal_buffering_range.py).
 - Cleaned unused imports and a redundant global in [bptools.py](bptools.py) to
   satisfy pyflakes.
 - Fixed a pyflakes warning in

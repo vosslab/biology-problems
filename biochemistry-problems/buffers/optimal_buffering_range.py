@@ -127,7 +127,7 @@ def generate_choices(buffer_dict, num_choices: int) -> (list, str):
 	random.shuffle(choices_list)
 	choices_list = choices_list[:num_choices-1]
 	choices_list.append(answer_value)
-	choices_list.sort()
+	choices_list = sorted(set(choices_list))
 	choices_text_list = []
 	for choice_value in choices_list:
 		choice_text = pH_to_color_span(choice_value) #= f'{choice_value:.1f}'

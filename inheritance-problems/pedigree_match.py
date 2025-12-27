@@ -31,7 +31,7 @@ def bbFormatMatchingQuestion(N, question_text, prompts_list, choices_list, max_c
 	return bb_output_format
 
 #=======================
-def matchingQuestionSet(start_num=1):
+def matchingQuestionSet(start_num=1, max_questions=None):
 	bb_output_format_list = []
 	question_text = "<p>Match the following pedigrees to their most likely inheritance type.</p> "
 	question_text += "<p>Note: <i>each inheritance type will only be used ONCE.</i></p> "
@@ -42,6 +42,8 @@ def matchingQuestionSet(start_num=1):
 			for xd in pedigree_code_strings.x_linked_dominant:
 				for xr in pedigree_code_strings.x_linked_recessive:
 					for yl in pedigree_code_strings.y_linked:
+						if max_questions is not None and N >= max_questions:
+							return bb_output_format_list
 						if random.random() < 0.5:
 							ad = pedigree_lib.mirrorPedigree(ad)
 						adc = pedigree_lib.translateCode(ad)
@@ -67,7 +69,7 @@ def matchingQuestionSet(start_num=1):
 
 #=======================
 def write_question_batch(N: int, args) -> list[str]:
-	return matchingQuestionSet(N)
+	return matchingQuestionSet(N, args.max_questions)
 
 
 #===========================================================
