@@ -13,8 +13,7 @@ debug = False
 #======================================
 #======================================
 def parse_protein_file():
-	git_root = bptools.get_git_root()
-	data_file_path = os.path.join(git_root, 'data/protein_isoelectric_points.csv')
+	data_file_path = bptools.get_repo_data_path('protein_isoelectric_points.csv')
 	file_handle = open(data_file_path, "r")
 	reader = csv.reader(file_handle)
 	protein_tree = []

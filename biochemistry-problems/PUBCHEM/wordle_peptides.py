@@ -29,8 +29,7 @@ def read_wordle():
 	Returns a list of valid words.
 	"""
 	valid_words = []
-	git_root = bptools.get_git_root()
-	wordle_file = os.path.join(git_root, 'data', 'real_wordles.txt')
+	wordle_file = bptools.get_repo_data_path('real_wordles.txt')
 	with open(wordle_file, 'r') as file:
 		for line in file:
 			# Skip comment lines in the wordle file

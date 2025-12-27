@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import os
 import re
 import yaml
 import random
@@ -32,8 +31,7 @@ import bptools
 class MultiDisorderClass(object):
 	#=====================
 	def __init__(self):
-		git_root = bptools.get_git_root()
-		yaml_data_file = os.path.join(git_root, 'data/genetic_disorders.yml')
+		yaml_data_file = bptools.get_repo_data_path('genetic_disorders.yml')
 		raw_disorder_data = self.readYaml(yaml_data_file)
 		self.disorder_data = self.filterDisorderData(raw_disorder_data)
 		pass

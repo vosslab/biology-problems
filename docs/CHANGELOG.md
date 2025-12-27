@@ -152,3 +152,26 @@
   parameter, and updated scripts to use that form.
 - Set `biochemistry-problems/alpha_helix_h-bonds.py` to use
   `add_choice_args(..., default=4)`.
+- Added `bptools.get_repo_data_path()` and switched
+  `biochemistry-problems/isoelectric_two_proteins.py` to use it for data file
+  resolution.
+- Switched `biochemistry-problems/isoelectric_one_protein.py`,
+  `biochemistry-problems/carbohydrates_classification/sugarlib.py`,
+  `biochemistry-problems/proteinlib.py`, and `inheritance-problems/disorderlib.py`
+  to use `bptools.get_repo_data_path()` for data file resolution.
+- Switched `biochemistry-problems/PUBCHEM/wordle_peptides.py` and
+  `inheritance-problems/deletion_mutant_words.py` to use
+  `bptools.get_repo_data_path()` for data file resolution, and removed the
+  local `get_git_root()` helper from
+  `biochemistry-problems/carbohydrates_classification/sugarlib.py`.
+- Refactored [biochemistry-problems/isoelectric_two_proteins.py](biochemistry-problems/isoelectric_two_proteins.py)
+  to use shared argparse defaults, cached protein data, and helper-based output.
+- Refactored [inheritance-problems/epistasis_test_cross.py](inheritance-problems/epistasis_test_cross.py)
+  to use shared argparse defaults, helper-based question collection, and
+  standardized outfile naming.
+- Refactored [molecular_biology-problems/mutant_screen.py](molecular_biology-problems/mutant_screen.py)
+  to use shared argparse defaults, MC/FIB format flags, and helper-based output.
+- Fixed the mutant screen HTML table to quote the width attribute for valid XML
+  in [molecular_biology-problems/mutant_screen.py](molecular_biology-problems/mutant_screen.py).
+- Added a migration note about converting stdout-based question scripts to
+  helper-based MC/FIB formatting in [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md).

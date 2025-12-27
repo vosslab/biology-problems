@@ -31,9 +31,8 @@ def get_anagrams_for_word(query_word: str, wordlist_path: str = None) -> set[str
 	"""
 	# Determine default word list path
 	if wordlist_path is None:
-		git_path = bptools.get_git_root()
 		large_file = "enable2k.txt"
-		wordlist_path = os.path.join(git_path, "data", large_file)
+		wordlist_path = bptools.get_repo_data_path(large_file)
 
 	# Normalize the query word
 	target = query_word.strip().upper()
@@ -154,12 +153,11 @@ def get_gene_word_bank(num_genes: int, min_word_bank_size: int) -> list[str]:
 		ValueError:
 			If no suitable word bank can be constructed.
 	"""
-	git_path = bptools.get_git_root()
 	small_file = "SCOWL-words_with_friends-intersection.txt"
-	small_path = os.path.join(git_path, "data", small_file)
+	small_path = bptools.get_repo_data_path(small_file)
 	#large_file = "words_with_friends_dictionary.txt"
 	large_file = "enable2k.txt"
-	large_path = os.path.join(git_path, "data", large_file)
+	large_path = bptools.get_repo_data_path(large_file)
 
 	for min_anagrams in (5, 4, 3, 2):
 		print(
@@ -418,4 +416,3 @@ def main() -> None:
 #==========================================================
 if __name__ == '__main__':
 	main()
-

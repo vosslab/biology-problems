@@ -4,9 +4,9 @@ import os
 import re
 import sys
 #import copy
-import subprocess
 
 from qti_package_maker.common import yaml_tools
+import bptools
 
 ### nomenclature for sugar code
 # A or M - aldose (A) or ketose (M) with a hydroxymethyl group
@@ -16,21 +16,6 @@ from qti_package_maker.common import yaml_tools
 # unless specified the following are all D sugars
 
 hidden_char = '<span style="visibility: hidden">.</span>'
-
-#==========================
-#==========================
-#==========================
-def get_git_root(path=None):
-	"""Return the absolute path of the repository root."""
-	if path is None:
-		# Use the path of the script
-		path = os.path.dirname(os.path.abspath(__file__))
-	try:
-		base = subprocess.check_output(['git', 'rev-parse', '--show-toplevel'], cwd=path, universal_newlines=True).strip()
-		return base
-	except subprocess.CalledProcessError:
-		# Not inside a git repository
-		return None
 
 #==========================
 # Color definitions for different categories
@@ -708,8 +693,7 @@ class SugarStructure(object):
 
 	#============================
 	def read_Haworth_pyranose_projection_html(self):
-		git_root = get_git_root()
-		data_file_path = os.path.join(git_root, 'data/haworth_pyranose_table.html')
+		data_file_path = bptools.get_repo_data_path('haworth_pyranose_table.html')
 		f = open(data_file_path, 'r')
 		table = ''
 		for line in f:
@@ -795,8 +779,7 @@ class SugarStructure(object):
 
 	#============================
 	def read_Haworth_furanose_projection_html(self):
-		git_root = get_git_root()
-		data_file_path = os.path.join(git_root, 'data/haworth_furanose_table.html')
+		data_file_path = bptools.get_repo_data_path('haworth_furanose_table.html')
 		f = open(data_file_path, 'r')
 		table = ''
 		for line in f:

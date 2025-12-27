@@ -2,12 +2,8 @@
 # ^^ Specifies the Python3 environment to use for script execution
 
 # Import built-in Python modules
-# Provides functions for interacting with the operating system
-import os
 # Provides functions to generate random numbers and selections
 import random
-# Provides tools to parse command-line arguments
-import argparse
 import copy
 import math
 # Import external modules (pip-installed)
@@ -209,7 +205,7 @@ assert _ans_i in _choices_i
 
 #===========================================================
 #===========================================================
-def write_question(N: int, direction: str, num_choices: int) -> str:
+def write_question(N: int, args) -> str:
 	"""
 	Format a single MC Blackboard question for the provided F2 ratio.
 
@@ -221,17 +217,17 @@ def write_question(N: int, direction: str, num_choices: int) -> str:
 	Returns:
 		str: Formatted Blackboard question string.
 	"""
-	if direction == 'forward':
+	if args.direction == 'forward':
 		progeny_ratios = list(forward_epistasis_ratios.keys())
 		progeny_ratio = progeny_ratios[(N - 1) % len(progeny_ratios)]
 		question_text = get_forward_question_text(progeny_ratio)
-		choices_list, answer_text = generate_forward_choices(progeny_ratio, num_choices)
+		choices_list, answer_text = generate_forward_choices(progeny_ratio, args.num_choices)
 
-	elif direction == 'inverse':
+	elif args.direction == 'inverse':
 		progeny_ratios = list(inverse_epistasis_ratios.keys())
 		progeny_ratio = progeny_ratios[(N - 1) % len(progeny_ratios)]
 		question_text = get_inverse_question_text(progeny_ratio)
-		choices_list, answer_text = generate_inverse_choices(progeny_ratio, num_choices)
+		choices_list, answer_text = generate_inverse_choices(progeny_ratio, args.num_choices)
 
 	formatted_choices = []
 	for i, choice_text in enumerate(choices_list):
@@ -254,20 +250,8 @@ def parse_arguments():
 	Returns:
 		argparse.Namespace: Parsed args.
 	"""
-	parser = argparse.ArgumentParser(description="Generate epistasis test-cross ratio questions.")
-	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='How many passes through the ratio list to generate.',
-		default=1
-	)
-	parser.add_argument(
-		'-x', '--max-questions', type=int, dest='max_questions',
-		default=99, help='Max number of questions to write.'
-	)
-	parser.add_argument(
-		'-c', '--num_choices', type=int, dest='num_choices',
-		default=6, help='Number of choices per question.'
-	)
+	parser = bptools.make_arg_parser(description="Generate epistasis test-cross ratio questions.")
+	parser = bptools.add_choice_args(parser, default=6)
 
 	direction_group = parser.add_mutually_exclusive_group(required=True)
 
@@ -301,53 +285,8 @@ def main():
 	# Parse arguments from the command line
 	args = parse_arguments()
 
-	# Generate the output file name based on the script name and arguments
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
-	outfile = (
-		'bbq'
-		f'-{script_name}'              # Add the script name to the file name
-		f'-{args.direction}_direction' # Append direction
-		f'-{args.num_choices}_choices' # Append number of choices
-		'-questions.txt'               # File extension
-	)
-
-	# Store all complete formatted questions
-	question_bank_list = []
-
-	# Initialize question counter
-	N = 0
-
-	# Create the specified number of questions
-	for _ in range(args.duplicates):
-		# Create a full formatted question (Blackboard format)
-		complete_question = write_question(N+1, args.direction, args.num_choices)
-
-		# Append question if successfully generated
-		if complete_question is not None:
-			N += 1
-			question_bank_list.append(complete_question)
-
-		if N >= args.max_questions:
-			break
-
-	# Histogram (choices distribution)
-	bptools.print_histogram()
-
-	# Shuffle and limit the number of questions if over max
-	if len(question_bank_list) > args.max_questions:
-		random.shuffle(question_bank_list)
-		question_bank_list = question_bank_list[:args.max_questions]
-
-	# Announce where output is going
-	print(f'\nWriting {N} question to file: {outfile}')
-
-	# Write all questions to file
-	with open(outfile, 'w') as f:
-		for complete_question in question_bank_list:
-			f.write(complete_question)
-
-	# Final status message
-	print(f'... saved {N} questions to {outfile}\n')
+	outfile = bptools.make_outfile(None, f"{args.direction}_direction", f"{args.num_choices}_choices")
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #===========================================================
 #===========================================================
@@ -355,5 +294,4 @@ if __name__ == '__main__':
 	main()
 
 ## THE END
-
 

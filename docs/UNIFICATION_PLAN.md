@@ -206,6 +206,13 @@ Batch generators:
 - Scripts that already use `-x` for a different option (for example
   `--max-length`) should move that short flag to avoid colliding with the
   unified `-x/--max-questions` base arg. Prefer a nearby alternative like `-M`.
+- Scripts that need to load shared data (for example, a CSV list) can load it
+  once in `main()` and store it in a module-level cache used by
+  `write_question(N, args)` to avoid repeated file reads.
+- Scripts that previously printed questions directly to stdout (especially when
+  offering MC vs FIB outputs) should switch to `add_question_format_args(...)`
+  and return a formatted Blackboard string via `bptools.formatBB_MC_Question`
+  or `bptools.formatBB_FIB_Question`.
 
 ## Legacy patterns to modernize
 These are common in older scripts and are the first candidates for cleanup

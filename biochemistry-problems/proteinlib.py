@@ -2,11 +2,12 @@
 import csv
 import math
 
+import bptools
 debug = False
 
 #==================================================
 def parse_protein_file():
-	filename = "../data/protein_isoelectric_points.csv"
+	filename = bptools.get_repo_data_path("protein_isoelectric_points.csv")
 	file_handle = open(filename, "r")
 	reader = csv.reader(file_handle)
 	protein_tree = []

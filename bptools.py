@@ -38,6 +38,22 @@ def get_git_root(path=None):
 		# Not inside a git repository
 		return None
 
+#==========================
+def get_repo_data_path(*parts):
+	"""
+	Build an absolute path under the repo data directory.
+
+	Args:
+		parts (tuple): Path components under the data directory.
+
+	Returns:
+		str: Absolute path to the requested data file.
+	"""
+	git_root = get_git_root()
+	if git_root is None:
+		raise FileNotFoundError("Unable to locate git root for data path resolution.")
+	return os.path.join(git_root, "data", *parts)
+
 #===========================================================
 #===========================================================
 def number_to_ordinal(integer):
