@@ -166,7 +166,15 @@ def _assign_slots(graph: PedigreeGraph) -> int:
 				else:
 					_place_couple(child_couple_id, cursor)
 				cursor += child_width + SIB_GAP
-			mid_slot = block_left + child_block_width // 2
+			child_slots = [
+				graph.individuals[child_id].slot
+				for child_id in children
+				if graph.individuals[child_id].slot is not None
+			]
+			if child_slots:
+				mid_slot = (min(child_slots) + max(child_slots)) // 2
+			else:
+				mid_slot = block_left + child_block_width // 2
 		else:
 			mid_slot = left_slot + couple_width // 2
 

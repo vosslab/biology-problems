@@ -198,7 +198,7 @@ def translateCode(code_string, label_string=None):
 			html_code += '</tr><tr>'
 	html_text = (
 		'<p><table cellpadding="0" cellspacing="0" style='
-		+ '"padding: 0; margin: 0; border-collapse: collapse; border: 3px solid silver; '
+		+ '"padding: 0; margin: 0; border-collapse: collapse; border: 6px solid #003366; '
 		+ f'width: {max_num_col * pedigree_code_lib.table_cell_dimension}px; '
 		+ f'height: {num_row * pedigree_code_lib.table_cell_dimension}px"'
 		+ '><tr>'

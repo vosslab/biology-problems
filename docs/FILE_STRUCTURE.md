@@ -71,10 +71,8 @@
   and helpers for mirroring and generation counting.
 - `inheritance-problems/pedigrees/pedigree_html_lib.py`: HTML rendering for
   pedigree code strings.
-- `inheritance-problems/pedigrees/pedigree_png_lib.py`: PNG rendering for
-  pedigree code strings.
 - `inheritance-problems/pedigrees/pedigree_svg_lib.py`: SVG rendering for
-  pedigree code strings.
+  pedigree code strings, plus SVG-to-PNG conversion via `rsvg-convert`.
 - `inheritance-problems/pedigrees/pedigree_graph_parse_lib.py`: graph-based pedigree
   types and layout helpers for graph-based pedigrees and code-string rendering.
 - `inheritance-problems/pedigrees/pedigree_skeleton_lib.py`: procedural pedigree

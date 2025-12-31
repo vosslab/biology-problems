@@ -336,7 +336,7 @@ validation. These names are stable in code. Rename suggestions are listed after.
 - `pedigree_validate_lib.py`: CodeString syntax validation.
 - `pedigree_mode_validate_lib.py`: inheritance-mode validation (PedigreeGraph-first).
 - `pedigree_html_lib.py`: HTML renderer (CodeString -> HTML).
-- `pedigree_png_lib.py`: PNG renderer (CodeString -> PNG).
+- `pedigree_svg_lib.py`: SVG renderer plus SVG-to-PNG conversion (CodeString -> SVG/PNG).
 - `pedigree_template_gen_lib.py`: template-based pedigree selection (CodeString output).
 - `pedigree_code_templates.py`: template library (static CodeStrings).
 

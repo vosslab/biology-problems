@@ -45,7 +45,18 @@
   with stable row parity and corrected descent validation.
 - Added label support for pedigrees via
   [inheritance-problems/pedigrees/pedigree_label_lib.py](inheritance-problems/pedigrees/pedigree_label_lib.py)
-  and optional `label_string` rendering in HTML/PNG/SVG.
+  and optional `label_string` rendering in HTML/SVG and SVG-to-PNG outputs.
+- Preview generation now assigns labels by default for HTML/PNG outputs in
+  [inheritance-problems/pedigrees/preview_pedigree.py](inheritance-problems/pedigrees/preview_pedigree.py).
+- Increased SVG/PNG label font sizes for better readability in pedigree previews.
+- Centered SVG/PNG label rendering (anchor-based centering with small SVG baseline
+  adjustment).
+- Removed the standalone PNG renderer and now convert SVG to PNG via `rsvg-convert`.
+- Preview index now shows explicit SVG and PNG sections, and SVG label size was reduced.
+- SVG-to-PNG conversion now flattens transparency against a white background.
+- Centered couple midpoints using actual child slots to avoid skewed sibship bars.
+- Added stronger colored borders around HTML (dark blue), SVG (dark red), and PNG
+  (dark green) previews for clarity.
 - Fixed vertical descent validation to check column-specific endpoints instead of
   flagging any connector row beneath a couple midpoint.
 - Refined vertical descent validation to use per-glyph edge masks (only connectors

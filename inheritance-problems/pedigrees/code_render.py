@@ -6,7 +6,6 @@ import os
 
 # Local repo modules
 import pedigree_html_lib
-import pedigree_png_lib
 import pedigree_svg_lib
 import pedigree_validate_lib
 
@@ -89,7 +88,7 @@ def main():
 
 	if args.write_png:
 		png_path = _output_path(args.out, '.png')
-		pedigree_png_lib.save_pedigree_png(code_string, png_path, scale=args.scale)
+		pedigree_svg_lib.save_pedigree_png(code_string, png_path, scale=args.scale)
 		print(f"Wrote PNG to {png_path}")
 
 	if args.write_svg:

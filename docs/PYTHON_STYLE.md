@@ -6,6 +6,12 @@ Language Model guide to Neil python3 programming
 
 * I like using one of the latest versions of python, but not the latest, of python3, currently **3.12**.
 
+## FILENAMES
+* Prefer snake_case for Python filenames and module names.
+* Avoid CamelCase in filenames. Reserve CamelCase for class names.
+* Keep filenames descriptive, and consistent with the primary thing the file provides.
+* Use only lowercase letters, numbers, and underscores in filenames.
+
 ## USE TABS
 
 * Always use tabs for indentation in python3 code, never spaces!
@@ -133,6 +139,19 @@ result = make_key({'ID': 12, 'Name': 'JoHN  '}, ('ID', 'Name'))
 assert result == '12 john'
 ```
 
+## PYTEST
+* Prefer pytest for automated tests when a repo has more than a few simple asserts.
+* Store tests in tests/ with files named test_*.py.
+* Test functions should be named test_* and should use plain assert.
+* Keep tests small and deterministic. Avoid network calls, random behavior, and time based logic unless mocked.
+* Prefer fixtures for setup and shared resources. Use built in fixtures like tmp_path instead of custom temp directories.
+* Avoid complex logic inside tests. If test logic needs comments, move the logic into helper functions and test those helpers.
+* Basic commands:
+* pytest run all tests
+* pytest -q quiet
+* pytest -k name run tests matching a substring
+* pytest -x stop on first failure
+
 ## TYPE HINTING
 * Use the python3-style explicit variable type hinting. I think it is good practice. Very little of my code uses it now, but I want to change that. For example,
 ```python
@@ -244,6 +263,7 @@ pyexiftool  # Python wrapper for exiftool metadata extraction and editing
 pyflakes  # Static analysis to find unused imports and simple errors
 pygame  # SDL based multimedia and simple game framework
 pytesseract  # Python wrapper for Tesseract OCR
+pytest
 python-bricklink-api  # BrickLink API client for LEGO parts and orders
 pyyaml  # YAML parsing and serialization
 qrcode  # QR code generation

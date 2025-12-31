@@ -6,12 +6,13 @@ import os
 import random
 
 # Local repo modules
+import pedigree_code_lib
 import pedigree_graph_parse_lib
 import pedigree_html_lib
 import pedigree_label_lib
-import pedigree_png_lib
 import pedigree_template_gen_lib
 import pedigree_validate_lib
+import pedigree_svg_lib
 
 
 #===============================
@@ -62,9 +63,18 @@ def parse_args():
 
 
 #===============================
-def make_index_entry(index_lines, label, png_file, html_text, code_text):
+def make_index_entry(index_lines, label, png_file, svg_file, html_text, code_text):
 	index_lines.append(f"<h3>{label}</h3>")
-	index_lines.append(f"<p><img src='{png_file}' alt='{label}'></p>")
+	index_lines.append("<p><strong>SVG preview:</strong></p>")
+	index_lines.append(
+		f"<p><img src='{svg_file}' alt='{label} SVG' "
+		"style='border: 4px solid #8b0000; padding: 6px;'></p>"
+	)
+	index_lines.append("<p><strong>PNG preview:</strong></p>")
+	index_lines.append(
+		f"<p><img src='{png_file}' alt='{label} PNG' "
+		"style='border: 4px solid #006400; padding: 6px;'></p>"
+	)
 	index_lines.append("<div style='margin-bottom: 24px;'>")
 	index_lines.append(html_text)
 	index_lines.append("<pre>")
@@ -147,31 +157,38 @@ def main():
 		idx = generated
 		print(f"Accepted {generated}/{args.count} after {attempts} attempts.")
 		label_positions: dict[tuple[int, int], str] = {}
-		rows = pedigree_graph_parse_lib._get_code_rows(code_string)
-		label_chars = pedigree_label_lib.assign_labels(len(rows))
-		label_cursor = 0
+		label_string = None
+		rows = pedigree_code_lib.get_code_rows(code_string)
+		person_cells: list[tuple[int, int]] = []
 		for row_index, row in enumerate(rows):
 			for col_index, char in enumerate(row):
-				name = pedigree_graph_parse_lib._lookup_shape_name(char)
+				name = pedigree_code_lib.short_hand_lookup.get(char, '')
 				if 'SQUARE' in name or 'CIRCLE' in name:
-					if label_cursor < len(label_chars):
-						label_positions[(row_index, col_index)] = label_chars[label_cursor]
-						label_cursor += 1
-		label_string = pedigree_label_lib.make_label_string(code_string, label_positions)
+					person_cells.append((row_index, col_index))
+		try:
+			label_chars = pedigree_label_lib.assign_labels(len(person_cells))
+			for position, label_char in zip(person_cells, label_chars, strict=False):
+				label_positions[position] = label_char
+			label_string = pedigree_label_lib.make_label_string(code_string, label_positions)
+		except ValueError as exc:
+			print(f"Labeling skipped: {exc}")
 
 		html_text = pedigree_html_lib.make_pedigree_html(code_string, label_string=label_string)
 		png_name = f"preview_{idx:03d}.png"
+		svg_name = f"preview_{idx:03d}.svg"
 		txt_name = f"preview_{idx:03d}.txt"
 		png_path = os.path.join(args.outdir, png_name)
+		svg_path = os.path.join(args.outdir, svg_name)
 		txt_path = os.path.join(args.outdir, txt_name)
 
 		print(f"Rendering HTML/PNG for preview_{idx:03d}...")
-		pedigree_png_lib.save_pedigree_png(code_string, png_path, scale=args.scale, label_string=label_string)
+		pedigree_svg_lib.save_pedigree_png(code_string, png_path, scale=args.scale, label_string=label_string)
+		pedigree_svg_lib.save_pedigree_svg(code_string, svg_path, scale=args.scale, label_string=label_string)
 		with open(txt_path, 'w') as txt_handle:
 			txt_handle.write(code_string)
 
 		label = f"{args.mode} {idx:03d}"
-		make_index_entry(index_lines, label, png_name, html_text, code_string)
+		make_index_entry(index_lines, label, png_name, svg_name, html_text, code_string)
 
 	index_lines.append("</body></html>")
 	index_path = os.path.join(args.outdir, "index.html")

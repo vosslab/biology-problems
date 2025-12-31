@@ -9,9 +9,36 @@ Repo-wide conventions for this project and related repos.
 - Keep `README.md` and `AGENTS.md` at the repo root.
 
 ## Naming
-- Use lowercase ascii filenames with underscores for most files; avoid spaces; 
-- Match script names to their primary purpose.
+- Use SCREAMING_SNAKE_CASE for Markdown docs filenames, with the .md extension
+- For non-Markdown filenames, use only lowercase ASCII letters, numbers, and underscores.
+- Prefer snake_case for most filenames. Avoid CamelCase in filenames. 
+- Use underscores between words and avoid spaces.
 - Use `.md` for docs, `.sh` for shell, `.py` for Python.
+- Keep filenames descriptive, and consistent with the primary thing the file provides.
+
+## Git moves, renames, and index locks
+- Use `git mv` for all renames and moves.
+- Do not use `mv` plus add/remove as a fallback. Do not use `git rm` unless deleting a file permanently.
+- Before any index-writing Git command (including `git mv`, `git add`, `git rm`, `git checkout`, `git switch`, `git restore`, `git merge`, `git rebase`, `git reset`, `git commit`), verify `.git` is writable by the current user. If not, stop and report a permissions error.
+- If `.git/index.lock` exists:
+  - Do not modify files and do not run Git commands. Stop and report:
+    - lock owner, permissions, and age (mtime)
+    - process holding the lock, if detectable (for example, `lsof .git/index.lock`)
+  - If a process holds the lock, report an active concurrent Git operation.
+  - If no process holds the lock and the lock age is > 5 minutes, report a likely stale lock. Do not delete it automatically.
+- If any Git command fails with an index lock error (cannot create `.git/index.lock`), stop immediately. Do not retry and do not fall back to `mv`.
+- Error report must include: the command run and full stderr, plus a short next step: close other Git processes, remove a stale lock only if no process holds it, or fix `.git` permissions.
+
+## Versioning
+- Prefer `pyproject.toml` as the single source of truth when the repo is a single Python package with a single `pyproject.toml`.
+- If the repo contains multiple Python packages (multiple `pyproject.toml` files), keep package versions in sync across all `pyproject.toml` files. Unless otherwise stated.
+- Maintain a REPO_ROOT/`VERSION` file as well that is sync'd with the `pyproject.toml` version.
+- Store the version under `[project] version`.
+- Prefer CalVer-style zero-padded year/zero-padded month versioning for new releases, formatted as `0Y.0M.PATCH` (for example `25.02.3rc1`). See https://calver.org/
+- Use PEP 440 pre-release tags when needed: `aN` for alpha, `bN` for beta, and `rcN` for release candidates.
+- When PATCH == 0, use shorthand `25.02b1` instead of `25.02.0b1`
+- Prefer zero-padded 0Y.0M for readability and lexicographic sorting. Packaging tools may normalize 25.02.* to 25.2.*; this does not affect version ordering.
+- Reference: [PyPA version specifiers](https://packaging.python.org/en/latest/specifications/version-specifiers/).
 
 ## Scripts and executables
 - Keep scripts self-contained and single-purpose.
@@ -33,9 +60,12 @@ Repo-wide conventions for this project and related repos.
 
 ## Documentation
 - Keep repo docs in `docs/` unless a file is explicitly root-level.
-- Keep docs concise and current; remove stale docs when replacing them.
-
-Use ALL CAPS for all Markdown documentation filenames (*.md) so docs visually stand out from code and scripts at a glance. Use underscores between words, avoid spaces, and choose clear, descriptive names. Keep well-known root-level docs in their conventional forms (for example README.md, AGENTS.md), and apply the same ALL CAPS rule to files under docs/ (for example docs/INSTALL.md, docs/USAGE.md).
+- Keep docs current. Remove or replace stale docs.
+- Use SCREAMING_SNAKE_CASE for Markdown docs filenames, with the .md extension
+- Apply the ALL CAPS rule to files under docs/ (for example docs/INSTALL.md).
+- Use underscores between words and avoid spaces.
+- Choose clear, descriptive names.
+- Keep well-known root-level docs (for example VERSION, README.md, AGENTS.md).
 
 ### Recommended common docs
 - `AGENTS.md`: agent instructions, tool constraints, and repo-specific workflow guardrails.
@@ -89,7 +119,7 @@ Possible examples:
 ## Licensing
 Check the license file to match these criteria.
 
-- Source code is licensed under **GPLv3**, unless stated otherwise.
+- Most source code is licensed under **GPLv3**, unless stated otherwise.
 - Libraries intended for use by proprietary or mixed-source software are licensed under **LGPLv3**.
 - Non-code creative works, including text and figures, are licensed under **CC BY-SA 4.0**. Commercial use is permitted.
 

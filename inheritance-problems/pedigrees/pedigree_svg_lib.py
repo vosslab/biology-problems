@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 
+# Standard Library
+import os
+import subprocess
+import tempfile
+
 # Local repo modules
 import pedigree_code_lib
 
@@ -191,10 +196,10 @@ def make_pedigree_svg(code_string: str, scale: float = 1.0, show_grid: bool = Fa
 						fill = _label_color(shape_name)
 						text_x = x0 + cell_size / 2
 						text_y = y0 + cell_size / 2
-						font_size = max(8, int(cell_size * 0.5))
+						font_size = max(10, int(cell_size * 0.52))
 						svg_parts.append(
-							f"<text x='{text_x}' y='{text_y}' text-anchor='middle' dominant-baseline='middle' "
-							f"font-size='{font_size}' font-weight='bold' fill='{fill}'>{label_char}</text>"
+							f"<text x='{text_x}' y='{text_y}' text-anchor='middle' dominant-baseline='central' "
+							f"font-size='{font_size}' font-weight='bold' fill='{fill}' dy='-0.1em'>{label_char}</text>"
 						)
 
 	if defs_parts:
@@ -218,6 +223,31 @@ def save_pedigree_svg(code_string: str, output_file: str, scale: float = 1.0, la
 	svg_text = make_pedigree_svg(code_string, scale, label_string=label_string)
 	with open(output_file, 'w') as handle:
 		handle.write(svg_text)
+
+
+#===============================
+def save_pedigree_png(code_string: str, output_file: str, scale: float = 1.0, label_string: str | None = None) -> None:
+	"""
+	Render and save a pedigree PNG image by converting SVG output.
+
+	Args:
+		code_string (str): Pedigree code string.
+		output_file (str): Output file path.
+		scale (float): Scaling factor for the output image size.
+		label_string (str | None): Optional label string aligned to code_string.
+	"""
+	svg_text = make_pedigree_svg(code_string, scale, label_string=label_string)
+	with tempfile.NamedTemporaryFile(mode='w', suffix='.svg', delete=False) as handle:
+		handle.write(svg_text)
+		tmp_path = handle.name
+	try:
+		subprocess.run(
+			['rsvg-convert', tmp_path, '-o', output_file, '--background-color', '#ffffff'],
+			check=True
+		)
+	finally:
+		if os.path.exists(tmp_path):
+			os.remove(tmp_path)
 
 
 #===============================
