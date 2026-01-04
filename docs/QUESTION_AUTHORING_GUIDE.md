@@ -12,6 +12,15 @@ argparse setup, and output conventions used across this repo.
 - Rename it using snake_case and a descriptive topic name.
 - Keep the `#!/usr/bin/env python3` shebang and the `main()` entrypoint.
 
+## Making `bptools` importable
+
+Two simple options:
+
+- Session-only: `source source_me.sh` (adds the repo root to `PYTHONPATH`).
+- Editable install: `python3 -m pip install -e .`
+  - This does not copy the code into `site-packages`.
+  - It links to your working tree, so edits take effect immediately.
+
 Example:
 
 ```bash

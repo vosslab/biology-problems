@@ -1,0 +1,18 @@
+Using 'list_of_phase_1_python_scripts_to_upgrade.txt', choose another three random scripts to upgrade based on the docs/UNIFICATION_PLAN.md guideline and docs/PYTHON_STYLE.md.
+
+If there are challenges to upgrading any of the files, such as having to make write_question(N, args) and pull content from main() document those solutions in docs/UNIFICATION_PLAN.md.
+
+Update docs/CHANGELOG.md with the files you changed what specifically needed to be done to each file
+
+when done remove the scripts from 'list_of_phase_1_python_scripts_to_upgrade.txt'. Further add the completed files to 'upgraded_phase_1_python_scripts.txt'
+
+
+I am going to bed now, but I would love it if you could go through and work on the remaining scripts. You are doing such a great job!!
+
+Using 'list_of_phase_1_python_scripts_to_upgrade.txt', slow work through each of the scripts and upgrade them based on the docs/UNIFICATION_PLAN.md and docs/PYTHON_STYLE.md guidelines.
+
+If there are challenges to upgrading any of the files, such as having to make a new write_question(N, args) and pull content from main() document those solutions in docs/UNIFICATION_PLAN.md.
+
+Update docs/CHANGELOG.md with the files you changed what specifically needed to be done to each file.
+
+When done remove the script from 'list_of_phase_1_python_scripts_to_upgrade.txt' and add the completed script to 'upgraded_phase_1_python_scripts.txt'

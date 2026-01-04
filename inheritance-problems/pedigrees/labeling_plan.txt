@@ -1,0 +1,66 @@
+Yes. Keep your existing single-character code_string unchanged, and add a parallel "labels layer" that is the same grid size. That gives you letters everywhere without breaking the alphabet.
+
+Recommended design
+
+1) Two-grid bundle
+* code_string: your current grid alphabet (# o T, | . % etc)
+* label_string: same rows and columns, but:
+* . means no label
+* A..Z (and maybe a..z later) are labels
+* same % row separator
+
+Rule: labels are only meaningful on person cells. A validator can enforce that.
+
+Example shape:
+* code_string row has ..#-o..
+* label_string row has ..A.B.. (labels placed on the person cells only)
+
+2) Keep labels out of connectors
+
+Do not try to label connectors. Only label the person symbols. That keeps it legible.
+
+3) Renderers
+
+All three renderers can support labels with minimal changes:
+
+HTML
+* When rendering a person cell, wrap the symbol with a positioned label:
+* a <div class="cell person"> containing the SVG or HTML shape plus <span class="label">A</span>
+* Use CSS to place the letter centered or slightly above the shape.
+
+PNG
+* After drawing the person symbol, draw text at the cell center:
+* use a small font, scaled with cell size
+* default to black text; if the person is filled black, draw white text for contrast
+* Keep this optional via show_labels=True.
+
+SVG
+* After drawing the person shape, add:
+* <text x="..." y="..." text-anchor="middle" dominant-baseline="middle">A</text>
+* Same contrast rule if filled.
+
+4) Where labels come from
+
+Do not force users to provide label_string. Generate it from the graph:
+* Assign labels in a deterministic order, for example:
+* generation order, left-to-right x, then male before female, or just left-to-right per row
+* Compiler produces both:
+* (code_string, label_string, person_id_to_label) for story problems
+
+5) Validation checks to add
+* label_string must have identical row structure to code_string (same number of rows and same row lengths).
+* Any label character must align with a person cell in code_string.
+* No duplicate labels.
+
+Minimal API suggestion
+
+In pedigree_code_lib.py or a new pedigree_label_lib.py:
+* make_label_string(code_string, labels_by_position) -> str
+* compile_graph_spec_to_code_and_labels(spec, ...) -> (code_string, label_string, label_map)
+
+And update render calls:
+* make_pedigree_html(code_string, label_string=None)
+* save_pedigree_png(code_string, out_path, label_string=None, ...)
+* make_pedigree_svg(code_string, label_string=None, ...)
+
+This gives you labeling everywhere, keeps the original code stable, and makes story problems much easier to write.

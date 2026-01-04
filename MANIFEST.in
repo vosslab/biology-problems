@@ -1,0 +1,9 @@
+include VERSION
+include LICENSE
+include README.md
+include pip_requirements.txt
+recursive-include data *.yml *.yaml *.csv *.txt
+recursive-include images *
+recursive-include matching_sets *.yml *.yaml *.csv *.txt
+recursive-include multiple_choice_statements *.yml *.yaml *.csv *.txt
+recursive-include docs *.md
