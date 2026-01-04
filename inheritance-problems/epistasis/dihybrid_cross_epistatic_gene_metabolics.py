@@ -3,11 +3,19 @@
 
 # Import built-in Python modules
 # Provides functions to generate random numbers and selections
-import random
 import copy
+import os
+import random
+import sys
 
 # Import external modules (pip-installed)
 # No external modules are used here currently
+
+repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+inheritance_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+for path in (repo_root, inheritance_root):
+	if path not in sys.path:
+		sys.path.insert(0, path)
 
 # Import local modules from the project
 # Provides custom functions, such as question formatting and other utilities

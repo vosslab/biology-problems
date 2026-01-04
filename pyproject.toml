@@ -13,3 +13,6 @@ license = { text = "GPL-3.0-or-later" }
 [tool.setuptools]
 py-modules = ["bptools", "logger_config"]
 include-package-data = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

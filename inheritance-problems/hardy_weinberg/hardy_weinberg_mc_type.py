@@ -10,14 +10,18 @@ import string
 # pip modules
 import yaml
 
+repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+inheritance_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+for path in (repo_root, inheritance_root):
+	if path not in sys.path:
+		sys.path.insert(0, path)
+
 # local modules
 import bptools
 import disorderlib
 
 
-yaml_file = os.path.abspath(
-	os.path.join(os.path.dirname(__file__), "..", "data", "organism_data.yml")
-)
+yaml_file = bptools.get_repo_data_path("organism_data.yml")
 with open(yaml_file, 'r') as file:
 	organism_data = yaml.safe_load(file)
 #import pprint

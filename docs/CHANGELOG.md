@@ -3,6 +3,46 @@
 ## 2026-01-04
 - Added a cytogenetic band-order question generator in
   [inheritance-problems/cytogenetic_notation/cytogenetic_notation-band_order.py](inheritance-problems/cytogenetic_notation/cytogenetic_notation-band_order.py).
+- Added a chi-square null/alternative hypothesis question generator in
+  [inheritance-problems/chi_square/chi_square_hypotheses.py](inheritance-problems/chi_square/chi_square_hypotheses.py).
+- Added a chi-square "dumb lab partner" hypothesis mistake-spotting generator in
+  [inheritance-problems/chi_square/chi_square_hypotheses_lab_partner.py](inheritance-problems/chi_square/chi_square_hypotheses_lab_partner.py).
+- Updated both chi-square hypothesis generators to choose offspring totals that produce integer expected counts.
+- Updated the phylogenetic tree batch script
+  [inheritance-problems/phylogenetic_trees/make_all_gene_trees.py](inheritance-problems/phylogenetic_trees/make_all_gene_trees.py)
+  to use [inheritance-problems/phylogenetic_trees/treelib/](inheritance-problems/phylogenetic_trees/treelib/) instead of `phylolib2.py`.
+- Added biostatistics hypothesis-identification generators in
+  [biostatistics-problems/hypothesis_statements.py](biostatistics-problems/hypothesis_statements.py) and
+  [biostatistics-problems/hypothesis_lab_partner.py](biostatistics-problems/hypothesis_lab_partner.py).
+- Updated [biostatistics-problems/hypothesis_statements.py](biostatistics-problems/hypothesis_statements.py)
+  to add plain-English "In words" sentences to each option and include an ASCII-friendly parameter label in
+  parentheses for improved terminal readability.
+- Updated [biostatistics-problems/hypothesis_lab_partner.py](biostatistics-problems/hypothesis_lab_partner.py)
+  to include the same ASCII-friendly parameter labels and "In words" sentences for the lab partner's hypotheses.
+- Added [source_me_for_testing.sh](source_me_for_testing.sh) to source both this repo and `qti_package_maker`
+  for local testing.
+- Added a pytest smoke-test suite for `*lib.py` modules in [tests/](tests/) and configured pytest discovery via
+  [pyproject.toml](pyproject.toml).
+- Added a dominant/X-linked recessive variation generator in
+  [inheritance-problems/dominant_and_X-linked_recessive_variations.py](inheritance-problems/dominant_and_X-linked_recessive_variations.py)
+  with varied event targets and family genotypes.
+- Added a compatibility shim for `qti_package_maker` AntiCheat hidden-term insertion in
+  [bptools.py](bptools.py).
+- Added a monohybrid litter inference generator in
+  [inheritance-problems/monohybrid_litter_inference.py](inheritance-problems/monohybrid_litter_inference.py)
+  inspired by single-gene dominance scenarios.
+- Added a lethal allele survival generator in
+  [inheritance-problems/lethal_allele_survival.py](inheritance-problems/lethal_allele_survival.py)
+  for heterozygote crosses with lethal homozygotes.
+- Fixed local import resolution for Hardy-Weinberg and epistasis generators after
+  directory moves, and updated Hardy-Weinberg data path resolution to use the
+  repo data directory.
+- Added a shared translocation helper library in
+  [inheritance-problems/translocation/translocationlib.py](inheritance-problems/translocation/translocationlib.py)
+  and refactored the Robertsonian and meiosis translocation generators to use it.
+- Added new X-linked inheritance generators inspired by the 2020 practice set:
+  [inheritance-problems/x_linked_reciprocal_cross.py](inheritance-problems/x_linked_reciprocal_cross.py)
+  and [inheritance-problems/x_linked_tortoiseshell.py](inheritance-problems/x_linked_tortoiseshell.py).
 - Added a question authoring guide based on `TEMPLATE.py` in
   [docs/QUESTION_AUTHORING_GUIDE.md](docs/QUESTION_AUTHORING_GUIDE.md).
 - Added cytogenetic disorder mappings in

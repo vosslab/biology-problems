@@ -3,49 +3,9 @@
 import random
 
 import bptools
+import translocationlib
 
 debug = False
-
-#Mbp
-chromosome_lengths = {
-	13: (18,97),
-	14: (17,90),
-	15: (19,84),
-	21: (13,35),
-	22: (15,37),
-}
-centromere_length = 20
-
-def drawChromosome(chromosome1, color='coral'):
-	table = ''
-	table += '<table style="border-collapse: collapse; border: 0px solid white; height: 30px">'
-	distance = chromosome_lengths[chromosome1]
-	table += '<colgroup width="{0}"></colgroup>'.format(distance[0]*3-12)
-	table += '<colgroup width="{0}"></colgroup>'.format(24)
-	table += '<colgroup width="{0}"></colgroup>'.format(distance[1]*3-12)
-	table += '<tr>'
-	table += '<td bgcolor="{1}"  style="border: 2px solid black;" align="center"><span style="font-size: small">{0}p</span></td>'.format(chromosome1, color)
-	table += '<td bgcolor="SlateGray" style="border: 4px solid black;"></td>'
-	table += '<td bgcolor="{1}"   style="border: 2px solid black;" align="center"><span style="font-size: small">{0}q</span></td>'.format(chromosome1, color)
-	table += '</tr>'
-	table += '</table>'
-	return table
-
-def drawRobertChromosome(chromosome1, chromosome2, color1='coral', color2='deepskyblue'):
-	table = ''
-	table += '<table style="border-collapse: collapse; border: 0px solid white; height: 30px">'
-	distance1 = chromosome_lengths[chromosome1]
-	distance2 = chromosome_lengths[chromosome2]
-	table += '<colgroup width="{0}"></colgroup>'.format(distance1[1]*3-12)
-	table += '<colgroup width="{0}"></colgroup>'.format(24)
-	table += '<colgroup width="{0}"></colgroup>'.format(distance2[1]*3-12)
-	table += '<tr>'
-	table += '<td bgcolor="{1}"  style="border: 2px solid black;" align="center"><span style="font-size: small">{0}q</span></td>'.format(chromosome1, color1)
-	table += '<td bgcolor="SlateGray" style="border: 4px solid black;"></td>'
-	table += '<td bgcolor="{1}"   style="border: 2px solid black;" align="center"><span style="font-size: small">{0}q</span></td>'.format(chromosome2, color2)
-	table += '</tr>'
-	table += '</table>'
-	return table
 
 def questionText(chromosome1, chromosome2):
 	question = ''
@@ -54,16 +14,6 @@ def questionText(chromosome1, chromosome2):
 	question += '<h5>Which one of the following gametes was formed by '
 	question += '<span style="color: darkred;">alternate</span> segregation in this individual?</h5>'
 	return question
-
-def merge_tables(table_list):
-	table = ''
-	table += '<table style="border-collapse: collapse; border: 0px solid white;">'
-	for chromo_table in table_list:
-		table += '<tr>'
-		table += '  <td align="left">{0}</td>'.format(chromo_table)
-		table += '</tr>'
-	table += '</table>'
-	return table
 
 def blackboardFormat(N, chromosome1, chromosome2):
 	question_string = questionText(chromosome1, chromosome2)
@@ -81,11 +31,11 @@ def blackboardFormat(N, chromosome1, chromosome2):
 		color1 = 'coral'
 		color2 = 'deepskyblue'
 
-	table1  = drawChromosome(chromosome1, color1)
-	table2  = drawChromosome(chromosome2, color2)
-	table12 = drawRobertChromosome(chromosome1, chromosome2, color1, color2)
+	table1  = translocationlib.draw_robertsonian_single_chromosome(chromosome1, color1)
+	table2  = translocationlib.draw_robertsonian_single_chromosome(chromosome2, color2)
+	table12 = translocationlib.draw_robertsonian_chromosome(chromosome1, chromosome2, color1, color2)
 	#print(table1+table2+table12)
-	table_merge = merge_tables([table1, table2, table12])
+	table_merge = translocationlib.merge_tables([table1, table2, table12])
 	question_string += table_merge
 	question_string += '<p>all of three of the chromosomes in a somatic cell are shown above.</p><p></p>'
 
@@ -127,7 +77,7 @@ def blackboardFormat(N, chromosome1, chromosome2):
 	return blackboard
 
 def write_question_batch(start_num: int, args) -> list:
-	acrocentric_chromosomes = [13, 14, 15, 21, 22]
+	acrocentric_chromosomes = translocationlib.ACROCENTRIC_CHROMOSOMES
 	questions = []
 	remaining = None
 	if args.max_questions is not None:

@@ -1,6 +1,7 @@
 #General Toosl for These Problems
 import os
 import sys
+import inspect
 import argparse
 import subprocess
 from collections import defaultdict
@@ -24,6 +25,26 @@ crc16_dict = {}
 nocheater = anti_cheat.AntiCheat()
 nocheater.use_insert_hidden_terms = True
 nocheater.use_no_click_div = True
+
+#==========================
+def _patch_anticheat_insert_hidden_terms():
+	"""
+	Compatibility shim for qti_package_maker AntiCheat API changes.
+
+	Some versions call insert_hidden_terms(text, hidden_term_bank) while others define
+	insert_hidden_terms(text) and store the term bank on self.
+	"""
+	sig = inspect.signature(anti_cheat.AntiCheat.insert_hidden_terms)
+	if len(sig.parameters) == 2:
+		original = anti_cheat.AntiCheat.insert_hidden_terms
+
+		def insert_hidden_terms(self, text_content: str, hidden_term_bank=None) -> str:
+			return original(self, text_content)
+
+		anti_cheat.AntiCheat.insert_hidden_terms = insert_hidden_terms
+
+
+_patch_anticheat_insert_hidden_terms()
 
 #==========================
 def get_git_root(path=None):

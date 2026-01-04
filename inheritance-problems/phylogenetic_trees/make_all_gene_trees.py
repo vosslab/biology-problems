@@ -1,152 +1,87 @@
 #!/usr/bin/env python3
 
-import os
-import sys
-import copy
-import math
 import time
-import random
 import argparse
-import colorsys
-import itertools
 
-#local
-import bptools
-import phylolib2
-
-# make a gene tree table with 4 leaves, ask students to choose correct one
-
-#===========================================
-def comb_safe_permutations(genes):
-	complete_set = itertools.permutations(genes, len(genes))
-	comb_safe_set = list(complete_set)
-	for p in comb_safe_set:
-		#swap first two elements
-		q = list(p)
-		q[0], q[1] = q[1], q[0]
-		r = tuple(q)
-		comb_safe_set.remove(r)
-	#print(comb_safe_set)
-	return comb_safe_set
-
-#===========================================
-def all_permutations(genes):
-	complete_set = itertools.permutations(genes, len(genes))
-	complete_set = list(complete_set)
-	return complete_set
-
-#===========================================
-def gene_tree_code_to_profile(code, num_nodes):
-	code_dict = {}
-	for i in range(num_nodes):
-		node_num = i + 1
-		node_index = code.find(str(node_num))
-		if code[node_index-1].isalpha():
-			code_dict[node_num] = code_dict.get(node_num, []) + [code[node_index-1],]
-		if code[node_index+1].isalpha():
-			code_dict[node_num] = code_dict.get(node_num, []) + [code[node_index+1],]
-	#print(code, code_dict)
-	profile = ""
-	keys = list(code_dict.keys())
-	keys.sort()
-	for key in keys:
-		profile += str(key)
-		values = code_dict[key]
-		values.sort()
-		profile += ''.join(values)
-	#print(code, profile)
-	return profile
-
-#===========================================
-def group_gene_trees(gene_tree_codes, num_nodes):
-	gene_tree_groups = {}
-	for code in gene_tree_codes:
-		profile = gene_tree_code_to_profile(code, num_nodes)
-		gene_tree_groups[profile] = gene_tree_groups.get(profile, []) + [code,]
-	print("Number of groups {0}".format(len(gene_tree_groups)))
-	#import pprint
-	#pprint.pprint(gene_tree_groups)
-	return gene_tree_groups
-
-#===========================================
-def is_gene_tree_alpha_sorted(code, num_nodes):
-	code_dict = {}
-	for i in range(num_nodes):
-		node_num = i + 1
-		node_index = code.find(str(node_num))
-		char1 = code[node_index-1]
-		if not char1.isalpha():
-			continue
-		char2 = code[node_index+1]
-		if not char2.isalpha():
-			continue
-		if char1 > char2:
-			return False
-	return True
-		
+from treelib import tools
+from treelib import lookup
+from treelib import permute
+from treelib import treecodeclass
 
 
 #===========================================
-def makeQuestion(N, sorted_genes, num_leaves):
-	t0 = time.time()
-	genetree = phylolib2.GeneTree()
-	num_nodes = num_leaves - 1
-	code_choice_list = genetree.make_all_gene_trees_for_leaf_count(num_leaves)
-
-	code_choice_list.sort()
-	print("code_choice_list: prelen=", prelen, "postlen=", postlen)
-
-	gene_tree_profile_groups = genetree.group_gene_trees_by_profile(code_choice_list, num_nodes)
-
-	### FILTER ANSWERS
+def group_tree_codes_by_common_name(tree_code_str_list: list[str]) -> dict[str, list[str]]:
+	groups: dict[str, list[str]] = {}
+	for tree_code_str in tree_code_str_list:
+		common_name = lookup.get_common_name_from_tree_code(tree_code_str)
+		if common_name is None:
+			common_name = tools.reset_sort_taxa_in_code(tree_code_str)
+		groups[common_name] = groups.get(common_name, []) + [tree_code_str]
+	return groups
 
 
-	group_names = list(gene_tree_profile_groups.keys())
+#===========================================
+def write_html_gallery(outfile: str, groups: dict[str, list[str]], max_per_group: int):
+	html = "<html><head><meta charset='utf-8'/>"
+	html += "<title>All gene trees</title>"
+	html += "<style>"
+	html += "body{font-family:Arial, sans-serif;}"
+	html += "code{background:#eee; padding:2px 4px;}"
+	html += "table{margin:10px 0;}"
+	html += "</style>"
+	html += "</head><body>"
+	html += "<h1>All gene trees</h1>"
+
+	group_names = list(groups.keys())
 	group_names.sort()
-	if len(group_names) < 15:
-		print(group_names)
-	"""
-	f = open('temp.html', 'w')
-	for i, profile in enumerate(group_names):
-		codes = gene_tree_groups[profile]
-		f.write('<h1>{0}. {1} &mdash; {2} trees</h1>'.format(i+1, profile, len(codes)))
-		codes.sort()
+	for i, group_name in enumerate(group_names):
+		tree_codes = groups[group_name]
+		tree_codes.sort()
+		html += f"<h2>{i+1}. {group_name} &mdash; {len(tree_codes)} trees</h2>"
 		count = 0
-		for code in codes:
-			#gene_tree_code_to_profile(code_choice, num_leaves-1)
-			html_choice = genetree.get_html_from_code(code)
-			#html_choices_list.append(html_choice)
-			f.write(html_choice+'<br/>')
+		for tree_code_str in tree_codes:
+			treecode_cls = treecodeclass.TreeCode(tree_code_str)
+			html += treecode_cls.get_html_table(caption=False)
+			html += f"<p><code>{tree_code_str}</code></p>"
 			count += 1
-			if count >= 5:
+			if count >= max_per_group:
 				break
-	f.close()
-	"""
-	return ''
+	html += "</body></html>"
+	with open(outfile, "w", encoding="utf-8") as f:
+		f.write(html)
 
 #===========================================
 #===========================================
 if __name__ == '__main__':
-	parser = argparse.ArgumentParser(description='Process some integers.')
+	parser = argparse.ArgumentParser(description="Generate and inspect all gene trees.")
 	parser.add_argument('-l', '--leaves', '--num-leaves', type=int, dest='num_leaves',
 		help='number of leaves in gene trees', default=5)
 	parser.add_argument('-d', '--duplicate-runs', type=int, dest='duplicate_runs',
-		help='number of questions to create', default=1)
+		help='legacy flag (unused); kept for compatibility', default=1)
 	parser.add_argument('-c', '--choices', type=int, dest='num_choices',
-		help='number of choices to choose from in the question', default=5)
+		help='number of example trees to render per group (when --html is used)', default=5)
+	parser.add_argument('--html', dest='write_html', action='store_true',
+		help='write an HTML gallery of trees', default=False)
+	parser.add_argument('-o', '--outfile', dest='outfile', type=str,
+		help='output HTML file name (only used with --html)', default=None)
 	args = parser.parse_args()
 
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	N = 0
-	for i in range(args.duplicate_runs):
-		sorted_genes = bptools.generate_gene_letters(args.num_leaves, 0)
-		N += 1
-		complete_question = makeQuestion(N, sorted_genes, args.num_leaves)
+	if args.num_leaves > 7:
+		raise ValueError("Too many leaves requested (>7). This can be extremely slow and memory-heavy.")
 
-		f.write(complete_question)
-	f.close()
-	print("wrote {0} questions to the file {1}".format(N, outfile))
-	bptools.print_histogram()
+	t0 = time.time()
+	base_treecode_cls_list = lookup.get_all_base_tree_codes_for_leaf_count(args.num_leaves)
+	base_tree_code_str_list = [t.tree_code_str for t in base_treecode_cls_list]
+	tree_code_str_list = permute.get_all_permuted_tree_codes_from_tree_code_list(base_tree_code_str_list)
+	tree_code_str_list = list(set(tree_code_str_list))
+	tree_code_str_list.sort()
 
+	groups = group_tree_codes_by_common_name(tree_code_str_list)
+	print(f"Generated {len(tree_code_str_list):,d} gene trees for {args.num_leaves} leaves in {time.time()-t0:.3f}s")
+	print(f"Grouped into {len(groups):,d} common-name groups")
+
+	if args.write_html:
+		if args.outfile is None:
+			args.outfile = f"all_gene_trees-{args.num_leaves}-leaves.html"
+		write_html_gallery(args.outfile, groups, args.num_choices)
+		print(f"Wrote HTML gallery to: {args.outfile}")
