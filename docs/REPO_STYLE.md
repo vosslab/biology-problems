@@ -51,6 +51,7 @@ Repo-wide conventions for this project and related repos.
 - Store Homebrew packages in `Brewfile` at the repo root.
 - Use per-subproject manifests only when a subfolder is a standalone project.
 - Document non-default system dependencies in `docs/INSTALL.md`.
+- In general, we want to require all dependencies, rather than provide work-arounds if they are mssing, because without all the dependencies the program is too crippled to run properly
 
 ## Data and outputs
 - Keep generated outputs out of git unless they are small and intentional.

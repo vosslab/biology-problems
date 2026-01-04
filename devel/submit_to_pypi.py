@@ -10,16 +10,27 @@ import tomllib
 import argparse
 import tempfile
 import subprocess
+import datetime
+import time
+import urllib.error
+import urllib.request
 
 # PIP3 modules
 import rich.console
+from packaging.utils import canonicalize_name
+from packaging.specifiers import SpecifierSet
+from packaging.version import InvalidVersion, Version
 
 DEFAULT_TESTPYPI_INDEX = "https://test.pypi.org/simple/"
 DEFAULT_PYPI_INDEX = "https://pypi.org/simple/"
 TESTPYPI_PROJECT_BASE = "https://test.pypi.org/project/"
 PYPI_PROJECT_BASE = "https://pypi.org/project/"
+BUILD_LOG_NAME = "build_output.log"
+TEST_INSTALL_RETRIES = 6
+TEST_INSTALL_RETRY_DELAY = 10
 
 console = rich.console.Console()
+error_console = rich.console.Console(stderr=True)
 
 #============================================
 
@@ -59,7 +70,7 @@ def print_error(message: str) -> None:
 	Args:
 		message: The error message to print.
 	"""
-	console.print(message, style="bold red", file=sys.stderr)
+	error_console.print(message, style="bold red")
 
 #============================================
 
@@ -119,6 +130,29 @@ def run_command_allow_fail(args: list[str], cwd: str, capture: bool) -> subproce
 
 #============================================
 
+def run_command_to_log(
+	args: list[str],
+	cwd: str,
+	log_path: str,
+) -> subprocess.CompletedProcess:
+	"""Run a command and write stdout/stderr to a log file."""
+	with open(log_path, "a") as handle:
+		handle.write(f"$ {' '.join(args)}\n")
+		handle.flush()
+		result = subprocess.run(
+			args,
+			cwd=cwd,
+			text=True,
+			stdout=handle,
+			stderr=handle,
+		)
+	if result.returncode != 0:
+		command_text = " ".join(args)
+		fail(f"Command failed (see {log_path}): {command_text}")
+	return result
+
+#============================================
+
 def parse_args() -> argparse.Namespace:
 	"""Parse command line arguments.
 
@@ -127,43 +161,6 @@ def parse_args() -> argparse.Namespace:
 	"""
 	parser = argparse.ArgumentParser(
 		description="Build and upload a Python package to PyPI or TestPyPI.",
-	)
-
-	project_group = parser.add_argument_group("project")
-	project_group.add_argument(
-		"-d",
-		"--project-dir",
-		dest="project_dir",
-		default=".",
-		help="Project directory with pyproject.toml.",
-	)
-	project_group.add_argument(
-		"-p",
-		"--pyproject",
-		dest="pyproject_path",
-		default="pyproject.toml",
-		help="Path to pyproject.toml (relative to project dir).",
-	)
-	project_group.add_argument(
-		"-n",
-		"--package-name",
-		dest="package_name",
-		default="",
-		help="Override the package name.",
-	)
-	project_group.add_argument(
-		"-v",
-		"--version",
-		dest="version",
-		default="",
-		help="Override the package version.",
-	)
-	project_group.add_argument(
-		"-m",
-		"--import-name",
-		dest="import_name",
-		default="",
-		help="Override the import name for the test import.",
 	)
 
 	repo_group = parser.add_argument_group("repository")
@@ -175,136 +172,47 @@ def parse_args() -> argparse.Namespace:
 		choices=["testpypi", "pypi"],
 		help="Repository target (default: testpypi).",
 	)
-	repo_group.add_argument(
-		"-u",
-		"--repo-url",
-		dest="repo_url",
-		default="",
-		help="Explicit repository upload URL (overrides --repo).",
-	)
-	repo_group.add_argument(
-		"-i",
-		"--index-url",
-		dest="index_url",
-		default="",
-		help="Index URL for version checks and test installs.",
-	)
 
 	behavior_group = parser.add_argument_group("behavior")
 	behavior_group.add_argument(
-		"-c",
-		"--clean",
-		dest="do_clean",
-		help="Clean build artifacts before building.",
-		action="store_true",
-	)
-	behavior_group.add_argument(
-		"-C",
-		"--no-clean",
-		dest="do_clean",
-		help="Skip cleaning build artifacts.",
-		action="store_false",
-	)
-	behavior_group.set_defaults(do_clean=True)
-
-	behavior_group.add_argument(
-		"-g",
-		"--upgrade-tools",
-		dest="upgrade_tools",
-		help="Upgrade build and upload tools.",
-		action="store_true",
-	)
-	behavior_group.add_argument(
-		"-G",
-		"--no-upgrade-tools",
-		dest="upgrade_tools",
-		help="Skip upgrading build tools.",
-		action="store_false",
-	)
-	behavior_group.set_defaults(upgrade_tools=True)
-
-	behavior_group.add_argument(
-		"-k",
 		"--version-check",
-		dest="version_check",
-		help="Check for an existing version before upload.",
+		dest="check_only",
+		help="Check if the version exists on the index and exit.",
 		action="store_true",
 	)
-	behavior_group.add_argument(
-		"-K",
-		"--skip-version-check",
-		dest="version_check",
-		help="Skip the version check.",
-		action="store_false",
-	)
-	behavior_group.set_defaults(version_check=True)
 
 	behavior_group.add_argument(
-		"-t",
-		"--test-install",
-		dest="test_install",
-		help="Test install in a temporary venv after upload.",
+		"--build-only",
+		dest="build_only",
+		help="Run all build steps but skip upload and test install.",
 		action="store_true",
 	)
-	behavior_group.add_argument(
-		"-T",
-		"--no-test-install",
-		dest="test_install",
-		help="Skip the test install step.",
-		action="store_false",
-	)
-	behavior_group.set_defaults(test_install=True)
 
 	behavior_group.add_argument(
-		"-o",
-		"--open-browser",
-		dest="open_browser",
-		help="Open the project page after upload.",
-		action="store_true",
+		"--set-version",
+		dest="set_version",
+		help="Update VERSION and pyproject.toml, then tag and push.",
+		default="",
 	)
-	behavior_group.add_argument(
-		"-O",
-		"--no-open-browser",
-		dest="open_browser",
-		help="Do not open the project page after upload.",
-		action="store_false",
-	)
-	behavior_group.set_defaults(open_browser=True)
 
 	args = parser.parse_args()
 	return args
 
 #============================================
 
-def normalize_project_dir(project_dir: str) -> str:
-	"""Normalize and validate the project directory.
-
-	Args:
-		project_dir: Project directory path.
-
-	Returns:
-		The absolute project directory path.
-	"""
-	resolved = os.path.abspath(os.path.expanduser(project_dir))
-	if not os.path.isdir(resolved):
-		fail(f"Project directory not found: {resolved}")
-	return resolved
+def resolve_repo_root() -> str:
+	"""Resolve the repository root (parent of this script)."""
+	repo_root = pathlib.Path(__file__).resolve().parents[1]
+	pyproject_path = repo_root / "pyproject.toml"
+	if not pyproject_path.is_file():
+		fail(f"pyproject.toml not found at repo root: {pyproject_path}")
+	return str(repo_root)
 
 #============================================
 
-def resolve_pyproject_path(project_dir: str, pyproject_path: str) -> str:
-	"""Resolve and validate the pyproject.toml path.
-
-	Args:
-		project_dir: Base project directory.
-		pyproject_path: Provided pyproject path.
-
-	Returns:
-		The resolved pyproject path.
-	"""
-	path_value = pyproject_path
-	if not os.path.isabs(path_value):
-		path_value = os.path.join(project_dir, path_value)
+def resolve_pyproject_path(project_dir: str) -> str:
+	"""Resolve and validate the pyproject.toml path."""
+	path_value = os.path.join(project_dir, "pyproject.toml")
 	if not os.path.isfile(path_value):
 		fail(f"pyproject.toml not found: {path_value}")
 	return path_value
@@ -366,40 +274,20 @@ def extract_project_metadata(pyproject_data: dict) -> tuple[str | None, str | No
 
 #============================================
 
-def resolve_package_name(arg_value: str, metadata_name: str | None) -> str:
-	"""Resolve the package name.
-
-	Args:
-		arg_value: Value from arguments.
-		metadata_name: Value from pyproject metadata.
-
-	Returns:
-		The resolved package name.
-	"""
-	name = arg_value.strip() if arg_value else ""
+def resolve_package_name(metadata_name: str | None) -> str:
+	"""Resolve the package name from pyproject metadata."""
+	name = metadata_name or ""
 	if not name:
-		name = metadata_name or ""
-	if not name:
-		fail("Package name not found. Use --package-name to set it.")
+		fail("Package name not found in pyproject.toml.")
 	return name
 
 #============================================
 
-def resolve_version(arg_value: str, metadata_version: str | None) -> str:
-	"""Resolve the package version.
-
-	Args:
-		arg_value: Value from arguments.
-		metadata_version: Value from pyproject metadata.
-
-	Returns:
-		The resolved package version.
-	"""
-	version = arg_value.strip() if arg_value else ""
+def resolve_version(metadata_version: str | None) -> str:
+	"""Resolve the package version from pyproject metadata."""
+	version = metadata_version or ""
 	if not version:
-		version = metadata_version or ""
-	if not version:
-		fail("Package version not found. Use --version to set it.")
+		fail("Package version not found in pyproject.toml.")
 	return version
 
 #============================================
@@ -419,24 +307,262 @@ def resolve_import_name(arg_value: str, package_name: str) -> str:
 		import_name = re.sub(r"[-.]", "_", package_name)
 	return import_name
 
+
+def read_version_file(project_dir: str) -> str:
+	"""Read the VERSION file at repo root."""
+	version_path = os.path.join(project_dir, "VERSION")
+	if not os.path.isfile(version_path):
+		fail(f"VERSION file not found at repo root: {version_path}")
+	with open(version_path, "r") as handle:
+		return handle.read().strip()
+
+
+def verify_version_sync(pyproject_version: str, file_version: str) -> None:
+	if pyproject_version != file_version:
+		fail(
+			"VERSION does not match pyproject.toml: "
+			f"{file_version} != {pyproject_version}"
+		)
+
 #============================================
 
-def resolve_index_url(repo: str, index_url: str) -> str:
-	"""Resolve the index URL based on inputs.
-
-	Args:
-		repo: Repo name.
-		index_url: Optional override.
-
-	Returns:
-		The index URL to use.
-	"""
-	url = index_url.strip() if index_url else ""
-	if url:
-		return url
+def resolve_index_url(repo: str) -> str:
+	"""Resolve the index URL based on repo."""
 	if repo == "pypi":
 		return DEFAULT_PYPI_INDEX
 	return DEFAULT_TESTPYPI_INDEX
+
+#============================================
+
+def validate_version_string(version: str) -> None:
+	"""Validate that the version string parses as PEP 440."""
+	try:
+		Version(version)
+	except InvalidVersion as exc:
+		fail(f"Invalid version string: {version} ({exc})")
+
+
+def normalize_version_string(version: str) -> str:
+	"""Return the normalized PEP 440 version string."""
+	return str(Version(version))
+
+
+def read_requires_python(pyproject_data: dict) -> str:
+	"""Read the requires-python field from pyproject data."""
+	project_data = pyproject_data.get("project", {})
+	requires_python = project_data.get("requires-python", "")
+	return str(requires_python).strip()
+
+
+def require_python_version(requires_python: str) -> None:
+	"""Ensure the running Python satisfies requires-python."""
+	if not requires_python:
+		print_warning("No requires-python specified in pyproject.toml; skipping check.")
+		return
+	specifier = SpecifierSet(requires_python)
+	current_version = Version(
+		f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
+	)
+	if current_version not in specifier:
+		fail(
+			"Python version does not satisfy requires-python: "
+			f"{current_version} not in {requires_python}"
+		)
+
+
+def require_git_clean(project_dir: str) -> None:
+	"""Ensure the git working tree has no staged or unstaged changes."""
+	result = run_command_allow_fail(
+		["git", "status", "--porcelain", "--untracked-files=no"],
+		project_dir,
+		True,
+	)
+	if result.returncode != 0:
+		fail("Unable to check git status. Is git installed?")
+	status = result.stdout.strip()
+	if status:
+		lines = status.splitlines()
+		sample = "\n".join(lines[:5])
+		fail(
+			"Working tree has tracked changes. Commit or stash before release.\n"
+			f"{sample}"
+		)
+
+
+def require_main_branch(project_dir: str) -> None:
+	"""Ensure the release is on the main branch."""
+	result = run_command_allow_fail(
+		["git", "rev-parse", "--abbrev-ref", "HEAD"],
+		project_dir,
+		True,
+	)
+	if result.returncode != 0:
+		fail("Unable to determine current git branch.")
+	branch = result.stdout.strip()
+	if branch != "main":
+		fail(f"Release must be cut from main. Current branch: {branch}")
+
+
+def require_version_tag(project_dir: str, version: str) -> None:
+	"""Ensure the git tag for the version exists."""
+	tag_name = f"v{version}"
+	result = run_command_allow_fail(
+		["git", "tag", "--list", tag_name],
+		project_dir,
+		True,
+	)
+	if result.returncode != 0:
+		fail("Unable to check git tags.")
+	if not result.stdout.strip():
+		fail(
+			"Missing version tag. Create it with:\n"
+			f"git tag -a {tag_name} -m \"Release {tag_name}\"\n"
+			f"git push origin {tag_name}"
+		)
+
+
+def require_twine_available(python_exe: str, project_dir: str) -> None:
+	"""Ensure twine is installed and runnable."""
+	result = run_command_allow_fail([python_exe, "-m", "twine", "--version"], project_dir, True)
+	if result.returncode != 0:
+		fail("twine is not available. Install it with: python -m pip install twine")
+
+
+def require_index_reachable(index_url: str) -> None:
+	"""Ensure the package index URL is reachable."""
+	request = urllib.request.Request(index_url, method="GET")
+	try:
+		with urllib.request.urlopen(request, timeout=5) as response:
+			if response.status >= 400:
+				fail(f"Index URL returned HTTP {response.status}: {index_url}")
+	except urllib.error.URLError as exc:
+		fail(f"Index URL not reachable: {index_url} ({exc})")
+
+
+def require_dist_empty(project_dir: str) -> None:
+	"""Ensure dist/ is empty after cleaning."""
+	dist_dir = os.path.join(project_dir, "dist")
+	if not os.path.isdir(dist_dir):
+		return
+	entries = [name for name in os.listdir(dist_dir) if not name.startswith(".")]
+	if entries:
+		joined = ", ".join(sorted(entries))
+		fail(f"dist/ is not empty after cleaning: {joined}")
+
+
+def require_pytest_passes_if_available(python_exe: str, project_dir: str) -> None:
+	"""Run pytest if it is installed."""
+	result = run_command_allow_fail([python_exe, "-c", "import pytest"], project_dir, False)
+	if result.returncode != 0:
+		print_warning("pytest not installed; skipping tests.")
+		return
+	print_step("Running pytest...")
+	run_command([python_exe, "-m", "pytest", "-q"], project_dir, False)
+
+
+def require_up_to_date_with_origin_main(project_dir: str) -> None:
+	"""Ensure local main is synced with origin/main."""
+	fetch_result = run_command_allow_fail(
+		["git", "fetch", "origin", "main"],
+		project_dir,
+		True,
+	)
+	if fetch_result.returncode != 0:
+		fail("Unable to fetch origin/main for sync check.")
+	result = run_command_allow_fail(
+		["git", "rev-list", "--left-right", "--count", "HEAD...origin/main"],
+		project_dir,
+		True,
+	)
+	if result.returncode != 0:
+		fail("Unable to compare HEAD with origin/main.")
+	parts = result.stdout.strip().split()
+	if len(parts) != 2:
+		fail("Unexpected rev-list output when comparing to origin/main.")
+	ahead = int(parts[0])
+	behind = int(parts[1])
+	if ahead == 0 and behind == 0:
+		return
+	if ahead > 0 and behind == 0:
+		fail(
+			"Local main has commits not pushed to origin/main. "
+			"Run: git push origin main"
+		)
+	if behind > 0 and ahead == 0:
+		fail(
+			"Local main is behind origin/main. "
+			"Run: git pull --ff-only origin main"
+		)
+	fail(
+		"Local main has diverged from origin/main. "
+		"Run: git pull --rebase origin main"
+	)
+
+
+def update_version_files(project_dir: str, version: str) -> None:
+	"""Update VERSION and pyproject.toml with the new version."""
+	version_path = os.path.join(project_dir, "VERSION")
+	current_version = ""
+	if os.path.isfile(version_path):
+		with open(version_path, "r") as handle:
+			current_version = handle.read().strip()
+	if current_version != version:
+		with open(version_path, "w") as handle:
+			handle.write(f"{version}\n")
+
+	pyproject_path = resolve_pyproject_path(project_dir)
+	with open(pyproject_path, "r") as handle:
+		contents = handle.read()
+	updated, count = re.subn(
+		r'(?m)^version\s*=\s*"[^"]+"',
+		f'version = "{version}"',
+		contents,
+		count=1,
+	)
+	if count == 0:
+		fail("Unable to update version in pyproject.toml.")
+	if updated != contents:
+		with open(pyproject_path, "w") as handle:
+			handle.write(updated)
+
+
+def has_tracked_changes(project_dir: str) -> bool:
+	"""Return True if git has tracked changes."""
+	result = run_command_allow_fail(
+		["git", "status", "--porcelain", "--untracked-files=no"],
+		project_dir,
+		True,
+	)
+	if result.returncode != 0:
+		fail("Unable to check git status.")
+	return bool(result.stdout.strip())
+
+
+def commit_version_bump(project_dir: str, version: str) -> bool:
+	"""Commit the version bump if there are tracked changes."""
+	run_command(["git", "add", "VERSION", "pyproject.toml"], project_dir, False)
+	if not has_tracked_changes(project_dir):
+		print_warning("Version files already match; skipping commit.")
+		return False
+	run_command(["git", "commit", "-m", f"Bump version to {version}"], project_dir, False)
+	return True
+
+
+def tag_and_push_version(project_dir: str, version: str, push_main: bool) -> None:
+	"""Tag and push the version."""
+	tag_name = f"v{version}"
+	tag_result = run_command_allow_fail(
+		["git", "tag", "--list", tag_name],
+		project_dir,
+		True,
+	)
+	if tag_result.returncode != 0:
+		fail("Unable to check git tags.")
+	if not tag_result.stdout.strip():
+		run_command(["git", "tag", "-a", tag_name, "-m", f"Release {tag_name}"], project_dir, False)
+	if push_main:
+		run_command(["git", "push", "origin", "main"], project_dir, False)
+	run_command(["git", "push", "origin", tag_name], project_dir, False)
 
 #============================================
 
@@ -602,6 +728,8 @@ def check_version_exists(
 		"--index-url",
 		index_url,
 	]
+	if Version(version).is_prerelease:
+		cmd.append("--pre")
 	result = run_command_allow_fail(cmd, project_dir, True)
 	output = "\n".join([result.stdout, result.stderr])
 	if result.returncode != 0:
@@ -611,8 +739,16 @@ def check_version_exists(
 	available_versions, latest_version = parse_pip_versions_output(output)
 	if latest_version:
 		print_info(f"Latest version on index: {latest_version}")
-	if available_versions and version in available_versions:
-		fail(f"Version {version} already exists on the index.")
+	normalized_version = normalize_version_string(version)
+	if available_versions:
+		normalized_versions: set[str] = set()
+		for item in available_versions:
+			try:
+				normalized_versions.add(normalize_version_string(item))
+			except InvalidVersion:
+				normalized_versions.add(item)
+		if normalized_version in normalized_versions:
+			fail(f"Version {version} already exists on the index.")
 	if not available_versions:
 		print_warning("No versions reported by pip index.")
 
@@ -657,7 +793,13 @@ def build_package(python_exe: str, project_dir: str) -> None:
 		project_dir: Project directory.
 	"""
 	print_step("Building the package...")
-	run_command([python_exe, "-m", "build"], project_dir, False)
+	log_path = os.path.join(project_dir, BUILD_LOG_NAME)
+	with open(log_path, "w") as handle:
+		handle.write(
+			f"Build log ({datetime.datetime.now().isoformat()})\n"
+		)
+	print_info(f"Build output: {log_path}")
+	run_command_to_log([python_exe, "-m", "build"], project_dir, log_path)
 
 #============================================
 
@@ -681,23 +823,12 @@ def upload_package(
 	python_exe: str,
 	project_dir: str,
 	repo: str,
-	repo_url: str,
 ) -> None:
-	"""Upload the package with twine.
-
-	Args:
-		python_exe: Python executable.
-		project_dir: Project directory.
-		repo: Repo name.
-		repo_url: Optional repo URL override.
-	"""
+	"""Upload the package with twine."""
 	print_step("Uploading the package...")
 	dist_dir = os.path.join(project_dir, "dist")
 	dist_args = get_dist_args(dist_dir)
-	if repo_url:
-		cmd = [python_exe, "-m", "twine", "upload", "--repository-url", repo_url]
-	else:
-		cmd = [python_exe, "-m", "twine", "upload", "--repository", repo]
+	cmd = [python_exe, "-m", "twine", "upload", "--repository", repo]
 	cmd.extend(dist_args)
 	run_command(cmd, project_dir, False)
 
@@ -726,6 +857,7 @@ def test_install(
 	package_name: str,
 	import_name: str,
 	index_url: str,
+	version: str,
 ) -> None:
 	"""Test install the package in a temporary venv.
 
@@ -743,44 +875,48 @@ def test_install(
 
 		venv_python = get_venv_python(venv_dir)
 		run_command([venv_python, "-m", "pip", "install", "--upgrade", "pip"], project_dir, False)
-		run_command(
-			[
-				venv_python,
-				"-m",
-				"pip",
-				"install",
-				"--no-deps",
-				"--no-cache-dir",
-				"--force-reinstall",
-				"--index-url",
-				index_url,
-				package_name,
-			],
-			project_dir,
-			False,
-		)
+		normalized_version = normalize_version_string(version)
+		install_command = [
+			venv_python,
+			"-m",
+			"pip",
+			"install",
+			"--no-deps",
+			"--no-cache-dir",
+			"--force-reinstall",
+			"--index-url",
+			index_url,
+			f"{package_name}=={normalized_version}",
+		]
+		if Version(version).is_prerelease:
+			install_command.insert(4, "--pre")
+		time.sleep(2)
+		for attempt in range(1, TEST_INSTALL_RETRIES + 1):
+			result = run_command_allow_fail(install_command, project_dir, True)
+			if result.returncode == 0:
+				break
+			output = "\n".join([result.stdout, result.stderr])
+			if "No matching distribution found" not in output:
+				fail(f"Test install failed. Output:\n{output}")
+			if attempt >= TEST_INSTALL_RETRIES:
+				fail("Test install failed after retries. Package may not be indexed yet.")
+			print_warning(
+				"Test install did not find the new version yet. "
+				f"Retrying in {TEST_INSTALL_RETRY_DELAY}s..."
+			)
+			time.sleep(TEST_INSTALL_RETRY_DELAY)
 
 		import_command = f"import {import_name}; print('{import_name} successfully installed')"
 		run_command([venv_python, "-c", import_command], project_dir, False)
 
 #============================================
 
-def resolve_project_url(repo: str, repo_url: str, package_name: str) -> str:
-	"""Resolve the project page URL.
-
-	Args:
-		repo: Repo name.
-		repo_url: Custom repo URL.
-		package_name: Package name.
-
-	Returns:
-		The project URL or an empty string.
-	"""
-	if repo_url:
-		return ""
+def resolve_project_url(repo: str, package_name: str, version: str) -> str:
+	"""Resolve the project page URL."""
+	normalized_version = normalize_version_string(version)
 	if repo == "pypi":
-		return f"{PYPI_PROJECT_BASE}{package_name}/"
-	return f"{TESTPYPI_PROJECT_BASE}{package_name}/"
+		return f"{PYPI_PROJECT_BASE}{canonicalize_name(package_name)}/{normalized_version}/"
+	return f"{TESTPYPI_PROJECT_BASE}{canonicalize_name(package_name)}/{normalized_version}/"
 
 #============================================
 
@@ -816,38 +952,76 @@ def open_project_url(url: str) -> None:
 
 def main() -> None:
 	args = parse_args()
-	project_dir = normalize_project_dir(args.project_dir)
-	pyproject_path = resolve_pyproject_path(project_dir, args.pyproject_path)
+	project_dir = resolve_repo_root()
+	pyproject_path = resolve_pyproject_path(project_dir)
 
 	pyproject_data = read_pyproject(pyproject_path)
 	metadata_name, metadata_version = extract_project_metadata(pyproject_data)
 
-	package_name = resolve_package_name(args.package_name, metadata_name)
-	version = resolve_version(args.version, metadata_version)
-	import_name = resolve_import_name(args.import_name, package_name)
-	index_url = resolve_index_url(args.repo, args.index_url)
+	package_name = resolve_package_name(metadata_name)
+	version = resolve_version(metadata_version)
+	import_name = resolve_import_name("", package_name)
+	index_url = resolve_index_url(args.repo)
+	version_file = read_version_file(project_dir)
+	verify_version_sync(version, version_file)
+	validate_version_string(version)
+	requires_python = read_requires_python(pyproject_data)
 
 	print_step("Project info")
 	print_info(f"Project dir: {project_dir}")
 	print_info(f"pyproject: {pyproject_path}")
 	print_info(f"Package name: {package_name}")
 	print_info(f"Version: {version}")
+	print_info(f"Normalized version: {normalize_version_string(version)}")
+	print_info(f"VERSION file: {version_file}")
 	print_info(f"Import name: {import_name}")
 	print_info(f"Repository: {args.repo}")
-	if args.repo_url:
-		print_info(f"Repository URL: {args.repo_url}")
 	print_info(f"Index URL: {index_url}")
 
-	if args.version_check:
-		check_version_exists(sys.executable, project_dir, package_name, version, index_url)
+	if args.set_version:
+		new_version = args.set_version.strip()
+		if not new_version:
+			fail("Set-version value cannot be empty.")
+		validate_version_string(new_version)
+		print_step("Setting version")
+		require_git_clean(project_dir)
+		require_main_branch(project_dir)
+		require_up_to_date_with_origin_main(project_dir)
+		update_version_files(project_dir, new_version)
+		did_commit = commit_version_bump(project_dir, new_version)
+		tag_and_push_version(project_dir, new_version, did_commit)
+		print_info(f"Version updated and pushed: {new_version}")
+		return
 
-	if args.upgrade_tools:
-		print_step("Upgrading build tools...")
-		upgrade_build_tools(sys.executable, project_dir)
+	print_step("Pre-checks")
+	require_python_version(requires_python)
+	require_git_clean(project_dir)
+	require_main_branch(project_dir)
+	require_up_to_date_with_origin_main(project_dir)
+	require_version_tag(project_dir, version)
+	require_twine_available(sys.executable, project_dir)
+	require_index_reachable(index_url)
+	require_pytest_passes_if_available(sys.executable, project_dir)
 
-	if args.do_clean:
-		print_step("Cleaning build artifacts...")
-		clean_build_artifacts(project_dir)
+	check_version_exists(sys.executable, project_dir, package_name, version, index_url)
+	if args.check_only:
+		print_step("Check-only mode: exiting after version check.")
+		return
+
+	print_step("Upgrading build tools...")
+	log_path = os.path.join(project_dir, BUILD_LOG_NAME)
+	with open(log_path, "a") as handle:
+		handle.write("\nUpgrade tools output\n")
+	print_info(f"Build output: {log_path}")
+	run_command_to_log(
+		[sys.executable, "-m", "pip", "install", "--upgrade", "pip", "setuptools", "wheel", "build", "twine"],
+		project_dir,
+		log_path,
+	)
+
+	print_step("Cleaning build artifacts...")
+	clean_build_artifacts(project_dir)
+	require_dist_empty(project_dir)
 
 	build_package(sys.executable, project_dir)
 
@@ -856,16 +1030,18 @@ def main() -> None:
 	show_dist_files(os.path.join(project_dir, "dist"))
 
 	check_metadata(sys.executable, project_dir)
-	upload_package(sys.executable, project_dir, args.repo, args.repo_url)
+	if args.build_only:
+		print_step("Build-only mode: skipping upload and test install.")
+		return
 
-	if args.test_install:
-		test_install(sys.executable, project_dir, package_name, import_name, index_url)
+	upload_package(sys.executable, project_dir, args.repo)
 
-	project_url = resolve_project_url(args.repo, args.repo_url, package_name)
+	test_install(sys.executable, project_dir, package_name, import_name, index_url, version)
+
+	project_url = resolve_project_url(args.repo, package_name, version)
 	if project_url:
 		print_info(f"Project URL: {project_url}")
-	if args.open_browser:
-		open_project_url(project_url)
+	open_project_url(project_url)
 
 	if args.repo == "testpypi":
 		print_step("Next step")

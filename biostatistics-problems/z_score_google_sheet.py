@@ -18,7 +18,9 @@ import bptools
 
 
 # fixed names file
-NAMES_FILE = os.path.join(os.path.dirname(__file__), "student_names.txt")
+NAMES_FILE = os.path.abspath(
+	os.path.join(os.path.dirname(__file__), "..", "data", "student_names.txt")
+)
 
 #============================================
 def load_unique_initial_names(k: int = 8) -> list[str]:

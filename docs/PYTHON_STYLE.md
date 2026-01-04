@@ -41,6 +41,26 @@ Language Model guide to Neil python3 programming
 * Or use single quotes on the outside with double quotes inside.
 * This is especially useful for HTML like "<span style='...'>text</span>".
 
+## LAMBDA FUNCTIONS
+* Be conservative with lambda. Prefer def for anything more than a simple key or one-liner callback.
+* lambda is allowed when used as key= for sorted(), .sort(), min(), or max() and the expression is short and obvious.
+* Avoid lambda bodies that call major helper functions or hide important logic. If the lambda is doing real work, name it with def so it is readable, commentable, and testable.
+* If the lambda expression would be hard to understand without a comment, replace it with a named function.
+
+Allowed:
+gel_set = sorted(gel_set, key=lambda k: k["MW"])
+i = max(range(n), key=lambda k: values[k])
+villages_sorted = sorted(villages, key=lambda v: totals[v])
+
+Avoid:
+choices = sorted(choices, key=lambda k: -compare_sequence(k, consensus_sequence))
+
+Preferred rewrite:
+def score_choice(choice: str) -> int:
+score = -compare_sequence(choice, consensus_sequence)
+return score
+choices = sorted(choices, key=score_choice)
+
 ## HTML UNITS IN MONOSPACE
 * When generating HTML for lab problems, render numeric values and their units in monospace for readability and alignment.
 * Use a span like:

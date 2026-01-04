@@ -1,5 +1,18 @@
 # Changelog
 
+## 2026-01-04
+- Added a cytogenetic band-order question generator in
+  [inheritance-problems/cytogenetic_notation-band_order.py](inheritance-problems/cytogenetic_notation-band_order.py).
+- Added a question authoring guide based on `TEMPLATE.py` in
+  [docs/QUESTION_AUTHORING_GUIDE.md](docs/QUESTION_AUTHORING_GUIDE.md).
+- Added cytogenetic disorder mappings in
+  [data/cytogenetic_disorders.yml](data/cytogenetic_disorders.yml).
+- Added a cytogenetic disorder question generator in
+  [inheritance-problems/cytogenetic_notation-disorders.py](inheritance-problems/cytogenetic_notation-disorders.py).
+- Moved [inheritance-problems/organism_data.yml](inheritance-problems/organism_data.yml)
+  and [biostatistics-problems/student_names.txt](biostatistics-problems/student_names.txt)
+  into [data/](data/) and updated the generators to reference the new paths.
+
 ## 2025-12-27
 - Added [docs/FILE_STRUCTURE.md](docs/FILE_STRUCTURE.md) to document repo organization.
 - Added [docs/CODE_ARCHITECTURE.md](docs/CODE_ARCHITECTURE.md) to describe major components

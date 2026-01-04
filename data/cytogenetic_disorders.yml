@@ -1,0 +1,108 @@
+
+# cytogenetic disorder to karyotype notation mapping
+# format mirrors genetic_disorders.yml: category -> disorder -> fields
+
+chromosomal disorders:
+   Down syndrome:
+      complete: True
+      abbreviation: T21
+      caused by: trisomy 21
+      notation:
+         - 47,XX,+21
+         - 47,XY,+21
+         - 46,XX/47,XX,+21
+         - 46,XY/47,XY,+21
+      notes: Mosaic forms list two cell lines separated by a slash.
+
+   Edwards syndrome:
+      complete: True
+      abbreviation: T18
+      caused by: trisomy 18
+      notation:
+         - 47,XX,+18
+         - 47,XY,+18
+         - 46,XX/47,XX,+18
+         - 46,XY/47,XY,+18
+
+   Patau syndrome:
+      complete: True
+      abbreviation: T13
+      caused by: trisomy 13
+      notation:
+         - 47,XX,+13
+         - 47,XY,+13
+         - 46,XX/47,XX,+13
+         - 46,XY/47,XY,+13
+
+   Turner syndrome:
+      complete: True
+      abbreviation: TS
+      caused by: monosomy X or X mosaicism
+      notation:
+         - 45,X
+         - 45,X/46,XX
+         - 45,X/46,XY
+
+   Klinefelter syndrome:
+      complete: True
+      abbreviation: XXY
+      caused by: extra X chromosome in a male
+      notation:
+         - 47,XXY
+         - 46,XY/47,XXY
+
+   Triple X syndrome:
+      complete: True
+      abbreviation: XXX
+      caused by: extra X chromosome in a female
+      notation:
+         - 47,XXX
+         - 46,XX/47,XXX
+
+   XYY syndrome:
+      complete: True
+      abbreviation: XYY
+      caused by: extra Y chromosome in a male
+      notation:
+         - 47,XYY
+         - 46,XY/47,XYY
+
+   Cri-du-chat syndrome:
+      complete: True
+      abbreviation: 5p-
+      caused by: deletion of 5p
+      notation:
+         - 46,XX,del(5)(p15.2)
+         - 46,XY,del(5)(p15.2)
+
+   Wolf-Hirschhorn syndrome:
+      complete: True
+      abbreviation: 4p-
+      caused by: deletion of 4p
+      notation:
+         - 46,XX,del(4)(p16.3)
+         - 46,XY,del(4)(p16.3)
+
+   DiGeorge syndrome:
+      complete: True
+      abbreviation: 22q11.2 del
+      caused by: microdeletion at 22q11.2
+      notation:
+         - 46,XX,del(22)(q11.2)
+         - 46,XY,del(22)(q11.2)
+
+   CML with Philadelphia chromosome:
+      complete: True
+      abbreviation: t(9;22)
+      caused by: reciprocal translocation between 9q34 and 22q11.2
+      notation:
+         - 46,XX,t(9;22)(q34;q11.2)
+         - 46,XY,t(9;22)(q34;q11.2)
+
+   Down syndrome due to Robertsonian translocation:
+      complete: True
+      abbreviation: rob(14;21)+21
+      caused by: unbalanced Robertsonian translocation involving chromosome 21
+      notation:
+         - 46,XX,rob(14;21)(q10;q10),+21
+         - 46,XY,rob(14;21)(q10;q10),+21
