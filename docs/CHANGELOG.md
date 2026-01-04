@@ -19,10 +19,12 @@
   parentheses for improved terminal readability.
 - Updated [biostatistics-problems/hypothesis_lab_partner.py](biostatistics-problems/hypothesis_lab_partner.py)
   to include the same ASCII-friendly parameter labels and "In words" sentences for the lab partner's hypotheses.
-- Added [source_me_for_testing.sh](source_me_for_testing.sh) to source both this repo and `qti_package_maker`
-  for local testing.
 - Added a pytest smoke-test suite for `*lib.py` modules in [tests/](tests/) and configured pytest discovery via
   [pyproject.toml](pyproject.toml).
+- Added per-library unit tests in [tests/](tests/) (one `tests/test_*.py` per `*lib.py` file) with a shared import helper
+  in [tests/lib_test_utils.py](tests/lib_test_utils.py).
+- Fixed [biochemistry-problems/aminoacidlib.py](biochemistry-problems/aminoacidlib.py) to store `sugar_code` on
+  `AminoAcidStructure`, enabling structure/formula helpers to run.
 - Added a dominant/X-linked recessive variation generator in
   [inheritance-problems/dominant_and_X-linked_recessive_variations.py](inheritance-problems/dominant_and_X-linked_recessive_variations.py)
   with varied event targets and family genotypes.

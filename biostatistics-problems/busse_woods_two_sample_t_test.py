@@ -227,7 +227,7 @@ def format_question_html(
 	q += f"<p><span style='font-family: monospace; background-color:#eee;'>{csv_rows}</span></p>"
 
 	# Instructions
-	q += f"<p>Compute the p value in Google Sheets using the tutorial: "
+	q += "<p>Compute the p value in Google Sheets using the tutorial: "
 	q += f"<a href='{tutorial_link}' target='_blank' rel='noopener'>link here</a>.</p>"
 	q += "<p>Enter the p value as a decimal between 0 and 1.</p>"
 	return q

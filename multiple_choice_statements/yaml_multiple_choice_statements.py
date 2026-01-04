@@ -14,7 +14,6 @@ import sys
 import copy
 import math
 import time
-import yaml
 import pprint
 import random
 import argparse

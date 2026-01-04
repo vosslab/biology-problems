@@ -33,7 +33,7 @@ def write_question(N, args):
 	answer3 = "5&prime;-{0}-3&prime;".format(answer1)
 	answer3c = "5&prime;-{0}-3&prime;".format(answer1c)
 	
-	answers_list = [answer1, answer2, answer1c, answer2c]
+	answers_list = [answer1, answer2, answer1c, answer2c, answer3, answer3c]
 	
 	question = bptools.formatBB_FIB_Question(N, question, answers_list)
 	return question

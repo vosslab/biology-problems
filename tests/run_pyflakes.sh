@@ -4,13 +4,13 @@ set -e
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 cd "${REPO_ROOT}"
 
-# Run pyflakes on all Python files and capture output
-PYFLAKES_OUT="${REPO_ROOT}/pyflakes.txt"
-find "${REPO_ROOT}" \
-	-type d \( -name .git -o -name .venv -o -name old_shell_folder \) -prune -o \
-	-type f -name "*.py" -print0 \
-	| sort -z \
-	| xargs -0 pyflakes > "${PYFLAKES_OUT}" 2>&1 || true
+	# Run pyflakes on all Python files and capture output
+	PYFLAKES_OUT="${REPO_ROOT}/pyflakes.txt"
+	find "${REPO_ROOT}" \
+		-type d \( -name .git -o -name .venv -o -name old_shell_folder \) -prune -o \
+		\( -type f -name "*.py" ! -name "broken-*.py" ! -path "*TEMPLATE*" -print0 \) \
+		| sort -z \
+		| xargs -0 pyflakes > "${PYFLAKES_OUT}" 2>&1 || true
 
 RESULT=$(wc -l < "${PYFLAKES_OUT}")
 

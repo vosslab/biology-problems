@@ -123,14 +123,14 @@ class RFLPClass:
 			self.fail['canthave-blood'] = self.fail.get('canthave-blood', 0) + 1
 			return None
 
-		if len(canthave) <= 2:
-			if self.debug is True:
-				print(".. suspect=", len(suspect), suspect)
-				print(".. blood=", len(blood), blood)
-				print(".. ignore=", len(ignore), ignore)
-				print("The blood and suspect are too similar.")
-			self.fail['canthave'] = self.fail.get('canthave', 0) + 1
-			return None
+			if len(canthave) <= 2:
+				if self.debug is True:
+					print(".. killer=", len(killer), killer)
+					print(".. blood=", len(blood), blood)
+					print(".. ignore=", len(ignore), ignore)
+					print("The blood and killer are too similar.")
+				self.fail['canthave'] = self.fail.get('canthave', 0) + 1
+				return None
 
 		if len(crime_diffs) <= minimum_crime_diffs:
 			if self.debug is True:

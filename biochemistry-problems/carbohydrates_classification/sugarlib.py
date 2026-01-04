@@ -1,6 +1,5 @@
 ### Library for crateing HTML tables of Sugar molecules
 
-import os
 import re
 import sys
 #import copy

@@ -58,7 +58,7 @@ class BoxPlot:
 
 	def pretty_print_values(self):
 		"""Prints the values of the box plot in a formatted manner."""
-		print(f"BoxPlot Values:")
+		print("BoxPlot Values:")
 		print(f"  Axis Start:    {self.axis_start}")
 		print(f"  Whisker Start: {self.whisker_start}")
 		print(f"  Box Start:     {self.box_start}")

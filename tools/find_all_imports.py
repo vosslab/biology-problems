@@ -1,7 +1,6 @@
 import os
 import ast
 import sys
-import pkgutil
 import warnings
 import importlib_metadata
 

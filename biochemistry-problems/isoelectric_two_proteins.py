@@ -224,7 +224,6 @@ def generate_choices(protein1: dict, protein2: dict, pH: float) -> tuple[list[st
 #===========================================================
 #===========================================================
 def write_question(N: int, args) -> str:
-	global protein_tree
 	if protein_tree is None:
 		raise ValueError("protein_tree was not initialized")
 	protein1, protein2 = random_select_proteins(protein_tree)

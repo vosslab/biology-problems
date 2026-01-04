@@ -8,6 +8,7 @@
 class AminoAcidStructure(object):
 	#============================
 	def __init__(self, sugar_code):
+		self.sugar_code = sugar_code
 		self.molecular_formula_ready = False
 		self.structural_parts = []
 

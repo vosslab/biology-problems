@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import os
-import sys
 import random
+import argparse
 import bptools
 import sugarlib
 
@@ -205,4 +205,3 @@ if __name__ == '__main__':
 	main()
 
 ## THE END
-

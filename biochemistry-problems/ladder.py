@@ -33,11 +33,11 @@ row_count = 0
 def gen_spacer_cell(height: int, width: int=None):
 	spacer_cell_html = ''
 	#spacer_cell_html += '<!-- Empty White Cell -->'
-	spacer_cell_html += f'<td style="'
+	spacer_cell_html += '<td style="'
 	spacer_cell_html += f' height: {height}px; '
 	if width is not None:
 		spacer_cell_html += f' width: {width}px; '
-	spacer_cell_html += f' background-color: #ddd; '
+	spacer_cell_html += ' background-color: #ddd; '
 	spacer_cell_html += '"></td>'
 	return spacer_cell_html
 

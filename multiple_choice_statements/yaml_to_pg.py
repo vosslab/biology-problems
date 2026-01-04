@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import os, sys, yaml, random, argparse, re
+import os, yaml, random, argparse, re
 from typing import Dict, List, Tuple
 
 _fam_re = re.compile(r'^(truth|false)\s*(\d+)[a-z]?$')
