@@ -17,6 +17,9 @@
   and [VERSION](VERSION) (version 26.01).
 - Documented editable install behavior in
   [docs/QUESTION_AUTHORING_GUIDE.md](docs/QUESTION_AUTHORING_GUIDE.md).
+- Updated [refactor-Jan_2026/upgraded_phase_1_python_scripts.txt](refactor-Jan_2026/upgraded_phase_1_python_scripts.txt)
+  to use the new directory names for chi_square, cytogenetic_notation, epistasis,
+  deletion_mutants, polyploid, translocation, and large_crosses.
 
 ## 2025-12-27
 - Added [docs/FILE_STRUCTURE.md](docs/FILE_STRUCTURE.md) to document repo organization.
