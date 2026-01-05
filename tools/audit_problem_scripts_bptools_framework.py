@@ -61,6 +61,15 @@ def read_text(path: Path) -> str:
 		return ""
 
 
+def is_library_path(path: Path) -> bool:
+	if path.name.endswith("lib.py"):
+		return True
+	for part in path.parts:
+		if part.endswith("lib"):
+			return True
+	return False
+
+
 @dataclass(frozen=True)
 class ScriptInfo:
 	rel_path: str
@@ -121,7 +130,7 @@ def build_audit(repo: Path) -> tuple[list[ScriptInfo], dict[str, list[str]]]:
 	for path in sorted(problems.rglob("*.py"), key=lambda p: str(p)):
 		if ".venv" in path.parts:
 			continue
-		if path.name.endswith("lib.py"):
+		if is_library_path(path):
 			continue
 		text = read_text(path)
 		rel = str(path.relative_to(repo))
@@ -212,12 +221,12 @@ def main():
 	entries, bins = build_audit(repo)
 	py_files_scanned = len([
 		p for p in (repo / "problems").rglob("*.py")
-		if ".venv" not in p.parts and not p.name.endswith("lib.py")
+		if ".venv" not in p.parts and not is_library_path(p)
 	])
 	libs = sorted([
 		str(p.relative_to(repo))
-		for p in (repo / "problems").rglob("*lib.py")
-		if ".venv" not in p.parts
+		for p in (repo / "problems").rglob("*.py")
+		if ".venv" not in p.parts and is_library_path(p)
 	], key=str)
 
 	out_new = out_dir / "bptools_scripts_new_framework.txt"
@@ -304,7 +313,7 @@ def main():
 		"#",
 		"# Scope:",
 		"# - Under problems/",
-		"# - Excludes *lib.py",
+		"# - Excludes *lib.py and any *.py under directories ending in 'lib'",
 		"#",
 		"# Script definition for binning:",
 		"# - Has python shebang and __main__ guard",
