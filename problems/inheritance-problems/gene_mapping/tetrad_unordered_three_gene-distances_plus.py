@@ -10,6 +10,7 @@ import bptools
 import tetradlib
 import genemaplib as gml
 import phenotypes_for_yeast
+import tetrad_unordered_three_gene_solver_lib as tusl
 
 #need this so students can add info to the box
 bptools.use_add_no_click_div = False
@@ -117,23 +118,23 @@ def create_pair_variable(gene1, gene2):
 
 #===========================================================
 #===========================================================
-def make_answer_map(gene_order_str, distances):
+def make_answer_map(gene_order_str, pair_distance_map):
 	"""
 	Creates a mapping of variable names to their associated distances and gene order.
 
-	For a given gene order and a list of distances, this function generates a dictionary where:
+	For a given gene order and a distance map, this function generates a dictionary where:
 	- Each pairwise combination of genes (in alphabetical order) is mapped to a distance.
 	- The full gene order is mapped to both its original and reversed versions.
 
 	Args:
 		gene_order_str (str): A string of gene letters, e.g., 'abc'.
-		distances (list): A list of distances between each pair of genes, e.g., [5, 10, 15].
+		pair_distance_map (dict): A map like {'AB': 5, 'BC': 10, 'AC': 15}.
 
 	Returns:
 		dict: A dictionary with variable names as keys and distance or gene order as values.
 
 	Example:
-		>>> make_answer_map('abc', [5, 10, 15])
+		>>> make_answer_map('abc', {'AB': 5, 'BC': 10, 'AC': 15})
 		{
 			'AB': [5],
 			'BC': [10],
@@ -143,9 +144,15 @@ def make_answer_map(gene_order_str, distances):
 	"""
 	# Initialize answer map with pairwise gene combinations
 	answer_map = {
-		create_pair_variable(gene_order_str[0], gene_order_str[1]): [distances[0]],
-		create_pair_variable(gene_order_str[1], gene_order_str[2]): [distances[1]],
-		create_pair_variable(gene_order_str[0], gene_order_str[2]): [distances[2]],
+		create_pair_variable(gene_order_str[0], gene_order_str[1]): [
+			str(pair_distance_map[create_pair_variable(gene_order_str[0], gene_order_str[1])])
+		],
+		create_pair_variable(gene_order_str[1], gene_order_str[2]): [
+			str(pair_distance_map[create_pair_variable(gene_order_str[1], gene_order_str[2])])
+		],
+		create_pair_variable(gene_order_str[0], gene_order_str[2]): [
+			str(pair_distance_map[create_pair_variable(gene_order_str[0], gene_order_str[2])])
+		],
 	}
 	# Add the full gene order and its reverse as a separate entry
 	answer_map['geneorder'] = [gene_order_str, gene_order_str[::-1]]
@@ -204,10 +211,22 @@ def main():
 		ascii_table = tetradlib.get_progeny_ascii_table(3, progeny_tetrads_count_dict, progeny_size)
 		print(ascii_table)
 		html_table = tetradlib.make_progeny_html_table(progeny_tetrads_count_dict, progeny_size)
-		answer_map = make_answer_map(gene_order_str, distances)
+		pair_distance_map, solved_gene_order_str, pair_details = (
+			tusl.solve_unordered_tetrad_three_gene(progeny_tetrads_count_dict, gene_letters_str)
+		)
+		if debug:
+			print(pair_details)
+		observed_distances_sorted = sorted(pair_distance_map.values())
+		expected_distances_sorted = sorted(distances)
+		if observed_distances_sorted != expected_distances_sorted:
+			print(f"Observed distances do not match expected distances.")
+			print(f"observed={observed_distances_sorted} expected={expected_distances_sorted}")
+			continue
+		answer_map = make_answer_map(solved_gene_order_str, pair_distance_map)
 
 		# Combine all parts of the question into a single HTML string
-		complete_question = question_header + phenotype_info_str + html_table + question_setup + footer_steps + important_tips
+		complete_question = question_header + phenotype_info_str + html_table + question_setup
+		complete_question += footer_steps + important_tips
 		final_question = bptools.formatBB_FIB_PLUS_Question(N, complete_question, answer_map)
 
 		if final_question is not None:

@@ -9,6 +9,7 @@ import random
 
 import bptools
 import genemaplib as ptcl
+import gene_map_solver_lib as gms
 
 debug = True
 
@@ -220,7 +221,7 @@ if __name__ == "__main__":
 		progeny_size = ptcl.get_general_progeny_size(distances)
 		typemap = makeQuestion(basetype, geneorder, distances, progeny_size)
 		ascii_table = ptcl.make_progeny_ascii_table(typemap, progeny_size)
-		ptcl.gene_map_solver(typemap, progeny_size)
+		gms.gene_map_solver(typemap)
 		print(ascii_table)
 		html_table = ptcl.make_progeny_html_table(typemap, progeny_size)
 		#print(html_table)
