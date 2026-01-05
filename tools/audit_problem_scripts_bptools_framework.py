@@ -13,6 +13,7 @@ SCRIPT_CANDIDATE_RE = re.compile(
 	re.M,
 )
 WRITE_QUESTION_BATCH_RE = re.compile(r"^[ \t]*def[ \t]+write_question_batch[ \t]*\(", re.M)
+BPT_TOOLS_IMPORT_RE = re.compile(r"^[ \t]*(import[ \t]+bptools\b|from[ \t]+bptools[ \t]+import[ \t]+)", re.M)
 
 
 def repo_root() -> Path:
@@ -85,6 +86,22 @@ def classify_style(text: str) -> str:
 	return "other"
 
 
+def uses_bptools_framework(text: str) -> bool:
+	"""
+	Heuristic for scripts using the bptools CLI framework.
+
+	We treat both single-question and batch-question styles as "new framework".
+	"""
+	has_make_arg_parser = "make_arg_parser" in text
+	has_single = "collect_and_write_questions" in text
+	has_batch = ("collect_question_batches" in text) or ("write_questions_to_file" in text) or (WRITE_QUESTION_BATCH_RE.search(text) is not None)
+	return has_make_arg_parser and (has_single or has_batch)
+
+
+def imports_bptools(text: str) -> bool:
+	return BPT_TOOLS_IMPORT_RE.search(text) is not None
+
+
 def build_audit(repo: Path) -> tuple[list[ScriptInfo], dict[str, list[str]]]:
 	problems = repo / "problems"
 	entries: list[ScriptInfo] = []
@@ -98,7 +115,7 @@ def build_audit(repo: Path) -> tuple[list[ScriptInfo], dict[str, list[str]]]:
 		"not_new_framework": [],
 		"batch_style": [],
 		"single_style": [],
-		"other_style": [],
+		"no_bptools": [],
 	}
 
 	for path in sorted(problems.rglob("*.py"), key=lambda p: str(p)):
@@ -135,7 +152,8 @@ def build_audit(repo: Path) -> tuple[list[ScriptInfo], dict[str, list[str]]]:
 		has_write_questions_to_file = "write_questions_to_file" in text
 
 		style = classify_style(text)
-		new_framework = has_make_arg_parser and has_collect_and_write
+		new_framework = uses_bptools_framework(text)
+		has_bptools_import = imports_bptools(text)
 
 		entries.append(
 			ScriptInfo(
@@ -152,15 +170,17 @@ def build_audit(repo: Path) -> tuple[list[ScriptInfo], dict[str, list[str]]]:
 
 		if new_framework:
 			bins["new_framework"].append(rel)
-		else:
+		elif has_bptools_import:
 			bins["not_new_framework"].append(rel)
-
-		if style == "batch":
-			bins["batch_style"].append(rel)
-		elif style == "single":
-			bins["single_style"].append(rel)
 		else:
-			bins["other_style"].append(rel)
+			bins["no_bptools"].append(rel)
+
+		# Style bins are only meaningful for scripts using the bptools framework.
+		if new_framework:
+			if style == "batch":
+				bins["batch_style"].append(rel)
+			elif style == "single":
+				bins["single_style"].append(rel)
 
 	return entries, bins
 
@@ -194,27 +214,43 @@ def main():
 		p for p in (repo / "problems").rglob("*.py")
 		if ".venv" not in p.parts and not p.name.endswith("lib.py")
 	])
+	libs = sorted([
+		str(p.relative_to(repo))
+		for p in (repo / "problems").rglob("*lib.py")
+		if ".venv" not in p.parts
+	], key=str)
 
 	out_new = out_dir / "bptools_scripts_new_framework.txt"
 	out_old = out_dir / "bptools_scripts_not_new_framework.txt"
-	out_all = out_dir / "bptools_scripts_audit.txt"
+	out_no_bptools = out_dir / "bptools_scripts_no_bptools.txt"
+	out_all = out_dir / "bptools_scripts_audit.md"
+	out_libs = out_dir / "problem_lib_modules.txt"
 	out_missing_shebang = out_dir / "bptools_scripts_missing_shebang.txt"
 	out_missing_main_guard = out_dir / "bptools_scripts_missing_main_guard.txt"
 	out_missing_either = out_dir / "bptools_scripts_missing_shebang_or_main_guard.txt"
 	out_shebang_not_exec = out_dir / "bptools_scripts_shebang_not_executable.txt"
 	out_batch = out_dir / "bptools_scripts_batch_style.txt"
 	out_single = out_dir / "bptools_scripts_single_style.txt"
-	out_other = out_dir / "bptools_scripts_other_style.txt"
 
 	write_lines(
 		out_new,
 		bins["new_framework"],
-		header_comment="Scripts under problems/ that have a python shebang + __main__ guard and use make_arg_parser + collect_and_write_questions.",
+		header_comment="Scripts under problems/ that have a python shebang + __main__ guard and use the bptools question CLI framework (make_arg_parser + (collect_and_write_questions OR collect_question_batches/write_question_batch/write_questions_to_file)).",
 	)
 	write_lines(
 		out_old,
 		bins["not_new_framework"],
-		header_comment="Scripts under problems/ that have a python shebang + __main__ guard but do not match the new bptools framework heuristic.",
+		header_comment="Scripts under problems/ that have a python shebang + __main__ guard and import bptools, but do not match the bptools framework heuristic.",
+	)
+	write_lines(
+		out_no_bptools,
+		bins["no_bptools"],
+		header_comment="Scripts under problems/ that have a python shebang + __main__ guard but do not import bptools.",
+	)
+	write_lines(
+		out_libs,
+		libs,
+		header_comment="All *lib.py modules under problems/ (excluded from script binning).",
 	)
 	write_lines_if_nonempty(
 		out_missing_shebang,
@@ -246,11 +282,9 @@ def main():
 		bins["single_style"],
 		header_comment="Scripts under problems/ with a python shebang + __main__ guard that look single-question style (collect_and_write_questions and not batch-style).",
 	)
-	write_lines(
-		out_other,
-		bins["other_style"],
-		header_comment="Scripts under problems/ with a python shebang + __main__ guard that do not match batch-style or single-question bptools patterns (often utilities or non-bptools scripts).",
-	)
+	# Back-compat cleanup: older runs wrote this name.
+	(out_dir / "bptools_scripts_other_style.txt").unlink(missing_ok=True)
+	(out_dir / "bptools_scripts_audit.txt").unlink(missing_ok=True)
 
 	detailed_lines = []
 	for e in entries:
@@ -276,15 +310,17 @@ def main():
 		"# - Has python shebang and __main__ guard",
 		"#",
 		"# New framework heuristic:",
-		"# - contains make_arg_parser and collect_and_write_questions",
+		"# - contains make_arg_parser and (collect_and_write_questions OR collect_question_batches OR write_questions_to_file OR def write_question_batch(...))",
 		"#",
 		f"# Files scanned (non-lib .py): {py_files_scanned}",
+		f"# Library modules (*lib.py) under problems/: {len(libs)}",
 		f"# Scripts found: {len(entries)}",
 		f"# Missing shebang or main guard (script-like only): {len(bins['missing_either'])}",
 		f"# Has shebang but not executable: {len(bins['shebang_not_executable'])}",
+		f"# Imports bptools but not framework: {len(bins['not_new_framework'])}",
 		f"# Batch-style scripts: {len(bins['batch_style'])}",
 		f"# Single-style scripts: {len(bins['single_style'])}",
-		f"# Other-style scripts: {len(bins['other_style'])}",
+		f"# Scripts that do not import bptools: {len(bins['no_bptools'])}",
 		"",
 		"== Has shebang but not executable (+x) ==",
 		* (bins["shebang_not_executable"] if bins["shebang_not_executable"] else ["(none)"]),
@@ -304,8 +340,8 @@ def main():
 		"== Single style ==",
 		* (bins["single_style"] if bins["single_style"] else ["(none)"]),
 		"",
-		"== Other style ==",
-		* (bins["other_style"] if bins["other_style"] else ["(none)"]),
+		"== No bptools ==",
+		* (bins["no_bptools"] if bins["no_bptools"] else ["(none)"]),
 		"",
 		"== Detailed flags (tab-separated) ==",
 		*detailed_lines,
@@ -314,16 +350,34 @@ def main():
 	write_lines(out_all, header)
 
 	print("Wrote:")
-	print(f"  {out_new.relative_to(repo)}")
-	print(f"  {out_old.relative_to(repo)}")
-	print(f"  {out_batch.relative_to(repo)}")
-	print(f"  {out_single.relative_to(repo)}")
-	print(f"  {out_other.relative_to(repo)}")
-	print(f"  {out_all.relative_to(repo)}")
-	print(f"  {out_missing_shebang.relative_to(repo)}")
-	print(f"  {out_missing_main_guard.relative_to(repo)}")
-	print(f"  {out_missing_either.relative_to(repo)}")
-	print(f"  {out_shebang_not_exec.relative_to(repo)}")
+	def _print_written(path: Path, entry_count: int | None, always_exists: bool = True):
+		rel = path.relative_to(repo)
+		if not path.exists():
+			if always_exists:
+				print(f"  {rel}\t(missing)")
+			else:
+				print(f"  {rel}\t(skipped; 0 entries)")
+			return
+		try:
+			line_count = sum(1 for _ in path.open("r", encoding="utf-8", errors="ignore"))
+		except OSError:
+			line_count = -1
+		if entry_count is None:
+			print(f"  {rel}\t({line_count} lines)")
+			return
+		print(f"  {rel}\t({entry_count} entries; {line_count} lines)")
+
+	_print_written(out_new, len(bins["new_framework"]))
+	_print_written(out_old, len(bins["not_new_framework"]))
+	_print_written(out_batch, len(bins["batch_style"]))
+	_print_written(out_single, len(bins["single_style"]))
+	_print_written(out_no_bptools, len(bins["no_bptools"]))
+	_print_written(out_libs, len(libs))
+	_print_written(out_all, None)
+	_print_written(out_missing_shebang, len(bins["missing_shebang"]), always_exists=False)
+	_print_written(out_missing_main_guard, len(bins["missing_main_guard"]), always_exists=False)
+	_print_written(out_missing_either, len(bins["missing_either"]), always_exists=False)
+	_print_written(out_shebang_not_exec, len(bins["shebang_not_executable"]))
 
 
 if __name__ == "__main__":
