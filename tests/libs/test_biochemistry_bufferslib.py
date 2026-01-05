@@ -4,7 +4,7 @@ from lib_test_utils import import_from_repo_path
 
 
 def test_bufferslib_protonation_state_and_formatting():
-	bufferslib = import_from_repo_path("biochemistry-problems/buffers/bufferslib.py")
+	bufferslib = import_from_repo_path("problems/biochemistry-problems/buffers/bufferslib.py")
 
 	assert "pK<sub>a</sub>" in bufferslib.pKa_list_to_words([4.76])
 	assert "and" in bufferslib.pKa_list_to_words([3.0, 4.0])

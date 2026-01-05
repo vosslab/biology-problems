@@ -4,7 +4,7 @@ from lib_test_utils import import_from_repo_path
 
 
 def test_disorderlib_small_helpers_without_io():
-	disorderlib = import_from_repo_path("inheritance-problems/disorderlib.py")
+	disorderlib = import_from_repo_path("problems/inheritance-problems/disorderlib.py")
 	md = disorderlib.MultiDisorderClass.__new__(disorderlib.MultiDisorderClass)
 
 	assert md.capitalFirstLetterOnly("hello") == "Hello"

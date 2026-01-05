@@ -168,7 +168,7 @@ Batch generators:
 - Keep diffs small and focused.
 
 ### Phase 3: Special-case tooling
-- Review YAML-driven tools in `multiple_choice_statements/` and `matching_sets/`.
+- Review YAML-driven tools in `problems/multiple_choice_statements/` and `matching_sets/`.
 - Decide if they adopt the helpers or keep their bespoke pipelines.
 
 ## Known special cases
@@ -176,7 +176,7 @@ Batch generators:
 - Scripts that write directly to file inside loops can move to list returns over
   time when convenient.
 - Helper-only scripts that generate standalone HTML assets (for example,
-  `biostatistics-problems/make_html_box_plot.py`) should be excluded from the
+  `problems/biostatistics-problems/make_html_box_plot.py`) should be excluded from the
   upgrade list and left as utilities rather than wrapped in question helpers.
 
 ## Migration notes from recent upgrades
@@ -240,8 +240,8 @@ Batch generators:
   and let `write_question_batch(...)` consume it so batch caps apply cleanly.
 - Helper/plot utilities and explicitly broken scripts should be removed from
   phase-1 upgrade lists and tracked separately (for example
-  `inheritance-problems/pedigrees/pedigree_code_templates.py`,
-  `inheritance-problems/population_logistic_map_chaos.py`).
+  `problems/inheritance-problems/pedigrees/pedigree_code_templates.py`,
+  `problems/inheritance-problems/population_logistic_map_chaos.py`).
 
 ## Legacy patterns to modernize
 These are common in older scripts and are the first candidates for cleanup

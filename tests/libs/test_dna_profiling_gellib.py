@@ -4,7 +4,7 @@ from lib_test_utils import import_from_repo_path
 
 
 def test_gellib_band_tree_smoke():
-	gellib = import_from_repo_path("dna_profiling-problems/gellib.py")
+	gellib = import_from_repo_path("problems/dna_profiling-problems/gellib.py")
 	gel = gellib.GelClass()
 	gel.createBandTree(total_bands=10)
 	assert isinstance(gel.band_tree, list)
@@ -14,7 +14,7 @@ def test_gellib_band_tree_smoke():
 
 
 def test_gellib_html_table_helpers():
-	gellib = import_from_repo_path("dna_profiling-problems/gellib.py")
+	gellib = import_from_repo_path("problems/dna_profiling-problems/gellib.py")
 	gel = gellib.GelClassHtml()
 	gel.createBandTree(total_bands=5)
 	widths = gel.tableWidths()

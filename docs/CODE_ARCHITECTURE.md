@@ -5,9 +5,9 @@
 - Output targets include Blackboard upload text and human-readable previews.
 
 ## Major components
-- Generator scripts: located under `*-problems/`, each script is usually a standalone CLI.
+- Generator scripts: located under `problems/*-problems/`, each script is usually a standalone CLI.
 - Shared helpers: `bptools.py` centralizes formatting, validation, and output helpers.
-- Content inputs: `data/`, `matching_sets/`, and `multiple_choice_statements/` provide YAML,
+- Content inputs: `data/`, `matching_sets/`, and `problems/multiple_choice_statements/` provide YAML,
   CSV, and text banks.
 - Assets: `images/` and `javascript/` support HTML content inside questions.
 - Templates: `TEMPLATE.py` provides the standard script layout and output naming.
@@ -29,9 +29,9 @@
 - `bptools.py` provides answer histograms and common output conventions.
 
 ## Extension points
-- Add a new generator by copying `TEMPLATE.py` into the relevant `*-problems/` folder.
+- Add a new generator by copying `TEMPLATE.py` into the relevant `problems/*-problems/` folder.
 - Add new YAML/CSV/text inputs under `data/`, `matching_sets/`, or
-  `multiple_choice_statements/`.
+  `problems/multiple_choice_statements/`.
 - Prefer shared helpers in `bptools.py` over duplicating formatting logic.
 
 ## Related docs

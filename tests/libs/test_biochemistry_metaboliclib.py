@@ -4,7 +4,7 @@ from lib_test_utils import import_from_repo_path
 
 
 def test_metaboliclib_letters_and_pathway_html():
-	metaboliclib = import_from_repo_path("biochemistry-problems/metaboliclib.py")
+	metaboliclib = import_from_repo_path("problems/biochemistry-problems/metaboliclib.py")
 	letters = metaboliclib.get_letters(3, shift=0)
 	assert len(letters) == 3
 	assert "A" in letters[0]

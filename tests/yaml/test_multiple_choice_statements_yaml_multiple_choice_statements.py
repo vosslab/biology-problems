@@ -6,7 +6,7 @@ from lib_test_utils import import_from_repo_path
 
 
 def test_yaml_multiple_choice_statements_autoAddConflictRules_generates_and_prunes():
-	mod = import_from_repo_path("multiple_choice_statements/yaml_multiple_choice_statements.py")
+	mod = import_from_repo_path("problems/multiple_choice_statements/yaml_multiple_choice_statements.py")
 
 	yaml_data = {
 		"true_statements": {
@@ -34,7 +34,7 @@ def test_yaml_multiple_choice_statements_autoAddConflictRules_generates_and_prun
 
 
 def test_yaml_multiple_choice_statements_checkIfConflict_uses_rules():
-	mod = import_from_repo_path("multiple_choice_statements/yaml_multiple_choice_statements.py")
+	mod = import_from_repo_path("problems/multiple_choice_statements/yaml_multiple_choice_statements.py")
 
 	conflict_rules = {
 		"bool1": {"truth1a": True, "false1b": True},
@@ -44,7 +44,7 @@ def test_yaml_multiple_choice_statements_checkIfConflict_uses_rules():
 
 
 def test_yaml_multiple_choice_statements_filterOpposingStatements_groups_conflicts():
-	mod = import_from_repo_path("multiple_choice_statements/yaml_multiple_choice_statements.py")
+	mod = import_from_repo_path("problems/multiple_choice_statements/yaml_multiple_choice_statements.py")
 
 	conflict_rules = {
 		"bool1": {"truth1a": True, "false1": True, "false1a": True},
@@ -71,7 +71,7 @@ def test_yaml_multiple_choice_statements_filterOpposingStatements_groups_conflic
 
 
 def test_yaml_multiple_choice_statements_writeQuestion_overrides_and_default():
-	mod = import_from_repo_path("multiple_choice_statements/yaml_multiple_choice_statements.py")
+	mod = import_from_repo_path("problems/multiple_choice_statements/yaml_multiple_choice_statements.py")
 
 	yaml_data = {
 		"topic": "biology",
@@ -92,7 +92,7 @@ def test_yaml_multiple_choice_statements_writeQuestion_overrides_and_default():
 
 
 def test_yaml_multiple_choice_statements_makeQuestionsFromStatement_calls_formatter(monkeypatch):
-	mod = import_from_repo_path("multiple_choice_statements/yaml_multiple_choice_statements.py")
+	mod = import_from_repo_path("problems/multiple_choice_statements/yaml_multiple_choice_statements.py")
 
 	def fake_format(N, question_text, choices_list, answer_text):
 		return f"MC\t{N}\t{answer_text}\t{len(choices_list)}\t{question_text}\n"
@@ -111,4 +111,3 @@ def test_yaml_multiple_choice_statements_makeQuestionsFromStatement_calls_format
 		assert q.startswith("MC\t")
 		assert "<strong>ALPHA</strong>" in q
 		assert "\t5\t" in q
-

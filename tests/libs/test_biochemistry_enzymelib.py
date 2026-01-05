@@ -4,7 +4,7 @@ from lib_test_utils import import_from_repo_path
 
 
 def test_enzymelib_tree_and_html_table():
-	enzymelib = import_from_repo_path("biochemistry-problems/enzymelib.py")
+	enzymelib = import_from_repo_path("problems/biochemistry-problems/enzymelib.py")
 	enzyme_tree = enzymelib.makeEnzymeTree(1)
 	assert isinstance(enzyme_tree, list)
 	assert len(enzyme_tree) == 4

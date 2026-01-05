@@ -4,7 +4,7 @@ from lib_test_utils import import_from_repo_path
 
 
 def test_genotypelib_cross_counts():
-	genotypelib = import_from_repo_path("inheritance-problems/genotypelib.py")
+	genotypelib = import_from_repo_path("problems/inheritance-problems/genotypelib.py")
 	assert genotypelib.deconstructPowerOfNumber(72) == (3, 2)
 
 	cross = genotypelib.crossGenotypes(("A", "a"), ("A", "a"))

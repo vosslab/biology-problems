@@ -7,13 +7,13 @@ from lib_test_utils import import_from_repo_path
 
 
 def test_yaml_to_pg_norm_and_uniq():
-	mod = import_from_repo_path("multiple_choice_statements/yaml_to_pg.py")
+	mod = import_from_repo_path("problems/multiple_choice_statements/yaml_to_pg.py")
 	assert mod.norm("  A  B ") == "a b"
 	assert mod.uniq(["A", " a ", "B", "b"]) == ["A", "B"]
 
 
 def test_yaml_to_pg_apply_replacements_longest_first_and_no_rereplace():
-	mod = import_from_repo_path("multiple_choice_statements/yaml_to_pg.py")
+	mod = import_from_repo_path("problems/multiple_choice_statements/yaml_to_pg.py")
 
 	rules = {"foo bar": "X", "foo": "Y"}
 	assert mod.apply_replacements("foo bar", rules) == "X"
@@ -26,7 +26,7 @@ def test_yaml_to_pg_apply_replacements_longest_first_and_no_rereplace():
 
 
 def test_yaml_to_pg_family_id_and_group_by_family_dedup():
-	mod = import_from_repo_path("multiple_choice_statements/yaml_to_pg.py")
+	mod = import_from_repo_path("problems/multiple_choice_statements/yaml_to_pg.py")
 	assert mod.family_id("truth1a") == 1
 	assert mod.family_id("false 12") == 12
 	assert mod.family_id("other") == -1
@@ -43,14 +43,14 @@ def test_yaml_to_pg_family_id_and_group_by_family_dedup():
 
 
 def test_yaml_to_pg_esc_pg_single_escapes_backslash_and_quote():
-	mod = import_from_repo_path("multiple_choice_statements/yaml_to_pg.py")
+	mod = import_from_repo_path("problems/multiple_choice_statements/yaml_to_pg.py")
 	out = mod.esc_pg_single(r"back\slash 'quote'")
 	assert "\\\\" in out
 	assert "\\'" in out
 
 
 def test_yaml_to_pg_mc_part_block_caps_and_includes_correct():
-	mod = import_from_repo_path("multiple_choice_statements/yaml_to_pg.py")
+	mod = import_from_repo_path("problems/multiple_choice_statements/yaml_to_pg.py")
 	random.seed(0)
 	block = mod.mc_part_block(
 		1,
@@ -71,7 +71,7 @@ def test_yaml_to_pg_mc_part_block_caps_and_includes_correct():
 
 
 def test_yaml_to_pg_pick_distractors_avoids_family_and_dedups():
-	mod = import_from_repo_path("multiple_choice_statements/yaml_to_pg.py")
+	mod = import_from_repo_path("problems/multiple_choice_statements/yaml_to_pg.py")
 	rng = random.Random(0)
 	out = mod.pick_distractors_from_opposite_pool({1: ["a", "b"], 2: ["c", " c "], 3: ["d"]}, 1, 2, rng)
 	assert len(out) == 2
@@ -80,7 +80,7 @@ def test_yaml_to_pg_pick_distractors_avoids_family_and_dedups():
 
 
 def test_yaml_to_pg_build_every_statement_items_basic_shape():
-	mod = import_from_repo_path("multiple_choice_statements/yaml_to_pg.py")
+	mod = import_from_repo_path("problems/multiple_choice_statements/yaml_to_pg.py")
 	data = {
 		"topic": "cells",
 		"connection_words": ["about"],

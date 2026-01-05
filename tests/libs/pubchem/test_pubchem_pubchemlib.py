@@ -4,7 +4,7 @@ from lib_test_utils import import_from_repo_path
 
 
 def test_pubchemlib_format_and_ratio_helpers_without_network():
-	pubchemlib = import_from_repo_path("biochemistry-problems/PUBCHEM/pubchemlib.py")
+	pubchemlib = import_from_repo_path("problems/biochemistry-problems/PUBCHEM/pubchemlib.py")
 	pcl = pubchemlib.PubChemLib.__new__(pubchemlib.PubChemLib)
 
 	formula_html = pcl.format_molecular_formula("C6H12O6")

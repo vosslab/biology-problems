@@ -6,7 +6,7 @@ from lib_test_utils import import_from_repo_path
 
 
 def test_genemaplib_small_pure_helpers():
-	genemaplib = import_from_repo_path("inheritance-problems/gene_mapping/genemaplib.py")
+	genemaplib = import_from_repo_path("problems/inheritance-problems/gene_mapping/genemaplib.py")
 	assert genemaplib.is_almost_integer(5.0000001) is True
 	assert genemaplib.is_almost_integer(5.001) is False
 

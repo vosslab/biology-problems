@@ -2,11 +2,11 @@
 
 ## Project Structure & Module Organization
 
-- `*-problems/`: domain-specific generators (Genetics, Biochemistry, Molecular Biology, etc.). Most files are standalone Python scripts that emit quiz/homework items.
+- `problems/*-problems/`: domain-specific generators (Genetics, Biochemistry, Molecular Biology, etc.). Most files are standalone Python scripts that emit quiz/homework items.
 - `bptools.py`, `logger_config.py`: shared helpers used by many generators (formatting, utilities).
 - `data/`: YAML/CSV/text inputs used by generators (word lists, reference tables, datasets).
 - `images/`: static images referenced in question text/HTML.
-- `matching_sets/`, `multiple_choice_statements/`: content banks used to assemble questions.
+- `matching_sets/`, `problems/multiple_choice_statements/`: content banks used to assemble questions.
 - `tools/`: small utilities (e.g., image conversion scripts).
 - `read_qti/`: utilities for reading/converting QTI exports.
 
@@ -15,8 +15,8 @@
 - Setup python3.12 environment
 source REPO_ROOT/source_me.sh
 - Run a generator (most support `--help` via `argparse`):
-  - `python3 inheritance-problems/<script>.py --help`
-  - `python3 biochemistry-problems/<script>.py -m -d 50` (example: generate 50 MC questions)
+  - `python3 problems/inheritance-problems/<script>.py --help`
+  - `python3 problems/biochemistry-problems/<script>.py -m -d 50` (example: generate 50 MC questions)
 - Inspect YAML inputs:
   - `python3 data/check_yaml.py data/genetic_disorders.yml`
 
@@ -38,7 +38,7 @@ Generated artifacts (do not commit): `bbq-*.txt`, `qti*.zip`, `selftest-*.html` 
 ## Commit & Pull Request Guidelines
 
 - Git history uses short, imperative, free-form subjects (no Conventional Commits); keep subjects brief and specific (e.g., “fix wording”, “formatting tweaks”).
-- PRs should describe the problem set affected (`inheritance-problems/`, `biochemistry-problems/`, etc.), how to reproduce (`python3 ...`), and include a small sample of expected output (or a screenshot if HTML/image rendering changes).
+- PRs should describe the problem set affected (`problems/inheritance-problems/`, `problems/biochemistry-problems/`, etc.), how to reproduce (`python3 ...`), and include a small sample of expected output (or a screenshot if HTML/image rendering changes).
 See Markdown style in docs/MARKDOWN_STYLE.md.
 When making edits, document them in docs/CHANGELOG.md.
 See repo style in docs/REPO_STYLE.md.

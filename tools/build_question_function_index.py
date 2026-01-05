@@ -80,12 +80,21 @@ def _repo_root() -> str:
 
 def _list_target_py_files(repo_root: str) -> list[str]:
 	roots: list[str] = []
-	for name in os.listdir(repo_root):
-		if name in _INCLUDE_DIR_NAMES:
-			roots.append(os.path.join(repo_root, name))
-			continue
-		if name.endswith("-problems"):
-			roots.append(os.path.join(repo_root, name))
+
+	# Preferred layout: all domain generators live under `problems/*-problems/`.
+	problems_root = os.path.join(repo_root, "problems")
+	if os.path.isdir(problems_root):
+		for name in os.listdir(problems_root):
+			if name in _INCLUDE_DIR_NAMES or name.endswith("-problems"):
+				roots.append(os.path.join(problems_root, name))
+	else:
+		# Backward-compatible layout: `*-problems/` at repo root.
+		for name in os.listdir(repo_root):
+			if name in _INCLUDE_DIR_NAMES:
+				roots.append(os.path.join(repo_root, name))
+				continue
+			if name.endswith("-problems"):
+				roots.append(os.path.join(repo_root, name))
 
 	paths: list[str] = []
 	for root in roots:

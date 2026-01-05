@@ -8,7 +8,7 @@ argparse setup, and output conventions used across this repo.
 
 ## Start from `TEMPLATE.py`
 
-- Copy `TEMPLATE.py` into the appropriate `*-problems/` folder.
+- Copy `TEMPLATE.py` into the appropriate `problems/*-problems/` folder.
 - Rename it using snake_case and a descriptive topic name.
 - Keep the `#!/usr/bin/env python3` shebang and the `main()` entrypoint.
 
@@ -24,7 +24,7 @@ Two simple options:
 Example:
 
 ```bash
-cp TEMPLATE.py inheritance-problems/my_new_question.py
+cp TEMPLATE.py problems/inheritance-problems/my_new_question.py
 ```
 
 ## Required structure
@@ -113,7 +113,7 @@ Generated files like `bbq-*.txt` should not be committed.
 Run the script with a small duplicate count and choices count:
 
 ```bash
-python3 inheritance-problems/my_new_question.py -d 1 -c 4
+python3 problems/inheritance-problems/my_new_question.py -d 1 -c 4
 ```
 
 If you add helper functions that are pure and small, include a simple `assert`.

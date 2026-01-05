@@ -8,6 +8,7 @@ import subprocess
 
 _INCLUDE_ROOTS = (
 	"matching_sets",
+	"problems/multiple_choice_statements",
 	"multiple_choice_statements",
 	"data",
 )

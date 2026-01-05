@@ -4,7 +4,7 @@ from lib_test_utils import import_from_repo_path
 
 
 def test_seqlib_core_functions():
-	seqlib = import_from_repo_path("molecular_biology-problems/seqlib.py")
+	seqlib = import_from_repo_path("problems/molecular_biology-problems/seqlib.py")
 	assert seqlib.complement("ATGC") == "TACG"
 	assert seqlib.flip("ATGC") == "CGTA"
 	assert seqlib.reverse_complement("ATGC") == "GCAT"
