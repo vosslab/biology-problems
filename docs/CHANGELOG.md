@@ -14,6 +14,10 @@
   [problems/biochemistry-problems/ladder.py](problems/biochemistry-problems/ladder.py).
 - Added a preliminary Kaleidoscope ladder mapping generator in
   [problems/biochemistry-problems/kaleidoscope_ladder_mapping.py](problems/biochemistry-problems/kaleidoscope_ladder_mapping.py) with mapping + unknown-size estimate questions and pytest coverage.
+- Added a lane-based Kaleidoscope gel question generator in
+  [problems/biochemistry-problems/kaleidoscope_ladder_unknown_band_mw.py](problems/biochemistry-problems/kaleidoscope_ladder_unknown_band_mw.py) (Lane 1 ladder, Lane 2 unknown band), including too-short/too-long run scenarios.
+- Updated the Kaleidoscope ladder scripts to use the standard `bptools.make_arg_parser` / `bptools.collect_and_write_questions` CLI framework (default `-d 2` questions).
+- Removed custom `-o/--outfile` CLI overrides so Kaleidoscope ladder scripts use the standard `bptools.make_outfile(None)` naming.
 - Added `docs/YAML_QUESTION_BANK_INDEX.md` and `tools/build_yaml_question_bank_index.py` to track YAML question bank creation/update dates (for `matching_sets/`, `problems/multiple_choice_statements/`, and `data/` YAML files).
 - Added `tools/test_reorg_git_mv_commands.txt` with a suggested `tests/` subfolder re-org command list (including YAML-focused tests under `tests/yaml/`).
 - Updated `tests/conftest.py` to add `tests/` to `sys.path` so helper imports (e.g., `lib_test_utils`) keep working after moving tests into subfolders.

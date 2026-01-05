@@ -28,6 +28,117 @@ spacer_width = 12
 label_width = 30
 
 #====================================================================
+def mw_to_ln_fraction(mw_kda: float, mw_high_kda: float, mw_low_kda: float) -> float:
+	"""
+	Return the fraction along a ladder between two marker weights using ln(MW).
+
+	`mw_high_kda` should be the higher marker (larger MW).
+	`mw_low_kda` should be the lower marker (smaller MW).
+
+	Returns a value in [0, 1] when `mw_kda` is between the markers.
+	"""
+	ln_high = math.log(float(mw_high_kda))
+	ln_low = math.log(float(mw_low_kda))
+	ln_val = math.log(float(mw_kda))
+	return (ln_val - ln_high) / (ln_low - ln_high)
+
+
+#====================================================================
+def ln_fraction_to_mw_kda(mw_high_kda: float, mw_low_kda: float, fraction: float) -> float:
+	"""
+	Inverse of `mw_to_ln_fraction`: return MW (kDa) at a fraction between markers.
+	"""
+	ln_high = math.log(float(mw_high_kda))
+	ln_low = math.log(float(mw_low_kda))
+	ln_val = ln_high + float(fraction) * (ln_low - ln_high)
+	return math.exp(ln_val)
+
+
+#====================================================================
+def simulate_kaleidoscope_band_y_positions_px(
+	gel_height_px: int,
+	run_factor: float=1.0,
+	top_margin_px: int=28,
+	bottom_margin_px: int=22,
+) -> dict[int, float]:
+	"""
+	Return simulated y-positions (px from top) for the Kaleidoscope ladder bands.
+
+	The mapping assumes migration distance is proportional to ln(MW) across the
+	ladder range, then scales the run distance by `run_factor`:
+	- `run_factor < 1.0`: gel run too short (bands compressed near the top)
+	- `run_factor > 1.0`: gel run too long (low-MW bands may run off the bottom)
+	"""
+	if gel_height_px <= 0:
+		raise ValueError("gel_height_px must be positive")
+	if top_margin_px < 0 or bottom_margin_px < 0:
+		raise ValueError("margins must be non-negative")
+	if top_margin_px + bottom_margin_px >= gel_height_px:
+		raise ValueError("margins exceed gel height")
+
+	mw_values = get_kaleidoscope_mw_values()
+	mw_high = float(mw_values[0])
+	mw_low = float(mw_values[-1])
+
+	usable = float(gel_height_px - top_margin_px - bottom_margin_px)
+	ln_range = math.log(mw_high) - math.log(mw_low)
+
+	positions: dict[int, float] = {}
+	for mw in mw_values:
+		# 0 at top marker, 1 at bottom marker.
+		frac = (math.log(mw_high) - math.log(float(mw))) / ln_range
+		y = float(top_margin_px) + float(run_factor) * frac * usable
+		positions[mw] = y
+	return positions
+
+
+#====================================================================
+def band_is_visible(y_px: float, gel_height_px: int, band_height_px: int=8) -> bool:
+	top = y_px - band_height_px / 2.0
+	bottom = y_px + band_height_px / 2.0
+	return top >= 0.0 and bottom <= float(gel_height_px)
+
+
+#====================================================================
+def gen_gel_lanes_html(
+	lanes: list[dict],
+	gel_height_px: int=340,
+	lane_width_px: int=72,
+	band_height_px: int=8,
+	lane_gap_px: int=18,
+) -> str:
+	"""
+	Render a simple 1D SDS-PAGE gel cartoon using positioned div bands.
+
+	Each lane dict supports:
+	- label: str
+	- bands: list of dicts with keys: y_px (float), color (str), optional border (str)
+	"""
+	lanes_html = f'<div style="display:flex; align-items:flex-start; gap:{lane_gap_px}px;">'
+	for lane in lanes:
+		label = lane.get("label", "")
+		bands = lane.get("bands", [])
+		lanes_html += '<div style="text-align:center; font-family:Arial, sans-serif;">'
+		lanes_html += f'<div style="margin-bottom:6px;"><b>{label}</b></div>'
+		lanes_html += (
+			f'<div style="position:relative; width:{lane_width_px}px; height:{gel_height_px}px; '
+			'border:2px solid #000; background-color:#f7f7f7;">'
+		)
+		for band in bands:
+			y_px = float(band["y_px"])
+			color = band.get("color", "#000")
+			border = band.get("border", "1px solid #000")
+			top_px = y_px - band_height_px / 2.0
+			lanes_html += (
+				f'<div style="position:absolute; left:6px; right:6px; '
+				f'top:{top_px:.1f}px; height:{band_height_px}px; '
+				f'background-color:{color}; border:{border};"></div>'
+			)
+		lanes_html += '</div></div>'
+	lanes_html += '</div>'
+	return lanes_html
+
+#====================================================================
 def gen_spacer_cell(height: int, width: int|None=None) -> str:
 	spacer_cell_html = '<td style="'
 	spacer_cell_html += f' height: {height}px; '

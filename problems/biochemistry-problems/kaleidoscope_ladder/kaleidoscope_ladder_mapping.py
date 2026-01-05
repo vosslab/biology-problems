@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import argparse
 import math
 import random
 
@@ -94,9 +93,7 @@ def write_prelim_estimate_unknown_question(N: int) -> str:
 
 
 def main():
-	parser = argparse.ArgumentParser(description="Kaleidoscope-style protein ladder mapping questions.")
-	parser.add_argument("-n", "--num-questions", type=int, default=1, help="Number of questions to generate")
-	parser.add_argument("-o", "--outfile", default=bptools.make_outfile(__file__), help="Output filename")
+	parser = bptools.make_arg_parser(description="Kaleidoscope-style protein ladder mapping questions.")
 	parser.add_argument("--table-height", type=int, default=450, help="Ladder table height (px)")
 	parser.add_argument(
 		"--question-type",
@@ -110,21 +107,19 @@ def main():
 	if args.seed is not None:
 		random.seed(args.seed)
 
-	questions = []
-	for i in range(args.num_questions):
-		N = i + 1
+	def write_question(N: int, args):
 		if args.question_type == "mapping":
-			questions.append(write_prelim_mapping_question(N, table_height=args.table_height))
-		elif args.question_type == "estimate":
-			questions.append(write_prelim_estimate_unknown_question(N))
-		elif args.question_type == "both":
-			if i % 2 == 0:
-				questions.append(write_prelim_mapping_question(N, table_height=args.table_height))
-			else:
-				questions.append(write_prelim_estimate_unknown_question(N))
-		else:
-			raise ValueError(f"Unknown question type: {args.question_type}")
-	bptools.write_questions_to_file(questions, args.outfile)
+			return write_prelim_mapping_question(N, table_height=args.table_height)
+		if args.question_type == "estimate":
+			return write_prelim_estimate_unknown_question(N)
+		if args.question_type == "both":
+			if N % 2 == 1:
+				return write_prelim_mapping_question(N, table_height=args.table_height)
+			return write_prelim_estimate_unknown_question(N)
+		raise ValueError(f"Unknown question type: {args.question_type}")
+
+	outfile = bptools.make_outfile(None)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 
 if __name__ == "__main__":

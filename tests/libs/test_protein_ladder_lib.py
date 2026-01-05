@@ -51,3 +51,19 @@ def test_kaleidoscope_ladder_mapping_estimate_unknown_question_smoke(monkeypatch
 	q = mod.write_prelim_estimate_unknown_question(1)
 	assert q.startswith("NUM\t1\t")
 	assert "<table" in q
+
+
+def test_kaleidoscope_ladder_lane2_unknown_mw_question_smoke(monkeypatch):
+	mod = import_from_repo_path("problems/biochemistry-problems/kaleidoscope_ladder_unknown_band_mw.py")
+
+	def fake_num(N, question_text, answer_float, tolerance_float, tol_message=True):
+		return f"NUM\t{N}\t{answer_float}\t{tolerance_float}\t{question_text}\n"
+
+	monkeypatch.setattr(bptools, "formatBB_NUM_Question", fake_num)
+	mod.random.seed(0)
+	q = mod.write_lane2_unknown_band_mw_question(1, gel_height_px=280, run_scenario="too_long")
+	assert q.startswith("NUM\t1\t")
+	assert "Lane 1" in q
+	assert "Lane 2" in q
+	assert "too long" in q.lower()
+	assert "display:flex" in q
