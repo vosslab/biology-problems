@@ -4,7 +4,7 @@ from lib_test_utils import import_from_repo_path
 
 
 def test_pedigree_template_gen_lib_normalize_and_choose():
-	pedigree_template_gen_lib = import_from_repo_path("problems/inheritance-problems/pedigrees/pedigree_template_gen_lib.py")
+	pedigree_template_gen_lib = import_from_repo_path("problems/inheritance-problems/pedigrees/pedigree_lib/template_generator.py")
 	assert pedigree_template_gen_lib.normalize_mode("ad") == "autosomal dominant"
 	assert pedigree_template_gen_lib.normalize_mode("Xr") == "x-linked recessive"
 

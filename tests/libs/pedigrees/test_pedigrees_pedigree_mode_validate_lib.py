@@ -6,10 +6,10 @@ from lib_test_utils import import_from_repo_path
 
 
 def test_pedigree_mode_validate_lib_roundtrip():
-	pedigree_graph_parse_lib = import_from_repo_path("problems/inheritance-problems/pedigrees/pedigree_graph_parse_lib.py")
-	pedigree_inheritance_lib = import_from_repo_path("problems/inheritance-problems/pedigrees/pedigree_inheritance_lib.py")
-	pedigree_mode_validate_lib = import_from_repo_path("problems/inheritance-problems/pedigrees/pedigree_mode_validate_lib.py")
-	pedigree_skeleton_lib = import_from_repo_path("problems/inheritance-problems/pedigrees/pedigree_skeleton_lib.py")
+	pedigree_graph_parse_lib = import_from_repo_path("problems/inheritance-problems/pedigrees/pedigree_lib/graph_parse.py")
+	pedigree_inheritance_lib = import_from_repo_path("problems/inheritance-problems/pedigrees/pedigree_lib/inheritance_assign.py")
+	pedigree_mode_validate_lib = import_from_repo_path("problems/inheritance-problems/pedigrees/pedigree_lib/mode_validate.py")
+	pedigree_skeleton_lib = import_from_repo_path("problems/inheritance-problems/pedigrees/pedigree_lib/skeleton.py")
 
 	mode = "autosomal dominant"
 	rng = random.Random(3)

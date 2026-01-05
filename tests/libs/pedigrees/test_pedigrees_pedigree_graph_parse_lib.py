@@ -9,8 +9,8 @@ from lib_test_utils import temp_sys_path
 
 
 def test_pedigree_graph_parse_lib_compile_to_valid_code():
-	pedigree_graph_parse_lib = import_from_repo_path("problems/inheritance-problems/pedigrees/pedigree_graph_parse_lib.py")
-	pedigree_validate_lib = import_from_repo_path("problems/inheritance-problems/pedigrees/pedigree_validate_lib.py")
+	pedigree_graph_parse_lib = import_from_repo_path("problems/inheritance-problems/pedigrees/pedigree_lib/graph_parse.py")
+	pedigree_validate_lib = import_from_repo_path("problems/inheritance-problems/pedigrees/pedigree_lib/validation.py")
 
 	rng = random.Random(1)
 	pedigree_dir = os.path.join(repo_root(), "problems", "inheritance-problems", "pedigrees")
