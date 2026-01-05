@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 # ^^ Specifies the Python3 environment to use for script execution
 
+# Import built-in Python modules
+import random
+
 # Import local modules from the project
 # Provides custom functions, such as question formatting and other utilities
 import bptools
@@ -89,35 +92,17 @@ def build_question(N: int, mom_pheno: str, dad_pheno: str) -> str:
 	return question
 
 #===========================================================
-def write_question_batch(N: int, args) -> list[str]:
-	"""
-	Create a batch of blood type questions for all parent phenotype combinations.
-
-	Args:
-		N (int): Starting question number.
-		args (argparse.Namespace): Parsed command-line arguments.
-
-	Returns:
-		list[str]: List of formatted question strings.
-	"""
-	questions = []
-	question_num = N
-	for mom_pheno in phenotypes:
-		for dad_pheno in phenotypes:
-			question = build_question(question_num, mom_pheno, dad_pheno)
-			questions.append(question)
-			question_num += 1
-	return questions
+def write_question(N: int, args) -> str:
+	mom_pheno = random.choice(phenotypes)
+	dad_pheno = random.choice(phenotypes)
+	return build_question(N, mom_pheno, dad_pheno)
 
 #===========================================================
 def parse_arguments():
 	"""
 	Parse command-line arguments.
 	"""
-	parser = bptools.make_arg_parser(
-		description="Generate ABO blood type offspring questions.",
-		batch=True
-	)
+	parser = bptools.make_arg_parser(description="Generate ABO blood type offspring questions.")
 	args = parser.parse_args()
 	return args
 
@@ -127,9 +112,8 @@ def main():
 	Generates all combinations of mother/father blood types as multiple-answer questions.
 	"""
 	args = parse_arguments()
-	outfile = bptools.make_outfile()
-	questions = bptools.collect_question_batches(write_question_batch, args)
-	bptools.write_questions_to_file(questions, outfile)
+	outfile = bptools.make_outfile(None)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #===========================================================
 # This block ensures the script runs only when executed directly

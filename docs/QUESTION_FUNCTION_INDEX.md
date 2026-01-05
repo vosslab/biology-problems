@@ -3,12 +3,15 @@
 This file lists key functions that create quiz/homework questions (or question items) and the date they first appeared in Git history.
 
 - Source: `tools/build_question_function_index.py`
-- Git HEAD: `601277c` (2026-01-04)
+- Git HEAD: `dae5797` (2026-01-05)
 - Date source: earliest commit that introduces `def <name>` in that file (`git log --follow -G ...`)
 - Also shown: file birth date (`git log --follow --diff-filter=A`)
 - Fallbacks: `git blame` on the `def ...` line; uncommitted/untracked files use file mtime (commit `WORKTREE`)
 - YAML-driven banks are tracked separately in `docs/YAML_QUESTION_BANK_INDEX.md`.
 
+## 2026-01-05
+- 2026-01-05 - `problems/biochemistry-problems/kaleidoscope_ladder/kaleidoscope_ladder_unknown_band_mw.py:147` - `write_question` (commit `dae5797aaa`)
+- 2026-01-05 - `problems/biochemistry-problems/kaleidoscope_ladder/kaleidoscope_ladder_unknown_band_mw.py:17` - `write_lane2_unknown_band_mw_question` (commit `dae5797aaa`) - "Lane 1: Kaleidoscope ladder bands (some may be off-gel if run too long)."
 ## 2026-01-04
 - 2026-01-04 - `problems/inheritance-problems/x_linked_tortoiseshell.py:84` - `write_question` (commit `566b69080e`)
 - 2026-01-04 - `problems/inheritance-problems/x_linked_reciprocal_cross.py:38` - `write_question` (commit `566b69080e`)
@@ -23,8 +26,8 @@ This file lists key functions that create quiz/homework questions (or question i
 - 2026-01-04 - `problems/inheritance-problems/chi_square/chi_square_hypotheses.py:315` - `write_question` (commit `566b69080e`)
 - 2026-01-04 - `problems/biostatistics-problems/hypothesis_statements.py:363` - `write_question` (commit `566b69080e`)
 - 2026-01-04 - `problems/biostatistics-problems/hypothesis_lab_partner.py:331` - `write_question` (commit `566b69080e`)
-- 2026-01-04 - `problems/biochemistry-problems/kaleidoscope_ladder_mapping.py:64` - `write_prelim_estimate_unknown_question` (commit `a36bce137d`)
-- 2026-01-04 - `problems/biochemistry-problems/kaleidoscope_ladder_mapping.py:20` - `write_prelim_mapping_question` (commit `a36bce137d`)
+- 2026-01-04 - `problems/biochemistry-problems/kaleidoscope_ladder/kaleidoscope_ladder_mapping.py:70` - `write_prelim_estimate_unknown_question` (commit `a36bce137d`)
+- 2026-01-04 - `problems/biochemistry-problems/kaleidoscope_ladder/kaleidoscope_ladder_mapping.py:26` - `write_prelim_mapping_question` (commit `a36bce137d`)
 ## 2025-12-28
 - 2025-12-28 - `problems/biostatistics-problems/busse_woods_two_sample_f_test.py:202` - `write_question` (commit `d484513fdb`) - file 2025-10-20 (commit `654cc1465b`) - "Create one Blackboard numeric question row for an F-test of variances."
 - 2025-12-28 - `problems/biostatistics-problems/busse_woods_anova.py:228` - `write_question` (commit `d484513fdb`) - "Create one Blackboard numeric question row for ANOVA across 5 years"

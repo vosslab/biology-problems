@@ -24,13 +24,11 @@ def colorHtml(color_name):
 	color_id = base_colors.index(color_name)
 	wavelength = wavelengths[color_id]
 	color_code = html_colors[color_id]
-	html_text = '<span style="color: {0}"><strong>{1}</strong> ({2:d} nm)</span>'.format(color_code, color_name, wavelength)
-	return html_text
+	return f'<span style="color: {color_code}"><strong>{color_name}</strong> ({wavelength:d} nm)</span>'
 
 #==================================
 def writeChoice(name1, name2):
-	choice = "{0} and {1} ".format(colorHtml(name1), colorHtml(name2))
-	return choice
+	return f"{colorHtml(name1)} and {colorHtml(name2)} "
 
 #==================================
 def colorDescription(leaf_color):
@@ -44,10 +42,10 @@ def colorDescription(leaf_color):
 	color1true = color1true.replace('ish', '')
 	color_index1 = base_colors.index(color1true)
 	color_index2 = base_colors.index(color2)
-	html_text = '<strong><span style="color: {0}">{1}</span> '.format(html_colors[color_index1], color1)
+	html_text = f'<strong><span style="color: {html_colors[color_index1]}">{color1}</span> '
 	if and_text is not None:
 		html_text += 'and '
-	html_text += '<span style="color: {0}">{1}</span></strong>'.format(html_colors[color_index2], color2)
+	html_text += f'<span style="color: {html_colors[color_index2]}">{color2}</span></strong>'
 	return html_text
 
 #==================================
@@ -56,7 +54,7 @@ def colorDescription(leaf_color):
 def build_question(leaf_color):
 	color_desc = colorDescription(leaf_color)
 	question = ""
-	question += "<p>A plant with unique photosynthetic pigments has leaves that appear {0}.</p>".format(color_desc)
+	question += f"<p>A plant with unique photosynthetic pigments has leaves that appear {color_desc}.</p>"
 	question += "<p>Which one of the following wavelengths of visible light "
 	question += "would most effectively be absorbed by this pigment?</p>"
 
@@ -95,31 +93,14 @@ def build_question(leaf_color):
 	return question, choices_list, answer
 
 #==================================
-def write_question_batch(start_num: int, args) -> list:
-	leaf_color_list = list(leaf_colors.keys())
-	if args.max_questions is not None:
-		remaining = args.max_questions - (start_num - 1)
-		if remaining <= 0:
-			return []
-		leaf_color_list = leaf_color_list[:remaining]
-	questions = []
-	for offset, leaf_color in enumerate(leaf_color_list):
-		question_text, choices_list, answer = build_question(leaf_color)
-		complete_question = bptools.formatBB_MC_Question(
-			start_num + offset,
-			question_text,
-			choices_list,
-			answer
-		)
-		questions.append(complete_question)
-	return questions
+def write_question(N: int, args) -> str:
+	leaf_color = random.choice(list(leaf_colors.keys()))
+	question_text, choices_list, answer = build_question(leaf_color)
+	return bptools.formatBB_MC_Question(N, question_text, choices_list, answer)
 
 #==================================
 def parse_arguments():
-	parser = bptools.make_arg_parser(
-		description="Generate photosynthetic light pigment questions.",
-		batch=True
-	)
+	parser = bptools.make_arg_parser(description="Generate photosynthetic light pigment questions.")
 	args = parser.parse_args()
 	return args
 
@@ -127,8 +108,7 @@ def parse_arguments():
 def main():
 	args = parse_arguments()
 	outfile = bptools.make_outfile(None)
-	questions = bptools.collect_question_batches(write_question_batch, args)
-	bptools.write_questions_to_file(questions, outfile)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 if __name__ == '__main__':
 	main()

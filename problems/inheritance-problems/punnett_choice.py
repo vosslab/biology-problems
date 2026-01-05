@@ -140,10 +140,12 @@ def generate_choices() -> str:
 		all_punnett_squares_html_dict[genotype_key] = punnett_html
 	return all_punnett_squares_html_dict
 
+_ALL_PUNNETT_SQUARES_HTML_DICT = None
+
 #===========================================================
 #===========================================================
 # This function creates and formats a complete question for output.
-def write_question(N: int, all_punnett_squares_html_dict: dict) -> str:
+def _format_question(N: int, all_punnett_squares_html_dict: dict) -> str:
 	"""
 	Creates a complete formatted question for output.
 
@@ -170,41 +172,26 @@ def write_question(N: int, all_punnett_squares_html_dict: dict) -> str:
 
 #===========================================================
 #===========================================================
-# This function serves as the entry point for generating and saving questions.
-def main():
-	"""
-	Main function that orchestrates question generation and file output.
-	"""
-
-	args = parse_arguments()
-	outfile = bptools.make_outfile(None)
-	questions = bptools.collect_question_batches(write_question_batch, args)
-	bptools.write_questions_to_file(questions, outfile)
+def write_question(N: int, args) -> str:
+	global _ALL_PUNNETT_SQUARES_HTML_DICT
+	if _ALL_PUNNETT_SQUARES_HTML_DICT is None:
+		_ALL_PUNNETT_SQUARES_HTML_DICT = generate_choices()
+	return _format_question(N, _ALL_PUNNETT_SQUARES_HTML_DICT)
 
 #===========================================================
 def parse_arguments():
-	parser = bptools.make_arg_parser(description="Generate Punnett square questions.", batch=True)
+	parser = bptools.make_arg_parser(description="Generate Punnett square questions.")
 	args = parser.parse_args()
 	return args
 
 #===========================================================
-def write_question_batch(start_num: int, args) -> list:
-	all_punnett_squares_html_dict = generate_choices()
-	questions = []
-	remaining = None
-	if args.max_questions is not None:
-		remaining = args.max_questions - (start_num - 1)
-		if remaining <= 0:
-			return questions
-	N = start_num
-	for _ in range(len(PUNNETT_CONTEXTS)):
-		complete_question = write_question(N, all_punnett_squares_html_dict)
-		if complete_question is not None:
-			questions.append(complete_question)
-			N += 1
-			if remaining is not None and len(questions) >= remaining:
-				return questions
-	return questions
+def main():
+	"""
+	Main function that orchestrates question generation and file output.
+	"""
+	args = parse_arguments()
+	outfile = bptools.make_outfile(None)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #===========================================================
 #===========================================================

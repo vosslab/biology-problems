@@ -122,14 +122,14 @@ nucleic_acids = [
 	"nucleotides",
 	"nucleosides",
 	"nucleobases",
-	"nitrogenous bases"
+	"nitrogenous bases",
 	"polynucleotides",
 	"pyrimidines",
 	"purines",
 	"deoxyribose backbone",
 	"double stranded helix",
 	"antiparallel helix",
-	"5&prime; &rarr; 3&prime;"
+	"5&prime; &rarr; 3&prime;",
 	"base pair",
 	"messenger RNA",
 	"transfer RNA",
@@ -154,8 +154,8 @@ choices = [
 
 #======================================
 #======================================
-def write_question(N, macro, answer):
-	question = "<p><b>{0}</b> ".format(macro)
+def _format_question(N: int, macro: str, answer: str) -> str:
+	question = f"<p><b>{macro}</b> "
 	if macro.endswith('s'):
 		question += "are "
 	else:
@@ -168,26 +168,20 @@ def write_question(N, macro, answer):
 
 #======================================
 #======================================
-def write_question_batch(N, args):
-	questions = []
-	for item in carbs:
-		questions.append(write_question(N, item, 'Carbohydrates'))
-		N += 1
-	for item in lipids:
-		questions.append(write_question(N, item, 'Lipids'))
-		N += 1
-	for item in protein:
-		questions.append(write_question(N, item, 'Proteins'))
-		N += 1
-	for item in nucleic_acids:
-		questions.append(write_question(N, item, 'Nucleic acids'))
-		N += 1
-	return questions
+def write_question(N: int, args) -> str:
+	all_items = (
+		[(item, 'Carbohydrates') for item in carbs]
+		+ [(item, 'Lipids') for item in lipids]
+		+ [(item, 'Proteins') for item in protein]
+		+ [(item, 'Nucleic acids') for item in nucleic_acids]
+	)
+	macro, answer = random.choice(all_items)
+	return _format_question(N, macro, answer)
 
 #======================================
 #======================================
 def parse_arguments():
-	parser = bptools.make_arg_parser(batch=True)
+	parser = bptools.make_arg_parser(description="Generate macromolecule category questions.")
 	args = parser.parse_args()
 	return args
 
@@ -195,9 +189,8 @@ def parse_arguments():
 #======================================
 def main():
 	args = parse_arguments()
-	outfile = bptools.make_outfile()
-	questions = bptools.collect_question_batches(write_question_batch, args)
-	bptools.write_questions_to_file(questions, outfile)
+	outfile = bptools.make_outfile(None)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 if __name__ == '__main__':
 	main()

@@ -14,14 +14,13 @@ options = ('donor_absorb', 'fret_color', 'acceptor_emit')
 
 #==================================
 def colorHtml(color_id):
-	html_text = '<span style="color: {0}"><strong>{1}</strong></span>'.format(html_colors[color_id], colors[color_id])
-	return html_text
+	return f'<span style="color: {html_colors[color_id]}"><strong>{colors[color_id]}</strong></span>'
 
 #==================================
 def writeChoice(donor_absorb_id, fret_color_id, acceptor_emit_id):
 	choice = ""
-	choice += "The donor protein absorbs {0} and emits {1}; ".format(colorHtml(donor_absorb_id), colorHtml(fret_color_id))
-	choice += "the acceptor protein absorbs {0} and emits {1}. ".format(colorHtml(fret_color_id), colorHtml(acceptor_emit_id))
+	choice += f"The donor protein absorbs {colorHtml(donor_absorb_id)} and emits {colorHtml(fret_color_id)}; "
+	choice += f"the acceptor protein absorbs {colorHtml(fret_color_id)} and emits {colorHtml(acceptor_emit_id)}. "
 	return choice
 
 #==================================
@@ -54,26 +53,15 @@ def build_question(color_set):
 	return question_text, choices, answer
 
 #==================================
-def write_question_batch(start_num: int, args) -> list:
+def write_question(N: int, args) -> str:
 	color_sets = get_filtered_color_sets()
-	if args.max_questions is not None:
-		remaining = args.max_questions - (start_num - 1)
-		if remaining <= 0:
-			return []
-		color_sets = color_sets[:remaining]
-	questions = []
-	for offset, color_set in enumerate(color_sets):
-		question_text, choices, answer = build_question(color_set)
-		complete_question = bptools.formatBB_MC_Question(start_num + offset, question_text, choices, answer)
-		questions.append(complete_question)
-	return questions
+	color_set = random.choice(color_sets)
+	question_text, choices, answer = build_question(color_set)
+	return bptools.formatBB_MC_Question(N, question_text, choices, answer)
 
 #==================================
 def parse_arguments():
-	parser = bptools.make_arg_parser(
-		description="Generate FRET color permutation questions.",
-		batch=True
-	)
+	parser = bptools.make_arg_parser(description="Generate FRET color permutation questions.")
 	args = parser.parse_args()
 	return args
 
@@ -81,9 +69,7 @@ def parse_arguments():
 def main():
 	args = parse_arguments()
 	outfile = bptools.make_outfile(None)
-	questions = bptools.collect_question_batches(write_question_batch, args)
-	bptools.write_questions_to_file(questions, outfile)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 if __name__ == '__main__':
 	main()
-

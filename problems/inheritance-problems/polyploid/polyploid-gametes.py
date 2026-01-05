@@ -47,39 +47,39 @@ def makeQuestion(N, ploidy, monoploid):
 		return None
 
 	choice_dict = {}
-	answer = '{0} chromosomes'.format(gametes)
+	answer = f'{gametes} chromosomes'
 	choice_dict[gametes] = answer
 	#===========
 	number = ploidy
-	wrong = '{0} chromosomes'.format(number)
+	wrong = f'{number} chromosomes'
 	choice_dict[number] = wrong
 	#===========
 	number = ploidy*2
-	wrong = '{0} chromosomes'.format(number)
+	wrong = f'{number} chromosomes'
 	choice_dict[number] = wrong
 	#===========
 	number = ploidy // 2
-	wrong = '{0} chromosomes'.format(number)
+	wrong = f'{number} chromosomes'
 	choice_dict[number] = wrong
 	#===========
 	number = monoploid
-	wrong = '{0} chromosomes'.format(number)
+	wrong = f'{number} chromosomes'
 	choice_dict[number] = wrong
 	#===========
 	number = monoploid*2
-	wrong = '{0} chromosomes'.format(number)
+	wrong = f'{number} chromosomes'
 	choice_dict[number] = wrong
 	#===========
 	number = gametes // 2
-	wrong = '{0} chromosomes'.format(number)
+	wrong = f'{number} chromosomes'
 	choice_dict[number] = wrong
 	#===========
 	number = total_chromosomes
-	wrong = '{0} chromosomes'.format(number)
+	wrong = f'{number} chromosomes'
 	choice_dict[number] = wrong
 	#===========
 	number = total_chromosomes * 2
-	wrong = '{0} chromosomes'.format(number)
+	wrong = f'{number} chromosomes'
 	choice_dict[number] = wrong
 
 	numbers = list(choice_dict.keys())
@@ -96,49 +96,36 @@ def makeQuestion(N, ploidy, monoploid):
 		choices_list.append(choice_dict[n])
 
 	question = ""
-	question += "<p>A {0} plant species is found to be ".format(polyploid_names[ploidy])
-	question += '{0}n = {1} chromosomes.</p> '.format(ploidy, total_chromosomes)
+	question += f"<p>A {polyploid_names[ploidy]} plant species is found to be "
+	question += f'{ploidy}n = {total_chromosomes} chromosomes.</p> '
 	question += '<h5>How many chromosomes would present in the gametes of this species?</h5>'
 	if random.random() < 0.5:
-		question += "<p><i>Note: {0}/{1} = {2} and {0}/2 = {3}</i></p>".format(total_chromosomes, ploidy, monoploid, gametes)
+		question += f"<p><i>Note: {total_chromosomes}/{ploidy} = {monoploid} and {total_chromosomes}/2 = {gametes}</i></p>"
 	else:
-		question += "<p><i>Note: {0}/2 = {3} and {0}/{1} = {2}</i></p>".format(total_chromosomes, ploidy, monoploid, gametes)
+		question += f"<p><i>Note: {total_chromosomes}/2 = {gametes} and {total_chromosomes}/{ploidy} = {monoploid}</i></p>"
 
 	bb_question = bptools.formatBB_MC_Question(N, question, choices_list, answer)
 	return bb_question
 
-def write_question_batch(start_num: int, args) -> list:
-	questions = []
-	remaining = None
-	if args.max_questions is not None:
-		remaining = args.max_questions - (start_num - 1)
-		if remaining <= 0:
-			return questions
-	N = start_num
-	for ploidy in ploidies:
-		for monoploid in monoploid_sizes:
-			bb_question = makeQuestion(N, ploidy, monoploid)
-			if bb_question is None:
-				continue
-			questions.append(bb_question)
-			N += 1
-			if remaining is not None and len(questions) >= remaining:
-				return questions
-	return questions
+def write_question(N: int, args) -> str:
+	max_tries = 100
+	for _ in range(max_tries):
+		ploidy = random.choice(ploidies)
+		monoploid = random.choice(monoploid_sizes)
+		bb_question = makeQuestion(N, ploidy, monoploid)
+		if bb_question is not None:
+			return bb_question
+	return None
 
 def parse_arguments():
-	parser = bptools.make_arg_parser(
-		description="Generate polyploid gamete questions.",
-		batch=True
-	)
+	parser = bptools.make_arg_parser(description="Generate polyploid gamete questions.")
 	args = parser.parse_args()
 	return args
 
 def main():
 	args = parse_arguments()
 	outfile = bptools.make_outfile(None)
-	questions = bptools.collect_question_batches(write_question_batch, args)
-	bptools.write_questions_to_file(questions, outfile)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 if __name__ == '__main__':
 	main()

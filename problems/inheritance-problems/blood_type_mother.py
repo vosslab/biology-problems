@@ -106,7 +106,7 @@ def get_possible_mom_phenotypes(dad_pheno: str, kid_pheno: str) -> list[str]:
 	return sorted(list(possible_phenos))
 
 #===========================================================
-def write_question(N: int, dad_pheno: str, kid_pheno: str) -> str:
+def _format_question(N: int, dad_pheno: str, kid_pheno: str) -> str:
 	"""
 	Generate a formatted multiple-answer question string.
 
@@ -153,37 +153,25 @@ def write_question(N: int, dad_pheno: str, kid_pheno: str) -> str:
 
 
 #===========================================================
-def main():
-	"""
-	Generates all combinations of father/child blood types as multiple-answer questions.
-	"""
-	parser = bptools.make_arg_parser(
-		description="Generate blood type mother questions.",
-		batch=True
-	)
-	args = parser.parse_args()
-
-	outfile = bptools.make_outfile(None)
-	questions = bptools.collect_question_batches(write_question_batch, args)
-	bptools.write_questions_to_file(questions, outfile)
+def write_question(N: int, args) -> str:
+	dad_pheno = random.choice(phenotypes)
+	kid_pheno = random.choice(phenotypes)
+	return _format_question(N, dad_pheno, kid_pheno)
 
 #===========================================================
-def write_question_batch(start_num: int, args) -> list:
-	questions = []
-	remaining = None
-	if args.max_questions is not None:
-		remaining = args.max_questions - (start_num - 1)
-		if remaining <= 0:
-			return questions
-	N = start_num
-	for dad_pheno in phenotypes:
-		for kid_pheno in phenotypes:
-			question = write_question(N, dad_pheno, kid_pheno)
-			questions.append(question)
-			N += 1
-			if remaining is not None and len(questions) >= remaining:
-				return questions
-	return questions
+def parse_arguments():
+	parser = bptools.make_arg_parser(description="Generate blood type mother questions.")
+	args = parser.parse_args()
+	return args
+
+#===========================================================
+def main():
+	"""
+	Generate blood type mother questions.
+	"""
+	args = parse_arguments()
+	outfile = bptools.make_outfile(None)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #===========================================================
 #===========================================================

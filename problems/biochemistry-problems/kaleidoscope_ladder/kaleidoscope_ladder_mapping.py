@@ -2,8 +2,15 @@
 
 import math
 import random
+import os
+import sys
 
 import bptools
+
+_BIOCHEM_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if _BIOCHEM_DIR not in sys.path:
+	sys.path.insert(0, _BIOCHEM_DIR)
+
 import protein_ladder_lib
 
 

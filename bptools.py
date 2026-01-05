@@ -47,7 +47,7 @@ def _patch_anticheat_insert_hidden_terms():
 _patch_anticheat_insert_hidden_terms()
 
 #==========================
-def get_git_root(path=None):
+def _get_git_root(path=None):
 	"""Return the absolute path of the repository root."""
 	if path is None:
 		# Use the path of the script
@@ -70,7 +70,7 @@ def get_repo_data_path(*parts):
 	Returns:
 		str: Absolute path to the requested data file.
 	"""
-	git_root = get_git_root()
+	git_root = _get_git_root()
 	if git_root is None:
 		raise FileNotFoundError("Unable to locate git root for data path resolution.")
 	return os.path.join(git_root, "data", *parts)
@@ -127,19 +127,13 @@ def get_indices_for_color_wheel(num_colors, color_wheel_length):
 def default_color_wheel(num_colors, my_color_wheel=dark_color_wheel):
 	return color_wheel.default_color_wheel(num_colors, my_color_wheel)
 #==========================
-def default_color_wheel2(num_colors, random_shift=True):
-	return color_wheel.default_color_wheel2(num_colors, random_shift)
-#==========================
 def light_and_dark_color_wheel(num_colors, dark_color_wheel=dark_color_wheel, light_color_wheel=light_color_wheel):
 	return color_wheel.light_and_dark_color_wheel(num_colors, dark_color_wheel, light_color_wheel)
-#==========================
-def light_and_dark_color_wheel2(num_colors, random_shift=True, extra_light=False):
-	return color_wheel.light_and_dark_color_wheel2(num_colors, random_shift, extra_light)
 #==========================
 def write_html_color_table(filename):
 	color_wheel.write_html_color_table(filename)
 #==========================
-def default_color_wheel_calc(num_colors=4):
+def _default_color_wheel_calc(num_colors=4):
 	return color_wheel.default_color_wheel_calc(num_colors)
 #==========================
 def make_color_wheel(r, g, b, degree_step=40):
@@ -176,7 +170,7 @@ def print_histogram():
 #===================================================================================
 
 #==========================
-def add_base_args(parser):
+def _add_base_args(parser):
 	"""
 	Add base CLI arguments for common generators.
 
@@ -198,7 +192,7 @@ def add_base_args(parser):
 	return parser
 
 #==========================
-def add_base_args_batch(parser):
+def _add_base_args_batch(parser):
 	"""
 	Add base CLI arguments for batch generators with a default cap.
 
@@ -208,7 +202,7 @@ def add_base_args_batch(parser):
 	Returns:
 		argparse.ArgumentParser: The updated parser.
 	"""
-	parser = add_base_args(
+	parser = _add_base_args(
 		parser
 	)
 	parser.set_defaults(max_questions=99)
@@ -230,11 +224,11 @@ def make_arg_parser(description=None, batch=False):
 		description = "Generate blackboard questions."
 	parser = argparse.ArgumentParser(description=description)
 	if batch:
-		parser = add_base_args_batch(
+		parser = _add_base_args_batch(
 			parser
 		)
 	else:
-		parser = add_base_args(
+		parser = _add_base_args(
 			parser
 		)
 	return parser
@@ -464,7 +458,7 @@ def _should_print_histogram(questions_list: list) -> bool:
 	return False
 
 #==========================
-def collect_questions(write_question, args, print_histogram_flag=True) -> list:
+def _collect_questions(write_question, args, print_histogram_flag=True) -> list:
 	"""
 	Collect questions from a single-question writer.
 
@@ -573,7 +567,7 @@ def make_outfile(script_path: str = None, *parts) -> str:
 	return outfile
 
 #==========================
-def write_questions_to_file(questions: list, outfile: str):
+def _write_questions_to_file(questions: list, outfile: str):
 	"""
 	Write questions to a file and print status messages.
 
@@ -590,6 +584,15 @@ def write_questions_to_file(questions: list, outfile: str):
 	print(f"... saved {question_count} {word} to {outfile}\n")
 
 #==========================
+def write_questions_to_file(questions: list, outfile: str):
+	"""
+	Public wrapper for writing questions to a file.
+
+	Prefer `collect_and_write_questions(...)` in scripts.
+	"""
+	return _write_questions_to_file(questions, outfile)
+
+#==========================
 def collect_and_write_questions(write_question, args, outfile, print_histogram_flag=True) -> list:
 	"""
 	Collect questions and write them to a file.
@@ -603,8 +606,8 @@ def collect_and_write_questions(write_question, args, outfile, print_histogram_f
 	Returns:
 		list: List of question strings.
 	"""
-	questions = collect_questions(write_question, args, print_histogram_flag)
-	write_questions_to_file(questions, outfile)
+	questions = _collect_questions(write_question, args, print_histogram_flag)
+	_write_questions_to_file(questions, outfile)
 	return questions
 
 #===================================================================================

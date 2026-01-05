@@ -82,7 +82,7 @@ def test_collect_questions_skips_empty_and_internal_newlines(capsys):
 			return ""
 		return "bad\nnews"
 
-	questions = bptools.collect_questions(writer, args, print_histogram_flag=False)
+	questions = bptools._collect_questions(writer, args, print_histogram_flag=False)
 	assert questions == ["hello\n"]
 
 	err = capsys.readouterr().err

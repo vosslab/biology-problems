@@ -2,11 +2,8 @@
 # ^^ Specifies the Python3 environment to use for script execution
 
 # Standard Library
-import os
 import math
-import time
 import random
-import argparse
 import statistics
 
 # local repo modules
@@ -225,7 +222,7 @@ def format_question_html(
 
 	return q
 
-def write_question(N: int) -> str:
+def _write_one_question(N: int) -> str:
 	"""
 	Create one Blackboard numeric question row for ANOVA across 5 years
 	with cumulative sampling: once a site appears, it persists in all later years.
@@ -305,19 +302,15 @@ def write_question(N: int) -> str:
 	return complete_question
 
 #============================================
+def write_question(N: int, args) -> str:
+	return _write_one_question(N)
+
+#============================================
 def parse_arguments():
 	"""
 	Parse command line arguments.
 	"""
-	parser = argparse.ArgumentParser(description="Generate ANOVA questions (5 years).")
-	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		default=1, help='Number of questions to create.'
-	)
-	parser.add_argument(
-		'-x', '--max-questions', type=int, dest='max_questions',
-		default=99, help='Max number of questions.'
-	)
+	parser = bptools.make_arg_parser(description="Generate ANOVA questions (5 years).")
 	args = parser.parse_args()
 	return args
 
@@ -327,42 +320,8 @@ def main():
 	Generate and save a bank of ANOVA numeric questions.
 	"""
 	args = parse_arguments()
-
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
-	outfile = (
-		'bbq'
-		f'-{script_name}'
-		'-anova-5year'
-		'-questions.txt'
-	)
-
-	question_bank_list: list[str] = []
-	N = 0
-
-	for _ in range(args.duplicates):
-		t0 = time.time()
-		complete_question = write_question(N + 1)
-		if time.time() - t0 > 1.0:
-			print(f"Question {N+1} complete in {time.time() - t0:.1f} seconds")
-
-		if complete_question is not None:
-			N += 1
-			question_bank_list.append(complete_question)
-
-		if N >= args.max_questions:
-			break
-
-	if len(question_bank_list) > args.max_questions:
-		random.shuffle(question_bank_list)
-		question_bank_list = question_bank_list[:args.max_questions]
-
-	print(f'\nWriting {len(question_bank_list)} question to file: {outfile}')
-	write_count = 0
-	with open(outfile, 'w') as f:
-		for q in question_bank_list:
-			write_count += 1
-			f.write(q)
-	print(f'... saved {write_count} questions to {outfile}\n')
+	outfile = bptools.make_outfile(None, "anova-5year")
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #============================================
 if __name__ == '__main__':

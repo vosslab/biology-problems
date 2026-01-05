@@ -21,7 +21,7 @@ num2ordinal = {
 }
 
 
-def write_question(chain_length, num_double_bonds, question_num):
+def _format_question(chain_length, num_double_bonds, question_num):
 	cl = chain_length
 	ndb = num_double_bonds
 	question = f'The notation {cl}:{ndb} indicates '
@@ -46,26 +46,17 @@ def write_question(chain_length, num_double_bonds, question_num):
 
 #=========================================
 #=========================================
-def write_question_batch(start_num, args):
-	question_list = []
-	question_num = start_num
+def write_question(N: int, args) -> str:
 	possible_chain_lengths = [12, 14, 16, 18, 20, 22, 24]
 	possible_num_double_bonds = [1, 2, 3, 4]
-
-	for chain_length in possible_chain_lengths:
-		for num_double_bonds in possible_num_double_bonds:
-			complete_question = write_question(chain_length, num_double_bonds, question_num)
-			question_list.append(complete_question)
-			question_num += 1
-	return question_list
+	chain_length = random.choice(possible_chain_lengths)
+	num_double_bonds = random.choice(possible_num_double_bonds)
+	return _format_question(chain_length, num_double_bonds, N)
 
 #=========================================
 #=========================================
 def parse_arguments():
-	parser = bptools.make_arg_parser(
-		description='Generate fatty acid notation questions.',
-		batch=True
-	)
+	parser = bptools.make_arg_parser(description='Generate fatty acid notation questions.')
 	args = parser.parse_args()
 	return args
 
@@ -73,9 +64,8 @@ def parse_arguments():
 #=========================================
 def main():
 	args = parse_arguments()
-	outfile = bptools.make_outfile()
-	questions = bptools.collect_question_batches(write_question_batch, args)
-	bptools.write_questions_to_file(questions, outfile)
+	outfile = bptools.make_outfile(None)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #=========================================
 #=========================================

@@ -45,7 +45,7 @@ def write_question_text(buffer_dict, pH_value):
 	question_text += ('<p>' + buffer_dict['acid_name'].capitalize() + ' has ' + bptools.number_to_cardinal(num_states)
 		+' possible protonation states in the choices below.</p> ')
 	question_text += ('<p>Which one of the following protonation states is the most abundant at <strong>pH '
-		+('{0:.1f}'.format(pH_value)) + '</strong>?</p> ')
+		+ f"{pH_value:.1f}" + '</strong>?</p> ')
 	return question_text
 
 
@@ -78,22 +78,15 @@ def get_buffer_list(proton_count):
 	raise ValueError("Invalid proton_count value.")
 
 #=====================
-def write_question_batch(N: int, args) -> list[str]:
+def write_question(N: int, args) -> str:
 	"""
-	Create a batch of buffer protonation questions.
+	Create a single buffer protonation question.
 	"""
-	questions = []
-	question_num = N
 	buffer_list = get_buffer_list(args.proton_count)
-	for buffer_dict in buffer_list:
-		buffer_dict = bufferslib.expand_buffer_dict(buffer_dict)
-		pH_list = get_pH_values(buffer_dict['pKa_list'])
-		for pH_value in pH_list:
-			complete_question = make_complete_question(question_num, buffer_dict, pH_value)
-			if complete_question is not None:
-				questions.append(complete_question)
-				question_num += 1
-	return questions
+	buffer_dict = bufferslib.expand_buffer_dict(random.choice(buffer_list))
+	pH_list = get_pH_values(buffer_dict['pKa_list'])
+	pH_value = random.choice(pH_list)
+	return make_complete_question(N, buffer_dict, pH_value)
 
 #=====================
 def parse_arguments():
@@ -111,7 +104,6 @@ def parse_arguments():
 	"""
 	parser = bptools.make_arg_parser(
 		description='Generate questions related to buffer protonation states.',
-		batch=True
 	)
 	parser.add_argument('-p', '--proton_count', '--protons', dest='proton_count', type=int, metavar='#',
 		help='Number of removable protons in a buffer (1, 2, 3, 4)',
@@ -133,8 +125,7 @@ def main():
 
 	# Define output file name
 	outfile = bptools.make_outfile(None, f"{args.proton_count}_protons")
-	questions = bptools.collect_question_batches(write_question_batch, args)
-	bptools.write_questions_to_file(questions, outfile)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #======================================
 #======================================

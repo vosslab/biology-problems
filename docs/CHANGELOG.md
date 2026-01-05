@@ -10,14 +10,38 @@
 - Added `docs/QUESTION_FUNCTION_INDEX.md` and `tools/build_question_function_index.py` to track question-creator functions and their Git creation dates.
 - Improved `tools/build_question_function_index.py` to better trace function origins across renames/moves and to show daily headings (YYYY-MM-DD), skipping symlink shims and using file “first seen” fallback dates when true file-add commits aren’t available.
 - Renamed the Kaleidoscope ladder helper module to
-  [problems/biochemistry-problems/protein_ladder_lib.py](problems/biochemistry-problems/protein_ladder_lib.py) and added a compatibility shim
-  [problems/biochemistry-problems/ladder.py](problems/biochemistry-problems/ladder.py).
+  [problems/biochemistry-problems/kaleidoscope_ladder/protein_ladder_lib.py](problems/biochemistry-problems/kaleidoscope_ladder/protein_ladder_lib.py) and added a compatibility shim
+  [problems/biochemistry-problems/kaleidoscope_ladder/ladder.py](problems/biochemistry-problems/kaleidoscope_ladder/ladder.py).
 - Added a preliminary Kaleidoscope ladder mapping generator in
-  [problems/biochemistry-problems/kaleidoscope_ladder_mapping.py](problems/biochemistry-problems/kaleidoscope_ladder_mapping.py) with mapping + unknown-size estimate questions and pytest coverage.
+  [problems/biochemistry-problems/kaleidoscope_ladder/kaleidoscope_ladder_mapping.py](problems/biochemistry-problems/kaleidoscope_ladder/kaleidoscope_ladder_mapping.py) with mapping + unknown-size estimate questions and pytest coverage.
 - Added a lane-based Kaleidoscope gel question generator in
-  [problems/biochemistry-problems/kaleidoscope_ladder_unknown_band_mw.py](problems/biochemistry-problems/kaleidoscope_ladder_unknown_band_mw.py) (Lane 1 ladder, Lane 2 unknown band), including too-short/too-long run scenarios.
+  [problems/biochemistry-problems/kaleidoscope_ladder/kaleidoscope_ladder_unknown_band_mw.py](problems/biochemistry-problems/kaleidoscope_ladder/kaleidoscope_ladder_unknown_band_mw.py) (Lane 1 ladder, Lane 2 unknown band), including too-short/too-long run scenarios.
+- Added an MC-only Kaleidoscope gel question generator that uses real protein MWs but anonymous lane labeling in the prompt:
+  [problems/biochemistry-problems/kaleidoscope_ladder/kaleidoscope_ladder_unknown_band_protein_mc.py](problems/biochemistry-problems/kaleidoscope_ladder/kaleidoscope_ladder_unknown_band_protein_mc.py).
 - Updated the Kaleidoscope ladder scripts to use the standard `bptools.make_arg_parser` / `bptools.collect_and_write_questions` CLI framework (default `-d 2` questions).
 - Removed custom `-o/--outfile` CLI overrides so Kaleidoscope ladder scripts use the standard `bptools.make_outfile(None)` naming.
+- Refactored additional legacy generators to the standard `bptools.make_arg_parser` / `bptools.collect_and_write_questions` single-question framework:
+  [problems/biochemistry-problems/buffers/pKa_buffer_state.py](problems/biochemistry-problems/buffers/pKa_buffer_state.py),
+  [problems/biochemistry-problems/fret_permute_colors.py](problems/biochemistry-problems/fret_permute_colors.py),
+  [problems/biochemistry-problems/macromolecules_categorize_by_name.py](problems/biochemistry-problems/macromolecules_categorize_by_name.py),
+  [problems/biochemistry-problems/photosynthetic_light_pigments.py](problems/biochemistry-problems/photosynthetic_light_pigments.py),
+  [problems/biochemistry-problems/quick_fatty_acid_colon_system.py](problems/biochemistry-problems/quick_fatty_acid_colon_system.py),
+  [problems/biostatistics-problems/busse_woods_anova.py](problems/biostatistics-problems/busse_woods_anova.py),
+  [problems/biostatistics-problems/busse_woods_two_sample_f_test.py](problems/biostatistics-problems/busse_woods_two_sample_f_test.py),
+  [problems/inheritance-problems/blood_type_mother.py](problems/inheritance-problems/blood_type_mother.py),
+  [problems/inheritance-problems/blood_type_offspring.py](problems/inheritance-problems/blood_type_offspring.py),
+  [problems/inheritance-problems/polyploid/polyploid-gametes.py](problems/inheritance-problems/polyploid/polyploid-gametes.py),
+  [problems/inheritance-problems/punnett_choice.py](problems/inheritance-problems/punnett_choice.py),
+  [problems/inheritance-problems/translocation/robertsonian.py](problems/inheritance-problems/translocation/robertsonian.py).
+- Added `tools/audit_problem_scripts_bptools_framework.sh` to bin `problems/` scripts into bptools-framework vs non-framework lists.
+- Extended the audit output to also list script-like files missing a python shebang and/or an `if __name__ == "__main__":` guard.
+- Extended the audit output to also list python-shebang files under `problems/` that are not marked executable (+x).
+- Added `tools/audit_problem_scripts_bptools_framework.py` and made the `.sh` a thin wrapper so the audit runs consistently on macOS (and now also separates batch-style vs single-question scripts).
+- Updated the audit to ignore python files under `.venv/` directories.
+- Updated the audit to skip writing empty `bptools_scripts_missing_*.txt` files.
+- Kept `bptools.write_questions_to_file` as a public wrapper (calling `_write_questions_to_file`) for older batch-style scripts.
+- Made `bptools.add_base_args`, `bptools.add_base_args_batch`, and `bptools.default_color_wheel_calc` private (underscored); scripts should call `bptools.make_arg_parser` instead.
+- Removed unused `bptools.default_color_wheel2` and `bptools.light_and_dark_color_wheel2`, and made `bptools.get_git_root` private (`_get_git_root`) since scripts should use `get_repo_data_path`.
 - Added `docs/YAML_QUESTION_BANK_INDEX.md` and `tools/build_yaml_question_bank_index.py` to track YAML question bank creation/update dates (for `matching_sets/`, `problems/multiple_choice_statements/`, and `data/` YAML files).
 - Added `tools/test_reorg_git_mv_commands.txt` with a suggested `tests/` subfolder re-org command list (including YAML-focused tests under `tests/yaml/`).
 - Updated `tests/conftest.py` to add `tests/` to `sys.path` so helper imports (e.g., `lib_test_utils`) keep working after moving tests into subfolders.

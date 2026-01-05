@@ -10,7 +10,7 @@ debug = False
 def questionText(chromosome1, chromosome2):
 	question = ''
 	question += '<p>An individual has a Robertsonian translocation involving chromosomes '
-	question += '{0} and {1}.</p>'.format(chromosome1, chromosome2)
+	question += f'{chromosome1} and {chromosome2}.</p>'
 	question += '<h5>Which one of the following gametes was formed by '
 	question += '<span style="color: darkred;">alternate</span> segregation in this individual?</h5>'
 	return question
@@ -44,18 +44,18 @@ def blackboardFormat(N, chromosome1, chromosome2):
 	smtab = '<table style="border-collapse: collapse; border: 1px solid silver;">'
 	trtd = '<tr><td style="border: 0px solid white;">'
 
-	answer = '{2}{3}rob({0}; {1})</td></tr>'.format(chromosome1, chromosome2, smtab, trtd)
+	answer = f'{smtab}{trtd}rob({chromosome1}; {chromosome2})</td></tr>'
 	answer += trtd + table12 + '</td></tr>'
 	answer += '</table><p></p><p></p>'
 	choices.append(answer)
 
-	wrong = '{2}{3}rob({0}; {1}), +{0}</td></tr>'.format(chromosome1, chromosome2, smtab, trtd)
+	wrong = f'{smtab}{trtd}rob({chromosome1}; {chromosome2}), +{chromosome1}</td></tr>'
 	wrong += trtd + table12 + '</td></tr>'
 	wrong += trtd + table1 + '</td></tr>'
 	wrong += '</table><p></p><p></p>'
 	choices.append(wrong)
 
-	wrong = '{2}{3}rob({0}; {1}), +{1}</td></tr>'.format(chromosome1, chromosome2, smtab, trtd)
+	wrong = f'{smtab}{trtd}rob({chromosome1}; {chromosome2}), +{chromosome2}</td></tr>'
 	wrong += trtd + table12 + '</td></tr>'
 	wrong += trtd + table2 + '</td></tr>'
 	wrong += '</table><p></p><p></p>'
@@ -76,30 +76,18 @@ def blackboardFormat(N, chromosome1, chromosome2):
 
 	return blackboard
 
-def write_question_batch(start_num: int, args) -> list:
+def write_question(N: int, args) -> str:
 	acrocentric_chromosomes = translocationlib.ACROCENTRIC_CHROMOSOMES
-	questions = []
-	remaining = None
-	if args.max_questions is not None:
-		remaining = args.max_questions - (start_num - 1)
-		if remaining <= 0:
-			return questions
-	N = start_num
-	for chromosome1 in acrocentric_chromosomes:
-		for chromosome2 in acrocentric_chromosomes:
-			if chromosome1 >= chromosome2:
-				continue
-			final_question = blackboardFormat(N, chromosome1, chromosome2)
-			questions.append(final_question)
-			N += 1
-			if remaining is not None and len(questions) >= remaining:
-				return questions
-	return questions
+	pairs = []
+	for i, chromosome1 in enumerate(acrocentric_chromosomes):
+		for chromosome2 in acrocentric_chromosomes[i+1:]:
+			pairs.append((chromosome1, chromosome2))
+	chromosome1, chromosome2 = random.choice(pairs)
+	return blackboardFormat(N, chromosome1, chromosome2)
 
 def parse_arguments():
 	parser = bptools.make_arg_parser(
 		description="Generate Robertsonian translocation questions.",
-		batch=True
 	)
 	args = parser.parse_args()
 	return args
@@ -107,8 +95,7 @@ def parse_arguments():
 def main():
 	args = parse_arguments()
 	outfile = bptools.make_outfile(None)
-	questions = bptools.collect_question_batches(write_question_batch, args)
-	bptools.write_questions_to_file(questions, outfile)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 if __name__ == "__main__":
 	main()
