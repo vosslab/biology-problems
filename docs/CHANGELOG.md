@@ -3,6 +3,7 @@
 ## 2026-01-05
 - Fixed pyflakes issues across multiple generators (unused imports/variables, missing helper functions, and indentation errors).
 - Converted a number of `.format(...)` string constructions to f-strings in the touched files.
+- Updated gene mapping scripts to import `gene_map_class_lib` after the genemap class library rename.
 - Updated docs, tests, and index-builder tools after moving generators under `problems/` (including relocating `problems/multiple_choice_statements/`).
 - Added pytest coverage for `bptools.py` helpers and test harness setup (`tests/test_bptools.py`, `tests/conftest.py`).
 - Added focused pytest coverage for `bptools.applyReplacementRulesToText` / `bptools.applyReplacementRulesToList` and key helpers in `problems/multiple_choice_statements/yaml_to_pg.py`.
