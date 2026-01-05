@@ -128,9 +128,11 @@ def test_applyReplacementRulesToText_type_checks():
 
 
 def test_applyReplacementRulesToText_uses_base_rules_and_custom_rules(capsys):
-	out = bptools.applyReplacementRulesToText("This is not true ", None)
-	assert "NOT" in out
-	assert "TRUE" in out
+	out_not = bptools.applyReplacementRulesToText("This is not ", None)
+	assert "NOT" in out_not
+
+	out_true = bptools.applyReplacementRulesToText("This is true ", None)
+	assert "TRUE" in out_true
 	_ = capsys.readouterr()
 
 	rules = {"XYZ": "abc"}
@@ -140,10 +142,11 @@ def test_applyReplacementRulesToText_uses_base_rules_and_custom_rules(capsys):
 
 
 def test_applyReplacementRulesToList_replaces_and_validates():
-	original = [" not true ", " false ", "hello"]
+	original = [" not ", " true ", " false ", "hello"]
 	out = bptools.applyReplacementRulesToList(list(original), None)
-	assert original == [" not true ", " false ", "hello"]
+	assert original == [" not ", " true ", " false ", "hello"]
 	assert any("NOT" in item for item in out)
+	assert any("TRUE" in item for item in out)
 	assert any("FALSE" in item for item in out)
 
 	try:

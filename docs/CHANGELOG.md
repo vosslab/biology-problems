@@ -4,6 +4,8 @@
 - Fixed pyflakes issues across multiple generators (unused imports/variables, missing helper functions, and indentation errors).
 - Converted a number of `.format(...)` string constructions to f-strings in the touched files.
 - Added pytest coverage for `bptools.py` helpers and test harness setup (`tests/test_bptools.py`, `tests/conftest.py`).
+- Added focused pytest coverage for `bptools.applyReplacementRulesToText` / `bptools.applyReplacementRulesToList` and key helpers in `multiple_choice_statements/yaml_to_pg.py`.
+- Added pytest coverage for YAML-driven content builders in `matching_sets/` and `multiple_choice_statements/` (including `yaml_multiple_choice_statements.py` and `yml_to_pgml.py`).
 
 ## 2026-01-04
 - Added a cytogenetic band-order question generator in
