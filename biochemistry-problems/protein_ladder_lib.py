@@ -1,10 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-import os
 import math
 from collections import defaultdict
 
-mw_color_map = {
+KALEIDOSCOPE_MW_COLOR_MAP = {
 	250: "#99dbfb",
 	150: "#adafdf",
 	100: "#83c6ee",
@@ -16,28 +15,25 @@ mw_color_map = {
 	15:  "#b3def6",
 	10:  "#ffee00",
 }
-default_blue_color_map = defaultdict(lambda: "#83c6ee")
+DEFAULT_BLUE_COLOR_MAP = defaultdict(lambda: "#83c6ee")
+
+# Backwards-compat aliases (older scripts used these names)
+mw_color_map = KALEIDOSCOPE_MW_COLOR_MAP
+default_blue_color_map = DEFAULT_BLUE_COLOR_MAP
 
 band_height = 9
 band_width = 50
 spacer_height = 25
 spacer_width = 12
 label_width = 30
-label_prefix = "&ndash; "
-label_prefix = ""
-
-row_count = 0
 
 #====================================================================
-def gen_spacer_cell(height: int, width: int=None):
-	spacer_cell_html = ''
-	#spacer_cell_html += '<!-- Empty White Cell -->'
-	spacer_cell_html += '<td style="'
+def gen_spacer_cell(height: int, width: int|None=None) -> str:
+	spacer_cell_html = '<td style="'
 	spacer_cell_html += f' height: {height}px; '
 	if width is not None:
 		spacer_cell_html += f' width: {width}px; '
-	spacer_cell_html += ' background-color: #ddd; '
-	spacer_cell_html += '"></td>'
+	spacer_cell_html += ' background-color: #ddd; "></td>'
 	return spacer_cell_html
 
 #====================================================================
@@ -45,95 +41,66 @@ def gen_spacer_row(height: int, columns: int=5) -> str:
 	"""
 	Generate an HTML spacer row with a specified height.
 	"""
-	global row_count
 	spacer_cell_html = gen_spacer_cell(height)
-	spacer_row_html = (
-		f'\n<!-- Row of Empty White Spacers; Row Count {row_count} -->'
-		'<tr>'
-	)
+	spacer_row_html = '<tr>'
 	for _ in range(columns):
 		spacer_row_html += spacer_cell_html
 	spacer_row_html += '</tr>\n'
-	row_count += 1
 	return spacer_row_html
 
 #====================================================================
-def gen_band_rows(mw, gap_height, mw_color_map):
-	rgb_color = mw_color_map[mw]
-	quotient, remainder = divmod(gap_height, band_height)
-	band_spacer_row_html = gen_spacer_row(band_height)
+def gen_band_row(mw_kda: int, color_map: dict[int, str], label: str) -> str:
+	rgb_color = color_map[mw_kda]
 	band_spacer_cell_html = gen_spacer_cell(band_height)
-
-	gel_bands_html = ""
-	for _ in range(quotient):
-		gel_bands_html += band_spacer_row_html
-	gel_bands_html += gen_spacer_row(remainder)
-
-	global row_count
-	gel_bands_html += (
-		f'\n<!-- Band Row = {mw} kD; Row Count {row_count} -->'
+	return (
 		'<tr>'
 		f'{band_spacer_cell_html}'
 		f'  <td style="width: {band_width}px; height: {band_height}px; '
 		f'    background-color: {rgb_color};"></td>'
 		f'{band_spacer_cell_html}'
 		f'  <td style="width: {label_width}px; vertical-align: top;" align="left">'
-		f'    {label_prefix}{mw}</td>'
+		f'    {label}</td>'
 		f'{band_spacer_cell_html}'
 		'</tr>\n'
 	)
-	print(f'1row_count = {row_count}')
-	row_count += 1
-	print(f'2row_count = {row_count}')
-	return gel_bands_html
 
 #====================================================================
-def gen_kaleidoscope_table(mw_values, mw_color_map, table_height):
-	global row_count
-	scale_constant = (table_height - 2*spacer_height - len(mw_values)*band_height)
-	#print(f"num_rows = {num_rows}")
+def gen_kaleidoscope_table(mw_values, color_map, table_height: int, show_labels: bool=True, label_prefix: str="") -> str:
+	"""
+	Generate an HTML table representing a pre-stained protein ladder.
+
+	Notes:
+	- Spacing between bands is proportional to ln(MW) differences.
+	- This is intended as a visual aid / simulation, not a measured gel.
+	"""
+	scale_constant = table_height - 2*spacer_height - len(mw_values)*band_height
 	table_width = label_width + band_width + spacer_width*3
-	while_cell_html = gen_spacer_cell(band_height, spacer_width)
 	html_table = (
 		f'<table cellspacing="0" cellpadding="0" border="1" width="{table_width}" height="{table_height}" '
 		 ' style="border-spacing: 0; border-collapse: collapse; border: 2px solid black; display: inline-block;">'
 	)
-	html_table += f'<tr><td colspan="5" style="height: {spacer_height}; background-color: #ddd;"></td>'
-	html_table += (
-		 '<tr>'
-		f'{while_cell_html}'
-		f'{gen_spacer_cell(band_height, band_width)}'
-		f'{while_cell_html}'
-		f'  <td rowspan="2" style="width: {label_width}px; vertical-align: bottom;" align="left">'
-		f'     {label_prefix}{mw_values[0]}</td>'
-		f'{while_cell_html}'
-		 '</tr>'
+	html_table += f'<tr><td colspan="5" style="height: {spacer_height}px; background-color: #ddd;"></td></tr>\n'
 
-		 '<tr>'
-		f'{while_cell_html}'
-		f'<td style="height: {band_height}px; width: {band_width}px; '
-		f'  background-color: {mw_color_map[mw_values[0]]};"></td>'
-		f'{while_cell_html}'
-		f'{while_cell_html}'
-		'</tr>'
-	)
-	row_count += 2
+	def _label(mw_kda: int) -> str:
+		if show_labels is False:
+			return ""
+		return f"{label_prefix}{mw_kda}"
+
+	html_table += gen_band_row(mw_values[0], color_map, _label(mw_values[0]))
 	gaps = calculate_mw_gaps(mw_values, scale_constant)
-	quotient, remainder = divmod(scale_constant, band_height)
-	for i, mw in enumerate(mw_values[1:]):
-		gap_height = gaps[i]
-		html_table += gen_band_rows(mw, gap_height, mw_color_map)
+	for gap_height, mw_kda in zip(gaps, mw_values[1:], strict=True):
+		html_table += gen_spacer_row(gap_height)
+		html_table += gen_band_row(mw_kda, color_map, _label(mw_kda))
+
 	html_table += (
 		 '<!-- Final White All Column Spacer to Clean Up Border -->'
-		f'<tr><td colspan="5" style="height: {spacer_height//2}px;"></td></tr>'
+		f'<tr><td colspan="5" style="height: {spacer_height//2}px;"></td></tr>\n'
 	)
-	row_count += 2
 	html_table += '</table>'
-	#print(f"row_count = {row_count}")
 	return html_table
 
 #====================================================================
-def calculate_mw_gaps(mw_values, scale_constant):
+def calculate_mw_gaps(mw_values: list[int], scale_constant: float) -> list[int]:
 	"""
 	Takes a list of molecular weights (mw_values), computes the log, differences,
 	normalizes them, scales them by a constant, and returns the rounded list.
@@ -168,26 +135,35 @@ def calculate_mw_gaps(mw_values, scale_constant):
 
 	# Return the final rounded scaled list (excluding None)
 	return rounded_scaled
-assert calculate_mw_gaps([100, 50, 10], 100) == [30, 70]
+
+#====================================================================
+def get_kaleidoscope_mw_values() -> list[int]:
+	return sorted(KALEIDOSCOPE_MW_COLOR_MAP.keys(), reverse=True)
+
+#====================================================================
+def get_kaleidoscope_markers() -> list[tuple[int, str]]:
+	"""
+	Returns a list of (mw_kda, color_hex) tuples in descending MW order.
+	"""
+	return [(mw, KALEIDOSCOPE_MW_COLOR_MAP[mw]) for mw in get_kaleidoscope_mw_values()]
 
 #====================================================================
 def main():
-	# Example usage:
-	mw_values = [250, 150, 100, 75, 50, 37, 25, 20, 15, 10]
+	import argparse
 
-	mw_values = sorted(mw_color_map.keys(), reverse=True)
-	#gen_kaleidoscope_table(mw_color_map, 580)
-	gen_kaleidoscope_table(mw_values, mw_color_map, 450)
-	# Create a defaultdict that always returns "#83c6ee"
+	parser = argparse.ArgumentParser(description="Generate an HTML representation of the Kaleidoscope protein ladder.")
+	parser.add_argument("-o", "--outfile", default="test_html_table.html", help="Output HTML file")
+	parser.add_argument("--height", type=int, default=450, help="Table height (px)")
+	args = parser.parse_args()
 
-	html_table = ""
-	html_table += gen_kaleidoscope_table(mw_values, mw_color_map, 450)
+	mw_values = get_kaleidoscope_mw_values()
+	html_table = gen_kaleidoscope_table(mw_values, KALEIDOSCOPE_MW_COLOR_MAP, args.height, show_labels=True, label_prefix="")
 	html_table += "&nbsp;"
-	html_table += gen_kaleidoscope_table(mw_values, default_blue_color_map, 450)
-	output_file = 'test_html_table.html'
-	with open(output_file, 'w') as f:
-		f.write(html_table)
-	os.system(f"open {output_file}")
+	html_table += gen_kaleidoscope_table(mw_values, DEFAULT_BLUE_COLOR_MAP, args.height, show_labels=False, label_prefix="")
+
+	with open(args.outfile, "w") as handle:
+		handle.write(html_table)
+	print(args.outfile)
 
 #====================================================================
 #====================================================================

@@ -6,6 +6,16 @@
 - Added pytest coverage for `bptools.py` helpers and test harness setup (`tests/test_bptools.py`, `tests/conftest.py`).
 - Added focused pytest coverage for `bptools.applyReplacementRulesToText` / `bptools.applyReplacementRulesToList` and key helpers in `multiple_choice_statements/yaml_to_pg.py`.
 - Added pytest coverage for YAML-driven content builders in `matching_sets/` and `multiple_choice_statements/` (including `yaml_multiple_choice_statements.py` and `yml_to_pgml.py`).
+- Added `docs/QUESTION_FUNCTION_INDEX.md` and `tools/build_question_function_index.py` to track question-creator functions and their Git creation dates.
+- Improved `tools/build_question_function_index.py` to better trace function origins across renames/moves and to show daily headings (YYYY-MM-DD), skipping symlink shims and using file “first seen” fallback dates when true file-add commits aren’t available.
+- Renamed the Kaleidoscope ladder helper module to
+  [biochemistry-problems/protein_ladder_lib.py](biochemistry-problems/protein_ladder_lib.py) and added a compatibility shim
+  [biochemistry-problems/ladder.py](biochemistry-problems/ladder.py).
+- Added a preliminary Kaleidoscope ladder mapping generator in
+  [biochemistry-problems/kaleidoscope_ladder_mapping.py](biochemistry-problems/kaleidoscope_ladder_mapping.py) with mapping + unknown-size estimate questions and pytest coverage.
+- Added `docs/YAML_QUESTION_BANK_INDEX.md` and `tools/build_yaml_question_bank_index.py` to track YAML question bank creation/update dates (for `matching_sets/`, `multiple_choice_statements/`, and `data/` YAML files).
+- Added `tools/test_reorg_git_mv_commands.txt` with a suggested `tests/` subfolder re-org command list (including YAML-focused tests under `tests/yaml/`).
+- Updated `tests/conftest.py` to add `tests/` to `sys.path` so helper imports (e.g., `lib_test_utils`) keep working after moving tests into subfolders.
 
 ## 2026-01-04
 - Added a cytogenetic band-order question generator in
