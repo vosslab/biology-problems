@@ -5,6 +5,7 @@
 # Provides functions to generate random numbers and selections
 import random
 import math
+import sys
 
 # Import external modules (pip-installed)
 # No external modules are used here currently
@@ -57,7 +58,6 @@ def get_values(p=None):
 	p2 = round(p**2, 4)
 	q2 = round(q**2, 4)
 	twopq = round(2*p*q,4)
-	sum = p2 + twopq + q2
 	#print(p, q)
 	#print(p2, twopq, q2, sum)
 	return p, q, p2, twopq, q2
@@ -175,7 +175,6 @@ def makeType1Question(p, phenotype=None):
 	Ftwopq = round(twopq * (1 - F), 8)
 	Fq2 = round(q2 * (1 - F) + q * F, 8)
 
-	sum = round(p2 + twopq + q2, 8)
 	Fsum = round(Fp2 + Ftwopq + Fq2, 8)
 	if abs(Fsum - 1.0) > 0.01:
 		print("sum error")
@@ -288,7 +287,6 @@ def makeType3aQuestion(p):
 	p, q, p2, twopq, q2 = get_values(p)
 	answer = p
 
-	boys_count = int(p * 1e4)
 	girls_count = int((p2 + twopq) * 1e4)
 	girls_numerator, denominator = make_interesting_fraction(
 		girls_count, 10000

@@ -4,7 +4,6 @@
 # general built-in/pip libraries
 import os
 import re
-import sys
 import random
 import argparse
 

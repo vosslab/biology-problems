@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-import random
-
 import bptools
 
 def make_choices_for_cycle(cycle_num: int, num_choices: int):
@@ -26,7 +24,7 @@ def make_choices_for_cycle(cycle_num: int, num_choices: int):
 			if value < 1:
 				value = 0
 			if power >= 2:
-				choice = "2<sup>{0:d}</sup> = {1:,d} complete copies".format(power, value)
+				choice = f"2<sup>{power:d}</sup> = {value:,d} complete copies"
 			elif power == 1:
 				choice = "two complete copies"
 			elif power == 0:

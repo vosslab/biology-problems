@@ -2,7 +2,6 @@
 
 # Standard Library
 import argparse
-import os
 
 # Local repo modules
 import pedigree_html_lib

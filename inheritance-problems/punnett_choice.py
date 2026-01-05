@@ -2,9 +2,6 @@
 # ^^ Specifies the Python3 environment to use for script execution
 
 # Import built-in Python modules
-# Provides functions to generate random numbers and selections
-import random
-
 # Import external modules (pip-installed)
 # No external modules are used here currently
 

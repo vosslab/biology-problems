@@ -5,9 +5,6 @@
 # Provides functions for interacting with the operating system
 # Provides functions to generate random numbers and selections
 import random
-import sys
-import copy
-import itertools
 
 # Import external modules (pip-installed)
 # No external modules are used here currently
@@ -30,13 +27,13 @@ def enzyme_table(metabolites, color_wheel):
 	enzyme_count = len(metabolites) - 1
 	for i in range(enzyme_count):
 		enzyme_num = i+1
-		htmltext += '<td></td> {0}<span style="font-size: 12px;">enzyme {1:d}</span></td> '.format(tdopen_bot, enzyme_num)
+		htmltext += f'<td></td> {tdopen_bot}<span style="font-size: 12px;">enzyme {enzyme_num:d}</span></td> '
 	htmltext += '</tr><tr> '
 	for i,meta in enumerate(metabolites):
 		color = color_wheel[i]
-		htmltext += '{0}<span style="color: {1}; font-size: 20px;"><strong>{2}</strong></span></td> '.format(tdopen_top, color, meta)
+		htmltext += f'{tdopen_top}<span style="color: {color}; font-size: 20px;"><strong>{meta}</strong></span></td> '
 		if i+1 != len(metabolites):
-			htmltext += '{0}<span style="font-size: 16px;">&xrarr;</span></td> '.format(tdopen_top)
+			htmltext += f'{tdopen_top}<span style="font-size: 16px;">&xrarr;</span></td> '
 	htmltext += '</tr> '
 	htmltext += '</table>'
 	return htmltext
@@ -77,7 +74,7 @@ def write_question(N, args):
 	#for i in range(len(metabolite_letters_upper)):
 	for i,meta in enumerate(metabolite_letters_upper):
 		color_txt = color_wheel[i]
-		meta_txt = '<span style="color: {0};"><strong>{1}</strong></span>'.format(color_txt, meta)
+		meta_txt = f'<span style="color: {color_txt};"><strong>{meta}</strong></span>'
 		choice = "Supplemented with nutrient {0}".format(meta_txt)
 		choices_list.append(choice)
 		if i >= enzyme_num:

@@ -108,15 +108,11 @@ class GelMigration(object):
 		unknown_mw = self.getNearestValidDNA_Size(unknown_mw)
 		unknown_dist = self.molecular_weight_to_distance(unknown_mw)
 
-
 		dist_range = (high_dist - low_dist)/2.0
-		low_unknown_mw = self.distance_to_molecular_weight(unknown_dist-dist_range)
-		high_unknown_mw = self.distance_to_molecular_weight(unknown_dist+dist_range)
 		#mw_range = (high_unknown_mw - low_unknown_mw)/4.0
 
-
 		if self.debug is True:
-			print("Unknown: MW = {0:.1f} +/- {1:.1f}; Dist = {2:.2f} +/- {3:.2f}".format(unknown_mw, mw_range, unknown_dist, dist_range))
+			print(f"Unknown: MW = {unknown_mw:.1f} +/- {mw_range:.1f}; Dist = {unknown_dist:.2f} +/- {dist_range:.2f}")
 		return unknown_mw, unknown_dist, mw_range, gap
 
 
@@ -130,33 +126,40 @@ class GelMigration(object):
 
 		question = ''
 		question += " <h6>Gel Migration Problem</h6> "
-		question += ('<p><table cellpadding="2" cellspacing="2" style="text-align:center; border: 1px solid black; font-size: 14px;">')
-		question += ('<tr><th align="center" style="vertical-align: bottom;">DNA Marker</th>'
-					 +'<th align="center">&num; of<br/>Base Pairs<br/>(bp)</th>'
-					 +'<th align="center">Migration<br/>Distance<br/>(cm)</th></tr>')
+		question += '<p><table cellpadding="2" cellspacing="2" style="text-align:center; border: 1px solid black; font-size: 14px;">'
+		question += (
+			"<tr><th align='center' style='vertical-align: bottom;'>DNA Marker</th>"
+			"<th align='center'>&num; of<br/>Base Pairs<br/>(bp)</th>"
+			"<th align='center'>Migration<br/>Distance<br/>(cm)</th></tr>"
+		)
 		for marker_dict in gel_set:
 			dist = self.molecular_weight_to_distance(marker_dict['MW'])
-			question += ('<tr><td align="right">{0}</td><td align="right">{2:d}</td><td align="right">{3:.2f}</td></tr>'.format(
-				marker_dict['fullname'], marker_dict['abbr'], marker_dict['MW'], dist))
-		question += ('<tr><td align="right">{0}</td><td align="center">{1}</td><td align="right">{2:.2f}</td></tr>'.format(
-			"Unknown", "?&nbsp;?", unknown_dist))
+			question += (
+				f"<tr><td align='right'>{marker_dict['fullname']}</td>"
+				f"<td align='right'>{marker_dict['MW']:d}</td>"
+				f"<td align='right'>{dist:.2f}</td></tr>"
+			)
+		question += (
+			f"<tr><td align='right'>Unknown</td>"
+			f"<td align='center'>?&nbsp;?</td>"
+			f"<td align='right'>{unknown_dist:.2f}</td></tr>"
+		)
 		question += "</table></p>"
 		question += '<p>The standard DNA ladder and unknown DNA strand listed in the table were separated using an agarose gel</p>'
 		question += '<p><b>Estimate the number of base pairs of the unknown DNA strand.</b></p>'
 
 		if question_type == 'mc':
-			#print(question)
 			choices_list = []
-			answer = '{0} base pairs (bp)'.format(unknown_mw)
+			answer = f'{unknown_mw} base pairs (bp)'
 			choice_count = min(num_choices, len(gel_set) - 1)
 			for i in range(choice_count):
 				j = i+1
 				if j == gap:
 					choices_list.append(answer)
 					continue
-				mw, d, r, g = self.get_unknown(gel_set, j)
+				mw, _dist, _range, _gap = self.get_unknown(gel_set, j)
 				new_num_base_pairs = self.getNearestValidDNA_Size(mw)
-				choices_list.append('{0} base pairs (bp)'.format(new_num_base_pairs))
+				choices_list.append(f'{new_num_base_pairs} base pairs (bp)')
 			bb_format = bptools.formatBB_MC_Question(N, question, choices_list, answer)
 		else:
 			bb_format = bptools.formatBB_NUM_Question(N, question, unknown_mw, mw_range)

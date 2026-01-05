@@ -54,15 +54,9 @@ def draw_meiosis_chromosome(chromosome1, color='red', scale=2.4, centromere_widt
 	table += '<colgroup width="{0}"></colgroup>'.format(centromere_width)
 	table += '<colgroup width="{0}"></colgroup>'.format(distance[1] * scale - centromere_width / 2)
 	table += '<tr>'
-	table += '<td bgcolor="{1}" style="border: 2px solid black;" align="center"><span style="font-size: small"></span></td>'.format(
-		chromosome1, COLOR_SCALES[color][2]
-	)
-	table += '<td bgcolor="{1}" style="border: 4px solid black;" align="center">{0}</td>'.format(
-		chromosome1, COLOR_SCALES[color][1]
-	)
-	table += '<td bgcolor="{1}" style="border: 2px solid black;" align="center"><span style="font-size: large"></span></td>'.format(
-		chromosome1, COLOR_SCALES[color][2]
-	)
+	table += f'<td bgcolor="{COLOR_SCALES[color][2]}" style="border: 2px solid black;" align="center"><span style="font-size: small"></span></td>'
+	table += f'<td bgcolor="{COLOR_SCALES[color][1]}" style="border: 4px solid black;" align="center">{chromosome1}</td>'
+	table += f'<td bgcolor="{COLOR_SCALES[color][2]}" style="border: 2px solid black;" align="center"><span style="font-size: large"></span></td>'
 	table += '</tr>'
 	table += '</table>'
 	return table
@@ -79,18 +73,10 @@ def draw_translocated_chromosome(chromosome1, chromosome2, color1='red', color2=
 	table += '<colgroup width="{0}"></colgroup>'.format(distance1[1] * scale_trans - centromere_width / 4)
 	table += '<colgroup width="{0}"></colgroup>'.format(distance2[1] * scale_trans - centromere_width / 4)
 	table += '<tr>'
-	table += '<td bgcolor="{1}" style="border: 2px solid black;" align="center"><span style="font-size: large"></span></td>'.format(
-		chromosome1, COLOR_SCALES[color1][2]
-	)
-	table += '<td bgcolor="{1}" style="border: 4px solid black;" align="center">{0}</td>'.format(
-		chromosome1, COLOR_SCALES[color1][1]
-	)
-	table += '<td bgcolor="{1}" style="border: 2px solid black; border-right: 1px dashed black" align="center"><span style="font-size: large"></span></td>'.format(
-		chromosome2, COLOR_SCALES[color1][2]
-	)
-	table += '<td bgcolor="{1}" style="border: 2px solid black; border-left: 1px dashed black" align="center"><span style="font-size: large"></span></td>'.format(
-		chromosome2, COLOR_SCALES[color2][2]
-	)
+	table += f'<td bgcolor="{COLOR_SCALES[color1][2]}" style="border: 2px solid black;" align="center"><span style="font-size: large"></span></td>'
+	table += f'<td bgcolor="{COLOR_SCALES[color1][1]}" style="border: 4px solid black;" align="center">{chromosome1}</td>'
+	table += f'<td bgcolor="{COLOR_SCALES[color1][2]}" style="border: 2px solid black; border-right: 1px dashed black" align="center"><span style="font-size: large"></span></td>'
+	table += f'<td bgcolor="{COLOR_SCALES[color2][2]}" style="border: 2px solid black; border-left: 1px dashed black" align="center"><span style="font-size: large"></span></td>'
 	table += '</tr>'
 	table += '</table>'
 	return table

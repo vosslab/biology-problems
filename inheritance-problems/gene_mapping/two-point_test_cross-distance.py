@@ -89,7 +89,6 @@ def generate_question(N: int, question_type: str) -> str:
 	"""
 	# Initialize Gene Mapping Class instance
 	GMC = gmc.GeneMappingClass(2, N)
-	global debug
 	GMC.debug = debug
 	GMC.question_type = question_type
 	GMC.setup_question()

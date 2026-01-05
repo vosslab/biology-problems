@@ -1,18 +1,17 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from rdkit import Chem
-from rdkit.Chem import AllChem, Draw
+from rdkit.Chem import AllChem
 from rdkit.Chem.Draw import rdMolDraw2D
 from PIL import Image
 from io import BytesIO
-import math
 
 # Step 1: Build and rotate poly-alanine
 def rotate_mol_180(mol):
-    conf = mol.GetConformer()
-    for i in range(mol.GetNumAtoms()):
-        pos = conf.GetAtomPosition(i)
-        conf.SetAtomPosition(i, (-pos.x, -pos.y, pos.z))
+	conf = mol.GetConformer()
+	for i in range(mol.GetNumAtoms()):
+		pos = conf.GetAtomPosition(i)
+		conf.SetAtomPosition(i, (-pos.x, -pos.y, pos.z))
 
 polyglycine = "[NH3+][C@@H]([H])(C(=O)N[C@@H]([H])(C(=O)N[C@@H]([H])(C(=O)N[C@@H]([H])(C(=O)N[C@@H]([H])(C(=O)[O-])))))"
 mol = Chem.MolFromSmiles(polyglycine)
@@ -33,7 +32,7 @@ polythreonine = "[NH3+][C@@H]([C@H](O)C)(C(=O)N[C@@H]([C@H](O)C)(C(=O)N[C@@H]([C
 polytrp = "[NH3+][C@@H](CC1=CC=C2C(=C1)C(=CN2))(C(=O)N[C@@H](CC1=CC=C2C(=C1)C(=CN2))(C(=O)N[C@@H](CC1=CC=C2C(=C1)C(=CN2))(C(=O)N[C@@H](CC1=CC=C2C(=C1)C(=CN2))(C(=O)N[C@@H](CC1=CC=C2C(=C1)C(=CN2))(C(=O)[O-])))))"
 polyisoleucine = "[NH3+][C@@H]([C@H](CC)C)(C(=O)N[C@@H]([C@H](CC)C)(C(=O)N[C@@H]([C@H](CC)C)(C(=O)N[C@@H]([C@H](CC)C)(C(=O)N[C@@H]([C@H](CC)C)(C(=O)[O-])))))"
 
-# 🔁 FIX: Read back the template
+# Read back the template
 mol_from_file = Chem.MolFromMolFile("polyglycine_template.mol", removeHs=False)
 
 # Step 3: Make serine molecule
@@ -60,4 +59,3 @@ drawer.FinishDrawing()
 
 img = Image.open(BytesIO(drawer.GetDrawingText()))
 img.show()
-

@@ -233,9 +233,9 @@ def write_question(N, args):
 		)
 	elif dna_type == 'strand':
 		header = (
-			f"<p><strong>DNA Strand Question:</strong></p>"
-			f"<p>Examine the DNA strand shown below. The table highlights a specific portion "
-			f"of a much longer DNA molecule to focus on the region containing restriction sites.</p>"
+			"<p><strong>DNA Strand Question:</strong></p>"
+			"<p>Examine the DNA strand shown below. The table highlights a specific portion "
+			"of a much longer DNA molecule to focus on the region containing restriction sites.</p>"
 		)
 
 	#==============================

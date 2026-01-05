@@ -173,9 +173,9 @@ def getVariables(basetype):
 def makeQuestionPretty(question):
 	pretty_question = copy.copy(question)
 	#print(len(pretty_question))
-	pretty_question = re.sub('\<table.+\<\/table\>', '[]\n', pretty_question)
+	pretty_question = re.sub(r"<table.+</table>", '[]\n', pretty_question)
 	#print(len(pretty_question))
-	pretty_question = re.sub('\<\/p\>\s*\<p\>', '\n', pretty_question)
+	pretty_question = re.sub(r"</p>\s*<p>", '\n', pretty_question)
 	#print(len(pretty_question))
 	return pretty_question
 

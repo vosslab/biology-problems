@@ -3,6 +3,7 @@
 import os
 import random
 import argparse
+import sys
 
 import bptools
 import sugarlib
@@ -70,8 +71,8 @@ def write_question(N, sugar_name, anomeric, sugar_codes_cls):
 	choice_codes = list(set(choice_codes))
 	postlen = len(choice_codes)
 	if prelen != postlen:
-		print("Lost some choices {0} -> {1}".format(prelen, postlen))
-		sys.exit(1)
+			print(f"Lost some choices {prelen} -> {postlen}")
+			sys.exit(1)
 
 	# Build full HTML content for the question
 	sugar_name_line = f"<p>&{anomeric};-{sugar_name}</p>"

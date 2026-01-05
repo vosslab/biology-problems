@@ -3,7 +3,6 @@
 import random
 
 import bptools
-import itertools
 
 base_colors = ['violet', 'indigo', 'blue', 'green', 'yellow', 'orange', 'red']
 
@@ -133,4 +132,3 @@ def main():
 
 if __name__ == '__main__':
 	main()
-

@@ -12,9 +12,8 @@
 
 ## Build, Test, and Development Commands
 
-- Create an environment and install deps:
-  - `python3 -m venv .venv && source .venv/bin/activate`
-  - `pip install -r requirements.txt`
+- Setup python3.12 environment
+source REPO_ROOT/source_me.sh
 - Run a generator (most support `--help` via `argparse`):
   - `python3 inheritance-problems/<script>.py --help`
   - `python3 biochemistry-problems/<script>.py -m -d 50` (example: generate 50 MC questions)

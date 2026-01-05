@@ -8,7 +8,6 @@ MAT TAB question text TAB answer text TAB matching text TAB answer two text TAB 
 
 import os
 import sys
-import copy
 import pprint
 import random
 import argparse

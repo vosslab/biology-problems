@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-01-05
+- Fixed pyflakes issues across multiple generators (unused imports/variables, missing helper functions, and indentation errors).
+- Converted a number of `.format(...)` string constructions to f-strings in the touched files.
+- Added pytest coverage for `bptools.py` helpers and test harness setup (`tests/test_bptools.py`, `tests/conftest.py`).
+
 ## 2026-01-04
 - Added a cytogenetic band-order question generator in
   [inheritance-problems/cytogenetic_notation/cytogenetic_notation-band_order.py](inheritance-problems/cytogenetic_notation/cytogenetic_notation-band_order.py).

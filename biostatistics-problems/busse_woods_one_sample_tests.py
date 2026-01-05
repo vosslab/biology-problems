@@ -200,23 +200,6 @@ _z, _p = test_stat_and_p([3.9, 4.1, 4.2], 4.0, 0.6, "ztest", "two")
 assert 0.0 <= _p <= 1.0
 
 #============================================
-def sample_diversity_values(k: int) -> list[float]:
-	"""
-	Sample k Shannon Index values from the Busse Woods pool.
-
-	Args:
-		k (int): Sample size.
-
-	Returns:
-		list[float]: Sample of k values.
-	"""
-	k = max(5, min(k, len(DIVERSITY_POOL)))
-	choices = random.sample(DIVERSITY_POOL, k)
-	values = [round(v, 2) for _, v in choices]
-	assert len(values) == k
-	return values
-
-#============================================
 def format_question_html(values: list, mu: float, sigma: float, method: str, tail: str) -> str:
 	"""
 	Build the Blackboard FIB_PLUS stem for microbial diversity testing.

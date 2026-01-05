@@ -2,7 +2,6 @@
 
 import os
 import math
-import random
 from collections import defaultdict
 
 mw_color_map = {
@@ -92,8 +91,6 @@ def gen_band_rows(mw, gap_height, mw_color_map):
 def gen_kaleidoscope_table(mw_values, mw_color_map, table_height):
 	global row_count
 	scale_constant = (table_height - 2*spacer_height - len(mw_values)*band_height)
-	num_rows = 3 * len(mw_values) + 1
-	num_rows = scale_constant // band_height + 20
 	#print(f"num_rows = {num_rows}")
 	table_width = label_width + band_width + spacer_width*3
 	while_cell_html = gen_spacer_cell(band_height, spacer_width)
@@ -177,10 +174,6 @@ assert calculate_mw_gaps([100, 50, 10], 100) == [30, 70]
 def main():
 	# Example usage:
 	mw_values = [250, 150, 100, 75, 50, 37, 25, 20, 15, 10]
-	scale_constant = 215
-
-	result = calculate_mw_gaps(mw_values, scale_constant)
-	#print(result)  # Expected Output: [34, 27, 19, 27, 20, 26, 15, 19, 27]
 
 	mw_values = sorted(mw_color_map.keys(), reverse=True)
 	#gen_kaleidoscope_table(mw_color_map, 580)

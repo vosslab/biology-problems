@@ -265,7 +265,7 @@ def _edges_to_char(edges: dict[str, bool]) -> str:
 
 #===============================
 def render_graph_to_code(graph: PedigreeGraph, show_carriers: bool = False) -> str:
-	max_slots = _assign_slots(graph)
+	_assign_slots(graph)
 	min_slot = min(ind.slot for ind in graph.individuals.values() if ind.slot is not None)
 	max_slot = max(ind.slot for ind in graph.individuals.values() if ind.slot is not None)
 	col_shift = _compute_col_shift(graph, min_slot, max_slot)
@@ -296,7 +296,6 @@ def render_graph_to_code(graph: PedigreeGraph, show_carriers: bool = False) -> s
 		if not couple.children:
 			continue
 		edge_cells.setdefault((row, mid_col), {}).update({'l': True, 'r': True, 'd': True})
-		child_row = row + 2
 		connector_row = row + 1
 		child_cols = []
 		for child_id in couple.children:

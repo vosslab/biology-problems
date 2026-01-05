@@ -197,9 +197,9 @@ def percent_to_fraction(p):
 	elif abs(p - 2/3.) < 1e-4:
 		ptxt = "<span style='font-size: large;'>&#8532;</span>"
 	elif abs(p*10.0 - int(p*10)) < 1e-4:
-		ptxt = "{0:.1f}".format(p)
+		ptxt = f"{p:.1f}"
 	else:
-		ptxt = "{0:.2f}".format(p)
+		ptxt = f"{p:.2f}"
 	return ptxt
 
 #===========================================================
@@ -223,7 +223,7 @@ def makeFormula(n, s, t, p, q):
 	final_value = choose(n, s) * p**s * q**t
 
 	# Start the HTML table for displaying the full equation
-	formula = f"<table style='border-collapse: collapse; border: 1px solid white;'>"
+	formula = "<table style='border-collapse: collapse; border: 1px solid white;'>"
 	formula += "<tr>"
 
 	# First term: choose function C(n, s)
@@ -318,27 +318,27 @@ def get_question_text(male_offspring: int, female_offspring: int,
 	question_text = ""
 
 	# Model badge with symbolic parameters only
-	question_text += f"<p style='margin:2px 0;color:#444;'>"
-	question_text += f"<strong>Model:</strong> Binomial &rarr; "
+	question_text += "<p style='margin:2px 0;color:#444;'>"
+	question_text += "<strong>Model:</strong> Binomial &rarr; "
 	question_text += f"{makeChoose('n', 'k')}&sdot;p<sup>k</sup>&sdot;q<sup>n-k</sup>"
-	question_text += f"</p>"
+	question_text += "</p>"
 
-	question_text += f"<p>"
-	question_text += f"In this scenario, assume that each child is born independently "
-	question_text += f"with the same chance of being either sex. The event outcomes "
-	question_text += f"are mutually exclusive, so we can apply the binomial model to "
-	question_text += f"determine the probability of a specific combination.</p>"
+	question_text += "<p>"
+	question_text += "In this scenario, assume that each child is born independently "
+	question_text += "with the same chance of being either sex. The event outcomes "
+	question_text += "are mutually exclusive, so we can apply the binomial model to "
+	question_text += "determine the probability of a specific combination.</p>"
 
 	# Main question stem
-	question_text += f"<p>"
+	question_text += "<p>"
 	question_text += f"A woman has <strong>{num2txt[total_offspring]} "
 	question_text += f"({total_offspring})</strong> children. "
-	question_text += f"What is the probability that she has exactly "
+	question_text += "What is the probability that she has exactly "
 	question_text += f"<span style='color:{color_boys};'><strong>{num2txt[male_offspring]} "
 	question_text += f"({male_offspring}) boys &male;</strong></span> and "
 	question_text += f"<span style='color:{color_girls};'><strong>{num2txt[female_offspring]} "
 	question_text += f"({female_offspring}) girls &female;</strong></span>? "
-	question_text += f"</p>"
+	question_text += "</p>"
 
 	return question_text
 
@@ -431,7 +431,3 @@ if __name__ == '__main__':
 	main()
 
 ## THE END
-
-
-
-

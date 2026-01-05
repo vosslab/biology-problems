@@ -86,7 +86,6 @@ colormap = {
 
 #========================================
 def printChoice(nts, valuelist):
-	global colormap
 	mystr = ''
 	# Iterate through the three nucleotides
 	for i in range(3):
@@ -95,16 +94,14 @@ def printChoice(nts, valuelist):
 		# Fetch the corresponding color
 		color = colormap[nt]
 		# Append the formatted string, color-coded and with full nucleotide names, abbreviations, and perhaps an em dash as a separator
-		mystr += "<span style='color: {0};'>{1} ({2}): {3:2d}%</span> &mdash; ".format(color, nt2name[nts[i]], nt, valuelist[i])
+		mystr += f"<span style='color: {color};'>{nt2name[nts[i]]} ({nt}): {valuelist[i]:2d}%</span> &mdash; "
 	# Remove the trailing em dash and space
 	return mystr[:-9]
 
 #========================================
 #========================================
 def write_question(N, args):
-	num_choices = args.num_choices
 	override_nt = args.override_nt
-	global colormap
 	if random.random() < 0.5:
 		percent = random.randint(1,23)
 	else:
@@ -136,7 +133,7 @@ def write_question(N, args):
 
 	# Utilize HTML to emphasize and color-code the percentage and nucleotide type
 	# Here, I retained your existing format and just tweaked the wording
-	question += "<strong><span style='color: {0};'>{1:2d}% is {2}</span></strong>.</p>".format(color, percent, nt2name[nt])
+	question += f"<strong><span style='color: {color};'>{percent:2d}% is {nt2name[nt]}</span></strong>.</p>"
 	# Formulate the follow-up query in a separate paragraph for clarity
 	question += "<p>What are the percentages of the other three bases?</p>"
 

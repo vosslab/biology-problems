@@ -213,7 +213,6 @@ class RFLPClass:
 		suspect = set(random.sample(list(self.validbands), suspect_size))
 
 		# Add bands to suspect that the actual killer cannot have from 'canthave'
-		current_canthave = len(suspect.intersection(canthave))
 		num_to_add_canthave = max(int(math.sqrt(len(canthave)))//2, 1)
 		# Sample 'num_to_add_canthave' bands from 'canthave'
 		add_canthave = random.sample(list(canthave), num_to_add_canthave)

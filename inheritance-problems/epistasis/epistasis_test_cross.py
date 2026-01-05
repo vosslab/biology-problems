@@ -5,7 +5,6 @@
 # Provides functions to generate random numbers and selections
 import random
 import copy
-import math
 # Import external modules (pip-installed)
 # No external modules are used here currently
 

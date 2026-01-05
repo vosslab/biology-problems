@@ -24,10 +24,10 @@ def get_question_header(enzyme_class) -> str:
 
 	# Intro to restriction enzymes
 	opening = (
-		f"<p>Restriction enzymes are proteins that cut DNA at specific sequences "
-		f"to produce fragments for further study. These enzymes are obtained from "
-		f"various types of bacteria and have the ability to recognize short nucleotide "
-		f"sequences within a larger DNA molecule.</p>"
+		"<p>Restriction enzymes are proteins that cut DNA at specific sequences "
+		"to produce fragments for further study. These enzymes are obtained from "
+		"various types of bacteria and have the ability to recognize short nucleotide "
+		"sequences within a larger DNA molecule.</p>"
 	)
 
 	# Specific enzyme context
@@ -50,14 +50,9 @@ def get_question_header(enzyme_class) -> str:
 
 #================================================
 def makeFillInBlankQuestion(N, enzyme_class):
-	name = restrictlib.html_monospace(enzyme_class.__name__)
-	cut_description = restrictlib.html_monospace(restrictlib.format_enzyme(enzyme_class))
-	web_data = restrictlib.get_web_data(enzyme_class)
-	organism = web_data.get('Organism')
-
 	question_text = get_question_header(enzyme_class)
 	prompt = (
-		f"<p>Based on this information, enter the overhang sequence in the blank below.</p>"
+		"<p>Based on this information, enter the overhang sequence in the blank below.</p>"
 	)
 	question_text += prompt
 

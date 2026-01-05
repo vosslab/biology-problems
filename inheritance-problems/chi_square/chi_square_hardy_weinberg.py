@@ -33,6 +33,8 @@ choices = [
 		+'<span style="color: darkgreen; font-weight: bold;">ACCEPT</span> the null hypothesis',
 ]
 
+letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
 #=========================
 def get_good_p():
 	max_p = 0.8
@@ -295,9 +297,9 @@ def makeBBText(desired_result):
 		else:
 			prefix = ""
 			status = "Incorrect"
-		blackboard_text += "\t{0}\t{1}".format(c, status)
+		blackboard_text += f"\t{c}\t{status}"
 		clean = re.sub("<[^>]*>", "", c)
-		print("{0}{1}. {2}".format(prefix, letters[k], clean[:110]))
+		print(f"{prefix}{letters[k]}. {clean[:110]}")
 	return blackboard_text
 
 #===================

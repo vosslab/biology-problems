@@ -61,12 +61,12 @@ def blackboardFormat(N, chromosome1, chromosome2):
 	wrong += '</table><p></p><p></p>'
 	choices.append(wrong)
 
-	wrong = '{2}{3}&ndash;{0}</td></tr>'.format(chromosome1, chromosome2, smtab, trtd)
+	wrong = f'{smtab}{trtd}&ndash;{chromosome1}</td></tr>'
 	wrong += trtd + table2 + '</td></tr>'
 	wrong += '</table><p></p><p></p>'
 	choices.append(wrong)
 
-	wrong = '{2}{3}&ndash;{1}</td></tr>'.format(chromosome1, chromosome2, smtab, trtd)
+	wrong = f'{smtab}{trtd}&ndash;{chromosome2}</td></tr>'
 	wrong += trtd + table1 + '</td></tr>'
 	wrong += '</table><p></p><p></p>'
 	choices.append(wrong)

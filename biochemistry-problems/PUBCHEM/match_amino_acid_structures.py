@@ -3,7 +3,6 @@
 # external python/pip modules
 import os
 import sys
-import random
 import argparse
 
 # local repo modules

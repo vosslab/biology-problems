@@ -2,8 +2,6 @@
 
 import os
 import sys
-import copy
-import random
 import argparse
 
 import bptools

@@ -19,21 +19,14 @@ def write_question(N, args):
 
 	question = '<br/>'
 	question += '<p>Under which one of the following conditions would '
-	question += '<strong>enzyme {0}</strong> be '.format(enzyme_dict['name'])
+	question += f'<strong>enzyme {enzyme_dict["name"]}</strong> be '
 	question += '<span style="color: DarkGreen;">most active</span>?</p> '
-	
+		
 	good_pH = enzyme_dict['optim_pH'] + random.randint(-2,2)/5.0
-	too_low_pH = enzyme_dict['optim_pH'] - random.randint(3,5)/2.0
-	too_high_pH = enzyme_dict['optim_pH'] - random.randint(3,5)/2.0
 
 	good_temp = random.randint(enzyme_dict['temp1']+1, enzyme_dict['temp2']-1)
-	too_low_temp = enzyme_dict['temp1'] - random.randint(6,15)
-	too_high_temp = enzyme_dict['temp1'] + random.randint(6,15)
 
-	temp_values = [too_low_temp, good_temp, too_high_temp,]
-	pH_values = [too_low_pH, good_pH, too_high_pH,]
-	
-	answer_text = 'The temperature is {0}&deg;C and the pH is {1:.1f}.'.format(good_temp, good_pH)
+	answer_text = f'The temperature is {good_temp}&deg;C and the pH is {good_pH:.1f}.'
 	values = (-1, 0, 1)
 	choices_list = []
 	for pH_mult in values:
@@ -52,7 +45,7 @@ def write_question(N, args):
 				pH = enzyme_dict['optim_pH'] + random.randint(-2,2)/5.0
 			else:
 				pH = enzyme_dict['optim_pH'] + pH_mult * random.randint(3,5)/2.0
-			choice = 'The temperature is {0}&deg;C and the pH is {1:.1f}.'.format(temp, pH)
+			choice = f'The temperature is {temp}&deg;C and the pH is {pH:.1f}.'
 			choices_list.append(choice)
 	random.shuffle(choices_list)
 	choices_list = choices_list[:4]

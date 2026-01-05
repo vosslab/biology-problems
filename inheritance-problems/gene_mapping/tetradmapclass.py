@@ -2,14 +2,9 @@
 
 
 # Built-in libraries
-import sys
-import copy
-import math
 import random
 
 # Local libraries
-import bptools
-import genemaplib as gml
 import genemapclass as gmc
 import tetradlib
 
@@ -66,7 +61,6 @@ class TetradMappingClass(gmc.GeneMappingClass):
 		# Chooses parental genotypes for the map
 		if self.debug is True:
 			self.print_gene_map_data()
-		sys.exit(1)
 
 		self.set_all_genotype_tuple_pairs_list()  # Sets pairs of genotypes for the map
 		self.set_genotype_counts()              # Sets counts for each genotype
@@ -223,8 +217,8 @@ class TetradMappingClass(gmc.GeneMappingClass):
 			'td_right': 'border: 1px solid black; text-align: right; background: gray; ',
 		}
 
-		# Sort the genotype keys
-		all_types = sorted(typemap.keys())
+		typemap = self.progeny_tetrads_count_dict
+		progeny_size = self.progeny_count_int
 
 		# Build the HTML table with a list to avoid repeated `+=`
 		html_output = [
@@ -239,21 +233,16 @@ class TetradMappingClass(gmc.GeneMappingClass):
 		# Sort all genotype pairs (tetrads) for display
 		all_tetrads_tuples = sorted(self.list_of_all_tetrads, reverse=True)
 
-		# Initialize tetrad set counter and overall total counter
-		total_tetrad_count = 0
-
 		# Loop through sorted genotype pairs to fill the table with tetrads
 		for tetrad_set_num, tetrad_tuple in enumerate(all_tetrads_tuples, start=1):
-			# Split and format genotype into separate cells if needed
-			genotype_cells = " ".join([
-				f'<td style="{styles["td"]}">{genotype_part}</td>'
-				for genotype_part in genotype.strip().split('\t')
-			])
+			genotype_cells = " ".join(
+				[f'<td style="{styles["td"]}">{genotype_part}</td>' for genotype_part in tetrad_tuple]
+			)
 
 			html_output.append('  <tr>')
 			html_output.append(f'    <td style="{styles["td"]}">{tetrad_set_num}</td>')
 			html_output.append(f'    {genotype_cells}')
-			html_output.append(f'    <td style="{styles["td_right"]}">{typemap[genotype]:,}</td>')
+			html_output.append(f'    <td style="{styles["td_right"]}">{typemap.get(tetrad_tuple, 0):,}</td>')
 			html_output.append('  </tr>')
 
 		# Add the total row
@@ -458,5 +447,3 @@ if __name__ == '__main__':
 	a.debug = False
 	a.setup_question()
 	a.print_gene_map_data()
-
-

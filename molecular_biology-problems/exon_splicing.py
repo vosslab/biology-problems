@@ -51,7 +51,6 @@ def makeHtmlTable(pre_mRNA_tree):
 	for mRNA_part in pre_mRNA_tree:
 		table += '<colgroup width="{0}"></colgroup> '.format(mRNA_part['size'])
 	table += '<tr>'
-	part_type_tuple = ('exon', 'intron')
 	for mRNA_part in pre_mRNA_tree:
 		html_name = mRNA_part['name'].replace(' ', '&nbsp;')
 		if mRNA_part.get('type') == 'exon':
@@ -110,8 +109,8 @@ def makeAllValid_mRNA(pre_mRNA_tree, num_exons, min_exons=3):
 #==========================
 #==========================
 def shift(seq, n):
-    n = n % len(seq)
-    return seq[n:] + seq[:n]
+	n = n % len(seq)
+	return seq[n:] + seq[:n]
 
 def makeINValid_mRNA(pre_mRNA_tree, num_exons, exons_to_use):
 	mRNA_tree = []
@@ -157,7 +156,7 @@ def makePre_mRNA_tree(part_sizes):
 			part_name = part_type
 		else:
 			part_type = part_type_tuple[(i+1)%2]
-			part_name = "{0} {1}".format(part_type, num)
+			part_name = f"{part_type} {num}"
 		shift = (i%3) * len(color_wheel)//3
 		color = color_wheel[(i//3 + shift)%len(color_wheel)]
 		mRNA_part['name'] = part_name
@@ -173,7 +172,6 @@ def makeCompleteQuestion(N, num_exons, min_exons):
 	part_sizes = getGenePartSizes(num_exons)
 	pre_mRNA_tree = makePre_mRNA_tree(part_sizes)
 	#print(pre_mRNA_tree)
-	table = makeHtmlTable(pre_mRNA_tree)
 	valid_mRNA_list = makeAllValid_mRNA(pre_mRNA_tree, num_exons, min_exons)
 	invalid_mRNA = makeINValid_mRNA(pre_mRNA_tree, num_exons, min_exons)
 	answer = makeHtmlTable(invalid_mRNA)

@@ -2,6 +2,7 @@
 
 import numpy
 import scipy.fftpack
+import scipy.ndimage
 from PIL import Image
 
 def real_fft2d(*args, **kwargs):
@@ -9,6 +10,20 @@ def real_fft2d(*args, **kwargs):
 
 def inverse_real_fft2d(*args, **kwargs):
 	return scipy.fftpack.ifft2(*args, **kwargs).real
+
+def swap_quadrants(a):
+	return numpy.fft.fftshift(a)
+
+def center_mask(a, mask_radius):
+	cy = a.shape[0] // 2
+	cx = a.shape[1] // 2
+	yy, xx = numpy.ogrid[:a.shape[0], :a.shape[1]]
+	mask = (yy - cy) ** 2 + (xx - cx) ** 2 <= mask_radius ** 2
+	a[mask] = 0
+	return a
+
+def clip_power(a, thresh):
+	return numpy.clip(a, -thresh, thresh)
 
 #=========================
 def getImageInfo(im):
@@ -32,13 +47,13 @@ def printImageInfo(im):
 	avg1,stdev1,min1,max1 = getImageInfo(im)
 
 	if len(im.shape) == 2:
-		print("Image: %d x %d - type %s"%(im.shape[0], im.shape[1], im.dtype))
+		print(f"Image: {im.shape[0]} x {im.shape[1]} - type {im.dtype}")
 	elif len(im.shape) == 1:
-		print("Image: %d - type %s"%(im.shape[0], im.dtype))
+		print(f"Image: {im.shape[0]} - type {im.dtype}")
 	#print " ... avg:  %.2e +- %.2e"%(avg1, stdev1)
 	#print " ... range: %.2e <> %.2e"%(min1, max1)
-	print(" ... avg:  %.4f +- %.4f"%(avg1, stdev1))
-	print(" ... range: %.4f <> %.4f"%(min1, max1))
+	print(f" ... avg:  {avg1:.4f} +- {stdev1:.4f}")
+	print(f" ... range: {min1:.4f} <> {max1:.4f}")
 
 	return avg1,stdev1,min1,max1
 
@@ -81,10 +96,10 @@ def normalizeImage(img, stdevLimit=3.0, minlevel=0.0, maxlevel=255.0, trim=0.0):
 shapes = []
 
 def power(a, mask_radius=1.0, thresh=3):
-	fft = ffteng.transform(a)
+	fft = real_fft2d(a)
 	pow = numpy.absolute(fft)
 	### neil half pixel shift or powerspectra are not centered!
-	pow = scipy.ndimage.interpolation.shift(pow, (-1, -1), order=1, mode='wrap')
+	pow = scipy.ndimage.shift(pow, (-1, -1), order=1, mode='wrap')
 	try:
 		pow = numpy.log(pow)
 	except OverflowError:

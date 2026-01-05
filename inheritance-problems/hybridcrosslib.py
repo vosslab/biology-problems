@@ -193,7 +193,7 @@ def createSingleGeneTable(gene_type, letter, color_set, title=None):
 	if title is not None:
 		table += " <th align='center' colspan='2' rowspan='2' style='background-color: lightgray'>{0}</th> ".format(title)
 	else:
-		table += " <th align='center' colspan='2' rowspan='2' style='background-color: lightgray'>Genotypes</th> ".format(title)
+		table += " <th align='center' colspan='2' rowspan='2' style='background-color: lightgray'>Genotypes</th> "
 	table += " <th align='center' colspan='2'>Female &female;</th> "
 	table += "</tr>"
 
@@ -375,6 +375,11 @@ def dihybridAssignColorsModified(gene_id, color_set):
 #===================
 #===================
 def createDiHybridTable(letter1, letter2, assigned_colors, title=None):
+	letter1_upper = letter1.upper()
+	letter1_lower = letter1.lower()
+	letter2_upper = letter2.upper()
+	letter2_lower = letter2.lower()
+
 	table = '<table style="border: 1px solid black; border-collapse: collapse; ">'
 	table += '<colgroup width="60"></colgroup> '
 	table += '<colgroup width="60"></colgroup> '
@@ -393,46 +398,46 @@ def createDiHybridTable(letter1, letter2, assigned_colors, title=None):
 
 
 	table += "<tr>"
-	table += " <td align='center' style='background-color: lightgray'>{0}{1}</td>".format(letter1.upper(), letter2.upper())
-	table += " <td align='center' style='background-color: lightgray'>{0}{1}</td>".format(letter1.upper(), letter2.lower())
-	table += " <td align='center' style='background-color: lightgray'>{0}{1}</td>".format(letter1.lower(), letter2.upper())
-	table += " <td align='center' style='background-color: lightgray'>{0}{1}</td>".format(letter1.lower(), letter2.lower())
+	table += f" <td align='center' style='background-color: lightgray'>{letter1_upper}{letter2_upper}</td>"
+	table += f" <td align='center' style='background-color: lightgray'>{letter1_upper}{letter2_lower}</td>"
+	table += f" <td align='center' style='background-color: lightgray'>{letter1_lower}{letter2_upper}</td>"
+	table += f" <td align='center' style='background-color: lightgray'>{letter1_lower}{letter2_lower}</td>"
 	table += "</tr>"
 
 	table += "<tr>"
 	table += " <th align='center' rowspan='4' style='vertical-align: middle;'>Male<br/>&male;</th> "
-	table += " <td align='center' style='background-color: lightgray'>{0}{1}</td>".format(letter1.upper(), letter2.upper())
-	table += " <td align='center' style='background-color: {0};'>{1}{1}{3}{3}</td>".format(assigned_colors[0][0], letter1.upper(), letter1.lower(), letter2.upper(), letter2.lower())
-	table += " <td align='center' style='background-color: {0};'>{1}{1}{3}{4}</td>".format(assigned_colors[0][1], letter1.upper(), letter1.lower(), letter2.upper(), letter2.lower())
-	table += " <td align='center' style='background-color: {0};'>{1}{2}{3}{3}</td>".format(assigned_colors[0][2], letter1.upper(), letter1.lower(), letter2.upper(), letter2.lower())
-	table += " <td align='center' style='background-color: {0};'>{1}{2}{3}{4}</td>".format(assigned_colors[0][3], letter1.upper(), letter1.lower(), letter2.upper(), letter2.lower())
+	table += f" <td align='center' style='background-color: lightgray'>{letter1_upper}{letter2_upper}</td>"
+	table += f" <td align='center' style='background-color: {assigned_colors[0][0]};'>{letter1_upper}{letter1_upper}{letter2_upper}{letter2_upper}</td>"
+	table += f" <td align='center' style='background-color: {assigned_colors[0][1]};'>{letter1_upper}{letter1_upper}{letter2_upper}{letter2_lower}</td>"
+	table += f" <td align='center' style='background-color: {assigned_colors[0][2]};'>{letter1_upper}{letter1_lower}{letter2_upper}{letter2_upper}</td>"
+	table += f" <td align='center' style='background-color: {assigned_colors[0][3]};'>{letter1_upper}{letter1_lower}{letter2_upper}{letter2_lower}</td>"
 	table += "</tr>"
 
 
 	table += "<tr>"
-	table += " <td align='center' style='background-color: lightgray'>{0}{1}</td>".format(letter1.upper(), letter2.lower())
-	table += " <td align='center' style='background-color: {0};'>{1}{1}{3}{4}</td>".format(assigned_colors[1][0], letter1.upper(), letter1.lower(), letter2.upper(), letter2.lower())
-	table += " <td align='center' style='background-color: {0};'>{1}{1}{4}{4}</td>".format(assigned_colors[1][1], letter1.upper(), letter1.lower(), letter2.upper(), letter2.lower())
-	table += " <td align='center' style='background-color: {0};'>{1}{2}{3}{4}</td>".format(assigned_colors[1][2], letter1.upper(), letter1.lower(), letter2.upper(), letter2.lower())
-	table += " <td align='center' style='background-color: {0};'>{1}{2}{4}{4}</td>".format(assigned_colors[1][3], letter1.upper(), letter1.lower(), letter2.upper(), letter2.lower())
+	table += f" <td align='center' style='background-color: lightgray'>{letter1_upper}{letter2_lower}</td>"
+	table += f" <td align='center' style='background-color: {assigned_colors[1][0]};'>{letter1_upper}{letter1_upper}{letter2_upper}{letter2_lower}</td>"
+	table += f" <td align='center' style='background-color: {assigned_colors[1][1]};'>{letter1_upper}{letter1_upper}{letter2_lower}{letter2_lower}</td>"
+	table += f" <td align='center' style='background-color: {assigned_colors[1][2]};'>{letter1_upper}{letter1_lower}{letter2_upper}{letter2_lower}</td>"
+	table += f" <td align='center' style='background-color: {assigned_colors[1][3]};'>{letter1_upper}{letter1_lower}{letter2_lower}{letter2_lower}</td>"
 	table += "</tr>"
 
 
 	table += "<tr>"
-	table += " <td align='center' style='background-color: lightgray'>{0}{1}</td>".format(letter1.lower(), letter2.upper())
-	table += " <td align='center' style='background-color: {0};'>{1}{2}{3}{3}</td>".format(assigned_colors[2][0], letter1.upper(), letter1.lower(), letter2.upper(), letter2.lower())
-	table += " <td align='center' style='background-color: {0};'>{1}{2}{3}{4}</td>".format(assigned_colors[2][1], letter1.upper(), letter1.lower(), letter2.upper(), letter2.lower())
-	table += " <td align='center' style='background-color: {0};'>{2}{2}{3}{3}</td>".format(assigned_colors[2][2], letter1.upper(), letter1.lower(), letter2.upper(), letter2.lower())
-	table += " <td align='center' style='background-color: {0};'>{2}{2}{3}{4}</td>".format(assigned_colors[2][3], letter1.upper(), letter1.lower(), letter2.upper(), letter2.lower())
+	table += f" <td align='center' style='background-color: lightgray'>{letter1_lower}{letter2_upper}</td>"
+	table += f" <td align='center' style='background-color: {assigned_colors[2][0]};'>{letter1_upper}{letter1_lower}{letter2_upper}{letter2_upper}</td>"
+	table += f" <td align='center' style='background-color: {assigned_colors[2][1]};'>{letter1_upper}{letter1_lower}{letter2_upper}{letter2_lower}</td>"
+	table += f" <td align='center' style='background-color: {assigned_colors[2][2]};'>{letter1_lower}{letter1_lower}{letter2_upper}{letter2_upper}</td>"
+	table += f" <td align='center' style='background-color: {assigned_colors[2][3]};'>{letter1_lower}{letter1_lower}{letter2_upper}{letter2_lower}</td>"
 	table += "</tr>"
 
 
 	table += "<tr>"
-	table += " <td align='center' style='background-color: lightgray'>{0}{1}</td>".format(letter1.lower(), letter2.lower())
-	table += " <td align='center' style='background-color: {0};'>{1}{2}{3}{4}</td>".format(assigned_colors[3][0], letter1.upper(), letter1.lower(), letter2.upper(), letter2.lower())
-	table += " <td align='center' style='background-color: {0};'>{1}{2}{4}{4}</td>".format(assigned_colors[3][1], letter1.upper(), letter1.lower(), letter2.upper(), letter2.lower())
-	table += " <td align='center' style='background-color: {0};'>{2}{2}{3}{4}</td>".format(assigned_colors[3][2], letter1.upper(), letter1.lower(), letter2.upper(), letter2.lower())
-	table += " <td align='center' style='background-color: {0};'>{2}{2}{4}{4}</td>".format(assigned_colors[3][3], letter1.upper(), letter1.lower(), letter2.upper(), letter2.lower())
+	table += f" <td align='center' style='background-color: lightgray'>{letter1_lower}{letter2_lower}</td>"
+	table += f" <td align='center' style='background-color: {assigned_colors[3][0]};'>{letter1_upper}{letter1_lower}{letter2_upper}{letter2_lower}</td>"
+	table += f" <td align='center' style='background-color: {assigned_colors[3][1]};'>{letter1_upper}{letter1_lower}{letter2_lower}{letter2_lower}</td>"
+	table += f" <td align='center' style='background-color: {assigned_colors[3][2]};'>{letter1_lower}{letter1_lower}{letter2_upper}{letter2_lower}</td>"
+	table += f" <td align='center' style='background-color: {assigned_colors[3][3]};'>{letter1_lower}{letter1_lower}{letter2_lower}{letter2_lower}</td>"
 	table += "</tr>"
 
 
@@ -443,6 +448,11 @@ def createDiHybridTable(letter1, letter2, assigned_colors, title=None):
 #===================
 #===================
 def createTestCrossTable(letter1, letter2, assigned_colors, title=None):
+	letter1_upper = letter1.upper()
+	letter1_lower = letter1.lower()
+	letter2_upper = letter2.upper()
+	letter2_lower = letter2.lower()
+
 	table = '<table style="border: 1px solid black; border-collapse: collapse; ">'
 	table += '<colgroup width="60"></colgroup> '
 	table += '<colgroup width="60"></colgroup> '
@@ -458,31 +468,31 @@ def createTestCrossTable(letter1, letter2, assigned_colors, title=None):
 
 
 	table += "<tr>"
-	table += " <td align='center' style='background-color: lightgray'>{0}{1}</td>".format(letter1.lower(), letter2.lower())
+	table += f" <td align='center' style='background-color: lightgray'>{letter1_lower}{letter2_lower}</td>"
 	table += "</tr>"
 
 	table += "<tr>"
 	table += " <th align='center' rowspan='4' style='vertical-align: middle;'>Male<br/>&male;</th> "
-	table += " <td align='center' style='background-color: lightgray'>{0}{1}</td>".format(letter1.upper(), letter2.upper())
-	table += " <td align='center' style='background-color: {0};'>{1}{2}{3}{4}</td>".format(assigned_colors[0][3], letter1.upper(), letter1.lower(), letter2.upper(), letter2.lower())
+	table += f" <td align='center' style='background-color: lightgray'>{letter1_upper}{letter2_upper}</td>"
+	table += f" <td align='center' style='background-color: {assigned_colors[0][3]};'>{letter1_upper}{letter1_lower}{letter2_upper}{letter2_lower}</td>"
 	table += "</tr>"
 
 
 	table += "<tr>"
-	table += " <td align='center' style='background-color: lightgray'>{0}{1}</td>".format(letter1.upper(), letter2.lower())
-	table += " <td align='center' style='background-color: {0};'>{1}{2}{4}{4}</td>".format(assigned_colors[1][3], letter1.upper(), letter1.lower(), letter2.upper(), letter2.lower())
+	table += f" <td align='center' style='background-color: lightgray'>{letter1_upper}{letter2_lower}</td>"
+	table += f" <td align='center' style='background-color: {assigned_colors[1][3]};'>{letter1_upper}{letter1_lower}{letter2_lower}{letter2_lower}</td>"
 	table += "</tr>"
 
 
 	table += "<tr>"
-	table += " <td align='center' style='background-color: lightgray'>{0}{1}</td>".format(letter1.lower(), letter2.upper())
-	table += " <td align='center' style='background-color: {0};'>{2}{2}{3}{4}</td>".format(assigned_colors[2][3], letter1.upper(), letter1.lower(), letter2.upper(), letter2.lower())
+	table += f" <td align='center' style='background-color: lightgray'>{letter1_lower}{letter2_upper}</td>"
+	table += f" <td align='center' style='background-color: {assigned_colors[2][3]};'>{letter1_lower}{letter1_lower}{letter2_upper}{letter2_lower}</td>"
 	table += "</tr>"
 
 
 	table += "<tr>"
-	table += " <td align='center' style='background-color: lightgray'>{0}{1}</td>".format(letter1.lower(), letter2.lower())
-	table += " <td align='center' style='background-color: {0};'>{2}{2}{4}{4}</td>".format(assigned_colors[3][3], letter1.upper(), letter1.lower(), letter2.upper(), letter2.lower())
+	table += f" <td align='center' style='background-color: lightgray'>{letter1_lower}{letter2_lower}</td>"
+	table += f" <td align='center' style='background-color: {assigned_colors[3][3]};'>{letter1_lower}{letter1_lower}{letter2_lower}{letter2_lower}</td>"
 	table += "</tr>"
 
 
