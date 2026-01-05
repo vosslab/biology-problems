@@ -5,7 +5,7 @@ import sys
 import argparse
 
 import bptools
-import genemapclass as gmc
+import gene_map_class_lib as gmc
 
 debug = False
 

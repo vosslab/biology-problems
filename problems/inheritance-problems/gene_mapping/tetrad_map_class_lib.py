@@ -5,7 +5,7 @@
 import random
 
 # Local libraries
-import genemapclass as gmc
+import gene_map_class_lib as gmc
 import tetradlib
 
 #===========================================================

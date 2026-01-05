@@ -7,7 +7,7 @@ import argparse
 
 import bptools
 import genemaplib as gml
-import genemapclass as gmc
+import gene_map_class_lib as gmc
 
 debug = True
 

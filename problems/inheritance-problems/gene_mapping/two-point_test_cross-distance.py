@@ -8,7 +8,7 @@ import argparse
 
 # Local repo modules
 import bptools
-import genemapclass as gmc
+import gene_map_class_lib as gmc
 
 debug = False
 

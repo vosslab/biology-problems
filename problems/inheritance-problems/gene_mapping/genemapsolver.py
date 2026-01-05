@@ -130,7 +130,7 @@ def gene_map_solver(genotype_counts: dict) -> str:
 #====================================
 #====================================
 def test_two_genes():
-	import genemapclass as gmc
+	import gene_map_class_lib as gmc
 	# two genes
 	a = gmc.GeneMappingClass(2, debug=debug)
 	gml.debug = debug
@@ -154,7 +154,7 @@ def test_two_genes():
 #====================================
 #====================================
 def test_three_genes():
-	import genemapclass as gmc
+	import gene_map_class_lib as gmc
 	# three genes
 	a = gmc.GeneMappingClass(3, debug=debug)
 	gml.debug = debug
