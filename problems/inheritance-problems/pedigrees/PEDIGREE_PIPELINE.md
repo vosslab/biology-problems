@@ -296,7 +296,7 @@ This is a compact, self-delimiting, union-based pedigree graph spec string.
 - Concept name (docs): pedigree graph spec
 - String form: `pedigree_graph_spec_str` or `pedigree_graph_spec_string`
 - Parsed object: `PedigreeGraphSpec` (class) or `pedigree_graph_spec` (dict)
-- Codec module: `pedigree_graph_spec_lib.py`
+- Codec module: `pedigree_lib/graph_spec.py`
 
 #### Functions
 - `parse_pedigree_graph_spec(s) -> PedigreeGraph`
@@ -328,17 +328,17 @@ Each library is intentionally narrow and maps to a pipeline layer or cross-cutti
 validation. These names are stable in code. Rename suggestions are listed after.
 
 ### Libraries
-- `pedigree_graph_parse_lib.py`: internal graph types plus compile step from
+- `pedigree_lib/graph_parse.py`: internal graph types plus compile step from
   graph spec to code-string layout (intermediate only).
-- `pedigree_skeleton_lib.py`: procedural skeleton generation (structure only).
-- `pedigree_inheritance_lib.py`: inheritance-mode phenotype assignment.
-- `pedigree_code_lib.py`: CodeSpec, code alphabet, mirroring, and encode/decode helpers.
-- `pedigree_validate_lib.py`: CodeString syntax validation.
-- `pedigree_mode_validate_lib.py`: inheritance-mode validation (PedigreeGraph-first).
-- `pedigree_html_lib.py`: HTML renderer (CodeString -> HTML).
-- `pedigree_svg_lib.py`: SVG renderer plus SVG-to-PNG conversion (CodeString -> SVG/PNG).
-- `pedigree_template_gen_lib.py`: template-based pedigree selection (CodeString output).
-- `pedigree_code_templates.py`: template library (static CodeStrings).
+- `pedigree_lib/skeleton.py`: procedural skeleton generation (structure only).
+- `pedigree_lib/inheritance_assign.py`: inheritance-mode phenotype assignment.
+- `pedigree_lib/code_definitions.py`: CodeSpec, code alphabet, mirroring, and encode/decode helpers.
+- `pedigree_lib/validation.py`: CodeString syntax validation.
+- `pedigree_lib/mode_validate.py`: inheritance-mode validation (PedigreeGraph-first).
+- `pedigree_lib/html_output.py`: HTML renderer (CodeString -> HTML).
+- `pedigree_lib/svg_output.py`: SVG renderer plus SVG-to-PNG conversion (CodeString -> SVG/PNG).
+- `pedigree_lib/template_generator.py`: template-based pedigree selection (CodeString output).
+- `pedigree_lib/code_templates.py`: template library (static CodeStrings).
 
 ### CLI
 - `preview_pedigree.py`: CLI for batch preview (HTML/PNG/code strings).
@@ -346,6 +346,6 @@ validation. These names are stable in code. Rename suggestions are listed after.
 ## Possible naming improvements
 These are suggestions only. They are not required by the pipeline.
 
-- `pedigree_graph_parse_lib.py` -> `pedigree_skeleton_lib.py` (if it stays focused
+- `pedigree_lib/graph_parse.py` -> `pedigree_lib/skeleton.py` (if it stays focused
   on structure generation).
 - `preview_pedigree.py` -> `cli_preview_pedigree.py` (distinguish CLI entry points).

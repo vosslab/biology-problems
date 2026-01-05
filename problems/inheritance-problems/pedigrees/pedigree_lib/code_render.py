@@ -4,9 +4,9 @@
 import argparse
 
 # Local repo modules
-import pedigree_html_lib
-import pedigree_svg_lib
-import pedigree_validate_lib
+import html_output
+import svg_output
+import validation
 
 
 #===============================
@@ -74,25 +74,25 @@ def main():
 
 	if not args.write_png and not args.write_html and not args.write_svg:
 		raise ValueError('Select at least one output with --png, --html, or --svg.')
-	errors = pedigree_validate_lib.validate_row_parity_semantics(code_string)
+	errors = validation.validate_row_parity_semantics(code_string)
 	if errors:
 		raise ValueError("Invalid pedigree code string:\n" + "\n".join(errors))
 
 	if args.write_html:
 		html_path = _output_path(args.out, '.html')
-		html_text = pedigree_html_lib.make_pedigree_html(code_string)
+		html_text = html_output.make_pedigree_html(code_string)
 		with open(html_path, 'w') as handle:
 			handle.write(html_text)
 		print(f"Wrote HTML to {html_path}")
 
 	if args.write_png:
 		png_path = _output_path(args.out, '.png')
-		pedigree_svg_lib.save_pedigree_png(code_string, png_path, scale=args.scale)
+		svg_output.save_pedigree_png(code_string, png_path, scale=args.scale)
 		print(f"Wrote PNG to {png_path}")
 
 	if args.write_svg:
 		svg_path = _output_path(args.out, '.svg')
-		pedigree_svg_lib.save_pedigree_svg(code_string, svg_path, scale=args.scale)
+		svg_output.save_pedigree_svg(code_string, svg_path, scale=args.scale)
 		print(f"Wrote SVG to {svg_path}")
 
 

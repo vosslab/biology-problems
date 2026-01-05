@@ -5,8 +5,8 @@ import dataclasses
 import random
 
 # Local repo modules
-import pedigree_code_lib
-import pedigree_code_templates
+import code_definitions
+import code_templates
 
 
 #===============================
@@ -66,15 +66,15 @@ def build_templates() -> list[PedigreeTemplate]:
 	"""
 	templates: list[PedigreeTemplate] = []
 	mode_lists = {
-		'autosomal dominant': pedigree_code_templates.autosomal_dominant,
-		'autosomal recessive': pedigree_code_templates.autosomal_recessive,
-		'x-linked dominant': pedigree_code_templates.x_linked_dominant,
-		'x-linked recessive': pedigree_code_templates.x_linked_recessive,
-		'y-linked': pedigree_code_templates.y_linked,
+		'autosomal dominant': code_templates.autosomal_dominant,
+		'autosomal recessive': code_templates.autosomal_recessive,
+		'x-linked dominant': code_templates.x_linked_dominant,
+		'x-linked recessive': code_templates.x_linked_recessive,
+		'y-linked': code_templates.y_linked,
 	}
 	for mode_name, code_list in mode_lists.items():
 		for code in code_list:
-			generations = pedigree_code_lib.count_generations(code)
+			generations = code_definitions.count_generations(code)
 			template = PedigreeTemplate(
 				mode=mode_name,
 				code=code,
@@ -162,7 +162,7 @@ def make_pedigree_code(
 	template = choose_template(mode, generations, rng)
 	code_string = template.code
 	if allow_mirror and rng.random() < 0.5:
-		code_string = pedigree_code_lib.mirror_pedigree(code_string)
+		code_string = code_definitions.mirror_pedigree(code_string)
 	return code_string
 
 

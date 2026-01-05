@@ -4,7 +4,7 @@
 import string
 
 # Local repo modules
-import pedigree_code_lib
+import code_definitions
 
 
 #===============================
@@ -19,7 +19,7 @@ def make_label_string(code_string: str, label_positions: dict[tuple[int, int], s
 	Returns:
 		str: Label string with identical row structure to code_string.
 	"""
-	code_rows = pedigree_code_lib.get_code_rows(code_string)
+	code_rows = code_definitions.get_code_rows(code_string)
 	if not code_rows:
 		raise ValueError('Empty pedigree code string.')
 	max_cols = max(len(row) for row in code_rows)
@@ -75,8 +75,8 @@ def validate_label_string(label_string: str, code_string: str) -> list[str]:
 		list[str]: Validation error messages.
 	"""
 	errors: list[str] = []
-	code_rows = pedigree_code_lib.get_code_rows(code_string)
-	label_rows = pedigree_code_lib.get_code_rows(label_string)
+	code_rows = code_definitions.get_code_rows(code_string)
+	label_rows = code_definitions.get_code_rows(label_string)
 
 	if len(code_rows) != len(label_rows):
 		errors.append('Label rows must match code string row count.')
@@ -97,7 +97,7 @@ def validate_label_string(label_string: str, code_string: str) -> list[str]:
 					f"Invalid label '{label_char}' at row {row_index + 1}, col {col_index + 1}."
 				)
 				continue
-			name = pedigree_code_lib.short_hand_lookup.get(code_char, '')
+			name = code_definitions.short_hand_lookup.get(code_char, '')
 			if 'SQUARE' not in name and 'CIRCLE' not in name:
 				errors.append(
 					f"Label '{label_char}' must align with a person cell at row {row_index + 1}, col {col_index + 1}."

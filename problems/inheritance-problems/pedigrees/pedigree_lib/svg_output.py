@@ -6,7 +6,7 @@ import subprocess
 import tempfile
 
 # Local repo modules
-import pedigree_code_lib
+import code_definitions
 
 
 #===============================
@@ -139,20 +139,20 @@ def make_pedigree_svg(code_string: str, scale: float = 1.0, show_grid: bool = Fa
 	Returns:
 		str: Rendered SVG content.
 	"""
-	rows = pedigree_code_lib.get_code_rows(code_string)
+	rows = code_definitions.get_code_rows(code_string)
 	if not rows:
 		raise ValueError('Empty pedigree code string.')
 
 	max_cols = max(len(row) for row in rows)
 	label_rows = None
 	if label_string is not None:
-		import pedigree_label_lib
-		errors = pedigree_label_lib.validate_label_string(label_string, code_string)
+		import label_strings
+		errors = label_strings.validate_label_string(label_string, code_string)
 		if errors:
 			raise ValueError('Invalid label string: ' + '; '.join(errors))
-		label_rows = pedigree_code_lib.get_code_rows(label_string)
+		label_rows = code_definitions.get_code_rows(label_string)
 	rows = [row.ljust(max_cols, '.') for row in rows]
-	cell_size = max(8, int(pedigree_code_lib.table_cell_dimension * scale))
+	cell_size = max(8, int(code_definitions.table_cell_dimension * scale))
 	width = max_cols * cell_size
 	height = len(rows) * cell_size
 	line_width = max(2, int(cell_size * 0.05))
@@ -176,7 +176,7 @@ def make_pedigree_svg(code_string: str, scale: float = 1.0, show_grid: bool = Fa
 
 	for row_idx, row in enumerate(rows):
 		for col_idx, char in enumerate(row):
-			shape_name = pedigree_code_lib.short_hand_lookup.get(char, None)
+			shape_name = code_definitions.short_hand_lookup.get(char, None)
 			if shape_name is None:
 				continue
 			x0 = col_idx * cell_size
@@ -186,7 +186,7 @@ def make_pedigree_svg(code_string: str, scale: float = 1.0, show_grid: bool = Fa
 			cell_box = [x0, y0, x1, y1]
 			clip_id_prefix = f"clip_{row_idx}_{col_idx}"
 			if shape_name.endswith('SHAPE'):
-				edge_binary = pedigree_code_lib.shape_binary_edges[shape_name]
+				edge_binary = code_definitions.shape_binary_edges[shape_name]
 				_draw_edge_cell(svg_parts, cell_box, edge_binary, line_width)
 			elif shape_name.endswith('CIRCLE') or shape_name.endswith('SQUARE'):
 				_draw_shape_cell(svg_parts, defs_parts, cell_box, shape_name, line_width, clip_id_prefix)

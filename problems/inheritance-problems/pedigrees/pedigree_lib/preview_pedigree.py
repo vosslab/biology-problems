@@ -6,13 +6,13 @@ import os
 import random
 
 # Local repo modules
-import pedigree_code_lib
-import pedigree_graph_parse_lib
-import pedigree_html_lib
-import pedigree_label_lib
-import pedigree_template_gen_lib
-import pedigree_validate_lib
-import pedigree_svg_lib
+import code_definitions
+import graph_parse
+import html_output
+import label_strings
+import template_generator
+import validation
+import svg_output
 
 
 #===============================
@@ -111,7 +111,7 @@ def main():
 	while generated < args.count and attempts < max_attempts:
 		attempts += 1
 		if args.generator == 'template':
-			code_string = pedigree_template_gen_lib.make_pedigree_code(
+			code_string = template_generator.make_pedigree_code(
 				args.mode,
 				generations=args.generations,
 				allow_mirror=True,
@@ -119,7 +119,7 @@ def main():
 			)
 		else:
 			print(f"Generating graph spec {attempts}...")
-			graph_spec = pedigree_graph_parse_lib.generate_pedigree_graph_spec(
+			graph_spec = graph_parse.generate_pedigree_graph_spec(
 				args.mode,
 				generations=args.generations,
 				starting_couples=args.starting_couples,
@@ -129,14 +129,14 @@ def main():
 			print("Graph spec:")
 			print(graph_spec)
 			print("Compiling code string...")
-			code_string = pedigree_graph_parse_lib.compile_graph_spec_to_code(
+			code_string = graph_parse.compile_graph_spec_to_code(
 				graph_spec,
 				show_carriers=args.show_carriers,
 			)
 			print("Code string:")
 			print(code_string)
 
-		errors = pedigree_validate_lib.validate_code_string_strict(
+		errors = validation.validate_code_string_strict(
 			code_string,
 			max_width_cells=max_width_cells,
 			max_height_cells=max_height_cells
@@ -158,22 +158,22 @@ def main():
 		print(f"Accepted {generated}/{args.count} after {attempts} attempts.")
 		label_positions: dict[tuple[int, int], str] = {}
 		label_string = None
-		rows = pedigree_code_lib.get_code_rows(code_string)
+		rows = code_definitions.get_code_rows(code_string)
 		person_cells: list[tuple[int, int]] = []
 		for row_index, row in enumerate(rows):
 			for col_index, char in enumerate(row):
-				name = pedigree_code_lib.short_hand_lookup.get(char, '')
+				name = code_definitions.short_hand_lookup.get(char, '')
 				if 'SQUARE' in name or 'CIRCLE' in name:
 					person_cells.append((row_index, col_index))
 		try:
-			label_chars = pedigree_label_lib.assign_labels(len(person_cells))
+			label_chars = label_strings.assign_labels(len(person_cells))
 			for position, label_char in zip(person_cells, label_chars, strict=False):
 				label_positions[position] = label_char
-			label_string = pedigree_label_lib.make_label_string(code_string, label_positions)
+			label_string = label_strings.make_label_string(code_string, label_positions)
 		except ValueError as exc:
 			print(f"Labeling skipped: {exc}")
 
-		html_text = pedigree_html_lib.make_pedigree_html(code_string, label_string=label_string)
+		html_text = html_output.make_pedigree_html(code_string, label_string=label_string)
 		png_name = f"preview_{idx:03d}.png"
 		svg_name = f"preview_{idx:03d}.svg"
 		txt_name = f"preview_{idx:03d}.txt"
@@ -182,8 +182,8 @@ def main():
 		txt_path = os.path.join(args.outdir, txt_name)
 
 		print(f"Rendering HTML/PNG for preview_{idx:03d}...")
-		pedigree_svg_lib.save_pedigree_png(code_string, png_path, scale=args.scale, label_string=label_string)
-		pedigree_svg_lib.save_pedigree_svg(code_string, svg_path, scale=args.scale, label_string=label_string)
+		svg_output.save_pedigree_png(code_string, png_path, scale=args.scale, label_string=label_string)
+		svg_output.save_pedigree_svg(code_string, svg_path, scale=args.scale, label_string=label_string)
 		with open(txt_path, 'w') as txt_handle:
 			txt_handle.write(code_string)
 

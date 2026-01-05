@@ -4,8 +4,8 @@
 import dataclasses
 
 # Local repo modules
-import pedigree_code_lib
-import pedigree_validate_lib
+import code_definitions
+import validation
 
 
 #===============================
@@ -57,7 +57,7 @@ def _sex_from_shape(shape_name: str) -> str:
 
 #===============================
 def _build_grid(code_string: str) -> tuple[list[list[str]], int, int]:
-	rows = pedigree_code_lib.get_code_rows(code_string)
+	rows = code_definitions.get_code_rows(code_string)
 	if not rows:
 		raise ValueError("Empty pedigree code string.")
 	max_cols = max(len(row) for row in rows)
@@ -74,7 +74,7 @@ def _find_individual_rows(grid: list[list[str]]) -> list[int]:
 	individual_rows = []
 	for row_index, row in enumerate(grid):
 		for char in row:
-			shape_name = pedigree_code_lib.short_hand_lookup.get(char, None)
+			shape_name = code_definitions.short_hand_lookup.get(char, None)
 			if shape_name is None:
 				continue
 			if _is_individual_shape(shape_name):
@@ -89,7 +89,7 @@ def _build_individuals(grid: list[list[str]], individual_rows: list[int]) -> dic
 	individuals: dict[str, Individual] = {}
 	for row_index in individual_rows:
 		for col_index, char in enumerate(grid[row_index]):
-			shape_name = pedigree_code_lib.short_hand_lookup.get(char, None)
+			shape_name = code_definitions.short_hand_lookup.get(char, None)
 			if shape_name is None or not _is_individual_shape(shape_name):
 				continue
 			sex = _sex_from_shape(shape_name)
@@ -109,7 +109,7 @@ def _build_individuals(grid: list[list[str]], individual_rows: list[int]) -> dic
 
 #===============================
 def _connectors_have_horizontal(shape_name: str) -> bool:
-	edges = pedigree_code_lib.shape_binary_edges[shape_name]
+	edges = code_definitions.shape_binary_edges[shape_name]
 	has_left = edges[2] in ('1', '2')
 	has_right = edges[3] in ('1', '2')
 	return has_left and has_right
@@ -117,7 +117,7 @@ def _connectors_have_horizontal(shape_name: str) -> bool:
 
 #===============================
 def _connectors_have_down(shape_name: str) -> bool:
-	edges = pedigree_code_lib.shape_binary_edges[shape_name]
+	edges = code_definitions.shape_binary_edges[shape_name]
 	has_down = edges[1] in ('1', '2')
 	return has_down
 
@@ -143,7 +143,7 @@ def _find_couples(grid: list[list[str]], individuals: dict[str, Individual], ind
 				valid = True
 				for col_mid in range(col_left + 1, col_right):
 					char = row[col_mid]
-					shape_name = pedigree_code_lib.short_hand_lookup.get(char, None)
+					shape_name = code_definitions.short_hand_lookup.get(char, None)
 					if shape_name is None or not shape_name.endswith('SHAPE'):
 						valid = False
 						break
@@ -176,10 +176,10 @@ def _build_adjacency(grid: list[list[str]]) -> dict[tuple[int, int], list[tuple[
 	for row_index in range(num_rows):
 		for col_index in range(num_cols):
 			char = grid[row_index][col_index]
-			shape_name = pedigree_code_lib.short_hand_lookup.get(char, None)
+			shape_name = code_definitions.short_hand_lookup.get(char, None)
 			if shape_name is None or not shape_name.endswith('SHAPE'):
 				continue
-			edges = pedigree_code_lib.shape_binary_edges[shape_name]
+			edges = code_definitions.shape_binary_edges[shape_name]
 			pos = (row_index, col_index)
 			for direction, offset in enumerate([(-1, 0), (1, 0), (0, -1), (0, 1)]):
 				if edges[direction] not in ('1', '2'):
@@ -191,7 +191,7 @@ def _build_adjacency(grid: list[list[str]]) -> dict[tuple[int, int], list[tuple[
 				if neighbor_col < 0 or neighbor_col >= num_cols:
 					continue
 				neighbor_char = grid[neighbor_row][neighbor_col]
-				neighbor_shape = pedigree_code_lib.short_hand_lookup.get(neighbor_char, None)
+				neighbor_shape = code_definitions.short_hand_lookup.get(neighbor_char, None)
 				if neighbor_shape is None or neighbor_shape == 'SPACE':
 					continue
 				adjacency.setdefault(pos, []).append((neighbor_row, neighbor_col))
@@ -211,7 +211,7 @@ def _find_children(
 	row = couple.row
 	for col_index in range(couple.col_left, couple.col_right + 1):
 		char = grid[row][col_index]
-		shape_name = pedigree_code_lib.short_hand_lookup.get(char, None)
+		shape_name = code_definitions.short_hand_lookup.get(char, None)
 		if shape_name is None or not shape_name.endswith('SHAPE'):
 			continue
 		if not _connectors_have_down(shape_name):
@@ -227,7 +227,7 @@ def _find_children(
 				if neighbor[0] <= row or neighbor[0] > child_row:
 					continue
 				neighbor_char = grid[neighbor[0]][neighbor[1]]
-				neighbor_shape = pedigree_code_lib.short_hand_lookup.get(neighbor_char, None)
+				neighbor_shape = code_definitions.short_hand_lookup.get(neighbor_char, None)
 				if neighbor_shape is None or neighbor_shape == 'SPACE':
 					continue
 				if _is_individual_shape(neighbor_shape) and neighbor[0] == child_row:
@@ -408,7 +408,7 @@ def validate_mode_from_code(
 	Returns:
 		list[str]: Validation errors.
 	"""
-	errors = pedigree_validate_lib.validate_code_string(code_string)
+	errors = validation.validate_code_string(code_string)
 	if errors:
 		return errors
 	individuals, _, detected_carriers = parse_pedigree_graph(code_string)

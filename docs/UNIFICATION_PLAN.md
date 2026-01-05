@@ -240,7 +240,7 @@ Batch generators:
   and let `write_question_batch(...)` consume it so batch caps apply cleanly.
 - Helper/plot utilities and explicitly broken scripts should be removed from
   phase-1 upgrade lists and tracked separately (for example
-  `problems/inheritance-problems/pedigrees/pedigree_code_templates.py`,
+  `problems/inheritance-problems/pedigrees/pedigree_lib/code_templates.py`,
   `problems/inheritance-problems/population_logistic_map_chaos.py`).
 
 ## Legacy patterns to modernize

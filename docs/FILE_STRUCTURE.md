@@ -61,29 +61,29 @@
   and combinatorics helpers for cross problems.
 - `problems/inheritance-problems/hybridcrosslib.py`: dihybrid/epistasis utilities, ratio
   dictionaries, and table construction for interaction problems.
-- `problems/inheritance-problems/pedigrees/pedigree_template_gen_lib.py`: higher-level pedigree
+- `problems/inheritance-problems/pedigrees/pedigree_lib/template_generator.py`: higher-level pedigree
   scenario picker that selects mode-specific templates and returns code strings.
-- `problems/inheritance-problems/pedigrees/pedigree_code_templates.py`: curated pedigree
+- `problems/inheritance-problems/pedigrees/pedigree_lib/code_templates.py`: curated pedigree
   code-string templates grouped by inheritance mode.
-- `problems/inheritance-problems/pedigrees/pedigree_validate_lib.py`: pedigree code
+- `problems/inheritance-problems/pedigrees/pedigree_lib/validation.py`: pedigree code
   validation helpers for checking allowed symbols and row structure.
-- `problems/inheritance-problems/pedigrees/pedigree_code_lib.py`: pedigree code constants
+- `problems/inheritance-problems/pedigrees/pedigree_lib/code_definitions.py`: pedigree code constants
   and helpers for mirroring and generation counting.
-- `problems/inheritance-problems/pedigrees/pedigree_html_lib.py`: HTML rendering for
+- `problems/inheritance-problems/pedigrees/pedigree_lib/html_output.py`: HTML rendering for
   pedigree code strings.
-- `problems/inheritance-problems/pedigrees/pedigree_svg_lib.py`: SVG rendering for
+- `problems/inheritance-problems/pedigrees/pedigree_lib/svg_output.py`: SVG rendering for
   pedigree code strings, plus SVG-to-PNG conversion via `rsvg-convert`.
-- `problems/inheritance-problems/pedigrees/pedigree_graph_parse_lib.py`: graph-based pedigree
+- `problems/inheritance-problems/pedigrees/pedigree_lib/graph_parse.py`: graph-based pedigree
   types and layout helpers for graph-based pedigrees and code-string rendering.
-- `problems/inheritance-problems/pedigrees/pedigree_skeleton_lib.py`: procedural pedigree
+- `problems/inheritance-problems/pedigrees/pedigree_lib/skeleton.py`: procedural pedigree
   skeleton generation (founders, children, marriages).
-- `problems/inheritance-problems/pedigrees/pedigree_inheritance_lib.py`: inheritance-mode
+- `problems/inheritance-problems/pedigrees/pedigree_lib/inheritance_assign.py`: inheritance-mode
   phenotype assignment for graph-based pedigrees.
-- `problems/inheritance-problems/pedigrees/pedigree_graph_spec_lib.py`: parse/serialize helpers
+- `problems/inheritance-problems/pedigrees/pedigree_lib/graph_spec.py`: parse/serialize helpers
   for the compact pedigree IR string format.
-- `problems/inheritance-problems/pedigrees/pedigree_mode_validate_lib.py`: inheritance
+- `problems/inheritance-problems/pedigrees/pedigree_lib/mode_validate.py`: inheritance
   mode validation layered on parsed pedigree graphs.
-- `problems/inheritance-problems/pedigrees/preview_pedigree.py`: CLI helper for generating
+- `problems/inheritance-problems/pedigrees/pedigree_lib/preview_pedigree.py`: CLI helper for generating
   HTML/PNG preview sets with saved code strings.
 - `problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md`: local architecture note
   describing the pedigree graph to layout to rendering pipeline.

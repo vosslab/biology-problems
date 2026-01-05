@@ -5,7 +5,7 @@ import dataclasses
 import random
 
 # Local repo modules
-import pedigree_graph_spec_lib
+import graph_spec
 
 
 
@@ -63,9 +63,9 @@ def generate_pedigree_graph(
 	"""
 	if rng is None:
 		rng = random.Random()
-	import pedigree_inheritance_lib
-	import pedigree_skeleton_lib
-	graph = pedigree_skeleton_lib.generate_skeleton_graph(
+	import inheritance_assign
+	import skeleton
+	graph = skeleton.generate_skeleton_graph(
 		generations=generations,
 		starting_couples=starting_couples,
 		rng=rng,
@@ -73,7 +73,7 @@ def generate_pedigree_graph(
 		max_children=max_children,
 		marry_in_rate=marry_in_rate,
 	)
-	pedigree_inheritance_lib.assign_phenotypes(graph, mode, rng, show_carriers)
+	inheritance_assign.assign_phenotypes(graph, mode, rng, show_carriers)
 	return graph
 
 
@@ -339,9 +339,9 @@ def render_graph_to_code(graph: PedigreeGraph, show_carriers: bool = False) -> s
 
 
 #===============================
-def _graph_to_graph_spec(graph: PedigreeGraph, include_carriers: bool) -> pedigree_graph_spec_lib.PedigreeGraphSpec:
-	people: dict[str, pedigree_graph_spec_lib.IndividualIR] = {}
-	unions: list[pedigree_graph_spec_lib.UnionIR] = []
+def _graph_to_graph_spec(graph: PedigreeGraph, include_carriers: bool) -> graph_spec.PedigreeGraphSpec:
+	people: dict[str, graph_spec.IndividualIR] = {}
+	unions: list[graph_spec.UnionIR] = []
 
 	main_couple_ids: tuple[str, str] | None = None
 	main_couple_people: tuple[str, str] | None = None
@@ -400,7 +400,7 @@ def _graph_to_graph_spec(graph: PedigreeGraph, include_carriers: bool) -> pedigr
 			status = 'infected'
 		elif individual.phenotype == 'carrier' and include_carriers:
 			status = 'carrier'
-		people[id_map[individual.id]] = pedigree_graph_spec_lib.IndividualIR(
+		people[id_map[individual.id]] = graph_spec.IndividualIR(
 			person_id=id_map[individual.id],
 			sex=individual.sex,
 			status=status,
@@ -409,13 +409,13 @@ def _graph_to_graph_spec(graph: PedigreeGraph, include_carriers: bool) -> pedigr
 	for couple in graph.couples:
 		if not couple.children:
 			continue
-		unions.append(pedigree_graph_spec_lib.UnionIR(
+		unions.append(graph_spec.UnionIR(
 			partner_a=id_map[couple.partner_a],
 			partner_b=id_map[couple.partner_b],
 			children=[id_map[child_id] for child_id in couple.children],
 		))
 
-	return pedigree_graph_spec_lib.PedigreeGraphSpec(people=people, unions=unions, main_couple=main_couple_ids)
+	return graph_spec.PedigreeGraphSpec(people=people, unions=unions, main_couple=main_couple_ids)
 
 
 #===============================
@@ -445,11 +445,11 @@ def generate_pedigree_graph_spec(
 	)
 	graph = _trim_graph_to_limit(graph, max_people)
 	spec = _graph_to_graph_spec(graph, include_carriers=show_carriers)
-	return pedigree_graph_spec_lib.format_pedigree_graph_spec(spec)
+	return graph_spec.format_pedigree_graph_spec(spec)
 
 
 #===============================
-def _assign_generations_from_unions(spec: pedigree_graph_spec_lib.PedigreeGraphSpec) -> dict[str, int]:
+def _assign_generations_from_unions(spec: graph_spec.PedigreeGraphSpec) -> dict[str, int]:
 	child_ids = set()
 	partner_ids = set()
 	for union in spec.unions:
@@ -508,7 +508,7 @@ def parse_graph_spec_to_graph(spec_string: str) -> PedigreeGraph:
 	"""
 	Parse a pedigree graph spec string into an internal PedigreeGraph.
 	"""
-	spec = pedigree_graph_spec_lib.parse_pedigree_graph_spec(spec_string)
+	spec = graph_spec.parse_pedigree_graph_spec(spec_string)
 	generations = _assign_generations_from_unions(spec)
 
 	individuals: dict[str, Individual] = {}

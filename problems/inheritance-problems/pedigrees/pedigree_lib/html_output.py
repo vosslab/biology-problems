@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 
 # Local repo modules
-import pedigree_code_lib
-import pedigree_label_lib
+import code_definitions
+import label_strings
 
 
 #===============================
 def makeCharacterTD_Cell(character_name):
-	character_unicode = pedigree_code_lib.character_unicodes[character_name]
-	fontsize = pedigree_code_lib.character_sizes[character_name]
+	character_unicode = code_definitions.character_unicodes[character_name]
+	fontsize = code_definitions.character_sizes[character_name]
 	html_text = makeTD_Cell(character_name, character_unicode, fontsize)
 	return html_text
 
@@ -23,8 +23,8 @@ def makeTD_Cell(comment_text, character_unicode, fontsize, line_height="0px"):
 		html_text += f'font-size: {fontsize:d}pt; '
 	html_text += (
 		f'padding: 0; margin: 0; line-height: {line_height}; vertical-align: middle; '
-		f'width: {pedigree_code_lib.table_cell_dimension}px; '
-		f'height: {pedigree_code_lib.table_cell_dimension}px;">'
+		f'width: {code_definitions.table_cell_dimension}px; '
+		f'height: {code_definitions.table_cell_dimension}px;">'
 	)
 	html_text += f'{character_unicode}</td>'
 	return html_text
@@ -32,7 +32,7 @@ def makeTD_Cell(comment_text, character_unicode, fontsize, line_height="0px"):
 
 #===============================
 def _make_person_span(shape_name, label_text):
-	cell_size = pedigree_code_lib.table_cell_dimension
+	cell_size = code_definitions.table_cell_dimension
 	border_width = 2
 	font_size = max(8, int(cell_size * 0.6))
 	label = label_text if label_text else '&nbsp;'
@@ -91,8 +91,8 @@ def makePersonTD_Cell(shape_name, label_text):
 	html_text += '<td align="center" style="'
 	html_text += (
 		'padding: 0; margin: 0; vertical-align: middle; '
-		f'width: {pedigree_code_lib.table_cell_dimension}px; '
-		f'height: {pedigree_code_lib.table_cell_dimension}px;">'
+		f'width: {code_definitions.table_cell_dimension}px; '
+		f'height: {code_definitions.table_cell_dimension}px;">'
 	)
 	html_text += _make_person_span(shape_name, label_text)
 	html_text += '</td>'
@@ -140,15 +140,15 @@ def tabelEdgeTD_Cell(location_binary, edge_binary):
 
 #===============================
 def makeShapeNameTableTD_Cell(shape_name):
-	binary_edges = pedigree_code_lib.shape_binary_edges[shape_name]
+	binary_edges = code_definitions.shape_binary_edges[shape_name]
 	shape_html_text = ''
 	shape_html_text += f'<!-- START {shape_name} -->'
 	shape_html_text += '<td align="center" style="vertical-align: middle; padding: 0; margin: 0; line-height: 0px; "> '
 	shape_html_text += '<table border="0" cellpadding="0" cellspacing="0" '
 	shape_html_text += (
 		' style="padding: 0; margin: 0; '
-		f'width: {pedigree_code_lib.table_cell_dimension}px; '
-		f'height: {pedigree_code_lib.table_cell_dimension}px; '
+		f'width: {code_definitions.table_cell_dimension}px; '
+		f'height: {code_definitions.table_cell_dimension}px; '
 		'border-collapse: collapse; border-style: hidden;"> '
 	)
 	shape_html_text += '<tbody><tr> '
@@ -179,7 +179,7 @@ def translateCode(code_string, label_string=None):
 	for idx, char in enumerate(list(code_string)):
 		if char != '%':
 			num_col += 1
-		char_name = pedigree_code_lib.short_hand_lookup[char]
+		char_name = code_definitions.short_hand_lookup[char]
 		if char_name.endswith('SHAPE'):
 			html_code += makeShapeNameTableTD_Cell(char_name)
 		elif char_name.endswith('CIRCLE') or char_name.endswith('SQUARE'):
@@ -199,8 +199,8 @@ def translateCode(code_string, label_string=None):
 	html_text = (
 		'<p><table cellpadding="0" cellspacing="0" style='
 		+ '"padding: 0; margin: 0; border-collapse: collapse; border: 6px solid #003366; '
-		+ f'width: {max_num_col * pedigree_code_lib.table_cell_dimension}px; '
-		+ f'height: {num_row * pedigree_code_lib.table_cell_dimension}px"'
+		+ f'width: {max_num_col * code_definitions.table_cell_dimension}px; '
+		+ f'height: {num_row * code_definitions.table_cell_dimension}px"'
 		+ '><tr>'
 		+ html_code
 		+ '</tr></table></p><p>&nbsp;</p>'
@@ -221,7 +221,7 @@ def make_pedigree_html(code_string: str, label_string: str | None = None) -> str
 		str: HTML table markup.
 	"""
 	if label_string is not None:
-		errors = pedigree_label_lib.validate_label_string(label_string, code_string)
+		errors = label_strings.validate_label_string(label_string, code_string)
 		if errors:
 			raise ValueError("Invalid label string: " + "; ".join(errors))
 	html_text = translateCode(code_string, label_string)

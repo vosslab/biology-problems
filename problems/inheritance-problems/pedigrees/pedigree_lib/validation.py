@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # Local repo modules
-import pedigree_code_lib
+import code_definitions
 
 
 #===============================
@@ -26,7 +26,7 @@ def validate_code_string(code_string: str, strict: bool = False) -> list[str]:
 		errors.append("Code string contains no rows.")
 		return errors
 
-	allowed_chars = set(pedigree_code_lib.short_hand_lookup.keys())
+	allowed_chars = set(code_definitions.short_hand_lookup.keys())
 	for row_index, row in enumerate(rows, start=1):
 		for col_index, char in enumerate(row, start=1):
 			if char not in allowed_chars:
@@ -51,11 +51,11 @@ def _get_connection_mask(char: str) -> list[bool] | None:
 	Returns:
 		list[bool] | None: Connectivity mask or None if not a connector glyph.
 	"""
-	name = pedigree_code_lib.short_hand_lookup.get(char)
+	name = code_definitions.short_hand_lookup.get(char)
 	if name is None:
 		return None
 
-	binary_edges = pedigree_code_lib.shape_binary_edges.get(name)
+	binary_edges = code_definitions.shape_binary_edges.get(name)
 	if binary_edges is None:
 		return None
 
@@ -74,7 +74,7 @@ def _is_person_cell(char: str) -> bool:
 	Returns:
 		bool: True if a person glyph, otherwise False.
 	"""
-	name = pedigree_code_lib.short_hand_lookup.get(char, '')
+	name = code_definitions.short_hand_lookup.get(char, '')
 	is_person = 'SQUARE' in name or 'CIRCLE' in name
 	return is_person
 
@@ -90,7 +90,7 @@ def _get_code_grid(code_string: str) -> list[str]:
 	Returns:
 		list[str]: Code rows.
 	"""
-	rows = pedigree_code_lib.get_code_rows(code_string)
+	rows = code_definitions.get_code_rows(code_string)
 	return rows
 
 

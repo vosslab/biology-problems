@@ -54,7 +54,7 @@ Do not force users to provide label_string. Generate it from the graph:
 
 Minimal API suggestion
 
-In pedigree_code_lib.py or a new pedigree_label_lib.py:
+In code_definitions.py or a new pedigree_label_lib.py:
 * make_label_string(code_string, labels_by_position) -> str
 * compile_graph_spec_to_code_and_labels(spec, ...) -> (code_string, label_string, label_map)
 

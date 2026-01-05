@@ -11,9 +11,9 @@ import random
 # Import local modules from the project
 # Provides custom functions, such as question formatting and other utilities
 import bptools
-import pedigree_html_lib
-import pedigree_code_lib
-import pedigree_code_templates
+import pedigree_lib.html_output
+import pedigree_lib.code_definitions
+import pedigree_lib.code_templates
 
 #=======================
 def bbFormatMatchingQuestion(N, question_text, prompts_list, choices_list, max_choices=5):
@@ -37,28 +37,28 @@ def matchingQuestionSet(start_num=1, max_questions=None):
 	question_text += "<p>Note: <i>each inheritance type will only be used ONCE.</i></p> "
 	choices_list = ['autosomal dominant', 'autosomal recessive', 'x-linked dominant', 'x-linked recessive', 'y-linked']
 	N = start_num - 1
-	for ad in pedigree_code_templates.autosomal_dominant:
-		for ar in pedigree_code_templates.autosomal_recessive:			
-			for xd in pedigree_code_templates.x_linked_dominant:
-				for xr in pedigree_code_templates.x_linked_recessive:
-					for yl in pedigree_code_templates.y_linked:
+	for ad in pedigree_lib.code_templates.autosomal_dominant:
+		for ar in pedigree_lib.code_templates.autosomal_recessive:			
+			for xd in pedigree_lib.code_templates.x_linked_dominant:
+				for xr in pedigree_lib.code_templates.x_linked_recessive:
+					for yl in pedigree_lib.code_templates.y_linked:
 						if max_questions is not None and N >= max_questions:
 							return bb_output_format_list
 						if random.random() < 0.5:
-							ad = pedigree_code_lib.mirror_pedigree(ad)
-						adc = pedigree_html_lib.translateCode(ad)
+							ad = pedigree_lib.code_definitions.mirror_pedigree(ad)
+						adc = pedigree_lib.html_output.translateCode(ad)
 						if random.random() < 0.5:
-							ar = pedigree_code_lib.mirror_pedigree(ar)
-						arc = pedigree_html_lib.translateCode(ar)
+							ar = pedigree_lib.code_definitions.mirror_pedigree(ar)
+						arc = pedigree_lib.html_output.translateCode(ar)
 						if random.random() < 0.5:
-							xd = pedigree_code_lib.mirror_pedigree(xd)
-						xdc = pedigree_html_lib.translateCode(xd)
+							xd = pedigree_lib.code_definitions.mirror_pedigree(xd)
+						xdc = pedigree_lib.html_output.translateCode(xd)
 						if random.random() < 0.5:
-							xr = pedigree_code_lib.mirror_pedigree(xr)
-						xrc = pedigree_html_lib.translateCode(xr)
+							xr = pedigree_lib.code_definitions.mirror_pedigree(xr)
+						xrc = pedigree_lib.html_output.translateCode(xr)
 						if random.random() < 0.5:
-							yl = pedigree_code_lib.mirror_pedigree(yl)
-						ylc = pedigree_html_lib.translateCode(yl)
+							yl = pedigree_lib.code_definitions.mirror_pedigree(yl)
+						ylc = pedigree_lib.html_output.translateCode(yl)
 
 						prompts_list = [adc, arc, xdc, xrc, ylc]
 						N += 1

@@ -10,7 +10,7 @@ import bptools
 import tetradlib
 import genemaplib as gml
 import phenotypes_for_yeast
-import tetrad_unordered_three_gene_solver_lib as tusl
+import tetrad_solver_lib as tusl
 
 #need this so students can add info to the box
 bptools.use_add_no_click_div = False
