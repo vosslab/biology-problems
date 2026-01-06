@@ -2,9 +2,7 @@
 
 
 # general built-in/pip libraries
-import os
 import random
-import argparse
 
 # local libraries
 import bptools
@@ -121,36 +119,32 @@ def generate_complete_question(N, num_amino_acids, debug=False):
 
 #===============================
 #===============================
-def main():
-	"""
-	Main function to generate and save pentapeptide questions.
-	"""
-	# Argument parser for command-line options
-	parser = argparse.ArgumentParser(description='Random polypeptide questions.')
-	parser.add_argument('-d', '--duplicates', type=int, default=95, help="Number of questions to create.")
+def write_question(N: int, args) -> str:
+	if args.question_type != 'fib':
+		raise ValueError("Only fill-in-the-blank format is supported.")
+	return generate_complete_question(N, args.num_amino)
+
+#===============================
+#===============================
+def parse_arguments():
+	parser = bptools.make_arg_parser(description="Random polypeptide questions.")
+	parser = bptools.add_question_format_args(
+		parser,
+		types_list=['fib'],
+		required=False,
+		default='fib'
+	)
 	parser.add_argument('-n', '--num_amino', type=int, default=2, help="Number of amino acids in polypeptides.")
-
+	parser.set_defaults(duplicates=95)
 	args = parser.parse_args()
+	return args
 
-	# Generate the output filename
-	outfile = ('bbq-'
-		+ f'{args.num_amino}aa-'
-		+ os.path.splitext(os.path.basename(__file__))[0]
-		+ '-questions.txt')
-	print('writing to file: ' + outfile)
-
-	# Create and write questions to the output file
-	with open(outfile, 'w') as file:
-		N = 0
-		for d in range(args.duplicates):
-			N += 1
-			bbformat = generate_complete_question(N, args.num_amino)
-			if bbformat is None:
-				N -= 1
-				continue
-			file.write(bbformat)
-	bptools.print_histogram()
-	print(f'saved {N} questions to {outfile}')
+#===============================
+#===============================
+def main():
+	args = parse_arguments()
+	outfile = bptools.make_outfile(None, args.question_type.upper(), f"{args.num_amino}aa")
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 
 #===============================

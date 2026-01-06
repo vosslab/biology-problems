@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 
 # external python/pip modules
-import os
 import sys
-import argparse
 
 # local repo modules
 import bptools
@@ -58,30 +56,35 @@ def write_question(N: int, answer_amino_acid_name: str, pcl: object, num_choices
 
 #======================================
 #======================================
-def main():
-	# Define argparse for command-line options
-	parser = argparse.ArgumentParser(description="Generate questions.")
-	parser.add_argument('-c', '--num_choices', type=int, default=4, help="Number of choices to create.")
-	args = parser.parse_args()
-
-	# Output file setup
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print(f'writing to file: {outfile}')
-
+def write_question_batch(start_num: int, args) -> list[str]:
+	questions = []
 	pcl = pubchemlib.PubChemLib()
-
-	# Create and write questions to the output file
-	with open(outfile, 'w') as f:
-		N = 1
-		for amino_acid_name in aminoacidlib.amino_acids_fullnames:
-			complete_question = write_question(N, amino_acid_name, pcl, args.num_choices)
-			if complete_question is None:
-				continue
-			N += 1
-			f.write(complete_question)
+	N = start_num
+	for amino_acid_name in aminoacidlib.amino_acids_fullnames:
+		complete_question = write_question(N, amino_acid_name, pcl, args.num_choices)
+		if complete_question is None:
+			continue
+		questions.append(complete_question)
+		N += 1
 	pcl.close()
-	bptools.print_histogram()
-	print(f'saved {N} questions to {outfile}')
+	return questions
+
+#======================================
+#======================================
+def parse_arguments():
+	parser = bptools.make_arg_parser(description="Generate amino acid structure matching questions.", batch=True)
+	parser = bptools.add_choice_args(parser, default=4)
+	parser.set_defaults(duplicates=1)
+	args = parser.parse_args()
+	return args
+
+#======================================
+#======================================
+def main():
+	args = parse_arguments()
+	outfile = bptools.make_outfile(None, f"{args.num_choices}_choices")
+	questions = bptools.collect_question_batches(write_question_batch, args)
+	bptools.write_questions_to_file(questions, outfile)
 
 #======================================
 #======================================

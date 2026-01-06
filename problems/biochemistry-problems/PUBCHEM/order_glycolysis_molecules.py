@@ -4,19 +4,20 @@
 import os
 import yaml
 #import random
-import argparse
 
 # local repo modules
 import bptools
 import moleculelib
 
 bptools.use_insert_hidden_terms = False
+GLOBAL_MOLECULE_DATA = None
 
 #======================================
 #======================================
 def load_molecules(molecule_file=None):
 	if molecule_file is None:
 		molecule_file = 'glycolysis.yml'
+	molecule_file = os.path.join(os.path.dirname(__file__), molecule_file)
 	with open(molecule_file, 'r') as file:
 		molecule_data = yaml.safe_load(file)
 	#print(molecule_data)
@@ -53,14 +54,14 @@ def get_question_text(molecules_to_use: list, num_choices: int):
 
 #======================================
 #======================================
-def write_question(N: int, molecule_data: list, num_choices: int) -> str:
+def write_question(N: int, args) -> str:
+	molecule_data = GLOBAL_MOLECULE_DATA
 
-	molecule_start_index = N % (len(molecule_data)-num_choices+1)
-	molecules_to_use = molecule_data[molecule_start_index:molecule_start_index+num_choices]
-	print(molecules_to_use[-1])
+	molecule_start_index = N % (len(molecule_data) - args.num_choices + 1)
+	molecules_to_use = molecule_data[molecule_start_index:molecule_start_index + args.num_choices]
 
 	# Add more to the question based on the given letters
-	question_text = get_question_text(molecules_to_use, num_choices)
+	question_text = get_question_text(molecules_to_use, args.num_choices)
 
 	ordered_answers_list = []
 	matches_list = []
@@ -80,28 +81,21 @@ def write_question(N: int, molecule_data: list, num_choices: int) -> str:
 
 #======================================
 #======================================
-def main():
-	# Define argparse for command-line options
-	parser = argparse.ArgumentParser(description="Generate questions.")
-	parser.add_argument('-d', '--duplicates', type=int, default=99, help="Number of questions to create.")
-	parser.add_argument('-n', '--num_choices', type=int, default=4, help="Number of choices to create.")
+def parse_arguments():
+	parser = bptools.make_arg_parser(description="Generate glycolysis ordering questions.")
+	parser = bptools.add_choice_args(parser, default=4)
+	parser.set_defaults(duplicates=99)
 	args = parser.parse_args()
+	return args
 
-	# Output file setup
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print(f'writing to file: {outfile}')
-
-	molecule_data = load_molecules()
-
-	# Create and write questions to the output file
-	with open(outfile, 'w') as f:
-		N = 1
-		for d in range(args.duplicates):
-			complete_question = write_question(N, molecule_data, args.num_choices)
-			if complete_question is not None:
-				N += 1
-				f.write(complete_question)
-	bptools.print_histogram()
+#======================================
+#======================================
+def main():
+	args = parse_arguments()
+	global GLOBAL_MOLECULE_DATA
+	GLOBAL_MOLECULE_DATA = load_molecules()
+	outfile = bptools.make_outfile(None, "ORD", f"{args.num_choices}_choices")
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 
 #======================================

@@ -2,10 +2,8 @@
 
 
 # general built-in/pip libraries
-import os
 import re
 import random
-import argparse
 
 # local libraries
 import bptools
@@ -113,33 +111,46 @@ def generate_complete_question(N, word, debug=False):
 
 #===============================
 #===============================
-def main():
-	"""
-	Main function to generate and save pentapeptide questions.
-	"""
-	# Argument parser for command-line options
-	parser = argparse.ArgumentParser(description='Generate pentapeptide questions.')
-	parser.add_argument('-x', '--max_questions', '--max', dest='max_questions', type=int, metavar='#',
-		help='Maximum number of questions to generate', default=9)
-	args = parser.parse_args()
-
-	# Read and shuffle the valid amino acid words
+def write_question_batch(start_num: int, args) -> list[str]:
 	valid_words = read_wordle()
 	random.shuffle(valid_words)
-	selected_words = valid_words[:args.max_questions]
+	max_questions = args.max_questions
+	if max_questions is None:
+		max_questions = 9
+	selected_words = valid_words[:max_questions]
 
-	# Generate the output filename
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: ' + outfile)
+	questions = []
+	N = start_num
+	for word in selected_words:
+		bbformat = generate_complete_question(N, word)
+		if bbformat is None:
+			continue
+		questions.append(bbformat)
+		N += 1
+	return questions
 
-	# Write the generated questions to the output file
-	with open(outfile, 'w') as file:
-		N = 0
-		for word in selected_words:
-			N += 1
-			bbformat = generate_complete_question(N, word)
-			file.write(bbformat)
-	print(f'saved {N} questions to {outfile}')
+#===============================
+#===============================
+def parse_arguments():
+	parser = bptools.make_arg_parser(description="Generate pentapeptide wordle questions.", batch=True)
+	parser = bptools.add_question_format_args(
+		parser,
+		types_list=['fib'],
+		required=False,
+		default='fib'
+	)
+	parser.set_defaults(duplicates=1)
+	parser.set_defaults(max_questions=9)
+	args = parser.parse_args()
+	return args
+
+#===============================
+#===============================
+def main():
+	args = parse_arguments()
+	outfile = bptools.make_outfile(None, args.question_type.upper())
+	questions = bptools.collect_question_batches(write_question_batch, args)
+	bptools.write_questions_to_file(questions, outfile)
 
 
 #===============================

@@ -4,7 +4,6 @@
 import os
 import yaml
 import random
-import argparse
 
 # local repo modules
 import bptools
@@ -14,6 +13,8 @@ import moleculelib
 bptools.use_insert_hidden_terms = False
 bptools.use_add_no_click_div = False
 used_macromolecule_names = {}
+GLOBAL_PCL = None
+GLOBAL_MACRO_DATA = None
 
 
 #======================================
@@ -155,17 +156,17 @@ def select_random_molecule_name(macro_type, macro_data) -> str:
 
 #======================================
 #======================================
-def write_question(N: int, pcl, macro_data) -> str:
+def write_question(N: int, args) -> str:
 	# Add more to the question based on the given letters
 
 	choices_list = list(choices_dict.values())
 	macro_type = random.choice(list(choices_dict.keys()))
 	answer_text = choices_dict[macro_type]
-	molecule_name = get_random_molecule_name(macro_type, macro_data)
+	molecule_name = get_random_molecule_name(macro_type, GLOBAL_MACRO_DATA)
 	if molecule_name is None:
 		return None
 
-	question_text = get_question_text(molecule_name, pcl)
+	question_text = get_question_text(molecule_name, GLOBAL_PCL)
 	if question_text is None:
 		return None
 
@@ -179,39 +180,41 @@ def write_question(N: int, pcl, macro_data) -> str:
 def load_molecules(macro_file=None):
 	if macro_file is None:
 		macro_file = 'macromolecules.yml'
+	macro_file = os.path.join(os.path.dirname(__file__), macro_file)
 	with open(macro_file, 'r') as file:
 		macro_data = yaml.safe_load(file)
 	return macro_data
 
 #======================================
 #======================================
-def main():
-	# Define argparse for command-line options
-	parser = argparse.ArgumentParser(description="Generate questions.")
-	parser.add_argument('-d', '--duplicates', type=int, default=95, help="Number of questions to create.")
-	parser.add_argument('-f', '-y', '--file', metavar='<file>', type=str, dest='input_yaml_file',
-		help='yaml input file to process')
+def parse_arguments():
+	parser = bptools.make_arg_parser(description="Generate macromolecule ID questions.")
+	parser = bptools.add_question_format_args(
+		parser,
+		types_list=['mc'],
+		required=False,
+		default='mc'
+	)
+	parser.add_argument(
+		'-f', '-y', '--file', metavar='<file>', type=str, dest='input_yaml_file',
+		help='yaml input file to process'
+	)
+	parser.set_defaults(duplicates=95)
 	args = parser.parse_args()
+	return args
 
-	# Output file setup
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print(f'writing to file: {outfile}')
-
-	pcl = pubchemlib.PubChemLib()
-	macro_data = load_molecules(args.input_yaml_file)
-
-	# Create and write questions to the output file
-	with open(outfile, 'w') as f:
-		N = 1
-		for d in range(args.duplicates):
-			complete_question = write_question(N, pcl, macro_data)
-			if complete_question is None:
-				continue
-			N += 1
-			f.write(complete_question)
-	pcl.close()
-	bptools.print_histogram()
-	print(f'saved {N} questions to {outfile}')
+#======================================
+#======================================
+def main():
+	args = parse_arguments()
+	used_macromolecule_names.clear()
+	global GLOBAL_PCL
+	global GLOBAL_MACRO_DATA
+	GLOBAL_PCL = pubchemlib.PubChemLib()
+	GLOBAL_MACRO_DATA = load_molecules(args.input_yaml_file)
+	outfile = bptools.make_outfile(None, args.question_type.upper())
+	bptools.collect_and_write_questions(write_question, args, outfile)
+	GLOBAL_PCL.close()
 
 #======================================
 #======================================

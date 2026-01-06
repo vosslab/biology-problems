@@ -5,6 +5,18 @@
   bptools question framework with standard args, hint handling, and outfile helpers:
   [problems/inheritance-problems/phylogenetic_trees/gene_tree_choice_plus.py](problems/inheritance-problems/phylogenetic_trees/gene_tree_choice_plus.py),
   [problems/inheritance-problems/phylogenetic_trees/gene_tree_matches_plus.py](problems/inheritance-problems/phylogenetic_trees/gene_tree_matches_plus.py).
+- Refactored PubChem biochemistry generators to use the shared bptools question framework
+  (standard args, outfile helpers, and shared collection utilities):
+  [problems/biochemistry-problems/PUBCHEM/match_amino_acid_structures.py](problems/biochemistry-problems/PUBCHEM/match_amino_acid_structures.py),
+  [problems/biochemistry-problems/PUBCHEM/order_glycolysis_molecules.py](problems/biochemistry-problems/PUBCHEM/order_glycolysis_molecules.py),
+  [problems/biochemistry-problems/PUBCHEM/polypeptide_fib_sequence.py](problems/biochemistry-problems/PUBCHEM/polypeptide_fib_sequence.py),
+  [problems/biochemistry-problems/PUBCHEM/which_amino_acid_mc.py](problems/biochemistry-problems/PUBCHEM/which_amino_acid_mc.py),
+  [problems/biochemistry-problems/PUBCHEM/which_macromolecule.py](problems/biochemistry-problems/PUBCHEM/which_macromolecule.py),
+  [problems/biochemistry-problems/PUBCHEM/wordle_peptides.py](problems/biochemistry-problems/PUBCHEM/wordle_peptides.py).
+- Added lightweight pytest coverage for PubChem generator text builders and local data loaders in
+  [tests/libs/pubchem/test_pubchem_generators.py](tests/libs/pubchem/test_pubchem_generators.py).
+- Added lightweight pytest coverage for biostatistics box plot generators in
+  [tests/libs/biostatistics/test_biostatistics_boxplots.py](tests/libs/biostatistics/test_biostatistics_boxplots.py).
 
 ## 2026-01-05
 - Fixed pyflakes issues across multiple generators (unused imports/variables, missing helper functions, and indentation errors).
