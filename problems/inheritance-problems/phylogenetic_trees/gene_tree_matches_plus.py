@@ -1,11 +1,8 @@
 #!/usr/bin/env python3
 
-import os
 import copy
 import time
 import random
-import argparse
-
 #local
 import bptools
 bptools.use_add_no_click_div = False
@@ -139,7 +136,7 @@ def get_background_statement() -> str:
 
 #===========================================================
 #===========================================================
-def find_diff_question(N, num_choices, same_treecode_cls_list, diff_treecode_cls_list):
+def find_diff_question(N, num_choices, same_treecode_cls_list, diff_treecode_cls_list, include_hint=False):
 	"""
 	Generate a question asking students to identify the different phylogenetic tree.
 	"""
@@ -173,6 +170,13 @@ def find_diff_question(N, num_choices, same_treecode_cls_list, diff_treecode_cls
 	question_statement += '<p>Which one of the following phylogenetic trees represents a '
 	question_statement += '<span style="color: #ba372a;"><strong>DIFFERENT</strong></span> phylogenetic tree?</p>'
 
+	hint_text = ""
+	if include_hint:
+		hint_text = (
+			"<p><i>Hint: trees can be rotated at internal nodes without changing their meaning. "
+			"Focus on branching order, not left/right orientation.</i></p>"
+		)
+
 	# Randomly select the correct "different" answer tree
 	random.shuffle(diff_treecode_cls_list)
 	answer_treecode_cls = diff_treecode_cls_list.pop()  # The "different" tree code
@@ -195,7 +199,7 @@ def find_diff_question(N, num_choices, same_treecode_cls_list, diff_treecode_cls
 	random.shuffle(html_choices_list)
 
 	# Combine the background, question statement, and choices into the full question
-	full_statement = header + background_statement + question_statement
+	full_statement = header + background_statement + question_statement + hint_text
 	complete_question = bptools.formatBB_MC_Question(N, full_statement, html_choices_list, answer_html_table)
 
 	# Print a debug message to indicate the question generation is complete
@@ -205,7 +209,7 @@ def find_diff_question(N, num_choices, same_treecode_cls_list, diff_treecode_cls
 
 #===========================================================
 #===========================================================
-def find_same_question(N, num_choices, same_treecode_cls_list, diff_treecode_cls_list):
+def find_same_question(N, num_choices, same_treecode_cls_list, diff_treecode_cls_list, include_hint=False):
 	"""
 	Generate a question asking students to identify the same phylogenetic tree.
 	"""
@@ -241,6 +245,13 @@ def find_same_question(N, num_choices, same_treecode_cls_list, diff_treecode_cls
 	question_statement += '<span style="color: #169179;"><strong>SAME</strong></span> '
 	question_statement += 'tree relationships or is equivalent to the phylogenetic tree above?</p>'
 
+	hint_text = ""
+	if include_hint:
+		hint_text = (
+			"<p><i>Hint: trees are equivalent if internal nodes can be rotated to match. "
+			"Ignore the exact left/right placement of taxa.</i></p>"
+		)
+
 	# Initialize the list of HTML representations for the multiple-choice options
 	html_choices_list = []
 	# Add the incorrect choices (trees with different structures)
@@ -256,7 +267,7 @@ def find_same_question(N, num_choices, same_treecode_cls_list, diff_treecode_cls
 	random.shuffle(html_choices_list)
 
 	# Combine the background, question statement, and choices into the full question
-	full_statement = header + background_statement + question_statement
+	full_statement = header + background_statement + question_statement + hint_text
 	complete_question = bptools.formatBB_MC_Question(N, full_statement, html_choices_list, answer_html_table)
 
 	# Print a debug message and return the complete question
@@ -265,10 +276,12 @@ def find_same_question(N, num_choices, same_treecode_cls_list, diff_treecode_cls
 
 #===========================================================
 #===========================================================
-def make_question(N, args):
+def write_question(N, args):
 	"""
 	Generate a phylogenetic question based on the specified mode.
 	"""
+	if args.question_type != 'mc':
+		raise ValueError("Only multiple-choice format is supported.")
 	# Generate a sorted list of gene letters based on the number of leaves
 	sorted_taxa = sorted(bptools.generate_gene_letters(args.num_leaves))
 
@@ -289,10 +302,22 @@ def make_question(N, args):
 	# Generate a question based on the specified mode ('same' or 'diff')
 	if args.mode == 'same':
 		# Find a "same" question where the student identifies the identical tree
-		complete_question = find_same_question(N, args.num_choices, same_treecode_cls_list, diff_treecode_cls_list)
+		complete_question = find_same_question(
+			N,
+			args.num_choices,
+			same_treecode_cls_list,
+			diff_treecode_cls_list,
+			include_hint=args.hint
+		)
 	else:
 		# Find a "different" question where the student identifies the different tree
-		complete_question = find_diff_question(N, args.num_choices, same_treecode_cls_list, diff_treecode_cls_list)
+		complete_question = find_diff_question(
+			N,
+			args.num_choices,
+			same_treecode_cls_list,
+			diff_treecode_cls_list,
+			include_hint=args.hint
+		)
 
 	# Return the formatted question
 	return complete_question
@@ -312,14 +337,14 @@ def parse_arguments():
 		argparse.Namespace: Parsed arguments with attributes `duplicates`,
 		`num_choices`, and `question_type`.
 	"""
-	parser = argparse.ArgumentParser(description="Generate questions.")
-	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='Number of duplicate runs to do or number of questions to create', default=1
-	)
-	parser.add_argument(
-		'-c', '--num_choices', type=int, default=5, dest='num_choices',
-		help="Number of choices to create."
+	parser = bptools.make_arg_parser(description="Generate phylogenetic tree matching questions.")
+	parser = bptools.add_choice_args(parser, default=5)
+	parser = bptools.add_hint_args(parser)
+	parser = bptools.add_question_format_args(
+		parser,
+		types_list=['mc'],
+		required=False,
+		default='mc'
 	)
 	parser.add_argument(
 		'-l', '--leaves', '--num_leaves', type=int, dest='num_leaves',
@@ -350,6 +375,7 @@ def parse_arguments():
 	diff_group.add_argument("-R", "--rigorous",  dest="difficulty", action="store_const", const="rigorous",
 		help="Set difficulty to rigorous")
 	parser.set_defaults(difficulty=None)
+	parser.set_defaults(duplicates=1)
 
 	args = parser.parse_args()
 
@@ -388,39 +414,21 @@ def main():
 	args = parse_arguments()
 
 	# Define output file name
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
+	hint_mode = 'with_hint' if args.hint else 'no_hint'
 	if args.difficulty is not None:
-		difficulty_suffix = f"-{args.difficulty.upper()}_level"
+		difficulty_suffix = f"{args.difficulty.upper()}_level"
 	else:
-		difficulty_suffix = f'-{args.num_leaves}_leaves-{args.num_choices}_choices'
-
-	outfile = (
-		'bbq'
-		f'-{script_name}'
-		f'-{args.mode.upper()}_mode'
-		f"{difficulty_suffix}"
-		'-questions.txt'
+		difficulty_suffix = f"{args.num_leaves}_leaves-{args.num_choices}_choices"
+	outfile = bptools.make_outfile(
+		None,
+		args.question_type.upper(),
+		hint_mode,
+		f"{args.mode.upper()}_mode",
+		difficulty_suffix
 	)
-	print(f'Writing to file: {outfile}')
 
-	# Open the output file and generate questions
-	with open(outfile, 'w') as f:
-		N = 1  # Question number counter
-		errors = 0
-		while(N <= args.duplicates and errors < args.duplicates):
-			t0 = time.time()
-			complete_question = make_question(N, args)
-			if time.time() - t0 > 1:
-				print(f"Question {N} complete in {time.time() - t0:.1f} seconds")
-			if complete_question is not None:
-				N += 1
-				f.write(complete_question)
-			else:
-				errors += 1
-
-	# Display histogram
-	print(f"wrote {N-1} questions to the file {outfile}")
-	bptools.print_histogram()
+	# Collect and write questions using shared helper
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #===========================================================
 #===========================================================

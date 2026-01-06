@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 
-import os
 import re
 import sys
 import copy
 import time
 import random
-import argparse
 import colorsys
 
 #local
@@ -330,7 +328,7 @@ def generate_html_distance_table(sorted_taxa, distance_dict, answer_treecode_cls
 
 #===========================================================
 #===========================================================
-def get_problem_statement(sorted_taxa, distance_dict, answer_treecode_cls):
+def get_problem_statement(sorted_taxa, distance_dict, answer_treecode_cls, include_hint=False):
 	font_colors = answer_treecode_cls.output_cls.font_colors
 	#background_colors = answer_treecode_cls.output_cls.background_colors
 	taxa_name_map = answer_treecode_cls.output_cls.taxa_name_map
@@ -356,6 +354,11 @@ def get_problem_statement(sorted_taxa, distance_dict, answer_treecode_cls):
 		"<p><span style='font-size: large;'>Using this distance matrix, determine the most appropriate gene tree that "
 		"accurately reflects the relationships and distances between these taxa.</span></p>"
 	)
+	if include_hint:
+		problem_statement += (
+			"<p><i>Hint: taxa with smaller distances are more closely related. "
+			"Look for clusters that best match the smallest distances.</i></p>"
+		)
 	tools.is_valid_html(problem_statement)
 	return problem_statement
 
@@ -421,7 +424,7 @@ def get_multiple_choices(ordered_taxa, num_choices):
 
 #===========================================================
 #===========================================================
-def make_question(N: int, num_leaves: int, num_choices: int) -> str:
+def make_question(N: int, num_leaves: int, num_choices: int, include_hint=False) -> str:
 	"""
 	Generate a multiple-choice question about gene trees based on a distance matrix.
 
@@ -502,7 +505,12 @@ def make_question(N: int, num_leaves: int, num_choices: int) -> str:
 	distance_html_table = generate_html_distance_table(sorted_taxa, distance_dict, answer_treecode_cls)
 
 	# Add the descriptive question statement
-	problem_statement = get_problem_statement(sorted_taxa, distance_dict, answer_treecode_cls)
+	problem_statement = get_problem_statement(
+		sorted_taxa,
+		distance_dict,
+		answer_treecode_cls,
+		include_hint=include_hint
+	)
 
 	# Format the question for multiple-choice display and return it
 	full_question = distance_html_table + problem_statement
@@ -511,27 +519,28 @@ def make_question(N: int, num_leaves: int, num_choices: int) -> str:
 
 #===========================================================
 #===========================================================
+def write_question(N: int, args) -> str:
+	"""
+	Wrapper for the shared question writer interface.
+	"""
+	if args.question_type != 'mc':
+		raise ValueError("Only multiple-choice format is supported.")
+	return make_question(N, args.num_leaves, args.num_choices, include_hint=args.hint)
+
+#===========================================================
+#===========================================================
 def parse_arguments():
 	"""
 	Parses command-line arguments for the script.
-
-	Defines and handles all arguments for the script, including:
-	- `duplicates`: The number of questions to generate.
-	- `num_choices`: The number of answer choices for each question.
-	- `question_type`: Type of question (numeric or multiple choice).
-
-	Returns:
-		argparse.Namespace: Parsed arguments with attributes `duplicates`,
-		`num_choices`, and `question_type`.
 	"""
-	parser = argparse.ArgumentParser(description="Generate questions.")
-	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='Number of duplicate runs to do or number of questions to create', default=1
-	)
-	parser.add_argument(
-		'-c', '--num_choices', type=int, default=5, dest='num_choices',
-		help="Number of choices to create."
+	parser = bptools.make_arg_parser(description="Generate gene tree distance-matrix questions.")
+	parser = bptools.add_choice_args(parser, default=5)
+	parser = bptools.add_hint_args(parser)
+	parser = bptools.add_question_format_args(
+		parser,
+		types_list=['mc'],
+		required=False,
+		default='mc'
 	)
 	parser.add_argument(
 		'-l', '--leaves', '--num_leaves', type=int, dest='num_leaves',
@@ -556,6 +565,7 @@ def parse_arguments():
 		help="Set difficulty to level 5")
 
 	parser.set_defaults(difficulty=None)
+	parser.set_defaults(duplicates=1)
 
 	args = parser.parse_args()
 
@@ -594,36 +604,21 @@ def main():
 	args = parse_arguments()
 
 	# Define output file name
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
+	hint_mode = 'with_hint' if args.hint else 'no_hint'
 	if args.difficulty is not None:
-		difficulty_suffix = f"-LEVEL_{args.difficulty}"
+		difficulty_suffix = f"LEVEL_{args.difficulty}"
 	else:
-		difficulty_suffix = f'-{args.num_leaves}_leaves-{args.num_choices}_choices'
-
-	outfile = (
-		'bbq'
-		f'-{script_name}'
-		f'-TABLE_mode'
-		f"{difficulty_suffix}"
-		'-questions.txt'
+		difficulty_suffix = f"{args.num_leaves}_leaves-{args.num_choices}_choices"
+	outfile = bptools.make_outfile(
+		None,
+		args.question_type.upper(),
+		hint_mode,
+		"TABLE_mode",
+		difficulty_suffix
 	)
-	print(f'Writing to file: {outfile}')
 
-	# Open the output file and generate questions
-	with open(outfile, 'w') as f:
-		N = 1 # Question number counter
-		for _ in range(args.duplicates):
-			t0 = time.time()
-			complete_question = make_question(N, args.num_leaves, args.num_choices)
-			if time.time() - t0 > 1:
-				print(f"Question {N} complete in {time.time() - t0:.1f} seconds")
-			if complete_question is not None:
-				N += 1
-				f.write(complete_question)
-
-	# Display histogram
-	print(f"wrote {N-1} questions to the file {outfile}")
-	bptools.print_histogram()
+	# Collect and write questions using shared helper
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #===========================================================
 #===========================================================

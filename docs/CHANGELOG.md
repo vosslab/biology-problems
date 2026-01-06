@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-01-06
+- Updated the phylogenetic tree gene tree choice/match generators to use the shared
+  bptools question framework with standard args, hint handling, and outfile helpers:
+  [problems/inheritance-problems/phylogenetic_trees/gene_tree_choice_plus.py](problems/inheritance-problems/phylogenetic_trees/gene_tree_choice_plus.py),
+  [problems/inheritance-problems/phylogenetic_trees/gene_tree_matches_plus.py](problems/inheritance-problems/phylogenetic_trees/gene_tree_matches_plus.py).
+
 ## 2026-01-05
 - Fixed pyflakes issues across multiple generators (unused imports/variables, missing helper functions, and indentation errors).
 - Converted a number of `.format(...)` string constructions to f-strings in the touched files.
