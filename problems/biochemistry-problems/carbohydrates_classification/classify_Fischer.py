@@ -6,11 +6,10 @@ import argparse
 import bptools
 import sugarlib
 
-def write_question(N, sugar_name):
+def write_question(N, sugar_name, sugar_codes_class):
 	"""
 	Creates a multiple-choice question for classifying a sugar based on its Fischer projection.
 	"""
-	sugar_codes_class = sugarlib.SugarCodes()
 	sugar_code = sugar_codes_class.sugar_name_to_code[sugar_name]
 	sugar_struct = sugarlib.SugarStructure(sugar_code)
 
@@ -107,8 +106,7 @@ def parse_arguments():
 
 #======================================
 #======================================
-def get_sugar_codes():
-	sugar_codes_class = sugarlib.SugarCodes()
+def get_sugar_codes(sugar_codes_class):
 	sugar_names_list = []
 	sugar_names_list += sugar_codes_class.get_sugar_names(4, 'D', None)
 	sugar_names_list += sugar_codes_class.get_sugar_names(4, 'L', None)
@@ -141,13 +139,14 @@ def main():
 	)
 	print(f'Writing to file: {outfile}')
 
-	sugar_names_list = get_sugar_codes()
+	sugar_codes_class = sugarlib.SugarCodes()
+	sugar_names_list = get_sugar_codes(sugar_codes_class)
 
 	# Open the output file and generate questions
 	with open(outfile, 'w') as f:
 		N = 1  # Question number counter
 		for sugar_name in sugar_names_list:
-			complete_question = write_question(N, sugar_name)
+			complete_question = write_question(N, sugar_name, sugar_codes_class)
 			if complete_question is not None:
 				N += 1
 				f.write(complete_question)
@@ -161,4 +160,3 @@ if __name__ == '__main__':
 	main()
 
 ## THE END
-

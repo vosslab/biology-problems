@@ -32,6 +32,8 @@ def write_question(N, sugar_name, anomeric, ring_type, sugar_codes_cls):
 	sugar_struct = sugarlib.SugarStructure(sugar_code)
 	#print(sugar_struct.structural_part_txt())
 	haworth = sugar_struct.Haworth_projection_html(ring=ring, anomeric=anomeric)
+	if haworth is None:
+		return None
 
 	question = ''
 	question += 'Above is a Haworth projection of the monosaccharide &{0};-{1}. '.format(anomeric, sugar_name)

@@ -1,10 +1,37 @@
 #!/usr/bin/env python3
 
 
+from fractions import Fraction
+from math import lcm
+
+
+def _infer_scale(values):
+	"""Return a scale factor based on fractional denominators (limited to 10)."""
+	scale = 1
+	for value in values:
+		if value is None:
+			continue
+		frac = Fraction(value).limit_denominator(10)
+		scale = lcm(scale, frac.denominator)
+	return scale
+
+
+def _scale_value(value, scale):
+	return int(round(value * scale))
+
+
+def _is_intish(value):
+	return abs(value - round(value)) <= 1e-9
+
+
+def _format_axis_value(value):
+	return format(value, "g")
+
+
 class BoxPlot:
 	"""Represents the structure of a box plot with elements such as whiskers, box edges, median, and mean."""
 
-	def __init__(self, axis_start, whisker_start, box_start, median, box_end, whisker_end, axis_end, mean):
+	def __init__(self, axis_start, whisker_start, box_start, median, box_end, whisker_end, axis_end, mean, scale=None):
 		"""
 		Initializes the BoxPlot object with the necessary parameters.
 
@@ -29,6 +56,16 @@ class BoxPlot:
 		self.whisker_end = whisker_end
 		self.axis_end = axis_end
 		self.mean = mean
+		self.scale = scale if scale is not None else _infer_scale([
+			axis_start,
+			whisker_start,
+			box_start,
+			median,
+			box_end,
+			whisker_end,
+			axis_end,
+			mean,
+		])
 
 		# Validate inputs upon creation
 		errors = self.validate_inputs()
@@ -40,19 +77,21 @@ class BoxPlot:
 		"""Validate the order of the input values and return a list of any values that are out of range."""
 		errors = []
 
-		# Ensure each part of the box plot follows the correct order
-		if not self.axis_start < self.whisker_start:
-			errors.append(f"whisker_start ({self.whisker_start}) must be greater than axis_start ({self.axis_start})")
-		if not self.whisker_start < self.box_start:
-			errors.append(f"box_start ({self.box_start}) must be greater than whisker_start ({self.whisker_start})")
-		if not self.box_start < self.median:
-			errors.append(f"median ({self.median}) must be greater than box_start ({self.box_start})")
-		if not self.median < self.box_end:
-			errors.append(f"box_end ({self.box_end}) must be greater than median ({self.median})")
-		if not self.box_end < self.whisker_end:
-			errors.append(f"whisker_end ({self.whisker_end}) must be greater than box_end ({self.box_end})")
-		if not self.whisker_end < self.axis_end:
-			errors.append(f"axis_end ({self.axis_end}) must be greater than whisker_end ({self.whisker_end})")
+		# Allow ties in the five-number summary (nondecreasing order)
+		if not self.axis_start <= self.whisker_start:
+			errors.append(f"whisker_start ({self.whisker_start}) must be greater than or equal to axis_start ({self.axis_start})")
+		if not self.whisker_start <= self.box_start:
+			errors.append(f"box_start ({self.box_start}) must be greater than or equal to whisker_start ({self.whisker_start})")
+		if not self.box_start <= self.median:
+			errors.append(f"median ({self.median}) must be greater than or equal to box_start ({self.box_start})")
+		if not self.median <= self.box_end:
+			errors.append(f"box_end ({self.box_end}) must be greater than or equal to median ({self.median})")
+		if not self.box_end <= self.whisker_end:
+			errors.append(f"whisker_end ({self.whisker_end}) must be greater than or equal to box_end ({self.box_end})")
+		if not self.whisker_end <= self.axis_end:
+			errors.append(f"axis_end ({self.axis_end}) must be greater than or equal to whisker_end ({self.whisker_end})")
+		if not self.axis_start < self.axis_end:
+			errors.append(f"axis_end ({self.axis_end}) must be greater than axis_start ({self.axis_start})")
 
 		return errors
 
@@ -71,7 +110,7 @@ class BoxPlot:
 
 #==============
 
-def create_grid(axis_start, axis_end):
+def create_grid(axis_start, axis_end, scale=1):
 	"""
 	Initialize a grid with empty cells for the axis.
 
@@ -82,7 +121,9 @@ def create_grid(axis_start, axis_end):
 	Returns:
 		list: A list of strings representing grid cells initialized as 'empty'.
 	"""
-	num_cells = axis_end - axis_start + 2
+	axis_start_grid = _scale_value(axis_start, scale)
+	axis_end_grid = _scale_value(axis_end, scale)
+	num_cells = axis_end_grid - axis_start_grid + 2
 	return ['empty' for _ in range(num_cells)]
 
 
@@ -100,13 +141,14 @@ def assign_elements(grid, box_plot):
 		list: The modified grid with elements assigned.
 	"""
 	# Calculate positions relative to the axis start
-	whisker_start_idx = box_plot.whisker_start - box_plot.axis_start + 1
-	whisker_end_idx = box_plot.whisker_end - box_plot.axis_start
-	box_start_idx = box_plot.box_start - box_plot.axis_start + 1
-	box_end_idx = box_plot.box_end - box_plot.axis_start
-	median_left_idx = box_plot.median - box_plot.axis_start + 1
+	axis_start_grid = _scale_value(box_plot.axis_start, box_plot.scale)
+	whisker_start_idx = _scale_value(box_plot.whisker_start, box_plot.scale) - axis_start_grid + 1
+	whisker_end_idx = _scale_value(box_plot.whisker_end, box_plot.scale) - axis_start_grid
+	box_start_idx = _scale_value(box_plot.box_start, box_plot.scale) - axis_start_grid + 1
+	box_end_idx = _scale_value(box_plot.box_end, box_plot.scale) - axis_start_grid
+	median_left_idx = _scale_value(box_plot.median, box_plot.scale) - axis_start_grid + 1
 	median_right_idx = median_left_idx
-	mean_left_idx = box_plot.mean - box_plot.axis_start
+	mean_left_idx = _scale_value(box_plot.mean, box_plot.scale) - axis_start_grid
 	mean_right_idx = mean_left_idx + 1
 
 	# Assign roles to the grid cells
@@ -229,7 +271,7 @@ def write_axis_row_ticks_html(grid, axis_start, line_location="top"):
 
 #==============
 
-def write_axis_row_labels_html(axis_start, axis_end, label_mod=5):
+def write_axis_row_labels_html(axis_start, axis_end, label_mod=5, scale=1):
 	"""
 	Generates an HTML row for axis labels.
 
@@ -245,15 +287,18 @@ def write_axis_row_labels_html(axis_start, axis_end, label_mod=5):
 	width2 = "width: 60px;"
 
 	html = '  <tr>\n'
-	for index in range(axis_start, axis_end + 1):
-		# Add labels every 'label_mod' intervals
-		if index % label_mod == 0:
-			html += f'    <td colspan=2 style="{width2} text-align: center">{index}</td>\n'
-		elif index > axis_start and index % label_mod == 1:
-			# Skip the next cell after adding a label (because of colspan=2)
+	axis_start_grid = _scale_value(axis_start, scale)
+	axis_end_grid = _scale_value(axis_end, scale)
+	grid_index = axis_start_grid
+	while grid_index <= axis_end_grid:
+		value = grid_index / scale
+		if _is_intish(value) and int(round(value)) % label_mod == 0:
+			label = _format_axis_value(value)
+			html += f'    <td colspan=2 style="{width2} text-align: center">{label}</td>\n'
+			grid_index += 2
 			continue
-		else:
-			html += f'    <td style="{width}">&nbsp;</td>'
+		html += f'    <td style="{width}">&nbsp;</td>'
+		grid_index += 1
 	html += '  </tr>\n'
 	return html
 
@@ -261,7 +306,7 @@ def write_axis_row_labels_html(axis_start, axis_end, label_mod=5):
 
 #==============
 
-def generate_html(grid, axis_start, axis_end):
+def generate_html(grid, axis_start, axis_end, scale=1):
 	"""
 	Generate the complete HTML table code based on the grid.
 
@@ -289,7 +334,7 @@ def generate_html(grid, axis_start, axis_end):
 	html += write_axis_row_ticks_html(grid, axis_start, line_location="top")
 
 	# Add row for the axis labels
-	html += write_axis_row_labels_html(axis_start, axis_end)
+	html += write_axis_row_labels_html(axis_start, axis_end, scale=scale)
 
 	html += '</table>'
 	return html
@@ -332,7 +377,7 @@ def generate_boxplot_html(box_plot):
 		str: The generated HTML code for the box plot.
 	"""
 	# Create grid
-	grid = create_grid(box_plot.axis_start, box_plot.axis_end)
+	grid = create_grid(box_plot.axis_start, box_plot.axis_end, scale=box_plot.scale)
 
 	# Assign elements to the grid
 	grid = assign_elements(grid, box_plot)
@@ -341,7 +386,7 @@ def generate_boxplot_html(box_plot):
 	print_grid(grid, box_plot.axis_start)
 
 	# Generate the HTML for the box plot
-	html = generate_html(grid, box_plot.axis_start, box_plot.axis_end)
+	html = generate_html(grid, box_plot.axis_start, box_plot.axis_end, scale=box_plot.scale)
 
 	return html
 

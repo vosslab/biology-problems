@@ -8,7 +8,7 @@ import bptools
 import sugarlib
 
 
-def write_question(N, sugar_name, anomeric, ring_type):
+def write_question(N, sugar_name, anomeric, ring_type, sugar_codes_class):
 	"""
 	Creates a multiple-choice question for classifying a sugar based on its Haworth projection.
 	Args:
@@ -16,12 +16,13 @@ def write_question(N, sugar_name, anomeric, ring_type):
 		sugar_name (str): Name of the sugar to classify.
 		anomeric (str): Anomeric configuration ('alpha' or 'beta').
 	"""
-	sugar_codes_class = sugarlib.SugarCodes()
 	sugar_code = sugar_codes_class.sugar_name_to_code[sugar_name]
 	sugar_struct = sugarlib.SugarStructure(sugar_code)
 
 	# Generate Haworth projection diagram
 	haworth_projection_html_str = sugar_struct.Haworth_projection_html(ring=ring_type, anomeric=anomeric)
+	if haworth_projection_html_str is None:
+		return None
 
 	# HTML question introduction and instructions
 	question = (
@@ -133,8 +134,7 @@ def parse_arguments():
 
 #======================================
 #======================================
-def get_sugar_codes(ring_type):
-	sugar_codes_class = sugarlib.SugarCodes()
+def get_sugar_codes(ring_type, sugar_codes_class):
 	sugar_names_list = []
 	#rings need to have exactly one extra carbon off the end, so D/L can easily be determined.
 	# Furanose-forming sugars (both D/L types))
@@ -179,14 +179,15 @@ def main():
 	)
 	print(f'Writing to file: {outfile}')
 
-	sugar_names_list = get_sugar_codes(args.ring_type)
+	sugar_codes_class = sugarlib.SugarCodes()
+	sugar_names_list = get_sugar_codes(args.ring_type, sugar_codes_class)
 
 	# Open the output file and generate questions
 	with open(outfile, 'w') as f:
 		N = 1  # Question number counter
 		for anomeric in ('alpha', 'beta'):
 			for sugar_name in sugar_names_list:
-				complete_question = write_question(N, sugar_name, anomeric, args.ring_type)
+				complete_question = write_question(N, sugar_name, anomeric, args.ring_type, sugar_codes_class)
 				if complete_question is not None:
 					N += 1
 					f.write(complete_question)
@@ -200,4 +201,3 @@ if __name__ == '__main__':
 	main()
 
 ## THE END
-

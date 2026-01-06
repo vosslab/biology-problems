@@ -673,3 +673,31 @@
   as utilities instead: 
   [problems/inheritance-problems/pedigrees/pedigree_code_templates.py](problems/inheritance-problems/pedigrees/pedigree_code_templates.py),
   [problems/inheritance-problems/population_logistic_map_chaos.py](problems/inheritance-problems/population_logistic_map_chaos.py).
+- Updated biostatistics box plot generators to use Tukey hinges, allow ties, and
+  replace numeric nudges with misconception-based distractors:
+  [problems/biostatistics-problems/boxplot_from_sorted_data.py](problems/biostatistics-problems/boxplot_from_sorted_data.py),
+  [problems/biostatistics-problems/boxplot_from_unsorted_even.py](problems/biostatistics-problems/boxplot_from_unsorted_even.py),
+  [problems/biostatistics-problems/boxplot_from_summary.py](problems/biostatistics-problems/boxplot_from_summary.py),
+  [problems/biostatistics-problems/boxplot_from_cdf.py](problems/biostatistics-problems/boxplot_from_cdf.py).
+- Allowed nondecreasing summaries and fractional quartiles in box plot rendering:
+  [problems/biostatistics-problems/make_html_box_plot.py](problems/biostatistics-problems/make_html_box_plot.py).
+- Updated box plot tests for Tukey hinges, ties, and fractional quartiles:
+  [tests/libs/biostatistics/test_biostatistics_boxplots.py](tests/libs/biostatistics/test_biostatistics_boxplots.py).
+- Added shared box plot helpers to reduce duplication in biostatistics generators:
+  [problems/biostatistics-problems/box_plot_lib.py](problems/biostatistics-problems/box_plot_lib.py).
+- Added dedicated box plot library tests:
+  [tests/libs/biostatistics/test_box_plot_lib.py](tests/libs/biostatistics/test_box_plot_lib.py).
+- Updated carbohydrate sugar code loading to use the repo data directory helper:
+  [problems/biochemistry-problems/carbohydrates_classification/sugarlib.py](problems/biochemistry-problems/carbohydrates_classification/sugarlib.py).
+- Replaced sys.exit calls in Haworth projection generation with exceptions:
+  [problems/biochemistry-problems/carbohydrates_classification/sugarlib.py](problems/biochemistry-problems/carbohydrates_classification/sugarlib.py).
+- Reused a single SugarCodes instance per generator run to avoid repeated YAML loads:
+  [problems/biochemistry-problems/carbohydrates_classification/classify_Fischer.py](problems/biochemistry-problems/carbohydrates_classification/classify_Fischer.py),
+  [problems/biochemistry-problems/carbohydrates_classification/classify_Haworth.py](problems/biochemistry-problems/carbohydrates_classification/classify_Haworth.py).
+- Guarded Haworth projection generators against None returns from invalid ring sizes:
+  [problems/biochemistry-problems/carbohydrates_classification/classify_Haworth.py](problems/biochemistry-problems/carbohydrates_classification/classify_Haworth.py),
+  [problems/biochemistry-problems/carbohydrates_classification/convert_Haworth_to_Fischer.py](problems/biochemistry-problems/carbohydrates_classification/convert_Haworth_to_Fischer.py),
+  [problems/biochemistry-problems/carbohydrates_classification/convert_Fischer_to_Haworth.py](problems/biochemistry-problems/carbohydrates_classification/convert_Fischer_to_Haworth.py),
+  [problems/biochemistry-problems/carbohydrates_classification/D_to_L_Haworth_configuration.py](problems/biochemistry-problems/carbohydrates_classification/D_to_L_Haworth_configuration.py).
+- Fixed arabinose spelling in sugar code data:
+  [data/sugar_codes.yml](data/sugar_codes.yml).

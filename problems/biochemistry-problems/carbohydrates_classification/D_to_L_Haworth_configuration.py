@@ -34,6 +34,8 @@ def write_question(N, sugar_name, anomeric, sugar_codes_cls):
 	print("structure:", sugar_struct)
 
 	haworth = sugar_struct.Haworth_projection_html(ring=ring, anomeric=anomeric)
+	if haworth is None:
+		return None
 
 	question_text = ''
 	question_text += '<p>Above is a Haworth projection of the monosaccharide &{0};-{1}. '.format(anomeric, sugar_name)
@@ -83,6 +85,8 @@ def write_question(N, sugar_name, anomeric, sugar_codes_cls):
 	for s, a in choice_codes:
 		my_sugar_struct = sugarlib.SugarStructure(s)
 		my_haworth = my_sugar_struct.Haworth_projection_html(ring=ring, anomeric=a)
+		if my_haworth is None:
+			return None
 		html_choices_list.append(my_haworth)
 		if s == answer_code:
 			html_answer_text = my_haworth

@@ -19,14 +19,14 @@ ketotetroses:
 
 D-aldopentoses:
   ARRDM: D-ribose
-  ALRDM: D-arabinaose
+  ALRDM: D-arabinose
   ARLDM: D-xylose
   ALLDM: D-lyxose
 
 L-aldopentoses:
   ARRLM: L-lyxose
   ALRLM: L-xylose
-  ARLLM: L-arabinaose
+  ARLLM: L-arabinose
   ALLLM: L-ribose
 
 ketopentoses:

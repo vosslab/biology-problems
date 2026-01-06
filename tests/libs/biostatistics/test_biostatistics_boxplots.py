@@ -9,8 +9,8 @@ from lib_test_utils import import_from_repo_path
 def test_sorted_summary_rule():
 	mod = import_from_repo_path("problems/biostatistics-problems/boxplot_from_sorted_data.py")
 	data = list(range(1, 12))
-	summary = mod.five_number_summary_odd_exclusive_median(data)
-	assert summary == {"min": 1, "q1": 3, "median": 6, "q3": 9, "max": 11}
+	summary = mod.five_number_summary_tukey_hinges(data)
+	assert summary == {"min": 1, "q1": 3.5, "median": 6, "q3": 8.5, "max": 11}
 
 
 def test_sorted_build_dataset_positions():
@@ -37,17 +37,27 @@ def test_sorted_generate_choices_contains_answer():
 def test_unsorted_even_summary_rule():
 	mod = import_from_repo_path("problems/biostatistics-problems/boxplot_from_unsorted_even.py")
 	data = [1, 2, 3, 3, 4, 6, 6, 7, 8, 8, 9, 10]
-	summary = mod.five_number_summary_even_median_of_halves(data)
+	summary = mod.five_number_summary_tukey_hinges(data)
 	assert summary == {"min": 1, "q1": 3, "median": 6, "q3": 8, "max": 10}
 
 
-def test_unsorted_even_dataset_is_strict():
+def test_unsorted_even_dataset_has_tie():
 	mod = import_from_repo_path("problems/biostatistics-problems/boxplot_from_unsorted_even.py")
 	random.seed(1)
 	data = mod.generate_dataset_12_unsorted()
-	summary = mod.five_number_summary_even_median_of_halves(data)
-	assert mod.is_strict(summary)
+	summary = mod.five_number_summary_tukey_hinges(data)
+	assert mod.is_nondecreasing(summary)
+	assert mod.has_tie(summary)
 	assert len(data) == 12
+
+
+def test_unsorted_even_summary_can_be_fractional():
+	mod = import_from_repo_path("problems/biostatistics-problems/boxplot_from_unsorted_even.py")
+	data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+	summary = mod.five_number_summary_tukey_hinges(data)
+	assert summary["median"] == 6.5
+	assert summary["q1"] == 3.5
+	assert summary["q3"] == 9.5
 
 
 def test_summary_generate_choices_contains_answer():
@@ -86,13 +96,14 @@ def test_cdf_generate_problem_is_strict_and_sums_to_40():
 	assert rows[-1][1] == 40
 	assert summary["min"] == rows[0][0]
 	assert summary["max"] == rows[-1][0]
-	assert mod.is_strict(summary)
+	assert mod.is_nondecreasing(summary)
+	assert mod.has_tie(summary)
 
 
 def test_cdf_question_text_includes_ranks():
 	mod = import_from_repo_path("problems/biostatistics-problems/boxplot_from_cdf.py")
 	rows = mod.make_cdf_table_from_breaks([2, 4, 6], [10, 10, 20])
 	text = mod.get_question_text(rows)
-	assert "k = 10" in text
-	assert "k = 20" in text
-	assert "k = 30" in text
+	assert "k=10,11" in text
+	assert "k=20,21" in text
+	assert "k=30,31" in text

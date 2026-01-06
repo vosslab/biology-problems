@@ -84,6 +84,8 @@ def write_question(N, sugar_name, anomeric, ring_type, sugar_codes_cls):
 	for s,a in choice_codes:
 		my_sugar_struct = sugarlib.SugarStructure(s)
 		my_haworth = my_sugar_struct.Haworth_projection_html(ring=ring, anomeric=a)
+		if my_haworth is None:
+			return None
 		if s == answer_code and a == anomeric:
 			answer = my_haworth
 		choices_list.append(my_haworth)

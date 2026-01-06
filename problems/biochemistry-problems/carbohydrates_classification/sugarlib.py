@@ -1,7 +1,7 @@
 ### Library for crateing HTML tables of Sugar molecules
 
+import os
 import re
-import sys
 #import copy
 
 from qti_package_maker.common import yaml_tools
@@ -148,7 +148,7 @@ class SugarCodes(object):
 
 
 	#=======================
-	def load_sugar_code_dict_from_yaml(self, yaml_path: str="sugar_codes.yml") -> dict:
+	def load_sugar_code_dict_from_yaml(self, yaml_path: str | None = None) -> dict:
 		"""
 		Reads a grouped sugar code YAML file and returns a flat sugar_code_to_name dictionary.
 		Uses a custom YAML loader to detect duplicate keys.
@@ -159,6 +159,10 @@ class SugarCodes(object):
 		Returns:
 			dict: Flattened sugar code dictionary {code: name}
 		"""
+		if yaml_path is None:
+			yaml_path = bptools.get_repo_data_path("sugar_codes.yml")
+		elif not os.path.isabs(yaml_path):
+			yaml_path = bptools.get_repo_data_path(yaml_path)
 		grouped_dict = yaml_tools.read_yaml_file(yaml_path, msg=False)
 		flat_dict = {}
 		for group, group_mapping in grouped_dict.items():
@@ -590,8 +594,7 @@ class SugarStructure(object):
 		# ring = 'pyran' or 'furan'
 		if ring.startswith('oxet'):
 			# oxtane or 2H-oxete
-			print("sorry not implemented")
-			sys.exit(1)
+			raise NotImplementedError("Oxetose rings are not implemented yet.")
 		elif ring.startswith('furan'):
 			return self.Haworth_furanose_projection_html(anomeric)
 		elif ring.startswith('pyran'):
@@ -599,8 +602,8 @@ class SugarStructure(object):
 		elif ring.startswith('oxepin') or ring.startswith('septan'):
 			# oxepane or oxepine or oxepin, requires a heptose
 			# also called a septanose sugar
-			print("sorry not implemented")
-			sys.exit(1)
+			raise NotImplementedError("Oxepinose/septanose rings are not implemented yet.")
+		raise ValueError(f"Unsupported ring type: {ring}")
 
 	#============================
 	def flip_direction(self, text: str) -> str:
