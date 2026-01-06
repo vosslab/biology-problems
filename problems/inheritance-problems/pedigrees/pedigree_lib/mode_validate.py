@@ -5,6 +5,7 @@ import dataclasses
 
 # Local repo modules
 import code_definitions
+import genetic_validation
 import validation
 
 
@@ -299,7 +300,6 @@ def parse_pedigree_graph(code_string: str) -> tuple[dict[str, Individual], list[
 def validate_mode(
 	individuals: dict[str, Individual],
 	mode: str,
-	allow_de_novo: bool = False,
 	carriers_visible: bool = False,
 ) -> list[str]:
 	"""
@@ -308,7 +308,6 @@ def validate_mode(
 	Args:
 		individuals (dict[str, Individual]): Parsed individuals.
 		mode (str): Inheritance mode.
-		allow_de_novo (bool): Allow de novo events for AD.
 		carriers_visible (bool): Whether carrier state is explicitly shown.
 
 	Returns:
@@ -330,8 +329,6 @@ def validate_mode(
 				continue
 			father = individuals.get(ind.father_id, None)
 			mother = individuals.get(ind.mother_id, None)
-			if allow_de_novo:
-				continue
 			if father is None and mother is None:
 				continue
 			father_ok = father is not None and father.phenotype == 'affected'
@@ -390,10 +387,29 @@ def validate_mode(
 
 
 #===============================
+def validate_mode_keys(
+	individuals: dict[str, Individual],
+	couples: list[Couple],
+	mode: str,
+) -> list[str]:
+	"""
+	Validate key evidence patterns for specific inheritance modes.
+
+	Args:
+		individuals (dict[str, Individual]): Parsed individuals.
+		couples (list[Couple]): Parsed couples with children.
+		mode (str): Inheritance mode.
+
+	Returns:
+		list[str]: Validation errors.
+	"""
+	return genetic_validation.validate_mode_keys(individuals, couples, mode)
+
+
+#===============================
 def validate_mode_from_code(
 	code_string: str,
 	mode: str,
-	allow_de_novo: bool = False,
 	carriers_visible: bool | None = None,
 ) -> list[str]:
 	"""
@@ -402,7 +418,6 @@ def validate_mode_from_code(
 	Args:
 		code_string (str): Pedigree code string.
 		mode (str): Inheritance mode.
-		allow_de_novo (bool): Allow de novo events for AD.
 		carriers_visible (bool | None): Override carrier visibility detection.
 
 	Returns:
@@ -416,10 +431,24 @@ def validate_mode_from_code(
 	mode_errors = validate_mode(
 		individuals,
 		mode,
-		allow_de_novo=allow_de_novo,
 		carriers_visible=carrier_flag,
 	)
 	return mode_errors
+
+
+#===============================
+def validate_mode_keys_from_code(code_string: str, mode: str) -> list[str]:
+	"""
+	Validate key evidence patterns for a code string.
+
+	Args:
+		code_string (str): Pedigree code string.
+		mode (str): Inheritance mode.
+
+	Returns:
+		list[str]: Validation errors.
+	"""
+	return genetic_validation.validate_mode_keys_from_code(code_string, mode)
 
 
 #===============================

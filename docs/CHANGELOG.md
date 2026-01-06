@@ -8,6 +8,21 @@
 - Updated the bptools audit to treat python files under *lib/ directories as libraries.
 - Moved the pedigree layout smoke test into `tests/` and converted it to a pytest.
 - Reorganized pedigree helpers under `problems/inheritance-problems/pedigrees/pedigree_lib/` and updated imports, tests, and docs (including a `code_definitions.py` rename to avoid stdlib `code` conflicts).
+- Added a pedigree genetic validation module for autosomal dominant/recessive key-evidence checks (affected-parent/unaffected-child and unaffected-parent/affected-child patterns).
+- Added `genetic_assignment.py` to evaluate which inheritance modes (AD/AR/XLD/XLR/YL) are consistent with a pedigree graph spec.
+- In genetic assignment, explicit carrier statuses now constrain possible modes to recessive inheritance (AR/XLR).
+- Updated `cat_pedigree_lib.py` to import pedigree helpers from `pedigree_lib/` after the reorg.
+- Clarified in `PEDIGREE_SPEC_v1.md` that union partner tokens are bare IDs only (no sex/status tokens).
+- Clarified in `PEDIGREE_SPEC_v1.md` that each union must include a previously defined partner and that marry-ins are assumed unaffected with sex inferred.
+- Clarified in `PEDIGREE_SPEC_v1.md` that founder-descendant unions are allowed, founder-undefined unions are invalid, and unions may not introduce two undefined partners.
+- Removed de novo language from pedigree validation docs and APIs (AD now always requires an affected parent).
+- Tightened autosomal constraint propagation in `genetic_assignment.py` by pruning parents after updated child domains.
+- Reworked `genetic_assignment.py` to use tuple-based allele representations for autosomal and X-linked modes.
+- Added XLD/XLR/YL genetic constraint validators in `genetic_validation.py`.
+- Strengthened XLR/XLD constraint checks in `genetic_validation.py` when carriers are visible.
+- Added pytest coverage for `genetic_assignment.py` and `genetic_validation.py`.
+- Expanded `genetic_assignment.py` pytest coverage for carrier-visible, XLR, and Y-linked edge cases.
+- Added pytest coverage for additional X-linked and autosomal recessive edge cases in pedigree genetics validation.
 - Updated docs, tests, and index-builder tools after moving generators under `problems/` (including relocating `problems/multiple_choice_statements/`).
 - Added pytest coverage for `bptools.py` helpers and test harness setup (`tests/test_bptools.py`, `tests/conftest.py`).
 - Added focused pytest coverage for `bptools.applyReplacementRulesToText` / `bptools.applyReplacementRulesToList` and key helpers in `problems/multiple_choice_statements/yaml_to_pg.py`.

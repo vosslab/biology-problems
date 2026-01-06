@@ -103,7 +103,7 @@ Validation is intentionally layered.
 
 ### Genetics validation
 #### PedigreeGraph
-- Autosomal dominant: affected must have an affected parent unless de novo.
+- Autosomal dominant: affected must have an affected parent.
 - Autosomal recessive: affected implies both parents are carriers or affected.
 - X-linked recessive: no father-to-son. Affected females require affected father.
 - Y-linked: affected only in males. Affected fathers imply affected sons.

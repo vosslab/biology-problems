@@ -16,5 +16,5 @@ def test_pedigree_mode_validate_lib_roundtrip():
 	graph = pedigree_skeleton_lib.generate_basic_three_gen_graph(rng=rng)
 	pedigree_inheritance_lib.assign_phenotypes(graph, mode, rng=random.Random(3), show_carriers=True)
 	code = pedigree_graph_parse_lib.render_graph_to_code(graph, show_carriers=True)
-	errors = pedigree_mode_validate_lib.validate_mode_from_code(code, mode, allow_de_novo=True)
+	errors = pedigree_mode_validate_lib.validate_mode_from_code(code, mode)
 	assert errors == []
