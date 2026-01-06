@@ -1,15 +1,12 @@
 #!/usr/bin/env python3
 
-import os
-import sys
 import time
 import random
-import argparse
 
 import bptools
 import sugarlib
 
-def write_question(N, sugar_name, anomeric, ring_type, sugar_codes_cls):
+def write_question(N, sugar_name, anomeric, ring_type, sugar_codes_cls, num_choices):
 	sugar_code = sugar_codes_cls.sugar_name_to_code[sugar_name]
 	if len(sugar_code) == 5 and sugar_code[0] == 'A':
 		#aldo pentose
@@ -21,11 +18,10 @@ def write_question(N, sugar_name, anomeric, ring_type, sugar_codes_cls):
 		#aldo hexose
 		ring='pyran'
 	elif len(sugar_code) == 7 and sugar_code[0] == 'M':
-		#keto pentose
+		#keto heptose
 		ring='pyran'
 	else:
-		print(sugar_code)
-		sys.exit(1)
+		raise ValueError(f"Unsupported sugar code for ring selection: {sugar_code}")
 	if ring != ring_type:
 		raise ValueError("ring types do not match")
 
@@ -56,7 +52,7 @@ def write_question(N, sugar_name, anomeric, ring_type, sugar_codes_cls):
 
 	extra_choices = list(set(extra_choices))
 	random.shuffle(extra_choices)
-	while len(choice_codes) < 5:
+	while len(choice_codes) < num_choices:
 		choice_codes.append(extra_choices.pop(0))
 		random.shuffle(extra_choices)
 
@@ -64,8 +60,7 @@ def write_question(N, sugar_name, anomeric, ring_type, sugar_codes_cls):
 	choice_codes = list(set(choice_codes))
 	postlen = len(choice_codes)
 	if prelen != postlen:
-		print("Lost some choices {0} -> {1}".format(prelen, postlen))
-		sys.exit(1)
+		raise ValueError("Lost some choices {0} -> {1}".format(prelen, postlen))
 
 	full_quesiton = '<p>&{0};-{1}&xrarr;{1}</p> '.format(anomeric, sugar_name)
 	full_quesiton += haworth
@@ -84,32 +79,6 @@ def write_question(N, sugar_name, anomeric, ring_type, sugar_codes_cls):
 	bbformat = bptools.formatBB_MC_Question(N, full_quesiton, choices_list, answer)
 
 	return bbformat
-
-#======================================
-#======================================
-def parse_arguments():
-	"""
-	Parses command-line arguments for the script.
-	"""
-	parser = argparse.ArgumentParser(description="Generate questions.")
-
-	# Create a mutually exclusive group for question type and make it required
-	ring_group = parser.add_mutually_exclusive_group(required=True)
-	ring_group.add_argument(
-		'-t', '--type', dest='ring_type', type=str, choices=('pyran', 'furan'),
-		help='Set the ring type: pyran (pyranose) or furan (furanose)'
-	)
-	ring_group.add_argument(
-		'-p', '--pyran', '--pyranose', dest='ring_type', action='store_const', const='pyran',
-		help='Set ring type to pyran (pyranose)'
-	)
-	ring_group.add_argument(
-		'-f', '--furan', '--furanose', dest='ring_type', action='store_const', const='furan',
-		help='Set ring type to furan (furanose)'
-	)
-
-	args = parser.parse_args()
-	return args
 
 #======================================
 #======================================
@@ -142,38 +111,87 @@ def get_sugar_codes(ring_type, sugar_codes_cls):
 
 
 #======================================
+#======================================
+def write_question_batch(start_num: int, args) -> list:
+	questions = []
+	N = start_num
+	for anomeric in ('alpha', 'beta'):
+		for sugar_name in args.sugar_names_list:
+			complete_question = write_question(
+				N,
+				sugar_name,
+				anomeric,
+				args.ring_type,
+				args.sugar_codes_cls,
+				args.num_choices
+			)
+			if complete_question is None:
+				continue
+			questions.append(complete_question)
+			N += 1
+	return questions
+
+#======================================
+#======================================
+def parse_arguments():
+	"""
+	Parses command-line arguments for the script.
+	"""
+	parser = bptools.make_arg_parser(
+		description="Generate Haworth-to-Fischer conversion questions.",
+		batch=True
+	)
+	parser = bptools.add_choice_args(parser, default=5)
+	parser = bptools.add_hint_args(parser)
+	parser = bptools.add_question_format_args(
+		parser,
+		types_list=['mc'],
+		required=False,
+		default='mc'
+	)
+
+	# Create a mutually exclusive group for question type and make it required
+	ring_group = parser.add_mutually_exclusive_group(required=True)
+	ring_group.add_argument(
+		'-t', '--type', dest='ring_type', type=str, choices=('pyran', 'furan'),
+		help='Set the ring type: pyran (pyranose) or furan (furanose)'
+	)
+	ring_group.add_argument(
+		'-p', '--pyran', '--pyranose', dest='ring_type', action='store_const', const='pyran',
+		help='Set ring type to pyran (pyranose)'
+	)
+	ring_group.add_argument(
+		'-f', '--furan', '--furanose', dest='ring_type', action='store_const', const='furan',
+		help='Set ring type to furan (furanose)'
+	)
+
+	parser.set_defaults(duplicates=1)
+	args = parser.parse_args()
+	return args
+
+
+#======================================
 def main():
 	"""
 	Main function that orchestrates question generation and file output.
 	"""
 	args = parse_arguments()
-
-	# Define output file name
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
-	outfile = (
-		'bbq'
-		f'-{script_name}'
-		f'-{args.ring_type.upper()}'
-		'-questions.txt'
-	)
-	print(f'Writing to file: {outfile}')
-
 	sugar_codes_cls = sugarlib.SugarCodes()
 	sugar_names_list = get_sugar_codes(args.ring_type, sugar_codes_cls)
 
-	# Open the output file and generate questions
-	with open(outfile, 'w') as f:
-		N = 1  # Question number counter
-		for anomeric in ('alpha', 'beta'):
-			for sugar_name in sugar_names_list:
-				#content = makeQuestion(N, sugar_name, anomeric)
-				complete_question = write_question(N, sugar_name, anomeric, args.ring_type, sugar_codes_cls)
-				if complete_question is not None:
-					N += 1
-					f.write(complete_question)
+	args.sugar_codes_cls = sugar_codes_cls
+	args.sugar_names_list = sugar_names_list
 
-	# Display histogram if question type is multiple choice
-	bptools.print_histogram()
+	hint_mode = 'with_hint' if args.hint else 'no_hint'
+	outfile = bptools.make_outfile(
+		None,
+		args.question_type.upper(),
+		hint_mode,
+		args.ring_type.upper(),
+		f"{args.num_choices}_choices"
+	)
+	questions = bptools.collect_question_batches(write_question_batch, args)
+	bptools.write_questions_to_file(questions, outfile)
 
 
 #======================================

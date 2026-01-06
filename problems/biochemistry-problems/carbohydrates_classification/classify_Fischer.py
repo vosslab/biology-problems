@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-import os
-import argparse
-
 import bptools
 import sugarlib
 
@@ -93,19 +90,6 @@ def write_question(N, sugar_name, sugar_codes_class):
 
 	return complete_question
 
-#======================================
-#======================================
-def parse_arguments():
-	"""
-	Parses command-line arguments for the script.
-	"""
-	parser = argparse.ArgumentParser(description="Generate questions.")
-
-	args = parser.parse_args()
-	return args
-
-#======================================
-#======================================
 def get_sugar_codes(sugar_codes_class):
 	sugar_names_list = []
 	sugar_names_list += sugar_codes_class.get_sugar_names(4, 'D', None)
@@ -126,33 +110,59 @@ def get_sugar_codes(sugar_codes_class):
 
 #======================================
 #======================================
+def write_question_batch(start_num: int, args) -> list:
+	questions = []
+	N = start_num
+	for sugar_name in args.sugar_names_list:
+		complete_question = write_question(N, sugar_name, args.sugar_codes_class)
+		if complete_question is None:
+			continue
+		questions.append(complete_question)
+		N += 1
+	return questions
+
+#======================================
+#======================================
+def parse_arguments():
+	"""
+	Parses command-line arguments for the script.
+	"""
+	parser = bptools.make_arg_parser(
+		description="Generate Fischer classification questions.",
+		batch=True
+	)
+	parser = bptools.add_hint_args(parser)
+	parser = bptools.add_question_format_args(
+		parser,
+		types_list=['ma'],
+		required=False,
+		default='ma'
+	)
+	parser.set_defaults(duplicates=1)
+	args = parser.parse_args()
+	return args
+
+#======================================
+#======================================
 def main():
 	"""
 	Main function that orchestrates question generation and file output.
 	"""
-	# Define output file name
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
-	outfile = (
-		'bbq'
-		f'-{script_name}'
-		'-questions.txt'
-	)
-	print(f'Writing to file: {outfile}')
-
+	args = parse_arguments()
 	sugar_codes_class = sugarlib.SugarCodes()
 	sugar_names_list = get_sugar_codes(sugar_codes_class)
 
-	# Open the output file and generate questions
-	with open(outfile, 'w') as f:
-		N = 1  # Question number counter
-		for sugar_name in sugar_names_list:
-			complete_question = write_question(N, sugar_name, sugar_codes_class)
-			if complete_question is not None:
-				N += 1
-				f.write(complete_question)
+	args.sugar_codes_class = sugar_codes_class
+	args.sugar_names_list = sugar_names_list
 
-	# Display histogram if question type is multiple choice
-	bptools.print_histogram()
+	hint_mode = 'with_hint' if args.hint else 'no_hint'
+	outfile = bptools.make_outfile(
+		None,
+		args.question_type.upper(),
+		hint_mode
+	)
+	questions = bptools.collect_question_batches(write_question_batch, args)
+	bptools.write_questions_to_file(questions, outfile)
 
 #======================================
 #======================================

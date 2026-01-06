@@ -1,12 +1,7 @@
 #!/usr/bin/env python3
 
-import os
-import argparse
-
 import bptools
 import gene_map_class_lib as gmc
-
-debug = False
 
 #====================================
 def get_question_text():
@@ -23,43 +18,60 @@ def get_question_text():
 
 #====================================
 #====================================
-if __name__ == "__main__":
-	parser = argparse.ArgumentParser(description='Process some integers.')
-	parser.add_argument('-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='number of duplicate runs to do', default=1)
+def write_question(N: int, args) -> str:
+	# Gene Mapping Class
+	GMC = gmc.GeneMappingClass(2, N)
+	GMC.setup_question()
+	print(GMC.get_progeny_ascii_table())
+	header = GMC.get_question_header()
+	html_table = GMC.get_progeny_html_table()
+	phenotype_info_text = GMC.get_phenotype_info()
+
+	choices_list = ['cis', 'trans']
+	extra_choices = ['both', 'neither', 'cannot be determined']
+	choices_list += extra_choices[:3]
+	if '++' in GMC.parental_genotypes_tuple:
+		answer = 'cis'
+	else:
+		answer = 'trans'
+
+	question_string = get_question_text()
+	full_question = header + phenotype_info_text + html_table + question_string
+	final_question = bptools.formatBB_MC_Question(N, full_question, choices_list, answer)
+	return final_question
+
+#====================================
+#====================================
+def parse_arguments():
+	parser = bptools.make_arg_parser(
+		description="Generate two-point test cross cis/trans questions."
+	)
+	parser = bptools.add_hint_args(parser)
+	parser = bptools.add_question_format_args(
+		parser,
+		types_list=['mc'],
+		required=False,
+		default='mc'
+	)
+	parser.set_defaults(duplicates=1)
 	args = parser.parse_args()
+	return args
 
-	outfile = ('bbq-' + os.path.splitext(os.path.basename(__file__))[0]
-		+ '-questions.txt')
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	N = 0
-	for i in range(args.duplicates):
-		N += 1
+#====================================
+#====================================
+def main():
+	args = parse_arguments()
+	hint_mode = 'with_hint' if args.hint else 'no_hint'
+	outfile = bptools.make_outfile(
+		None,
+		args.question_type.upper(),
+		hint_mode
+	)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
-		# Gene Mapping Class
-		GMC = gmc.GeneMappingClass(2, N)
-		GMC.setup_question()
-		print(GMC.get_progeny_ascii_table())
-		header = GMC.get_question_header()
-		html_table = GMC.get_progeny_html_table()
-		phenotype_info_text = GMC.get_phenotype_info()
-
-		choices_list = ['cis', 'trans']
-		#old_choices = ['ortho', 'para', 'meta', 'anti', 'syn', 'cyclo', 'iso', 'tert', 'endo', 'exo']
-		extra_choices = ['both', 'neither', 'cannot be determined']
-		choices_list += extra_choices[:3]
-		if '++' in GMC.parental_genotypes_tuple:
-			answer = 'cis'
-		else:
-			answer = 'trans'
-
-		question_string = get_question_text()
-		full_question = header+phenotype_info_text+html_table+question_string
-		final_question = bptools.formatBB_MC_Question(N, full_question, choices_list, answer)
-
-		f.write(final_question)
-	f.close()
-	bptools.print_histogram()
+#====================================
+#====================================
+if __name__ == "__main__":
+	main()
 
 #THE END

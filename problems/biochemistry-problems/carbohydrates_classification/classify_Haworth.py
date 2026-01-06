@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
-import os
 import time
-import argparse
 
 import bptools
 import sugarlib
@@ -108,32 +106,6 @@ def write_question(N, sugar_name, anomeric, ring_type, sugar_codes_class):
 
 #======================================
 #======================================
-def parse_arguments():
-	"""
-	Parses command-line arguments for the script.
-	"""
-	parser = argparse.ArgumentParser(description="Generate questions.")
-
-	# Create a mutually exclusive group for question type and make it required
-	ring_group = parser.add_mutually_exclusive_group(required=True)
-	ring_group.add_argument(
-		'-t', '--type', dest='ring_type', type=str, choices=('pyran', 'furan'),
-		help='Set the ring type: pyran (pyranose) or furan (furanose)'
-	)
-	ring_group.add_argument(
-		'-p', '--pyran', '--pyranose', dest='ring_type', action='store_const', const='pyran',
-		help='Set ring type to pyran (pyranose)'
-	)
-	ring_group.add_argument(
-		'-f', '--furan', '--furanose', dest='ring_type', action='store_const', const='furan',
-		help='Set ring type to furan (furanose)'
-	)
-
-	args = parser.parse_args()
-	return args
-
-#======================================
-#======================================
 def get_sugar_codes(ring_type, sugar_codes_class):
 	sugar_names_list = []
 	#rings need to have exactly one extra carbon off the end, so D/L can easily be determined.
@@ -163,37 +135,83 @@ def get_sugar_codes(ring_type, sugar_codes_class):
 
 #======================================
 #======================================
+def write_question_batch(start_num: int, args) -> list:
+	questions = []
+	N = start_num
+	for anomeric in ('alpha', 'beta'):
+		for sugar_name in args.sugar_names_list:
+			complete_question = write_question(
+				N,
+				sugar_name,
+				anomeric,
+				args.ring_type,
+				args.sugar_codes_class
+			)
+			if complete_question is None:
+				continue
+			questions.append(complete_question)
+			N += 1
+	return questions
+
+#======================================
+#======================================
+def parse_arguments():
+	"""
+	Parses command-line arguments for the script.
+	"""
+	parser = bptools.make_arg_parser(
+		description="Generate Haworth classification questions.",
+		batch=True
+	)
+	parser = bptools.add_hint_args(parser)
+	parser = bptools.add_question_format_args(
+		parser,
+		types_list=['ma'],
+		required=False,
+		default='ma'
+	)
+
+	# Create a mutually exclusive group for question type and make it required
+	ring_group = parser.add_mutually_exclusive_group(required=True)
+	ring_group.add_argument(
+		'-t', '--type', dest='ring_type', type=str, choices=('pyran', 'furan'),
+		help='Set the ring type: pyran (pyranose) or furan (furanose)'
+	)
+	ring_group.add_argument(
+		'-p', '--pyran', '--pyranose', dest='ring_type', action='store_const', const='pyran',
+		help='Set ring type to pyran (pyranose)'
+	)
+	ring_group.add_argument(
+		'-f', '--furan', '--furanose', dest='ring_type', action='store_const', const='furan',
+		help='Set ring type to furan (furanose)'
+	)
+
+	parser.set_defaults(duplicates=1)
+	args = parser.parse_args()
+	return args
+
+#======================================
+#======================================
 def main():
 	"""
 	Main function that orchestrates question generation and file output.
 	"""
 	args = parse_arguments()
-
-	# Define output file name
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
-	outfile = (
-		'bbq'
-		f'-{script_name}'
-		f'-{args.ring_type.upper()}'
-		'-questions.txt'
-	)
-	print(f'Writing to file: {outfile}')
-
 	sugar_codes_class = sugarlib.SugarCodes()
 	sugar_names_list = get_sugar_codes(args.ring_type, sugar_codes_class)
 
-	# Open the output file and generate questions
-	with open(outfile, 'w') as f:
-		N = 1  # Question number counter
-		for anomeric in ('alpha', 'beta'):
-			for sugar_name in sugar_names_list:
-				complete_question = write_question(N, sugar_name, anomeric, args.ring_type, sugar_codes_class)
-				if complete_question is not None:
-					N += 1
-					f.write(complete_question)
+	args.sugar_codes_class = sugar_codes_class
+	args.sugar_names_list = sugar_names_list
 
-	# Display histogram if question type is multiple choice
-	bptools.print_histogram()
+	hint_mode = 'with_hint' if args.hint else 'no_hint'
+	outfile = bptools.make_outfile(
+		None,
+		args.question_type.upper(),
+		hint_mode,
+		args.ring_type.upper()
+	)
+	questions = bptools.collect_question_batches(write_question_batch, args)
+	bptools.write_questions_to_file(questions, outfile)
 
 #======================================
 #======================================

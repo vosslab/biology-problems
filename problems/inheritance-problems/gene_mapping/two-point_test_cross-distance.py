@@ -1,16 +1,8 @@
 #!/usr/bin/env python3
 
-
-# Standard Library
-import os
-import sys
-import argparse
-
 # Local repo modules
 import bptools
 import gene_map_class_lib as gmc
-
-debug = False
 
 #===========================
 def get_question_text(question_type):
@@ -51,67 +43,54 @@ def parse_arguments():
 	Returns:
 		Namespace: Parsed arguments with attributes `question_type` and `duplicates`.
 	"""
-	parser = argparse.ArgumentParser(description='Process some integers.')
-	question_group = parser.add_mutually_exclusive_group(required=True)
-
-	# Add question type argument with choices
-	question_group.add_argument(
-		'-t', '--type', dest='question_type', type=str, choices=('num', 'mc'),
-		help='Set the question type: num (numeric) or mc (multiple choice)'
+	parser = bptools.make_arg_parser(
+		description="Generate two-point test cross distance questions."
 	)
-	question_group.add_argument(
-		'-m', '--mc', dest='question_type', action='store_const', const='mc',
-		help='Set question type to multiple choice'
+	parser = bptools.add_choice_args(parser, default=6)
+	parser = bptools.add_hint_args(parser)
+	parser = bptools.add_question_format_args(
+		parser,
+		types_list=['mc', 'num'],
+		required=True
 	)
-	question_group.add_argument(
-		'-n', '--num', dest='question_type', action='store_const', const='num',
-		help='Set question type to numeric'
-	)
-
-	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='Number of duplicate runs to do', default=1
-	)
-
+	parser.set_defaults(duplicates=1)
 	return parser.parse_args()
 
 #===========================
-def generate_question(N: int, question_type: str) -> str:
+def generate_question(N: int, args) -> str:
 	"""
 	Generates a formatted question string based on the type.
 
 	Args:
 		N (int): Question number.
-		question_type (str): Type of question ('num' or 'mc').
+		args (argparse.Namespace): Parsed arguments with question settings.
 
 	Returns:
 		str: The formatted question string ready to be written to the file.
 	"""
 	# Initialize Gene Mapping Class instance
 	GMC = gmc.GeneMappingClass(2, N)
-	GMC.debug = debug
-	GMC.question_type = question_type
+	GMC.question_type = args.question_type
 	GMC.setup_question()
 
 	# Retrieve question data
 	header = GMC.get_question_header()
 	phenotype_info_text = GMC.get_phenotype_info()
 	html_table = GMC.get_progeny_html_table()
-	question_string = get_question_text(question_type)
+	question_string = get_question_text(args.question_type)
 
 	# Assemble full question content
 	full_question = header + phenotype_info_text + html_table + question_string
 
 	# Format question based on type
-	if question_type == 'num':
+	if args.question_type == 'num':
 		distance = GMC.distances_dict[(1, 2)]
 		return bptools.formatBB_NUM_Question(N, full_question, distance, 0.1, tol_message=False)
-	elif question_type == 'mc':
-		choices_list, answer_text = GMC.make_choices()
+	elif args.question_type == 'mc':
+		choices_list, answer_text = GMC.make_choices(num_choices=args.num_choices)
 		return bptools.formatBB_MC_Question(N, full_question, choices_list, answer_text)
 	else:
-		print("Error: Invalid question type in generate_question.")
-		sys.exit(1)
+		raise ValueError("Error: Invalid question type in generate_question.")
 
 #===========================
 def main():
@@ -120,19 +99,15 @@ def main():
 	"""
 	args = parse_arguments()
 
-	# Setup output file
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
-	outfile =  f'bbq-{script_name}-{args.question_type.upper()}-questions.txt'
-	print(f'Writing to file: {outfile}')
-
-	# Open file and write questions
-	with open(outfile, 'w') as f:
-		for i in range(args.duplicates):
-			N = i + 1  # Question number
-			final_question = generate_question(N, args.question_type)
-			f.write(final_question)
-	if args.question_type == "mc":
-		bptools.print_histogram()
+	hint_mode = 'with_hint' if args.hint else 'no_hint'
+	suffix = f"{args.num_choices}_choices" if args.question_type == "mc" else None
+	outfile = bptools.make_outfile(
+		None,
+		args.question_type.upper(),
+		hint_mode,
+		suffix
+	)
+	bptools.collect_and_write_questions(generate_question, args, outfile)
 
 if __name__ == "__main__":
 	main()

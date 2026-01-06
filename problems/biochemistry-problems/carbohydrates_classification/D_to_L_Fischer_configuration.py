@@ -1,27 +1,17 @@
 #!/usr/bin/env python3
 
-import os
 import random
-import argparse
+
 import bptools
 import sugarlib
 
-#!/usr/bin/env python3
-
-def write_question(N, d_sugar_name, sugar_codes_cls):
-	print("\n\n")
+def write_question(N, d_sugar_name, sugar_codes_cls, num_choices):
 	d_sugar_code = sugar_codes_cls.sugar_name_to_code[d_sugar_name]
 	d_sugar_structure = sugarlib.SugarStructure(d_sugar_code)
-
-	print("d_name:", d_sugar_name)
-	print("d_length:", len(d_sugar_code))
-	print("d_code:", d_sugar_code)
-	print("d_structure:", d_sugar_structure.structural_part_txt())
 	fischer_html = d_sugar_structure.Fischer_projection_html()
 
 	# Build the question prompt
 	L_sugar_name = d_sugar_name.replace('D-', 'L-')
-	print("L_name:", L_sugar_name)
 	question_text = ''
 	question_text += f'<p>Above is a Fischer projection of the monosaccharide {d_sugar_name}. '
 	question_text += f'Which one of the following Fischer projections is of the monosaccharide {L_sugar_name}?</p> '
@@ -29,8 +19,6 @@ def write_question(N, d_sugar_name, sugar_codes_cls):
 	# Get correct answer
 	L_sugar_code = sugar_codes_cls.get_enantiomer_code_from_code(d_sugar_code)
 	correct_answer_code = L_sugar_code
-	print("L_code:", L_sugar_code)
-	print("L_length:", len(L_sugar_code))
 	if len(d_sugar_code) != len(L_sugar_code):
 		raise ValueError("L and D sugars are different lengths")
 
@@ -54,7 +42,7 @@ def write_question(N, d_sugar_name, sugar_codes_cls):
 	all_distractor_codes = list(set(all_distractor_codes))
 	random.shuffle(all_distractor_codes)
 
-	while len(choice_codes) < 5:
+	while len(choice_codes) < num_choices:
 		choice_codes.append(all_distractor_codes.pop(0))
 		random.shuffle(all_distractor_codes)
 
@@ -142,19 +130,6 @@ def write_question2(N, sugar_name):
 	)
 	return complete_question
 
-#======================================
-#======================================
-def parse_arguments():
-	"""
-	Parses command-line arguments for the script.
-	"""
-	parser = argparse.ArgumentParser(description="Generate questions.")
-
-	args = parser.parse_args()
-	return args
-
-#======================================
-#======================================
 def get_sugar_codes(sugar_codes_cls):
 	sugar_names_list = []
 	sugar_names_list += sugar_codes_cls.get_sugar_names(5, configuration='D', types='aldo')
@@ -172,32 +147,58 @@ def get_sugar_codes(sugar_codes_cls):
 
 #======================================
 #======================================
-def main():
+def write_question_batch(start_num: int, args) -> list:
+	questions = []
+	N = start_num
+	for sugar_name in args.sugar_names_list:
+		complete_question = write_question(N, sugar_name, args.sugar_codes_cls, args.num_choices)
+		if complete_question is None:
+			continue
+		questions.append(complete_question)
+		N += 1
+	return questions
 
-	# Define output file name
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
-	outfile = (
-		'bbq'
-		f'-{script_name}'
-		'-questions.txt'
+#======================================
+#======================================
+def parse_arguments():
+	"""
+	Parses command-line arguments for the script.
+	"""
+	parser = bptools.make_arg_parser(
+		description="Generate D/L Fischer configuration questions.",
+		batch=True
 	)
-	print(f'Writing to file: {outfile}')
+	parser = bptools.add_choice_args(parser, default=5)
+	parser = bptools.add_hint_args(parser)
+	parser = bptools.add_question_format_args(
+		parser,
+		types_list=['mc'],
+		required=False,
+		default='mc'
+	)
+	parser.set_defaults(duplicates=1)
+	args = parser.parse_args()
+	return args
 
+#======================================
+#======================================
+def main():
+	args = parse_arguments()
 	sugar_codes_cls = sugarlib.SugarCodes()
-
 	sugar_names_list = get_sugar_codes(sugar_codes_cls)
 
-	# Open the output file and generate questions
-	with open(outfile, 'w') as f:
-		N = 1  # Question number counter
-		for sugar_name in sugar_names_list:
-			complete_question = write_question(N, sugar_name, sugar_codes_cls)
-			if complete_question is not None:
-				N += 1
-				f.write(complete_question)
+	args.sugar_codes_cls = sugar_codes_cls
+	args.sugar_names_list = sugar_names_list
 
-	# Display histogram if question type is multiple choice
-	bptools.print_histogram()
+	hint_mode = 'with_hint' if args.hint else 'no_hint'
+	outfile = bptools.make_outfile(
+		None,
+		args.question_type.upper(),
+		hint_mode,
+		f"{args.num_choices}_choices"
+	)
+	questions = bptools.collect_question_batches(write_question_batch, args)
+	bptools.write_questions_to_file(questions, outfile)
 
 #======================================
 #======================================

@@ -701,3 +701,24 @@
   [problems/biochemistry-problems/carbohydrates_classification/D_to_L_Haworth_configuration.py](problems/biochemistry-problems/carbohydrates_classification/D_to_L_Haworth_configuration.py).
 - Fixed arabinose spelling in sugar code data:
   [data/sugar_codes.yml](data/sugar_codes.yml).
+- Migrated carbohydrate classification generators to the standard question framework:
+  [problems/biochemistry-problems/carbohydrates_classification/D_to_L_Fischer_configuration.py](problems/biochemistry-problems/carbohydrates_classification/D_to_L_Fischer_configuration.py),
+  [problems/biochemistry-problems/carbohydrates_classification/D_to_L_Haworth_configuration.py](problems/biochemistry-problems/carbohydrates_classification/D_to_L_Haworth_configuration.py),
+  [problems/biochemistry-problems/carbohydrates_classification/classify_Fischer.py](problems/biochemistry-problems/carbohydrates_classification/classify_Fischer.py),
+  [problems/biochemistry-problems/carbohydrates_classification/classify_Haworth.py](problems/biochemistry-problems/carbohydrates_classification/classify_Haworth.py).
+- Dropped CLI choice-count overrides for fixed-choice carbohydrate classification items:
+  [problems/biochemistry-problems/carbohydrates_classification/classify_Fischer.py](problems/biochemistry-problems/carbohydrates_classification/classify_Fischer.py),
+  [problems/biochemistry-problems/carbohydrates_classification/classify_Haworth.py](problems/biochemistry-problems/carbohydrates_classification/classify_Haworth.py).
+- Added coverage for SugarCodes filters, enantiomer mapping, flip behavior, and formula output:
+  [tests/libs/test_biochemistry_sugarlib.py](tests/libs/test_biochemistry_sugarlib.py).
+- Fixed ketoheptose comment in Haworth ring selection logic:
+  [problems/biochemistry-problems/carbohydrates_classification/D_to_L_Haworth_configuration.py](problems/biochemistry-problems/carbohydrates_classification/D_to_L_Haworth_configuration.py),
+  [problems/biochemistry-problems/carbohydrates_classification/convert_Haworth_to_Fischer.py](problems/biochemistry-problems/carbohydrates_classification/convert_Haworth_to_Fischer.py),
+  [problems/biochemistry-problems/carbohydrates_classification/convert_Fischer_to_Haworth.py](problems/biochemistry-problems/carbohydrates_classification/convert_Fischer_to_Haworth.py).
+- Migrated Haworth/Fischer conversion generators to the standard question framework:
+  [problems/biochemistry-problems/carbohydrates_classification/convert_Haworth_to_Fischer.py](problems/biochemistry-problems/carbohydrates_classification/convert_Haworth_to_Fischer.py),
+  [problems/biochemistry-problems/carbohydrates_classification/convert_Fischer_to_Haworth.py](problems/biochemistry-problems/carbohydrates_classification/convert_Fischer_to_Haworth.py).
+- Migrated two-point test cross gene mapping generators to the standard question framework:
+  [problems/inheritance-problems/gene_mapping/two-point_test_cross-cis-trans.py](problems/inheritance-problems/gene_mapping/two-point_test_cross-cis-trans.py),
+  [problems/inheritance-problems/gene_mapping/two-point_test_cross-distance.py](problems/inheritance-problems/gene_mapping/two-point_test_cross-distance.py),
+  [problems/inheritance-problems/gene_mapping/two-point_test_cross-which_genotypes.py](problems/inheritance-problems/gene_mapping/two-point_test_cross-which_genotypes.py).
