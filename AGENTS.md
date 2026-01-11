@@ -34,6 +34,7 @@ Generated artifacts (do not commit): `bbq-*.txt`, `qti*.zip`, `selftest-*.html` 
 - There is no repo-wide unit test runner. Validate changes by:
   - Running the modified script(s) and sanity-checking the generated output formatting.
   - Adding small `assert` checks for pure helper functions where appropriate.
+- For student assessments, prefer true randomness in scenario selection (or a well-mixed PRNG-based selection) over deterministic round-robin/modulo cycling, since predictable sequences make cheating easier; use deterministic selection primarily for debugging, reproducibility, or unit tests.
 
 ## Commit & Pull Request Guidelines
 
