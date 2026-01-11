@@ -226,23 +226,22 @@ def _slot_to_col(slot: int, col_shift: int) -> int:
 
 
 #===============================
-def _compute_col_shift(graph: PedigreeGraph, min_slot: int, max_slot: int) -> int:
-	top_couples = [c for c in graph.couples if c.generation == 1]
-	if not top_couples:
-		return 0
-	top_couples.sort(key=lambda couple: couple.id)
-	top_couple = top_couples[0]
-	partner_a = graph.individuals[top_couple.partner_a]
-	partner_b = graph.individuals[top_couple.partner_b]
-	top_mid_col = ((partner_a.slot or 0) + (partner_b.slot or 0)) // 2
-	col_min = min_slot
-	col_max = max_slot
-	current_center = (col_min + col_max) // 2
-	col_shift = current_center - top_mid_col
-	min_shifted = col_min + col_shift
-	if min_shifted < 0:
-		col_shift += -min_shifted
-	return col_shift
+def _compute_col_shift(min_slot: int) -> int:
+	"""Compute column shift to ensure non-negative column indices.
+
+	The slot assignment in _assign_slots() already correctly positions parents
+	centered above their children. This function only needs to shift everything
+	right if there are negative slot values, to ensure valid array indices.
+
+	Args:
+		min_slot: The minimum slot value in the graph.
+
+	Returns:
+		Shift amount to add to all slots to get column indices.
+	"""
+	if min_slot < 0:
+		return -min_slot
+	return 0
 
 
 #===============================
@@ -268,7 +267,7 @@ def render_graph_to_code(graph: PedigreeGraph, show_carriers: bool = False) -> s
 	_assign_slots(graph)
 	min_slot = min(ind.slot for ind in graph.individuals.values() if ind.slot is not None)
 	max_slot = max(ind.slot for ind in graph.individuals.values() if ind.slot is not None)
-	col_shift = _compute_col_shift(graph, min_slot, max_slot)
+	col_shift = _compute_col_shift(min_slot)
 	num_rows = graph.generations * 2 - 1
 	num_cols = max(3, max_slot + col_shift + 1)
 
@@ -566,6 +565,160 @@ def compile_graph_spec_to_code(spec_string: str, show_carriers: bool = True) -> 
 	graph = parse_graph_spec_to_graph(spec_string)
 	code_string = render_graph_to_code(graph, show_carriers=show_carriers)
 	return code_string
+
+
+#===============================
+# Layout Validation Functions
+#===============================
+
+
+def validate_parents_centered_above_children(graph: PedigreeGraph, tolerance: int = 1) -> list[str]:
+	"""Validate that each couple is horizontally centered above their children.
+
+	Args:
+		graph: PedigreeGraph with slots already assigned.
+		tolerance: Maximum allowed deviation from perfect centering (in slots).
+
+	Returns:
+		List of error messages (empty if valid).
+	"""
+	errors: list[str] = []
+
+	for couple in graph.couples:
+		if not couple.children:
+			continue
+
+		partner_a = graph.individuals[couple.partner_a]
+		partner_b = graph.individuals[couple.partner_b]
+
+		if partner_a.slot is None or partner_b.slot is None:
+			errors.append(f"Couple {couple.id}: partners have no slot assigned")
+			continue
+
+		parent_mid = (partner_a.slot + partner_b.slot) / 2.0
+
+		child_slots = []
+		for child_id in couple.children:
+			child = graph.individuals[child_id]
+			if child.slot is not None:
+				child_slots.append(child.slot)
+
+		if not child_slots:
+			errors.append(f"Couple {couple.id}: no children have slots assigned")
+			continue
+
+		children_mid = (min(child_slots) + max(child_slots)) / 2.0
+		deviation = abs(parent_mid - children_mid)
+
+		if deviation > tolerance:
+			errors.append(
+				f"Couple {couple.id}: parents at {parent_mid:.1f}, children span "
+				f"{min(child_slots)}-{max(child_slots)} (mid={children_mid:.1f}), "
+				f"deviation={deviation:.1f} exceeds tolerance={tolerance}"
+			)
+
+	return errors
+
+
+def validate_no_negative_slots(graph: PedigreeGraph) -> list[str]:
+	"""Validate that no individual has a negative slot value.
+
+	Args:
+		graph: PedigreeGraph with slots already assigned.
+
+	Returns:
+		List of error messages (empty if valid).
+	"""
+	errors: list[str] = []
+
+	for ind_id, ind in graph.individuals.items():
+		if ind.slot is not None and ind.slot < 0:
+			errors.append(f"Individual {ind_id}: negative slot {ind.slot}")
+
+	return errors
+
+
+def validate_no_slot_collisions(graph: PedigreeGraph) -> list[str]:
+	"""Validate that no two individuals in the same generation share a slot.
+
+	Args:
+		graph: PedigreeGraph with slots already assigned.
+
+	Returns:
+		List of error messages (empty if valid).
+	"""
+	errors: list[str] = []
+
+	gen_slots: dict[int, dict[int, list[str]]] = {}
+	for ind_id, ind in graph.individuals.items():
+		if ind.slot is None:
+			continue
+		if ind.generation not in gen_slots:
+			gen_slots[ind.generation] = {}
+		if ind.slot not in gen_slots[ind.generation]:
+			gen_slots[ind.generation][ind.slot] = []
+		gen_slots[ind.generation][ind.slot].append(ind_id)
+
+	for gen, slots in gen_slots.items():
+		for slot, ids in slots.items():
+			if len(ids) > 1:
+				errors.append(
+					f"Generation {gen}, slot {slot}: collision between {', '.join(ids)}"
+				)
+
+	return errors
+
+
+def validate_layout(graph: PedigreeGraph, tolerance: int = 1) -> list[str]:
+	"""Run all layout validations on a graph.
+
+	Args:
+		graph: PedigreeGraph with slots already assigned.
+		tolerance: Centering tolerance for parent-child alignment.
+
+	Returns:
+		List of all error messages (empty if valid).
+	"""
+	errors: list[str] = []
+	errors.extend(validate_no_negative_slots(graph))
+	errors.extend(validate_no_slot_collisions(graph))
+	errors.extend(validate_parents_centered_above_children(graph, tolerance))
+	return errors
+
+
+def validate_code_layout(code_string: str) -> list[str]:
+	"""Validate layout properties of a rendered pedigree code string.
+
+	Checks that the founding couple is not pushed to the far left edge
+	when children extend significantly to the right.
+
+	Args:
+		code_string: Pedigree code string.
+
+	Returns:
+		List of error messages (empty if valid).
+	"""
+	errors: list[str] = []
+	lines = code_string.split('%')
+
+	if not lines:
+		return errors
+
+	first_row = lines[0]
+	first_content_col = len(first_row) - len(first_row.lstrip('.'))
+
+	max_width = max(len(line.rstrip('.')) for line in lines)
+
+	if max_width > 6 and first_content_col == 0:
+		last_row = lines[-1] if lines else ''
+		last_content_end = len(last_row.rstrip('.'))
+		if last_content_end > first_content_col + 4:
+			errors.append(
+				f"Founding couple at column 0 but pedigree extends to column {max_width-1}; "
+				f"couple may not be centered above descendants"
+			)
+
+	return errors
 
 
 #===============================

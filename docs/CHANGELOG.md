@@ -167,6 +167,8 @@
 - Cross-linked `problems/matching_sets/MATCHING_SET_AUTHORING_GUIDE.md` and `problems/multiple_choice_statements/MC_STATEMENTS_AUTHORING_GUIDE.md` with guidance on when each question-bank format is a better fit.
 - Added descriptive, jargon-free filename convention guidance (for example `senses_<topic>.yml`) to both authoring guides.
 - Added a helper script with `git mv` commands to reorganize matching-set YAML banks into subject folders: `tools/sort_matching_sets_by_subject.sh`.
+- Added a helper script with `git mv` commands to reorganize MC-statement YAML banks into subject folders: `tools/sort_mc_statements_by_subject.sh`.
+- Moved the BBQ cleanup helper to `tools/remove_all_bbq_files.sh` and updated it to search from the git repo root.
 
 ## 2026-01-04
 - Added a cytogenetic band-order question generator in

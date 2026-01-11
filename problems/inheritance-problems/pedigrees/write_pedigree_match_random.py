@@ -39,6 +39,13 @@ INHERITANCE_MODES = [
 ]
 
 #=======================
+def count_individuals(code_string: str) -> int:
+	"""Count the number of individuals in a pedigree code string."""
+	individuals, _, _ = mode_validate.parse_pedigree_graph(code_string)
+	return len(individuals)
+
+
+#=======================
 def generate_valid_pedigree(
 	mode: str,
 	generations: int = 3,
@@ -46,6 +53,8 @@ def generate_valid_pedigree(
 	max_children: int = 4,
 	max_attempts: int = 100,
 	show_carriers: bool = False,
+	min_individuals: int | None = None,
+	max_individuals: int | None = None,
 ) -> str | None:
 	"""
 	Generate a random pedigree code string that is valid for the given mode.
@@ -57,6 +66,8 @@ def generate_valid_pedigree(
 		max_children (int): Maximum children per couple (default 4).
 		max_attempts (int): Maximum generation attempts before giving up.
 		show_carriers (bool): Whether to show carrier status (for AR, XR).
+		min_individuals (int | None): Minimum number of individuals (optional).
+		max_individuals (int | None): Maximum number of individuals (optional).
 
 	Returns:
 		str | None: Valid pedigree code string, or None if generation failed.
@@ -93,6 +104,13 @@ def generate_valid_pedigree(
 			# Parse to get individual counts
 			individuals, couples, _ = mode_validate.parse_pedigree_graph(code_string)
 
+			# Check individual count constraints
+			num_individuals = len(individuals)
+			if min_individuals is not None and num_individuals < min_individuals:
+				continue
+			if max_individuals is not None and num_individuals > max_individuals:
+				continue
+
 			# Check minimum affected count (at least 1 for most modes)
 			affected_count = sum(1 for ind in individuals.values() if ind.phenotype == 'affected')
 			if affected_count < 1:
@@ -116,30 +134,60 @@ def generate_valid_pedigree(
 def generate_pedigree_set(
 	generations: int = 3,
 	show_carriers: bool = False,
+	min_individuals: int = 8,
+	max_individuals: int = 14,
+	max_size_spread: int = 4,
+	max_set_attempts: int = 20,
 ) -> dict[str, str] | None:
 	"""
-	Generate a complete set of pedigrees, one for each inheritance mode.
+	Generate a complete set of pedigrees with similar complexity.
+
+	All pedigrees in the set will have individual counts within a constrained
+	range to ensure fair comparison in matching questions.
 
 	Args:
 		generations (int): Number of generations per pedigree.
 		show_carriers (bool): Whether to show carrier status.
+		min_individuals (int): Minimum individuals per pedigree (default 8).
+		max_individuals (int): Maximum individuals per pedigree (default 14).
+		max_size_spread (int): Maximum difference between largest and smallest
+			pedigree in the set (default 4).
+		max_set_attempts (int): Maximum attempts to generate a balanced set.
 
 	Returns:
 		dict[str, str] | None: Mapping of mode to code string, or None if failed.
 	"""
-	pedigrees: dict[str, str] = {}
+	for _ in range(max_set_attempts):
+		pedigrees: dict[str, str] = {}
+		sizes: dict[str, int] = {}
 
-	for mode in INHERITANCE_MODES:
-		code_string = generate_valid_pedigree(
-			mode=mode,
-			generations=generations,
-			show_carriers=show_carriers,
-		)
-		if code_string is None:
-			return None
-		pedigrees[mode] = code_string
+		# Generate a pedigree for each mode within the size constraints
+		for mode in INHERITANCE_MODES:
+			code_string = generate_valid_pedigree(
+				mode=mode,
+				generations=generations,
+				show_carriers=show_carriers,
+				min_individuals=min_individuals,
+				max_individuals=max_individuals,
+			)
+			if code_string is None:
+				break  # Failed to generate for this mode, retry whole set
+			pedigrees[mode] = code_string
+			sizes[mode] = count_individuals(code_string)
 
-	return pedigrees
+		# Check if we got all modes
+		if len(pedigrees) != len(INHERITANCE_MODES):
+			continue
+
+		# Check if the size spread is acceptable
+		size_values = list(sizes.values())
+		spread = max(size_values) - min(size_values)
+		if spread <= max_size_spread:
+			return pedigrees
+
+		# Size spread too large, try again
+
+	return None
 
 
 #=======================
