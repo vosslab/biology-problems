@@ -130,6 +130,9 @@ def mirror_pedigree(code_string: str) -> str:
 	"""
 	Mirror a pedigree code string horizontally.
 
+	Rows are first padded to equal length before mirroring to preserve
+	vertical alignment of connectors.
+
 	Args:
 		code_string (str): Pedigree code string.
 
@@ -137,8 +140,14 @@ def mirror_pedigree(code_string: str) -> str:
 		str: Mirrored code string.
 	"""
 	code_lines = code_string.split('%')
+
+	# Pad all rows to the same length before mirroring
+	# This preserves vertical alignment of connectors
+	max_len = max(len(line) for line in code_lines) if code_lines else 0
+	padded_lines = [line.ljust(max_len, '.') for line in code_lines]
+
 	mirror_code_lines = []
-	for code_line in code_lines:
+	for code_line in padded_lines:
 		mirror_code_line = code_line[::-1]
 		# u <-> L
 		mirror_code_line = mirror_code_line.replace('u', '@')
@@ -148,6 +157,11 @@ def mirror_pedigree(code_string: str) -> str:
 		mirror_code_line = mirror_code_line.replace('r', '@')
 		mirror_code_line = mirror_code_line.replace('d', 'r')
 		mirror_code_line = mirror_code_line.replace('@', 'd')
+
+		# Strip trailing dots to match original format
+		mirror_code_line = mirror_code_line.rstrip('.')
+		if not mirror_code_line:
+			mirror_code_line = '.'
 
 		mirror_code_lines.append(mirror_code_line)
 	mirror_code_string = '%'.join(mirror_code_lines)
