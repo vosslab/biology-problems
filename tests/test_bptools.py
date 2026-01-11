@@ -9,34 +9,114 @@ import bptools
 
 def test_make_outfile_includes_script_and_parts():
 	old_argv = list(sys.argv)
+	main_mod = sys.modules.get("__main__")
+	old_main_file = getattr(main_mod, "__file__", None)
 	try:
 		sys.argv[0] = "/tmp/my_script.py"
+		if main_mod is not None:
+			main_mod.__file__ = None
 		outfile = bptools.make_outfile("mc", 5, None, "")
 		assert outfile == "bbq-my_script-mc-5-questions.txt"
 	finally:
+		if main_mod is not None:
+			if old_main_file is None:
+				try:
+					delattr(main_mod, "__file__")
+				except AttributeError:
+					pass
+			else:
+				main_mod.__file__ = old_main_file
 		sys.argv = old_argv
 
 
 def test_make_outfile_ignores_legacy_first_arg_none_or_path():
 	old_argv = list(sys.argv)
+	main_mod = sys.modules.get("__main__")
+	old_main_file = getattr(main_mod, "__file__", None)
 	try:
 		sys.argv[0] = "/tmp/my_script.py"
+		if main_mod is not None:
+			main_mod.__file__ = None
 		outfile_none = bptools.make_outfile(None, "mc")
 		assert outfile_none == "bbq-my_script-mc-questions.txt"
 
 		outfile_path = bptools.make_outfile("/tmp/ignored.py", "mc")
 		assert outfile_path == "bbq-my_script-mc-questions.txt"
 	finally:
+		if main_mod is not None:
+			if old_main_file is None:
+				try:
+					delattr(main_mod, "__file__")
+				except AttributeError:
+					pass
+			else:
+				main_mod.__file__ = old_main_file
 		sys.argv = old_argv
 
 
 def test_make_outfile_treats_format_token_as_suffix():
 	old_argv = list(sys.argv)
+	main_mod = sys.modules.get("__main__")
+	old_main_file = getattr(main_mod, "__file__", None)
 	try:
 		sys.argv[0] = "/tmp/alpha_helix_h-bonds.py"
+		if main_mod is not None:
+			main_mod.__file__ = None
 		outfile = bptools.make_outfile("MC")
 		assert outfile == "bbq-alpha_helix_h-bonds-MC-questions.txt"
 	finally:
+		if main_mod is not None:
+			if old_main_file is None:
+				try:
+					delattr(main_mod, "__file__")
+				except AttributeError:
+					pass
+			else:
+				main_mod.__file__ = old_main_file
+		sys.argv = old_argv
+
+
+def test_make_outfile_prefers_main_dunder_file_over_argv0():
+	old_argv = list(sys.argv)
+	main_mod = sys.modules.get("__main__")
+	old_main_file = getattr(main_mod, "__file__", None)
+	try:
+		sys.argv[0] = "/tmp/argv0_script.py"
+		if main_mod is not None:
+			main_mod.__file__ = "/tmp/main_script.py"
+		outfile = bptools.make_outfile("MC")
+		assert outfile == "bbq-main_script-MC-questions.txt"
+	finally:
+		if main_mod is not None:
+			if old_main_file is None:
+				try:
+					delattr(main_mod, "__file__")
+				except AttributeError:
+					pass
+			else:
+				main_mod.__file__ = old_main_file
+		sys.argv = old_argv
+
+
+def test_make_outfile_falls_back_to_argv1_when_argv0_is_dash_c():
+	old_argv = list(sys.argv)
+	main_mod = sys.modules.get("__main__")
+	old_main_file = getattr(main_mod, "__file__", None)
+	try:
+		sys.argv = ["-c", "/tmp/wrapper_script.py"]
+		if main_mod is not None:
+			main_mod.__file__ = None
+		outfile = bptools.make_outfile("MC")
+		assert outfile == "bbq-wrapper_script-MC-questions.txt"
+	finally:
+		if main_mod is not None:
+			if old_main_file is None:
+				try:
+					delattr(main_mod, "__file__")
+				except AttributeError:
+					pass
+			else:
+				main_mod.__file__ = old_main_file
 		sys.argv = old_argv
 
 

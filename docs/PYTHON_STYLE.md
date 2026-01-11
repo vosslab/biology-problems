@@ -23,6 +23,8 @@ Language Model guide to Neil python3 programming
 
 - Use a `def main()` for the backbone of the code, have a `if __name__ == '__main__': main()` to run main
 - I prefer single task sub-functions over one large function.
+- `args` is reserved for the `argparse.Namespace` returned by `parse_args()`; do not attach derived runtime state to `args` (use local variables, module-level caches, or explicit parameters instead).
+- Prefer to avoid module-level global state; when a generator needs expensive precomputed data (lists, parsed files) and the framework requires `write_question(N, args)`, it is acceptable to cache that data in a module-level constant-like variable (ALL_CAPS) initialized in `main()` and treated as read-only during question generation.
 - Whenever making a URL or API internet request, add a time.sleep(random.random()) to avoid overloading the server, unless the official API specifies otherwise.
 - For error handling, avoid try/except block if you can, I find they cause more problems than they solve.
 - Use try/except rarely, and if needed use for at most two lines

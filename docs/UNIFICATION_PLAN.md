@@ -220,6 +220,19 @@ Batch generators:
   - Option 2a (modulo N): still deterministic, use a direct modulo mapping:
     - `idx = (N - 1) % len(scenarios)`
     - `scenario = scenarios[idx]`
+    - Recommended pattern for “grid” generators (cartesian products):
+      - Build a single `scenarios` list once (typically in `main()`), e.g. by
+        flattening `for mode in modes: for vmax in vmax_choices: for km in km_choices:`
+        into `scenarios.append((mode, vmax, km))`.
+      - In `write_question(N, args)`, select exactly one scenario via modulo `N`
+        and then compute any derived values (tables, distractors, etc.) from that scenario.
+      - Keep `scenarios` in a stable order (for example `sorted(...)`) so coverage is
+        repeatable across runs with the same `-d/-x` settings.
+      - If you want *less obvious* cycling but still deterministic, prefer a stable
+        mixing step before the modulo (see the `modmix` note above) rather than
+        shuffling `scenarios` randomly.
+      - Only use `random.shuffle(scenarios)` if you also fix the seed (and document it),
+        otherwise question selection will vary run-to-run even with identical CLI args.
   - Option 2b (random): pick a scenario at random each time:
     - `scenario = random.choice(scenarios)`
   - Keep `N` meaning unchanged:

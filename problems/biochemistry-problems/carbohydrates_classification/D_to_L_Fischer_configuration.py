@@ -5,7 +5,13 @@ import random
 import bptools
 import sugarlib
 
-def write_question(N, d_sugar_name, sugar_codes_cls, num_choices):
+#======================================
+SUGAR_CODES_CLS = None
+SUGAR_NAMES_LIST = None
+
+
+#======================================
+def write_fischer_question(N, d_sugar_name, sugar_codes_cls, num_choices):
 	d_sugar_code = sugar_codes_cls.sugar_name_to_code[d_sugar_name]
 	d_sugar_structure = sugarlib.SugarStructure(d_sugar_code)
 	fischer_html = d_sugar_structure.Fischer_projection_html()
@@ -146,17 +152,13 @@ def get_sugar_codes(sugar_codes_cls):
 	return sugar_names_list
 
 #======================================
-#======================================
-def write_question_batch(start_num: int, args) -> list:
-	questions = []
-	N = start_num
-	for sugar_name in args.sugar_names_list:
-		complete_question = write_question(N, sugar_name, args.sugar_codes_cls, args.num_choices)
-		if complete_question is None:
-			continue
-		questions.append(complete_question)
-		N += 1
-	return questions
+def write_question(N: int, args) -> str:
+	if SUGAR_CODES_CLS is None or SUGAR_NAMES_LIST is None:
+		raise ValueError("Sugar globals not initialized; run main().")
+	if N > len(SUGAR_NAMES_LIST):
+		return None
+	sugar_name = SUGAR_NAMES_LIST[(N - 1) % len(SUGAR_NAMES_LIST)]
+	return write_fischer_question(N, sugar_name, SUGAR_CODES_CLS, args.num_choices)
 
 #======================================
 #======================================
@@ -166,7 +168,6 @@ def parse_arguments():
 	"""
 	parser = bptools.make_arg_parser(
 		description="Generate D/L Fischer configuration questions.",
-		batch=True
 	)
 	parser = bptools.add_choice_args(parser, default=5)
 	parser = bptools.add_hint_args(parser)
@@ -176,7 +177,6 @@ def parse_arguments():
 		required=False,
 		default='mc'
 	)
-	parser.set_defaults(duplicates=1)
 	args = parser.parse_args()
 	return args
 
@@ -184,19 +184,19 @@ def parse_arguments():
 #======================================
 def main():
 	args = parse_arguments()
-	sugar_codes_cls = sugarlib.SugarCodes()
-	sugar_names_list = get_sugar_codes(sugar_codes_cls)
+	global SUGAR_CODES_CLS
+	global SUGAR_NAMES_LIST
+	SUGAR_CODES_CLS = sugarlib.SugarCodes()
+	SUGAR_NAMES_LIST = sorted(get_sugar_codes(SUGAR_CODES_CLS))
 
-	args.sugar_codes_cls = sugar_codes_cls
-	args.sugar_names_list = sugar_names_list
+	print(f"Using {len(SUGAR_NAMES_LIST)} scenarios")
 
 	hint_mode = 'with_hint' if args.hint else 'no_hint'
 	outfile = bptools.make_outfile(args.question_type.upper(),
 		hint_mode,
 		f"{args.num_choices}_choices"
 	)
-	questions = bptools.collect_question_batches(write_question_batch, args)
-	bptools.write_questions_to_file(questions, outfile)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #======================================
 #======================================

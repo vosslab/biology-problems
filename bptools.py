@@ -565,7 +565,23 @@ def make_outfile(*parts) -> str:
 		if looks_like_path:
 			parts = parts[1:]
 
-	script_path = sys.argv[0]
+	main_file = getattr(sys.modules.get("__main__"), "__file__", None)
+	if isinstance(main_file, str) and main_file.endswith(".py") and main_file not in ("<stdin>", "<string>"):
+		script_path = main_file
+	else:
+		script_path = sys.argv[0]
+		if isinstance(script_path, str):
+			if script_path in ("-c", "-m") or (not script_path.endswith(".py")):
+				# Wrapper fallback: when argv[0] is not a useful script path, check for a
+				# nearby *.py argument.
+				for idx in (1, 2):
+					if len(sys.argv) <= idx:
+						break
+					cand = sys.argv[idx]
+					if isinstance(cand, str) and cand.endswith(".py") and cand not in ("<stdin>", "<string>"):
+						script_path = cand
+						break
+
 	if script_path is None or len(str(script_path)) == 0:
 		script_name = "script"
 	else:

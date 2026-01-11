@@ -223,42 +223,36 @@ def makeCompleteProblem(N, xvals, Km, Vmax, inhibition):
 	return bb_question
 
 #=============================
-#=============================
-#=============================
-#=============================
-#=============================
-def write_question_batch(start_num: int, args) -> list:
-	#acceptable range: >40, <200, multiple of 20
+def _get_scenarios() -> list[tuple[str, int, float]]:
+	# acceptable range: >40, <200, multiple of 20
 	Vmax_choices = [40, 60, 80, 100, 120, 140, 160, 180, 200]
 	inhibition_types = ['competitive', 'un-competitive', 'non-competitive']
 	mode = 1
 
-	questions = []
-	remaining = None
-	if args.max_questions is not None:
-		remaining = args.max_questions - (start_num - 1)
-		if remaining <= 0:
-			return questions
+	xvals = makeXvals(mode)
+	Km_choices = xvals[1:6]
 
-	N = start_num
+	scenarios: list[tuple[str, int, float]] = []
 	for inhibition in inhibition_types:
 		for Vmax in Vmax_choices:
-			xvals = makeXvals(mode)
-			Km_choices = xvals[1:6]
 			for Km in Km_choices:
-				bb_question = makeCompleteProblem(N, xvals, Km, Vmax, inhibition)
-				if bb_question is not None:
-					questions.append(bb_question)
-					N += 1
-					if remaining is not None and len(questions) >= remaining:
-						return questions
-	return questions
+				scenarios.append((inhibition, Vmax, Km))
+	return scenarios
+
+
+#=============================
+def write_question(N: int, args) -> str:
+	mode = 1
+	xvals = makeXvals(mode)
+	scenarios = _get_scenarios()
+	idx = (N - 1) % len(scenarios)
+	inhibition, Vmax, Km = scenarios[idx]
+	return makeCompleteProblem(N, xvals, Km, Vmax, inhibition)
 
 #=============================
 def parse_arguments():
 	parser = bptools.make_arg_parser(
 		description="Generate Michaelis-Menten inhibition table questions.",
-		batch=True
 	)
 	args = parser.parse_args()
 	return args
@@ -267,8 +261,7 @@ def parse_arguments():
 def main():
 	args = parse_arguments()
 	outfile = bptools.make_outfile()
-	questions = bptools.collect_question_batches(write_question_batch, args)
-	bptools.write_questions_to_file(questions, outfile)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 if __name__ == '__main__':
 	main()
