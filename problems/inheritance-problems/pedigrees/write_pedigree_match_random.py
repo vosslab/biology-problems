@@ -98,6 +98,11 @@ def generate_valid_pedigree(
 			if affected_count < 1:
 				continue
 
+			# Reject pedigrees with childless couples (invalid per spec)
+			has_childless_couple = any(not couple.children for couple in couples)
+			if has_childless_couple:
+				continue
+
 			return code_string
 
 		except (ValueError, KeyError, IndexError):

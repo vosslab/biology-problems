@@ -163,11 +163,28 @@ def makeShapeNameTableTD_Cell(shape_name):
 
 
 #===============================
-def translateCode(code_string, label_string=None):
+def translateCode(code_string, label_string=None, debug_spec: str | None = None):
+	"""
+	Translate a pedigree code string into HTML table markup.
+
+	Args:
+		code_string (str): Pedigree code string.
+		label_string (str | None): Optional label string aligned to code_string.
+		debug_spec (str | None): Optional graph spec to include as HTML comment for debugging.
+
+	Returns:
+		str: HTML table markup.
+	"""
 	max_num_col = 0
 	num_row = 0
 	num_col = 0
 	html_code = ''
+
+	# Add debug comment with graph spec if provided
+	# Graph spec only has single dashes (A-B) so it's safe for HTML comments
+	if debug_spec is not None:
+		html_code += f'<!-- pedigree_graph_spec: {debug_spec} -->'
+
 	if not code_string.endswith('%'):
 		code_string += '%'
 	label_chars = None
@@ -209,13 +226,18 @@ def translateCode(code_string, label_string=None):
 
 
 #===============================
-def make_pedigree_html(code_string: str, label_string: str | None = None) -> str:
+def make_pedigree_html(
+	code_string: str,
+	label_string: str | None = None,
+	debug_spec: str | None = None,
+) -> str:
 	"""
 	Translate a pedigree code string into HTML markup.
 
 	Args:
 		code_string (str): Pedigree code string.
 		label_string (str | None): Optional label string aligned to code_string.
+		debug_spec (str | None): Optional graph spec to include as HTML comment.
 
 	Returns:
 		str: HTML table markup.
@@ -224,7 +246,7 @@ def make_pedigree_html(code_string: str, label_string: str | None = None) -> str
 		errors = label_strings.validate_label_string(label_string, code_string)
 		if errors:
 			raise ValueError("Invalid label string: " + "; ".join(errors))
-	html_text = translateCode(code_string, label_string)
+	html_text = translateCode(code_string, label_string, debug_spec=debug_spec)
 	return html_text
 
 

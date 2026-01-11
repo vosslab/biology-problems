@@ -142,7 +142,8 @@ def generate_skeleton_graph(
 			min_children,
 			max_children,
 		)
-		if gen + 1 > generations:
+		# Don't pair children in the last generation - they would have no offspring
+		if gen + 1 >= generations:
 			continue
 		new_couples, person_counter, couple_counter = _pair_children(
 			individuals,
