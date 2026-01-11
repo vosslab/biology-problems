@@ -9,6 +9,10 @@ import bptools
 
 #=============================
 #=============================
+SCENARIOS = None
+
+#=============================
+#=============================
 def makeXvals(mode=1):
 	if mode == 1:
 		generators = [0.0001, 0.001, 0.01]
@@ -244,9 +248,10 @@ def _get_scenarios() -> list[tuple[str, int, float]]:
 def write_question(N: int, args) -> str:
 	mode = 1
 	xvals = makeXvals(mode)
-	scenarios = _get_scenarios()
-	idx = (N - 1) % len(scenarios)
-	inhibition, Vmax, Km = scenarios[idx]
+	if SCENARIOS is None:
+		raise ValueError("Scenarios not initialized; run main().")
+	idx = (N - 1) % len(SCENARIOS)
+	inhibition, Vmax, Km = SCENARIOS[idx]
 	return makeCompleteProblem(N, xvals, Km, Vmax, inhibition)
 
 #=============================
@@ -254,12 +259,19 @@ def parse_arguments():
 	parser = bptools.make_arg_parser(
 		description="Generate Michaelis-Menten inhibition table questions.",
 	)
+	parser = bptools.add_scenario_args(parser)
 	args = parser.parse_args()
 	return args
 
 #=============================
 def main():
 	args = parse_arguments()
+	global SCENARIOS
+	SCENARIOS = _get_scenarios()
+	if len(SCENARIOS) == 0:
+		raise ValueError("No scenarios were generated.")
+	if args.scenario_order == 'random':
+		random.shuffle(SCENARIOS)
 	outfile = bptools.make_outfile()
 	bptools.collect_and_write_questions(write_question, args, outfile)
 

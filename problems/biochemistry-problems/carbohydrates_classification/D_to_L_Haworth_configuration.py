@@ -130,8 +130,6 @@ def _build_scenarios(sugar_names_list: list, sugar_codes_cls) -> list:
 def write_question(N: int, args) -> str:
 	if SUGAR_CODES_CLS is None or SCENARIOS is None:
 		raise ValueError("Sugar globals not initialized; run main().")
-	if N > len(SCENARIOS):
-		return None
 	idx = (N - 1) % len(SCENARIOS)
 	sugar_name, anomeric = SCENARIOS[idx]
 	return write_haworth_question(
@@ -152,6 +150,7 @@ def parse_arguments():
 		description="Generate D/L Haworth configuration questions.",
 	)
 	parser = bptools.add_choice_args(parser, default=5)
+	parser = bptools.add_scenario_args(parser)
 	parser = bptools.add_hint_args(parser)
 	parser = bptools.add_question_format_args(
 		parser,
@@ -173,6 +172,8 @@ def main():
 	SUGAR_NAMES_LIST = get_sugar_codes(SUGAR_CODES_CLS)
 
 	SCENARIOS = _build_scenarios(SUGAR_NAMES_LIST, SUGAR_CODES_CLS)
+	if args.scenario_order == 'random':
+		random.shuffle(SCENARIOS)
 	print(f"Using {len(SCENARIOS)} scenarios")
 	if len(SCENARIOS) == 0:
 		raise ValueError("No valid Haworth scenarios were generated.")

@@ -133,6 +133,10 @@ adopt them at once.
   - Adds expanded aliases: `--multiple-choice`, `--multiple-answer`,
     `--numeric`, and `--fill-in-blank`.
 
+- `add_scenario_args(parser)`
+  - Adds `--random` (default) and `--sorted` for scripts that build a fixed `scenarios` list.
+  - Recommended behavior: prebuild `scenarios` once in `main()`, shuffle when random, then select with modulo-`N`.
+
 - `add_difficulty_args(parser)`
   - Adds `--difficulty` and `--easy/--medium/--rigorous` shortcuts.
 
@@ -211,9 +215,8 @@ Batch generators:
   and return a formatted Blackboard string via `bptools.formatBB_MC_Question`
   or `bptools.formatBB_FIB_Question`.
 - Scripts that select from a fixed scenario list can expose
-  `--scenario-select {cycle,modmix,random}` with `modmix` as the preferred
-  non-cycling default for upgraded scripts. Use a stable mix (for example
-  `N * 2654435761`) before modulo to avoid simple round-robin cycling.
+  a scenario-order toggle like `--random` (default) vs `--sorted` via
+  `bptools.add_scenario_args(parser)`.
 - Switching a batch script (fixed cycle) to an individual-question script:
   - Option 1 (current): deterministic round-robin over a fixed scenario list:
     - `scenario = scenarios[(N - 1) % len(scenarios)]`

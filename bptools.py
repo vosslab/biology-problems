@@ -276,6 +276,25 @@ def add_hint_args(parser, hint_default=True, dest='hint'):
 	return parser
 
 #==========================
+def add_scenario_args(parser, dest='scenario_order', default='random'):
+	"""
+	Add a standard scenario-order toggle for scripts that precompute a scenario list.
+
+	By default, we prefer random ordering for student assessment use-cases.
+	"""
+	group = parser.add_mutually_exclusive_group(required=False)
+	group.add_argument(
+		'--sorted', dest=dest, action='store_const', const='sorted',
+		help='Use deterministic sorted scenario order.'
+	)
+	group.add_argument(
+		'--random', dest=dest, action='store_const', const='random',
+		help='Use randomized scenario order (default).'
+	)
+	parser.set_defaults(**{dest: default})
+	return parser
+
+#==========================
 def add_question_format_args(parser, types_list=None, required=True, default=None):
 	"""
 	Add standard question format arguments.

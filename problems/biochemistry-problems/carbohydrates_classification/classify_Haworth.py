@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
 
+import random
 import time
 
 import bptools
 import sugarlib
+
+#======================================
+SUGAR_CODES_CLS = None
+SCENARIOS = None
 
 
 def write_question(N, sugar_name, anomeric, ring_type, sugar_codes_class):
@@ -135,23 +140,31 @@ def get_sugar_codes(ring_type, sugar_codes_class):
 
 #======================================
 #======================================
-def write_question_batch(start_num: int, args) -> list:
-	questions = []
-	N = start_num
+def _build_scenarios(sugar_names_list: list, ring_type: str, sugar_codes_class) -> list:
+	scenarios: list[tuple[str, str]] = []
 	for anomeric in ('alpha', 'beta'):
-		for sugar_name in args.sugar_names_list:
-			complete_question = write_question(
-				N,
-				sugar_name,
-				anomeric,
-				args.ring_type,
-				args.sugar_codes_class
-			)
-			if complete_question is None:
+		for sugar_name in sorted(sugar_names_list):
+			sugar_code = sugar_codes_class.sugar_name_to_code[sugar_name]
+			sugar_struct = sugarlib.SugarStructure(sugar_code)
+			haworth = sugar_struct.Haworth_projection_html(ring=ring_type, anomeric=anomeric)
+			if haworth is None:
 				continue
-			questions.append(complete_question)
-			N += 1
-	return questions
+			scenarios.append((sugar_name, anomeric))
+	return scenarios
+
+
+def write_single_question(N: int, args) -> str:
+	if SUGAR_CODES_CLS is None or SCENARIOS is None:
+		raise ValueError("Sugar globals not initialized; run main().")
+	idx = (N - 1) % len(SCENARIOS)
+	sugar_name, anomeric = SCENARIOS[idx]
+	return write_question(
+		N,
+		sugar_name,
+		anomeric,
+		args.ring_type,
+		SUGAR_CODES_CLS
+	)
 
 #======================================
 #======================================
@@ -161,8 +174,8 @@ def parse_arguments():
 	"""
 	parser = bptools.make_arg_parser(
 		description="Generate Haworth classification questions.",
-		batch=True
 	)
+	parser = bptools.add_scenario_args(parser)
 	parser = bptools.add_hint_args(parser)
 	parser = bptools.add_question_format_args(
 		parser,
@@ -196,19 +209,23 @@ def main():
 	Main function that orchestrates question generation and file output.
 	"""
 	args = parse_arguments()
-	sugar_codes_class = sugarlib.SugarCodes()
-	sugar_names_list = get_sugar_codes(args.ring_type, sugar_codes_class)
-
-	args.sugar_codes_class = sugar_codes_class
-	args.sugar_names_list = sugar_names_list
+	global SUGAR_CODES_CLS
+	global SCENARIOS
+	SUGAR_CODES_CLS = sugarlib.SugarCodes()
+	sugar_names_list = get_sugar_codes(args.ring_type, SUGAR_CODES_CLS)
+	SCENARIOS = _build_scenarios(sugar_names_list, args.ring_type, SUGAR_CODES_CLS)
+	if args.scenario_order == 'random':
+		random.shuffle(SCENARIOS)
+	print(f"Using {len(SCENARIOS)} scenarios")
+	if len(SCENARIOS) == 0:
+		raise ValueError("No valid Haworth scenarios were generated.")
 
 	hint_mode = 'with_hint' if args.hint else 'no_hint'
 	outfile = bptools.make_outfile(args.question_type.upper(),
 		hint_mode,
 		args.ring_type.upper()
 	)
-	questions = bptools.collect_question_batches(write_question_batch, args)
-	bptools.write_questions_to_file(questions, outfile)
+	bptools.collect_and_write_questions(write_single_question, args, outfile)
 
 #======================================
 #======================================

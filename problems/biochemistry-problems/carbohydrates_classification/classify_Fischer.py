@@ -1,7 +1,14 @@
 #!/usr/bin/env python3
 
+import random
+
 import bptools
 import sugarlib
+
+#======================================
+SUGAR_CODES_CLS = None
+SUGAR_NAMES_LIST = None
+
 
 def write_question(N, sugar_name, sugar_codes_class):
 	"""
@@ -110,16 +117,11 @@ def get_sugar_codes(sugar_codes_class):
 
 #======================================
 #======================================
-def write_question_batch(start_num: int, args) -> list:
-	questions = []
-	N = start_num
-	for sugar_name in args.sugar_names_list:
-		complete_question = write_question(N, sugar_name, args.sugar_codes_class)
-		if complete_question is None:
-			continue
-		questions.append(complete_question)
-		N += 1
-	return questions
+def write_single_question(N: int, args) -> str:
+	if SUGAR_CODES_CLS is None or SUGAR_NAMES_LIST is None:
+		raise ValueError("Sugar globals not initialized; run main().")
+	sugar_name = SUGAR_NAMES_LIST[(N - 1) % len(SUGAR_NAMES_LIST)]
+	return write_question(N, sugar_name, SUGAR_CODES_CLS)
 
 #======================================
 #======================================
@@ -129,8 +131,8 @@ def parse_arguments():
 	"""
 	parser = bptools.make_arg_parser(
 		description="Generate Fischer classification questions.",
-		batch=True
 	)
+	parser = bptools.add_scenario_args(parser)
 	parser = bptools.add_hint_args(parser)
 	parser = bptools.add_question_format_args(
 		parser,
@@ -148,18 +150,23 @@ def main():
 	Main function that orchestrates question generation and file output.
 	"""
 	args = parse_arguments()
-	sugar_codes_class = sugarlib.SugarCodes()
-	sugar_names_list = get_sugar_codes(sugar_codes_class)
-
-	args.sugar_codes_class = sugar_codes_class
-	args.sugar_names_list = sugar_names_list
+	global SUGAR_CODES_CLS
+	global SUGAR_NAMES_LIST
+	SUGAR_CODES_CLS = sugarlib.SugarCodes()
+	SUGAR_NAMES_LIST = get_sugar_codes(SUGAR_CODES_CLS)
+	if args.scenario_order == 'sorted':
+		SUGAR_NAMES_LIST = sorted(SUGAR_NAMES_LIST)
+	else:
+		random.shuffle(SUGAR_NAMES_LIST)
+	print(f"Using {len(SUGAR_NAMES_LIST)} scenarios")
+	if len(SUGAR_NAMES_LIST) == 0:
+		raise ValueError("No valid Fischer scenarios were generated.")
 
 	hint_mode = 'with_hint' if args.hint else 'no_hint'
 	outfile = bptools.make_outfile(args.question_type.upper(),
 		hint_mode
 	)
-	questions = bptools.collect_question_batches(write_question_batch, args)
-	bptools.write_questions_to_file(questions, outfile)
+	bptools.collect_and_write_questions(write_single_question, args, outfile)
 
 #======================================
 #======================================

@@ -155,8 +155,6 @@ def get_sugar_codes(sugar_codes_cls):
 def write_question(N: int, args) -> str:
 	if SUGAR_CODES_CLS is None or SUGAR_NAMES_LIST is None:
 		raise ValueError("Sugar globals not initialized; run main().")
-	if N > len(SUGAR_NAMES_LIST):
-		return None
 	sugar_name = SUGAR_NAMES_LIST[(N - 1) % len(SUGAR_NAMES_LIST)]
 	return write_fischer_question(N, sugar_name, SUGAR_CODES_CLS, args.num_choices)
 
@@ -170,6 +168,7 @@ def parse_arguments():
 		description="Generate D/L Fischer configuration questions.",
 	)
 	parser = bptools.add_choice_args(parser, default=5)
+	parser = bptools.add_scenario_args(parser)
 	parser = bptools.add_hint_args(parser)
 	parser = bptools.add_question_format_args(
 		parser,
@@ -187,9 +186,15 @@ def main():
 	global SUGAR_CODES_CLS
 	global SUGAR_NAMES_LIST
 	SUGAR_CODES_CLS = sugarlib.SugarCodes()
-	SUGAR_NAMES_LIST = sorted(get_sugar_codes(SUGAR_CODES_CLS))
+	SUGAR_NAMES_LIST = get_sugar_codes(SUGAR_CODES_CLS)
+	if args.scenario_order == 'sorted':
+		SUGAR_NAMES_LIST = sorted(SUGAR_NAMES_LIST)
+	else:
+		random.shuffle(SUGAR_NAMES_LIST)
 
 	print(f"Using {len(SUGAR_NAMES_LIST)} scenarios")
+	if len(SUGAR_NAMES_LIST) == 0:
+		raise ValueError("No valid Fischer scenarios were generated.")
 
 	hint_mode = 'with_hint' if args.hint else 'no_hint'
 	outfile = bptools.make_outfile(args.question_type.upper(),
