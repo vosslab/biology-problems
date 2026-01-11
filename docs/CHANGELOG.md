@@ -169,6 +169,7 @@
 - Added a helper script with `git mv` commands to reorganize matching-set YAML banks into subject folders: `tools/sort_matching_sets_by_subject.sh`.
 - Added a helper script with `git mv` commands to reorganize MC-statement YAML banks into subject folders: `tools/sort_mc_statements_by_subject.sh`.
 - Moved the BBQ cleanup helper to `tools/remove_all_bbq_files.sh` and updated it to search from the git repo root.
+- Updated the taste-stimulus matching bank `problems/matching_sets/cell_biology/senses_taste_quality_to_stimulus.yml` to use short, deduction-friendly biological cues (no taste words; Sweet values avoid the substring "sugar") and added author notes as YAML comments.
 
 ## 2026-01-04
 - Added a cytogenetic band-order question generator in

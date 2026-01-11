@@ -138,18 +138,45 @@ def test_founding_couple_not_at_far_left():
 			)
 
 
-def test_col_shift_only_prevents_negatives():
-	"""Verify _compute_col_shift only shifts to prevent negative indices."""
+def test_col_shift_centers_founding_couple():
+	"""Verify _compute_col_shift centers the founding couple in asymmetric pedigrees."""
+	skeleton = import_from_repo_path("problems/inheritance-problems/pedigrees/pedigree_lib/skeleton.py")
 	graph_parse = import_from_repo_path("problems/inheritance-problems/pedigrees/pedigree_lib/graph_parse.py")
 
-	# Test with positive min_slot - no shift needed
-	assert graph_parse._compute_col_shift(0) == 0
-	assert graph_parse._compute_col_shift(5) == 0
+	# Generate several pedigrees and verify the founding couple is reasonably centered
+	for seed in range(15):
+		rng = random.Random(seed)
+		graph = skeleton.generate_skeleton_graph(
+			generations=3,
+			rng=rng,
+			min_children=2,
+			max_children=4,
+		)
+		graph_parse._assign_slots(graph)
 
-	# Test with negative min_slot - shift to make it 0
-	assert graph_parse._compute_col_shift(-3) == 3
-	assert graph_parse._compute_col_shift(-10) == 10
-	assert graph_parse._compute_col_shift(-1) == 1
+		min_slot = min(ind.slot for ind in graph.individuals.values() if ind.slot is not None)
+		max_slot = max(ind.slot for ind in graph.individuals.values() if ind.slot is not None)
+		col_shift = graph_parse._compute_col_shift(graph, min_slot, max_slot)
+
+		# After shift, min column should be >= 0
+		assert min_slot + col_shift >= 0, f"Seed {seed}: negative column after shift"
+
+		# Find founding couple
+		top_couples = [c for c in graph.couples if c.generation == 1]
+		if top_couples:
+			tc = top_couples[0]
+			pa = graph.individuals[tc.partner_a]
+			pb = graph.individuals[tc.partner_b]
+			couple_mid = (pa.slot + pb.slot) / 2 + col_shift
+
+			# The couple should have roughly equal space on left and right
+			left_space = couple_mid - 0
+			right_space = (max_slot + col_shift) - couple_mid
+
+			# Allow some tolerance for integer rounding
+			assert abs(left_space - right_space) <= 2, (
+				f"Seed {seed}: couple not centered, left={left_space}, right={right_space}"
+			)
 
 
 def test_layout_preserved_after_code_generation():

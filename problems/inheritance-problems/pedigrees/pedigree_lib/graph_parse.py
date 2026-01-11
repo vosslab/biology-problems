@@ -226,22 +226,50 @@ def _slot_to_col(slot: int, col_shift: int) -> int:
 
 
 #===============================
-def _compute_col_shift(min_slot: int) -> int:
-	"""Compute column shift to ensure non-negative column indices.
+def _compute_col_shift(graph: PedigreeGraph, min_slot: int, max_slot: int) -> int:
+	"""Compute column shift to center the founding couple in the output.
 
-	The slot assignment in _assign_slots() already correctly positions parents
-	centered above their children. This function only needs to shift everything
-	right if there are negative slot values, to ensure valid array indices.
+	The slot assignment in _assign_slots() correctly positions parents centered
+	above their children. However, if descendants spread asymmetrically, the
+	founding couple may end up near one edge. This function shifts the entire
+	pedigree so the founding couple appears more centered.
 
 	Args:
+		graph: The pedigree graph with slots assigned.
 		min_slot: The minimum slot value in the graph.
+		max_slot: The maximum slot value in the graph.
 
 	Returns:
 		Shift amount to add to all slots to get column indices.
 	"""
-	if min_slot < 0:
-		return -min_slot
-	return 0
+	# Find the founding couple (generation 1)
+	top_couples = [c for c in graph.couples if c.generation == 1]
+	if not top_couples:
+		# No couples found, just ensure non-negative indices
+		return -min_slot if min_slot < 0 else 0
+
+	# Get the first founding couple's midpoint
+	top_couples.sort(key=lambda c: c.id)
+	top_couple = top_couples[0]
+	partner_a = graph.individuals[top_couple.partner_a]
+	partner_b = graph.individuals[top_couple.partner_b]
+	top_mid = ((partner_a.slot or 0) + (partner_b.slot or 0)) // 2
+
+	# Compute how far the couple is from the content's left and right edges
+	left_extent = top_mid - min_slot   # Distance from couple to left edge
+	right_extent = max_slot - top_mid  # Distance from couple to right edge
+
+	# To center the couple, both extents should be equal
+	# Add padding to the shorter side by shifting
+	if left_extent < right_extent:
+		# Couple is closer to left, shift right to add left padding
+		padding_needed = right_extent - left_extent
+		col_shift = -min_slot + padding_needed
+	else:
+		# Couple is centered or closer to right, just ensure non-negative
+		col_shift = -min_slot if min_slot < 0 else 0
+
+	return col_shift
 
 
 #===============================
@@ -267,7 +295,7 @@ def render_graph_to_code(graph: PedigreeGraph, show_carriers: bool = False) -> s
 	_assign_slots(graph)
 	min_slot = min(ind.slot for ind in graph.individuals.values() if ind.slot is not None)
 	max_slot = max(ind.slot for ind in graph.individuals.values() if ind.slot is not None)
-	col_shift = _compute_col_shift(min_slot)
+	col_shift = _compute_col_shift(graph, min_slot, max_slot)
 	num_rows = graph.generations * 2 - 1
 	num_cols = max(3, max_slot + col_shift + 1)
 
