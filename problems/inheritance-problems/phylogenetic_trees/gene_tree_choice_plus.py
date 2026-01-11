@@ -565,7 +565,6 @@ def parse_arguments():
 		help="Set difficulty to level 5")
 
 	parser.set_defaults(difficulty=None)
-	parser.set_defaults(duplicates=1)
 
 	args = parser.parse_args()
 

@@ -139,7 +139,6 @@ def parse_arguments():
 		required=False,
 		default='fib'
 	)
-	parser.set_defaults(duplicates=1)
 	parser.set_defaults(max_questions=9)
 	args = parser.parse_args()
 	return args

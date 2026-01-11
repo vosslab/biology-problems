@@ -135,7 +135,6 @@ def parse_arguments():
 		default='fib'
 	)
 	parser.add_argument('-n', '--num_amino', type=int, default=2, help="Number of amino acids in polypeptides.")
-	parser.set_defaults(duplicates=95)
 	args = parser.parse_args()
 	return args
 

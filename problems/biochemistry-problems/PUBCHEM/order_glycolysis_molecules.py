@@ -84,7 +84,6 @@ def write_question(N: int, args) -> str:
 def parse_arguments():
 	parser = bptools.make_arg_parser(description="Generate glycolysis ordering questions.")
 	parser = bptools.add_choice_args(parser, default=4)
-	parser.set_defaults(duplicates=99)
 	args = parser.parse_args()
 	return args
 

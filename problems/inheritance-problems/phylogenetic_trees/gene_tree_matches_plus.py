@@ -375,7 +375,6 @@ def parse_arguments():
 	diff_group.add_argument("-R", "--rigorous",  dest="difficulty", action="store_const", const="rigorous",
 		help="Set difficulty to rigorous")
 	parser.set_defaults(difficulty=None)
-	parser.set_defaults(duplicates=1)
 
 	args = parser.parse_args()
 

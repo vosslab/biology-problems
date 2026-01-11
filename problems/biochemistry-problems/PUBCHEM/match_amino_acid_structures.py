@@ -74,7 +74,6 @@ def write_question_batch(start_num: int, args) -> list[str]:
 def parse_arguments():
 	parser = bptools.make_arg_parser(description="Generate amino acid structure matching questions.", batch=True)
 	parser = bptools.add_choice_args(parser, default=4)
-	parser.set_defaults(duplicates=1)
 	args = parser.parse_args()
 	return args
 

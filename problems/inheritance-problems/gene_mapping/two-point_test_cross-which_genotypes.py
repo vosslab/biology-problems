@@ -68,7 +68,6 @@ def parse_arguments():
 		'-r', '--recombinant', dest='genotype_type', action='store_const',
 		const='recombinant',
 	)
-	parser.set_defaults(duplicates=1)
 	args = parser.parse_args()
 	return args
 

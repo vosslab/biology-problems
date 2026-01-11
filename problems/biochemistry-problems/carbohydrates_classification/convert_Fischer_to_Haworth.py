@@ -175,7 +175,6 @@ def parse_arguments():
 		help='Set ring type to furan (furanose)'
 	)
 
-	parser.set_defaults(duplicates=1)
 	args = parser.parse_args()
 	return args
 

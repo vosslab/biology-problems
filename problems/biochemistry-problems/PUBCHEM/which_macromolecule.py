@@ -199,7 +199,6 @@ def parse_arguments():
 		'-f', '-y', '--file', metavar='<file>', type=str, dest='input_yaml_file',
 		help='yaml input file to process'
 	)
-	parser.set_defaults(duplicates=95)
 	args = parser.parse_args()
 	return args
 

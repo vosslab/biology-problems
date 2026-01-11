@@ -53,7 +53,6 @@ def parse_arguments():
 		types_list=['mc', 'num'],
 		required=True
 	)
-	parser.set_defaults(duplicates=1)
 	return parser.parse_args()
 
 #===========================

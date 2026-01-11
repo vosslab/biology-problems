@@ -88,7 +88,6 @@ def parse_arguments():
 		required=False,
 		default='mc'
 	)
-	parser.set_defaults(duplicates=1)
 	args = parser.parse_args()
 	return args
 
