@@ -52,6 +52,22 @@ Each YAML file defines:
 - `key description` and `keys description`: singular and plural phrases for the key side
 - `value description` and `values description`: singular and plural phrases for the value side
 
+## qti_package_maker Terminology (MATCH items)
+
+Internally, a matching question is represented as:
+
+- `prompts_list`: the left-column headings (your YAML keys)
+- `choices_list`: the right-column options (your YAML values)
+
+In other words: keys become prompts, and values become choices.
+
+## Deterministic Prompt Colors (default behavior)
+
+For MATCH questions, this repo will automatically color the `prompts_list` (left-column headings) using a deterministic color wheel, to make matching tables easier to scan.
+
+- Colors are assigned deterministically by sorting prompts alphabetically, so the same prompt set gets the same colors run-to-run.
+- If any prompt already contains HTML color markup (for example `<span style="color: ...">`), automatic prompt coloring is disabled for the entire question (so author-chosen colors are preserved).
+
 ### Common Optional Top-Level Keys
 
 - `items to match per question`: how many key/value pairs appear in each matching question (default is `5` in the scripts)
@@ -171,6 +187,16 @@ Three quick checks that prevent "test-taking" answers:
 - Keep value length similar across keys (do not let one answer be twice as long).
 - Keep grammar parallel (all noun phrases, or all full sentences).
 - Avoid unique keywords that appear only in one value (they give away the match).
+
+### Normalize Formatting So Values Do Not “Telegraph” The Match
+
+A very common matching-bank failure mode is that the value repeats a key word from the prompt.
+That makes the item solvable by scanning for the repeated word instead of understanding the biology.
+
+Quick check:
+
+- If a prompt contains a distinctive word (for example `adenylyl`, `rhodopsin`, `transducin`, `phosphodiesterase`), do not repeat that same word in its matching values.
+- Prefer functional descriptions that avoid the prompt noun (for example "enzyme that produces cAMP from ATP" instead of "adenylyl cyclase that produces cAMP").
 
 ## Difficulty Control (quick slider)
 

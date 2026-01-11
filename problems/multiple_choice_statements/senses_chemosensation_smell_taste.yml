@@ -13,6 +13,7 @@ replacement_rules:
   AC3: "<strong>adenylyl cyclase 3 (AC3)</strong>"
   PLC: "<strong>phospholipase C (PLC)</strong>"
   IP3: "<strong>IP<sub>3</sub></strong>"
+  H3O+: "<strong>H<sub>3</sub>O<sup>+</sup></strong>"
   Ca2+: "<strong>Ca<sup>2+</sup></strong>"
   Na+: "<strong>Na<sup>+</sup></strong>"
   K+: "<strong>K<sup>+</sup></strong>"
@@ -40,6 +41,7 @@ true_statements:
 
   truth7a: Sour taste is linked to high acidity and elevated H3O+ in foods.
   truth7b: Sour tastants are associated with low pH and increased proton concentration.
+  truth7c: In sour sensing cells, protons (H+) can directly change ion channel activity.
 
   truth8a: Sweet taste commonly uses a GPCR pathway rather than a simple ion channel pore.
   truth8b: Sweet taste is often detected by GPCR type receptors on taste cells.
@@ -57,7 +59,7 @@ true_statements:
   truth12b: Cyclic nucleotide phosphodiesterases reduce signaling by hydrolyzing cyclic nucleotides.
 
 false_statements:
-  false1a: Olfactory receptors are ligand gated ion channels that open directly when an odorant binds.
+  false1a: In mammals, olfactory receptors are ligand gated ion channels that open directly when an odorant binds.
   false1b: Most odorants are detected by receptor tyrosine kinases in olfactory neurons.
 
   false2a: In olfaction, odorant binding decreases cAMP by directly inhibiting adenylyl cyclase.
@@ -92,4 +94,3 @@ false_statements:
 
   false12a: Phosphodiesterase makes cAMP from ATP and starts signaling.
   false12b: Phosphodiesterase increases cyclic nucleotide levels by synthesizing cAMP and cGMP.
-

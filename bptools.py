@@ -1,5 +1,6 @@
 #General Toosl for These Problems
 import os
+import re
 import sys
 import inspect
 import argparse
@@ -725,8 +726,25 @@ def formatBB_MA_Question(N: int, question_text: str, choices_list, answers_list,
 
 #=====================
 def formatBB_MAT_Question(N: int, question_text: str, prompts_list, choices_list):
+	def _has_existing_color_markup(text: str) -> bool:
+		if text is None:
+			return False
+		return re.search(r'color\s*[:=]', str(text), flags=re.IGNORECASE) is not None
+
+	def _maybe_color_prompts_deterministic(prompts_list_in):
+		prompts_text = [str(p) for p in prompts_list_in]
+		if any(_has_existing_color_markup(p) for p in prompts_text):
+			return prompts_text
+
+		unique_sorted = sorted(set(prompts_text), key=lambda s: s.casefold())
+		palette = list(dark_color_wheel.values())
+		colors = [palette[i % len(palette)] for i in range(len(unique_sorted))]
+		color_map = {prompt: colors[i] for i, prompt in enumerate(unique_sorted)}
+		return [colorHTMLText(p, color_map[p]) for p in prompts_text]
+
 	# deal with item classes
-	item_cls = item_types.MATCH(question_text, prompts_list, choices_list)
+	colored_prompts_list = _maybe_color_prompts_deterministic(prompts_list)
+	item_cls = item_types.MATCH(question_text, colored_prompts_list, choices_list)
 	item_cls.item_number = N
 	nocheat_item_cls = nocheater.modify_item_cls(item_cls)
 	nocheat_item_cls._validate()

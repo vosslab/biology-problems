@@ -22,16 +22,16 @@ matching pairs:
     - Heterotrimeric G protein used in olfactory GPCR pathways
   Adenylyl cyclase (AC3):
     - Enzyme that converts ATP to cAMP in olfactory neurons
-    - Cyclase that produces cAMP as a second messenger
+    - Enzyme that produces cAMP as a second messenger
     - ATP-to-cAMP enzyme downstream of G<sub>olf</sub>
   cAMP:
-    - Cyclic AMP second messenger in olfaction
     - Second messenger made from ATP that rises during odor detection
-    - Signaling nucleotide that opens olfactory CNG channels
+    - Signaling molecule that helps open olfactory CNG channels
+    - Cytosolic second messenger produced downstream of olfactory GPCRs
   CNG channel (olfactory):
-    - Ion channel opened by cAMP during odor detection
+    - Ion channel opened by cyclic nucleotides during odor detection
     - Cyclic nucleotide gated channel that depolarizes olfactory neurons
-    - cAMP-gated cation channel in olfactory transduction
+    - Allows Ca<sup>2+</sup> entry that can amplify the olfactory response
   Gustducin:
     - Taste G protein used in bitter and sweet pathways
     - G protein that couples taste GPCRs to downstream second messengers
@@ -58,10 +58,10 @@ matching pairs:
     - Heterotrimeric G protein in the visual cascade
   Phosphodiesterase 6 (PDE6):
     - Enzyme that hydrolyzes cGMP in rods after light activation
-    - Rod phosphodiesterase that lowers cGMP concentration
+    - Enzyme that lowers cGMP concentration during phototransduction
     - cGMP-degrading enzyme downstream of transducin
   cGMP:
-    - Cyclic GMP second messenger that keeps rod CNG channels open in the dark
+    - Second messenger that keeps rod CNG channels open in the dark
     - Signaling nucleotide that falls in light, closing CNG channels
     - Cyclic nucleotide that gates rod outer segment ion channels
   CNG channel (rod outer segment):
@@ -75,7 +75,7 @@ matching pairs:
   Mechanotransduction channel (hair cell MET channel):
     - Ion channel opened by stereocilia deflection in hearing and balance
     - Mechanically gated channel that allows cation influx in hair cells
-    - Transduction channel whose open probability depends on tip link tension
+    - Allows K<sup>+</sup> influx from K<sup>+</sup> rich endolymph to depolarize hair cells
 
 exclude pairs:
   - [cAMP, cGMP]

@@ -8,8 +8,8 @@ key description: sensory modality
 keys description: sensory modalities
 
 # both singular and plural
-value description: primary receptor type
-values description: primary receptor types
+value description: primary receptor cell type
+values description: primary receptor cell types
 
 matching pairs:
   Vision:
@@ -17,13 +17,13 @@ matching pairs:
     - Photoreceptors that use opsins
     - Rod and cone photoreceptors (opsin + retinal)
   Smell (olfaction):
-    - Chemoreceptors (olfactory receptor neurons)
-    - Chemoreceptors that detect volatile ligands
-    - Olfactory GPCR-based chemoreceptors
+    - Olfactory sensory neurons (chemoreceptors; odorant receptors are GPCRs)
+    - Olfactory receptor neurons (odorant GPCRs)
+    - Olfactory sensory neurons that detect odorant molecules
   Taste (gustation):
-    - Chemoreceptors (taste receptor cells in taste buds)
-    - Chemoreceptors in taste buds
-    - Taste receptor cells (chemoreceptors)
+    - Taste receptor cells in taste buds (chemoreceptors)
+    - Taste receptor cells that detect chemicals in food
+    - Taste receptor cells (GPCR pathways and ion channels)
   Hearing (audition):
     - Mechanoreceptors (cochlear hair cells)
     - Inner ear hair cells (mechanoreceptors)
@@ -35,7 +35,7 @@ matching pairs:
   Touch (pressure, vibration):
     - Mechanoreceptors (skin, e.g., Pacinian corpuscles)
     - Cutaneous mechanoreceptors in skin
-    - Mechanoreceptors that detect pressure and vibration
+    - Cutaneous mechanoreceptors (many types; pressure and vibration)
 
 exclude pairs:
   - [Hearing (audition), Balance (vestibular)]

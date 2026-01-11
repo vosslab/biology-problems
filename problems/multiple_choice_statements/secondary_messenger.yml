@@ -4,7 +4,7 @@
 topic: ~
 
 override_question_true: 'Which one of the following is an example of a second messenger?'
-override_question_false: 'Which one of the following is NOT an example of a secondary messengers?'
+override_question_false: 'Which one of the following is NOT an example of a second messenger?'
 
 connection_words: ~
 
@@ -14,6 +14,14 @@ true_statements:
   truth2: IP<sub>3</sub>
 
   truth3: cAMP
+
+  truth4: cGMP
+
+  truth5: diacylglycerol (DAG)
+
+  truth6: nitric oxide (NO)
+
+  truth7: PIP<sub>3</sub>
 
 false_statements:
   false1a: GTP
@@ -40,5 +48,4 @@ false_statements:
 # conflicts, means that the statements cannot appear together
 # add ': True' to each line, so the program runs a faster lookup
 conflict_rules: ~
-
 

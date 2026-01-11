@@ -29,6 +29,9 @@ true_statements:
   truth7a: Olfaction supports high discrimination partly because many receptors contribute to identity coding.
   truth7b: Smell can distinguish many stimuli because odor identity depends on a large receptor repertoire and pattern coding.
 
+  truth8a: Taste is commonly described using a small number of basic qualities (sweet, sour, salty, bitter, and umami).
+  truth8b: Compared with smell, taste is organized into a few basic categories rather than many distinct identities.
+
 false_statements:
   false1a: Each olfactory sensory neuron expresses many different olfactory receptor genes at the same time.
   false1b: Olfactory sensory neurons usually express all olfactory receptor genes.
@@ -51,3 +54,5 @@ false_statements:
   false7a: Olfaction is low discrimination because it relies on labeled line coding for a few odor categories.
   false7b: Smell uses only a small set of receptors, so most odorants activate the same receptor.
 
+  false8a: Taste uses hundreds of receptor types to encode thousands of distinct taste identities like smell.
+  false8b: Taste identity is primarily encoded by combinatorial patterns across many receptor types, like olfaction.

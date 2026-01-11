@@ -54,6 +54,9 @@ true_statements:
   truth12a: Hair cells release neurotransmitter to afferent neurons when depolarized.
   truth12b: Hair cell signaling to the auditory nerve occurs through synaptic transmission.
 
+  truth13a: Unlike many sensory receptors that depolarize to stimulus, rods hyperpolarize to light.
+  truth13b: Rods are unusual because the light response is hyperpolarization, not depolarization.
+
 false_statements:
   false1a: Rhodopsin is a receptor tyrosine kinase that phosphorylates retinal.
   false1b: Rhodopsin is an ion channel that directly conducts photons into the cell.
@@ -83,11 +86,10 @@ false_statements:
   false9b: Hair cells detect sound by photoreception in the cochlea.
 
   false10a: Tip links prevent ion channels from opening and block mechanotransduction.
-  false10b: Tip links are DNA strands that transmit sound signals to the nucleus.
+  false10b: Tip links stabilize stereocilia but do not help gate mechanotransduction channels.
 
   false11a: Hair cells depolarize mainly because Na+ enters from endolymph through ENaC channels.
-  false11b: Hair cell depolarization requires glucose uptake through GLUT1 channels.
+  false11b: Hair cells depolarize mainly because K+ leaves the cell into endolymph when stereocilia deflect.
 
   false12a: Hair cells do not use synapses and communicate only by gap junctions to the auditory nerve.
   false12b: Hair cells send action potentials down the cochlea without neurotransmitter release.
-

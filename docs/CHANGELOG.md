@@ -134,20 +134,33 @@
 - Kept `bptools.write_questions_to_file` as a public wrapper (calling `_write_questions_to_file`) for older batch-style scripts.
 - Made `bptools.add_base_args`, `bptools.add_base_args_batch`, and `bptools.default_color_wheel_calc` private (underscored); scripts should call `bptools.make_arg_parser` instead.
 - Removed unused `bptools.default_color_wheel2` and `bptools.light_and_dark_color_wheel2`, and made `bptools.get_git_root` private (`_get_git_root`) since scripts should use `get_repo_data_path`.
+- Added deterministic coloring for MATCH `prompts_list` in `bptools.formatBB_MAT_Question(...)` unless any prompt already contains HTML color markup.
 - Added `docs/YAML_QUESTION_BANK_INDEX.md` and `tools/build_yaml_question_bank_index.py` to track YAML question bank creation/update dates (for `matching_sets/`, `problems/multiple_choice_statements/`, and `data/` YAML files).
 - Added `tools/test_reorg_git_mv_commands.txt` with a suggested `tests/` subfolder re-org command list (including YAML-focused tests under `tests/yaml/`).
 - Updated `tests/conftest.py` to add `tests/` to `sys.path` so helper imports (e.g., `lib_test_utils`) keep working after moving tests into subfolders.
 - Made `tests/lib_test_utils.py` resolve repo paths across the `problems/` move (so tests can use legacy paths like `inheritance-problems/...` and still work).
 - Added `problems/matching_sets/MATCHING_SET_AUTHORING_GUIDE.md` documenting the YAML schema and test workflow for authoring matching-set question banks (based on `problems/matching_sets/TEMPLATE.yml`).
 - Added matching-set banks `problems/matching_sets/core_receptor_types.yml` (core receptor types) and `problems/matching_sets/pathway_component_to_function.yml` (pathway component to function).
+- Added senses matching-set banks `problems/matching_sets/senses_receptor_types_by_modality.yml` (modality to receptor cell type) and `problems/matching_sets/senses_signal_transduction_matching_set.yml` (signal transduction components to function).
+- Added senses matching-set banks `problems/matching_sets/senses_taste_quality_to_stimulus.yml`, `problems/matching_sets/senses_taste_quality_to_mechanism.yml`, `problems/matching_sets/senses_sensory_cell_types.yml`, and `problems/matching_sets/senses_phototransduction_steps.yml`.
+- Added ion formatting replacement rules (for example `Na<sup>+</sup>`, `H<sub>3</sub>O<sup>+</sup>`) to `problems/matching_sets/senses_taste_quality_to_stimulus.yml` for clearer intro-biology display.
+- Refined `problems/matching_sets/senses_taste_quality_to_stimulus.yml` to remove answer-revealing phrases, expand the canonical stimulus pools, and set `items to match per question: 4` for more prompt-combination variety.
+- Updated `problems/matching_sets/senses_receptor_types_by_modality.yml` wording to be consistent about receptor *cells* (not receptor proteins) and to reduce intro-student confusion.
+- Updated `problems/matching_sets/senses_signal_transduction_matching_set.yml` to reduce "giveaway" wording, add a K<sup>+</sup>-from-endolymph depolarization hint for hair cells, and include an olfaction amplification note (Ca<sup>2+</sup> entry).
 - Improved `problems/matching_sets/MATCHING_SET_AUTHORING_GUIDE.md` with more faculty-focused authoring and quality-check tips.
 - Expanded `problems/matching_sets/MATCHING_SET_AUTHORING_GUIDE.md` with a "Start here" recipe, a copy/paste biology example, difficulty control guidance, and YAML troubleshooting notes.
 - Refined `problems/matching_sets/MATCHING_SET_AUTHORING_GUIDE.md` to use a low-jargon starter example (enzyme classes), add filename/metadata guidance, and avoid repeating the same test command.
+- Documented qti_package_maker MATCH terminology (`prompts_list` vs `choices_list`) and the default deterministic prompt-coloring behavior in `problems/matching_sets/MATCHING_SET_AUTHORING_GUIDE.md`.
+- Added a matching-set authoring reminder to avoid "telegraph" values that repeat prompt keywords in `problems/matching_sets/MATCHING_SET_AUTHORING_GUIDE.md`.
 - Added `problems/multiple_choice_statements/MC_STATEMENTS_AUTHORING_GUIDE.md` documenting the YAML schema and faculty-friendly authoring workflow for multiple-choice statement banks (based on `problems/multiple_choice_statements/TEMPLATE.yml`).
 - Expanded `problems/multiple_choice_statements/MC_STATEMENTS_AUTHORING_GUIDE.md` with faculty-focused topic selection, clearer conflict-group ID examples, concrete patterns for writing good false statements, `~` semantics, and a quick lint checklist.
 - Fixed `problems/multiple_choice_statements/chemical_reactions.yml` statement placement/ID collision and corrected several typos for clarity.
-- Added senses MC-statement banks `problems/multiple_choice_statements/senses_chemosensation_smell_taste_mc_statements.yml` and `problems/multiple_choice_statements/senses_vision_hearing_mc_statements.yml`.
-- Added senses coding MC-statement bank `problems/multiple_choice_statements/senses_coding_principles_smell_vs_taste_mc_statements.yml`.
+- Added senses MC-statement banks `problems/multiple_choice_statements/senses_chemosensation_smell_taste.yml` and `problems/multiple_choice_statements/senses_vision_hearing.yml`.
+- Added senses coding MC-statement bank `problems/multiple_choice_statements/senses_smell_vs_taste.yml`.
+- Updated `problems/multiple_choice_statements/senses_smell_vs_taste.yml` to add additional statements so the bank better fits the recommended size range.
+- Updated `problems/multiple_choice_statements/senses_chemosensation_smell_taste.yml` to clarify mammalian olfaction and add a proton/ion-channel true statement for sour taste.
+- Updated `problems/multiple_choice_statements/senses_vision_hearing.yml` to replace a few cartoonishly wrong distractors with more plausible misconceptions and add a true statement highlighting rod hyperpolarization as a classic exception.
+- Expanded `problems/multiple_choice_statements/secondary_messenger.yml` with additional true second messengers (cGMP, DAG, NO, PIP<sub>3</sub>) and fixed the NOT-a-second-messenger stem grammar.
 - Added filename guidance to `problems/multiple_choice_statements/MC_STATEMENTS_AUTHORING_GUIDE.md` recommending against redundant `*_mc_statements.yml` suffixes.
 - Cross-linked `problems/matching_sets/MATCHING_SET_AUTHORING_GUIDE.md` and `problems/multiple_choice_statements/MC_STATEMENTS_AUTHORING_GUIDE.md` with guidance on when each question-bank format is a better fit.
 - Added descriptive, jargon-free filename convention guidance (for example `senses_<topic>.yml`) to both authoring guides.

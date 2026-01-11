@@ -1,0 +1,61 @@
+#YAML file for Matching Questions
+
+topic: taste_basics
+topic_tag: senses
+learning_objective: Match each taste quality to a canonical stimulus example.
+source: senses chapter
+
+items to match per question: 4
+
+#both singular and plural
+key description: taste quality
+keys description: taste qualities
+
+#both singular and plural
+value description: stimulus
+values description: stimuli
+
+replacement_rules:
+  Na+: "<strong>Na<sup>+</sup></strong>"
+  K+: "<strong>K<sup>+</sup></strong>"
+  Li+: "<strong>Li<sup>+</sup></strong>"
+  H+: "<strong>H<sup>+</sup></strong>"
+  H3O+: "<strong>H<sub>3</sub>O<sup>+</sup></strong>"
+  NaCl: "<strong>NaCl</strong>"
+  MSG: "<strong>MSG</strong>"
+  IMP: "<strong>IMP</strong>"
+  GMP: "<strong>GMP</strong>"
+  L-glutamate: "<strong>L-glutamate</strong>"
+  glutamate: "<strong>glutamate</strong>"
+
+matching pairs:
+  Sweet:
+    - glucose
+    - sucrose
+    - fructose
+    - lactose
+    - maltose
+    - sugars
+  Umami:
+    - glutamate
+    - L-glutamate
+    - MSG
+    - IMP
+    - GMP
+  Sour:
+    - "H3O+"
+    - "H+"
+    - citric acid
+    - acetic acid
+    - lactic acid
+  Salty:
+    - "Na+"
+    - NaCl
+    - "Li+"
+    - "K+"
+  Bitter:
+    - quinine
+    - caffeine
+    - nicotine
+    - denatonium
+    - cycloheximide
