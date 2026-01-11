@@ -12,7 +12,7 @@
 - Fixed `--ma` default choice handling in [problems/biochemistry-problems/alpha_helix_h-bonds.py](problems/biochemistry-problems/alpha_helix_h-bonds.py) so MA no longer errors unless the user explicitly sets `-c/--num-choices` below the minimum.
 - Simplified the metabolic pathway HTML table layout in [problems/biochemistry-problems/metaboliclib.py](problems/biochemistry-problems/metaboliclib.py) to avoid extra empty columns in text previews.
 - Expanded the example pools for hydrophobic/hydrophilic compounds in [problems/biochemistry-problems/which_hydrophobic-simple.py](problems/biochemistry-problems/which_hydrophobic-simple.py) to be more obvious for intro students.
-- Hardened `bptools.make_outfile(...)` to treat common format tokens like `MC`/`MA` as suffixes (not script names) to prevent cross-script output filename collisions like `bbq-MC-questions.txt`.
+- Refactored `bptools.make_outfile(...)` so the base filename always comes from `sys.argv[0]` and positional args are suffix parts (legacy leading `None`/`__file__` arguments are ignored), preventing cross-script output filename collisions like `bbq-MC-questions.txt`.
 
 ## 2026-01-09
 - Updated [docs/CODE_ARCHITECTURE.md](CODE_ARCHITECTURE.md) with expanded component descriptions, clearer data flow, testing details, and known gaps.

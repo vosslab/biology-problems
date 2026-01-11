@@ -8,8 +8,26 @@ import bptools
 
 
 def test_make_outfile_includes_script_and_parts():
-	outfile = bptools.make_outfile("/tmp/my_script.py", "mc", 5, None, "")
-	assert outfile == "bbq-my_script-mc-5-questions.txt"
+	old_argv = list(sys.argv)
+	try:
+		sys.argv[0] = "/tmp/my_script.py"
+		outfile = bptools.make_outfile("mc", 5, None, "")
+		assert outfile == "bbq-my_script-mc-5-questions.txt"
+	finally:
+		sys.argv = old_argv
+
+
+def test_make_outfile_ignores_legacy_first_arg_none_or_path():
+	old_argv = list(sys.argv)
+	try:
+		sys.argv[0] = "/tmp/my_script.py"
+		outfile_none = bptools.make_outfile(None, "mc")
+		assert outfile_none == "bbq-my_script-mc-questions.txt"
+
+		outfile_path = bptools.make_outfile("/tmp/ignored.py", "mc")
+		assert outfile_path == "bbq-my_script-mc-questions.txt"
+	finally:
+		sys.argv = old_argv
 
 
 def test_make_outfile_treats_format_token_as_suffix():

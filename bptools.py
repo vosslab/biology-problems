@@ -538,38 +538,35 @@ def collect_question_batches(write_question_batch, args, print_histogram_flag=Tr
 	return questions
 
 #==========================
-def make_outfile(script_path: str = None, *parts) -> str:
+def make_outfile(*parts) -> str:
 	"""
 	Build a bbq output filename with optional suffix parts.
 
 	Args:
-		script_path (str): Script path used to derive the base name.
 		parts (tuple): Optional suffix parts to append to the filename.
 
 	Returns:
 		str: Output filename.
 	"""
-	if script_path is not None:
-		script_path_text = str(script_path).strip()
-		# Backward-compatible guard: many older scripts mistakenly pass a question-format
-		# token (e.g., "MC") as the first positional argument, which becomes the base name
-		# ("bbq-MC-questions.txt") and collides across scripts.
-		known_format_tokens = {
-			"mc", "ma", "num", "fib", "ord",
-			"MC", "MA", "NUM", "FIB", "ORD",
-		}
-		if (
-			script_path_text in known_format_tokens
-			and "/" not in script_path_text
-			and "\\" not in script_path_text
-			and os.sep not in script_path_text
-			and "." not in script_path_text
-		):
-			parts = (script_path_text,) + parts
-			script_path = None
-	if script_path is None:
-		script_path = sys.argv[0]
-	if script_path is None or len(script_path) == 0:
+	# Backward compatibility:
+	# - historical call sites used `make_outfile(None, ...)` or `make_outfile(__file__, ...)`
+	#   even though the base name is already derived from sys.argv[0].
+	# - some older call sites used `make_outfile("MC")` intending "MC" as a suffix part.
+	if len(parts) > 0 and parts[0] is None:
+		parts = parts[1:]
+	elif len(parts) > 0:
+		first = str(parts[0]).strip()
+		looks_like_path = (
+			(os.sep in first)
+			or ("/" in first)
+			or ("\\" in first)
+			or first.endswith(".py")
+		)
+		if looks_like_path:
+			parts = parts[1:]
+
+	script_path = sys.argv[0]
+	if script_path is None or len(str(script_path)) == 0:
 		script_name = "script"
 	else:
 		script_name = os.path.splitext(os.path.basename(script_path))[0]
