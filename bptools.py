@@ -524,6 +524,19 @@ def collect_question_batches(write_question_batch, args, print_histogram_flag=Tr
 	Returns:
 		list: List of question strings.
 	"""
+	global _warned_collect_question_batches
+	try:
+		warned = _warned_collect_question_batches
+	except NameError:
+		warned = False
+	if warned is False:
+		_warned_collect_question_batches = True
+		sys.stderr.write(
+			"DEPRECATION WARNING: bptools.collect_question_batches is a legacy pattern; "
+			"prefer single-question writers with bptools.collect_and_write_questions, "
+			"and use a prebuilt SCENARIOS list with shuffle-once + modulo-N selection. "
+			"Only use batch writers when one attempt must emit multiple questions.\n"
+		)
 	questions = []
 	n = 0
 	max_questions = args.max_questions

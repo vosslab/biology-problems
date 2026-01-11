@@ -82,6 +82,8 @@ ALL_CROSSES_SET = set([
 	"aa x aa",
 ])
 
+SCENARIOS: list[tuple[str, str, frozenset[str]]] = []
+
 #===========================================================
 #===========================================================
 def format_html_cross(cross_text: str) -> str:
@@ -167,6 +169,7 @@ def parse_arguments():
 	"""
 	# Create an argument parser with a description of the script's functionality
 	parser = bptools.make_arg_parser(description="Generate questions.", batch=True)
+	parser = bptools.add_scenario_args(parser)
 
 	# Parse the provided command-line arguments and return them
 	args = parser.parse_args()
@@ -185,28 +188,28 @@ def write_question_batch(start_num: int, args) -> list:
 	Returns:
 		int: Total number of questions written
 	"""
-	N = start_num
+	if len(SCENARIOS) == 0:
+		return []
+
 	questions = []
 	remaining = None
 	if args.max_questions is not None:
 		remaining = args.max_questions - (start_num - 1)
 		if remaining <= 0:
 			return questions
-	for question_statement, answers in QUESTION_BANK:
-		answers_set = set(answers)
-		if not answers_set.issubset(ALL_CROSSES_SET):
-			raise ValueError(
-				"QUESTION_BANK answer set contains an unknown cross: "
-				f"{sorted(list(answers_set - ALL_CROSSES_SET))}"
-			)
-		for answer_cross in answers_set:
-			choice_pool_set = (ALL_CROSSES_SET - answers_set) | {answer_cross}
-			complete_question = write_question(N, question_statement, answer_cross, choice_pool_set)
-			if complete_question:
-				questions.append(complete_question)
-				N += 1
-				if remaining is not None and len(questions) >= remaining:
-					return questions
+
+	batch_size = len(SCENARIOS) if remaining is None else min(len(SCENARIOS), remaining)
+	for offset in range(batch_size):
+		N = start_num + offset
+		idx = (N - 1) % len(SCENARIOS)
+		question_statement, answer_cross, answers_frozen = SCENARIOS[idx]
+		answers_set = set(answers_frozen)
+		choice_pool_set = (ALL_CROSSES_SET - answers_set) | {answer_cross}
+
+		complete_question = write_question(N, question_statement, answer_cross, choice_pool_set)
+		if complete_question:
+			questions.append(complete_question)
+
 	return questions
 
 
@@ -220,6 +223,22 @@ def main():
 
 	# Parse arguments from the command line
 	args = parse_arguments()
+
+	global SCENARIOS
+	SCENARIOS = []
+	for question_statement, answers in QUESTION_BANK:
+		answers_set = set(answers)
+		if not answers_set.issubset(ALL_CROSSES_SET):
+			raise ValueError(
+				"QUESTION_BANK answer set contains an unknown cross: "
+				f"{sorted(list(answers_set - ALL_CROSSES_SET))}"
+			)
+		for answer_cross in answers_set:
+			SCENARIOS.append((question_statement, answer_cross, frozenset(answers_set)))
+	if args.scenario_order == 'sorted':
+		SCENARIOS.sort(key=lambda x: (x[0], x[1]))
+	else:
+		random.shuffle(SCENARIOS)
 
 	outfile = bptools.make_outfile()
 	questions = bptools.collect_question_batches(write_question_batch, args)

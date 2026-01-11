@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 
 # Standard Library
-import os
 import math
 import random
-import argparse
 
 # Local repo modules
 import bptools
@@ -117,7 +115,8 @@ def get_asci_counts(distance: float) -> dict:
 	check_count = sum(asci_count_dict.values())
 	if check_count != total_count:
 		raise ValueError
-	print(asci_count_dict)
+	if debug:
+		print(asci_count_dict)
 	return asci_count_dict
 
 #=====================
@@ -223,7 +222,8 @@ def make_choices(asci_count_dict):
 		if key not in parental_patterns:
 			answer_values.append(asci_count_dict[key])
 	answer_text = values_to_text(answer_values, total_count)
-	print(f'answer_text={answer_text}')
+	if debug:
+		print(f'answer_text={answer_text}')
 	choices_set.add(answer_text)
 
 	parent_values = []
@@ -231,7 +231,8 @@ def make_choices(asci_count_dict):
 		if key in parental_patterns:
 			parent_values.append(asci_count_dict[key])
 	parent_text = values_to_text(parent_values, total_count)
-	print(f'parent_text={parent_text}')
+	if debug:
+		print(f'parent_text={parent_text}')
 	choices_set.add(parent_text)
 
 	all_keys = list(asci_count_dict.keys())
@@ -287,55 +288,25 @@ def generate_question(N: int, question_type: str) -> str:
 
 #=====================
 def parse_arguments():
-	"""Parses command-line arguments for the script."""
-	parser = argparse.ArgumentParser(description="Generate Neurospora genetics questions.")
-	question_group = parser.add_mutually_exclusive_group(required=True)
-
-	# Add question type argument with choices
-	question_group.add_argument(
-		'-t', '--type', dest='question_type', type=str, choices=('num', 'mc'),
-		help='Set the question type: num (numeric) or mc (multiple choice)'
+	parser = bptools.make_arg_parser(
+		description="Generate ordered tetrad gene-centromere distance questions."
 	)
-	question_group.add_argument(
-		'-m', '--mc', dest='question_type', action='store_const', const='mc',
-		help='Set question type to multiple choice'
-	)
-	question_group.add_argument(
-		'-n', '--num', dest='question_type', action='store_const', const='num',
-		help='Set question type to numeric'
-	)
-
-	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='Number of duplicate runs to do', default=1
-	)
-
+	parser = bptools.add_question_format_args(parser, types_list=['mc', 'num'], required=True)
 	args = parser.parse_args()
-
 	return args
 
 
 #=====================
 def main():
-	"""Main function that handles argument parsing, question generation, and file writing."""
 	args = parse_arguments()
 
-	outfile = f'bbq-{os.path.splitext(os.path.basename(__file__))[0]}-{args.question_type.upper()}-questions.txt'
-	print(f'Writing to file: {outfile}')
+	outfile = bptools.make_outfile(args.question_type.upper())
 
-	# Open the output file and generate questions
-	with open(outfile, 'w') as f:
-		N = 1  # Question number counter
-		for _ in range(args.duplicates):
-			final_question = generate_question(N, args.question_type)
-			if final_question:
-				N += 1
-				f.write(final_question)
-	f.close()
-
-	# Display histogram if question type is multiple choice
-	if args.question_type == "mc":
-		bptools.print_histogram()
+	bptools.collect_and_write_questions(
+		lambda N, args: generate_question(N, args.question_type),
+		args,
+		outfile,
+	)
 
 
 #===========================================================

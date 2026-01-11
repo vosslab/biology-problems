@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 
 # Standard Library
-import os
 import random
-import argparse
 
 # Local repo modules
 import bptools
@@ -11,7 +9,7 @@ import tetradlib
 import genemaplib as gml
 import phenotypes_for_yeast
 
-debug = True
+debug = False
 
 
 
@@ -341,68 +339,29 @@ def generate_question(N: int, question_type, num_choices) -> str:
 
 #=====================
 def parse_arguments():
-	"""Parses command-line arguments for the script."""
-	parser = argparse.ArgumentParser(description="Generate genetics mapping questions.")
-	question_group = parser.add_mutually_exclusive_group(required=True)
-
-	# Add question type argument with choices
-	question_group.add_argument(
-		'-t', '--type', dest='question_type', type=str, choices=('num', 'mc'),
-		help='Set the question type: num (numeric) or mc (multiple choice)'
+	parser = bptools.make_arg_parser(
+		description="Generate unordered tetrad two-gene mapping (find distance) questions."
 	)
-	question_group.add_argument(
-		'-m', '--mc', dest='question_type', action='store_const', const='mc',
-		help='Set question type to multiple choice'
-	)
-	question_group.add_argument(
-		'-n', '--num', dest='question_type', action='store_const', const='num',
-		help='Set question type to numeric'
-	)
-
-	parser.add_argument('-c', '--choices', type=int, dest='num_choices',
-		help='number of choices to choose from in the question', default=6)
-
-	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='Number of duplicate runs to do', default=1
-	)
-
+	parser = bptools.add_choice_args(parser, default=6)
+	parser = bptools.add_question_format_args(parser, types_list=['mc', 'num'], required=True)
 	args = parser.parse_args()
-
 	return args
+
+#=====================
+def write_question(N: int, args) -> str | None:
+	return generate_question(N, args.question_type, args.num_choices)
 
 #=====================
 #=====================
 def main():
 	args = parse_arguments()
 
-	# Generate output filename based on script name and question type
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
-	# Define output file name
-	outfile = (
-		'bbq-' +
-		script_name +
-		'-' +
-		args.question_type.upper() +
-		'-questions.txt'
-		)
-	print(f'Writing to file: {outfile}')
-
-	# Open file and write questions
-	N = 0
-	with open(outfile, 'w') as f:
-		while N < args.duplicates:
-			final_question = generate_question(N, args.question_type, args.num_choices)
-			if final_question is not None:
-				N += 1
-				f.write(final_question)
-			else:
-				print("Question generation failed")
-	f.close()
-
-	# Display histogram if question type is multiple choice
-	if args.question_type == "mc":
-		bptools.print_histogram()
+	outfile_suffix = args.question_type.upper()
+	if args.question_type == 'mc':
+		outfile = bptools.make_outfile(outfile_suffix, f"{args.num_choices}_choices")
+	else:
+		outfile = bptools.make_outfile(outfile_suffix)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 if __name__ == "__main__":
 	main()

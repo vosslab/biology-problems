@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 
 # Standard Library
-import os
 import random
-import argparse
 
 # Local repo modules
 import bptools
@@ -11,7 +9,7 @@ import tetradlib
 import genemaplib as gml
 import phenotypes_for_yeast
 
-debug = True
+debug = False
 
 #===========================
 #===========================
@@ -213,7 +211,7 @@ def generate_question(N: int) -> str:
 
 	# Determine the type of question (linked or unlinked) based on the question number
 	# This alternates the question type for each call, so even questions are "linked" and odd questions are "unlinked"
-	question_type_str = ('linked', 'unlinked')[N % 2]
+	question_type_str = ('linked', 'unlinked')[(N - 1) % 2]
 
 	# Randomly generate a genetic distance between 12 and 40 centiMorgans for the question
 	if question_type_str == "unlinked":
@@ -288,37 +286,23 @@ def generate_question(N: int) -> str:
 #=====================
 #=====================
 def parse_arguments():
-	"""Parses command-line arguments for the script."""
-	parser = argparse.ArgumentParser(description="Generate genetics questions.")
-
-	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='Number of duplicate runs to do', default=1
+	parser = bptools.make_arg_parser(
+		description="Generate unordered tetrad two-gene linkage (linked vs unlinked) MC questions."
 	)
-
 	args = parser.parse_args()
 	return args
+
+#===========================
+def write_question(N: int, args) -> str | None:
+	return generate_question(N)
 
 #=====================
 #=====================
 def main():
 	args = parse_arguments()
 
-	# Generate output filename based on script name and question type
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
-	outfile = f'bbq-{script_name}-questions.txt'
-	print(f'Writing to file: {outfile}')
-
-	# Open file and write questions
-	N = 0
-	with open(outfile, 'w') as f:
-		for _ in range(args.duplicates):
-			final_question = generate_question(N)
-			if final_question is not None:
-				N += 1
-				f.write(final_question)
-
-	bptools.print_histogram()
+	outfile = bptools.make_outfile()
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 if __name__ == "__main__":
 	main()

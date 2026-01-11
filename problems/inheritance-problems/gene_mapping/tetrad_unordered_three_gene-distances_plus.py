@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 
-import os
-#import sys
 import random
-import argparse
 import itertools
 
 import bptools
@@ -14,7 +11,13 @@ import tetrad_solver_lib as tusl
 
 #need this so students can add info to the box
 bptools.use_add_no_click_div = False
-debug = True
+debug = False
+
+DISTANCE_TRIPLETS: list[tuple[int, int, int]] = []
+QUESTION_HEADER = ""
+FOOTER_STEPS = ""
+IMPORTANT_TIPS = ""
+PHENOTYPE_DICT: dict = {}
 
 #===========================================================
 #===========================================================
@@ -161,81 +164,81 @@ def make_answer_map(gene_order_str, pair_distance_map):
 
 #=====================
 def parse_arguments():
-	"""Parses command-line arguments for the script."""
-	parser = argparse.ArgumentParser(description="Generate genetics questions.")
-	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='Number of duplicate runs to do', default=1
+	parser = bptools.make_arg_parser(
+		description="Generate unordered tetrad three-gene mapping (distances + order) FIB+ questions."
 	)
 	args = parser.parse_args()
-
 	return args
+
+#=====================
+def write_question(N: int, args) -> str | None:
+	gene_letters_str = gml.get_gene_letters(3)
+	question_setup = get_question_setup(gene_letters_str)
+	phenotype_info_str = gml.get_phenotype_info(gene_letters_str, PHENOTYPE_DICT)
+
+	gene_order_str = gml.get_random_gene_order(gene_letters_str)
+
+	distances = sorted(random.choice(DISTANCE_TRIPLETS))
+	while distances[1] > 26 and len(set(distances)) == 3:
+		distances = sorted(random.choice(DISTANCE_TRIPLETS))
+	if debug:
+		print(f"Distances: {distances}")
+
+	progeny_size = gml.get_general_progeny_size(distances) * 3
+
+	progeny_tetrads_count_dict = tetradlib.construct_progeny_counts(
+		gene_letters_str,
+		gene_order_str,
+		distances,
+		progeny_size,
+	)
+	#Check if progeny_tetrads_count_dict are valid
+	if tetradlib.check_if_progeny_counts_are_valid(progeny_tetrads_count_dict) is False:
+		return None
+
+	if debug:
+		ascii_table = tetradlib.get_progeny_ascii_table(3, progeny_tetrads_count_dict, progeny_size)
+		print(ascii_table)
+
+	html_table = tetradlib.make_progeny_html_table(progeny_tetrads_count_dict, progeny_size)
+	pair_distance_map, solved_gene_order_str, pair_details = (
+		tusl.solve_unordered_tetrad_three_gene(progeny_tetrads_count_dict, gene_letters_str)
+	)
+	if debug:
+		print(pair_details)
+
+	observed_distances_sorted = sorted(pair_distance_map.values())
+	expected_distances_sorted = sorted(distances)
+	if observed_distances_sorted != expected_distances_sorted:
+		if debug:
+			print("Observed distances do not match expected distances.")
+			print(f"observed={observed_distances_sorted} expected={expected_distances_sorted}")
+		return None
+	answer_map = make_answer_map(solved_gene_order_str, pair_distance_map)
+
+	complete_question = QUESTION_HEADER + phenotype_info_str + html_table + question_setup
+	complete_question += FOOTER_STEPS + IMPORTANT_TIPS
+	return bptools.formatBB_FIB_PLUS_Question(N, complete_question, answer_map)
 
 #=====================
 #=====================
 def main():
 	args = parse_arguments()
 
-	# Load the distance triplets and question headers
-	distance_triplet_list = gml.get_all_distance_triplets(msg=debug)
-	question_header = get_question_header()
-	footer_steps = get_question_footer_steps()
-	important_tips = get_important_tips()
-	phenotype_dict = phenotypes_for_yeast.phenotype_dict
+	global DISTANCE_TRIPLETS
+	global QUESTION_HEADER
+	global FOOTER_STEPS
+	global IMPORTANT_TIPS
+	global PHENOTYPE_DICT
 
-	# Define output file name
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('Writing to file:', outfile)
-	f = open(outfile, 'w')
-	N = 1
+	DISTANCE_TRIPLETS = gml.get_all_distance_triplets(msg=debug)
+	QUESTION_HEADER = get_question_header()
+	FOOTER_STEPS = get_question_footer_steps()
+	IMPORTANT_TIPS = get_important_tips()
+	PHENOTYPE_DICT = phenotypes_for_yeast.phenotype_dict
 
-	for _ in range(args.duplicates):
-		gene_letters_str = gml.get_gene_letters(3)
-		question_setup = get_question_setup(gene_letters_str)
-		phenotype_info_str = gml.get_phenotype_info(gene_letters_str, phenotype_dict)
-
-		gene_order_str = gml.get_random_gene_order(gene_letters_str)
-
-		distances = sorted(random.choice(distance_triplet_list))
-		while distances[1] > 26 and len(set(distances)) == 3:
-			distances = sorted(random.choice(distance_triplet_list))
-		if debug: print(f"Distances: {distances}")
-
-		progeny_size = gml.get_general_progeny_size(distances) * 3
-
-		progeny_tetrads_count_dict = tetradlib.construct_progeny_counts(gene_letters_str, gene_order_str, distances, progeny_size)
-		#Check if progeny_tetrads_count_dict are valid
-		if tetradlib.check_if_progeny_counts_are_valid(progeny_tetrads_count_dict) is False:
-			continue
-
-		ascii_table = tetradlib.get_progeny_ascii_table(3, progeny_tetrads_count_dict, progeny_size)
-		print(ascii_table)
-		html_table = tetradlib.make_progeny_html_table(progeny_tetrads_count_dict, progeny_size)
-		pair_distance_map, solved_gene_order_str, pair_details = (
-			tusl.solve_unordered_tetrad_three_gene(progeny_tetrads_count_dict, gene_letters_str)
-		)
-		if debug:
-			print(pair_details)
-		observed_distances_sorted = sorted(pair_distance_map.values())
-		expected_distances_sorted = sorted(distances)
-		if observed_distances_sorted != expected_distances_sorted:
-			print(f"Observed distances do not match expected distances.")
-			print(f"observed={observed_distances_sorted} expected={expected_distances_sorted}")
-			continue
-		answer_map = make_answer_map(solved_gene_order_str, pair_distance_map)
-
-		# Combine all parts of the question into a single HTML string
-		complete_question = question_header + phenotype_info_str + html_table + question_setup
-		complete_question += footer_steps + important_tips
-		final_question = bptools.formatBB_FIB_PLUS_Question(N, complete_question, answer_map)
-
-		if final_question is not None:
-			N += 1
-			f.write(final_question)
-		else:
-			print("Question generation failed")
-
-	f.close()
+	outfile = bptools.make_outfile()
+	bptools.collect_and_write_questions(write_question, args, outfile, print_histogram_flag=False)
 
 #===========================================================
 #===========================================================

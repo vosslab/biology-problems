@@ -2,6 +2,7 @@
 
 # external python/pip modules
 import sys
+import random
 
 # local repo modules
 import bptools
@@ -11,6 +12,8 @@ import aminoacidlib
 
 bptools.use_insert_hidden_terms = False
 bptools.use_add_no_click_div = False
+
+SCENARIOS: list[str] = []
 
 #======================================
 #======================================
@@ -57,15 +60,30 @@ def write_question(N: int, answer_amino_acid_name: str, pcl: object, num_choices
 #======================================
 #======================================
 def write_question_batch(start_num: int, args) -> list[str]:
+	if len(SCENARIOS) == 0:
+		return []
+
 	questions = []
 	pcl = pubchemlib.PubChemLib()
-	N = start_num
-	for amino_acid_name in aminoacidlib.amino_acids_fullnames:
+
+	remaining = None
+	if args.max_questions is not None:
+		remaining = args.max_questions - (start_num - 1)
+		if remaining <= 0:
+			pcl.close()
+			return []
+	batch_size = len(SCENARIOS) if remaining is None else min(len(SCENARIOS), remaining)
+
+	for offset in range(batch_size):
+		N = start_num + offset
+		idx = (N - 1) % len(SCENARIOS)
+		amino_acid_name = SCENARIOS[idx]
+
 		complete_question = write_question(N, amino_acid_name, pcl, args.num_choices)
 		if complete_question is None:
 			continue
 		questions.append(complete_question)
-		N += 1
+
 	pcl.close()
 	return questions
 
@@ -74,14 +92,24 @@ def write_question_batch(start_num: int, args) -> list[str]:
 def parse_arguments():
 	parser = bptools.make_arg_parser(description="Generate amino acid structure matching questions.", batch=True)
 	parser = bptools.add_choice_args(parser, default=4)
+	parser = bptools.add_scenario_args(parser)
 	args = parser.parse_args()
 	return args
 
 #======================================
 #======================================
 def main():
+	global SCENARIOS
+
 	args = parse_arguments()
 	outfile = bptools.make_outfile(f"{args.num_choices}_choices")
+
+	SCENARIOS = list(aminoacidlib.amino_acids_fullnames)
+	if args.scenario_order == 'sorted':
+		SCENARIOS.sort()
+	else:
+		random.shuffle(SCENARIOS)
+
 	questions = bptools.collect_question_batches(write_question_batch, args)
 	bptools.write_questions_to_file(questions, outfile)
 

@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
-import os
 import random
-import argparse
 
 import bptools
 import gene_map_class_lib as gmc
@@ -51,81 +49,53 @@ def get_important_tips():
 
 #=====================
 def parse_arguments():
-	"""Parses command-line arguments for the script."""
-	parser = argparse.ArgumentParser(description="Generate Neurospora genetics questions.")
-	question_group = parser.add_mutually_exclusive_group(required=True)
-
-	# Add question type argument with choices
-	question_group.add_argument(
-		'-t', '--type', dest='question_type', type=str, choices=('num', 'mc'),
-		help='Set the question type: num (numeric) or mc (multiple choice)'
+	parser = bptools.make_arg_parser(
+		description="Generate three-point test cross (one gene-pair distance) questions."
 	)
-	question_group.add_argument(
-		'-m', '--mc', dest='question_type', action='store_const', const='mc',
-		help='Set question type to multiple choice'
-	)
-	question_group.add_argument(
-		'-n', '--num', dest='question_type', action='store_const', const='num',
-		help='Set question type to numeric'
-	)
-
-	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='Number of duplicate runs to do', default=1
-	)
-
+	parser = bptools.add_question_format_args(parser, types_list=['mc', 'num'], required=True)
 	args = parser.parse_args()
-
 	return args
+
+#=====================
+def write_question(N: int, args) -> str | None:
+	GMC = gmc.GeneMappingClass(3, N)
+	GMC.debug = debug
+	GMC.question_type = args.question_type
+	GMC.setup_question()
+
+	header = GMC.get_question_header()
+	html_table = GMC.get_progeny_html_table()
+	phenotype_info_text = GMC.get_phenotype_info()
+
+	genes_list = list(GMC.gene_order_str)
+	gene_indices = random.sample(list(range(1, 4)), 2)
+	gene_index_tuple = tuple(sorted(gene_indices))
+	gene_pair = (genes_list[gene_index_tuple[0]-1], genes_list[gene_index_tuple[1]-1])
+
+	answer_distance = GMC.distances_dict[gene_index_tuple]
+
+	assert gene_pair == (
+		GMC.gene_order_str[gene_index_tuple[0]-1],
+		GMC.gene_order_str[gene_index_tuple[1]-1]
+	), "gene_pair does not match gene_order_str at gene_index_tuple"
+
+	question_string = get_question_text(args.question_type, gene_pair)
+	full_question = header + phenotype_info_text + html_table + question_string
+	GMC.is_valid_html(full_question)
+
+	if args.question_type == 'num':
+		return bptools.formatBB_NUM_Question(N, full_question, answer_distance, 0.1, tol_message=False)
+
+	choices_list, answer_text = GMC.make_choices(gene_pair)
+	return bptools.formatBB_MC_Question(N, full_question, choices_list, answer_text)
 
 #=====================
 #=====================
 def main():
 	args = parse_arguments()
 
-	outfile = ('bbq-' + os.path.splitext(os.path.basename(__file__))[0]
-		+ f'-{args.question_type.upper()}'
-		+ '-questions.txt')
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	N = 0
-	for i in range(args.duplicates):
-		N += 1
-		# Gene Mapping Class
-		GMC = gmc.GeneMappingClass(3, N)
-		GMC.debug = True
-		GMC.question_type = args.question_type
-		GMC.setup_question()
-		print(GMC.get_progeny_ascii_table())
-		header = GMC.get_question_header()
-		html_table = GMC.get_progeny_html_table()
-		phenotype_info_text = GMC.get_phenotype_info()
-
-		genes_list = list(GMC.gene_order_str)
-		gene_indices = random.sample(list(range(1,4)), 2)
-		gene_index_tuple = tuple(sorted(gene_indices))
-		gene_pair = (genes_list[gene_index_tuple[0]-1], genes_list[gene_index_tuple[1]-1])
-
-		answer_distance = GMC.distances_dict[gene_index_tuple]
-		print(gene_pair, gene_index_tuple)
-
-		assert gene_pair == (
-			GMC.gene_order_str[gene_index_tuple[0]-1],
-			GMC.gene_order_str[gene_index_tuple[1]-1]
-		), "gene_pair does not match gene_order_str at gene_index_tuple"
-
-		question_string = get_question_text(args.question_type, gene_pair)
-		full_question = header + phenotype_info_text + html_table + question_string
-		GMC.is_valid_html(full_question)
-		if args.question_type == 'num':
-			final_question = bptools.formatBB_NUM_Question(N, full_question, answer_distance, 0.1, tol_message=False)
-		elif args.question_type == 'mc':
-			choices_list, answer_text = GMC.make_choices(gene_pair)
-			final_question = bptools.formatBB_MC_Question(N, full_question, choices_list, answer_text)
-
-		f.write(final_question)
-	f.close()
-	bptools.print_histogram()
+	outfile = bptools.make_outfile(args.question_type.upper())
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #===========================================================
 #===========================================================

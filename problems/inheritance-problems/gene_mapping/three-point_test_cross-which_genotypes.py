@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
-import os
 import random
-import argparse
 
 import bptools
 import gene_map_class_lib as gmc
@@ -38,67 +36,72 @@ def get_question_text(question_type='parental', gene_pair=None):
 
 #=====================
 #=====================
-if __name__ == "__main__":
-	parser = argparse.ArgumentParser()
+def parse_arguments():
+	parser = bptools.make_arg_parser(
+		description="Generate three-point test cross genotype identification (MA) questions."
+	)
 	question_group = parser.add_mutually_exclusive_group(required=True)
-	# Add question type argument with choices
-	question_group.add_argument('-t', '--type', dest='question_type', type=str,
-		choices=('parental', 'double', 'genes'), help='Set the question type: accept or reject')
-	question_group.add_argument('-p', '--parental', dest='question_type', action='store_const',
-		const='parental',)
-	question_group.add_argument('-D', '--double', dest='question_type', action='store_const',
-		const='double',)
-	question_group.add_argument('-g', '--genes', dest='question_type', action='store_const',
-		const='genes',)
-	parser.add_argument('-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='number of duplicate runs to do', default=1)
+	question_group.add_argument(
+		'-t', '--type', dest='mode', type=str,
+		choices=('parental', 'double', 'genes'),
+		help='Select which genotype set students must identify.'
+	)
+	question_group.add_argument(
+		'-p', '--parental', dest='mode', action='store_const', const='parental',
+		help='Identify parental genotype combinations.'
+	)
+	question_group.add_argument(
+		'-D', '--double', dest='mode', action='store_const', const='double',
+		help='Identify double crossover genotype combinations.'
+	)
+	question_group.add_argument(
+		'-g', '--genes', dest='mode', action='store_const', const='genes',
+		help='Identify all recombinant genotypes for a gene pair.'
+	)
 	args = parser.parse_args()
+	return args
 
-	outfile = ('bbq-' + os.path.splitext(os.path.basename(__file__))[0]
-		+ f'-{args.question_type.upper()}'
-		+ '-questions.txt')
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	N = 0
-	for i in range(args.duplicates):
-		N += 1
-		# Gene Mapping Class
-		GMC = gmc.GeneMappingClass(3, N)
-		GMC.setup_question()
+#=====================
+def write_question(N: int, args) -> str | None:
+	GMC = gmc.GeneMappingClass(3, N)
+	GMC.setup_question()
+	if debug:
 		print(GMC.get_progeny_ascii_table())
-		header = GMC.get_question_header()
-		html_table = GMC.get_progeny_html_table()
-		phenotype_info_text = GMC.get_phenotype_info()
+	header = GMC.get_question_header()
+	html_table = GMC.get_progeny_html_table()
+	phenotype_info_text = GMC.get_phenotype_info()
 
-		#typemap, type_categories = makeQuestion(basetype, geneorder, distances, progeny_size)
+	sorted_genotype_counts = sorted(GMC.genotype_counts.items(), key=lambda x: x[1], reverse=True)
+	parental_genotypes_tuple = tuple(sorted((sorted_genotype_counts[0][0], sorted_genotype_counts[1][0])))
+	if parental_genotypes_tuple != GMC.parental_genotypes_tuple:
+		raise ValueError(f'parental_genotypes_tuple: {parental_genotypes_tuple} != {GMC.parental_genotypes_tuple}')
+	double_cross_genotypes_tuple = (sorted_genotype_counts[-1][0], sorted_genotype_counts[-2][0])
 
-		sorted_genotype_counts = sorted(GMC.genotype_counts.items(), key=lambda x: x[1], reverse=True)
-		parental_genotypes_tuple = tuple(sorted((sorted_genotype_counts[0][0], sorted_genotype_counts[1][0])))
-		if parental_genotypes_tuple != GMC.parental_genotypes_tuple:
-			raise ValueError(f'parental_genotypes_tuple: {parental_genotypes_tuple} != {GMC.parental_genotypes_tuple}')
-		double_cross_genotypes_tuple = (sorted_genotype_counts[-1][0], sorted_genotype_counts[-2][0])
+	choices_list = sorted(GMC.genotype_counts.keys(), reverse=True)
+	gene_pair = None
+	if args.mode == 'parental':
+		answers_list = list(GMC.parental_genotypes_tuple)
+	elif args.mode == 'double':
+		answers_list = list(double_cross_genotypes_tuple)
+	elif args.mode == 'genes':
+		genes_list = list(GMC.gene_letters_str)
+		random.shuffle(genes_list)
+		gene_pair = tuple(genes_list[0:2])
+		answers_list = GMC.get_all_recombinants_for_gene_pair(gene_pair)
+	else:
+		raise ValueError(f'unknown mode: {args.mode}')
 
-		choices_list = sorted(GMC.genotype_counts.keys(), reverse=True)
-		gene_pair = None
-		if args.question_type == 'parental':
-			answers_list = list(GMC.parental_genotypes_tuple)
-		elif args.question_type == 'double':
-			answers_list = list(double_cross_genotypes_tuple)
-		elif args.question_type == 'genes':
-			genes_list = list(GMC.gene_letters_str)
-			random.shuffle(genes_list)
-			gene_pair = tuple(genes_list[0:2])
-			answers_list = GMC.get_all_recombinants_for_gene_pair(gene_pair)
-		else:
-			raise ValueError(f'unknown question type: {args.question_type}')
+	question_string = get_question_text(args.mode, gene_pair)
+	full_question = header + phenotype_info_text + html_table + question_string
+	GMC.is_valid_html(full_question)
+	return bptools.formatBB_MA_Question(N, full_question, choices_list, answers_list)
 
-		question_string = get_question_text(args.question_type, gene_pair)
-		full_question = header + phenotype_info_text + html_table + question_string
-		GMC.is_valid_html(full_question)
-		final_question = bptools.formatBB_MA_Question(N, full_question, choices_list, answers_list)
+#=====================
+def main():
+	args = parse_arguments()
+	outfile = bptools.make_outfile(args.mode.upper())
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
-		f.write(final_question)
-	f.close()
-	bptools.print_histogram()
-
-#THE END
+#=====================
+if __name__ == "__main__":
+	main()

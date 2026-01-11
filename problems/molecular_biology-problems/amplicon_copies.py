@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 
+import random
+
 import bptools
+
+SCENARIOS: list[int] = []
 
 def make_choices_for_cycle(cycle_num: int, num_choices: int):
 	if cycle_num < 2:
@@ -38,14 +42,22 @@ def make_choices_for_cycle(cycle_num: int, num_choices: int):
 	return None, None
 
 def write_question_batch(start_num: int, args) -> list:
+	if len(SCENARIOS) == 0:
+		return []
+
 	questions = []
 	remaining = None
 	if args.max_questions is not None:
 		remaining = args.max_questions - (start_num - 1)
 		if remaining <= 0:
 			return questions
-	N = start_num
-	for cycle_num in range(1, args.num_cycles + 1):
+
+	batch_size = len(SCENARIOS) if remaining is None else min(len(SCENARIOS), remaining)
+	for offset in range(batch_size):
+		N = start_num + offset
+		idx = (N - 1) % len(SCENARIOS)
+		cycle_num = SCENARIOS[idx]
+
 		question = ""
 		question += "Starting with genomic DNA, how many copies of the double-stranded "
 		question += f"amplicon of the exact length are there after {cycle_num} rounds of PCR?"
@@ -54,9 +66,6 @@ def write_question_batch(start_num: int, args) -> list:
 			continue
 		bb_question = bptools.formatBB_MC_Question(N, question, choices_list, answer_text)
 		questions.append(bb_question)
-		N += 1
-		if remaining is not None and len(questions) >= remaining:
-			return questions
 	return questions
 
 def parse_arguments():
@@ -65,6 +74,7 @@ def parse_arguments():
 		batch=True
 	)
 	parser = bptools.add_choice_args(parser, default=5)
+	parser = bptools.add_scenario_args(parser)
 	parser.add_argument(
 		'-n', '--num-cycles', dest='num_cycles', type=int,
 		default=30, help='Number of PCR cycles to include.'
@@ -74,6 +84,11 @@ def parse_arguments():
 
 if __name__ == '__main__':
 	args = parse_arguments()
+	SCENARIOS = list(range(1, args.num_cycles + 1))
+	if args.scenario_order == 'sorted':
+		SCENARIOS.sort()
+	else:
+		random.shuffle(SCENARIOS)
 	outfile = bptools.make_outfile()
 	questions = bptools.collect_question_batches(write_question_batch, args)
 	bptools.write_questions_to_file(questions, outfile)

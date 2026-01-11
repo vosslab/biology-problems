@@ -14,6 +14,7 @@ import bptools
 import seqlib
 import restrictlib
 
+SCENARIOS: list[str] = []
 
 #==========================
 def get_question_header(enzyme_class) -> str:
@@ -154,15 +155,22 @@ def write_question(N, enzyme_name, num_choices, question_type):
 
 #=====================
 def write_question_batch(N: int, args) -> list[str]:
+	if len(SCENARIOS) == 0:
+		return []
+
 	questions = []
-	question_num = N
-	enzyme_names = restrictlib.get_enzyme_list(include_blunt=False)
-	for enzyme_name in enzyme_names:
-		if args.max_questions is not None and question_num > args.max_questions:
-			break
-		enzyme_class = restrictlib.enzyme_name_to_class(enzyme_name)
-		if not enzyme_class.overhang().endswith('overhang'):
-			continue
+	remaining = None
+	if args.max_questions is not None:
+		remaining = args.max_questions - (N - 1)
+		if remaining <= 0:
+			return questions
+
+	batch_size = len(SCENARIOS) if remaining is None else min(len(SCENARIOS), remaining)
+	for offset in range(batch_size):
+		question_num = N + offset
+		idx = (question_num - 1) % len(SCENARIOS)
+		enzyme_name = SCENARIOS[idx]
+
 		complete_question = write_question(
 			question_num,
 			enzyme_name,
@@ -171,7 +179,7 @@ def write_question_batch(N: int, args) -> list[str]:
 		)
 		if complete_question is not None:
 			questions.append(complete_question)
-			question_num += 1
+
 	return questions
 
 #===========================================================
@@ -193,6 +201,7 @@ def parse_arguments():
 		required=False,
 		default='mc'
 	)
+	parser = bptools.add_scenario_args(parser)
 	args = parser.parse_args()
 	return args
 
@@ -200,6 +209,8 @@ def parse_arguments():
 #===========================================================
 # This function serves as the entry point for generating and saving questions.
 def main():
+	global SCENARIOS
+
 	"""
 	Main function that orchestrates question generation and file output.
 	"""
@@ -208,6 +219,15 @@ def main():
 	args = parse_arguments()
 
 	outfile = bptools.make_outfile(args.question_type)
+
+	enzyme_names = restrictlib.get_enzyme_list(include_blunt=False)
+	enzyme_names = [name for name in enzyme_names if restrictlib.enzyme_name_to_class(name).overhang().endswith('overhang')]
+	if args.scenario_order == 'sorted':
+		enzyme_names.sort()
+	else:
+		random.shuffle(enzyme_names)
+	SCENARIOS = enzyme_names
+
 	questions = bptools.collect_question_batches(write_question_batch, args)
 	bptools.write_questions_to_file(questions, outfile)
 

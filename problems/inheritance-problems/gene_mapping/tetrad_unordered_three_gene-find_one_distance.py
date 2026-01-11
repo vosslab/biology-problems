@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 
-import os
 import math
 import random
-import argparse
 import itertools
 
 import bptools
@@ -11,7 +9,13 @@ import tetradlib
 import genemaplib as gml
 import phenotypes_for_yeast
 
-debug = True
+debug = False
+
+DISTANCE_TRIPLETS: list[tuple[int, int, int]] = []
+QUESTION_HEADER = ""
+FOOTER_STEPS = ""
+FIB_IMPORTANT_TIPS = ""
+PHENOTYPE_DICT: dict = {}
 
 #=====================
 #=====================
@@ -227,110 +231,86 @@ def make_choices(progeny_tetrads_count_dict, gene_pair_distance, num_choices):
 
 #=====================
 def parse_arguments():
-	"""Parses command-line arguments for the script."""
-	parser = argparse.ArgumentParser(description="Generate Neurospora genetics questions.")
-	question_group = parser.add_mutually_exclusive_group(required=True)
-
-	# Add question type argument with choices
-	question_group.add_argument(
-		'-t', '--type', dest='question_type', type=str, choices=('num', 'mc'),
-		help='Set the question type: num (numeric) or mc (multiple choice)'
+	parser = bptools.make_arg_parser(
+		description="Generate unordered tetrad three-gene mapping (find one distance) questions."
 	)
-	question_group.add_argument(
-		'-m', '--mc', dest='question_type', action='store_const', const='mc',
-		help='Set question type to multiple choice'
-	)
-	question_group.add_argument(
-		'-n', '--num', dest='question_type', action='store_const', const='num',
-		help='Set question type to numeric'
-	)
-
-	parser.add_argument('-c', '--choices', type=int, dest='num_choices',
-		help='number of choices to choose from in the question', default=5)
-
-	parser.add_argument(
-		'-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='Number of duplicate runs to do', default=1
-	)
-
+	parser = bptools.add_choice_args(parser, default=5)
+	parser = bptools.add_question_format_args(parser, types_list=['mc', 'num'], required=True)
 	args = parser.parse_args()
-
 	return args
+
+#=====================
+def write_question(N: int, args) -> str | None:
+	gene_letters_str = gml.get_gene_letters(3)
+	phenotype_info_str = gml.get_phenotype_info(gene_letters_str, PHENOTYPE_DICT)
+
+	gene_order_str = gml.get_random_gene_order(gene_letters_str)
+
+	distances = sorted(random.choice(DISTANCE_TRIPLETS))
+	while distances[1] > 26 and len(set(distances)) == 3:
+		distances = sorted(random.choice(DISTANCE_TRIPLETS))
+	if debug:
+		print(f"Distances: {distances}")
+
+	progeny_size = gml.get_general_progeny_size(distances) * 3
+
+	progeny_tetrads_count_dict = tetradlib.construct_progeny_counts(
+		gene_letters_str,
+		gene_order_str,
+		distances,
+		progeny_size,
+	)
+	#Check if progeny_tetrads_count_dict are valid
+	if tetradlib.check_if_progeny_counts_are_valid(progeny_tetrads_count_dict) is False:
+		return None
+
+	if debug:
+		ascii_table = tetradlib.get_progeny_ascii_table(3, progeny_tetrads_count_dict, progeny_size)
+		print(ascii_table)
+	html_table = tetradlib.make_progeny_html_table(progeny_tetrads_count_dict, progeny_size)
+
+	answer_map = make_answer_map(gene_order_str, distances)
+	gene_pair_str, gene_pair_distances = random.choice(list(answer_map.items()))
+	gene_pair_distance = gene_pair_distances[0]
+	statement = (
+		f"<h5>Determine the distance between the two genes "
+		f"{gene_pair_str[0].upper()} and {gene_pair_str[1].upper()}</h5>"
+	)
+
+	full_question = QUESTION_HEADER + phenotype_info_str + html_table + FOOTER_STEPS
+	if args.question_type == 'mc':
+		full_question = full_question + statement
+		choices_list, answer_text = make_choices(progeny_tetrads_count_dict, gene_pair_distance, args.num_choices)
+		if choices_list is None:
+			return None
+		return bptools.formatBB_MC_Question(N, full_question, choices_list, answer_text)
+
+	full_question = full_question + FIB_IMPORTANT_TIPS + statement
+	return bptools.formatBB_NUM_Question(N, full_question, gene_pair_distance, 0.1, tol_message=False)
 
 #=====================
 #=====================
 def main():
 	args = parse_arguments()
 
-	# Load the distance triplets and question headers
-	distance_triplet_list = gml.get_all_distance_triplets(msg=debug)
-	question_header = get_question_header()
-	footer_steps = get_question_footer_steps()
-	fib_important_tips = get_important_tips()
-	phenotype_dict = phenotypes_for_yeast.phenotype_dict
+	global DISTANCE_TRIPLETS
+	global QUESTION_HEADER
+	global FOOTER_STEPS
+	global FIB_IMPORTANT_TIPS
+	global PHENOTYPE_DICT
 
-	# Define output file name
-	outfile = (
-		'bbq-' +
-		os.path.splitext(os.path.basename(__file__))[0] +
-		'-' +
-		args.question_type.upper() +
-		'-questions.txt'
-		)
-	print('Writing to file:', outfile)
-	f = open(outfile, 'w')
-	N = 0
-	while N < args.duplicates:
-		gene_letters_str = gml.get_gene_letters(3)
-		phenotype_info_str = gml.get_phenotype_info(gene_letters_str, phenotype_dict)
+	DISTANCE_TRIPLETS = gml.get_all_distance_triplets(msg=debug)
+	QUESTION_HEADER = get_question_header()
+	FOOTER_STEPS = get_question_footer_steps()
+	FIB_IMPORTANT_TIPS = get_important_tips()
+	PHENOTYPE_DICT = phenotypes_for_yeast.phenotype_dict
 
-		gene_order_str = gml.get_random_gene_order(gene_letters_str)
-
-		distances = sorted(random.choice(distance_triplet_list))
-		while distances[1] > 26 and len(set(distances)) == 3:
-			distances = sorted(random.choice(distance_triplet_list))
-		if debug: print(f"Distances: {distances}")
-
-		progeny_size = gml.get_general_progeny_size(distances) * 3
-
-		progeny_tetrads_count_dict = tetradlib.construct_progeny_counts(gene_letters_str, gene_order_str, distances, progeny_size)
-		#Check if progeny_tetrads_count_dict are valid
-		if tetradlib.check_if_progeny_counts_are_valid(progeny_tetrads_count_dict) is False:
-			continue
-
-		ascii_table = tetradlib.get_progeny_ascii_table(3, progeny_tetrads_count_dict, progeny_size)
-		print(ascii_table)
-		html_table = tetradlib.make_progeny_html_table(progeny_tetrads_count_dict, progeny_size)
-
-		answer_map = make_answer_map(gene_order_str, distances)
-		gene_pair_str, gene_pair_distances = random.choice(list(answer_map.items()))
-		gene_pair_distance = gene_pair_distances[0]
-		statement = f"<h5>Determine the distance between the two genes {gene_pair_str[0].upper()} and {gene_pair_str[1].upper()}</h5>"
-
-		# Combine all parts of the question into a single HTML string
-		full_question = question_header + phenotype_info_str + html_table + footer_steps
-		# Format question based on type
-		if args.question_type == 'mc':
-			full_question = full_question + statement
-			choices_list, answer_text = make_choices(progeny_tetrads_count_dict, gene_pair_distance, args.num_choices)
-			if choices_list is None:
-				continue
-			final_question = bptools.formatBB_MC_Question(N, full_question, choices_list, answer_text)
-		else:
-			full_question = full_question + fib_important_tips + statement
-			print(f"gene_pair_distance = {gene_pair_distance}")
-			final_question = bptools.formatBB_NUM_Question(N, full_question, gene_pair_distance, 0.1, tol_message=False)
-
-		if final_question is not None:
-			N += 1
-			f.write(final_question)
-		else:
-			print("Question generation failed")
-	f.close()
-
-	# Display histogram if question type is multiple choice
-	if args.question_type == "mc":
-		bptools.print_histogram()
+	outfile_suffix = args.question_type.upper()
+	if args.question_type == 'mc':
+		outfile = bptools.make_outfile(outfile_suffix, f"{args.num_choices}_choices")
+	else:
+		outfile = bptools.make_outfile(outfile_suffix)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 
 #===========================================================

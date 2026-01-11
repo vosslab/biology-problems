@@ -51,6 +51,8 @@ choice_color_map = {
 	'overhang end': '<span style="color: #e65400;">overhang end</span>', #DARK ORANGE
 }
 
+SCENARIOS: list[object] = []
+
 #=====================
 #=====================
 def write_question(N, enzyme_class, use_overhang_type):
@@ -101,6 +103,7 @@ def parse_arguments():
 		description="Generate restriction enzyme overhang questions.",
 		batch=True
 	)
+	parser = bptools.add_scenario_args(parser)
 
 	parser.add_argument(
 		'-o', '--overhang-type', '--overhang_type', dest='use_overhang_type',
@@ -118,11 +121,22 @@ def parse_arguments():
 
 #===========================================================
 def write_question_batch(start_num, args):
+	if len(SCENARIOS) == 0:
+		return []
+
+	remaining = None
+	if args.max_questions is not None:
+		remaining = args.max_questions - (start_num - 1)
+		if remaining <= 0:
+			return []
+
+	batch_size = len(SCENARIOS) if remaining is None else min(len(SCENARIOS), remaining)
 	questions = []
-	question_num = start_num
-	for enzyme_class in args.enzyme_classes:
-		if args.max_questions is not None and question_num > args.max_questions:
-			break
+	for offset in range(batch_size):
+		question_num = start_num + offset
+		idx = (question_num - 1) % len(SCENARIOS)
+		enzyme_class = SCENARIOS[idx]
+
 		question_text = write_question(
 			question_num,
 			enzyme_class,
@@ -131,7 +145,6 @@ def write_question_batch(start_num, args):
 		if question_text is None:
 			continue
 		questions.append(question_text)
-		question_num += 1
 	return questions
 
 
@@ -142,12 +155,19 @@ def write_question_batch(start_num, args):
 def main():
 	args = parse_arguments()
 
+	global SCENARIOS
+
 	suffix = '5_3_blunt' if args.use_overhang_type else 'blunt_v_sticky'
 	outfile = bptools.make_outfile(suffix)
 
 	enzyme_names = restrictlib.get_enzyme_list()
-	random.shuffle(enzyme_names)
-	args.enzyme_classes = [restrictlib.enzyme_name_to_class(name) for name in enzyme_names]
+	enzyme_classes = [restrictlib.enzyme_name_to_class(name) for name in enzyme_names]
+	if args.scenario_order == 'sorted':
+		enzyme_classes.sort(key=lambda x: x.__name__)
+	else:
+		random.shuffle(enzyme_classes)
+	SCENARIOS = enzyme_classes
+
 	questions = bptools.collect_question_batches(write_question_batch, args)
 	bptools.write_questions_to_file(questions, outfile)
 

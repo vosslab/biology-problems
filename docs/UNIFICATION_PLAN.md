@@ -183,65 +183,75 @@ Batch generators:
   `problems/biostatistics-problems/make_html_box_plot.py`) should be excluded from the
   upgrade list and left as utilities rather than wrapped in question helpers.
 
-## Migration notes from recent upgrades
-- Some scripts build questions from cross-products (for example, lists of chain
-  lengths and bond counts). Move those nested loops into
-  `write_question_batch(start_num, args)` and return a list so `main()` stays
-  minimal and the helper can cap output.
-- Scripts that previously computed their own default run count to hit an
-  approximate total should now rely on the default of 2 and let users set `-d`
-  explicitly when they want more.
-- When a script manually constructs Blackboard text (for example `"MC\t..."`),
-  replace that block with `bptools.formatBB_MC_Question(...)` so numbering,
-  histogram tracking, and formatting stay consistent.
-- For scripts that emit pure HTML (not an MC/MA/NUM/FIB Blackboard line), use
-  `collect_questions(..., print_histogram_flag=False)` and write the raw HTML
-  strings without a question formatter.
-- Scripts that generate a full grid of combinations (for example all parent
-  phenotype pairs) should be modeled as batch writers: move the nested loops
-  into `write_question_batch(start_num, args)` and return the full list so
-  `main()` stays minimal and batch caps apply consistently.
-- Scripts that previously cycled through a fixed list of scenarios (for example,
-  using `N % len(list)`) should preserve that behavior inside
-  `write_question(N, args)` to keep coverage evenly distributed.
-- Scripts that already use `-x` for a different option (for example
-  `--max-length`) should move that short flag to avoid colliding with the
-  unified `-x/--max-questions` base arg. Prefer a nearby alternative like `-M`.
-- Scripts that need to load shared data (for example, a CSV list) can load it
-  once in `main()` and store it in a module-level cache used by
-  `write_question(N, args)` to avoid repeated file reads.
-- Scripts that previously printed questions directly to stdout (especially when
-  offering MC vs FIB outputs) should switch to `add_question_format_args(...)`
-  and return a formatted Blackboard string via `bptools.formatBB_MC_Question`
-  or `bptools.formatBB_FIB_Question`.
-- Scripts that select from a fixed scenario list can expose
-  a scenario-order toggle like `--random` (default) vs `--sorted` via
-  `bptools.add_scenario_args(parser)`.
-- Switching a batch script (fixed cycle) to an individual-question script:
-  - Option 1 (current): deterministic round-robin over a fixed scenario list:
-    - `scenario = scenarios[(N - 1) % len(scenarios)]`
-  - Option 2a (modulo N): still deterministic, use a direct modulo mapping:
-    - `idx = (N - 1) % len(scenarios)`
-    - `scenario = scenarios[idx]`
-    - Recommended pattern for “grid” generators (cartesian products):
-      - Build a single `scenarios` list once (typically in `main()`), e.g. by
-        flattening `for mode in modes: for vmax in vmax_choices: for km in km_choices:`
-        into `scenarios.append((mode, vmax, km))`.
-      - In `write_question(N, args)`, select exactly one scenario via modulo `N`
-        and then compute any derived values (tables, distractors, etc.) from that scenario.
-      - Keep `scenarios` in a stable order (for example `sorted(...)`) so coverage is
-        repeatable across runs with the same `-d/-x` settings.
-      - If you want *less obvious* cycling but still deterministic, prefer a stable
-        mixing step before the modulo (see the `modmix` note above) rather than
-        shuffling `scenarios` randomly.
-      - Only use `random.shuffle(scenarios)` if you also fix the seed (and document it),
-        otherwise question selection will vary run-to-run even with identical CLI args.
-  - Option 2b (random): pick a scenario at random each time:
-    - `scenario = random.choice(scenarios)`
-  - Keep `N` meaning unchanged:
-    - `N` is the next successful question number (1-based).
-    - For batch writers, `N` is the starting number for the batch.
-  - Do not change `-d/--duplicates` or `-x/--max-questions` semantics.
+## Switching A Batch Script (Fixed Cycle) To An Individual-Question Script
+This is the common refactor for scripts that currently emit a fixed "grid" of questions
+via nested loops inside `write_question_batch(...)`.
+
+### Goals
+- Reduce nested loops and keep `main()` small.
+- Keep `-d/--duplicates` and `-x/--max-questions` semantics unchanged.
+- Keep `N` meaning unchanged:
+  - For single-question writers, `N` is the next successful question number (1-based).
+  - For batch writers, `N` is the starting number for the batch.
+
+### Options For Scenario Selection
+Pick one approach and document it in the script.
+
+- Option 1 (deterministic round-robin, simple):
+  - `scenario = SCENARIOS[(N - 1) % len(SCENARIOS)]`
+- Option 2a (deterministic modulo N, same idea but explicit):
+  - `idx = (N - 1) % len(SCENARIOS)`
+  - `scenario = SCENARIOS[idx]`
+- Option 2b (random order, no repeats until exhausted):
+  - Shuffle once in `main()`:
+    - `random.shuffle(SCENARIOS)`
+  - Then select with modulo:
+    - `scenario = SCENARIOS[(N - 1) % len(SCENARIOS)]`
+
+Avoid `random.choice(SCENARIOS)` for scenario selection; it can repeat scenarios and
+skip others.
+
+### Recommended Conversion Pattern
+1. Identify the "scenario" inputs that define one unique question (for example
+   `(mode, vmax, km)` or `(sugar_name, anomeric)`).
+2. Prebuild a single `SCENARIOS` list once (typically in `main()`).
+3. Select exactly one scenario per question number `N` (usually via modulo).
+4. Derive all per-question values (tables, distractors, formatting) from that one scenario.
+
+Notes:
+- Prefer keeping derived state out of `args` (reserved for CLI args); store prebuilt
+  scenarios in a module-level cache like `SCENARIOS` initialized in `main()`.
+- For huge cartesian products, avoid building a massive `SCENARIOS` list; instead
+  compute mixed-radix indices from `N` (see the pedigree matching pattern).
+- Avoid "fully random batch writers" where `write_question_batch(...)` returns a list
+  of random scenarios each attempt. This often repeats scenarios, skips others, and
+  makes output coverage hard to reason about. Prefer a single-question writer with a
+  prebuilt `SCENARIOS` list (shuffled once in `main()`) plus modulo selection.
+
+### Scenario Ordering (Assessment vs Debugging)
+For scripts that build a fixed `SCENARIOS` list, expose:
+- `bptools.add_scenario_args(parser)`:
+  - `--random` (default): shuffle `SCENARIOS` once in `main()` to reduce predictable cycling.
+  - `--sorted`: deterministic `SCENARIOS` order for debugging/reproducibility.
+
+Both `--sorted` and `--random` use the same modulo selection pattern:
+```python
+scenario = SCENARIOS[(N - 1) % len(SCENARIOS)]
+```
+
+The difference is whether `SCENARIOS` is shuffled once in `main()`:
+- `--sorted`: deterministic order, even coverage, fully reproducible.
+- `--random`: shuffle once in `main()`, then modulo selection gives random order
+  with even coverage and no repeats until all scenarios are exhausted.
+
+Avoid `random.choice(SCENARIOS)` since it can repeat scenarios and skip others.
+
+### Keeping Writer Semantics Intact
+- Do not change the meaning of `-d/--duplicates` and `-x/--max-questions`:
+  - `-d` is the number of attempts to generate acceptable questions.
+  - `-x` is the maximum number of accepted questions to keep.
+- A single-question writer should return `None` to "skip" a failed attempt; the
+  helper will try again until attempts/cap are exhausted.
 - For batch lists that return pre-numbered questions (for example, matching
   sets), add a `start_num` parameter to the helper that creates the list so the
   numbering can begin at the batch start `N`.
@@ -252,8 +262,45 @@ Batch generators:
   highest/lowest prompts) should use `write_question_batch(...)` with
   `collect_question_batches(...)`, then write via `write_questions_to_file(...)`.
 - For scripts that iterate over a fixed item list (for example restriction
-  enzymes), build and shuffle the list once in `main()`, store it on `args`,
-  and let `write_question_batch(...)` consume it so batch caps apply cleanly.
+  enzymes), build and shuffle the list once in `main()`, store it in a module-level
+  cache, and select from it in `write_question(N, args)` (or `write_question_batch(...)`
+  if the script remains a batch writer).
+
+### Related Changes That Often Belong In This Refactor
+- Cross-product ("grid") generators:
+  - If the script currently does nested loops in `write_question_batch(...)`, either:
+    - keep it as a batch writer (still fine), or
+    - flatten into `SCENARIOS` and convert to `write_question(N, args)`.
+- Shared data loads (CSV/YAML/word lists):
+  - Load once in `main()` and cache it so `write_question(...)` does not re-open files.
+- Mixed output modes (MC vs NUM/FIB):
+  - Use `bptools.add_question_format_args(...)` and return a formatted Blackboard string
+    via `bptools.formatBB_*_Question(...)` instead of printing directly to stdout.
+- Fixed item lists (enzymes, amino acids, etc.):
+  - Build and (optionally) shuffle the list once in `main()`, store it in a module-level
+    cache, then select by `idx = (N - 1) % len(SCENARIOS)`.
+
+## Common Upgrade Gotchas
+
+### Attempts And Defaults
+- Scripts that previously computed their own default run count to hit an
+  approximate total should now rely on the default of 2 and let users set `-d`
+  explicitly when they want more.
+
+### Formatting And Output
+- When a script manually constructs Blackboard text (for example `"MC\t..."`),
+  replace that block with `bptools.formatBB_MC_Question(...)` so numbering,
+  histogram tracking, and formatting stay consistent.
+- For scripts that emit pure HTML (not an MC/MA/NUM/FIB Blackboard line), use
+  `collect_questions(..., print_histogram_flag=False)` and write the raw HTML
+  strings without a question formatter.
+
+### CLI Flag Collisions
+- Scripts that already use `-x` for a different option (for example
+  `--max-length`) should move that short flag to avoid colliding with the
+  unified `-x/--max-questions` base arg. Prefer a nearby alternative like `-M`.
+
+### What Not To Unify
 - Helper/plot utilities and explicitly broken scripts should be removed from
   phase-1 upgrade lists and tracked separately (for example
   `problems/inheritance-problems/pedigrees/pedigree_lib/code_templates.py`,
