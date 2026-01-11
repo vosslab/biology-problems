@@ -8,6 +8,9 @@ import yaml
 import random
 import requests
 
+# local repo modules
+import bptools
+
 #============================
 #============================
 class PubChemLib():
@@ -16,7 +19,8 @@ class PubChemLib():
 	def __init__(self):
 		self.start_time = time.time()
 		self.BASE_URL = "https://pubchem.ncbi.nlm.nih.gov/rest/pug"
-		self.cache_file = 'cache_pubchem_molecules.yml'
+		self.cache_file = bptools.get_repo_data_path('pubchem_molecules_data.yml')
+		self.legacy_cache_file = os.path.join(os.path.dirname(__file__), 'cache_pubchem_molecules.yml')
 		self.api_count = 0
 		self.molecule_data_lookup_count = 0
 		self.molecule_cid_lookup_count = 0
@@ -31,6 +35,9 @@ class PubChemLib():
 	#============================
 	def load_cache(self):
 		print('==== LOAD CACHE ====')
+		if not os.path.isfile(self.cache_file) and os.path.isfile(self.legacy_cache_file):
+			print(f".. migrating legacy cache file {self.legacy_cache_file}")
+			self.cache_file = self.legacy_cache_file
 		if os.path.isfile(self.cache_file):
 			t0 = time.time()
 			with open(self.cache_file, 'r') as file:
@@ -50,6 +57,8 @@ class PubChemLib():
 	#============================
 	#============================
 	def close(self):
+		if self.cache_file == self.legacy_cache_file:
+			self.cache_file = bptools.get_repo_data_path('pubchem_molecules_data.yml')
 		self.save_cache()
 		print(f"{self.molecule_cid_lookup_count} cid lookup requests were made")
 		print(f"{self.molecule_data_lookup_count} molecular data dict requests were made")
@@ -116,10 +125,37 @@ class PubChemLib():
 	#============================
 	#============================
 	#=======================
+	def _extract_smiles_from_property_response(self, response_json: dict) -> str | None:
+		if not isinstance(response_json, dict):
+			return None
+		prop_table = response_json.get('PropertyTable')
+		if not isinstance(prop_table, dict):
+			return None
+		props = prop_table.get('Properties')
+		if not isinstance(props, list) or len(props) == 0:
+			return None
+		first = props[0]
+		if not isinstance(first, dict):
+			return None
+		smiles = first.get('IsomericSMILES')
+		if smiles is None:
+			smiles = first.get('CanonicalSMILES')
+		if smiles is None:
+			smiles = first.get('SMILES')
+		if smiles is None:
+			smiles = first.get('ConnectivitySMILES')
+		if smiles is None:
+			return None
+		return str(smiles)
+
+	#=======================
 	def get_smiles(self, cid):
 		"""Get the SMILES notation for a molecule given its CID."""
-		response_json = self.api_call(f"{self.BASE_URL}/compound/cid/{cid}/property/IsomericSMILES/JSON")
-		return response_json['PropertyTable']['Properties'][0]['IsomericSMILES']
+		response_json = self.api_call(f"{self.BASE_URL}/compound/cid/{cid}/property/SMILES/JSON")
+		smiles = self._extract_smiles_from_property_response(response_json)
+		if smiles is None:
+			raise KeyError(f"PubChem SMILES not found for CID {cid}")
+		return smiles
 
 	#=======================
 	def get_logp(self, cid):

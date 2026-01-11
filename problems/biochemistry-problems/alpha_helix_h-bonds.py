@@ -101,7 +101,7 @@ def write_question(N, args):
 #=====================
 def parse_arguments():
 	parser = bptools.make_arg_parser()
-	parser = bptools.add_choice_args(parser, default=4)
+	parser = bptools.add_choice_args(parser, default=None)
 	parser = bptools.add_question_format_args(
 		parser,
 		types_list=['ma', 'mc'],
@@ -110,7 +110,7 @@ def parse_arguments():
 	)
 
 	args = parser.parse_args()
-	if not args.num_choices:
+	if args.num_choices is None:
 		if args.question_type == "ma":
 			args.num_choices = 9
 		elif args.question_type == "mc":

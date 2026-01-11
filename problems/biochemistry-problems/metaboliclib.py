@@ -72,28 +72,23 @@ def generate_metabolic_pathway(num_letters, shift=0):
 	# Fetch HTML-formatted letters
 	letters = get_letters(num_letters, shift)
 
-	# Initialize the HTML table
-	metabolic_table = '<table border="0" style="border-collapse: collapse;">'
+	# Initialize the HTML table (avoid colspan-heavy layouts which render as extra columns in text previews)
+	metabolic_table = "<table border='0' style='border-collapse: collapse;'>"
 
-	# Create the row for enzymes
-	metabolic_table += '<tr><td colspan=2></td>'  # Leading empty cells
+	# Row for enzyme labels (aligned above the arrows)
+	metabolic_table += "<tr>"
 	for i in range(len(letters) - 1):
-		metabolic_table += f'<td style="font-size: 75%; text-align:center; vertical-align: bottom;" colspan=3>enzyme {i+1}</td>'
-		metabolic_table += '<td></td>'  # Trailing empty cell
-	metabolic_table += '<td></td></tr>'  # Trailing empty cell
+		metabolic_table += "<td>&nbsp;</td>"
+		metabolic_table += ("<td style='font-size: 75%; text-align:center; vertical-align: bottom;'>"
+			f"enzyme {i+1}</td>")
+	metabolic_table += "<td>&nbsp;</td></tr>"
 
-	# Create the row for molecules and arrows
-	metabolic_table += '<tr>'
+	# Row for molecules and arrows
+	metabolic_table += "<tr>"
 	for i in range(len(letters) - 1):
-		metabolic_table += f'<td style="font-size: 150%; text-align:center;" colspan=3>{letters[i]}</td>'
-		metabolic_table += '<td style="text-align:center; vertical-align:top;">&nbsp;&xrarr;&nbsp;</td>'
-	# Add the last molecule
-	metabolic_table += f'<td style="font-size: 150%; text-align:center;" colspan=3>{letters[-1]}</td></tr>'
-
-	# Create a row for spacing (to separate rows visually)
-	metabolic_table += '<tr>'
-	for i in range(len(letters)*4-1):
-		metabolic_table += "<td><span style='font-size: 1px; color: white;'>&nbsp;</span></td>"
-	metabolic_table += '</tr></table>'
+		metabolic_table += f"<td style='font-size: 150%; text-align:center; padding: 0 6px;'>{letters[i]}</td>"
+		metabolic_table += "<td style='text-align:center; padding: 0 6px;'>&xrarr;</td>"
+	metabolic_table += f"<td style='font-size: 150%; text-align:center; padding: 0 6px;'>{letters[-1]}</td>"
+	metabolic_table += "</tr></table>"
 
 	return metabolic_table

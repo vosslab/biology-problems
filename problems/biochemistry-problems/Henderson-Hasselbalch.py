@@ -1,35 +1,37 @@
 #!/usr/bin/env python3
-# ^^ Specifies the Python3 environment to use for script execution
 
-# Import built-in Python modules
-# Provides functions to generate random numbers and selections
+import math
+import os
 import random
+import sys
 
-# Import external modules (pip-installed)
-# No external modules are used here currently
-
-# Import local modules from the project
-# Provides custom functions, such as question formatting and other utilities
 import bptools
 
 #===========================================================
 #===========================================================
-# This function generates and returns the main question text.
-def get_question_text() -> str:
-	"""
-	Generates and returns the main text for the question.
+_BIOCHEM_DIR = os.path.abspath(os.path.dirname(__file__))
+_BUFFERS_DIR = os.path.join(_BIOCHEM_DIR, "buffers")
+if _BUFFERS_DIR not in sys.path:
+	sys.path.insert(0, _BUFFERS_DIR)
 
-	Returns:
-		str: A string containing the main question text.
-	"""
-	# Initialize an empty string for the question text
-	question_text = ""
+import bufferslib
 
-	# Add the actual question text to the string
-	question_text += "This is a hard question?"
+_PKW = 14.00
 
-	# Return the complete question text
-	return question_text
+_WEAK_BASE_BUFFER_LIST = [
+	{
+		'base_name': 'ethylamine',
+		'conj_acid_name': 'ethylammonium',
+		'salt_name': 'ethylammonium chloride',
+		'pKb': 3.99,
+	},
+	{
+		'base_name': 'ammonia',
+		'conj_acid_name': 'ammonium',
+		'salt_name': 'ammonium chloride',
+		'pKb': 14.00 - float(bufferslib.monoprotic['ammonia']['pKa_list'][0]),
+	},
+]
 
 #===========================================================
 #===========================================================
@@ -123,45 +125,137 @@ def get_Henderson_Hasselbalch_equation(
 
 #===========================================================
 #===========================================================
-# This function generates multiple answer choices for a question.
-def generate_choices(num_choices: int) -> (list, str):
-	"""
-	Generates a list of answer choices along with the correct answer.
+def _safe_log10(value: float) -> float:
+	if value <= 0.0:
+		raise ValueError(f"log10 domain error: {value}")
+	return math.log10(value)
 
-	Args:
-		num_choices (int): The total number of answer choices to generate.
 
-	Returns:
-		tuple: A tuple containing:
-			- list: A list of answer choices (mixed correct and incorrect).
-			- str: The correct answer text.
-	"""
-	# Define a list of correct answer choices
-	choices_list = [
-		'competitive inhibitor',
-		'non-competitive inhibitor',
-	]
+#===========================================================
+#===========================================================
+def compute_pH_from_pKa_conc(pKa: float, base_conc: float, acid_conc: float) -> float:
+	return float(pKa) + _safe_log10(float(base_conc) / float(acid_conc))
 
-	# Randomly select one correct answer from the list
-	answer_text = random.choice(choices_list)
 
-	# Define a list of incorrect answer choices
-	wrong_choices_list = [
-		'molecular stopper',
-		'metabolic blocker',
-	]
+#===========================================================
+#===========================================================
+def compute_pKa_from_pH_conc(pH: float, base_conc: float, acid_conc: float) -> float:
+	return float(pH) - _safe_log10(float(base_conc) / float(acid_conc))
 
-	# Shuffle the incorrect choices to add randomness
-	random.shuffle(wrong_choices_list)
 
-	# Add incorrect choices to the choices list to reach the desired number of choices
-	choices_list.extend(wrong_choices_list[:num_choices - len(choices_list)])
+#===========================================================
+#===========================================================
+def compute_ratio_from_pH_pKa(pH: float, pKa: float) -> float:
+	return pow(10.0, float(pH) - float(pKa))
 
-	# Shuffle all the choices to randomize their order
-	random.shuffle(choices_list)
 
-	# Return the list of choices and the correct answer
-	return choices_list, answer_text
+#===========================================================
+#===========================================================
+def compute_pH_from_pKb_conc(pKb: float, base_conc: float, conj_acid_conc: float) -> float:
+	ratio_base_to_acid = float(base_conc) / float(conj_acid_conc)
+	pKa_conj_acid = _PKW - float(pKb)
+	return float(pKa_conj_acid) + _safe_log10(ratio_base_to_acid)
+
+
+#===========================================================
+#===========================================================
+def compute_pKb_from_pH_conc(pH: float, base_conc: float, conj_acid_conc: float) -> float:
+	ratio_base_to_acid = float(base_conc) / float(conj_acid_conc)
+	pKa_conj_acid = float(pH) - _safe_log10(ratio_base_to_acid)
+	return _PKW - float(pKa_conj_acid)
+
+
+#===========================================================
+#===========================================================
+def compute_ratio_from_pH_pKb(pH: float, pKb: float) -> float:
+	pKa_conj_acid = _PKW - float(pKb)
+	return compute_ratio_from_pH_pKa(pH, pKa_conj_acid)
+
+
+#===========================================================
+#===========================================================
+def _html_monospace(text: str) -> str:
+	return f"<span style='font-family: monospace;'>{text}</span>"
+
+
+#===========================================================
+#===========================================================
+def _format_concentration(value_molar: float) -> str:
+	value_molar = float(value_molar)
+	abs_value = abs(value_molar)
+	if abs_value >= 1.0:
+		return _html_monospace(f"{value_molar:.3f} M")
+	if abs_value >= 1e-3:
+		return _html_monospace(f"{value_molar * 1e3:.1f} mM")
+	if abs_value >= 1e-6:
+		return _html_monospace(f"{value_molar * 1e6:.1f} &mu;M")
+	return _html_monospace(f"{value_molar * 1e9:.1f} nM")
+
+
+#===========================================================
+#===========================================================
+def _format_pK(value: float, decimals: int = 2) -> str:
+	return _html_monospace(f"{value:.{decimals}f}")
+
+
+#===========================================================
+#===========================================================
+def _format_pH(value: float, decimals: int = 2) -> str:
+	return _html_monospace(f"{value:.{decimals}f}")
+
+
+#===========================================================
+#===========================================================
+def _format_ratio(value: float) -> str:
+	if value < 0.01 or value > 100.0:
+		return _html_monospace(f"{value:.3g}")
+	return _html_monospace(f"{value:.3f}")
+
+
+#===========================================================
+#===========================================================
+def _pick_float(low: float, high: float, decimals: int) -> float:
+	value = random.random() * (high - low) + low
+	return round(value, decimals)
+
+
+#===========================================================
+#===========================================================
+def _make_mc_value_choices(
+	answer_value: float,
+	num_choices: int,
+	decimals: int,
+	min_value: float | None = None,
+	max_value: float | None = None,
+) -> list[float]:
+	offset_pool = [-1.00, -0.60, -0.35, -0.20, 0.20, 0.35, 0.60, 1.00]
+	random.shuffle(offset_pool)
+
+	choices: list[float] = [round(float(answer_value), decimals)]
+	for offset in offset_pool:
+		if len(choices) >= int(num_choices):
+			break
+		cand = round(float(answer_value) + float(offset), decimals)
+		if min_value is not None and cand < float(min_value):
+			continue
+		if max_value is not None and cand > float(max_value):
+			continue
+		if cand in choices:
+			continue
+		choices.append(cand)
+
+	while len(choices) < int(num_choices):
+		cand = round(float(answer_value) + _pick_float(-1.2, 1.2, decimals), decimals)
+		if min_value is not None and cand < float(min_value):
+			continue
+		if max_value is not None and cand > float(max_value):
+			continue
+		if cand in choices:
+			continue
+		choices.append(cand)
+
+	random.shuffle(choices)
+	return choices
 
 #===========================================================
 #===========================================================
@@ -210,14 +304,276 @@ def write_equation_question(N: int) -> str:
 
 #===========================================================
 #===========================================================
-def write_question(N: int, args) -> str:
-	if args.question_type == 'equation':
-		return write_equation_question(N)
-	if args.question_type == 'ratio':
-		question_text = get_question_text()
-		choices_list, answer_text = generate_choices(args.num_choices)
+def _pick_monoprotic_acid_buffer():
+	acid_buffer_list = []
+	for buffer_dict in bufferslib.monoprotic.values():
+		# Exclude ammonia/ammonium here: they are typically presented as a weak base buffer
+		# (ammonia + ammonium chloride), not "sodium ammonia".
+		if buffer_dict.get('base_name') == 'ammonia':
+			continue
+		acid_buffer_list.append(buffer_dict)
+	buffer_dict = bufferslib.expand_buffer_dict(random.choice(acid_buffer_list))
+	pKa = float(buffer_dict['pKa_list'][0])
+	return buffer_dict, pKa
+
+
+#===========================================================
+#===========================================================
+def _write_pH_question(N: int, args) -> str:
+	ask_base_buffer = (random.random() < 0.35)
+	equation_html = get_Henderson_Hasselbalch_equation(words=True, plus='plus', wrong=False)
+
+	if ask_base_buffer is True:
+		base_buffer = random.choice(_WEAK_BASE_BUFFER_LIST)
+		pKb = float(base_buffer['pKb'])
+		base_conc = _pick_float(0.0200, 0.1200, 4)
+		conj_acid_conc = _pick_float(0.0200, 0.1200, 4)
+		pH_value = compute_pH_from_pKb_conc(pKb, base_conc, conj_acid_conc)
+
+		question_text = ""
+		question_text += "<p><b>Calculate the pH of the buffer solution.</b></p>"
+		question_text += (f"<p>The solution contains {_format_concentration(base_conc)} of "
+			f"<strong>{base_buffer['base_name']}</strong> and {_format_concentration(conj_acid_conc)} of "
+			f"<strong>{base_buffer['salt_name']}</strong>.</p>")
+		question_text += f"<p>(pK<sub>b</sub> of {base_buffer['base_name']} = {_format_pK(pKb)})</p>"
+		question_text += "<p>Hint: pK<sub>a</sub> + pK<sub>b</sub> = 14.00 for a conjugate acid-base pair.</p>"
+		question_text += "<p>Henderson-Hasselbalch form:</p>"
+		question_text += equation_html
+
+		answer_value = round(float(pH_value), 2)
+		if args.question_format == 'mc':
+			choices = _make_mc_value_choices(answer_value, args.num_choices, 2, 0.00, 14.00)
+			choices_list = [_format_pH(v, 2) for v in choices]
+			answer_text = _format_pH(answer_value, 2)
+			return bptools.formatBB_MC_Question(N, question_text, choices_list, answer_text)
+		tolerance = 0.05
+		return bptools.formatBB_NUM_Question(N, question_text, answer_value, tolerance)
+
+	buffer_dict, pKa = _pick_monoprotic_acid_buffer()
+	acid_conc = _pick_float(0.050, 0.700, 3)
+	base_conc = _pick_float(0.050, 0.700, 3)
+	pH_value = compute_pH_from_pKa_conc(pKa, base_conc, acid_conc)
+
+	use_mass_volume = (
+		buffer_dict['acid_name'] == 'acetic acid'
+		and buffer_dict['base_name'] == 'acetate'
+		and random.random() < 0.40
+	)
+	if use_mass_volume is True:
+		# Example-style: masses and a final volume.
+		m_acid_g = _pick_float(6.0, 14.0, 1)
+		m_salt_g = _pick_float(6.0, 14.0, 1)
+		vol_ml = _pick_float(100.0, 250.0, 1)
+		mm_acid = 60.05
+		mm_salt = 82.03
+		moles_acid = float(m_acid_g) / mm_acid
+		moles_base = float(m_salt_g) / mm_salt
+		vol_l = float(vol_ml) / 1000.0
+		acid_conc = float(moles_acid) / vol_l
+		base_conc = float(moles_base) / vol_l
+		pH_value = compute_pH_from_pKa_conc(pKa, base_conc, acid_conc)
+
+		question_text = ""
+		question_text += "<p><b>Use the Henderson-Hasselbalch equation to calculate the pH.</b></p>"
+		question_text += (f"<p>A solution contains {_html_monospace(f'{m_acid_g:.1f} g')} of "
+			f"<strong>HC<sub>2</sub>H<sub>3</sub>O<sub>2</sub></strong> and {_html_monospace(f'{m_salt_g:.1f} g')} of "
+			f"<strong>NaC<sub>2</sub>H<sub>3</sub>O<sub>2</sub></strong> in {_html_monospace(f'{vol_ml:.1f} mL')} of solution.</p>")
+		question_text += f"<p>(pK<sub>a</sub> of {buffer_dict['acid_name']} = {_format_pK(pKa)})</p>"
+		question_text += "<p>Molar masses: HC<sub>2</sub>H<sub>3</sub>O<sub>2</sub> = 60.05 g/mol; NaC<sub>2</sub>H<sub>3</sub>O<sub>2</sub> = 82.03 g/mol.</p>"
+		question_text += "<p>Henderson-Hasselbalch equation:</p>"
+		question_text += equation_html
+	else:
+		question_text = ""
+		question_text += "<p><b>Calculate the pH of the buffer solution.</b></p>"
+		question_text += (f"<p>The solution contains {_format_concentration(acid_conc)} of "
+			f"<strong>{buffer_dict['acid_name']}</strong> and {_format_concentration(base_conc)} of "
+			f"<strong>sodium {buffer_dict['base_name']}</strong>.</p>")
+		question_text += f"<p>(pK<sub>a</sub> of {buffer_dict['acid_name']} = {_format_pK(pKa)})</p>"
+		question_text += "<p>Henderson-Hasselbalch equation:</p>"
+		question_text += equation_html
+
+	answer_value = round(float(pH_value), 2)
+	if args.question_format == 'mc':
+		choices = _make_mc_value_choices(answer_value, args.num_choices, 2, 0.00, 14.00)
+		choices_list = [_format_pH(v, 2) for v in choices]
+		answer_text = _format_pH(answer_value, 2)
 		return bptools.formatBB_MC_Question(N, question_text, choices_list, answer_text)
-	raise NotImplementedError("question_type is not implemented in this script.")
+	tolerance = 0.05
+	return bptools.formatBB_NUM_Question(N, question_text, answer_value, tolerance)
+
+
+#===========================================================
+#===========================================================
+def _write_pK_question(N: int, args) -> str:
+	ask_base_buffer = (random.random() < 0.35)
+	equation_html = get_Henderson_Hasselbalch_equation(words=True, plus='plus', wrong=False)
+
+	if ask_base_buffer is True:
+		base_buffer = random.choice(_WEAK_BASE_BUFFER_LIST)
+		pKb = float(base_buffer['pKb'])
+		base_conc = _pick_float(0.0200, 0.1200, 4)
+		conj_acid_conc = _pick_float(0.0200, 0.1200, 4)
+		pH_value = compute_pH_from_pKb_conc(pKb, base_conc, conj_acid_conc)
+
+		question_text = ""
+		question_text += "<p><b>Calculate pK<sub>b</sub> for the weak base.</b></p>"
+		question_text += (f"<p>The solution contains {_format_concentration(base_conc)} of "
+			f"<strong>{base_buffer['base_name']}</strong> and {_format_concentration(conj_acid_conc)} of "
+			f"<strong>{base_buffer['salt_name']}</strong>.</p>")
+		question_text += f"<p>The measured pH of the solution is {_format_pH(pH_value, 2)}.</p>"
+		question_text += "<p>Hint: pK<sub>a</sub> + pK<sub>b</sub> = 14.00 for a conjugate acid-base pair.</p>"
+		question_text += "<p>Henderson-Hasselbalch form:</p>"
+		question_text += equation_html
+
+		answer_value = round(float(pKb), 2)
+		if args.question_format == 'mc':
+			choices = _make_mc_value_choices(answer_value, args.num_choices, 2, 0.00, 14.00)
+			choices_list = [_format_pK(v, 2) for v in choices]
+			answer_text = _format_pK(answer_value, 2)
+			return bptools.formatBB_MC_Question(N, question_text, choices_list, answer_text)
+		tolerance = 0.05
+		return bptools.formatBB_NUM_Question(N, question_text, answer_value, tolerance)
+
+	buffer_dict, pKa = _pick_monoprotic_acid_buffer()
+	acid_conc = _pick_float(0.050, 0.700, 3)
+	base_conc = _pick_float(0.050, 0.700, 3)
+	pH_value = compute_pH_from_pKa_conc(pKa, base_conc, acid_conc)
+
+	question_text = ""
+	question_text += "<p><b>Calculate pK<sub>a</sub> for the weak acid.</b></p>"
+	question_text += (f"<p>The solution contains {_format_concentration(acid_conc)} of "
+		f"<strong>{buffer_dict['acid_name']}</strong> and {_format_concentration(base_conc)} of "
+		f"<strong>sodium {buffer_dict['base_name']}</strong>.</p>")
+	question_text += f"<p>The measured pH of the solution is {_format_pH(pH_value, 2)}.</p>"
+	question_text += "<p>Henderson-Hasselbalch equation:</p>"
+	question_text += equation_html
+
+	answer_value = round(float(pKa), 2)
+	if args.question_format == 'mc':
+		choices = _make_mc_value_choices(answer_value, args.num_choices, 2, 0.00, 14.00)
+		choices_list = [_format_pK(v, 2) for v in choices]
+		answer_text = _format_pK(answer_value, 2)
+		return bptools.formatBB_MC_Question(N, question_text, choices_list, answer_text)
+	tolerance = 0.05
+	return bptools.formatBB_NUM_Question(N, question_text, answer_value, tolerance)
+
+
+#===========================================================
+#===========================================================
+def _write_ratio_question(N: int, args) -> str:
+	ask_base_buffer = (random.random() < 0.35)
+
+	if ask_base_buffer is True:
+		base_buffer = random.choice(_WEAK_BASE_BUFFER_LIST)
+		pKb = float(base_buffer['pKb'])
+		pKa_conj_acid = _PKW - pKb
+		pH_value = round(float(pKa_conj_acid) + _pick_float(-1.00, 1.00, 2), 2)
+		ratio_value = compute_ratio_from_pH_pKb(pH_value, pKb)
+
+		question_text = ""
+		question_text += "<p><b>Calculate the ratio of weak base to conjugate acid.</b></p>"
+		question_text += (f"<p>For <strong>{base_buffer['base_name']}</strong> / <strong>{base_buffer['conj_acid_name']}</strong>, "
+			f"pK<sub>b</sub> = {_format_pK(pKb)} and the desired pH is {_format_pH(pH_value, 2)}.</p>")
+		question_text += "<p><b>What is the ratio</b> [base] / [conjugate acid] ?</p>"
+		question_text += "<p>Hint: pK<sub>a</sub> + pK<sub>b</sub> = 14.00 for a conjugate acid-base pair.</p>"
+
+		if args.question_format == 'mc':
+			answer_value = float(ratio_value)
+			choice_values = [
+				answer_value,
+				1.0 / answer_value,
+				answer_value * 10.0,
+				answer_value / 10.0,
+				answer_value * 2.0,
+				answer_value / 2.0,
+			]
+			random.shuffle(choice_values)
+			unique_values: list[float] = []
+			for v in choice_values:
+				if len(unique_values) >= int(args.num_choices):
+					break
+				if v <= 0.0:
+					continue
+				rounded = round(float(v), 3)
+				if rounded in unique_values:
+					continue
+				unique_values.append(rounded)
+			while len(unique_values) < int(args.num_choices):
+				rounded = round(float(answer_value) * pow(10.0, _pick_float(-0.6, 0.6, 2)), 3)
+				if rounded <= 0.0:
+					continue
+				if rounded in unique_values:
+					continue
+				unique_values.append(rounded)
+			random.shuffle(unique_values)
+			choices_list = [_format_ratio(v) for v in unique_values]
+			answer_text = _format_ratio(answer_value)
+			return bptools.formatBB_MC_Question(N, question_text, choices_list, answer_text)
+
+		answer_value = float(ratio_value)
+		tolerance = round(max(0.01, abs(answer_value) * 0.05), 3)
+		return bptools.formatBB_NUM_Question(N, question_text, answer_value, tolerance)
+
+	buffer_dict, pKa = _pick_monoprotic_acid_buffer()
+	pH_value = round(float(pKa) + _pick_float(-1.00, 1.00, 2), 2)
+	ratio_value = compute_ratio_from_pH_pKa(pH_value, pKa)
+
+	question_text = ""
+	question_text += "<p><b>Calculate the ratio of conjugate base to weak acid.</b></p>"
+	question_text += (f"<p>For <strong>{buffer_dict['acid_name']}</strong> / <strong>{buffer_dict['base_name']}</strong>, "
+		f"pK<sub>a</sub> = {_format_pK(pKa)} and the desired pH is {_format_pH(pH_value, 2)}.</p>")
+	question_text += "<p><b>What is the ratio</b> [A<sup>-</sup>] / [HA] ?</p>"
+
+	if args.question_format == 'mc':
+		answer_value = float(ratio_value)
+		choice_values = [
+			answer_value,
+			1.0 / answer_value,
+			answer_value * 10.0,
+			answer_value / 10.0,
+			answer_value * 2.0,
+			answer_value / 2.0,
+		]
+		random.shuffle(choice_values)
+		unique_values: list[float] = []
+		for v in choice_values:
+			if len(unique_values) >= int(args.num_choices):
+				break
+			if v <= 0.0:
+				continue
+			rounded = round(float(v), 3)
+			if rounded in unique_values:
+				continue
+			unique_values.append(rounded)
+		while len(unique_values) < int(args.num_choices):
+			rounded = round(float(answer_value) * pow(10.0, _pick_float(-0.6, 0.6, 2)), 3)
+			if rounded <= 0.0:
+				continue
+			if rounded in unique_values:
+				continue
+			unique_values.append(rounded)
+		random.shuffle(unique_values)
+		choices_list = [_format_ratio(v) for v in unique_values]
+		answer_text = _format_ratio(answer_value)
+		return bptools.formatBB_MC_Question(N, question_text, choices_list, answer_text)
+
+	answer_value = float(ratio_value)
+	tolerance = round(max(0.01, abs(answer_value) * 0.05), 3)
+	return bptools.formatBB_NUM_Question(N, question_text, answer_value, tolerance)
+
+
+#===========================================================
+#===========================================================
+def write_question(N: int, args) -> str:
+	if args.hh_type == 'equation':
+		return write_equation_question(N)
+	if args.hh_type == 'pH':
+		return _write_pH_question(N, args)
+	if args.hh_type == 'pKa':
+		return _write_pK_question(N, args)
+	if args.hh_type == 'ratio':
+		return _write_ratio_question(N, args)
+	raise NotImplementedError(f"question type is not implemented: {args.hh_type}")
 
 #===========================================================
 #===========================================================
@@ -234,40 +590,61 @@ def parse_arguments():
 	parser = bptools.add_choice_args(parser, default=4)
 	question_group = parser.add_mutually_exclusive_group(required=False)
 
+	format_group = parser.add_mutually_exclusive_group(required=False)
+	format_group.add_argument(
+		'--format', dest='question_format', type=str,
+		choices=('mc', 'num'),
+		help='Set question format for numeric-style question types.'
+	)
+	format_group.add_argument(
+		'--mc', dest='question_format', action='store_const', const='mc',
+		help='Set question format to multiple choice'
+	)
+	format_group.add_argument(
+		'--num', '--numeric', dest='question_format', action='store_const', const='num',
+		help='Set question format to numeric entry'
+	)
+
 	# Add an option to manually set the question type
 	question_group.add_argument(
-		'-t', '--type', dest='question_type', type=str,
+		'-t', '--type', dest='hh_type', type=str,
 		choices=('equation', 'pH', 'pKa', 'ratio'),
-		help='Set the question type: num (numeric) or mc (multiple choice)'
+		help='Set the Henderson-Hasselbalch question type.'
 	)
 
 	# Add a shortcut option to set the question type to 'equation'
 	question_group.add_argument(
-		'-e', '--equation', dest='question_type', action='store_const', const='equation',
+		'-e', '--equation', dest='hh_type', action='store_const', const='equation',
 		help='Set question type to equation'
 	)
 
 	# Add a shortcut option to set the question type to 'pH'
 	question_group.add_argument(
-		'-p', '--ph', '--pH', dest='question_type', action='store_const', const='pH',
+		'-p', '--ph', '--pH', dest='hh_type', action='store_const', const='pH',
 		help='Set question type to pH'
 	)
 
 	# Add a shortcut option to set the question type to 'pKa'
 	question_group.add_argument(
-		'-k', '--pka', '--pKa', dest='question_type', action='store_const', const='pKa',
+		'-k', '--pka', '--pKa', dest='hh_type', action='store_const', const='pKa',
 		help='Set question type to pKa'
 	)
 
 	# Add a shortcut option to set the question type to 'ratio'
 	question_group.add_argument(
-		'-r', '--ratio', dest='question_type', action='store_const', const='ratio',
+		'-r', '--ratio', dest='hh_type', action='store_const', const='ratio',
 		help='Set question type to ratio'
 	)
-	parser.set_defaults(question_type='equation')
+	parser.set_defaults(hh_type='equation')
+	parser.set_defaults(question_format=None)
 
 	# Parse the provided command-line arguments and return them
 	args = parser.parse_args()
+	if args.question_format is None:
+		if args.hh_type == 'equation':
+			args.question_format = 'mc'
+		else:
+			args.question_format = 'num'
 	return args
 
 #===========================================================
@@ -281,9 +658,12 @@ def main():
 	# Parse arguments from the command line
 	args = parse_arguments()
 
-	if args.question_type == 'equation' and args.duplicates > 16:
+	if args.hh_type == 'equation' and args.duplicates > 16:
 		args.duplicates = 16
-	outfile = bptools.make_outfile(None, args.question_type)
+	outfile_suffix = args.hh_type
+	if args.hh_type != 'equation':
+		outfile_suffix = f"{args.hh_type}_{args.question_format}"
+	outfile = bptools.make_outfile(None, outfile_suffix)
 	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #===========================================================

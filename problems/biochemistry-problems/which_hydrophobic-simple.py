@@ -6,17 +6,27 @@ import bptools
 
 hydrophobic_compounds = [
 	'benzene, C<sub>6</sub>H<sub>6</sub>',
+	'toluene, C<sub>7</sub>H<sub>8</sub>',
 	'ethylene, CH<sub>2</sub>CH<sub>2</sub>',
+	'propane, CH<sub>3</sub>CH<sub>2</sub>CH<sub>3</sub>',
 	'butane, CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>3</sub>',
+	'cyclohexane, C<sub>6</sub>H<sub>12</sub>',
+	'hexane, CH<sub>3</sub>(CH<sub>2</sub>)<sub>4</sub>CH<sub>3</sub>',
+	'octane, CH<sub>3</sub>(CH<sub>2</sub>)<sub>6</sub>CH<sub>3</sub>',
 ]
 
 hydrophillic_compounds = [
 	'acetate, C<sub>2</sub>H<sub>3</sub>O<sub>2</sub>',
+	'water, H<sub>2</sub>O',
 	'erythrose, C<sub>4</sub>H<sub>8</sub>O<sub>4</sub>',
+	'glucose, C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>',
+	'sucrose, C<sub>12</sub>H<sub>22</sub>O<sub>11</sub>',
+	'glycerol, C<sub>3</sub>H<sub>8</sub>O<sub>3</sub>',
 	'glycine, NH<sub>2</sub>CH<sub>2</sub>COOH',
 	'ethanol, CH<sub>3</sub>CH<sub>2</sub>OH',
 	'methanol, CH<sub>3</sub>OH',
 	'ammonia, NH<sub>3</sub>',
+	'sodium chloride, NaCl',
 	'phosphoric acid, H<sub>3</sub>PO<sub>4</sub>',
 	'urea, CO(NH<sub>2</sub>)<sub>2</sub>',
 ]

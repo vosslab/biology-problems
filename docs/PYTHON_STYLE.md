@@ -207,7 +207,39 @@ import aminoacidlib
 ```
 
 ## ARGPARSE
-* Always provide argparse for inputs and outputs and any variables to adjusted.
+
+### ARGPARSE MINIMALISM
+
+Be conservative. Only add arguments users frequently need to change between runs.
+
+**Good candidates:**
+- Input/output file paths
+- Mode switches (--dry-run, --verbose, --format)
+- Behavior toggles (--recursive, --force)
+
+**Hardcode instead:**
+- Backup suffixes, timeout durations, buffer sizes
+- Retry counts, column widths, formatting details
+- Any "what if someone wants to..." parameters
+
+**Rule:** If you added it thinking "someone might want to configure this", remove it.
+
+#### Over-engineered (bad):
+```python
+parser.add_argument('-t', '--timeout', type=int, default=30)
+parser.add_argument('-r', '--retries', type=int, default=3)
+parser.add_argument('-s', '--suffix', default='.bak')
+```
+
+#### Minimal (good):
+```python
+parser.add_argument('-i', '--input', dest='input_file', required=True)
+parser.add_argument('-o', '--output', dest='output_file', required=True)
+parser.add_argument('-n', '--dry-run', dest='dry_run', action='store_true')
+```
+
+### ARGPARSE DETAILS
+
 * Argparse value should have both a single letter cli flag and a full word cli flag. You should always specify the destination for the value, dest='flag_name'. See example below.
 * When doing an argparse boolean value. Provide both on and off flags and set the default with a different command, For example,
 ```python

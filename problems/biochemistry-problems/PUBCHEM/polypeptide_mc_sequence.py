@@ -183,7 +183,7 @@ def apply_difficulty_defaults(args):
 			'num_choices': 4,
 		},
 		'medium': {
-			'num_amino': 2,
+			'num_amino': 3,
 			'num_choices': 5,
 		},
 		'rigorous': {

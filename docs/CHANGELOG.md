@@ -1,5 +1,22 @@
 # Changelog
 
+## 2026-01-11
+- Expanded [problems/biochemistry-problems/Henderson-Hasselbalch.py](problems/biochemistry-problems/Henderson-Hasselbalch.py) to support `-t` question types `pH`, `pKa`, and `ratio` (numeric or MC formats) in addition to `equation`, using the shared biochemistry buffers library for acid/base scenarios.
+- Updated Henderson-Hasselbalch concentration units to M/mM/&mu;M for intro-biochemistry readability and aligned repo-root resolution with the shared bptools git-root helper.
+- Removed the optional `bptools` import fallback in [problems/biochemistry-problems/Henderson-Hasselbalch.py](problems/biochemistry-problems/Henderson-Hasselbalch.py); `bptools` is now required at import time.
+- Added pytest coverage for Henderson-Hasselbalch calculation helpers in [tests/libs/test_henderson_hasselbalch.py](tests/libs/test_henderson_hasselbalch.py).
+- Fixed PubChem SMILES fetching to handle current PubChem REST responses that provide `SMILES` instead of `IsomericSMILES` in [problems/biochemistry-problems/PUBCHEM/pubchemlib.py](problems/biochemistry-problems/PUBCHEM/pubchemlib.py).
+- Moved PubChem molecule persistence from a local cache file to [data/pubchem_molecules_data.yml](data/pubchem_molecules_data.yml) (with automatic migration from the legacy `cache_pubchem_molecules.yml`).
+- Expanded [problems/biochemistry-problems/PUBCHEM/which_amino_acid_mc.py](problems/biochemistry-problems/PUBCHEM/which_amino_acid_mc.py) to support a FIB mode (`--fib`) in addition to MC.
+- Added a small pytest for PubChem SMILES extraction in [tests/libs/pubchem/test_pubchem_smiles_extraction.py](tests/libs/pubchem/test_pubchem_smiles_extraction.py).
+- Fixed `--ma` default choice handling in [problems/biochemistry-problems/alpha_helix_h-bonds.py](problems/biochemistry-problems/alpha_helix_h-bonds.py) so MA no longer errors unless the user explicitly sets `-c/--num-choices` below the minimum.
+- Simplified the metabolic pathway HTML table layout in [problems/biochemistry-problems/metaboliclib.py](problems/biochemistry-problems/metaboliclib.py) to avoid extra empty columns in text previews.
+- Expanded the example pools for hydrophobic/hydrophilic compounds in [problems/biochemistry-problems/which_hydrophobic-simple.py](problems/biochemistry-problems/which_hydrophobic-simple.py) to be more obvious for intro students.
+
+## 2026-01-09
+- Updated [docs/CODE_ARCHITECTURE.md](CODE_ARCHITECTURE.md) with expanded component descriptions, clearer data flow, testing details, and known gaps.
+- Updated [docs/FILE_STRUCTURE.md](FILE_STRUCTURE.md) with current top-level layout, comprehensive library module listings, tools/tests directory details, and practical guidance for adding new work.
+
 ## 2026-01-06
 - Updated the phylogenetic tree gene tree choice/match generators to use the shared
   bptools question framework with standard args, hint handling, and outfile helpers:

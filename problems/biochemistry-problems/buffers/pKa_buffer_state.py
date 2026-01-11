@@ -105,7 +105,8 @@ def parse_arguments():
 	parser = bptools.make_arg_parser(
 		description='Generate questions related to buffer protonation states.',
 	)
-	parser.add_argument('-p', '--proton_count', '--protons', dest='proton_count', type=int, metavar='#',
+	parser.add_argument('-p', '--protons', '--proton-count', dest='proton_count',
+		type=int, metavar='#',
 		help='Number of removable protons in a buffer (1, 2, 3, 4)',
 		default=2)
 
