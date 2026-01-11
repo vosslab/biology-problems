@@ -11,6 +11,15 @@
   [problems/inheritance-problems/pedigrees/pedigree_lib/inheritance_assign.py](../problems/inheritance-problems/pedigrees/pedigree_lib/inheritance_assign.py)
   to track carrier status internally, ensuring affected offspring are produced reliably
   even when `show_carriers=False`.
+- Fixed skeleton generation in
+  [problems/inheritance-problems/pedigrees/pedigree_lib/skeleton.py](../problems/inheritance-problems/pedigrees/pedigree_lib/skeleton.py)
+  to avoid creating couples in the last generation (which would have no children).
+- Added debug HTML comments with `pedigree_code_string` in
+  [problems/inheritance-problems/pedigrees/pedigree_lib/html_output.py](../problems/inheritance-problems/pedigrees/pedigree_lib/html_output.py)
+  for easier debugging of rendered pedigrees; dashes are escaped to avoid invalid XML.
+- Added validation in `write_pedigree_match_random.py` to reject pedigrees with childless couples.
+- Added pytest coverage for skeleton childless-couple prevention and HTML comment escaping in
+  [tests/libs/pedigrees/](../tests/libs/pedigrees/).
 - Expanded [problems/biochemistry-problems/Henderson-Hasselbalch.py](problems/biochemistry-problems/Henderson-Hasselbalch.py) to support `-t` question types `pH`, `pKa`, and `ratio` (numeric or MC formats) in addition to `equation`, using the shared biochemistry buffers library for acid/base scenarios.
 - Updated Henderson-Hasselbalch concentration units to M/mM/&mu;M for intro-biochemistry readability and aligned repo-root resolution with the shared bptools git-root helper.
 - Removed the optional `bptools` import fallback in [problems/biochemistry-problems/Henderson-Hasselbalch.py](problems/biochemistry-problems/Henderson-Hasselbalch.py); `bptools` is now required at import time.
@@ -129,6 +138,19 @@
 - Added `tools/test_reorg_git_mv_commands.txt` with a suggested `tests/` subfolder re-org command list (including YAML-focused tests under `tests/yaml/`).
 - Updated `tests/conftest.py` to add `tests/` to `sys.path` so helper imports (e.g., `lib_test_utils`) keep working after moving tests into subfolders.
 - Made `tests/lib_test_utils.py` resolve repo paths across the `problems/` move (so tests can use legacy paths like `inheritance-problems/...` and still work).
+- Added `problems/matching_sets/MATCHING_SET_AUTHORING_GUIDE.md` documenting the YAML schema and test workflow for authoring matching-set question banks (based on `problems/matching_sets/TEMPLATE.yml`).
+- Added matching-set banks `problems/matching_sets/core_receptor_types.yml` (core receptor types) and `problems/matching_sets/pathway_component_to_function.yml` (pathway component to function).
+- Improved `problems/matching_sets/MATCHING_SET_AUTHORING_GUIDE.md` with more faculty-focused authoring and quality-check tips.
+- Expanded `problems/matching_sets/MATCHING_SET_AUTHORING_GUIDE.md` with a "Start here" recipe, a copy/paste biology example, difficulty control guidance, and YAML troubleshooting notes.
+- Refined `problems/matching_sets/MATCHING_SET_AUTHORING_GUIDE.md` to use a low-jargon starter example (enzyme classes), add filename/metadata guidance, and avoid repeating the same test command.
+- Added `problems/multiple_choice_statements/MC_STATEMENTS_AUTHORING_GUIDE.md` documenting the YAML schema and faculty-friendly authoring workflow for multiple-choice statement banks (based on `problems/multiple_choice_statements/TEMPLATE.yml`).
+- Expanded `problems/multiple_choice_statements/MC_STATEMENTS_AUTHORING_GUIDE.md` with faculty-focused topic selection, clearer conflict-group ID examples, concrete patterns for writing good false statements, `~` semantics, and a quick lint checklist.
+- Fixed `problems/multiple_choice_statements/chemical_reactions.yml` statement placement/ID collision and corrected several typos for clarity.
+- Added senses MC-statement banks `problems/multiple_choice_statements/senses_chemosensation_smell_taste_mc_statements.yml` and `problems/multiple_choice_statements/senses_vision_hearing_mc_statements.yml`.
+- Added senses coding MC-statement bank `problems/multiple_choice_statements/senses_coding_principles_smell_vs_taste_mc_statements.yml`.
+- Added filename guidance to `problems/multiple_choice_statements/MC_STATEMENTS_AUTHORING_GUIDE.md` recommending against redundant `*_mc_statements.yml` suffixes.
+- Cross-linked `problems/matching_sets/MATCHING_SET_AUTHORING_GUIDE.md` and `problems/multiple_choice_statements/MC_STATEMENTS_AUTHORING_GUIDE.md` with guidance on when each question-bank format is a better fit.
+- Added descriptive, jargon-free filename convention guidance (for example `senses_<topic>.yml`) to both authoring guides.
 
 ## 2026-01-04
 - Added a cytogenetic band-order question generator in

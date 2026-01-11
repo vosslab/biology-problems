@@ -1,0 +1,95 @@
+---
+
+topic: chemosensation (smell and taste)
+topic_tag: senses
+learning_objective: Compare olfaction and taste transduction, including GPCR versus ion channel mechanisms.
+source: senses chapter
+
+replacement_rules:
+  GPCR: "<strong>GPCR</strong>"
+  cAMP: "<strong>cAMP</strong>"
+  cGMP: "<strong>cGMP</strong>"
+  Golf: "<strong>G<sub>olf</sub></strong>"
+  AC3: "<strong>adenylyl cyclase 3 (AC3)</strong>"
+  PLC: "<strong>phospholipase C (PLC)</strong>"
+  IP3: "<strong>IP<sub>3</sub></strong>"
+  Ca2+: "<strong>Ca<sup>2+</sup></strong>"
+  Na+: "<strong>Na<sup>+</sup></strong>"
+  K+: "<strong>K<sup>+</sup></strong>"
+
+connection_words: ~
+
+true_statements:
+  truth1a: Many odorant receptors are GPCRs expressed in olfactory sensory neurons.
+  truth1b: Olfactory receptors are commonly seven-transmembrane GPCR proteins.
+
+  truth2a: In olfaction, an odorant can activate a G protein that stimulates adenylyl cyclase.
+  truth2b: Odorant binding can lead to Golf activation and increased cAMP production.
+
+  truth3a: cAMP can open cyclic nucleotide gated (CNG) ion channels in olfactory neurons.
+  truth3b: In olfaction, cAMP can act as a second messenger that gates ion channels.
+
+  truth4a: Olfactory sensory neurons typically express one olfactory receptor gene.
+  truth4b: A single olfactory sensory neuron usually expresses one receptor type.
+
+  truth5a: Odor identity is encoded by patterns of activity across many receptor types.
+  truth5b: Many odorants activate multiple receptors, producing a combinatorial code.
+
+  truth6a: Salty taste commonly involves ion movement through channels rather than GPCR signaling.
+  truth6b: Salty taste is often detected by direct ion flow across the membrane.
+
+  truth7a: Sour taste is linked to high acidity and elevated H3O+ in foods.
+  truth7b: Sour tastants are associated with low pH and increased proton concentration.
+
+  truth8a: Sweet taste commonly uses a GPCR pathway rather than a simple ion channel pore.
+  truth8b: Sweet taste is often detected by GPCR type receptors on taste cells.
+
+  truth9a: Bitter taste commonly uses GPCR type receptors and downstream signaling.
+  truth9b: Many bitter compounds are detected through GPCR signaling in taste receptor cells.
+
+  truth10a: Taste receptor cells can release neurotransmitter onto afferent neurons.
+  truth10b: Taste transduction ends with synaptic signaling to sensory neurons.
+
+  truth11a: Signal amplification can occur when one activated receptor leads to many downstream second messengers.
+  truth11b: A signaling cascade can amplify a small input into a larger cellular response.
+
+  truth12a: Phosphodiesterase can terminate cyclic nucleotide signals by breaking down cAMP or cGMP.
+  truth12b: Cyclic nucleotide phosphodiesterases reduce signaling by hydrolyzing cyclic nucleotides.
+
+false_statements:
+  false1a: Olfactory receptors are ligand gated ion channels that open directly when an odorant binds.
+  false1b: Most odorants are detected by receptor tyrosine kinases in olfactory neurons.
+
+  false2a: In olfaction, odorant binding decreases cAMP by directly inhibiting adenylyl cyclase.
+  false2b: Olfactory transduction primarily depends on cGMP made by guanylyl cyclase.
+
+  false3a: In olfactory neurons, cAMP closes CNG channels to trigger depolarization.
+  false3b: In olfaction, ion channels open only after cAMP is converted into cGMP.
+
+  false4a: Each olfactory sensory neuron expresses many different olfactory receptor genes.
+  false4b: A single olfactory sensory neuron expresses every odorant receptor type.
+
+  false5a: Each odorant activates only one receptor, so smell has a one odor to one receptor code.
+  false5b: Odor identity is determined only by odorant concentration, not by receptor patterns.
+
+  false6a: Salty taste depends on GPCR activation of adenylyl cyclase and cAMP.
+  false6b: Salty taste is primarily detected by nuclear hormone receptors in taste cells.
+
+  false7a: Sour taste is caused by Na+ entering taste cells through ENaC channels.
+  false7b: Sour tastants are detected because they increase pH inside taste receptor cells.
+
+  false8a: Sweet tastants are detected mainly by direct passage of glucose through a membrane channel.
+  false8b: Sweet taste is detected by a voltage gated sodium channel on taste cells.
+
+  false9a: Bitter tastants are detected by the same receptor used for salty taste.
+  false9b: Bitter taste occurs only when taste cells take up large amounts of Ca2+ from food.
+
+  false10a: Taste receptor cells do not communicate with neurons and act only as passive sensors.
+  false10b: Taste transduction bypasses synapses and directly activates the cortex.
+
+  false11a: Signal amplification means each signaling step reduces the number of activated molecules.
+  false11b: A cascade is less sensitive because it prevents second messenger production.
+
+  false12a: Phosphodiesterase makes cAMP from ATP and starts signaling.
+  false12b: Phosphodiesterase increases cyclic nucleotide levels by synthesizing cAMP and cGMP.
+

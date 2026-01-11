@@ -1,0 +1,82 @@
+# YAML file for Matching Questions
+# Chapter: Senses (signal transduction)
+
+items to match per question: 8
+
+# both singular and plural
+key description: sensory transduction component
+keys description: sensory transduction components
+
+# both singular and plural
+value description: function in signaling
+values description: functions in signaling
+
+matching pairs:
+  Olfactory receptor (GPCR):
+    - Receptor that binds odorants and activates G proteins
+    - GPCR that initiates olfactory signaling in sensory neurons
+    - Odorant-activated GPCR upstream of cAMP production
+  G<sub>olf</sub>:
+    - Olfactory G protein that activates adenylyl cyclase
+    - G protein coupling olfactory receptors to cAMP signaling
+    - Heterotrimeric G protein used in olfactory GPCR pathways
+  Adenylyl cyclase (AC3):
+    - Enzyme that converts ATP to cAMP in olfactory neurons
+    - Cyclase that produces cAMP as a second messenger
+    - ATP-to-cAMP enzyme downstream of G<sub>olf</sub>
+  cAMP:
+    - Cyclic AMP second messenger in olfaction
+    - Second messenger made from ATP that rises during odor detection
+    - Signaling nucleotide that opens olfactory CNG channels
+  CNG channel (olfactory):
+    - Ion channel opened by cAMP during odor detection
+    - Cyclic nucleotide gated channel that depolarizes olfactory neurons
+    - cAMP-gated cation channel in olfactory transduction
+  Gustducin:
+    - Taste G protein used in bitter and sweet pathways
+    - G protein that couples taste GPCRs to downstream second messengers
+    - Heterotrimeric G protein in taste receptor signaling
+  Phospholipase C-&beta;2 (PLC-&beta;2):
+    - Enzyme that cleaves PIP<sub>2</sub> to generate IP<sub>3</sub>
+    - PIP<sub>2</sub>-cleaving enzyme in bitter, sweet, and umami taste signaling
+    - Enzyme that produces IP<sub>3</sub> downstream of taste GPCRs
+  IP<sub>3</sub>:
+    - Second messenger that triggers Ca<sup>2+</sup> release from ER stores
+    - Diffusible messenger that raises cytosolic Ca<sup>2+</sup> in taste cells
+    - Molecule that opens IP<sub>3</sub> receptors on internal Ca<sup>2+</sup> stores
+  TRPM5:
+    - Cation channel activated downstream of Ca<sup>2+</sup> signaling in taste cells
+    - Channel that helps depolarize taste receptor cells after GPCR activation
+    - Ion channel involved in taste transduction downstream of IP<sub>3</sub>
+  Rhodopsin:
+    - Opsin plus retinal that activates transducin when retinal isomerizes
+    - Light-activated GPCR in rod photoreceptors
+    - Photopigment that starts rod phototransduction
+  Transducin:
+    - G protein that activates PDE6 in rod phototransduction
+    - Rod G protein linking rhodopsin to cGMP breakdown
+    - Heterotrimeric G protein in the visual cascade
+  Phosphodiesterase 6 (PDE6):
+    - Enzyme that hydrolyzes cGMP in rods after light activation
+    - Rod phosphodiesterase that lowers cGMP concentration
+    - cGMP-degrading enzyme downstream of transducin
+  cGMP:
+    - Cyclic GMP second messenger that keeps rod CNG channels open in the dark
+    - Signaling nucleotide that falls in light, closing CNG channels
+    - Cyclic nucleotide that gates rod outer segment ion channels
+  CNG channel (rod outer segment):
+    - Ion channel that closes when cGMP falls, hyperpolarizing the rod
+    - cGMP-gated channel that is open in darkness and closes in light
+    - Rod channel controlled by cGMP levels
+  Tip link (hair cell bundle):
+    - Mechanical tether that transmits force to open mechanotransduction channels
+    - Link between stereocilia that helps gate transduction channels
+    - Structure whose tension changes during stereocilia deflection
+  Mechanotransduction channel (hair cell MET channel):
+    - Ion channel opened by stereocilia deflection in hearing and balance
+    - Mechanically gated channel that allows cation influx in hair cells
+    - Transduction channel whose open probability depends on tip link tension
+
+exclude pairs:
+  - [cAMP, cGMP]
+  - [CNG channel (olfactory), CNG channel (rod outer segment)]

@@ -23,14 +23,14 @@ true_statements:
 
   truth2a: Chemical reactions always transform one or more substances into one or more different substances.
 
-  truth3a: The rate of a chemical reactions depend on temperature, pressure, and the presence of catalysts.
+  truth3a: The rate of a chemical reaction depends on temperature, pressure, and the presence of catalysts.
 
   truth4a: Chemical reactions always involve the forming and breaking of chemical bonds
 
   truth5a: For chemical reactions to occur, the chemical identity of the substances must change.
-  false5b: For chemical reactions to occur, the chemical formulas of both the reactant and the product can be the same.
+  truth5b: For chemical reactions to occur, the chemical formulas of both the reactant and the product can be the same.
 
-  truth11a: Salt (NaCl) dissolving in water breaking the ionic bonds between Na<sup>+</sup> and Cl<sup>&ndash;</sup> is a physical reaction.
+  truth11a: Salt (NaCl) dissolving in water, breaking the ionic bonds between Na<sup>+</sup> and Cl<sup>&ndash;</sup>, is a physical change.
 
   truth15a: Chemical reactions are involved in many important processes in biology.
   truth15b: Chemical reactions play a role in many important biological processes.
@@ -45,9 +45,9 @@ false_statements:
   false11a: Chemical reactions always involve physical changes.
   false11b: Chemical reactions only involve physical changes.
   false11c: Ice melting into water is a chemical reaction.
-  false11d: Sugar (glucose) disolving in water is a chemical reaction.
+  false11d: Sugar (glucose) dissolving in water is a chemical reaction.
   false11e: Sublimation of dry ice into carbon dioxide gas is a chemical reaction.
-  false11f: Salt (NaCl) dissolving in water is a chemical reaction since breaking ionic bonds forms in new chemicals.
+  false11f: Salt (NaCl) dissolving in water is a chemical reaction since breaking ionic bonds forms new chemicals.
 
   false12a: Chemical reactions only occur when energy is added.
   false12b: Chemical reactions only occur when energy is released.
@@ -65,13 +65,13 @@ false_statements:
   false16d: Chemical reactions cannot be endothermic.
 
   false17a: Chemical reactions always result in a decrease in the total energy of the system.
-  false17b: Chemical reactions always result in a increase in the total energy of the system.
+  false17b: Chemical reactions always result in an increase in the total energy of the system.
 
   false18a: Chemical reactions always result in a decrease in the number of atoms.
-  false18b: Chemical reactions always result in a increase in the number of atoms.
+  false18b: Chemical reactions always result in an increase in the number of atoms.
 
   false19a: Chemical reactions always result in a decrease in entropy.
-  false19b: Chemical reactions always result in a increase in entropy.
+  false19b: Chemical reactions always result in an increase in entropy.
 
 
 # conflicts, means that the statements cannot appear together

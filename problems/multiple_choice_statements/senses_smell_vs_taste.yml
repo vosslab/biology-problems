@@ -1,0 +1,53 @@
+---
+
+topic: sensory coding principles (smell vs taste)
+topic_tag: senses
+learning_objective: Explain how sensory identity is encoded in olfaction versus taste, and why discrimination differs across modalities.
+source: senses chapter
+
+connection_words: ~
+
+true_statements:
+  truth1a: An individual olfactory sensory neuron usually expresses a single olfactory receptor gene.
+  truth1b: A single olfactory sensory neuron typically expresses one receptor type.
+
+  truth2a: Odor identity is encoded by patterns of activity across many olfactory receptor types.
+  truth2b: Many odorants activate multiple receptors, producing a combinatorial code for odor identity.
+
+  truth3a: Different odorants can be distinguished even when they share some receptors, because the overall activation pattern differs.
+  truth3b: Odor discrimination can rely on different receptor activation patterns rather than a one odor to one receptor map.
+
+  truth4a: Bitter taste is often encoded as an aversive category rather than many distinct bitter identities.
+  truth4b: Bitter perception is frequently treated as a danger signal, so fine bitter identity is not strongly separated.
+
+  truth5a: Many bitter sensing taste cells express multiple bitter receptors, which limits preservation of bitter identity at the periphery.
+  truth5b: Coexpression of multiple bitter receptors in the same taste cells reduces the ability to label many separate bitter stimuli.
+
+  truth6a: Taste coding often uses labeled line logic for categories like bitter, sweet, and umami.
+  truth6b: Some taste qualities are carried by dedicated pathways that preserve category identity.
+
+  truth7a: Olfaction supports high discrimination partly because many receptors contribute to identity coding.
+  truth7b: Smell can distinguish many stimuli because odor identity depends on a large receptor repertoire and pattern coding.
+
+false_statements:
+  false1a: Each olfactory sensory neuron expresses many different olfactory receptor genes at the same time.
+  false1b: Olfactory sensory neurons usually express all olfactory receptor genes.
+
+  false2a: Each odorant activates only one olfactory receptor, so odor identity uses a one odor to one receptor code.
+  false2b: Odor identity is determined mainly by odorant concentration, not by receptor activation patterns.
+
+  false3a: Odor identity is lost before reaching the brain, so the brain receives only intensity information.
+  false3b: Olfactory signals are mixed into a single channel before the brain, which prevents odor discrimination.
+
+  false4a: Bitter taste discrimination is limited because bitter uses photoreceptors rather than chemoreceptors.
+  false4b: Bitter taste does not use receptors and occurs only by diffusion into taste cells.
+
+  false5a: Bitter taste discrimination is high because each bitter taste cell expresses only one bitter receptor.
+  false5b: Bitter identity is preserved at the periphery by one receptor per cell logic.
+
+  false6a: Taste categories are encoded only by intensity, not by which pathway is activated.
+  false6b: Sweet and bitter activate the same dedicated pathway, so the brain cannot separate them.
+
+  false7a: Olfaction is low discrimination because it relies on labeled line coding for a few odor categories.
+  false7b: Smell uses only a small set of receptors, so most odorants activate the same receptor.
+
