@@ -94,7 +94,7 @@ def main():
 	args = parse_arguments()
 	global GLOBAL_MOLECULE_DATA
 	GLOBAL_MOLECULE_DATA = load_molecules()
-	outfile = bptools.make_outfile(None, "ORD", f"{args.num_choices}_choices")
+	outfile = bptools.make_outfile("ORD", f"{args.num_choices}_choices")
 	bptools.collect_and_write_questions(write_question, args, outfile)
 
 

@@ -140,7 +140,7 @@ def main() -> None:
 	parser = bptools.add_choice_args(parser)
 	args = parser.parse_args()
 
-	outfile = bptools.make_outfile(__file__, "MC", "boxplot_from_sorted_data", f"{args.num_choices}_choices")
+	outfile = bptools.make_outfile("MC", "boxplot_from_sorted_data", f"{args.num_choices}_choices")
 	bptools.collect_and_write_questions(write_question, args, outfile)
 
 

@@ -167,7 +167,7 @@ def main():
 	if args.seed is not None:
 		random.seed(args.seed)
 
-	outfile = bptools.make_outfile(None)
+	outfile = bptools.make_outfile()
 	bptools.collect_and_write_questions(write_question, args, outfile)
 
 

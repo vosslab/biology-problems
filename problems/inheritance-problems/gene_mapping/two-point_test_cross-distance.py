@@ -101,9 +101,7 @@ def main():
 
 	hint_mode = 'with_hint' if args.hint else 'no_hint'
 	suffix = f"{args.num_choices}_choices" if args.question_type == "mc" else None
-	outfile = bptools.make_outfile(
-		None,
-		args.question_type.upper(),
+	outfile = bptools.make_outfile(args.question_type.upper(),
 		hint_mode,
 		suffix
 	)

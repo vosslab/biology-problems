@@ -143,7 +143,7 @@ def parse_arguments():
 #===============================
 def main():
 	args = parse_arguments()
-	outfile = bptools.make_outfile(None, args.question_type.upper(), f"{args.num_amino}aa")
+	outfile = bptools.make_outfile(args.question_type.upper(), f"{args.num_amino}aa")
 	bptools.collect_and_write_questions(write_question, args, outfile)
 
 

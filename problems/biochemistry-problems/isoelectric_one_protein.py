@@ -128,7 +128,7 @@ def main():
 	Main function that orchestrates question generation and file output.
 	"""
 	args = parse_arguments()
-	outfile = bptools.make_outfile(None)
+	outfile = bptools.make_outfile()
 	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #======================================

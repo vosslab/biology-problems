@@ -112,7 +112,7 @@ def main():
 	Generates all combinations of mother/father blood types as multiple-answer questions.
 	"""
 	args = parse_arguments()
-	outfile = bptools.make_outfile(None)
+	outfile = bptools.make_outfile()
 	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #===========================================================

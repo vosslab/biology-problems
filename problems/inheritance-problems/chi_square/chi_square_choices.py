@@ -334,7 +334,7 @@ def makeQuestion(error_type: int, desired_result: str) -> tuple:
 def main():
 	parser = bptools.make_arg_parser(description='Chi Square Question')
 	args = parser.parse_args()
-	outfile = bptools.make_outfile(None)
+	outfile = bptools.make_outfile()
 	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #===========================================================

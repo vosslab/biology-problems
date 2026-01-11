@@ -99,7 +99,7 @@ def parse_arguments():
 #=====================
 def main():
 	args = parse_arguments()
-	outfile = bptools.make_outfile(__file__, f"len_{args.sequence_len}")
+	outfile = bptools.make_outfile(f"len_{args.sequence_len}")
 	questions = bptools.collect_question_batches(write_question_batch, args)
 	bptools.write_questions_to_file(questions, outfile)
 

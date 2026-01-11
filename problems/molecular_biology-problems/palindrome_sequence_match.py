@@ -128,7 +128,7 @@ def parse_arguments():
 #===========================================================
 def main():
 	args = parse_arguments()
-	outfile = bptools.make_outfile(__file__)
+	outfile = bptools.make_outfile()
 	bptools.collect_and_write_questions(write_question_wrapper, args, outfile)
 
 #===========================================================

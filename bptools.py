@@ -549,6 +549,24 @@ def make_outfile(script_path: str = None, *parts) -> str:
 	Returns:
 		str: Output filename.
 	"""
+	if script_path is not None:
+		script_path_text = str(script_path).strip()
+		# Backward-compatible guard: many older scripts mistakenly pass a question-format
+		# token (e.g., "MC") as the first positional argument, which becomes the base name
+		# ("bbq-MC-questions.txt") and collides across scripts.
+		known_format_tokens = {
+			"mc", "ma", "num", "fib", "ord",
+			"MC", "MA", "NUM", "FIB", "ORD",
+		}
+		if (
+			script_path_text in known_format_tokens
+			and "/" not in script_path_text
+			and "\\" not in script_path_text
+			and os.sep not in script_path_text
+			and "." not in script_path_text
+		):
+			parts = (script_path_text,) + parts
+			script_path = None
 	if script_path is None:
 		script_path = sys.argv[0]
 	if script_path is None or len(script_path) == 0:

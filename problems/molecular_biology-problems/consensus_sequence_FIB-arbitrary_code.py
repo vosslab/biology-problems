@@ -138,7 +138,7 @@ def write_question(N, args):
 if __name__ == '__main__':
 	parser = bptools.make_arg_parser(description="Generate consensus sequence FIB questions.")
 	args = parser.parse_args()
-	outfile = bptools.make_outfile(None)
+	outfile = bptools.make_outfile()
 	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #==========================

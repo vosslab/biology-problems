@@ -113,7 +113,7 @@ def parse_arguments():
 #===========================================================
 def main():
 	args = parse_arguments()
-	outfile = bptools.make_outfile(None, f"{args.question_type}", f"{args.num_metabolites}_metabolites")
+	outfile = bptools.make_outfile(f"{args.question_type}", f"{args.num_metabolites}_metabolites")
 	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #===========================================================

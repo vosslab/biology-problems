@@ -337,9 +337,9 @@ def parse_arguments():
 #===========================
 def main():
 	args = parse_arguments()
-	outfile = bptools.make_outfile(None, args.kind)
+	outfile = bptools.make_outfile(args.kind)
 	if args.scenario is not None:
-		outfile = bptools.make_outfile(None, args.kind, args.scenario)
+		outfile = bptools.make_outfile(args.kind, args.scenario)
 	bptools.collect_and_write_questions(write_question, args, outfile)
 
 

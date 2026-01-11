@@ -246,7 +246,7 @@ def main():
 	parser.add_argument("--unknown-label", type=str, default="Protein X17", help="Label to show for lane 2.")
 	args = parser.parse_args()
 
-	outfile = bptools.make_outfile(None)
+	outfile = bptools.make_outfile()
 	bptools.collect_and_write_questions(write_question, args, outfile)
 
 

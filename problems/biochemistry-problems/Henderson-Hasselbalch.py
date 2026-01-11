@@ -663,7 +663,7 @@ def main():
 	outfile_suffix = args.hh_type
 	if args.hh_type != 'equation':
 		outfile_suffix = f"{args.hh_type}_{args.question_format}"
-	outfile = bptools.make_outfile(None, outfile_suffix)
+	outfile = bptools.make_outfile(outfile_suffix)
 	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #===========================================================

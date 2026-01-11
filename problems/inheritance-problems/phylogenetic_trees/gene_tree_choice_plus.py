@@ -609,9 +609,7 @@ def main():
 		difficulty_suffix = f"LEVEL_{args.difficulty}"
 	else:
 		difficulty_suffix = f"{args.num_leaves}_leaves-{args.num_choices}_choices"
-	outfile = bptools.make_outfile(
-		None,
-		args.question_type.upper(),
+	outfile = bptools.make_outfile(args.question_type.upper(),
 		hint_mode,
 		"TABLE_mode",
 		difficulty_suffix

@@ -125,7 +125,7 @@ def main():
 			return write_prelim_estimate_unknown_question(N)
 		raise ValueError(f"Unknown question type: {args.question_type}")
 
-	outfile = bptools.make_outfile(None)
+	outfile = bptools.make_outfile()
 	bptools.collect_and_write_questions(write_question, args, outfile)
 
 

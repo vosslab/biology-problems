@@ -314,7 +314,7 @@ def main():
 	# Parse arguments from the command line
 	args = parse_arguments()
 
-	outfile = bptools.make_outfile(None)
+	outfile = bptools.make_outfile()
 	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #===========================================================

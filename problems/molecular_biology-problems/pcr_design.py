@@ -134,7 +134,7 @@ def parse_arguments():
 #=====================
 def main():
 	args = parse_arguments()
-	outfile = bptools.make_outfile(None, f"{args.sequence_len}_bp", f"{args.primer_len}_primer")
+	outfile = bptools.make_outfile(f"{args.sequence_len}_bp", f"{args.primer_len}_primer")
 	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #=====================

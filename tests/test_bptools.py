@@ -2,6 +2,7 @@
 
 import argparse
 import os
+import sys
 
 import bptools
 
@@ -9,6 +10,16 @@ import bptools
 def test_make_outfile_includes_script_and_parts():
 	outfile = bptools.make_outfile("/tmp/my_script.py", "mc", 5, None, "")
 	assert outfile == "bbq-my_script-mc-5-questions.txt"
+
+
+def test_make_outfile_treats_format_token_as_suffix():
+	old_argv = list(sys.argv)
+	try:
+		sys.argv[0] = "/tmp/alpha_helix_h-bonds.py"
+		outfile = bptools.make_outfile("MC")
+		assert outfile == "bbq-alpha_helix_h-bonds-MC-questions.txt"
+	finally:
+		sys.argv = old_argv
 
 
 def test_prepare_question_text_validation_and_normalization(capsys):

@@ -143,7 +143,7 @@ def main():
 	args = parse_arguments()
 
 	suffix = '5_3_blunt' if args.use_overhang_type else 'blunt_v_sticky'
-	outfile = bptools.make_outfile(__file__, suffix)
+	outfile = bptools.make_outfile(suffix)
 
 	enzyme_names = restrictlib.get_enzyme_list()
 	random.shuffle(enzyme_names)

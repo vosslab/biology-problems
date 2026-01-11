@@ -517,9 +517,7 @@ def main():
 		params['num_suspects'] = args.num_choices
 	args.params = params
 
-	outfile = bptools.make_outfile(
-		None,
-		args.style.upper(),
+	outfile = bptools.make_outfile(args.style.upper(),
 		f"{params['num_suspects']}_suspects"
 	)
 	bptools.collect_and_write_questions(write_question_wrapper, args, outfile)

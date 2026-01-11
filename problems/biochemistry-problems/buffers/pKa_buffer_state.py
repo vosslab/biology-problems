@@ -125,7 +125,7 @@ def main():
 	args = parse_arguments()
 
 	# Define output file name
-	outfile = bptools.make_outfile(None, f"{args.proton_count}_protons")
+	outfile = bptools.make_outfile(f"{args.proton_count}_protons")
 	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #======================================

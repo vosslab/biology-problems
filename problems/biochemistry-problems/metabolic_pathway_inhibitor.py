@@ -173,7 +173,7 @@ def parse_arguments():
 #======================================
 def main():
 	args = parse_arguments()
-	outfile = bptools.make_outfile(None, args.course.upper())
+	outfile = bptools.make_outfile(args.course.upper())
 	bptools.collect_and_write_questions(write_question, args, outfile)
 
 if __name__ == '__main__':

@@ -406,7 +406,7 @@ def main():
 	parser = bptools.add_choice_args(parser, default=4)
 	args = parser.parse_args()
 
-	outfile = bptools.make_outfile(None)
+	outfile = bptools.make_outfile()
 	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #==============

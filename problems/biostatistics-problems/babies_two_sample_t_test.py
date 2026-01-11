@@ -286,7 +286,7 @@ def main():
 	"""
 	args = parse_arguments()
 
-	outfile = bptools.make_outfile(None, f"tails{args.tails}")
+	outfile = bptools.make_outfile(f"tails{args.tails}")
 	bptools.collect_and_write_questions(write_question, args, outfile)
 
 

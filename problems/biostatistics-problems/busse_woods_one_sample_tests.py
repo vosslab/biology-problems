@@ -364,7 +364,7 @@ def main():
 	6. Print status.
 	"""
 	args = parse_arguments()
-	outfile = bptools.make_outfile(None, args.test_method)
+	outfile = bptools.make_outfile(args.test_method)
 	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #===========================================================

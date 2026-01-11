@@ -193,9 +193,7 @@ def main():
 	args.sugar_names_list = sugar_names_list
 
 	hint_mode = 'with_hint' if args.hint else 'no_hint'
-	outfile = bptools.make_outfile(
-		None,
-		args.question_type.upper(),
+	outfile = bptools.make_outfile(args.question_type.upper(),
 		hint_mode,
 		args.ring_type.upper(),
 		f"{args.num_choices}_choices"

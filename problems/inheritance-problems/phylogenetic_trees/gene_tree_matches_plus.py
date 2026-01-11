@@ -419,9 +419,7 @@ def main():
 		difficulty_suffix = f"{args.difficulty.upper()}_level"
 	else:
 		difficulty_suffix = f"{args.num_leaves}_leaves-{args.num_choices}_choices"
-	outfile = bptools.make_outfile(
-		None,
-		args.question_type.upper(),
+	outfile = bptools.make_outfile(args.question_type.upper(),
 		hint_mode,
 		f"{args.mode.upper()}_mode",
 		difficulty_suffix

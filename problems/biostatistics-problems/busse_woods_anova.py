@@ -320,7 +320,7 @@ def main():
 	Generate and save a bank of ANOVA numeric questions.
 	"""
 	args = parse_arguments()
-	outfile = bptools.make_outfile(None, "anova-5year")
+	outfile = bptools.make_outfile("anova-5year")
 	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #============================================

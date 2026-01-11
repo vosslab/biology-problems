@@ -188,7 +188,7 @@ def parse_arguments():
 def main():
 	args = parse_arguments()
 	args.gelm = GelMigration()
-	outfile = bptools.make_outfile(__file__, args.question_type)
+	outfile = bptools.make_outfile(args.question_type)
 	bptools.collect_and_write_questions(write_question, args, outfile)
 
 

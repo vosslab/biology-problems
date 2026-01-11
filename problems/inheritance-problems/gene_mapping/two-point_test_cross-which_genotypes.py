@@ -77,9 +77,7 @@ def parse_arguments():
 def main():
 	args = parse_arguments()
 	hint_mode = 'with_hint' if args.hint else 'no_hint'
-	outfile = bptools.make_outfile(
-		None,
-		"MA",
+	outfile = bptools.make_outfile("MA",
 		hint_mode,
 		args.genotype_type.upper()
 	)

@@ -212,7 +212,7 @@ def main():
 	global GLOBAL_MACRO_DATA
 	GLOBAL_PCL = pubchemlib.PubChemLib()
 	GLOBAL_MACRO_DATA = load_molecules(args.input_yaml_file)
-	outfile = bptools.make_outfile(None, args.question_type.upper())
+	outfile = bptools.make_outfile(args.question_type.upper())
 	bptools.collect_and_write_questions(write_question, args, outfile)
 	GLOBAL_PCL.close()
 

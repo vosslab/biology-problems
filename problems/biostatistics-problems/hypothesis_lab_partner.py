@@ -359,11 +359,11 @@ def parse_arguments():
 #===========================
 def main():
 	args = parse_arguments()
-	outfile = bptools.make_outfile(None, "hypotheses_partner")
+	outfile = bptools.make_outfile("hypotheses_partner")
 	if args.error_type != "random":
-		outfile = bptools.make_outfile(None, "hypotheses_partner", args.error_type)
+		outfile = bptools.make_outfile("hypotheses_partner", args.error_type)
 	if args.scenario is not None:
-		outfile = bptools.make_outfile(None, "hypotheses_partner", args.error_type, args.scenario)
+		outfile = bptools.make_outfile("hypotheses_partner", args.error_type, args.scenario)
 	bptools.collect_and_write_questions(write_question, args, outfile)
 
 

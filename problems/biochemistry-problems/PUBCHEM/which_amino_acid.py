@@ -98,9 +98,9 @@ def main():
 	args = parse_arguments()
 	outfile_suffix = args.question_type.upper()
 	if args.question_type == 'mc':
-		outfile = bptools.make_outfile(None, outfile_suffix, f"{args.num_choices}_choices")
+		outfile = bptools.make_outfile(outfile_suffix, f"{args.num_choices}_choices")
 	else:
-		outfile = bptools.make_outfile(None, outfile_suffix)
+		outfile = bptools.make_outfile(outfile_suffix)
 	questions = bptools.collect_question_batches(write_question_batch, args)
 	bptools.write_questions_to_file(questions, outfile)
 

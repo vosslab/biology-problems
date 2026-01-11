@@ -385,9 +385,7 @@ def parse_arguments():
 #===========================================================
 def main():
 	args = parse_arguments()
-	outfile = bptools.make_outfile(
-		__file__,
-		f"length_{args.length}",
+	outfile = bptools.make_outfile(f"length_{args.length}",
 		f"sites_{args.num_sites}",
 		args.dna_type
 	)

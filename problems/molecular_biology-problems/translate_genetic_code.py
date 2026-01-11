@@ -172,7 +172,7 @@ def parse_arguments():
 #==========================
 def main():
 	args = parse_arguments()
-	outfile = bptools.make_outfile(None, f"{args.peptide_length}_aa", "extra" if args.extra else None)
+	outfile = bptools.make_outfile(f"{args.peptide_length}_aa", "extra" if args.extra else None)
 	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #==========================

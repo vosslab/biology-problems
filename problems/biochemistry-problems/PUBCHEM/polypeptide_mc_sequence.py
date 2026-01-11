@@ -223,7 +223,7 @@ def main():
 	args = parse_arguments()
 
 	# Generate the output filename
-	outfile = bptools.make_outfile(__file__, f"{args.num_amino}_amino_acids")
+	outfile = bptools.make_outfile(f"{args.num_amino}_amino_acids")
 	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #===============================

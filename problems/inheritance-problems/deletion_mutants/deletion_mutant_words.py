@@ -399,9 +399,7 @@ def main() -> None:
 	6. Print stats and status.
 	"""
 	args = parse_arguments()
-	outfile = bptools.make_outfile(
-		None,
-		f"{args.num_genes:02d}_genes",
+	outfile = bptools.make_outfile(f"{args.num_genes:02d}_genes",
 		args.question_type.upper()
 	)
 	bptools.collect_and_write_questions(write_question, args, outfile)
