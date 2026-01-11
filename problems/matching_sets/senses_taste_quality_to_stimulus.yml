@@ -17,16 +17,11 @@ values description: stimuli
 
 replacement_rules:
   Na+: "<strong>Na<sup>+</sup></strong>"
-  K+: "<strong>K<sup>+</sup></strong>"
-  Li+: "<strong>Li<sup>+</sup></strong>"
   H+: "<strong>H<sup>+</sup></strong>"
   H3O+: "<strong>H<sub>3</sub>O<sup>+</sup></strong>"
   NaCl: "<strong>NaCl</strong>"
   MSG: "<strong>MSG</strong>"
-  IMP: "<strong>IMP</strong>"
-  GMP: "<strong>GMP</strong>"
   L-glutamate: "<strong>L-glutamate</strong>"
-  glutamate: "<strong>glutamate</strong>"
 
 matching pairs:
   Sweet:
@@ -36,26 +31,34 @@ matching pairs:
     - lactose
     - maltose
     - sugars
+    - simple sugars
   Umami:
     - glutamate
     - L-glutamate
     - MSG
-    - IMP
-    - GMP
+    - monosodium glutamate
+    - sodium glutamate
+    - glutamate salts
   Sour:
     - "H3O+"
     - "H+"
+    - hydronium
+    - protons
     - citric acid
     - acetic acid
     - lactic acid
+    - organic acids
   Salty:
     - "Na+"
     - NaCl
-    - "Li+"
-    - "K+"
+    - sodium ions
+    - sodium chloride
+    - table salt
+    - dissolved NaCl
   Bitter:
     - quinine
     - caffeine
-    - nicotine
-    - denatonium
     - cycloheximide
+    - nicotine
+    - alkaloids
+    - plant toxins

@@ -113,6 +113,11 @@ Named rule: "Same concept, different phrasing."
 
 This is the biggest quality lever: it makes banks feel fresh without changing what you are assessing.
 
+Instructor-friendly way to think about it:
+
+- If two answers mean the same thing (synonyms, paraphrases, or equally acceptable wording), put them under the same key as separate lines.
+- Students will only see one wording per key in any single generated question, but across different generated questions the bank naturally rotates through the alternate wordings.
+
 ## Excluding Confusable Pairs
 
 If two keys are too similar (or their values are too easy to mix up), use `exclude pairs` so they never appear together:

@@ -1,6 +1,8 @@
 #General Toosl for These Problems
 import os
 import re
+import random
+import zlib
 import sys
 import inspect
 import argparse
@@ -737,8 +739,23 @@ def formatBB_MAT_Question(N: int, question_text: str, prompts_list, choices_list
 			return prompts_text
 
 		unique_sorted = sorted(set(prompts_text), key=lambda s: s.casefold())
+		if len(unique_sorted) == 0:
+			return prompts_text
+
 		palette = list(dark_color_wheel.values())
-		colors = [palette[i % len(palette)] for i in range(len(unique_sorted))]
+
+		# Use qti_package_maker's color-wheel selection logic, but make it deterministic
+		# by seeding from the prompt set (so the same prompt set gets the same colors).
+		seed_material = "\n".join(unique_sorted).encode("utf-8", errors="replace")
+		seed = zlib.crc32(seed_material) & 0xFFFFFFFF
+		random_state = random.getstate()
+		random.seed(seed)
+		try:
+			indices = color_wheel.get_indices_for_color_wheel(len(unique_sorted), len(palette))
+		finally:
+			random.setstate(random_state)
+
+		colors = [palette[i] for i in indices]
 		color_map = {prompt: colors[i] for i, prompt in enumerate(unique_sorted)}
 		return [colorHTMLText(p, color_map[p]) for p in prompts_text]
 
