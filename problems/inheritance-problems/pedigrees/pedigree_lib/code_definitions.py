@@ -126,6 +126,56 @@ def count_generations(code_string: str) -> int:
 
 
 #===============================
+def strip_empty_columns(code_string: str) -> str:
+	"""
+	Remove columns that are entirely empty (dots) across all rows.
+
+	This compacts the pedigree by removing unnecessary whitespace columns
+	while preserving all content and connector alignment.
+
+	Args:
+		code_string (str): Pedigree code string.
+
+	Returns:
+		str: Code string with empty columns removed.
+	"""
+	rows = code_string.split('%')
+	if not rows:
+		return code_string
+
+	# Pad all rows to equal length
+	max_len = max(len(row) for row in rows)
+	if max_len == 0:
+		return code_string
+	padded_rows = [row.ljust(max_len, '.') for row in rows]
+
+	# Find columns that are entirely dots
+	columns_to_keep: list[int] = []
+	for col_idx in range(max_len):
+		is_empty_column = all(row[col_idx] == '.' for row in padded_rows)
+		if not is_empty_column:
+			columns_to_keep.append(col_idx)
+
+	# If all columns are kept or no columns to keep, return original
+	if len(columns_to_keep) == max_len:
+		return code_string
+	if not columns_to_keep:
+		return '.'
+
+	# Rebuild rows with only non-empty columns
+	new_rows: list[str] = []
+	for row in padded_rows:
+		new_row = ''.join(row[col_idx] for col_idx in columns_to_keep)
+		# Strip trailing dots to match original format
+		new_row = new_row.rstrip('.')
+		if not new_row:
+			new_row = '.'
+		new_rows.append(new_row)
+
+	return '%'.join(new_rows)
+
+
+#===============================
 def mirror_pedigree(code_string: str) -> str:
 	"""
 	Mirror a pedigree code string horizontally.

@@ -14,6 +14,17 @@ from rendering and makes both HTML and PNG outputs consistent.
 - CodeString is a compact layout serialization, not a family graph.
 - Renderers are pure transforms from CodeString.
 
+## Recent milestones (2026-01-11)
+- Fixed `mirror_pedigree()` to pad rows to equal length before reversing,
+  preserving vertical connector alignment in mirrored pedigrees.
+- Fixed `_compute_col_shift()` to properly center the founding couple above
+  their descendants rather than pushing them to the left edge.
+- Added `strip_empty_columns()` to remove columns that are entirely empty (dots)
+  across all rows, producing more compact pedigree output.
+- Added balanced complexity support for matching questions with `min_individuals`,
+  `max_individuals`, and `max_size_spread` parameters.
+- Added comprehensive pytest coverage for layout centering and code transformations.
+
 ## Recent milestones (2025-12-27)
 - Stabilized pedigree graph spec rules: founder definition, sex inference, and
   male-first union normalization.
@@ -322,6 +333,36 @@ Generate -> label -> validate -> score -> accept if above threshold.
 ## Compatibility
 - CodeString rendering and HTML/PNG outputs remain stable across generator changes.
 - PedigreeGraph and inheritance assignment can evolve independently of renderers.
+
+## Known limitations
+### Generation II spacing
+In some pedigrees, Generation II (the children of the founding couple) may appear
+more spaced out than strictly necessary. This is a deliberate trade-off in the
+layout algorithm.
+
+#### Why this happens
+The layout engine allocates horizontal space for each subtree based on the maximum
+width of all descendants. When one child's subtree is wider than another's, both
+children receive spacing based on their respective subtree widths. This ensures
+parents are always centered above their children and prevents connector alignment
+issues.
+
+#### Example
+If the founding couple has two children, and one child has 4 grandchildren while
+the other has 2, the child with 4 grandchildren needs more horizontal space. The
+layout allocates this space upward, which can make Generation II appear sparse.
+
+#### Why we don't fix this
+Compacting Generation II to remove the visual gaps would break the invariant that
+parents are centered above their children. Previous attempts to optimize this
+spacing caused connector alignment bugs (T-shapes misaligned with their descent
+lines). The current behavior prioritizes correctness over visual compactness.
+
+#### Workaround
+For pedigrees where this is visually problematic, consider:
+- Using fewer generations to reduce subtree width variation
+- Manually adjusting the `min_children`/`max_children` parameters to produce more
+  uniform subtrees
 
 ## Library roles (current files)
 Each library is intentionally narrow and maps to a pipeline layer or cross-cutting

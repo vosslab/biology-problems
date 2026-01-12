@@ -5,6 +5,7 @@ import dataclasses
 import random
 
 # Local repo modules
+import code_definitions
 import graph_spec
 
 
@@ -362,6 +363,10 @@ def render_graph_to_code(graph: PedigreeGraph, show_carriers: bool = False) -> s
 			line = '.'
 		code_lines.append(line)
 	code_string = '%'.join(code_lines)
+
+	# Remove any columns that are entirely empty (whitespace optimization)
+	code_string = code_definitions.strip_empty_columns(code_string)
+
 	return code_string
 
 

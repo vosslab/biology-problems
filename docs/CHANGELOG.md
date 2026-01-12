@@ -1,6 +1,24 @@
 # Changelog
 
 ## 2026-01-11
+- Fixed `mirror_pedigree()` in
+  [pedigree_lib/code_definitions.py](../problems/inheritance-problems/pedigrees/pedigree_lib/code_definitions.py)
+  to pad rows to equal length before reversing, preserving vertical connector alignment.
+- Fixed `_compute_col_shift()` in
+  [pedigree_lib/graph_parse.py](../problems/inheritance-problems/pedigrees/pedigree_lib/graph_parse.py)
+  to properly center the founding couple rather than pushing them to the left edge.
+- Added `strip_empty_columns()` in
+  [pedigree_lib/code_definitions.py](../problems/inheritance-problems/pedigrees/pedigree_lib/code_definitions.py)
+  to remove columns that are entirely empty (dots) across all rows, compacting pedigree output.
+- Integrated empty column stripping into `render_graph_to_code()` in
+  [pedigree_lib/graph_parse.py](../problems/inheritance-problems/pedigrees/pedigree_lib/graph_parse.py).
+- Added balanced complexity support to `generate_pedigree_set()` in
+  [write_pedigree_match_random.py](../problems/inheritance-problems/pedigrees/write_pedigree_match_random.py)
+  with `min_individuals`, `max_individuals`, and `max_size_spread` parameters.
+- Added pytest coverage for pedigree layout centering validation in
+  [tests/libs/pedigrees/test_pedigrees_layout_centering.py](../tests/libs/pedigrees/test_pedigrees_layout_centering.py).
+- Added pytest coverage for mirror and strip functions in
+  [tests/libs/pedigrees/test_pedigrees_pedigree_code_lib.py](../tests/libs/pedigrees/test_pedigrees_pedigree_code_lib.py).
 - Added a random pedigree generation matching question generator in
   [problems/inheritance-problems/pedigrees/write_pedigree_match_random.py](../problems/inheritance-problems/pedigrees/write_pedigree_match_random.py)
   that uses the skeleton and inheritance assignment engines instead of static templates.
