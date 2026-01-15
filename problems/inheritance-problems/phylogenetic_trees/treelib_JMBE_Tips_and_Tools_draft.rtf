@@ -1,0 +1,79 @@
+{\rtf1\ansi\deff0
+{\fonttbl{\f0 Times New Roman;}}
+\fs24
+\pard\qc\b treelib: generating phylogenetic tree equivalence exam items with answer keys by construction\b0\par
+\pard\qc Neil Voss\par
+\pard\qc \par
+\pard\b ABSTRACT\b0\par
+\pard Phylogenetic trees are a core representation in genetics and evolution, but many students confuse tree drawings with tree relationships. A common failure mode is treating rotated subtrees as different, even when the underlying topology is identical. This Tips and Tools article describes treelib, a small open-source module used inside a larger free biology problems package to automatically generate phylogenetic tree “SAME tree” and “DIFFERENT tree” multiple-choice items. treelib represents rooted binary trees as compact “tree code” strings and generates item variants through systematic subtree rotations, taxon relabeling, canonical filtering, and deduplication. The workflow produces ready-to-use HTML question pages and answer keys, and it exposes simple difficulty controls, including leaf count, topology class, and distractor similarity. This article focuses on instructor-facing use and reproducibility, and does not report student outcome data.\par
+\pard\par
+\pard\b KEYWORDS\b0\par
+\pard phylogenetic trees; tree thinking; assessment; item generation; open source; bioinformatics education\par
+\pard\par
+\pard\b INTRODUCTION\b0\par
+\pard Phylogenetic trees are central to modern biology curricula, but tree interpretation remains tricky. Many students treat a phylogenetic tree as a picture to match, rather than a set of nested relationships. Subtree rotation is an especially persistent misconception. Rotating a node changes the drawing, but not the relationships. If students miss this, later ideas such as clades and sister taxa become harder to learn.\par
+\pard\par
+\pard I built treelib to generate large numbers of tree equivalence questions with ground truth by construction. The goal was speed and consistency. An instructor should be able to generate many unique but conceptually matched items, print them cleanly, and receive an answer key automatically. treelib is currently used as one generator inside a larger free biology problems package.\par
+\pard\par
+\pard\b PROCEDURE\b0\par
+\pard Overview of the representation\par
+\pard treelib represents a rooted binary tree as a single string called a tree code. Tree codes use parentheses for nesting, leaf taxa as labels, and internal nodes as digits placed between the two child subtrees. For example, ((a1b)3(c2d)) is a four-leaf rooted binary tree. Internal node 1 connects a and b, internal node 2 connects c and d, and internal node 3 connects those two subtrees.\par
+\pard\par
+\pard The representation is designed for controlled transformations. Subtree rotation corresponds to swapping the left and right children around an internal-node digit. Taxon relabeling corresponds to a deterministic replacement of leaf labels.\par
+\pard\par
+\pard How treelib generates trees and item variants\par
+\pard treelib generates candidate trees using a pipeline that can be audited and reproduced:\par
+\pard\par
+\pard 1. Base shapes. Start from a small library of base tree codes for a given leaf count. These are topology templates with a consistent internal-node numbering convention.\par
+\pard 2. Topology rotations. Enumerate subtree rotations by flipping left and right children around internal nodes. This produces different drawings that can still represent the same relationships.\par
+\pard 3. Taxon relabeling. Apply a controlled set of taxon permutations to generate new named instances while preserving topology.\par
+\pard 4. Canonical filtering and deduplication. Apply a fast canonical check to reduce obvious duplicates, then deduplicate by hashing the final code strings.\par
+\pard\par
+\pard The output is a set of unique tree codes that can be rendered into tree diagrams. Because each item is generated from known tree codes, the answer key is produced automatically.\par
+\pard\par
+\pard Instructor workflow\par
+\pard A typical workflow is:\par
+\pard\par
+\pard 1. Choose the learning objective: find the SAME tree (equivalence under rotation) or find the DIFFERENT tree (detect a topology change).\par
+\pard 2. Choose a leaf count (for example, 6 to 10) and a difficulty setting.\par
+\pard 3. Generate a question page plus answer key.\par
+\pard 4. Optionally regenerate with new taxon names to create an alternate exam form.\par
+\pard\par
+\pard Figure 1 shows a representative “SAME tree” item. Students select the candidate tree that represents the same relationships as the reference tree, allowing arbitrary subtree rotations.\par
+\pard\par
+\pard Difficulty controls\par
+\pard In practice, difficulty depends on more than leaf count. treelib supports several instructor-facing controls that are useful for building item sets with predictable progression. Table 1 lists common controls and their instructional effect.\par
+\pard\par
+\pard A simple pattern is to start with low leaf counts and visually distinct distractors, then increase distractor similarity while holding leaf count fixed. This isolates whether students are learning tree equivalence rather than reacting to diagram crowding.\par
+\pard\par
+\pard Outputs and reproducibility\par
+\pard treelib emits HTML pages that print cleanly to PDF. Given the same inputs and random seed, treelib produces the same question set and answer key. This makes it straightforward to archive an exam form and later regenerate it for review or accommodation workflows.\par
+\pard\par
+\pard Safety and accessibility notes\par
+\pard This activity has no laboratory safety issues. For accessibility, instructors should avoid security tricks that embed hidden text or micro-font watermarking in HTML, because these can interfere with screen readers and copy and paste workflows. If watermarking is required in a local exam setting, it should be tested with institutional accessibility support.\par
+\pard\par
+\pard\b CONCLUSION\b0\par
+\pard treelib provides a lightweight way to generate phylogenetic tree equivalence questions with an answer key by construction. The main benefit is time. An instructor can generate many variants of a conceptually consistent question family without hand-drawing trees or manually vetting distractors.\par
+\pard\par
+\pard This article does not include student outcome data. Instructors who wish to study learning gains can layer item statistics or concept inventories on top of the same generated question sets, but that evaluation is outside the scope of this Tips and Tools report.\par
+\pard\par
+\pard\b ACKNOWLEDGMENTS\b0\par
+\pard Add funding sources, contributors, and any prior dissemination (workshops, talks) here.\par
+\pard\par
+\pard\b REFERENCES\b0\par
+\pard Add 6 to 12 references here. Suggested categories include: phylogenetic tree representation standards, tree-thinking education work, and assessment design references.\par
+\pard\par
+\pard\b TABLES\b0\par
+\pard Table 1. Example difficulty controls for generating item variants.\par
+\pard Control\\tEffect on item\\tTypical use\par
+\pard Leaf count (n)\\tMore visual complexity and larger tree space\\tScale from intro to advanced\par
+\pard Topology class\\tBalanced versus imbalanced structures\\tTarget specific misconceptions\par
+\pard Distractor similarity\\tHow close wrong trees are to the correct tree\\tImprove discrimination\par
+\pard Taxon relabeling\\tNew names on the same topology\\tReduce memorization across versions\par
+\pard\par
+\pard\b FIGURE LEGENDS\b0\par
+\pard FIG 1. Example “Find the SAME tree” multiple-choice item generated using treelib inside a free biology problems package. Students select the candidate tree that represents the same relationships as the reference tree, allowing arbitrary subtree rotations.\par
+\pard\par
+\pard\b FIGURES\b0\par
+\pard [Place FIG 1 here]\par
+}

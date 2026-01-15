@@ -1,0 +1,825 @@
+Phylogenetic Tree Paper
+
+Gene-tree generation in this module is mostly a two-stage "expand then canonicalize" pipeline.
+
+The expansion happens in lookup.get_all_permuted_tree_codes_for_leaf_count() which hands the base, unlabeled "tree types" from definitions.code_library to permute.get_all_permuted_tree_codes_from_tree_code_list().
+
+Inside permute.get_all_permuted_tree_codes_from_tree_code_list() the gene trees are produced like this:
+
+1. Topology permutations (inner-node flips)
+For each base tree code, permute.get_all_inner_node_permutations_from_tree_code(base_tree_code_str) enumerates left right swaps at internal nodes using a binary mask (range(0, 2**max_nodes, 2)). Each permuted topology is then run through tools.sort_alpha_for_gene_tree() and added to a set, to collapse equivalent rotations.
+
+2. Taxon label permutations (leaf relabeling)
+tools.get_comb_safe_taxa_permutations(sorted_taxa) generates the allowed taxa orders. For every (topology permutation, taxa order) pair, tools.replace_taxa_letters(permuted_code, permuted_taxa) rewrites the leaf labels using placeholders to avoid replacement collisions.
+
+3. Canonical filter
+Only codes that pass tools.is_gene_tree_alpha_sorted(final_code) are kept, then duplicates are removed with set(...).
+
+A few implementation details that matter a lot:
+* TreeCode.__init__() also normalizes every incoming code with tools.sort_alpha_for_gene_tree(tree_code_str), so even "already generated" codes get a final canonical pass.
+* tools.sort_alpha_for_gene_tree() and tools.is_gene_tree_alpha_sorted() only look at the single characters immediately adjacent to each internal node number. That means canonicalization is strict only for patterns like (a1b) where both children are single-letter leaves.
+
+Two sharp edges to be aware of:
+* Multi-character gene names are not actually ordered. replace_taxa_letters() wraps multi-character labels as |NAME|, but the alpha-sort and alpha-check logic uses str.isalpha() on the adjacent character. Adjacent characters become |, so the checks skip, and canonicalization becomes inconsistent for multi-character taxa.
+* permute.get_all_permutations_from_tree_code() calls tools.replace_gene_letters(...), which does not exist in tools.py. It looks like dead or older code, but it will crash if used.
+
+If the goal is a truly unique canonical form for any label length, the robust fix is to parse the tree into a nested structure and recursively sort child subtrees by a subtree key (for example the minimum leaf label in the subtree, or a full leaf-label tuple), then reserialize. That avoids the "adjacent character" fragility entirely.
+
+=======================
+
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath, amssymb}
+\usepackage{hyperref}
+\usepackage[numbers,sort&compress]{natbib}
+
+\title{Enumerating Phylogenetic Tree Codes via Topology Rotations, Taxon Relabeling, and Canonicalization}
+\author{Neil Voss}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+The number of possible phylogenetic tree topologies grows super-exponentially with the number of taxa, which makes exhaustive approaches infeasible beyond small leaf counts. This paper describes a compact, string-based representation of rooted binary gene trees (a ``tree code'') and an enumeration pipeline built around a small library of base shapes, internal-node rotations, taxon relabeling, canonical filtering, and deduplication. The implementation is intended for reproducible enumeration, rapid comparison, and the derivation of secondary features such as taxon distance maps. We relate the observed growth of the generated code space to classical counts of labeled rooted and unrooted binary phylogenetic trees, and we discuss where the encoding intentionally differs from standard Newick representations.
+\end{abstract}
+
+\section{Introduction}
+Phylogenetic inference methods search a combinatorial space whose size becomes enormous even for modest numbers of taxa. For fully resolved (binary) trees on $n$ labeled leaves, the number of rooted topologies is $(2n-3)!!$ and the number of unrooted topologies is $(2n-5)!!$ \citep{apeRandomTopologies,uconnTreeCounts}. This combinatorial explosion is a foundational reason why phylogenetic optimization is difficult \citep{sempleSteel,felsenstein2004}.
+
+Beyond labeled topologies, researchers frequently care about \emph{shapes} (unlabeled topologies), symmetry classes, and canonical forms that allow fast deduplication and comparison. Unlabeled rooted binary shapes are counted by the Wedderburn--Etherington numbers \citep{WEwiki,OEISA001190}, and unlabeled unrooted binary shapes are captured by OEIS A000672 \citep{OEISA000672,TreeToolsShapes}.
+
+This paper contributes:
+\begin{enumerate}
+\item A string encoding (tree code) for rooted binary gene trees that is close to Newick but carries explicit internal-node identifiers.
+\item A practical enumeration algorithm built from (i) base shape codes, (ii) systematic internal-node flips, (iii) combination-safe taxon permutations, (iv) canonical filtering, and (v) hash-based deduplication.
+\item A discussion of how internal-node identifiers enable derived features, including taxon distance maps computed from least-common-ancestor identifiers.
+\end{enumerate}
+
+\section{Background}
+\subsection{Classical counts of labeled tree topologies}
+For $n \ge 2$, the number of rooted, fully resolved, leaf-labeled phylogenetic trees is
+\begin{equation}
+N_{\mathrm{root}}(n) = (2n-3)!! = 1 \cdot 3 \cdot 5 \cdots (2n-3),
+\end{equation}
+and the number of unrooted, fully resolved, leaf-labeled phylogenetic trees is
+\begin{equation}
+N_{\mathrm{unroot}}(n) = (2n-5)!! = 1 \cdot 3 \cdot 5 \cdots (2n-5),
+\end{equation}
+with equivalent factorial forms commonly used in teaching materials and software documentation \citep{apeRandomTopologies,uconnTreeCounts}. Early systematic discussion of counting evolutionary trees appears in \citet{felsenstein1978}.
+
+Table \ref{tab:labeledCounts} lists these values for small $n$ to emphasize growth.
+
+\begin{table}[ht]
+\centering
+\caption{Classical counts of labeled binary phylogenetic tree topologies.}
+\label{tab:labeledCounts}
+\begin{tabular}{@{}rrr@{}}
+\toprule
+Leaves $n$ & Rooted $(2n-3)!!$ & Unrooted $(2n-5)!!$ \\
+\midrule
+3  & 3        & 1 \\
+4  & 15       & 3 \\
+5  & 105      & 15 \\
+6  & 945      & 105 \\
+7  & 10{,}395 & 945 \\
+8  & 135{,}135 & 10{,}395 \\
+9  & 2{,}027{,}025 & 135{,}135 \\
+10 & 34{,}459{,}425 & 2{,}027{,}025 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Unlabeled shapes}
+If leaf labels are ignored, the number of rooted binary shapes with $n$ leaves is given by the Wedderburn--Etherington numbers \citep{WEwiki,OEISA001190}. For unrooted unlabeled binary shapes, a commonly cited sequence is OEIS A000672 \citep{OEISA000672}, which is also exposed in software as the number of unrooted binary shapes on $n$ unlabeled leaves \citep{TreeToolsShapes}. These counts are much smaller than labeled counts, and they define the ``shape library'' size required for certain enumeration strategies.
+
+\section{Methods}
+\subsection{Tree code representation}
+Gene trees are represented as a single string, the \emph{tree code}. The code uses:
+\begin{itemize}
+\item Parentheses to represent nesting and topology.
+\item Leaf taxa as symbols (typically letters for compactness).
+\item Internal nodes as digits placed \emph{between} the two child subtrees they connect.
+\end{itemize}
+For example:
+\[
+((a1b)3(c2d))
+\]
+represents a rooted binary tree where internal node \texttt{1} connects leaves \texttt{a} and \texttt{b}, internal node \texttt{2} connects \texttt{c} and \texttt{d}, and internal node \texttt{3} connects those two subtrees.
+
+This encoding is closely related to Newick parenthetical notation but differs by placing explicit internal-node identifiers inline and by omitting commas for ordered child separation \citep{NewickPHYLIP}. Internal-node identifiers are useful as stable handles for downstream computations (Section \ref{sec:distanceMap}).
+
+\subsection{Enumeration pipeline overview}
+The implemented generation pipeline is:
+\[
+\text{base shapes} \rightarrow \text{internal-node flips} \rightarrow \text{taxon relabeling} \rightarrow \text{canonical filter} \rightarrow \text{dedupe}.
+\]
+
+\paragraph{Base shape library.}
+Enumeration begins from a curated library of base tree codes for a given leaf count. Each base code fixes a particular topology and an internal-node numbering scheme (an ``edge-labeled'' convention in the implementation). The library is validated against expected library sizes for each leaf count.
+
+\paragraph{Topology rotations by internal-node flips.}
+For each base code, internal-node flips systematically swap the left and right sides at each internal node. A bit mask controls whether each internal node is flipped. To avoid the trivial symmetry of swapping the first internal split, only even masks are visited in the implementation, which reduces redundant exploration.
+
+\paragraph{Combination-safe taxon relabeling.}
+For each permuted topology, the algorithm relabels taxa by iterating through a list of taxon permutations. A ``combination-safe'' permutation list treats permutations that differ only by swapping the first two taxa as equivalent, effectively halving the naive $n!$ space.
+
+\paragraph{Canonical filtering.}
+A fast canonical check discards codes that violate a local alphabetical ordering rule when a node has single-character taxa immediately adjacent to its identifier. This is a lightweight filter intended to reduce obvious duplicates before deduplication.
+
+\paragraph{Deduplication.}
+Finally, the algorithm inserts generated codes into a set and returns unique codes.
+
+\subsection{Pseudocode}
+\begin{verbatim}
+Input: base_codes for n leaves
+taxa_orders = comb_safe_permutations(sorted_taxa)
+
+S = empty set
+for code in base_codes:
+for topo in inner_node_flip_permutations(code):
+topo = alpha_sort_local(topo)   # local swap when possible
+for order in taxa_orders:
+labeled = replace_taxa(topo, order)
+if is_alpha_sorted_local(labeled):
+S.add(labeled)
+
+return list(S)
+\end{verbatim}
+
+\subsection{Distance maps from internal-node identifiers}
+\label{sec:distanceMap}
+Internal-node identifiers allow a direct computation of a taxon pair ``distance'' proxy based on the least common ancestor (LCA): for a given pair of taxa, identify the smallest substring containing both and read the maximum internal-node identifier in that substring. The implementation precomputes an all-pairs taxon distance map, which is then used for similarity scoring and downstream sorting.
+
+This is not a metric in the strict mathematical sense for all encodings, but it is a compact, reproducible feature vector for comparing trees.
+
+\section{Results}
+\subsection{Observed growth in generated tree codes}
+Even under canonical filtering and deduplication, the generated code space grows rapidly. As an illustrative example from the current implementation, exhaustive generation produces 6 unique codes for $n=3$, 60 for $n=4$, and 960 for $n=5$ under the specific combination of (i) the base library used, (ii) internal-node flip rules, (iii) combination-safe taxon permutations, and (iv) the local canonical filter.
+
+These values are not intended to match classical counts of labeled rooted topologies (Table \ref{tab:labeledCounts}) because the tree codes include explicit internal-node identifiers and a particular enumeration convention over base codes and relabeling rules. Instead, these values characterize the size of the encoding space produced by this pipeline, which is the relevant quantity for indexing, sampling, and deduplicating tree codes.
+
+\subsection{Relationship to classical counts}
+Classical counts remain important as a reference scale. For example, $n=10$ already implies 34,459,425 rooted labeled binary topologies \citep{uconnTreeCounts,lectureTreeSpace}, which motivates strong pruning, sampling, and canonicalization strategies even before considering edge lengths, multifurcations, or model parameters.
+
+\section{Discussion}
+\subsection{Why a tree code instead of standard Newick}
+Newick is widely supported and flexible \citep{NewickPHYLIP}. The tree code representation described here emphasizes:
+\begin{itemize}
+\item Compactness for small trees.
+\item Deterministic internal-node identifiers that support derived features (distance maps).
+\item String-local transformations (node flips and local canonical checks).
+\end{itemize}
+These design choices trade broad interoperability for a controlled enumeration environment.
+
+\subsection{Canonicalization and known limitations}
+The current canonical filter is intentionally local: it checks and optionally swaps only when an internal-node digit has single-character taxa immediately adjacent. This makes canonicalization fast, but it can miss duplicates when a node digit is adjacent to parentheses rather than leaf symbols, and it can fail to impose a total order for multi-character taxon labels that are delimited in the implementation.
+
+A robust next step is full parsing into a tree structure and canonicalization by subtree signatures (for example, sorting child subtrees by a tuple of leaf labels, or by a hash of the subtree). This would provide a true canonical form for arbitrary label lengths and nested structures, at the cost of heavier computation.
+
+\subsection{Connections to tree shape enumeration}
+The base-library approach aligns naturally with shape-first thinking: one can begin with unlabeled shapes (Wedderburn--Etherington for rooted trees \citep{OEISA001190,WEwiki} and OEIS A000672 for unrooted shapes \citep{OEISA000672,TreeToolsShapes}), then expand by leaf labeling and by symmetry operations. This decomposition helps separate questions about topology classes (shapes) from questions about labeled instances, which is often useful in phylogenetic method development \citep{sempleSteel,felsenstein2004}.
+
+\section{Conclusions}
+We presented a practical enumeration framework for rooted binary gene trees based on a compact tree code representation and a systematic pipeline: base library expansion, internal-node flips, combination-safe taxon relabeling, lightweight canonical filtering, and set-based deduplication. The approach is designed to be reproducible and extensible, supporting downstream feature extraction such as taxon distance maps. Classical counts of rooted and unrooted labeled phylogenetic trees highlight the rapid growth of the underlying search space, motivating canonical forms and shape-based decomposition.
+
+\section*{Software availability}
+The reference implementation is in Python and organized as a small module pipeline (definitions, lookup, permute, tools, and a TreeCode class). A public repository link, version tag, and license statement should be added for submission.
+
+\section*{Acknowledgements}
+Add funding, lab, and collaborator acknowledgements here.
+
+\bibliographystyle{plainnat}
+\begin{thebibliography}{99}
+
+\bibitem[Felsenstein(1978)]{felsenstein1978}
+J.~Felsenstein.
+\newblock The number of evolutionary trees.
+\newblock \emph{Systematic Zoology}, 27(1):27--33, 1978.
+\newblock JSTOR record: \citep{jstorFelsenstein1978}.
+
+\bibitem[Felsenstein(2004)]{felsenstein2004}
+J.~Felsenstein.
+\newblock \emph{Inferring Phylogenies}.
+\newblock Sinauer Associates, 2004.
+
+\bibitem[Semple and Steel(2003)]{sempleSteel}
+C.~Semple and M.~Steel.
+\newblock \emph{Phylogenetics}.
+\newblock Oxford University Press, 2003.
+
+\bibitem[Paradis(2004) and updates]{apeRandomTopologies}
+E.~Paradis.
+\newblock \emph{Enumeration and Simulation of Random Tree Topologies} (ape package vignette).
+\newblock CRAN documentation. See formula discussion for $(2n-3)!!$.
+\newblock \url{https://cran.r-project.org/web/packages/ape/vignettes/RandomTopologies.pdf}.
+
+\bibitem[UConn teaching notes]{uconnTreeCounts}
+University of Connecticut.
+\newblock Number of rooted and unrooted trees.
+\newblock Teaching resource.
+\newblock \url{https://carrot.mcb.uconn.edu/mcb396_41/tree_number.html}.
+
+\bibitem[PHYLIP Newick documentation]{NewickPHYLIP}
+J.~Felsenstein.
+\newblock The Newick tree format.
+\newblock PHYLIP documentation.
+\newblock \url{https://phylipweb.github.io/phylip/newicktree.html}.
+
+\bibitem[OEIS A001190]{OEISA001190}
+OEIS Foundation Inc.
+\newblock A001190: Wedderburn--Etherington numbers.
+\newblock \url{https://oeis.org/A001190}.
+
+\bibitem[OEIS A000672]{OEISA000672}
+OEIS Foundation Inc.
+\newblock A000672: Number of trivalent (binary) trees.
+\newblock \url{https://oeis.org/A000672}.
+
+\bibitem[Wikipedia: Wedderburn--Etherington numbers]{WEwiki}
+Wikipedia contributors.
+\newblock Wedderburn--Etherington number.
+\newblock \url{https://en.wikipedia.org/wiki/Wedderburn%E2%80%93Etherington_number}.
+
+\bibitem[TreeTools documentation]{TreeToolsShapes}
+C.~Smith and contributors.
+\newblock TreeTools: Number of rooted and unrooted tree shapes.
+\newblock CRAN documentation (nRootedShapes, nUnrootedShapes).
+\newblock \url{https://search.r-project.org/CRAN/refmans/TreeTools/html/nRootedShapes.html}.
+
+\bibitem[Lecture notes: phylogeny tree space]{lectureTreeSpace}
+S.~Emrich (example teaching notes).
+\newblock Why phylogenetics is hard: tree space counts.
+\newblock \url{https://web.eecs.utk.edu/~semrich/bc25/notes/lecture16.pdf}.
+
+\bibitem[JSTOR record]{jstorFelsenstein1978}
+JSTOR.
+\newblock The number of evolutionary trees (Felsenstein, 1978).
+\newblock \url{https://www.jstor.org/stable/2412810}.
+
+\end{thebibliography}
+
+\end{document}
+
+=======================
+The draft is a strong skeleton. The structure tracks your actual pipeline cleanly (base codes ? node flips ? taxa relabeling ? canonicalize ? dedupe), and the "tree code" idea is explained early enough that the rest reads smoothly.
+
+The main problems are practical and fixable:
+* It does not compile as-is. It calls \input{figures/tree_flip_equivalence.tex} and \input{figures/tree_examples.tex}, but those files are not present, so LaTeX stops with a fatal error.
+* There are multiple literal "..." placeholders in the abstract and body. Those read like unfinished text and should be replaced everywhere.
+* It needs references. It states Wedderburn-Etherington numbers and Euler up/down numbers but provides no citations. At minimum, cite OEIS and one phylogenetics reference that states the classical labeled-tree counts.
+* Terminology needs one tightening pass. The code places digits as internal-node identifiers, but the draft sometimes calls the secondary count "edge-labeled." Either justify that mapping explicitly or rename it to "internal-node-labeled encodings" to match what the strings actually contain.
+* Results need to be anchored to real output from your implementation. Right now it mostly presents known sequences; add a table that reports "unique codes produced by this pipeline for n = 2...k" and show how that relates to classical rooted/unrooted labeled counts and to unlabeled shape counts.
+
+One extra scientific point worth surfacing in the paper (because it is genuinely interesting): your canonicalization is local (adjacent single-letter taxa around a digit). That is fast, but it is not a total canonical form for nested subtrees or multi-character taxa. The draft hints at this, but it should be stated plainly as a limitation and as motivation for a parser-based canonical form in future work.
+
+If you want this to look submission-ready quickly, the fastest path is: (1) make it compile, (2) delete all placeholders, (3) add 8 to 15 real citations, (4) add one quantitative table directly generated from treelib output. That turns it from "nice idea" into "reproducible method with measured behavior."
+
+=======================
+Yes, but not in the way your first framing suggested.
+
+The "how many phylogenetic trees exist for n taxa" story is absolutely published. The UConn page is basically a teaching table for the standard double-factorial counts, and those counts go back decades.   The same is true for unlabeled rooted shapes via Wedderburn-Etherington numbers.
+
+Where you can still have something publishable is the representation + canonicalization + feature extraction bundle:
+* Internal-node-labeled "tree code" as an enumeration-friendly encoding (digits inline, deterministic transforms). This is not just Newick with labels, it is a deliberately constrained string calculus for generating and comparing trees.
+* A reproducible generation pipeline that decomposes the space into base shapes, flip symmetries, relabeling, canonical filtering, and deduping. That is a practical algorithmic contribution when it is benchmarked and validated.
+* Derived features (distance maps, similarity scores) from internal-node identifiers. This connects to current interest in numeric or vector representations of trees, but your approach is different from recent "tree as vector/encoding" work, so you can position it as a complementary representation optimized for exhaustive enumeration and hashing.
+
+What would make this a solid paper, as opposed to "cool code":
+
+1. Define the equivalence relation precisely (what counts as the same tree under your pipeline). Then prove that your canonicalization is correct for that definition, or clearly label it as a heuristic and quantify the miss rate.
+
+2. Report new, verifiable sequences produced by your conventions: number of unique codes produced for n=2\ldots k, number of base shapes used, number of flip classes, size of dedupe reductions. Those numbers can be genuinely new because they depend on your encoding and constraints, even though the classical topology counts are known.
+
+3. Compare to known baselines (classical rooted/unrooted labeled counts, Wedderburn-Etherington shapes) to show exactly how your generated set relates to the standard objects.
+
+4. Ship a dataset artifact (canonical codes and feature vectors for small n) plus reproducible scripts. Many journals will accept this as a methods or software note if it is clean and useful.
+
+The short verdict: the counting itself is not novel, but your encoding-driven enumeration and the distance-map style features can be publishable if you treat them as a methods contribution and you back them with proofs or careful empirical validation and a reusable catalog.
+
+=======================
+
+Yes, it can get traction, but only if you treat it as a teaching product with evidence, not as a "new counting result."
+
+The classical counts for labeled phylogenetic trees are well known, so a paper that re-derives them will not land. What is publishable is a tight educational contribution built around your library:
+* A clear representation that students can manipulate (your tree-code strings).
+* A generator that can produce controlled question families (same shape, different labeling; same taxa, different symmetries).
+* An instructor-facing workflow (how you build exams, how you parameterize difficulty).
+* Learning evidence (pre/post, concept inventory style items, rubric-scored answers, or at least multi-semester performance and common misconceptions).
+
+There are established venues that explicitly publish computational biology education resources and tools, including the PLOS Computational Biology Education collection and JMBE.   There is also precedent for publishing interactive teaching tools that cover phylogenetics components.
+
+A strong angle that is genuinely "yours" is: algorithmic generation of phylogenetics assessment items with measurable difficulty control, plus a small open bank of questions and answer keys generated from a pinned version of the code. That is more novel than "tree counts," and it is directly useful to other instructors.
+
+If you want maximum acceptance probability, aim for a "teaching resource + evaluation" paper, and treat the tree-space discussion as the conceptual backbone rather than the main claim.
+
+=======================
+
+Here is a lightly edited version of the question stem that keeps your original voice but reads cleaner for ESL science students.
+
+Revised stem (minimal edits):
+
+Phylogenetic trees are fundamental tools in genetics research. They help scientists visualize evolutionary relationships among species, gene sequences, or populations. By tracing shared ancestry, these trees can provide valuable insight into genetic biodiversity. Phylogenetic trees are used to track disease evolution, identify conserved sequences, and understand speciation processes. They are useful in both theoretical and applied genetics.
+
+The tree diagram below is a phylogenetic tree with 8 leaves. This phylogenetic tree is called "None".
+
+Several phylogenetic trees are shown below, but only one has the SAME structure and represents the same relationships as the reference tree above.
+
+Which one of the following phylogenetic trees represents the SAME relationships, or is equivalent to the phylogenetic tree above?
+
+Quick note (quality and accessibility): your HTML includes many hidden words inserted via tiny white text spans.   This can confuse screen readers, copy/paste, and some browsers. If this is for assessment security, it works, but it will also add noise for students using accessibility tools.
+
+=======================
+Yes, this is a solid example of a teaching contribution.
+
+What the sample question shows is a clean assessment objective: students must recognize tree equivalence under rotation (same topology, different drawing order), not just match labels or "visual similarity."   It also scales nicely because you can fix the concept (same topology) while varying leaf count, naming, and distractor design.
+
+From a publishability angle, the strongest story is not "we can count trees" (that is well covered in the literature), but "we can automatically generate high-quality phylogenetics exam items with controlled difficulty and known ground truth." Your generator gives you three things that many instructors do not have:
+* Guaranteed equivalence classes: you can generate many depictions of the same underlying tree and prove they are the same by construction (canonicalization and dedupe in your pipeline).
+* Principled distractors: you can sample near-miss trees (for example, small topological changes) rather than random wrong answers, which tends to produce better discrimination.
+* Difficulty knobs: leaf count, symmetry, and "distance" between the correct tree and distractors can be tuned, then validated empirically with student performance.
+
+If you push it as an education methods paper, you can make it publishable by adding a compact evaluation section: item statistics (difficulty, discrimination), common wrong choices, and how those map to specific misconceptions about rotations and clades. The question stem you showed is already in the right genre for that kind of study.
+
+=======================
+It has been applied to phylogenetic trees in biology, but often under the name "tree shapes" or "unlabeled topologies," so it can be easy to miss if you search only for "Wedderburn-Etherington."
+
+A few concrete examples:
+* A phylogenetics-focused teaching and research site (X-Trees, Rosenberg lab) explicitly states that the number of rooted binary unlabeled shapes is the Wedderburn-Etherington sequence and frames these as unlabeled phylogenetic tree topologies.
+* TreeTools (an R phylogenetics toolkit) documents that "rooted tree shapes" are counted by Wedderburn-Etherington numbers (OEIS A001190) and "unrooted shapes" by OEIS A000672.
+* Recent combinatorics papers explicitly call Wedderburn-Etherington numbers "rooted phylogenetic tree shapes" and use them as the baseline object in phylogenetics-motivated problems.
+
+So the concept is known in evolutionary biology, but it is usually presented as "shape space" rather than as "applying Wedderburn-Etherington." Your opportunity is still real, but it shifts from "this counting exists" to "here is an encoding and generator that makes shape space operational for assessment, indexing, and controlled distractors."
+
+=======================
+(1) "Comb, giraffe" naming for shape space
+
+"Comb" is already a standard name in phylogenetics for the maximally imbalanced rooted binary tree, also commonly called the "caterpillar" tree.
+So that one is not new, but it is good to use because it matches the literature.
+
+"Giraffe" is probably not standard. I did not see it used as a canonical shape term in phylogenetics sources I checked. What you can do (and it is pedagogically strong) is keep "giraffe" as a classroom mnemonic, but define it as a specific, formally described shape (for example "a comb with one balanced subtree at depth k"), then relate it to published "tree balance" language and indices (Sackin, Colless, cophenetic).
+
+(2) Journals that could publish "automatic generation of phylogenetics exam items"
+
+Best fits if you include evaluation data (difficulty, discrimination, misconceptions) and release a usable item bank plus code.
+* CBE Life Sciences Education (CBE LSE): explicitly publishes evaluated educational innovations in life sciences, including assessment methods.
+* Journal of Microbiology & Biology Education (JMBE): aims for adoptable biology education resources and scholarly teaching.
+* Evolution: Education and Outreach: publishes "tree-thinking" education activities and studies, very on-topic for phylogenetic equivalence questions.
+* Frontiers in Education: has published bioinformatics and phylogenetics curriculum resources with instructor-facing materials and student survey outcomes.
+* PLOS Computational Biology (Education article type): possible if you frame it as a broadly useful training resource (less "exam bank," more "teaching method + toolkit"), and meet their reproducibility and code availability expectations.
+* F1000Research (Bioinformatics or related gateways): a practical route for "software + teaching lab + dataset," with transparent review.
+
+If you want traction, the "winning package" is: a small study of learning outcomes or item statistics, plus a versioned release of the generator and a curated set of vetted questions (including accessibility notes).
+
+=======================
+
+Understood. You can still publish this without any student data.
+
+The pivot is: write it as a computational methods / software paper, not an education outcomes paper. You demonstrate correctness and usefulness using mathematical validation and synthetic benchmarks, not humans.
+
+What you can publish without IRB
+* A tree-code representation + canonicalization strategy for rooted binary phylogenetic trees, with a clear equivalence definition.
+* An enumeration and sampling engine that can generate (a) equivalent depictions and (b) near-miss distractors with a tunable "topological distance."
+* Validation against known baselines (double-factorial labeled counts, Wedderburn-Etherington shape counts) and internal consistency checks (dedupe rates, symmetry-class sizes, invariants).
+* A released artifact: Python package, documentation, and a small dataset of canonical codes for small n, plus reproducible scripts.
+
+You can mention exam generation as an application, but keep the paper's core claim computational.
+
+Good journal and venue targets that do not require IRB
+
+If you want "coder traction" and citations, aim for software venues:
+* Bioinformatics (Applications Note) or Bioinformatics Advances: short, tool-focused papers when the package is polished.
+* BMC Bioinformatics: full software paper format, often friendly to open-source tools.
+* GigaScience: software plus reproducible data and workflows.
+* PLOS Computational Biology: possible as a methods/software contribution if positioned as broadly useful beyond one course.
+* F1000Research: rapid publication for software with transparent review.
+* Journal of Open Source Software (JOSS): very practical and lightweight review for a well documented package, good for a "coder-first" publication.
+* SoftwareX: applied software publication, often used for scientific tooling.
+
+How to make the contribution feel "researchy" without humans
+* Define the object: what a "tree code" represents, what equivalence means.
+* Provide a canonicalization method and either prove it works for your constraints or quantify failure cases and provide a robust variant.
+* Provide complexity and scaling, and show where pruning saves work.
+* Provide benchmarks: counts, dedupe reduction, and runtime up to a reasonable n.
+
+This lands as "a reproducible phylogenetic tree-space toolkit," with assessment generation as a motivating use case, not the evaluation target.
+
+=======================
+
+GPL is fine. The real issue is scope and "is this a coherent research software product."
+
+Here are publication paths that still work when this is a module inside a larger problem bank.
+
+Best fit: software "metapaper" journals
+
+Journal of Open Research Software (JORS) is explicitly for software metapapers that mainly describe the software and where to get it, with the software in a public repository under an open license.
+This is a good match when you have useful code but do not want to build a big biological results story.
+
+If you are willing to polish the treelib part a bit
+
+JOSS is stricter. It requires an OSI-approved license (GPL qualifies) but also expects the software to be feature-complete and not a minor utility package.
+If treelib is a small internal module, JOSS may reject it unless you submit the larger package as the "software" and treelib is a major component.
+
+Traditional bioinformatics software articles
+
+BMC Bioinformatics (Software article) can work if you frame this as broadly useful and you compare against related tools or representations. They also want the software available for anonymous review and strongly recommend archiving the code with the submission, plus a clear "Availability and requirements" section that includes the license.
+This route usually expects more narrative, comparison, and a bit more "tool maturity" than JORS.
+
+What I would do in your situation
+
+1. Write the paper about the larger free biology problems package, with treelib as one highlighted engine (tree-code enumeration for item generation).
+
+2. Add one small "reproducibility surface" for treelib: a minimal CLI or notebook that regenerates a tiny dataset (canonical codes for n=3..8) and validates counts against known sequences.
+
+3. Archive a tagged release (for example via Zenodo) and cite the version in the paper.
+
+That is enough to publish without IRB and without turning treelib into its own standalone project.
+
+=======================
+
+That is fine. Most useful software papers are "one platform, many small engines," and you only spotlight a few engines.
+
+Treat treelib as:
+* a worked example of your generation philosophy (formal representation ? canonicalization ? controlled variation ? answer key by construction)
+* a capability demo that is visually obvious to readers (tree equivalence questions look like real assessments, not toy output)
+* a reproducibility anchor (a tiny script that regenerates a small reference set of trees and validates counts)
+
+In the paper, treelib can be 1 paragraph in the Methods plus a 1 page appendix:
+
+Main text (1 paragraph): "One generator (phylogenetic tree equivalence) uses a compact tree-code string representation to enumerate tree variants and construct distractors with guaranteed ground truth."
+
+Appendix (short):
+* tree-code definition and one example
+* the generation pipeline in 5 lines
+* one table: number of unique generated codes for n = 3...8 (whatever is fast), plus runtime on a standard laptop
+* link to the exact script that reproduces the table
+
+That way, treelib is not pretending to be the centerpiece, but it still signals "this package has serious algorithmic guts," which helps reviewers take the whole package more seriously.
+
+If you want the paper to land, pick 2 to 4 "showcase engines" like treelib and present the rest as a catalog, not as individual features. That reads like a coherent toolkit rather than "a folder of scripts."
+
+=======================
+
+It is cool enough to earn its own paper, but only if you make the "cool" legible to reviewers who do not care about exam generation.
+
+A treelib-only paper works when treelib is positioned as a general-purpose method for:
+* Canonical tree encodings for rooted binary phylogenetic trees (string calculus, canonical form, dedupe).
+* Exhaustive enumeration and symmetry reduction from a base-shape library.
+* Tree comparison features (your distance map and similarity scores) that are fast and reproducible.
+
+If treelib stays "a neat internal module," reviewers will treat it as a footnote. To make it paper-sized, you need one of these trajectories:
+
+1. Methods note: define the tree-code formally, define equivalence, prove or rigorously test canonicalization, publish benchmark tables and a small canonical dataset.
+
+2. Software note: package treelib as a callable library with a stable interface plus one reproducibility script, then publish in a software venue.
+
+3. Short theory-meets-implementation: connect base shapes to known shape sequences, show how your enumeration relates to labeled counts, and contribute a new sequence that is specific to your encoding and constraints.
+
+You do not need IRB for any of this. You just need a crisp claim that is not "we counted trees," plus reproducible outputs that somebody else can run and verify.
+
+A practical compromise that often wins: treelib gets a short standalone preprint (or tech report) that you cite from the larger package paper. That gives treelib its own spotlight without forcing it to pretend it is the main product.
+
+=======================
+
+Yes. There are venues where reviewers actually like exam generation, open educational resources, and open-source code.
+
+Top fits for your specific combo:
+
+1. Journal of Open Source Education (JOSE)
+Best match. JOSE explicitly publishes open-source educational software tools, and it is built to credit exactly this kind of work. It also explicitly says novelty matters less than "statement of need," which helps if the main contribution is packaging, usability, and adoption.
+Note: JOSE expects educational text and graphics to be under a Creative Commons license, and code under an OSI-approved license. GPL covers the code side.
+
+2. Journal of Microbiology and Biology Education (JMBE), Tips and Tools
+Also a good fit for a practical "here is a tool instructors can use now" paper. Their own description of Tips and Tools explicitly includes "innovative tools to teach students," and IRB information is only required when you are doing human-subjects research.
+So you can submit a tool and a question bank without student data.
+
+3. CourseSource
+This is closer to "publishable lesson resources" than "software paper," but they publish downloadable instructor materials (including questions). A catch: it may be more template-driven and may have page charges.
+
+4. LifeSciTRC (not a journal, but peer-reviewed distribution)
+If you mainly want peer-reviewed dissemination of the actual exam resources, LifeSciTRC is a peer-reviewed repository with wide reach.
+
+One venue to avoid right now: Evolution: Education and Outreach. It stopped accepting new submissions July 1, 2025 and is merging into EvoDevo as of January 1, 2026.
+
+If you want, I can help you shape your package into a JOSE-style submission (Statement of Need, minimal paper, what the reviewers will test, and what to include so it feels "feature complete").
+
+=======================
+
+Yes. If you want the shortest "software note" style paper, these are the best matches, with the formats they require.
+
+JOSE
+* Paper is a short Markdown file (paper.md) plus BibTeX (paper.bib) in your repo.
+* They explicitly say the paper should be about 1000 words, around two pages, and the scholarship is primarily in the software or module itself.
+* Licensing requirement: non-code educational text and graphics under Creative Commons (ideally CC-BY), and code under an OSI-approved license.
+
+This is the cleanest fit for "exam generation + FOSS."
+
+JOSS
+* Same paper.md + paper.bib workflow, reviewed on GitHub.
+* Paper length is 250 to 1000 words.
+* Stronger requirement that the software has an "obvious research application" and is not a minor utility.
+
+This is the shortest, but it is less aligned with education-only tooling than JOSE.
+
+Bioinformatics "Application Note"
+* A classic software-note format: up to 4 pages, about 2600 words (or 2000 plus one figure).
+* Requires a structured abstract with headings including Availability and Implementation.
+* They also require software availability for at least two years after publication.
+
+This is still short, but it is longer than JOSE and JOSS, and it expects broader bioinformatics utility than "exam generator."
+
+Best match for your situation
+
+If you want minimal writing and maximum alignment with "cool open educational software," JOSE is the path of least resistance.
+
+=======================
+
+Yes.
+
+JOSE takes the manuscript source as Markdown, but the published article looks like a normal journal paper: it has a Crossref DOI, a "Download paper" link (PDF), and a standard citation line that includes journal name, volume, issue number, and article number.
+
+Example from an actual JOSE paper page: it shows "Journal of Open Source Education, 4(46), 138" plus the DOI, and it provides a "Download paper" link.
+
+One nuance: JOSE publishes papers as soon as they are accepted (rolling publication), but they still maintain a table of contents by volumes and issues on the site.
+
+So on a CV you can cite it exactly like any other journal article (authors, year, title, journal, volume(issue), article number, DOI).
+
+=======================
+
+JMBE Tips and Tools format
+
+JMBE Tips and Tools is a conventional journal article, not a Markdown metapaper. The expected structure is Introduction, Procedure, Conclusion, plus Acknowledgements and References. Figures, tables, and supplementary materials are optional but encouraged. IRB approval is only needed if you are reporting research involving human subjects.
+
+It still looks like a normal publication on a CV: Tips and Tools articles are published with volume, issue, page numbering, and a DOI, and they exist as PDFs.   A number of Tips and Tools papers also link to GitHub code and include supplemental files, so "tool + materials" is an established pattern.
+
+JOSS vs JOSE
+
+They are sibling journals under Open Journals.
+* JOSS (Journal of Open Source Software) is for research software. The paper is a short paper.md plus paper.bib, and the manuscript is typically 250 to 1000 words with a required "Statement of Need" and research-use framing.
+* JOSE (Journal of Open Source Education) is for open-source educational materials and educational software tools, built on the same infrastructure as JOSS.
+
+For your exam-generation tooling, JMBE Tips and Tools is the "classic journal article" route, and JOSE is the "short metapaper that credits the repository" route.
+
+=======================
+
+For JMBE Tips and Tools, the target length is 800 to 1,500 words (excluding abstract and references), with the goal that text plus figures fit on about two printed journal pages. The abstract is submitted but is published only as article metadata, and supplemental materials are allowed and not counted toward the word limit.
+
+Even though the intended footprint is short, the published PDF still looks like a normal journal article, with volume, issue, DOI, and a PDF layout (for example, "Volume 26 Issue 2" in a Tips and Tools paper).
+
+=======================
+
+Yes. JMBE Tips and Tools is basically built for what you are describing, and you can fit it in 800 to 1,500 words if you treat the paper as an instructor quick-start and push the rest into figures and supplements.
+
+A tight outline that will fit:
+
+Introduction (150 to 250 words)
+One paragraph on why "tree equivalence" is hard for students, one paragraph on what your generator provides (auto-generated, answer-key by construction, adjustable difficulty).
+
+Procedure (350 to 650 words)
+Describe the workflow an instructor follows:
+* pick leaf count and mode (SAME vs DIFFERENT)
+* choose rigor level / distractor distance setting
+* generate HTML/PDF exam page + key
+* optional: regenerate with new taxa names for a new version
+
+You can keep the deep treelib mechanics in one small box or figure caption.
+
+Conclusion (100 to 200 words)
+What instructors get, common pitfalls (accessibility note about hidden watermark text, printing), and how to obtain and run it.
+
+Figures and tables do the heavy lifting
+* Figure 1: an example question (like your screenshot) with a caption that explains the learning objective.
+* Figure 2: "difficulty knobs" diagram (leaf count, symmetry, distractor distance).
+* Table 1: example parameter sets and what they output (easy, medium, hard).
+
+Supplemental
+* a sample question set (HTML/PDF)
+* answer key
+* quick-start instructions
+* optional: short note explaining your tree-code representation
+
+This hits the Tips and Tools goal: immediate classroom use, minimal narrative, visuals welcomed.
+
+=======================
+
+Yes, with a caveat.
+* Initial submission: JMBE Tips and Tools is format-neutral, and they accept a PDF upload, so a LaTeX-generated PDF is fine for first submission.
+* After review (revisions or acceptance): they require final source files, not a PDF, and the listed manuscript formats are Word or RTF (plus PDF only for initial).
+
+Below is a JMBE Tips and Tools style draft in the style of Albert et al. (short Abstract, Keywords, then Introduction, Procedure, Conclusion, Acknowledgments, Additional Files, References).
+
+\documentclass[10pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+
+\title{treelib: an open-source generator for phylogenetic tree equivalence questions with answer keys by construction}
+\author{Neil Voss}
+\date{}
+
+\begin{document}
+\maketitle
+
+\noindent\textbf{ABSTRACT}
+Phylogenetic trees are a core representation in genetics and evolution, but many students confuse tree drawings with tree relationships. In particular, students often treat rotated subtrees as different, even when the underlying topology is identical. Here I describe \texttt{treelib}, a small open-source module used inside a larger free biology problem set package to automatically generate phylogenetic tree ``SAME tree'' and ``DIFFERENT tree'' exam items. \texttt{treelib} represents rooted binary trees as compact ``tree code'' strings and generates equivalent depictions through systematic subtree rotations, taxon relabeling, canonical filtering, and deduplication. The tool produces ready-to-use HTML question pages and answer keys, and it exposes practical difficulty controls, including leaf count, topology class, and distractor distance. This note focuses on instructor workflow and reproducibility, rather than student outcome claims.
+
+\vspace{0.5em}
+\noindent\textbf{KEYWORDS} phylogenetic trees, tree thinking, assessment, item generation, open source, bioinformatics education
+
+\section*{INTRODUCTION}
+Students can correctly recite that phylogenetic trees represent relationships, yet still answer tree questions by matching the picture. One common failure mode is treating a subtree rotation as a change in relationships. This is not just a cosmetic issue. It blocks later concepts such as clades, sister taxa, and interpreting inferred gene trees.
+
+\texttt{treelib} was built to generate large numbers of equivalent and non-equivalent phylogenetic tree questions with guaranteed ground truth. The design goal was practical. It should generate many variations quickly, provide an answer key automatically, and allow instructors to tune difficulty without hand-drawing trees.
+
+\section*{PROCEDURE}
+\subsection*{Overview of the representation}
+\texttt{treelib} uses a compact string representation called a \emph{tree code}. Tree codes use parentheses for nesting, leaf taxa as labels, and internal nodes as digits placed between the left and right child subtrees. For example,
+\[
+((a1b)3(c2d))
+\]
+represents a rooted binary tree on four taxa, where internal nodes \texttt{1} and \texttt{2} connect leaf pairs and internal node \texttt{3} connects those subtrees.
+
+This encoding is intentionally convenient for controlled transformations. Subtree rotation corresponds to swapping the left and right components around an internal-node digit. Taxon relabeling corresponds to deterministic replacement of leaf labels.
+
+\subsection*{How trees are generated}
+Tree generation follows a simple pipeline that is easy to explain and audit:
+
+\begin{enumerate}
+\item \textbf{Base shapes.} Start from a small library of base tree codes for a given leaf count. These are unlabeled topology templates with a fixed internal-node numbering convention.
+\item \textbf{Topology rotations.} Enumerate subtree rotations by flipping left and right children around internal nodes. This produces different drawings that can still represent the same relationships.
+\item \textbf{Taxon relabeling.} Apply a controlled set of taxon permutations to generate new named instances while preserving the topology.
+\item \textbf{Canonical filtering and deduplication.} Apply a fast canonical check that reduces obvious duplicates, then deduplicate by hashing the final code strings.
+\end{enumerate}
+
+The practical result is a set of unique tree codes that can be rendered into tree diagrams. Because the generator keeps track of which code produced which output, the answer key is produced automatically.
+
+\subsection*{Instructor workflow}
+A typical instructor workflow is:
+
+\begin{enumerate}
+\item Choose the learning objective: ``find the SAME tree'' (equivalence under rotation) or ``find the DIFFERENT tree'' (detect a topology change).
+\item Choose a leaf count (e.g., 6 to 10) and a difficulty level.
+\item Generate a question page plus an answer key.
+\item Optionally regenerate using new taxon names to produce an alternate exam form.
+\end{enumerate}
+
+Figure 1 shows a representative ``SAME tree'' question format produced by the surrounding problem package. In this format, students see one reference tree and multiple candidate trees, where only one candidate is equivalent to the reference.
+
+\subsection*{Difficulty controls}
+In practice, difficulty depends on more than leaf count. \texttt{treelib} provides knobs that instructors can use to tune item difficulty without rewriting questions.
+
+\begin{table}[h]
+\centering
+\caption{Example difficulty controls for generating item variants.}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Control & Effect on item & Typical use \\
+\midrule
+Leaf count ($n$) & Larger search space and visual complexity & Scale from intro to advanced \\
+Topology class & Balanced vs. imbalanced structures & Target specific misconceptions \\
+Distractor distance & How ``close'' wrong trees are to the correct tree & Improve discrimination \\
+Taxon relabeling & New names on the same topology & New versions, reduce memorization \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+A useful pattern is to start with low leaf counts and obvious distractors, then increase distractor similarity while holding leaf count fixed. This isolates whether students are learning tree equivalence rather than simply reacting to crowded diagrams.
+
+\subsection*{Outputs and reproducibility}
+The generator is designed to be reproducible. Given the same inputs and random seed, it produces the same question set and answer key. Outputs are emitted as HTML pages, which print cleanly to PDF for distribution.
+
+\subsection*{Safety and accessibility notes}
+This activity is computational and has no laboratory safety issues.
+
+For accessibility, the instructor should avoid assessment-security tricks that embed hidden text or micro-font watermarking in the HTML, because these can interfere with screen readers and copy/paste workflows. If such watermarking is required for a specific exam setting, it should be tested with the institution accessibility office.
+
+\section*{CONCLUSION}
+\texttt{treelib} provides a lightweight way to generate phylogenetic tree equivalence questions that have an answer key by construction. The primary benefit is time. An instructor can generate many variants of a conceptually consistent question family without hand-drawing trees or manually vetting distractors.
+
+Preliminary field testing consisted of instructor-side pilot generation, printing checks, and review of distractor validity by course staff. No student data were collected for this note. Instructors who wish to study learning outcomes can layer standard item statistics or concept inventories on top of the same generated question sets.
+
+\section*{ACKNOWLEDGMENTS}
+Add funding sources and any contributors to the broader biology problems package. Note prior presentations if applicable.
+
+\section*{ADDITIONAL FILES}
+The following material is available as supplemental material:
+\begin{itemize}
+\item Example generated ``SAME tree'' HTML question page.
+\item Example answer key.
+\item Instructor quick-start guide (dependencies, command-line usage, and recommended settings).
+\item Short technical note describing the tree-code grammar and canonicalization rules.
+\end{itemize}
+
+\section*{REFERENCES}
+\begin{enumerate}
+\item Add core phylogenetics reference on tree representations.
+\item Add tree-thinking education reference relevant to rotation equivalence.
+\item Add reference for any external renderer, if used.
+\end{enumerate}
+
+\clearpage
+\noindent\textbf{FIGURE LEGENDS}
+
+\noindent\textbf{FIG 1.} Example ``Find the SAME tree'' multiple-choice item generated using \texttt{treelib} inside a free biology problems package. Students select the candidate tree that represents the same relationships as the reference tree, allowing arbitrary subtree rotations.
+
+% Place the actual figure file at the end for submission, per JMBE guidance.
+% \begin{figure}[h]
+% \centering
+% \includegraphics[width=\linewidth]{fig1_same_tree_example.png}
+% \end{figure}
+
+\end{document}
+
+If you want this to match JMBE submission mechanics even more closely, the next step is converting the references to their citation-sequence style and adding one concrete "how to run it" snippet (kept short) plus a real Figure 1 from your generated output.
+
+=======================
+
+RTF is acceptable for the manuscript file, but JMBE will still want figures handled like a journal, not like a slide deck.
+* Manuscript file format: PDF, Word, or RTF are allowed.
+* Placement in the manuscript: Figures and tables should be placed at the end of the text, not embedded "in-line" within the body.
+* Initial submission: If you submit a PDF, figures and tables may be included in that PDF after the References.
+* After review (modification stage): You must provide production-quality figure files separately, with legends as text files.
+* Accepted figure formats for the article: TIFF or EPS only. They explicitly say other formats are not accepted.
+
+So, RTF can technically embed PNG/JPG, but for JMBE it is safest to treat the RTF as "text + figure legends," keep the actual figures as separate .tif (or .eps) files, and only drop the figures into a single PDF for the initial submission if you want reviewers to see layout. SVG is not on their accepted list for final figures.
+
+=======================
+
+Yes, it is very "journals still run on 1998 PostScript energy."
+
+Practical way to stay sane:
+* Draft and iterate figures in whatever is easiest (SVG, PNG, PDF).
+* At the end, export to TIFF (best for raster plots) or EPS (best for vector line art) for the final production files, because that is what they require.
+* Keep the manuscript itself as RTF/Word with figure legends at the end, and upload the figure files separately when requested.
+
+If you want, I can give you exact conversion commands (Inkscape for EPS, ImageMagick for TIFF) that preserve resolution and fonts without nasty surprises.
+
+=======================
+
+Yes, it is very "journals still run on 1998 PostScript energy."
+
+Practical way to stay sane:
+* Draft and iterate figures in whatever is easiest (SVG, PNG, PDF).
+* At the end, export to TIFF (best for raster plots) or EPS (best for vector line art) for the final production files, because that is what they require.
+* Keep the manuscript itself as RTF/Word with figure legends at the end, and upload the figure files separately when requested.
+
+If you want, I can give you exact conversion commands (Inkscape for EPS, ImageMagick for TIFF) that preserve resolution and fonts without nasty surprises.
+
+=======================
+
+LibreOffice + RTF is a workable combo, and it plays reasonably well with LLM editing because the text stays mostly "flat" compared to DOCX.
+
+A workflow that tends to be low pain:
+
+1. Write in LibreOffice as ODT, not RTF, while drafting
+ODT preserves styles, captions, and references better than RTF during day to day edits.
+
+2. When you want LLM help, export a "LLM copy" as RTF or plain text
+RTF is fine, but for best LLM results you can also export a clean plain text version with:
+* headings
+* figure legends
+* tables as simple tab-delimited text
+Then paste that into the chat, apply edits, and paste back.
+
+3. Keep figures separate from the manuscript while drafting
+Put "Figure 1 here" placeholders plus legends at the end of the document, which matches JMBE's workflow anyway.
+
+4. Final step for JMBE
+Submit the manuscript as PDF or RTF for review, then later deliver figures as TIFF or EPS when they ask.
+
+If you want, I can take your current draft and produce two outputs: a clean "LLM-friendly" plain text version and a journal-shaped RTF outline with the right section order and legend placement.
+
+=======================
+
+Got it. That is a nice separation, and it maps well onto how people actually cite software in papers.
+* Concept name (no "generator"): Phylogenetic Tree Assessment = PTA
+This reads like a pedagogy concept or framework. It stays true even if you later swap out the implementation.
+* Software/system name (with "generator"): Phylogenetic Tree Assessment Generator = PhyTAG
+This reads like a concrete tool, which is exactly what a Tips and Tools paper wants. It also gives you a clean proper noun you can use throughout the manuscript.
+
+A practical naming pattern that works well:
+* Repo name: long and explicit
+Example: phylogenetic-tree-assessment-generator
+* PyPI distribution name: short and brand-like
+Example: phytag
+* Import/module name: same short form
+Example: import phytag
+
+Then in the paper you can write something like: "We present PhyTAG, an open-source implementation of the PTA approach."
+
+If you decide to keep PTA as the "big idea" and PhyTAG as the "thing you install," reviewers usually like that. It feels intentional, not like acronym chaos.
+
+=======================
+
+=======================
+
+=======================
+
+=======================
+
+=======================
