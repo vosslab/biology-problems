@@ -1,5 +1,23 @@
 # Changelog
 
+## 2026-01-15
+- Added treelib documentation for phylogenetic tree codes and usage:
+  [TREELIB_SPEC_v1.md](../problems/inheritance-problems/phylogenetic_trees/TREELIB_SPEC_v1.md),
+  [TREELIB_USAGE.md](../problems/inheritance-problems/phylogenetic_trees/TREELIB_USAGE.md),
+  [TREELIB_TECH.md](../problems/inheritance-problems/phylogenetic_trees/TREELIB_TECH.md).
+- Expanded technical detail in
+  [JMBE_Tips_and_Tools_draft.rtf](../problems/inheritance-problems/phylogenetic_trees/JMBE_Tips_and_Tools_draft.rtf)
+  to cover validation rules, permutation pipeline, distance maps, rendering, and limits.
+- Updated [make_all_gene_trees.py](../problems/inheritance-problems/phylogenetic_trees/make_all_gene_trees.py)
+  to write HTML and ASCII galleries by default with new on/off flags and outfile options.
+- Refined [JMBE_Tips_and_Tools_draft.rtf](../problems/inheritance-problems/phylogenetic_trees/JMBE_Tips_and_Tools_draft.rtf)
+  to emphasize the assessment pipeline contribution and note canonicalization limitations.
+- Added bibliography citations from phylogenetic_tree_notes_Jan_2026.txt to
+  [JMBE_Tips_and_Tools_draft.rtf](../problems/inheritance-problems/phylogenetic_trees/JMBE_Tips_and_Tools_draft.rtf).
+- Edited [JMBE_Tips_and_Tools_draft.rtf](../problems/inheritance-problems/phylogenetic_trees/JMBE_Tips_and_Tools_draft.rtf)
+  to tighten the abstract, add a requirements/availability subsection, simplify the pipeline,
+  clarify difficulty controls, and condense limitations for Tips and Tools.
+
 ## 2026-01-11
 - Fixed `mirror_pedigree()` in
   [pedigree_lib/code_definitions.py](../problems/inheritance-problems/pedigrees/pedigree_lib/code_definitions.py)

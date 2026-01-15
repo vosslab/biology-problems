@@ -1,0 +1,100 @@
+{\rtf1\ansi\deff0
+{\fonttbl{\f0 Times New Roman;}}
+\fs24
+\pard\qc\b treelib: generating phylogenetic tree equivalence exam items with answer keys by construction\b0\par
+\pard\qc Neil Voss\par
+\pard\qc \par
+\pard\b ABSTRACT\b0\par
+\pard Phylogenetic trees are a core representation in genetics and evolution, but many students confuse tree drawings with tree relationships. A common failure mode is treating rotated subtrees as different, even when the underlying topology is identical. This Tips and Tools article describes treelib, an open-source module that automatically generates “SAME tree” and “DIFFERENT tree” multiple-choice items with answer keys by construction. treelib uses a compact tree-code representation plus systematic subtree rotations, taxon relabeling, canonical filtering, and deduplication to produce printable HTML question pages and keys with adjustable difficulty (leaf count, topology class, and distractor similarity). No student outcome data are reported.\par
+\pard\par
+\pard\b KEYWORDS\b0\par
+\pard phylogenetic trees; tree thinking; assessment; item generation; open source; bioinformatics education\par
+\pard\par
+\pard\b INTRODUCTION\b0\par
+\pard Phylogenetic trees are central to modern biology curricula, but tree interpretation remains tricky. Many students treat a phylogenetic tree as a picture to match, rather than a set of nested relationships. Subtree rotation is an especially persistent misconception. Rotating a node changes the drawing, but not the relationships. If students miss this, later ideas such as clades and sister taxa become harder to learn.\par
+\pard\par
+\pard I built treelib to generate large numbers of tree equivalence questions with ground truth by construction. The goal was speed and consistency. An instructor should be able to generate many unique but conceptually matched items, print them cleanly, and receive an answer key automatically. treelib is currently used as one generator inside a larger free biology problems package.\par
+\pard\par
+\pard\b PROCEDURE\b0\par
+\pard Overview of the representation\par
+\pard treelib represents a rooted binary tree as a single string called a tree code. Tree codes use parentheses for nesting, leaf taxa as labels, and internal nodes as digits placed between the two child subtrees. For example, ((a1b)3(c2d)) is a four-leaf rooted binary tree. Internal node 1 connects a and b, internal node 2 connects c and d, and internal node 3 connects those two subtrees.\par
+\pard\par
+\pard The representation is designed for controlled transformations. Subtree rotation corresponds to swapping the left and right children around an internal-node digit. Taxon relabeling corresponds to a deterministic replacement of leaf labels.\par
+\pard\par
+\pard How treelib generates trees and item variants\par
+\pard treelib generates candidate trees using a short, auditable pipeline: start from a small library of base tree codes for a given leaf count, enumerate subtree rotations by flipping internal nodes, relabel taxa with controlled permutations, apply a fast canonical filter, and deduplicate the results. For small leaf counts, the library includes all base codes used by the generator; for larger counts, it uses representative topology classes. This produces unique tree codes that can be rendered into diagrams, so answer keys are generated automatically. Figure 2 summarizes the inputs and outputs.\par
+\pard\par
+\pard Requirements and availability\par
+\pard 1) Location: treelib is bundled in the free biology problems package under problems/inheritance-problems/phylogenetic_trees/treelib.\par
+\pard 2) License: GPL (repository license).\par
+\pard 3) Python: tested with Python 3.12.\par
+\pard 4) Example command: python3 problems/inheritance-problems/phylogenetic_trees/gene_tree_matches_plus.py --help\par
+\pard 5) Outputs: printable HTML pages plus answer keys (and optional ASCII previews).\par
+\pard\par
+\pard Instructor workflow\par
+\pard A typical workflow is:\par
+\pard\par
+\pard 1. Choose the learning objective: find the SAME tree (equivalence under rotation) or find the DIFFERENT tree (detect a topology change).\par
+\pard 2. Choose a leaf count (for example, 3 to 8) and a difficulty setting.\par
+\pard 3. Generate a question page plus answer key.\par
+\pard 4. Optionally regenerate with new taxon names to create an alternate exam form.\par
+\pard\par
+\pard Figure 1 shows a representative "SAME tree" item. Students select the candidate tree that represents the same relationships as the reference tree, allowing arbitrary subtree rotations.\par
+\pard\par
+\pard Difficulty controls\par
+\pard In practice, difficulty depends on more than leaf count. treelib supports several instructor-facing controls that are useful for building item sets with predictable progression. Table 1 lists common controls and their instructional effect.\par
+\pard\par
+\pard treelib ranks candidate distractors by how many taxon-pair relationships change relative to the correct tree, allowing wrong choices that are obviously wrong or deceptively close.\par
+\pard\par
+\pard A simple pattern is to start with low leaf counts and visually distinct distractors, then increase distractor similarity while holding leaf count fixed. This isolates whether students are learning tree equivalence rather than reacting to diagram crowding.\par
+\pard\par
+\pard Outputs and reproducibility\par
+\pard treelib emits HTML pages that print cleanly to PDF. Given the same inputs and random seed, treelib produces the same question set and answer key. This makes it straightforward to archive an exam form and later regenerate it for review or accommodation workflows. The two current generators in the package are gene_tree_choice_plus.py (distance matrix to tree choice) and gene_tree_matches_plus.py (find SAME or DIFFERENT tree).\par
+\pard\par
+\pard Limitations\par
+\pard 1) Leaf count is practically limited by single-digit internal nodes (tested to 8 leaves).\par
+\pard 2) Multi-character taxa are supported for replacement but can bypass local canonical checks.\par
+\pard 3) A robust future fix is a parser-based canonical form that sorts child subtrees by a subtree key before reserializing.\par
+\pard\par
+\pard Safety and accessibility notes\par
+\pard This activity has no laboratory safety issues. For accessibility, instructors should avoid security tricks that embed hidden text or micro-font watermarking in HTML, because these can interfere with screen readers and copy and paste workflows. If watermarking is required in a local exam setting, it should be tested with institutional accessibility support.\par
+\pard\par
+\pard\b CONCLUSION\b0\par
+\pard treelib provides a lightweight way to generate phylogenetic tree equivalence questions with an answer key by construction. The main benefit is time. An instructor can generate many variants of a conceptually consistent question family without hand-drawing trees or manually vetting distractors.\par
+\pard\par
+\pard This article does not include student outcome data. Instructors who wish to study learning gains can layer item statistics or concept inventories on top of the same generated question sets, but that evaluation is outside the scope of this Tips and Tools report.\par
+\pard\par
+\pard\b ACKNOWLEDGMENTS\b0\par
+\pard Add funding sources, contributors, and any prior dissemination (workshops, talks) here.\par
+\pard\par
+\pard\b REFERENCES\b0\par
+\pard Felsenstein J. 1978. The number of evolutionary trees. Systematic Zoology 27(1):27-33. JSTOR: https://www.jstor.org/stable/2412810\par
+\pard Felsenstein J. 2004. Inferring Phylogenies. Sinauer Associates.\par
+\pard Semple C, Steel M. 2003. Phylogenetics. Oxford University Press.\par
+\pard Paradis E. 2004 and updates. Enumeration and Simulation of Random Tree Topologies (ape package vignette). CRAN. https://cran.r-project.org/web/packages/ape/vignettes/RandomTopologies.pdf\par
+\pard University of Connecticut. Number of rooted and unrooted trees. Teaching resource. https://carrot.mcb.uconn.edu/mcb396_41/tree_number.html\par
+\pard Felsenstein J. The Newick tree format. PHYLIP documentation. https://phylipweb.github.io/phylip/newicktree.html\par
+\pard OEIS Foundation Inc. A001190: Wedderburn-Etherington numbers. https://oeis.org/A001190\par
+\pard OEIS Foundation Inc. A000672: Number of trivalent (binary) trees. https://oeis.org/A000672\par
+\pard Wikipedia contributors. Wedderburn-Etherington number. https://en.wikipedia.org/wiki/Wedderburn%E2%80%93Etherington_number\par
+\pard Smith C and contributors. TreeTools: Number of rooted and unrooted tree shapes (nRootedShapes, nUnrootedShapes). https://search.r-project.org/CRAN/refmans/TreeTools/html/nRootedShapes.html\par
+\pard Emrich S. Why phylogenetics is hard: tree space counts. https://web.eecs.utk.edu/~semrich/bc25/notes/lecture16.pdf\par
+\pard\par
+\pard\b TABLES\b0\par
+\pard Table 1. Example difficulty controls for generating item variants.\par
+\pard Control\\tEffect on item\\tTypical use\par
+\pard Leaf count (n)\\tMore visual complexity and larger tree space\\tScale from intro to advanced\par
+\pard Topology class\\tBalanced versus imbalanced structures\\tTarget specific misconceptions\par
+\pard Distractor similarity\\tHow close wrong trees are to the correct tree\\tImprove discrimination\par
+\pard Taxon relabeling\\tNew names on the same topology\\tReduce memorization across versions\par
+\pard Number of answer choices\\tMore distractors to compare\\tIncrease challenge without changing core concept\par
+\pard Taxon name style\\tShort vs. long names change visual clutter\\tAdjust readability for course level\par
+\pard Display mode\\tASCII preview vs. HTML table\\tQuick drafts versus final exam formatting\par
+\pard\par
+\pard\b FIGURE LEGENDS\b0\par
+\pard FIG 1. Example "Find the SAME tree" multiple-choice item generated using treelib inside a free biology problems package. Students select the candidate tree that represents the same relationships as the reference tree, allowing arbitrary subtree rotations.\par
+\pard FIG 2. Instructor inputs (mode, leaf count, difficulty, choices) flow through treelib to produce printable HTML pages plus an answer key.\par
+\pard\par
+\pard\b FIGURES\b0\par
+\pard [Place FIG 1 here]\par
+}

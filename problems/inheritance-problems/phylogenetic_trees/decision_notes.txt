@@ -1,0 +1,43 @@
+Journal direction
+
+You leaned toward a classic journal article format, specifically JMBE Tips and Tools, because it reads like a normal CV line and lets you use figures and tables heavily.
+You also kept JOSE in play as the shortest "software note" style option (Markdown in-repo, short paper), and you noted the Bioinformatics "Application Note" as another short format if you broaden the utility story.
+
+Core focus of the paper
+
+We agreed the novelty is not "counting phylogenetic trees," but the practical method and teaching utility:
+* A compact tree-code encoding for rooted binary trees.
+* A reproducible generation pipeline that produces exam items with answer keys by construction and tunable distractor similarity.
+* The algorithmic pipeline framing: base shapes  internal-node flips  taxon relabeling  canonical filter  dedupe.
+
+Best drafting format and workflow
+
+For JMBE practicality, we converged on:
+* Draft in LibreOffice ODT, then export an RTF "LLM copy" when you want iterative edits with an LLM.
+* Keep figures separate while drafting, using placeholders and putting legends at the end.
+* Final journal reality: export figures to TIFF/EPS when needed.
+
+General section outline we planned
+
+For JMBE Tips and Tools:
+* Introduction (why subtree rotation equivalence trips students)
+* Procedure (instructor workflow, difficulty controls, reproducibility)
+* Conclusion (what instructors get, scope limits)
+* Acknowledgments, References
+* Tables + Figure legends at end, plus Additional files listing sample HTML, key, quick-start, and a short technical note.
+
+Key technical points you did not want to lose
+* The actual generation pipeline in treelib: inner-node flips via a bitmask, taxa relabeling, canonical filter, then set dedupe.
+* Canonicalization is currently local and adjacent-character based, which is fast but has sharp edges with nested structure and multi-character taxa.
+* Known fragility: multi-character labels wrapped as |NAME| can bypass the alpha checks, and there is at least one stale call to a missing function (replace_gene_letters) in an older path.
+* A robust future-proof fix would be parse-and-canonicalize by subtree keys, then reserialize.
+
+Teaching and accessibility note
+
+We flagged that hidden text or micro-font watermarking in HTML can interfere with accessibility tooling, so the paper should recommend avoiding it or testing it with institutional accessibility support.
+
+Naming discussion you were considering
+
+You liked separating the "idea" name from the "software" name:
+* PTA = Phylogenetic Tree Assessment (concept)
+* PhyTAG = Phylogenetic Tree Assessment Generator (tool)
