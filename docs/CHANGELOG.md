@@ -4,6 +4,8 @@
 - Replaced the long README catalog with a concise overview, documentation links, quick start, and a status note pointing to the current indexes.
 - Converted README documentation references to explicit Markdown links and linked all current docs.
 - Standardized README link text to use file-path names in bracket text.
+- Reorganized README documentation links into grouped sections with one-line descriptions.
+- Added minimal `docs/INSTALL.md` and `docs/USAGE.md` stubs for setup and common commands.
 
 ## 2026-01-15
 - Added treelib documentation for phylogenetic tree codes and usage:
