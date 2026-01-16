@@ -1,33 +1,12 @@
 
-# Standard Library
-from typing import Protocol
-
 # Local repo modules
 import validation
 
 
 #===============================
-class _HasPhenotype(Protocol):
-	phenotype: str
-
-
-#===============================
-class _HasSexPhenotype(Protocol):
-	sex: str
-	phenotype: str
-
-
-#===============================
-class _HasCouple(Protocol):
-	partner_a: str
-	partner_b: str
-	children: list[str]
-
-
-#===============================
 def _has_recessive_key(
-	individuals: dict[str, _HasPhenotype],
-	couples: list[_HasCouple],
+	individuals: dict,
+	couples: list,
 ) -> bool:
 	for couple in couples:
 		parent_a = individuals.get(couple.partner_a)
@@ -45,8 +24,8 @@ def _has_recessive_key(
 
 #===============================
 def _has_dominant_key(
-	individuals: dict[str, _HasPhenotype],
-	couples: list[_HasCouple],
+	individuals: dict,
+	couples: list,
 ) -> bool:
 	for couple in couples:
 		parent_a = individuals.get(couple.partner_a)
@@ -63,7 +42,7 @@ def _has_dominant_key(
 
 
 #===============================
-def _iter_children(couples: list[_HasCouple]):
+def _iter_children(couples: list):
 	for couple in couples:
 		for child_id in couple.children:
 			yield couple, child_id
@@ -71,9 +50,9 @@ def _iter_children(couples: list[_HasCouple]):
 
 #===============================
 def _get_parents(
-	individuals: dict[str, _HasSexPhenotype],
-	couple: _HasCouple,
-) -> tuple[_HasSexPhenotype | None, _HasSexPhenotype | None]:
+	individuals: dict,
+	couple,
+) -> tuple:
 	parent_a = individuals.get(couple.partner_a)
 	parent_b = individuals.get(couple.partner_b)
 	if parent_a is None or parent_b is None:
@@ -86,17 +65,17 @@ def _get_parents(
 
 
 #===============================
-def _any_carrier(individuals: dict[str, _HasPhenotype]) -> bool:
+def _any_carrier(individuals: dict) -> bool:
 	return any(person.phenotype == 'carrier' for person in individuals.values())
 
 
 #===============================
 def validate_x_linked_recessive_constraints(
-	individuals: dict[str, _HasSexPhenotype],
-	couples: list[_HasCouple],
+	individuals: dict,
+	couples: list,
 	carriers_visible: bool | None = None,
-) -> list[str]:
-	errors: list[str] = []
+) -> list:
+	errors: list = []
 	if carriers_visible is None:
 		carriers_visible = _any_carrier(individuals)
 
@@ -134,10 +113,10 @@ def validate_x_linked_recessive_constraints(
 
 #===============================
 def validate_x_linked_dominant_constraints(
-	individuals: dict[str, _HasSexPhenotype],
-	couples: list[_HasCouple],
-) -> list[str]:
-	errors: list[str] = []
+	individuals: dict,
+	couples: list,
+) -> list:
+	errors: list = []
 	if _any_carrier(individuals):
 		errors.append("XLD invalid: carrier phenotype present.")
 		return errors
@@ -170,10 +149,10 @@ def validate_x_linked_dominant_constraints(
 
 #===============================
 def validate_y_linked_constraints(
-	individuals: dict[str, _HasSexPhenotype],
-	couples: list[_HasCouple],
-) -> list[str]:
-	errors: list[str] = []
+	individuals: dict,
+	couples: list,
+) -> list:
+	errors: list = []
 	for person_id, person in individuals.items():
 		if person.phenotype == 'carrier':
 			errors.append(f"{person_id}: carrier phenotype in Y-linked mode.")
@@ -197,22 +176,22 @@ def validate_y_linked_constraints(
 
 #===============================
 def validate_mode_keys(
-	individuals: dict[str, _HasPhenotype],
-	couples: list[_HasCouple],
+	individuals: dict,
+	couples: list,
 	mode: str,
-) -> list[str]:
+) -> list:
 	"""
 	Validate key evidence patterns for specific inheritance modes.
 
 	Args:
-		individuals (dict[str, _HasPhenotype]): Parsed individuals.
-		couples (list[_HasCouple]): Parsed couples with children.
+		individuals (dict): Parsed individuals.
+		couples (list): Parsed couples with children.
 		mode (str): Inheritance mode.
 
 	Returns:
-		list[str]: Validation errors.
+		list: Validation errors.
 	"""
-	errors: list[str] = []
+	errors: list = []
 	mode_value = mode.strip().lower()
 
 	if mode_value in ('autosomal recessive', 'ar'):
@@ -228,11 +207,11 @@ def validate_mode_keys(
 
 #===============================
 def validate_mode_constraints(
-	individuals: dict[str, _HasSexPhenotype],
-	couples: list[_HasCouple],
+	individuals: dict,
+	couples: list,
 	mode: str,
 	carriers_visible: bool | None = None,
-) -> list[str]:
+) -> list:
 	"""
 	Validate hard inheritance constraints for specific inheritance modes.
 	"""
@@ -252,7 +231,7 @@ def validate_mode_constraints(
 
 
 #===============================
-def validate_mode_keys_from_code(code_string: str, mode: str) -> list[str]:
+def validate_mode_keys_from_code(code_string: str, mode: str) -> list:
 	"""
 	Validate key evidence patterns for a code string.
 
@@ -261,7 +240,7 @@ def validate_mode_keys_from_code(code_string: str, mode: str) -> list[str]:
 		mode (str): Inheritance mode.
 
 	Returns:
-		list[str]: Validation errors.
+		list: Validation errors.
 	"""
 	errors = validation.validate_code_string(code_string)
 	if errors:
@@ -276,7 +255,7 @@ def validate_mode_constraints_from_code(
 	code_string: str,
 	mode: str,
 	carriers_visible: bool | None = None,
-) -> list[str]:
+) -> list:
 	"""
 	Validate hard inheritance constraints for a code string.
 	"""

@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-# Standard Library
-from typing import Iterable
-
 # Local repo modules
 import graph_spec
 
@@ -29,7 +26,7 @@ def _phenotype_from_status(status: str | None) -> str:
 
 
 #===============================
-def _carriers_visible(people: dict[str, graph_spec.IndividualIR]) -> bool:
+def _carriers_visible(people: dict) -> bool:
 	return any(person.status == 'carrier' for person in people.values())
 
 
@@ -37,8 +34,8 @@ def _carriers_visible(people: dict[str, graph_spec.IndividualIR]) -> bool:
 def _canonical_pair(
 	allele_a: str,
 	allele_b: str,
-	allele_order: tuple[str, str],
-) -> tuple[str, str]:
+	allele_order: tuple,
+) -> tuple:
 	if allele_a == allele_b:
 		return (allele_a, allele_b)
 	order_map = {
@@ -52,12 +49,12 @@ def _canonical_pair(
 
 #===============================
 def _autosomal_child_genotypes(
-	parent_a: tuple[str, str],
-	parent_b: tuple[str, str],
-) -> set[tuple[str, str]]:
+	parent_a: tuple,
+	parent_b: tuple,
+) -> set:
 	alleles_a = parent_a
 	alleles_b = parent_b
-	children: set[tuple[str, str]] = set()
+	children: set = set()
 	for allele_a in alleles_a:
 		for allele_b in alleles_b:
 			children.add(_canonical_pair(allele_a, allele_b, AUTOSOMAL_ALLELES))
@@ -66,9 +63,9 @@ def _autosomal_child_genotypes(
 
 #===============================
 def _autosomal_parent_possible(
-	parent_genotype: tuple[str, str],
-	other_parent_domain: Iterable[tuple[str, str]],
-	children_domains: list[set[tuple[str, str]]],
+	parent_genotype: tuple,
+	other_parent_domain: list,
+	children_domains: list,
 ) -> bool:
 	for child_domain in children_domains:
 		match_found = False
@@ -83,8 +80,8 @@ def _autosomal_parent_possible(
 
 #===============================
 def _propagate_autosomal(
-	unions: list[graph_spec.UnionIR],
-	domains: dict[str, set[tuple[str, str]]],
+	unions: list,
+	domains: dict,
 ) -> bool:
 	changed = True
 	while changed:
@@ -97,7 +94,7 @@ def _propagate_autosomal(
 
 			for child_id in union.children:
 				child_domain = domains[child_id]
-				possible_child: set[tuple[str, str]] = set()
+				possible_child: set = set()
 				for genotype_a in parent_a_domain:
 					for genotype_b in parent_b_domain:
 						possible_child.update(_autosomal_child_genotypes(genotype_a, genotype_b))
@@ -135,8 +132,8 @@ def _propagate_autosomal(
 
 #===============================
 def _solve_autosomal(
-	unions: list[graph_spec.UnionIR],
-	domains: dict[str, set[tuple[str, str]]],
+	unions: list,
+	domains: dict,
 ) -> bool:
 	if not _propagate_autosomal(unions, domains):
 		return False
@@ -154,16 +151,16 @@ def _solve_autosomal(
 
 #===============================
 def _x_linked_child_genotypes(
-	father_genotype: tuple[str, ...],
-	mother_genotype: tuple[str, str],
+	father_genotype: tuple,
+	mother_genotype: tuple,
 	child_sex: str,
-	allele_order: tuple[str, str],
-) -> set[tuple[str, ...]]:
+	allele_order: tuple,
+) -> set:
 	father_allele = father_genotype[0]
 	mother_alleles = mother_genotype
 	if child_sex == 'male':
 		return {(allele,) for allele in mother_alleles}
-	children: set[tuple[str, str]] = set()
+	children: set = set()
 	for allele in mother_alleles:
 		children.add(_canonical_pair(father_allele, allele, allele_order))
 	return children
@@ -172,12 +169,12 @@ def _x_linked_child_genotypes(
 #===============================
 def _x_linked_parent_possible(
 	parent_is_father: bool,
-	parent_domain: Iterable[tuple[str, ...]],
-	other_parent_domain: Iterable[tuple[str, ...]],
-	children: list[tuple[str, set[tuple[str, ...]]]],
-	allele_order: tuple[str, str],
-) -> set[tuple[str, ...]]:
-	valid: set[tuple[str, ...]] = set()
+	parent_domain: list,
+	other_parent_domain: list,
+	children: list,
+	allele_order: tuple,
+) -> set:
+	valid: set = set()
 	for genotype in parent_domain:
 		ok = True
 		for child_sex, child_domain in children:
@@ -211,8 +208,8 @@ def _x_linked_parent_possible(
 #===============================
 def _propagate_x_linked(
 	pedigree: graph_spec.PedigreeGraphSpec,
-	domains: dict[str, set[tuple[str, ...]]],
-	allele_order: tuple[str, str],
+	domains: dict,
+	allele_order: tuple,
 ) -> bool:
 	changed = True
 	while changed:
@@ -233,7 +230,7 @@ def _propagate_x_linked(
 			for child_id in union.children:
 				child_sex = pedigree.people[child_id].sex
 				child_domain = domains[child_id]
-				possible_child: set[tuple[str, ...]] = set()
+				possible_child: set = set()
 				for father_genotype in father_domain:
 					for mother_genotype in mother_domain:
 						possible_child.update(_x_linked_child_genotypes(
@@ -283,8 +280,8 @@ def _propagate_x_linked(
 #===============================
 def _solve_x_linked(
 	pedigree: graph_spec.PedigreeGraphSpec,
-	domains: dict[str, set[tuple[str, ...]]],
-	allele_order: tuple[str, str],
+	domains: dict,
+	allele_order: tuple,
 ) -> bool:
 	if not _propagate_x_linked(pedigree, domains, allele_order):
 		return False
@@ -305,8 +302,8 @@ def _autosomal_domains(
 	pedigree: graph_spec.PedigreeGraphSpec,
 	mode: str,
 	carriers_visible: bool,
-) -> dict[str, set[tuple[str, str]]] | None:
-	domains: dict[str, set[tuple[str, str]]] = {}
+) -> dict | None:
+	domains: dict = {}
 	heterozygous = _canonical_pair(AUTOSOMAL_ALLELES[0], AUTOSOMAL_ALLELES[1], AUTOSOMAL_ALLELES)
 	for person_id, person in pedigree.people.items():
 		phenotype = _phenotype_from_status(person.status)
@@ -339,8 +336,8 @@ def _x_linked_domains(
 	pedigree: graph_spec.PedigreeGraphSpec,
 	mode: str,
 	carriers_visible: bool,
-) -> dict[str, set[tuple[str, ...]]] | None:
-	domains: dict[str, set[tuple[str, ...]]] = {}
+) -> dict | None:
+	domains: dict = {}
 	if mode == X_LINKED_RECESSIVE:
 		alleles = X_LINKED_RECESSIVE_ALLELES
 	else:
@@ -440,7 +437,7 @@ def _is_mode_possible(pedigree: graph_spec.PedigreeGraphSpec, mode: str) -> bool
 
 
 #===============================
-def possible_modes(pedigree: graph_spec.PedigreeGraphSpec) -> list[str]:
+def possible_modes(pedigree: graph_spec.PedigreeGraphSpec) -> list:
 	"""
 	Return all inheritance modes consistent with a pedigree graph spec.
 	"""
@@ -458,7 +455,7 @@ def possible_modes(pedigree: graph_spec.PedigreeGraphSpec) -> list[str]:
 
 
 #===============================
-def possible_modes_from_spec(spec_string: str) -> list[str]:
+def possible_modes_from_spec(spec_string: str) -> list:
 	"""
 	Parse and evaluate a pedigree graph spec string.
 	"""

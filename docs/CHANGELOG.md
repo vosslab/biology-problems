@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-01-22
+- Resolved merge conflicts in [docs/CODE_ARCHITECTURE.md](docs/CODE_ARCHITECTURE.md) and [docs/FILE_STRUCTURE.md](docs/FILE_STRUCTURE.md) to align test/tool references with the current repo layout.
+- Standardized lxml etree imports in gene mapping and treelib HTML validation helpers after merge resolution.
+- Removed legacy [problems/multiple_choice_statements/yaml_to_pg.py](../problems/multiple_choice_statements/yaml_to_pg.py) during conflict cleanup to match the current PGML workflow.
+
 ## 2026-01-21
 - Removed emoji from [docs/webwork/MATCHING_PROBLEMS.md](webwork/MATCHING_PROBLEMS.md) to satisfy ASCII compliance tests.
 - Fixed the molecular biology test import path in [tests/test_check_complementary_sequences_prime.py](../tests/test_check_complementary_sequences_prime.py) to point at the `problems/` module location.
@@ -51,6 +56,12 @@
 - Fixed mixed indentation in several generators/libraries so `pytest tests/test_indentation.py` passes (tabs only).
 
 ## 2026-01-16
+- Trimmed README documentation links to keep the standards list concise while retaining core pointers.
+- Refreshed [docs/CODE_ARCHITECTURE.md](docs/CODE_ARCHITECTURE.md) and [docs/FILE_STRUCTURE.md](docs/FILE_STRUCTURE.md) to match the current repo layout and content bank locations.
+- Grouped README documentation links into four sections to align with medium docset guidance.
+- Removed typing-module imports and parameterized type hints from pedigree genetics utilities and yaml_to_pg to match PYTHON_STYLE guidance.
+- Added `lxml` to `pip_requirements.txt` after switching HTML validation helpers to lxml etree.
+- Switched HTML validation helpers in treelib tools and gene mapping library to use lxml etree instead of xml.etree.ElementTree.
 - Clarified that Python 3.12 is recommended (not required), updated usage/install/authoring examples to avoid hardcoded interpreter paths, switched the ASCII compliance runner to use env Python, documented the preferred shebang in python style guidance, and removed interpreter path references from AGENTS environment notes.
 - Added a minimal Brewfile to capture optional Homebrew dependencies.
 - Updated README documentation links to remove redundant backticked paths and added INSTALL/USAGE to the documentation map.

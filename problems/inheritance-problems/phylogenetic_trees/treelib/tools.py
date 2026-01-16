@@ -4,7 +4,7 @@ import re
 import copy
 import itertools
 from functools import lru_cache
-import lxml.etree
+from lxml import etree
 
 ### NOT ALLOWED TO IMPORT OTHER TREELIB FILES
 
@@ -554,9 +554,9 @@ def is_valid_html(html_str: str, debug: bool=True) -> bool:
 		# Wrap in a root tag for XML parsing as XML requires a single root element
 		wrapped_html = f"<root>{cleaned_html}</root>"
 		# Parse the cleaned and wrapped HTML with XML parser
-		lxml.etree.fromstring(wrapped_html)
+		etree.fromstring(wrapped_html)
 		return True
-	except lxml.etree.XMLSyntaxError as e:
+	except etree.XMLSyntaxError as e:
 		# Print detailed error information for debugging
 		if debug: print(f"Parse error: {e}")
 
