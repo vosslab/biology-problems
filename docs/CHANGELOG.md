@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-01-16
+- Replaced the long README catalog with a concise overview, documentation links, quick start, and a status note pointing to the current indexes.
+- Converted README documentation references to explicit Markdown links and linked all current docs.
+
 ## 2026-01-15
 - Added treelib documentation for phylogenetic tree codes and usage:
   [TREELIB_SPEC_v1.md](../problems/inheritance-problems/phylogenetic_trees/TREELIB_SPEC_v1.md),

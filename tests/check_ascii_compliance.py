@@ -144,6 +144,7 @@ def apply_simple_fixes(text: str) -> tuple[str, bool]:
 	# Replace common mathematical symbols.
 	fixed_text = fixed_text.replace("\u2260", "!=")
 	fixed_text = fixed_text.replace("\u2264", "<=")
+	fixed_text = fixed_text.replace("\u2265", ">=")
 	fixed_text = fixed_text.replace("\u00B1", "+/-")
 	fixed_text = fixed_text.replace("\u2248", "~")
 
