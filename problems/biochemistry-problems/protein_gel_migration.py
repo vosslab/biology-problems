@@ -188,8 +188,8 @@ class GelMigration(object):
 	#==================================================
 	def write_question(self, N: int, num_choices: int=4, question_type: str='mc'):
 		"""
-		49. <p>The standard and unknown proteins listed in the table were run using SDS–PAGE.</p> <p><b>Estimate the molecular weight of the unknown protein.</b></p>
-		A. 190 kDa	B. 320 kDa	C. 430 kDa	D. 520 kDa
+		49. <p>The standard and unknown proteins listed in the table were run using SDS-PAGE.</p> <p><b>Estimate the molecular weight of the unknown protein.</b></p>
+		A. 190 kDa	B. 320 kDa	C. 430 kDa	D. 520 kDa
 		"""
 
 		gel_set = self.get_protein_set_for_gel(num_choices+1)

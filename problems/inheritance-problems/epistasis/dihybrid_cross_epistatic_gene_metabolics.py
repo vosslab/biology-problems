@@ -459,7 +459,7 @@ def build_question(N: int, answer_gene_id: str, color_set: list, num_choices: in
 	# Get the number of phenotype colors produced by the correct gene interaction
 	num_colors = hybridcrosslib.gene_type_num_colors[answer_gene_id]
 
-	# Mapping of extended gene interaction type IDs (0–10) including hypothetical/fake types for distractors
+	# Mapping of extended gene interaction type IDs (0-10) including hypothetical/fake types for distractors
 	# Create a list of *all* possible gene interaction IDs
 	all_plus_gene_ids = list(hybridcrosslib.gene_interaction_names_plus.keys())
 

@@ -546,7 +546,7 @@ def parse_arguments():
 		'-l', '--leaves', '--num_leaves', type=int, dest='num_leaves',
 		help='number of leaves in the gene tree', default=5)
 
-	# Difficulty levels as integers 1–5
+	# Difficulty levels as integers 1-5
 	diff_group = parser.add_mutually_exclusive_group()
 	diff_group.add_argument("--level", "-L", dest="difficulty", type=int,
 		choices=range(1, 6),

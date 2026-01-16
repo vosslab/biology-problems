@@ -224,11 +224,11 @@ def generate_choices(target_z_lower: int, num_choices: int, names: list[str], bp
 	# required choices
 	required = {correct_pair, min_pair, max_pair}
 
-	# if correct is min → add second min
+	# if correct is min -> add second min
 	if correct_pair == min_pair:
 		required.add(second_min_pair)
 
-	# if correct is max → add second max
+	# if correct is max -> add second max
 	if correct_pair == max_pair:
 		required.add(second_max_pair)
 

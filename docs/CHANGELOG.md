@@ -1,6 +1,8 @@
 # Changelog
 
 ## 2026-01-16
+- Clarified that Python 3.12 is recommended (not required), updated usage/install/authoring examples to avoid hardcoded interpreter paths, switched the ASCII compliance runner to use env Python, and documented the preferred shebang in python style guidance.
+- Added a minimal Brewfile to capture optional Homebrew dependencies.
 - Updated README documentation links to remove redundant backticked paths and added INSTALL/USAGE to the documentation map.
 - Replaced the long README catalog with a concise overview, documentation links, quick start, and a status note pointing to the current indexes.
 - Converted README documentation references to explicit Markdown links and linked all current docs.
@@ -144,7 +146,7 @@
 - Added focused pytest coverage for `bptools.applyReplacementRulesToText` / `bptools.applyReplacementRulesToList` and key helpers in `problems/multiple_choice_statements/yaml_to_pg.py`.
 - Added pytest coverage for YAML-driven content builders in `matching_sets/` and `problems/multiple_choice_statements/` (including `yaml_multiple_choice_statements.py` and `yml_to_pgml.py`).
 - Added `docs/QUESTION_FUNCTION_INDEX.md` and `tools/build_question_function_index.py` to track question-creator functions and their Git creation dates.
-- Improved `tools/build_question_function_index.py` to better trace function origins across renames/moves and to show daily headings (YYYY-MM-DD), skipping symlink shims and using file “first seen” fallback dates when true file-add commits aren’t available.
+- Improved `tools/build_question_function_index.py` to better trace function origins across renames/moves and to show daily headings (YYYY-MM-DD), skipping symlink shims and using file "first seen" fallback dates when true file-add commits aren't available.
 - Renamed the Kaleidoscope ladder helper module to
   [problems/biochemistry-problems/kaleidoscope_ladder/protein_ladder_lib.py](problems/biochemistry-problems/kaleidoscope_ladder/protein_ladder_lib.py) and added a compatibility shim
   [problems/biochemistry-problems/kaleidoscope_ladder/ladder.py](problems/biochemistry-problems/kaleidoscope_ladder/ladder.py).
@@ -423,7 +425,7 @@
   unions require at least one child, and sex can be inferred for outside
   spouses.
 - Generator now omits childless unions when emitting graph specs to comply with
-  the “couples must have children” rule.
+  the "couples must have children" rule.
 - Clarified the internal role of PedigreeGraph in
   [problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md](problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md).
 - Added a compact pedigree graph spec parser/serializer in
@@ -615,7 +617,7 @@
   to use shared helpers, and moved the `--max-length` short flag from `-x` to `-M`
   to avoid conflict with `-x/--max-questions`.
 - Updated [problems/biochemistry-problems/chymotrypsin_substrate.py](problems/biochemistry-problems/chymotrypsin_substrate.py)
-  to map RasMol families to the custom palette, keep RasMol for the “weird”
+  to map RasMol families to the custom palette, keep RasMol for the "weird"
   residues, and darken gray residues for white backgrounds.
 - Added a migration note about `-x` short-flag conflicts in
   [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md).

@@ -193,7 +193,7 @@ Three quick checks that prevent "test-taking" answers:
 - Keep grammar parallel (all noun phrases, or all full sentences).
 - Avoid unique keywords that appear only in one value (they give away the match).
 
-### Normalize Formatting So Values Do Not “Telegraph” The Match
+### Normalize Formatting So Values Do Not "Telegraph" The Match
 
 A very common matching-bank failure mode is that the value repeats a key word from the prompt.
 That makes the item solvable by scanning for the repeated word instead of understanding the biology.
@@ -278,14 +278,14 @@ From repo root:
 
 ```bash
 source source_me.sh
-/opt/homebrew/opt/python@3.12/bin/python3.12 problems/matching_sets/yaml_make_match_sets.py -y problems/matching_sets/your_set.yml -x 20
+python3 problems/matching_sets/yaml_make_match_sets.py -y problems/matching_sets/your_set.yml -x 20
 ```
 
 For MC questions derived from the same set:
 
 ```bash
 source source_me.sh
-/opt/homebrew/opt/python@3.12/bin/python3.12 problems/matching_sets/yaml_make_which_one_multiple_choice.py -y problems/matching_sets/your_set.yml -x 20
+python3 problems/matching_sets/yaml_make_which_one_multiple_choice.py -y problems/matching_sets/your_set.yml -x 20
 ```
 
 The scripts write `bbq-*.txt` outputs in the current working directory.

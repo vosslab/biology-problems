@@ -30,7 +30,7 @@ Python scripts that generate biochemistry, genetics, molecular biology, and rela
 
 ## Quick start
 - `source source_me.sh`
-- `/opt/homebrew/opt/python@3.12/bin/python3.12 problems/biochemistry-problems/Henderson-Hasselbalch.py -m -d 5`
+- `python3 problems/biochemistry-problems/Henderson-Hasselbalch.py -m -d 5`
 - Review the generated `bbq-*.txt` output in the repo root.
 
 ## Status

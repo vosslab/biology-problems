@@ -12,7 +12,7 @@
 
 ## Build, Test, and Development Commands
 
-- Setup python3.12 environment
+- Setup python3 environment (3.12 recommended)
 source REPO_ROOT/source_me.sh
 - Run a generator (most support `--help` via `argparse`):
   - `python3 problems/inheritance-problems/<script>.py --help`
@@ -25,7 +25,7 @@ Generated artifacts (do not commit): `bbq-*.txt`, `qti*.zip`, `selftest-*.html` 
 ## Coding Style & Naming Conventions
 
 - Python: follow `docs/PYTHON_STYLE.md` (tabs for indentation; prefer Python ~3.12).
-- Prefer executable scripts with `#!/usr/bin/env python3`, a `main()` entrypoint, and `if __name__ == '__main__': main()`.
+- Prefer executable scripts with `#!/usr/bin/env python`, a `main()` entrypoint, and `if __name__ == '__main__': main()`.
 - Use `argparse` with both short and long flags (e.g., `-d/--duplicates`), and keep output filenames predictable (often `bbq-<script>-...`).
 - Keep comments ASCII-only; prefer f-strings; avoid `import *`.
 
@@ -38,7 +38,7 @@ Generated artifacts (do not commit): `bbq-*.txt`, `qti*.zip`, `selftest-*.html` 
 
 ## Commit & Pull Request Guidelines
 
-- Git history uses short, imperative, free-form subjects (no Conventional Commits); keep subjects brief and specific (e.g., “fix wording”, “formatting tweaks”).
+- Git history uses short, imperative, free-form subjects (no Conventional Commits); keep subjects brief and specific (e.g., "fix wording", "formatting tweaks").
 - PRs should describe the problem set affected (`problems/inheritance-problems/`, `problems/biochemistry-problems/`, etc.), how to reproduce (`python3 ...`), and include a small sample of expected output (or a screenshot if HTML/image rendering changes).
 See Markdown style in docs/MARKDOWN_STYLE.md.
 When making edits, document them in docs/CHANGELOG.md.
@@ -46,7 +46,7 @@ See repo style in docs/REPO_STYLE.md.
 Agents may run programs in the tests folder, including smoke tests and pyflakes/mypy runner scripts.
 
 ## Environment
-Codex must run Python using `/opt/homebrew/opt/python@3.12/bin/python3.12` (use Python 3.12 only).
+Codex should prefer running Python using `/opt/homebrew/opt/python@3.12/bin/python3.12` when available (Python 3.12 recommended).
 On this user's macOS (Homebrew Python 3.12), Python modules are installed to `/opt/homebrew/lib/python3.12/site-packages/`.
 When in doubt, implement the changes the user asked for rather than waiting for a response; the user is not the best reader and will likely miss your request and then be confused why it was not implemented or fixed.
 When changing code always run tests, documentation does not require tests.

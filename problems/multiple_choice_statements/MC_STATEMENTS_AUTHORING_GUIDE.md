@@ -12,7 +12,7 @@ This folder contains YAML "statement banks" and a generator that turns them into
 
 ```bash
 source source_me.sh
-/opt/homebrew/opt/python@3.12/bin/python3.12 problems/multiple_choice_statements/yaml_multiple_choice_statements.py -y problems/multiple_choice_statements/your_set.yml -x 20
+python3 problems/multiple_choice_statements/yaml_multiple_choice_statements.py -y problems/multiple_choice_statements/your_set.yml -x 20
 ```
 
 ## File Naming Recommendation

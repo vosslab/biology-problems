@@ -187,7 +187,7 @@ def build_every_statement_items(data: dict,
                     or ["about", "regarding", "concerning", "of"])
     replace_rules: Dict[str, str] = data.get("replacement_rules") or {}
 
-    # 🧼 Clean up replacement rules — strip out any HTML or color styling
+    # 🧼 Clean up replacement rules - strip out any HTML or color styling
     clean_rules = {}
     for k, v in (data.get("replacement_rules") or {}).items():
         # Skip replacements that contain HTML tags (like <span>, <b>, etc.)
@@ -304,7 +304,7 @@ def main():
     base = os.path.splitext(args.input_yaml)[0]
     if args.one_per_file:
         written = write_pg_one_per_file(base, items, limit=args.limit)
-        print(f"✅ Wrote {written} files like {base}_q001.pg, {base}_q002.pg, …")
+        print(f"✅ Wrote {written} files like {base}_q001.pg, {base}_q002.pg, ...")
     else:
         out_path = base + ".pg"
         written = write_pg_multi(out_path, items, limit=args.limit)

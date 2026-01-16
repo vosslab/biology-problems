@@ -22,7 +22,7 @@ num2word = {
 	20: 'twenty',
 }
 
-# Mapping of real gene interaction type IDs (0–6) to their descriptive names (used in question text and answer choices)
+# Mapping of real gene interaction type IDs (0-6) to their descriptive names (used in question text and answer choices)
 gene_interaction_names = {
 	0: 'digenic inheritance',
 	1: 'recessive epistasis',
@@ -33,7 +33,7 @@ gene_interaction_names = {
 	6: 'dominant and recessive epistasis',
 }
 
-# Mapping of extended gene interaction type IDs (0–10) including hypothetical/fake types for distractors
+# Mapping of extended gene interaction type IDs (0-10) including hypothetical/fake types for distractors
 gene_interaction_names_plus = {
 	0: 'digenic inheritance',
 	1: 'recessive epistasis',

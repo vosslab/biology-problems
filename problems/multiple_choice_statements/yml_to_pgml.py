@@ -12,7 +12,7 @@ def group_statements(block):
     grouped = {}
 
     for key, value in block.items():
-        # Extract the digits from keys like truth3a → 3
+        # Extract the digits from keys like truth3a -> 3
         m = re.search(r'(\d+)', key)
         if not m:
             continue

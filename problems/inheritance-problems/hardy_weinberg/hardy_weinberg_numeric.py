@@ -377,7 +377,7 @@ def parse_arguments():
 		"1a": "From phenotype counts with incomplete dominance, compute dominant allele frequency (p).",
 		"1b": "From phenotype counts with incomplete dominance, compute recessive allele frequency (q).",
 		"2a": "Given recessive disorder prevalence (q^2), compute p or q as specified.",
-		"2b": "Given dominant phenotype proportion (1−q^2), compute p or q as specified.",
+		"2b": "Given dominant phenotype proportion (1-q^2), compute p or q as specified.",
 		"3a": "Use X-linked dominant model with sex-specific rates to estimate allele frequency p.",
 	}
 

@@ -1,4 +1,4 @@
-#!/opt/homebrew/opt/python@3.12/bin/python3.12
+#!/usr/bin/env python3
 import os
 import random
 import re
@@ -45,7 +45,7 @@ EXTENSIONS = {
 	".swift",
 }
 SKIP_DIRS = {".git", ".venv", "old_shell_folder"}
-PYTHON_BIN = "/opt/homebrew/opt/python@3.12/bin/python3.12"
+PYTHON_BIN = sys.executable
 ERROR_RE = re.compile(r":[0-9]+:[0-9]+:")
 CODEPOINT_RE = re.compile(r"non-ISO-8859-1 character U\+([0-9A-Fa-f]{4,6})")
 ERROR_SAMPLE_COUNT = 5
