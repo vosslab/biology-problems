@@ -1,7 +1,7 @@
 # Changelog
 
 ## 2026-01-16
-- Clarified that Python 3.12 is recommended (not required), updated usage/install/authoring examples to avoid hardcoded interpreter paths, switched the ASCII compliance runner to use env Python, and documented the preferred shebang in python style guidance.
+- Clarified that Python 3.12 is recommended (not required), updated usage/install/authoring examples to avoid hardcoded interpreter paths, switched the ASCII compliance runner to use env Python, documented the preferred shebang in python style guidance, and removed interpreter path references from AGENTS environment notes.
 - Added a minimal Brewfile to capture optional Homebrew dependencies.
 - Updated README documentation links to remove redundant backticked paths and added INSTALL/USAGE to the documentation map.
 - Replaced the long README catalog with a concise overview, documentation links, quick start, and a status note pointing to the current indexes.
