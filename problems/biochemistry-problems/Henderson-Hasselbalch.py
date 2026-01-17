@@ -51,25 +51,25 @@ def get_Henderson_Hasselbalch_equation(
 	else:
 		# Numeric HA value if provided
 		ha_conj_base = open_bracket + f"<mn>{HA:.2f}</mn>" + close_bracket
-	# Define MathML representation for the conjugate base (A⁻)
-	if A_ is None:
-		# Symbolic A⁻ if no value is provided
-		a_mathml = "<msup><mi mathvariant='normal'>A</mi><mo>&#8211;</mo></msup>"
-		if words is True:
-			a__conj_acid = open_bracket + "<mi>Base</mi>" + close_bracket
+		# Define MathML representation for the conjugate base (A-)
+		if A_ is None:
+			# Symbolic A- if no value is provided
+			a_mathml = "<msup><mi mathvariant='normal'>A</mi><mo>&#8211;</mo></msup>"
+			if words is True:
+				a__conj_acid = open_bracket + "<mi>Base</mi>" + close_bracket
+			else:
+				a__conj_acid = open_bracket + a_mathml + close_bracket
 		else:
-			a__conj_acid = open_bracket + a_mathml + close_bracket
-	else:
-		# Numeric A⁻ value if provided
-		a__conj_acid = open_bracket + f"<mn>{A_:.2f}</mn>" + close_bracket
+			# Numeric A- value if provided
+			a__conj_acid = open_bracket + f"<mn>{A_:.2f}</mn>" + close_bracket
 	# Determine the correct or intentionally incorrect structure of the equation
 	# Set whether [HA] appears in the numerator
-	if wrong is False:
-		# Correct format: [A⁻] / [HA]
-		ha_on_top = False
-	else:
-		# Incorrect format: [HA] / [A⁻]
-		ha_on_top = True
+		if wrong is False:
+			# Correct format: [A-] / [HA]
+			ha_on_top = False
+		else:
+			# Incorrect format: [HA] / [A-]
+			ha_on_top = True
 	# Initialize the MathML string for the equation
 	equation_text = ""
 	equation_text += "<p><math xmlns='http://www.w3.org/1998/Math/MathML'>"
@@ -95,26 +95,26 @@ def get_Henderson_Hasselbalch_equation(
 	else:
 		# Add plus sign
 		equation_text += "<mo>&#160;</mo><mo>+</mo><mo>&#8201;</mo>"
-	# Add the log function and start the fraction
-	equation_text += "<msub><mo>log</mo><mn>10</mn></msub>"
-	# Begin the numerator of the fraction
-	equation_text += "<mfenced><mfrac><mrow>"
-	# Insert the numerator based on the 'ha_on_top' flag
-	if ha_on_top is False:
-		# A⁻ goes on top in the correct format
-		equation_text += a__conj_acid
-	else:
-		# HA goes on top in the incorrect format
-		equation_text += ha_conj_base
-	# Close the numerator
-	equation_text += "</mrow><mrow>"
-	# Insert the denominator based on the 'ha_on_top' flag
-	if ha_on_top is False:
-		# HA goes on bottom in the correct format
-		equation_text += ha_conj_base
-	else:
-		# A⁻ goes on bottom in the incorrect format
-		equation_text += a__conj_acid
+		# Add the log function and start the fraction
+		equation_text += "<msub><mo>log</mo><mn>10</mn></msub>"
+		# Begin the numerator of the fraction
+		equation_text += "<mfenced><mfrac><mrow>"
+		# Insert the numerator based on the 'ha_on_top' flag
+		if ha_on_top is False:
+			# A- goes on top in the correct format
+			equation_text += a__conj_acid
+		else:
+			# HA goes on top in the incorrect format
+			equation_text += ha_conj_base
+		# Close the numerator
+		equation_text += "</mrow><mrow>"
+		# Insert the denominator based on the 'ha_on_top' flag
+		if ha_on_top is False:
+			# HA goes on bottom in the correct format
+			equation_text += ha_conj_base
+		else:
+			# A- goes on bottom in the incorrect format
+			equation_text += a__conj_acid
 	# Close the denominator and log function
 	equation_text += "</mrow></mfrac></mfenced>"
 	# Complete the MathML structure

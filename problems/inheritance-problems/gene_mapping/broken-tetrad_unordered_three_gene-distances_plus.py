@@ -1,13 +1,10 @@
 #!/usr/bin/env python3
 
-import os
-import sys
 import random
-import argparse
 
 import bptools
 import genemaplib as gml
-import gene_map_class_lib as gmc
+#import gene_map_class_lib as gmc
 
 debug = True
 
@@ -89,8 +86,36 @@ def makeProgenyAsciiTable(typemap, progeny_size):
 
 #=====================
 #=====================
+def calculate_double_crossovers(distances, progeny_size, interference_tuple):
+	"""
+	Calculate an estimated double crossover (DCO) count for a three-gene unordered tetrad problem.
+
+	Note: This script is kept for historical/debugging purposes and may not be used in production.
+	"""
+	dist1 = float(distances[0])
+	dist2 = float(distances[1])
+
+	no_interference_dco = float(progeny_size) * (dist1 / 100.0) * (dist2 / 100.0)
+	if interference_tuple is None:
+		return int(round(no_interference_dco))
+
+	a, b = interference_tuple
+	a = float(a)
+	b = float(b)
+	if b == 0.0:
+		return int(round(no_interference_dco))
+
+	interference_dco = no_interference_dco * (b - a) / b
+	return int(round(interference_dco))
+
+
+#=====================
+#=====================
 def generateTypeCounts(parental, geneorder, distances, progeny_size, basetype, interference_tuple):
-	doublecount = calculate_double_crossovers(distances, progeny_size, interference_tuple)
+	dcount1 = 0
+	dcount2 = 0
+	dcount3 = calculate_double_crossovers(distances, progeny_size, interference_tuple)
+	doublecount = dcount1 + dcount2 + dcount3
 
 	firstcount = 2*(int(round(distances[0]*progeny_size/100.)) - 3*(dcount1 + dcount3))
 	secondcount = 2*(int(round(distances[1]*progeny_size/100.)) - 3*(dcount2 + dcount3))
@@ -98,7 +123,7 @@ def generateTypeCounts(parental, geneorder, distances, progeny_size, basetype, i
 
 	# dcount3 controls the third distance
 	# for progeny_size of 1000, each dcount3 = 0.6 distance
-	distance3 = distances[-1]
+	distance3 = float(distances[-1])
 
 	if not distance3.is_integer():
 		return None
@@ -247,104 +272,14 @@ def makeQuestion(basetype, geneorder, distances, progeny_size, interference_tupl
 #=====================
 #=====================
 def translate_genotype_counts_to_tetrads(GMC):
-	print(GMC.progeny_groups_count_dict)
-	print(GMC.genotype_counts)
-	GMC.gene_letters_str
-
-	# Create Six Genotypes
-	tetradCount = {}
-
-	tetradSet = list(GMC.parental_genotypes_tuple) + list(GMC.parental_genotypes_tuple)
-	tetradSet.sort()
-	if debug is True: print(" parental ", tetradSet)
-
-	tetradName = tetradSetToString(tetradSet)
-	tetradCount[tetradName] = GMC.progeny_groups_count_dict['parental']
-
-	print(tetradCount)
-
-	#first flip
-	firsttype1 = gml.flip_gene_by_letter(GMC.parental_genotypes_tuple[0], GMC.gene_order_str[0], GMC.gene_letters_str)
-	firsttype2 = gml.invert_genotype(firsttype1, GMC.gene_letters_str)
-
-	#usually TT
-	tetradSet = list(GMC.parental_genotypes_tuple) + [firsttype1, firsttype2]
-	tetradSet.sort()
-	tetradName = tetradSetToString(tetradSet)
-	tetradCount[tetradName] = firstcount
-
-	#usually NPD for gene 1
-	tetradSet = [firsttype1, firsttype2, firsttype1, firsttype2]
-	tetradSet.sort()
-	tetradName = tetradSetToString(tetradSet)
-	tetradCount[tetradName] = dcount1
-
-	#second flip
-	secondtype = gml.flip_gene_by_letter(parental, geneorder[2], basetype)
-
-	#usually TT
-	tetradSet = [secondtype, gml.invert_genotype(secondtype, basetype), parental, gml.invert_genotype(parental, basetype),]
-	tetradSet.sort()
-	tetradName = tetradSetToString(tetradSet)
-	tetradCount[tetradName] = secondcount
-
-	#usually NPD
-	tetradSet = [secondtype, gml.invert_genotype(secondtype, basetype), secondtype, gml.invert_genotype(secondtype, basetype),]
-	tetradSet.sort()
-	tetradName = tetradSetToString(tetradSet)
-	tetradCount[tetradName] = dcount2
-
-	#both flips
-	thirdtype = gml.flip_gene_by_letter(gml.flip_gene_by_letter(parental, geneorder[2], basetype), geneorder[0], basetype)
-
-	#usually NPD
-	tetradSet = [thirdtype, gml.invert_genotype(thirdtype, basetype), thirdtype, gml.invert_genotype(thirdtype, basetype),]
-	tetradSet.sort()
-	tetradName = tetradSetToString(tetradSet)
-	tetradCount[tetradName] = dcount3
-
-	return tetradCount
+	raise NotImplementedError(
+		"This debug helper is incomplete; use `tetrad_unordered_three_gene-distances_plus.py` instead."
+	)
 
 #=====================
 #=====================
 if __name__ == "__main__":
-	parser = argparse.ArgumentParser()
-	parser.add_argument('-d', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='number of duplicate runs to do', default=1)
-	args = parser.parse_args()
-	outfile = ('bbq-' + os.path.splitext(os.path.basename(__file__))[0]
-		+ '-questions.txt')
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	N = 0
-	print(N)
-	for i in range(args.duplicates):
-		N += 1
-		GMC = gmc.GeneMappingClass(3, N)
-		GMC.setup_question()
-		print(GMC.get_progeny_ascii_table())
-		header = GMC.get_question_header()
-		html_table = GMC.get_progeny_html_table()
-		phenotype_info_text = GMC.get_phenotype_info()
-
-		translate_genotype_counts_to_tetrads(GMC)
-		sys.exit(1)
-
-		genotype_counts_dict = makeQuestion(gene_letters, gene_order, distances, progeny_size, interference_tuple)
-		if genotype_counts_dict is None:
-			continue
-		print(f'genotype_counts_dict={genotype_counts_dict}')
-
-		ascii_table = makeProgenyAsciiTable(genotype_counts_dict, progeny_size)
-		print(ascii_table)
-		html_table = makeProgenyHtmlTable(genotype_counts_dict, progeny_size)
-		#print(html_table)
-		question_string = questionText(gene_letters)
-		variable_list = getVariables(gene_order)
-		complete_question = html_table + question_string
-		#final_question = blackboardFormat(question_string, html_table, variable_list, gene_order, distances)
-		final_question = formatBB_FIB_PLUS_Question(N, complete_question, variable_list, gene_order, distances)
-		#print(final_question)
-
-		f.write(final_question)
-	f.close()
+	print(
+		"This script is deprecated/broken and kept for reference.\n"
+		"Use `tetrad_unordered_three_gene-distances_plus.py` instead."
+	)

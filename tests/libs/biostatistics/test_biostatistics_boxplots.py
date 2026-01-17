@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import random
-from types import SimpleNamespace
 
 from lib_test_utils import import_from_repo_path
 

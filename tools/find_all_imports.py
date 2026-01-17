@@ -100,7 +100,7 @@ def find_all_imports(directory="."):
 		for package in pypi_packages:
 			f.write(f"{package}\n")
 
-	print("✅ Generated `requirements.txt` successfully! (Filtered built-ins & local modules)")
+	print("Generated `requirements.txt` successfully! (Filtered built-ins & local modules)")
 
 if __name__ == "__main__":
 	find_all_imports()

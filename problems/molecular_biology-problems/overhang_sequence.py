@@ -60,7 +60,7 @@ def makeFillInBlankQuestion(N, enzyme_class):
 	answer1 = enzyme_class.ovhgseq
 	answer2 = f"5'-{answer1}-3'"
 	answer3 = f"5&prime;-{answer1}-3&prime;"
-	#answer4 = f"5′-{answer1}-3′"
+	#answer4 = f"5'-{answer1}-3'"
 	answer_list = [answer1, answer2, answer3]
 
 	bb_question = bptools.formatBB_FIB_Question(N, question_text, answer_list)

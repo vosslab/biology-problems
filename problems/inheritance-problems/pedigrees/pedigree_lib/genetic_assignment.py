@@ -221,7 +221,6 @@ def _propagate_x_linked(
 			parent_a = union.partner_a
 			parent_b = union.partner_b
 			parent_a_sex = pedigree.people[parent_a].sex
-			parent_b_sex = pedigree.people[parent_b].sex
 			if parent_a_sex == 'male':
 				father_id = parent_a
 				mother_id = parent_b
@@ -230,7 +229,6 @@ def _propagate_x_linked(
 				mother_id = parent_a
 			father_domain = domains[father_id]
 			mother_domain = domains[mother_id]
-			children = [(pedigree.people[child_id].sex, domains[child_id]) for child_id in union.children]
 
 			for child_id in union.children:
 				child_sex = pedigree.people[child_id].sex
@@ -251,9 +249,9 @@ def _propagate_x_linked(
 					domains[child_id] = new_child_domain
 					changed = True
 
-			parent_children = [(pedigree.people[child_id].sex, domains[child_id]) for child_id in union.children]
-			new_father = _x_linked_parent_possible(
-				True,
+				parent_children = [(pedigree.people[child_id].sex, domains[child_id]) for child_id in union.children]
+				new_father = _x_linked_parent_possible(
+					True,
 				father_domain,
 				mother_domain,
 				parent_children,
@@ -390,15 +388,14 @@ def _check_y_linked(pedigree: graph_spec.PedigreeGraphSpec) -> bool:
 		if person.sex == 'female' and phenotype == 'affected':
 			return False
 
-	for union in pedigree.unions:
-		parent_a = union.partner_a
-		parent_b = union.partner_b
-		parent_a_sex = pedigree.people[parent_a].sex
-		parent_b_sex = pedigree.people[parent_b].sex
-		if parent_a_sex == 'male':
-			father_id = parent_a
-		else:
-			father_id = parent_b
+		for union in pedigree.unions:
+			parent_a = union.partner_a
+			parent_b = union.partner_b
+			parent_a_sex = pedigree.people[parent_a].sex
+			if parent_a_sex == 'male':
+				father_id = parent_a
+			else:
+				father_id = parent_b
 		father_status = _phenotype_from_status(pedigree.people[father_id].status)
 		for child_id in union.children:
 			child = pedigree.people[child_id]
