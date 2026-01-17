@@ -1,6 +1,7 @@
 # Changelog
 
 ## 2026-01-17
+- Added `problems/matching_sets/yaml_make_match_pgml.py` to generate PGML matching problems from matching-set YAML files.
 - Added `docs/webwork/` as a dedicated place to store WebWork style guides (starting with [docs/webwork/INDEX.md](webwork/INDEX.md)).
 - Added a WeBWorK PG header/tagging style guide: [docs/webwork/WEBWORK_HEADER_STYLE.md](webwork/WEBWORK_HEADER_STYLE.md).
 - Added a PGML-first WeBWorK problem authoring guide: [docs/webwork/WEBWORK_PROBLEM_AUTHOR_GUIDE.md](webwork/WEBWORK_PROBLEM_AUTHOR_GUIDE.md).
