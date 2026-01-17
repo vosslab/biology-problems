@@ -4,7 +4,7 @@
 - Added `docs/webwork/` as a dedicated place to store WebWork style guides (starting with [docs/webwork/INDEX.md](webwork/INDEX.md)).
 - Added a WeBWorK PG header/tagging style guide: [docs/webwork/WEBWORK_HEADER_STYLE.md](webwork/WEBWORK_HEADER_STYLE.md).
 - Added a PGML-first WeBWorK problem authoring guide: [docs/webwork/WEBWORK_PROBLEM_AUTHOR_GUIDE.md](webwork/WEBWORK_PROBLEM_AUTHOR_GUIDE.md).
-- Improved [tools/check_yaml.py](../tools/check_yaml.py) to validate one or more YAML files (or directories with `--recursive`) with better error reporting and optional pretty-printing.
+- Improved [tools/check_yaml.py](../tools/check_yaml.py) to validate one or more YAML files (or directories with `--recursive`) with quality checks (duplicate-key detection, basic schema checks for YAML banks, and tab-indentation checks).
 - Added a repo-wide pytest that parses all YAML files under `data/` and `problems/`: [tests/yaml/test_repo_yaml_files_parse.py](../tests/yaml/test_repo_yaml_files_parse.py).
 - Fixed invalid YAML in [problems/matching_sets/biotechnology/plant_transgenes.yml](../problems/matching_sets/biotechnology/plant_transgenes.yml) and [problems/matching_sets/inheritance/degrees_of_dominance.yml](../problems/matching_sets/inheritance/degrees_of_dominance.yml) so repo-wide YAML parsing passes.
 
