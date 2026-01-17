@@ -36,17 +36,17 @@ organism_list = [
 ]
 
 fictional_diseases = [
-    'cooties',
-    'homework-itis',
-    'snackmania',
-    'the giggle pox',
-    'boardom syndrome',
-    'midterm madness',
-    'deadline delirium',
-    'the freshman five',
-    'finals fever',
-    'powerpoint poisoning',
-    'zoom fatigue',
+'cooties',
+'homework-itis',
+'snackmania',
+'the giggle pox',
+'boardom syndrome',
+'midterm madness',
+'deadline delirium',
+'the freshman five',
+'finals fever',
+'powerpoint poisoning',
+'zoom fatigue',
 ]
 
 #=========================

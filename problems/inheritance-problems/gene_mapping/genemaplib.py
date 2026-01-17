@@ -736,9 +736,11 @@ def get_all_distance_triplets_INTERFERENCE(max_fraction_int: int=99, max_distanc
 
 	# If `msg` is True, print the number of distance triplets found and other parameters.
 	if msg is True:
-		print(f'found {len(distance_triplet_list)} distance tuples ' +
-		      f'with max distance {max_distance} ' +
-		      f'from all interference fractions up to numerator {max_fraction_int}')
+		print(
+			f"found {len(distance_triplet_list)} distance tuples "
+			f"with max distance {max_distance} "
+			f"from all interference fractions up to numerator {max_fraction_int}"
+		)
 
 	# Return the complete list of distance triplets.
 	return distance_triplet_list
@@ -1000,4 +1002,3 @@ assert crossover_after_index('++++', 2, 'adcb') == '+bc+'
 
 if __name__ == "__main__":
 	print("DONE")
-

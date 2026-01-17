@@ -14,8 +14,13 @@ from matplotlib import pyplot
 #r: 4 and up -> diverge
 
 growth_rates = [0.9, 1.3, 2.9, 3.1, 3.8]
-labels = ["r = 0.9 (die)", "r = 1.3 (quick)", "r = 2.9 (slow)",
-			 "r = 3.1 (bimodal)", "r = 3.8 (chaos)",]
+labels = [
+"r = 0.9 (die)",
+"r = 1.3 (quick)",
+"r = 2.9 (slow)",
+"r = 3.1 (bimodal)",
+"r = 3.8 (chaos)",
+]
 original_population = 0.3
 num_generations = 60
 population_multiplier = 20000

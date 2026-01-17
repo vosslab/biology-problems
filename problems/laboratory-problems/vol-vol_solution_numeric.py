@@ -6,7 +6,7 @@ import bptools
 
 #https://en.wikipedia.org/wiki/List_of_water-miscible_solvents
 liquids = ['ethanol', 'hydrogen peroxide', 'acetone', 'glycerol',
-					 'isopropyl alcohol', 'acetic acid', 'formic acid',]
+'isopropyl alcohol', 'acetic acid', 'formic acid',]
 
 molecular_weights = {
 	'ethanol': 46.07,

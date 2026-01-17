@@ -9,9 +9,9 @@ lowercase = "abcdefghjkmpqrstvwxyz"
 
 #=======================
 def getCrc16_FromString(mystr):
- crc16 = crcmod.predefined.Crc('xmodem')
- crc16.update(mystr.encode('ascii'))
- return crc16.hexdigest().lower()
+	crc16 = crcmod.predefined.Crc('xmodem')
+	crc16.update(mystr.encode('ascii'))
+	return crc16.hexdigest().lower()
 
 #=======================
 def genotype_code_format_text(mystr):
@@ -187,4 +187,3 @@ if __name__ == '__main__':
 	print(gamete_count)
 	print(genestr)
 	print(genestr.replace(' ', '\t'))
-

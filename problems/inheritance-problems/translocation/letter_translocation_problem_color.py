@@ -36,7 +36,7 @@ class Fragment():
 	Chromosome fragment defined as a contiguous A..Z run in forward order.
 	"""
 	def __init__(self, sequence: str, telomere: str, break_point: str,
-	             rgb_color: str = 'black') -> None:
+		rgb_color: str = 'black') -> None:
 		# Validate sequence
 		if not isinstance(sequence, str):
 			raise ValueError("Sequence must be a string")
@@ -158,7 +158,7 @@ class Chromosome:
 	Two joined fragments that form a chromosome.
 	"""
 	def __init__(self, fragment_A: Fragment, fragment_B: Fragment,
-	             telomere_A_improper: bool = False, telomere_B_improper: bool = False) -> None:
+		telomere_A_improper: bool = False, telomere_B_improper: bool = False) -> None:
 		if fragment_A == fragment_B:
 			raise ValueError("Fragments cannot be the same")
 

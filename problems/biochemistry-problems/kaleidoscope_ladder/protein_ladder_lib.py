@@ -188,7 +188,7 @@ def gen_kaleidoscope_table(mw_values, color_map, table_height: int, show_labels:
 	table_width = label_width + band_width + spacer_width*3
 	html_table = (
 		f'<table cellspacing="0" cellpadding="0" border="1" width="{table_width}" height="{table_height}" '
-		 ' style="border-spacing: 0; border-collapse: collapse; border: 2px solid black; display: inline-block;">'
+		' style="border-spacing: 0; border-collapse: collapse; border: 2px solid black; display: inline-block;">'
 	)
 	html_table += f'<tr><td colspan="5" style="height: {spacer_height}px; background-color: #ddd;"></td></tr>\n'
 
@@ -204,7 +204,7 @@ def gen_kaleidoscope_table(mw_values, color_map, table_height: int, show_labels:
 		html_table += gen_band_row(mw_kda, color_map, _label(mw_kda))
 
 	html_table += (
-		 '<!-- Final White All Column Spacer to Clean Up Border -->'
+		'<!-- Final White All Column Spacer to Clean Up Border -->'
 		f'<tr><td colspan="5" style="height: {spacer_height//2}px;"></td></tr>\n'
 	)
 	html_table += '</table>'

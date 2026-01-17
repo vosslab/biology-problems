@@ -7,6 +7,7 @@
 - Improved [tools/check_yaml.py](../tools/check_yaml.py) to validate one or more YAML files (or directories with `--recursive`) with quality checks (duplicate-key detection, basic schema checks for YAML banks, and tab-indentation checks).
 - Added a repo-wide pytest that parses all YAML files under `data/` and `problems/`: [tests/yaml/test_repo_yaml_files_parse.py](../tests/yaml/test_repo_yaml_files_parse.py).
 - Fixed invalid YAML in [problems/matching_sets/biotechnology/plant_transgenes.yml](../problems/matching_sets/biotechnology/plant_transgenes.yml) and [problems/matching_sets/inheritance/degrees_of_dominance.yml](../problems/matching_sets/inheritance/degrees_of_dominance.yml) so repo-wide YAML parsing passes.
+- Fixed mixed indentation in several generators/libraries so `pytest tests/test_indentation.py` passes (tabs only).
 
 ## 2026-01-16
 - Clarified that Python 3.12 is recommended (not required), updated usage/install/authoring examples to avoid hardcoded interpreter paths, switched the ASCII compliance runner to use env Python, documented the preferred shebang in python style guidance, and removed interpreter path references from AGENTS environment notes.
