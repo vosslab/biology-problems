@@ -12,16 +12,6 @@ selftest-*.html
 # Byte-compiled / optimized / DLL files
 *.py[cod]
 
-# Distribution / packaging
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-*.egg-info/
-*.egg
-
 # Environments
 .env
 .venv
@@ -31,8 +21,3 @@ ENV/
 env.bak/
 venv.bak/
 
-# mkdocs documentation
-/site
-
-# mypy
-.mypy_cache/
