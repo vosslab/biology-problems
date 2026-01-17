@@ -1,6 +1,8 @@
 # Changelog
 
 ## 2026-01-17
+- Updated `problems/multiple_choice_statements/yaml_mc_statements_to_pgml.py` to align with repo Python style and include `PGcourse.pl` in the macro list.
+- Added pytest coverage for PGML generators in `tests/test_pgml_generators.py`.
 - Added `webwork_lib.py` to generate OPL-style PG headers and wired it into matching and multiple-choice PG/PGML generators.
 - Added a full OPL-style header block to `yaml_make_match_pgml.py` output, sourcing optional YAML metadata and generating defaults.
 - Added `problems/matching_sets/yaml_make_match_pgml.py` to generate PGML matching problems from matching-set YAML files.
