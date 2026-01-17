@@ -4,23 +4,108 @@ set -e
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 cd "${REPO_ROOT}"
 
-# Run pyflakes on all Python files and capture output
 PYFLAKES_OUT="${REPO_ROOT}/pyflakes.txt"
-find "${REPO_ROOT}" \
-	-type d \( -name .git -o -name .venv -o -name old_shell_folder \) -prune -o \
-	\( -type f -name "*.py" ! -path "*TEMPLATE*" -print0 \) \
-	| sort -z \
-	| xargs -0 pyflakes > "${PYFLAKES_OUT}" 2>&1 || true
+PYFLAKES_TMP=""
+CHANGED_LIST=""
+TRACKED_LIST=""
 
-RESULT=$(wc -l < "${PYFLAKES_OUT}")
+cleanup() {
+	if [ -n "${CHANGED_LIST:-}" ]; then
+		rm -f "${CHANGED_LIST}"
+	fi
+	if [ -n "${TRACKED_LIST:-}" ]; then
+		rm -f "${TRACKED_LIST}"
+	fi
+	if [ -n "${PYFLAKES_TMP:-}" ]; then
+		rm -f "${PYFLAKES_TMP}"
+	fi
+}
+trap cleanup EXIT
+
+SCOPE="${REPO_HYGIENE_SCOPE:-}"
+if [ -z "${SCOPE}" ] && [ "${FAST_REPO_HYGIENE:-}" = "1" ]; then
+	SCOPE="changed"
+fi
+
+# Run pyflakes on all Python files and capture output
+if [ "${SCOPE}" = "changed" ]; then
+	CHANGED_LIST="$(mktemp)"
+	collect_changed_files() {
+		git diff --name-only --diff-filter=ACMRTUXB -z
+		git diff --name-only --cached --diff-filter=ACMRTUXB -z
+	}
+	collect_changed_files | while IFS= read -r -d '' path; do
+		if [ -z "${path}" ]; then
+			continue
+		fi
+		case "${path}" in
+			.git/*|*/.git/*|.venv/*|*/.venv/*|old_shell_folder/*|*/old_shell_folder/*)
+				continue
+				;;
+		esac
+		if [[ "${path}" != *.py ]]; then
+			continue
+		fi
+		if [[ "${path}" == *TEMPLATE* ]]; then
+			continue
+		fi
+		printf '%s\0' "${path}"
+	done | sort -zu > "${CHANGED_LIST}"
+	FILE_COUNT=$(tr -cd '\0' < "${CHANGED_LIST}" | wc -c | tr -d ' ')
+	if [ "${FILE_COUNT}" -eq 0 ]; then
+		echo "pyflakes: no Python files matched scope changed."
+		rm -f "${PYFLAKES_OUT}"
+		echo "No errors found!!!"
+		exit 0
+	fi
+	echo "pyflakes: scanning ${FILE_COUNT} files..."
+	PYFLAKES_TMP="$(mktemp)"
+	xargs -0 pyflakes < "${CHANGED_LIST}" > "${PYFLAKES_TMP}" 2>&1 || true
+else
+	TRACKED_LIST="$(mktemp)"
+	git ls-files -z -- "*.py" | while IFS= read -r -d '' path; do
+		if [ -z "${path}" ]; then
+			continue
+		fi
+		case "${path}" in
+			.git/*|*/.git/*|.venv/*|*/.venv/*|old_shell_folder/*|*/old_shell_folder/*)
+				continue
+				;;
+		esac
+		if [[ "${path}" == *TEMPLATE* ]]; then
+			continue
+		fi
+		if [ ! -f "${path}" ]; then
+			continue
+		fi
+		printf '%s\0' "${path}"
+	done | sort -zu > "${TRACKED_LIST}"
+	FILE_COUNT=$(tr -cd '\0' < "${TRACKED_LIST}" | wc -c | tr -d ' ')
+	if [ "${FILE_COUNT}" -eq 0 ]; then
+		echo "pyflakes: no Python files matched scope all."
+		rm -f "${PYFLAKES_OUT}"
+		echo "No errors found!!!"
+		exit 0
+	fi
+	echo "pyflakes: scanning ${FILE_COUNT} files..."
+	PYFLAKES_TMP="$(mktemp)"
+	xargs -0 pyflakes < "${TRACKED_LIST}" > "${PYFLAKES_TMP}" 2>&1 || true
+fi
+
+RESULT=$(wc -l < "${PYFLAKES_TMP}" | tr -d ' ')
 
 N=5
+SMALL_LIMIT=20
 
 # Success if no errors were found
 if [ "${RESULT}" -eq 0 ]; then
-    echo "No errors found!!!"
-    exit 0
+	rm -f "${PYFLAKES_OUT}"
+	echo "No errors found!!!"
+	exit 0
 fi
+
+mv "${PYFLAKES_TMP}" "${PYFLAKES_OUT}"
+PYFLAKES_TMP=""
 
 shorten_paths() {
 	sed -E 's|.*/([^/:]+:)|\1|'
@@ -105,6 +190,16 @@ print_unclassified() {
 		}
 	' "${PYFLAKES_OUT}" | shorten_paths
 }
+
+if [ "${RESULT}" -le "${SMALL_LIMIT}" ]; then
+	echo ""
+	echo "Last ${N} errors"
+	grep -E ':[0-9]+:[0-9]+:' "${PYFLAKES_OUT}" | tail -n "${N}" | shorten_paths
+	echo "-------------------------"
+	echo ""
+	echo "Found ${RESULT} pyflakes errors written to REPO_ROOT/pyflakes.txt"
+	exit 1
+fi
 
 echo ""
 echo "First ${N} errors"
