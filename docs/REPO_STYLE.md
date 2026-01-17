@@ -45,6 +45,7 @@ Repo-wide conventions for this project and related repos.
 - Add a shebang for executable scripts and keep them runnable directly.
 - Document shared helpers and modules in `docs/USAGE.md` when used across scripts.
 - Use `tests/run_pyflakes.sh` and `tests/run_ascii_compliance.py` for repo-wide lint checks, with `tests/check_ascii_compliance.py` for single-file ASCII/ISO-8859-1 checks.
+- For smoke tests, reuse stable output folder names (for example `output_smoke/`) instead of creating one-off output directory names; reusing/overwriting avoids repeated delete-approval prompts.
 
 ## Dependency manifests
 - Store Python dependencies in `pip_requirements.txt` at the repo root. 

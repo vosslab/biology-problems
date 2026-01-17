@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 import os
-import random
 import re
-import subprocess
 import sys
+import random
+import argparse
+import subprocess
+import shutil
+import tempfile
 
 
 EXTENSIONS = {
@@ -45,10 +48,15 @@ EXTENSIONS = {
 	".swift",
 }
 SKIP_DIRS = {".git", ".venv", "old_shell_folder"}
+SKIP_FILES = {
+	os.path.join("CODEX", "skills", ".system", "skill-creator", "SKILL.md"),
+}
 PYTHON_BIN = sys.executable
 ERROR_RE = re.compile(r":[0-9]+:[0-9]+:")
 CODEPOINT_RE = re.compile(r"non-ISO-8859-1 character U\+([0-9A-Fa-f]{4,6})")
 ERROR_SAMPLE_COUNT = 5
+SCOPE_ENV = "REPO_HYGIENE_SCOPE"
+FAST_ENV = "FAST_REPO_HYGIENE"
 
 
 #============================================
@@ -92,6 +100,43 @@ def find_repo_root() -> str:
 
 
 #============================================
+def parse_args() -> argparse.Namespace:
+	"""
+	Parse command-line arguments.
+	"""
+	parser = argparse.ArgumentParser(description="Run ASCII compliance scans.")
+	parser.add_argument(
+		"-p", "--progress",
+		dest="progress",
+		action="store_true",
+		help="Print progress markers while scanning files.",
+	)
+	parser.add_argument(
+		"-q", "--quiet",
+		dest="progress",
+		action="store_false",
+		help="Disable progress markers while scanning files.",
+	)
+	parser.add_argument(
+		"-e", "--progress-every",
+		dest="progress_every",
+		type=int,
+		default=1,
+		help="Emit progress every N files (default: 1).",
+	)
+	parser.add_argument(
+		"-s", "--scope",
+		dest="scope",
+		choices=("all", "changed"),
+		default="",
+		help="Scope to scan (all or changed).",
+	)
+	parser.set_defaults(progress=True)
+	args = parser.parse_args()
+	return args
+
+
+#============================================
 def get_progress_colors() -> dict[str, str]:
 	"""
 	Get ANSI color codes for progress output.
@@ -110,13 +155,34 @@ def get_progress_colors() -> dict[str, str]:
 
 
 #============================================
+def resolve_scope(arg_scope: str) -> str:
+	"""
+	Resolve the scan scope from args or environment.
+
+	Args:
+		arg_scope: Scope from CLI args.
+
+	Returns:
+		str: Resolved scope ("all" or "changed").
+	"""
+	if arg_scope:
+		return arg_scope
+	env_scope = os.environ.get(SCOPE_ENV, "").strip().lower()
+	if not env_scope and os.environ.get(FAST_ENV) == "1":
+		env_scope = "changed"
+	if env_scope in ("all", "changed"):
+		return env_scope
+	return "all"
+
+
+#============================================
 def gather_files(
 	repo_root: str,
 	ascii_out: str,
 	pyflakes_out: str,
-) -> list[str]:
+) -> tuple[list[str], bool]:
 	"""
-	Collect files to scan, honoring extension and skip rules.
+	Collect tracked files to scan, honoring extension and skip rules.
 
 	Args:
 		repo_root: Root path for the repo.
@@ -124,22 +190,137 @@ def gather_files(
 		pyflakes_out: Output path to skip.
 
 	Returns:
-		list[str]: Sorted file list.
+		tuple[list[str], bool]: Sorted file list and error flag.
+	"""
+	result = subprocess.run(
+		["git", "ls-files", "-z"],
+		capture_output=True,
+		text=True,
+		cwd=repo_root,
+	)
+	if result.returncode != 0:
+		message = result.stderr.strip()
+		if not message:
+			message = "Failed to list tracked files."
+		print(message, file=sys.stderr)
+		return [], True
+	tracked_paths = []
+	for path in result.stdout.split("\0"):
+		if not path:
+			continue
+		tracked_paths.append(os.path.join(repo_root, path))
+	matches = filter_files(repo_root, tracked_paths, ascii_out, pyflakes_out)
+	return matches, False
+
+
+#============================================
+def path_has_skip_dir(repo_root: str, path: str) -> bool:
+	"""
+	Check whether a path includes a skipped directory.
+
+	Args:
+		repo_root: Root path for the repo.
+		path: Absolute file path.
+
+	Returns:
+		bool: True if the path contains a skipped directory.
+	"""
+	rel_path = os.path.relpath(path, repo_root)
+	if rel_path.startswith(".."):
+		return True
+	parts = rel_path.split(os.sep)
+	for part in parts:
+		if part in SKIP_DIRS:
+			return True
+	return False
+
+
+#============================================
+def filter_files(
+	repo_root: str,
+	paths: list[str],
+	ascii_out: str,
+	pyflakes_out: str,
+) -> list[str]:
+	"""
+	Filter candidate paths by extension and skip rules.
+
+	Args:
+		repo_root: Root path for the repo.
+		paths: Candidate file paths.
+		ascii_out: Output path to skip.
+		pyflakes_out: Output path to skip.
+
+	Returns:
+		list[str]: Sorted filtered files.
 	"""
 	matches = []
+	seen = set()
 	skip_files = {ascii_out, pyflakes_out}
-	for root, dirs, files in os.walk(repo_root):
-		dirs[:] = [name for name in dirs if name not in SKIP_DIRS]
-		for name in files:
-			ext = os.path.splitext(name)[1].lower()
-			if ext not in EXTENSIONS:
-				continue
-			path = os.path.join(root, name)
-			if path in skip_files:
-				continue
-			matches.append(path)
+	for path in paths:
+		abs_path = os.path.abspath(path)
+		if abs_path in seen:
+			continue
+		seen.add(abs_path)
+		if abs_path in skip_files:
+			continue
+		rel_path = os.path.relpath(abs_path, repo_root)
+		if rel_path in SKIP_FILES:
+			continue
+		if path_has_skip_dir(repo_root, abs_path):
+			continue
+		if not os.path.isfile(abs_path):
+			continue
+		ext = os.path.splitext(abs_path)[1].lower()
+		if ext not in EXTENSIONS:
+			continue
+		matches.append(abs_path)
 	matches.sort()
 	return matches
+
+
+#============================================
+def gather_changed_files(
+	repo_root: str,
+	ascii_out: str,
+	pyflakes_out: str,
+) -> tuple[list[str], bool]:
+	"""
+	Collect changed files using git diff and untracked lists.
+
+	Args:
+		repo_root: Root path for the repo.
+		ascii_out: Output path to skip.
+		pyflakes_out: Output path to skip.
+
+	Returns:
+		tuple[list[str], bool]: Filtered file list and error flag.
+	"""
+	commands = [
+		["git", "diff", "--name-only", "--diff-filter=ACMRTUXB"],
+		["git", "diff", "--name-only", "--cached", "--diff-filter=ACMRTUXB"],
+	]
+	changed_paths = []
+	for command in commands:
+		result = subprocess.run(
+			command,
+			capture_output=True,
+			text=True,
+			cwd=repo_root,
+		)
+		if result.returncode != 0:
+			message = result.stderr.strip()
+			if not message:
+				message = "Failed to list changed files."
+			print(message, file=sys.stderr)
+			return [], True
+		for line in result.stdout.splitlines():
+			path = line.strip()
+			if not path:
+				continue
+			changed_paths.append(os.path.join(repo_root, path))
+	filtered = filter_files(repo_root, changed_paths, ascii_out, pyflakes_out)
+	return filtered, False
 
 
 #============================================
@@ -249,6 +430,7 @@ def main() -> int:
 	Returns:
 		int: Process exit code.
 	"""
+	args = parse_args()
 	repo_root = find_repo_root()
 	if not repo_root:
 		return 1
@@ -256,42 +438,85 @@ def main() -> int:
 	ascii_out = os.path.join(repo_root, "ascii_compliance.txt")
 	pyflakes_out = os.path.join(repo_root, "pyflakes.txt")
 	script_path = os.path.join(repo_root, "tests", "check_ascii_compliance.py")
+	ascii_tmp_fd, ascii_tmp_path = tempfile.mkstemp(prefix="ascii_compliance_", suffix=".txt")
+	os.close(ascii_tmp_fd)
 
 	if not os.path.isfile(script_path):
 		print(f"Missing script: {script_path}", file=sys.stderr)
+		if os.path.exists(ascii_tmp_path):
+			os.remove(ascii_tmp_path)
 		return 1
 
-	with open(ascii_out, "w", encoding="utf-8"):
+	with open(ascii_tmp_path, "w", encoding="utf-8"):
 		pass
 
-	files = gather_files(repo_root, ascii_out, pyflakes_out)
-	colors = get_progress_colors()
+	scope = resolve_scope(args.scope)
+	if scope == "changed":
+		files, had_error = gather_changed_files(repo_root, ascii_out, pyflakes_out)
+		if had_error:
+			print("Falling back to full scan after git errors.", file=sys.stderr)
+			files, had_error = gather_files(repo_root, ascii_out, pyflakes_out)
+			if had_error:
+				if os.path.exists(ascii_tmp_path):
+					os.remove(ascii_tmp_path)
+				return 1
+	else:
+		files, had_error = gather_files(repo_root, ascii_out, pyflakes_out)
+		if had_error:
+			if os.path.exists(ascii_tmp_path):
+				os.remove(ascii_tmp_path)
+			return 1
+	if not files:
+		print("No files matched the requested scope.")
+		if os.path.exists(ascii_out):
+			os.remove(ascii_out)
+		if os.path.exists(ascii_tmp_path):
+			os.remove(ascii_tmp_path)
+		return 0
 
-	with open(ascii_out, "a", encoding="utf-8") as ascii_handle:
-		for file_path in files:
+	colors = get_progress_colors()
+	progress_every = args.progress_every
+	if progress_every < 1:
+		progress_every = 1
+	progress_enabled = args.progress
+	if progress_enabled:
+		print(f"ascii_compliance: scanning {len(files)} files...", file=sys.stderr)
+
+	with open(ascii_tmp_path, "a", encoding="utf-8") as ascii_handle:
+		for index, file_path in enumerate(files, start=1):
 			status = 0
 			result = subprocess.run(
 				[PYTHON_BIN, script_path, "-i", file_path],
 				stderr=ascii_handle,
 			)
 			status = result.returncode
-			if status == 0:
-				sys.stderr.write(f"{colors['green']}.{colors['reset']}")
-			elif status == 2:
-				sys.stderr.write(f"{colors['yellow']}+{colors['reset']}")
-			else:
-				sys.stderr.write(f"{colors['red']}!{colors['reset']}")
-			sys.stderr.flush()
+			if progress_enabled and (status != 0 or index % progress_every == 0):
+				if status == 0:
+					sys.stderr.write(f"{colors['green']}.{colors['reset']}")
+				elif status == 2:
+					sys.stderr.write(f"{colors['yellow']}+{colors['reset']}")
+				else:
+					sys.stderr.write(f"{colors['red']}!{colors['reset']}")
+				sys.stderr.flush()
 
-	sys.stderr.write("\n")
-	sys.stderr.flush()
+	if progress_enabled:
+		sys.stderr.write("\n")
+		sys.stderr.flush()
 
-	with open(ascii_out, "r", encoding="utf-8") as handle:
+	with open(ascii_tmp_path, "r", encoding="utf-8") as handle:
 		all_lines = [line.rstrip("\n") for line in handle]
 
 	if not all_lines:
+		if os.path.exists(ascii_out):
+			os.remove(ascii_out)
+		if os.path.exists(ascii_tmp_path):
+			os.remove(ascii_tmp_path)
 		print("No errors found!!!")
 		return 0
+
+	if os.path.exists(ascii_out):
+		os.remove(ascii_out)
+	shutil.move(ascii_tmp_path, ascii_out)
 
 	error_lines = [line for line in all_lines if ERROR_RE.search(line)]
 
