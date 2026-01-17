@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-01-17
+- Added `docs/webwork/` as a dedicated place to store WebWork style guides (starting with [docs/webwork/INDEX.md](webwork/INDEX.md)).
+- Added a WeBWorK PG header/tagging style guide: [docs/webwork/WEBWORK_HEADER_STYLE.md](webwork/WEBWORK_HEADER_STYLE.md).
+- Added a PGML-first WeBWorK problem authoring guide: [docs/webwork/WEBWORK_PROBLEM_AUTHOR_GUIDE.md](webwork/WEBWORK_PROBLEM_AUTHOR_GUIDE.md).
+
 ## 2026-01-16
 - Clarified that Python 3.12 is recommended (not required), updated usage/install/authoring examples to avoid hardcoded interpreter paths, switched the ASCII compliance runner to use env Python, documented the preferred shebang in python style guidance, and removed interpreter path references from AGENTS environment notes.
 - Added a minimal Brewfile to capture optional Homebrew dependencies.
