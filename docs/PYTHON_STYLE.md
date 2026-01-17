@@ -125,6 +125,15 @@ debug_mode = os.environ.get("DEBUG_MODE") == "true"
 
 For api keys, mode settings, or temp variables use argparse, config files, or function arguments instead. Rule of thumb: If a variable exists only because the script exists, it does not belong in the environment.
 
+### Shell defaults
+
+When running Python scripts locally, export these to get unbuffered output and to avoid writing `.pyc` / `__pycache__` garbage files (scripts must still work without them):
+
+```bash
+export PYTHONUNBUFFERED=1
+export PYTHONDONTWRITEBYTECODE=1
+```
+
 ## COMMENTING
 
 - Assume all import statements have been made at the top of the script file
