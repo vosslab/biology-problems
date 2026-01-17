@@ -71,18 +71,17 @@ def perl_array(name, groups):
 	"""
 	Convert Python list-of-lists into Perl array syntax.
 	"""
-	lines = []
-	lines.append(f"@{name} = (")
+	text = ""
+	text += f"@{name} = (\n"
 	for group in groups:
-		lines.append("    [")
+		text += "    [\n"
 		for statement in group:
 			safe = escape_perl_string(statement)
-			lines.append(f'      "{safe}",')
-		lines.append("    ],")
-	lines.append(");")
-	lines.append("")
-	perl_text = "\n".join(lines)
-	return perl_text
+			text += f'      "{safe}",\n'
+		text += "    ],\n"
+	text += ");\n"
+	text += "\n"
+	return text
 
 #============================================
 def build_question_text(override_true, override_false):
@@ -162,113 +161,119 @@ def build_pgml_text(yaml_data):
 	perl_true = perl_array("true_groups", true_groups)
 	perl_false = perl_array("false_groups", false_groups)
 
-	lines = []
-	lines.append(header_text.rstrip())
-	lines.append("")
-	lines.append("DOCUMENT();")
-	lines.append("")
-	lines.append("loadMacros(")
-	lines.append('  "PGstandard.pl",')
-	lines.append('  "PGML.pl",')
-	lines.append('  "PGchoicemacros.pl",')
-	lines.append('  "parserRadioButtons.pl",')
-	lines.append('  "PGcourse.pl",')
-	lines.append(");")
-	lines.append("")
-	lines.append("TEXT(beginproblem());")
-	lines.append("$showPartialCorrectAnswers = 1;")
-	lines.append("")
-	lines.append("#==========================================================")
-	lines.append("# AUTO-GENERATED GROUPS FROM YAML")
-	lines.append("#==========================================================")
-	lines.append("")
-	lines.append(perl_true.rstrip())
-	lines.append(perl_false.rstrip())
-	lines.append("")
-	lines.append("#==========================================================")
-	lines.append("# GLOBAL SETTINGS")
-	lines.append("#==========================================================")
-	lines.append("")
-	lines.append(f'$topic = "{escape_perl_string(topic)}";')
-	lines.append('$mode  = list_random("TRUE","FALSE");')
-	lines.append("$num_distractors = 4;")
+	preamble_text = ""
+	preamble_text += header_text.rstrip() + "\n"
+	preamble_text += "\n"
+	preamble_text += "DOCUMENT();\n"
+	preamble_text += "\n"
+	preamble_text += "loadMacros(\n"
+	preamble_text += '  "PGstandard.pl",\n'
+	preamble_text += '  "PGML.pl",\n'
+	preamble_text += '  "PGchoicemacros.pl",\n'
+	preamble_text += '  "parserRadioButtons.pl",\n'
+	preamble_text += '  "PGcourse.pl",\n'
+	preamble_text += ");\n"
+	preamble_text += "\n"
+	preamble_text += "TEXT(beginproblem());\n"
+	preamble_text += "$showPartialCorrectAnswers = 1;\n"
+	preamble_text += "\n"
+
+	setup_text = ""
+	setup_text += "#==========================================================\n"
+	setup_text += "# AUTO-GENERATED GROUPS FROM YAML\n"
+	setup_text += "#==========================================================\n"
+	setup_text += "\n"
+	setup_text += perl_true.rstrip() + "\n"
+	setup_text += perl_false.rstrip() + "\n"
+	setup_text += "\n"
+	setup_text += "#==========================================================\n"
+	setup_text += "# GLOBAL SETTINGS\n"
+	setup_text += "#==========================================================\n"
+	setup_text += "\n"
+	setup_text += f'$topic = "{escape_perl_string(topic)}";\n'
+	setup_text += '$mode  = list_random("TRUE","FALSE");\n'
+	setup_text += "$num_distractors = 4;\n"
 	if question_setup:
-		lines.append(question_setup)
-	lines.append("#==========================================================")
-	lines.append("# SELECT GROUP")
-	lines.append("#==========================================================")
-	lines.append("")
-	lines.append("my (@selected_group, @opposite_groups);")
-	lines.append("")
-	lines.append('if ($mode eq "TRUE") {')
-	lines.append("  $group_index      = random(0, scalar(@true_groups)-1, 1);")
-	lines.append("  @selected_group   = @{ $true_groups[$group_index] };")
-	lines.append("  @opposite_groups  = @false_groups;")
-	lines.append("} else {")
-	lines.append("  $group_index      = random(0, scalar(@false_groups)-1, 1);")
-	lines.append("  @selected_group   = @{ $false_groups[$group_index] };")
-	lines.append("  @opposite_groups  = @true_groups;")
-	lines.append("}")
-	lines.append("")
-	lines.append("#==========================================================")
-	lines.append("# PICK CORRECT + DISTRACTORS")
-	lines.append("#==========================================================")
-	lines.append("")
-	lines.append("$correct = list_random(@selected_group);")
-	lines.append("")
-	lines.append("my @available_group_indices = (0 .. $#opposite_groups);")
-	lines.append("my @selected_distractor_indices = ();")
-	lines.append("")
-	lines.append(
+		setup_text += question_setup + "\n"
+	setup_text += "#==========================================================\n"
+	setup_text += "# SELECT GROUP\n"
+	setup_text += "#==========================================================\n"
+	setup_text += "\n"
+	setup_text += "my (@selected_group, @opposite_groups);\n"
+	setup_text += "\n"
+	setup_text += 'if ($mode eq "TRUE") {\n'
+	setup_text += "  $group_index      = random(0, scalar(@true_groups)-1, 1);\n"
+	setup_text += "  @selected_group   = @{ $true_groups[$group_index] };\n"
+	setup_text += "  @opposite_groups  = @false_groups;\n"
+	setup_text += "} else {\n"
+	setup_text += "  $group_index      = random(0, scalar(@false_groups)-1, 1);\n"
+	setup_text += "  @selected_group   = @{ $false_groups[$group_index] };\n"
+	setup_text += "  @opposite_groups  = @true_groups;\n"
+	setup_text += "}\n"
+	setup_text += "\n"
+	setup_text += "#==========================================================\n"
+	setup_text += "# PICK CORRECT + DISTRACTORS\n"
+	setup_text += "#==========================================================\n"
+	setup_text += "\n"
+	setup_text += "$correct = list_random(@selected_group);\n"
+	setup_text += "\n"
+	setup_text += "my @available_group_indices = (0 .. $#opposite_groups);\n"
+	setup_text += "my @selected_distractor_indices = ();\n"
+	setup_text += "\n"
+	setup_text += (
 		"while (@selected_distractor_indices < $num_distractors "
-		"&& @available_group_indices > 0) {"
+		"&& @available_group_indices > 0) {\n"
 	)
-	lines.append("  my $random_index = random(0, scalar(@available_group_indices)-1, 1);")
-	lines.append(
+	setup_text += "  my $random_index = random(0, scalar(@available_group_indices)-1, 1);\n"
+	setup_text += (
 		"  push @selected_distractor_indices, "
-		"splice(@available_group_indices, $random_index, 1);"
+		"splice(@available_group_indices, $random_index, 1);\n"
 	)
-	lines.append("}")
-	lines.append("")
-	lines.append("@distractors = ();")
-	lines.append("foreach my $group_idx (@selected_distractor_indices) {")
-	lines.append("  my @group = @{ $opposite_groups[$group_idx] };")
-	lines.append("  my $distractor = list_random(@group);")
-	lines.append("  push @distractors, $distractor;")
-	lines.append("}")
-	lines.append("")
-	lines.append("@choices = ($correct, @distractors);")
-	lines.append("")
-	lines.append("#==========================================================")
-	lines.append("# RADIO BUTTONS WITH A/B/C/D/E LABELS")
-	lines.append("#==========================================================")
-	lines.append("")
-	lines.append("$rb = RadioButtons(")
-	lines.append("  [@choices],")
-	lines.append("  $correct,")
-	lines.append("  labels        => ['A','B','C','D','E'],")
-	lines.append("  displayLabels => 1,")
-	lines.append("  randomize     => 1,")
-	lines.append("  separator     => '<div style=\"margin-bottom: 0.7em;\"></div>',")
-	lines.append(");")
-	lines.append("")
-	lines.append("#==========================================================")
-	lines.append("# PGML")
-	lines.append("#==========================================================")
-	lines.append("")
-	lines.append("BEGIN_PGML")
-	lines.append("")
-	lines.append(pgml_question)
-	lines.append("")
-	lines.append("[@ $rb->buttons() @]*")
-	lines.append("")
-	lines.append("END_PGML")
-	lines.append("")
-	lines.append("ANS($rb->cmp());")
-	lines.append("")
-	lines.append("ENDDOCUMENT();")
-	lines.append("")
-	return "\n".join(lines)
+	setup_text += "}\n"
+	setup_text += "\n"
+	setup_text += "@distractors = ();\n"
+	setup_text += "foreach my $group_idx (@selected_distractor_indices) {\n"
+	setup_text += "  my @group = @{ $opposite_groups[$group_idx] };\n"
+	setup_text += "  my $distractor = list_random(@group);\n"
+	setup_text += "  push @distractors, $distractor;\n"
+	setup_text += "}\n"
+	setup_text += "\n"
+	setup_text += "@choices = ($correct, @distractors);\n"
+	setup_text += "\n"
+	setup_text += "#==========================================================\n"
+	setup_text += "# RADIO BUTTONS WITH A/B/C/D/E LABELS\n"
+	setup_text += "#==========================================================\n"
+	setup_text += "\n"
+	setup_text += "$rb = RadioButtons(\n"
+	setup_text += "  [@choices],\n"
+	setup_text += "  $correct,\n"
+	setup_text += "  labels        => ['A','B','C','D','E'],\n"
+	setup_text += "  displayLabels => 1,\n"
+	setup_text += "  randomize     => 1,\n"
+	setup_text += "  separator     => '<div style=\"margin-bottom: 0.7em;\"></div>',\n"
+	setup_text += ");\n"
+	setup_text += "\n"
+
+	statement_text = ""
+	statement_text += "#==========================================================\n"
+	statement_text += "# PGML\n"
+	statement_text += "#==========================================================\n"
+	statement_text += "\n"
+	statement_text += "BEGIN_PGML\n"
+	statement_text += "\n"
+	statement_text += pgml_question + "\n"
+	statement_text += "\n"
+	statement_text += "[@ $rb->buttons() @]*\n"
+	statement_text += "\n"
+	statement_text += "END_PGML\n"
+	statement_text += "\n"
+
+	solution_text = ""
+	solution_text += "ANS($rb->cmp());\n"
+	solution_text += "\n"
+	solution_text += "ENDDOCUMENT();\n"
+	solution_text += "\n"
+	return preamble_text + setup_text + statement_text + solution_text
 
 #============================================
 def main():

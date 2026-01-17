@@ -1,6 +1,8 @@
 # Changelog
 
 ## 2026-01-17
+- Refactored PGML generators to assemble preamble/setup/statement/solution sections in `yaml_match_to_pgml.py` and `yaml_mc_statements_to_pgml.py`.
+- Switched PGML generator output assembly to string concatenation for readability in `yaml_match_to_pgml.py` and `yaml_mc_statements_to_pgml.py`.
 - Updated `problems/multiple_choice_statements/yaml_mc_statements_to_pgml.py` to align with repo Python style and include `PGcourse.pl` in the macro list.
 - Added pytest coverage for PGML generators in `tests/test_pgml_generators.py`.
 - Added `webwork_lib.py` to generate OPL-style PG headers and wired it into matching and multiple-choice PG/PGML generators.

@@ -165,33 +165,33 @@ def render_match_data(match_data):
 	"""
 	Render match data into Perl hash syntax.
 	"""
-	lines = []
-	lines.append("%match_data = (")
+	text = ""
+	text += "%match_data = (\n"
 	for key, values in match_data.items():
 		key_text = escape_perl_single_quoted(key)
-		lines.append(f"  '{key_text}' => [")
+		text += f"  '{key_text}' => [\n"
 		for value in values:
 			value_text = escape_perl_single_quoted(value)
-			lines.append(f"    '{value_text}',")
-		lines.append("  ],")
-	lines.append(");")
-	return lines
+			text += f"    '{value_text}',\n"
+		text += "  ],\n"
+	text += ");\n"
+	return text
 
 #============================================
 def render_exclude_pairs(exclude_pairs):
 	"""
 	Render exclude pairs into Perl array-of-arrays syntax.
 	"""
-	lines = []
 	if len(exclude_pairs) == 0:
-		return lines
-	lines.append("@exclude_pairs = (")
+		return ""
+	text = ""
+	text += "@exclude_pairs = (\n"
 	for left, right in exclude_pairs:
 		left_text = escape_perl_single_quoted(left)
 		right_text = escape_perl_single_quoted(right)
-		lines.append(f"  ['{left_text}', '{right_text}'],")
-	lines.append(");")
-	return lines
+		text += f"  ['{left_text}', '{right_text}'],\n"
+	text += ");\n"
+	return text
 
 #============================================
 def build_pgml_text(yaml_data, num_choices):
@@ -232,193 +232,200 @@ def build_pgml_text(yaml_data, num_choices):
 		default_description=default_description,
 		fallback_keywords=fallback_keywords,
 	)
-	lines = []
-	lines.append(header_text.rstrip())
-	lines.append("")
-	lines.append("DOCUMENT();")
-	lines.append("")
-	lines.append("loadMacros(")
-	lines.append("    'PGstandard.pl',")
-	lines.append("    'PGML.pl',")
-	lines.append("    'PGchoicemacros.pl',")
-	lines.append("    'PGgraders.pl',")
-	lines.append("    'unionTables.pl',")
-	lines.append("    'PGcourse.pl'")
-	lines.append(");")
-	lines.append("")
-	lines.append("# ================================")
-	lines.append("# Full matching data")
-	lines.append("# ================================")
-	lines.extend(render_match_data(match_data))
-	lines.append("")
+
+	preamble_text = ""
+	preamble_text += header_text.rstrip() + "\n"
+	preamble_text += "\n"
+	preamble_text += "DOCUMENT();\n"
+	preamble_text += "\n"
+	preamble_text += "loadMacros(\n"
+	preamble_text += "    'PGstandard.pl',\n"
+	preamble_text += "    'PGML.pl',\n"
+	preamble_text += "    'PGchoicemacros.pl',\n"
+	preamble_text += "    'PGgraders.pl',\n"
+	preamble_text += "    'unionTables.pl',\n"
+	preamble_text += "    'PGcourse.pl'\n"
+	preamble_text += ");\n"
+	preamble_text += "\n"
+
+	setup_text = ""
+	setup_text += "# ================================\n"
+	setup_text += "# Full matching data\n"
+	setup_text += "# ================================\n"
+	setup_text += render_match_data(match_data)
+	setup_text += "\n"
 	if len(exclude_pairs) > 0:
-		lines.append("# -------------------------------")
-		lines.append("# Exclude pairs")
-		lines.append("# -------------------------------")
-		lines.extend(render_exclude_pairs(exclude_pairs))
-		lines.append("")
-	lines.append("# -------------------------------")
-	lines.append("# Select N random terms")
-	lines.append("# -------------------------------")
-	lines.append(f"my $n = {num_choices};")
-	lines.append("@all_terms = keys %match_data;")
-	lines.append("")
+		setup_text += "# -------------------------------\n"
+		setup_text += "# Exclude pairs\n"
+		setup_text += "# -------------------------------\n"
+		setup_text += render_exclude_pairs(exclude_pairs)
+		setup_text += "\n"
+	setup_text += "# -------------------------------\n"
+	setup_text += "# Select N random terms\n"
+	setup_text += "# -------------------------------\n"
+	setup_text += f"my $n = {num_choices};\n"
+	setup_text += "@all_terms = keys %match_data;\n"
+	setup_text += "\n"
 	if len(exclude_pairs) > 0:
-		lines.append("my @selected_terms = ();")
-		lines.append("my $max_tries = 500;")
-		lines.append("my $tries = 0;")
-		lines.append("while (1) {")
-		lines.append("  my @indices = NchooseK(scalar(@all_terms), $n);")
-		lines.append("  @selected_terms = @all_terms[@indices[0..$n-1]];")
-		lines.append("  my $excluded = 0;")
-		lines.append("  foreach my $pair (@exclude_pairs) {")
-		lines.append("    my ($left, $right) = @$pair;")
-		lines.append("    my $has_left = 0;")
-		lines.append("    my $has_right = 0;")
-		lines.append("    foreach my $term (@selected_terms) {")
-		lines.append("      if ($term eq $left) {")
-		lines.append("        $has_left = 1;")
-		lines.append("      }")
-		lines.append("      if ($term eq $right) {")
-		lines.append("        $has_right = 1;")
-		lines.append("      }")
-		lines.append("    }")
-		lines.append("    if ($has_left && $has_right) {")
-		lines.append("      $excluded = 1;")
-		lines.append("      last;")
-		lines.append("    }")
-		lines.append("  }")
-		lines.append("  last if !$excluded;")
-		lines.append("  $tries += 1;")
-		lines.append("  if ($tries > $max_tries) {")
-		lines.append("    die 'Unable to find a non-conflicting set of terms';")
-		lines.append("  }")
-		lines.append("}")
+		setup_text += "my @selected_terms = ();\n"
+		setup_text += "my $max_tries = 500;\n"
+		setup_text += "my $tries = 0;\n"
+		setup_text += "while (1) {\n"
+		setup_text += "  my @indices = NchooseK(scalar(@all_terms), $n);\n"
+		setup_text += "  @selected_terms = @all_terms[@indices[0..$n-1]];\n"
+		setup_text += "  my $excluded = 0;\n"
+		setup_text += "  foreach my $pair (@exclude_pairs) {\n"
+		setup_text += "    my ($left, $right) = @$pair;\n"
+		setup_text += "    my $has_left = 0;\n"
+		setup_text += "    my $has_right = 0;\n"
+		setup_text += "    foreach my $term (@selected_terms) {\n"
+		setup_text += "      if ($term eq $left) {\n"
+		setup_text += "        $has_left = 1;\n"
+		setup_text += "      }\n"
+		setup_text += "      if ($term eq $right) {\n"
+		setup_text += "        $has_right = 1;\n"
+		setup_text += "      }\n"
+		setup_text += "    }\n"
+		setup_text += "    if ($has_left && $has_right) {\n"
+		setup_text += "      $excluded = 1;\n"
+		setup_text += "      last;\n"
+		setup_text += "    }\n"
+		setup_text += "  }\n"
+		setup_text += "  last if !$excluded;\n"
+		setup_text += "  $tries += 1;\n"
+		setup_text += "  if ($tries > $max_tries) {\n"
+		setup_text += "    die 'Unable to find a non-conflicting set of terms';\n"
+		setup_text += "  }\n"
+		setup_text += "}\n"
 	else:
-		lines.append("my @indices = NchooseK(scalar(@all_terms), $n);")
-		lines.append("my @selected_terms = @all_terms[@indices[0..$n-1]];")
-	lines.append("")
-	lines.append("# -------------------------------")
-	lines.append("# Build (Q, A, Q, A, ...) array")
-	lines.append("# -------------------------------")
-	lines.append("@qa_list = ();")
-	lines.append("@indices = ();")
-	lines.append("%answer_map = ();")
-	lines.append("foreach my $term (@selected_terms) {")
-	lines.append("  my $descriptions_ref = $match_data{$term};")
-	lines.append("  my $i = random(0, $#$descriptions_ref, 1);")
-	lines.append("  my $desc = $descriptions_ref->[$i];")
-	lines.append("  push @qa_list, $term, $desc;")
-	lines.append("  push @indices, $i;")
-	lines.append("  $answer_map{$term} = $desc;")
-	lines.append("}")
-	lines.append("")
-	lines.append("# -------------------------------")
-	lines.append("# Create match list")
-	lines.append("# -------------------------------")
-	lines.append("$ml = new_match_list();")
-	lines.append("")
-	lines.append("# -------------------------------")
-	lines.append("# Override question formatting")
-	lines.append("# -------------------------------")
-	lines.append("sub custom_pop_up_list_print_q {")
-	lines.append("    my $self = shift;")
-	lines.append("    my (@questions) = @_;")
-	lines.append("    my @list = @{$self->{ra_pop_up_list}};")
-	lines.append("    my $out = \"\";")
-	lines.append("    if ($main::displayMode =~ /^HTML/) {")
-	lines.append("        my $i = 1;")
-	lines.append("        foreach my $quest (@questions) {")
-	lines.append("            $out .= qq!<div style=\"margin-bottom: 0.75em; white-space: nowrap;\">!")
-	lines.append("                  . qq!<strong>$i.</strong>&nbsp;$quest&nbsp;!")
-	lines.append("                  . pop_up_list(@list)")
-	lines.append("                  . qq!</div>!;")
-	lines.append("            $i++;")
-	lines.append("        }")
-	lines.append("    } else {")
-	lines.append("        return pop_up_list_print_q($self, @questions);")
-	lines.append("    }")
-	lines.append("    return $out;")
-	lines.append("}")
-	lines.append("")
-	lines.append("$ml->rf_print_q(~~&custom_pop_up_list_print_q);")
-	lines.append("")
-	lines.append("# -------------------------------")
-	lines.append("# Override answer formatting")
-	lines.append("# -------------------------------")
-	lines.append("sub my_print_a {")
-	lines.append("  my $self = shift;")
-	lines.append("  my(@array) = @_;")
-	lines.append("  my @alpha = ('A'..'Z', 'AA'..'ZZ');")
-	lines.append("  my $out = \"<BLOCKQUOTE>\";")
-	lines.append("  for my $i (0..$#array) {")
-	lines.append("    my $letter = $alpha[$i];")
-	lines.append("    my $elem = $array[$i];")
-	lines.append("    $out .= \"<div style='margin-bottom: 1em;'><b>$letter.</b> $elem</div>\";")
-	lines.append("  }")
-	lines.append("  $out .= \"</BLOCKQUOTE>\";")
-	lines.append("  return $out;")
-	lines.append("}")
-	lines.append("")
-	lines.append("$ml->rf_print_a(~~&my_print_a);")
-	lines.append("")
-	lines.append("# -------------------------------")
-	lines.append("# Dynamically generate popup choices (A to N)")
-	lines.append("# -------------------------------")
-	lines.append("my @letters = ('A' .. 'Z');")
-	lines.append("my @popup_list = ('No answer', '?');")
-	lines.append("for my $i (0 .. $n - 1) {")
-	lines.append("  push @popup_list, $letters[$i], $letters[$i];")
-	lines.append("}")
-	lines.append("$ml->ra_pop_up_list([@popup_list]);")
-	lines.append("")
-	lines.append("# -------------------------------")
-	lines.append("# Insert generated Q/A pairs")
-	lines.append("# -------------------------------")
-	lines.append("$ml->qa(@qa_list);")
-	lines.append("$ml->choose($n);")
-	lines.append("")
-	lines.append("# -------------------------------")
-	lines.append("# Render the question")
-	lines.append("# -------------------------------")
-	lines.append("BEGIN_PGML")
-	lines.append(question_text)
-	lines.append(note_text)
-	lines.append("")
-	lines.append("[@ ColumnMatchTable($ml) @]***")
-	lines.append("END_PGML")
-	lines.append("")
-	lines.append("# -------------------------------")
-	lines.append("# Dynamic Partial Credit Based on $n")
-	lines.append("# -------------------------------")
-	lines.append("$showPartialCorrectAnswers = 0;")
-	lines.append("my @thresholds;")
-	lines.append("my @scores;")
-	lines.append("for (my $i = 1; $i <= $n; $i++) {")
-	lines.append("  push @thresholds, $i;")
-	lines.append("  push @scores, sprintf(\"%.2f\", $i / $n);")
-	lines.append("}")
-	lines.append("")
-	lines.append("install_problem_grader(~~&custom_problem_grader_fluid);")
-	lines.append("$ENV{grader_numright} = [@thresholds];")
-	lines.append("$ENV{grader_scores}   = [@scores];")
-	lines.append("$ENV{grader_message} = 'You can earn partial credit.';")
-	lines.append("")
-	lines.append("# -------------------------------")
-	lines.append("# Grading")
-	lines.append("# -------------------------------")
-	lines.append("ANS(str_cmp($ml->ra_correct_ans));")
-	lines.append("")
-	lines.append("@correct      = @{ $ml->ra_correct_ans() };")
-	lines.append("$answerstring = join(', ', @correct);")
-	lines.append("")
-	lines.append("BEGIN_PGML_SOLUTION")
-	lines.append("The correct answers are [$answerstring].")
-	lines.append("END_PGML_SOLUTION")
-	lines.append("")
-	lines.append("ENDDOCUMENT();")
-	lines.append("")
-	return "\n".join(lines)
+		setup_text += "my @indices = NchooseK(scalar(@all_terms), $n);\n"
+		setup_text += "my @selected_terms = @all_terms[@indices[0..$n-1]];\n"
+	setup_text += "\n"
+	setup_text += "# -------------------------------\n"
+	setup_text += "# Build (Q, A, Q, A, ...) array\n"
+	setup_text += "# -------------------------------\n"
+	setup_text += "@qa_list = ();\n"
+	setup_text += "@indices = ();\n"
+	setup_text += "%answer_map = ();\n"
+	setup_text += "foreach my $term (@selected_terms) {\n"
+	setup_text += "  my $descriptions_ref = $match_data{$term};\n"
+	setup_text += "  my $i = random(0, $#$descriptions_ref, 1);\n"
+	setup_text += "  my $desc = $descriptions_ref->[$i];\n"
+	setup_text += "  push @qa_list, $term, $desc;\n"
+	setup_text += "  push @indices, $i;\n"
+	setup_text += "  $answer_map{$term} = $desc;\n"
+	setup_text += "}\n"
+	setup_text += "\n"
+	setup_text += "# -------------------------------\n"
+	setup_text += "# Create match list\n"
+	setup_text += "# -------------------------------\n"
+	setup_text += "$ml = new_match_list();\n"
+	setup_text += "\n"
+	setup_text += "# -------------------------------\n"
+	setup_text += "# Override question formatting\n"
+	setup_text += "# -------------------------------\n"
+	setup_text += "sub custom_pop_up_list_print_q {\n"
+	setup_text += "    my $self = shift;\n"
+	setup_text += "    my (@questions) = @_;\n"
+	setup_text += "    my @list = @{$self->{ra_pop_up_list}};\n"
+	setup_text += "    my $out = \"\";\n"
+	setup_text += "    if ($main::displayMode =~ /^HTML/) {\n"
+	setup_text += "        my $i = 1;\n"
+	setup_text += "        foreach my $quest (@questions) {\n"
+	setup_text += "            $out .= qq!<div style=\"margin-bottom: 0.75em; white-space: nowrap;\">!\n"
+	setup_text += "                  . qq!<strong>$i.</strong>&nbsp;$quest&nbsp;!\n"
+	setup_text += "                  . pop_up_list(@list)\n"
+	setup_text += "                  . qq!</div>!;\n"
+	setup_text += "            $i++;\n"
+	setup_text += "        }\n"
+	setup_text += "    } else {\n"
+	setup_text += "        return pop_up_list_print_q($self, @questions);\n"
+	setup_text += "    }\n"
+	setup_text += "    return $out;\n"
+	setup_text += "}\n"
+	setup_text += "\n"
+	setup_text += "$ml->rf_print_q(~~&custom_pop_up_list_print_q);\n"
+	setup_text += "\n"
+	setup_text += "# -------------------------------\n"
+	setup_text += "# Override answer formatting\n"
+	setup_text += "# -------------------------------\n"
+	setup_text += "sub my_print_a {\n"
+	setup_text += "  my $self = shift;\n"
+	setup_text += "  my(@array) = @_;\n"
+	setup_text += "  my @alpha = ('A'..'Z', 'AA'..'ZZ');\n"
+	setup_text += "  my $out = \"<BLOCKQUOTE>\";\n"
+	setup_text += "  for my $i (0..$#array) {\n"
+	setup_text += "    my $letter = $alpha[$i];\n"
+	setup_text += "    my $elem = $array[$i];\n"
+	setup_text += "    $out .= \"<div style='margin-bottom: 1em;'><b>$letter.</b> $elem</div>\";\n"
+	setup_text += "  }\n"
+	setup_text += "  $out .= \"</BLOCKQUOTE>\";\n"
+	setup_text += "  return $out;\n"
+	setup_text += "}\n"
+	setup_text += "\n"
+	setup_text += "$ml->rf_print_a(~~&my_print_a);\n"
+	setup_text += "\n"
+	setup_text += "# -------------------------------\n"
+	setup_text += "# Dynamically generate popup choices (A to N)\n"
+	setup_text += "# -------------------------------\n"
+	setup_text += "my @letters = ('A' .. 'Z');\n"
+	setup_text += "my @popup_list = ('No answer', '?');\n"
+	setup_text += "for my $i (0 .. $n - 1) {\n"
+	setup_text += "  push @popup_list, $letters[$i], $letters[$i];\n"
+	setup_text += "}\n"
+	setup_text += "$ml->ra_pop_up_list([@popup_list]);\n"
+	setup_text += "\n"
+	setup_text += "# -------------------------------\n"
+	setup_text += "# Insert generated Q/A pairs\n"
+	setup_text += "# -------------------------------\n"
+	setup_text += "$ml->qa(@qa_list);\n"
+	setup_text += "$ml->choose($n);\n"
+	setup_text += "\n"
+
+	statement_text = ""
+	statement_text += "# -------------------------------\n"
+	statement_text += "# Render the question\n"
+	statement_text += "# -------------------------------\n"
+	statement_text += "BEGIN_PGML\n"
+	statement_text += question_text + "\n"
+	statement_text += note_text + "\n"
+	statement_text += "\n"
+	statement_text += "[@ ColumnMatchTable($ml) @]***\n"
+	statement_text += "END_PGML\n"
+	statement_text += "\n"
+
+	solution_text = ""
+	solution_text += "# -------------------------------\n"
+	solution_text += "# Dynamic Partial Credit Based on $n\n"
+	solution_text += "# -------------------------------\n"
+	solution_text += "$showPartialCorrectAnswers = 0;\n"
+	solution_text += "my @thresholds;\n"
+	solution_text += "my @scores;\n"
+	solution_text += "for (my $i = 1; $i <= $n; $i++) {\n"
+	solution_text += "  push @thresholds, $i;\n"
+	solution_text += "  push @scores, sprintf(\"%.2f\", $i / $n);\n"
+	solution_text += "}\n"
+	solution_text += "\n"
+	solution_text += "install_problem_grader(~~&custom_problem_grader_fluid);\n"
+	solution_text += "$ENV{grader_numright} = [@thresholds];\n"
+	solution_text += "$ENV{grader_scores}   = [@scores];\n"
+	solution_text += "$ENV{grader_message} = 'You can earn partial credit.';\n"
+	solution_text += "\n"
+	solution_text += "# -------------------------------\n"
+	solution_text += "# Grading\n"
+	solution_text += "# -------------------------------\n"
+	solution_text += "ANS(str_cmp($ml->ra_correct_ans));\n"
+	solution_text += "\n"
+	solution_text += "@correct      = @{ $ml->ra_correct_ans() };\n"
+	solution_text += "$answerstring = join(', ', @correct);\n"
+	solution_text += "\n"
+	solution_text += "BEGIN_PGML_SOLUTION\n"
+	solution_text += "The correct answers are [$answerstring].\n"
+	solution_text += "END_PGML_SOLUTION\n"
+	solution_text += "\n"
+	solution_text += "ENDDOCUMENT();\n"
+	solution_text += "\n"
+	return preamble_text + setup_text + statement_text + solution_text
 
 #============================================
 def main():
