@@ -4,12 +4,12 @@ items to match per question: 4
 
 
 #both singular and plural
-key description: stage in the central dogma of biology
-keys description: stages in the central dogma of biology
+key description: transgene
+keys description: transgenes
 
 #both singular and plural
-value description: concept
-values description: concepts
+value description: description
+values description: descriptions
 
 replacement_rules:
     AAAAAAAA: '<span style="color: #e60000;">AAAAAAAA</span>' #RED
@@ -51,42 +51,38 @@ matching pairs:
     - Enhances water-use efficiency by increasing cellular ion retention
     - Associated with improved phosphorus uptake in plants
 
-    aro A (Glyphosate Resistant)
+  'aro A (Glyphosate Resistant)':
+    - Allows for resistance to glyphosate herbicides
+    - Developed by transferring aro A gene into a glyphosate EPSP synthetase from Salmonella typhimurium and E. coli
 
-Allows for resistance to glyphosate herbicides
-Developed by transferring aro A gene into a glyphosate EPSP synthetase from Salmonella typhimurium and E. coli
-Mutant ALS (Sulphonylurea Resistant)
+  'Mutant ALS (Sulphonylurea Resistant)':
+    - Encodes for a mutant acetolactate synthetase that allows for resistance to Sulphonylurea herbicides
+    - Originates from Arabidopsis
 
-Encodes for a mutant acetolactate synthetase that allows for resistance to Sulphonylurea herbicides
-Originates from Arabidopsis
-QB Protein (Atrazine Resistant)
+  'QB Protein (Atrazine Resistant)':
+    - Derived from mutant Amaranthus hybrids
+    - Produces atrazine-resistant transgenic plants
 
-Derived from mutant Amaranthus hybrids
-Produces atrazine-resistant transgenic plants
-TMV Coat Proteins (Virus Resistant)
+  'TMV Coat Proteins (Virus Resistant)':
+    - Provides resistance against Tobacco Mosaic Virus (TMV)
+    - Developed by introducing viral coat proteins
 
-Provides resistance against Tobacco Mosaic Virus (TMV)
-Developed by introducing viral coat proteins
-Beta-Carotene Genes (Nutritional Benefits)
+  'Beta-Carotene Genes (Nutritional Benefits)':
+    - Increases production of beta-carotene as a precursor to vitamin A
+    - Derived from daffodils and microorganisms
 
-Increases production of beta-carotene as a precursor to vitamin A
-Derived from daffodils and microorganisms
-Salt Tolerance Gene (from Mangroves)
+  'Salt Tolerance Gene (from Mangroves)':
+    - Provides salt tolerance
+    - Derived from Avicennia marina
 
-Provides salt tolerance
-Derived from Avicennia marina
-gut D Gene (Salt Tolerance)
+  'gut D Gene (Salt Tolerance)':
+    - Used to generate salt-tolerant transgenic maize plants
+    - Originates from Escherichia coli
 
-Used to generate salt-tolerant transgenic maize plants
-Originates from Escherichia coli
-Therapeutic Proteins
+  Therapeutic Proteins:
+    - Produces antibodies, proteins, or vaccines for therapeutic use
+    - Could be useful for various diseases ranging from dental caries to certain cancers
 
-Produces antibodies, proteins, or vaccines for therapeutic use
-Could be useful for various diseases ranging from dental caries to certain cancers
-Enhanced Shelf Life Genes
-
-Provides enhanced ability to withstand long-distance transportation
-Allows for longer shelf life of produce
-
-exclude pairs:
-  - [Sunny, Elizabeth]
+  Enhanced Shelf Life Genes:
+    - Provides enhanced ability to withstand long-distance transportation
+    - Allows for longer shelf life of produce

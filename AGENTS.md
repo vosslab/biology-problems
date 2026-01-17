@@ -18,7 +18,7 @@ source REPO_ROOT/source_me.sh
   - `python3 problems/inheritance-problems/<script>.py --help`
   - `python3 problems/biochemistry-problems/<script>.py -m -d 50` (example: generate 50 MC questions)
 - Inspect YAML inputs:
-  - `python3 data/check_yaml.py data/genetic_disorders.yml`
+  - `python3 tools/check_yaml.py data/genetic_disorders.yml`
 
 Generated artifacts (do not commit): `bbq-*.txt`, `qti*.zip`, `selftest-*.html` (see `.gitignore`).
 

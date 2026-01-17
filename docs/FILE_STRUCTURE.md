@@ -93,7 +93,6 @@ Domain-specific helper libraries located within their corresponding `problems/*-
   - `protein_isoelectric_points.csv`: protein pI/MW table.
   - `sugar_codes.yml`: carbohydrate structure codes.
   - `all_short_words.txt`, `enable2k.txt`, `real_wordles.txt`, `SCOWL-words_with_friends-intersection.txt`, `words_with_friends_dictionary.txt`: word lists.
-  - `check_yaml.py`: YAML validation utility.
 - `matching_sets/`: YAML banks and templates for matching questions.
 - `problems/multiple_choice_statements/`: YAML banks and helper scripts for statement-based MC questions.
 - `images/`: static images referenced by HTML question text.
@@ -106,6 +105,7 @@ Domain-specific helper libraries located within their corresponding `problems/*-
 - `audit_problem_scripts_bptools_framework.py`: audits scripts for `bptools.py` framework usage.
 - `build_question_function_index.py`: generates question function index documentation.
 - `build_yaml_question_bank_index.py`: generates YAML question bank index.
+- `check_yaml.py`: YAML validation and pretty-print utility for repo YAML inputs.
 - `commit_changelog.py`: automates changelog commit workflow.
 - `find_all_imports.py`: scans Python imports for dependency audits.
 - `gh-md-toc`: GitHub Markdown table of contents generator.

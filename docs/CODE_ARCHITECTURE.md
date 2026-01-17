@@ -71,7 +71,7 @@ Generators randomize question content using inline logic, external data files, a
   - `tests/libs/`: pytest tests for specific library modules.
   - `tests/yaml/`: YAML data validation tests.
 - Validate changes by running modified scripts and inspecting output formatting.
-- Use `python3 data/check_yaml.py <file.yml>` to validate YAML inputs.
+- Use `python3 tools/check_yaml.py <file.yml>` to validate YAML inputs.
 
 ## Extension points
 

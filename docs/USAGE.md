@@ -9,4 +9,4 @@
 - Most generators support `--help`:
   - `python3 problems/inheritance-problems/<script>.py --help`
 - Inspect YAML inputs:
-  - `python3 data/check_yaml.py data/genetic_disorders.yml`
+  - `python3 tools/check_yaml.py data/genetic_disorders.yml`

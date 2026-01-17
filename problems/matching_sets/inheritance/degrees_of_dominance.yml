@@ -2,44 +2,23 @@
 
 items to match per question: 4
 
-Questions 61-64. Match the following mode of inheritance to the correct numbered description. Letters are used exactly once.
-A. epistasis	B. codominance	C. incomplete dominance	D. complete dominance
-__ 67. heterozygotes equally express both alleles in the phenotype
-__ 68. one allele masks the effect of another allele
-__ 69. one gene suppresses the effect of another gene that is not its allele
-__ 70. heterozygote appearance is blended phenotype of both homozygous phenotypes
-
+#both singular and plural
+key description: inheritance pattern
+keys description: inheritance patterns
 
 #both singular and plural
-key description: stage in the central dogma of biology
-keys description: stages in the central dogma of biology
-
-#both singular and plural
-value description: concept
-values description: concepts
-
-replacement_rules:
-    AAAAAAAA: '<span style="color: #e60000;">AAAAAAAA</span>' #RED
-    BBBBBBBB: '<span style="color: #e65400;">BBBBBBBB</span>' #DARK ORANGE
-    CCCCCCCC: '<span style="color: #e69100;">CCCCCCCC</span>' #LIGHT ORANGE
-    DDDDDDDD: '<span style="color: #b3b300;">DDDDDDDD</span>' #DARK YELLOW
-    EEEEEEEE: '<span style="color: #59b300;">EEEEEEEE</span>' #LIME GREEN
-    FFFFFFFF: '<span style="color: #009900;">FFFFFFFF</span>' #GREEN
-    GGGGGGGG: '<span style="color: #00b38f;">GGGGGGGG</span>' #TEAL
-    HHHHHHHH: '<span style="color: #00b3b3;">HHHHHHHH</span>' #CYAN
-    IIIIIIII: '<span style="color: #0a9bf5;">IIIIIIII</span>' #SKY BLUE
-    JJJJJJJJ: '<span style="color: #0039e6;">JJJJJJJJ</span>' #BLUE
-    KKKKKKKK: '<span style="color: #004d99;">KKKKKKKK</span>' #NAVY
-    LLLLLLLL: '<span style="color: #7b12a1;">LLLLLLLL</span>' #PURPLE
-    MMMMMMMM: '<span style="color: #b30077;">MMMMMMMM</span>' #MAGENTA
-    NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
+value description: definition
+values description: definitions
 
 matching pairs:
-  Elizabeth:
-    - Founder and chief execuitive officer (CEO) of Theranos
+  codominance:
+    - heterozygotes equally express both alleles in the phenotype
 
-  Sunny:
-    - former president and chief operating officer (COO) of Theranos
+  complete dominance:
+    - one allele masks the effect of another allele
 
-exclude pairs:
-  - [Sunny, Elizabeth]
+  epistasis:
+    - one gene suppresses the effect of another gene that is not its allele
+
+  incomplete dominance:
+    - heterozygote appearance is a blended phenotype of both homozygous phenotypes
