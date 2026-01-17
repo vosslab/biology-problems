@@ -4,6 +4,8 @@ import yaml
 import re
 from pathlib import Path
 
+import webwork_lib
+
 def group_statements(block):
     """
     Groups truth1a, truth1b... into:
@@ -65,6 +67,14 @@ def main():
 
     # Extract topic
     topic = data.get("topic", "this topic")
+
+    default_description = f"Select the statement that is TRUE or FALSE about {topic}."
+    fallback_keywords = [topic, "true/false", "multiple choice"]
+    header_text = webwork_lib.build_opl_header(
+        data,
+        default_description=default_description,
+        fallback_keywords=fallback_keywords,
+    )
     
     # Extract override questions (can be None or ~)
     override_true = data.get("override_question_true")
@@ -121,6 +131,8 @@ $question_false = "{override_false_escaped}";
 
     # Full PGML template with override support
     pgml_template = f"""
+{header_text.rstrip()}
+
 DOCUMENT();
 
 loadMacros(

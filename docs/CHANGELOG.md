@@ -1,6 +1,8 @@
 # Changelog
 
 ## 2026-01-17
+- Added `webwork_lib.py` to generate OPL-style PG headers and wired it into matching and multiple-choice PG/PGML generators.
+- Added a full OPL-style header block to `yaml_make_match_pgml.py` output, sourcing optional YAML metadata and generating defaults.
 - Added `problems/matching_sets/yaml_make_match_pgml.py` to generate PGML matching problems from matching-set YAML files.
 - Added `docs/webwork/` as a dedicated place to store WebWork style guides (starting with [docs/webwork/INDEX.md](webwork/INDEX.md)).
 - Added a WeBWorK PG header/tagging style guide: [docs/webwork/WEBWORK_HEADER_STYLE.md](webwork/WEBWORK_HEADER_STYLE.md).

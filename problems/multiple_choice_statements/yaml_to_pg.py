@@ -2,6 +2,8 @@
 import os, yaml, random, argparse, re
 from typing import Dict, List, Tuple
 
+import webwork_lib
+
 _fam_re = re.compile(r'^(truth|false)\s*(\d+)[a-z]?$')
 
 PG_HEADER_MULTI = r"""DOCUMENT();
@@ -156,8 +158,16 @@ def mc_part_block(idx, prompt, choices, correct_text):
     lines.append("")
     return "\n".join(lines)
 
-def single_question_pg(prompt: str, choices: List[str], correct_text: str) -> str:
-    return "\n".join([PG_HEADER_SINGLE, mc_part_block(1, prompt, choices, correct_text), PG_FOOTER])
+def single_question_pg(prompt: str,
+                       choices: List[str],
+                       correct_text: str,
+                       header_text: str = "") -> str:
+    return "\n".join([
+        header_text.rstrip(),
+        PG_HEADER_SINGLE,
+        mc_part_block(1, prompt, choices, correct_text),
+        PG_FOOTER
+    ]).lstrip()
 
 def pick_distractors_from_opposite_pool(opposite_by_family: Dict[int, List[str]],
                                         avoid_family: int,
@@ -256,10 +266,12 @@ def build_every_statement_items(data: dict,
 
     return items
 
-def write_pg_multi(out_path: str, items, limit=None) -> int:
+def write_pg_multi(out_path: str, items, limit=None, header_text: str = "") -> int:
     if limit is not None:
         items = items[:limit]
     with open(out_path, "w", encoding="utf-8") as f:
+        if header_text:
+            f.write(header_text.rstrip() + "\n")
         f.write(PG_HEADER_MULTI + "\n")
         for i, (prompt, choices, correct) in enumerate(items, start=1):
             f.write(mc_part_block(i, prompt, choices, correct) + "\n")
@@ -273,12 +285,15 @@ def write_pg_multi(out_path: str, items, limit=None) -> int:
     return len(items)
 
 
-def write_pg_one_per_file(base_out: str, items: List[Tuple[str, List[str], str]], limit: int = None) -> int:
+def write_pg_one_per_file(base_out: str,
+                          items: List[Tuple[str, List[str], str]],
+                          limit: int = None,
+                          header_text: str = "") -> int:
     if limit is not None:
         items = items[:limit]
     count = 0
     for i, (prompt, choices, correct) in enumerate(items, start=1):
-        pg_text = single_question_pg(prompt, choices, correct)
+        pg_text = single_question_pg(prompt, choices, correct, header_text=header_text)
         out_path = f"{base_out}_q{i:03d}.pg"
         with open(out_path, "w", encoding="utf-8") as f:
             f.write(pg_text)
@@ -297,17 +312,35 @@ def main():
     args = parse_args()
     rng = random.Random(args.seed)
     data = load_yaml(args.input_yaml)
+    topic = data.get("topic", "this topic")
+    default_description = f"Select the statement that is TRUE or FALSE about {topic}."
+    fallback_keywords = [topic, "true/false", "multiple choice"]
+    header_text = webwork_lib.build_opl_header(
+        data,
+        default_description=default_description,
+        fallback_keywords=fallback_keywords,
+    )
 
     # ALWAYS 5 choices per question by design
     items = build_every_statement_items(data, rng, choices_per_q=5)
 
     base = os.path.splitext(args.input_yaml)[0]
     if args.one_per_file:
-        written = write_pg_one_per_file(base, items, limit=args.limit)
+        written = write_pg_one_per_file(
+            base,
+            items,
+            limit=args.limit,
+            header_text=header_text,
+        )
         print(f"Wrote {written} files like {base}_q001.pg, {base}_q002.pg, ...")
     else:
         out_path = base + ".pg"
-        written = write_pg_multi(out_path, items, limit=args.limit)
+        written = write_pg_multi(
+            out_path,
+            items,
+            limit=args.limit,
+            header_text=header_text,
+        )
         print(f"Wrote {written} sub-questions to {out_path}")
 
 if __name__ == "__main__":

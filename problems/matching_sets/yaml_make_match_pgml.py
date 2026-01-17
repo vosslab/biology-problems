@@ -7,9 +7,9 @@ Generate a PGML matching problem from a matching-set YAML file.
 import argparse
 import os
 import random
-import re
 
 import bptools
+import webwork_lib
 
 #============================================
 def parse_args():
@@ -48,107 +48,6 @@ def escape_perl_single_quoted(text_string):
 	return text_string
 
 #============================================
-def sanitize_header_text(text_string):
-	"""
-	Sanitize header text to plain ASCII without HTML tags.
-	"""
-	if not isinstance(text_string, str):
-		raise TypeError(f"value is not string: {text_string}")
-	text_string = re.sub(r'<[^>]+>', '', text_string)
-	text_string = text_string.replace("\r", " ")
-	text_string = text_string.replace("\n", " ")
-	text_string = " ".join(text_string.split())
-	text_string = text_string.encode("ascii", "ignore").decode("ascii")
-	return text_string
-
-#============================================
-def normalize_keywords(raw_keywords):
-	"""
-	Normalize keywords to a list of strings.
-	"""
-	if raw_keywords is None:
-		return []
-	if isinstance(raw_keywords, list):
-		keywords = raw_keywords
-	elif isinstance(raw_keywords, str):
-		if "," in raw_keywords:
-			keywords = [item.strip() for item in raw_keywords.split(",")]
-		else:
-			keywords = [raw_keywords.strip()]
-	else:
-		raise TypeError("keywords must be a list or string")
-	normalized = []
-	for keyword in keywords:
-		if not keyword:
-			continue
-		if not isinstance(keyword, str):
-			raise TypeError(f"keyword is not string: {keyword}")
-		normalized.append(keyword)
-	return normalized
-
-#============================================
-def build_header_lines(yaml_data):
-	"""
-	Build a complete OPL-style header block.
-	"""
-	description_text = yaml_data.get('description')
-	if description_text is None:
-		keys_description = yaml_data.get('keys description', '')
-		values_description = yaml_data.get('values description', '')
-		description_text = (
-			f"Match each of the following {keys_description} "
-			f"with their corresponding {values_description}."
-		)
-	description_text = sanitize_header_text(description_text)
-
-	keywords = normalize_keywords(yaml_data.get('keywords'))
-	if len(keywords) == 0:
-		for candidate in [
-			yaml_data.get('topic'),
-			yaml_data.get('keys description'),
-			yaml_data.get('values description'),
-		]:
-			if candidate:
-				keywords.append(candidate)
-	keywords = [sanitize_header_text(keyword) for keyword in keywords if keyword]
-
-	dbsubject = sanitize_header_text(str(yaml_data.get('dbsubject', '')))
-	dbchapter = sanitize_header_text(str(yaml_data.get('dbchapter', '')))
-	dbsection = sanitize_header_text(str(yaml_data.get('dbsection', '')))
-	date_text = sanitize_header_text(str(yaml_data.get('date', '')))
-	author_text = sanitize_header_text(str(yaml_data.get('author', '')))
-	institution_text = sanitize_header_text(str(yaml_data.get('institution', '')))
-	title_text = sanitize_header_text(str(yaml_data.get('titletext1', '')))
-	edition_text = sanitize_header_text(str(yaml_data.get('editiontext1', '')))
-	author_text_1 = sanitize_header_text(str(yaml_data.get('authortext1', '')))
-	section_text = sanitize_header_text(str(yaml_data.get('section1', '')))
-	problem_text = sanitize_header_text(str(yaml_data.get('problem1', '')))
-
-	header_lines = []
-	header_lines.append("## DESCRIPTION")
-	header_lines.append(f"## {description_text}")
-	header_lines.append("## ENDDESCRIPTION")
-	if len(keywords) == 0:
-		header_lines.append("## KEYWORDS('')")
-	else:
-		escaped_keywords = []
-		for keyword in keywords:
-			escaped_keywords.append(escape_perl_single_quoted(keyword))
-		keyword_blob = "','".join(escaped_keywords)
-		header_lines.append(f"## KEYWORDS('{keyword_blob}')")
-	header_lines.append(f"## DBsubject('{escape_perl_single_quoted(dbsubject)}')")
-	header_lines.append(f"## DBchapter('{escape_perl_single_quoted(dbchapter)}')")
-	header_lines.append(f"## DBsection('{escape_perl_single_quoted(dbsection)}')")
-	header_lines.append(f"## Date('{escape_perl_single_quoted(date_text)}')")
-	header_lines.append(f"## Author('{escape_perl_single_quoted(author_text)}')")
-	header_lines.append(f"## Institution('{escape_perl_single_quoted(institution_text)}')")
-	header_lines.append(f"## TitleText1('{escape_perl_single_quoted(title_text)}')")
-	header_lines.append(f"## EditionText1('{escape_perl_single_quoted(edition_text)}')")
-	header_lines.append(f"## AuthorText1('{escape_perl_single_quoted(author_text_1)}')")
-	header_lines.append(f"## Section1('{escape_perl_single_quoted(section_text)}')")
-	header_lines.append(f"## Problem1('{escape_perl_single_quoted(problem_text)}')")
-	return header_lines
-
 #============================================
 def normalize_key(raw_key):
 	"""
@@ -315,8 +214,26 @@ def build_pgml_text(yaml_data, num_choices):
 
 	question_text, note_text = build_question_text(yaml_data, replacement_rules)
 
+	default_description = None
+	if yaml_data.get('description') is None:
+		keys_description = yaml_data.get('keys description', '')
+		values_description = yaml_data.get('values description', '')
+		default_description = (
+			f"Match each of the following {keys_description} "
+			f"with their corresponding {values_description}."
+		)
+	fallback_keywords = [
+		yaml_data.get('topic'),
+		yaml_data.get('keys description'),
+		yaml_data.get('values description'),
+	]
+	header_text = webwork_lib.build_opl_header(
+		yaml_data,
+		default_description=default_description,
+		fallback_keywords=fallback_keywords,
+	)
 	lines = []
-	lines.extend(build_header_lines(yaml_data))
+	lines.append(header_text.rstrip())
 	lines.append("")
 	lines.append("DOCUMENT();")
 	lines.append("")
