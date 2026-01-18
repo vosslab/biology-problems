@@ -1,15 +1,6 @@
 #!/usr/bin/env python3
 
-import importlib.util
-import pathlib
-
-
-REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
-LIB_PATH = REPO_ROOT / "webwork_lib.py"
-spec = importlib.util.spec_from_file_location("webwork_lib", LIB_PATH)
-webwork_lib = importlib.util.module_from_spec(spec)
-assert spec.loader is not None
-spec.loader.exec_module(webwork_lib)
+import webwork_lib
 
 
 #============================================

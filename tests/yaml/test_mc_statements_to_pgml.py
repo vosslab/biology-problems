@@ -1,15 +1,6 @@
 #!/usr/bin/env python3
 
-import importlib.util
-import pathlib
-
-
-REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
-LIB_PATH = REPO_ROOT / "tests" / "lib_test_utils.py"
-spec = importlib.util.spec_from_file_location("lib_test_utils", LIB_PATH)
-lib_test_utils = importlib.util.module_from_spec(spec)
-assert spec.loader is not None
-spec.loader.exec_module(lib_test_utils)
+import lib_test_utils
 
 
 #============================================

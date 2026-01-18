@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-01-18
+- Updated YAML PGML tests to import helpers and `webwork_lib` via the existing `tests/conftest.py` path setup, avoiding hardcoded `tests/tests` paths.
+- Fixed the PGML matching test to monkeypatch the `bptools` stub so it no longer leaks into unrelated YAML tests.
+- Added a `stub_bptools` fixture in `tests/conftest.py` and switched the matching PGML test to use it.
+
 ## 2026-01-17
 - Removed `tests/yaml/test_multiple_choice_statements_yml_to_pgml.py` now that coverage lives in dedicated PGML/webwork tests.
 - Removed tests tied to the deleted `yaml_to_pg.py` generator and updated the PGML YAML tests to target `yaml_mc_statements_to_pgml.py` and `webwork_lib.py`.
