@@ -7,6 +7,7 @@ Repo-wide conventions for this project and related repos.
 - Create topic folders only when a collection needs grouping.
 - Avoid deep nesting; keep paths short.
 - Keep `README.md` and `AGENTS.md` at the repo root.
+- Determine REPO_ROOT with `git rev-parse --show-toplevel`, not by deriving paths from the current working directory.
 
 ## Naming
 - Use SCREAMING_SNAKE_CASE for Markdown docs filenames, with the .md extension

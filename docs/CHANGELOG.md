@@ -5,6 +5,7 @@
 - Fixed the PGML matching test to monkeypatch the `bptools` stub so it no longer leaks into unrelated YAML tests.
 - Added a `stub_bptools` fixture in `tests/conftest.py` and switched the matching PGML test to use it.
 - Removed the temporary repo-hygiene fixtures from `tests/conftest.py` and made the ASCII/pyflakes tests read repo root and env flags directly.
+- Resolved `REPO_ROOT` in `tests/conftest.py` using `git rev-parse --show-toplevel` instead of a path relative to the tests directory.
 
 ## 2026-01-17
 - Removed `tests/yaml/test_multiple_choice_statements_yml_to_pgml.py` now that coverage lives in dedicated PGML/webwork tests.

@@ -2,6 +2,7 @@
 
 import importlib.util
 import os
+import subprocess
 import sys
 import tempfile
 import types
@@ -9,7 +10,23 @@ import types
 import pytest
 
 
-REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+#============================================
+def _resolve_repo_root() -> str:
+	result = subprocess.run(
+		["git", "rev-parse", "--show-toplevel"],
+		capture_output=True,
+		text=True,
+		cwd=os.path.dirname(__file__),
+	)
+	if result.returncode != 0:
+		message = result.stderr.strip()
+		if not message:
+			message = "Unable to resolve repo root via git."
+		raise RuntimeError(message)
+	return result.stdout.strip()
+
+
+REPO_ROOT = _resolve_repo_root()
 if REPO_ROOT not in sys.path:
 	sys.path.insert(0, REPO_ROOT)
 
