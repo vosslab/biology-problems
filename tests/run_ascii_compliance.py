@@ -131,7 +131,20 @@ def parse_args() -> argparse.Namespace:
 		default="",
 		help="Scope to scan (all or changed).",
 	)
+	parser.add_argument(
+		"-f", "--fix",
+		dest="apply_fix",
+		action="store_true",
+		help="Apply fixes to non-compliant files.",
+	)
+	parser.add_argument(
+		"-n", "--no-fix",
+		dest="apply_fix",
+		action="store_false",
+		help="Do not apply fixes to non-compliant files.",
+	)
 	parser.set_defaults(progress=True)
+	parser.set_defaults(apply_fix=True)
 	args = parser.parse_args()
 	return args
 
@@ -438,11 +451,17 @@ def main() -> int:
 	ascii_out = os.path.join(repo_root, "ascii_compliance.txt")
 	pyflakes_out = os.path.join(repo_root, "pyflakes.txt")
 	script_path = os.path.join(repo_root, "tests", "check_ascii_compliance.py")
+	fix_script_path = os.path.join(repo_root, "tests", "fix_ascii_compliance.py")
 	ascii_tmp_fd, ascii_tmp_path = tempfile.mkstemp(prefix="ascii_compliance_", suffix=".txt")
 	os.close(ascii_tmp_fd)
 
 	if not os.path.isfile(script_path):
 		print(f"Missing script: {script_path}", file=sys.stderr)
+		if os.path.exists(ascii_tmp_path):
+			os.remove(ascii_tmp_path)
+		return 1
+	if args.apply_fix and not os.path.isfile(fix_script_path):
+		print(f"Missing script: {fix_script_path}", file=sys.stderr)
 		if os.path.exists(ascii_tmp_path):
 			os.remove(ascii_tmp_path)
 		return 1
@@ -485,11 +504,24 @@ def main() -> int:
 	with open(ascii_tmp_path, "a", encoding="utf-8") as ascii_handle:
 		for index, file_path in enumerate(files, start=1):
 			status = 0
-			result = subprocess.run(
-				[PYTHON_BIN, script_path, "-i", file_path],
-				stderr=ascii_handle,
-			)
-			status = result.returncode
+			if args.apply_fix:
+				result = subprocess.run(
+					[PYTHON_BIN, script_path, "-i", file_path],
+					stderr=subprocess.DEVNULL,
+				)
+				status = result.returncode
+				if status == 1:
+					fix_result = subprocess.run(
+						[PYTHON_BIN, fix_script_path, "-i", file_path],
+						stderr=ascii_handle,
+					)
+					status = fix_result.returncode
+			else:
+				result = subprocess.run(
+					[PYTHON_BIN, script_path, "-i", file_path],
+					stderr=ascii_handle,
+				)
+				status = result.returncode
 			if progress_enabled and (status != 0 or index % progress_every == 0):
 				if status == 0:
 					sys.stderr.write(f"{colors['green']}.{colors['reset']}")

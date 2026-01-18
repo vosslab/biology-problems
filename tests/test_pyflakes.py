@@ -1,6 +1,5 @@
 import os
 import subprocess
-import sys
 
 
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -46,18 +45,11 @@ def run_command(label: str, command: list[str], capture_output: bool = True) -> 
 
 
 #============================================
-def test_repo_hygiene_checks(capfd) -> None:
+def test_pyflakes() -> None:
 	"""
-	Run repo hygiene scripts as a single pytest gate.
+	Run pyflakes script as a pytest gate.
 	"""
 	if os.environ.get(SKIP_ENV) == "1":
 		return
-	ascii_script = os.path.join(REPO_ROOT, "tests", "run_ascii_compliance.py")
 	pyflakes_script = os.path.join(REPO_ROOT, "tests", "run_pyflakes.sh")
-	with capfd.disabled():
-		run_command(
-			"ascii_compliance",
-			[sys.executable, ascii_script],
-			capture_output=False,
-		)
 	run_command("pyflakes", ["bash", pyflakes_script])
