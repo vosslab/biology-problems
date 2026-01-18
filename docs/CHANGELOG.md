@@ -1,10 +1,17 @@
 # Changelog
 
 ## 2026-01-17
+- Expanded pytest coverage for `escape_perl_string` in `tests/test_webwork_lib.py`.
+- Optimized `escape_perl_string()` with a fast no-op path and clarified non-idempotent behavior in its docstring.
+- Inlined Perl string quoting inside `perl_literal()` and removed the separate `perl_quoted()` helper.
+- Simplified override handling in `yaml_mc_statements_to_pgml.py` to always render a single ternary PGML line.
+- Added `escape_perl_string` in `webwork_lib.py` to normalize newlines for Perl single-quoted strings and reused it for overrides.
+- Tightened override handling in `yaml_mc_statements_to_pgml.py` to treat empty strings as overrides and to normalize newlines in override strings.
+- Added `escape_perl_string`, `perl_array`, and `perl_hash` helpers to `webwork_lib.py` and split PGML assembly into preamble/setup/statement/solution helper functions.
 - Refactored PGML generators to assemble preamble/setup/statement/solution sections in `yaml_match_to_pgml.py` and `yaml_mc_statements_to_pgml.py`.
 - Switched PGML generator output assembly to string concatenation for readability in `yaml_match_to_pgml.py` and `yaml_mc_statements_to_pgml.py`.
 - Updated `problems/multiple_choice_statements/yaml_mc_statements_to_pgml.py` to align with repo Python style and include `PGcourse.pl` in the macro list.
-- Added pytest coverage for PGML generators in `tests/test_pgml_generators.py`.
+- Split PGML generator tests into `tests/test_webwork_lib.py`, `tests/test_match_to_pgml.py`, and `tests/test_mc_statements_to_pgml.py`.
 - Added `webwork_lib.py` to generate OPL-style PG headers and wired it into matching and multiple-choice PG/PGML generators.
 - Added a full OPL-style header block to `yaml_make_match_pgml.py` output, sourcing optional YAML metadata and generating defaults.
 - Added `problems/matching_sets/yaml_make_match_pgml.py` to generate PGML matching problems from matching-set YAML files.

@@ -17,15 +17,107 @@ def get_yaml_value(yaml_data, *keys):
 	return None
 
 #============================================
-def escape_perl_single_quoted(text_string):
+def escape_perl_string(text_string):
 	"""
-	Escape text for a Perl single-quoted string.
+	Escape text for a Perl single-quoted string and normalize newlines.
+
+	Notes:
+	- Safe optimization: early return if no escaping is needed.
+	- This function is intentionally not idempotent. Call it once on raw text.
 	"""
+	if text_string is None:
+		return ""
 	if not isinstance(text_string, str):
 		raise TypeError(f"value is not string: {text_string}")
+
+	if ("\\" not in text_string
+		and "'" not in text_string
+		and "\r" not in text_string
+		and "\n" not in text_string):
+		return text_string
+
+	text_string = text_string.replace("\r\n", "\n")
+	text_string = text_string.replace("\r", "\n")
 	text_string = text_string.replace("\\", "\\\\")
 	text_string = text_string.replace("'", "\\'")
+	text_string = text_string.replace("\n", "\\n")
 	return text_string
+
+def perl_literal(value, indent=""):
+	"""
+	Convert a Python value to a Perl literal string.
+	"""
+	if isinstance(value, dict):
+		return perl_hash_ref(value, indent)
+	if isinstance(value, (list, tuple)):
+		return perl_array_ref(value, indent)
+	if isinstance(value, bool):
+		return "1" if value else "0"
+	if value is None:
+		return "''"
+	if isinstance(value, (int, float)):
+		return str(value)
+	if isinstance(value, str):
+		return "'" + escape_perl_string(value) + "'"
+	raise TypeError(f"unsupported perl literal type: {type(value)}")
+
+#============================================
+def perl_array_ref(values, indent=""):
+	"""
+	Convert a list/tuple into a Perl array reference.
+	"""
+	if len(values) == 0:
+		return "[]"
+	inner_indent = indent + "  "
+	lines = ["["]
+	for item in values:
+		lines.append(f"{inner_indent}{perl_literal(item, inner_indent)},")
+	lines.append(f"{indent}]")
+	return "\n".join(lines)
+
+#============================================
+def perl_hash_ref(mapping, indent=""):
+	"""
+	Convert a dict into a Perl hash reference.
+	"""
+	if len(mapping) == 0:
+		return "{}"
+	inner_indent = indent + "  "
+	lines = ["{"]
+	for key, value in mapping.items():
+		key_text = escape_perl_string(str(key))
+		value_text = perl_literal(value, inner_indent)
+		lines.append(f"{inner_indent}'{key_text}' => {value_text},")
+	lines.append(f"{indent}}}")
+	return "\n".join(lines)
+
+#============================================
+def perl_array(name, values):
+	"""
+	Convert a list/tuple into a Perl array assignment.
+	"""
+	text = ""
+	text += f"@{name} = (\n"
+	for item in values:
+		text += f"  {perl_literal(item, '  ')},\n"
+	text += ");\n"
+	text += "\n"
+	return text
+
+#============================================
+def perl_hash(name, mapping):
+	"""
+	Convert a dict into a Perl hash assignment.
+	"""
+	text = ""
+	text += f"%{name} = (\n"
+	for key, value in mapping.items():
+		key_text = escape_perl_string(str(key))
+		value_text = perl_literal(value, "  ")
+		text += f"  '{key_text}' => {value_text},\n"
+	text += ");\n"
+	text += "\n"
+	return text
 
 #============================================
 def sanitize_header_text(text_string):
@@ -106,20 +198,20 @@ def build_opl_header_lines(yaml_data, default_description=None, fallback_keyword
 	else:
 		escaped_keywords = []
 		for keyword in keywords:
-			escaped_keywords.append(escape_perl_single_quoted(keyword))
+			escaped_keywords.append(escape_perl_string(keyword))
 		keyword_blob = "','".join(escaped_keywords)
-		header_lines.append(f"## KEYWORDS('{keyword_blob}')")
-	header_lines.append(f"## DBsubject('{escape_perl_single_quoted(dbsubject)}')")
-	header_lines.append(f"## DBchapter('{escape_perl_single_quoted(dbchapter)}')")
-	header_lines.append(f"## DBsection('{escape_perl_single_quoted(dbsection)}')")
-	header_lines.append(f"## Date('{escape_perl_single_quoted(date_text)}')")
-	header_lines.append(f"## Author('{escape_perl_single_quoted(author_text)}')")
-	header_lines.append(f"## Institution('{escape_perl_single_quoted(institution_text)}')")
-	header_lines.append(f"## TitleText1('{escape_perl_single_quoted(title_text)}')")
-	header_lines.append(f"## EditionText1('{escape_perl_single_quoted(edition_text)}')")
-	header_lines.append(f"## AuthorText1('{escape_perl_single_quoted(author_text_1)}')")
-	header_lines.append(f"## Section1('{escape_perl_single_quoted(section_text)}')")
-	header_lines.append(f"## Problem1('{escape_perl_single_quoted(problem_text)}')")
+	header_lines.append(f"## KEYWORDS('{keyword_blob}')")
+	header_lines.append(f"## DBsubject('{escape_perl_string(dbsubject)}')")
+	header_lines.append(f"## DBchapter('{escape_perl_string(dbchapter)}')")
+	header_lines.append(f"## DBsection('{escape_perl_string(dbsection)}')")
+	header_lines.append(f"## Date('{escape_perl_string(date_text)}')")
+	header_lines.append(f"## Author('{escape_perl_string(author_text)}')")
+	header_lines.append(f"## Institution('{escape_perl_string(institution_text)}')")
+	header_lines.append(f"## TitleText1('{escape_perl_string(title_text)}')")
+	header_lines.append(f"## EditionText1('{escape_perl_string(edition_text)}')")
+	header_lines.append(f"## AuthorText1('{escape_perl_string(author_text_1)}')")
+	header_lines.append(f"## Section1('{escape_perl_string(section_text)}')")
+	header_lines.append(f"## Problem1('{escape_perl_string(problem_text)}')")
 	return header_lines
 
 #============================================

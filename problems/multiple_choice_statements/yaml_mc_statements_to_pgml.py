@@ -54,80 +54,175 @@ def group_statements(block):
 	return grouped_list
 
 #============================================
-def escape_perl_string(text_string):
+def build_question_text(override_true, override_false):
 	"""
-	Escape a string for use in Perl double quotes.
+	Build the question setup block and PGML question line.
 	"""
-	if text_string is None:
-		return ""
-	text_string = text_string.replace('\\', '\\\\')
-	text_string = text_string.replace('"', '\\"')
-	text_string = text_string.replace('$', '\\$')
-	text_string = text_string.replace('@', '\\@')
-	return text_string
+	has_true_override = override_true is not None
+	has_false_override = override_false is not None
+
+	default_true = (
+		"Which one of the following statements is "
+		"<strong>TRUE</strong> about $topic?"
+	)
+	default_false = (
+		"Which one of the following statements is "
+		"<strong>FALSE</strong> about $topic?"
+	)
+
+	question_setup_lines = []
+	if has_true_override:
+		question_setup_lines.append("# Question text with TRUE override")
+		escaped_true = webwork_lib.escape_perl_string(override_true)
+		question_setup_lines.append(f"$question_true = '{escaped_true}';")
+
+	if has_false_override:
+		question_setup_lines.append("# Question text with FALSE override")
+		escaped_false = webwork_lib.escape_perl_string(override_false)
+		question_setup_lines.append(f"$question_false = '{escaped_false}';")
+
+	true_expr = "$question_true" if has_true_override else f'"{default_true}"'
+	false_expr = "$question_false" if has_false_override else f'"{default_false}"'
+	pgml_question = f'[@ $mode eq "TRUE" ? {true_expr} : {false_expr} @]*'
+	question_setup = "\n".join(question_setup_lines)
+	return question_setup, pgml_question
 
 #============================================
-def perl_array(name, groups):
+def build_preamble_text(header_text):
 	"""
-	Convert Python list-of-lists into Perl array syntax.
+	Build the PGML preamble text.
 	"""
 	text = ""
-	text += f"@{name} = (\n"
-	for group in groups:
-		text += "    [\n"
-		for statement in group:
-			safe = escape_perl_string(statement)
-			text += f'      "{safe}",\n'
-		text += "    ],\n"
+	text += header_text.rstrip() + "\n"
+	text += "\n"
+	text += "DOCUMENT();\n"
+	text += "\n"
+	text += "loadMacros(\n"
+	text += '  "PGstandard.pl",\n'
+	text += '  "PGML.pl",\n'
+	text += '  "PGchoicemacros.pl",\n'
+	text += '  "parserRadioButtons.pl",\n'
+	text += '  "PGcourse.pl",\n'
+	text += ");\n"
+	text += "\n"
+	text += "TEXT(beginproblem());\n"
+	text += "$showPartialCorrectAnswers = 1;\n"
+	text += "\n"
+	return text
+
+#============================================
+def build_setup_text(perl_true, perl_false, topic, question_setup):
+	"""
+	Build the PGML setup text.
+	"""
+	text = ""
+	text += "#==========================================================\n"
+	text += "# AUTO-GENERATED GROUPS FROM YAML\n"
+	text += "#==========================================================\n"
+	text += "\n"
+	text += perl_true.rstrip() + "\n"
+	text += perl_false.rstrip() + "\n"
+	text += "\n"
+	text += "#==========================================================\n"
+	text += "# GLOBAL SETTINGS\n"
+	text += "#==========================================================\n"
+	text += "\n"
+	text += f"$topic = '{webwork_lib.escape_perl_string(topic)}';\n"
+	text += '$mode  = list_random("TRUE","FALSE");\n'
+	text += "$num_distractors = 4;\n"
+	if question_setup:
+		text += question_setup + "\n"
+	text += "#==========================================================\n"
+	text += "# SELECT GROUP\n"
+	text += "#==========================================================\n"
+	text += "\n"
+	text += "my (@selected_group, @opposite_groups);\n"
+	text += "\n"
+	text += 'if ($mode eq "TRUE") {\n'
+	text += "  $group_index      = random(0, scalar(@true_groups)-1, 1);\n"
+	text += "  @selected_group   = @{ $true_groups[$group_index] };\n"
+	text += "  @opposite_groups  = @false_groups;\n"
+	text += "} else {\n"
+	text += "  $group_index      = random(0, scalar(@false_groups)-1, 1);\n"
+	text += "  @selected_group   = @{ $false_groups[$group_index] };\n"
+	text += "  @opposite_groups  = @true_groups;\n"
+	text += "}\n"
+	text += "\n"
+	text += "#==========================================================\n"
+	text += "# PICK CORRECT + DISTRACTORS\n"
+	text += "#==========================================================\n"
+	text += "\n"
+	text += "$correct = list_random(@selected_group);\n"
+	text += "\n"
+	text += "my @available_group_indices = (0 .. $#opposite_groups);\n"
+	text += "my @selected_distractor_indices = ();\n"
+	text += "\n"
+	text += (
+		"while (@selected_distractor_indices < $num_distractors "
+		"&& @available_group_indices > 0) {\n"
+	)
+	text += "  my $random_index = random(0, scalar(@available_group_indices)-1, 1);\n"
+	text += (
+		"  push @selected_distractor_indices, "
+		"splice(@available_group_indices, $random_index, 1);\n"
+	)
+	text += "}\n"
+	text += "\n"
+	text += "@distractors = ();\n"
+	text += "foreach my $group_idx (@selected_distractor_indices) {\n"
+	text += "  my @group = @{ $opposite_groups[$group_idx] };\n"
+	text += "  my $distractor = list_random(@group);\n"
+	text += "  push @distractors, $distractor;\n"
+	text += "}\n"
+	text += "\n"
+	text += "@choices = ($correct, @distractors);\n"
+	text += "\n"
+	text += "#==========================================================\n"
+	text += "# RADIO BUTTONS WITH A/B/C/D/E LABELS\n"
+	text += "#==========================================================\n"
+	text += "\n"
+	text += "$rb = RadioButtons(\n"
+	text += "  [@choices],\n"
+	text += "  $correct,\n"
+	text += "  labels        => ['A','B','C','D','E'],\n"
+	text += "  displayLabels => 1,\n"
+	text += "  randomize     => 1,\n"
+	text += "  separator     => '<div style=\"margin-bottom: 0.7em;\"></div>',\n"
 	text += ");\n"
 	text += "\n"
 	return text
 
 #============================================
-def build_question_text(override_true, override_false):
+def build_statement_text(pgml_question):
 	"""
-	Build the question setup block and PGML question line.
+	Build the PGML statement text.
 	"""
-	question_setup_lines = []
-	if override_true or override_false:
-		if override_true and override_false:
-			question_setup_lines.append("# Question text with overrides")
-			question_setup_lines.append(
-				f'$question_true = "{escape_perl_string(override_true)}";'
-			)
-			question_setup_lines.append(
-				f'$question_false = "{escape_perl_string(override_false)}";'
-			)
-			pgml_question = (
-				'[@ $mode eq "TRUE" ? $question_true : $question_false @]*'
-			)
-		elif override_true:
-			question_setup_lines.append("# Question text with TRUE override")
-			question_setup_lines.append(
-				f'$question_true = "{escape_perl_string(override_true)}";'
-			)
-			pgml_question = (
-				'[@ $mode eq "TRUE" ? $question_true : '
-				'"Which one of the following statements is '
-				'<strong>FALSE</strong> about $topic?" @]*'
-			)
-		else:
-			question_setup_lines.append("# Question text with FALSE override")
-			question_setup_lines.append(
-				f'$question_false = "{escape_perl_string(override_false)}";'
-			)
-			pgml_question = (
-				'[@ $mode eq "TRUE" ? '
-				'"Which one of the following statements is '
-				'<strong>TRUE</strong> about $topic?" : $question_false @]*'
-			)
-	else:
-		pgml_question = (
-			'[@ "Which one of the following statements is '
-			'<strong>$mode</strong> about $topic?" @]*'
-		)
-	question_setup = "\n".join(question_setup_lines)
-	return question_setup, pgml_question
+	text = ""
+	text += "#==========================================================\n"
+	text += "# PGML\n"
+	text += "#==========================================================\n"
+	text += "\n"
+	text += "BEGIN_PGML\n"
+	text += "\n"
+	text += pgml_question + "\n"
+	text += "\n"
+	text += "[@ $rb->buttons() @]*\n"
+	text += "\n"
+	text += "END_PGML\n"
+	text += "\n"
+	return text
+
+#============================================
+def build_solution_text():
+	"""
+	Build the PGML solution text.
+	"""
+	text = ""
+	text += "ANS($rb->cmp());\n"
+	text += "\n"
+	text += "ENDDOCUMENT();\n"
+	text += "\n"
+	return text
 
 #============================================
 def build_pgml_text(yaml_data):
@@ -158,121 +253,18 @@ def build_pgml_text(yaml_data):
 	true_groups = group_statements(true_block)
 	false_groups = group_statements(false_block)
 
-	perl_true = perl_array("true_groups", true_groups)
-	perl_false = perl_array("false_groups", false_groups)
+	perl_true = webwork_lib.perl_array("true_groups", true_groups)
+	perl_false = webwork_lib.perl_array("false_groups", false_groups)
 
-	preamble_text = ""
-	preamble_text += header_text.rstrip() + "\n"
-	preamble_text += "\n"
-	preamble_text += "DOCUMENT();\n"
-	preamble_text += "\n"
-	preamble_text += "loadMacros(\n"
-	preamble_text += '  "PGstandard.pl",\n'
-	preamble_text += '  "PGML.pl",\n'
-	preamble_text += '  "PGchoicemacros.pl",\n'
-	preamble_text += '  "parserRadioButtons.pl",\n'
-	preamble_text += '  "PGcourse.pl",\n'
-	preamble_text += ");\n"
-	preamble_text += "\n"
-	preamble_text += "TEXT(beginproblem());\n"
-	preamble_text += "$showPartialCorrectAnswers = 1;\n"
-	preamble_text += "\n"
-
-	setup_text = ""
-	setup_text += "#==========================================================\n"
-	setup_text += "# AUTO-GENERATED GROUPS FROM YAML\n"
-	setup_text += "#==========================================================\n"
-	setup_text += "\n"
-	setup_text += perl_true.rstrip() + "\n"
-	setup_text += perl_false.rstrip() + "\n"
-	setup_text += "\n"
-	setup_text += "#==========================================================\n"
-	setup_text += "# GLOBAL SETTINGS\n"
-	setup_text += "#==========================================================\n"
-	setup_text += "\n"
-	setup_text += f'$topic = "{escape_perl_string(topic)}";\n'
-	setup_text += '$mode  = list_random("TRUE","FALSE");\n'
-	setup_text += "$num_distractors = 4;\n"
-	if question_setup:
-		setup_text += question_setup + "\n"
-	setup_text += "#==========================================================\n"
-	setup_text += "# SELECT GROUP\n"
-	setup_text += "#==========================================================\n"
-	setup_text += "\n"
-	setup_text += "my (@selected_group, @opposite_groups);\n"
-	setup_text += "\n"
-	setup_text += 'if ($mode eq "TRUE") {\n'
-	setup_text += "  $group_index      = random(0, scalar(@true_groups)-1, 1);\n"
-	setup_text += "  @selected_group   = @{ $true_groups[$group_index] };\n"
-	setup_text += "  @opposite_groups  = @false_groups;\n"
-	setup_text += "} else {\n"
-	setup_text += "  $group_index      = random(0, scalar(@false_groups)-1, 1);\n"
-	setup_text += "  @selected_group   = @{ $false_groups[$group_index] };\n"
-	setup_text += "  @opposite_groups  = @true_groups;\n"
-	setup_text += "}\n"
-	setup_text += "\n"
-	setup_text += "#==========================================================\n"
-	setup_text += "# PICK CORRECT + DISTRACTORS\n"
-	setup_text += "#==========================================================\n"
-	setup_text += "\n"
-	setup_text += "$correct = list_random(@selected_group);\n"
-	setup_text += "\n"
-	setup_text += "my @available_group_indices = (0 .. $#opposite_groups);\n"
-	setup_text += "my @selected_distractor_indices = ();\n"
-	setup_text += "\n"
-	setup_text += (
-		"while (@selected_distractor_indices < $num_distractors "
-		"&& @available_group_indices > 0) {\n"
+	preamble_text = build_preamble_text(header_text)
+	setup_text = build_setup_text(
+		perl_true,
+		perl_false,
+		topic,
+		question_setup,
 	)
-	setup_text += "  my $random_index = random(0, scalar(@available_group_indices)-1, 1);\n"
-	setup_text += (
-		"  push @selected_distractor_indices, "
-		"splice(@available_group_indices, $random_index, 1);\n"
-	)
-	setup_text += "}\n"
-	setup_text += "\n"
-	setup_text += "@distractors = ();\n"
-	setup_text += "foreach my $group_idx (@selected_distractor_indices) {\n"
-	setup_text += "  my @group = @{ $opposite_groups[$group_idx] };\n"
-	setup_text += "  my $distractor = list_random(@group);\n"
-	setup_text += "  push @distractors, $distractor;\n"
-	setup_text += "}\n"
-	setup_text += "\n"
-	setup_text += "@choices = ($correct, @distractors);\n"
-	setup_text += "\n"
-	setup_text += "#==========================================================\n"
-	setup_text += "# RADIO BUTTONS WITH A/B/C/D/E LABELS\n"
-	setup_text += "#==========================================================\n"
-	setup_text += "\n"
-	setup_text += "$rb = RadioButtons(\n"
-	setup_text += "  [@choices],\n"
-	setup_text += "  $correct,\n"
-	setup_text += "  labels        => ['A','B','C','D','E'],\n"
-	setup_text += "  displayLabels => 1,\n"
-	setup_text += "  randomize     => 1,\n"
-	setup_text += "  separator     => '<div style=\"margin-bottom: 0.7em;\"></div>',\n"
-	setup_text += ");\n"
-	setup_text += "\n"
-
-	statement_text = ""
-	statement_text += "#==========================================================\n"
-	statement_text += "# PGML\n"
-	statement_text += "#==========================================================\n"
-	statement_text += "\n"
-	statement_text += "BEGIN_PGML\n"
-	statement_text += "\n"
-	statement_text += pgml_question + "\n"
-	statement_text += "\n"
-	statement_text += "[@ $rb->buttons() @]*\n"
-	statement_text += "\n"
-	statement_text += "END_PGML\n"
-	statement_text += "\n"
-
-	solution_text = ""
-	solution_text += "ANS($rb->cmp());\n"
-	solution_text += "\n"
-	solution_text += "ENDDOCUMENT();\n"
-	solution_text += "\n"
+	statement_text = build_statement_text(pgml_question)
+	solution_text = build_solution_text()
 	return preamble_text + setup_text + statement_text + solution_text
 
 #============================================
