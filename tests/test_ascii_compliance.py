@@ -8,6 +8,8 @@ import sys
 
 SCOPE_ENV = "REPO_HYGIENE_SCOPE"
 FAST_ENV = "FAST_REPO_HYGIENE"
+SKIP_ENV = "SKIP_REPO_HYGIENE"
+REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 ERROR_RE = re.compile(r":[0-9]+:[0-9]+:")
 CODEPOINT_RE = re.compile(r"non-ISO-8859-1 character U\+([0-9A-Fa-f]{4,6})")
 ERROR_SAMPLE_COUNT = 5
@@ -88,6 +90,14 @@ def resolve_scope() -> str:
 	if scope in ("all", "changed"):
 		return scope
 	return "all"
+
+
+#============================================
+def resolve_fix(pytestconfig) -> bool:
+	"""
+	Resolve whether fixes should be applied.
+	"""
+	return not pytestconfig.getoption("no_ascii_fix", default=False)
 
 
 #============================================
@@ -348,15 +358,15 @@ def scan_file(
 
 
 #============================================
-def test_ascii_compliance(repo_root, skip_repo_hygiene, ascii_fix_enabled) -> None:
+def test_ascii_compliance(pytestconfig) -> None:
 	"""
 	Run ASCII compliance checks across the repo.
 	"""
-	if skip_repo_hygiene:
+	if os.environ.get(SKIP_ENV) == "1":
 		return
 
-	check_path = os.path.join(repo_root, "tests", "check_ascii_compliance.py")
-	fix_path = os.path.join(repo_root, "tests", "fix_ascii_compliance.py")
+	check_path = os.path.join(REPO_ROOT, "tests", "check_ascii_compliance.py")
+	fix_path = os.path.join(REPO_ROOT, "tests", "fix_ascii_compliance.py")
 	if not os.path.isfile(check_path):
 		raise AssertionError(f"Missing script: {check_path}")
 	if not os.path.isfile(fix_path):
@@ -367,11 +377,11 @@ def test_ascii_compliance(repo_root, skip_repo_hygiene, ascii_fix_enabled) -> No
 
 	scope = resolve_scope()
 	if scope == "changed":
-		files = gather_changed_files(repo_root)
+		files = gather_changed_files(REPO_ROOT)
 	else:
-		files = gather_files(repo_root)
+		files = gather_files(REPO_ROOT)
 
-	ascii_out = os.path.join(repo_root, "ascii_compliance.txt")
+	ascii_out = os.path.join(REPO_ROOT, "ascii_compliance.txt")
 	if not files:
 		if os.path.exists(ascii_out):
 			os.remove(ascii_out)
@@ -379,7 +389,7 @@ def test_ascii_compliance(repo_root, skip_repo_hygiene, ascii_fix_enabled) -> No
 		print("No errors found!!!")
 		return
 
-	apply_fix = ascii_fix_enabled
+	apply_fix = resolve_fix(pytestconfig)
 	progress_enabled = sys.stderr.isatty()
 	if progress_enabled:
 		print(f"ascii_compliance: scanning {len(files)} files...", file=sys.stderr)
@@ -450,7 +460,7 @@ def test_ascii_compliance(repo_root, skip_repo_hygiene, ascii_fix_enabled) -> No
 		print(f"Files with errors ({error_file_count})")
 		for path in error_files:
 			count = file_counts.get(path, 0)
-			print(f"{os.path.relpath(path, repo_root)}: {count}")
+			print(f"{os.path.relpath(path, REPO_ROOT)}: {count}")
 		print("")
 	else:
 		print(f"Files with errors: {error_file_count}")
@@ -459,7 +469,7 @@ def test_ascii_compliance(repo_root, skip_repo_hygiene, ascii_fix_enabled) -> No
 			print("")
 			print("Top 5 files by error count")
 			for path, count in top_files:
-				display_path = os.path.relpath(path, repo_root)
+				display_path = os.path.relpath(path, REPO_ROOT)
 				print(f"{display_path}: {count}")
 	top_codepoints = top_items(codepoint_counts, ERROR_SAMPLE_COUNT)
 	if top_codepoints:

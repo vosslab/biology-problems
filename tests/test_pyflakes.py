@@ -7,6 +7,8 @@ import subprocess
 
 SCOPE_ENV = "REPO_HYGIENE_SCOPE"
 FAST_ENV = "FAST_REPO_HYGIENE"
+SKIP_ENV = "SKIP_REPO_HYGIENE"
+REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 ERROR_RE = re.compile(r":[0-9]+:[0-9]+:")
 ERROR_SAMPLE_COUNT = 5
 SMALL_LIMIT = 20
@@ -253,20 +255,20 @@ def run_pyflakes(repo_root: str, files: list[str]) -> list[str]:
 
 
 #============================================
-def test_pyflakes(repo_root, skip_repo_hygiene) -> None:
+def test_pyflakes() -> None:
 	"""
 	Run pyflakes across the repo.
 	"""
-	if skip_repo_hygiene:
+	if os.environ.get(SKIP_ENV) == "1":
 		return
 
 	scope = resolve_scope()
 	if scope == "changed":
-		files = gather_changed_files(repo_root)
+		files = gather_changed_files(REPO_ROOT)
 	else:
-		files = gather_files(repo_root)
+		files = gather_files(REPO_ROOT)
 
-	pyflakes_out = os.path.join(repo_root, "pyflakes.txt")
+	pyflakes_out = os.path.join(REPO_ROOT, "pyflakes.txt")
 	if not files:
 		if os.path.exists(pyflakes_out):
 			os.remove(pyflakes_out)
@@ -275,7 +277,7 @@ def test_pyflakes(repo_root, skip_repo_hygiene) -> None:
 		return
 
 	print(f"pyflakes: scanning {len(files)} files...")
-	lines = run_pyflakes(repo_root, files)
+	lines = run_pyflakes(REPO_ROOT, files)
 	result_count = len(lines)
 
 	if result_count == 0:

@@ -37,33 +37,6 @@ def _ensure_qti_package_maker_on_path():
 _ensure_qti_package_maker_on_path()
 
 
-def _env_truthy(name: str) -> bool:
-	value = os.environ.get(name, "").strip().lower()
-	return value in {"1", "true", "yes", "on"}
-
-
-@pytest.fixture
-def repo_root():
-	return REPO_ROOT
-
-
-@pytest.fixture
-def skip_repo_hygiene():
-	return (
-		_env_truthy("SKIP_REPO_HYGIENE")
-		or _env_truthy("SKIP_REPO_HYGIENE_TESTS")
-	)
-
-
-@pytest.fixture
-def ascii_fix_enabled():
-	return (
-		_env_truthy("ASCII_FIX")
-		or _env_truthy("ASCII_FIX_ENABLED")
-		or _env_truthy("REPO_HYGIENE_FIX")
-	)
-
-
 @pytest.fixture
 def stub_bptools(monkeypatch):
 	"""
