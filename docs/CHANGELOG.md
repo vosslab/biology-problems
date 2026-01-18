@@ -1,6 +1,8 @@
 # Changelog
 
 ## 2026-01-17
+- Removed `tests/yaml/test_multiple_choice_statements_yml_to_pgml.py` now that coverage lives in dedicated PGML/webwork tests.
+- Removed tests tied to the deleted `yaml_to_pg.py` generator and updated the PGML YAML tests to target `yaml_mc_statements_to_pgml.py` and `webwork_lib.py`.
 - Expanded pytest coverage for `escape_perl_string` in `tests/test_webwork_lib.py`.
 - Optimized `escape_perl_string()` with a fast no-op path and clarified non-idempotent behavior in its docstring.
 - Inlined Perl string quoting inside `perl_literal()` and removed the separate `perl_quoted()` helper.
