@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """
 Shared helpers for generating WeBWorK PG/PGML files.
 """
