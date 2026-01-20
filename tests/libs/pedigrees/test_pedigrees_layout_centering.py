@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 
 """Tests for pedigree layout centering and validation.
 

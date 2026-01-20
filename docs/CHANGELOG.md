@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-01-20
+- Removed shebang lines from pytest test modules so they are run via pytest instead of as standalone scripts.
+- Modernized `tools/find_all_imports.py` to follow repo Python style guidance, add argparse, and write to `pip_requirements.txt` by default.
+
 ## 2026-01-18
 - Updated YAML PGML tests to import helpers and `webwork_lib` via the existing `tests/conftest.py` path setup, avoiding hardcoded `tests/tests` paths.
 - Fixed the PGML matching test to monkeypatch the `bptools` stub so it no longer leaks into unrelated YAML tests.

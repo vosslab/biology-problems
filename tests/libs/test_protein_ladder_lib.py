@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 
 import bptools
 from lib_test_utils import import_from_repo_path
