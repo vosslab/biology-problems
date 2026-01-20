@@ -12,7 +12,7 @@ Repo-wide conventions for this project and related repos.
 ## Naming
 - Use SCREAMING_SNAKE_CASE for Markdown docs filenames, with the .md extension
 - For non-Markdown filenames, use only lowercase ASCII letters, numbers, and underscores.
-- Prefer snake_case for most filenames. Avoid CamelCase in filenames. 
+- Prefer snake_case for most filenames. Avoid CamelCase in filenames.
 - Use underscores between words and avoid spaces.
 - Use `.md` for docs, `.sh` for shell, `.py` for Python.
 - Keep filenames descriptive, and consistent with the primary thing the file provides.
@@ -49,7 +49,7 @@ Repo-wide conventions for this project and related repos.
 - For smoke tests, reuse stable output folder names (for example `output_smoke/`) instead of creating one-off output directory names; reusing/overwriting avoids repeated delete-approval prompts.
 
 ## Dependency manifests
-- Store Python dependencies in `pip_requirements.txt` at the repo root. 
+- Store Python standard dependencies in `pip_requirements.txt` at the repo root and developer dependencies, e.g., pytest in `pip_requirements-dev.txt`.
 - Use `pip_requirements.txt` not `requirements.txt` for clarity reasons
 - Store Homebrew packages in `Brewfile` at the repo root.
 - Use per-subproject manifests only when a subfolder is a standalone project.

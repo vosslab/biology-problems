@@ -4,6 +4,7 @@ import re
 import shutil
 import subprocess
 
+import git_file_utils
 
 SCOPE_ENV = "REPO_HYGIENE_SCOPE"
 FAST_ENV = "FAST_REPO_HYGIENE"
@@ -70,21 +71,12 @@ def gather_files(repo_root: str) -> list[str]:
 	"""
 	Collect tracked Python files.
 	"""
-	result = subprocess.run(
-		["git", "ls-files", "-z", "--", "*.py"],
-		capture_output=True,
-		text=True,
-		cwd=repo_root,
-	)
-	if result.returncode != 0:
-		message = result.stderr.strip()
-		if not message:
-			message = "Failed to list tracked Python files."
-		raise AssertionError(message)
 	paths = []
-	for path in result.stdout.split("\0"):
-		if not path:
-			continue
+	for path in git_file_utils.list_tracked_files(
+		repo_root,
+		patterns=["*.py"],
+		error_message="Failed to list tracked Python files.",
+	):
 		paths.append(os.path.join(repo_root, path))
 	return filter_py_files(paths)
 
@@ -94,27 +86,9 @@ def gather_changed_files(repo_root: str) -> list[str]:
 	"""
 	Collect changed Python files.
 	"""
-	commands = [
-		["git", "diff", "--name-only", "--diff-filter=ACMRTUXB", "-z"],
-		["git", "diff", "--name-only", "--cached", "--diff-filter=ACMRTUXB", "-z"],
-	]
 	paths = []
-	for command in commands:
-		result = subprocess.run(
-			command,
-			capture_output=True,
-			text=True,
-			cwd=repo_root,
-		)
-		if result.returncode != 0:
-			message = result.stderr.strip()
-			if not message:
-				message = "Failed to list changed files."
-			raise AssertionError(message)
-		for path in result.stdout.split("\0"):
-			if not path:
-				continue
-			paths.append(os.path.join(repo_root, path))
+	for path in git_file_utils.list_changed_files(repo_root):
+		paths.append(os.path.join(repo_root, path))
 	return filter_py_files(paths)
 
 
@@ -262,16 +236,18 @@ def test_pyflakes() -> None:
 	if os.environ.get(SKIP_ENV) == "1":
 		return
 
+	# Delete old report file before running
+	pyflakes_out = os.path.join(REPO_ROOT, "report_pyflakes.txt")
+	if os.path.exists(pyflakes_out):
+		os.remove(pyflakes_out)
+
 	scope = resolve_scope()
 	if scope == "changed":
 		files = gather_changed_files(REPO_ROOT)
 	else:
 		files = gather_files(REPO_ROOT)
 
-	pyflakes_out = os.path.join(REPO_ROOT, "pyflakes.txt")
 	if not files:
-		if os.path.exists(pyflakes_out):
-			os.remove(pyflakes_out)
 		print(f"pyflakes: no Python files matched scope {scope}.")
 		print("No errors found!!!")
 		return
@@ -281,8 +257,6 @@ def test_pyflakes() -> None:
 	result_count = len(lines)
 
 	if result_count == 0:
-		if os.path.exists(pyflakes_out):
-			os.remove(pyflakes_out)
 		print("No errors found!!!")
 		return
 
@@ -299,7 +273,7 @@ def test_pyflakes() -> None:
 			print(shorten_paths(line))
 		print("-------------------------")
 		print("")
-		print(f"Found {result_count} pyflakes errors written to REPO_ROOT/pyflakes.txt")
+		print(f"Found {result_count} pyflakes errors written to REPO_ROOT/report_pyflakes.txt")
 		raise AssertionError("Pyflakes errors detected.")
 
 	print("")
@@ -338,5 +312,5 @@ def test_pyflakes() -> None:
 	print("-------------------------")
 	print("")
 
-	print(f"Found {result_count} pyflakes errors written to REPO_ROOT/pyflakes.txt")
+	print(f"Found {result_count} pyflakes errors written to REPO_ROOT/report_pyflakes.txt")
 	raise AssertionError("Pyflakes errors detected.")

@@ -834,7 +834,7 @@
   [problems/dna_profiling-problems/hla_genotype.py](problems/dna_profiling-problems/hla_genotype.py),
   [problems/biochemistry-problems/PUBCHEM/polypeptide_mc_sequence.py](problems/biochemistry-problems/PUBCHEM/polypeptide_mc_sequence.py).
 - Removed non-generator utilities from the phase-1 upgrade list and tracked them
-  as utilities instead: 
+  as utilities instead:
   [problems/inheritance-problems/pedigrees/pedigree_code_templates.py](problems/inheritance-problems/pedigrees/pedigree_code_templates.py),
   [problems/inheritance-problems/population_logistic_map_chaos.py](problems/inheritance-problems/population_logistic_map_chaos.py).
 - Updated biostatistics box plot generators to use Tukey hinges, allow ties, and

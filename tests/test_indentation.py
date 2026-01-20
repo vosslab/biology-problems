@@ -1,7 +1,7 @@
-import subprocess
 import pathlib
 import tokenize
 
+import git_file_utils
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
 
@@ -14,18 +14,12 @@ def list_tracked_python_files() -> list[pathlib.Path]:
 	Returns:
 		list[pathlib.Path]: Absolute paths to tracked .py files.
 	"""
-	result = subprocess.run(
-		["git", "-C", str(REPO_ROOT), "ls-files", "--", "*.py"],
-		capture_output=True,
-		text=True,
-	)
-	if result.returncode != 0:
-		message = result.stderr.strip() or "Failed to list tracked Python files."
-		raise RuntimeError(message)
 	paths: list[pathlib.Path] = []
-	for line in result.stdout.splitlines():
-		if not line:
-			continue
+	for line in git_file_utils.list_tracked_files(
+		str(REPO_ROOT),
+		patterns=["*.py"],
+		error_message="Failed to list tracked Python files.",
+	):
 		if line.startswith("old_shell_folder/"):
 			continue
 		path = REPO_ROOT / line
