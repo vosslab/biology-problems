@@ -6,6 +6,7 @@
 - Removed shebangs from listed problem and library modules that do not define a `__main__` entrypoint.
 - Added Bandit confidence-level filtering at medium in the repo hygiene test.
 - Replaced xml.etree usage with lxml.etree in treelib and genemap HTML validation helpers.
+- Resolved Bandit findings by avoiding hardcoded temp paths in `tests/test_bptools.py` and marking SHA1 as non-security usage in `tests/test_lib_imports.py`.
 
 ## 2026-01-18
 - Updated YAML PGML tests to import helpers and `webwork_lib` via the existing `tests/conftest.py` path setup, avoiding hardcoded `tests/tests` paths.

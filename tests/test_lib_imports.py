@@ -31,7 +31,7 @@ def _module_name_for_path(path: str) -> str:
 	root = _repo_root()
 	rel = os.path.relpath(path, root)
 	key = rel.encode("utf-8", errors="strict")
-	short_hash = hashlib.sha1(key).hexdigest()[:10]
+	short_hash = hashlib.sha1(key, usedforsecurity=False).hexdigest()[:10]
 	safe = rel.replace(os.sep, "_").replace("-", "_").replace(".", "_")
 	return f"bp_lib_{safe}_{short_hash}"
 
