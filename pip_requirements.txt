@@ -3,6 +3,7 @@ bs4
 classic_phylolib
 crcmod
 importlib_metadata
+lxml
 matplotlib
 numpy
 pillow
@@ -12,3 +13,4 @@ rdkit
 requests
 scipy
 tabulate
+
