@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 
 CHROMOSOME_LENGTHS = {
 	1: (125, 124),

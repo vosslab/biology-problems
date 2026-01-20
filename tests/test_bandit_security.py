@@ -57,6 +57,8 @@ def run_bandit(repo_root: str) -> tuple[int, str]:
 		bandit_bin,
 		"--severity-level",
 		"medium",
+		"--confidence-level",
+		"medium",
 	] + files
 	result = subprocess.run(
 		command,

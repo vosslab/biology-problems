@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 
 import make_html_box_plot
 
