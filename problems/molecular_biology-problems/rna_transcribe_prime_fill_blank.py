@@ -7,7 +7,7 @@ import bptools
 def write_question(N, args):
 	#============================
 	seq = seqlib.makeSequence(args.sequence_len)
-	
+
 	#============================
 	question = "<p>What is the transcribed RNA sequence to the "
 	if random.random() < 0.5:
@@ -32,9 +32,9 @@ def write_question(N, args):
 	answer2c = "5'-{0}-3'".format(answer1c)
 	answer3 = "5&prime;-{0}-3&prime;".format(answer1)
 	answer3c = "5&prime;-{0}-3&prime;".format(answer1c)
-	
+
 	answers_list = [answer1, answer2, answer1c, answer2c, answer3, answer3c]
-	
+
 	question = bptools.formatBB_FIB_Question(N, question, answers_list)
 	return question
 

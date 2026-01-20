@@ -171,7 +171,7 @@ class GelMigration(object):
 		high_dist = self.molecular_weight_to_distance(high_mw)
 		#30-70%
 		adj_rand = random.random()*0.4 + 0.3
-		
+
 		unknown_dist = adj_rand*(high_dist - low_dist) + low_dist
 		unknown_mw = self.distance_to_molecular_weight(unknown_dist)
 

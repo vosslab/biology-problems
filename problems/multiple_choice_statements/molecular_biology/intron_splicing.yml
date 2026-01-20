@@ -81,7 +81,7 @@ false_statements:
    false7a: group I introns are never self-splicing
    false7b: group II introns are always self-splicing
    false7c: group II introns are never self-splicing
-   
+
    false8a: group I introns use a phosphoester transfer mechanism, while group II introns do not
    false8b: group II introns use a phosphoester transfer mechanism, while group I introns do not
 

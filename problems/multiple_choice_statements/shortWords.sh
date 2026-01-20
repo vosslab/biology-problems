@@ -14,7 +14,7 @@ process_file() {
     while read -r line; do
         # Convert the line to lowercase
         line=$(echo "$line" | tr '[:upper:]' '[:lower:]')
-        
+
         # Remove all non-letter characters from the line
         line=$(echo "$line" | sed 's/[^a-zA-Z ]//g')
 

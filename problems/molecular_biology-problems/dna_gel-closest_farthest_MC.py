@@ -62,12 +62,12 @@ def write_question(N, args):
 	else:
 		type_text = type2
 		correct_id = 0
-	
+
 	question = (
 		"Which one of the following fragments of DNA would "
 		+ "{0} the wells during agarose gel electrophoresis?".format(type_text)
 	)
-	
+
 	bands = getDNA_Bands()
 	#print(bands)
 	correct_band = bands[correct_id]
@@ -95,4 +95,4 @@ def main():
 #==================================================
 if __name__ == '__main__':
 	main()
-	
+

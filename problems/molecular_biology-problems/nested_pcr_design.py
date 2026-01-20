@@ -34,26 +34,26 @@ def BIG_Table(sequence_tuple):
 def getPrimerChoices(top_sequence, primer_len):
 	bottom_sequence = seqlib.complement(top_sequence)
 	primer_set = []
-	
+
 	primer = top_sequence[:primer_len]
-	primer_set.append(primer) 
-	primer_set.append(seqlib.flip(primer)) 
+	primer_set.append(primer)
+	primer_set.append(seqlib.flip(primer))
 	answer1 = primer
 
 	primer = bottom_sequence[:primer_len]
 	primer_set.append(primer)
 	primer_set.append(seqlib.flip(primer)) #answer1
-	
+
 	primer = top_sequence[-primer_len:]
 	primer_set.append(primer)
 	primer_set.append(seqlib.flip(primer))
-	
+
 	primer = bottom_sequence[-primer_len:]
-	primer_set.append(primer)  
+	primer_set.append(primer)
 	primer_set.append(seqlib.flip(primer)) #answer2
 	answer2 = seqlib.flip(primer)
 
-	
+
 	answer_set = [answer1, answer2]
 	for ans in answer_set:
 		for nt in list('ACGT'):
@@ -83,7 +83,7 @@ def getSequence(sequence_len, round1_primer_len, round2_primer_len):
 		right_top_sequence = seqlib.makeSequence(side_len)
 		primer_set, answer_set = getPrimerChoices(known_top_sequence, round2_primer_len)
 		sequence_tuple = (left_top_sequence, known_top_sequence, right_top_sequence)
-	return sequence_tuple, primer_set, answer_set 
+	return sequence_tuple, primer_set, answer_set
 
 #=====================
 #=====================
@@ -97,7 +97,7 @@ def makeChoices(primer_set, answer_set):
 	choices.add(wrong)
 	wrong = (seqlib.flip(answer_set[0]), seqlib.flip(answer_set[1]))
 	choices.add(wrong)
-	
+
 	while len(choices) < 6:
 		c1 = random.choice(primer_set)
 		c2 = random.choice(primer_set)

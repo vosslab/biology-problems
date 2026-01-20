@@ -11,7 +11,7 @@ connection_words: ~
 
 true_statements:
   truth1a: DNA is usually double-stranded (duplex), whereas RNA is usually single-stranded (simplex)
-  truth1b: RNA is usually single-stranded (simplex), whereas DNA is usually double-stranded (duplex) 
+  truth1b: RNA is usually single-stranded (simplex), whereas DNA is usually double-stranded (duplex)
 
   truth2a: uracil in RNA takes the place of thymine in DNA
   truth2b: thymine in DNA takes the place of uracil in RNA
@@ -30,8 +30,8 @@ true_statements:
 
   truth9: Both double-stranded DNA and double-stranded RNA have major and minor grooves
 
-  truth10a: DNA has a regular consistent structure, whereas RNA adopts a wide variety of tertiary structures 
-  truth10b: RNA adopts a wide variety of tertiary structures 
+  truth10a: DNA has a regular consistent structure, whereas RNA adopts a wide variety of tertiary structures
+  truth10b: RNA adopts a wide variety of tertiary structures
   truth10c: DNA has a regular consistent structure
 
   truth11a: RNA can form a double-stranded helix
@@ -40,7 +40,7 @@ true_statements:
 
 false_statements:
   false1a: RNA is usually double-stranded (duplex), whereas DNA is usually single-stranded (simplex)
-  false1b: DNA is usually single-stranded (simplex), whereas RNA is usually double-stranded (duplex) 
+  false1b: DNA is usually single-stranded (simplex), whereas RNA is usually double-stranded (duplex)
 
   false2a: uracil in DNA takes the place of thymine in RNA
   false2b: thymine in RNA takes the place of uracil in DNA
@@ -68,7 +68,7 @@ false_statements:
   false6c: DNA has a positive charge, RNA has a negative charge
   false6d: RNA has a positive charge, DNA has a negative charge
   false6e: Both DNA and RNA have a positive charge
-  
+
   false7a: RNA is made of nucleotides, DNA is made of amino acids
   false7b: DNA is made of nucleotides, RNA is made of amino acids
 
@@ -78,23 +78,23 @@ false_statements:
   false9a: double-stranded DNA has major and minor grooves, double-stranded RNA does not
   false9b: double-stranded RNA has major and minor grooves, double-stranded DNA does not
 
-  false10a: RNA has a regular consistent structure, whereas DNA adopts a wide variety of tertiary structures 
-  false10b: DNA adopts a wide variety of tertiary structures 
-  false10c: RNA has a regular consistent structure 
+  false10a: RNA has a regular consistent structure, whereas DNA adopts a wide variety of tertiary structures
+  false10b: DNA adopts a wide variety of tertiary structures
+  false10c: RNA has a regular consistent structure
 
   false11a: RNA cannot form a double-stranded helix
   false11b: DNA can form a double-stranded helix, but RNA cannot
 
 
 # conflicts, means that the statements cannot appear together
-# add ': True' to each line, so the program runs a faster lookup 
+# add ': True' to each line, so the program runs a faster lookup
 conflict_rules: ~
-    
 
 
 
 
 
 
-    
-    
+
+
+

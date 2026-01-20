@@ -11,7 +11,7 @@ true_statements:
   truth1: Solos
   truth2: Stats
   truth3: Rotor
-  
+
   truth84: Pop
   truth85: Anna
   truth86: Kayak
@@ -58,7 +58,7 @@ false_statements:
   false27: bid
   false28: suns
   false29: wog
-  
+
 # conflicts, means that the statements cannot appear together
 conflict_rules: ~
 

@@ -49,17 +49,17 @@ genetic_code = {
 	'UUC':'F', 'UCC':'S', 'UAC':'Y', 'UGC':'C',
 	'UUA':'L', 'UCA':'S', 'UAA':'_', 'UGA':'_',
 	'UUG':'L', 'UCG':'S', 'UAG':'_', 'UGG':'W',
-	
+
 	'CUU':'L', 'CCU':'P', 'CAU':'H', 'CGU':'R',
 	'CUC':'L', 'CCC':'P', 'CAC':'H', 'CGC':'R',
 	'CUA':'L', 'CCA':'P', 'CAA':'Q', 'CGA':'R',
 	'CUG':'L', 'CCG':'P', 'CAG':'Q', 'CGG':'R',
-	
+
 	'AUU':'I', 'ACU':'T', 'AAU':'N', 'AGU':'S',
 	'AUC':'I', 'ACC':'T', 'AAC':'N', 'AGC':'S',
 	'AUA':'I', 'ACA':'T', 'AAA':'K', 'AGA':'R',
 	'AUG':'M', 'ACG':'T', 'AAG':'K', 'AGG':'R',
-	
+
 	'GUU':'V', 'GCU':'A', 'GAU':'D', 'GGU':'G',
 	'GUC':'V', 'GCC':'A', 'GAC':'D', 'GGC':'G',
 	'GUA':'V', 'GCA':'A', 'GAA':'E', 'GGA':'G',
@@ -282,7 +282,7 @@ def makeSequence(seqlen=10):
 				endloop = False
 			newseq = newseq.replace('C', 'G')
 			if 'GGGG' in newseq:
-				endloop = False			
+				endloop = False
 
 	return seq
 

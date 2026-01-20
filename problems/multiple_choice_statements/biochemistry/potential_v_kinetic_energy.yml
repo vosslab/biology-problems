@@ -45,25 +45,25 @@ true_statements:
   truth23a: a hammer striking a nail
 
   truth24a: a car speeding on the interstate
-  
+
   truth25a: a crawling baby
-  
+
   truth26a: an asteroid falling to earth
-  
+
   truth27a: a glowing hot poker in a firepit
 
   truth28a: wind turbine blades turning in the wind
   truth28b: a hurricane
   truth28c: a tornado
   truth28d: fan blades moving air around the room
-  
+
   truth29a: a light bulb shining in a dark tunnel
   truth29b: heat released by a campfire
-  
+
   truth30a: stereo speakers playing a John Coltrane saxophone solo
-  
+
   truth31a: someone knocking at your front door
-  
+
   truth32a: wet clothes in the washer during the spin cycle
   truth32b: a centrifuge spinning tubes on the bench
 
@@ -73,43 +73,43 @@ false_statements:
   false1b: water behind the Hoover dam
 
   false2a: a molecule of glucose
-  
+
   false3a: a skier at the top of a hill
-  
+
   false4a: an airplane at the start of the runway
 
   false5a: a baseball in the hand of a pitcher
-  
+
   false6a: a bullet in the chamber of a gun
 
   false7a: a rollercoaster car at the top of the first hill
-  
+
   false8a: a marathon runner at the start line
-  
+
   false9a: fireworks still in their package
   false9b: a stick of dynamite
   false9c: an unused nuclear bomb
 
   false81a: a book hanging off the edge of a table
-  false81b: a rock sitting at the edge of a cliff  
-  
+  false81b: a rock sitting at the edge of a cliff
+
   false82a: a fully charged battery
-  
+
   false83a: an archery bow with the string pulled back
-  
+
   false84a: a stretched rubber band
 
   false85a: freshly chopped wood sitting in a cold fireplace
 
   false86a: the wick in an unlit candle
 
-  
+
   false88a: a ball stuck in a tree
-  
+
   false89a: a diver standing at the edge of a diving board
-  
+
 # conflicts, means that the statements cannot appear together
-# add ': True' to each line, so the program runs a faster lookup 
+# add ': True' to each line, so the program runs a faster lookup
 conflict_rules: ~
 
 

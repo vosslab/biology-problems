@@ -104,7 +104,7 @@ def write_question(N):
 	for match in matching_list:
 		match_table = seqlib.Single_Strand_Table_No_Primes(match, separate=4)
 		matching_table_list.append(match_table)
-		
+
 	question_text = ''
 	question_text += "<p>The following numbered sequences only contains half of a palindromic sequence.</p> "
 	question_text += "<p>Match the correct lettered sequence that would finish and replace "

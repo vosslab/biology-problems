@@ -20,10 +20,10 @@ true_statements:
   truth22b: positively charged metal ions
 
   truth24a: Oligonucleotide primers
-  truth24b: Primers complementary to each end of the sequence to be amplified 
+  truth24b: Primers complementary to each end of the sequence to be amplified
 
   truth25a: Reaction Buffer
-  truth25b: pH Buffer  
+  truth25b: pH Buffer
 
   truth26a: Template DNA
   truth26b: DNA containing the sequences to be amplified
@@ -49,9 +49,9 @@ false_statements:
   false11: Okazaki fragments
   false12: DNA sliding &beta;-clamp protein
   false13: ATP synthase complex
-  
+
 # conflicts, means that the statements cannot appear together
-# add ': True' to each line, so the program runs a faster lookup 
+# add ': True' to each line, so the program runs a faster lookup
 conflict_rules: ~
 
 

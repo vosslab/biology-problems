@@ -17,9 +17,9 @@ def BIG_Table(sequence_tuple):
 	big_table = '<table style="border-collapse: collapse; border: 1px solid silver;"> '
 	big_table += '<tr>'
 	big_table += '  <td bgcolor="#ecb3ff" align="center"><i>Eco</i>R1<br/>overhang</td>'
-	big_table += '  <td bgcolor="#ffff99" align="center">left<br/>unknown<br/>sequence</td>'	
-	big_table += '  <td bgcolor="#99ff99" align="center">central<br/>known<br/>sequence</td>'	
-	big_table += '  <td bgcolor="#ffff99" align="center">right<br/>unknown<br/>sequence</td>'	
+	big_table += '  <td bgcolor="#ffff99" align="center">left<br/>unknown<br/>sequence</td>'
+	big_table += '  <td bgcolor="#99ff99" align="center">central<br/>known<br/>sequence</td>'
+	big_table += '  <td bgcolor="#ffff99" align="center">right<br/>unknown<br/>sequence</td>'
 	big_table += '  <td bgcolor="#ecb3ff" align="center"><i>Eco</i>R1<br/>overhang</td>'
 	big_table += '</tr>'
 	big_table += '<tr>'
@@ -35,11 +35,11 @@ def BIG_Table(sequence_tuple):
 		seqlib.DNA_Table('G     ', 'CTTAA ',  left_primes=False, right_primes=True ))
 	big_table += '</tr>'
 	big_table += '<tr>'
-	big_table += '  <td bgcolor="#ecb3ff" align="center">&nbsp;</td>'	
-	big_table += '  <td bgcolor="#ffff99" align="center">&nbsp;</td>'	
-	big_table += '  <td bgcolor="#99ff99" align="center">&nbsp;</td>'	
-	big_table += '  <td bgcolor="#ffff99" align="center">&nbsp;</td>'	
-	big_table += '  <td bgcolor="#ecb3ff" align="center">&nbsp;</td>'	
+	big_table += '  <td bgcolor="#ecb3ff" align="center">&nbsp;</td>'
+	big_table += '  <td bgcolor="#ffff99" align="center">&nbsp;</td>'
+	big_table += '  <td bgcolor="#99ff99" align="center">&nbsp;</td>'
+	big_table += '  <td bgcolor="#ffff99" align="center">&nbsp;</td>'
+	big_table += '  <td bgcolor="#ecb3ff" align="center">&nbsp;</td>'
 	big_table += '</tr>'
 	big_table += '</table>'
 	return big_table
@@ -49,25 +49,25 @@ def BIG_Table(sequence_tuple):
 def getInversePrimerChoices(top_sequence, primer_len):
 	bottom_sequence = seqlib.complement(top_sequence)
 	primer_set = []
-	
+
 	primer = top_sequence[:primer_len]
-	primer_set.append(primer) 
-	primer_set.append(seqlib.flip(primer)) 
+	primer_set.append(primer)
+	primer_set.append(seqlib.flip(primer))
 
 	primer = bottom_sequence[:primer_len]
 	primer_set.append(primer)
 	primer_set.append(seqlib.flip(primer)) #answer1
 	answer1 = seqlib.flip(primer)
-	
+
 	primer = top_sequence[-primer_len:]
 	primer_set.append(primer)
 	primer_set.append(seqlib.flip(primer))
 	answer2 = primer
-	
+
 	primer = bottom_sequence[-primer_len:]
 	primer_set.append(primer)  #answer2
-	primer_set.append(seqlib.flip(primer)) 
-	
+	primer_set.append(seqlib.flip(primer))
+
 	answer_set = [answer1, answer2]
 	for ans in answer_set:
 		for nt in list('ACGT'):
@@ -98,7 +98,7 @@ def getSequence(sequence_len, primer_len):
 		right_top_sequence = "N" * side_len
 		primer_set, answer_set = getInversePrimerChoices(known_top_sequence, primer_len)
 		sequence_tuple = (left_top_sequence, known_top_sequence, right_top_sequence)
-	return sequence_tuple, primer_set, answer_set 
+	return sequence_tuple, primer_set, answer_set
 
 #=====================
 #=====================
@@ -112,7 +112,7 @@ def makeChoices(primer_set, answer_set):
 	choices.add(wrong)
 	wrong = (seqlib.flip(answer_set[0]), seqlib.flip(answer_set[1]))
 	choices.add(wrong)
-	
+
 	while len(choices) < 6:
 		c1 = random.choice(primer_set)
 		c2 = random.choice(primer_set)

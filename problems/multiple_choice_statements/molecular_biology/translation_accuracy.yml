@@ -9,9 +9,9 @@ override_question_false: ~
 replacement_rules:
   ribosome:          '<span style="color: OrangeRed;">ribosome</span>'
   amino acid:        '<span style="color: DarkBlue;">amino acid</span>'
-  'tRNA anticodon':  '<span style="color: DarkRed;">tRNA anticodon</span>'  
-  'mRNA codon':      '<span style="color: DarkGreen;">mRNA codon</span>'  
-  'tRNA molecule':   '<span style="color: #663300;">tRNA molecule</span>'  
+  'tRNA anticodon':  '<span style="color: DarkRed;">tRNA anticodon</span>'
+  'mRNA codon':      '<span style="color: DarkGreen;">mRNA codon</span>'
+  'tRNA molecule':   '<span style="color: #663300;">tRNA molecule</span>'
 
 
 connection_words: ~
@@ -21,12 +21,12 @@ true_statements:
   truth1b: bonding of the mRNA codon to the tRNA anticodon.
   truth1c: base-pairing of the mRNA codon to the tRNA anticodon.
   truth1d: base-pairing of the tRNA anticodon to the mRNA codon.
-  
+
   truth2a: attachment of the specific amino acid to the tRNA.
   truth2b: covalent attachment of the specific amino acid to the tRNA CCA tail.
   truth2c: amino acid attached to tRNA by the synthase enzyme.
   truth2d: match between the attached amino acid and the tRNA anticodon
-  truth2e: match between the tRNA anticodon and the attached amino acid 
+  truth2e: match between the tRNA anticodon and the attached amino acid
 
 
 false_statements:
@@ -36,11 +36,11 @@ false_statements:
   false3a: binding of the tRNA anticodon to small subunit of the ribosome.
   false3b: binding of small subunit of the ribosome to mRNA.
   false3c: binding of small subunit of the ribosome to the mRNA's Shine-Delgarno sequence.
-  
+
   false4a: binding of the new tRNA molecule to the A-site of the ribosome.
-  
+
   false5a: removal of the tRNA molecule from the E-site of the ribosome.
-  
+
   false6a: binding of large subunit of the ribosome to the amino acyl-tRNA.
   false6b: binding of large subunit of the ribosome to the tRNA's CCA tail.
 
@@ -53,8 +53,7 @@ false_statements:
 
 
 # conflicts, means that the statements cannot appear together
-# add ': True' to each line, so the program runs a faster lookup 
-conflict_rules: ~  
-    
-    
-    
+# add ': True' to each line, so the program runs a faster lookup
+conflict_rules: ~
+
+

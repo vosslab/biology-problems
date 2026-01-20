@@ -22,7 +22,7 @@ def enzyme_table(metabolites, color_wheel):
 	tdopen_bot = '<td align="center" valign="bottom" >'
 	htmltext += '<table cellpadding="2" cellspacing="2"'
 	htmltext += '  style="background-color: #efefef; text-align:center; '
-	htmltext += '  border: 1px solid black; font-size: 14px;"> '  
+	htmltext += '  border: 1px solid black; font-size: 14px;"> '
 	htmltext += '<tr> '
 	enzyme_count = len(metabolites) - 1
 	for i in range(enzyme_count):
@@ -45,7 +45,7 @@ def write_question(N, args):
 	metabolite_letters_lower = bptools.generate_gene_letters(num_metabolites, clear=True)
 	metabolite_letters_upper = metabolite_letters_lower.upper()
 	#print("metabolite_letters_upper = ", metabolite_letters_upper)
-	
+
 	deg_step = int(round(360./len(metabolite_letters_upper) - 1))
 	color_amount = 240
 	color_wheel = bptools.make_color_wheel(color_amount, 0, 0, deg_step)

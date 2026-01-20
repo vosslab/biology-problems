@@ -8,7 +8,7 @@ templates = [
 	+"oT#.#=o.oT#%"
 	+"r+drT+Tdr+d%"
 	+"###########%"
-	),	
+	),
 ]
 
 
@@ -20,7 +20,7 @@ autosomal_dominant = [
 	+"*Tx.#=o.*T#%"
 	+"r+Tdr+Tdr+d%"
 	+"#*x*#o##ox#%"
-	),	
+	),
 	("#T*.oT#.xTo%"
 	+"r+d.r^d.r+d%"
 	+"x#*T#.oTxo#%"
@@ -57,7 +57,7 @@ autosomal_recessive = [
 	+"oT*.[=(.oT#%"
 	+"r+drT+Tdr+d%"
 	+"o#o[(*oxoo#%"
-	),	
+	),
 ]
 [	("#To.#To.#To.#To%"
 	+"r^d.r^d.r^d.r^d%"
@@ -158,7 +158,7 @@ y_linked = [
 	+"oT#.o=x.oTx%"
 	+"r+drT+Tdr+d%"
 	+"##oo#o#xo#x%"
-	),	
+	),
 	("#To.#To.#To.xTo%"
 	+"r^d.r^d.r^d.r^d%"
 	+"o.oT#.o.#.oTx.x%"

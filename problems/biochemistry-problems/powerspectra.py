@@ -132,8 +132,8 @@ if __name__ == '__main__':
 	s = frame_constant(square, (256,256))
 	printImageInfo(s)
 	img = Image.fromarray(normalizeImage(s), 'RGB')
-	img.show()	
+	img.show()
 	S = scipy.fftpack.fft2(s)
-	
+
 	img = Image.fromarray(S, 'RGB')
 	img.show()

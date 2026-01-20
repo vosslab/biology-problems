@@ -50,8 +50,8 @@ false_statements:
 
 
 # conflicts, means that the statements cannot appear together
-# add ': True' to each line, so the program runs a faster lookup 
-conflict_rules: ~  
-    
-    
-    
+# add ': True' to each line, so the program runs a faster lookup
+conflict_rules: ~
+
+
+

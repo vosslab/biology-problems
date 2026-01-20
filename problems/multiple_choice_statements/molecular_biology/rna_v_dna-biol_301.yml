@@ -11,7 +11,7 @@ connection_words: ~
 
 true_statements:
   truth1a: DNA is usually double-stranded (duplex), whereas RNA is usually single-stranded (simplex)
-  truth1b: RNA is usually single-stranded (simplex), whereas DNA is usually double-stranded (duplex) 
+  truth1b: RNA is usually single-stranded (simplex), whereas DNA is usually double-stranded (duplex)
 
   truth2a: uracil in RNA takes the place of thymine in DNA
   truth2b: thymine in DNA takes the place of uracil in RNA
@@ -23,9 +23,9 @@ true_statements:
   truth4b: DNA nucleotides are missing the 2&prime; hydroxide (-OH) group
   truth4c: DNA contains one less hydroxyl (-OH) group than RNA
 
-  truth10a: DNA has a regular consistent structure, whereas RNA adopts a wide variety of tertiary structures 
-  truth10b: RNA adopts a wide variety of tertiary structures 
-  truth10c: DNA has a regular consistent structure and does not adopt a wide variety of tertiary structures 
+  truth10a: DNA has a regular consistent structure, whereas RNA adopts a wide variety of tertiary structures
+  truth10b: RNA adopts a wide variety of tertiary structures
+  truth10c: DNA has a regular consistent structure and does not adopt a wide variety of tertiary structures
 
   truth11a: RNA can sometimes form a double-stranded helix
   truth11b: Both DNA and RNA can form a double-stranded helix
@@ -33,7 +33,7 @@ true_statements:
 
 false_statements:
   false1a: RNA is usually double-stranded (duplex), whereas DNA is usually single-stranded (simplex)
-  false1b: DNA is usually single-stranded (simplex), whereas RNA is usually double-stranded (duplex) 
+  false1b: DNA is usually single-stranded (simplex), whereas RNA is usually double-stranded (duplex)
 
   false2a: uracil in DNA takes the place of thymine in RNA
   false2b: thymine in RNA takes the place of uracil in DNA
@@ -52,29 +52,29 @@ false_statements:
   false4c: RNA nucleotides have an extra 4&prime; hydroxide (-OH) group, DNA does not
   false4d: DNA nucleotides are missing the 4&prime; hydroxide (-OH) group compared to RNA
   false4e: RNA contains one less hydroxyl (-OH) group than DNA
- 
+
   false7a: RNA is made of nucleotides, DNA is made of amino acids
   false7b: DNA is made of nucleotides, RNA is made of amino acids
 
   false8a: DNA has a sugar-phosphate backbone, RNA does not
   false8b: RNA has a sugar-phosphate backbone, DNA does not
 
-  false10a: RNA has a regular consistent structure, whereas DNA adopts a wide variety of tertiary structures 
-  false10b: DNA adopts a wide variety of tertiary structures 
-  false10c: RNA has a regular consistent structure and does not adopt a wide variety of tertiary structures 
+  false10a: RNA has a regular consistent structure, whereas DNA adopts a wide variety of tertiary structures
+  false10b: DNA adopts a wide variety of tertiary structures
+  false10c: RNA has a regular consistent structure and does not adopt a wide variety of tertiary structures
 
   false11a: RNA is unable to form a double-stranded helix
   false11b: DNA can form a double-stranded helix, but RNA is unable to form it
 
 # conflicts, means that the statements cannot appear together
-# add ': True' to each line, so the program runs a faster lookup 
+# add ': True' to each line, so the program runs a faster lookup
 conflict_rules: ~
-    
 
 
 
 
 
 
-    
-    
+
+
+

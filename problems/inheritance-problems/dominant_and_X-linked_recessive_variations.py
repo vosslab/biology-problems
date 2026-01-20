@@ -126,9 +126,9 @@ def event_phrase(event, xlr_short_name, ad_short_name):
 #=====================
 def group_phrase(group):
 	if group == 'sons':
-		return 'sons (&male;)' 
+		return 'sons (&male;)'
 	if group == 'daughters':
-		return 'daughters (&female;)' 
+		return 'daughters (&female;)'
 	return 'children (sons and daughters equally likely)'
 
 

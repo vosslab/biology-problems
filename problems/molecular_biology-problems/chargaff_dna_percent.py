@@ -153,14 +153,14 @@ def write_question(N, args):
 	choices.append(offchoices[0])
 	choices.append(offchoices[1])
 	random.shuffle(choices)
-	
+
 	choices_list = []
 	for valuelist in choices:
 		choice_text = printChoice(nts, valuelist)
 		choices_list.append(choice_text)
 		if valuelist == answer:
 			answer_text = choice_text
-	
+
 	complete_question = bptools.formatBB_MC_Question(N, question, choices_list, answer_text)
 	return complete_question
 

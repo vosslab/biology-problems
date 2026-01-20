@@ -37,7 +37,7 @@ def makeSequences():
 	for j in range(num_sequence):
 		sequence_list.append('')
 	consensus = ''
-	
+
 	for i in range(sequence_length):
 		other_dna = copy.copy(dna)
 		random.shuffle(other_dna)
@@ -108,7 +108,7 @@ def makeCompleteQuestion():
 	bbquestion = 'FIB\t'
 	bbquestion += table + ' <br/> '
 	bbquestion += question + '\t'
-	bbquestion += consensus + '\t'	
+	bbquestion += consensus + '\t'
 	bbquestion += insertCommas(consensus)
 
 	#============================
@@ -130,7 +130,7 @@ if __name__ == '__main__':
 	args = parser.parse_args()
 	outfile = bptools.make_outfile()
 	bptools.collect_and_write_questions(write_question, args, outfile)
-	
+
 #==========================
 #==========================
 #==========================

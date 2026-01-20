@@ -41,7 +41,7 @@ def mutate_sequences(consensus_sequence, sequence_list):
 		seq = list(sequence_list[seq_num])
 		seq[i] = letter1
 		sequence_list[seq_num] = ''.join(seq)
-	
+
 		other_letters.remove(letter1)
 		letter2 = random.choice(other_letters)
 		seq_num = random.randint(1,num_sequences) - 1
@@ -169,5 +169,5 @@ def main():
 #============================
 if __name__ == '__main__':
 	main()
-		
-	
+
+

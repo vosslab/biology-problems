@@ -66,27 +66,27 @@ false_statements:
   false4b: cellulose
   false4c: glycogen
   false4d: amylopectin
-  false4e: amylose  
+  false4e: amylose
   false4f: glucose
   false4g: galactose
   false4h: fructose
   false4i: lactose
-  false4j: sucrose  
-  false4k: maltose 
+  false4j: sucrose
+  false4k: maltose
   false4l: pyruvate
-  
+
   false5a: actin filaments
   false5b: microtubules
   false5c: intermediate filaments
   false5d: collagen
   false5e: albumin
- 
+
   false6a: coenzyme A
   false6b: coenzyme Q
   false6c: NADH
   false6d: NADPH
   false6e: FADH<sub>2</sub>
-  
+
   false7a: GTP
   false7b: ATP
   false7c: GDP
@@ -100,5 +100,5 @@ false_statements:
 
 
 # conflicts, means that the statements cannot appear together
-# add ': True' to each line, so the program runs a faster lookup 
+# add ': True' to each line, so the program runs a faster lookup
 conflict_rules: ~

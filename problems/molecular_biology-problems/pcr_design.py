@@ -16,7 +16,7 @@ import bptools
 def getPrimerChoices(top_sequence, primer_len):
 	bottom_sequence = seqlib.complement(top_sequence)
 	primer_set = []
-	
+
 	primer = top_sequence[:primer_len]
 	primer_set.append(primer) #answer1
 	answer1 = primer
@@ -25,16 +25,16 @@ def getPrimerChoices(top_sequence, primer_len):
 	primer = bottom_sequence[:primer_len]
 	primer_set.append(primer)
 	primer_set.append(seqlib.flip(primer))
-	
+
 	primer = top_sequence[-primer_len:]
 	primer_set.append(primer)
 	primer_set.append(seqlib.flip(primer))
-	
+
 	primer = bottom_sequence[-primer_len:]
 	primer_set.append(primer)
 	primer_set.append(seqlib.flip(primer)) #answer2
 	answer2 = seqlib.flip(primer)
-	
+
 	answer_set = [answer1, answer2]
 	for ans in answer_set:
 		for nt in list('ACGT'):
@@ -62,7 +62,7 @@ def getSequence(sequence_len, primer_len):
 	while primer_set is False:
 		top_sequence = seqlib.makeSequence(sequence_len)
 		primer_set, answer_set = getPrimerChoices(top_sequence, primer_len)
-	return top_sequence, primer_set, answer_set 
+	return top_sequence, primer_set, answer_set
 
 
 #=====================
@@ -77,7 +77,7 @@ def makeChoices(primer_set, answer_set):
 	choices.add(wrong)
 	wrong = (seqlib.flip(answer_set[0]), seqlib.flip(answer_set[1]))
 	choices.add(wrong)
-	
+
 	while len(choices) < 6:
 		c1 = random.choice(primer_set)
 		c2 = random.choice(primer_set)

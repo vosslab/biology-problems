@@ -49,13 +49,13 @@ def get_volume(pipet):
 ##=========================
 def pipetstr(pipet, rawdigits):
 	colors = pipet_colors[pipet]
-		
+
 	digits = [0,0,0]
 	digits[2] = rawdigits % 10
 	digits[1] = (rawdigits % 100) // 10
 	digits[0] = (rawdigits % 1000) // 100
 	print(digits)
-	
+
 	pipetstr = ''
 	pipetstr += '<table border="0"><tbody><tr><td style="vertical-align: middle;"><strong>{0}</strong>'.format(pipet.upper())
 	pipetstr += '</td><td style="vertical-align: middle;"><table border="1"><tbody>'
@@ -64,12 +64,12 @@ def pipetstr(pipet, rawdigits):
 	pipetstr += '<tr><td align="center"><span style="color: {0};"><strong>{1}</strong></span></td></tr>'.format(colors[2], digits[2])
 	pipetstr += '</tbody></table></td></tr></tbody></table>'
 	return pipetstr
-	
+
 ##=========================
 def get_raw_digits(volume, pipet):
 	rawdigits = int(volume * pipet_volume_multiplier[pipet])
 	return rawdigits
-	
+
 ##=========================
 def question_text(volume):
 	# <p>Which pipet and setting would you use to pipet 230 &mu;L using only one step?</p>
@@ -95,14 +95,14 @@ def get_wrong_choices(volume, pipet):
 		rawdigits2 = get_raw_digits(volume*10, pipet)
 	else:
 		rawdigits2 = get_raw_digits(volume//10, pipet)
-	
+
 	for pipet in pipet_choices:
 		for value in (rawdigits1, rawdigits2):
 			choice_text = pipetstr(pipet, value)
 			choice = {'text': choice_text, 'pipet': pipet, 'rawdigits': value,}
 			choices.append(choice)
 	return choices
-	
+
 
 ##=========================
 def write_question(N: int, args) -> str:
@@ -137,10 +137,10 @@ def main():
 if __name__ == '__main__':
 	main()
 
-			
 
 
-	
-	
-	
-	
+
+
+
+
+

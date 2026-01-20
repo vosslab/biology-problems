@@ -72,8 +72,8 @@ def formatChoice(power2, power3):
 	if power2 == 1:
 		pow2str = "2"
 	if power2 > 1:
-		pow2str = "2<sup>{0}</sup>".format(power2)		
-	
+		pow2str = "2<sup>{0}</sup>".format(power2)
+
 	pow3str = ""
 	if power3 == 0:
 		pow3str = None
@@ -81,7 +81,7 @@ def formatChoice(power2, power3):
 		pow3str = "3"
 	if power3 > 1:
 		pow3str = "3<sup>{0}</sup>".format(power3)
-	
+
 	if pow2str is None:
 		mystr = pow3str + " &nbsp; = {0}".format(num)
 	elif pow3str is None:

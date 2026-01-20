@@ -71,7 +71,7 @@ class GelMigration(object):
 		gel_set = []
 		gel_set.append( {'MW': 500, 'fullname': '500 base pairs', 'abbr': '500 bp',} )
 		gel_set.append( {'MW': 1000, 'fullname': '1,000 base pairs', 'abbr': '1000 bp',} )
-		gel_set.append( {'MW': 2000, 'fullname': '2,000 base pairs', 'abbr': '2000 bp',} )		
+		gel_set.append( {'MW': 2000, 'fullname': '2,000 base pairs', 'abbr': '2000 bp',} )
 		gel_set.append( {'MW': 3000, 'fullname': '3,000 base pairs', 'abbr': '3000 bp',} )
 		gel_set.append( {'MW': 5000, 'fullname': '5,000 base pairs', 'abbr': '5000 bp',} )
 		gel_set.append( {'MW': 10000, 'fullname': '10,000 base pairs', 'abbr': '10000 bp',} )
@@ -99,7 +99,7 @@ class GelMigration(object):
 		high_dist = self.molecular_weight_to_distance(high_mw)
 		#30-70%
 		adj_rand = random.random()*0.4 + 0.3
-		
+
 		unknown_dist = adj_rand*(high_dist - low_dist) + low_dist
 		if unknown_dist < 0:
 			raise ValueError("Distance less than zero.")

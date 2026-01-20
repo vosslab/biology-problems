@@ -33,7 +33,7 @@ false_statements:
 
    false5a: 'decrease the amount of nucleobases with amino groups adenine (A) + cytosine (C).'
    false5b: 'increase the amount of nucleobases with amino groups adenine (A) + cytosine (C).'
-   
+
 #conflicts, means that the statements cannot appear together
 
 conflict_rules: ~

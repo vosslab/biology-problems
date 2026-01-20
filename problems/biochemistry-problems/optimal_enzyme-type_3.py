@@ -21,7 +21,7 @@ def write_question(N, args):
 	question += '<p>Under which one of the following conditions would '
 	question += f'<strong>enzyme {enzyme_dict["name"]}</strong> be '
 	question += '<span style="color: DarkGreen;">most active</span>?</p> '
-		
+
 	good_pH = enzyme_dict['optim_pH'] + random.randint(-2,2)/5.0
 
 	good_temp = random.randint(enzyme_dict['temp1']+1, enzyme_dict['temp2']-1)
@@ -40,7 +40,7 @@ def write_question(N, args):
 				temp = enzyme_dict['temp2'] + random.randint(6,15)
 			else:
 				temp = random.randint(enzyme_dict['temp1']+1, enzyme_dict['temp2']-1)
-			
+
 			if pH_mult == 0:
 				pH = enzyme_dict['optim_pH'] + random.randint(-2,2)/5.0
 			else:
