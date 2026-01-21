@@ -2,6 +2,10 @@
 
 """
 Generate a PGML matching problem from a matching-set YAML file.
+
+Note: This generator uses legacy PG style with ANS() calls because matching
+problems do not have a modern PGML inline answer specification as of January 2026.
+See docs/webwork/MATCHING_PROBLEMS_LEGACY_STYLE.md for detailed rationale.
 """
 
 import argparse
@@ -354,6 +358,7 @@ def build_statement_text(question_text, note_text):
 	text += question_text + "\n"
 	text += note_text + "\n"
 	text += "\n"
+	# Legacy pattern: no PGML inline equivalent exists for matching problems
 	text += "[@ ColumnMatchTable($ml) @]***\n"
 	text += "END_PGML\n"
 	text += "\n"
@@ -384,6 +389,7 @@ def build_solution_text():
 	text += "# -------------------------------\n"
 	text += "# Grading\n"
 	text += "# -------------------------------\n"
+	# Legacy ANS() call required: matching problems have no PGML inline spec
 	text += "ANS(str_cmp($ml->ra_correct_ans));\n"
 	text += "\n"
 	text += "@correct      = @{ $ml->ra_correct_ans() };\n"

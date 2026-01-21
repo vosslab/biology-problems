@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-01-21
+- Documented why matching problems use legacy PG style in [docs/webwork/MATCHING_PROBLEMS_LEGACY_STYLE.md](webwork/MATCHING_PROBLEMS_LEGACY_STYLE.md) after researching modern PGML alternatives.
+- Confirmed that matching problems have no modern PGML inline answer spec equivalent as of January 2026, unlike multiple-choice problems which were recently modernized.
+- Research included official OpenWeBWorK documentation, PGML training corpus, linter documentation, and LibreTexts materials; all sources show matching problems still require legacy `ANS()` calls with `PGchoicemacros.pl`.
+
 ## 2026-01-20
 - Removed shebang lines from pytest test modules so they are run via pytest instead of as standalone scripts.
 - Modernized `tools/find_all_imports.py` to follow repo Python style guidance, add argparse, and write to `pip_requirements.txt` by default.

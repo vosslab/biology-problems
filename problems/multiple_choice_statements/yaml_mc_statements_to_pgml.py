@@ -206,7 +206,7 @@ def build_statement_text(pgml_question):
 	text += "\n"
 	text += pgml_question + "\n"
 	text += "\n"
-	text += "[@ $rb->buttons() @]*\n"
+	text += "[_]{$rb}\n"
 	text += "\n"
 	text += "END_PGML\n"
 	text += "\n"
@@ -218,8 +218,6 @@ def build_solution_text():
 	Build the PGML solution text.
 	"""
 	text = ""
-	text += "ANS($rb->cmp());\n"
-	text += "\n"
 	text += "ENDDOCUMENT();\n"
 	text += "\n"
 	return text
