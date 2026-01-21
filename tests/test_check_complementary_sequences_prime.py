@@ -2,7 +2,7 @@ import os
 import sys
 
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-SEQ_DIR = os.path.join(ROOT_DIR, 'molecular_biology-problems')
+SEQ_DIR = os.path.join(ROOT_DIR, 'problems', 'molecular_biology-problems')
 if SEQ_DIR not in sys.path:
 	sys.path.insert(0, SEQ_DIR)
 

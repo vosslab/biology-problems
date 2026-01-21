@@ -42,7 +42,7 @@ END_PGML
 | Object type | `new_match_list()` | `DropDown()` (one per question) |
 | Display | `[@ ColumnMatchTable($ml) @]***` | Manual PGML layout with `[_]{$dropdown}` |
 | Grading | `ANS(str_cmp($ml->ra_correct_ans))` | Inline `[_]{$dropdown}` (pure PGML) |
-| PGML linter | ❌ Warnings (mixed style) | ✅ No warnings (pure PGML) |
+| PGML linter | Warnings (mixed style) | No warnings (pure PGML) |
 
 ### Source
 

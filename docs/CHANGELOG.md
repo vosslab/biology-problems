@@ -1,6 +1,8 @@
 # Changelog
 
 ## 2026-01-21
+- Removed emoji from [docs/webwork/MATCHING_PROBLEMS.md](webwork/MATCHING_PROBLEMS.md) to satisfy ASCII compliance tests.
+- Fixed the molecular biology test import path in [tests/test_check_complementary_sequences_prime.py](../tests/test_check_complementary_sequences_prime.py) to point at the `problems/` module location.
 - Modernized `problems/matching_sets/yaml_match_to_pgml.py` to use pure PGML style with `parserPopUp.pl` and inline answer specifications.
 - Discovered modern PGML approach in official WeBWorK PG tutorial sample `MatchingAlt.pg` (dated 2023-05-23) after examining latest PG library code.
 - Replaced legacy `PGchoicemacros.pl` with `DropDown` objects from `parserPopUp.pl`, eliminating `ANS()` calls and achieving pure PGML compliance.
