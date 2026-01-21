@@ -1,10 +1,56 @@
-# Matching Problems and Legacy PG Style
+# Matching Problems: Legacy vs Modern PGML
 
 ## Summary
 
-Matching problems in WeBWorK **do not have a modern PGML-first inline answer specification**. The matching generator script ([problems/matching_sets/yaml_match_to_pgml.py](../../problems/matching_sets/yaml_match_to_pgml.py)) uses legacy PG style with `ANS()` calls because no modern alternative exists as of January 2026.
+**UPDATE 2026-01-21:** A modern PGML approach for matching problems exists using `parserPopUp.pl` with inline answer specs. The matching generator script ([problems/matching_sets/yaml_match_to_pgml.py](../../problems/matching_sets/yaml_match_to_pgml.py)) is being updated to use this modern approach instead of legacy `PGchoicemacros.pl`.
 
-## Background
+## Modern PGML Approach (Discovered 2026-01-21)
+
+After examining the latest PG library code, we found **MatchingAlt.pg** (dated 2023-05-23) in the official WeBWorK tutorial samples, which demonstrates a modern PGML approach:
+
+### Modern Pattern (Pure PGML)
+
+```perl
+loadMacros('parserPopUp.pl');  # Modern parser macro
+
+# Create individual DropDown objects for each question
+@answer_dropdowns = map {
+    DropDown([ @ALPHABET[ 0 .. $#answers ] ], $correct_index)
+} 0 .. $#questions;
+
+BEGIN_PGML
+Match each question with its answer.
+
+[_]{$answer_dropdowns[0]} *1.* Question 1?
+[_]{$answer_dropdowns[1]} *2.* Question 2?
+[_]{$answer_dropdowns[2]} *3.* Question 3?
+
+*Answers:*
+*A.* Answer A
+*B.* Answer B
+*C.* Answer C
+END_PGML
+
+# NO ANS() calls needed - inline PGML specs handle grading!
+```
+
+### Key Differences from Legacy
+
+| Aspect | Legacy (PGchoicemacros.pl) | Modern (parserPopUp.pl) |
+|--------|---------------------------|-------------------------|
+| Macro | `PGchoicemacros.pl` | `parserPopUp.pl` |
+| Object type | `new_match_list()` | `DropDown()` (one per question) |
+| Display | `[@ ColumnMatchTable($ml) @]***` | Manual PGML layout with `[_]{$dropdown}` |
+| Grading | `ANS(str_cmp($ml->ra_correct_ans))` | Inline `[_]{$dropdown}` (pure PGML) |
+| PGML linter | ❌ Warnings (mixed style) | ✅ No warnings (pure PGML) |
+
+### Source
+
+File: `/Users/vosslab/nsh/webwork-pg-renderer/lib/PG/tutorial/sample-problems/Misc/MatchingAlt.pg`
+
+This file is part of the official WeBWorK PG tutorial and shows the recommended modern approach for matching problems.
+
+## Background (Historical Research)
 
 In January 2026, we updated the multiple-choice generator ([problems/multiple_choice_statements/yaml_mc_statements_to_pgml.py](../../problems/multiple_choice_statements/yaml_mc_statements_to_pgml.py)) to use pure PGML style, replacing:
 
