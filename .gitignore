@@ -1,10 +1,17 @@
 # output files
-*.html
+tools/bptools_scripts_audit.md
+tools/bptools_scripts_*.txt
+tools/problem_lib_modules.txt
 *.od?
 bbq-*.txt
 qti*.zip
 selftest-*.html
 .DS_Store
+report_shebang.txt
+report_pyflakes.txt
+report_ascii_compliance.txt
+report_bandit.txt
+report_pyright.txt
 
 # Byte-compiled / optimized / DLL files
 *.py[cod]
@@ -18,8 +25,3 @@ ENV/
 env.bak/
 venv.bak/
 
-report_shebang.txt
-report_pyflakes.txt
-report_ascii_compliance.txt
-report_bandit.txt
-report_pyright.txt
