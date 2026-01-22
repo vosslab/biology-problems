@@ -1,0 +1,61 @@
+DOCUMENT();
+loadMacros(
+  "PGstandard.pl",
+  "PGML.pl",
+  "parserRadioButtons.pl",
+);
+
+TEXT(beginproblem());
+
+# Header to load RDKit.js
+HEADER_TEXT(<<'EOF');
+<script src="https://unpkg.com/@rdkit/rdkit/dist/RDKit_minimal.js"></script>
+<script>
+  function initMolecule(canvasId, smiles) {
+    initRDKitModule().then(function(RDKit) {
+      console.log("RDKit version: " + RDKit.version());
+      const mol = RDKit.get_mol(smiles);
+      const mdetails = {"legend":"", "explicitMethyl":true};
+      const canvas = document.getElementById(canvasId);
+      mol.draw_to_canvas_with_highlights(canvas, JSON.stringify(mdetails));
+    }).catch(error => {
+      console.error('Error initializing RDKit.', error);
+    });
+  }
+</script>
+EOF
+
+# Problem content with inline scripts to render molecules and radio buttons for answers
+BEGIN_TEXT
+<p><strong>Match the amino acid structures to their names.</strong></p>
+<p><i>Note:</i> Each choice will be used exactly once.</p>
+
+$PAR
+<strong>Cysteine:</strong>
+<p><canvas id="canvas_cysteine" width="480" height="320"></canvas></p>
+<script>initMolecule("canvas_cysteine", "C([C@@H](C(=O)O)N)S");</script>
+\{
+  RadioButtons(
+    ["Cysteine", "Alanine", "Serine", "Leucine"],
+    "Cysteine",
+    labels => "ABC",
+    displayLabels => 1
+  )->buttons()
+\}
+$BR
+
+$PAR
+<strong>Alanine:</strong>
+<p><canvas id="canvas_alanine" width="480" height="320"></canvas></p>
+<script>initMolecule("canvas_alanine", "C[C@@H](C(=O)O)N");</script>
+\{
+  RadioButtons(
+    ["Cysteine", "Alanine", "Serine", "Leucine"],
+    "Alanine",
+    labels => "ABC",
+    displayLabels => 1
+  )->buttons()
+\}
+END_TEXT
+
+ENDDOCUMENT();
