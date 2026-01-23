@@ -1,0 +1,121 @@
+## DESCRIPTION
+## Based on their molecular formula, which one of the following compounds is most likely hydrophobic?
+## ENDDESCRIPTION
+## KEYWORDS('hydrophobic','hydrophilic','molecular formula')
+## DBsubject('Biochemistry')
+## DBchapter('Chemical Properties')
+## DBsection('Hydrophobic and Hydrophilic')
+## Date('2026-01-23')
+## Author('Neil R. Voss')
+## Institution('Roosevelt University')
+## TitleText1('')
+## EditionText1('')
+## AuthorText1('')
+## Section1('')
+## Problem1('')
+
+DOCUMENT();
+
+loadMacros(
+	'PGstandard.pl',
+	'PGchoicemacros.pl',
+	'PGML.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl',
+);
+
+TEXT(beginproblem());
+$showPartialCorrectAnswers = 0;
+
+########################################################
+# DATA POOLS
+########################################################
+
+@hydrophobic_compounds = (
+	'benzene, C<sub>6</sub>H<sub>6</sub>',
+	'toluene, C<sub>7</sub>H<sub>8</sub>',
+	'ethylene, CH<sub>2</sub>CH<sub>2</sub>',
+	'propane, CH<sub>3</sub>CH<sub>2</sub>CH<sub>3</sub>',
+	'butane, CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>3</sub>',
+	'cyclohexane, C<sub>6</sub>H<sub>12</sub>',
+	'hexane, CH<sub>3</sub>(CH<sub>2</sub>)<sub>4</sub>CH<sub>3</sub>',
+	'octane, CH<sub>3</sub>(CH<sub>2</sub>)<sub>6</sub>CH<sub>3</sub>',
+);
+
+@hydrophilic_compounds = (
+	'acetate, C<sub>2</sub>H<sub>3</sub>O<sub>2</sub>',
+	'water, H<sub>2</sub>O',
+	'erythrose, C<sub>4</sub>H<sub>8</sub>O<sub>4</sub>',
+	'glucose, C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>',
+	'sucrose, C<sub>12</sub>H<sub>22</sub>O<sub>11</sub>',
+	'glycerol, C<sub>3</sub>H<sub>8</sub>O<sub>3</sub>',
+	'glycine, NH<sub>2</sub>CH<sub>2</sub>COOH',
+	'ethanol, CH<sub>3</sub>CH<sub>2</sub>OH',
+	'methanol, CH<sub>3</sub>OH',
+	'ammonia, NH<sub>3</sub>',
+	'sodium chloride, NaCl',
+	'phosphoric acid, H<sub>3</sub>PO<sub>4</sub>',
+	'urea, CO(NH<sub>2</sub>)<sub>2</sub>',
+);
+
+########################################################
+# GENERATE QUESTION
+########################################################
+
+# Number of choices to display
+$num_choices = 5;
+
+# Select one correct answer (hydrophobic compound)
+$correct_answer = list_random(@hydrophobic_compounds);
+
+# Select distractors (hydrophilic compounds)
+my @indices = NchooseK(scalar(@hydrophilic_compounds), $num_choices - 1);
+my @distractors = @hydrophilic_compounds[@indices];
+
+# Build complete choices list
+@choices = ($correct_answer, @distractors);
+
+########################################################
+# BUILD RADIO BUTTONS
+########################################################
+
+$rb = RadioButtons(
+	[@choices],
+	$correct_answer,
+	labels        => 'ABC',
+	displayLabels => 1,
+	separator     => '<div style="margin-bottom: 0.7em;"></div>',
+	uncheckable   => 0,
+);
+
+########################################################
+# QUESTION TEXT
+########################################################
+
+BEGIN_PGML
+
+Based on their molecular formula, which one of the following compounds is most likely *hydrophobic*?
+
+[@ $rb->buttons() @]*
+
+END_PGML
+
+########################################################
+# ANSWER
+########################################################
+
+ANS( $rb->cmp() );
+
+########################################################
+# SOLUTION
+########################################################
+
+BEGIN_PGML_SOLUTION
+
+The correct answer is: [$correct_answer]
+
+*Explanation:* Hydrophobic compounds are typically nonpolar molecules composed mainly of carbon and hydrogen atoms, with few or no oxygen or nitrogen atoms. These compounds do not dissolve well in water.
+
+END_PGML_SOLUTION
+
+ENDDOCUMENT();
