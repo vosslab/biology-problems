@@ -197,6 +197,7 @@ def build_preamble_text(header_text):
 	text += "loadMacros(\n"
 	text += "    'PGstandard.pl',\n"
 	text += "    'PGML.pl',\n"
+	text += "    'PGchoicemacros.pl',\n"
 	text += "    'parserPopUp.pl',\n"
 	text += "    'PGgraders.pl',\n"
 	text += "    'PGcourse.pl'\n"
