@@ -1,24 +1,15 @@
-#YAML file for Matching Questions
-
 items to match per question: 4
-
-#both singular and plural
 key description: inheritance pattern
 keys description: inheritance patterns
-
-#both singular and plural
 value description: definition
 values description: definitions
-
 matching pairs:
   codominance:
-    - heterozygotes equally express both alleles in the phenotype
-
+  - heterozygotes equally express both alleles in the phenotype
   complete dominance:
-    - one allele masks the effect of another allele
-
+  - one allele masks the effect of another allele
   epistasis:
-    - one gene suppresses the effect of another gene that is not its allele
-
+  - one gene suppresses the effect of another gene that is not its allele
   incomplete dominance:
-    - heterozygote appearance is a blended phenotype of both homozygous phenotypes
+  - heterozygote appearance is a blended phenotype of both homozygous phenotypes
+dbsubject: Genetics

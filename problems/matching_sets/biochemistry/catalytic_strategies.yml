@@ -1,104 +1,94 @@
-#YAML file for Matching Questions
-
 items to match per question: 4
-
-
-#both singular and plural
 key description: mechanism of enzyme catalysis
 keys description: mechanisms of enzyme catalysis
-
-#both singular and plural
 value description: definition
 values description: definitions
-
 replacement_rules:
-   Acid-base Catalysis: '<span style="color: #e60000;">Acid-base catalysis</span>' #RED
-
-   BBBBBBBB: '<span style="color: #e65400;">BBBBBBBB</span>' #DARK ORANGE
-   ATP Hydrolysis: '<span style="color: #e69100;">ATP Hydrolysis</span>' #LIGHT ORANGE
-
-   DDDDDDDD: '<span style="color: #b3b300;">DDDDDDDD</span>' #DARK YELLOW
-   Catalysis by Approximation: '<span style="color: #59b300;">Catalysis by Approximation</span>' #LIME GREEN
-
-   FFFFFFFF: '<span style="color: #009900;">FFFFFFFF</span>' #GREEN
-   Metal Ion and Electrostatic Catalysis: '<span style="color: #00b38f;">Metal Ion and Electrostatic Catalysis</span>' #TEAL
-
-   HHHHHHHH: '<span style="color: #00b3b3;">HHHHHHHH</span>' #CYAN
-   IIIIIIII: '<span style="color: #0a9bf5;">IIIIIIII</span>' #SKY BLUE
-   Bond Strain or Distortion: '<span style="color: #0039e6;">Bond Strain or Distortion</span>' #BLUE
-
-   KKKKKKKK: '<span style="color: #004d99;">KKKKKKKK</span>' #NAVY
-   Covalent Catalysis: '<span style="color: #7b12a1;">Covalent Catalysis</span>' #PURPLE
-
-   Active Site Microenvironment: '<span style="color: #b30077;">Active Site Microenvironment</span>' #MAGENTA
-   NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
-
+  Acid-base Catalysis: '<span style="color: #e60000;">Acid-base catalysis</span>'
+  BBBBBBBB: '<span style="color: #e65400;">BBBBBBBB</span>'
+  ATP Hydrolysis: '<span style="color: #e69100;">ATP Hydrolysis</span>'
+  DDDDDDDD: '<span style="color: #b3b300;">DDDDDDDD</span>'
+  Catalysis by Approximation: '<span style="color: #59b300;">Catalysis by Approximation</span>'
+  FFFFFFFF: '<span style="color: #009900;">FFFFFFFF</span>'
+  Metal Ion and Electrostatic Catalysis: '<span style="color: #00b38f;">Metal Ion
+    and Electrostatic Catalysis</span>'
+  HHHHHHHH: '<span style="color: #00b3b3;">HHHHHHHH</span>'
+  IIIIIIII: '<span style="color: #0a9bf5;">IIIIIIII</span>'
+  Bond Strain or Distortion: '<span style="color: #0039e6;">Bond Strain or Distortion</span>'
+  KKKKKKKK: '<span style="color: #004d99;">KKKKKKKK</span>'
+  Covalent Catalysis: '<span style="color: #7b12a1;">Covalent Catalysis</span>'
+  Active Site Microenvironment: '<span style="color: #b30077;">Active Site Microenvironment</span>'
+  NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>'
 matching pairs:
-
-    Acid-base Catalysis:
-    - A side chain removes a hydrogen to enhance electron density for attack.
-    - A hydrogen is transferred to or from a reactive group to make it more reactive.
-    - A group adjusts the electron flow by altering local charge through hydrogen transfer.
-    - A hydrogen shift increases the effectiveness of a nearby atom in bond formation or cleavage.
-    - A functional group removes a proton to activate a nearby nucleophilic residue.
-    - Transfer of a proton improves the departure of an unstable leaving group.
-    - Movement of a hydrogen atom influences the readiness of atoms to make or break bonds.
-    - Has reactions involving electron pairs, commonly involving a proton exchange.
-
-    Active Site Microenvironment:
-    - Local polarity and charge are tuned to create favorable reaction conditions.
-    - Electrostatic forces within the active site are adjusted to promote the reaction.
-    - Charge distributions are optimized in the catalytic pocket to support intermediate stability.
-    - Chemical surroundings are adapted to promote bond changes during the reaction.
-    - The spatial arrangement of atoms influences ionization and electron flow.
-    - The immediate setting of the reactive site alters how atoms interact during catalysis.
-
-    ATP Hydrolysis:
-    - A high energy molecule is broken down to drive conformational shifts.
-    - Breakdown of a high-energy compound powers chemical transitions.
-    - Cleaving a specific high-energy bond allows the system to overcome energetic barriers.
-    - A secondary high-energy process brings energy into the system to promote transformation.
-    - High-energy bond cleavage is coupled to chemical changes in the system.
-
-    Bond Strain or Distortion:
-    - The substrate is bent or twisted into a higher-energy conformation.
-    - Structural tension is introduced into the substrate to increase the likelihood of reaction.
-    - The substrate is reshaped into a geometry more favorable for reaction.
-    - Mechanical stress is applied to stretch or compress bonds in the substrate.
-    - The molecular arrangement of the substrate is structurally destabilized.
-    - The substrate is forced into a conformation resembling the transition state.
-
-    Catalysis by Approximation:
-    - Multiple substrates are brought together and precisely positioned for interaction.
-    - Reacting groups of the substrate are aligned in close space to favor bond formation.
-    - Substrates are oriented in a geometry that enhances the chance of chemical change.
-    - The reaction site arranges substrate components to ensure correct position for reaction.
-    - Local concentration of substrates is effectively increased by spatial confinement.
-    - When two substrates are brought into close proximity with one another.
-
-    Covalent Catalysis:
-    - A temporary link is formed between the substrate and the enzyme.
-    - A direct interaction creates an intermediate enzyme-substrate complex that alters the reaction pathway.
-    - The enzyme briefly attaches to the substrate during the reaction.
-    - A short-lived connection forms between the substrate and the enzyme.
-    - A reactive group on the enzyme bonds to the substrate to initiate a new pathway.
-    - The substrate and enzyme form an intermediate complex before completing the reaction.
-    - The enzyme forms a bond with the substrate that facilitates conversion into the product.
-    - The reaction proceeds through a stage where the substrate is attached to the enzyme.
-    - Creates a new reaction pathway, i.e., adds an additional step in the reaction
-
-    Metal Ion and Electrostatic Catalysis:
-    - A positively charged ion attracts or repels electrons to promote the reaction.
-    - The arrangement of charged ions help guide the substrate into the ideal position for chemistry.
-    - A charged ion stabilizes areas with too many electrons during a reaction step.
-    - Reactive partners are activated through interactions with nearby charged groups.
-    - The reaction center is stabilized by charge-based interactions during the transition state.
-    - A charged ion holds the substrate in the right position for the reaction.
-    - An ion in the active site interacts with the substrate to support the reaction.
-    - A charged ion helps stabilize unstable intermediates during the reaction.
-    - Ions help organize the charges of important groups in the reaction.
-    - Uses a special cation to stabilize a negative charge in the active site
-    - uses an ion that can also act to stabilize the charges on the intermediates in the reaction.
-
+  Acid-base Catalysis:
+  - A side chain removes a hydrogen to enhance electron density for attack.
+  - A hydrogen is transferred to or from a reactive group to make it more reactive.
+  - A group adjusts the electron flow by altering local charge through hydrogen transfer.
+  - A hydrogen shift increases the effectiveness of a nearby atom in bond formation
+    or cleavage.
+  - A functional group removes a proton to activate a nearby nucleophilic residue.
+  - Transfer of a proton improves the departure of an unstable leaving group.
+  - Movement of a hydrogen atom influences the readiness of atoms to make or break
+    bonds.
+  - Has reactions involving electron pairs, commonly involving a proton exchange.
+  Active Site Microenvironment:
+  - Local polarity and charge are tuned to create favorable reaction conditions.
+  - Electrostatic forces within the active site are adjusted to promote the reaction.
+  - Charge distributions are optimized in the catalytic pocket to support intermediate
+    stability.
+  - Chemical surroundings are adapted to promote bond changes during the reaction.
+  - The spatial arrangement of atoms influences ionization and electron flow.
+  - The immediate setting of the reactive site alters how atoms interact during catalysis.
+  ATP Hydrolysis:
+  - A high energy molecule is broken down to drive conformational shifts.
+  - Breakdown of a high-energy compound powers chemical transitions.
+  - Cleaving a specific high-energy bond allows the system to overcome energetic barriers.
+  - A secondary high-energy process brings energy into the system to promote transformation.
+  - High-energy bond cleavage is coupled to chemical changes in the system.
+  Bond Strain or Distortion:
+  - The substrate is bent or twisted into a higher-energy conformation.
+  - Structural tension is introduced into the substrate to increase the likelihood
+    of reaction.
+  - The substrate is reshaped into a geometry more favorable for reaction.
+  - Mechanical stress is applied to stretch or compress bonds in the substrate.
+  - The molecular arrangement of the substrate is structurally destabilized.
+  - The substrate is forced into a conformation resembling the transition state.
+  Catalysis by Approximation:
+  - Multiple substrates are brought together and precisely positioned for interaction.
+  - Reacting groups of the substrate are aligned in close space to favor bond formation.
+  - Substrates are oriented in a geometry that enhances the chance of chemical change.
+  - The reaction site arranges substrate components to ensure correct position for
+    reaction.
+  - Local concentration of substrates is effectively increased by spatial confinement.
+  - When two substrates are brought into close proximity with one another.
+  Covalent Catalysis:
+  - A temporary link is formed between the substrate and the enzyme.
+  - A direct interaction creates an intermediate enzyme-substrate complex that alters
+    the reaction pathway.
+  - The enzyme briefly attaches to the substrate during the reaction.
+  - A short-lived connection forms between the substrate and the enzyme.
+  - A reactive group on the enzyme bonds to the substrate to initiate a new pathway.
+  - The substrate and enzyme form an intermediate complex before completing the reaction.
+  - The enzyme forms a bond with the substrate that facilitates conversion into the
+    product.
+  - The reaction proceeds through a stage where the substrate is attached to the enzyme.
+  - Creates a new reaction pathway, i.e., adds an additional step in the reaction
+  Metal Ion and Electrostatic Catalysis:
+  - A positively charged ion attracts or repels electrons to promote the reaction.
+  - The arrangement of charged ions help guide the substrate into the ideal position
+    for chemistry.
+  - A charged ion stabilizes areas with too many electrons during a reaction step.
+  - Reactive partners are activated through interactions with nearby charged groups.
+  - The reaction center is stabilized by charge-based interactions during the transition
+    state.
+  - A charged ion holds the substrate in the right position for the reaction.
+  - An ion in the active site interacts with the substrate to support the reaction.
+  - A charged ion helps stabilize unstable intermediates during the reaction.
+  - Ions help organize the charges of important groups in the reaction.
+  - Uses a special cation to stabilize a negative charge in the active site
+  - uses an ion that can also act to stabilize the charges on the intermediates in
+    the reaction.
 exclude pairs:
-  - [Metal Ion and Electrostatic Catalysis, Active Site Microenvironment]
+- - Metal Ion and Electrostatic Catalysis
+  - Active Site Microenvironment
+dbsubject: Biochemistry

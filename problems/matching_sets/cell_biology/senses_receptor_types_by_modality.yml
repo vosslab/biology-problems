@@ -1,41 +1,34 @@
-# YAML file for Matching Questions
-# Chapter: Senses (intro biochemistry)
-
 items to match per question: 5
-
-# both singular and plural
 key description: sensory modality
 keys description: sensory modalities
-
-# both singular and plural
 value description: primary receptor cell type
 values description: primary receptor cell types
-
 matching pairs:
   Vision:
-    - Photoreceptors (rods and cones)
-    - Photoreceptors that use opsins
-    - Rod and cone photoreceptors (opsin + retinal)
+  - Photoreceptors (rods and cones)
+  - Photoreceptors that use opsins
+  - Rod and cone photoreceptors (opsin + retinal)
   Smell (olfaction):
-    - Olfactory sensory neurons (chemoreceptors; odorant receptors are GPCRs)
-    - Olfactory receptor neurons (odorant GPCRs)
-    - Olfactory sensory neurons that detect odorant molecules
+  - Olfactory sensory neurons (chemoreceptors; odorant receptors are GPCRs)
+  - Olfactory receptor neurons (odorant GPCRs)
+  - Olfactory sensory neurons that detect odorant molecules
   Taste (gustation):
-    - Taste receptor cells in taste buds (chemoreceptors)
-    - Taste receptor cells that detect chemicals in food
-    - Taste receptor cells (GPCR pathways and ion channels)
+  - Taste receptor cells in taste buds (chemoreceptors)
+  - Taste receptor cells that detect chemicals in food
+  - Taste receptor cells (GPCR pathways and ion channels)
   Hearing (audition):
-    - Mechanoreceptors (cochlear hair cells)
-    - Inner ear hair cells (mechanoreceptors)
-    - Mechanoreceptors that respond to sound-driven deflection
+  - Mechanoreceptors (cochlear hair cells)
+  - Inner ear hair cells (mechanoreceptors)
+  - Mechanoreceptors that respond to sound-driven deflection
   Balance (vestibular):
-    - Mechanoreceptors (vestibular hair cells)
-    - Vestibular hair cells (mechanoreceptors)
-    - Mechanoreceptors that respond to head motion and gravity
+  - Mechanoreceptors (vestibular hair cells)
+  - Vestibular hair cells (mechanoreceptors)
+  - Mechanoreceptors that respond to head motion and gravity
   Touch (pressure, vibration):
-    - Mechanoreceptors (skin, e.g., Pacinian corpuscles)
-    - Cutaneous mechanoreceptors in skin
-    - Cutaneous mechanoreceptors (many types; pressure and vibration)
-
+  - Mechanoreceptors (skin, e.g., Pacinian corpuscles)
+  - Cutaneous mechanoreceptors in skin
+  - Cutaneous mechanoreceptors (many types; pressure and vibration)
 exclude pairs:
-  - [Hearing (audition), Balance (vestibular)]
+- - Hearing (audition)
+  - Balance (vestibular)
+dbsubject: Cell Biology

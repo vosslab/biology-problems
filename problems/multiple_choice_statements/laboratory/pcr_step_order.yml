@@ -1,15 +1,11 @@
----
-
-#Which one of the following statements is FALSE/TRUE <connection word> <topic>
-topic: ~
-override_question_true: Which one of the following is the <strong>CORRECT</strong> order of steps in a polymerase chain reaction (PCR) reaction?
-override_question_false: ~
-connection_words: ~
-
+topic: null
+override_question_true: Which one of the following is the <strong>CORRECT</strong>
+  order of steps in a polymerase chain reaction (PCR) reaction?
+override_question_false: null
+connection_words: null
 true_statements:
   truth1a: Denaturation, annealing, and elongation
   truth1b: Denaturation, annealing, and extension
-
 false_statements:
   false1a: Denaturation, elongation, annealing
   false2a: Annealing, denaturation, elongation
@@ -51,12 +47,5 @@ false_statements:
   false3h: Binding, extension, separation
   false4h: Extension, separation, binding
   false5h: Extension, binding, separation
-
-
-# conflicts, means that the statements cannot appear together
-# add ': True' to each line, so the program runs a faster lookup
-conflict_rules: ~
-
-
-
-
+conflict_rules: null
+dbsubject: Laboratory Techniques

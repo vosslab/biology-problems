@@ -1,79 +1,75 @@
-# YAML file for Matching Questions
-
 items to match per question: 5
-
-# both singular and plural
 key description: stattest term
 keys description: stattest terms
-
-# both singular and plural
 value description: definition
 values description: definitions
-
 replacement_rules:
-    'reject ': '<span style="color: #e60000;">reject</span> ' #RED
-    rejected: '<span style="color: #e60000;">rejected</span>' #RED
-    althyp: '<span style="color: #e65400;">alternative hypothesis, H<sub>a</sub></span>' #DARK ORANGE
-    'stattest ': '<span style="color: #e69100;">statistical test</span> ' #LIGHT ORANGE
-    stattests: '<span style="color: #e69100;">statistical tests</span>' #LIGHT ORANGE
-    dof: '<span style="color: #b3b300;">degrees of freedom</span>' #DARK YELLOW
-    EEEEEEEE: '<span style="color: #59b300;">EEEEEEEE</span>' #LIME GREEN
-    'accept ': '<span style="color: #009900;">accept</span> ' #GREEN
-    accepted: '<span style="color: #009900;">accepted</span>' #GREEN
-    teststat: '<span style="color: #00b38f;">test statistic</span>' #TEAL
-    nullhyp: '<span style="color: #00b3b3;">null hypothesis, H<sub>0</sub></span>' #CYAN
-    IIIIIIII: '<span style="color: #0a9bf5;">IIIIIIII</span>' #SKY BLUE
-    critval: '<span style="color: #0039e6;">critical value</span>' #BLUE
-    KKKKKKKK: '<span style="color: #004d99;">KKKKKKKK</span>' #NAVY
-    losa:     '<span style="color: #7b12a1;">level of significance, &alpha;</span>' #PURPLE
-    p-value:  '<span style="color: #b30077;">p-value</span>' #MAGENTA
-    NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
-
+  'reject ': '<span style="color: #e60000;">reject</span> '
+  rejected: '<span style="color: #e60000;">rejected</span>'
+  althyp: '<span style="color: #e65400;">alternative hypothesis, H<sub>a</sub></span>'
+  'stattest ': '<span style="color: #e69100;">statistical test</span> '
+  stattests: '<span style="color: #e69100;">statistical tests</span>'
+  dof: '<span style="color: #b3b300;">degrees of freedom</span>'
+  EEEEEEEE: '<span style="color: #59b300;">EEEEEEEE</span>'
+  'accept ': '<span style="color: #009900;">accept</span> '
+  accepted: '<span style="color: #009900;">accepted</span>'
+  teststat: '<span style="color: #00b38f;">test statistic</span>'
+  nullhyp: '<span style="color: #00b3b3;">null hypothesis, H<sub>0</sub></span>'
+  IIIIIIII: '<span style="color: #0a9bf5;">IIIIIIII</span>'
+  critval: '<span style="color: #0039e6;">critical value</span>'
+  KKKKKKKK: '<span style="color: #004d99;">KKKKKKKK</span>'
+  losa: '<span style="color: #7b12a1;">level of significance, &alpha;</span>'
+  p-value: '<span style="color: #b30077;">p-value</span>'
+  NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>'
 matching pairs:
   critval:
-    - found in a table for given degrees of freedom and losa
-    - the boundary for how extreme a teststat must be to reject the nullhyp
-    - the cutoff used to compare against the observed teststat
-
+  - found in a table for given degrees of freedom and losa
+  - the boundary for how extreme a teststat must be to reject the nullhyp
+  - the cutoff used to compare against the observed teststat
   teststat:
-    - a function of the data computed to test the nullhyp
-    - a function of the data designed to measure agreement or disagreement with the null hypothesis
-    - if this value is large in the direction favoring the althyp, there is stronger evidence against the nullhyp
-    - the more extreme this value is under the nullhyp, the smaller the p-value
-
+  - a function of the data computed to test the nullhyp
+  - a function of the data designed to measure agreement or disagreement with the
+    null hypothesis
+  - if this value is large in the direction favoring the althyp, there is stronger
+    evidence against the nullhyp
+  - the more extreme this value is under the nullhyp, the smaller the p-value
   losa:
-    - the probability cutoff used to decide whether to reject the nullhyp
-    - the probability cutoff that limits how often we mistakenly reject a true nullhyp (later called a Type I error).
-    - the cutoff for how small a p-value must be to reject the nullhyp
-    - standard cutoff probability used to determine statistical significance
-    - biologists often use a probability of 0.05 (5%) for this value
-
+  - the probability cutoff used to decide whether to reject the nullhyp
+  - the probability cutoff that limits how often we mistakenly reject a true nullhyp
+    (later called a Type I error).
+  - the cutoff for how small a p-value must be to reject the nullhyp
+  - standard cutoff probability used to determine statistical significance
+  - biologists often use a probability of 0.05 (5%) for this value
   p-value:
-    - the probability, under the nullhyp, of obtaining a result at least as extreme as the one observed
-    - if this value is small, there is stronger evidence in favor of the althyp
-    - if this value is small, it suggests that the observed data are not consistent with the nullhyp
-    - smaller values typically correspond to more extreme teststat values
-
+  - the probability, under the nullhyp, of obtaining a result at least as extreme
+    as the one observed
+  - if this value is small, there is stronger evidence in favor of the althyp
+  - if this value is small, it suggests that the observed data are not consistent
+    with the nullhyp
+  - smaller values typically correspond to more extreme teststat values
   nullhyp:
-    - the hypothesis we attempt to find evidence against in a stattest
-    - the hypothesis we want to reject in a stattest
-    - this hypothesis defines the distribution used for comparison in the test
-    - defines the distribution used for comparison in the test
-    - defines the reference distribution used for comparison
-
+  - the hypothesis we attempt to find evidence against in a stattest
+  - the hypothesis we want to reject in a stattest
+  - this hypothesis defines the distribution used for comparison in the test
+  - defines the distribution used for comparison in the test
+  - defines the reference distribution used for comparison
   althyp:
-    - the hypothesis we aim to support indirectly by rejecting another hypothesis
-    - this hypothesis can sometimes be true even when the test fails to detect it (later called a Type II error)
-    - can be true even if the test fails to detect it (later called a Type II error)
-    - this hypothesis represents the possibility that the observed effect is real and not random
-    - this hypothesis represents the possibility that the observed effect is not due to random chance
-    - represents the possibility that an observed effect or relationship is real and not random
-    - represents the possibility that an observed effect or relationship is not due to random chance
-
+  - the hypothesis we aim to support indirectly by rejecting another hypothesis
+  - this hypothesis can sometimes be true even when the test fails to detect it (later
+    called a Type II error)
+  - can be true even if the test fails to detect it (later called a Type II error)
+  - this hypothesis represents the possibility that the observed effect is real and
+    not random
+  - this hypothesis represents the possibility that the observed effect is not due
+    to random chance
+  - represents the possibility that an observed effect or relationship is real and
+    not random
+  - represents the possibility that an observed effect or relationship is not due
+    to random chance
   dof:
-    - a parameter based on sample size and estimated parameters or constraints
-    - a parameter determined by sample size and the number of parameters
-    - based on how many independent pieces of information are available
-    - the count of values free to vary once constraints are applied
-    - depends on sample size and restrictions from estimated parameters
-
+  - a parameter based on sample size and estimated parameters or constraints
+  - a parameter determined by sample size and the number of parameters
+  - based on how many independent pieces of information are available
+  - the count of values free to vary once constraints are applied
+  - depends on sample size and restrictions from estimated parameters
+dbsubject: Biostatistics

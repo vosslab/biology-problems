@@ -1,178 +1,149 @@
-#YAML file for Matching Questions
-
 items to match per question: 4
-
-
-#both singular and plural
 key description: type of macromolecule
 keys description: types of macromolecules
-
-#both singular and plural
 value description: macromolecule
 values description: macromolecules
-
 replacement_rules:
-    lipids: '<span style="color: #e65400;">lipids</span>' #DARK ORANGE
-    proteins: '<span style="color: #009900;">proteins</span>' #GREEN
-    carbohydrates: '<span style="color: #0039e6;">carbohydrates</span>' #BLUE
-    nucleic acids: '<span style="color: #b30077;">nucleic acids</span>' #MAGENTA
-
+  lipids: '<span style="color: #e65400;">lipids</span>'
+  proteins: '<span style="color: #009900;">proteins</span>'
+  carbohydrates: '<span style="color: #0039e6;">carbohydrates</span>'
+  nucleic acids: '<span style="color: #b30077;">nucleic acids</span>'
 matching pairs:
   proteins:
-    - amino acids
-    - tryptophan
-    - alanine
-    - glycine
-    - serine
-    - threonine
-    - tyrosine
-    - phenylalanine
-    - histidine
-    - aspartate
-    - aspartic acid
-    - asparagine
-    - cysteine
-    - arginine
-    - glutamate
-    - glutamic acid
-    - glutamine
-    - leucine
-    - isoleucine
-    - methionine
-    - lysine
-    - proline
-    - valine
-
-    - polypeptides
-    - hemoglobin
-    - collagen
-    - insulin
-    - chymotypsin
-    - serum albumin &ndash; family of water-soluble polypeptides found in blood plasma
-    - lactalbumin &ndash; whey polypeptides found in milk
-    - antibodies &ndash; Y-shaped 150 kDa polypeptides used by the immune system
-    - enzymes
-
-
+  - amino acids
+  - tryptophan
+  - alanine
+  - glycine
+  - serine
+  - threonine
+  - tyrosine
+  - phenylalanine
+  - histidine
+  - aspartate
+  - aspartic acid
+  - asparagine
+  - cysteine
+  - arginine
+  - glutamate
+  - glutamic acid
+  - glutamine
+  - leucine
+  - isoleucine
+  - methionine
+  - lysine
+  - proline
+  - valine
+  - polypeptides
+  - hemoglobin
+  - collagen
+  - insulin
+  - chymotypsin
+  - serum albumin &ndash; family of water-soluble polypeptides found in blood plasma
+  - lactalbumin &ndash; whey polypeptides found in milk
+  - antibodies &ndash; Y-shaped 150 kDa polypeptides used by the immune system
+  - enzymes
   lipids:
-    - vegetable oil
-    - beeswax
-    - spermaceti wax &ndash; found in the head cavities of sperm whales
-    - carnauba wax &ndash; from leaves of the Brazilian palm tree
-    - shellac wax &ndash; secreted by the female lac bug
-    - castor oil &ndash; oil pressed from castor beans
-    - lanolin or wool wax &ndash; secreted by the sebaceous glands of sheep
-
-    - monoglycerides
-    - fatty acids
-    - butyric acid &ndash; a fatty acid with 4 carbons
-    - caproic acid &ndash; a fatty acid with 6 carbons
-    - caprylic acid &ndash; a fatty acid with 8 carbons
-    - capric acid &ndash; a fatty acid with 10 carbons
-    - lauric acid &ndash; a fatty acid with 12 carbons
-    - myristic acid &ndash; a fatty acid with 14 carbons
-    - palmitic acid &ndash; a fatty acid with 16 carbons
-    - stearic acid &ndash; a fatty acid with 18 carbons
-
-    - membrane bilayer
-    - diglycerides
-    - phospholipids
-    - sphingolipids
-    - sphingosine
-    - phosphatidylcholine
-
-    - triglycerides
-
-    - steroids
-    - cholesterol
-    - testosterone
-    - estrogen
-
+  - vegetable oil
+  - beeswax
+  - spermaceti wax &ndash; found in the head cavities of sperm whales
+  - carnauba wax &ndash; from leaves of the Brazilian palm tree
+  - shellac wax &ndash; secreted by the female lac bug
+  - castor oil &ndash; oil pressed from castor beans
+  - lanolin or wool wax &ndash; secreted by the sebaceous glands of sheep
+  - monoglycerides
+  - fatty acids
+  - butyric acid &ndash; a fatty acid with 4 carbons
+  - caproic acid &ndash; a fatty acid with 6 carbons
+  - caprylic acid &ndash; a fatty acid with 8 carbons
+  - capric acid &ndash; a fatty acid with 10 carbons
+  - lauric acid &ndash; a fatty acid with 12 carbons
+  - myristic acid &ndash; a fatty acid with 14 carbons
+  - palmitic acid &ndash; a fatty acid with 16 carbons
+  - stearic acid &ndash; a fatty acid with 18 carbons
+  - membrane bilayer
+  - diglycerides
+  - phospholipids
+  - sphingolipids
+  - sphingosine
+  - phosphatidylcholine
+  - triglycerides
+  - steroids
+  - cholesterol
+  - testosterone
+  - estrogen
   carbohydrates:
-    - sugar
-
-    - monosaccharides
-    - hexose
-    - pentose
-    - ketose
-    - aldose
-    - pyranose
-    - furanose
-
-    - erythrose
-    - threose
-    - erythrulose
-
-    - ribose
-    - arabinose
-    - xylose
-    - lyxose
-    - ribulose
-    - xylulose
-
-    - allose
-    - altrose
-    - glucose
-    - dextrose
-    - mannose
-    - gulose
-    - idose
-    - galactose
-    - talose
-
-    - psicose
-    - fructose
-    - sorbose
-    - tagatose
-
-    - disaccharides
-    - sucrose
-    - maltose
-    - trehalose
-    - lactose
-
-    - sorbitol &ndash; a sugar alcohol added to chewing gum
-    - xylitol &ndash; a sugar alcohol added to chewing gum
-
-    - oligosaccharides
-    - maltodextrin
-
-    - polysaccharides
-    - starch
-    - glycogen
-    - amylose starch
-    - amylopectin starch
-    - chitin
-    - cellulose
-    - hemicellulose
-    - dietary fiber
-    - fiber
-    - pectin &ndash; a heteropolysaccharide present in plant cell walls
-    - resistant starch
-    - xanthan gum &ndash; polysaccharide used as a thickening agent in food
-    - agarose &ndash; a heteropolysaccharide extracted from certain red seaweed
-
+  - sugar
+  - monosaccharides
+  - hexose
+  - pentose
+  - ketose
+  - aldose
+  - pyranose
+  - furanose
+  - erythrose
+  - threose
+  - erythrulose
+  - ribose
+  - arabinose
+  - xylose
+  - lyxose
+  - ribulose
+  - xylulose
+  - allose
+  - altrose
+  - glucose
+  - dextrose
+  - mannose
+  - gulose
+  - idose
+  - galactose
+  - talose
+  - psicose
+  - fructose
+  - sorbose
+  - tagatose
+  - disaccharides
+  - sucrose
+  - maltose
+  - trehalose
+  - lactose
+  - sorbitol &ndash; a sugar alcohol added to chewing gum
+  - xylitol &ndash; a sugar alcohol added to chewing gum
+  - oligosaccharides
+  - maltodextrin
+  - polysaccharides
+  - starch
+  - glycogen
+  - amylose starch
+  - amylopectin starch
+  - chitin
+  - cellulose
+  - hemicellulose
+  - dietary fiber
+  - fiber
+  - pectin &ndash; a heteropolysaccharide present in plant cell walls
+  - resistant starch
+  - xanthan gum &ndash; polysaccharide used as a thickening agent in food
+  - agarose &ndash; a heteropolysaccharide extracted from certain red seaweed
   nucleic acids:
-    - nucleotides
-    - adenine
-    - adenosine
-    - adenosine triphosphate
-    - thymine
-    - thymidine
-    - cytosine
-    - cytidine
-    - guanine
-    - guanosine
-    - guanosine triphosphate
-    - uracil
-    - uridine
-
-    - polynucleotides
-    - DNA
-    - RNA
-    - ATP
-    - GTP
-    - deoxyribonucleic acid
-    - ribonucleic acid
-
-
+  - nucleotides
+  - adenine
+  - adenosine
+  - adenosine triphosphate
+  - thymine
+  - thymidine
+  - cytosine
+  - cytidine
+  - guanine
+  - guanosine
+  - guanosine triphosphate
+  - uracil
+  - uridine
+  - polynucleotides
+  - DNA
+  - RNA
+  - ATP
+  - GTP
+  - deoxyribonucleic acid
+  - ribonucleic acid
+dbsubject: Biochemistry

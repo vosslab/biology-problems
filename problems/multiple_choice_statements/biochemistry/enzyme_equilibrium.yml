@@ -1,71 +1,44 @@
----
-
-#Which one of the following statements is FALSE/TRUE <connection word> <topic>
 topic: enzyme kinetics
-
-#override_question_true: ~
-#override_question_false: ~
-
 replacement_rules:
-  enzymes:            '<i>enzymes</i>'
-
-  free energy:        '<span style="color: #006600;">free energy</span>'
-  activation energy:  '<span style="color: #660000;">activation energy</span>'
-
-  increase:           '<span style="color: #009900;">increase</span>'
-  raise:              '<span style="color: #009900;">raise</span>'
-
-  decrease:           '<span style="color: #990000;">decrease</span>'
-  reduce:             '<span style="color: #990000;">reduce</span>'
-  lower:              '<span style="color: #990000;">lower</span>'
-
-  alter:              '<span style="color: #000099;">alter</span>'
-  change:             '<span style="color: #000099;">change</span>'
-
-
-connection_words: ~
-
+  enzymes: <i>enzymes</i>
+  free energy: '<span style="color: #006600;">free energy</span>'
+  activation energy: '<span style="color: #660000;">activation energy</span>'
+  increase: '<span style="color: #009900;">increase</span>'
+  raise: '<span style="color: #009900;">raise</span>'
+  decrease: '<span style="color: #990000;">decrease</span>'
+  reduce: '<span style="color: #990000;">reduce</span>'
+  lower: '<span style="color: #990000;">lower</span>'
+  alter: '<span style="color: #000099;">alter</span>'
+  change: '<span style="color: #000099;">change</span>'
+connection_words: null
 true_statements:
-  truth2a: enzymes cannot change the standard free energy (&Delta;G&deg;&prime;) of a chemical reaction
+  truth2a: enzymes cannot change the standard free energy (&Delta;G&deg;&prime;) of
+    a chemical reaction
   truth2b: enzymes cannot change the Gibbs free energy (&Delta;G) of a chemical reaction
-
   truth3a: enzymes cannot change the equilibrium of the chemical reaction
-
   truth4a: enzymes reduce the activation energy of a chemical reaction
   truth4b: enzymes decrease the activation energy of a chemical reaction
   truth4c: enzymes lower the activation energy of a chemical reaction
-
   truth5a: enzymes increase the rate of a chemical reaction
-
   truth12: enzymes stabilize the transition state in a chemical reaction
   truth13: enzymes can provide favorable microenvironments for a chemical reaction
-
 false_statements:
   false1a: enzymes only allow chemical reactions to go forward
   false1b: enzymes force chemical reactions to go forward
   false1c: enzymes produce more product than substrate in a chemical reaction
   false1d: enzymes only convert substrate to product and not the reverse
-
   false2a: enzymes alter the Gibbs free energy (&Delta;G) of a chemical reaction
-  false2b: enzymes alter the standard free energy (&Delta;G&deg;&prime;) of a chemical reaction
+  false2b: enzymes alter the standard free energy (&Delta;G&deg;&prime;) of a chemical
+    reaction
   false2c: enzymes make endergonic reactions proceed spontaneously
-
   false3a: enzymes alter the equilibrium of the chemical reaction
-
   false4a: enzymes increase the activation energy of a chemical reaction
   false4b: enzymes raise the activation energy of a chemical reaction
   false4c: enzymes eliminate the activation energy of a chemical reaction.
   false4d: enzymes cannot change the activation energy of the chemical reaction
   false4e: enzymes provide the needed activation energy for a chemical reaction
-
   false5a: enzymes reduce the rate of a chemical reaction
-
-  false6a: enzymes are needed in large quantities as they are used up in a chemical reaction
-
-
-
-
-
-# conflicts, means that the statements cannot appear together
-# add ': True' to each line, so the program runs a faster lookup
-conflict_rules: ~
+  false6a: enzymes are needed in large quantities as they are used up in a chemical
+    reaction
+conflict_rules: null
+dbsubject: Biochemistry

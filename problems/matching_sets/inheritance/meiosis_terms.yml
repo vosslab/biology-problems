@@ -1,80 +1,75 @@
-#YAML file for Matching Questions
-
 items to match per question: 4
-
-#both singular and plural
 key description: Meiosis term
 keys description: Meiosis terms
-
-#both singular and plural
 value description: definition
 values description: definitions
-
 replacement_rules:
-    homologous chromosomes: '<span style="color: #e60000;">homologous chromosomes</span>' #RED
-    BBBBBBBB: '<span style="color: #e65400;">BBBBBBBB</span>' #DARK ORANGE
-    CCCCCCCC: '<span style="color: #e69100;">CCCCCCCC</span>' #LIGHT ORANGE
-    DDDDDDDD: '<span style="color: #b3b300;">DDDDDDDD</span>' #DARK YELLOW
-    EEEEEEEE: '<span style="color: #59b300;">EEEEEEEE</span>' #LIME GREEN
-    FFFFFFFF: '<span style="color: #009900;">FFFFFFFF</span>' #GREEN
-    GGGGGGGG: '<span style="color: #00b38f;">GGGGGGGG</span>' #TEAL
-    homologousx: '<span style="color: #00b3b3;">homologous</span>' #CYAN
-    IIIIIIII: '<span style="color: #0a9bf5;">IIIIIIII</span>' #SKY BLUE
-    JJJJJJJJ: '<span style="color: #0039e6;">JJJJJJJJ</span>' #BLUE
-    KKKKKKKK: '<span style="color: #004d99;">KKKKKKKK</span>' #NAVY
-    LLLLLLLL: '<span style="color: #7b12a1;">LLLLLLLL</span>' #PURPLE
-    MMMMMMMM: '<span style="color: #b30077;">MMMMMMMM</span>' #MAGENTA
-    NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
-
-#######################
+  homologous chromosomes: '<span style="color: #e60000;">homologous chromosomes</span>'
+  BBBBBBBB: '<span style="color: #e65400;">BBBBBBBB</span>'
+  CCCCCCCC: '<span style="color: #e69100;">CCCCCCCC</span>'
+  DDDDDDDD: '<span style="color: #b3b300;">DDDDDDDD</span>'
+  EEEEEEEE: '<span style="color: #59b300;">EEEEEEEE</span>'
+  FFFFFFFF: '<span style="color: #009900;">FFFFFFFF</span>'
+  GGGGGGGG: '<span style="color: #00b38f;">GGGGGGGG</span>'
+  homologousx: '<span style="color: #00b3b3;">homologous</span>'
+  IIIIIIII: '<span style="color: #0a9bf5;">IIIIIIII</span>'
+  JJJJJJJJ: '<span style="color: #0039e6;">JJJJJJJJ</span>'
+  KKKKKKKK: '<span style="color: #004d99;">KKKKKKKK</span>'
+  LLLLLLLL: '<span style="color: #7b12a1;">LLLLLLLL</span>'
+  MMMMMMMM: '<span style="color: #b30077;">MMMMMMMM</span>'
+  NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>'
 matching pairs:
   homologous chromosomes:
-    - two similar but different copies of a chromosome
-    - one chromosome from the mother and one chromosome from the father
-    - two chromosomes which carry the same genes, one from each parental source
-    - chromosomes which contain the same genes in the same order along their chromosomal arms
-    - chromosomes of similar length, gene position, and centromere location
-    - two chromosomes containing identical genetic loci although possibly different allelic forms
-    - chromosome pairs (one from each parent) that are similar in length, gene position, and centromere location
-
+  - two similar but different copies of a chromosome
+  - one chromosome from the mother and one chromosome from the father
+  - two chromosomes which carry the same genes, one from each parental source
+  - chromosomes which contain the same genes in the same order along their chromosomal
+    arms
+  - chromosomes of similar length, gene position, and centromere location
+  - two chromosomes containing identical genetic loci although possibly different
+    allelic forms
+  - chromosome pairs (one from each parent) that are similar in length, gene position,
+    and centromere location
   homologousx:
-    - not an exact copy but having the same structural features and pattern of genes
-    - corresponding or similar in position, value, structure, or function
-    - similar in structure and evolutionary origin, though not necessarily in function
-    - corresponding or alike in certain critical attributes
-    - denoting organs or parts corresponding in evolutionary origin and similar to some extent in structure
-    - having a similar position, structure, value, or purpose
-
+  - not an exact copy but having the same structural features and pattern of genes
+  - corresponding or similar in position, value, structure, or function
+  - similar in structure and evolutionary origin, though not necessarily in function
+  - corresponding or alike in certain critical attributes
+  - denoting organs or parts corresponding in evolutionary origin and similar to some
+    extent in structure
+  - having a similar position, structure, value, or purpose
   synapsis:
-    - process of pairing of homologous (maternal and paternal) chromosomes
-    - the lengthwise pairing of homologous chromosomes
-    - the joining of the two homologous chromosomes
-    - the matching-up of homologous pairs prior to their segregation
-    - homologous chromosomes pair with their counterparts and remain bound
-    - pairing of homologous chromosomes prior to their separation into daughter cells
-
+  - process of pairing of homologous (maternal and paternal) chromosomes
+  - the lengthwise pairing of homologous chromosomes
+  - the joining of the two homologous chromosomes
+  - the matching-up of homologous pairs prior to their segregation
+  - homologous chromosomes pair with their counterparts and remain bound
+  - pairing of homologous chromosomes prior to their separation into daughter cells
   sister chromatids:
-    - two identical copies of a single replicated chromosome joined at the centromere
-    - two identical copies of the same chromosome formed by DNA replication
-    - two identical copies of the same chromosome attached to each other by the centromere
-    - a single duplicated chromosome with a common centromere
-    - identical copies (chromatids) of a chromosome formed by DNA replication
-    - two identical copies of a chromosome joined together by a common centromere
-    - two identical chromatids that are formed by replication of a chromosome
-    - two identical copies of one chromosome specifically created for cell division
-
+  - two identical copies of a single replicated chromosome joined at the centromere
+  - two identical copies of the same chromosome formed by DNA replication
+  - two identical copies of the same chromosome attached to each other by the centromere
+  - a single duplicated chromosome with a common centromere
+  - identical copies (chromatids) of a chromosome formed by DNA replication
+  - two identical copies of a chromosome joined together by a common centromere
+  - two identical chromatids that are formed by replication of a chromosome
+  - two identical copies of one chromosome specifically created for cell division
   crossing over:
-    - the exchange of genes between homologous chromosomes, resulting in a mixture of parental characteristics
-    - two homologous chromosomes line up and parts of the chromosomes can be exchanged
-    - the exchange of genes between two homologous chromosomes, resulting in a mixture of parental characteristics
-    - the exchange of genetic material between homologous chromosomes
-    - the actual exchange of segments between homologous chromosomes
-    - a process by which parts of homologous chromosomes are interchanged
-
+  - the exchange of genes between homologous chromosomes, resulting in a mixture of
+    parental characteristics
+  - two homologous chromosomes line up and parts of the chromosomes can be exchanged
+  - the exchange of genes between two homologous chromosomes, resulting in a mixture
+    of parental characteristics
+  - the exchange of genetic material between homologous chromosomes
+  - the actual exchange of segments between homologous chromosomes
+  - a process by which parts of homologous chromosomes are interchanged
   chiasmata:
-    - the physical link between non-sister chromatids of homologous chromosomes that remain after crossing over
-    - the point of contact between paired chromatids that marks a crossover site
-    - specialized chromatin structures that link homologous chromosomes together
-    - the visible link between two (non-sister) chromatids belonging to homologous chromosomes
-    - the region where homologous chromosomes stay connected after crossing over
-    - a point of overlap of paired chromatids at which exchange of genetic material has taken place
+  - the physical link between non-sister chromatids of homologous chromosomes that
+    remain after crossing over
+  - the point of contact between paired chromatids that marks a crossover site
+  - specialized chromatin structures that link homologous chromosomes together
+  - the visible link between two (non-sister) chromatids belonging to homologous chromosomes
+  - the region where homologous chromosomes stay connected after crossing over
+  - a point of overlap of paired chromatids at which exchange of genetic material
+    has taken place
+dbsubject: Genetics

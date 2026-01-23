@@ -1,35 +1,22 @@
----
-
-#Which one of the following statements is FALSE/TRUE <connection word> <topic>
 topic: the G&cdot;U wobble base pair
-
-connection_words: ~
-
+connection_words: null
 true_statements:
-  truth11: the G&cdot;U wobble base pair ribose sugar glycosidic bond angles are shifted from normal
-
+  truth11: the G&cdot;U wobble base pair ribose sugar glycosidic bond angles are shifted
+    from normal
   truth12: the G&cdot;U wobble base pair is a fundamental unit of RNA secondary structure
-
-  truth13: the G&cdot;U wobble base pair differs in the orientation of the bases with respect to the backbone
-
-  truth14: the G&cdot;U wobble base pair the most common mismatch (non Watson-Crick) in the RNA helices
-
-  truth15: the G&cdot;U wobble base pair provides unique hydrogen bond donors and acceptors in the major and minor grooves of the RNA helices
-
-  truth16: unlike Watson-Crick base pairs, the G&cdot;U wobble base pair does not have a amino group in the minor groove
-
+  truth13: the G&cdot;U wobble base pair differs in the orientation of the bases with
+    respect to the backbone
+  truth14: the G&cdot;U wobble base pair the most common mismatch (non Watson-Crick)
+    in the RNA helices
+  truth15: the G&cdot;U wobble base pair provides unique hydrogen bond donors and
+    acceptors in the major and minor grooves of the RNA helices
+  truth16: unlike Watson-Crick base pairs, the G&cdot;U wobble base pair does not
+    have a amino group in the minor groove
 false_statements:
-  false1: the G&cdot;U wobble base pair causes the local double helix region to wobble in solution
-
+  false1: the G&cdot;U wobble base pair causes the local double helix region to wobble
+    in solution
   false2: the G&cdot;U wobble base pair is named for famous scientist Chandler Wobble.
-
-  false3: the G&cdot;U wobble base pair is only found in nucleotide structures that wobble
-
-
-
-
-# conflicts, means that the statements cannot appear together
-# add ': True' to each line, so the program runs a faster lookup
-conflict_rules: ~
-
-
+  false3: the G&cdot;U wobble base pair is only found in nucleotide structures that
+    wobble
+conflict_rules: null
+dbsubject: Molecular Biology

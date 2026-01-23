@@ -1,85 +1,75 @@
-#YAML file for Matching Questions
-
 items to match per question: 5
-
-#both singular and plural
 key description: genetic term
 keys description: genetic terms
-
-#both singular and plural
 value description: definition
 values description: definitions
-
 replacement_rules:
-    haploid: '<span style="color: #e60000;">haploid</span>' #RED
-    'gene ': '<span style="color: #e65400;">gene</span> ' #DARK ORANGE
-    locus: '<span style="color: #e69100;">locus</span>' #LIGHT ORANGE
-    genomes: '<span style="color: #b3b300;">genomes</span>' #DARK YELLOW
-    'genome ': '<span style="color: #b3b300;">genome</span> ' #DARK YELLOW
-    'single nucleotide polymorphism (SNP)': '<span style="color: #59b300;">single nucleotide polymorphism (SNP)</span>' #LIME GREEN
-    genetics: '<span style="color: #009900;">genetics</span>' #GREEN
-    'homologous chromosomes': '<span style="color: #00b38f;">homologous chromosomes</span>' #TEAL
-    diploid: '<span style="color: #00b3b3;">diploid</span>' #CYAN
-    IIIIIIII: '<span style="color: #0a9bf5;">IIIIIIII</span>' #SKY BLUE
-    'genetic code': '<span style="color: #0039e6;">genetic code</span>' #BLUE
-    KKKKKKKK: '<span style="color: #004d99;">KKKKKKKK</span>' #NAVY
-    'genetic term ': '<span style="color: #7b12a1;">genetic term</span> ' #PURPLE
-    'genetic terms': '<span style="color: #7b12a1;">genetic terms</span>' #PURPLE
-    genomics: '<span style="color: #b30077;">genomics</span>' #MAGENTA
-    NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
-
-#######################
+  haploid: '<span style="color: #e60000;">haploid</span>'
+  'gene ': '<span style="color: #e65400;">gene</span> '
+  locus: '<span style="color: #e69100;">locus</span>'
+  genomes: '<span style="color: #b3b300;">genomes</span>'
+  'genome ': '<span style="color: #b3b300;">genome</span> '
+  single nucleotide polymorphism (SNP): '<span style="color: #59b300;">single nucleotide
+    polymorphism (SNP)</span>'
+  genetics: '<span style="color: #009900;">genetics</span>'
+  homologous chromosomes: '<span style="color: #00b38f;">homologous chromosomes</span>'
+  diploid: '<span style="color: #00b3b3;">diploid</span>'
+  IIIIIIII: '<span style="color: #0a9bf5;">IIIIIIII</span>'
+  genetic code: '<span style="color: #0039e6;">genetic code</span>'
+  KKKKKKKK: '<span style="color: #004d99;">KKKKKKKK</span>'
+  'genetic term ': '<span style="color: #7b12a1;">genetic term</span> '
+  genetic terms: '<span style="color: #7b12a1;">genetic terms</span>'
+  genomics: '<span style="color: #b30077;">genomics</span>'
+  NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>'
 matching pairs:
   haploid:
-    - a cell or organism that a single set of chromosomes
-
+  - a cell or organism that a single set of chromosomes
   diploid:
-    - a cell or organism that has paired chromosomes
-
+  - a cell or organism that has paired chromosomes
   'gene ':
-    - the unit of inheritance passed from parents to offspring
-    - the main elements of heredity
-
+  - the unit of inheritance passed from parents to offspring
+  - the main elements of heredity
   genetics:
-    - the study of heredity and the variation of inherited characteristics
-    - the study of the effect of genetic differences on organisms
-    - study of genes, genetic variation, and heredity in organisms
-    - scientific study of how genes control the characteristics of plants and animals
-    - study of both trait and molecular inheritance mechanisms of genes
-    - the study of heredity and how genes control the inherited characteristics
-
+  - the study of heredity and the variation of inherited characteristics
+  - the study of the effect of genetic differences on organisms
+  - study of genes, genetic variation, and heredity in organisms
+  - scientific study of how genes control the characteristics of plants and animals
+  - study of both trait and molecular inheritance mechanisms of genes
+  - the study of heredity and how genes control the inherited characteristics
   genetic code:
-    - the set of instructions that tell a cell how to make a specific protein
-    - the set of rules used by living cells to translate information encoded within genetic material into proteins
-    - the set of instructions that converts the sequence of nucleotides into an amino acid sequence in proteins
-    - the code our body uses to convert the instructions contained in our DNA the essential materials of life
-
+  - the set of instructions that tell a cell how to make a specific protein
+  - the set of rules used by living cells to translate information encoded within
+    genetic material into proteins
+  - the set of instructions that converts the sequence of nucleotides into an amino
+    acid sequence in proteins
+  - the code our body uses to convert the instructions contained in our DNA the essential
+    materials of life
   genomics:
-    - the study of all of the genes in an organism
-    - the structure, function, evolution, and mapping of genomes
-
+  - the study of all of the genes in an organism
+  - the structure, function, evolution, and mapping of genomes
   'genome ':
-    - an organism's complete set of DNA
-    - complete set of DNA in an organism
-    - complete set of DNA in a cell or organism
-
+  - an organism's complete set of DNA
+  - complete set of DNA in an organism
+  - complete set of DNA in a cell or organism
   locus:
-    - location of a gene on a chromosome
-    - where on a chromosome a specific gene is located
-    - a specific, fixed position on a chromosome of a particular gene
-    - a spot or "address" on a chromosome at which a gene for a particular trait is located
-    - the physical position of a gene within a chromosome
-
+  - location of a gene on a chromosome
+  - where on a chromosome a specific gene is located
+  - a specific, fixed position on a chromosome of a particular gene
+  - a spot or "address" on a chromosome at which a gene for a particular trait is
+    located
+  - the physical position of a gene within a chromosome
   single nucleotide polymorphism (SNP):
-    - variation resulting from a single base pair change
-    - most common type of genetic variation among people
-    - a genomic variant at a single base position in the DNA
-    - a substitution of a single nucleotide at a specific position in the genome
-
+  - variation resulting from a single base pair change
+  - most common type of genetic variation among people
+  - a genomic variant at a single base position in the DNA
+  - a substitution of a single nucleotide at a specific position in the genome
   homologous chromosomes:
-    - two similar but different copies of a chromosome
-    - one chromosome from the mother and one chromosome from the father
-    - two chromosomes which carry the same genes, one from each parental source
-    - chromosomes which contain the same genes in the same order along their chromosomal arms
-    - chromosomes of similar length, gene position, and centromere location
-    - two chromosomes containing identical genetic loci although possibly different allelic forms
+  - two similar but different copies of a chromosome
+  - one chromosome from the mother and one chromosome from the father
+  - two chromosomes which carry the same genes, one from each parental source
+  - chromosomes which contain the same genes in the same order along their chromosomal
+    arms
+  - chromosomes of similar length, gene position, and centromere location
+  - two chromosomes containing identical genetic loci although possibly different
+    allelic forms
+dbsubject: Genetics

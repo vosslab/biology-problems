@@ -1,112 +1,110 @@
-
 items to match per question: 4
-
-#both singular and plural
 key description: cell disruption method
 keys description: cell disruption techniques
-
-#both singular and plural
 value description: description
 values description: descriptions
-
 replacement_rules:
-    cells: '<span style="color: #e60000;">cells</span>' #RED
-    'cell ': '<span style="color: #e65400;">cell</span> ' #DARK ORANGE
-    Enzymatic Method: '<span style="color: #e69100;">Enzymatic Method</span>' #LIGHT ORANGE
-    Bead-beating: '<span style="color: #b3b300;">Bead-beating</span>' #DARK YELLOW
-    Sonication: '<span style="color: #59b300;">Sonication</span>' #LIME GREEN
-    Freeze-thaw: '<span style="color: #009900;">Freeze-thaw</span>' #GREEN
-    'Mortar &amp; Pestle': '<span style="color: #00b38f;">Mortar &amp; Pestle</span>' #TEAL
-    Dounce Homogenizer: '<span style="color: #00b3b3;">Dounce Homogenizer</span>' #CYAN
-    Mechanical Homogenizer: '<span style="color: #0a9bf5;">Mechanical Homogenizer</span>' #SKY BLUE
-    French Press: '<span style="color: #0039e6;">French Press</span>' #BLUE
-    Microfluidizer: '<span style="color: #004d99;">Microfluidizer</span>' #NAVY
-    High-throughput Homogenizer: '<span style="color: #7b12a1;">High-throughput Homogenizer</span>' #PURPLE
-    MMMMMMMM: '<span style="color: #b30077;">MMMMMMMM</span>' #MAGENTA
-    NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
-
-
+  cells: '<span style="color: #e60000;">cells</span>'
+  'cell ': '<span style="color: #e65400;">cell</span> '
+  Enzymatic Method: '<span style="color: #e69100;">Enzymatic Method</span>'
+  Bead-beating: '<span style="color: #b3b300;">Bead-beating</span>'
+  Sonication: '<span style="color: #59b300;">Sonication</span>'
+  Freeze-thaw: '<span style="color: #009900;">Freeze-thaw</span>'
+  Mortar &amp; Pestle: '<span style="color: #00b38f;">Mortar &amp; Pestle</span>'
+  Dounce Homogenizer: '<span style="color: #00b3b3;">Dounce Homogenizer</span>'
+  Mechanical Homogenizer: '<span style="color: #0a9bf5;">Mechanical Homogenizer</span>'
+  French Press: '<span style="color: #0039e6;">French Press</span>'
+  Microfluidizer: '<span style="color: #004d99;">Microfluidizer</span>'
+  High-throughput Homogenizer: '<span style="color: #7b12a1;">High-throughput Homogenizer</span>'
+  MMMMMMMM: '<span style="color: #b30077;">MMMMMMMM</span>'
+  NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>'
 matching pairs:
   Enzymatic Method:
-    - Chemical reactions digest the cell wall.
-    - Cells are suspended in buffers containing protein catalysts that digest the cell wall.
-    - Digestive protein catalysts digest and decompose the microbial cell wall.
-    - Lysozyme is commonly used to digest the cell wall of gram-positive bacteria.
-    - Digestion of the cell wall by chemical reactions.
-    - Cells wall digestion by protein catalysts.
-    - Protein catalysts decompose the microbial cell wall.
-    - Lysozyme digests gram-positive bacterial cell walls.
-
+  - Chemical reactions digest the cell wall.
+  - Cells are suspended in buffers containing protein catalysts that digest the cell
+    wall.
+  - Digestive protein catalysts digest and decompose the microbial cell wall.
+  - Lysozyme is commonly used to digest the cell wall of gram-positive bacteria.
+  - Digestion of the cell wall by chemical reactions.
+  - Cells wall digestion by protein catalysts.
+  - Protein catalysts decompose the microbial cell wall.
+  - Lysozyme digests gram-positive bacterial cell walls.
   Bead-beating:
-    - Tiny glass particles are mixed and stirred to a high level of agitation.
-    - This technique involves using glass or metal particles to apply gentle abrasion while vortexing them.
-    - Small glass particles are placed into a blender and act like bullets smashing the cells.
-    - Small glass or ceramic particles are used to crack open cells.
-    - Gentle abrasion is applied to cells through vortexing with glass or metal particles.
-    - Glass or ceramic particles stirred at high speeds crack cells open.
-
+  - Tiny glass particles are mixed and stirred to a high level of agitation.
+  - This technique involves using glass or metal particles to apply gentle abrasion
+    while vortexing them.
+  - Small glass particles are placed into a blender and act like bullets smashing
+    the cells.
+  - Small glass or ceramic particles are used to crack open cells.
+  - Gentle abrasion is applied to cells through vortexing with glass or metal particles.
+  - Glass or ceramic particles stirred at high speeds crack cells open.
   Sonication:
-    - This technique applies high-frequency sound waves to shatter cells.
-    - This technique uses short bursts of ultrasonic waves to disrupt the tissue.
-    - High-frequency sound waves cause disruption of cells by shear force and tension.
-    - Ultrasonic sound energy is used to cause air bubbles in a liquid to implode, damaging the cells.
-    - High-frequency sound waves produce tiny bubbles that explode, producing a local shockwave.
-    - This technique uses the forces of ultrasonic waves to rupture cells.
-    - Ultrasonic waves in short bursts are employed to disintegrate tissue.
-    - Cells are disrupted by the shear force and tension caused by high-frequency sound waves.
-    - Ultrasonic waves rupture cell walls.
-    - Shear force from high-frequency waves disrupts cells.
-
+  - This technique applies high-frequency sound waves to shatter cells.
+  - This technique uses short bursts of ultrasonic waves to disrupt the tissue.
+  - High-frequency sound waves cause disruption of cells by shear force and tension.
+  - Ultrasonic sound energy is used to cause air bubbles in a liquid to implode, damaging
+    the cells.
+  - High-frequency sound waves produce tiny bubbles that explode, producing a local
+    shockwave.
+  - This technique uses the forces of ultrasonic waves to rupture cells.
+  - Ultrasonic waves in short bursts are employed to disintegrate tissue.
+  - Cells are disrupted by the shear force and tension caused by high-frequency sound
+    waves.
+  - Ultrasonic waves rupture cell walls.
+  - Shear force from high-frequency waves disrupts cells.
   Freeze-thaw:
-    - This technique uses extremely cold temperatures and grinding to pulverize cells.
-    - Under cold temperatures, the water inside the cells expands into ice, causing the cells to burst open.
-    - Cell suspensions are subjected to variable temperatures, resulting in rupture of the walls.
-    - Cold temperatures form ice crystals, which expand, ultimately causing the cell wall to rupture.
-    - Cells are pulverized through a combination of extreme cold.
-    - The cell walls rupture due to extreme temperature variations.
-    - Extreme temperature variations cause cell wall rupture.
-    - Ice crystal expansion leads to cell wall disruption.
-
-  'Mortar &amp; Pestle':
-    - Samples are ground by hand to break apart into small pieces.
-    - This is laborious manual work that can take several minutes.
-    - Grinding of the cells by hand to disrupt the cell walls.
-    - The cells are disrupted by hand grinding them.
-    - Manual grinding of cells that can take several minutes."
-
+  - This technique uses extremely cold temperatures and grinding to pulverize cells.
+  - Under cold temperatures, the water inside the cells expands into ice, causing
+    the cells to burst open.
+  - Cell suspensions are subjected to variable temperatures, resulting in rupture
+    of the walls.
+  - Cold temperatures form ice crystals, which expand, ultimately causing the cell
+    wall to rupture.
+  - Cells are pulverized through a combination of extreme cold.
+  - The cell walls rupture due to extreme temperature variations.
+  - Extreme temperature variations cause cell wall rupture.
+  - Ice crystal expansion leads to cell wall disruption.
+  Mortar &amp; Pestle:
+  - Samples are ground by hand to break apart into small pieces.
+  - This is laborious manual work that can take several minutes.
+  - Grinding of the cells by hand to disrupt the cell walls.
+  - The cells are disrupted by hand grinding them.
+  - Manual grinding of cells that can take several minutes."
   Dounce Homogenizer:
-    - Handheld device that spins in a tube to smash cells.
-    - Handheld cylindrical glass tube and a spinning pestle that has a tight fit within the shaft.
-    - Cells are smashed using a spinning handheld device in a tube.
-    - A spinning handheld device smashes cells in a tube.
-
+  - Handheld device that spins in a tube to smash cells.
+  - Handheld cylindrical glass tube and a spinning pestle that has a tight fit within
+    the shaft.
+  - Cells are smashed using a spinning handheld device in a tube.
+  - A spinning handheld device smashes cells in a tube.
   Mechanical Homogenizer:
-    - Drill-like device with spinning rotor blades to shear cells apart.
-    - Consists of a fast-spinning inner rotor with a stationary outer stator to produce shearing forces.
-    - Motorized device with rotating blades that shear cells apart.
-    - Shearing forces from spinning blades break cells apart.
-    - Spinning rotor blades shear the cell walls.
-
+  - Drill-like device with spinning rotor blades to shear cells apart.
+  - Consists of a fast-spinning inner rotor with a stationary outer stator to produce
+    shearing forces.
+  - Motorized device with rotating blades that shear cells apart.
+  - Shearing forces from spinning blades break cells apart.
+  - Spinning rotor blades shear the cell walls.
   French Press:
-    - A hydraulic piston within a cylinder forces cells through a small hole using high pressure.
-    - A hydraulic press drives a piston to squeeze the sample through a needle valve.
-    - Cell suspension is forced through a narrow valve using a hydraulic piston.
-    - Cells are pushed through a small hole using high pressure from a hydraulic piston.
-    - Cells are forced through a tiny hole by a high-pressure hydraulic piston.
-    - High-pressure hydraulic piston forces cells through a small hole.
-
+  - A hydraulic piston within a cylinder forces cells through a small hole using high
+    pressure.
+  - A hydraulic press drives a piston to squeeze the sample through a needle valve.
+  - Cell suspension is forced through a narrow valve using a hydraulic piston.
+  - Cells are pushed through a small hole using high pressure from a hydraulic piston.
+  - Cells are forced through a tiny hole by a high-pressure hydraulic piston.
+  - High-pressure hydraulic piston forces cells through a small hole.
   Microfluidizer:
-    - A high-pressure pump pushes cells through a Z-shaped interaction chamber.
-    - Uses a pump and a Z-shaped interaction chamber to create high pressures.
-    - High pressures are generated using a Z-shaped chamber and a pump.
-    - A Z-shaped interaction chamber and pump work in tandem to exert high pressures on cells.
-    - Z-shaped chamber and pump create high pressure to disrupt cells.
-    - Cells are pushed through a Z-shaped chamber using a high-pressure pump.
-
+  - A high-pressure pump pushes cells through a Z-shaped interaction chamber.
+  - Uses a pump and a Z-shaped interaction chamber to create high pressures.
+  - High pressures are generated using a Z-shaped chamber and a pump.
+  - A Z-shaped interaction chamber and pump work in tandem to exert high pressures
+    on cells.
+  - Z-shaped chamber and pump create high pressure to disrupt cells.
+  - Cells are pushed through a Z-shaped chamber using a high-pressure pump.
   High-throughput Homogenizer:
-    - An expensive bead-beating machine can process a large number of samples simultaneously in a short time.
-    - Numerous samples are processed simultaneously using a bead-beating machine.
-    - Large numbers of samples are disrupted simultaneously using a bead-beating machine.
-
+  - An expensive bead-beating machine can process a large number of samples simultaneously
+    in a short time.
+  - Numerous samples are processed simultaneously using a bead-beating machine.
+  - Large numbers of samples are disrupted simultaneously using a bead-beating machine.
 exclude pairs:
-  - [High-throughput Homogenizer, Bead-beating]
+- - High-throughput Homogenizer
+  - Bead-beating
+dbsubject: Laboratory Techniques

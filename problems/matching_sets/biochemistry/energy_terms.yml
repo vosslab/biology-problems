@@ -1,62 +1,54 @@
-#YAML file for Matching Questions
-
 items to match per question: 2
-
-question override: "Match each energy requirement category with its corresponding energy term."
-
-#both singular and plural
+question override: Match each energy requirement category with its corresponding energy
+  term.
 key description: energy requirement category
 keys description: energy requirement categories
-
-#both singular and plural
 value description: energy term
 values description: energy terms
-
 replacement_rules:
-    releases&nbsp;energy: '<span style="color: #e60000;">releases&nbsp;energy</span>' #RED
-    BBBBBBBB: '<span style="color: #e65400;">BBBBBBBB</span>' #DARK ORANGE
-    CCCCCCCC: '<span style="color: #e69100;">CCCCCCCC</span>' #LIGHT ORANGE
-    DDDDDDDD: '<span style="color: #b3b300;">DDDDDDDD</span>' #DARK YELLOW
-    reactions: '<span style="color: #59b300;">reactions</span>' #LIME GREEN
-    FFFFFFFF: '<span style="color: #009900;">FFFFFFFF</span>' #GREEN
-    GGGGGGGG: '<span style="color: #00b38f;">GGGGGGGG</span>' #TEAL
-    HHHHHHHH: '<span style="color: #00b3b3;">HHHHHHHH</span>' #CYAN
-    requires&nbsp;energy&nbsp;input: '<span style="color: #0a9bf5;">requires&nbsp;energy&nbsp;input</span>' #SKY BLUE
-    JJJJJJJJ: '<span style="color: #0039e6;">JJJJJJJJ</span>' #BLUE
-    KKKKKKKK: '<span style="color: #004d99;">KKKKKKKK</span>' #NAVY
-    formation: '<span style="color: #7b12a1;">formation</span>' #PURPLE
-    breaking: '<span style="color: #b30077;">breaking</span>' #MAGENTA
-    NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
-
+  releases&nbsp;energy: '<span style="color: #e60000;">releases&nbsp;energy</span>'
+  BBBBBBBB: '<span style="color: #e65400;">BBBBBBBB</span>'
+  CCCCCCCC: '<span style="color: #e69100;">CCCCCCCC</span>'
+  DDDDDDDD: '<span style="color: #b3b300;">DDDDDDDD</span>'
+  reactions: '<span style="color: #59b300;">reactions</span>'
+  FFFFFFFF: '<span style="color: #009900;">FFFFFFFF</span>'
+  GGGGGGGG: '<span style="color: #00b38f;">GGGGGGGG</span>'
+  HHHHHHHH: '<span style="color: #00b3b3;">HHHHHHHH</span>'
+  requires&nbsp;energy&nbsp;input: '<span style="color: #0a9bf5;">requires&nbsp;energy&nbsp;input</span>'
+  JJJJJJJJ: '<span style="color: #0039e6;">JJJJJJJJ</span>'
+  KKKKKKKK: '<span style="color: #004d99;">KKKKKKKK</span>'
+  formation: '<span style="color: #7b12a1;">formation</span>'
+  breaking: '<span style="color: #b30077;">breaking</span>'
+  NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>'
 matching pairs:
-  'requires&nbsp;energy&nbsp;input':
-    - anabolic
-    - endergonic
-    - '&Delta;G &gt; 0'
-    - '&Delta;G&deg;&prime; &gt; 0'
-    - Gibbs free energy greater than zero
-    - non-spontaneous
-    - dehydration reactions
-    - formation of polymers
-    - condensation reactions
-    - forming bonds
-    - bond formation
-    - building muscle
-    - polymer formation
-    - bio-synthesis
-    - making larger, complex molecules
-    - isomerization, bond rearrangement reactions
-
-  'releases&nbsp;energy':
-    - catabolic
-    - exergonic
-    - '&Delta;G &lt; 0'
-    - '&Delta;G&deg;&prime; &lt; 0'
-    - Gibbs free energy less than zero
-    - spontaneous
-    - hydrolysis reactions
-    - digestion
-    - breaking bonds
-    - breaking down food
-    - breaking down polymers
-    - polymer breakdown
+  requires&nbsp;energy&nbsp;input:
+  - anabolic
+  - endergonic
+  - '&Delta;G &gt; 0'
+  - '&Delta;G&deg;&prime; &gt; 0'
+  - Gibbs free energy greater than zero
+  - non-spontaneous
+  - dehydration reactions
+  - formation of polymers
+  - condensation reactions
+  - forming bonds
+  - bond formation
+  - building muscle
+  - polymer formation
+  - bio-synthesis
+  - making larger, complex molecules
+  - isomerization, bond rearrangement reactions
+  releases&nbsp;energy:
+  - catabolic
+  - exergonic
+  - '&Delta;G &lt; 0'
+  - '&Delta;G&deg;&prime; &lt; 0'
+  - Gibbs free energy less than zero
+  - spontaneous
+  - hydrolysis reactions
+  - digestion
+  - breaking bonds
+  - breaking down food
+  - breaking down polymers
+  - polymer breakdown
+dbsubject: Biochemistry

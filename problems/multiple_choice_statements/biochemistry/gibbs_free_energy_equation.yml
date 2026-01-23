@@ -1,46 +1,34 @@
----
-
-#Which one of the following statements is FALSE/TRUE <connection word> <topic>
 topic: the Gibbs free energy, &Delta;G = &Delta;H &ndash; T &Delta;S
-
-connection_words: ~
-
+connection_words: null
 replacement_rules:
-    '&Delta;H': '<span style="color: #e60000;"><strong>&Delta;<i>H</i></strong></span>' #RED
-    enthalpy: '<span style="color: #e65400;">enthalpy</span>' #DARK ORANGE
-    'T ': '<span style="color: #e69100;"><strong><i>T</i></strong></span>' #LIGHT ORANGE
-    temperature: '<span style="color: #b3b300;">temperature</span>' #DARK YELLOW
-    EEEEEEEE: '<span style="color: #59b300;">EEEEEEEE</span>' #LIME GREEN
-    ' spontaneous': '<span style="color: #009900;"><i>spontaneous</i></span>' #GREEN
-    GGGGGGGG: '<span style="color: #00b38f;">GGGGGGGG</span>' #TEAL
-    entropy: '<span style="color: #00b3b3;">entropy</span>' #CYAN
-    '&Delta;S': '<span style="color: #0a9bf5;"><strong>&Delta;<i>S</i></strong></span>' #SKY BLUE
-    JJJJJJJJ: '<span style="color: #0039e6;">JJJJJJJJ</span>' #BLUE
-    '&Delta;G': '<span style="color: #004d99;"><strong>&Delta;<i>G</i></strong></span>' #NAVY
-    free energy: '<span style="color: #7b12a1;">free energy</span>' #PURPLE
-    'non-spontaneous': '<span style="color: #b30077;"><i>non-spontaneous</i></span>' #MAGENTA
-    degrees Celcius: '<span style="color: #cc0066;">degrees Celcius</span>' #PINK
-    degrees Fahrenheit: '<span style="color: #cc0066;">degrees Fahrenheit</span>' #PINK
-    degrees Kelvin: '<span style="color: #cc0066;">degrees Kelvin</span>' #PINK
-
-
+  '&Delta;H': '<span style="color: #e60000;"><strong>&Delta;<i>H</i></strong></span>'
+  enthalpy: '<span style="color: #e65400;">enthalpy</span>'
+  'T ': '<span style="color: #e69100;"><strong><i>T</i></strong></span>'
+  temperature: '<span style="color: #b3b300;">temperature</span>'
+  EEEEEEEE: '<span style="color: #59b300;">EEEEEEEE</span>'
+  ' spontaneous': '<span style="color: #009900;"><i>spontaneous</i></span>'
+  GGGGGGGG: '<span style="color: #00b38f;">GGGGGGGG</span>'
+  entropy: '<span style="color: #00b3b3;">entropy</span>'
+  '&Delta;S': '<span style="color: #0a9bf5;"><strong>&Delta;<i>S</i></strong></span>'
+  JJJJJJJJ: '<span style="color: #0039e6;">JJJJJJJJ</span>'
+  '&Delta;G': '<span style="color: #004d99;"><strong>&Delta;<i>G</i></strong></span>'
+  free energy: '<span style="color: #7b12a1;">free energy</span>'
+  non-spontaneous: '<span style="color: #b30077;"><i>non-spontaneous</i></span>'
+  degrees Celcius: '<span style="color: #cc0066;">degrees Celcius</span>'
+  degrees Fahrenheit: '<span style="color: #cc0066;">degrees Fahrenheit</span>'
+  degrees Kelvin: '<span style="color: #cc0066;">degrees Kelvin</span>'
 true_statements:
   truth1a: '&Delta;G is the change in free energy'
   truth1b: '&Delta;H is the change in enthalpy'
   truth1c: '&Delta;S is the change in entropy'
-
   truth2a: entropy is associated with a state of disorder, randomness, or uncertainty
   truth2b: enthalpy is associated with the amount of heat exchanged with the environment
   truth2c: enthalpy is associated with the heat content of a system
   truth2d: the Gibbs free energy can be described as the energy available to do work
-
   truth3a: T is the temperature in degrees Kelvin
-
-  truth4a: 'When &Delta;G = 0 the reaction has reached equilibrium'
-
-  truth5a: 'When &Delta;G &gt; 0 the reaction is called non-spontaneous'
-  truth5b: 'When &Delta;G &lt; 0 the reaction is called spontaneous'
-
+  truth4a: When &Delta;G = 0 the reaction has reached equilibrium
+  truth5a: When &Delta;G &gt; 0 the reaction is called non-spontaneous
+  truth5b: When &Delta;G &lt; 0 the reaction is called spontaneous
 false_statements:
   false1a: '&Delta;H is the change in free energy'
   false1b: '&Delta;S is the change in free energy'
@@ -48,7 +36,6 @@ false_statements:
   false1d: '&Delta;S is the change in enthalpy'
   false1e: '&Delta;G is the change in entropy'
   false1f: '&Delta;H is the change in entropy'
-
   false2a: enthalpy is associated with a state of disorder, randomness, or uncertainty
   false2b: enthalpy can be described as the energy available to do work
   false2c: entropy is associated with the amount of heat exchanged with the environment
@@ -57,28 +44,19 @@ false_statements:
   false2f: free energy is associated with the amount of heat exchanged with the environment
   truth2g: entropy is associated with the heat content of a system
   truth2h: free energy is associated with the heat content of a system
-
   false3a: T is the temperature in degrees Celcius
   false3b: T is the temperature in degrees Fahrenheit
-
-  false4a: 'When &Delta;H = 0 the reaction has reached equilibrium'
-  false4b: 'When &Delta;S = 0 the reaction has reached equilibrium'
-
-  false5a: 'When &Delta;H &lt; 0 the reaction is called spontaneous'
-  false5b: 'When &Delta;S &lt; 0 the reaction is called spontaneous'
-  false5c: 'When &Delta;H &lt; 0 the reaction is called non-spontaneous'
-  false5d: 'When &Delta;S &lt; 0 the reaction is called non-spontaneous'
-  false5e: 'When &Delta;H &gt; 0 the reaction is called spontaneous'
-  false5f: 'When &Delta;S &gt; 0 the reaction is called spontaneous'
-  false5g: 'When &Delta;H &gt; 0 the reaction is called non-spontaneous'
-  false5h: 'When &Delta;S &gt; 0 the reaction is called non-spontaneous'
-
-  false5i: 'When &Delta;G &lt; 0 the reaction is called non-spontaneous'
-  false5j: 'When &Delta;G &gt; 0 the reaction is called spontaneous'
-
-# conflicts, means that the statements cannot appear together
-# add ': True' to each line, so the program runs a faster lookup
-conflict_rules: ~
-
-
-
+  false4a: When &Delta;H = 0 the reaction has reached equilibrium
+  false4b: When &Delta;S = 0 the reaction has reached equilibrium
+  false5a: When &Delta;H &lt; 0 the reaction is called spontaneous
+  false5b: When &Delta;S &lt; 0 the reaction is called spontaneous
+  false5c: When &Delta;H &lt; 0 the reaction is called non-spontaneous
+  false5d: When &Delta;S &lt; 0 the reaction is called non-spontaneous
+  false5e: When &Delta;H &gt; 0 the reaction is called spontaneous
+  false5f: When &Delta;S &gt; 0 the reaction is called spontaneous
+  false5g: When &Delta;H &gt; 0 the reaction is called non-spontaneous
+  false5h: When &Delta;S &gt; 0 the reaction is called non-spontaneous
+  false5i: When &Delta;G &lt; 0 the reaction is called non-spontaneous
+  false5j: When &Delta;G &gt; 0 the reaction is called spontaneous
+conflict_rules: null
+dbsubject: Biochemistry

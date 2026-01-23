@@ -1,82 +1,66 @@
----
-
-#Which one of the following statements is FALSE/TRUE <connection word> <topic>
 topic: chemical reactions
-
 replacement_rules:
-  AAAAAAA: '<span style="color: #ff0000;">AAAAAAA</span>' #RED
-  exothermic: '<span style="color: #ff5e00;">exothermic</span>' #DARK ORANGE
-  BBBBBBB: '<span style="color: #ffa100;">BBBBBBB</span>' #LIGHT ORANGE
-  CCCCCCC: '<span style="color: #b3b300;">CCCCCCC</span>' #DARK YELLOW
-  physical changes: '<span style="color: #2fbd0f;">physical changes</span>' #LIME GREEN
-  energy: '<span style="color: #009e4c;">energy</span>' #TEAL
-  endothermic: '<span style="color: #0d57a5;">endothermic</span>' #BLUE
-  substances: '<span style="color: #6d108e;">substances</span>' #PURPLE
-  Chemical reactions: '<span style="color: #a1005e;">Chemical&nbsp;reactions</span>' #MAGENTA
-  chemical reactions: '<span style="color: #a1005e;">chemical&nbsp;reactions</span>' #MAGENTA
-  'chemical reaction.': '<span style="color: #a1005e;">chemical&nbsp;reaction</span>.' #MAGENTA
-
-connection_words: ~
-
+  AAAAAAA: '<span style="color: #ff0000;">AAAAAAA</span>'
+  exothermic: '<span style="color: #ff5e00;">exothermic</span>'
+  BBBBBBB: '<span style="color: #ffa100;">BBBBBBB</span>'
+  CCCCCCC: '<span style="color: #b3b300;">CCCCCCC</span>'
+  physical changes: '<span style="color: #2fbd0f;">physical changes</span>'
+  energy: '<span style="color: #009e4c;">energy</span>'
+  endothermic: '<span style="color: #0d57a5;">endothermic</span>'
+  substances: '<span style="color: #6d108e;">substances</span>'
+  Chemical reactions: '<span style="color: #a1005e;">Chemical&nbsp;reactions</span>'
+  chemical reactions: '<span style="color: #a1005e;">chemical&nbsp;reactions</span>'
+  chemical reaction.: '<span style="color: #a1005e;">chemical&nbsp;reaction</span>.'
+connection_words: null
 true_statements:
-  truth1a: Chemical reactions always involve a change in the chemical composition of substances.
-
-  truth2a: Chemical reactions always transform one or more substances into one or more different substances.
-
-  truth3a: The rate of a chemical reaction depends on temperature, pressure, and the presence of catalysts.
-
-  truth4a: Chemical reactions always involve the forming and breaking of chemical bonds
-
-  truth5a: For chemical reactions to occur, the chemical identity of the substances must change.
-  truth5b: For chemical reactions to occur, the chemical formulas of both the reactant and the product can be the same.
-
-  truth11a: Salt (NaCl) dissolving in water, breaking the ionic bonds between Na<sup>+</sup> and Cl<sup>&ndash;</sup>, is a physical change.
-
+  truth1a: Chemical reactions always involve a change in the chemical composition
+    of substances.
+  truth2a: Chemical reactions always transform one or more substances into one or
+    more different substances.
+  truth3a: The rate of a chemical reaction depends on temperature, pressure, and the
+    presence of catalysts.
+  truth4a: Chemical reactions always involve the forming and breaking of chemical
+    bonds
+  truth5a: For chemical reactions to occur, the chemical identity of the substances
+    must change.
+  truth5b: For chemical reactions to occur, the chemical formulas of both the reactant
+    and the product can be the same.
+  truth11a: Salt (NaCl) dissolving in water, breaking the ionic bonds between Na<sup>+</sup>
+    and Cl<sup>&ndash;</sup>, is a physical change.
   truth15a: Chemical reactions are involved in many important processes in biology.
   truth15b: Chemical reactions play a role in many important biological processes.
-
   truth16a: Chemical reactions are always either exothermic or endothermic.
-
 false_statements:
-  false5a: For chemical reactions to occur, the chemical formula of the substances must change.
-  false5b: For chemical reactions to occur, the chemical formulas of both the reactant and the product cannot be the same.
-  false5c: For chemical reactions to happen, the chemical identity of both reactants and products remains the same.
-
+  false5a: For chemical reactions to occur, the chemical formula of the substances
+    must change.
+  false5b: For chemical reactions to occur, the chemical formulas of both the reactant
+    and the product cannot be the same.
+  false5c: For chemical reactions to happen, the chemical identity of both reactants
+    and products remains the same.
   false11a: Chemical reactions always involve physical changes.
   false11b: Chemical reactions only involve physical changes.
   false11c: Ice melting into water is a chemical reaction.
   false11d: Sugar (glucose) dissolving in water is a chemical reaction.
   false11e: Sublimation of dry ice into carbon dioxide gas is a chemical reaction.
-  false11f: Salt (NaCl) dissolving in water is a chemical reaction since breaking ionic bonds forms new chemicals.
-
+  false11f: Salt (NaCl) dissolving in water is a chemical reaction since breaking
+    ionic bonds forms new chemicals.
   false12a: Chemical reactions only occur when energy is added.
   false12b: Chemical reactions only occur when energy is released.
-
   false13a: Chemical reactions only occur at a specific temperature.
-
   false14a: Chemical reactions only occur in the presence of light.
-
   false15a: Chemical reactions only occur in living organisms.
   false15b: Reactions that occur in living organisms are not chemical reactions.
-
   false16a: Chemical reactions are always exothermic.
   false16b: Chemical reactions are always endothermic.
   false16c: Chemical reactions cannot be exothermic.
   false16d: Chemical reactions cannot be endothermic.
-
-  false17a: Chemical reactions always result in a decrease in the total energy of the system.
-  false17b: Chemical reactions always result in an increase in the total energy of the system.
-
+  false17a: Chemical reactions always result in a decrease in the total energy of
+    the system.
+  false17b: Chemical reactions always result in an increase in the total energy of
+    the system.
   false18a: Chemical reactions always result in a decrease in the number of atoms.
   false18b: Chemical reactions always result in an increase in the number of atoms.
-
   false19a: Chemical reactions always result in a decrease in entropy.
   false19b: Chemical reactions always result in an increase in entropy.
-
-
-# conflicts, means that the statements cannot appear together
-# add ': True' to each line, so the program runs a faster lookup
-conflict_rules: ~
-
-
-
+conflict_rules: null
+dbsubject: Biochemistry

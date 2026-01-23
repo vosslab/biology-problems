@@ -1,81 +1,75 @@
-
 items to match per question: 5
-
-#both singular and plural
 key description: alteration of chromosome structure
 keys description: alterations to chromosome structure
-
-#both singular and plural
 value description: description
 values description: descriptions
-
 replacement_rules:
-   chromosome:              '<span style="color: #008a75;">chromosome</span>' #teal
-   'chromosome</span>s':    'chromosomes</span>'
-   centromere:              '<span style="color: #c1480a;">centromere</span>' #brick
-   reversal:                '<span style="color: #56225d;">reversal</span>' #indigo
-   reverse:                 '<span style="color: #56225d;">reverse</span>' #indigo
-   'reverse</span>d':       'reversed</span>'
-   genes:                   '<span style="color: #478d1b;">genes</span>' #lime
-   ectopic:                 '<span style="color: #b77b04;">genes</span>' #gold
-
+  chromosome: '<span style="color: #008a75;">chromosome</span>'
+  chromosome</span>s: chromosomes</span>
+  centromere: '<span style="color: #c1480a;">centromere</span>'
+  reversal: '<span style="color: #56225d;">reversal</span>'
+  reverse: '<span style="color: #56225d;">reverse</span>'
+  reverse</span>d: reversed</span>
+  genes: '<span style="color: #478d1b;">genes</span>'
+  ectopic: '<span style="color: #b77b04;">genes</span>'
 matching pairs:
   non-disjunction:
-    - the failure of sister chromatids to separate properly during cell division
-    - the failure of homologous chromosomes to separate properly during cell division
-
+  - the failure of sister chromatids to separate properly during cell division
+  - the failure of homologous chromosomes to separate properly during cell division
   deletion:
-    - portion of the chromosome is missing
-    - a sequence of DNA is left out during DNA replication
-    - a part of a chromosome is left out during DNA replication
-    - when a chromosome breaks a part of it is lost
-    - can result from ectopic recombination where a part of a chromosome is lost
-    - chromosome in which is missing a group of genes
-
+  - portion of the chromosome is missing
+  - a sequence of DNA is left out during DNA replication
+  - a part of a chromosome is left out during DNA replication
+  - when a chromosome breaks a part of it is lost
+  - can result from ectopic recombination where a part of a chromosome is lost
+  - chromosome in which is missing a group of genes
   duplications:
-    - portion of the chromosome has been copied, resulting in extra genetic material
-    - portion of the chromosome has been copied, resulting extra copies of a gene
-    - can result from ectopic recombination where a part of a chromosome is replicated
-    - chromosome that has an extra copy of a group of genes
-
+  - portion of the chromosome has been copied, resulting in extra genetic material
+  - portion of the chromosome has been copied, resulting extra copies of a gene
+  - can result from ectopic recombination where a part of a chromosome is replicated
+  - chromosome that has an extra copy of a group of genes
   reciprocal translocation:
-    - can change a metacentric chromosome into a submetacentric chromosome
-    - a pair of non-homologous chromosomes swapping genes with each other
-    - the exchange of broken chromosome segments between two nonhomologous chromosomes
-    - two detached fragments of two different chromosomes are switched
-    - the Philadelphia chromosome is formed from this alteration of chromosomes 9 and 22
-    - segments from two different chromosomes have been exchanged
-
+  - can change a metacentric chromosome into a submetacentric chromosome
+  - a pair of non-homologous chromosomes swapping genes with each other
+  - the exchange of broken chromosome segments between two nonhomologous chromosomes
+  - two detached fragments of two different chromosomes are switched
+  - the Philadelphia chromosome is formed from this alteration of chromosomes 9 and
+    22
+  - segments from two different chromosomes have been exchanged
   non-reciprocal translocation:
-    - the transferring of a chromosome segment from one chromosome to another non-homologous chromosome
-    - the one-way transfer of a chromosomal segment from one non-homologous chromosome to another
-    - a complete chromosome that also has a group of genes from another chromosome
-
+  - the transferring of a chromosome segment from one chromosome to another non-homologous
+    chromosome
+  - the one-way transfer of a chromosomal segment from one non-homologous chromosome
+    to another
+  - a complete chromosome that also has a group of genes from another chromosome
   paracentric inversion:
-    - can change two monocentric chromosomes into an acentric chromosome
-    - can change two monocentric chromosomes into a dicentric chromosome
-    - the reversal of the gene order within a chromosome that does NOT include the centromere
-    - two breaks and reversal of the genes occur on one arm of the chromosome
-    - does NOT include the centromere and both breaks occur in one arm of the chromosome
-    - a portion of a single chromosome arm has broken off, turned upside down, and reattached
-    - a portion of a single chromosome arm has broken off, reversed, and reattached in its original place
-    - can result from ectopic recombination where a part of a single chromosome arm is reversed
-    - a group of genes on one arm of the chromosome is the reverse of the normal order
-
+  - can change two monocentric chromosomes into an acentric chromosome
+  - can change two monocentric chromosomes into a dicentric chromosome
+  - the reversal of the gene order within a chromosome that does NOT include the centromere
+  - two breaks and reversal of the genes occur on one arm of the chromosome
+  - does NOT include the centromere and both breaks occur in one arm of the chromosome
+  - a portion of a single chromosome arm has broken off, turned upside down, and reattached
+  - a portion of a single chromosome arm has broken off, reversed, and reattached
+    in its original place
+  - can result from ectopic recombination where a part of a single chromosome arm
+    is reversed
+  - a group of genes on one arm of the chromosome is the reverse of the normal order
   pericentric inversion:
-    - a pair of homologous chromosomes that both have duplicated genes and missing genes
-    - the reversal of the gene order in a chromosome that includes the centromere
-    - two breaks and reversal of the genes occurs on both arms or sides of the centromere
-    - centromere is included in the reversed loop that is formed during synapsis
-    - reversal of the genes that includes both arms of the chromosome
-    - includes the centromere and there is a break point in each arm
-    - a portion of a chromosome that includes both arms has broken off, turned upside down, and reattached
-    - a portion of a chromosome that includes both arms has broken off, reversed, and reattached
-    - a group of genes including the centromere is the reverse of the normal order
-
+  - a pair of homologous chromosomes that both have duplicated genes and missing genes
+  - the reversal of the gene order in a chromosome that includes the centromere
+  - two breaks and reversal of the genes occurs on both arms or sides of the centromere
+  - centromere is included in the reversed loop that is formed during synapsis
+  - reversal of the genes that includes both arms of the chromosome
+  - includes the centromere and there is a break point in each arm
+  - a portion of a chromosome that includes both arms has broken off, turned upside
+    down, and reattached
+  - a portion of a chromosome that includes both arms has broken off, reversed, and
+    reattached
+  - a group of genes including the centromere is the reverse of the normal order
   Robertsonian translocation:
-    - can change two acrocentric chromosomes into a metacentric chromosome
-    - fusion of two chromosomes that have short p arms
-    - caused by breaks at or near the centromeres of two acrocentric chromosomes
-    - in humans, these alterations only occur with chromosomes 13, 14, 15, 21, and 22
-    - entire chromosome has attached to another at the centromere
+  - can change two acrocentric chromosomes into a metacentric chromosome
+  - fusion of two chromosomes that have short p arms
+  - caused by breaks at or near the centromeres of two acrocentric chromosomes
+  - in humans, these alterations only occur with chromosomes 13, 14, 15, 21, and 22
+  - entire chromosome has attached to another at the centromere
+dbsubject: Genetics

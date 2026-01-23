@@ -1,59 +1,47 @@
-#YAML file for Matching Questions
-
 items to match per question: 5
-
-#both singular and plural
 key description: cellular structure
 keys description: cellular structures
-
-#both singular and plural
 value description: description
 values description: descriptions
-
 replacement_rules:
-    Flagellum: '<span style="color: #e60000;">Flagellum</span>' #RED
-    BBBBBBBB: '<span style="color: #e65400;">BBBBBBBB</span>' #DARK ORANGE
-    CCCCCCCC: '<span style="color: #e69100;">CCCCCCCC</span>' #LIGHT ORANGE
-    Fimbriae: '<span style="color: #b3b300;">Fimbriae</span>' #DARK YELLOW
-    EEEEEEEE: '<span style="color: #59b300;">EEEEEEEE</span>' #LIME GREEN
-    FFFFFFFF: '<span style="color: #009900;">FFFFFFFF</span>' #GREEN
-    Sex pilus: '<span style="color: #00b38f;">Sex pilus</span>' #TEAL
-    HHHHHHHH: '<span style="color: #00b3b3;">HHHHHHHH</span>' #CYAN
-    IIIIIIII: '<span style="color: #0a9bf5;">IIIIIIII</span>' #SKY BLUE
-    Capsule: '<span style="color: #0039e6;">Capsule</span>' #BLUE
-    KKKKKKKK: '<span style="color: #004d99;">KKKKKKKK</span>' #NAVY
-    LLLLLLLL: '<span style="color: #7b12a1;">LLLLLLLL</span>' #PURPLE
-    Peptidoglycan: '<span style="color: #b30077;">Peptidoglycan</span>' #MAGENTA
-    NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
-
+  Flagellum: '<span style="color: #e60000;">Flagellum</span>'
+  BBBBBBBB: '<span style="color: #e65400;">BBBBBBBB</span>'
+  CCCCCCCC: '<span style="color: #e69100;">CCCCCCCC</span>'
+  Fimbriae: '<span style="color: #b3b300;">Fimbriae</span>'
+  EEEEEEEE: '<span style="color: #59b300;">EEEEEEEE</span>'
+  FFFFFFFF: '<span style="color: #009900;">FFFFFFFF</span>'
+  Sex pilus: '<span style="color: #00b38f;">Sex pilus</span>'
+  HHHHHHHH: '<span style="color: #00b3b3;">HHHHHHHH</span>'
+  IIIIIIII: '<span style="color: #0a9bf5;">IIIIIIII</span>'
+  Capsule: '<span style="color: #0039e6;">Capsule</span>'
+  KKKKKKKK: '<span style="color: #004d99;">KKKKKKKK</span>'
+  LLLLLLLL: '<span style="color: #7b12a1;">LLLLLLLL</span>'
+  Peptidoglycan: '<span style="color: #b30077;">Peptidoglycan</span>'
+  NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>'
 matching pairs:
   Flagellum:
-    - tail-like structure for motility and movement
-    - motility structure for movement and navigation
-    - whiplike structure for bacterial movement and motility
-
+  - tail-like structure for motility and movement
+  - motility structure for movement and navigation
+  - whiplike structure for bacterial movement and motility
   Fimbriae:
-    - hair-like appendages used for attachment
-    - hair-like attachment structures for colonization
-    - short, hair-like appendages that aid in attachment and infection
-    - short projections that aid in attachment and infection
-
+  - hair-like appendages used for attachment
+  - hair-like attachment structures for colonization
+  - short, hair-like appendages that aid in attachment and infection
+  - short projections that aid in attachment and infection
   Sex pilus:
-    - mating structure for transfer of genetic material
-    - mating structure for genetic material transfer
-    - structure for transferring genetic material
-    - used for the exchange of genetic material
-    - structure that allows for the transfer of DNA
-    - structure for transfer of genetic material between cells
-
+  - mating structure for transfer of genetic material
+  - mating structure for genetic material transfer
+  - structure for transferring genetic material
+  - used for the exchange of genetic material
+  - structure that allows for the transfer of DNA
+  - structure for transfer of genetic material between cells
   Capsule:
-    - thin layer for protection and evasion
-    - thin protective layer that aids in survival
-    - protective layer used for evasion
-    - layer for protecting and evading
-    - a polysaccharide material that surrounds the bacterial cell
-    - A protective covering surrounding bacteria
-
-  Peptidoglycan:
-    complex protein and polysaccharide structure within the cell wall
+  - thin layer for protection and evasion
+  - thin protective layer that aids in survival
+  - protective layer used for evasion
+  - layer for protecting and evading
+  - a polysaccharide material that surrounds the bacterial cell
+  - A protective covering surrounding bacteria
+  Peptidoglycan: complex protein and polysaccharide structure within the cell wall
     stiff protein and carbohydrate layer within bacteria cell wall
+dbsubject: Cell Biology

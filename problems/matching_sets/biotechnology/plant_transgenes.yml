@@ -1,88 +1,75 @@
-#YAML file for Matching Questions
-
 items to match per question: 4
-
-
-#both singular and plural
 key description: transgene
 keys description: transgenes
-
-#both singular and plural
 value description: description
 values description: descriptions
-
 replacement_rules:
-    AAAAAAAA: '<span style="color: #e60000;">AAAAAAAA</span>' #RED
-    BBBBBBBB: '<span style="color: #e65400;">BBBBBBBB</span>' #DARK ORANGE
-    CCCCCCCC: '<span style="color: #e69100;">CCCCCCCC</span>' #LIGHT ORANGE
-    DDDDDDDD: '<span style="color: #b3b300;">DDDDDDDD</span>' #DARK YELLOW
-    EEEEEEEE: '<span style="color: #59b300;">EEEEEEEE</span>' #LIME GREEN
-    FFFFFFFF: '<span style="color: #009900;">FFFFFFFF</span>' #GREEN
-    GGGGGGGG: '<span style="color: #00b38f;">GGGGGGGG</span>' #TEAL
-    HHHHHHHH: '<span style="color: #00b3b3;">HHHHHHHH</span>' #CYAN
-    IIIIIIII: '<span style="color: #0a9bf5;">IIIIIIII</span>' #SKY BLUE
-    JJJJJJJJ: '<span style="color: #0039e6;">JJJJJJJJ</span>' #BLUE
-    KKKKKKKK: '<span style="color: #004d99;">KKKKKKKK</span>' #NAVY
-    LLLLLLLL: '<span style="color: #7b12a1;">LLLLLLLL</span>' #PURPLE
-    MMMMMMMM: '<span style="color: #b30077;">MMMMMMMM</span>' #MAGENTA
-    NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
-
+  AAAAAAAA: '<span style="color: #e60000;">AAAAAAAA</span>'
+  BBBBBBBB: '<span style="color: #e65400;">BBBBBBBB</span>'
+  CCCCCCCC: '<span style="color: #e69100;">CCCCCCCC</span>'
+  DDDDDDDD: '<span style="color: #b3b300;">DDDDDDDD</span>'
+  EEEEEEEE: '<span style="color: #59b300;">EEEEEEEE</span>'
+  FFFFFFFF: '<span style="color: #009900;">FFFFFFFF</span>'
+  GGGGGGGG: '<span style="color: #00b38f;">GGGGGGGG</span>'
+  HHHHHHHH: '<span style="color: #00b3b3;">HHHHHHHH</span>'
+  IIIIIIII: '<span style="color: #0a9bf5;">IIIIIIII</span>'
+  JJJJJJJJ: '<span style="color: #0039e6;">JJJJJJJJ</span>'
+  KKKKKKKK: '<span style="color: #004d99;">KKKKKKKK</span>'
+  LLLLLLLL: '<span style="color: #7b12a1;">LLLLLLLL</span>'
+  MMMMMMMM: '<span style="color: #b30077;">MMMMMMMM</span>'
+  NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>'
 matching pairs:
   DREB1A:
-    - Enhances the plant's ability to retain water under drought conditions
-    - Activates stress-responsive genes to help cope with arid environments
-    - Primarily found in plants that are modified to thrive in drought-prone areas
-    - Known for its role in enhancing abiotic stress tolerance, particularly drought
-    - Increases the osmotic potential in plants, allowing them to survive longer without water
-
+  - Enhances the plant's ability to retain water under drought conditions
+  - Activates stress-responsive genes to help cope with arid environments
+  - Primarily found in plants that are modified to thrive in drought-prone areas
+  - Known for its role in enhancing abiotic stress tolerance, particularly drought
+  - Increases the osmotic potential in plants, allowing them to survive longer without
+    water
   Cry/Bt:
-    - Functions by producing a protein toxic to specific insect larvae
-    - Commonly utilized in crops like corn and cotton to reduce reliance on chemical pesticides
-    - Is derived from the bacterium Bacillus thuringiensis
-    - Binds to receptors in the insect gut, leading to cell lysis and death
-    - Considered an environmentally friendly method for pest control as it reduces chemical pesticide use
-    - Often integrated into plant genomes to produce Cry proteins throughout the plant's lifecycle
-
+  - Functions by producing a protein toxic to specific insect larvae
+  - Commonly utilized in crops like corn and cotton to reduce reliance on chemical
+    pesticides
+  - Is derived from the bacterium Bacillus thuringiensis
+  - Binds to receptors in the insect gut, leading to cell lysis and death
+  - Considered an environmentally friendly method for pest control as it reduces chemical
+    pesticide use
+  - Often integrated into plant genomes to produce Cry proteins throughout the plant's
+    lifecycle
   AVP1:
-    - Encodes a proton pump that helps plants tolerate salty environments
-    - Increases root growth and biomass in transgenic plants
-    - Plays a key role in vacuolar proton transport
-    - Often engineered into plants that require high salt tolerance
-    - Enhances water-use efficiency by increasing cellular ion retention
-    - Associated with improved phosphorus uptake in plants
-
-  'aro A (Glyphosate Resistant)':
-    - Allows for resistance to glyphosate herbicides
-    - Developed by transferring aro A gene into a glyphosate EPSP synthetase from Salmonella typhimurium and E. coli
-
-  'Mutant ALS (Sulphonylurea Resistant)':
-    - Encodes for a mutant acetolactate synthetase that allows for resistance to Sulphonylurea herbicides
-    - Originates from Arabidopsis
-
-  'QB Protein (Atrazine Resistant)':
-    - Derived from mutant Amaranthus hybrids
-    - Produces atrazine-resistant transgenic plants
-
-  'TMV Coat Proteins (Virus Resistant)':
-    - Provides resistance against Tobacco Mosaic Virus (TMV)
-    - Developed by introducing viral coat proteins
-
-  'Beta-Carotene Genes (Nutritional Benefits)':
-    - Increases production of beta-carotene as a precursor to vitamin A
-    - Derived from daffodils and microorganisms
-
-  'Salt Tolerance Gene (from Mangroves)':
-    - Provides salt tolerance
-    - Derived from Avicennia marina
-
-  'gut D Gene (Salt Tolerance)':
-    - Used to generate salt-tolerant transgenic maize plants
-    - Originates from Escherichia coli
-
+  - Encodes a proton pump that helps plants tolerate salty environments
+  - Increases root growth and biomass in transgenic plants
+  - Plays a key role in vacuolar proton transport
+  - Often engineered into plants that require high salt tolerance
+  - Enhances water-use efficiency by increasing cellular ion retention
+  - Associated with improved phosphorus uptake in plants
+  aro A (Glyphosate Resistant):
+  - Allows for resistance to glyphosate herbicides
+  - Developed by transferring aro A gene into a glyphosate EPSP synthetase from Salmonella
+    typhimurium and E. coli
+  Mutant ALS (Sulphonylurea Resistant):
+  - Encodes for a mutant acetolactate synthetase that allows for resistance to Sulphonylurea
+    herbicides
+  - Originates from Arabidopsis
+  QB Protein (Atrazine Resistant):
+  - Derived from mutant Amaranthus hybrids
+  - Produces atrazine-resistant transgenic plants
+  TMV Coat Proteins (Virus Resistant):
+  - Provides resistance against Tobacco Mosaic Virus (TMV)
+  - Developed by introducing viral coat proteins
+  Beta-Carotene Genes (Nutritional Benefits):
+  - Increases production of beta-carotene as a precursor to vitamin A
+  - Derived from daffodils and microorganisms
+  Salt Tolerance Gene (from Mangroves):
+  - Provides salt tolerance
+  - Derived from Avicennia marina
+  gut D Gene (Salt Tolerance):
+  - Used to generate salt-tolerant transgenic maize plants
+  - Originates from Escherichia coli
   Therapeutic Proteins:
-    - Produces antibodies, proteins, or vaccines for therapeutic use
-    - Could be useful for various diseases ranging from dental caries to certain cancers
-
+  - Produces antibodies, proteins, or vaccines for therapeutic use
+  - Could be useful for various diseases ranging from dental caries to certain cancers
   Enhanced Shelf Life Genes:
-    - Provides enhanced ability to withstand long-distance transportation
-    - Allows for longer shelf life of produce
+  - Provides enhanced ability to withstand long-distance transportation
+  - Allows for longer shelf life of produce
+dbsubject: Biotechnology

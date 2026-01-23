@@ -1,83 +1,56 @@
----
-
-#Which one of the following statements is FALSE/TRUE <connection word> <topic>
 topic: chi-square (&chi;&sup2;) tests
-
-#override_question_true: ~
-override_question_false: ~
-
+override_question_false: null
 replacement_rules:
-    'yesrej':      'is <span style="color: #d9534f;">REJECTED</span>'
-    'notrej':  'is <span style="color: #367c36;">NOT REJECTED</span>'
-    'yessupp':     'is <span style="color: #367c36;">SUPPORTED</span>'
-    'notsupp': 'is <span style="color: #d9534f;">NOT SUPPORTED</span>'
-
-    c2s:        '<span style="color: #004d99;">chi-square (&chi;&sup2;) statistic</span>' #NAVY
-    p-value:    '<span style="color: #59b300;">p-value</span>' #LIME GREEN
-    losa:       '<span style="color: #e65400;">level of significance, &alpha;</span>' #DARK ORANGE
-    critval:    '<span style="color: #e69100;">critical value</span>' #LIGHT ORANGE
-    nullhyp:    '<span style="color: #0a9bf5;">null hypothesis, H<sub>0</sub></span>' #SKY BLUE
-    althyp:     '<span style="color: #b30077;">alternative hypothesis, H<sub>a</sub></span>' #MAGENTA
-    less than:   '<strong>less than</strong>'
-    larger than: '<strong>larger than</strong>'
-
-    EEEEEEEE: '<span style="color: #59b300;">EEEEEEEE</span>' #LIME GREEN
-    GGGGGGGG: '<span style="color: #00b38f;">GGGGGGGG</span>' #TEAL
-    HHHHHHHH: '<span style="color: #00b3b3;">HHHHHHHH</span>' #CYAN
-    JJJJJJJJ: '<span style="color: #0039e6;">JJJJJJJJ</span>' #BLUE
-    LLLLLLLL: '<span style="color: #7b12a1;">LLLLLLLL</span>' #PURPLE
-    NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
-
-connection_words: ~
-
+  yesrej: 'is <span style="color: #d9534f;">REJECTED</span>'
+  notrej: 'is <span style="color: #367c36;">NOT REJECTED</span>'
+  yessupp: 'is <span style="color: #367c36;">SUPPORTED</span>'
+  notsupp: 'is <span style="color: #d9534f;">NOT SUPPORTED</span>'
+  c2s: '<span style="color: #004d99;">chi-square (&chi;&sup2;) statistic</span>'
+  p-value: '<span style="color: #59b300;">p-value</span>'
+  losa: '<span style="color: #e65400;">level of significance, &alpha;</span>'
+  critval: '<span style="color: #e69100;">critical value</span>'
+  nullhyp: '<span style="color: #0a9bf5;">null hypothesis, H<sub>0</sub></span>'
+  althyp: '<span style="color: #b30077;">alternative hypothesis, H<sub>a</sub></span>'
+  less than: <strong>less than</strong>
+  larger than: <strong>larger than</strong>
+  EEEEEEEE: '<span style="color: #59b300;">EEEEEEEE</span>'
+  GGGGGGGG: '<span style="color: #00b38f;">GGGGGGGG</span>'
+  HHHHHHHH: '<span style="color: #00b3b3;">HHHHHHHH</span>'
+  JJJJJJJJ: '<span style="color: #0039e6;">JJJJJJJJ</span>'
+  LLLLLLLL: '<span style="color: #7b12a1;">LLLLLLLL</span>'
+  NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>'
+connection_words: null
 true_statements:
   truth1a: the nullhyp notrej if the c2s is less than the critval
   truth1b: the nullhyp yesrej if the c2s is larger than the critval
-
   truth2a: the nullhyp notrej if the p-value is larger than the losa
   truth2b: the nullhyp yesrej if the p-value is less than the losa
-
   truth3a: the althyp yessupp if the c2s is larger than the critval
   truth3b: the althyp notsupp if the c2s is less than the critval
-
   truth4a: the althyp yessupp if the p-value is less than the losa
   truth4b: the althyp notsupp if the p-value is larger than the losa
-
 false_statements:
-  #false1a: the nullhyp notrej if the c2s is less than the critval
   false1b: the nullhyp yesrej if the c2s is less than the critval
   false1c: the nullhyp notrej if the c2s is larger than the critval
-
-  #false2a: the nullhyp notrej if the p-value is larger than the losa
   false2b: the nullhyp yesrej if the p-value is larger than the losa
   false2c: the nullhyp notrej if the p-value is less than the losa
-
   false3a: the althyp yessupp if the c2s is less than the critval
-
   false4a: the althyp yessupp if the p-value is larger than the losa
-
-  #---
-
   false5a: the nullhyp notrej if the c2s is less than the losa
   false5b: the nullhyp notrej if the c2s is larger than the losa
   false5c: the nullhyp yesrej if the c2s is larger than the losa
   false5d: the nullhyp yesrej if the c2s is less than the losa
-
   false6a: the nullhyp notrej if the p-value is larger than the critval
   false6b: the nullhyp notrej if the p-value is less than the critval
   false6c: the nullhyp yesrej if the p-value is larger than the critval
   false6d: the nullhyp yesrej if the p-value is less than the critval
-
   false7a: the althyp yessupp if the c2s is less than the losa
   false7b: the althyp yessupp if the c2s is larger than the losa
   false7c: the althyp notsupp if the c2s is less than the losa
   false7d: the althyp notsupp if the c2s is larger than the losa
-
   false8a: the althyp yessupp if the p-value is less than the critval
   false8b: the althyp yessupp if the p-value is larger than the critval
   false8c: the althyp notsupp if the p-value is less than the critval
   false8d: the althyp notsupp if the p-value is larger than the critval
-
-# conflicts, means that the statements cannot appear together
-# add ': True' to each line, so the program runs a faster lookup
-conflict_rules: ~
+conflict_rules: null
+dbsubject: Biostatistics

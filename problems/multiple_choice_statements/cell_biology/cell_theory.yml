@@ -1,36 +1,25 @@
----
-
-#Which one of the following statements is FALSE/TRUE <connection word> <topic>
 topic: cell theory
-#override_question_true: Which one of the following atoms/molecules would readily pass through the lipid membrane?
-#override_question_false: Which one of the following atoms/molecules could <b>NOT</b> readily pass through the lipid membrane?
-#override_question_false: ~
-override_question_true: ~
-
+override_question_true: null
 replacement_rules:
-  'cell theory':      '<span style="color: #793AAA;">cell&nbsp;theory</span>'
-  Cells:              '<span style="color: MediumBlue;">Cells</span>'
-  cells:              '<span style="color: MediumBlue;">cells</span>'
-  ' cell':            ' <span style="color: MediumBlue;">cell</span>'
-  living things:      '<span style="color: OrangeRed;">living things</span>'
-  living organisms:   '<span style="color: OrangeRed;">living organisms</span>'
-  life:               '<span style="color: OrangeRed;">life</span>'
-  Organs:             '<span style="color: MediumBlue;">Organs</span>'
-  organs:             '<span style="color: MediumBlue;">organs</span>'
-  'organ ':           '<span style="color: MediumBlue;">organ</span> '
-
-connection_words: ~
-
+  cell theory: '<span style="color: #793AAA;">cell&nbsp;theory</span>'
+  Cells: '<span style="color: MediumBlue;">Cells</span>'
+  cells: '<span style="color: MediumBlue;">cells</span>'
+  ' cell': ' <span style="color: MediumBlue;">cell</span>'
+  living things: '<span style="color: OrangeRed;">living things</span>'
+  living organisms: '<span style="color: OrangeRed;">living organisms</span>'
+  life: '<span style="color: OrangeRed;">life</span>'
+  Organs: '<span style="color: MediumBlue;">Organs</span>'
+  organs: '<span style="color: MediumBlue;">organs</span>'
+  'organ ': '<span style="color: MediumBlue;">organ</span> '
+connection_words: null
 true_statements:
   truth1a: All living things are composed of cells.
   truth1b: All living organisms are composed of one or more cells.
   truth1c: All known living things are made up of one or more cells.
   truth1d: All living things are made up of one or more cells.
   truth1e: Cells are the basic building blocks of all living things.
-
   truth2a: Cells share similar chemical composition.
   truth2c: All cells are basically the same in chemical composition.
-
   truth3a: All cells arise from pre-existing cells.
   truth3b: Cells arise from pre-existing cells.
   truth3c: All living cells arise from pre-existing cells by division.
@@ -38,60 +27,40 @@ true_statements:
   truth3e: Cells come from previously existing cells.
   truth3f: All cells come from other living cells.
   truth3g: All cells arise from other cells.
-
   truth5a: The cell is the basic unit of structure and organization in organisms.
   truth5b: Cells are the basic unit of structure and function in all living things.
   truth5c: The basic units of structure and function are cells.
   truth5d: Cells are the basic structural and functional units of life.
-  truth5e: The cell is the smallest living thing that performs all the functions of life.
+  truth5e: The cell is the smallest living thing that performs all the functions of
+    life.
   truth5f: The basic unit of life is a cell.
-
   truth6a: Energy flow (metabolism and biochemistry) occurs within cells.
   truth6b: All life functions occur within cells.
-
   truth7a: Heredity information (DNA) is passed on from cell to cell.
   truth7b: All cells contain genetic information or DNA.
-
-
 false_statements:
   false81a: Cells are of similar shapes and sizes.
-
   false82a: Cells are too small to see without a microscope.
-
   false83a: Not all organisms are composed of cells, but most organisms are.
-
   false84a: All cells contain membrane-bound organelles.
   false84b: All cells have a nucleus which divides.
   false84c: All cells contain a nucleus.
-
   false85a: Eukaryotic cells are complex.
   false85b: Humans are multicellular.
   false85c: Bacteria are prokaryotic cells.
-
   false86a: Cells form through spontaneous generation.
   false86b: Living things can "generate" from non-living matter.
-
   false87a: The organ is the basic unit of structure and organization in organisms.
   false87b: Organs are the basic unit of structure and function in all living things.
   false87c: The basic units of structure and function are organs.
   false87d: Organs are the basic structural and functional units of life.
-  false87e: The organ is the smallest living thing that performs all the functions of life.
-
+  false87e: The organ is the smallest living thing that performs all the functions
+    of life.
   false88a: Cells are made primarily of water.
   false88b: All living things are only composed of cells and nothing else.
   false88c: All living cells require water for survival.
   false88d: All living cells require glucose for survival.
   false88e: All living cells require oxygen in order to survive.
-
   false89a: All living cells must have a cell wall.
-
-# conflicts, means that the statements cannot appear together
-conflict_rules: ~
-
-
-
-
-
-
-
-
+conflict_rules: null
+dbsubject: Cell Biology

@@ -1,57 +1,48 @@
-#YAML file for Matching Questions
-
 items to match per question: 5
-
-#both singular and plural
 key description: trophic organism
 keys description: trophic organisms
-
-#both singular and plural
 value description: definition
 values description: definitions
-
 replacement_rules:
-    chemoorganoheterotroph: '<span style="color: #e60000;">chemoorganoheterotroph</span>' #RED
-    inorganic: '<span style="color: #e65400;">inorganic</span>' #DARK ORANGE
-    organisms: '<span style="color: #e69100;">organisms</span>' #LIGHT ORANGE
-    photolithoautotroph: '<span style="color: #b3b300;">photolithoautotroph</span>' #DARK YELLOW
-    light: '<span style="color: #59b300;">light</span>' #LIME GREEN
-    photoorganoheterotroph: '<span style="color: #009900;">photoorganoheterotroph</span>' #GREEN
-    ' organic': ' <span style="color: #00b38f;">organic</span>' #TEAL
-    carbon&nbsp;dioxide: '<span style="color: #00b3b3;">carbon&nbsp;dioxide</span>' #CYAN
-    chemolithoheterotroph: '<span style="color: #0a9bf5;">chemolithoheterotroph</span>' #SKY BLUE
-    JJJJJJJJ: '<span style="color: #0039e6;">JJJJJJJJ</span>' #BLUE
-    carbon&nbsp;source: '<span style="color: #004d99;">carbon&nbsp;source</span>' #NAVY
-    chemolithoautotroph: '<span style="color: #7b12a1;">chemolithoautotroph</span>' #PURPLE
-    MMMMMMMM: '<span style="color: #b30077;">MMMMMMMM</span>' #MAGENTA
-    energy: '<span style="color: #cc0066;">energy</span>' #PINK
-
+  chemoorganoheterotroph: '<span style="color: #e60000;">chemoorganoheterotroph</span>'
+  inorganic: '<span style="color: #e65400;">inorganic</span>'
+  organisms: '<span style="color: #e69100;">organisms</span>'
+  photolithoautotroph: '<span style="color: #b3b300;">photolithoautotroph</span>'
+  light: '<span style="color: #59b300;">light</span>'
+  photoorganoheterotroph: '<span style="color: #009900;">photoorganoheterotroph</span>'
+  ' organic': ' <span style="color: #00b38f;">organic</span>'
+  carbon&nbsp;dioxide: '<span style="color: #00b3b3;">carbon&nbsp;dioxide</span>'
+  chemolithoheterotroph: '<span style="color: #0a9bf5;">chemolithoheterotroph</span>'
+  JJJJJJJJ: '<span style="color: #0039e6;">JJJJJJJJ</span>'
+  carbon&nbsp;source: '<span style="color: #004d99;">carbon&nbsp;source</span>'
+  chemolithoautotroph: '<span style="color: #7b12a1;">chemolithoautotroph</span>'
+  MMMMMMMM: '<span style="color: #b30077;">MMMMMMMM</span>'
+  energy: '<span style="color: #cc0066;">energy</span>'
 matching pairs:
   photolithoautotroph:
-    - uses light for energy and CO<sub>2</sub> as a carbon&nbsp;source
-    - uses light for energy and carbon&nbsp;dioxide as a carbon&nbsp;source
-    - obtains energy from light and its organic material is derived from carbon&nbsp;dioxide
-
+  - uses light for energy and CO<sub>2</sub> as a carbon&nbsp;source
+  - uses light for energy and carbon&nbsp;dioxide as a carbon&nbsp;source
+  - obtains energy from light and its organic material is derived from carbon&nbsp;dioxide
   chemolithoautotroph:
-    - obtains energy by oxidizing inorganic compounds
-    - uses inorganic compounds for both energy and carbon&nbsp;source
-    - uses sulfur, iron, or nitrogen as energy sources and carbon&nbsp;dioxide as a carbon&nbsp;source
-
+  - obtains energy by oxidizing inorganic compounds
+  - uses inorganic compounds for both energy and carbon&nbsp;source
+  - uses sulfur, iron, or nitrogen as energy sources and carbon&nbsp;dioxide as a
+    carbon&nbsp;source
   chemoorganoheterotroph:
-    - derives its energy using organic chemicals from consuming other organisms
-    - uses organic compounds for both energy and its carbon&nbsp;source
-
+  - derives its energy using organic chemicals from consuming other organisms
+  - uses organic compounds for both energy and its carbon&nbsp;source
   chemolithoheterotroph:
-    - its energy from the oxidation of inorganic compounds, but uses organic compounds as its carbon&nbsp;source
-    - derives its energy using inorganic chemicals, but its carbon from other organisms
-    - uses inorganic compounds for energy, but uses organic compounds as its carbon&nbsp;source
-    - uses sulfur, iron, or nitrogen as energy sources, but uses organic compounds from other organisms as its carbon&nbsp;source
-
+  - its energy from the oxidation of inorganic compounds, but uses organic compounds
+    as its carbon&nbsp;source
+  - derives its energy using inorganic chemicals, but its carbon from other organisms
+  - uses inorganic compounds for energy, but uses organic compounds as its carbon&nbsp;source
+  - uses sulfur, iron, or nitrogen as energy sources, but uses organic compounds from
+    other organisms as its carbon&nbsp;source
   photoorganoheterotroph:
-    - obtains energy from light and organic material from other organisms
-    - obtains energy from light and organic material as its carbon&nbsp;source
-    - uses energy from light and organic material from other organisms
-    - relys on light for energy and organic compounds from other organisms for survival
-    - uses light for energy, but requires organic compounds from other organisms to provide the carbon it needs
-
-
+  - obtains energy from light and organic material from other organisms
+  - obtains energy from light and organic material as its carbon&nbsp;source
+  - uses energy from light and organic material from other organisms
+  - relys on light for energy and organic compounds from other organisms for survival
+  - uses light for energy, but requires organic compounds from other organisms to
+    provide the carbon it needs
+dbsubject: Cell Biology

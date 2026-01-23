@@ -1,186 +1,151 @@
-#YAML file for Matching Questions
-
 items to match per question: 4
-
-
-#both singular and plural
 key description: type of macromolecule
 keys description: types of macromolecules
-
-#both singular and plural
 value description: macromolecule
 values description: macromolecules
-
 replacement_rules:
-    lipids: '<span style="color: #e65400;">lipids</span>' #DARK ORANGE
-    proteins: '<span style="color: #009900;">proteins</span>' #GREEN
-    carbohydrates: '<span style="color: #0039e6;">carbohydrates</span>' #BLUE
-    nucleic acids: '<span style="color: #b30077;">nucleic acids</span>' #MAGENTA
-
+  lipids: '<span style="color: #e65400;">lipids</span>'
+  proteins: '<span style="color: #009900;">proteins</span>'
+  carbohydrates: '<span style="color: #0039e6;">carbohydrates</span>'
+  nucleic acids: '<span style="color: #b30077;">nucleic acids</span>'
 matching pairs:
   proteins:
-    - amino acids
-    - amino acid tryptophan
-    - amino acid alanine
-    - amino acid glycine
-    - amino acid serine
-    - amino acid threonine
-    - amino acid tyrosine
-    - amino acid phenylalanine
-    - amino acid histidine
-    - amino acid aspartate
-    - amino acid aspartic acid
-    - amino acid asparagine
-    - amino acid cysteine
-    - amino acid arginine
-    - amino acid glutamate
-    - amino acid glutamic acid
-    - amino acid glutamine
-    - amino acid leucine
-    - amino acid isoleucine
-    - amino acid methionine
-    - amino acid lysine
-    - amino acid proline
-    - amino acid valine
-
-    - primary structure
-    - secondary structure
-    - tertiary structure
-    - quaternary structure
-
-
-    - polypeptides
-    - enzymes
-    - hemoglobin
-    - only macromolecule that often contains sulfur atoms
-    - speed up chemical reactions
-    - side chains
-
-    - '&alpha;-helix or alpha-helix'
-    - '&beta;-sheet or beta-sheet'
-    - '&beta;-strand or beta-strand'
-    - '&beta;-pleated sheet or beta-pleated sheet'
-    - 'contains an alpha-carbon or C<sub>&alpha;</sub>'
-    - disulfide bridges
-    - hydrophobic core
-    - denaturation
-    - native structure
-    - chaperonins
-
+  - amino acids
+  - amino acid tryptophan
+  - amino acid alanine
+  - amino acid glycine
+  - amino acid serine
+  - amino acid threonine
+  - amino acid tyrosine
+  - amino acid phenylalanine
+  - amino acid histidine
+  - amino acid aspartate
+  - amino acid aspartic acid
+  - amino acid asparagine
+  - amino acid cysteine
+  - amino acid arginine
+  - amino acid glutamate
+  - amino acid glutamic acid
+  - amino acid glutamine
+  - amino acid leucine
+  - amino acid isoleucine
+  - amino acid methionine
+  - amino acid lysine
+  - amino acid proline
+  - amino acid valine
+  - primary structure
+  - secondary structure
+  - tertiary structure
+  - quaternary structure
+  - polypeptides
+  - enzymes
+  - hemoglobin
+  - only macromolecule that often contains sulfur atoms
+  - speed up chemical reactions
+  - side chains
+  - '&alpha;-helix or alpha-helix'
+  - '&beta;-sheet or beta-sheet'
+  - '&beta;-strand or beta-strand'
+  - '&beta;-pleated sheet or beta-pleated sheet'
+  - contains an alpha-carbon or C<sub>&alpha;</sub>
+  - disulfide bridges
+  - hydrophobic core
+  - denaturation
+  - native structure
+  - chaperonins
   carbohydrates:
-    - sugar
-
-    - main compontent of the tough cell wall in plants
-
-
-    - monosaccharides
-    - hexose
-    - pentose
-    - triose
-    - ketose
-    - aldose
-
-    - chemical formula of C<sub>>6</sub>H<sub>>12</sub>O<sub>>6</sub>
-    - ribose
-    - glucose
-    - galactose
-    - fructose
-
-    - disaccharides
-    - sucrose
-    - maltose
-    - lactose
-    - glycosidic linkage
-    - '&alpha;-glycosidic linkage'
-    - '&beta;-glycosidic linkage'
-
-
-    - oligosaccharides
-
-    - polysaccharides
-    - starch
-    - glycogen
-    - amylose starch
-    - amylopectin starch
-    - chitin
-    - cellulose
-    - dietary fiber
-
-    - exoskeleton of arthropods
-    - macromolecule used to make strong and flexible surgical thread
-    - pectin &ndash; a heteropolysaccharide present in plant cell walls
-    - xanthan gum &ndash; polysaccharide used as a thickening agent in food
-    - agarose &ndash; a heteropolysaccharide extracted from certain red seaweed
-
+  - sugar
+  - main compontent of the tough cell wall in plants
+  - monosaccharides
+  - hexose
+  - pentose
+  - triose
+  - ketose
+  - aldose
+  - chemical formula of C<sub>>6</sub>H<sub>>12</sub>O<sub>>6</sub>
+  - ribose
+  - glucose
+  - galactose
+  - fructose
+  - disaccharides
+  - sucrose
+  - maltose
+  - lactose
+  - glycosidic linkage
+  - '&alpha;-glycosidic linkage'
+  - '&beta;-glycosidic linkage'
+  - oligosaccharides
+  - polysaccharides
+  - starch
+  - glycogen
+  - amylose starch
+  - amylopectin starch
+  - chitin
+  - cellulose
+  - dietary fiber
+  - exoskeleton of arthropods
+  - macromolecule used to make strong and flexible surgical thread
+  - pectin &ndash; a heteropolysaccharide present in plant cell walls
+  - xanthan gum &ndash; polysaccharide used as a thickening agent in food
+  - agarose &ndash; a heteropolysaccharide extracted from certain red seaweed
   lipids:
-    - vegetable oil
-    - beeswax
-    - olive oil
-    - oil
-    - wax
-    - fat
-
-    - fatty acids
-    - '&omega;-3 fatty acids'
-    - saturated fatty acids
-    - unsaturated fatty acids
-    - chemical process of hydrogenation
-    - cis-unsaturated fatty acids
-    - trans-unsaturated fatty acids
-    - butter or margarine
-    - detergents
-    - trans-fat
-
-    - most hydrophobic macromolecule
-    - only macromolecule that is not a polymer
-    - does not form long polymers
-    - made of long hydrocarbons
-    - fatty acids attached to glycerol backbone
-    - macromolecule with the highest energy density
-    - does not dissolve well in water
-    - long-term energy storage from food
-
-    - membrane bilayer
-    - phospholipids
-
-    - triglycerides or fat
-
-    - steroids
-    - cholesterol
-    - testosterone
-    - estrogen
-
-
-
+  - vegetable oil
+  - beeswax
+  - olive oil
+  - oil
+  - wax
+  - fat
+  - fatty acids
+  - '&omega;-3 fatty acids'
+  - saturated fatty acids
+  - unsaturated fatty acids
+  - chemical process of hydrogenation
+  - cis-unsaturated fatty acids
+  - trans-unsaturated fatty acids
+  - butter or margarine
+  - detergents
+  - trans-fat
+  - most hydrophobic macromolecule
+  - only macromolecule that is not a polymer
+  - does not form long polymers
+  - made of long hydrocarbons
+  - fatty acids attached to glycerol backbone
+  - macromolecule with the highest energy density
+  - does not dissolve well in water
+  - long-term energy storage from food
+  - membrane bilayer
+  - phospholipids
+  - triglycerides or fat
+  - steroids
+  - cholesterol
+  - testosterone
+  - estrogen
   nucleic acids:
-    - nucleotides
-    - nucleobases
-    - nitrogenous bases
-    - polynucleotides
-    - pyrimidines
-    - purines
-    - deoxyribose backbone
-    - double stranded helix
-    - anti-parallel helix
-    - '5&prime; &rarr; 3&prime; direction'
-    - polymer is connected by phosphates
-    - backbone of sugar-phosphate units
-
-    - adenine
-    - adenosine triphosphate
-    - thymine
-    - cytosine
-    - guanine
-    - uracil
-
-    - polynucleotides
-    - DNA
-    - RNA
-    - messenger RNA
-    - transfer RNA
-    - ribosomal RNA
-    - ATP
-    - deoxyribonucleic acid
-    - ribonucleic acid
-
-
+  - nucleotides
+  - nucleobases
+  - nitrogenous bases
+  - polynucleotides
+  - pyrimidines
+  - purines
+  - deoxyribose backbone
+  - double stranded helix
+  - anti-parallel helix
+  - 5&prime; &rarr; 3&prime; direction
+  - polymer is connected by phosphates
+  - backbone of sugar-phosphate units
+  - adenine
+  - adenosine triphosphate
+  - thymine
+  - cytosine
+  - guanine
+  - uracil
+  - polynucleotides
+  - DNA
+  - RNA
+  - messenger RNA
+  - transfer RNA
+  - ribosomal RNA
+  - ATP
+  - deoxyribonucleic acid
+  - ribonucleic acid
+dbsubject: Biochemistry

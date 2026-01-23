@@ -1,24 +1,17 @@
----
-
-#Which one of the following statements is FALSE/TRUE <connection word> <topic>
 topic: proofreading by DNA polymerase
-
-connection_words: ~
-# conflicts, means that the statements cannot appear together
-conflict_rules: ~
-
+connection_words: null
+conflict_rules: null
 replacement_rules:
-   Taq DNA polymerase:    '<span style="color: #5A8432;"><i>Taq</i> DNA&nbsp;polymerase</span>'
-   DNA polymerases:       '<span style="color: #3E3EC4;">DNA&nbsp;polymerases</span>'
-   DNA polymerase:        '<span style="color: #3E3EC4;">DNA&nbsp;polymerase</span>'
-   RNA polymerases:       '<span style="color: #793AAA;">RNA&nbsp;polymerases</span>'
-   RNA polymerase:        '<span style="color: #793AAA;">RNA&nbsp;polymerase</span>'
-   proofreading:          '<span style="color: DarkGreen;">proofreading</span>'
-
-   exonuclease polymerase domain:   '<span style="color: MediumVioletRed;">exonuclease polymerase domain</span>'
-   3&prime;&rarr;5&prime;:          '<span style="color: #b33000;">3&prime;&rarr;5&prime;</span>'
-   5&prime;&rarr;3&prime;:          '<span style="color: #248f24;">primase</span>'
-
+  Taq DNA polymerase: '<span style="color: #5A8432;"><i>Taq</i> DNA&nbsp;polymerase</span>'
+  DNA polymerases: '<span style="color: #3E3EC4;">DNA&nbsp;polymerases</span>'
+  DNA polymerase: '<span style="color: #3E3EC4;">DNA&nbsp;polymerase</span>'
+  RNA polymerases: '<span style="color: #793AAA;">RNA&nbsp;polymerases</span>'
+  RNA polymerase: '<span style="color: #793AAA;">RNA&nbsp;polymerase</span>'
+  proofreading: '<span style="color: DarkGreen;">proofreading</span>'
+  exonuclease polymerase domain: '<span style="color: MediumVioletRed;">exonuclease
+    polymerase domain</span>'
+  3&prime;&rarr;5&prime;: '<span style="color: #b33000;">3&prime;&rarr;5&prime;</span>'
+  5&prime;&rarr;3&prime;: '<span style="color: #248f24;">primase</span>'
 true_statements:
   truth1: proofreading is designed in a way that requires a primer
   truth2: RNA polymerases do not have proofreading capability
@@ -27,9 +20,10 @@ true_statements:
   truth5: DNA polymerase requires a primer to start synthesis
   truth6: RNA polymerase can start synthesis without primer
   truth7: proofreading and 'starting from scratch' have opposite requirements
-  truth8: the 3&prime;&rarr;5&prime; exonuclease polymerase domain is required for proofreading
-  truth9: proofreading allows DNA polymerase to remove mismatched nucleotides in the 3&prime;&rarr;5&prime; direction
-
+  truth8: the 3&prime;&rarr;5&prime; exonuclease polymerase domain is required for
+    proofreading
+  truth9: proofreading allows DNA polymerase to remove mismatched nucleotides in the
+    3&prime;&rarr;5&prime; direction
 false_statements:
   false1a: proofreading is designed to allow polymerase to 'start from scratch'
   false1b: proofreading allows DNA polymerase to 'start from scratch'
@@ -38,7 +32,8 @@ false_statements:
   false4: Taq DNA polymerase has proofreading capability
   false5: DNA polymerase can start synthesis without primer
   false6: RNA polymerase requires a primer to start synthesis
-  false8: the 5&prime;&rarr;3&prime; exonuclease polymerase domain is required for proofreading
-  false9: proofreading allows DNA polymerase to remove mismatched nucleotides in the 5&prime;&rarr;3&prime; direction
-
-
+  false8: the 5&prime;&rarr;3&prime; exonuclease polymerase domain is required for
+    proofreading
+  false9: proofreading allows DNA polymerase to remove mismatched nucleotides in the
+    5&prime;&rarr;3&prime; direction
+dbsubject: Molecular Biology

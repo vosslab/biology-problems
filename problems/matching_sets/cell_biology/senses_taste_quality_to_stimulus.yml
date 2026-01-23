@@ -1,70 +1,54 @@
-#YAML file for Matching Questions
-
 topic: taste_basics
 topic_tag: senses
 learning_objective: Match each taste quality to a canonical stimulus example.
 source: senses chapter
-
 items to match per question: 4
-
-#Author notes (biology-first, deduction-based):
-#- Values should be short biological cues, not just molecule names.
-#- Each value should include (a) a chemical/class cue and (b) a familiar example/source.
-#- Do not include taste words (sweet/sour/salty/bitter/savory) in the values.
-#- For Sweet values, avoid the substring "sugar" anywhere; use carbohydrate/saccharide terms instead.
-#- Put synonyms/alternate phrasings under the same key so a student sees only one per question,
-#  but different generated questions rotate through variants.
-
-#both singular and plural
 key description: taste quality
 keys description: taste qualities
-
-#both singular and plural
 value description: stimulus
 values description: stimuli
-
 replacement_rules:
-  Na+: "<strong>Na<sup>+</sup></strong>"
-  H+: "<strong>H<sup>+</sup></strong>"
-  H3O+: "<strong>H<sub>3</sub>O<sup>+</sup></strong>"
-  NaCl: "<strong>NaCl</strong>"
-  MSG: "<strong>MSG</strong>"
-  L-glutamate: "<strong>L-glutamate</strong>"
-
+  Na+: <strong>Na<sup>+</sup></strong>
+  H+: <strong>H<sup>+</sup></strong>
+  H3O+: <strong>H<sub>3</sub>O<sup>+</sup></strong>
+  NaCl: <strong>NaCl</strong>
+  MSG: <strong>MSG</strong>
+  L-glutamate: <strong>L-glutamate</strong>
 matching pairs:
   Sweet:
-    - a monosaccharide such as glucose, a common fuel for glycolysis
-    - a disaccharide such as sucrose, common in table sucrose products
-    - a fruit hexose such as fructose, common in ripe fruit
-    - a milk disaccharide such as lactose, common in dairy
-    - a starch breakdown product such as maltose
-    - small carbohydrates absorbed in the small intestine
-    - simple saccharides commonly used as cellular energy sources
+  - a monosaccharide such as glucose, a common fuel for glycolysis
+  - a disaccharide such as sucrose, common in table sucrose products
+  - a fruit hexose such as fructose, common in ripe fruit
+  - a milk disaccharide such as lactose, common in dairy
+  - a starch breakdown product such as maltose
+  - small carbohydrates absorbed in the small intestine
+  - simple saccharides commonly used as cellular energy sources
   Umami:
-    - free glutamate released from protein rich foods during fermentation
-    - the amino acid glutamate concentrated in aged cheeses and soy sauce
-    - a protein hydrolysis product that increases free glutamate
-    - monosodium glutamate, a salt form of the amino acid glutamate used in seasoning
-    - L-glutamate released when proteins are broken down during digestion
-    - MSG added to foods as a glutamate source
+  - free glutamate released from protein rich foods during fermentation
+  - the amino acid glutamate concentrated in aged cheeses and soy sauce
+  - a protein hydrolysis product that increases free glutamate
+  - monosodium glutamate, a salt form of the amino acid glutamate used in seasoning
+  - L-glutamate released when proteins are broken down during digestion
+  - MSG added to foods as a glutamate source
   Sour:
-    - high proton concentration, low pH, typical of lemon juice
-    - organic acids that donate protons, such as citric acid in citrus
-    - acetic acid from vinegar, a proton donor that lowers pH
-    - lactic acid from fermented dairy, increasing acidity
-    - increased H3O+ concentration in an acidic solution
-    - protons (H+) that lower pH in foods and drinks
+  - high proton concentration, low pH, typical of lemon juice
+  - organic acids that donate protons, such as citric acid in citrus
+  - acetic acid from vinegar, a proton donor that lowers pH
+  - lactic acid from fermented dairy, increasing acidity
+  - increased H3O+ concentration in an acidic solution
+  - protons (H+) that lower pH in foods and drinks
   Salty:
-    - high sodium ion concentration from dissolved NaCl in snack foods
-    - sodium ions released when sodium chloride dissolves in saliva
-    - a sodium rich brine solution used to preserve foods like pickles
-    - electrolyte sodium ions common in broths and cured foods
-    - Na+ in solution from added sodium chloride
-    - foods with high sodium chloride content
+  - high sodium ion concentration from dissolved NaCl in snack foods
+  - sodium ions released when sodium chloride dissolves in saliva
+  - a sodium rich brine solution used to preserve foods like pickles
+  - electrolyte sodium ions common in broths and cured foods
+  - Na+ in solution from added sodium chloride
+  - foods with high sodium chloride content
   Bitter:
-    - quinine alkaloids from plant defense chemistry, present in tonic water
-    - basic nitrogen containing alkaloids such as caffeine in coffee or tea
-    - plant defensive toxins, often alkaloids, that deter herbivores
-    - an alkaloid poison such as strychnine used historically as pesticide
-    - nicotine, a plant alkaloid that acts as an insect deterrent
-    - denatonium, a compound used to discourage accidental ingestion
+  - quinine alkaloids from plant defense chemistry, present in tonic water
+  - basic nitrogen containing alkaloids such as caffeine in coffee or tea
+  - plant defensive toxins, often alkaloids, that deter herbivores
+  - an alkaloid poison such as strychnine used historically as pesticide
+  - nicotine, a plant alkaloid that acts as an insect deterrent
+  - denatonium, a compound used to discourage accidental ingestion
+dbsubject: Cell Biology

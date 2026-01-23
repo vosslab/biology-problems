@@ -1,22 +1,14 @@
----
-
-#Which one of the following statements is FALSE/TRUE <connection word> <topic>
 topic: PCR primers that are efficient and avoid mispriming
-
-connection_words: ~
-# conflicts, means that the statements cannot appear together
-# add ': True' to each line, so the program runs a faster lookup
-conflict_rules: ~
-
+connection_words: null
+conflict_rules: null
 replacement_rules:
-   nucleotides:           '<span style="color: Maroon;">nucleotides</span>'
-   complementary:         '<span style="color: #b33000;">complementary</span>'
-   primers:               '<span style="color: #248f24;">primers</span>'
-   'primer ':             '<span style="color: #248f24;">primer </span>'
-   sequences:             '<span style="color: #002699;">sequences</span>'
-   'sequence ':           '<span style="color: #002699;">sequence </span>'
-   melting temperature:   '<span style="color: #995c00;">melting temperature (T<sub>m</sub>)</span>'
-
+  nucleotides: '<span style="color: Maroon;">nucleotides</span>'
+  complementary: '<span style="color: #b33000;">complementary</span>'
+  primers: '<span style="color: #248f24;">primers</span>'
+  'primer ': '<span style="color: #248f24;">primer </span>'
+  sequences: '<span style="color: #002699;">sequences</span>'
+  'sequence ': '<span style="color: #002699;">sequence </span>'
+  melting temperature: '<span style="color: #995c00;">melting temperature (T<sub>m</sub>)</span>'
 true_statements:
   truth1: the primers are about 18 to 30 nucleotides in length
   truth2: the primers are complementary to highly conserved regions of the genome
@@ -26,8 +18,8 @@ true_statements:
   truth6: the ends of the primer sequence must not bind to form secondary structures
   truth7: the percentage of G/C bases in the range of 40% to 60%
   truth8: the primers have a melting temperature in the range of 50&deg;C to 65&deg;C
-  truth9: the primers would ideally have unique sequences that a deficient in 1 of the 4 nucleotides
-
+  truth9: the primers would ideally have unique sequences that a deficient in 1 of
+    the 4 nucleotides
 false_statements:
   false1a: the primers are shorter than 10 nucleotides in length
   false1b: the primers are at least 50 nucleotides in length, if not longer
@@ -36,13 +28,11 @@ false_statements:
   false4: the primers are rich in A/T bases at the 3&prime; end to ensure good binding
   false5a: the primers are mostly complementary to each other
   false5b: the primers can readily bind to form primer-dimers
-  false6: the ends of each primer are self-complementary to form strong secondary structure
+  false6: the ends of each primer are self-complementary to form strong secondary
+    structure
   false7a: the percentage of G/C bases are less than 30%
   false7b: the percentage of G/C bases are more than 70%
   false8a: the primers have a melting temperature less than 42&deg;C
   false8b: the primers have a melting temperature more than 68&deg;C
   false9: both primers must always contain all four possible nucleotides
-
-
-
-
+dbsubject: Laboratory Techniques

@@ -1,47 +1,29 @@
----
-
-#Which one of the following statements is FALSE/TRUE <connection word> <topic>
 topic: Long Distance PCR
-
-connection_words: ~
-
+connection_words: null
 true_statements:
-   truth1a: the time for polymerase elongation step is extended
-   truth1b: the polymerase elongation time is increased
-
-   truth2a: the time for dna denaturation step is shortened
-   truth2b: the dna denaturation time is decreased
-
-   truth3a: the temperature for polymerase elongation step is lowered
-   truth3b: the polymerase elongation temperature is decreased
-
-   truth4a: a second polymerase is added to proofread mistakes made by Taq
-   truth4b: a mixture of two different thermostable polymerases is used
-
-   truth5a: normal PCR cannot produce products longer than 5 kb
-   truth5b: long range PCR can amplify long target DNA sequences up to 30 kb
-
-   truth6: the dna denaturation step can cause depurination of the purine bases
-
-   truth7: the buffer conditions are modified to provide better ionic concentrations
-
-
+  truth1a: the time for polymerase elongation step is extended
+  truth1b: the polymerase elongation time is increased
+  truth2a: the time for dna denaturation step is shortened
+  truth2b: the dna denaturation time is decreased
+  truth3a: the temperature for polymerase elongation step is lowered
+  truth3b: the polymerase elongation temperature is decreased
+  truth4a: a second polymerase is added to proofread mistakes made by Taq
+  truth4b: a mixture of two different thermostable polymerases is used
+  truth5a: normal PCR cannot produce products longer than 5 kb
+  truth5b: long range PCR can amplify long target DNA sequences up to 30 kb
+  truth6: the dna denaturation step can cause depurination of the purine bases
+  truth7: the buffer conditions are modified to provide better ionic concentrations
 false_statements:
-   false1a: the time for polymerase elongation step is shortened
-   false1b: the polymerase elongation time is decreased
-
-   false2a: the time for dna denaturation step is extended
-   false2b: the dna denaturation time is increased
-
-   false3a: the temperature for polymerase elongation step is raised
-   false3b: the polymerase elongation temperature is increased
-
-   false5a: long range PCR can amplify long target DNA sequences up to an amazing 3,000 kb
-   false5b: normal PCR cannot produce products longer than 200 bases
-   false5c: long range PCR can amplify long target DNA sequences of only 4 kb
-
-   false6: the dna denaturation step can cause depurination of the pyrimidine bases
-
-
-# conflicts, means that the statements cannot appear together
-conflict_rules: ~
+  false1a: the time for polymerase elongation step is shortened
+  false1b: the polymerase elongation time is decreased
+  false2a: the time for dna denaturation step is extended
+  false2b: the dna denaturation time is increased
+  false3a: the temperature for polymerase elongation step is raised
+  false3b: the polymerase elongation temperature is increased
+  false5a: long range PCR can amplify long target DNA sequences up to an amazing 3,000
+    kb
+  false5b: normal PCR cannot produce products longer than 200 bases
+  false5c: long range PCR can amplify long target DNA sequences of only 4 kb
+  false6: the dna denaturation step can cause depurination of the pyrimidine bases
+conflict_rules: null
+dbsubject: Laboratory Techniques

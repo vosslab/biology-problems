@@ -1,105 +1,89 @@
-#YAML file for Matching Questions
-
 items to match per question: 4
-
-
-#both singular and plural
 key description: level of protein structure
 keys description: levels of protein structure
-
-#both singular and plural
 value description: description
 values description: descriptions
-
 replacement_rules:
-    primary: '<span style="color: #e60000;">primary</span>' #RED
-    amino acids: '<span style="color: #e65400;">amino acids</span>' #DARK ORANGE
-    'amino acid ': '<span style="color: #e65400;">amino acid</span> ' #DARK ORANGE
-    polypeptide chains: '<span style="color: #e69100;">polypeptide chains</span>' #LIGHT ORANGE
-    ' polypeptide chain': ' <span style="color: #e69100;">polypeptide chain</span>' #LIGHT ORANGE
-    peptide bonds: '<span style="color: #b3b300;">peptide bonds</span>' #DARK YELLOW
-    secondary: '<span style="color: #59b300;">secondary</span>' #LIME GREEN
-    backbone: '<span style="color: #009900;">backbone</span>' #GREEN
-    hydrogen bonding: '<span style="color: #00b38f;">hydrogen bonding</span>' #TEAL
-    dihedral angles: '<span style="color: #00b3b3;">dihedral angles</span>' #CYAN
-    tertiary: '<span style="color: #0a9bf5;">tertiary</span>' #SKY BLUE
-    'side chains': '<span style="color: #0039e6;">side chains</span>' #BLUE
-    'side chain ': '<span style="color: #0039e6;">side chain</span> ' #BLUE
-    interactions: '<span style="color: #004d99;">interactions</span>' #NAVY
-    quaternary: '<span style="color: #7b12a1;">quaternary</span>' #PURPLE
-    protein: '<span style="color: #b30077;">protein</span>' #MAGENTA
-    'subunits': '<span style="color: #cc0066;">subunits</span>' #PINK
-    'subunit ': '<span style="color: #cc0066;">subunits</span> ' #PINK
-
-
+  primary: '<span style="color: #e60000;">primary</span>'
+  amino acids: '<span style="color: #e65400;">amino acids</span>'
+  'amino acid ': '<span style="color: #e65400;">amino acid</span> '
+  polypeptide chains: '<span style="color: #e69100;">polypeptide chains</span>'
+  ' polypeptide chain': ' <span style="color: #e69100;">polypeptide chain</span>'
+  peptide bonds: '<span style="color: #b3b300;">peptide bonds</span>'
+  secondary: '<span style="color: #59b300;">secondary</span>'
+  backbone: '<span style="color: #009900;">backbone</span>'
+  hydrogen bonding: '<span style="color: #00b38f;">hydrogen bonding</span>'
+  dihedral angles: '<span style="color: #00b3b3;">dihedral angles</span>'
+  tertiary: '<span style="color: #0a9bf5;">tertiary</span>'
+  side chains: '<span style="color: #0039e6;">side chains</span>'
+  'side chain ': '<span style="color: #0039e6;">side chain</span> '
+  interactions: '<span style="color: #004d99;">interactions</span>'
+  quaternary: '<span style="color: #7b12a1;">quaternary</span>'
+  protein: '<span style="color: #b30077;">protein</span>'
+  subunits: '<span style="color: #cc0066;">subunits</span>'
+  'subunit ': '<span style="color: #cc0066;">subunits</span> '
 matching pairs:
   primary:
-    - order of the amino acids in a polypeptide chain
-    - sequence of amino acids residues in the protein chain
-    - formation of peptide bonds to make a polypeptide chain
-    - intramolecular peptide bonds of the linear amino acid chain
-    - linear arrangement of the amino acids connected by the peptide bonds
-    - N-terminal to C-terminal list of amino acids
-    - length of the amino acid chain
-    - amino acid sequence in a polypeptide chain
-    - linear sequence of amino acids joined by peptide bonds
-    - peptide bonds forming a linear chain of amino acids
-    - amino acid chain length
-
-
+  - order of the amino acids in a polypeptide chain
+  - sequence of amino acids residues in the protein chain
+  - formation of peptide bonds to make a polypeptide chain
+  - intramolecular peptide bonds of the linear amino acid chain
+  - linear arrangement of the amino acids connected by the peptide bonds
+  - N-terminal to C-terminal list of amino acids
+  - length of the amino acid chain
+  - amino acid sequence in a polypeptide chain
+  - linear sequence of amino acids joined by peptide bonds
+  - peptide bonds forming a linear chain of amino acids
+  - amino acid chain length
   secondary:
-    - 'formation of a &beta;-strand within the polypeptide backbone'
-    - 'formation of a &alpha;-helix within the polypeptide backbone'
-    - relative orientation of neighboring amino acids
-    - backbone dihedral angles
-    - 'backbone hydrogen bonding in &alpha;-helices'
-    - Ramachandran plot of dihedral angles
-    - 'hydrogen bonding between nearby backbone atoms in the polypeptide chain'
-    - 'hydrogen bonding between nearby backbone atoms in a &beta;-sheet'
-    - peptide bonds restricting rotation of the backbone
-    - '&beta;-strand locations within polypeptide backbone'
-    - 'locations of &alpha;-helix structures within the backbone'
-    - angular orientation between adjacent amino acids
-    - '&alpha;-helix structures linked by backbone hydrogen bonding'
-    - restriction of backbone rotation by peptide bonds
-    - '&phi; and &psi; dihedral angles'
-
-
+  - formation of a &beta;-strand within the polypeptide backbone
+  - formation of a &alpha;-helix within the polypeptide backbone
+  - relative orientation of neighboring amino acids
+  - backbone dihedral angles
+  - backbone hydrogen bonding in &alpha;-helices
+  - Ramachandran plot of dihedral angles
+  - hydrogen bonding between nearby backbone atoms in the polypeptide chain
+  - hydrogen bonding between nearby backbone atoms in a &beta;-sheet
+  - peptide bonds restricting rotation of the backbone
+  - '&beta;-strand locations within polypeptide backbone'
+  - locations of &alpha;-helix structures within the backbone
+  - angular orientation between adjacent amino acids
+  - '&alpha;-helix structures linked by backbone hydrogen bonding'
+  - restriction of backbone rotation by peptide bonds
+  - '&phi; and &psi; dihedral angles'
   tertiary:
-    - complete three-dimensional conformation
-    - hydrophobic side chain interactions
-    - hydrogen bonding between polar side chains
-    - highest level for a protein with a single peptide chain
-    - formation of disulfide bonds by special side chains
-    - disulfide bridges linking distant amino acids in the same polypeptide chain
-    - electrostatic interactions among charged side chains
-    - ionic bonds between oppositely charged side chains
-    - van der Waals (VDW) interactions between uncharged side chains
-    - side chain hydrogen bonding between distant amino acids
-    - formation of ionic salt bridges by charged side chains
-    - creation of hydrophobic core
-    - three-dimensional shape of a single polypeptide chain
-    - hydrophobic interactions of amino acid side chains
-    - creation of disulfide bridges by specific side chains
-    - distant amino acids linked by disulfide bonds
-    - charged side chain interactions
-    - side chains with opposite charges forming ionic bonds
-    - hydrophobic side chain van der Waals (VDW) interactions
-    - hydrogen bonding between distant side chain amino acids
-    - ionic salt bridge formations between charged side chains
-
-
+  - complete three-dimensional conformation
+  - hydrophobic side chain interactions
+  - hydrogen bonding between polar side chains
+  - highest level for a protein with a single peptide chain
+  - formation of disulfide bonds by special side chains
+  - disulfide bridges linking distant amino acids in the same polypeptide chain
+  - electrostatic interactions among charged side chains
+  - ionic bonds between oppositely charged side chains
+  - van der Waals (VDW) interactions between uncharged side chains
+  - side chain hydrogen bonding between distant amino acids
+  - formation of ionic salt bridges by charged side chains
+  - creation of hydrophobic core
+  - three-dimensional shape of a single polypeptide chain
+  - hydrophobic interactions of amino acid side chains
+  - creation of disulfide bridges by specific side chains
+  - distant amino acids linked by disulfide bonds
+  - charged side chain interactions
+  - side chains with opposite charges forming ionic bonds
+  - hydrophobic side chain van der Waals (VDW) interactions
+  - hydrogen bonding between distant side chain amino acids
+  - ionic salt bridge formations between charged side chains
   quaternary:
-    - association of two or more polypeptide chains
-    - relative orientation of one protein subunit to another protein subunit
-    - formation of oligomers from two or more protein subunits
-    - manner in which protein subunits are arranged in the native protein
-    - number and arrangement of multiple folded protein subunits
-    - way in which the different protein subunits are packed together
-    - dimers, trimers, tetramers, and pentamers
-    - 'homo- and hetero-oligomers'
-    - assembly of multiple polypeptide chains into a protein complex
-    - arrangement of many protein domains
-    - arrangement of subunits into a protein complex
-    - organization and quantity of folded polypeptide chains
-
+  - association of two or more polypeptide chains
+  - relative orientation of one protein subunit to another protein subunit
+  - formation of oligomers from two or more protein subunits
+  - manner in which protein subunits are arranged in the native protein
+  - number and arrangement of multiple folded protein subunits
+  - way in which the different protein subunits are packed together
+  - dimers, trimers, tetramers, and pentamers
+  - homo- and hetero-oligomers
+  - assembly of multiple polypeptide chains into a protein complex
+  - arrangement of many protein domains
+  - arrangement of subunits into a protein complex
+  - organization and quantity of folded polypeptide chains
+dbsubject: Biochemistry

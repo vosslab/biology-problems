@@ -1,95 +1,79 @@
----
-
 topic: vision and hearing transduction
 topic_tag: senses
-learning_objective: Explain how photons and mechanical stimuli are converted into changes in membrane potential.
+learning_objective: Explain how photons and mechanical stimuli are converted into
+  changes in membrane potential.
 source: senses chapter
-
 replacement_rules:
-  rhodopsin: "<strong>rhodopsin</strong>"
-  retinal: "<strong>retinal</strong>"
-  cGMP: "<strong>cGMP</strong>"
-  PDE: "<strong>phosphodiesterase (PDE)</strong>"
-  CNG: "<strong>CNG</strong>"
-  K+: "<strong>K<sup>+</sup></strong>"
-  Ca2+: "<strong>Ca<sup>2+</sup></strong>"
-  Na+: "<strong>Na<sup>+</sup></strong>"
-
-connection_words: ~
-
+  rhodopsin: <strong>rhodopsin</strong>
+  retinal: <strong>retinal</strong>
+  cGMP: <strong>cGMP</strong>
+  PDE: <strong>phosphodiesterase (PDE)</strong>
+  CNG: <strong>CNG</strong>
+  K+: <strong>K<sup>+</sup></strong>
+  Ca2+: <strong>Ca<sup>2+</sup></strong>
+  Na+: <strong>Na<sup>+</sup></strong>
+connection_words: null
 true_statements:
   truth1a: Rhodopsin consists of an opsin protein plus a retinal chromophore.
   truth1b: Rhodopsin is formed when opsin binds retinal.
-
-  truth2a: Light causes retinal isomerization that triggers a conformational change in opsin.
+  truth2a: Light causes retinal isomerization that triggers a conformational change
+    in opsin.
   truth2b: Photon absorption changes retinal shape and activates rhodopsin.
-
-  truth3a: In rods, activated rhodopsin activates a G protein that leads to phosphodiesterase activation.
+  truth3a: In rods, activated rhodopsin activates a G protein that leads to phosphodiesterase
+    activation.
   truth3b: Phototransduction uses a G protein cascade that activates PDE.
-
   truth4a: In rods, PDE activity lowers cGMP concentration.
   truth4b: Phototransduction reduces cGMP by increasing its breakdown.
-
   truth5a: Lower cGMP closes CNG channels in rod outer segments.
   truth5b: Rod CNG channels close when cGMP levels fall.
-
   truth6a: Rod photoreceptors hyperpolarize in response to light.
   truth6b: Light reduces inward current in rods, causing hyperpolarization.
-
   truth7a: In darkness, rods have relatively high cGMP and open CNG channels.
   truth7b: Dark current in rods is supported by cGMP gated channel opening.
-
-  truth8a: Cones support color vision and function best at higher light levels than rods.
+  truth8a: Cones support color vision and function best at higher light levels than
+    rods.
   truth8b: Rods are more sensitive to low light than cones.
-
   truth9a: Hearing depends on mechanotransduction in hair cells of the inner ear.
   truth9b: Sound is converted into electrical signals by hair cell deflection.
-
-  truth10a: Tip links connect stereocilia and contribute to opening mechanosensitive transduction channels.
+  truth10a: Tip links connect stereocilia and contribute to opening mechanosensitive
+    transduction channels.
   truth10b: Mechanical tension through tip links can gate hair cell transduction channels.
-
   truth11a: Hair cell depolarization can occur when K+ enters from K+ rich endolymph.
   truth11b: K+ influx from endolymph can drive hair cell depolarization.
-
   truth12a: Hair cells release neurotransmitter to afferent neurons when depolarized.
   truth12b: Hair cell signaling to the auditory nerve occurs through synaptic transmission.
-
-  truth13a: Unlike many sensory receptors that depolarize to stimulus, rods hyperpolarize to light.
-  truth13b: Rods are unusual because the light response is hyperpolarization, not depolarization.
-
+  truth13a: Unlike many sensory receptors that depolarize to stimulus, rods hyperpolarize
+    to light.
+  truth13b: Rods are unusual because the light response is hyperpolarization, not
+    depolarization.
 false_statements:
   false1a: Rhodopsin is a receptor tyrosine kinase that phosphorylates retinal.
   false1b: Rhodopsin is an ion channel that directly conducts photons into the cell.
-
   false2a: In rods, light increases cGMP to open more CNG channels.
   false2b: Phototransduction begins by synthesizing cGMP from GDP.
-
   false3a: Activated rhodopsin directly converts ATP into cGMP without enzymes.
   false3b: Phototransduction activates adenylyl cyclase to raise cAMP in rods.
-
   false4a: PDE increases cGMP concentration by synthesizing it from GTP.
   false4b: PDE terminates signals by producing cGMP in the outer segment.
-
   false5a: Rod CNG channels open when cGMP levels fall.
   false5b: CNG channels close in darkness because cGMP is highest in light.
-
   false6a: Rod photoreceptors depolarize strongly in response to light.
   false6b: Light opens sodium channels in rods and increases inward current.
-
   false7a: In darkness, rods have low cGMP and all CNG channels are closed.
   false7b: Dark current is produced by closing CNG channels in rod outer segments.
-
   false8a: Cones are more sensitive to dim light than rods.
   false8b: Rods are responsible for most color discrimination in bright light.
-
   false9a: Hearing relies mainly on GPCR signaling cascades that take seconds to operate.
   false9b: Hair cells detect sound by photoreception in the cochlea.
-
   false10a: Tip links prevent ion channels from opening and block mechanotransduction.
-  false10b: Tip links stabilize stereocilia but do not help gate mechanotransduction channels.
-
-  false11a: Hair cells depolarize mainly because Na+ enters from endolymph through ENaC channels.
-  false11b: Hair cells depolarize mainly because K+ leaves the cell into endolymph when stereocilia deflect.
-
-  false12a: Hair cells do not use synapses and communicate only by gap junctions to the auditory nerve.
-  false12b: Hair cells send action potentials down the cochlea without neurotransmitter release.
+  false10b: Tip links stabilize stereocilia but do not help gate mechanotransduction
+    channels.
+  false11a: Hair cells depolarize mainly because Na+ enters from endolymph through
+    ENaC channels.
+  false11b: Hair cells depolarize mainly because K+ leaves the cell into endolymph
+    when stereocilia deflect.
+  false12a: Hair cells do not use synapses and communicate only by gap junctions to
+    the auditory nerve.
+  false12b: Hair cells send action potentials down the cochlea without neurotransmitter
+    release.
+dbsubject: Cell Biology

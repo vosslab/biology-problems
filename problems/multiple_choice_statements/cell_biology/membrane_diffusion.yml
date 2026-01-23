@@ -1,41 +1,31 @@
----
-
-#Which one of the following statements is FALSE/TRUE <connection word> <topic>
-topic: ~
-override_question_true: Which one of the following atoms/molecules would readily pass through the lipid membrane?
-#override_question_false: Which one of the following atoms/molecules could <b>NOT</b> readily pass through the lipid membrane?
-override_question_false: ~
-
-connection_words: ~
-
+topic: null
+override_question_true: Which one of the following atoms/molecules would readily pass
+  through the lipid membrane?
+override_question_false: null
+connection_words: null
 true_statements:
   truth81a: nitrogen gas, N<sub>2</sub>
   truth81b: oxygen gas, O<sub>2</sub>
   truth81c: carbon dioxide gas, CO<sub>2</sub>
   truth81d: methane gas, CH<sub>4</sub>
   truth81e: hydrogen gas, H<sub>2</sub>
-
   truth82a: testosterone steriods
   truth82b: estrogen steriods
-
 false_statements:
   false1a: chloride ions, Cl<sup>&ndash;</sup>
   false1b: bicarbonate ions, HCO<sub>3</sub><sup>&ndash;</sup>
   false1c: acetate, CH<sub>3</sub>COO<sup>&ndash;</sup>
-
   false2a: calcium ions, Ca<sup>2+</sup>
   false2b: sodium ions, Na<sup>+</sup>
   false2c: potassium ions, K<sup>+</sup>
   false2d: ammonia, NH<sub>3</sub><sup>+</sup>
   false2e: magnesium ions, Mg<sup>2+</sup>
   false2f: phosphate ions, PO<sub>4</sub><sup>3-</sup>
-
   false3a: adenine nucleotides
   false3b: guanine nucleotides
   false3c: thymine nucleotides
   false3d: uracil nucleotides
   false3e: cytosine nucleotides
-
   false4a: fructose sugars
   false4b: glucose sugars
   false4c: mannose sugars
@@ -44,7 +34,6 @@ false_statements:
   false4f: lactose sugars
   false4g: maltose sugars
   false4h: ribose sugars
-
   false5a: glycine amino acids
   false5b: alanine amino acids
   false5c: serine amino acids
@@ -53,18 +42,8 @@ false_statements:
   false5f: lysine amino acids
   false5g: glutamate amino acids
   false5h: glutamic acid amino acids
-
   false6a: dihydrogen oxide, H<sub>2</sub>O
   false6b: water, H<sub>2</sub>O
   false6c: ethanol, CH<sub>3</sub>CH<sub>2</sub>OH
-
-# conflicts, means that the statements cannot appear together
-conflict_rules: ~
-
-
-
-
-
-
-
-
+conflict_rules: null
+dbsubject: Cell Biology

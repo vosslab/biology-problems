@@ -1,134 +1,123 @@
-#YAML file for Matching Questions
-
 items to match per question: 5
-
-#both singular and plural
 key description: stage in the central dogma of biology
 keys description: stages in the central dogma of biology
-
-#both singular and plural
 value description: related terminology
 values description: related terms
-
 replacement_rules:
-    RNA transcription: '<span style="color: #e60000;">RNA transcription</span>' #RED
-    tRNA charging: '<span style="color: #e65400;">tRNA charging</span>' #DARK ORANGE
-    amino acid: '<span style="color: #e69100;">amino acid</span>' #LIGHT ORANGE
-    strand: '<span style="color: #b3b300;">strand</span>' #DARK YELLOW
-    polymerase: '<span style="color: #59b300;">polymerase</span>' #LIME GREEN
-    Protein translation: '<span style="color: #009900;">Protein translation</span>' #GREEN
-    introns: '<span style="color: #00b38f;">introns</span>' #TEAL
-    promotor: '<span style="color: #00b3b3;">promotor</span>' #CYAN
-    attachment: '<span style="color: #0a9bf5;">attachment</span>' #SKY BLUE
-    terminator: '<span style="color: #0039e6;">terminator</span>' #BLUE
-    DNA replication: '<span style="color: #004d99;">DNA replication</span>' #NAVY
-    synthetase: '<span style="color: #7b12a1;">synthetase</span>' #PURPLE
-    codon: '<span style="color: #b30077;">codon</span>' #MAGENTA
-    translocation: '<span style="color: #cc0066;">translocation</span>' #PINK
-    mRNA processing: '<span style="color: #cc0066;">mRNA processing</span>' #PINK
-
+  RNA transcription: '<span style="color: #e60000;">RNA transcription</span>'
+  tRNA charging: '<span style="color: #e65400;">tRNA charging</span>'
+  amino acid: '<span style="color: #e69100;">amino acid</span>'
+  strand: '<span style="color: #b3b300;">strand</span>'
+  polymerase: '<span style="color: #59b300;">polymerase</span>'
+  Protein translation: '<span style="color: #009900;">Protein translation</span>'
+  introns: '<span style="color: #00b38f;">introns</span>'
+  promotor: '<span style="color: #00b3b3;">promotor</span>'
+  attachment: '<span style="color: #0a9bf5;">attachment</span>'
+  terminator: '<span style="color: #0039e6;">terminator</span>'
+  DNA replication: '<span style="color: #004d99;">DNA replication</span>'
+  synthetase: '<span style="color: #7b12a1;">synthetase</span>'
+  codon: '<span style="color: #b30077;">codon</span>'
+  translocation: '<span style="color: #cc0066;">translocation</span>'
+  mRNA processing: '<span style="color: #cc0066;">mRNA processing</span>'
 matching pairs:
   DNA replication:
-    - DNA polymerase
-    - DNA pol III
-    - DNA pol I
-    - Okazaki fragments
-    - leading strand
-    - lagging strand
-    - origin
-    - origin of replication
-    - helicase
-    - RNA primase
-    - DNA sliding clamp
-    - DNA ligase
-    - single-stranded binding proteins
-    - topoisomerase
-    - replication fork
-    - telomere shortening
-    - semi-conservative model
-    - bubble
-    - replication bubble
-    - daughter DNA strand
-    - deoxytriphosphate nucleotides, such as dATP
-    - DNA proof-reading
-    - primer removal
-    - Meselson-Stahl experiment
-
+  - DNA polymerase
+  - DNA pol III
+  - DNA pol I
+  - Okazaki fragments
+  - leading strand
+  - lagging strand
+  - origin
+  - origin of replication
+  - helicase
+  - RNA primase
+  - DNA sliding clamp
+  - DNA ligase
+  - single-stranded binding proteins
+  - topoisomerase
+  - replication fork
+  - telomere shortening
+  - semi-conservative model
+  - bubble
+  - replication bubble
+  - daughter DNA strand
+  - deoxytriphosphate nucleotides, such as dATP
+  - DNA proof-reading
+  - primer removal
+  - Meselson-Stahl experiment
   RNA transcription:
-    - RNA polymerase
-    - RNA polymerase II
-    - -35 and -10 promotor regions
-    - TATA box
-    - -35 promotor region
-    - -75 and -25 promotor regions
-    - RNA is synthesized
-    - Pribnow box
-    - non-template or coding strand
-    - enhancer sequences
-    - activator proteins
-    - template strand
-    - terminator
-    - terminator sequence
-    - transcription factors
-    - creation of pre-mRNA transcript
-    - proximal promotor elements
-    - distal promotor elements
-
+  - RNA polymerase
+  - RNA polymerase II
+  - -35 and -10 promotor regions
+  - TATA box
+  - -35 promotor region
+  - -75 and -25 promotor regions
+  - RNA is synthesized
+  - Pribnow box
+  - non-template or coding strand
+  - enhancer sequences
+  - activator proteins
+  - template strand
+  - terminator
+  - terminator sequence
+  - transcription factors
+  - creation of pre-mRNA transcript
+  - proximal promotor elements
+  - distal promotor elements
   mRNA processing:
-    - 5&prime;-cap
-    - intron removal
-    - poly-A tail
-    - poly-adenylation tail
-    - poly-A polymerase
-    - alternative splicing
-    - spliceosome
-    - removes introns and joins exons
-    - RNA splicing
-    - GT-AG introns
-    - group I self-splicing introns
-    - conversion of pre-mRNA transcript into mature mRNA
-    - exons are spliced together
-    - introns are cut out
-    - introns are removed
-    - capping enzyme
-    - creation of mature mRNA
-
+  - 5&prime;-cap
+  - intron removal
+  - poly-A tail
+  - poly-adenylation tail
+  - poly-A polymerase
+  - alternative splicing
+  - spliceosome
+  - removes introns and joins exons
+  - RNA splicing
+  - GT-AG introns
+  - group I self-splicing introns
+  - conversion of pre-mRNA transcript into mature mRNA
+  - exons are spliced together
+  - introns are cut out
+  - introns are removed
+  - capping enzyme
+  - creation of mature mRNA
   tRNA charging:
-    - anti-codon recognition for amino acid attachment
-    - synthetase enzymes
-    - attachment of amino acid to tRNA
-    - attachment of amino acid to CCA tail
-    - tRNA binds to the synthetase
-    - correct match between a tRNA and an amino acid
-    - creates aminoacyl-tRNA synthetase
-    - tRNA editing site
-
+  - anti-codon recognition for amino acid attachment
+  - synthetase enzymes
+  - attachment of amino acid to tRNA
+  - attachment of amino acid to CCA tail
+  - tRNA binds to the synthetase
+  - correct match between a tRNA and an amino acid
+  - creates aminoacyl-tRNA synthetase
+  - tRNA editing site
   Protein translation:
-    - start codon
-    - AUG start codon
-    - codons, triplets of bases
-    - proteins are synthesized
-    - stop codon
-    - UAA, UAG, UGA stop codons
-    - reading frame
-    - mRNA codon recognition by tRNA
-    - mRNA codon recognition
-    - Shine-Delgarno sequence
-    - codon/anti-codon binding
-    - ribosome
-    - polysomes
-    - peptide bond formation
-    - large ribosomal subunit
-    - small ribosomal subunit
-    - mRNA attaches to ribosomes
-    - peptidyl transferase
-    - initiation factors
-    - elongation factors
-    - release factors
-    - A-site
-    - aminoacyl-tRNA binds to A-site
-    - translocation
-    - tRNA translocation
-    - translocation of peptidyl-tRNA
-    - P-site
-    - E-site
+  - start codon
+  - AUG start codon
+  - codons, triplets of bases
+  - proteins are synthesized
+  - stop codon
+  - UAA, UAG, UGA stop codons
+  - reading frame
+  - mRNA codon recognition by tRNA
+  - mRNA codon recognition
+  - Shine-Delgarno sequence
+  - codon/anti-codon binding
+  - ribosome
+  - polysomes
+  - peptide bond formation
+  - large ribosomal subunit
+  - small ribosomal subunit
+  - mRNA attaches to ribosomes
+  - peptidyl transferase
+  - initiation factors
+  - elongation factors
+  - release factors
+  - A-site
+  - aminoacyl-tRNA binds to A-site
+  - translocation
+  - tRNA translocation
+  - translocation of peptidyl-tRNA
+  - P-site
+  - E-site
+dbsubject: Molecular Biology

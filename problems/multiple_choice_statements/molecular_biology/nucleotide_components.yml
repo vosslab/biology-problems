@@ -1,56 +1,39 @@
----
-
-#Which one of the following statements is FALSE/TRUE <connection word> <topic>
-topic: ~
-override_question_true: ~
-override_question_false: Which one of the following is NOT one of the three (3) major components of a DNA or RNA nucleotide?
-connection_words: ~
-
+topic: null
+override_question_true: null
+override_question_false: Which one of the following is NOT one of the three (3) major
+  components of a DNA or RNA nucleotide?
+connection_words: null
 true_statements:
   truth1a: sugar molecule
   truth1b: deoxyribose
   truth1c: ribose
-
   truth2: phosphate group
-
   truth3a: nitrogenous base
   truth3b: nucleobase
   truth3c: purines and pyrimidines
-
 false_statements:
   false11: carboxyl
-
   false12a: amino acid
   false12b: protein
   false12c: peptide bond
   false12d: polypeptide
-
   false13a: alanine
   false13b: glycine
   false13c: serine
-
   false14a: glycerol backbone
   false14b: glycerin
   false14c: glyceraldehyde
-
   false15: sulfur
-
   false16a: nuclein
   false16b: nucleus
   false16c: nucleolus
-
   false18a: cytoplasm
   false18b: cytosol
-
   false19a: glucose
   false19b: fructose
   false19c: sucrose
-
   false20a: chromatin
   false20b: chromosomes
   false20c: chromatid
-
-
-# conflicts, means that the statements cannot appear together
-# add ': True' to each line, so the program runs a faster lookup
-conflict_rules: ~
+conflict_rules: null
+dbsubject: Molecular Biology

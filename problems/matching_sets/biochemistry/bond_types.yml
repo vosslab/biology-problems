@@ -1,51 +1,43 @@
-#YAML file for Matching Questions
-
 items to match per question: 4
-
-
-#both singular and plural
 key description: type of chemical bond
 keys description: types of chemical bonds
-
-#both singular and plural
 value description: example
 values description: examples
-
 replacement_rules:
-    hydrogen bond: '<span style="color: #e60000;">hydrogen bond</span>' #RED
-    non-polar covalent bond: '<span style="color: #b3b300;">non-polar covalent bond</span>' #DARK YELLOW
-    ionic bond: '<span style="color: #009900;">ionic bond</span>' #GREEN
-    polar covalent&nbsp;bond: '<span style="color: #00b3b3;">polar covalent&nbsp;bond</span>' #CYAN
-
+  hydrogen bond: '<span style="color: #e60000;">hydrogen bond</span>'
+  non-polar covalent bond: '<span style="color: #b3b300;">non-polar covalent bond</span>'
+  ionic bond: '<span style="color: #009900;">ionic bond</span>'
+  polar covalent&nbsp;bond: '<span style="color: #00b3b3;">polar covalent&nbsp;bond</span>'
 matching pairs:
   polar covalent&nbsp;bond:
-    - H - O - H (water)
-    - N - H (in an amide group)
-    - O - H (in an alcohol group)
-    - S - H (in hydrogen sulfide, H<sub>2</sub>S)
-    - C - O (in carbon monoxide, CO)
-    - P - O (in phosphate groups, PO<sub>4</sub>)
-
+  - H - O - H (water)
+  - N - H (in an amide group)
+  - O - H (in an alcohol group)
+  - S - H (in hydrogen sulfide, H<sub>2</sub>S)
+  - C - O (in carbon monoxide, CO)
+  - P - O (in phosphate groups, PO<sub>4</sub>)
   non-polar covalent bond:
-    - C - C (in ethane, C<sub>2</sub>H<sub>6</sub>)
-    - C = C (in ethylene, C<sub>2</sub>H<sub>4</sub>)
-    - C &equiv; C (in acetylene, C<sub>2</sub>H<sub>2</sub>)
-    - C - C (in benzene, C<sub>6</sub>H<sub>6</sub>)
-    - C - H (in methane, CH<sub>4</sub>)
-    - N &equiv; N (nitrogen gas)
-    - O = O (oxygen gas)
-
+  - C - C (in ethane, C<sub>2</sub>H<sub>6</sub>)
+  - C = C (in ethylene, C<sub>2</sub>H<sub>4</sub>)
+  - C &equiv; C (in acetylene, C<sub>2</sub>H<sub>2</sub>)
+  - C - C (in benzene, C<sub>6</sub>H<sub>6</sub>)
+  - C - H (in methane, CH<sub>4</sub>)
+  - N &equiv; N (nitrogen gas)
+  - O = O (oxygen gas)
   ionic bond:
-    - Ca<sup>2+</sup> &bull; 2&times; Cl<sup>-</sup> (calcium chloride)
-    - Ca<sup>2+</sup> &bull; CO<sub>3</sub><sup>2-</sup> (calcium carbonate)
-    - K<sup>+</sup> &bull; Cl<sup>-</sup> (potassium chloride)
-    - Mg<sup>2+</sup> &bull; 2&times; Cl<sup>-</sup> (magnesium chloride)
-    - Na<sup>+</sup> &bull; Cl<sup>-</sup> (sodium chloride)
-    - NH<sub>4</sub><sup>+</sup> &bull; NO<sub>3</sub><sup>-</sup> (ammonium nitrate)
-
+  - Ca<sup>2+</sup> &bull; 2&times; Cl<sup>-</sup> (calcium chloride)
+  - Ca<sup>2+</sup> &bull; CO<sub>3</sub><sup>2-</sup> (calcium carbonate)
+  - K<sup>+</sup> &bull; Cl<sup>-</sup> (potassium chloride)
+  - Mg<sup>2+</sup> &bull; 2&times; Cl<sup>-</sup> (magnesium chloride)
+  - Na<sup>+</sup> &bull; Cl<sup>-</sup> (sodium chloride)
+  - NH<sub>4</sub><sup>+</sup> &bull; NO<sub>3</sub><sup>-</sup> (ammonium nitrate)
   hydrogen bond:
-    - 'N-H <span style="font-size: 75%;">| | | |</span> N (bond represented by the vertical lines)'
-    - 'N-H <span style="font-size: 75%;">| | | |</span> O (bond represented by the vertical lines)'
-    - 'O-H <span style="font-size: 75%;">| | | |</span> N (bond represented by the vertical lines)'
-    - 'O-H <span style="font-size: 75%;">| | | |</span> O (bond represented by the vertical lines)'
-
+  - 'N-H <span style="font-size: 75%;">| | | |</span> N (bond represented by the vertical
+    lines)'
+  - 'N-H <span style="font-size: 75%;">| | | |</span> O (bond represented by the vertical
+    lines)'
+  - 'O-H <span style="font-size: 75%;">| | | |</span> N (bond represented by the vertical
+    lines)'
+  - 'O-H <span style="font-size: 75%;">| | | |</span> O (bond represented by the vertical
+    lines)'
+dbsubject: Biochemistry

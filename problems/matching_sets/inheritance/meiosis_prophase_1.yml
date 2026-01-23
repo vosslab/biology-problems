@@ -1,68 +1,56 @@
-#YAML file for Matching Questions
-
 items to match per question: 4
-
-#both singular and plural
 key description: stage of meiosis prophase I
 keys description: stages of meiosis prophase I
-
-#both singular and plural
 value description: partial description
 values description: partial descriptions
-
 replacement_rules:
-    AAAAAAAA: '<span style="color: #e60000;">AAAAAAAA</span>' #RED
-    Leptotene: '<span style="color: #e65400;">Leptotene</span>' #DARK ORANGE
-    CCCCCCCC: '<span style="color: #e69100;">CCCCCCCC</span>' #LIGHT ORANGE
-    DDDDDDDD: '<span style="color: #b3b300;">DDDDDDDD</span>' #DARK YELLOW
-    EEEEEEEE: '<span style="color: #59b300;">EEEEEEEE</span>' #LIME GREEN
-    FFFFFFFF: '<span style="color: #009900;">FFFFFFFF</span>' #GREEN
-    Zygotene: '<span style="color: #00b38f;">Zygotene</span>' #TEAL
-    HHHHHHHH: '<span style="color: #00b3b3;">HHHHHHHH</span>' #CYAN
-    IIIIIIII: '<span style="color: #0a9bf5;">IIIIIIII</span>' #SKY BLUE
-    JJJJJJJJ: '<span style="color: #0039e6;">JJJJJJJJ</span>' #BLUE
-    Pachytene, early or late: '<span style="color: #004d99;">Pachytene, early or late</span>' #NAVY
-    LLLLLLLL: '<span style="color: #7b12a1;">LLLLLLLL</span>' #PURPLE
-    MMMMMMMM: '<span style="color: #b30077;">MMMMMMMM</span>' #MAGENTA
-    Diplotene or Diakinesis, combined: '<span style="color: #cc0066;">Diplotene or Diakinesis, combined</span>' #PINK
-
-#######################
+  AAAAAAAA: '<span style="color: #e60000;">AAAAAAAA</span>'
+  Leptotene: '<span style="color: #e65400;">Leptotene</span>'
+  CCCCCCCC: '<span style="color: #e69100;">CCCCCCCC</span>'
+  DDDDDDDD: '<span style="color: #b3b300;">DDDDDDDD</span>'
+  EEEEEEEE: '<span style="color: #59b300;">EEEEEEEE</span>'
+  FFFFFFFF: '<span style="color: #009900;">FFFFFFFF</span>'
+  Zygotene: '<span style="color: #00b38f;">Zygotene</span>'
+  HHHHHHHH: '<span style="color: #00b3b3;">HHHHHHHH</span>'
+  IIIIIIII: '<span style="color: #0a9bf5;">IIIIIIII</span>'
+  JJJJJJJJ: '<span style="color: #0039e6;">JJJJJJJJ</span>'
+  Pachytene, early or late: '<span style="color: #004d99;">Pachytene, early or late</span>'
+  LLLLLLLL: '<span style="color: #7b12a1;">LLLLLLLL</span>'
+  MMMMMMMM: '<span style="color: #b30077;">MMMMMMMM</span>'
+  Diplotene or Diakinesis, combined: '<span style="color: #cc0066;">Diplotene or Diakinesis,
+    combined</span>'
 matching pairs:
   Leptotene:
-    - chromosomes begin to condense
-    - thread-like chromomeres become visible along the chromosomes
-    - chromosomes first become visible as thin thread-like structures
-    - chromosomes first appear as fine discrete threads
-    - chromomeres appear as bead-like thickenings along the chromosomes
-    - condensation begins and chromosomes become visible as thin threads
-
+  - chromosomes begin to condense
+  - thread-like chromomeres become visible along the chromosomes
+  - chromosomes first become visible as thin thread-like structures
+  - chromosomes first appear as fine discrete threads
+  - chromomeres appear as bead-like thickenings along the chromosomes
+  - condensation begins and chromosomes become visible as thin threads
   Zygotene:
-    - synapsis begins
-    - the pairing of homologous chromosomes begins
-    - the synapsis process forms numerous points of contact between homologs
-    - stage where homologous chromosomes become paired
-    - homologous chromosomes align and pair
-    - synapsis of homologous chromosomes occurs
-    - strands of homologous chromosomes line up and become pairs
-
+  - synapsis begins
+  - the pairing of homologous chromosomes begins
+  - the synapsis process forms numerous points of contact between homologs
+  - stage where homologous chromosomes become paired
+  - homologous chromosomes align and pair
+  - synapsis of homologous chromosomes occurs
+  - strands of homologous chromosomes line up and become pairs
   Pachytene, early or late:
-    - synapsis is complete
-    - the pairing of homologous chromosomes is complete
-    - crossing over occurs between non-sister chromatids
-    - crossing over occurs between homologous chromosomes
-    - exchange of segments between non-sister chromatids may occur
-    - exchange of segments between homologous chromosomes may occur
-    - chromosomes continue to shorten and thicken
-
+  - synapsis is complete
+  - the pairing of homologous chromosomes is complete
+  - crossing over occurs between non-sister chromatids
+  - crossing over occurs between homologous chromosomes
+  - exchange of segments between non-sister chromatids may occur
+  - exchange of segments between homologous chromosomes may occur
+  - chromosomes continue to shorten and thicken
   Diplotene or Diakinesis, combined:
-    - the paired chromosomes begin to separate
-    - chiasmata are visible between homologous chromosomes
-    - homologous chromosomes begin to migrate apart
-    - homologous chromosome pairs begin to separate and chiasmata become visible
-    - homologous chromosomes separate and chiasmata become visible
-    - homologous chromosomes are held together only by the chiasmata
-    - chromosomes become further condensed
-    - chromosomes reach near-maximal condensation in late prophase I
-    - nucleolus and nuclear envelope disappear while spindle fibers form
-
-
+  - the paired chromosomes begin to separate
+  - chiasmata are visible between homologous chromosomes
+  - homologous chromosomes begin to migrate apart
+  - homologous chromosome pairs begin to separate and chiasmata become visible
+  - homologous chromosomes separate and chiasmata become visible
+  - homologous chromosomes are held together only by the chiasmata
+  - chromosomes become further condensed
+  - chromosomes reach near-maximal condensation in late prophase I
+  - nucleolus and nuclear envelope disappear while spindle fibers form
+dbsubject: Genetics

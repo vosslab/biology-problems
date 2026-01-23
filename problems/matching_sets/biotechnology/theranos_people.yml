@@ -1,59 +1,49 @@
-#YAML file for Matching Questions
-
 items to match per question: 5
-
-#both singular and plural
 key description: character in the Theranos story
 keys description: characters in the Theranos story
-
-#both singular and plural
 value description: information
 values description: information
-
 matching pairs:
   Elizabeth Holmes:
-    - Founder and chief execuitive officer (CEO) of Theranos
-    - youngest and wealthiest self-made female billionaire in America based on the $9-billion company valuation
-    - dropped out of Stanford in 2004 to start her own blood testing company
-
+  - Founder and chief execuitive officer (CEO) of Theranos
+  - youngest and wealthiest self-made female billionaire in America based on the $9-billion
+    company valuation
+  - dropped out of Stanford in 2004 to start her own blood testing company
   Ramesh "Sunny" Balwani:
-    - former president and chief operating officer (COO) of Theranos
-    - joined Theranos in 2009 and ran the company's day-to- day operations as its president
-    - was in a romantic relationship with Elizabeth Holmes during his tenure at Theranos
-
+  - former president and chief operating officer (COO) of Theranos
+  - joined Theranos in 2009 and ran the company's day-to- day operations as its president
+  - was in a romantic relationship with Elizabeth Holmes during his tenure at Theranos
   George Shultz:
-    - former secretary of state and chairman of the Theranos board
-    - chairman of the board and his grandson Tyler was one of the whistleblowers for problems at Theranos
-
+  - former secretary of state and chairman of the Theranos board
+  - chairman of the board and his grandson Tyler was one of the whistleblowers for
+    problems at Theranos
   Tyler Shultz:
-    - one of the whistleblowers for problems at Theranos whose grandfather was chairman of the board
-    - served as a confidential source for the Wall Street Journal showing the company's device was faulty
-
+  - one of the whistleblowers for problems at Theranos whose grandfather was chairman
+    of the board
+  - served as a confidential source for the Wall Street Journal showing the company's
+    device was faulty
   Erika Cheung:
-    - with chemist and biologist degrees from Berkeley, she was the main whistleblower
-
+  - with chemist and biologist degrees from Berkeley, she was the main whistleblower
   David Boies:
-    - the "pitbull" lawyer who represented Theranos and hired private investigators to harass employees
-
+  - the "pitbull" lawyer who represented Theranos and hired private investigators
+    to harass employees
   Channing Robertson:
-    - Stanford professor who first encouraged Holmes to start her company
-
+  - Stanford professor who first encouraged Holmes to start her company
   Phyllis Gardner:
-    - Stanford professor who was skeptical of Holmes early on
-    - professor who knew from the moment the Holmes had her "brilliant" idea that it wouldn't work
-
+  - Stanford professor who was skeptical of Holmes early on
+  - professor who knew from the moment the Holmes had her "brilliant" idea that it
+    wouldn't work
   Rupert Murdoch:
-    - Owner of the Wall Street Journal newspaper who could have killed the information leak
-
+  - Owner of the Wall Street Journal newspaper who could have killed the information
+    leak
   Dr. Richard Fuisz, MD:
-    - childhood neighbor of Holmes who was sued by Theranos for a misappropriated patent
-
+  - childhood neighbor of Holmes who was sued by Theranos for a misappropriated patent
   Avie Tevanian:
-    - investor from Apple who was forced to step down for asking too many questions
-
+  - investor from Apple who was forced to step down for asking too many questions
   John Carreyrou:
-    - journalist that was first to expose Theranos scandal
-    - author of Bad Blood book, Theranos tracked his movements to prevent him from getting secrets
-
+  - journalist that was first to expose Theranos scandal
+  - author of Bad Blood book, Theranos tracked his movements to prevent him from getting
+    secrets
   Amanda Seyfried:
-    - actress who portrays Holmes in the Hulu TV series, The Dropout
+  - actress who portrays Holmes in the Hulu TV series, The Dropout
+dbsubject: Biotechnology

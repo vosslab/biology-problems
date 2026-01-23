@@ -1,47 +1,35 @@
-#YAML file for Matching Questions
-
 items to match per question: 6
-
-#both singular and plural
 key description: parental genotypes in a monohybrid cross
 keys description: parental genotypes in monohybrid crosses
-
-#both singular and plural
 value description: description of the progeny
 values description: descriptions of the progeny
-
 replacement_rules:
-    'AA*': '<strong><span style="color: #ba372a;">AA</span></strong>'
-    'Aa*': '<strong><span style="color: #843fa1;">Aa</span></strong>'
-    'aa*': '<strong><span style="color: #236fa1;">aa</span></strong>'
-    ' xx ': '&nbsp;&times;&nbsp;'
-
+  AA*: '<strong><span style="color: #ba372a;">AA</span></strong>'
+  Aa*: '<strong><span style="color: #843fa1;">Aa</span></strong>'
+  aa*: '<strong><span style="color: #236fa1;">aa</span></strong>'
+  ' xx ': '&nbsp;&times;&nbsp;'
 matching pairs:
-  'AA* xx AA*':
-    - Results in all homozygous dominant offspring
-    - All offspring have the same dominant genotype and phenotype
-
-  'AA* xx Aa*':
-    - Yields offspring with 50% homozygous dominant and 50% heterozygous genotypes
-
-  'AA* xx aa*':
-    - Results in all heterozygous offspring
-    - Produces only heterozygotes in progeny
-    - All offspring have the dominant phenotype and are heterozygous
-
-  'Aa* xx Aa*':
-    - Produces a 3:1 phenotype ratio in progeny
-    - Produces a 1:2:1 genotype ratio in progeny
-    - 25% of the offspring are homozygous dominant
-    - One-quarter of the offspring show the recessive phenotype
-
-  'Aa* xx aa*':
-    - Generates a 1:1 phenotype ratio in progeny
-    - Produces a 1:1 phenotype ratio in progeny
-    - 50% of the offspring are homozygous recessive
-    - Half of the offspring display the recessive phenotype
-
-  'aa* xx aa*':
-    - Produces offspring that are all homozygous recessive
-    - Produces only the recessive phenotype in progeny
-    - All offspring have the same recessive genotype and phenotype
+  AA* xx AA*:
+  - Results in all homozygous dominant offspring
+  - All offspring have the same dominant genotype and phenotype
+  AA* xx Aa*:
+  - Yields offspring with 50% homozygous dominant and 50% heterozygous genotypes
+  AA* xx aa*:
+  - Results in all heterozygous offspring
+  - Produces only heterozygotes in progeny
+  - All offspring have the dominant phenotype and are heterozygous
+  Aa* xx Aa*:
+  - Produces a 3:1 phenotype ratio in progeny
+  - Produces a 1:2:1 genotype ratio in progeny
+  - 25% of the offspring are homozygous dominant
+  - One-quarter of the offspring show the recessive phenotype
+  Aa* xx aa*:
+  - Generates a 1:1 phenotype ratio in progeny
+  - Produces a 1:1 phenotype ratio in progeny
+  - 50% of the offspring are homozygous recessive
+  - Half of the offspring display the recessive phenotype
+  aa* xx aa*:
+  - Produces offspring that are all homozygous recessive
+  - Produces only the recessive phenotype in progeny
+  - All offspring have the same recessive genotype and phenotype
+dbsubject: Genetics

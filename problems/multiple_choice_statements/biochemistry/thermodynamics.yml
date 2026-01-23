@@ -1,89 +1,87 @@
----
-
-#Which one of the following statements is FALSE/TRUE <connection word> <topic>
 topic: thermodynamics and kinetics
-
 replacement_rules:
-  thermodynamics:    '<span style="color: #bb5d00;">thermodynamics</span>'
-  kinetics:          '<span style="color: #56225d;">kinetics</span>'
-  equilibrium:       '<span style="color: #478d1b;">equilibrium</span>'
-  reaction:          '<span style="color: #008a75;">reaction</span>'
-  'reaction</span>s': 'reactions</span>'
-  enzymes:            '<span style="color: #cc2489;">enzymes</span>'
-  entropy:            '<span style="color: #b77b04;">entropy</span>'
-  enthalpy:           '<span style="color: #0078a3;">enthalpy</span>'
-
-connection_words: ~
-
+  thermodynamics: '<span style="color: #bb5d00;">thermodynamics</span>'
+  kinetics: '<span style="color: #56225d;">kinetics</span>'
+  equilibrium: '<span style="color: #478d1b;">equilibrium</span>'
+  reaction: '<span style="color: #008a75;">reaction</span>'
+  reaction</span>s: reactions</span>
+  enzymes: '<span style="color: #cc2489;">enzymes</span>'
+  entropy: '<span style="color: #b77b04;">entropy</span>'
+  enthalpy: '<span style="color: #0078a3;">enthalpy</span>'
+connection_words: null
 true_statements:
   truth1a: Thermodynamics describes the equilibrium point of a reaction.
   truth1b: Kinetics describes the rate at which a reaction approaches equilibrium.
-  truth1c: Equilibrium is reached when the rate of the forward and reverse reactions is equal.
-
+  truth1c: Equilibrium is reached when the rate of the forward and reverse reactions
+    is equal.
   truth2a: Enzymes increase or decrease the rate of a reaction.
   truth2b: Enzymes lower the activation energy, which affects the reaction kinetics.
   truth2c: Enzymes do not affect the thermodynamics of a reaction.
   truth2d: Enzymes change the rate of a reaction.
   truth2e: Enzymes are not consumed by the reaction they catalyze.
   truth2f: Enzymes alter the reaction kinetics by lowering the activation energy.
-
-  truth3a: Enzymes do not change the overall change in free energy (&Delta;G) of a reaction.
-  truth3b: Enzymes do not change the standard change in free energy (&Delta;G&deg;&prime;) of a reaction.
-  truth3c: Enzymes do not change the equilibrium constant (K&prime;<sub>eq</sub>) of a reaction.
-  truth3d: The equilibrium constant (K&prime;<sub>eq</sub>) is related to the standard change in free energy (&Delta;G&deg;&prime;) of a reaction.
-
-  truth4a: Thermodynamics determines the direction a reaction will proceed under specific conditions.
-
-  truth4c: A reaction is spontaneous if the standard change in free energy (&Delta;G&deg;&prime;) is negative.
-
-  truth5a: The change in Gibbs free energy (&Delta;G) of a reaction is related to the enthalpy and entropy changes of the reaction.
-  truth5b: Thermodynamics is determined by the combination of enthalpy and entropy of a reaction.
-
-  truth6a: The first law of thermodynamics states that energy is conserved and cannot be created or destroyed.
-  truth6b: The second law of thermodynamics states that the total entropy of a closed system will always increase.
-
+  truth3a: Enzymes do not change the overall change in free energy (&Delta;G) of a
+    reaction.
+  truth3b: Enzymes do not change the standard change in free energy (&Delta;G&deg;&prime;)
+    of a reaction.
+  truth3c: Enzymes do not change the equilibrium constant (K&prime;<sub>eq</sub>)
+    of a reaction.
+  truth3d: The equilibrium constant (K&prime;<sub>eq</sub>) is related to the standard
+    change in free energy (&Delta;G&deg;&prime;) of a reaction.
+  truth4a: Thermodynamics determines the direction a reaction will proceed under specific
+    conditions.
+  truth4c: A reaction is spontaneous if the standard change in free energy (&Delta;G&deg;&prime;)
+    is negative.
+  truth5a: The change in Gibbs free energy (&Delta;G) of a reaction is related to
+    the enthalpy and entropy changes of the reaction.
+  truth5b: Thermodynamics is determined by the combination of enthalpy and entropy
+    of a reaction.
+  truth6a: The first law of thermodynamics states that energy is conserved and cannot
+    be created or destroyed.
+  truth6b: The second law of thermodynamics states that the total entropy of a closed
+    system will always increase.
   truth7a: Hydrolysis reactions often lead to an increase in the entropy of the products.
   truth7b: Dehydration reactions often lead to a decrease in the entropy of the products.
-  truth7c: In general, an increase in disorder or randomness corresponds to an increase in entropy.
-
+  truth7c: In general, an increase in disorder or randomness corresponds to an increase
+    in entropy.
 false_statements:
   false1a: Kinetics tells us the equilibrium point.
   false1b: Thermodynamics tells us how fast equilibrium is approached.
   false1c: Thermodynamics determines the rate of a reaction.
-
   false2a: Enzymes change the equilibrium point.
   false2b: Enzymes change the reaction thermodynamics.
   false2c: Kinetics is unaffected by enzymes.
   false2d: Enzymes must be regenerated after each reaction they catalyze.
-  false2e: Enzymes are consumed by the reaction they catalyze and must continually be replaced.
+  false2e: Enzymes are consumed by the reaction they catalyze and must continually
+    be replaced.
   false2f: Enzymes are not essential for most biochemical reactions.
-
   false3a: Enzymes change the Gibbs free energy (&Delta;G) of the reaction.
-  false3b: Enzymes change the standard Gibbs free energy change (&Delta;G&deg;&prime;) of a reaction.
+  false3b: Enzymes change the standard Gibbs free energy change (&Delta;G&deg;&prime;)
+    of a reaction.
   false3c: Enzymes change the equilibrium constant (K&prime;<sub>eq</sub>) of a reaction.
-
   false4a: Kinetics determines the direction of the reaction.
   false4b: Kinetics depends only on the ratio of product and substrates.
-  false4c: A reaction can proceed spontaneously even if the standard Gibbs free energy change (&Delta;G&deg;&prime;) is positive.
+  false4c: A reaction can proceed spontaneously even if the standard Gibbs free energy
+    change (&Delta;G&deg;&prime;) is positive.
   false4d: Kinetics depends only on the concentration of reactants.
-  false4e: The activation energy of a reaction is related to the concentration of reactants.
-  false4f: The equilibrium constant (K&prime;<sub>eq</sub>) of a reaction is related to the activation energy.
-
+  false4e: The activation energy of a reaction is related to the concentration of
+    reactants.
+  false4f: The equilibrium constant (K&prime;<sub>eq</sub>) of a reaction is related
+    to the activation energy.
   false5a: Kinetics is determined by a combination of enthalpy and entropy.
   false5b: The rate of a reaction is independent of temperature.
   false5c: The thermodynamics of a reaction is independent of temperature.
   false5d: Kinetics is only determined by the enthalpy change of a reaction.
-
-  false6a: The second law of thermodynamics states that the entropy of a closed system always decreases.
-  false6b: The first law of thermodynamics states that the total entropy of a closed system will always increase.
-  false6c: The third law of thermodynamics states that the entropy of a system is conserved.
+  false6a: The second law of thermodynamics states that the entropy of a closed system
+    always decreases.
+  false6b: The first law of thermodynamics states that the total entropy of a closed
+    system will always increase.
+  false6c: The third law of thermodynamics states that the entropy of a system is
+    conserved.
   false6d: The second law of thermodynamics is the conservation of energy.
-
   false7a: Hydrolysis reactions tend to decrease entropy of the products.
   false7b: Dehydration reactions tend to increase entropy of the products.
   false7c: In general, more order means more entropy.
   false7d: In general, more disorder means less entropy.
-
-# conflicts, means that the statements cannot appear together
-# add ': True' to each line, so the program runs a faster lookup
-conflict_rules: ~
+conflict_rules: null
+dbsubject: Biochemistry

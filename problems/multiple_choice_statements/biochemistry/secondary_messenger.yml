@@ -1,28 +1,16 @@
----
-
-#Which one of the following statements is FALSE/TRUE <connection word> <topic>
-topic: ~
-
-override_question_true: 'Which one of the following is an example of a second messenger?'
-override_question_false: 'Which one of the following is NOT an example of a second messenger?'
-
-connection_words: ~
-
+topic: null
+override_question_true: Which one of the following is an example of a second messenger?
+override_question_false: Which one of the following is NOT an example of a second
+  messenger?
+connection_words: null
 true_statements:
   truth1: Ca<sup>2+</sup>
-
   truth2: IP<sub>3</sub>
-
   truth3: cAMP
-
   truth4: cGMP
-
   truth5: diacylglycerol (DAG)
-
   truth6: nitric oxide (NO)
-
   truth7: PIP<sub>3</sub>
-
 false_statements:
   false1a: GTP
   false1b: ATP
@@ -30,22 +18,14 @@ false_statements:
   false1d: ADP
   false1e: GMP
   false1f: AMP
-
   false2a: insulin
-
   false3a: epinephrine
   false3b: adrenaline
-
   false4a: testosterone
   false4b: estrogen
-
   false5a: NADPH
   false5b: NADH
   false5c: FADH<sub>2</sub>
-
   false6a: neurotransmitters
-
-# conflicts, means that the statements cannot appear together
-# add ': True' to each line, so the program runs a faster lookup
-conflict_rules: ~
-
+conflict_rules: null
+dbsubject: Biochemistry

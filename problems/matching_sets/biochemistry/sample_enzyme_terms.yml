@@ -1,43 +1,38 @@
-#YAML file for Matching Questions
-
 items to match per question: 4
-
-#both singular and plural
 key description: term related to enzyme catalysis
 keys description: terms related to enzyme catalysis
-
-#both singular and plural
 value description: definition
 values description: definitions
-
 matching pairs:
   Substrate:
-    - a molecule (reactant) that is acted upon by an enzyme
-    - a molecule that is transformed into a product by an enzyme
+  - a molecule (reactant) that is acted upon by an enzyme
+  - a molecule that is transformed into a product by an enzyme
   Reagent:
-    - a molecule that facilitates a chemical reaction
-    - a substance that participates in a chemical reaction
-    - substance used to cause or facilitate a chemical reaction
+  - a molecule that facilitates a chemical reaction
+  - a substance that participates in a chemical reaction
+  - substance used to cause or facilitate a chemical reaction
   Reactant:
-    - a molecule that is consumed by a chemical reaction
+  - a molecule that is consumed by a chemical reaction
   Product:
-    - something manufactured by an enzyme from its substrate
+  - something manufactured by an enzyme from its substrate
   Enzyme:
-    - proteins that catalyze chemical reactions
-    - proteins that increase the rate of reactions
+  - proteins that catalyze chemical reactions
+  - proteins that increase the rate of reactions
   Ligand:
-    - forms a complex with a biomolecule to serve a biological purpose
-    - a hormone, neurotransmitter, or drug that binds to a protein
+  - forms a complex with a biomolecule to serve a biological purpose
+  - a hormone, neurotransmitter, or drug that binds to a protein
   Ligand-binding site:
-    - location on biomolecule where an important small molecule binds
-    - enzyme binding site that is often a drug target
+  - location on biomolecule where an important small molecule binds
+  - enzyme binding site that is often a drug target
   Cofactor:
-    - non-protein small molecules required for enzyme activity
-    - non-protein substances required for enzyme activity
+  - non-protein small molecules required for enzyme activity
+  - non-protein substances required for enzyme activity
   Coenzyme:
-    - organic molecules derived from vitamins
-    - organic molecules required for enzyme activity
-
+  - organic molecules derived from vitamins
+  - organic molecules required for enzyme activity
 exclude pairs:
-  - [Coenzyme, Cofactor]
-  - [Ligand, Ligand binding site]
+- - Coenzyme
+  - Cofactor
+- - Ligand
+  - Ligand binding site
+dbsubject: Biochemistry

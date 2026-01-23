@@ -1,51 +1,54 @@
-#YAML file for Matching Questions
-
 items to match per question: 4
-
-#both singular and plural
 key description: intercellular junction
 keys description: intercellular junctions
-
-#both singular and plural
 value description: function
 values description: functions
-
 matching pairs:
   desmosome:
-    - a dense attachment of anchoring proteins that a provide strong adhesion between cells
-    - an adhesive junction that is crucial to tissues that experience mechanical stress
-    - anchoring spots found all around cells that bind two adjacent cells together
-    - one of the stronger junctions found in tissue that experience intense mechanical stress
+  - a dense attachment of anchoring proteins that a provide strong adhesion between
+    cells
+  - an adhesive junction that is crucial to tissues that experience mechanical stress
+  - anchoring spots found all around cells that bind two adjacent cells together
+  - one of the stronger junctions found in tissue that experience intense mechanical
+    stress
   gap junction:
-    - collection of protein channels that allow the direct transfer of signal molecules between cells
-    - collection of protein channels that facilitates passage of ions, hormones, and neurotransmitters
-    - collection of protein channels that allow for intercellular communication
-    - two adjacent cells are connected through a collection of protein channels
-    - collection of protein channels that directly connect the cytoplasm of two adjacent cells
-    - collection of protein channels that allow electrical impulses to directly pass between cells
+  - collection of protein channels that allow the direct transfer of signal molecules
+    between cells
+  - collection of protein channels that facilitates passage of ions, hormones, and
+    neurotransmitters
+  - collection of protein channels that allow for intercellular communication
+  - two adjacent cells are connected through a collection of protein channels
+  - collection of protein channels that directly connect the cytoplasm of two adjacent
+    cells
+  - collection of protein channels that allow electrical impulses to directly pass
+    between cells
   plasmodesmata:
-    - large tubes which traverse cell walls enabling transport and communication between cells
-    - large tubes that pass through openings in cell walls linking one cell to another
+  - large tubes which traverse cell walls enabling transport and communication between
+    cells
+  - large tubes that pass through openings in cell walls linking one cell to another
   tight junction:
-    - forms a seal between the two membranes to prevent passive flow between cells
-    - membranes join together forming a virtual impermeable barrier to fluid
-    - areas where the membranes of two adjacent cells join together to form a barrier
-    - parallel interweaving strands between two membranes that greatly reduce the flow of macromolecules between cells
-    - outer layers of the cell membranes are fused, reducing the ability of larger molecules to pass between
-    - closely associated areas of two adjacent cells whose membranes join together to form a virtually impermeable barrier to fluid
-    - seal between the membranes of two adjacent cells to prevent leakage of solutes and water
-    - connections formed by cells that fuse together so that a relatively impermeable barrier is created
-
+  - forms a seal between the two membranes to prevent passive flow between cells
+  - membranes join together forming a virtual impermeable barrier to fluid
+  - areas where the membranes of two adjacent cells join together to form a barrier
+  - parallel interweaving strands between two membranes that greatly reduce the flow
+    of macromolecules between cells
+  - outer layers of the cell membranes are fused, reducing the ability of larger molecules
+    to pass between
+  - closely associated areas of two adjacent cells whose membranes join together to
+    form a virtually impermeable barrier to fluid
+  - seal between the membranes of two adjacent cells to prevent leakage of solutes
+    and water
+  - connections formed by cells that fuse together so that a relatively impermeable
+    barrier is created
 replacement_rules:
-   collection of protein channels: '<span style="color: #7b7737;">collection of protein channels</span>'
-   between cells:                  '<span style="color: #5A8432;">between cells</span>'
-   two adjacent cells:             '<span style="color: #3E3EC4;">two adjacent cells</span>'
-   membranes:                      '<span style="color: #793AAA;">membranes</span>'
-   cell walls:                     '<span style="color: #b45918;">cell walls</span>'
-
-   desmosome:          '<span style="color: DarkGreen;">desmosome</span>'
-   gap junction:       '<span style="color: MediumVioletRed;">gap junction</span>'
-   plasmodesmata:      '<span style="color: Indigo;">plasmodesmata</span>'
-   tight junction:     '<span style="color: SteelBlue;">tight junction</span>'
-
-
+  collection of protein channels: '<span style="color: #7b7737;">collection of protein
+    channels</span>'
+  between cells: '<span style="color: #5A8432;">between cells</span>'
+  two adjacent cells: '<span style="color: #3E3EC4;">two adjacent cells</span>'
+  membranes: '<span style="color: #793AAA;">membranes</span>'
+  cell walls: '<span style="color: #b45918;">cell walls</span>'
+  desmosome: '<span style="color: DarkGreen;">desmosome</span>'
+  gap junction: '<span style="color: MediumVioletRed;">gap junction</span>'
+  plasmodesmata: '<span style="color: Indigo;">plasmodesmata</span>'
+  tight junction: '<span style="color: SteelBlue;">tight junction</span>'
+dbsubject: Cell Biology

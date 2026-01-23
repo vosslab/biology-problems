@@ -1,74 +1,70 @@
-#YAML file for Matching Questions
-
 items to match per question: 4
-
-#both singular and plural
 key description: sex determination system
 keys description: sex determination systems
-
-#both singular and plural
 value description: description
 values description: descriptions
-
 replacement_rules:
-    AAAAAAAA: '<span style="color: #e60000;">AAAAAAAA</span>' #RED
-    X-Y system: '<span style="color: #e65400;">X-Y system</span>' #DARK ORANGE
-    CCCCCCCC: '<span style="color: #e69100;">CCCCCCCC</span>' #LIGHT ORANGE
-    DDDDDDDD: '<span style="color: #b3b300;">DDDDDDDD</span>' #DARK YELLOW
-    X-O system: '<span style="color: #59b300;">X-O system</span>' #LIME GREEN
-    FFFFFFFF: '<span style="color: #009900;">FFFFFFFF</span>' #GREEN
-    'sex chromosomes': '<span style="color: #00b38f;">sex&nbsp;chromosomes</span>' #TEAL
-    'sex chromosome': '<span style="color: #00b38f;">sex chromosome</span>' #TEAL
-    sperm: '<span style="color: #00b3b3;">sperm</span>' #CYAN
-    'xmales': ' <span style="color: #0a9bf5;">males &male;</span>' #SKY BLUE
-    'xmale ': ' <span style="color: #0a9bf5;">male &male;</span> ' #SKY BLUE
-    JJJJJJJJ: '<span style="color: #0039e6;">JJJJJJJJ</span>' #BLUE
-    Z-W system: '<span style="color: #004d99;">Z-W system</span>' #NAVY
-    Haplo-Diploid system: '<span style="color: #7b12a1;">Haplo-Diploid system</span>' #PURPLE
-    'egg (ovum)': '<span style="color: #b30077;">egg (ovum)</span>' #MAGENTA
-    'females': '<span style="color: #cc0066;">females &female;</span> ' #PINK
-    'female ': '<span style="color: #cc0066;">female &female;</span> ' #PINK
-
-
+  AAAAAAAA: '<span style="color: #e60000;">AAAAAAAA</span>'
+  X-Y system: '<span style="color: #e65400;">X-Y system</span>'
+  CCCCCCCC: '<span style="color: #e69100;">CCCCCCCC</span>'
+  DDDDDDDD: '<span style="color: #b3b300;">DDDDDDDD</span>'
+  X-O system: '<span style="color: #59b300;">X-O system</span>'
+  FFFFFFFF: '<span style="color: #009900;">FFFFFFFF</span>'
+  sex chromosomes: '<span style="color: #00b38f;">sex&nbsp;chromosomes</span>'
+  sex chromosome: '<span style="color: #00b38f;">sex chromosome</span>'
+  sperm: '<span style="color: #00b3b3;">sperm</span>'
+  xmales: ' <span style="color: #0a9bf5;">males &male;</span>'
+  'xmale ': ' <span style="color: #0a9bf5;">male &male;</span> '
+  JJJJJJJJ: '<span style="color: #0039e6;">JJJJJJJJ</span>'
+  Z-W system: '<span style="color: #004d99;">Z-W system</span>'
+  Haplo-Diploid system: '<span style="color: #7b12a1;">Haplo-Diploid system</span>'
+  egg (ovum): '<span style="color: #b30077;">egg (ovum)</span>'
+  females: '<span style="color: #cc0066;">females &female;</span> '
+  'female ': '<span style="color: #cc0066;">female &female;</span> '
 matching pairs:
-  'X-Y system':
-    - 'xmales are heterogametic and females are homogametic'
-    - 'females are homogametic and xmales are heterogametic'
-    - 'sex is determined by which chromosome is contained in the xmale sperm cell'
-    - 'found in most mammals, as well as some insects including <i>Drosophila</i>'
-    - 'xmales have two different kinds of sex chromosomes'
-    - 'females have two of the same kind of sex chromosome'
-    - 'sex of an offspring depends on which of two sex chromosomes are contained with the xmale sperm'
-
-  'X-O system':
-    - 'xmales are diploid, but only have one sex chromosome'
-    - 'xmales only have one sex chromosome, while females have two'
-    - 'females have two homologous sex chromosomes, xmales have only one'
-    - 'sex is determined on whether or not the xmale sperm contains a sex chromosome'
-    - 'found in a number of insects, including the grasshoppers, cockroaches, and crickets'
-    - 'sex of the offspring depends on whether or not a sex chromosome is present in the xmale sperm'
-    - 'sex of the offspring depends on whether or not a sex chromosome is present in the xmale gamete'
-    - 'xmale sperm normally contain either one sex chromosome or no sex chromosomes at all'
-    - 'sex of an offspring depends on if the xmale sperm contains a sex chromosome or if it is missing'
-
-  'Z-W system':
-    - 'females are heterogametic and xmales are homogametic'
-    - 'xmales are homogametic and females are heterogametic'
-    - 'sex of an offspring depends on which sex chromosome is contained with the female egg (ovum)'
-    - 'sex is determined by the type of sex chromosome in the egg (ovum)'
-    - 'found in most birds, many reptiles, and some insects'
-    - 'this system is the reverse of the system found in humans'
-    - 'females have two different kinds of sex chromosomes'
-    - 'xmales have two of the same kind of sex chromosomes'
-    - 'xmales have two of the same sex chromosomes'
-
-  'Haplo-Diploid system':
-    - 'xmales develop from unfertilized eggs and thus have no fathers'
-    - 'only system where xmales have no fathers'
-    - 'xmales only have one copy of every chromosome'
-    - 'xmales carry only one copy of each chromosome'
-    - 'found in insects, such as ants and bees'
-    - 'unfertilized eggs develop into xmales'
-    - 'sex is based on whether or not the female egg (ovum) is exposed to sperm'
-    - 'there are no sex chromosomes'
-    - 'fertilized eggs (with sperm) develop into females, unfertilized eggs develop into xmales'
+  X-Y system:
+  - xmales are heterogametic and females are homogametic
+  - females are homogametic and xmales are heterogametic
+  - sex is determined by which chromosome is contained in the xmale sperm cell
+  - found in most mammals, as well as some insects including <i>Drosophila</i>
+  - xmales have two different kinds of sex chromosomes
+  - females have two of the same kind of sex chromosome
+  - sex of an offspring depends on which of two sex chromosomes are contained with
+    the xmale sperm
+  X-O system:
+  - xmales are diploid, but only have one sex chromosome
+  - xmales only have one sex chromosome, while females have two
+  - females have two homologous sex chromosomes, xmales have only one
+  - sex is determined on whether or not the xmale sperm contains a sex chromosome
+  - found in a number of insects, including the grasshoppers, cockroaches, and crickets
+  - sex of the offspring depends on whether or not a sex chromosome is present in
+    the xmale sperm
+  - sex of the offspring depends on whether or not a sex chromosome is present in
+    the xmale gamete
+  - xmale sperm normally contain either one sex chromosome or no sex chromosomes at
+    all
+  - sex of an offspring depends on if the xmale sperm contains a sex chromosome or
+    if it is missing
+  Z-W system:
+  - females are heterogametic and xmales are homogametic
+  - xmales are homogametic and females are heterogametic
+  - sex of an offspring depends on which sex chromosome is contained with the female
+    egg (ovum)
+  - sex is determined by the type of sex chromosome in the egg (ovum)
+  - found in most birds, many reptiles, and some insects
+  - this system is the reverse of the system found in humans
+  - females have two different kinds of sex chromosomes
+  - xmales have two of the same kind of sex chromosomes
+  - xmales have two of the same sex chromosomes
+  Haplo-Diploid system:
+  - xmales develop from unfertilized eggs and thus have no fathers
+  - only system where xmales have no fathers
+  - xmales only have one copy of every chromosome
+  - xmales carry only one copy of each chromosome
+  - found in insects, such as ants and bees
+  - unfertilized eggs develop into xmales
+  - sex is based on whether or not the female egg (ovum) is exposed to sperm
+  - there are no sex chromosomes
+  - fertilized eggs (with sperm) develop into females, unfertilized eggs develop into
+    xmales
+dbsubject: Genetics

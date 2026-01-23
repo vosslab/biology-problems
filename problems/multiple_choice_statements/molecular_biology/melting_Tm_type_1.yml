@@ -1,57 +1,68 @@
----
-
-#Which one of the following statements is FALSE/TRUE <connection word> <topic>
 topic: melting temperature (T<sub>m</sub>) of DNA
-
 replacement_rules:
-  '(increases)': '<span style="color: OrangeRed;">(increases)</span>'
-  '(decreases)': '<span style="color: MediumBlue;">(decreases)</span>'
+  (increases): '<span style="color: OrangeRed;">(increases)</span>'
+  (decreases): '<span style="color: MediumBlue;">(decreases)</span>'
   increases: '<span style="color: OrangeRed;">increases</span>'
   decreases: '<span style="color: MediumBlue;">decreases</span>'
-
-connection_words: ~
-
+connection_words: null
 true_statements:
-   truth1a: 'The melting temperature (T<sub>m</sub>) of a DNA strand goes up (increases) when the cytosine (C) + guanine (G) base pairing content increases.'
-   truth1b: 'The melting temperature (T<sub>m</sub>) of a DNA strand goes down (decreases) when the cytosine (C) + guanine (G) base pairing content decreases.'
-
-   truth2a: 'The melting temperature (T<sub>m</sub>) of a DNA strand goes up (increases) when the adenine (A) + thymine (T) base pairing content decreases.'
-   truth2b: 'The melting temperature (T<sub>m</sub>) of a DNA strand goes down (decreases) when the adenine (A) + thymine (T) base pairing content increases.'
-
-   truth10: 'The melting temperature (T<sub>m</sub>) of a DNA strand is the temperature at which half of strands are single-stranded and the other half are double-stranded.'
-
+  truth1a: The melting temperature (T<sub>m</sub>) of a DNA strand goes up (increases)
+    when the cytosine (C) + guanine (G) base pairing content increases.
+  truth1b: The melting temperature (T<sub>m</sub>) of a DNA strand goes down (decreases)
+    when the cytosine (C) + guanine (G) base pairing content decreases.
+  truth2a: The melting temperature (T<sub>m</sub>) of a DNA strand goes up (increases)
+    when the adenine (A) + thymine (T) base pairing content decreases.
+  truth2b: The melting temperature (T<sub>m</sub>) of a DNA strand goes down (decreases)
+    when the adenine (A) + thymine (T) base pairing content increases.
+  truth10: The melting temperature (T<sub>m</sub>) of a DNA strand is the temperature
+    at which half of strands are single-stranded and the other half are double-stranded.
 false_statements:
-   false1a: 'The melting temperature (T<sub>m</sub>) of a DNA strand goes up (increases) when the cytosine (C) + guanine (G) base pairing content decreases.'
-   false1b: 'The melting temperature (T<sub>m</sub>) of a DNA strand goes down (decreases) when the cytosine (C) + guanine (G) base pairing content increases.'
-
-   false2a: 'The melting temperature (T<sub>m</sub>) of a DNA strand goes up (increases) when the adenine (A) + thymine (T) base pairing content increases.'
-   false2b: 'The melting temperature (T<sub>m</sub>) of a DNA strand goes down (decreases) when the adenine (A) + thymine (T) base pairing content decreases.'
-
-   false3a: 'The melting temperature (T<sub>m</sub>) of a DNA strand goes up (increases) when the amount of purine nucleobases, adenine (A) + guanine (G), decreases.'
-   false3b: 'The melting temperature (T<sub>m</sub>) of a DNA strand goes down (decreases) when the amount of purine nucleobases, adenine (A) + guanine (G), increases.'
-   false3c: 'The melting temperature (T<sub>m</sub>) of a DNA strand goes up (increases) when the amount of purine nucleobases, adenine (A) + guanine (G), increases.'
-   false3d: 'The melting temperature (T<sub>m</sub>) of a DNA strand goes down (decreases) when the amount of purine nucleobases, adenine (A) + guanine (G), decreases.'
-
-   false4a: 'The melting temperature (T<sub>m</sub>) of a DNA strand goes up (increases) when the amount of pyrimidine nucleobases, cytosine (C) + thymine (T), decreases.'
-   false4b: 'The melting temperature (T<sub>m</sub>) of a DNA strand goes down (decreases) when the amount of pyrimidine nucleobases, cytosine (C) + thymine (T), increases.'
-   false4c: 'The melting temperature (T<sub>m</sub>) of a DNA strand goes up (increases) when the amount of pyrimidine nucleobases, cytosine (C) + thymine (T), increases.'
-   false4d: 'The melting temperature (T<sub>m</sub>) of a DNA strand goes down (decreases) when the amount of pyrimidine nucleobases, cytosine (C) + thymine (T), decreases.'
-
-   false5a: 'The melting temperature (T<sub>m</sub>) of a DNA strand goes up (increases) when the amount of nucleobases with ketone groups, guanine (G) + thymine (T), decreases.'
-   false5b: 'The melting temperature (T<sub>m</sub>) of a DNA strand goes down (decreases) when the amount of nucleobases with ketone groups, guanine (G) + thymine (T), increases.'
-   false5c: 'The melting temperature (T<sub>m</sub>) of a DNA strand goes up (increases) when the amount of nucleobases with ketone groups, guanine (G) + thymine (T), increases.'
-   false5d: 'The melting temperature (T<sub>m</sub>) of a DNA strand goes down (decreases) when the amount of nucleobases with ketone groups, guanine (G) + thymine (T), decreases.'
-
-   false6a: 'The melting temperature (T<sub>m</sub>) of a DNA strand goes up (increases) when the amount of nucleobases with amino groups adenine (A) + cytosine (C), decreases.'
-   false6b: 'The melting temperature (T<sub>m</sub>) of a DNA strand goes down (decreases) when the amount of nucleobases with amino groups, adenine (A) + cytosine (C), increases.'
-   false6c: 'The melting temperature (T<sub>m</sub>) of a DNA strand goes up (increases) when the amount of nucleobases with amino groups, adenine (A) + cytosine (C), increases.'
-   false6d: 'The melting temperature (T<sub>m</sub>) of a DNA strand goes down (decreases) when the amount of nucleobases with amino groups, adenine (A) + cytosine (C), decreases.'
-
-#conflicts, means that the statements cannot appear together
-conflict_rules: ~
-
-
-
-
-
-
+  false1a: The melting temperature (T<sub>m</sub>) of a DNA strand goes up (increases)
+    when the cytosine (C) + guanine (G) base pairing content decreases.
+  false1b: The melting temperature (T<sub>m</sub>) of a DNA strand goes down (decreases)
+    when the cytosine (C) + guanine (G) base pairing content increases.
+  false2a: The melting temperature (T<sub>m</sub>) of a DNA strand goes up (increases)
+    when the adenine (A) + thymine (T) base pairing content increases.
+  false2b: The melting temperature (T<sub>m</sub>) of a DNA strand goes down (decreases)
+    when the adenine (A) + thymine (T) base pairing content decreases.
+  false3a: The melting temperature (T<sub>m</sub>) of a DNA strand goes up (increases)
+    when the amount of purine nucleobases, adenine (A) + guanine (G), decreases.
+  false3b: The melting temperature (T<sub>m</sub>) of a DNA strand goes down (decreases)
+    when the amount of purine nucleobases, adenine (A) + guanine (G), increases.
+  false3c: The melting temperature (T<sub>m</sub>) of a DNA strand goes up (increases)
+    when the amount of purine nucleobases, adenine (A) + guanine (G), increases.
+  false3d: The melting temperature (T<sub>m</sub>) of a DNA strand goes down (decreases)
+    when the amount of purine nucleobases, adenine (A) + guanine (G), decreases.
+  false4a: The melting temperature (T<sub>m</sub>) of a DNA strand goes up (increases)
+    when the amount of pyrimidine nucleobases, cytosine (C) + thymine (T), decreases.
+  false4b: The melting temperature (T<sub>m</sub>) of a DNA strand goes down (decreases)
+    when the amount of pyrimidine nucleobases, cytosine (C) + thymine (T), increases.
+  false4c: The melting temperature (T<sub>m</sub>) of a DNA strand goes up (increases)
+    when the amount of pyrimidine nucleobases, cytosine (C) + thymine (T), increases.
+  false4d: The melting temperature (T<sub>m</sub>) of a DNA strand goes down (decreases)
+    when the amount of pyrimidine nucleobases, cytosine (C) + thymine (T), decreases.
+  false5a: The melting temperature (T<sub>m</sub>) of a DNA strand goes up (increases)
+    when the amount of nucleobases with ketone groups, guanine (G) + thymine (T),
+    decreases.
+  false5b: The melting temperature (T<sub>m</sub>) of a DNA strand goes down (decreases)
+    when the amount of nucleobases with ketone groups, guanine (G) + thymine (T),
+    increases.
+  false5c: The melting temperature (T<sub>m</sub>) of a DNA strand goes up (increases)
+    when the amount of nucleobases with ketone groups, guanine (G) + thymine (T),
+    increases.
+  false5d: The melting temperature (T<sub>m</sub>) of a DNA strand goes down (decreases)
+    when the amount of nucleobases with ketone groups, guanine (G) + thymine (T),
+    decreases.
+  false6a: The melting temperature (T<sub>m</sub>) of a DNA strand goes up (increases)
+    when the amount of nucleobases with amino groups adenine (A) + cytosine (C), decreases.
+  false6b: The melting temperature (T<sub>m</sub>) of a DNA strand goes down (decreases)
+    when the amount of nucleobases with amino groups, adenine (A) + cytosine (C),
+    increases.
+  false6c: The melting temperature (T<sub>m</sub>) of a DNA strand goes up (increases)
+    when the amount of nucleobases with amino groups, adenine (A) + cytosine (C),
+    increases.
+  false6d: The melting temperature (T<sub>m</sub>) of a DNA strand goes down (decreases)
+    when the amount of nucleobases with amino groups, adenine (A) + cytosine (C),
+    decreases.
+conflict_rules: null
+dbsubject: Molecular Biology

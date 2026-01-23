@@ -1,59 +1,47 @@
-#YAML file for Matching Questions
-
 items to match per question: 5
-
-#both singular and plural
 key description: trophic classification
 keys description: trophic classifications
-
-#both singular and plural
 value description: definition
 values description: definitions
-
 replacement_rules:
-    heterotroph: '<span style="color: #e60000;">heterotroph</span>' #RED
-    organisms: '<span style="color: #e65400;">organisms</span>' #DARK ORANGE
-    organotroph: '<span style="color: #e69100;">organotroph</span>' #LIGHT ORANGE
-    lithotroph: '<span style="color: #b3b300;">lithotroph</span>' #DARK YELLOW
-    XXXXXXX: '<span style="color: #59b300;">XXXXXXX</span>' #LIME GREEN
-    phototroph: '<span style="color: #009900;">phototroph</span>' #GREEN
-    light: '<span style="color: #00b38f;">light</span>' #TEAL
-    energy: '<span style="color: #00b3b3;">energy</span>' #CYAN
-    chemotroph: '<span style="color: #0a9bf5;">chemotroph</span>' #SKY BLUE
-    inorganic: '<span style="color: #0039e6;">inorganic</span>' #BLUE
-    YYYYYYYY: '<span style="color: #004d99;">YYYYYYYY</span>' #NAVY
-    ZZZZZZZZZ: '<span style="color: #7b12a1;">ZZZZZZZZZ</span>' #PURPLE
-    WWWWWWWW: '<span style="color: #b30077;">WWWWWWWW</span>' #MAGENTA
-    autotroph: '<span style="color: #cc0066;">autotroph</span>' #PINK
-
+  heterotroph: '<span style="color: #e60000;">heterotroph</span>'
+  organisms: '<span style="color: #e65400;">organisms</span>'
+  organotroph: '<span style="color: #e69100;">organotroph</span>'
+  lithotroph: '<span style="color: #b3b300;">lithotroph</span>'
+  XXXXXXX: '<span style="color: #59b300;">XXXXXXX</span>'
+  phototroph: '<span style="color: #009900;">phototroph</span>'
+  light: '<span style="color: #00b38f;">light</span>'
+  energy: '<span style="color: #00b3b3;">energy</span>'
+  chemotroph: '<span style="color: #0a9bf5;">chemotroph</span>'
+  inorganic: '<span style="color: #0039e6;">inorganic</span>'
+  YYYYYYYY: '<span style="color: #004d99;">YYYYYYYY</span>'
+  ZZZZZZZZZ: '<span style="color: #7b12a1;">ZZZZZZZZZ</span>'
+  WWWWWWWW: '<span style="color: #b30077;">WWWWWWWW</span>'
+  autotroph: '<span style="color: #cc0066;">autotroph</span>'
 matching pairs:
   heterotroph:
-    - consume other organisms for food
-    - rely on other organisms for their food
-    - obtain their nourishment from other organisms
-
+  - consume other organisms for food
+  - rely on other organisms for their food
+  - obtain their nourishment from other organisms
   autotroph:
-    - produce their own food
-    - generate their own food
-    - produce their own nourishment
-
+  - produce their own food
+  - generate their own food
+  - produce their own nourishment
   chemotroph:
-    - obtain energy from molecules rather than light
-    - derive energy from molecules rather than light
-    - get their energy from molecules instead of from light
-    - use molecules as a source of energy
-
+  - obtain energy from molecules rather than light
+  - derive energy from molecules rather than light
+  - get their energy from molecules instead of from light
+  - use molecules as a source of energy
   phototroph:
-    - use light as a source of energy
-    - get their energy from light instead of from chemicals
-    - derive energy from light rather than chemicals
-
+  - use light as a source of energy
+  - get their energy from light instead of from chemicals
+  - derive energy from light rather than chemicals
   lithotroph:
-    - derive energy from inorganic compounds
-    - obtain energy from inorganic compounds
-    - obtain their energy from inorganic chemicals
-
+  - derive energy from inorganic compounds
+  - obtain energy from inorganic compounds
+  - obtain their energy from inorganic chemicals
   organotroph:
-    - derive energy from organic compounds
-    - obtain energy from organic compounds
-    - obtain their energy from organic matter
+  - derive energy from organic compounds
+  - obtain energy from organic compounds
+  - obtain their energy from organic matter
+dbsubject: Cell Biology

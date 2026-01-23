@@ -1,101 +1,132 @@
-#YAML file for Matching Questions
-
 items to match per question: 4
-
-#both singular and plural
 key description: genetic disorder
 keys description: genetic disorders
-
-#both singular and plural
 value description: description
 values description: descriptions
-
 replacement_rules:
-   disorder:       '<span style="color: DarkGreen;">disorder</span>'
-   genetic:        '<span style="color: MediumVioletRed;">genetic</span>'
-   metabolic:      '<span style="color: Indigo;">metabolic</span>'
-   chromosome:     '<span style="color: SteelBlue;">chromosome</span>'
-
+  disorder: '<span style="color: DarkGreen;">disorder</span>'
+  genetic: '<span style="color: MediumVioletRed;">genetic</span>'
+  metabolic: '<span style="color: Indigo;">metabolic</span>'
+  chromosome: '<span style="color: SteelBlue;">chromosome</span>'
 matching pairs:
   Achondroplasia:
-    - impairs the growth of bone in the limbs and causes abnormal growth in the spine and skull
+  - impairs the growth of bone in the limbs and causes abnormal growth in the spine
+    and skull
   Beta-Thalassemia:
-    - reduced hemoglobin proteins that result in variable outcomes including severe anemia
+  - reduced hemoglobin proteins that result in variable outcomes including severe
+    anemia
   Cystic fibrosis:
-    - a faulty protein that affects the cells, tissues, and the glands that make mucus and sweat
-    - autosomal recessive genetic disorder affecting most critically the lungs
+  - a faulty protein that affects the cells, tissues, and the glands that make mucus
+    and sweat
+  - autosomal recessive genetic disorder affecting most critically the lungs
   Duchenne muscular dystrophy:
-    - disorder that affects the muscles, leading to muscle wasting that gets worse over time
+  - disorder that affects the muscles, leading to muscle wasting that gets worse over
+    time
   Fragile X syndrome:
-    - a genetic condition involving changes in part of the X chromosome
+  - a genetic condition involving changes in part of the X chromosome
   Galactosemia:
-    - metabolic disorder that affects an individual's ability to metabolize the sugar galactose properly
+  - metabolic disorder that affects an individual's ability to metabolize the sugar
+    galactose properly
   Hemophilia:
-    - an inherited bleeding disorder in which the blood does not clot properly
-  "Huntington's disease":
-    - disorder that causes the progressive breakdown (degeneration) of nerve cells in the brain
+  - an inherited bleeding disorder in which the blood does not clot properly
+  Huntington's disease:
+  - disorder that causes the progressive breakdown (degeneration) of nerve cells in
+    the brain
   Maple syrup urine disease:
-    - metabolic disorder affecting branched-chain amino acids
-    - "gets its name from the distinctive sweet odor of affected infants' urine"
+  - metabolic disorder affecting branched-chain amino acids
+  - gets its name from the distinctive sweet odor of affected infants' urine
   Marfan syndrome:
-    - multi-systemic genetic disorder that affects the connective tissue
-    - individuals with the condition tend to be tall and thin, with long arms, legs, fingers, and toes
+  - multi-systemic genetic disorder that affects the connective tissue
+  - individuals with the condition tend to be tall and thin, with long arms, legs,
+    fingers, and toes
   Phenylketonuria:
-    - inherited disorder that causes an amino acid called phenylalanine to build up in the body
-    - "genetic metabolic disorder that increases the body's levels of phenylalanine"
-    -  inherited disorder of metabolism that causes an increase in the blood of a chemical known as phenylalanine
+  - inherited disorder that causes an amino acid called phenylalanine to build up
+    in the body
+  - genetic metabolic disorder that increases the body's levels of phenylalanine
+  - inherited disorder of metabolism that causes an increase in the blood of a chemical
+    known as phenylalanine
   Sickle-cell anemia:
-    - affects your red blood cells, turning them from round flexible discs into stiff and sticky, long, and rigid cells
+  - affects your red blood cells, turning them from round flexible discs into stiff
+    and sticky, long, and rigid cells
   Tay-Sachs disease:
-    - a genetic disorder that results in the destruction of nerve cells in the brain and spinal cord
-    - people with the disorder do not have enough of an enzyme called beta-hexosaminidase
-
+  - a genetic disorder that results in the destruction of nerve cells in the brain
+    and spinal cord
+  - people with the disorder do not have enough of an enzyme called beta-hexosaminidase
   Angelman syndrome:
-    - caused by duplications of the UBE3A gene located on chromosome 15
-    - disorder that is due to a extra piece (duplication) of a specific gene on chromosome 15
+  - caused by duplications of the UBE3A gene located on chromosome 15
+  - disorder that is due to a extra piece (duplication) of a specific gene on chromosome
+    15
   Prader-Willi syndrome:
-    - a genetic disorder caused by a loss of function of specific genes on chromosome 15
-    - disorder that is due to a missing piece (deletion) of a specific part of chromosome 15
+  - a genetic disorder caused by a loss of function of specific genes on chromosome
+    15
+  - disorder that is due to a missing piece (deletion) of a specific part of chromosome
+    15
   Cri du chat syndrome:
-    - usually include a high-pitched cat-like cry, mental disability, delayed development, distinctive facial features, widely-spaced eyes
-    - disorder that is due to a missing piece (deletion) of a specific part of chromosome 5
-    - disorder caused when a small part of chromosome 5 is missing
+  - usually include a high-pitched cat-like cry, mental disability, delayed development,
+    distinctive facial features, widely-spaced eyes
+  - disorder that is due to a missing piece (deletion) of a specific part of chromosome
+    5
+  - disorder caused when a small part of chromosome 5 is missing
   DiGeorge syndrome:
-    - disorder caused when a small part of chromosome 22 is missing
-    - disorder that is due to a missing piece (deletion) of a specific part of chromosome 22
+  - disorder caused when a small part of chromosome 22 is missing
+  - disorder that is due to a missing piece (deletion) of a specific part of chromosome
+    22
   Down syndrome:
-    - genetic disorder caused by the presence of all or part of a third copy of chromosome 21
-    - chromosomal abnormality characterized by the presence of an extra copy of genetic material on the 21st chromosome
-    - a chromosomal abnormality, in which the cells of the body contain extra genetic material from chromosome 21
-    - result of a random error that causes a person to be born with an extra chromosome 21
+  - genetic disorder caused by the presence of all or part of a third copy of chromosome
+    21
+  - chromosomal abnormality characterized by the presence of an extra copy of genetic
+    material on the 21st chromosome
+  - a chromosomal abnormality, in which the cells of the body contain extra genetic
+    material from chromosome 21
+  - result of a random error that causes a person to be born with an extra chromosome
+    21
   Edwards syndrome:
-    - chromosomal abnormality characterized by the presence of an extra copy of genetic material on the 18th chromosome
-    - genetic disorder caused by the presence of all or part of a third copy of chromosome 18
-    - a chromosomal abnormality, in which the cells of the body contain extra genetic material from chromosome 18
-    - result of a random error that causes a person to be born with an extra chromosome 18
+  - chromosomal abnormality characterized by the presence of an extra copy of genetic
+    material on the 18th chromosome
+  - genetic disorder caused by the presence of all or part of a third copy of chromosome
+    18
+  - a chromosomal abnormality, in which the cells of the body contain extra genetic
+    material from chromosome 18
+  - result of a random error that causes a person to be born with an extra chromosome
+    18
   Klinefelter syndrome:
-    - result of a random error that causes a male to be born with an extra X chromosome
-    - also known as 47,XXY, is a syndrome where a male has an additional copy of the X chromosome
+  - result of a random error that causes a male to be born with an extra X chromosome
+  - also known as 47,XXY, is a syndrome where a male has an additional copy of the
+    X chromosome
   Patau syndrome:
-    - a chromosomal abnormality, in which the cells of the body contain extra genetic material from chromosome 13
-    - chromosomal abnormality characterized by the presence of an extra copy of genetic material on the 13th chromosome
-    - genetic disorder caused by the presence of all or part of a third copy of chromosome 13
-    - result of a random error that causes a person to be born with an extra chromosome 13
+  - a chromosomal abnormality, in which the cells of the body contain extra genetic
+    material from chromosome 13
+  - chromosomal abnormality characterized by the presence of an extra copy of genetic
+    material on the 13th chromosome
+  - genetic disorder caused by the presence of all or part of a third copy of chromosome
+    13
+  - result of a random error that causes a person to be born with an extra chromosome
+    13
   Philadelphia chromosome:
-    - cancerous chromosomal abnormality that is manifested as a shortened version of human chromosome 22
-    - forms when chromosome 9 and chromosome 22 break and exchange portions of their genetic material
+  - cancerous chromosomal abnormality that is manifested as a shortened version of
+    human chromosome 22
+  - forms when chromosome 9 and chromosome 22 break and exchange portions of their
+    genetic material
   Triple X syndrome:
-    - also known as 47,XXX, is a genetic disorder that results in a female that has three X chromosomes
-    - a genetic condition in females which there are three copies of the X chromosome
+  - also known as 47,XXX, is a genetic disorder that results in a female that has
+    three X chromosomes
+  - a genetic condition in females which there are three copies of the X chromosome
   Turner syndrome:
-    - a condition that affects only females, results when one of their X chromosomes is missing or partially missing
-    - also known as monosomy X, includes a number of typical physical features observed such as webbed neck
+  - a condition that affects only females, results when one of their X chromosomes
+    is missing or partially missing
+  - also known as monosomy X, includes a number of typical physical features observed
+    such as webbed neck
   WAGR syndrome:
-    - genetic condition caused by a deletion of a group of genes located on chromosome number 11
-    - disorder caused when a small part of chromosome 11 is missing
-    - disorder that is due to a missing piece (deletion) of a specific part of chromosome 11
+  - genetic condition caused by a deletion of a group of genes located on chromosome
+    number 11
+  - disorder caused when a small part of chromosome 11 is missing
+  - disorder that is due to a missing piece (deletion) of a specific part of chromosome
+    11
   Wolf-Hirschhorn syndrome:
-    - caused by a deletion within HSA band on the short arm of chromosome 4
-    - genetic condition caused by a deletion of a group of genes located on chromosome number 4
-    - disorder caused when a small part of chromosome 4 is missing
-    - disorder that is due to a missing piece (deletion) of a specific part of chromosome 4
+  - caused by a deletion within HSA band on the short arm of chromosome 4
+  - genetic condition caused by a deletion of a group of genes located on chromosome
+    number 4
+  - disorder caused when a small part of chromosome 4 is missing
+  - disorder that is due to a missing piece (deletion) of a specific part of chromosome
+    4
+dbsubject: Genetics

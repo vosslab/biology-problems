@@ -1,117 +1,91 @@
----
-
-#Which one of the following statements is FALSE/TRUE <connection word> <topic>
 topic: post-transcriptional mRNA modification
-
-#override_question_true: ~
-connection_words: ~
-
+connection_words: null
 replacement_rules:
-   non-coding:       '<span style="color: #b30059;">non-coding</span>'
-   introns:          '<span style="color: #b30059;">introns</span>'
-
-   ' coding':        '<span style="color: #0000b3;"> coding</span>'
-   exons:            '<span style="color: #0000b3;">exons</span>'
-
-   poly-adenine tail:     '<span style="color: #00802b;">poly-adenine tail</span>'
-   poly-adenylation:      '<span style="color: #00802b;">poly-adenylation</span>'
-   adenine residues:      '<span style="color: #00802b;">adenine residues</span>'
-   modified adenosine:    '<span style="color: #00802b;">modified adenosine</span>'
-
-   poly-guanine tail:     '<span style="color: #4d4d00;">poly-guanine tail</span>'
-   poly-guanidinylation:  '<span style="color: #4d4d00;">poly-guanidinylation</span>'
-   guanine residues:      '<span style="color: #4d4d00;">guanine residues</span>'
-   modified guanosine:    '<span style="color: #4d4d00;">modified guanosine</span>'
-
-   5&prime; end:          '<span style="color: #86592d;">5&prime; end</span>'
-   first nucleotide:      '<span style="color: #86592d;">first nucleotide</span>'
-   3&prime; end:          '<span style="color: #008080;">3&prime; end</span>'
-   last nucleotide:       '<span style="color: #008080;">last nucleotide</span>'
-
+  non-coding: '<span style="color: #b30059;">non-coding</span>'
+  introns: '<span style="color: #b30059;">introns</span>'
+  ' coding': '<span style="color: #0000b3;"> coding</span>'
+  exons: '<span style="color: #0000b3;">exons</span>'
+  poly-adenine tail: '<span style="color: #00802b;">poly-adenine tail</span>'
+  poly-adenylation: '<span style="color: #00802b;">poly-adenylation</span>'
+  adenine residues: '<span style="color: #00802b;">adenine residues</span>'
+  modified adenosine: '<span style="color: #00802b;">modified adenosine</span>'
+  poly-guanine tail: '<span style="color: #4d4d00;">poly-guanine tail</span>'
+  poly-guanidinylation: '<span style="color: #4d4d00;">poly-guanidinylation</span>'
+  guanine residues: '<span style="color: #4d4d00;">guanine residues</span>'
+  modified guanosine: '<span style="color: #4d4d00;">modified guanosine</span>'
+  5&prime; end: '<span style="color: #86592d;">5&prime; end</span>'
+  first nucleotide: '<span style="color: #86592d;">first nucleotide</span>'
+  3&prime; end: '<span style="color: #008080;">3&prime; end</span>'
+  last nucleotide: '<span style="color: #008080;">last nucleotide</span>'
 true_statements:
-   truth1a: poly-adenine tail is added on the 3&prime; end
-   truth1b: poly-adenylation at the 3&prime; end
-   truth1c: addition of a 3&prime; end poly-adenylation
-   truth1d: addition of a poly-adenylation tail on the 3&prime; end
-   truth1e: addition of about 250 adenine residues on the 3&prime; end
-   truth1f: about 250 adenine residues are added on the 3&prime; end
-
-   truth2a: capping of 5&prime; end
-   truth2b: 5&prime; end capping
-   truth2c: a cap is placed on the 5&prime; end
-   truth2d: addition of a cap on the 5&prime; end
-
-   truth2e: a modified guanosine is linked to the 5&prime; end
-   truth2f: a modified guanosine is placed on the 5&prime; end
-   truth2g: a modified guanosine is added at the 5&prime; end
-   truth2h: a modified guanosine is linked to the first nucleotide
-
-   truth3a: removal the intervening, non-coding sequences
-   truth3b: removal of introns
-   truth3c: removing internal non-coding RNA sequences
-   truth3d: non-coding sections of the RNA are removed
-   truth3e: introns of the RNA are removed
-
-   truth3f: exons are fused together
-   truth3g: exons are spliced together
-   truth3h: exons are joined together
-   truth3i: exons are stuck back together
-
-   truth3j: coding sections are fused together
-   truth3k: coding sections are spliced together
-   truth3l: coding sections are joined together
-   truth3m: coding sections are stuck back together
-
-   truth4a: nucleotide base modification
-   truth4b: RNA splicing
-
-
+  truth1a: poly-adenine tail is added on the 3&prime; end
+  truth1b: poly-adenylation at the 3&prime; end
+  truth1c: addition of a 3&prime; end poly-adenylation
+  truth1d: addition of a poly-adenylation tail on the 3&prime; end
+  truth1e: addition of about 250 adenine residues on the 3&prime; end
+  truth1f: about 250 adenine residues are added on the 3&prime; end
+  truth2a: capping of 5&prime; end
+  truth2b: 5&prime; end capping
+  truth2c: a cap is placed on the 5&prime; end
+  truth2d: addition of a cap on the 5&prime; end
+  truth2e: a modified guanosine is linked to the 5&prime; end
+  truth2f: a modified guanosine is placed on the 5&prime; end
+  truth2g: a modified guanosine is added at the 5&prime; end
+  truth2h: a modified guanosine is linked to the first nucleotide
+  truth3a: removal the intervening, non-coding sequences
+  truth3b: removal of introns
+  truth3c: removing internal non-coding RNA sequences
+  truth3d: non-coding sections of the RNA are removed
+  truth3e: introns of the RNA are removed
+  truth3f: exons are fused together
+  truth3g: exons are spliced together
+  truth3h: exons are joined together
+  truth3i: exons are stuck back together
+  truth3j: coding sections are fused together
+  truth3k: coding sections are spliced together
+  truth3l: coding sections are joined together
+  truth3m: coding sections are stuck back together
+  truth4a: nucleotide base modification
+  truth4b: RNA splicing
 false_statements:
-   false1a: poly-guanine tail is added on the 3&prime; end
-   false1b: poly-guanidinylation at the 3&prime; end
-   false1c: addition of a 3&prime; end poly-guanidinylation
-   false1d: addition of a poly-guanidinylation tail on the 3&prime; end
-   false1e: addition of about 250 guanine residues on the 3&prime; end
-   false1f: about 250 guanine residues are added on the 3&prime; end
-
-   false1g: poly-adenine tail is added on the 5&prime; end
-   false1h: poly-adenylation at the 5&prime; end
-   false1i: addition of a 5&prime; end poly-adenylation
-   false1j: addition of a poly-adenylation tail on the 5&prime; end
-   false1k: addition of about 250 adenine residues on the 5&prime; end
-   false1l: about 250 adenine residues are added on the 5&prime; end
-
-   false2a: capping of 3&prime; end
-   false2b: 3&prime; end capping
-   false2c: a cap is placed on the 3&prime; end
-   truth2d: addition of a cap on the 3&prime; end
-   false2e: a modified adenosine is linked to the first nucleotide
-   false2f: a modified adenosine is linked to the 5&prime; end
-   false2g: a modified adenosine is placed on the 5&prime; end
-   false2h: a modified adenosine is added at the 5&prime; end
-   false2i: a modified guanosine is linked to the last nucleotide
-   false2j: a modified guanosine is linked to the 3&prime; end
-   false2k: a modified guanosine is placed on the 3&prime; end
-   false2l: a modified guanosine is added at the 3&prime; end
-
-   false3a: removal the intervening, coding sequences
-   false3b: removal of exons
-   false3c: removing internal coding RNA sequences
-   false3d: coding sections of the RNA are removed
-   false3e: exons of the RNA are removed
-
-   false3f: introns are fused together
-   false3g: introns are spliced together
-   false3h: introns are joined together
-   false3i: introns are stuck back together
-   false3j: non-coding sections are fused together
-   false3k: non-coding sections are spliced together
-   false3l: non-coding sections are joined together
-   false3m: non-coding sections are stuck back together
-
-   false4a: reverse transcription of the mRNA
-   false4b: mRNA proofreading
-
-
-# conflicts, means that the statements cannot appear together
-conflict_rules: ~
+  false1a: poly-guanine tail is added on the 3&prime; end
+  false1b: poly-guanidinylation at the 3&prime; end
+  false1c: addition of a 3&prime; end poly-guanidinylation
+  false1d: addition of a poly-guanidinylation tail on the 3&prime; end
+  false1e: addition of about 250 guanine residues on the 3&prime; end
+  false1f: about 250 guanine residues are added on the 3&prime; end
+  false1g: poly-adenine tail is added on the 5&prime; end
+  false1h: poly-adenylation at the 5&prime; end
+  false1i: addition of a 5&prime; end poly-adenylation
+  false1j: addition of a poly-adenylation tail on the 5&prime; end
+  false1k: addition of about 250 adenine residues on the 5&prime; end
+  false1l: about 250 adenine residues are added on the 5&prime; end
+  false2a: capping of 3&prime; end
+  false2b: 3&prime; end capping
+  false2c: a cap is placed on the 3&prime; end
+  truth2d: addition of a cap on the 3&prime; end
+  false2e: a modified adenosine is linked to the first nucleotide
+  false2f: a modified adenosine is linked to the 5&prime; end
+  false2g: a modified adenosine is placed on the 5&prime; end
+  false2h: a modified adenosine is added at the 5&prime; end
+  false2i: a modified guanosine is linked to the last nucleotide
+  false2j: a modified guanosine is linked to the 3&prime; end
+  false2k: a modified guanosine is placed on the 3&prime; end
+  false2l: a modified guanosine is added at the 3&prime; end
+  false3a: removal the intervening, coding sequences
+  false3b: removal of exons
+  false3c: removing internal coding RNA sequences
+  false3d: coding sections of the RNA are removed
+  false3e: exons of the RNA are removed
+  false3f: introns are fused together
+  false3g: introns are spliced together
+  false3h: introns are joined together
+  false3i: introns are stuck back together
+  false3j: non-coding sections are fused together
+  false3k: non-coding sections are spliced together
+  false3l: non-coding sections are joined together
+  false3m: non-coding sections are stuck back together
+  false4a: reverse transcription of the mRNA
+  false4b: mRNA proofreading
+conflict_rules: null
+dbsubject: Molecular Biology

@@ -1,66 +1,67 @@
----
-
-#Which one of the following statements is FALSE/TRUE <connection word> <topic>
 topic: Michaelis-Menten kinetics
-
 replacement_rules:
-  concentration: '<span style="color: #ff0000;">concentration</span>' #RED
-  enzyme-product complex [EP]: '<span style="color: #ff5e00;">enzyme-product complex [EP]</span>' #DARK ORANGE
-  CCCCCCC: '<span style="color: #ffa100;">CCCCCCC</span>' #LIGHT ORANGE
-  DDDDDDD: '<span style="color: #b3b300;">DDDDDDD</span>' #DARK YELLOW
-  enzyme-substrate complex [ES]: '<span style="color: #2fbd0f;">enzyme-substrate complex [ES]</span>' #LIME GREEN
-  proportional: '<span style="color: #009e4c;"><i>proportional</i></span>' #TEAL
-  M-M kinetics: '<span style="color: #0d57a5;">M-M kinetics</span>' #BLUE
-  constant: '<span style="color: #6d108e;"><i>constant</i></span>' #PURPLE
-  reaction rate: '<span style="color: #a1005e;">reaction rate</span>' #MAGENTA
-
-connection_words: ~
-
+  concentration: '<span style="color: #ff0000;">concentration</span>'
+  enzyme-product complex [EP]: '<span style="color: #ff5e00;">enzyme-product complex
+    [EP]</span>'
+  CCCCCCC: '<span style="color: #ffa100;">CCCCCCC</span>'
+  DDDDDDD: '<span style="color: #b3b300;">DDDDDDD</span>'
+  enzyme-substrate complex [ES]: '<span style="color: #2fbd0f;">enzyme-substrate complex
+    [ES]</span>'
+  proportional: '<span style="color: #009e4c;"><i>proportional</i></span>'
+  M-M kinetics: '<span style="color: #0d57a5;">M-M kinetics</span>'
+  constant: '<span style="color: #6d108e;"><i>constant</i></span>'
+  reaction rate: '<span style="color: #a1005e;">reaction rate</span>'
+connection_words: null
 true_statements:
   truth1a: The reaction rate is proportional to the substrate concentration.
-
   truth2a: M-M kinetics assumes the enzyme has a single active site.
   truth2b: M-M kinetics does not apply to allosteric enzymes.
-
-  truth3a: M-M kinetics was developed by German biochemist Leonor Michaelis and Canadian physician Maud Menten in 1913.
-
-  truth4a: M-M kinetics assumes a quasi-steady state, that the enzyme-substrate complex [ES] is constant.
-  truth4b: M-M kinetics assumes that the change in concentration of enzyme-substrate complex [ES] does not change.
-  truth4c: M-M kinetics assumes that the concentration of enzyme-substrate complex [ES] is constant.
-  truth4d: M-M kinetics assumes that the rate of breaking the enzyme-substrate complex [ES] is equal to the rate of its formation.
-
-  truth5a: M-M kinetics assumes that the enzyme bound to the product [EP] is short lived and does not contribute to the reaction rate.
-  truth5b: M-M kinetics assumes that the enzyme-product complex [EP] is short lived and does not contribute to the reaction rate.
-
-  truth6a: M-M kinetics assumes that there is no product available and there is no measureable reverse reaction rate.
-  truth6b: M-M kinetics assumes that the product is not available and there is no measureable reverse reaction rate.
-
-  truth7a: When the substrate concentration, [S], is much larger than K<sub>M</sub>, the reaction rate is constant.
-  truth7b: When the substrate concentration, [S], is much smaller than K<sub>M</sub>, the reaction rate is linear.
-
+  truth3a: M-M kinetics was developed by German biochemist Leonor Michaelis and Canadian
+    physician Maud Menten in 1913.
+  truth4a: M-M kinetics assumes a quasi-steady state, that the enzyme-substrate complex
+    [ES] is constant.
+  truth4b: M-M kinetics assumes that the change in concentration of enzyme-substrate
+    complex [ES] does not change.
+  truth4c: M-M kinetics assumes that the concentration of enzyme-substrate complex
+    [ES] is constant.
+  truth4d: M-M kinetics assumes that the rate of breaking the enzyme-substrate complex
+    [ES] is equal to the rate of its formation.
+  truth5a: M-M kinetics assumes that the enzyme bound to the product [EP] is short
+    lived and does not contribute to the reaction rate.
+  truth5b: M-M kinetics assumes that the enzyme-product complex [EP] is short lived
+    and does not contribute to the reaction rate.
+  truth6a: M-M kinetics assumes that there is no product available and there is no
+    measureable reverse reaction rate.
+  truth6b: M-M kinetics assumes that the product is not available and there is no
+    measureable reverse reaction rate.
+  truth7a: When the substrate concentration, [S], is much larger than K<sub>M</sub>,
+    the reaction rate is constant.
+  truth7b: When the substrate concentration, [S], is much smaller than K<sub>M</sub>,
+    the reaction rate is linear.
 false_statements:
   false1a: The reaction rate is proportional to the product concentration.
-
-  false3a: M-M kinetics was developed by American linguist Laura Michaelis and Belgian cyclist Milan Menten in 1913.
-  false3b: M-M kinetics was developed by Greek economist Leo Michelis and Dutch bobsledder Hubert Menten in 1913.
-
+  false3a: M-M kinetics was developed by American linguist Laura Michaelis and Belgian
+    cyclist Milan Menten in 1913.
+  false3b: M-M kinetics was developed by Greek economist Leo Michelis and Dutch bobsledder
+    Hubert Menten in 1913.
   false4a: M-M kinetics assumes that the enzyme-product complex [EP] is constant.
-  false4b: M-M kinetics assumes that the change in concentration of enzyme-product complex [EP] does not change.
-  false4c: M-M kinetics assumes that the concentration of enzyme-product complex [EP] is constant.
-  false4d: M-M kinetics assumes that the rate of breaking the enzyme-product complex [EP] is equal to the rate of its formation.
-
-  false5a: M-M kinetics assumes that the enzyme bound to the substrate [ES] is short lived and does not contribute to the reaction rate.
-  false5b: M-M kinetics assumes that the enzyme-substrate complex [ES] is short lived and does not contribute to the reaction rate.
-
-  false6a: M-M kinetics assumes that there is no substrate available and there is no measureable reverse reaction rate.
-  false6b: M-M kinetics assumes that the substrate is not available and there is no measureable reverse reaction rate.
-
-  false7a: When the substrate concentration, [S], is much larger than K<sub>M</sub>, the reaction rate is linear.
-  false7b: When the substrate concentration, [S], is much smaller than K<sub>M</sub>, the reaction rate is constant.
-
-# conflicts, means that the statements cannot appear together
-# add ': True' to each line, so the program runs a faster lookup
-conflict_rules: ~
-
-
-
+  false4b: M-M kinetics assumes that the change in concentration of enzyme-product
+    complex [EP] does not change.
+  false4c: M-M kinetics assumes that the concentration of enzyme-product complex [EP]
+    is constant.
+  false4d: M-M kinetics assumes that the rate of breaking the enzyme-product complex
+    [EP] is equal to the rate of its formation.
+  false5a: M-M kinetics assumes that the enzyme bound to the substrate [ES] is short
+    lived and does not contribute to the reaction rate.
+  false5b: M-M kinetics assumes that the enzyme-substrate complex [ES] is short lived
+    and does not contribute to the reaction rate.
+  false6a: M-M kinetics assumes that there is no substrate available and there is
+    no measureable reverse reaction rate.
+  false6b: M-M kinetics assumes that the substrate is not available and there is no
+    measureable reverse reaction rate.
+  false7a: When the substrate concentration, [S], is much larger than K<sub>M</sub>,
+    the reaction rate is linear.
+  false7b: When the substrate concentration, [S], is much smaller than K<sub>M</sub>,
+    the reaction rate is constant.
+conflict_rules: null
+dbsubject: Biochemistry

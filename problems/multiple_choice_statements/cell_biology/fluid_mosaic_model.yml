@@ -1,52 +1,32 @@
----
-
-#Which one of the following statements is FALSE/TRUE <connection word> <topic>
 topic: the fluid mosaic model of membrane lipid bilayers
-
 replacement_rules:
-  'plasma&nbsp;membrane': '<span style="color: #ff0000;">plasma&nbsp;membrane</span>' #RED
-  structure: '<span style="color: #ff5e00;">structure</span>' #DARK ORANGE
-  rigid: '<span style="color: #ffa100;">rigid</span>' #LIGHT ORANGE
-  liquid: '<span style="color: #b3b300;">liquid</span>' #DARK YELLOW
-  flexible: '<span style="color: #2fbd0f;">flexible</span>' #LIME GREEN
-  cell: '<span style="color: #009e4c;">cell</span>' #TEAL
-  proteins: '<span style="color: #0d57a5;">proteins</span>' #BLUE
-  lipids: '<span style="color: #6d108e;">lipids</span>' #PURPLE
-  'external&nbsp;environment': '<span style="color: #a1005e;">external&nbsp;environment</span>' #MAGENTA
-
-connection_words: ~
-
+  plasma&nbsp;membrane: '<span style="color: #ff0000;">plasma&nbsp;membrane</span>'
+  structure: '<span style="color: #ff5e00;">structure</span>'
+  rigid: '<span style="color: #ffa100;">rigid</span>'
+  liquid: '<span style="color: #b3b300;">liquid</span>'
+  flexible: '<span style="color: #2fbd0f;">flexible</span>'
+  cell: '<span style="color: #009e4c;">cell</span>'
+  proteins: '<span style="color: #0d57a5;">proteins</span>'
+  lipids: '<span style="color: #6d108e;">lipids</span>'
+  external&nbsp;environment: '<span style="color: #a1005e;">external&nbsp;environment</span>'
+connection_words: null
 true_statements:
   truth1a: The plasma&nbsp;membrane is a liquid-like structure
   truth1b: The plasma&nbsp;membrane displays a liquid-like character.
   truth1c: The plasma&nbsp;membrane is a flexible barrier
-
   truth2a: The plasma&nbsp;membrane is composed of a variety of lipids and proteins.
-
   truth4a: The plasma&nbsp;membrane separates the interior of the cell from the external&nbsp;environment
-
-
 false_statements:
   false1a: The plasma&nbsp;membrane is a solid, rigid structure.
-  false1b: The plasma&nbsp;membrane is a rigid barrier that separates the cytosol from the external&nbsp;environment
+  false1b: The plasma&nbsp;membrane is a rigid barrier that separates the cytosol
+    from the external&nbsp;environment
   false1c: The plasma&nbsp;membrane is a rigid structure.
-
   false12a: The plasma&nbsp;membrane is composed of only lipids.
-
   false13a: The plasma&nbsp;membrane is composed of only proteins.
-
   false14a: The plasma&nbsp;membrane provides mechanical support to the cell
-
-  false15a: The plasma&nbsp;membrane facilitates transport of molecules across the membrane
-
+  false15a: The plasma&nbsp;membrane facilitates transport of molecules across the
+    membrane
   false16a: The plasma&nbsp;membrane recognizes and binds to other cells or substances
-
   false17a: The plasma&nbsp;membrane provides energy to the cell
-
-
-# conflicts, means that the statements cannot appear together
-# add ': True' to each line, so the program runs a faster lookup
-conflict_rules: ~
-
-
-
+conflict_rules: null
+dbsubject: Cell Biology

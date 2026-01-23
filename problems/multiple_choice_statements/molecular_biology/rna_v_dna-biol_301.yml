@@ -1,40 +1,32 @@
----
-
-#Which one of the following statements is FALSE/TRUE <connection word> <topic>
 topic: differences between RNA and DNA
-
 replacement_rules:
   DNA: '<span style="color: MediumBlue;">DNA</span>'
   RNA: '<span style="color: OrangeRed;">RNA</span>'
-
-connection_words: ~
-
+connection_words: null
 true_statements:
-  truth1a: DNA is usually double-stranded (duplex), whereas RNA is usually single-stranded (simplex)
-  truth1b: RNA is usually single-stranded (simplex), whereas DNA is usually double-stranded (duplex)
-
+  truth1a: DNA is usually double-stranded (duplex), whereas RNA is usually single-stranded
+    (simplex)
+  truth1b: RNA is usually single-stranded (simplex), whereas DNA is usually double-stranded
+    (duplex)
   truth2a: uracil in RNA takes the place of thymine in DNA
   truth2b: thymine in DNA takes the place of uracil in RNA
-
   truth3a: the DNA sugar is dexoyribose, RNA has a different sugar
   truth3b: the RNA sugar is ribose, DNA has a different sugar
-
   truth4a: RNA nucleotides have a 2&prime; hydroxide (-OH) group, DNA does not
   truth4b: DNA nucleotides are missing the 2&prime; hydroxide (-OH) group
   truth4c: DNA contains one less hydroxyl (-OH) group than RNA
-
-  truth10a: DNA has a regular consistent structure, whereas RNA adopts a wide variety of tertiary structures
+  truth10a: DNA has a regular consistent structure, whereas RNA adopts a wide variety
+    of tertiary structures
   truth10b: RNA adopts a wide variety of tertiary structures
-  truth10c: DNA has a regular consistent structure and does not adopt a wide variety of tertiary structures
-
+  truth10c: DNA has a regular consistent structure and does not adopt a wide variety
+    of tertiary structures
   truth11a: RNA can sometimes form a double-stranded helix
   truth11b: Both DNA and RNA can form a double-stranded helix
-
-
 false_statements:
-  false1a: RNA is usually double-stranded (duplex), whereas DNA is usually single-stranded (simplex)
-  false1b: DNA is usually single-stranded (simplex), whereas RNA is usually double-stranded (duplex)
-
+  false1a: RNA is usually double-stranded (duplex), whereas DNA is usually single-stranded
+    (simplex)
+  false1b: DNA is usually single-stranded (simplex), whereas RNA is usually double-stranded
+    (duplex)
   false2a: uracil in DNA takes the place of thymine in RNA
   false2b: thymine in RNA takes the place of uracil in DNA
   false2c: uracil in RNA takes the place of cytosine in DNA
@@ -43,38 +35,26 @@ false_statements:
   false2f: thymine in DNA takes the place of cytosine in RNA
   false2g: thymine in DNA takes the place of guanine in RNA
   false2h: thymine in DNA takes the place of adenine in RNA
-
   false3a: the DNA sugar is ribose, RNA has a different sugar
   false3b: the RNA sugar is deoxyribose, DNA has a different sugar
-
   false4a: DNA nucleotides have a 2&prime; hydroxide (-OH) group, RNA does not
-  false4b: RNA nucleotides are missing the 2&prime; hydroxide (-OH) group compared to DNA
-  false4c: RNA nucleotides have an extra 4&prime; hydroxide (-OH) group, DNA does not
-  false4d: DNA nucleotides are missing the 4&prime; hydroxide (-OH) group compared to RNA
+  false4b: RNA nucleotides are missing the 2&prime; hydroxide (-OH) group compared
+    to DNA
+  false4c: RNA nucleotides have an extra 4&prime; hydroxide (-OH) group, DNA does
+    not
+  false4d: DNA nucleotides are missing the 4&prime; hydroxide (-OH) group compared
+    to RNA
   false4e: RNA contains one less hydroxyl (-OH) group than DNA
-
   false7a: RNA is made of nucleotides, DNA is made of amino acids
   false7b: DNA is made of nucleotides, RNA is made of amino acids
-
   false8a: DNA has a sugar-phosphate backbone, RNA does not
   false8b: RNA has a sugar-phosphate backbone, DNA does not
-
-  false10a: RNA has a regular consistent structure, whereas DNA adopts a wide variety of tertiary structures
+  false10a: RNA has a regular consistent structure, whereas DNA adopts a wide variety
+    of tertiary structures
   false10b: DNA adopts a wide variety of tertiary structures
-  false10c: RNA has a regular consistent structure and does not adopt a wide variety of tertiary structures
-
+  false10c: RNA has a regular consistent structure and does not adopt a wide variety
+    of tertiary structures
   false11a: RNA is unable to form a double-stranded helix
   false11b: DNA can form a double-stranded helix, but RNA is unable to form it
-
-# conflicts, means that the statements cannot appear together
-# add ': True' to each line, so the program runs a faster lookup
-conflict_rules: ~
-
-
-
-
-
-
-
-
-
+conflict_rules: null
+dbsubject: Molecular Biology

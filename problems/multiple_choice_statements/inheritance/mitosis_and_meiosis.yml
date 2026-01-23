@@ -1,8 +1,4 @@
----
-
-#Which one of the following statements is FALSE/TRUE <connection word> <topic>
 topic: mitosis and meiosis cell division
-
 replacement_rules:
   Mitosis II: '<span style="color: OrangeRed;">Mitosis II</span>'
   Mitosis I: '<span style="color: OrangeRed;">Mitosis I</span>'
@@ -10,98 +6,94 @@ replacement_rules:
   mitosis II: '<span style="color: OrangeRed;">mitosis II</span>'
   mitosis I: '<span style="color: OrangeRed;">mitosis I</span>'
   mitosis: '<span style="color: OrangeRed;">mitosis</span>'
-
   Meiosis II: '<span style="color: MediumBlue;">Meiosis II</span>'
   Meiosis I: '<span style="color: MediumBlue;">Meiosis I</span>'
   Meiosis: '<span style="color: MediumBlue;">Meiosis</span>'
   meiosis II: '<span style="color: MediumBlue;">meiosis II</span>'
   meiosis I: '<span style="color: MediumBlue;">meiosis I</span>'
   meiosis: '<span style="color: MediumBlue;">meiosis</span>'
-
-connection_words: ~
-
+connection_words: null
 true_statements:
-  truth1a: Each daughter cell formed by mitosis has the same kinds of chromosomes as the parent cell
-  truth1b: Each daughter cell formed by meiosis has half the number of chromosomes as the parent cell
-
+  truth1a: Each daughter cell formed by mitosis has the same kinds of chromosomes
+    as the parent cell
+  truth1b: Each daughter cell formed by meiosis has half the number of chromosomes
+    as the parent cell
   truth2a: In mitosis, the parent cell and the daughter cells are genetically identical
-  truth2b: The daughter cells produced at the end of meiosis are genetically different from the original parent cell
-  truth2c: Meiosis daughter cells contain half of the genetic material which is a mix of both the maternal and paternal genes
-
+  truth2b: The daughter cells produced at the end of meiosis are genetically different
+    from the original parent cell
+  truth2c: Meiosis daughter cells contain half of the genetic material which is a
+    mix of both the maternal and paternal genes
   truth3a: Mitosis is cell division that produces two (2) daughter cells
   truth3b: Meiosis is cell division that produces four (4) daughter cells
-
-  truth4a: In diploid organisms, the final cells resulting from meiosis cell division are haploid
-  truth4b: In diploid organisms, the final cells resulting from mitosis cell division are diploid
-
+  truth4a: In diploid organisms, the final cells resulting from meiosis cell division
+    are haploid
+  truth4b: In diploid organisms, the final cells resulting from mitosis cell division
+    are diploid
   truth5: Both meiosis and mitosis start with one cell
-
-  truth6a: Mitosis produces new cells to help organisms grow in size and repair damaged tissue
+  truth6a: Mitosis produces new cells to help organisms grow in size and repair damaged
+    tissue
   truth6b: Meiosis produces new gamete cells, such as sperm and egg
-
   truth7a: Mitosis goes through cytokinesis cell division once
   truth7b: Meiosis goes through cytokinesis cell division twice
-
   truth8a: Cross-over regularly happens in meiosis, but not in mitosis
   truth8b: Mitosis almost never involves crossing over of the chromosomes
-
-  truth9a: Mitosis normally occurs in somatic cells of organisms and facilitates growth and development
-  truth9b: Meiosis occurs only in specialized germline cells and facilitates sexual reproduction
+  truth9a: Mitosis normally occurs in somatic cells of organisms and facilitates growth
+    and development
+  truth9b: Meiosis occurs only in specialized germline cells and facilitates sexual
+    reproduction
   truth9c: Meiosis occurs only in specialized germline cells and produces gametes.
-
   truth10: Meiosis occurs in two phases, that is, meiosis I and meiosis II
-
-  truth11: During the process of meiosis several processes occur that cause genetic variation among organisms
-
-  truth12: Meiosis I is the only stage where homologous chromosomes pair up and exchange genetic material
-
+  truth11: During the process of meiosis several processes occur that cause genetic
+    variation among organisms
+  truth12: Meiosis I is the only stage where homologous chromosomes pair up and exchange
+    genetic material
   truth13a: Only sexually reproductive organisms utilize meiosis
-  truth13b: Meiosis is a special type of cell division that produces sex cells for reproduction
+  truth13b: Meiosis is a special type of cell division that produces sex cells for
+    reproduction
   truth13c: Both sexual and asexual organisms go through the process of mitosis
-
 false_statements:
-  false1a: Each daughter cell formed by meiosis has the same kinds of chromosomes as the parent cell
-  false1b: Each daughter cell formed by mitosis has half the number of chromosomes as the parent cell
-
+  false1a: Each daughter cell formed by meiosis has the same kinds of chromosomes
+    as the parent cell
+  false1b: Each daughter cell formed by mitosis has half the number of chromosomes
+    as the parent cell
   false2a: In meiosis, the parent cell and the daughter cells are genetically identical
-  false2b: The daughter cells produced at the end of mitosis are completely different from the original parent cell
-
+  false2b: The daughter cells produced at the end of mitosis are completely different
+    from the original parent cell
   false3a: Meiosis is cell division that produces two (2) daughter cells
   false3b: Mitosis is cell division that produces four (4) daughter cells
-
-  false4a: In diploid organisms, the final cells resulting from meiosis cell division are diploid
-  false4b: In diploid organisms, the final cells resulting from mitosis cell division are haploid
-
+  false4a: In diploid organisms, the final cells resulting from meiosis cell division
+    are diploid
+  false4b: In diploid organisms, the final cells resulting from mitosis cell division
+    are haploid
   false5a: Meiosis starts with two cells and mitosis starts with only one cell
   false5b: Mitosis starts with two cells and meiosis starts with only one cell
-
-  false6a: Meiosis produces new cells to help organisms grow in size and repair damaged tissue
+  false6a: Meiosis produces new cells to help organisms grow in size and repair damaged
+    tissue
   false6b: Mitosis produces new gamete cells, such as sperm and egg
-
   false7a: Meiosis goes through cytokinesis cell division once
   false7b: Mitosis goes through cytokinesis cell division twice
-
   false8a: Cross-over regularly happens in mitosis, but not in meiosis
   false8b: Meiosis does not involve crossing over of the chromosomes
-
-  false9a: Meiosis normally occurs in somatic cells of organisms and facilitates growth and development
-  false9b: Mitosis occurs only in specialized germline cells and facilitates sexual reproduction
-
+  false9a: Meiosis normally occurs in somatic cells of organisms and facilitates growth
+    and development
+  false9b: Mitosis occurs only in specialized germline cells and facilitates sexual
+    reproduction
   false10: Mitosis occurs in two phases, that is, mitosis I and mitosis II
-
-  false11: During the process of mitosis several processes occur that cause genetic variation among organisms
-
-  false12a: Mitosis I is the only stage where homologous chromosomes pair up and exchange genetic material
-  false12b: Mitosis II is the only stage where homologous chromosomes pair up and exchange genetic material
-  false12c: Meiosis I is the only stage where sister chromatids pair up and exchange genetic material
-  false12d: Meiosis II is the only stage where sister chromatids pair up and exchange genetic material
-  false12e: Meiosis II is the only stage where homologous chromosomes pair up and exchange genetic material
-
+  false11: During the process of mitosis several processes occur that cause genetic
+    variation among organisms
+  false12a: Mitosis I is the only stage where homologous chromosomes pair up and exchange
+    genetic material
+  false12b: Mitosis II is the only stage where homologous chromosomes pair up and
+    exchange genetic material
+  false12c: Meiosis I is the only stage where sister chromatids pair up and exchange
+    genetic material
+  false12d: Meiosis II is the only stage where sister chromatids pair up and exchange
+    genetic material
+  false12e: Meiosis II is the only stage where homologous chromosomes pair up and
+    exchange genetic material
   false13a: Only sexually reproductive organisms utilize mitosis
-  false13b: Mitosis is a special type of cell division that produces sex cells for reproduction
+  false13b: Mitosis is a special type of cell division that produces sex cells for
+    reproduction
   false13c: Both sexual and asexual organisms go through the process of meiosis
-
-
-# conflicts, means that the statements cannot appear together
-# add ': True' to each line, so the program runs a faster lookup
-conflict_rules: ~
+conflict_rules: null
+dbsubject: Genetics
