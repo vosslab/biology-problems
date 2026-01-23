@@ -1,0 +1,118 @@
+## DESCRIPTION
+## Select the statement that is TRUE or FALSE about the structure of DNA.
+## ENDDESCRIPTION
+## KEYWORDS('the structure of DNA','true/false','multiple choice')
+## DBsubject('')
+## DBchapter('')
+## DBsection('')
+## Date('')
+## Author('')
+## Institution('')
+## TitleText1('')
+## EditionText1('')
+## AuthorText1('')
+## Section1('')
+## Problem1('')
+
+DOCUMENT();
+
+loadMacros(
+  "PGstandard.pl",
+  "PGML.pl",
+  "PGchoicemacros.pl",
+  "parserRadioButtons.pl",
+  "PGcourse.pl",
+);
+
+TEXT(beginproblem());
+$showPartialCorrectAnswers = 1;
+
+#==========================================================
+# AUTO-GENERATED GROUPS FROM YAML
+#==========================================================
+
+@true_groups = (
+  [
+    'the backbone contains only phosphate and sugar',
+  ],
+);
+@false_groups = (
+  [
+    'the backbone contains only phosphate and nucleobase',
+    'the backbone contains only nucleobase and sugar',
+  ],
+);
+
+#==========================================================
+# GLOBAL SETTINGS
+#==========================================================
+
+$topic = 'the structure of DNA';
+$mode  = list_random("TRUE","FALSE");
+$num_distractors = 4;
+#==========================================================
+# SELECT GROUP
+#==========================================================
+
+my (@selected_group, @opposite_groups);
+
+if ($mode eq "TRUE") {
+  $group_index      = random(0, scalar(@true_groups)-1, 1);
+  @selected_group   = @{ $true_groups[$group_index] };
+  @opposite_groups  = @false_groups;
+} else {
+  $group_index      = random(0, scalar(@false_groups)-1, 1);
+  @selected_group   = @{ $false_groups[$group_index] };
+  @opposite_groups  = @true_groups;
+}
+
+#==========================================================
+# PICK CORRECT + DISTRACTORS
+#==========================================================
+
+$correct = list_random(@selected_group);
+
+my @available_group_indices = (0 .. $#opposite_groups);
+my @selected_distractor_indices = ();
+
+while (@selected_distractor_indices < $num_distractors && @available_group_indices > 0) {
+  my $random_index = random(0, scalar(@available_group_indices)-1, 1);
+  push @selected_distractor_indices, splice(@available_group_indices, $random_index, 1);
+}
+
+@distractors = ();
+foreach my $group_idx (@selected_distractor_indices) {
+  my @group = @{ $opposite_groups[$group_idx] };
+  my $distractor = list_random(@group);
+  push @distractors, $distractor;
+}
+
+@choices = ($correct, @distractors);
+
+#==========================================================
+# RADIO BUTTONS WITH A/B/C/D/E LABELS
+#==========================================================
+
+$rb = RadioButtons(
+  [@choices],
+  $correct,
+  labels        => ['A','B','C','D','E'],
+  displayLabels => 1,
+  randomize     => 1,
+  separator     => '<div style="margin-bottom: 0.7em;"></div>',
+);
+
+#==========================================================
+# PGML
+#==========================================================
+
+BEGIN_PGML
+
+[@ $mode eq "TRUE" ? "Which one of the following statements is <strong>TRUE</strong> about $topic?" : "Which one of the following statements is <strong>FALSE</strong> about $topic?" @]*
+
+[_]{$rb}
+
+END_PGML
+
+ENDDOCUMENT();
+
