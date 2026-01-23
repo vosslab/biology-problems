@@ -427,7 +427,7 @@ def main():
 	output_pgml_file = args.output_pgml_file
 	if output_pgml_file is None:
 		base_name = os.path.splitext(os.path.basename(args.input_yaml_file))[0]
-		output_pgml_file = f"matching-{base_name}.pgml"
+		output_pgml_file = f"{base_name}-matching.pgml"
 
 	with open(output_pgml_file, 'w') as outfile:
 		outfile.write(pgml_text)

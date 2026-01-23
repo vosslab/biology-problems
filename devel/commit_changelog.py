@@ -361,16 +361,16 @@ def build_message(added_lines: list[str], max_body_lines: int) -> str:
 
 	# Build subject line
 	if num_changes == 0:
-		subject = "docs: update changelog"
+		subject = "update changelog"
 	elif num_changes == 1 and first_bullet_text:
 		# Single change: use the bullet text as subject
-		subject = f"docs: {first_bullet_text}"
+		subject = first_bullet_text
 	else:
 		# Multiple changes: use first bullet + count
 		if first_bullet_text:
-			subject = f"docs: {first_bullet_text} (+{num_changes - 1} more)"
+			subject = f"{first_bullet_text} (+{num_changes - 1} more)"
 		else:
-			subject = f"docs: update changelog ({num_changes} changes)"
+			subject = f"update changelog ({num_changes} changes)"
 
 	# Limit subject line length
 	if len(subject) > 72:
