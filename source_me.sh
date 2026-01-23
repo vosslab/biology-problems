@@ -9,7 +9,7 @@ REPO_PARENT_DIR="$(dirname "$REPO_TOPLEVEL_DIR")"
 QTI_PACKAGE_MAKER_DIR="$REPO_PARENT_DIR/qti_package_maker"
 PGML_LINTER_DIR="$REPO_PARENT_DIR/webwork-pgml-linter"
 CLEANPATH_PY="$REPO_PARENT_DIR/junk-drawer/cleanpath.py"
-PYTHON_EXE="/usr/bin/env python3"
+PYTHON_EXE="python3"
 
 SETUP_SCRIPT="$QTI_PACKAGE_MAKER_DIR/source_me_for_testing.sh"
 if [[ ! -f "$SETUP_SCRIPT" ]]; then
