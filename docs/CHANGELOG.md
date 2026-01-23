@@ -3,6 +3,7 @@
 ## 2026-01-23
 - Converted [problems/biochemistry-problems/which_hydrophobic-simple.py](../problems/biochemistry-problems/which_hydrophobic-simple.py) to self-contained PGML format as [problems/biochemistry-problems/which_hydrophobic-simple.pgml](../problems/biochemistry-problems/which_hydrophobic-simple.pgml).
 - Fixed `NchooseK` undefined error in [problems/biochemistry-problems/which_hydrophobic-simple.pgml](../problems/biochemistry-problems/which_hydrophobic-simple.pgml) by adding `PGchoicemacros.pl` to the loadMacros list.
+- Added concise two-sentence `BEGIN_PGML_HINT` to [problems/biochemistry-problems/which_hydrophobic-simple.pgml](../problems/biochemistry-problems/which_hydrophobic-simple.pgml) explaining that hydrophobic compounds are mostly carbon and hydrogen.
 - Updated [source_me.sh](../source_me.sh) to add PGML linter (`pgml-lint`) to the environment setup, making it available as a shell function after sourcing the script.
 
 ## 2026-01-22

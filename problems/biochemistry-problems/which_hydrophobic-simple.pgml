@@ -107,6 +107,16 @@ END_PGML
 ANS( $rb->cmp() );
 
 ########################################################
+# HINT
+########################################################
+
+BEGIN_PGML_HINT
+
+Hydrophobic compounds are composed mostly of carbon and hydrogen atoms with very few or no oxygen or nitrogen atoms. Look for simple hydrocarbon formulas that contain mainly C and H.
+
+END_PGML_HINT
+
+########################################################
 # SOLUTION
 ########################################################
 
