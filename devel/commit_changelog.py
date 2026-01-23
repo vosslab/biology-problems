@@ -338,18 +338,45 @@ def extract_added_lines(diff_text: str) -> list[str]:
 
 def build_message(added_lines: list[str], max_body_lines: int) -> str:
 	"""Build a subject and body from added changelog lines."""
-	version: str | None = None
+	# Count bullet points (changes)
+	bullet_lines: list[str] = []
+	first_bullet_text: str | None = None
+
 	for line in added_lines:
-		m = VERSION_RE.match(line.strip())
-		if m:
-			version = m.group(1)
-			break
+		s = line.strip()
+		if s.startswith("##"):
+			continue
+		if s.startswith("- "):
+			bullet_lines.append(s)
+			if first_bullet_text is None:
+				# Extract first ~50 chars after "- "
+				text = s[2:].strip()
+				# Remove markdown links to get clean text
+				text = re.sub(r'\[([^\]]+)\]\([^\)]+\)', r'\1', text)
+				if len(text) > 50:
+					text = text[:47] + "..."
+				first_bullet_text = text
 
-	if version:
-		subject = f"docs: update changelog for {version}"
-	else:
+	num_changes = len(bullet_lines)
+
+	# Build subject line
+	if num_changes == 0:
 		subject = "docs: update changelog"
+	elif num_changes == 1 and first_bullet_text:
+		# Single change: use the bullet text as subject
+		subject = f"docs: {first_bullet_text}"
+	else:
+		# Multiple changes: use first bullet + count
+		if first_bullet_text:
+			subject = f"docs: {first_bullet_text} (+{num_changes - 1} more)"
+		else:
+			subject = f"docs: update changelog ({num_changes} changes)"
 
+	# Limit subject line length
+	if len(subject) > 72:
+		subject = subject[:69] + "..."
+
+	# Build body from all added lines
 	body_lines: list[str] = []
 	for line in added_lines:
 		s = line.strip()

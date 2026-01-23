@@ -2,6 +2,7 @@
 Shared helpers for generating WeBWorK PG/PGML files.
 """
 
+import datetime
 import re
 
 #============================================
@@ -178,9 +179,24 @@ def build_opl_header_lines(yaml_data, default_description=None, fallback_keyword
 	dbsubject = sanitize_header_text(str(get_yaml_value(yaml_data, 'dbsubject', 'DBsubject') or ''))
 	dbchapter = sanitize_header_text(str(get_yaml_value(yaml_data, 'dbchapter', 'DBchapter') or ''))
 	dbsection = sanitize_header_text(str(get_yaml_value(yaml_data, 'dbsection', 'DBsection') or ''))
-	date_text = sanitize_header_text(str(get_yaml_value(yaml_data, 'date', 'Date') or ''))
-	author_text = sanitize_header_text(str(get_yaml_value(yaml_data, 'author', 'Author') or ''))
-	institution_text = sanitize_header_text(str(get_yaml_value(yaml_data, 'institution', 'Institution') or ''))
+
+	# Use current date if not specified
+	date_text = get_yaml_value(yaml_data, 'date', 'Date')
+	if not date_text:
+		date_text = datetime.date.today().strftime('%Y-%m-%d')
+	date_text = sanitize_header_text(str(date_text))
+
+	# Use default author if not specified
+	author_text = get_yaml_value(yaml_data, 'author', 'Author')
+	if not author_text:
+		author_text = 'Neil R. Voss'
+	author_text = sanitize_header_text(str(author_text))
+
+	# Use default institution if not specified
+	institution_text = get_yaml_value(yaml_data, 'institution', 'Institution')
+	if not institution_text:
+		institution_text = 'Roosevelt University'
+	institution_text = sanitize_header_text(str(institution_text))
 	title_text = sanitize_header_text(str(get_yaml_value(yaml_data, 'titletext1', 'TitleText1') or ''))
 	edition_text = sanitize_header_text(str(get_yaml_value(yaml_data, 'editiontext1', 'EditionText1') or ''))
 	author_text_1 = sanitize_header_text(str(get_yaml_value(yaml_data, 'authortext1', 'AuthorText1') or ''))
@@ -198,7 +214,7 @@ def build_opl_header_lines(yaml_data, default_description=None, fallback_keyword
 		for keyword in keywords:
 			escaped_keywords.append(escape_perl_string(keyword))
 		keyword_blob = "','".join(escaped_keywords)
-	header_lines.append(f"## KEYWORDS('{keyword_blob}')")
+		header_lines.append(f"## KEYWORDS('{keyword_blob}')")
 	header_lines.append(f"## DBsubject('{escape_perl_string(dbsubject)}')")
 	header_lines.append(f"## DBchapter('{escape_perl_string(dbchapter)}')")
 	header_lines.append(f"## DBsection('{escape_perl_string(dbsection)}')")
