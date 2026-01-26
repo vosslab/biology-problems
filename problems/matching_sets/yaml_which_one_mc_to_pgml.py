@@ -37,10 +37,18 @@ def parse_args():
 		'-c', '--num-choices', dest='num_choices', type=int, default=None,
 		help='Number of choices per question'
 	)
-	parser.add_argument(
-		'-m', '--color-mode', dest='color_mode',
-		choices=['inline', 'class', 'none'], default='inline',
-		help='Replacement rule coloring mode (inline, class, or none).'
+	color_group = parser.add_mutually_exclusive_group()
+	color_group.add_argument(
+		'--use-colors', dest='use_colors', action='store_true',
+		help='Enable inline color styling (default behavior).'
+	)
+	color_group.add_argument(
+		'--use-color', dest='use_colors', action='store_true',
+		help='Enable inline color styling (alias for --use-colors).'
+	)
+	color_group.add_argument(
+		'--no-color', dest='no_color', action='store_true',
+		help='Disable color styling.'
 	)
 	parser.add_argument(
 		'--flip', action='store_true', dest='flip',
@@ -422,11 +430,12 @@ def main():
 		)
 
 	yaml_data = bptools.readYamlFile(args.input_yaml_file)
+	color_mode = "none" if args.no_color else "inline"
 	pgml_text, warnings = build_pgml_text(
 		yaml_data,
 		args.num_choices,
 		args.flip,
-		args.color_mode,
+		color_mode,
 	)
 
 	output_pgml_file = args.output_pgml_file

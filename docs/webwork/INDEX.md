@@ -15,4 +15,5 @@ Guides:
 - [REPLACEMENT_RULES_IMPLEMENTATION_PLAN.md](REPLACEMENT_RULES_IMPLEMENTATION_PLAN.md)
 - [HTML_TO_WEBWORK_PLAN.md](HTML_TO_WEBWORK_PLAN.md)
 - [NICETABLES_TRANSLATION_PLAN.md](NICETABLES_TRANSLATION_PLAN.md)
+- [PGML_LINTER_EXPECTATIONS.md](PGML_LINTER_EXPECTATIONS.md)
 - HTML whitelist and blacklist constraints (including blocked `table`, `tr`, `td` tags) are covered in the matching and author guides.

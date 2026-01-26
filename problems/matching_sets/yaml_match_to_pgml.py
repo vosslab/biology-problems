@@ -35,14 +35,18 @@ def parse_args():
 		'-c', '--num-choices', dest='num_choices', type=int, default=None,
 		help='Number of matching pairs to include per question'
 	)
-	parser.add_argument(
-		'-m', '--color-mode', dest='color_mode',
-		choices=['inline', 'class', 'none'], default='inline',
-		help='Replacement rule coloring mode (inline, class, or none).'
-	)
-	parser.add_argument(
+	color_group = parser.add_mutually_exclusive_group()
+	color_group.add_argument(
 		'--use-colors', dest='use_colors', action='store_true',
-		help='Bake MathJax-colored choice labels into the generated PG (legacy).'
+		help='Enable inline color styling (default behavior).'
+	)
+	color_group.add_argument(
+		'--use-color', dest='use_colors', action='store_true',
+		help='Enable inline color styling (alias for --use-colors).'
+	)
+	color_group.add_argument(
+		'--no-color', dest='no_color', action='store_true',
+		help='Disable color styling.'
 	)
 	args = parser.parse_args()
 	return args
@@ -80,48 +84,6 @@ def normalize_values(raw_values):
 	return normalized
 
 #============================================
-def tex_escape(text_string):
-	"""
-	Escape a string for use inside TeX \\text{...}.
-	"""
-	repl = {
-		"\\": r"\\",
-		"{": r"\{",
-		"}": r"\}",
-		"#": r"\#",
-		"$": r"\$",
-		"%": r"\%",
-		"&": r"\&",
-		"_": r"\_",
-		"^": r"\^{}",
-		"~": r"\~{}",
-	}
-	return "".join(repl.get(ch, ch) for ch in text_string)
-
-#============================================
-def mj_color_label(label, hex_color):
-	"""
-	Create a MathJax-colored label string.
-	"""
-	safe = tex_escape(label)
-	return f"[\\color{{{hex_color}}}{{\\text{{{safe}}}}}]"
-
-#============================================
-def make_color_palette(num_colors):
-	"""
-	Select colors from the qti_package_maker color wheel.
-	"""
-	if num_colors <= 0:
-		return []
-	color_wheel = bptools.dark_color_wheel
-	color_keys = list(color_wheel.keys())
-	if len(color_keys) == 0:
-		return []
-	indices = bptools.get_indices_for_color_wheel(num_colors, len(color_keys))
-	return [f"#{color_wheel[color_keys[i]]}" for i in indices]
-
-#============================================
-
 def build_match_data(yaml_data, replacement_rules, color_mode):
 	"""
 	Build match data and exclude pairs from YAML.
@@ -182,34 +144,6 @@ def build_match_data(yaml_data, replacement_rules, color_mode):
 		)
 		exclude_pairs.append([left, right])
 	return match_data, exclude_pairs, answer_html_map, color_classes, needs_bold_class, warnings
-
-#============================================
-def maybe_color_mapping(match_data, exclude_pairs, use_colors):
-	"""
-	Optionally colorize choice labels using MathJax \\color{...}.
-	"""
-	if not use_colors:
-		return match_data, exclude_pairs
-	labels = sorted(match_data.keys())
-	palette = make_color_palette(len(labels))
-	if len(palette) == 0:
-		return match_data, exclude_pairs
-	color_for = {label: palette[i] for i, label in enumerate(labels)}
-	label_map = {
-		label: mj_color_label(label, color_for[label])
-		for label in labels
-	}
-	colored_match_data = {
-		label_map[label]: values
-		for label, values in match_data.items()
-	}
-	colored_exclude_pairs = []
-	for left, right in exclude_pairs:
-		colored_exclude_pairs.append([
-			label_map.get(left, left),
-			label_map.get(right, right),
-		])
-	return colored_match_data, colored_exclude_pairs
 
 #============================================
 def build_question_text(yaml_data, replacement_rules):
@@ -494,7 +428,7 @@ def build_solution_text():
 	return text
 
 #============================================
-def build_pgml_text(yaml_data, num_choices, use_colors, color_mode):
+def build_pgml_text(yaml_data, num_choices, color_mode):
 	"""
 	Create the PGML file content as a string.
 	"""
@@ -508,16 +442,6 @@ def build_pgml_text(yaml_data, num_choices, use_colors, color_mode):
 			color_mode,
 		)
 	)
-	if use_colors:
-		match_data, exclude_pairs = maybe_color_mapping(
-			match_data,
-			exclude_pairs,
-			use_colors,
-		)
-		answer_html_map = {}
-		color_classes = {}
-		needs_bold_class = False
-
 	if num_choices is None:
 		num_choices = yaml_data.get('items to match per question', 5)
 	if not isinstance(num_choices, int):
@@ -548,7 +472,7 @@ def build_pgml_text(yaml_data, num_choices, use_colors, color_mode):
 		fallback_keywords=fallback_keywords,
 	)
 	preamble_text = build_preamble_text(header_text)
-	use_answer_html = (not use_colors) and bool(answer_html_map)
+	use_answer_html = (color_mode != "none") and bool(answer_html_map)
 	setup_text = build_setup_text(match_data, exclude_pairs, num_choices, answer_html_map)
 	statement_text = build_statement_text(
 		question_text,
@@ -572,11 +496,11 @@ def main():
 			f"input yaml file not found: {args.input_yaml_file}"
 		)
 	yaml_data = bptools.readYamlFile(args.input_yaml_file)
+	color_mode = "none" if args.no_color else "inline"
 	pgml_text, warnings = build_pgml_text(
 		yaml_data,
 		args.num_choices,
-		args.use_colors,
-		args.color_mode,
+		color_mode,
 	)
 
 	output_pgml_file = args.output_pgml_file

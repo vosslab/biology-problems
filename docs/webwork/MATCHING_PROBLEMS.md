@@ -63,7 +63,7 @@ Notes:
 - If YAML uses HTML entities (named or numeric), the generator unescapes them into Unicode characters so they render without MathJax. `<sub>`/`<sup>` tags are converted into Unicode subscripts/superscripts before other HTML is stripped.
 - For fixed label colors, build HTML labels in Perl (for example `%answer_html`) and emit them with `[$answers_html[$shuffle[$_]]]*` so spans survive PGML escaping. See [COLOR_TEXT_IN_WEBWORK.md](COLOR_TEXT_IN_WEBWORK.md).
 - Right-column labels can be formatted as `*A.*` (bold) or `A\.` (escaped dot). Plain `A.` may be parsed as an ordered list marker depending on context.
-- Use `--use-colors` only for legacy MathJax experiments; the CSS/HTML approach is the reliable path in this install.
+- Default output uses inline HTML spans for replacement-rule colors. Use `--no-color` to disable styling; `--use-colors` is an explicit enable (same as default).
 
 ## HTML whitelist and layout constraints
 

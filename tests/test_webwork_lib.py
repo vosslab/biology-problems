@@ -112,3 +112,28 @@ def test_sanitize_text_for_html_and_span_builder():
 
 	span = webwork_lib.build_html_span("bold", class_name="color-test pgml-bold")
 	assert span == "<span class=\"color-test pgml-bold\">bold</span>"
+
+
+def test_format_label_html_strict_span():
+	color_classes = {}
+	warnings = []
+	text = "pre <span style=\"color: #009900;\">ion</span> post"
+	result, is_bold = webwork_lib.format_label_html(
+		text,
+		"inline",
+		color_classes,
+		warnings,
+	)
+	assert result == "pre <span style=\"color: #009900;\">ion</span> post"
+	assert is_bold is False
+	assert color_classes == {}
+	assert warnings == []
+
+	result, is_bold = webwork_lib.format_label_html(
+		"<span style=\"color: #009900;\">ion</span>",
+		"none",
+		color_classes,
+		warnings,
+	)
+	assert result == "ion"
+	assert is_bold is False

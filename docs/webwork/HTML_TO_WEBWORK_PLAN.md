@@ -20,7 +20,7 @@
 - Output PGML should be flat and deterministic.
 
 ## Translation rules (high level)
-- `span style="color: ..."` -> HTML span with CSS class (preferred) or inline style (fallback), then output with `[$var]*` if stored in a variable.
+- `span style="color: ..."` -> HTML span with inline style (current default), then output with `[$var]*` if stored in a variable. Class-based spans are a future option.
 - `<sub>`/`<sup>` -> Unicode conversion (digits and common signs; Greek baseline).
 - `<table>` -> translate via niceTables.pl or drop with a warning (see table plan).
 - All other unsupported HTML tags -> strip to plain text.

@@ -20,7 +20,7 @@
 - Normalize `&ndash;` and Unicode minus variants to `-` inside `<sup>`/`<sub>`.
 
 ## Table guard (required)
-- If a string contains `<table`, `<tr`, or `<td>`, skip any color-class conversion.
+- If a string contains `<table`, `<tr`, or `<td>`, skip any color conversion.
 - Apply only the safe sanitize path (sub/sup, unescape, strip tags).
 - Log a warning so the entry can be cleaned up later.
 
@@ -31,7 +31,7 @@
 - When strict parsing succeeds, convert to HTML spans and emit through `[$var]*`
   when the text is stored in Perl arrays or variables.
 
-### Strict class mode (opt-in)
+### Future: strict class mode (opt-in)
 - Only convert when the rule matches a strict pattern:
   - A single `<span>` with a `color:` style and no other nested tags.
   - Optional `<strong>` wrapper allowed; translate to `font-weight:700`.
@@ -54,7 +54,7 @@
 ## Warnings and visibility
 - Log warnings for:
   - Table content detected (conversion skipped).
-  - Non-strict color spans when strict class mode is enabled.
+  - Non-strict color spans when strict conversion is requested in the future.
   - Unsupported HTML tags encountered in replacement output.
 
 ## Migration strategy
@@ -63,7 +63,6 @@
 - Prefer small, local changes over a repo-wide refactor.
 
 ## Implemented flags (current)
-- `--color-mode inline|class|none` exists in:
-  - `problems/matching_sets/yaml_match_to_pgml.py`
-  - `problems/matching_sets/yaml_which_one_mc_to_pgml.py`
-  - `problems/multiple_choice_statements/yaml_mc_statements_to_pgml.py`
+- Default coloring is inline spans derived from strict `<span style="color: ...">` rules.
+- `--no-color` disables coloring.
+- `--use-colors` is an explicit enable (same as default).

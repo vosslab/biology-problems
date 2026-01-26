@@ -53,6 +53,7 @@ Use CSS coloring, not MathJax coloring.
 - Prefer CSS classes over inline styles.
 - Put style definitions in `HEADER_TEXT` (HTML mode) at the top of the problem.
 - For text stored in Perl variables (choices, prompts, labels), use HTML spans and render with `[$var]*` so PGML does not escape them.
+- Generator defaults use inline spans; use `--no-color` to disable styling.
 
 ## Recommended pattern for matching problems
 

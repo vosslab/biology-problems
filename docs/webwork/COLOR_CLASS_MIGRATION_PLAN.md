@@ -27,7 +27,7 @@
 - Only use class-based coloring when this block is present.
 - This avoids "smart" guessing and preserves legacy behavior.
 
-### 3) Optional strict conversion mode (flagged)
+### 3) Optional strict conversion mode (future)
 - Add a generator flag (tentative: `--color-mode class`) that will only convert
   replacement rules matching a very strict pattern:
   - A single span with a `color:` style and no other HTML tags.
@@ -62,10 +62,9 @@
 - Spot-check at least one matching set with sub/sup and one with table content.
 
 ## Implemented flags (current)
-- `--color-mode inline|class|none` is now supported in:
-  - `problems/matching_sets/yaml_match_to_pgml.py`
-  - `problems/matching_sets/yaml_which_one_mc_to_pgml.py`
-  - `problems/multiple_choice_statements/yaml_mc_statements_to_pgml.py`
+- Generators default to inline color spans.
+- `--no-color` disables coloring.
+- `--use-colors` is an explicit enable (same as default).
 
 ## Open questions
 - Final name of the new YAML key (`color_rules` vs `color_classes`).
