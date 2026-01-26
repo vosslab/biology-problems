@@ -14,6 +14,8 @@ What actually happens:
 
 Linter checks:
 - Warn when strings assigned in Perl contain `"[<` or `]{[` patterns.
+- Error when `[$... ]` PGML interpolation appears inside a `[@ ... @]` eval block
+  (PGML will not re-parse it).
 - Warn when variables containing `<span` are rendered without trailing `*` in PGML.
 
 ## Mismatch: HTML in variables gets escaped
@@ -120,6 +122,7 @@ Linter checks:
 ### Encoding and mojibake
 - Replacement character `�`.
 - Common mojibake patterns: `Â`, `Ã`, `â€™`, `â€“`, `â€”`, `â€¢`.
+- Non-printable control characters (ASCII 0x00-0x1F excluding `\n`, `\r`, `\t`).
 
 ### Macro/widget sanity
 - `DropDown(...)` used without `parserPopUp.pl` in `loadMacros`.

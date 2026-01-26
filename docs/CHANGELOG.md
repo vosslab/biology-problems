@@ -29,6 +29,7 @@
 - Added generator unit tests in [tests/test_pgml_generators.py](../tests/test_pgml_generators.py) to cover matching, which-one, and MC statements PGML builders with inline color spans, plus additional helper coverage in [tests/test_webwork_lib.py](../tests/test_webwork_lib.py).
 - Documented PGML renderer expectation mismatches and linter checks in [docs/webwork/PGML_LINTER_EXPECTATIONS.md](webwork/PGML_LINTER_EXPECTATIONS.md) and linked it from [docs/webwork/INDEX.md](webwork/INDEX.md).
 - Expanded [docs/webwork/PGML_LINTER_EXPECTATIONS.md](webwork/PGML_LINTER_EXPECTATIONS.md) with additional structural, encoding, and macro sanity checks for poorly formed PGML files.
+- Added linter guidance for detecting PGML interpolation inside `[@ @]` eval blocks and control characters in [docs/webwork/PGML_LINTER_EXPECTATIONS.md](webwork/PGML_LINTER_EXPECTATIONS.md).
 - Added pytest smoke coverage for the three YAML-to-PGML generators that writes outputs to a temp directory and checks for basic PGML markers in [tests/test_pgml_generators.py](../tests/test_pgml_generators.py).
 - Reverted [problems/matching_sets/bond_types-matching.pgml](../problems/matching_sets/bond_types-matching.pgml) right-column output to PGML list markup with CSS coloring on `ol li:nth-child(...)` after inline HTML injection failed to render labels.
 - Switched [problems/matching_sets/bond_types-matching.pgml](../problems/matching_sets/bond_types-matching.pgml) to PGML tag wrappers for the two-column layout to keep right-column list items rendering with CSS nth-child coloring.
