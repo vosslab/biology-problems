@@ -221,6 +221,12 @@ For new problems:
 
 ---
 
+## Related PGML HTML whitelist note
+
+This guide is about headers, but remember that PGML output is filtered by an HTML whitelist in this install. Tags like `table`, `tr`, and `td` are blocked and will warn or render badly. For safe layout patterns, see [MATCHING_PROBLEMS.md](MATCHING_PROBLEMS.md) and [WEBWORK_PROBLEM_AUTHOR_GUIDE.md](WEBWORK_PROBLEM_AUTHOR_GUIDE.md).
+
+---
+
 ## Header review checklist
 
 Before publishing:
@@ -231,4 +237,3 @@ Before publishing:
 - DBchapter and DBsection are present when you can assign them confidently.
 - Author and date are present when known.
 - No smart quotes or odd characters were introduced into header lines.
-

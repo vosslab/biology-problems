@@ -2,179 +2,85 @@
 
 ## Summary
 
-**UPDATE 2026-01-21:** A modern PGML approach for matching problems exists using `parserPopUp.pl` with inline answer specs. The matching generator script ([problems/matching_sets/yaml_match_to_pgml.py](../../problems/matching_sets/yaml_match_to_pgml.py)) is being updated to use this modern approach instead of legacy `PGchoicemacros.pl`.
+**UPDATE 2026-01-24:** Matching PGML is dual output (HTML and TeX). The matching generator ([problems/matching_sets/yaml_match_to_pgml.py](../../problems/matching_sets/yaml_match_to_pgml.py)) now follows the `matching_from_web.pgml` pattern using `MODES(...)` wrappers to build a flexbox HTML layout while keeping TeX wrappers present.
 
-## Modern PGML Approach (Discovered 2026-01-21)
+## Recommended pattern (PGML dual output)
 
-After examining the latest PG library code, we found **MatchingAlt.pg** (dated 2023-05-23) in the official WeBWorK tutorial samples, which demonstrates a modern PGML approach:
-
-### Modern Pattern (Pure PGML)
+Use DropDown widgets from `parserPopUp.pl` and `MODES(...)` wrappers so both HTML and TeX slots exist. Keep matching data as plain text plus TeX math, and add color only at render time.
 
 ```perl
-loadMacros('parserPopUp.pl');  # Modern parser macro
+loadMacros(
+  "PGstandard.pl",
+  "PGML.pl",
+  "parserPopUp.pl",
+  "PGcourse.pl",
+);
 
-# Create individual DropDown objects for each question
-@answer_dropdowns = map {
-    DropDown([ @ALPHABET[ 0 .. $#answers ] ], $correct_index)
-} 0 .. $#questions;
+# ... build @q_and_a, @answers, @shuffle, @answer_dropdowns ...
+
+HEADER_TEXT(MODES(TeX => '', HTML => <<END_STYLE));
+<style>
+.two-column {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  align-items: center;
+  justify-content: space-evenly;
+}
+</style>
+END_STYLE
 
 BEGIN_PGML
 Match each question with its answer.
 
-[_]{$answer_dropdowns[0]} *1.* Question 1?
-[_]{$answer_dropdowns[1]} *2.* Question 2?
-[_]{$answer_dropdowns[2]} *3.* Question 3?
-
-*Answers:*
-*A.* Answer A
-*B.* Answer B
-*C.* Answer C
-END_PGML
-
-# NO ANS() calls needed - inline PGML specs handle grading!
-```
-
-### Key Differences from Legacy
-
-| Aspect | Legacy (PGchoicemacros.pl) | Modern (parserPopUp.pl) |
-|--------|---------------------------|-------------------------|
-| Macro | `PGchoicemacros.pl` | `parserPopUp.pl` |
-| Object type | `new_match_list()` | `DropDown()` (one per question) |
-| Display | `[@ ColumnMatchTable($ml) @]***` | Manual PGML layout with `[_]{$dropdown}` |
-| Grading | `ANS(str_cmp($ml->ra_correct_ans))` | Inline `[_]{$dropdown}` (pure PGML) |
-| PGML linter | Warnings (mixed style) | No warnings (pure PGML) |
-
-### Source
-
-File: `/Users/vosslab/nsh/webwork-pg-renderer/lib/PG/tutorial/sample-problems/Misc/MatchingAlt.pg`
-
-This file is part of the official WeBWorK PG tutorial and shows the recommended modern approach for matching problems.
-
-## Background (Historical Research)
-
-In January 2026, we updated the multiple-choice generator ([problems/multiple_choice_statements/yaml_mc_statements_to_pgml.py](../../problems/multiple_choice_statements/yaml_mc_statements_to_pgml.py)) to use pure PGML style, replacing:
-
-```perl
-BEGIN_PGML
-[@ $rb->buttons() @]*
-END_PGML
-ANS($rb->cmp());
-```
-
-With modern inline answer specs:
-
-```perl
-BEGIN_PGML
-[_]{$rb}
+[@ MODES(TeX => '\\parbox{0.4\\linewidth}{',
+  HTML => '<div class="two-column"><div>') @]*
+[@ join(
+  "\n\n",
+  map {
+    '[_]{$answer_dropdowns[' . $_ . ']} '
+      . '*' . ($_ + 1) . '.* '
+      . $q_and_a[$_][0]
+  } 0 .. $#q_and_a
+) @]**
+[@ MODES(TeX => '}\\hfill\\parbox{0.4\\linewidth}{',
+  HTML => '</div><div>') @]*
+[@ join(
+  "\n\n",
+  map {
+    '*' . $ALPHABET[($_)] . '.* ' . $answers[$shuffle[$_]]
+  } 0 .. $#answers
+) @]**
+[@ MODES(TeX => '}', HTML => '</div></div>') @]*
 END_PGML
 ```
 
-This eliminates the mixed-style warning from the PGML linter and follows modern WeBWorK authoring best practices.
+Notes:
 
-## Research Findings
+- Keep the TeX wrapper slots present, even if you never print hardcopy.
+- Use `MODES(TeX => '', HTML => ...)` for HTML-only styling blocks.
+- Avoid raw HTML in YAML matching data. The generator strips tags to prevent PGML whitelist issues. If you need color without MathJax, use CSS on the right column (for example `:nth-child()` selectors) rather than per-item spans.
+- If YAML uses HTML entities (named or numeric), the generator unescapes them into Unicode characters so they render without MathJax. `<sub>`/`<sup>` tags are converted into Unicode subscripts/superscripts before other HTML is stripped.
+- Right-column labels must not use `*A.*` (bold-list markup). In this install, `A.` is parsed as an ordered list marker, so emit `A\.` (escaped dot) to force plain text labels.
+- Use `--use-colors` to bake MathJax-colored choice labels into the generated PG. When enabled, the generator rewrites the choice keys into PGML math strings like `[\color{#HEX}{\text{label}}]` using the qti color wheel palette and disables CSS nth-child coloring to avoid double styling.
 
-### What We Found
+## HTML whitelist and layout constraints
 
-After extensive research including:
+This install blocks several HTML tags inside PGML, including `table`, `tr`, and `td`. Those tags trigger PGML warnings and render garbage.
 
-1. Official OpenWeBWorK PG documentation
-2. WeBWorK wiki resources
-3. Local PGML training corpus ([webwork-pgml-opl-training-set](https://github.com/example/training-set))
-4. PGML linter documentation ([webwork-pgml-linter](https://github.com/example/linter))
-5. LibreTexts ADAPT textbook materials ([webwork-pgml-libretexts-adapt-texbook](https://github.com/example/adapt))
+Preferred layout options:
 
-**No modern PGML equivalent exists for matching problems.**
+- Two columns: use flexbox with `div` wrappers.
+- Table-like grids: use a TeX `array` (renders via MathJax in HTML), or `niceTables.pl` if that macro is available.
+- Small styling: `span` is usually allowed.
 
-### Official Sources
+If a sanitizer strips `<style>` blocks (for example in Blackboard), fall back to inline styles on elements, or use `<font color="...">` as a last resort.
 
-The official OpenWeBWorK PG documentation sample for matching problems ([https://openwebwork.github.io/pg-docs/sample-problems/Misc/Matching.html](https://openwebwork.github.io/pg-docs/sample-problems/Misc/Matching.html)) uses legacy style as of January 2026:
+## Legacy pattern (historical)
 
-```perl
-# Create matching list using PGchoicemacros.pl
-$ml = new_match_list();
-$ml->qa(...);
-$ml->choose(6);
+Older matching problems use `PGchoicemacros.pl` and `ColumnMatchTable($ml)` with a separate `ANS(...)` call. That still works, but it is legacy style and triggers PGML linter warnings for mixed style.
 
-BEGIN_PGML
-[@ ColumnMatchTable($ml) @]***
-END_PGML
+## Document history
 
-# Legacy ANS() call (no PGML inline alternative exists)
-ANS(str_cmp($ml->ra_correct_ans));
-```
-
-### Why No Modern Alternative
-
-Matching problems rely on infrastructure from `PGchoicemacros.pl`, which predates PGML:
-
-- `new_match_list()` creates a legacy match list object
-- `ColumnMatchTable($ml)` renders the matching interface
-- Answer checking requires `ANS(str_cmp($ml->ra_correct_ans))`
-
-Unlike radio buttons (`RadioButtons` from `parserRadioButtons.pl`), which have MathObjects support and work with inline specs like `[_]{$rb}`, matching lists do not have a corresponding `parserMatchingList.pl` or equivalent modern macro.
-
-### Training Corpus Gap
-
-The [webwork-pgml-opl-training-set](https://github.com/example/training-set) repository contains **no matching problems**, confirming this is a known gap in the PGML ecosystem.
-
-## Current Implementation
-
-The matching generator ([problems/matching_sets/yaml_match_to_pgml.py](../../problems/matching_sets/yaml_match_to_pgml.py)) uses the legacy approach because:
-
-1. It is the only documented method
-2. The official OpenWeBWorK samples use this pattern
-3. No modern PGML-first alternative has been developed
-4. The implementation is stable and functional
-
-### Code Pattern
-
-```perl
-# From build_statement_text() in yaml_match_to_pgml.py
-BEGIN_PGML
-[question text]
-[note text]
-
-[@ ColumnMatchTable($ml) @]***
-END_PGML
-
-# From build_solution_text() in yaml_match_to_pgml.py
-ANS(str_cmp($ml->ra_correct_ans));
-```
-
-## Linter Behavior
-
-The PGML linter ([webwork-pgml-linter](https://github.com/example/linter)) plugin `pgml_ans_style` will flag this pattern with:
-
-```
-WARNING: ANS() call after END_PGML block (mixed style).
-Pure PGML uses inline answer specs: [_]{$answer} instead of ANS($answer->cmp())
-```
-
-**This warning is expected for matching problems** and reflects a limitation in the PGML ecosystem, not an authoring error.
-
-## Recommendations
-
-### For Matching Problem Authors
-
-- Use the legacy pattern as shown in the official documentation
-- Expect the PGML linter warning for matching problems
-- Document matching problems as a known exception to pure PGML style
-
-### For Future Updates
-
-If a modern PGML matching solution becomes available (e.g., `parserMatchingList.pl` with inline answer spec support), this generator should be updated to use it. Monitor:
-
-- OpenWeBWorK PG documentation updates
-- New parser macros in WeBWorK releases
-- Community discussions about PGML matching problems
-
-## References
-
-- Official matching sample: [https://openwebwork.github.io/pg-docs/sample-problems/Misc/Matching.html](https://openwebwork.github.io/pg-docs/sample-problems/Misc/Matching.html)
-- PGchoicemacros documentation: [https://openwebwork.github.io/pg-docs/pod/pg/macros/ui/PGchoicemacros.html](https://openwebwork.github.io/pg-docs/pod/pg/macros/ui/PGchoicemacros.html)
-- LibreTexts matching guidance: [webwork-pgml-libretexts-adapt-texbook/Textbook/05_Different_Question_Types/5.4-Matching.html](https://github.com/example/adapt)
-- Related issue: Multiple choice generator modernization (January 2026)
-
-## Document History
-
-- 2026-01-21: Initial documentation of matching problems legacy style rationale
+- 2026-01-24: Updated guidance with PGML tag-wrapper layout, empty TeX placeholders, and HTML whitelist constraints.
+- 2026-01-21: Initial documentation of matching problems and legacy patterns.

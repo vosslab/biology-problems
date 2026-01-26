@@ -1,0 +1,45 @@
+DOCUMENT();
+
+loadMacros('PGstandard.pl','PGML.pl');
+
+HEADER_TEXT(MODES(TeX => '', HTML => <<'END_STYLE'));
+<style>
+.css-magenta { color:#cc00cc; font-weight:700; }
+.css-green   { color:#009900; font-weight:700; }
+</style>
+END_STYLE
+
+# A variable that contains TeX-like content (this is expected to FAIL in your setup)
+my $var_tex = '[\\color{#cc00cc}{\\text{VAR TeX magenta}}]';
+
+BEGIN_PGML
+Color rendering tests (same page, multiple methods).
+
+1) Literal TeX in PGML math brackets (should work if MathJax processes PGML math):
+[\color{#cc00cc}{\text{BRACKET TeX magenta}}]
+
+2) Literal TeX using \textcolor (sometimes available, depends on MathJax extensions):
+[\textcolor{#009900}{\text{BRACKET textcolor green}}]
+
+3) Literal TeX with \( \) delimiters typed directly (often fails if treated as text):
+\(\color{#cc00cc}{\text{PAREN TeX magenta}}\)
+
+4) PGML tag wrapper with CSS class (no MathJax needed, should work if span tags are allowed):
+[<CSS class magenta>]{['span', class => 'css-magenta']}{['','']}
+
+5) PGML tag wrapper with inline style (no MathJax needed):
+[<Inline style green>]{['span', style => 'color:#009900;font-weight:700;']}{['','']}
+
+6) Variable inserted TeX-like string (in your setup this has been getting tex2jax_ignore, so this should show literal backslashes):
+[$var_tex]
+
+END_PGML
+
+ENDDOCUMENT();
+
+How to read the results:
+	•	If (1) renders colored, MathJax is working on PGML math, and you can use the “TeX is literal in PGML math” approach.
+	•	If (4) and (5) render colored but (1) does not, then MathJax coloring is a dead end on your install and CSS is the reliable path.
+	•	If none of them render colored, something is sanitizing styles and MathJax, and we need to look at site configuration.
+
+Your earlier dumps strongly suggest (6) will fail, and the goal is to discover whether (1) works and whether CSS wrappers (4)/(5) are permitted.

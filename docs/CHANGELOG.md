@@ -1,5 +1,39 @@
 # Changelog
 
+## 2026-01-26
+- Added [problems/matching_sets/color_render_test.pg](../problems/matching_sets/color_render_test.pg) as a single-page PGML color rendering probe for MathJax and CSS styling methods.
+- Added [docs/webwork/COLOR_TEXT_IN_WEBWORK.md](webwork/COLOR_TEXT_IN_WEBWORK.md) to document reliable CSS-based coloring and MathJax color failures in this WeBWorK setup.
+- Linked [docs/webwork/COLOR_TEXT_IN_WEBWORK.md](webwork/COLOR_TEXT_IN_WEBWORK.md) from [docs/webwork/INDEX.md](webwork/INDEX.md).
+- Expanded [problems/matching_sets/yaml_match_to_pgml.py](../problems/matching_sets/yaml_match_to_pgml.py) sub/sup conversion to unescape entities inside tags, normalize minus signs, and map common letter subscripts/superscripts while leaving Greek letters on baseline.
+- Documented the color-class migration plan for matching sets in [docs/webwork/COLOR_CLASS_MIGRATION_PLAN.md](webwork/COLOR_CLASS_MIGRATION_PLAN.md) and linked it from [docs/webwork/INDEX.md](webwork/INDEX.md).
+- Added [docs/webwork/REPLACEMENT_RULES_IMPLEMENTATION_PLAN.md](webwork/REPLACEMENT_RULES_IMPLEMENTATION_PLAN.md) to define handling plans for sub/sup, tables, colors, and other replacement-rule cases, and linked it from [docs/webwork/INDEX.md](webwork/INDEX.md).
+- Refined the replacement-rules plan to note baseline Greek handling, named color parsing, and bold/italic scope for strict conversions in [docs/webwork/REPLACEMENT_RULES_IMPLEMENTATION_PLAN.md](webwork/REPLACEMENT_RULES_IMPLEMENTATION_PLAN.md).
+- Added shared HTML sanitization and strict color-span parsing helpers to [webwork_lib.py](../webwork_lib.py) for reuse across PGML generators.
+- Updated [problems/matching_sets/yaml_match_to_pgml.py](../problems/matching_sets/yaml_match_to_pgml.py) to support strict replacement-rule color conversion (inline or class mode), PGML-safe sanitization, and table/unsupported span warnings.
+- Added pytest coverage for new WebWork helper utilities in [tests/test_webwork_lib.py](../tests/test_webwork_lib.py).
+- Added [docs/webwork/HTML_TO_WEBWORK_PLAN.md](webwork/HTML_TO_WEBWORK_PLAN.md) as the master HTML-to-PGML plan and [docs/webwork/NICETABLES_TRANSLATION_PLAN.md](webwork/NICETABLES_TRANSLATION_PLAN.md) for table translation guidance, and linked both from [docs/webwork/INDEX.md](webwork/INDEX.md).
+- Adjusted PGML tag wrapper output in [webwork_lib.py](../webwork_lib.py) to use double quotes inside wrappers to avoid PG compile errors, and updated tests accordingly in [tests/test_webwork_lib.py](../tests/test_webwork_lib.py).
+- Updated [problems/matching_sets/bond_types-matching.pgml](../problems/matching_sets/bond_types-matching.pgml) to render colored labels via PGML tag wrappers in the statement block instead of storing wrappers inside match data.
+- Switched [problems/matching_sets/bond_types-matching.pgml](../problems/matching_sets/bond_types-matching.pgml) right-column labels to inline HTML span styling with escaped `A\.` prefixes so PGML does not auto-build ordered lists.
+- Reworked [problems/matching_sets/bond_types-matching.pgml](../problems/matching_sets/bond_types-matching.pgml) to emit right-column labels via HTML built in Perl and injected through `MODES(HTML => ...)` so span styling survives PGML.
+- Adjusted [problems/matching_sets/bond_types-matching.pgml](../problems/matching_sets/bond_types-matching.pgml) to inject right-column HTML directly from a PGML eval block to avoid `MODES(...)` returning `1`.
+- Removed PGML parsing on right-column HTML injection in [problems/matching_sets/bond_types-matching.pgml](../problems/matching_sets/bond_types-matching.pgml) so raw HTML labels render.
+- Reverted [problems/matching_sets/bond_types-matching.pgml](../problems/matching_sets/bond_types-matching.pgml) right-column output to PGML list markup with CSS coloring on `ol li:nth-child(...)` after inline HTML injection failed to render labels.
+- Switched [problems/matching_sets/bond_types-matching.pgml](../problems/matching_sets/bond_types-matching.pgml) to PGML tag wrappers for the two-column layout to keep right-column list items rendering with CSS nth-child coloring.
+- Added fixed label-to-color HTML mapping in [problems/matching_sets/bond_types-matching.pgml](../problems/matching_sets/bond_types-matching.pgml) and emit it via `[$answers_html[...]]*` so label colors follow meaning instead of position.
+- Documented the working fixed-label color approach for matching problems in [docs/webwork/COLOR_TEXT_IN_WEBWORK.md](webwork/COLOR_TEXT_IN_WEBWORK.md).
+
+## 2026-01-24
+- Updated [problems/matching_sets/yaml_match_to_pgml.py](../problems/matching_sets/yaml_match_to_pgml.py) to emit the `matching_from_web.pgml` MODES-based layout with HTML flexbox wrappers and TeX placeholders for reliable matching renders.
+- Adjusted [problems/matching_sets/yaml_match_to_pgml.py](../problems/matching_sets/yaml_match_to_pgml.py) to strip HTML tags from YAML content, wrap prompt/choice variables in PGML brackets, color the right column via CSS on the container (position-based), and unescape HTML entities into Unicode characters.
+- Converted `<sub>` and `<sup>` tags in [problems/matching_sets/yaml_match_to_pgml.py](../problems/matching_sets/yaml_match_to_pgml.py) to Unicode subscripts/superscripts before stripping other HTML.
+- Switched the right-column labels in [problems/matching_sets/yaml_match_to_pgml.py](../problems/matching_sets/yaml_match_to_pgml.py) to escaped `A\.` text (avoids PGML ordered-list parsing), and normalized non-breaking spaces after entity unescape.
+- Documented the `A\.` right-column label requirement in [docs/webwork/MATCHING_PROBLEMS.md](webwork/MATCHING_PROBLEMS.md) to prevent PGML ordered-list parsing.
+- Set matching layout `MODES(TeX => '')` wrappers in [problems/matching_sets/yaml_match_to_pgml.py](../problems/matching_sets/yaml_match_to_pgml.py) since TeX output is not supported.
+- Added `--use-colors` in [problems/matching_sets/yaml_match_to_pgml.py](../problems/matching_sets/yaml_match_to_pgml.py) to bake MathJax-colored choice labels in Python using PGML math strings (`[\color{#HEX}{\text{...}}]`) from the qti color wheel palette, with stable ordering and CSS nth-child colors disabled when enabled.
+- Defined `@ALPHABET` in [problems/matching_sets/yaml_match_to_pgml.py](../problems/matching_sets/yaml_match_to_pgml.py) to ensure matching labels render as A/B/C/etc.
+- Refreshed WebWork docs to document PGML HTML whitelist constraints (blocked `table`/`tr`/`td`) and the MODES-based matching layout in [docs/webwork/MATCHING_PROBLEMS.md](webwork/MATCHING_PROBLEMS.md), [docs/webwork/WEBWORK_PROBLEM_AUTHOR_GUIDE.md](webwork/WEBWORK_PROBLEM_AUTHOR_GUIDE.md), [docs/webwork/WEBWORK_HEADER_STYLE.md](webwork/WEBWORK_HEADER_STYLE.md), and [docs/webwork/INDEX.md](webwork/INDEX.md).
+
 ## 2026-01-23
 - Converted [problems/biochemistry-problems/which_hydrophobic-simple.py](../problems/biochemistry-problems/which_hydrophobic-simple.py) to self-contained PGML format as [problems/biochemistry-problems/which_hydrophobic-simple.pgml](../problems/biochemistry-problems/which_hydrophobic-simple.pgml).
 - Fixed `NchooseK` undefined error in [problems/biochemistry-problems/which_hydrophobic-simple.pgml](../problems/biochemistry-problems/which_hydrophobic-simple.pgml) by adding `PGchoicemacros.pl` to the loadMacros list.

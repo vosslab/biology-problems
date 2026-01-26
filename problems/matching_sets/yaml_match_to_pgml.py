@@ -11,6 +11,7 @@ See docs/webwork/MATCHING_PROBLEMS.md for approach documentation.
 import argparse
 import os
 import random
+import re
 
 import bptools
 import webwork_lib
@@ -34,6 +35,15 @@ def parse_args():
 	parser.add_argument(
 		'-c', '--num-choices', dest='num_choices', type=int, default=None,
 		help='Number of matching pairs to include per question'
+	)
+	parser.add_argument(
+		'-m', '--color-mode', dest='color_mode',
+		choices=['inline', 'class', 'none'], default='inline',
+		help='Replacement rule coloring mode (inline, class, or none).'
+	)
+	parser.add_argument(
+		'--use-colors', dest='use_colors', action='store_true',
+		help='Bake MathJax-colored choice labels into the generated PG (legacy).'
 	)
 	args = parser.parse_args()
 	return args
@@ -82,18 +92,127 @@ def normalize_replacement_rules(replacement_rules):
 	return replacement_rules
 
 #============================================
+#============================================
+def tex_escape(text_string):
+	"""
+	Escape a string for use inside TeX \\text{...}.
+	"""
+	repl = {
+		"\\": r"\\",
+		"{": r"\{",
+		"}": r"\}",
+		"#": r"\#",
+		"$": r"\$",
+		"%": r"\%",
+		"&": r"\&",
+		"_": r"\_",
+		"^": r"\^{}",
+		"~": r"\~{}",
+	}
+	return "".join(repl.get(ch, ch) for ch in text_string)
+
+#============================================
+def mj_color_label(label, hex_color):
+	"""
+	Create a MathJax-colored label string.
+	"""
+	safe = tex_escape(label)
+	return f"[\\color{{{hex_color}}}{{\\text{{{safe}}}}}]"
+
+#============================================
+def make_color_palette(num_colors):
+	"""
+	Select colors from the qti_package_maker color wheel.
+	"""
+	if num_colors <= 0:
+		return []
+	color_wheel = bptools.dark_color_wheel
+	color_keys = list(color_wheel.keys())
+	if len(color_keys) == 0:
+		return []
+	indices = bptools.get_indices_for_color_wheel(num_colors, len(color_keys))
+	return [f"#{color_wheel[color_keys[i]]}" for i in indices]
+
+#============================================
+
+#============================================
 def apply_replacements_to_text(text_string, replacement_rules):
 	"""
 	Apply replacement rules to a single string.
 	"""
-	return bptools.applyReplacementRulesToText(text_string, replacement_rules)
+	text_string = bptools.applyReplacementRulesToText(text_string, replacement_rules)
+	return sanitize_replaced_text(text_string)
 
 #============================================
 def apply_replacements_to_list(list_of_text_strings, replacement_rules):
 	"""
 	Apply replacement rules to a list of strings.
 	"""
-	return bptools.applyReplacementRulesToList(list_of_text_strings, replacement_rules)
+	values_list = bptools.applyReplacementRulesToList(list_of_text_strings, replacement_rules)
+	return [sanitize_replaced_text(value) for value in values_list]
+
+#============================================
+def sanitize_replaced_text(text_string):
+	"""
+	Sanitize replacement output into PGML-safe text.
+	"""
+	text_string = webwork_lib.convert_sub_sup(text_string)
+	text_string = webwork_lib.strip_html_tags(text_string, preserve_pgml_wrappers=True)
+	text_string = webwork_lib.unescape_html(text_string)
+	text_string = webwork_lib.normalize_nbsp(text_string)
+	return text_string
+
+#============================================
+def prepare_replacement_rules(replacement_rules, color_mode):
+	"""
+	Prepare replacement rules by converting strict color spans to PGML wrappers.
+	"""
+	prepared = {}
+	color_classes = {}
+	needs_bold_class = False
+	warnings = []
+
+	for token, value in replacement_rules.items():
+		if not isinstance(value, str):
+			prepared[token] = value
+			continue
+		if color_mode == "none":
+			prepared[token] = value
+			continue
+		if webwork_lib.contains_html_table(value):
+			warnings.append(f"table content skipped for replacement: {token}")
+			prepared[token] = value
+			continue
+		parsed = webwork_lib.extract_strict_color_span(value)
+		if parsed is None:
+			if re.search(r'<span[^>]*color', value, flags=re.IGNORECASE):
+				warnings.append(f"non-strict color span skipped for replacement: {token}")
+			prepared[token] = value
+			continue
+		prefix, inner_text, suffix, color_value, is_bold = parsed
+		if color_mode == "class":
+			normalized_color, class_name = webwork_lib.normalize_color_value(color_value)
+			class_names = class_name
+			if is_bold:
+				class_names = f"{class_names} pgml-bold"
+				needs_bold_class = True
+			wrapper = webwork_lib.build_pgml_tag_wrapper(
+				inner_text,
+				class_name=class_names,
+			)
+			color_classes[class_name] = normalized_color
+		else:
+			normalized_color, _ = webwork_lib.normalize_color_value(color_value)
+			style = f"color: {normalized_color};"
+			if is_bold:
+				style += " font-weight:700;"
+			wrapper = webwork_lib.build_pgml_tag_wrapper(
+				inner_text,
+				style=style,
+			)
+		prepared[token] = f"{prefix}{wrapper}{suffix}"
+
+	return prepared, color_classes, needs_bold_class, warnings
 
 #============================================
 def build_match_data(yaml_data, replacement_rules):
@@ -128,6 +247,34 @@ def build_match_data(yaml_data, replacement_rules):
 		right = apply_replacements_to_text(right, replacement_rules)
 		exclude_pairs.append([left, right])
 	return match_data, exclude_pairs
+
+#============================================
+def maybe_color_mapping(match_data, exclude_pairs, use_colors):
+	"""
+	Optionally colorize choice labels using MathJax \\color{...}.
+	"""
+	if not use_colors:
+		return match_data, exclude_pairs
+	labels = sorted(match_data.keys())
+	palette = make_color_palette(len(labels))
+	if len(palette) == 0:
+		return match_data, exclude_pairs
+	color_for = {label: palette[i] for i, label in enumerate(labels)}
+	label_map = {
+		label: mj_color_label(label, color_for[label])
+		for label in labels
+	}
+	colored_match_data = {
+		label_map[label]: values
+		for label, values in match_data.items()
+	}
+	colored_exclude_pairs = []
+	for left, right in exclude_pairs:
+		colored_exclude_pairs.append([
+			label_map.get(left, left),
+			label_map.get(right, right),
+		])
+	return colored_match_data, colored_exclude_pairs
 
 #============================================
 def build_question_text(yaml_data, replacement_rules):
@@ -203,6 +350,7 @@ def build_preamble_text(header_text):
 	text += "    'PGgraders.pl',\n"
 	text += "    'PGcourse.pl'\n"
 	text += ");\n"
+	text += "our @ALPHABET = ('A' .. 'Z');\n"
 	text += "\n"
 	return text
 
@@ -308,16 +456,28 @@ def build_setup_text(match_data, exclude_pairs, num_choices):
 	return text
 
 #============================================
-def build_statement_text(question_text, note_text, num_choices):
+def build_statement_text(question_text, note_text, use_colors, color_mode, color_classes,
+	needs_bold_class):
 	"""
-	Build the PGML statement text using modern inline answer specs.
+	Build the PGML statement text using PGML tag wrappers and empty TeX slots.
 	"""
 	text = ""
 	text += "# -------------------------------\n"
 	text += "# Render the question\n"
 	text += "# -------------------------------\n"
-	text += "HEADER_TEXT(<<END_STYLE);\n"
+	text += "HEADER_TEXT(MODES(TeX => '', HTML => <<END_STYLE));\n"
 	text += "<style>\n"
+	if not use_colors:
+		text += ".right-col > div:nth-child(1) { color: #00b3b3; font-weight: 700; }\n"
+		text += ".right-col > div:nth-child(2) { color: #b3b300; font-weight: 700; }\n"
+		text += ".right-col > div:nth-child(3) { color: #009900; font-weight: 700; }\n"
+		text += ".right-col > div:nth-child(4) { color: #e60000; font-weight: 700; }\n"
+	if color_mode == "class" and len(color_classes) > 0:
+		for class_name in sorted(color_classes.keys()):
+			color_value = color_classes[class_name]
+			text += f".{class_name} {{ color: {color_value}; }}\n"
+		if needs_bold_class:
+			text += ".pgml-bold { font-weight: 700; }\n"
 	text += ".two-column {\n"
 	text += "    display: flex;\n"
 	text += "\tflex-wrap: wrap;\n"
@@ -332,23 +492,25 @@ def build_statement_text(question_text, note_text, num_choices):
 	text += question_text + "\n"
 	text += note_text + "\n"
 	text += "\n"
-	text += "[@ HTML('<div class=\"two-column\"><div>') @]\n"
+	text += "[@ MODES(TeX => '',\n"
+	text += "\tHTML => '<div class=\"two-column\"><div>') @]*\n"
 	text += "[@ join(\n"
 	text += "    \"\\n\\n\",\n"
 	text += "    map {\n"
 	text += "        '[_]{$answer_dropdowns[' . $_ . ']} '\n"
 	text += "            . '*' . ($_ + 1) . '.* '\n"
-	text += "            . $q_and_a[$_][0]\n"
+	text += "            . '[$q_and_a[' . $_ . '][0]]'\n"
 	text += "    } 0 .. $#q_and_a\n"
 	text += ") @]**\n"
-	text += "[@ HTML('</div><div>') @]\n"
+	text += "[@ MODES(TeX => '',\n"
+	text += "\tHTML => '</div><div class=\"right-col\">') @]*\n"
 	text += "[@ join(\n"
 	text += "    \"\\n\\n\",\n"
 	text += "    map {\n"
-	text += "        '*' . $ALPHABET[($_)] . '.* ' . $answers[$shuffle[$_]]\n"
+	text += "        chr(65 + $_) . '. ' . '[$answers[$shuffle[' . $_ . ']]]' \n"
 	text += "    } 0 .. $#answers\n"
 	text += ") @]**\n"
-	text += "[@ HTML('</div></div>') @]\n"
+	text += "[@ MODES(TeX => '', HTML => '</div></div>') @]*\n"
 	text += "END_PGML\n"
 	text += "\n"
 	return text
@@ -388,14 +550,26 @@ def build_solution_text():
 	return text
 
 #============================================
-def build_pgml_text(yaml_data, num_choices):
+def build_pgml_text(yaml_data, num_choices, use_colors, color_mode):
 	"""
 	Create the PGML file content as a string.
 	"""
 	replacement_rules = normalize_replacement_rules(
 		yaml_data.get('replacement_rules')
 	)
-	match_data, exclude_pairs = build_match_data(yaml_data, replacement_rules)
+	replacement_rules, color_classes, needs_bold_class, warnings = prepare_replacement_rules(
+		replacement_rules,
+		color_mode,
+	)
+	match_data, exclude_pairs = build_match_data(
+		yaml_data,
+		replacement_rules
+	)
+	match_data, exclude_pairs = maybe_color_mapping(
+		match_data,
+		exclude_pairs,
+		use_colors,
+	)
 
 	if num_choices is None:
 		num_choices = yaml_data.get('items to match per question', 5)
@@ -428,9 +602,16 @@ def build_pgml_text(yaml_data, num_choices):
 	)
 	preamble_text = build_preamble_text(header_text)
 	setup_text = build_setup_text(match_data, exclude_pairs, num_choices)
-	statement_text = build_statement_text(question_text, note_text, num_choices)
+	statement_text = build_statement_text(
+		question_text,
+		note_text,
+		use_colors,
+		color_mode,
+		color_classes,
+		needs_bold_class,
+	)
 	solution_text = build_solution_text()
-	return preamble_text + setup_text + statement_text + solution_text
+	return preamble_text + setup_text + statement_text + solution_text, warnings
 
 #============================================
 def main():
@@ -443,7 +624,12 @@ def main():
 			f"input yaml file not found: {args.input_yaml_file}"
 		)
 	yaml_data = bptools.readYamlFile(args.input_yaml_file)
-	pgml_text = build_pgml_text(yaml_data, args.num_choices)
+	pgml_text, warnings = build_pgml_text(
+		yaml_data,
+		args.num_choices,
+		args.use_colors,
+		args.color_mode,
+	)
 
 	output_pgml_file = args.output_pgml_file
 	if output_pgml_file is None:
@@ -453,6 +639,8 @@ def main():
 	with open(output_pgml_file, 'w') as outfile:
 		outfile.write(pgml_text)
 	print(f"Wrote PGML to {output_pgml_file}")
+	for warning in warnings:
+		print(f"WARNING: {warning}")
 
 #============================================
 if __name__ == '__main__':
