@@ -1,0 +1,31 @@
+DOCUMENT();
+loadMacros("PGstandard.pl");
+
+TEXT(beginproblem());
+
+sub try_load {
+  my ($m) = @_;
+  my $path = findMacroFile($m);
+  if (!$path) {
+    TEXT("$m : FAIL (not found)$BR");
+    return;
+  }
+  my $ok = eval { loadMacros($m); 1 };
+  my $err = $@ || "";
+  $err =~ s/\s+/ /g;
+  TEXT("$m : " . ($ok ? "OK ($path)" : "FAIL ($err)") . $BR);
+}
+
+try_load("PGstandard.pl");
+try_load("PGML.pl");
+try_load("PGchoicemacros.pl");
+try_load("parserPopUp.pl");
+try_load("parserDropDown.pl");
+try_load("parserUtils.pl");
+try_load("PGgraders.pl");
+try_load("PGcourse.pl");
+try_load("nicetables.pl");
+try_load("fake_macro_does_not_exist.pl");
+
+
+ENDDOCUMENT();

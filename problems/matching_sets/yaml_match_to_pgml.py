@@ -250,6 +250,7 @@ def build_setup_text(match_data, exclude_pairs, num_choices, answer_html_map):
 	text += "# -------------------------------\n"
 	text += f"my $n = {num_choices};\n"
 	text += "@all_keys = keys %match_data;\n"
+	text += "@all_keys = sort @all_keys;\n"
 	text += "\n"
 	if len(exclude_pairs) > 0:
 		text += "my @selected_keys = ();\n"
@@ -383,9 +384,9 @@ def build_statement_text(question_text, note_text, use_answer_html, color_mode,
 	text += "    \"\\n\\n\",\n"
 	text += "    map {\n"
 	if use_answer_html:
-		text += "        chr(65 + $_) . '. ' . '[$answers_html[$shuffle[' . $_ . ']]]*' \n"
+		text += "        chr(65 + $_) . '\\. ' . '[$answers_html[$shuffle[' . $_ . ']]]*' \n"
 	else:
-		text += "        chr(65 + $_) . '. ' . '[$answers[$shuffle[' . $_ . ']]]' \n"
+		text += "        chr(65 + $_) . '\\. ' . '[$answers[$shuffle[' . $_ . ']]]' \n"
 	text += "    } 0 .. $#answers\n"
 	text += ") @]**\n"
 	text += "[@ MODES(TeX => '', HTML => '</div></div>') @]*\n"

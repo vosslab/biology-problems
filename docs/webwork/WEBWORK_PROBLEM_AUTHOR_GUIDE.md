@@ -215,11 +215,12 @@ Randomization must be stable, readable, and avoid edge cases.
 Requirements:
 
 1. No custom seeding. Use WeBWorK's built-in seeding.
-2. Avoid degeneracy.
+2. Deterministic for a fixed seed. Do not rely on Perl hash key order; sort keys before randomized selection.
+3. Avoid degeneracy.
    - No division by zero.
    - No invalid domains (log of nonpositive, sqrt of negative) unless the context supports it.
-3. Bound magnitudes to reasonable ranges for readability.
-4. Guard interacting random choices when needed.
+4. Bound magnitudes to reasonable ranges for readability.
+5. Guard interacting random choices when needed.
 
 ### Guard patterns
 

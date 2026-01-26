@@ -1,0 +1,37 @@
+DOCUMENT();
+loadMacros("PGstandard.pl");
+
+TEXT(beginproblem());
+
+sub show {
+  TEXT(shift . $BR);
+}
+
+show("displayMode: " . ($envir{displayMode} // ""));
+show("latexImageSVGMethod: " . ($envir{latexImageSVGMethod} // ""));
+show("probFileName: " . ($envir{probFileName} // ""));
+show("");
+
+# macrosPath (arrayref)
+if (ref($envir{macrosPath}) eq "ARRAY") {
+  show("macrosPath entries:");
+  for my $p (@{ $envir{macrosPath} }) { show("  $p"); }
+  show("");
+} else {
+  show("macrosPath is not an ARRAY ref");
+  show("");
+}
+
+# pgDirectories (hashref)
+if (ref($envir{pgDirectories}) eq "HASH") {
+  show("pgDirectories keys:");
+  for my $k (keys %{ $envir{pgDirectories} }) { show("  $k"); }
+  show("");
+} else {
+  show("pgDirectories is not a HASH ref");
+  show("");
+}
+
+show("pgMacrosDir: " . ($envir{pgMacrosDir} // "[undef]"));
+
+ENDDOCUMENT();

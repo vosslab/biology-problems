@@ -1,0 +1,14 @@
+DOCUMENT();
+loadMacros("PGstandard.pl");
+
+TEXT(beginproblem());
+
+my $nkeys = scalar(keys %envir);
+TEXT("Number of envir keys: $nkeys$BR$BR");
+
+foreach my $k (keys %envir) {
+  my $v = defined($envir{$k}) ? $envir{$k} : "";
+  TEXT("$k: $v$BR");
+}
+
+ENDDOCUMENT();

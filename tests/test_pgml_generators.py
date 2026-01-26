@@ -61,6 +61,27 @@ def test_yaml_match_to_pgml_inline_colors(monkeypatch):
 	assert warnings == []
 
 
+def test_yaml_match_to_pgml_seed_determinism(monkeypatch):
+	module_path = Path(
+		"/Users/vosslab/nsh/biology-problems/problems/matching_sets/yaml_match_to_pgml.py"
+	)
+	module = _load_module(monkeypatch, "yaml_match_to_pgml_seed_test", module_path)
+
+	yaml_data = {
+		"matching pairs": {
+			"beta": "b",
+			"alpha": "a",
+		},
+		"keys description": "letters",
+		"values description": "names",
+	}
+
+	pgml_text, warnings = module.build_pgml_text(yaml_data, 2, "inline")
+
+	assert "@all_keys = sort @all_keys;" in pgml_text
+	assert warnings == []
+
+
 def test_yaml_which_one_mc_to_pgml_inline_colors(monkeypatch):
 	module_path = Path(
 		"/Users/vosslab/nsh/biology-problems/problems/matching_sets/yaml_which_one_mc_to_pgml.py"

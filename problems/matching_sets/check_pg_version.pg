@@ -1,0 +1,114 @@
+DOCUMENT();
+loadMacros("PGstandard.pl");
+
+TEXT(beginproblem());
+
+sub yesno { $_[0] ? "yes" : "no" }
+
+sub load_and_check {
+  my ($label, $macro, $check_sub) = @_;
+
+  my $before = $check_sub->() ? 1 : 0;
+
+  my $ok = eval { loadMacros($macro); 1 };
+  my $err = $@ // "";
+  $err =~ s/\s+/ /g;
+
+  my $after = $check_sub->() ? 1 : 0;
+
+  TEXT("$label$BR");
+  TEXT("  macro: $macro$BR");
+  TEXT("  loadMacros: " . ($ok ? "OK" : "FAIL $err") . $BR);
+  TEXT("  symbol before: " . yesno($before) . $BR);
+  TEXT("  symbol after:  " . yesno($after) . $BR);
+  TEXT($BR);
+
+  return ($ok, $before, $after);
+}
+
+# --- 2.16 signals ---
+my $g16 = 0;
+my ($ok_gt, $b_gt, $a_gt) = load_and_check(
+  "2.16 signal: GraphTool exists",
+  "parserGraphTool.pl",
+  sub { defined(&main::GraphTool) }
+);
+$g16++ if $a_gt;  # GraphTool present
+
+my ($ok_aux, $b_rc, $a_rc) = load_and_check(
+  "2.16 signal: random_coprime exists",
+  "PGauxiliaryFunctions.pl",
+  sub { defined(&main::random_coprime) }
+);
+$g16++ if $a_rc;
+
+# --- 2.17 signals ---
+my $g17 = 0;
+my ($ok_dp, $b_dp, $a_dp) = load_and_check(
+  "2.17 signal: DraggableProof exists",
+  "draggableProof.pl",
+  sub { defined(&main::DraggableProof) }
+);
+$g17++ if $a_dp;
+
+# Tool packages (from 2.17 release notes)
+loadMacros("parserGraphTool.pl");
+my $pt = defined(&GraphTool::Tool::PointTool::new) ? 1 : 0;
+my $qt = defined(&GraphTool::Tool::QuadraticTool::new) ? 1 : 0;
+my $ct = defined(&GraphTool::Tool::CubicTool::new) ? 1 : 0;
+TEXT("2.17 signal: GraphTool tools$BR");
+TEXT("  PointTool package: " . yesno($pt) . $BR);
+TEXT("  QuadraticTool package: " . yesno($qt) . $BR);
+TEXT("  CubicTool package: " . yesno($ct) . $BR);
+TEXT($BR);
+$g17++ if ($pt || $qt || $ct);
+
+# --- 2.18 signals ---
+my $g18 = 0;
+my ($ok_dd, $b_dd, $a_dd) = load_and_check(
+  "2.18 signal: DropDown exists",
+  "parserPopUp.pl",
+  sub { defined(&main::DropDown) }
+);
+$g18++ if $a_dd;
+
+my ($ok_p3, $b_p3, $a_p3) = load_and_check(
+  "2.18 signal: Graph3D exists",
+  "plotly3D.pl",
+  sub { defined(&main::Graph3D) }
+);
+$g18++ if $a_p3;
+
+my ($ok_rp, $b_rp, $a_rp) = load_and_check(
+  "2.18 signal: randomPerson exists",
+  "randomPerson.pl",
+  sub { defined(&main::randomPerson) }
+);
+$g18++ if $a_rp;
+
+my ($ok_rma, $b_rma, $a_rma) = load_and_check(
+  "2.18 signal: RadioMultiAnswer exists",
+  "parserRadioMultiAnswer.pl",
+  sub { defined(&main::RadioMultiAnswer) }
+);
+$g18++ if $a_rma;
+
+# --- Summary ---
+TEXT("=== Heuristic summary ===$BR");
+TEXT("2.16 signals hit: $g16$BR");
+TEXT("2.17 signals hit: $g17$BR");
+TEXT("2.18 signals hit: $g18$BR");
+TEXT($BR);
+
+my $guess =
+  ($g18 > 0) ? "Likely >= 2.18" :
+  ($g17 > 0) ? "Likely 2.17 era (>=2.17, <2.18)" :
+  ($g16 > 0) ? "Likely 2.16 era (>=2.16, <2.17)" :
+               "Likely < 2.16 (or very trimmed macros)";
+TEXT("Guess: $guess$BR");
+
+TEXT($BR);
+TEXT("displayMode: " . ($envir{displayMode} // "") . $BR);
+TEXT("latexImageSVGMethod: " . ($envir{latexImageSVGMethod} // "") . $BR);
+
+ENDDOCUMENT();

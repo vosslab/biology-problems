@@ -35,6 +35,10 @@
 - Switched [problems/matching_sets/bond_types-matching.pgml](../problems/matching_sets/bond_types-matching.pgml) to PGML tag wrappers for the two-column layout to keep right-column list items rendering with CSS nth-child coloring.
 - Added fixed label-to-color HTML mapping in [problems/matching_sets/bond_types-matching.pgml](../problems/matching_sets/bond_types-matching.pgml) and emit it via `[$answers_html[...]]*` so label colors follow meaning instead of position.
 - Documented the working fixed-label color approach for matching problems in [docs/webwork/COLOR_TEXT_IN_WEBWORK.md](webwork/COLOR_TEXT_IN_WEBWORK.md).
+- Escaped right-column matching labels to `A\.` in [problems/matching_sets/yaml_match_to_pgml.py](../problems/matching_sets/yaml_match_to_pgml.py) and regenerated [problems/matching_sets/bond_types-matching.pgml](../problems/matching_sets/bond_types-matching.pgml) to avoid double-letter list rendering.
+- Sorted matching keys before NchooseK selection in [problems/matching_sets/yaml_match_to_pgml.py](../problems/matching_sets/yaml_match_to_pgml.py) and regenerated [problems/matching_sets/bond_types-matching.pgml](../problems/matching_sets/bond_types-matching.pgml) so a fixed seed yields deterministic matching sets.
+- Documented fixed-seed determinism for randomization in [docs/webwork/WEBWORK_PROBLEM_AUTHOR_GUIDE.md](webwork/WEBWORK_PROBLEM_AUTHOR_GUIDE.md) and added a generator test to enforce sorted matching keys in [tests/test_pgml_generators.py](../tests/test_pgml_generators.py).
+- Updated [problems/matching_sets/check_pg_macro_status.pg](../problems/matching_sets/check_pg_macro_status.pg) to verify macro existence with `findMacroFile` and report missing macros instead of always printing OK.
 
 ## 2026-01-24
 - Updated [problems/matching_sets/yaml_match_to_pgml.py](../problems/matching_sets/yaml_match_to_pgml.py) to emit the `matching_from_web.pgml` MODES-based layout with HTML flexbox wrappers and TeX placeholders for reliable matching renders.
