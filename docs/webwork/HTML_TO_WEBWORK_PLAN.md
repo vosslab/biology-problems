@@ -12,6 +12,7 @@
 ## Hard constraints in this install
 - HTML tables (`table`, `tr`, `td`) are blocked and must not be emitted.
 - Use PGML for structure and PGML tag wrappers for allowed HTML (`span`, `div`).
+- PGML parses once; it will not re-parse PGML tag wrapper syntax constructed inside Perl variables.
 
 ## Pipeline contract (generator responsibilities)
 - Sanitization and conversion happen in Python, not in PG.
@@ -19,7 +20,7 @@
 - Output PGML should be flat and deterministic.
 
 ## Translation rules (high level)
-- `span style="color: ..."` -> PGML tag wrapper with CSS class (preferred) or inline style (fallback).
+- `span style="color: ..."` -> HTML span with CSS class (preferred) or inline style (fallback), then output with `[$var]*` if stored in a variable.
 - `<sub>`/`<sup>` -> Unicode conversion (digits and common signs; Greek baseline).
 - `<table>` -> translate via niceTables.pl or drop with a warning (see table plan).
 - All other unsupported HTML tags -> strip to plain text.

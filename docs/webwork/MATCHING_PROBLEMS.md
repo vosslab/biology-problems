@@ -59,10 +59,11 @@ Notes:
 
 - Keep the TeX wrapper slots present, even if you never print hardcopy.
 - Use `MODES(TeX => '', HTML => ...)` for HTML-only styling blocks.
-- Avoid raw HTML in YAML matching data. The generator strips tags to prevent PGML whitelist issues. If you need color without MathJax, use CSS on the right column (for example `:nth-child()` selectors) rather than per-item spans.
+- PGML parses once. Do not build PGML tag wrappers inside Perl variables and expect a second parse.
 - If YAML uses HTML entities (named or numeric), the generator unescapes them into Unicode characters so they render without MathJax. `<sub>`/`<sup>` tags are converted into Unicode subscripts/superscripts before other HTML is stripped.
-- Right-column labels must not use `*A.*` (bold-list markup). In this install, `A.` is parsed as an ordered list marker, so emit `A\.` (escaped dot) to force plain text labels.
-- Use `--use-colors` to bake MathJax-colored choice labels into the generated PG. When enabled, the generator rewrites the choice keys into PGML math strings like `[\color{#HEX}{\text{label}}]` using the qti color wheel palette and disables CSS nth-child coloring to avoid double styling.
+- For fixed label colors, build HTML labels in Perl (for example `%answer_html`) and emit them with `[$answers_html[$shuffle[$_]]]*` so spans survive PGML escaping. See [COLOR_TEXT_IN_WEBWORK.md](COLOR_TEXT_IN_WEBWORK.md).
+- Right-column labels can be formatted as `*A.*` (bold) or `A\.` (escaped dot). Plain `A.` may be parsed as an ordered list marker depending on context.
+- Use `--use-colors` only for legacy MathJax experiments; the CSS/HTML approach is the reliable path in this install.
 
 ## HTML whitelist and layout constraints
 

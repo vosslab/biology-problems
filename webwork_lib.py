@@ -223,6 +223,44 @@ def normalize_nbsp(text_string):
 	return text_string.replace("\u00a0", " ")
 
 #============================================
+def normalize_replacement_rules(replacement_rules):
+	"""
+	Ensure replacement rules are a dict when provided.
+	"""
+	if replacement_rules is None:
+		return {}
+	if not isinstance(replacement_rules, dict):
+		raise TypeError("replacement_rules must be a dict when provided")
+	return replacement_rules
+
+#============================================
+def apply_replacements_to_text(text_string, replacement_rules):
+	"""
+	Apply replacement rules to a single string.
+	"""
+	import bptools
+	return bptools.applyReplacementRulesToText(text_string, replacement_rules)
+
+#============================================
+def apply_replacements_to_list(list_of_text_strings, replacement_rules):
+	"""
+	Apply replacement rules to a list of strings.
+	"""
+	import bptools
+	return bptools.applyReplacementRulesToList(list_of_text_strings, replacement_rules)
+
+#============================================
+def sanitize_replaced_text(text_string):
+	"""
+	Sanitize replacement output into PGML-safe plain text.
+	"""
+	text_string = convert_sub_sup(text_string)
+	text_string = strip_html_tags(text_string, preserve_pgml_wrappers=True)
+	text_string = unescape_html(text_string)
+	text_string = normalize_nbsp(text_string)
+	return text_string
+
+#============================================
 def escape_html_text(text_string):
 	"""
 	Escape plain text for safe HTML output.
@@ -266,6 +304,51 @@ def build_html_span(text_string, class_name=None, style=None):
 	if len(attrs) > 0:
 		attr_blob = " " + " ".join(attrs)
 	return f"<span{attr_blob}>{escape_html_text(text_string)}</span>"
+
+#============================================
+def format_label_html(text_string, color_mode, color_classes, warnings, label_name=None):
+	"""
+	Format a label for raw HTML output, preserving strict color spans.
+	"""
+	if color_mode == "none":
+		return sanitize_text_for_html(text_string), False
+	if contains_html_table(text_string):
+		label_note = f": {label_name}" if label_name else ""
+		warnings.append(f"table content skipped for replacement{label_note}")
+		return sanitize_text_for_html(text_string), False
+
+	parsed = extract_strict_color_span(text_string)
+	if parsed is None:
+		if re.search(r'<span[^>]*color', text_string, flags=re.IGNORECASE):
+			label_note = f": {label_name}" if label_name else ""
+			warnings.append(f"non-strict color span skipped for replacement{label_note}")
+		return sanitize_text_for_html(text_string), False
+
+	prefix, inner_text, suffix, color_value, is_bold = parsed
+	prefix_html = sanitize_text_for_html(prefix)
+	suffix_html = sanitize_text_for_html(suffix)
+
+	if color_mode == "class":
+		normalized_color, class_name = normalize_color_value(color_value)
+		class_names = class_name
+		if is_bold:
+			class_names = f"{class_names} pgml-bold"
+		color_classes[class_name] = normalized_color
+		span_html = build_html_span(
+			inner_text,
+			class_name=class_names,
+		)
+	else:
+		normalized_color, _ = normalize_color_value(color_value)
+		style = f"color: {normalized_color};"
+		if is_bold:
+			style += " font-weight:700;"
+		span_html = build_html_span(
+			inner_text,
+			style=style,
+		)
+
+	return f"{prefix_html}{span_html}{suffix_html}", is_bold
 
 #============================================
 def normalize_color_value(color_value):

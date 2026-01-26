@@ -5,6 +5,8 @@ In our WeBWorK setup, CSS styling via PGML tag wrappers works reliably, while Ma
 
 Use PGML tag wrappers to emit `span` tags with either a CSS class (preferred) or an inline style.
 
+Important: PGML parses once. If you build PGML tag wrappers inside Perl variables, PGML will not re-parse them. For dynamic content (choices, prompts, labels stored in arrays), emit raw HTML spans and pass them through with a trailing `*` in PGML (for example `[$label_html]*`).
+
 ## What works
 ### 1) PGML tag wrapper + CSS class (preferred)
 Define CSS once using `HEADER_TEXT`:
@@ -50,6 +52,7 @@ Use CSS coloring, not MathJax coloring.
 - Treat PGML as the markup layer and use its tag wrapper feature to emit safe HTML.
 - Prefer CSS classes over inline styles.
 - Put style definitions in `HEADER_TEXT` (HTML mode) at the top of the problem.
+- For text stored in Perl variables (choices, prompts, labels), use HTML spans and render with `[$var]*` so PGML does not escape them.
 
 ## Recommended pattern for matching problems
 
@@ -68,6 +71,7 @@ For right-column choice labels that need color:
 .choice-covalent { color:#cc00cc; font-weight:700; }
 .choice-ionic    { color:#009900; font-weight:700; }
 .choice-hbond    { color:#e60000; font-weight:700; }
+```
 
 ## Fixed label colors in matching problems (working solution)
 
@@ -102,6 +106,15 @@ Notes:
 - The trailing `*` is required; it tells PGML to pass through the HTML rather
   than escape it.
 - This keeps colors tied to the label text even when the order is randomized.
+
+## Variable output pattern (applies to MC too)
+
+When choice text or prompts live in Perl variables, PGML must pass them through
+as raw HTML:
+
+```perl
+Which one of the following [$plural_choice]* corresponds to [$singular_item]* [$item_name]*?
+The correct answer is: [$correct]*
 ```
 
 ## Notes

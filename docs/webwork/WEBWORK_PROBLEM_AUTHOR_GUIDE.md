@@ -128,6 +128,8 @@ Rules:
 - Do not use HTML tables in PGML. Use flexbox `div` layouts, a TeX `array`, or `niceTables.pl` if that macro is available.
 - Keep TeX wrapper slots present in `MODES(...)` wrappers (or PGML tag wrappers) even for web-only problems.
 - For styling, use `span` and `MODES(HTML => '<span ...>', TeX => $text)`. If a sanitizer strips `<style>` blocks (for example in Blackboard), prefer inline styles or `<font color="...">` as a fallback.
+- PGML parses once. Do not build PGML tag wrapper syntax inside Perl variables and expect a second parse.
+- If you need to inject HTML stored in a Perl variable, render it with `[$var]*` so PGML does not escape the tags.
 
 ---
 

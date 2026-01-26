@@ -100,3 +100,15 @@ def test_extract_strict_color_span_basic():
 	assert webwork_lib.extract_strict_color_span(
 		"<span style=\"color: #e60000;\">a</span> <span style=\"color: #e60000;\">b</span>"
 	) is None
+
+
+def test_sanitize_text_for_html_and_span_builder():
+	text = "C<sub>2</sub>H<sub>6</sub> &amp; CO<sub>2</sub>"
+	result = webwork_lib.sanitize_text_for_html(text)
+	assert result == "C\u2082H\u2086 &amp; CO\u2082"
+
+	span = webwork_lib.build_html_span("ionic bond", style="color: #009900;")
+	assert span == "<span style=\"color: #009900;\">ionic bond</span>"
+
+	span = webwork_lib.build_html_span("bold", class_name="color-test pgml-bold")
+	assert span == "<span class=\"color-test pgml-bold\">bold</span>"

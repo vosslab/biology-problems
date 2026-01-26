@@ -31,6 +31,11 @@ def parse_args():
 		'-o', '--output', dest='output_pg_file',
 		help='Output PG file path'
 	)
+	parser.add_argument(
+		'-m', '--color-mode', dest='color_mode',
+		choices=['inline', 'class', 'none'], default='inline',
+		help='Replacement rule coloring mode (inline, class, or none).'
+	)
 	args = parser.parse_args()
 	return args
 
@@ -52,6 +57,33 @@ def group_statements(block):
 	for group_num in sorted(grouped.keys()):
 		grouped_list.append(grouped[group_num])
 	return grouped_list
+
+#============================================
+def convert_groups_to_html(groups, replacement_rules, color_mode, color_classes, warnings):
+	"""
+	Convert grouped statements into HTML-safe strings.
+	"""
+	converted = []
+	needs_bold_class = False
+	for group in groups:
+		new_group = []
+		for statement in group:
+			replaced = webwork_lib.apply_replacements_to_text(
+				statement,
+				replacement_rules,
+			)
+			html_text, is_bold = webwork_lib.format_label_html(
+				replaced,
+				color_mode,
+				color_classes,
+				warnings,
+				label_name=statement,
+			)
+			if is_bold:
+				needs_bold_class = True
+			new_group.append(html_text)
+		converted.append(new_group)
+	return converted, needs_bold_class
 
 #============================================
 def build_question_text(override_true, override_false):
@@ -193,7 +225,7 @@ def build_setup_text(perl_true, perl_false, topic, question_setup):
 	return text
 
 #============================================
-def build_statement_text(pgml_question):
+def build_statement_text(pgml_question, color_mode, color_classes, needs_bold_class):
 	"""
 	Build the PGML statement text.
 	"""
@@ -202,6 +234,17 @@ def build_statement_text(pgml_question):
 	text += "# PGML\n"
 	text += "#==========================================================\n"
 	text += "\n"
+	if color_mode == "class" and (len(color_classes) > 0 or needs_bold_class):
+		text += "HEADER_TEXT(MODES(TeX => '', HTML => <<END_STYLE));\n"
+		text += "<style>\n"
+		for class_name in sorted(color_classes.keys()):
+			color_value = color_classes[class_name]
+			text += f".{class_name} {{ color: {color_value}; }}\n"
+		if needs_bold_class:
+			text += ".pgml-bold { font-weight: 700; }\n"
+		text += "</style>\n"
+		text += "END_STYLE\n"
+		text += "\n"
 	text += "BEGIN_PGML\n"
 	text += "\n"
 	text += pgml_question + "\n"
@@ -223,23 +266,73 @@ def build_solution_text():
 	return text
 
 #============================================
-def build_pgml_text(yaml_data):
+def build_pgml_text(yaml_data, color_mode):
 	"""
 	Create the PGML file content as a string.
 	"""
-	topic = yaml_data.get("topic", "this topic")
-	default_description = (
-		f"Select the statement that is TRUE or FALSE about {topic}."
+	replacement_rules = webwork_lib.normalize_replacement_rules(
+		yaml_data.get("replacement_rules")
 	)
-	fallback_keywords = [topic, "true/false", "multiple choice"]
+	color_classes = {}
+	needs_bold_class = False
+	warnings = []
+
+	topic_raw = yaml_data.get("topic", "this topic")
+	topic_replaced = webwork_lib.apply_replacements_to_text(
+		topic_raw,
+		replacement_rules,
+	)
+	topic, topic_bold = webwork_lib.format_label_html(
+		topic_replaced,
+		color_mode,
+		color_classes,
+		warnings,
+		label_name=topic_raw,
+	)
+	if topic_bold:
+		needs_bold_class = True
+	default_description = (
+		f"Select the statement that is TRUE or FALSE about {topic_raw}."
+	)
+	fallback_keywords = [topic_raw, "true/false", "multiple choice"]
 	header_text = webwork_lib.build_opl_header(
 		yaml_data,
 		default_description=default_description,
 		fallback_keywords=fallback_keywords,
 	)
 
-	override_true = yaml_data.get("override_question_true")
-	override_false = yaml_data.get("override_question_false")
+	override_true_raw = yaml_data.get("override_question_true")
+	override_false_raw = yaml_data.get("override_question_false")
+	override_true = None
+	override_false = None
+	if override_true_raw is not None:
+		override_true_replaced = webwork_lib.apply_replacements_to_text(
+			override_true_raw,
+			replacement_rules,
+		)
+		override_true, is_bold = webwork_lib.format_label_html(
+			override_true_replaced,
+			color_mode,
+			color_classes,
+			warnings,
+			label_name="override_question_true",
+		)
+		if is_bold:
+			needs_bold_class = True
+	if override_false_raw is not None:
+		override_false_replaced = webwork_lib.apply_replacements_to_text(
+			override_false_raw,
+			replacement_rules,
+		)
+		override_false, is_bold = webwork_lib.format_label_html(
+			override_false_replaced,
+			color_mode,
+			color_classes,
+			warnings,
+			label_name="override_question_false",
+		)
+		if is_bold:
+			needs_bold_class = True
 	question_setup, pgml_question = build_question_text(
 		override_true,
 		override_false,
@@ -250,6 +343,24 @@ def build_pgml_text(yaml_data):
 
 	true_groups = group_statements(true_block)
 	false_groups = group_statements(false_block)
+	true_groups, true_bold = convert_groups_to_html(
+		true_groups,
+		replacement_rules,
+		color_mode,
+		color_classes,
+		warnings,
+	)
+	if true_bold:
+		needs_bold_class = True
+	false_groups, false_bold = convert_groups_to_html(
+		false_groups,
+		replacement_rules,
+		color_mode,
+		color_classes,
+		warnings,
+	)
+	if false_bold:
+		needs_bold_class = True
 
 	perl_true = webwork_lib.perl_array("true_groups", true_groups)
 	perl_false = webwork_lib.perl_array("false_groups", false_groups)
@@ -261,9 +372,14 @@ def build_pgml_text(yaml_data):
 		topic,
 		question_setup,
 	)
-	statement_text = build_statement_text(pgml_question)
+	statement_text = build_statement_text(
+		pgml_question,
+		color_mode,
+		color_classes,
+		needs_bold_class,
+	)
 	solution_text = build_solution_text()
-	return preamble_text + setup_text + statement_text + solution_text
+	return preamble_text + setup_text + statement_text + solution_text, warnings
 
 #============================================
 def main():
@@ -275,7 +391,7 @@ def main():
 	if not yml_path.exists():
 		raise FileNotFoundError(f"File not found: {yml_path}")
 	yaml_data = yaml.safe_load(yml_path.read_text())
-	pgml_text = build_pgml_text(yaml_data)
+	pgml_text, warnings = build_pgml_text(yaml_data, args.color_mode)
 
 	output_path = args.output_pg_file
 	if output_path is None:
@@ -283,6 +399,8 @@ def main():
 	with open(output_path, 'w') as handle:
 		handle.write(pgml_text)
 	print(f"Generated: {output_path}")
+	for warning in warnings:
+		print(f"WARNING: {warning}")
 
 #============================================
 if __name__ == "__main__":

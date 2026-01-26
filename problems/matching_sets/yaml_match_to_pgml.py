@@ -11,7 +11,6 @@ See docs/webwork/MATCHING_PROBLEMS.md for approach documentation.
 import argparse
 import os
 import random
-import re
 
 import bptools
 import webwork_lib
@@ -81,18 +80,6 @@ def normalize_values(raw_values):
 	return normalized
 
 #============================================
-def normalize_replacement_rules(replacement_rules):
-	"""
-	Ensure replacement rules are a dict, so base rules apply without extra prints.
-	"""
-	if replacement_rules is None:
-		return {}
-	if not isinstance(replacement_rules, dict):
-		raise TypeError("replacement_rules must be a dict when provided")
-	return replacement_rules
-
-#============================================
-#============================================
 def tex_escape(text_string):
 	"""
 	Escape a string for use inside TeX \\text{...}.
@@ -135,87 +122,7 @@ def make_color_palette(num_colors):
 
 #============================================
 
-#============================================
-def apply_replacements_to_text(text_string, replacement_rules):
-	"""
-	Apply replacement rules to a single string.
-	"""
-	text_string = bptools.applyReplacementRulesToText(text_string, replacement_rules)
-	return sanitize_replaced_text(text_string)
-
-#============================================
-def apply_replacements_to_list(list_of_text_strings, replacement_rules):
-	"""
-	Apply replacement rules to a list of strings.
-	"""
-	values_list = bptools.applyReplacementRulesToList(list_of_text_strings, replacement_rules)
-	return [sanitize_replaced_text(value) for value in values_list]
-
-#============================================
-def sanitize_replaced_text(text_string):
-	"""
-	Sanitize replacement output into PGML-safe text.
-	"""
-	text_string = webwork_lib.convert_sub_sup(text_string)
-	text_string = webwork_lib.strip_html_tags(text_string, preserve_pgml_wrappers=True)
-	text_string = webwork_lib.unescape_html(text_string)
-	text_string = webwork_lib.normalize_nbsp(text_string)
-	return text_string
-
-#============================================
-def prepare_replacement_rules(replacement_rules, color_mode):
-	"""
-	Prepare replacement rules by converting strict color spans to PGML wrappers.
-	"""
-	prepared = {}
-	color_classes = {}
-	needs_bold_class = False
-	warnings = []
-
-	for token, value in replacement_rules.items():
-		if not isinstance(value, str):
-			prepared[token] = value
-			continue
-		if color_mode == "none":
-			prepared[token] = value
-			continue
-		if webwork_lib.contains_html_table(value):
-			warnings.append(f"table content skipped for replacement: {token}")
-			prepared[token] = value
-			continue
-		parsed = webwork_lib.extract_strict_color_span(value)
-		if parsed is None:
-			if re.search(r'<span[^>]*color', value, flags=re.IGNORECASE):
-				warnings.append(f"non-strict color span skipped for replacement: {token}")
-			prepared[token] = value
-			continue
-		prefix, inner_text, suffix, color_value, is_bold = parsed
-		if color_mode == "class":
-			normalized_color, class_name = webwork_lib.normalize_color_value(color_value)
-			class_names = class_name
-			if is_bold:
-				class_names = f"{class_names} pgml-bold"
-				needs_bold_class = True
-			wrapper = webwork_lib.build_pgml_tag_wrapper(
-				inner_text,
-				class_name=class_names,
-			)
-			color_classes[class_name] = normalized_color
-		else:
-			normalized_color, _ = webwork_lib.normalize_color_value(color_value)
-			style = f"color: {normalized_color};"
-			if is_bold:
-				style += " font-weight:700;"
-			wrapper = webwork_lib.build_pgml_tag_wrapper(
-				inner_text,
-				style=style,
-			)
-		prepared[token] = f"{prefix}{wrapper}{suffix}"
-
-	return prepared, color_classes, needs_bold_class, warnings
-
-#============================================
-def build_match_data(yaml_data, replacement_rules):
+def build_match_data(yaml_data, replacement_rules, color_mode):
 	"""
 	Build match data and exclude pairs from YAML.
 	"""
@@ -225,12 +132,36 @@ def build_match_data(yaml_data, replacement_rules):
 	if not isinstance(raw_pairs, dict):
 		raise TypeError("matching pairs must be a mapping")
 	match_data = {}
+	answer_html_map = {}
+	color_classes = {}
+	needs_bold_class = False
+	warnings = []
 	for raw_key, raw_values in raw_pairs.items():
-		key = normalize_key(raw_key)
-		values = normalize_values(raw_values)
-		key = apply_replacements_to_text(key, replacement_rules)
-		values = apply_replacements_to_list(values, replacement_rules)
-		match_data[key] = values
+		key_raw = normalize_key(raw_key)
+		values_raw = normalize_values(raw_values)
+		key_replaced = webwork_lib.apply_replacements_to_text(
+			key_raw,
+			replacement_rules,
+		)
+		key_plain = webwork_lib.sanitize_replaced_text(key_replaced)
+		key_html, is_bold = webwork_lib.format_label_html(
+			key_replaced,
+			color_mode,
+			color_classes,
+			warnings,
+			label_name=key_raw,
+		)
+		if is_bold:
+			needs_bold_class = True
+		values = [
+			webwork_lib.sanitize_replaced_text(value)
+			for value in webwork_lib.apply_replacements_to_list(
+				values_raw,
+				replacement_rules,
+			)
+		]
+		match_data[key_plain] = values
+		answer_html_map[key_plain] = key_html
 
 	exclude_pairs = []
 	raw_excludes = yaml_data.get('exclude pairs', [])
@@ -243,10 +174,14 @@ def build_match_data(yaml_data, replacement_rules):
 			raise ValueError(f"exclude pair must be a 2-item list: {pair}")
 		left = normalize_key(pair[0])
 		right = normalize_key(pair[1])
-		left = apply_replacements_to_text(left, replacement_rules)
-		right = apply_replacements_to_text(right, replacement_rules)
+		left = webwork_lib.sanitize_replaced_text(
+			webwork_lib.apply_replacements_to_text(left, replacement_rules)
+		)
+		right = webwork_lib.sanitize_replaced_text(
+			webwork_lib.apply_replacements_to_text(right, replacement_rules)
+		)
 		exclude_pairs.append([left, right])
-	return match_data, exclude_pairs
+	return match_data, exclude_pairs, answer_html_map, color_classes, needs_bold_class, warnings
 
 #============================================
 def maybe_color_mapping(match_data, exclude_pairs, use_colors):
@@ -293,9 +228,13 @@ def build_question_text(yaml_data, replacement_rules):
 		)
 	else:
 		question_text = question_override
-	question_text = apply_replacements_to_text(question_text, replacement_rules)
+	question_text = webwork_lib.sanitize_replaced_text(
+		webwork_lib.apply_replacements_to_text(question_text, replacement_rules)
+	)
 	note_text = "Note: Each choice will be used exactly once."
-	note_text = apply_replacements_to_text(note_text, replacement_rules)
+	note_text = webwork_lib.sanitize_replaced_text(
+		webwork_lib.apply_replacements_to_text(note_text, replacement_rules)
+	)
 	return question_text, note_text
 
 #============================================
@@ -355,7 +294,7 @@ def build_preamble_text(header_text):
 	return text
 
 #============================================
-def build_setup_text(match_data, exclude_pairs, num_choices):
+def build_setup_text(match_data, exclude_pairs, num_choices, answer_html_map):
 	"""
 	Build the PGML setup text using modern DropDown approach.
 	Keys (short terms) go in dropdowns, values (long descriptions) are prompts.
@@ -440,6 +379,13 @@ def build_setup_text(match_data, exclude_pairs, num_choices):
 	text += "@indices = (0 .. $#answers);\n"
 	text += "@shuffle = map { splice(@indices, random(0, $#indices), 1) } 0 .. $#indices;\n"
 	text += "\n"
+	if answer_html_map:
+		text += "# -------------------------------\n"
+		text += "# HTML-safe answer labels\n"
+		text += "# -------------------------------\n"
+		text += webwork_lib.perl_hash("answer_html", answer_html_map)
+		text += "@answers_html = map { $answer_html{$_} || $_ } @answers;\n"
+		text += "\n"
 	text += "# -------------------------------\n"
 	text += "# Create inverse mapping\n"
 	text += "# -------------------------------\n"
@@ -456,8 +402,8 @@ def build_setup_text(match_data, exclude_pairs, num_choices):
 	return text
 
 #============================================
-def build_statement_text(question_text, note_text, use_colors, color_mode, color_classes,
-	needs_bold_class):
+def build_statement_text(question_text, note_text, use_answer_html, color_mode,
+	color_classes, needs_bold_class):
 	"""
 	Build the PGML statement text using PGML tag wrappers and empty TeX slots.
 	"""
@@ -467,11 +413,6 @@ def build_statement_text(question_text, note_text, use_colors, color_mode, color
 	text += "# -------------------------------\n"
 	text += "HEADER_TEXT(MODES(TeX => '', HTML => <<END_STYLE));\n"
 	text += "<style>\n"
-	if not use_colors:
-		text += ".right-col > div:nth-child(1) { color: #00b3b3; font-weight: 700; }\n"
-		text += ".right-col > div:nth-child(2) { color: #b3b300; font-weight: 700; }\n"
-		text += ".right-col > div:nth-child(3) { color: #009900; font-weight: 700; }\n"
-		text += ".right-col > div:nth-child(4) { color: #e60000; font-weight: 700; }\n"
 	if color_mode == "class" and len(color_classes) > 0:
 		for class_name in sorted(color_classes.keys()):
 			color_value = color_classes[class_name]
@@ -507,7 +448,10 @@ def build_statement_text(question_text, note_text, use_colors, color_mode, color
 	text += "[@ join(\n"
 	text += "    \"\\n\\n\",\n"
 	text += "    map {\n"
-	text += "        chr(65 + $_) . '. ' . '[$answers[$shuffle[' . $_ . ']]]' \n"
+	if use_answer_html:
+		text += "        chr(65 + $_) . '. ' . '[$answers_html[$shuffle[' . $_ . ']]]*' \n"
+	else:
+		text += "        chr(65 + $_) . '. ' . '[$answers[$shuffle[' . $_ . ']]]' \n"
 	text += "    } 0 .. $#answers\n"
 	text += ") @]**\n"
 	text += "[@ MODES(TeX => '', HTML => '</div></div>') @]*\n"
@@ -554,22 +498,25 @@ def build_pgml_text(yaml_data, num_choices, use_colors, color_mode):
 	"""
 	Create the PGML file content as a string.
 	"""
-	replacement_rules = normalize_replacement_rules(
+	replacement_rules = webwork_lib.normalize_replacement_rules(
 		yaml_data.get('replacement_rules')
 	)
-	replacement_rules, color_classes, needs_bold_class, warnings = prepare_replacement_rules(
-		replacement_rules,
-		color_mode,
+	match_data, exclude_pairs, answer_html_map, color_classes, needs_bold_class, warnings = (
+		build_match_data(
+			yaml_data,
+			replacement_rules,
+			color_mode,
+		)
 	)
-	match_data, exclude_pairs = build_match_data(
-		yaml_data,
-		replacement_rules
-	)
-	match_data, exclude_pairs = maybe_color_mapping(
-		match_data,
-		exclude_pairs,
-		use_colors,
-	)
+	if use_colors:
+		match_data, exclude_pairs = maybe_color_mapping(
+			match_data,
+			exclude_pairs,
+			use_colors,
+		)
+		answer_html_map = {}
+		color_classes = {}
+		needs_bold_class = False
 
 	if num_choices is None:
 		num_choices = yaml_data.get('items to match per question', 5)
@@ -601,11 +548,12 @@ def build_pgml_text(yaml_data, num_choices, use_colors, color_mode):
 		fallback_keywords=fallback_keywords,
 	)
 	preamble_text = build_preamble_text(header_text)
-	setup_text = build_setup_text(match_data, exclude_pairs, num_choices)
+	use_answer_html = (not use_colors) and bool(answer_html_map)
+	setup_text = build_setup_text(match_data, exclude_pairs, num_choices, answer_html_map)
 	statement_text = build_statement_text(
 		question_text,
 		note_text,
-		use_colors,
+		use_answer_html,
 		color_mode,
 		color_classes,
 		needs_bold_class,

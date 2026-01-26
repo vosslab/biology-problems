@@ -35,8 +35,10 @@
 - If the rule does not match the strict pattern, keep inline output or leave it
   untouched, and log a warning.
 
-### 4) Always use PGML tag wrappers for styling
-- Emit styled text using PGML tag wrappers, not raw HTML strings.
+### 4) Use HTML spans + `*` for variable content
+- PGML parses once; tag wrappers built inside Perl variables are not re-parsed.
+- Emit HTML spans (class or inline) and pass them through with `[$var]*` when
+  the content lives in Perl arrays or variables.
 - Prefer CSS classes; allow inline styles only as a fallback.
 
 ### 5) Sub/sup handling
@@ -58,6 +60,12 @@
 - Use the color probe file to confirm CSS rendering in the target install:
   `problems/matching_sets/color_render_test.pg`.
 - Spot-check at least one matching set with sub/sup and one with table content.
+
+## Implemented flags (current)
+- `--color-mode inline|class|none` is now supported in:
+  - `problems/matching_sets/yaml_match_to_pgml.py`
+  - `problems/matching_sets/yaml_which_one_mc_to_pgml.py`
+  - `problems/multiple_choice_statements/yaml_mc_statements_to_pgml.py`
 
 ## Open questions
 - Final name of the new YAML key (`color_rules` vs `color_classes`).

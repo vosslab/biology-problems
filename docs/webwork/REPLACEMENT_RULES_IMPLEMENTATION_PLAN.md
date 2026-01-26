@@ -28,7 +28,8 @@
 
 ### Default (safe, legacy)
 - Preserve existing inline color spans after replacement rules.
-- Convert those spans to PGML tag wrappers if a strict match is detected.
+- When strict parsing succeeds, convert to HTML spans and emit through `[$var]*`
+  when the text is stored in Perl arrays or variables.
 
 ### Strict class mode (opt-in)
 - Only convert when the rule matches a strict pattern:
@@ -36,8 +37,8 @@
   - Optional `<strong>` wrapper allowed; translate to `font-weight:700`.
 - Accept either hex colors or named colors, and tolerate unquoted `style=color: ...`.
 - Extract the color value and generate a CSS class.
-- Emit PGML tag wrappers:
-  `[<text>]{['span', class => 'color-xxxxxx']}{['','']}`.
+- Emit HTML spans (class-based or inline), and pass them through with `*` when
+  the content lives in Perl variables (PGML does not re-parse tag wrappers built in Perl).
 - If any rule does not match the strict pattern, leave it untouched and log a warning.
 
 ## Bold and italic (pending)
@@ -60,3 +61,9 @@
 - Keep YAML stable now.
 - Add new explicit `color_rules` only when editing a file.
 - Prefer small, local changes over a repo-wide refactor.
+
+## Implemented flags (current)
+- `--color-mode inline|class|none` exists in:
+  - `problems/matching_sets/yaml_match_to_pgml.py`
+  - `problems/matching_sets/yaml_which_one_mc_to_pgml.py`
+  - `problems/multiple_choice_statements/yaml_mc_statements_to_pgml.py`

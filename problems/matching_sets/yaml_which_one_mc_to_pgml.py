@@ -38,39 +38,16 @@ def parse_args():
 		help='Number of choices per question'
 	)
 	parser.add_argument(
+		'-m', '--color-mode', dest='color_mode',
+		choices=['inline', 'class', 'none'], default='inline',
+		help='Replacement rule coloring mode (inline, class, or none).'
+	)
+	parser.add_argument(
 		'--flip', action='store_true', dest='flip',
 		help='Flip the keys and values from the YAML input'
 	)
 	args = parser.parse_args()
 	return args
-
-#============================================
-
-def normalize_replacement_rules(replacement_rules):
-	"""
-	Ensure replacement rules are a dict.
-	"""
-	if replacement_rules is None:
-		return {}
-	if not isinstance(replacement_rules, dict):
-		raise TypeError("replacement_rules must be a dict when provided")
-	return replacement_rules
-
-#============================================
-
-def apply_replacements_to_text(text_string, replacement_rules):
-	"""
-	Apply replacement rules to a single string.
-	"""
-	return bptools.applyReplacementRulesToText(text_string, replacement_rules)
-
-#============================================
-
-def apply_replacements_to_list(list_of_text_strings, replacement_rules):
-	"""
-	Apply replacement rules to a list of strings.
-	"""
-	return bptools.applyReplacementRulesToList(list_of_text_strings, replacement_rules)
 
 #============================================
 
@@ -115,7 +92,7 @@ def generate_combinations(all_keys, num_choices, exclude_pairs_list):
 
 #============================================
 
-def build_perl_question_data(yaml_data, num_choices, flip, replacement_rules):
+def build_perl_question_data(yaml_data, num_choices, flip, replacement_rules, color_mode):
 	"""
 	Build Perl code for question data arrays.
 	"""
@@ -131,6 +108,9 @@ def build_perl_question_data(yaml_data, num_choices, flip, replacement_rules):
 
 	# Build questions data
 	questions_data = []
+	color_classes = {}
+	needs_bold_class = False
+	warnings = []
 
 	for key, value in key_value_pairs:
 		# Find a combination that includes this key
@@ -166,20 +146,88 @@ def build_perl_question_data(yaml_data, num_choices, flip, replacement_rules):
 			correct_answer = value
 
 		# Apply replacements
-		item_name = apply_replacements_to_text(item_name, replacement_rules)
-		choices_list = apply_replacements_to_list(choices_list, replacement_rules)
-		correct_answer = apply_replacements_to_text(correct_answer, replacement_rules)
+		item_name = webwork_lib.apply_replacements_to_text(item_name, replacement_rules)
+		choices_list = webwork_lib.apply_replacements_to_list(
+			choices_list,
+			replacement_rules,
+		)
+		correct_answer = webwork_lib.apply_replacements_to_text(
+			correct_answer,
+			replacement_rules,
+		)
+		plural_choice_description = webwork_lib.apply_replacements_to_text(
+			plural_choice_description,
+			replacement_rules,
+		)
+		singular_item_description = webwork_lib.apply_replacements_to_text(
+			singular_item_description,
+			replacement_rules,
+		)
+
+		item_name_html, item_bold = webwork_lib.format_label_html(
+			item_name,
+			color_mode,
+			color_classes,
+			warnings,
+			label_name=item_name,
+		)
+		if item_bold:
+			needs_bold_class = True
+		item_name_html = f"<strong>{item_name_html}</strong>"
+
+		plural_choice_html, plural_bold = webwork_lib.format_label_html(
+			plural_choice_description,
+			color_mode,
+			color_classes,
+			warnings,
+			label_name=plural_choice_description,
+		)
+		if plural_bold:
+			needs_bold_class = True
+
+		singular_item_html, singular_bold = webwork_lib.format_label_html(
+			singular_item_description,
+			color_mode,
+			color_classes,
+			warnings,
+			label_name=singular_item_description,
+		)
+		if singular_bold:
+			needs_bold_class = True
+
+		choices_html = []
+		for choice in choices_list:
+			choice_html, choice_bold = webwork_lib.format_label_html(
+				choice,
+				color_mode,
+				color_classes,
+				warnings,
+				label_name=choice,
+			)
+			if choice_bold:
+				needs_bold_class = True
+			choices_html.append(choice_html)
+
+		correct_html, correct_bold = webwork_lib.format_label_html(
+			correct_answer,
+			color_mode,
+			color_classes,
+			warnings,
+			label_name=correct_answer,
+		)
+		if correct_bold:
+			needs_bold_class = True
 
 		question_data = {
-			'item_name': item_name,
-			'plural_choice_description': plural_choice_description,
-			'singular_item_description': singular_item_description,
-			'choices': choices_list,
-			'correct': correct_answer,
+			'item_name': item_name_html,
+			'plural_choice_description': plural_choice_html,
+			'singular_item_description': singular_item_html,
+			'choices': choices_html,
+			'correct': correct_html,
 		}
 		questions_data.append(question_data)
 
-	return questions_data
+	return questions_data, color_classes, needs_bold_class, warnings
 
 #============================================
 
@@ -263,7 +311,7 @@ def build_setup_text(questions_data):
 
 #============================================
 
-def build_statement_text():
+def build_statement_text(color_mode, color_classes, needs_bold_class):
 	"""
 	Build the PGML question text.
 	"""
@@ -272,9 +320,20 @@ def build_statement_text():
 	text += "# PGML\n"
 	text += "#==========================================================\n"
 	text += "\n"
+	if color_mode == "class" and (len(color_classes) > 0 or needs_bold_class):
+		text += "HEADER_TEXT(MODES(TeX => '', HTML => <<END_STYLE));\n"
+		text += "<style>\n"
+		for class_name in sorted(color_classes.keys()):
+			color_value = color_classes[class_name]
+			text += f".{class_name} {{ color: {color_value}; }}\n"
+		if needs_bold_class:
+			text += ".pgml-bold { font-weight: 700; }\n"
+		text += "</style>\n"
+		text += "END_STYLE\n"
+		text += "\n"
 	text += "BEGIN_PGML\n"
 	text += "\n"
-	text += "Which one of the following [$plural_choice] corresponds to the [$singular_item] *[$item_name]*?\n"
+	text += "Which one of the following [$plural_choice]* corresponds to the [$singular_item]* [$item_name]*?\n"
 	text += "\n"
 	text += "[_]{$rb}\n"
 	text += "\n"
@@ -291,7 +350,7 @@ def build_solution_text():
 	text = ""
 	text += "BEGIN_PGML_SOLUTION\n"
 	text += "\n"
-	text += "The correct answer is: [$correct]\n"
+	text += "The correct answer is: [$correct]*\n"
 	text += "\n"
 	text += "END_PGML_SOLUTION\n"
 	text += "\n"
@@ -301,11 +360,11 @@ def build_solution_text():
 
 #============================================
 
-def build_pgml_text(yaml_data, num_choices, flip):
+def build_pgml_text(yaml_data, num_choices, flip, color_mode):
 	"""
 	Create the PGML file content as a string.
 	"""
-	replacement_rules = normalize_replacement_rules(
+	replacement_rules = webwork_lib.normalize_replacement_rules(
 		yaml_data.get('replacement_rules')
 	)
 
@@ -335,19 +394,20 @@ def build_pgml_text(yaml_data, num_choices, flip):
 		fallback_keywords=fallback_keywords,
 	)
 
-	questions_data = build_perl_question_data(
+	questions_data, color_classes, needs_bold_class, warnings = build_perl_question_data(
 		yaml_data,
 		num_choices,
 		flip,
 		replacement_rules,
+		color_mode,
 	)
 
 	preamble_text = build_preamble_text(header_text)
 	setup_text = build_setup_text(questions_data)
-	statement_text = build_statement_text()
+	statement_text = build_statement_text(color_mode, color_classes, needs_bold_class)
 	solution_text = build_solution_text()
 
-	return preamble_text + setup_text + statement_text + solution_text
+	return preamble_text + setup_text + statement_text + solution_text, warnings
 
 #============================================
 
@@ -362,7 +422,12 @@ def main():
 		)
 
 	yaml_data = bptools.readYamlFile(args.input_yaml_file)
-	pgml_text = build_pgml_text(yaml_data, args.num_choices, args.flip)
+	pgml_text, warnings = build_pgml_text(
+		yaml_data,
+		args.num_choices,
+		args.flip,
+		args.color_mode,
+	)
 
 	output_pgml_file = args.output_pgml_file
 	if output_pgml_file is None:
@@ -373,6 +438,8 @@ def main():
 	with open(output_pgml_file, 'w') as outfile:
 		outfile.write(pgml_text)
 	print(f"Wrote PGML to {output_pgml_file}")
+	for warning in warnings:
+		print(f"WARNING: {warning}")
 
 #============================================
 
