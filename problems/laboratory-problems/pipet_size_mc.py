@@ -31,6 +31,12 @@ pipet_colors = {
 	'P1000': ['red', 'black', 'black',],
 }
 
+##=========================
+pipet_bg_colors = {
+	'P10': '#f0f0f0',
+	'P100': '#fff6d6',
+	'P1000': '#dfefff',
+}
 
 ##=========================
 def get_volume(pipet):
@@ -49,19 +55,34 @@ def get_volume(pipet):
 ##=========================
 def pipetstr(pipet, rawdigits):
 	colors = pipet_colors[pipet]
+	bg_color = pipet_bg_colors[pipet]
 
 	digits = [0,0,0]
 	digits[2] = rawdigits % 10
 	digits[1] = (rawdigits % 100) // 10
 	digits[0] = (rawdigits % 1000) // 100
-	print(digits)
 
 	pipetstr = ''
-	pipetstr += '<table border="0"><tbody><tr><td style="vertical-align: middle;"><strong>{0}</strong>'.format(pipet.upper())
-	pipetstr += '</td><td style="vertical-align: middle;"><table border="1"><tbody>'
-	pipetstr += '<tr><td align="center"><span style="color: {0};">&nbsp;<strong>{1}</strong></span></td></tr>'.format(colors[0], digits[0])
-	pipetstr += '<tr><td align="center"><span style="color: {0};">&nbsp;<strong>{1}</strong></span></td></tr>'.format(colors[1], digits[1])
-	pipetstr += '<tr><td align="center"><span style="color: {0};"><strong>{1}</strong></span></td></tr>'.format(colors[2], digits[2])
+	pipetstr += "<table border='0' cellpadding='0' cellspacing='6'><tbody><tr>"
+	pipetstr += "<td style='vertical-align: middle;'>"
+	pipetstr += (
+		f"<span style='display: inline-block; width: 52px; height: 52px; "
+		f"line-height: 52px; border-radius: 50%; border: 1px solid #333; "
+		f"text-align: center; background-color: {bg_color}; "
+		f"font-family: Arial, sans-serif; font-weight: bold;'>"
+		f"{pipet.upper()}</span>"
+	)
+	pipetstr += "</td><td style='vertical-align: middle;'>"
+	pipetstr += (
+		f"<table border='0' cellpadding='2' cellspacing='0' "
+		f"style='border-collapse: separate; border-spacing: 0; "
+		f"border-radius: 10px 10px 6px 6px; overflow: hidden; "
+		f"background-color: {bg_color}; border: 1px solid #333;'>"
+		"<tbody>"
+	)
+	pipetstr += f"<tr><td align='center'><span style='color: {colors[0]};'>&nbsp;<strong>{digits[0]}</strong></span></td></tr>"
+	pipetstr += f"<tr><td align='center'><span style='color: {colors[1]};'>&nbsp;<strong>{digits[1]}</strong></span></td></tr>"
+	pipetstr += f"<tr><td align='center'><span style='color: {colors[2]};'><strong>{digits[2]}</strong></span></td></tr>"
 	pipetstr += '</tbody></table></td></tr></tbody></table>'
 	return pipetstr
 
@@ -136,7 +157,6 @@ def main():
 
 if __name__ == '__main__':
 	main()
-
 
 
 

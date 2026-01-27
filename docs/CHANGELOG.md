@@ -107,6 +107,7 @@
 - Adjusted matching PGML prompt/choice substitutions to use raw PGML eval blocks so HTML in prompts/choices renders correctly in [problems/matching_sets/yaml_match_to_pgml.py](../problems/matching_sets/yaml_match_to_pgml.py) and [problems/matching_sets/bond_types-matching.pgml](../problems/matching_sets/bond_types-matching.pgml).
 - Added [problems/matching_sets/matching_full_fix.pgml](../problems/matching_sets/matching_full_fix.pgml) as a parserPopUp-based matching example (MatchingAlt-style, HTML-only layout) derived from [problems/matching_sets/matching_semifix.pgml](../problems/matching_sets/matching_semifix.pgml).
 - Replaced the PGML solution join block in [problems/matching_sets/matching_full_fix.pgml](../problems/matching_sets/matching_full_fix.pgml) with a precomputed answer string to avoid unstable inline evaluation.
+- Styled pipet labels as circular badges and added subtle pipet-specific colors with rounded digit windows in `problems/laboratory-problems/pipet_size_mc.py`.
 
 ## 2026-01-22
 - Resolved merge conflicts in [docs/CODE_ARCHITECTURE.md](docs/CODE_ARCHITECTURE.md) and [docs/FILE_STRUCTURE.md](docs/FILE_STRUCTURE.md) to align test/tool references with the current repo layout.
