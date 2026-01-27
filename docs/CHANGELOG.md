@@ -18,6 +18,8 @@
 - Updated [problems/biochemistry-problems/which_hydrophobic-simple.pgml](../problems/biochemistry-problems/which_hydrophobic-simple.pgml) to use inline PGML answer specs for `RadioButtons`, remove a trailing loadMacros comma, and wrap the long hint line to satisfy pgml-lint warnings.
 - Added [docs/webwork/RANDOMIZATION_REFERENCE.md](webwork/RANDOMIZATION_REFERENCE.md) with a PG randomization function inventory and seed-stability guidance, and linked it from [docs/webwork/INDEX.md](webwork/INDEX.md) and [docs/webwork/WEBWORK_PROBLEM_AUTHOR_GUIDE.md](webwork/WEBWORK_PROBLEM_AUTHOR_GUIDE.md).
 - Updated [problems/matching_sets/yaml_which_one_mc_to_pgml.py](../problems/matching_sets/yaml_which_one_mc_to_pgml.py) and [problems/multiple_choice_statements/yaml_mc_statements_to_pgml.py](../problems/multiple_choice_statements/yaml_mc_statements_to_pgml.py) to use a local `PGrandom` seeded by `problemSeed` for question selection and to perform seed-stable choice shuffling with `randomize => 0`.
+- Updated [problems/matching_sets/yaml_match_to_pgml.py](../problems/matching_sets/yaml_match_to_pgml.py) to emit PGML tag wrappers instead of raw `<div>` tags and remove `MODES(...)` calls inside eval blocks, resolving pgml-lint HTML/MODES errors.
+- Updated [tests/test_pgml_generators.py](../tests/test_pgml_generators.py) to expect `PGsort(...)` in the matching generator seed-determinism output.
 
 ## 2026-01-26
 - Added [problems/matching_sets/color_render_test.pg](../problems/matching_sets/color_render_test.pg) as a single-page PGML color rendering probe for MathJax and CSS styling methods.

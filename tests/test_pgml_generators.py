@@ -78,7 +78,7 @@ def test_yaml_match_to_pgml_seed_determinism(monkeypatch):
 
 	pgml_text, warnings = module.build_pgml_text(yaml_data, 2, "inline")
 
-	assert "@all_keys = sort @all_keys;" in pgml_text
+	assert "@all_keys = PGsort(sub { $_[0] lt $_[1] }, keys %match_data);" in pgml_text
 	assert warnings == []
 
 
