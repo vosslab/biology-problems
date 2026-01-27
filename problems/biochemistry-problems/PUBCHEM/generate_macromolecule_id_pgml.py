@@ -294,7 +294,7 @@ BEGIN_PGML_HINT
 
 **Carbohydrates (monosaccharides)**
 * Should have about the same number of oxygens as carbons
-* Look for hydroxyl groups (–OH) attached to carbon atoms
+* Look for hydroxyl groups (-OH) attached to carbon atoms
 * Carbonyl groups (C=O) are often present
 * Look for the base unit of CH₂O
 * Larger carbohydrates form hexagon or pentagon ring structures
@@ -302,22 +302,22 @@ BEGIN_PGML_HINT
 **Lipids (fatty acids)**
 * Contain mostly carbon and hydrogen
 * Very few oxygens and often no nitrogens
-* Fats and oils have carboxyl groups (–COOH) and ester bonds
+* Fats and oils have carboxyl groups (-COOH) and ester bonds
 * Look for long chains or ring structures of only carbon and hydrogen
 * Steroids have four interconnected carbon rings
 
 **Proteins (amino acids and dipeptides)**
-* Always have a nitrogen/amino group (–NH₂ or –NH₃⁺)
-* Always have a carboxyl group (–COOH or –COO⁻)
+* Always have a nitrogen/amino group (-NH₂ or -NH₃⁺)
+* Always have a carboxyl group (-COOH or -COO⁻)
 * Identify the central Cα (alpha-carbon) attached to amino and carboxyl groups
-* Larger proteins have characteristic peptide bonds (C–N)
+* Larger proteins have characteristic peptide bonds (C-N)
 * Try to identify common side chains (R groups)
 
 **Nucleic acids (nucleobases)**
 * Must have a nucleobase: rings containing carbon and nitrogen
 * Larger nucleic acids have a sugar backbone and phosphate groups
 
-**Note:** Phosphate groups (–PO₄²⁻) can be found in all macromolecule types, so they may be confusing markers.
+**Note:** Phosphate groups (-PO₄²⁻) can be found in all macromolecule types, so they may be confusing markers.
 
 END_PGML_HINT
 

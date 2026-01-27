@@ -132,7 +132,7 @@ Linter checks:
 
 ### Encoding and mojibake
 - Replacement character `�`.
-- Common mojibake patterns: `Â`, `Ã`, `â€™`, `â€“`, `â€”`, `â€¢`.
+- Common mojibake patterns: `A`, `A`, `a€™`, `a€"`, `a€"`, `a€¢`.
 - Non-printable control characters (ASCII 0x00-0x1F excluding `\n`, `\r`, `\t`).
 
 ### Macro/widget sanity
