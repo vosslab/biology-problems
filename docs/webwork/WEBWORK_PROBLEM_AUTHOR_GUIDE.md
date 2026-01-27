@@ -315,6 +315,21 @@ If you use interactive widgets, treat them as first-class and keep grading expli
 
 ---
 
+## Randomization and seeds
+
+- Use a local `PGrandom` instance seeded with `problemSeed` when you need
+  deterministic output for a fixed seed.
+- Avoid `SRAND(seed)` unless you intend to reset the global RNG for the whole
+  problem.
+- When selecting from hash keys, sort keys before random selection so a fixed
+  seed yields stable results across runs.
+- Prefer non-deprecated helpers (for example `random_subset`) over wrappers like
+  `NchooseK` when possible.
+- See [RANDOMIZATION_REFERENCE.md](RANDOMIZATION_REFERENCE.md) for a list of
+  common PG randomization entry points.
+
+---
+
 ## Solutions and hints
 
 ### Use PGML solution/hint blocks when available

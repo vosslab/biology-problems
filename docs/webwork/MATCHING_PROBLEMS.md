@@ -6,7 +6,7 @@
 
 ## Recommended pattern (PGML dual output)
 
-Use DropDown widgets from `parserPopUp.pl` and `MODES(...)` wrappers so both HTML and TeX slots exist. Keep matching data as plain text plus TeX math, and add color only at render time.
+Use PopUp widgets from `parserPopUp.pl` (DropDown is PG 2.18+) and `MODES(...)` wrappers so both HTML and TeX slots exist. For forward compatibility, you can wrap widget creation to prefer `DropDown` when available and fall back to `PopUp`. Keep matching data as plain text plus TeX math, and add color only at render time.
 
 ```perl
 loadMacros(

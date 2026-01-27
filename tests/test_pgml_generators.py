@@ -57,7 +57,7 @@ def test_yaml_match_to_pgml_inline_colors(monkeypatch):
 	assert "%answer_html" in pgml_text
 	assert "color: #009900" in pgml_text
 	assert "H\u2082O" in pgml_text
-	assert "[$answers_html[$shuffle" in pgml_text
+	assert "$answers_sorted_html" in pgml_text
 	assert warnings == []
 
 

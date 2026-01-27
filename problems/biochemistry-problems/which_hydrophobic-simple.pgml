@@ -21,7 +21,7 @@ loadMacros(
 	'PGchoicemacros.pl',
 	'PGML.pl',
 	'parserRadioButtons.pl',
-	'PGcourse.pl',
+	'PGcourse.pl'
 );
 
 TEXT(beginproblem());
@@ -76,6 +76,21 @@ my @distractors = @hydrophilic_compounds[@indices];
 @choices = ($correct_answer, @distractors);
 
 ########################################################
+# SHUFFLE CHOICES (SEED-STABLE)
+########################################################
+
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+
+my @choice_indices = (0 .. $#choices);
+my @choice_shuffled = ();
+while (@choice_indices) {
+	my $pick = $local_random->random(0, $#choice_indices, 1);
+	push @choice_shuffled, splice(@choice_indices, $pick, 1);
+}
+@choices = @choices[@choice_shuffled];
+
+########################################################
 # BUILD RADIO BUTTONS
 ########################################################
 
@@ -96,7 +111,7 @@ BEGIN_PGML
 
 Based on their molecular formula, which one of the following compounds is most likely *hydrophobic*?
 
-[@ $rb->buttons() @]*
+[_]{$rb}
 
 END_PGML
 
@@ -104,15 +119,14 @@ END_PGML
 # ANSWER
 ########################################################
 
-ANS( $rb->cmp() );
-
 ########################################################
 # HINT
 ########################################################
 
 BEGIN_PGML_HINT
 
-Hydrophobic compounds are composed mostly of carbon and hydrogen atoms with very few or no oxygen or nitrogen atoms. Look for simple hydrocarbon formulas that contain mainly C and H.
+Hydrophobic compounds are composed mostly of carbon and hydrogen atoms with very few or no oxygen or nitrogen atoms.
+Look for simple hydrocarbon formulas that contain mainly C and H.
 
 END_PGML_HINT
 
