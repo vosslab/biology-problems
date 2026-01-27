@@ -5,6 +5,26 @@ def format_monospace(text):
 	return f"<span style='font-family: monospace;'>{text}</span>"
 
 #============================================
+def format_color(text, color):
+	return f"<span style='color: {color};'>{text}</span>"
+
+#============================================
+def format_aliquot(text_html):
+	return format_color(text_html, '#7a1f7a')
+
+#============================================
+def format_diluent(text_html):
+	return format_color(text_html, '#005cb3')
+
+#============================================
+def format_stock(text_html):
+	return format_color(text_html, '#cc5500')
+
+#============================================
+def format_df(text_html):
+	return format_color(text_html, '#228b22')
+
+#============================================
 def format_key_request(text_html):
 	return f"<span style='font-size: 1.05em;'>{text_html}</span>"
 

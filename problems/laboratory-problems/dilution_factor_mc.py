@@ -2,10 +2,15 @@
 
 import random
 import bptools
+import lab_helper_lib
 
 #==================================================
 #==================================================
 def make_question_text(volume, df_value):
+	df_text = lab_helper_lib.format_df(lab_helper_lib.format_monospace(f"DF={df_value}"))
+	df_request = lab_helper_lib.format_key_request(df_text)
+	volume_text = lab_helper_lib.format_monospace(f"{volume:.1f} mL")
+	volume_request = lab_helper_lib.format_key_request(volume_text)
 	question = (
 		"<p>Dilution factors are used in biology labs to make solutions at precise "
 		"concentrations, ensure consistency across experiments, and preserve valuable "
@@ -13,22 +18,20 @@ def make_question_text(volume, df_value):
 		"needs 400 mL of a working solution, it is much easier to measure a small "
 		"aliquot from a concentrated stock and add water to reach the final volume "
 		"than to prepare the solution from scratch each time.</p>"
-		f"<p>You are preparing a new solution with a dilution factor of DF={df_value}.</p>"
-		f"<p>How much liquid do you add to make a total of "
-		f"<span style='font-family: monospace;'>{volume:.1f} mL</span>?</p>"
+		f"<p>You are preparing a new solution with a dilution factor of {df_request}.</p>"
+		f"<p>How much liquid do you add to make a total of {volume_request}?</p>"
 	)
 	return question
 
 #==================================================
 #==================================================
 def format_volumes(vol1, vol2):
+	aliquot_amount = lab_helper_lib.format_monospace(f"{vol1:.1f} mL")
+	diluent_amount = lab_helper_lib.format_monospace(f"{vol2:.1f} mL")
+	aliquot_text = lab_helper_lib.format_aliquot(f"{aliquot_amount} stock solution (aliquot)")
+	diluent_text = lab_helper_lib.format_diluent(f"{diluent_amount} distilled water (diluent)")
 	choice_text = (
-		f"<span style='color: #e65400;'>"
-		f"<span style='font-family: monospace;'>{vol1:.1f} mL</span> "
-		f"stock solution (aliquot)</span><br/>&nbsp;&nbsp;"
-		f"<span style='color: darkblue;'>"
-		f"<span style='font-family: monospace;'>{vol2:.1f} mL</span> "
-		f"distilled water (diluent)</span>"
+		f"{aliquot_text}<br/>&nbsp;&nbsp;{diluent_text}"
 	)
 	return choice_text
 

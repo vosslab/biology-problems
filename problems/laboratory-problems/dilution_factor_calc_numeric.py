@@ -2,17 +2,21 @@
 
 import random
 import bptools
+import lab_helper_lib
 
 #==================================================
 #==================================================
 def make_question_text(aliquot_mL, diluent_mL):
-	aliquot_text = f"<span style='font-family: monospace;'>{aliquot_mL:.1f} mL</span>"
-	diluent_text = f"<span style='font-family: monospace;'>{diluent_mL:.1f} mL</span>"
+	aliquot_text = lab_helper_lib.format_monospace(f"{aliquot_mL:.1f} mL")
+	diluent_text = lab_helper_lib.format_monospace(f"{diluent_mL:.1f} mL")
+	stock_text = lab_helper_lib.format_stock('stock solution')
+	diluent_label = lab_helper_lib.format_diluent('distilled water')
+	key_request = lab_helper_lib.format_key_request(
+		f"{aliquot_text} {stock_text} into {diluent_text} {diluent_label}"
+	)
 	question = (
 		"<p>You are preparing a new solution.</p>"
-		+ "<p>You dilute {0} of stock solution into {1} distilled water to make a dilution.</p>".format(
-			aliquot_text, diluent_text
-		)
+		+ "<p>You dilute {0} to make a dilution.</p>".format(key_request)
 		+ "<p>What is the dilution factor?</p>"
 	)
 	return question

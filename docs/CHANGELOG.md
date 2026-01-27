@@ -118,6 +118,9 @@
 - Slightly increased the font size for the key request phrase in solution question prompts via `lab_helper_lib.py`.
 - Added compound name rows to the solution info tables for context in `problems/laboratory-problems/solution-*.py`.
 - Moved compound names into a two-column header row at the top of the solution info tables in `problems/laboratory-problems/solution-*.py`.
+- Applied `lab_helper_lib.py` table formatting to `problems/laboratory-problems/percent_dilution_aliquot_numeric.py` for compound context and clearer dilution prompts.
+- Emphasized key dilution details with monospace and larger text in `problems/laboratory-problems/dilution_factor_*.py` and `problems/laboratory-problems/serial_dilution_factor_*.py`.
+- Standardized color cues for DF, aliquot, diluent, and stock solution text across laboratory dilution questions using `lab_helper_lib.py`.
 
 ## 2026-01-22
 - Resolved merge conflicts in [docs/CODE_ARCHITECTURE.md](docs/CODE_ARCHITECTURE.md) and [docs/FILE_STRUCTURE.md](docs/FILE_STRUCTURE.md) to align test/tool references with the current repo layout.

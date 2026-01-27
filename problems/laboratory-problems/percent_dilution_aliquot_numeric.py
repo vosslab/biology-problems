@@ -3,6 +3,7 @@
 import random
 
 import bptools
+import lab_helper_lib
 
 df_ratios = [
 	(2, 1), (3, 1), (4, 1),
@@ -49,15 +50,35 @@ def question_text(solute, volume, conc1, conc2):
 	unit2 = 'milliliters (mL)'
 	unit = random.choice((unit1,unit2))
 	if unit == unit1:
-		volume_text = f"<span style='font-family: monospace;'>{volume} &mu;L</span>"
+		volume_text = lab_helper_lib.format_monospace(f"{volume} &mu;L")
 	else:
-		volume_text = f"<span style='font-family: monospace;'>{volume} mL</span>"
-	question += '<p>You have an already prepared stock solution of {0}% {1} on the shelf.</p>'.format(conc2, solute)
-	question += '<p>Prepare {0} of {1}% {2} solution using the stock solution ({3}).</p>'.format(volume_text, conc1, solute, unit)
+		volume_text = lab_helper_lib.format_monospace(f"{volume} mL")
+	stock_text = lab_helper_lib.format_stock(lab_helper_lib.format_monospace(f"{conc2}%"))
+	stock_label = lab_helper_lib.format_stock('stock solution')
+	target_text = lab_helper_lib.format_monospace(f"{conc1}%")
 	full_name = solute_full_names.get(solute, solute)
+	compound_text = solute
+	if full_name != solute:
+		compound_text = f"{full_name} ({solute})"
 	mw = molecular_weights[solute]
-	question += "<p>The molecular weight of {0} ({1}) is {2:.2f} g/mol.</p>".format(full_name.lower(), solute, mw)
-	question += "<p>What volume of aliquot in {0} do you add to distilled water to make the final dilution?</p>".format(unit)
+	mw_text = lab_helper_lib.format_monospace(f"{mw:.2f} g/mol")
+	info_rows = [
+		('Final volume', volume_text),
+		('Target concentration', target_text),
+		('Stock concentration', stock_text),
+		('Molecular weight', mw_text),
+		('Aliquot unit', unit),
+	]
+	question = lab_helper_lib.build_info_table(info_rows, compound_text)
+	question += '<p>You have an already prepared {0} of {1} {2} on the shelf.</p>'.format(
+		stock_label, stock_text, solute
+	)
+	key_request = lab_helper_lib.format_key_request(f"{volume_text} of {target_text} {solute} solution")
+	question += '<p>Prepare <strong>{0}</strong> using the {1}.</p>'.format(key_request, stock_label)
+	diluent_label = lab_helper_lib.format_diluent('distilled water')
+	question += "<p>What volume of aliquot in {0} do you add to {1} to make the final dilution?</p>".format(
+		unit, diluent_label
+	)
 	return question
 
 #==================================================

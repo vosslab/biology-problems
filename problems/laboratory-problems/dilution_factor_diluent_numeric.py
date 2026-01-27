@@ -2,14 +2,19 @@
 
 import random
 import bptools
+import lab_helper_lib
 
 #==================================================
 #==================================================
 def make_question_text(volume, df_value):
-	volume_text = f"<span style='font-family: monospace;'>{volume:.1f} mL</span>"
+	volume_text = lab_helper_lib.format_monospace(f"{volume:.1f} mL")
+	df_text = lab_helper_lib.format_df(lab_helper_lib.format_monospace(f"DF={df_value}"))
+	key_request = lab_helper_lib.format_key_request(f"{volume_text} with dilution factor {df_text}")
+	aliquot_text = lab_helper_lib.format_aliquot('aliquoted sample')
+	diluent_text = lab_helper_lib.format_diluent('diluent')
 	question = (
-		f"<p>You are preparing {volume_text} of a new solution with a dilution factor of DF={df_value}.</p>"
-		"<p>What volume of diluent in milliliters (mL) do you add to the aliquoted sample?</p>"
+		f"<p>You are preparing {key_request}.</p>"
+		f"<p>What volume of {diluent_text} in milliliters (mL) do you add to the {aliquot_text}?</p>"
 	)
 	return question
 

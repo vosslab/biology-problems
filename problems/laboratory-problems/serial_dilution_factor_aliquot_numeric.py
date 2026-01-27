@@ -2,6 +2,7 @@
 
 import random
 import bptools
+import lab_helper_lib
 
 df_ratios = [
 	(2, 1), (3, 1), (4, 1),
@@ -15,11 +16,19 @@ df_ratios = [
 #==================================================
 #==================================================
 def question_text(volume, df1, df2):
-	volume_text = f"<span style='font-family: monospace;'>{volume} &mu;L</span>"
+	volume_text = lab_helper_lib.format_monospace(f"{volume} &mu;L")
+	df1_text = lab_helper_lib.format_df(lab_helper_lib.format_monospace(f"DF={df1}"))
+	df2_text = lab_helper_lib.format_df(lab_helper_lib.format_monospace(f"DF={df2}"))
+	df1_request = lab_helper_lib.format_key_request(df1_text)
+	df2_request = lab_helper_lib.format_key_request(df2_text)
+	volume_request = lab_helper_lib.format_key_request(volume_text)
+	aliquot_text = lab_helper_lib.format_aliquot('aliquot')
+	aliquot_sample = lab_helper_lib.format_aliquot('previous diluted sample')
+	diluent_text = lab_helper_lib.format_diluent('distilled water')
 	question = (
-		f"<p>Using a previous diluted sample at DF={df1}, "
-		f"create a new dilution with a final dilution of DF={df2} and a total volume of {volume_text}.</p>"
-		"<p>What volume of aliquot in microliters (&mu;L) do you add to distilled water to make the dilution?</p>"
+		f"<p>Using a {aliquot_sample} at {df1_request}, "
+		f"create a new dilution with a final dilution of {df2_request} and a total volume of {volume_request}.</p>"
+		f"<p>What volume of {aliquot_text} in microliters (&mu;L) do you add to {diluent_text} to make the dilution?</p>"
 	)
 	return question
 

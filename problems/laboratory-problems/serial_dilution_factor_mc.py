@@ -3,6 +3,7 @@
 import random
 
 import bptools
+import lab_helper_lib
 
 df_ratios = [
 	(2, 1), (3, 1), (4, 1),
@@ -15,10 +16,16 @@ df_ratios = [
 #==================================================
 #==================================================
 def question_text(volume, df1, df2):
-	volume_text = f"<span style='font-family: monospace;'>{volume} &mu;L</span>"
+	volume_text = lab_helper_lib.format_monospace(f"{volume} &mu;L")
+	df1_text = lab_helper_lib.format_df(lab_helper_lib.format_monospace(f"DF={df1}"))
+	df2_text = lab_helper_lib.format_df(lab_helper_lib.format_monospace(f"DF={df2}"))
+	df1_request = lab_helper_lib.format_key_request(df1_text)
+	df2_request = lab_helper_lib.format_key_request(df2_text)
+	volume_request = lab_helper_lib.format_key_request(volume_text)
+	aliquot_sample = lab_helper_lib.format_aliquot('previous diluted sample')
 	question = (
-		f"<p>Using a previous diluted sample at DF={df1}, create a new dilution with a final dilution of DF={df2}.</p>"
-		f"<p>How much liquid do you add to make a total of {volume_text}?</p>"
+		f"<p>Using a {aliquot_sample} at {df1_request}, create a new dilution with a final dilution of {df2_request}.</p>"
+		f"<p>How much liquid do you add to make a total of {volume_request}?</p>"
 	)
 	return question
 
@@ -36,11 +43,16 @@ def df_ratio_to_values(df_ratio):
 #==================================================
 #==================================================
 def format_volumes(vol1, vol2):
+	aliquot_amount = lab_helper_lib.format_monospace(f"{vol1:.1f} mL")
+	diluent_amount = lab_helper_lib.format_monospace(f"{vol2:.0f} mL")
+	aliquot_text = lab_helper_lib.format_aliquot(
+		f"{aliquot_amount} previously diluted sample (aliquot)"
+	)
+	diluent_text = lab_helper_lib.format_diluent(
+		f"{diluent_amount} distilled water (diluent)"
+	)
 	choice_text = (
-		f"<span style='font-family: monospace;'>{vol1:.1f} mL</span> "
-		f"previously diluted sample (aliquot)<br/>&nbsp;&nbsp;"
-		f"<span style='color: darkblue;'><span style='font-family: monospace;'>{vol2:.0f} mL</span> "
-		f"distilled water (diluent)</span>"
+		f"{aliquot_text}<br/>&nbsp;&nbsp;{diluent_text}"
 	)
 	return choice_text
 #==================================================
