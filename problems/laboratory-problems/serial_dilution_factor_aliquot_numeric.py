@@ -22,13 +22,13 @@ def question_text(volume, df1, df2):
 	df1_request = lab_helper_lib.format_key_request(df1_text)
 	df2_request = lab_helper_lib.format_key_request(df2_text)
 	volume_request = lab_helper_lib.format_key_request(volume_text)
-	aliquot_text = lab_helper_lib.format_aliquot('aliquot')
+	aliquot_text = lab_helper_lib.format_aliquot('volume of aliquot')
 	aliquot_sample = lab_helper_lib.format_aliquot('previous diluted sample')
 	diluent_text = lab_helper_lib.format_diluent('distilled water')
 	question = (
 		f"<p>Using a {aliquot_sample} at {df1_request}, "
 		f"create a new dilution with a final dilution of {df2_request} and a total volume of {volume_request}.</p>"
-		f"<p>What volume of {aliquot_text} in microliters (&mu;L) do you add to {diluent_text} to make the dilution?</p>"
+		f"<p>What {aliquot_text} in microliters (&mu;L) do you add to {diluent_text} to make the dilution?</p>"
 	)
 	return question
 

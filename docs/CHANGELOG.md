@@ -121,6 +121,7 @@
 - Applied `lab_helper_lib.py` table formatting to `problems/laboratory-problems/percent_dilution_aliquot_numeric.py` for compound context and clearer dilution prompts.
 - Emphasized key dilution details with monospace and larger text in `problems/laboratory-problems/dilution_factor_*.py` and `problems/laboratory-problems/serial_dilution_factor_*.py`.
 - Standardized color cues for DF, aliquot, diluent, and stock solution text across laboratory dilution questions using `lab_helper_lib.py`.
+- Updated dilution prompts to color the full aliquot/diluent/stock phrases and aligned the diluent blue to `#005cb3` in `lab_helper_lib.py`.
 
 ## 2026-01-22
 - Resolved merge conflicts in [docs/CODE_ARCHITECTURE.md](docs/CODE_ARCHITECTURE.md) and [docs/FILE_STRUCTURE.md](docs/FILE_STRUCTURE.md) to align test/tool references with the current repo layout.

@@ -28,7 +28,7 @@ def make_question_text(volume, df_value):
 def format_volumes(vol1, vol2):
 	aliquot_amount = lab_helper_lib.format_monospace(f"{vol1:.1f} mL")
 	diluent_amount = lab_helper_lib.format_monospace(f"{vol2:.1f} mL")
-	aliquot_text = lab_helper_lib.format_aliquot(f"{aliquot_amount} stock solution (aliquot)")
+	aliquot_text = lab_helper_lib.format_stock(f"{aliquot_amount} stock solution (aliquot)")
 	diluent_text = lab_helper_lib.format_diluent(f"{diluent_amount} distilled water (diluent)")
 	choice_text = (
 		f"{aliquot_text}<br/>&nbsp;&nbsp;{diluent_text}"

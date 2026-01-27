@@ -10,11 +10,11 @@ def make_question_text(volume_mL, df_value):
 	volume_text = lab_helper_lib.format_monospace(f"{volume_mL:.1f} mL")
 	df_text = lab_helper_lib.format_df(lab_helper_lib.format_monospace(f"DF={df_value}"))
 	key_request = lab_helper_lib.format_key_request(f"{volume_text} with dilution factor {df_text}")
-	aliquot_text = lab_helper_lib.format_aliquot('aliquot')
+	aliquot_text = lab_helper_lib.format_aliquot('volume of aliquot')
 	diluent_text = lab_helper_lib.format_diluent('distilled water')
 	question = (
 		f"<p>You are preparing {key_request}.</p>"
-		f"<p>What volume of {aliquot_text} in milliliters (mL) do you add to {diluent_text} to make the dilution?</p>"
+		f"<p>What {aliquot_text} in milliliters (mL) do you add to {diluent_text} to make the dilution?</p>"
 	)
 	return question
 

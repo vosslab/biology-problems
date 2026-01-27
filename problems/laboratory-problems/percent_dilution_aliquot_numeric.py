@@ -53,7 +53,8 @@ def question_text(solute, volume, conc1, conc2):
 		volume_text = lab_helper_lib.format_monospace(f"{volume} &mu;L")
 	else:
 		volume_text = lab_helper_lib.format_monospace(f"{volume} mL")
-	stock_text = lab_helper_lib.format_stock(lab_helper_lib.format_monospace(f"{conc2}%"))
+	stock_text = lab_helper_lib.format_monospace(f"{conc2}%")
+	stock_phrase = lab_helper_lib.format_stock(f"stock solution of {stock_text} {solute}")
 	stock_label = lab_helper_lib.format_stock('stock solution')
 	target_text = lab_helper_lib.format_monospace(f"{conc1}%")
 	full_name = solute_full_names.get(solute, solute)
@@ -65,19 +66,18 @@ def question_text(solute, volume, conc1, conc2):
 	info_rows = [
 		('Final volume', volume_text),
 		('Target concentration', target_text),
-		('Stock concentration', stock_text),
+		('Stock concentration', lab_helper_lib.format_stock(stock_text)),
 		('Molecular weight', mw_text),
 		('Aliquot unit', unit),
 	]
 	question = lab_helper_lib.build_info_table(info_rows, compound_text)
-	question += '<p>You have an already prepared {0} of {1} {2} on the shelf.</p>'.format(
-		stock_label, stock_text, solute
-	)
+	question += '<p>You have an already prepared {0} on the shelf.</p>'.format(stock_phrase)
 	key_request = lab_helper_lib.format_key_request(f"{volume_text} of {target_text} {solute} solution")
 	question += '<p>Prepare <strong>{0}</strong> using the {1}.</p>'.format(key_request, stock_label)
 	diluent_label = lab_helper_lib.format_diluent('distilled water')
-	question += "<p>What volume of aliquot in {0} do you add to {1} to make the final dilution?</p>".format(
-		unit, diluent_label
+	aliquot_phrase = lab_helper_lib.format_aliquot('volume of aliquot')
+	question += "<p>What {0} in {1} do you add to {2} to make the final dilution?</p>".format(
+		aliquot_phrase, unit, diluent_label
 	)
 	return question
 
