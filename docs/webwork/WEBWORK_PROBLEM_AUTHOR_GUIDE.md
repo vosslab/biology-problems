@@ -133,6 +133,32 @@ Rules:
 
 ---
 
+## HTML in PGML (PG 2.17)
+
+For PG 2.17, raw HTML layouts are reliable when you keep TeX output empty.
+This is the recommended pattern for two-column matching layouts.
+
+Rules:
+
+- Emit raw HTML only in `MODES(TeX => '', HTML => '...')` so TeX output is empty.
+- Use `HEADER_TEXT(MODES(TeX => '', HTML => <<'END_STYLE'))` for CSS blocks.
+- If a Perl variable contains HTML (`<span>`, `<div>`), output it as `[$var]*`.
+- Avoid PGML tag wrapper syntax (`[< ... >]{...}`) for complex layouts; it is
+  fragile in PG 2.17.
+- Do not use blocked tags like `table`, `tr`, `td`.
+
+Example (HTML-only wrapper):
+
+```perl
+[@ MODES(TeX => '', HTML => '<div class="two-column"><div>') @]*
+... left column ...
+[@ MODES(TeX => '', HTML => '</div><div class="right-col">') @]*
+... right column ...
+[@ MODES(TeX => '', HTML => '</div></div>') @]*
+```
+
+---
+
 ## Inline grading requirements (required)
 
 ### Principle

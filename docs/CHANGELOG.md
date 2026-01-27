@@ -20,6 +20,13 @@
 - Updated [problems/matching_sets/yaml_which_one_mc_to_pgml.py](../problems/matching_sets/yaml_which_one_mc_to_pgml.py) and [problems/multiple_choice_statements/yaml_mc_statements_to_pgml.py](../problems/multiple_choice_statements/yaml_mc_statements_to_pgml.py) to use a local `PGrandom` seeded by `problemSeed` for question selection and to perform seed-stable choice shuffling with `randomize => 0`.
 - Updated [problems/matching_sets/yaml_match_to_pgml.py](../problems/matching_sets/yaml_match_to_pgml.py) to emit PGML tag wrappers instead of raw `<div>` tags and remove `MODES(...)` calls inside eval blocks, resolving pgml-lint HTML/MODES errors.
 - Updated [tests/test_pgml_generators.py](../tests/test_pgml_generators.py) to expect `PGsort(...)` in the matching generator seed-determinism output.
+- Adjusted [problems/matching_sets/yaml_match_to_pgml.py](../problems/matching_sets/yaml_match_to_pgml.py) to keep each PGML tag wrapper on a single line so pgml-lint and PG 2.17 do not emit `[< ... line break` parsing errors.
+- Updated [problems/matching_sets/yaml_match_to_pgml.py](../problems/matching_sets/yaml_match_to_pgml.py) to restore the MODES-based HTML wrapper layout for PG 2.17 rendering, keeping TeX output empty.
+- Documented PG 2.17 HTML-in-PGML guidance in [docs/webwork/WEBWORK_PROBLEM_AUTHOR_GUIDE.md](webwork/WEBWORK_PROBLEM_AUTHOR_GUIDE.md) and clarified pgml-lint exceptions in [docs/webwork/PGML_LINTER_EXPECTATIONS.md](webwork/PGML_LINTER_EXPECTATIONS.md).
+- Exposed `%answer_index` as a package variable in [problems/matching_sets/yaml_match_to_pgml.py](../problems/matching_sets/yaml_match_to_pgml.py) so PGML solution blocks can display correct answer letters.
+- Updated [problems/matching_sets/yaml_match_to_pgml.py](../problems/matching_sets/yaml_match_to_pgml.py) solution output to format answers as numbered mappings (for example `1-C, 2-B, 3-A`).
+- Added a general `pg-render` shortcut in [source_me.sh](../source_me.sh) to run the renderer script with arbitrary arguments (for example `-r -i file.pgml`).
+- Updated hydrogen bond examples in [problems/matching_sets/biochemistry/bond_types.yml](../problems/matching_sets/biochemistry/bond_types.yml) to use escaped Unicode middle dots (`\u00b7`) for a dotted hydrogen bond line.
 
 ## 2026-01-26
 - Added [problems/matching_sets/color_render_test.pg](../problems/matching_sets/color_render_test.pg) as a single-page PGML color rendering probe for MathJax and CSS styling methods.

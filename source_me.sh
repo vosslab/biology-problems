@@ -45,6 +45,7 @@ echo "You can now run generators with: python3 path/to/script.py"
 # PGML Linter Setup
 # ================================
 PGML_LINTER_SCRIPT="$PGML_LINTER_DIR/tools/webwork_pgml_simple_lint.py"
+PG_RENDERER_SCRIPT="$REPO_PARENT_DIR/webwork-pg-renderer/script/lint_pg_via_renderer_api.py"
 
 if [[ -f "$PGML_LINTER_SCRIPT" ]]; then
 	# Create a shell function to invoke the linter
@@ -55,4 +56,17 @@ if [[ -f "$PGML_LINTER_SCRIPT" ]]; then
 	echo "PGML linter available: pgml-lint -i file.pg"
 else
 	echo "Warning: PGML linter not found at $PGML_LINTER_SCRIPT" >&2
+fi
+
+# ================================
+# PG Renderer Shortcut
+# ================================
+if [[ -f "$PG_RENDERER_SCRIPT" ]]; then
+	pg-render() {
+		"$PYTHON_EXE" "$PG_RENDERER_SCRIPT" "$@"
+	}
+	export -f pg-render
+	echo "Renderer shortcut available: pg-render -r -i file.pgml"
+else
+	echo "Warning: renderer script not found at $PG_RENDERER_SCRIPT" >&2
 fi

@@ -43,6 +43,12 @@ Linter checks:
 - Warn when `MODES(` appears inside a `[@ ... @]` block.
 - Recommend using PGML tag wrappers or raw HTML outside eval blocks.
 
+PG 2.17 exception:
+- For two-column matching layouts, we intentionally use
+  `MODES(TeX => '', HTML => '<div ...>')` inside `[@ ... @]` to emit raw HTML.
+  In this repo, treat that pattern as allowed (warn at most) because the
+  PG 2.17 renderer requires it for stable layout.
+
 ## Mismatch: MathJax color does not render
 
 Expectation:
@@ -67,6 +73,11 @@ What actually happens:
 Linter checks:
 - Error on `<table`, `<tr`, `<td` in PGML output.
 - Suggest `niceTables.pl` or flexbox `div` layout.
+
+PG 2.17 exception:
+- Allow `<div>` and `<span>` in PGML output when emitted through HTML-only
+  `MODES(TeX => '', HTML => ...)` wrappers. This is the recommended pattern in
+  `WEBWORK_PROBLEM_AUTHOR_GUIDE.md` for matching layouts.
 
 ## Mismatch: Ordered list auto-parsing
 
