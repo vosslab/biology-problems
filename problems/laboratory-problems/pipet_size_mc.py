@@ -53,53 +53,108 @@ def get_volume(pipet):
 	return volume
 
 ##=========================
-def pipetstr(pipet, rawdigits):
-	colors = pipet_colors[pipet]
-	bg_color = pipet_bg_colors[pipet]
+def get_raw_digits(volume, pipet):
+	rawdigits = int(volume * pipet_volume_multiplier[pipet])
+	return rawdigits
 
+##=========================
+def get_pipet_digits(rawdigits):
 	digits = [0,0,0]
 	digits[2] = rawdigits % 10
 	digits[1] = (rawdigits % 100) // 10
 	digits[0] = (rawdigits % 1000) // 100
+	return digits
 
-	pipetstr = ''
-	pipetstr += "<table border='0' cellpadding='0' cellspacing='6'><tbody><tr>"
-	pipetstr += "<td style='vertical-align: middle;'>"
-	pipetstr += (
+##=========================
+def build_pipet_label_html(pipet, bg_color):
+	label_html = (
 		f"<span style='display: inline-block; width: 52px; height: 52px; "
 		f"line-height: 52px; border-radius: 50%; border: 1px solid #333; "
 		f"text-align: center; background-color: {bg_color}; "
 		f"font-family: Arial, sans-serif; font-weight: bold;'>"
 		f"{pipet.upper()}</span>"
 	)
-	pipetstr += "</td><td style='vertical-align: middle;'>"
-	pipetstr += (
-		f"<table border='0' cellpadding='2' cellspacing='0' "
-		f"style='border-collapse: separate; border-spacing: 0; "
-		f"border-radius: 10px 10px 6px 6px; overflow: hidden; "
-		f"background-color: {bg_color}; border: 1px solid #333;'>"
-		"<tbody>"
-	)
-	pipetstr += f"<tr><td align='center'><span style='color: {colors[0]};'>&nbsp;<strong>{digits[0]}</strong></span></td></tr>"
-	pipetstr += f"<tr><td align='center'><span style='color: {colors[1]};'>&nbsp;<strong>{digits[1]}</strong></span></td></tr>"
-	pipetstr += f"<tr><td align='center'><span style='color: {colors[2]};'><strong>{digits[2]}</strong></span></td></tr>"
-	pipetstr += '</tbody></table></td></tr></tbody></table>'
-	return pipetstr
+	return label_html
 
 ##=========================
-def get_raw_digits(volume, pipet):
-	rawdigits = int(volume * pipet_volume_multiplier[pipet])
-	return rawdigits
+def build_pipet_digit_row_html(digit, color, add_space):
+	space_prefix = ''
+	row_html = (
+		f"<tr><td align='center' style='border: 1px solid #333; "
+		f"width: 20px; height: 20px; background-color: #ffffff; "
+		f"padding: 0; text-align: center; vertical-align: middle;'>"
+		f"<span style='color: {color}; display: block; line-height: 20px;'>"
+		f"{space_prefix}<strong>{digit}</strong></span>"
+		f"</td></tr>"
+	)
+	return row_html
+
+##=========================
+def build_pipet_digits_table_html(digits, colors):
+	rows = []
+	rows.append(build_pipet_digit_row_html(digits[0], colors[0], True))
+	rows.append(build_pipet_digit_row_html(digits[1], colors[1], True))
+	rows.append(build_pipet_digit_row_html(digits[2], colors[2], False))
+	rows_html = ''.join(rows)
+	table_html = (
+		f"<table border='0' cellpadding='2' cellspacing='0' "
+		f"style='border-collapse: collapse; border-spacing: 0; "
+		f"border-radius: 0; overflow: hidden; "
+		f"background-color: #ffffff; border: 1px solid #333;'>"
+		f"<tbody>{rows_html}</tbody></table>"
+	)
+	return table_html
+
+##=========================
+def build_pipet_display_html(label_html, digits_html):
+	pipet_html = ''
+	pipet_html += "<table border='0' cellpadding='0' cellspacing='6'><tbody><tr>"
+	pipet_html += "<td style='vertical-align: middle;'>"
+	pipet_html += label_html
+	pipet_html += "</td><td style='vertical-align: middle;'>"
+	pipet_html += digits_html
+	pipet_html += '</td></tr></tbody></table>'
+	return pipet_html
+
+##=========================
+def pipetstr(pipet, rawdigits):
+	colors = pipet_colors[pipet]
+	bg_color = pipet_bg_colors[pipet]
+	digits = get_pipet_digits(rawdigits)
+	label_html = build_pipet_label_html(pipet, bg_color)
+	digits_html = build_pipet_digits_table_html(digits, colors)
+	pipet_html = build_pipet_display_html(label_html, digits_html)
+	return pipet_html
+
+##=========================
+def format_volume_text(volume):
+	if volume > 10:
+		value_text = f"{volume:.0f}"
+	else:
+		value_text = f"{volume:.1f}"
+	volume_text = f"<span style='font-family: monospace;'>{value_text} &mu;L</span>"
+	return volume_text
+
+##=========================
+def get_alternate_volume(volume, rawdigits):
+	alternate_volume = volume * 10
+	if rawdigits >= 100:
+		alternate_volume = volume // 10
+	return alternate_volume
+
+##=========================
+def get_alternate_rawdigits(volume, pipet, rawdigits):
+	alternate_volume = get_alternate_volume(volume, rawdigits)
+	alternate_rawdigits = get_raw_digits(alternate_volume, pipet)
+	return alternate_rawdigits
 
 ##=========================
 def question_text(volume):
 	# <p>Which pipet and setting would you use to pipet 230 &mu;L using only one step?</p>
-	volume_text = f"<span style='font-family: monospace;'>{volume:.1f} &mu;L</span>"
-	if volume > 10:
-		volume_text = f"<span style='font-family: monospace;'>{volume:.0f} &mu;L</span>"
-		question = "Which pipet and setting would you use to pipet {0} using only one step?".format(volume_text)
-	else:
-		question = "Which pipet and setting would you use to pipet {0} using only one step?".format(volume_text)
+	volume_text = format_volume_text(volume)
+	question = "Which pipet and setting would you use to pipet {0} using only one step?".format(volume_text)
+	hint_text = "Hint: <i>Red digits indicate the different decimal place value.</i>"
+	question = f"<p>{question}</p><p>{hint_text}</p>"
 	return question
 
 ##=========================
@@ -112,10 +167,7 @@ def get_wrong_choices(volume, pipet):
 	#	volume2 = volume // 10
 	choices = []
 	rawdigits1 = get_raw_digits(volume, pipet)
-	if rawdigits1 < 100:
-		rawdigits2 = get_raw_digits(volume*10, pipet)
-	else:
-		rawdigits2 = get_raw_digits(volume//10, pipet)
+	rawdigits2 = get_alternate_rawdigits(volume, pipet, rawdigits1)
 
 	for pipet in pipet_choices:
 		for value in (rawdigits1, rawdigits2):
@@ -157,10 +209,6 @@ def main():
 
 if __name__ == '__main__':
 	main()
-
-
-
-
 
 
 

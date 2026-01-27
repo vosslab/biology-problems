@@ -108,6 +108,10 @@
 - Added [problems/matching_sets/matching_full_fix.pgml](../problems/matching_sets/matching_full_fix.pgml) as a parserPopUp-based matching example (MatchingAlt-style, HTML-only layout) derived from [problems/matching_sets/matching_semifix.pgml](../problems/matching_sets/matching_semifix.pgml).
 - Replaced the PGML solution join block in [problems/matching_sets/matching_full_fix.pgml](../problems/matching_sets/matching_full_fix.pgml) with a precomputed answer string to avoid unstable inline evaluation.
 - Styled pipet labels as circular badges and added subtle pipet-specific colors with rounded digit windows in `problems/laboratory-problems/pipet_size_mc.py`.
+- Refactored `problems/laboratory-problems/pipet_size_mc.py` to split pipet HTML and volume formatting into helper subfunctions.
+- Changed pipet digit windows to rigid boxed cells with white backgrounds to match the side display in `problems/laboratory-problems/pipet_size_mc.py`.
+- Centered pipet digit text in the boxed display cells in `problems/laboratory-problems/pipet_size_mc.py`.
+- Added a red-digit place-value hint to the pipet question text in `problems/laboratory-problems/pipet_size_mc.py`.
 
 ## 2026-01-22
 - Resolved merge conflicts in [docs/CODE_ARCHITECTURE.md](docs/CODE_ARCHITECTURE.md) and [docs/FILE_STRUCTURE.md](docs/FILE_STRUCTURE.md) to align test/tool references with the current repo layout.
