@@ -88,7 +88,23 @@ def generate_pg_file(smiles_by_type, output_path):
 	nucleic_acids_array = format_smiles_array(smiles_by_type['nucleic acids'])
 
 	# Generate the PG file
-	pg_content = f'''DOCUMENT();
+	pg_content = f'''## DESCRIPTION
+## Identify the macromolecule type from a rendered chemical structure.
+## ENDDESCRIPTION
+## KEYWORDS('macromolecules','structure identification','pubchem','rdkit')
+## DBsubject('Biochemistry')
+## DBchapter('Macromolecules')
+## DBsection('Identification')
+## Date('')
+## Author('')
+## Institution('')
+## TitleText1('')
+## EditionText1('')
+## AuthorText1('')
+## Section1('')
+## Problem1('')
+
+DOCUMENT();
 loadMacros(
 	"PGstandard.pl",
 	"PGML.pl",
@@ -125,45 +141,78 @@ TEXT(beginproblem());
 # PROBLEM SETUP
 # =============================================================================
 
-# Randomly select a macromolecule type
+# Randomly select a macromolecule type (seed-stable)
 @types = ('proteins', 'lipids', 'carbohydrates', 'nucleic acids');
-$type_index = random(0, 3);
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+$type_index = $local_random->random(0, 3, 1);
 $selected_type = $types[$type_index];
 
 # Get the corresponding array and select a random SMILES
 if ($selected_type eq 'proteins') {{
-	$mol_smiles = $proteins[random(0, $#proteins)];
-	$correct_answer = "Proteins (amino acids and dipeptides)";
+	$mol_smiles = $proteins[$local_random->random(0, $#proteins, 1)];
+	$correct_answer_plain = "Proteins (amino acids and dipeptides)";
 }} elsif ($selected_type eq 'lipids') {{
-	$mol_smiles = $lipids[random(0, $#lipids)];
-	$correct_answer = "Lipids (fatty acids)";
+	$mol_smiles = $lipids[$local_random->random(0, $#lipids, 1)];
+	$correct_answer_plain = "Lipids (fatty acids)";
 }} elsif ($selected_type eq 'carbohydrates') {{
-	$mol_smiles = $carbohydrates[random(0, $#carbohydrates)];
-	$correct_answer = "Carbohydrates (monosaccharides)";
+	$mol_smiles = $carbohydrates[$local_random->random(0, $#carbohydrates, 1)];
+	$correct_answer_plain = "Carbohydrates (monosaccharides)";
 }} elsif ($selected_type eq 'nucleic acids') {{
-	$mol_smiles = $nucleic_acids[random(0, $#nucleic_acids)];
-	$correct_answer = "Nucleic acids (nucleobases)";
+	$mol_smiles = $nucleic_acids[$local_random->random(0, $#nucleic_acids, 1)];
+	$correct_answer_plain = "Nucleic acids (nucleobases)";
 }}
 
-# Escape SMILES for JavaScript (backslashes and quotes)
-$mol_smiles_js = $mol_smiles;
-$mol_smiles_js =~ s/\\\\/\\\\\\\\/g;  # Escape backslashes
-$mol_smiles_js =~ s/"/\\\\"/g;    # Escape double quotes
+# Escape SMILES for HTML attribute
+$mol_smiles_attr = $mol_smiles;
+$mol_smiles_attr =~ s/&/&amp;/g;
+$mol_smiles_attr =~ s/"/&quot;/g;
+$mol_smiles_attr =~ s/</&lt;/g;
+$mol_smiles_attr =~ s/>/&gt;/g;
 
-# Create radio buttons
-$mc = RadioButtons(
+	# Create colorized choices (HTML) with plain TeX fallbacks
+	$choice_carbohydrates = MODES(
+		TeX => '',
+		HTML => '<strong><span style="color: #0a9bf5;">Carbohydrates</span></strong> (monosaccharides)',
+	);
+	$choice_lipids = MODES(
+		TeX => '',
+		HTML => '<strong><span style="color: #e69100;">Lipids</span></strong> (fatty acids)',
+	);
+	$choice_proteins = MODES(
+		TeX => '',
+		HTML => '<strong><span style="color: #009900;">Proteins</span></strong> (amino acids and dipeptides)',
+	);
+	$choice_nucleic_acids = MODES(
+		TeX => '',
+		HTML => '<strong><span style="color: #e60000;">Nucleic acids</span></strong> (nucleobases)',
+	);
+
+	# Map the correct answer to its colored choice
+	if ($selected_type eq 'proteins') {{
+		$correct_answer = $choice_proteins;
+	}} elsif ($selected_type eq 'lipids') {{
+		$correct_answer = $choice_lipids;
+	}} elsif ($selected_type eq 'carbohydrates') {{
+		$correct_answer = $choice_carbohydrates;
+	}} elsif ($selected_type eq 'nucleic acids') {{
+		$correct_answer = $choice_nucleic_acids;
+	}}
+
+	# Create radio buttons
+	$mc = RadioButtons(
 	[
-		"Carbohydrates (monosaccharides)",
-		"Lipids (fatty acids)",
-		"Proteins (amino acids and dipeptides)",
-		"Nucleic acids (nucleobases)",
+		$choice_carbohydrates,
+		$choice_lipids,
+		$choice_proteins,
+		$choice_nucleic_acids,
 	],
 	$correct_answer,
-	# Order is automatically randomized
-);
+	randomize => 1,
+	);
 
 # Generate unique canvas ID
-$canvas_id = "canvas_" . random(10000, 99999);
+$canvas_id = "canvas_" . $local_random->random(10000, 99999, 1);
 
 # =============================================================================
 # HEADER: Load RDKit.js
@@ -171,21 +220,44 @@ $canvas_id = "canvas_" . random(10000, 99999);
 HEADER_TEXT(<<'EOF');
 <script src="https://unpkg.com/@rdkit/rdkit/dist/RDKit_minimal.js"></script>
 <script>
-function initMolecule(canvasId, smiles) {{
-	initRDKitModule().then(function(RDKit) {{
-		console.log("RDKit version: " + RDKit.version());
-		const mol = RDKit.get_mol(smiles);
-		const mdetails = {{"explicitMethyl": true}};
-		const canvas = document.getElementById(canvasId);
-		if (canvas && mol) {{
-			mol.draw_to_canvas_with_highlights(canvas, JSON.stringify(mdetails));
-		}}
+let RDKitReady = null;
+function getRDKit() {{
+	if (!RDKitReady) {{
+		RDKitReady = initRDKitModule();
+	}}
+	return RDKitReady;
+}}
+function initMoleculeCanvases() {{
+	getRDKit().then(function(RDKit) {{
+		const canvases = document.querySelectorAll('canvas[data-smiles]');
+		canvases.forEach((canvas) => {{
+			const smiles = canvas.dataset.smiles;
+			if (!smiles) {{
+				return;
+			}}
+			const mol = RDKit.get_mol(smiles);
+			const mdetails = {{"explicitMethyl": true}};
+			if (canvas && mol) {{
+				mol.draw_to_canvas_with_highlights(canvas, JSON.stringify(mdetails));
+			}}
+		}});
 	}}).catch(error => {{
 		console.error('Error initializing RDKit:', error);
 	}});
 }}
+if (document.readyState === 'loading') {{
+	document.addEventListener('DOMContentLoaded', initMoleculeCanvases);
+}} else {{
+	initMoleculeCanvases();
+}}
 </script>
 EOF
+
+# Canvas HTML (HTML-only)
+$canvas_html = MODES(
+	TeX => '',
+	HTML => '<canvas id="' . $canvas_id . '" width="480" height="270" data-smiles="' . $mol_smiles_attr . '"></canvas>',
+);
 
 # =============================================================================
 # PROBLEM TEXT
@@ -199,10 +271,7 @@ Study the chemical structure below and identify which of the four main types of 
 
 ---
 
-[@
-"<canvas id='$canvas_id' width='480' height='400'></canvas>" .
-"<script>initMolecule('$canvas_id', \\"$mol_smiles_js\\");</script>"
-@]*
+[$canvas_html]*
 
 ---
 
@@ -258,7 +327,7 @@ END_PGML_HINT
 
 BEGIN_PGML_SOLUTION
 
-The correct answer is **[$correct_answer]**.
+The correct answer is [$correct_answer_plain].
 
 END_PGML_SOLUTION
 
