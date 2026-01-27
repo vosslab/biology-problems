@@ -3,6 +3,7 @@
 import random
 
 import bptools
+import lab_helper_lib
 
 
 solute_full_names = {
@@ -32,19 +33,26 @@ molecular_weights = {
 }
 
 def question_text(solute, volume, concentration):
-	full_name = solute_full_names.get(solute, None)
-	if full_name is None:
-		merge_name = solute
-	else:
+	full_name = solute_full_names.get(solute, solute)
+	merge_name = solute
+	if full_name != solute:
 		merge_name = f"{full_name.lower()} ({solute})"
-	volume_text = f"<span style='font-family: monospace;'>{volume} mL</span>"
-	concentration_text = f"<span style='font-family: monospace;'>{concentration} mM</span>"
-	question = f"<p>How many milligrams (mg) of {merge_name} would you need to make "
-	question += f"<strong>{volume_text} of a {concentration_text}</strong> {solute} solution?</p> "
-	mw = molecular_weights[solute]
-	question += f"<p>The molecular weight of {merge_name} is {mw:.2f} g/mol. "
-	question += f"{solute} is a solid powder at room temperature.</p> "
-
+	compound_text = solute
+	if full_name != solute:
+		compound_text = f"{full_name} ({solute})"
+	volume_text = lab_helper_lib.format_monospace(f"{volume} mL")
+	concentration_text = lab_helper_lib.format_monospace(f"{concentration} mM")
+	mw_text = lab_helper_lib.format_monospace(f"{molecular_weights[solute]:.2f} g/mol")
+	info_rows = [
+		('Volume', volume_text),
+		('Concentration', concentration_text),
+		('Molecular weight', mw_text),
+		('State', 'Solid powder at room temperature'),
+	]
+	question = lab_helper_lib.build_info_table(info_rows, compound_text)
+	key_request = lab_helper_lib.format_key_request(f"{volume_text} of a {concentration_text}")
+	question += f"<p>How many milligrams (mg) of {merge_name} would you need to make "
+	question += f"<strong>{key_request}</strong> {solute} solution?</p> "
 	return question
 
 #==================================================

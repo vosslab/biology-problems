@@ -2,6 +2,7 @@
 
 import random
 import bptools
+import lab_helper_lib
 
 solute_full_names = {
 	'NaCl': 'Sodium chloride',
@@ -32,14 +33,22 @@ molecular_weights = {
 
 def question_text(solute, volume, concentration):
 	full_name = solute_full_names.get(solute, solute)
-	volume_text = f"<span style='font-family: monospace;'>{volume} mL</span>"
-	concentration_text = f"<span style='font-family: monospace;'>{concentration}% (w/v)</span>"
-	question = "<p>How many grams (g) of {0} ({1}) you would need to make ".format(full_name.lower(), solute)
-	question += "<strong>{1} of a {2}</strong> {0} solution?</p> ".format(solute, volume_text, concentration_text)
-	mw = molecular_weights[solute]
-	question += "<p>The molecular weight of {0} ({1}) is {2:.2f} g/mol. ".format(full_name.lower(), solute, mw)
-	question += "{0} is a solid powder at room temperature.</p> ".format(full_name)
-
+	compound_text = solute
+	if full_name != solute:
+		compound_text = f"{full_name} ({solute})"
+	volume_text = lab_helper_lib.format_monospace(f"{volume} mL")
+	concentration_text = lab_helper_lib.format_monospace(f"{concentration}% (w/v)")
+	mw_text = lab_helper_lib.format_monospace(f"{molecular_weights[solute]:.2f} g/mol")
+	info_rows = [
+		('Volume', volume_text),
+		('Concentration', concentration_text),
+		('Molecular weight', mw_text),
+		('State', 'Solid powder at room temperature'),
+	]
+	question = lab_helper_lib.build_info_table(info_rows, compound_text)
+	key_request = lab_helper_lib.format_key_request(f"{volume_text} of a {concentration_text}")
+	question += "<p>How many grams (g) of {0} ({1}) you would need to make ".format(full_name.lower(), solute)
+	question += "<strong>{1}</strong> {0} solution?</p> ".format(solute, key_request)
 	return question
 
 def get_vol_conc_answer():

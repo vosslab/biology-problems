@@ -2,6 +2,7 @@
 
 import random
 import bptools
+import lab_helper_lib
 
 
 #https://en.wikipedia.org/wiki/List_of_water-miscible_solvents
@@ -19,13 +20,20 @@ molecular_weights = {
 }
 
 def question_text(solute, volume, concentration):
-	volume_text = f"<span style='font-family: monospace;'>{volume} mL</span>"
-	concentration_text = f"<span style='font-family: monospace;'>{concentration}% (v/v)</span>"
-	question = f"<p>How many milliliters (mL) of {solute} you would need to make "
-	question += f"{volume_text} of a {concentration_text} {solute} solution?</p> "
-	mw = molecular_weights[solute]
-	question += f"<p>The molecular weight of {solute} is {mw:.2f} g/mol. "
-	question += f"{solute.title()} is a liquid at room temperature.</p> "
+	compound_text = solute
+	volume_text = lab_helper_lib.format_monospace(f"{volume} mL")
+	concentration_text = lab_helper_lib.format_monospace(f"{concentration}% (v/v)")
+	mw_text = lab_helper_lib.format_monospace(f"{molecular_weights[solute]:.2f} g/mol")
+	info_rows = [
+		('Volume', volume_text),
+		('Concentration', concentration_text),
+		('Molecular weight', mw_text),
+		('State', 'Liquid at room temperature'),
+	]
+	question = lab_helper_lib.build_info_table(info_rows, compound_text)
+	key_request = lab_helper_lib.format_key_request(f"{volume_text} of a {concentration_text}")
+	question += f"<p>How many milliliters (mL) of {solute} you would need to make "
+	question += f"<strong>{key_request}</strong> {solute} solution?</p> "
 	return question
 
 #==================================================

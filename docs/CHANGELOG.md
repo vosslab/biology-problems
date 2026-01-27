@@ -112,6 +112,12 @@
 - Changed pipet digit windows to rigid boxed cells with white backgrounds to match the side display in `problems/laboratory-problems/pipet_size_mc.py`.
 - Centered pipet digit text in the boxed display cells in `problems/laboratory-problems/pipet_size_mc.py`.
 - Added a red-digit place-value hint to the pipet question text in `problems/laboratory-problems/pipet_size_mc.py`.
+- Added `problems/laboratory-problems/lab_helper_lib.py` for shared HTML formatting helpers in solution questions.
+- Moved solution question numeric details into consistent bordered info tables with monospace values in `problems/laboratory-problems/solution-*.py`.
+- Moved solution question prompts after the info tables so the question sits closer to the response entry in `problems/laboratory-problems/solution-*.py`.
+- Slightly increased the font size for the key request phrase in solution question prompts via `lab_helper_lib.py`.
+- Added compound name rows to the solution info tables for context in `problems/laboratory-problems/solution-*.py`.
+- Moved compound names into a two-column header row at the top of the solution info tables in `problems/laboratory-problems/solution-*.py`.
 
 ## 2026-01-22
 - Resolved merge conflicts in [docs/CODE_ARCHITECTURE.md](docs/CODE_ARCHITECTURE.md) and [docs/FILE_STRUCTURE.md](docs/FILE_STRUCTURE.md) to align test/tool references with the current repo layout.
