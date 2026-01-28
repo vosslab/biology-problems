@@ -1,0 +1,325 @@
+## DESCRIPTION
+## Match each of the following types of macromolecules with their corresponding macromolecules.
+## ENDDESCRIPTION
+## KEYWORDS('types of macromolecules','macromolecules')
+## DBsubject('Biochemistry')
+## DBchapter('')
+## DBsection('')
+## Date('2026-01-26')
+## Author('Neil R. Voss')
+## Institution('Roosevelt University')
+## TitleText1('')
+## EditionText1('')
+## AuthorText1('')
+## Section1('')
+## Problem1('')
+
+DOCUMENT();
+
+loadMacros(
+    'PGstandard.pl',
+    'PGML.pl',
+    'PGchoicemacros.pl',
+    'parserPopUp.pl',
+    'parserUtils.pl',
+    'PGgraders.pl',
+    'PGcourse.pl'
+);
+our @ALPHABET = ('A' .. 'Z');
+
+# ================================
+# Full matching data
+# ================================
+%match_data = (
+  'proteins' => [
+    'amino acids',
+    'tryptophan',
+    'alanine',
+    'glycine',
+    'serine',
+    'threonine',
+    'tyrosine',
+    'phenylalanine',
+    'histidine',
+    'aspartate',
+    'aspartic acid',
+    'asparagine',
+    'cysteine',
+    'arginine',
+    'glutamate',
+    'glutamic acid',
+    'glutamine',
+    'leucine',
+    'isoleucine',
+    'methionine',
+    'lysine',
+    'proline',
+    'valine',
+    'polypeptides',
+    'hemoglobin',
+    'collagen',
+    'insulin',
+    'chymotypsin',
+    'serum albumin – family of water-soluble polypeptides found in blood plasma',
+    'lactalbumin – whey polypeptides found in milk',
+    'antibodies – Y-shaped 150 kDa polypeptides used by the immune system',
+    'enzymes',
+  ],
+  'lipids' => [
+    'vegetable oil',
+    'beeswax',
+    'spermaceti wax – found in the head cavities of sperm whales',
+    'carnauba wax – from leaves of the Brazilian palm tree',
+    'shellac wax – secreted by the female lac bug',
+    'castor oil – oil pressed from castor beans',
+    'lanolin or wool wax – secreted by the sebaceous glands of sheep',
+    'monoglycerides',
+    'fatty acids',
+    'butyric acid – a fatty acid with 4 carbons',
+    'caproic acid – a fatty acid with 6 carbons',
+    'caprylic acid – a fatty acid with 8 carbons',
+    'capric acid – a fatty acid with 10 carbons',
+    'lauric acid – a fatty acid with 12 carbons',
+    'myristic acid – a fatty acid with 14 carbons',
+    'palmitic acid – a fatty acid with 16 carbons',
+    'stearic acid – a fatty acid with 18 carbons',
+    'membrane bilayer',
+    'diglycerides',
+    'phospholipids',
+    'sphingolipids',
+    'sphingosine',
+    'phosphatidylcholine',
+    'triglycerides',
+    'steroids',
+    'cholesterol',
+    'testosterone',
+    'estrogen',
+  ],
+  'carbohydrates' => [
+    'sugar',
+    'monosaccharides',
+    'hexose',
+    'pentose',
+    'ketose',
+    'aldose',
+    'pyranose',
+    'furanose',
+    'erythrose',
+    'threose',
+    'erythrulose',
+    'ribose',
+    'arabinose',
+    'xylose',
+    'lyxose',
+    'ribulose',
+    'xylulose',
+    'allose',
+    'altrose',
+    'glucose',
+    'dextrose',
+    'mannose',
+    'gulose',
+    'idose',
+    'galactose',
+    'talose',
+    'psicose',
+    'fructose',
+    'sorbose',
+    'tagatose',
+    'disaccharides',
+    'sucrose',
+    'maltose',
+    'trehalose',
+    'lactose',
+    'sorbitol – a sugar alcohol added to chewing gum',
+    'xylitol – a sugar alcohol added to chewing gum',
+    'oligosaccharides',
+    'maltodextrin',
+    'polysaccharides',
+    'starch',
+    'glycogen',
+    'amylose starch',
+    'amylopectin starch',
+    'chitin',
+    'cellulose',
+    'hemicellulose',
+    'dietary fiber',
+    'fiber',
+    'pectin – a heteropolysaccharide present in plant cell walls',
+    'resistant starch',
+    'xanthan gum – polysaccharide used as a thickening agent in food',
+    'agarose – a heteropolysaccharide extracted from certain red seaweed',
+  ],
+  'nucleic acids' => [
+    'nucleotides',
+    'adenine',
+    'adenosine',
+    'adenosine triphosphate',
+    'thymine',
+    'thymidine',
+    'cytosine',
+    'cytidine',
+    'guanine',
+    'guanosine',
+    'guanosine triphosphate',
+    'uracil',
+    'uridine',
+    'polynucleotides',
+    'DNA',
+    'RNA',
+    'ATP',
+    'GTP',
+    'deoxyribonucleic acid',
+    'ribonucleic acid',
+  ],
+);
+
+# -------------------------------
+# Select N random keys
+# -------------------------------
+my $n = 4;
+@all_keys = PGsort(sub { $_[0] lt $_[1] }, keys %match_data);
+my $local_seed = (defined($problemSeed) && $problemSeed ne '') ? $problemSeed : 1;
+my $local_random = new PGrandom($local_seed);
+
+my @indices = (0 .. $#all_keys);
+my @shuffled = ();
+while (@indices) {
+  my $pick = $local_random->random(0, $#indices, 1);
+  push @shuffled, splice(@indices, $pick, 1);
+}
+my @selected_keys = @all_keys[@shuffled[0..$n-1]];
+
+# -------------------------------
+# Build question/answer pairs
+# -------------------------------
+# Each entry: [prompt, choice]
+@q_and_a = ();
+foreach my $key (@selected_keys) {
+  my $values_ref = $match_data{$key};
+  my $i = $local_random->random(0, $#$values_ref, 1);
+  my $value = $values_ref->[$i];
+  push @q_and_a, [ $value, $key ];
+}
+
+# -------------------------------
+# Randomize the questions
+# -------------------------------
+my @q_indices = (0 .. $#q_and_a);
+my @q_shuffled = ();
+while (@q_indices) {
+  my $pick = $local_random->random(0, $#q_indices, 1);
+  push @q_shuffled, $q_and_a[splice(@q_indices, $pick, 1)];
+}
+@q_and_a = @q_shuffled;
+
+# -------------------------------
+# Sort the choices alphabetically
+# -------------------------------
+@answers = ();
+push(@answers, (map { $_->[1] } @q_and_a));
+@answers_sorted = PGsort(sub { $_[0] lt $_[1] }, @answers);
+
+# -------------------------------
+# HTML-safe answer labels
+# -------------------------------
+%answer_html = (
+  'proteins' => '<span style="color: #009900; font-weight:700;">proteins</span>',
+  'lipids' => '<span style="color: #e65400; font-weight:700;">lipids</span>',
+  'carbohydrates' => '<span style="color: #0039e6; font-weight:700;">carbohydrates</span>',
+  'nucleic acids' => '<span style="color: #b30077; font-weight:700;">nucleic acids</span>',
+);
+
+@answers_sorted_html = map { $answer_html{$_} || $_ } @answers_sorted;
+
+# -------------------------------
+# Create answer index lookup
+# -------------------------------
+our %answer_index;
+for (my $i = 0; $i <= $#answers_sorted; $i++) {
+  $answer_index{$answers_sorted[$i]} = $i;
+}
+
+# -------------------------------
+# PopUp/DropDown compatibility
+# -------------------------------
+sub make_popup {
+  return defined &DropDown ? DropDown(@_) : PopUp(@_);
+}
+
+# -------------------------------
+# Create popup objects (blank default)
+# -------------------------------
+my @answer_letters = @ALPHABET[0 .. $#answers_sorted];
+my @answer_letters_with_blank = ('', @answer_letters);
+@answer_dropdowns =
+  map { make_popup([ @answer_letters_with_blank ], $answer_index{$q_and_a[$_][1]} + 1 ) }
+  0 .. $#q_and_a;
+
+# -------------------------------
+# Render the question
+# -------------------------------
+HEADER_TEXT(MODES(TeX => '', HTML => <<END_STYLE));
+<style>
+.pgml-bold { font-weight: 700; }
+.two-column {
+    display: flex;
+	flex-wrap: wrap;
+	gap: 2rem;
+	align-items: center;
+	justify-content: space-evenly;
+}
+</style>
+END_STYLE
+
+BEGIN_PGML
+Match each of the following types of macromolecules with their corresponding macromolecules.
+Note: Each choice will be used exactly once.
+
+[@ MODES(TeX => '',
+	HTML => '<div class="two-column"><div>') @]*
+[@ join(
+    "\n\n",
+    map {
+        '[_]{$answer_dropdowns[' . $_ . ']} '
+            . '*' . ($_ + 1) . '.* '
+            . '[$q_and_a[' . $_ . '][0]]'
+    } 0 .. $#q_and_a
+) @]**
+[@ MODES(TeX => '',
+	HTML => '</div><div class="right-col">') @]*
+[@ join(
+    "\n\n",
+    map {
+        chr(65 + $_) . '\\.' . ' ' . '[$answers_sorted_html[' . $_ . ']]*'
+    } 0 .. $#answers_sorted
+) @]**
+[@ MODES(TeX => '', HTML => '</div></div>') @]*
+END_PGML
+
+# -------------------------------
+# Dynamic Partial Credit Based on $n
+# -------------------------------
+$showPartialCorrectAnswers = 0;
+my @thresholds;
+my @scores;
+for (my $i = 1; $i <= $n; $i++) {
+  push @thresholds, $i;
+  push @scores, sprintf("%.2f", $i / $n);
+}
+
+install_problem_grader(~~&custom_problem_grader_fluid);
+$ENV{grader_numright} = [@thresholds];
+$ENV{grader_scores}   = [@scores];
+$ENV{grader_message} = 'You can earn partial credit.';
+
+# -------------------------------
+# Solution
+# -------------------------------
+$answer_list = join(', ', map { ($_ + 1) . '-' . $ALPHABET[$answer_index{$q_and_a[$_][1]}] } 0 .. $#q_and_a);
+BEGIN_PGML_SOLUTION
+The correct answers are: [$answer_list].
+END_PGML_SOLUTION
+
+ENDDOCUMENT();
+

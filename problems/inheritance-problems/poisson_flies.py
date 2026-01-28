@@ -20,15 +20,24 @@ def geno2pheno(genotype):
 	else:
 		phenotype = "white"
 	if '-' in genotype:
-		phenotype += " male"
+		phenotype += " male (&male;)"
 	else:
-		phenotype += " female"
+		phenotype += " female (&female;)"
 	return phenotype
 
 #===========================================================
 #===========================================================
 def geno_span(genotype_html):
-	return f"<span style='font-family: monospace; font-size: 1.25em;'>{genotype_html}</span>"
+	return (
+		"<span style='font-family: monospace; font-size: 0.95em; font-weight: 600; "
+		"text-transform: none; font-variant: normal;'>"
+		f"{genotype_html}</span>"
+	)
+
+#===========================================================
+#===========================================================
+def sex_word_span(word, color_hex):
+	return f"<span style='color: {color_hex}; font-weight: 600;'>{word}</span>"
 
 #===========================================================
 #===========================================================
@@ -88,14 +97,18 @@ def print_distribution_table(distribution):
 
 	pkeys = list(pcount.keys())
 	pkeys.sort()
+	female_word = sex_word_span("female", "#990070")
+	male_word = sex_word_span("male", "#002499")
+	female_label = f"{female_word} (&female;)"
+	male_label = f"{male_word} (&male;)"
 	mystr = '<table cellpadding="2" cellspacing="2" style="border-collapse: collapse; text-align:center; border: 1px solid black; font-size: 14px;">'
-	mystr += "<tr><th>phenotype</th><th>female &female;</th><th>male &male;</th></tr> "
+	mystr += f"<tr><th>phenotype</th><th>{female_label}</th><th>{male_label}</th></tr> "
 	mystr += "<tr><td><span style='color: darkred;'>red-eyed (wildtype)</span></td> "
-	mystr +=   f"<td align='center'>{pcount.get('red female', 0)}</td>"
-	mystr +=   f"<td align='center'>{pcount.get('red male', 0)}</td></tr> "
-	mystr += "<tr><td>white-eyed (mutant)</td> "
-	mystr +=   f"<td align='center'>{pcount.get('white female', 0)}</td>"
-	mystr +=   f"<td align='center'>{pcount.get('white male', 0)}</td></tr> "
+	mystr +=   f"<td align='center'>{pcount.get('red female (&female;)', 0)}</td>"
+	mystr +=   f"<td align='center'>{pcount.get('red male (&male;)', 0)}</td></tr> "
+	mystr += "<tr><td><span style='color: #595959; font-weight: 600;'>white-eyed (mutant)</span></td> "
+	mystr +=   f"<td align='center'>{pcount.get('white female (&female;)', 0)}</td>"
+	mystr +=   f"<td align='center'>{pcount.get('white male (&male;)', 0)}</td></tr> "
 	mystr += "</table><br/>"
 	return mystr
 
@@ -104,19 +117,23 @@ def print_distribution_table(distribution):
 def build_question(N, female_genotype, male_genotype, progeny_size):
 	wildtype_word = "<span style='color: #8b0000; font-weight: 600;'>wildtype</span>"
 	mutant_word = "<span style='color: #595959; font-weight: 600;'>mutant</span>"
+	female_word = sex_word_span("female", "#990070")
+	male_word = sex_word_span("male", "#002499")
+	female_label = f"{female_word} (&female;)"
+	male_label = f"{male_word} (&male;)"
 
 	choices_list = [
-		f"heterozygous female (&female;) {geno_span('+w')} and {mutant_word} male (&male;) {geno_span('w&ndash;')}",
-		f"heterozygous female (&female;) {geno_span('+w')} and {wildtype_word} male (&male;) {geno_span('+&ndash;')}",
-		f"homozygous {mutant_word} female (&female;) {geno_span('ww')} and {mutant_word} male (&male;) {geno_span('w&ndash;')}",
-		f"homozygous {mutant_word} female (&female;) {geno_span('ww')} and {wildtype_word} male (&male;) {geno_span('+&ndash;')}",
-		f"homozygous {wildtype_word} female (&female;) {geno_span('++')} and male (&male;) of unknown genotype",
+		f"heterozygous {female_label} {geno_span('+w')} and {mutant_word} {male_label} {geno_span('w-')}",
+		f"heterozygous {female_label} {geno_span('+w')} and {wildtype_word} {male_label} {geno_span('+-')}",
+		f"homozygous {mutant_word} {female_label} {geno_span('ww')} and {mutant_word} {male_label} {geno_span('w-')}",
+		f"homozygous {mutant_word} {female_label} {geno_span('ww')} and {wildtype_word} {male_label} {geno_span('+-')}",
+		f"homozygous {wildtype_word} {female_label} {geno_span('++')} and {male_label} of unknown genotype",
 	]
 
 	pre_question = (
 		"<p>The white-eyed phenotype is an X-linked recessive disorder in fruit flies. "
-		f"The red ({wildtype_word}) allele, +, is dominant to the white ({mutant_word}) allele, w. "
-		"The offspring of size {0} from the mating of a single female and a single male "
+		f"The red ({wildtype_word}) allele, {geno_span('+')}, is dominant to the white ({mutant_word}) allele, {geno_span('w')}. "
+		f"The offspring of size {{0}} from the mating of a single {female_label} and a single {male_label} "
 		"are shown in the table below:</p>"
 	).format(progeny_size)
 

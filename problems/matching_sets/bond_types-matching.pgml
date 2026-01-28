@@ -1,0 +1,215 @@
+## DESCRIPTION
+## Match each of the following types of chemical bonds with their corresponding examples.
+## ENDDESCRIPTION
+## KEYWORDS('types of chemical bonds','examples')
+## DBsubject('Biochemistry')
+## DBchapter('')
+## DBsection('')
+## Date('2026-01-26')
+## Author('Neil R. Voss')
+## Institution('Roosevelt University')
+## TitleText1('')
+## EditionText1('')
+## AuthorText1('')
+## Section1('')
+## Problem1('')
+
+DOCUMENT();
+
+loadMacros(
+    'PGstandard.pl',
+    'PGML.pl',
+    'PGchoicemacros.pl',
+    'parserPopUp.pl',
+    'parserUtils.pl',
+    'PGgraders.pl',
+    'PGcourse.pl'
+);
+our @ALPHABET = ('A' .. 'Z');
+
+# ================================
+# Full matching data
+# ================================
+%match_data = (
+  'polar covalent bond' => [
+    'H - O - H (water)',
+    'N - H (in an amide group)',
+    'O - H (in an alcohol group)',
+    'S - H (in hydrogen sulfide, H₂S)',
+    'C - O (in carbon monoxide, CO)',
+    'P - O (in phosphate groups, PO₄)',
+  ],
+  'non-polar covalent bond' => [
+    'C - C (in ethane, C₂H₆)',
+    'C = C (in ethylene, C₂H₄)',
+    'C ≡ C (in acetylene, C₂H₂)',
+    'C - C (in benzene, C₆H₆)',
+    'C - H (in methane, CH₄)',
+    'N ≡ N (nitrogen gas)',
+    'O = O (oxygen gas)',
+  ],
+  'ionic bond' => [
+    'Ca²⁺ • 2× Cl⁻ (calcium chloride)',
+    'Ca²⁺ • CO₃²⁻ (calcium carbonate)',
+    'K⁺ • Cl⁻ (potassium chloride)',
+    'Mg²⁺ • 2× Cl⁻ (magnesium chloride)',
+    'Na⁺ • Cl⁻ (sodium chloride)',
+    'NH₄⁺ • NO₃⁻ (ammonium nitrate)',
+  ],
+  'hydrogen bond' => [
+    'N-H ···· N (bond represented by the dots)',
+    'N-H ···· O (bond represented by the dots)',
+    'O-H ···· N (bond represented by the dots)',
+    'O-H ···· O (bond represented by the dots)',
+  ],
+);
+
+# -------------------------------
+# Select N random keys
+# -------------------------------
+my $n = 4;
+@all_keys = PGsort(sub { $_[0] lt $_[1] }, keys %match_data);
+my $local_seed = (defined($problemSeed) && $problemSeed ne '') ? $problemSeed : 1;
+my $local_random = new PGrandom($local_seed);
+
+my @indices = (0 .. $#all_keys);
+my @shuffled = ();
+while (@indices) {
+  my $pick = $local_random->random(0, $#indices, 1);
+  push @shuffled, splice(@indices, $pick, 1);
+}
+my @selected_keys = @all_keys[@shuffled[0..$n-1]];
+
+# -------------------------------
+# Build question/answer pairs
+# -------------------------------
+# Each entry: [prompt, choice]
+@q_and_a = ();
+foreach my $key (@selected_keys) {
+  my $values_ref = $match_data{$key};
+  my $i = $local_random->random(0, $#$values_ref, 1);
+  my $value = $values_ref->[$i];
+  push @q_and_a, [ $value, $key ];
+}
+
+# -------------------------------
+# Randomize the questions
+# -------------------------------
+my @q_indices = (0 .. $#q_and_a);
+my @q_shuffled = ();
+while (@q_indices) {
+  my $pick = $local_random->random(0, $#q_indices, 1);
+  push @q_shuffled, $q_and_a[splice(@q_indices, $pick, 1)];
+}
+@q_and_a = @q_shuffled;
+
+# -------------------------------
+# Sort the choices alphabetically
+# -------------------------------
+@answers = ();
+push(@answers, (map { $_->[1] } @q_and_a));
+@answers_sorted = PGsort(sub { $_[0] lt $_[1] }, @answers);
+
+# -------------------------------
+# HTML-safe answer labels
+# -------------------------------
+%answer_html = (
+  'polar covalent bond' => '<span style="color: #00b3b3; font-weight:700;">polar covalent bond</span>',
+  'non-polar covalent bond' => '<span style="color: #b3b300; font-weight:700;">non-polar covalent bond</span>',
+  'ionic bond' => '<span style="color: #009900; font-weight:700;">ionic bond</span>',
+  'hydrogen bond' => '<span style="color: #e60000; font-weight:700;">hydrogen bond</span>',
+);
+
+@answers_sorted_html = map { $answer_html{$_} || $_ } @answers_sorted;
+
+# -------------------------------
+# Create answer index lookup
+# -------------------------------
+our %answer_index;
+for (my $i = 0; $i <= $#answers_sorted; $i++) {
+  $answer_index{$answers_sorted[$i]} = $i;
+}
+
+# -------------------------------
+# PopUp/DropDown compatibility
+# -------------------------------
+sub make_popup {
+  return defined &DropDown ? DropDown(@_) : PopUp(@_);
+}
+
+# -------------------------------
+# Create popup objects (blank default)
+# -------------------------------
+my @answer_letters = @ALPHABET[0 .. $#answers_sorted];
+my @answer_letters_with_blank = ('', @answer_letters);
+@answer_dropdowns =
+  map { make_popup([ @answer_letters_with_blank ], $answer_index{$q_and_a[$_][1]} + 1 ) }
+  0 .. $#q_and_a;
+
+# -------------------------------
+# Render the question
+# -------------------------------
+HEADER_TEXT(MODES(TeX => '', HTML => <<END_STYLE));
+<style>
+.pgml-bold { font-weight: 700; }
+.two-column {
+    display: flex;
+	flex-wrap: wrap;
+	gap: 2rem;
+	align-items: center;
+	justify-content: space-evenly;
+}
+</style>
+END_STYLE
+
+BEGIN_PGML
+Match each of the following types of chemical bonds with their corresponding examples.
+Note: Each choice will be used exactly once.
+
+[@ MODES(TeX => '',
+	HTML => '<div class="two-column"><div>') @]*
+[@ join(
+    "\n\n",
+    map {
+        '[_]{$answer_dropdowns[' . $_ . ']} '
+            . '*' . ($_ + 1) . '.* '
+            . '[$q_and_a[' . $_ . '][0]]'
+    } 0 .. $#q_and_a
+) @]**
+[@ MODES(TeX => '',
+	HTML => '</div><div class="right-col">') @]*
+[@ join(
+    "\n\n",
+    map {
+        chr(65 + $_) . '\\.' . ' ' . '[$answers_sorted_html[' . $_ . ']]*'
+    } 0 .. $#answers_sorted
+) @]**
+[@ MODES(TeX => '', HTML => '</div></div>') @]*
+END_PGML
+
+# -------------------------------
+# Dynamic Partial Credit Based on $n
+# -------------------------------
+$showPartialCorrectAnswers = 0;
+my @thresholds;
+my @scores;
+for (my $i = 1; $i <= $n; $i++) {
+  push @thresholds, $i;
+  push @scores, sprintf("%.2f", $i / $n);
+}
+
+install_problem_grader(~~&custom_problem_grader_fluid);
+$ENV{grader_numright} = [@thresholds];
+$ENV{grader_scores}   = [@scores];
+$ENV{grader_message} = 'You can earn partial credit.';
+
+# -------------------------------
+# Solution
+# -------------------------------
+$answer_list = join(', ', map { ($_ + 1) . '-' . $ALPHABET[$answer_index{$q_and_a[$_][1]}] } 0 .. $#q_and_a);
+BEGIN_PGML_SOLUTION
+The correct answers are: [$answer_list].
+END_PGML_SOLUTION
+
+ENDDOCUMENT();
+
