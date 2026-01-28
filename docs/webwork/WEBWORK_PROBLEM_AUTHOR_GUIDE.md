@@ -367,6 +367,7 @@ Rules:
 - Keep solutions correct and concise.
 - Do not include extraneous debugging prints.
 - If the solution depends on a random parameter, show the parameter values clearly.
+- ADAPT does not render HTML or numeric Unicode entities in solution blocks; keep solution text plain ASCII when exporting to ADAPT (for example, avoid `CH&#8322;CH&#8322;` in solutions).
 
 ---
 

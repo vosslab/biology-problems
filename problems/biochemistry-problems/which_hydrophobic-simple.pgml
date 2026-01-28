@@ -67,6 +67,8 @@ $num_choices = 5;
 
 # Select one correct answer (hydrophobic compound)
 $correct_answer = list_random(@hydrophobic_compounds);
+$correct_answer_plain = $correct_answer;
+$correct_answer_plain =~ s/<[^>]+>//g;
 
 # Select distractors (hydrophilic compounds)
 my @indices = NchooseK(scalar(@hydrophilic_compounds), $num_choices - 1);
@@ -107,9 +109,11 @@ $rb = RadioButtons(
 # QUESTION TEXT
 ########################################################
 
+$hydrophobic_emph = "<span style='color:#997300;font-size:1.25em;font-weight:700;'>hydrophobic</span>";
+
 BEGIN_PGML
 
-Based on their molecular formula, which one of the following compounds is most likely *hydrophobic*?
+Based on their molecular formula, which one of the following compounds is most likely [$hydrophobic_emph]*?
 
 [_]{$rb}
 
@@ -135,11 +139,7 @@ END_PGML_HINT
 ########################################################
 
 BEGIN_PGML_SOLUTION
-
-The correct answer is: [$correct_answer]
-
-*Explanation:* Hydrophobic compounds are typically nonpolar molecules composed mainly of carbon and hydrogen atoms, with few or no oxygen or nitrogen atoms. These compounds do not dissolve well in water.
-
+The correct answer is: [$correct_answer_plain].
 END_PGML_SOLUTION
 
 ENDDOCUMENT();

@@ -1,6 +1,19 @@
 # Changelog
 
 ## 2026-01-27
+- Made the "hydrophobic" emphasis bold in [problems/biochemistry-problems/which_hydrophobic-simple.pgml](../problems/biochemistry-problems/which_hydrophobic-simple.pgml).
+- Restored HTML subscript formulas in [problems/biochemistry-problems/which_hydrophobic-simple.pgml](../problems/biochemistry-problems/which_hydrophobic-simple.pgml) and reintroduced regex-based tag stripping for plain-text solution output.
+- Simplified [problems/biochemistry-problems/which_hydrophobic-simple.pgml](../problems/biochemistry-problems/which_hydrophobic-simple.pgml) to plain ASCII formulas, removed emphasis styling and the hint, and reduced the solution line for ADAPT testing.
+- Documented that ADAPT does not render HTML or numeric Unicode entities in solution blocks in [docs/webwork/WEBWORK_PROBLEM_AUTHOR_GUIDE.md](webwork/WEBWORK_PROBLEM_AUTHOR_GUIDE.md).
+- Simplified the solution block in [problems/biochemistry-problems/which_hydrophobic-simple.pgml](../problems/biochemistry-problems/which_hydrophobic-simple.pgml) to a single plain-text line to align with other PGML solutions.
+- Use the Unicode-entity hydrophobic answer directly in [problems/biochemistry-problems/which_hydrophobic-simple.pgml](../problems/biochemistry-problems/which_hydrophobic-simple.pgml) solution output, removing the unused plain-text variable.
+- Converted hydrophilic formulas to numeric Unicode entities in [problems/biochemistry-problems/which_hydrophobic-simple.pgml](../problems/biochemistry-problems/which_hydrophobic-simple.pgml) and removed the separate plain hydrophobic list.
+- Replaced hydrophobic compound formulas in [problems/biochemistry-problems/which_hydrophobic-simple.pgml](../problems/biochemistry-problems/which_hydrophobic-simple.pgml) with numeric Unicode entities for subscripts to avoid HTML tags in choices.
+- Replaced regex-based HTML stripping in [problems/biochemistry-problems/which_hydrophobic-simple.pgml](../problems/biochemistry-problems/which_hydrophobic-simple.pgml) with a parallel plain-text hydrophobic list for solution output.
+- Stripped HTML tags from the solution answer in [problems/biochemistry-problems/which_hydrophobic-simple.pgml](../problems/biochemistry-problems/which_hydrophobic-simple.pgml) so solution text stays plain.
+- Switched the "hydrophobic" emphasis in [problems/biochemistry-problems/which_hydrophobic-simple.pgml](../problems/biochemistry-problems/which_hydrophobic-simple.pgml) to an HTML span passed through with `*` to avoid PGML tag-wrapper parsing errors.
+- Styled "hydrophobic" in [problems/biochemistry-problems/which_hydrophobic-simple.pgml](../problems/biochemistry-problems/which_hydrophobic-simple.pgml) with larger gold text using a PGML tag wrapper for emphasis.
+- Fixed [problems/biochemistry-problems/which_hydrophobic-simple.pgml](../problems/biochemistry-problems/which_hydrophobic-simple.pgml) solution output to pass through HTML so subscripts render correctly.
 - Updated [problems/matching_sets/yaml_match_to_pgml.py](../problems/matching_sets/yaml_match_to_pgml.py) to use `PopUp` from `parserPopUp.pl` instead of `DropDown` for PG 2.17 compatibility.
 - Updated [docs/webwork/MATCHING_PROBLEMS.md](webwork/MATCHING_PROBLEMS.md) to recommend `PopUp` widgets for PG 2.17 compatibility.
 - Stabilized matching key selection in [problems/matching_sets/yaml_match_to_pgml.py](../problems/matching_sets/yaml_match_to_pgml.py) by sorting `%match_data` keys before seeding, so the same seed yields the same choices.
