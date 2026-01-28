@@ -1,0 +1,192 @@
+## DESCRIPTION
+## Identify protonation states for carboxyl, amine, and thiol groups when pH is two units above or below the pKa.
+## Select the group form and the net charge for the chosen scenario.
+## ENDDESCRIPTION
+## KEYWORDS('pKa','acid-base','protonation','carboxyl','amine','thiol')
+## DBsubject('Biochemistry')
+## DBchapter('Chemical Properties')
+## DBsection('Acids and Bases')
+## Date('2026-01-28')
+## Author('Neil R. Voss')
+## Institution('Roosevelt University')
+## TitleText1('')
+## EditionText1('')
+## AuthorText1('')
+## Section1('')
+## Problem1('')
+
+DOCUMENT();
+
+loadMacros(
+	'PGstandard.pl',
+	'PGML.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl',
+);
+
+$showPartialCorrectAnswers = 1;
+
+# ----------------------------
+# 2) Randomization and setup
+# ----------------------------
+sub subscript {
+	my ($value) = @_;
+	return MODES(TeX => '', HTML => "<sub>$value</sub>");
+}
+
+my $amine_nh2 = 'NH' . subscript(2);
+my $amine_nh3 = 'NH' . subscript(3);
+my $amine_nh4 = 'NH' . subscript(4);
+
+my $carboxyl_cooh2 = 'COOH' . subscript(2);
+my $carboxyl_cooh3 = 'COOH' . subscript(3);
+
+my $thiol_sh2_pos = 'SH' . subscript(2);
+my $thiol_sh3 = 'SH' . subscript(3);
+
+# Include extra or uncommon forms as distractors to probe concept mastery.
+# Order forms from most protonated to least so the list reads logically.
+my @amine_forms = ($amine_nh4, $amine_nh3, $amine_nh2, 'NH');
+my @carboxyl_forms = ($carboxyl_cooh3, $carboxyl_cooh2, 'COOH', 'COO');
+my @thiol_forms = ($thiol_sh3, $thiol_sh2_pos, 'SH', 'S');
+
+my $charge_positive = MODES(
+	TeX => '',
+	HTML => "<span style='color:#b32020;'>positive charge (+)</span>",
+);
+my $charge_neutral = MODES(
+	TeX => '',
+	HTML => "<span style='color:#444444;'>neutral charge (0)</span>",
+);
+my $charge_negative = MODES(
+	TeX => '',
+	HTML => "<span style='color:#1a5fb4;'>negative charge (-)</span>",
+);
+# Charge is selected separately to avoid embedding charge in the form options.
+my @charge_labels = ($charge_positive, $charge_neutral, $charge_negative);
+
+# Choose one scenario per seed to avoid predictable repeats.
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+
+my $above_emph = "<span style='color:#d96500;font-weight:700;'>ABOVE</span>";
+my $below_emph = "<span style='color:#1f7a1f;font-weight:700;'>BELOW</span>";
+my $carboxyl_emph = "<span style='color:#c62828;font-weight:700;'>carboxyl group</span>";
+my $amine_emph = "<span style='color:#1565c0;font-weight:700;'>amine group</span>";
+my $thiol_emph = "<span style='color:#b58900;font-weight:700;'>thiol group</span>";
+my $prompt_tail = 'what form is the chemical group in at this pH?';
+my $prompt_prefix = 'When the pH is more than two pH units';
+
+my @scenarios = (
+	{
+		prompt => "$prompt_prefix $above_emph the pKa of a $carboxyl_emph (-COOH), $prompt_tail",
+		forms_key => 'carboxyl',
+		correct_form_index => 3,
+		correct_charge_index => 2,
+		solution => 'COO and negative charge (-).',
+	},
+	{
+		prompt => "$prompt_prefix $below_emph the pKa of a $carboxyl_emph (-COOH), $prompt_tail",
+		forms_key => 'carboxyl',
+		correct_form_index => 2,
+		correct_charge_index => 1,
+		solution => 'COOH and neutral charge (0).',
+	},
+	{
+		prompt => "$prompt_prefix $above_emph the pKa of an $amine_emph (-NH<sub>2</sub>), $prompt_tail",
+		forms_key => 'amine',
+		correct_form_index => 2,
+		correct_charge_index => 1,
+		solution => 'NH2 and neutral charge (0).',
+	},
+	{
+		prompt => "$prompt_prefix $below_emph the pKa of an $amine_emph (-NH<sub>2</sub>), $prompt_tail",
+		forms_key => 'amine',
+		correct_form_index => 1,
+		correct_charge_index => 0,
+		solution => 'NH3 and positive charge (+).',
+	},
+	{
+		prompt => "$prompt_prefix $above_emph the pKa of a $thiol_emph (-SH), $prompt_tail",
+		forms_key => 'thiol',
+		correct_form_index => 3,
+		correct_charge_index => 2,
+		solution => 'S and negative charge (-).',
+	},
+	{
+		prompt => "$prompt_prefix $below_emph the pKa of a $thiol_emph (-SH), $prompt_tail",
+		forms_key => 'thiol',
+		correct_form_index => 2,
+		correct_charge_index => 1,
+		solution => 'SH and neutral charge (0).',
+	},
+);
+
+my $scenario_index = $local_random->random(0, $#scenarios, 1);
+my $scenario = $scenarios[$scenario_index];
+$prompt = $scenario->{prompt};
+$solution = $scenario->{solution};
+my @form_choices;
+if ($scenario->{forms_key} eq 'amine') {
+	@form_choices = @amine_forms;
+} elsif ($scenario->{forms_key} eq 'thiol') {
+	@form_choices = @thiol_forms;
+} else {
+	@form_choices = @carboxyl_forms;
+}
+my $correct_form_index = $scenario->{correct_form_index};
+my $correct_charge_index = $scenario->{correct_charge_index};
+
+# ----------------------------
+# 3) Define correct answers
+# ----------------------------
+$form_radio = RadioButtons(
+	[@form_choices],
+	$correct_form_index,
+	labels        => 'ABC',
+	displayLabels => 1,
+	separator     => '<div style="margin-bottom: 0.6em;"></div>',
+);
+$charge_radio = RadioButtons(
+	[@charge_labels],
+	$correct_charge_index,
+	labels        => 'ABC',
+	displayLabels => 1,
+	separator     => '<div style="margin-bottom: 0.6em;"></div>',
+);
+
+# ----------------------------
+# 4) Problem text (PGML)
+# ----------------------------
+BEGIN_PGML
+[@ $prompt @]*
+
+Select the group form and the net charge.
+Choose one option from each list.
+
+[@ MODES(TeX => '', HTML => '<div style="display:flex;gap:1.5em;align-items:flex-start;flex-wrap:wrap;"><div style="flex:1 1 260px;min-width:240px;"><div style="font-weight:600;margin-bottom:0.3em;">Form:</div>') @]*
+
+[_]{$form_radio}
+
+[@ MODES(TeX => '', HTML => '</div><div style="flex:1 1 260px;min-width:240px;"><div style="font-weight:600;margin-bottom:0.3em;">Charge:</div>') @]*
+
+[_]{$charge_radio}
+
+[@ MODES(TeX => '', HTML => '</div></div>') @]*
+END_PGML
+
+# ----------------------------
+# 5) Solutions, hints (optional)
+# ----------------------------
+BEGIN_PGML_HINT
+The protonation state of a molecule is determined by the relationship between the
+solution's pH and the molecule's pKa. If the pH is lower than the pKa, the molecule
+is mostly in its protonated form; if the pH is higher, it is mostly in its
+deprotonated form.
+END_PGML_HINT
+
+BEGIN_PGML_SOLUTION
+Correct answer: [$solution]
+END_PGML_SOLUTION
+
+ENDDOCUMENT();

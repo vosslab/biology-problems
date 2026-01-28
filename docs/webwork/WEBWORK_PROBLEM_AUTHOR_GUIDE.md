@@ -130,6 +130,52 @@ Rules:
 - For styling, use `span` and `MODES(HTML => '<span ...>', TeX => $text)`. If a sanitizer strips `<style>` blocks (for example in Blackboard), prefer inline styles or `<font color="...">` as a fallback.
 - PGML parses once. Do not build PGML tag wrapper syntax inside Perl variables and expect a second parse.
 - If you need to inject HTML stored in a Perl variable, render it with `[$var]*` so PGML does not escape the tags.
+- Only wrap strings in `MODES(...)` when you truly need mode-specific output (for example HTML tags). If a value is plain text with no HTML tags or mode differences, use a plain string instead. When `MODES(...)` is used in this repo, keep the TeX value empty.
+
+---
+
+## Emphasis for critical words (recommended)
+
+Use concise visual emphasis for key terms like ABOVE/BELOW, NOT, or the target
+concept. Keep TeX output empty for these spans in this repo to avoid renderer
+and ADAPT mismatches. Prefer HTML `span` styles over MathJax color macros.
+
+Example:
+
+```perl
+my $above_emph = MODES(
+  TeX => '',
+  HTML => "<span style='color:#d96500;font-weight:700;'>ABOVE</span>",
+);
+my $below_emph = MODES(
+  TeX => '',
+  HTML => "<span style='color:#1f7a1f;font-weight:700;'>BELOW</span>",
+);
+
+BEGIN_PGML
+When the pH is two units [$above_emph]* the pKa, what form is present?
+END_PGML
+```
+
+Guidelines:
+
+- Keep emphasis short (1 to 3 words).
+- Use high-contrast colors and bold weight for readability.
+- Do not rely on MathJax macros for color or emphasis.
+
+---
+
+## Question order (recommended)
+
+Use this ordering in PGML to keep questions consistent and scannable:
+
+1) Background (context or scenario)
+2) Statement (what is being asked)
+3) Data/table (if any)
+4) Directions (how to respond, constraints, formatting)
+
+Keep directions concise and place them after the data or statement rather than
+before the prompt.
 
 ---
 
