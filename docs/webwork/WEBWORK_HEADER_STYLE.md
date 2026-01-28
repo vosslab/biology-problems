@@ -31,8 +31,10 @@ A well-formed header usually contains:
 1. `TITLE('...')` line (required)
 2. `DESCRIPTION` block (required)
 3. `KEYWORDS(...)` (strongly recommended)
-4. `DBsubject(...)`, `DBchapter(...)`, `DBsection(...)` (strongly recommended)
-5. Attribution and provenance fields (recommended, but valuable)
+4. `DBsubject(...)`, `DBchapter(...)`, `DBsection(...)` (required for repo tagging)
+5. `Level(...)` (required for this corpus)
+6. Attribution and provenance fields (recommended, but valuable)
+7. `Language(en)` (required for this corpus)
 
 Order is not technically required, but the canonical order below is recommended for consistency.
 
@@ -124,7 +126,7 @@ A single line:
 
 ---
 
-## 4) Library classification: DBsubject / DBchapter / DBsection (strongly recommended)
+## 4) Library classification: DBsubject / DBchapter / DBsection (required)
 
 ### Purpose
 
@@ -140,24 +142,76 @@ Primary browse and analysis hooks. These are the most useful tags for corpus sta
 
 ### Rules
 
-- Use one DBsubject, one DBchapter, one DBsection when possible.
-- Match existing strings used elsewhere in your library.
+- Use one DBsubject, one DBchapter, one DBsection for every problem in this repo.
+- The upstream OPL corpus is math-heavy, so use the local life science strings listed below.
+- Match existing strings used elsewhere in this repo.
 - Choose the most specific correct subject that still fits typical course organization.
 - If uncertain, search for existing usage and copy the exact string.
+- Do not leave empty strings. If you are unsure, pick the closest existing label and revise later.
 
-### Allowed omissions
+### Local DBsubject values for biology-problems
 
-- If you cannot confidently assign DBchapter or DBsection, omit them.
-- Prefer keeping DBsubject even if chapter and section are omitted.
+Use these DBsubject values for life science content:
+
+- Anatomy and Physiology
+- Biochemistry
+- Bioinformatics and Computational Biology
+- Biomedical Sciences
+- Biostatistics
+- Cell Biology
+- DNA Profiling
+- Ecology
+- Evolution
+- Immunology
+- Inheritance Genetics
+- Laboratory Techniques
+- Microbiology
+- Molecular Biology
+- Neuroscience
+- Organismic Biology
+
+If a new subject is needed, add it to this list so tags remain consistent.
 
 ### Common pitfalls
 
 - Quoted duplicates like `'Algebra'` vs `Algebra`. Pick one style and stick to it.
-- Empty subject strings. If truly unknown, omit the DBsubject line rather than writing an empty label.
+- Empty subject strings. Do not leave empty strings; choose the closest existing label.
 
 ---
 
-## 5) Attribution and provenance fields (recommended)
+## 5) Problem level: Level(...) (required)
+
+OPL uses a 1-6 scale aligned to Bloom's revised taxonomy order (Remember,
+Understand, Apply, Analyze, Evaluate, Create). Use these life science oriented
+meanings (calculations, when present, are typically lab-only).
+
+- Level 1 (Remember): recall a term, definition, or basic fact.
+  Verbs: recall, define, label, list, match, identify.
+- Level 2 (Understand): describe or explain a concept, classify or interpret a
+  simple representation (for example, identify a technique or classify a
+  molecule). Verbs: explain, summarize, interpret, classify, compare.
+- Level 3 (Apply): use rules or methods in a direct way, typically routine and
+  low-stakes (for example, apply Mendelian rules or use a lab formula).
+  Verbs: apply, use, determine, solve, choose.
+- Level 4 (Analyze): interpret data or results and connect to a biological
+  conclusion (for example, read a graph, compare treatments, or infer phenotype
+  effects). Verbs: analyze, compare, contrast, categorize, infer.
+- Level 5 (Evaluate): justify a choice, critique evidence, or defend a
+  conclusion (for example, assess experimental design or argue between
+  competing explanations). Verbs: evaluate, justify, critique, defend.
+- Level 6 (Create): combine ideas to design or propose a new biological plan or
+  model (for example, design a study or propose a pathway).
+  Verbs: design, propose, formulate, develop, create.
+
+Format:
+
+```text
+## Level(2)
+```
+
+---
+
+## 6) Attribution and provenance fields (recommended)
 
 These fields are frequently present in OPL-style problems and are useful for credit, auditing, and licensing clarity.
 
@@ -177,7 +231,17 @@ different author is explicitly required for a specific problem. Current default:
 ## Institution('Roosevelt University')
 ```
 
-### Source and textbook provenance (use when adapted)
+### Contact links (comments only)
+
+If you want contact links, use plain comment lines (not tags) and avoid email:
+
+```text
+# https://github.com/vosslab
+# https://bsky.app/profile/neilvosslab.bsky.social
+# https://www.youtube.com/neilvosslab
+```
+
+### Source and textbook provenance (use when adapted or mapped)
 
 Use these when the problem is adapted from a textbook, worksheet, or other source.
 
@@ -189,6 +253,15 @@ Use these when the problem is adapted from a textbook, worksheet, or other sourc
 ## Problem1('Problem identifier')
 ```
 
+For this repo, the common textbook titles are:
+
+- Upper-Level Introductory Biochemistry
+- Advanced Genetics: Mechanisms of Inheritance and Analysis
+- Writing Automated Questions using WeBWork in ADAPT
+
+Use TitleText1/2/3 (and matching EditionText/AuthorText/Section/Problem tags) to
+map to multiple texts when appropriate.
+
 ### Rules
 
 - If adapted, also state that in DESCRIPTION.
@@ -197,13 +270,42 @@ Use these when the problem is adapted from a textbook, worksheet, or other sourc
 
 ---
 
-## 6) Optional header tags you may encounter
+## 7) Language: Language(en) (required)
+
+Use ISO 639-1 language codes. For English, use:
+
+```text
+## Language(en)
+```
+
+---
+
+## 8) License comments (recommended, not an OPL tag)
+
+OPL does not define a standard license tag. Use plain comment lines to state
+licensing for the problem text and any included images or code. Default to CC BY
+4.0 for problem text unless otherwise specified, and note LGPLv3 for code
+portions if present.
+
+Example:
+
+```text
+# This work is licensed under the Creative Commons Attribution 4.0
+# International License.
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions (if any) are licensed under LGPLv3.
+```
+
+If a problem includes a separate image license, add an extra comment line for
+the image.
+
+---
+
+## 9) Optional header tags you may encounter
 
 These vary by collection. Use them only if your corpus expects them.
 
 - `## DBcourse(...)` or course tags: often local, not recommended for portability.
-- `## Level(...)` or difficulty tags: only if your workflow uses them.
-- `## Language(...)`: if multilingual content is supported.
 - `## Commentary(...)`: keep short. Prefer adding context to DESCRIPTION instead.
 
 When adding optional tags, keep them consistent and avoid creating new tag dialects without a corpus-wide decision.
@@ -242,10 +344,17 @@ For new problems:
 ## DBsubject('Subject')
 ## DBchapter('Chapter')
 ## DBsection('Section')
+## Level(2)
 ## Date('YYYY-MM-DD')
 ## Author('Dr. Neil R. Voss')
 ## Institution('Roosevelt University')
-## TitleText1('')
+## Language(en)
+```
+
+Optional textbook mapping (use only when applicable):
+
+```text
+## TitleText1('Upper-Level Introductory Biochemistry')
 ## EditionText1('')
 ## AuthorText1('')
 ## Section1('')
@@ -266,7 +375,9 @@ Before publishing:
 
 - DESCRIPTION exists and is short, accurate, and code-free.
 - KEYWORDS exist and are concept-focused.
-- DBsubject uses an existing corpus string.
-- DBchapter and DBsection are present when you can assign them confidently.
+- DBsubject uses an existing repo string from the local list above.
+- DBchapter and DBsection are present (no empty strings).
+- Level is set using the 1-6 scale.
 - Author and date are present when known.
+- Language(en) is present.
 - No smart quotes or odd characters were introduced into header lines.

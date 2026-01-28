@@ -1,6 +1,7 @@
 # Changelog
 
 ## 2026-01-28
+- Expanded [docs/webwork/WEBWORK_HEADER_STYLE.md](webwork/WEBWORK_HEADER_STYLE.md) with required DBsection/Level/Language guidance, a license comment pattern, optional textbook mappings, contact-link comment examples, a local life science DBsubject list (including Biomedical Sciences and Immunology), and Level descriptions aligned to the revised Bloom order (Remember through Create), plus clarified DBsubject wording to refer to repo strings.
 - Switched [problems/inheritance-problems/poisson_flies.pgml](../problems/inheritance-problems/poisson_flies.pgml) to use a plain ASCII solution string for ADAPT instead of the styled HTML choice text.
 - Clarified in [docs/webwork/WEBWORK_PROBLEM_AUTHOR_GUIDE.md](webwork/WEBWORK_PROBLEM_AUTHOR_GUIDE.md) that BEGIN_PGML_SOLUTION must be plain ASCII for ADAPT exports.
 - Pointed [tests/yaml/test_matching_sets_yaml_generators.py](../tests/yaml/test_matching_sets_yaml_generators.py) at the current matching-set BBQ generators ([problems/matching_sets/yaml_match_to_bbq.py](../problems/matching_sets/yaml_match_to_bbq.py), [problems/matching_sets/yaml_which_one_mc_to_bbq.py](../problems/matching_sets/yaml_which_one_mc_to_bbq.py)).
