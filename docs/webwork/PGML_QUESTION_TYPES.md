@@ -1,0 +1,148 @@
+# PGML Question Type Patterns
+
+This guide describes the preferred PGML style for common question types in this
+repo. It complements [WEBWORK_PROBLEM_AUTHOR_GUIDE.md](WEBWORK_PROBLEM_AUTHOR_GUIDE.md)
+and [MATCHING_PROBLEMS.md](MATCHING_PROBLEMS.md).
+
+## General rules (all question types)
+
+- PGML-first: put student-facing text and blanks inside `BEGIN_PGML ... END_PGML`.
+- Inline graders: attach the answer evaluator in the PGML blank (for example
+  `[_]{$rb}` or `[__________]{$ans}`), not via a separate `ANS(...)` call.
+- Use HTML-only `MODES(TeX => '', HTML => ...)` when HTML is required. Do not
+  wrap plain text in `MODES(...)`.
+- If you must pass HTML stored in a Perl variable into PGML, render it with
+  `[$var]*` so PGML does not escape it.
+
+## Multiple choice (RadioButtons)
+
+Use `RadioButtons` with `parserRadioButtons.pl` and inline it in PGML.
+
+```perl
+loadMacros(
+  "PGstandard.pl",
+  "PGML.pl",
+  "parserRadioButtons.pl",
+  "PGcourse.pl",
+);
+
+$rb = RadioButtons(
+  [ [ 'Red', 'Blue', 'Green' ], 'None of these' ],
+  'Blue',
+  labels        => 'ABC',
+  displayLabels => 1,
+  randomize     => 0,
+);
+
+BEGIN_PGML
+My favorite color is
+
+[_]{$rb}
+END_PGML
+```
+
+Notes:
+- Use `labels => 'ABC'` for consistent labeling.
+- Keep `randomize => 0` unless you are safely randomizing and mapping the
+  correct answer.
+- For horizontal options, use a separator (for example `separator => $SPACE x 5`)
+  or HTML spacing via `separator => '<div ...>'`.
+
+## Multiple answer (checkbox)
+
+Checkbox macros are unreliable in our PG 2.17 renderer snapshot. Avoid
+checkboxes unless you have verified the macro exists in
+[PG_2_17_RENDERER_MACROS.md](PG_2_17_RENDERER_MACROS.md) and tested rendering.
+
+Preferred fallback patterns:
+- Use multiple `RadioButtons` or `PopUp` widgets, one per statement.
+- Convert to multiple choice if the learning goal allows it.
+
+If checkboxes are confirmed available, keep the same PGML-first pattern and
+inline the evaluator in the blank.
+
+## Fill-in-blank (string)
+
+Use a string MathObject only if the string context is available in the renderer.
+If it is not available, convert the question to multiple choice or PopUp.
+
+```perl
+# If Context("String") or Context("LimitedString") is available:
+Context("String");
+$ans = Compute("blue");
+
+BEGIN_PGML
+Enter the color: [__________]{$ans}
+END_PGML
+```
+
+## Numerical with tolerance
+
+Use a numeric MathObject with explicit tolerance settings.
+
+```perl
+Context("Numeric");
+$ans = Compute("3.2")->with(tolType => "absolute", tolerance => 0.1);
+
+BEGIN_PGML
+Enter the value: [__________]{$ans}
+END_PGML
+```
+
+Notes:
+- State the tolerance policy in the prompt when it matters.
+- If units are required, use a units-aware evaluator and verify the macro is
+  available in the renderer snapshot.
+
+## Matching
+
+Follow [MATCHING_PROBLEMS.md](MATCHING_PROBLEMS.md): use `PopUp` widgets and
+HTML-only layout wrappers with `MODES(TeX => '', HTML => ...)`. PGML should
+render the layout and the PopUps inline.
+
+```perl
+loadMacros(
+  "PGstandard.pl",
+  "PGML.pl",
+  "parserPopUp.pl",
+  "PGcourse.pl",
+);
+
+$popup = PopUp([ 'A', 'B', 'C' ], 'B');
+
+BEGIN_PGML
+1. Prompt text [_]{$popup}
+END_PGML
+```
+
+Notes:
+- Keep matching layout HTML-only and keep TeX empty.
+- Use the label and ordering rules in MATCHING_PROBLEMS.md.
+
+## Ordering (not implemented)
+
+We do not have a standard PGML ordering widget in this repo. If ordering is
+required, approximate it with a sequence of PopUps (position 1, 2, 3, ...) or
+convert to multiple choice. Document any workaround and test with the renderer.
+
+## Multipart (mixed formats or repeated formats)
+
+Define each answer object separately and attach them inline in PGML. Keep each
+blank close to its prompt. Avoid relying on implicit `ANS(...)` ordering.
+
+```perl
+Context("Numeric");
+$a = Compute("2");
+$b = Compute("5");
+
+BEGIN_PGML
+Part A: [__________]{$a}
+
+Part B: [__________]{$b}
+END_PGML
+```
+
+Notes:
+- For mixed formats (for example radio + numeric), define and place each blank
+  near its text.
+- If repeated formats are used, keep naming consistent (`$ans1`, `$ans2`, etc.).

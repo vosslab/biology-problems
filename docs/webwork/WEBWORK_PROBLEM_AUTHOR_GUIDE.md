@@ -117,6 +117,10 @@ END_PGML
 
 Avoid relying on a blank in PGML while grading is done later elsewhere.
 
+Treat `ANS(...)` as legacy PG. In PGML-first problems, bind answer evaluators
+inline (for example `[_]{$radio}` or `[__________]{$ans}`) and avoid standalone
+`ANS(...)` calls unless there is no other way to attach the grader.
+
 ---
 
 ## HTML whitelist and sanitizers (required awareness)

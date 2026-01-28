@@ -116,10 +116,16 @@ for my $genotype (keys %distribution) {
 
 $wildtype_word = "<span style='color:#8b0000;font-weight:600;'>wildtype</span>";
 $mutant_word = "<span style='color:#595959;font-weight:600;'>mutant</span>";
+$red_phenotype = "<span style='color:#8b0000;font-weight:600;'>red-eyed (wildtype)</span>";
+$white_phenotype = "<span style='color:#595959;font-weight:600;'>white-eyed (mutant)</span>";
 $female_word = "<span style='color:#990070;font-weight:600;'>female</span>";
 $male_word = "<span style='color:#002499;font-weight:600;'>male</span>";
-$female_label = "$female_word (&female;)";
-$male_label = "$male_word (&male;)";
+$female_label = "$female_word <span style='font-weight:400;'>(</span>"
+  . "<span style='font-weight:400;'>&female;</span>"
+  . "<span style='font-weight:400;'>)</span>";
+$male_label = "$male_word <span style='font-weight:400;'>(</span>"
+  . "<span style='font-weight:400;'>&male;</span>"
+  . "<span style='font-weight:400;'>)</span>";
 $allele_plus = geno_span('+');
 $allele_w = geno_span('w');
 
@@ -192,7 +198,7 @@ $rb = RadioButtons(
 # ----------------------------
 
 BEGIN_PGML
-The white-eyed phenotype is an X-linked recessive disorder in fruit flies. The red ([$wildtype_word]*)
+The [$white_phenotype]* phenotype is an X-linked recessive disorder in fruit flies. The [$red_phenotype]*
 allele ([$allele_plus]*) is dominant to the white ([$mutant_word]*) allele ([$allele_w]*). The offspring of size
 [$progeny_size] from the mating of a single [$female_label]* and a single [$male_label]* are shown in the table below:
 
@@ -200,13 +206,11 @@ allele ([$allele_plus]*) is dominant to the white ([$mutant_word]*) allele ([$al
 
 **What are the genotypes of the parents in this cross?**
 
-[@ $rb->buttons() @]*
+[_]{$rb}
 END_PGML
 
-ANS( $rb->cmp() );
-
 BEGIN_PGML_SOLUTION
-The correct parental genotypes are: $correct
+The correct parental genotypes are: [$correct]*
 END_PGML_SOLUTION
 
 ENDDOCUMENT();

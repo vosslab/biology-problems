@@ -71,6 +71,10 @@
 - Restored sex symbol parentheses in [problems/inheritance-problems/poisson_flies.py](../problems/inheritance-problems/poisson_flies.py) so table headers, choices, and the stem match PGML styling.
 - Added TITLE and expanded DESCRIPTION metadata in [problems/inheritance-problems/poisson_flies.pgml](../problems/inheritance-problems/poisson_flies.pgml), trimmed KEYWORDS, and aligned Author/Institution with `docs/AUTHORS.md`.
 - Ensured genotype phenotype labels always include sex symbols (for example, `female (&female;)` / `male (&male;)`) in [problems/inheritance-problems/poisson_flies.pgml](../problems/inheritance-problems/poisson_flies.pgml) and [problems/inheritance-problems/poisson_flies.py](../problems/inheritance-problems/poisson_flies.py).
+- Normalized sex-symbol parentheses and glyphs to regular font weight in [problems/inheritance-problems/poisson_flies.pgml](../problems/inheritance-problems/poisson_flies.pgml) and [problems/inheritance-problems/poisson_flies.py](../problems/inheritance-problems/poisson_flies.py).
+- Matched background phrasing to table labels by using "red-eyed (wildtype)" and "white-eyed (mutant)" phrases in [problems/inheritance-problems/poisson_flies.pgml](../problems/inheritance-problems/poisson_flies.pgml) and [problems/inheritance-problems/poisson_flies.py](../problems/inheritance-problems/poisson_flies.py).
+- Switched [problems/inheritance-problems/poisson_flies.pgml](../problems/inheritance-problems/poisson_flies.pgml) to PGML inline radio blanks and removed the standalone `ANS(...)` call.
+- Documented that `ANS(...)` is legacy PG and should be avoided in PGML-first problems unless no alternative exists in [docs/webwork/WEBWORK_PROBLEM_AUTHOR_GUIDE.md](webwork/WEBWORK_PROBLEM_AUTHOR_GUIDE.md).
 
 ## 2026-01-27
 - Made the "hydrophobic" emphasis bold in [problems/biochemistry-problems/which_hydrophobic-simple.pgml](../problems/biochemistry-problems/which_hydrophobic-simple.pgml).

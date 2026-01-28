@@ -99,8 +99,16 @@ def print_distribution_table(distribution):
 	pkeys.sort()
 	female_word = sex_word_span("female", "#990070")
 	male_word = sex_word_span("male", "#002499")
-	female_label = f"{female_word} (&female;)"
-	male_label = f"{male_word} (&male;)"
+	female_label = (
+		f"{female_word} <span style='font-weight: 400;'>(</span>"
+		"<span style='font-weight: 400;'>&female;</span>"
+		"<span style='font-weight: 400;'>)</span>"
+	)
+	male_label = (
+		f"{male_word} <span style='font-weight: 400;'>(</span>"
+		"<span style='font-weight: 400;'>&male;</span>"
+		"<span style='font-weight: 400;'>)</span>"
+	)
 	mystr = '<table cellpadding="2" cellspacing="2" style="border-collapse: collapse; text-align:center; border: 1px solid black; font-size: 14px;">'
 	mystr += f"<tr><th>phenotype</th><th>{female_label}</th><th>{male_label}</th></tr> "
 	mystr += "<tr><td><span style='color: darkred;'>red-eyed (wildtype)</span></td> "
@@ -117,10 +125,20 @@ def print_distribution_table(distribution):
 def build_question(N, female_genotype, male_genotype, progeny_size):
 	wildtype_word = "<span style='color: #8b0000; font-weight: 600;'>wildtype</span>"
 	mutant_word = "<span style='color: #595959; font-weight: 600;'>mutant</span>"
+	red_phenotype = "<span style='color: #8b0000; font-weight: 600;'>red-eyed (wildtype)</span>"
+	white_phenotype = "<span style='color: #595959; font-weight: 600;'>white-eyed (mutant)</span>"
 	female_word = sex_word_span("female", "#990070")
 	male_word = sex_word_span("male", "#002499")
-	female_label = f"{female_word} (&female;)"
-	male_label = f"{male_word} (&male;)"
+	female_label = (
+		f"{female_word} <span style='font-weight: 400;'>(</span>"
+		"<span style='font-weight: 400;'>&female;</span>"
+		"<span style='font-weight: 400;'>)</span>"
+	)
+	male_label = (
+		f"{male_word} <span style='font-weight: 400;'>(</span>"
+		"<span style='font-weight: 400;'>&male;</span>"
+		"<span style='font-weight: 400;'>)</span>"
+	)
 
 	choices_list = [
 		f"heterozygous {female_label} {geno_span('+w')} and {mutant_word} {male_label} {geno_span('w-')}",
@@ -131,8 +149,9 @@ def build_question(N, female_genotype, male_genotype, progeny_size):
 	]
 
 	pre_question = (
-		"<p>The white-eyed phenotype is an X-linked recessive disorder in fruit flies. "
-		f"The red ({wildtype_word}) allele, {geno_span('+')}, is dominant to the white ({mutant_word}) allele, {geno_span('w')}. "
+		"<p>The "
+		f"{white_phenotype} phenotype is an X-linked recessive disorder in fruit flies. "
+		f"The {red_phenotype} allele, {geno_span('+')}, is dominant to the white ({mutant_word}) allele, {geno_span('w')}. "
 		f"The offspring of size {{0}} from the mating of a single {female_label} and a single {male_label} "
 		"are shown in the table below:</p>"
 	).format(progeny_size)
