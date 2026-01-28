@@ -396,6 +396,7 @@ If you use interactive widgets, treat them as first-class and keep grading expli
 
 - Load the relevant parser macro (`parserRadioButtons.pl`, etc.).
 - Keep options stable and avoid randomizing option wording unless you also randomize the answer mapping safely.
+- Use `labels => 'ABC'` for RadioButtons so labels scale beyond 26 choices (A..Z, AA..ZZ) and stay consistent across problems.
 
 ---
 

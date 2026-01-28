@@ -1,0 +1,204 @@
+## DESCRIPTION
+## Determine parental genotypes from an X-linked recessive fly cross using offspring phenotype counts.
+## ENDDESCRIPTION
+## KEYWORDS('X-linked','sex-linked','recessive','Drosophila','genotype','phenotype','inheritance')
+## DBsubject('Genetics')
+## DBchapter('Inheritance')
+## DBsection('Sex-linked inheritance')
+## Date('2026-01-28')
+## Author('Codex')
+## Institution('Vosslab')
+
+DOCUMENT();
+
+loadMacros(
+  "PGstandard.pl",
+  "MathObjects.pl",
+  "PGML.pl",
+  "parserRadioButtons.pl",
+  "niceTables.pl",
+  "PGcourse.pl",
+);
+
+TEXT(beginproblem());
+$showPartialCorrectAnswers = 1;
+
+# ----------------------------
+# 1) Context and configuration
+# ----------------------------
+
+# ----------------------------
+# 2) Randomization and setup
+# ----------------------------
+
+sub geno2pheno {
+  my ($genotype) = @_;
+  my $phenotype = (substr($genotype, 0, 1) eq '+') ? 'red' : 'white';
+  if (index($genotype, '-') != -1) {
+    $phenotype .= ' male';
+  } else {
+    $phenotype .= ' female';
+  }
+  return $phenotype;
+}
+
+sub geno_span {
+  my ($text) = @_;
+  return "<span style='font-family:monospace;font-size:1.25em;'>$text</span>";
+}
+
+sub get_answer_index {
+  my ($female_genotype, $male_genotype) = @_;
+  return 0 if $female_genotype eq '++';
+  if ($female_genotype eq '+w') {
+    return 1 if $male_genotype eq '+-';
+    return 2 if $male_genotype eq 'w-';
+  }
+  if ($female_genotype eq 'ww') {
+    return 3 if $male_genotype eq '+-';
+    return 4 if $male_genotype eq 'w-';
+  }
+  die "Unknown genotype combo: $female_genotype x $male_genotype";
+}
+
+my @progeny_sizes = (160, 200, 240, 320, 360, 400, 480, 600);
+my @crosses = (
+  [ '++', 'w-' ],
+  [ '+w', '+-' ],
+  [ '+w', 'w-' ],
+  [ 'ww', '+-' ],
+  [ 'ww', 'w-' ],
+);
+
+my $local_random = PGrandom->new();
+my $seed_value = (defined($problemSeed) && $problemSeed ne '') ? $problemSeed : 1;
+$local_random->srand($seed_value);
+
+my $cross_index = $seed_value % scalar(@crosses);
+my ($female_genotype, $male_genotype) = @{ $crosses[$cross_index] };
+$progeny_size = $progeny_sizes[$local_random->random(0, $#progeny_sizes, 1)];
+
+my %distribution;
+my $bad_cross = 1;
+my $max_attempts = 200;
+for (my $attempt = 0; $attempt < $max_attempts && $bad_cross; $attempt++) {
+  %distribution = ();
+  for (1 .. $progeny_size) {
+    my @female_alleles = split //, $female_genotype;
+    my @male_alleles = split //, $male_genotype;
+    my $a = $female_alleles[$local_random->random(0, $#female_alleles, 1)];
+    my $b = $male_alleles[$local_random->random(0, $#male_alleles, 1)];
+    my $offspring_str = ($a lt $b) ? "$a$b" : "$b$a";
+    $distribution{$offspring_str} = ($distribution{$offspring_str} // 0) + 1;
+  }
+  $bad_cross = 0;
+  for my $count (values %distribution) {
+    if ($count % 5 == 0) {
+      $bad_cross = 1;
+      last;
+    }
+  }
+}
+
+my %pcount = (
+  'red female' => 0,
+  'red male' => 0,
+  'white female' => 0,
+  'white male' => 0,
+);
+for my $genotype (keys %distribution) {
+  my $phenotype = geno2pheno($genotype);
+  $pcount{$phenotype} += $distribution{$genotype};
+}
+
+$table = LayoutTable(
+  [
+    [
+      [ 'phenotype', cellcss => 'font-weight:700;background-color:#f0f0f0;' ],
+      [ 'female &female;', cellcss => 'font-weight:700;background-color:#f0f0f0;' ],
+      [ 'male &male;', cellcss => 'font-weight:700;background-color:#f0f0f0;' ],
+    ],
+    [
+      [ 'red-eyed (wildtype)', cellcss => 'color:#8b0000;font-weight:600;' ],
+      $pcount{'red female'},
+      $pcount{'red male'},
+    ],
+    [
+      'white-eyed (mutant)',
+      $pcount{'white female'},
+      $pcount{'white male'},
+    ],
+  ],
+  center => 1,
+  tablecss => 'border-collapse:collapse;border:1px solid #000;font-size:14px;',
+  allcellcss => 'border:1px solid #000;padding:4px;text-align:center;',
+);
+
+# ----------------------------
+# 3) Define correct answers
+# ----------------------------
+
+$wildtype_word = "<span style='color:#8b0000;font-weight:600;'>wildtype</span>";
+$mutant_word = "<span style='color:#595959;font-weight:600;'>mutant</span>";
+
+$choice_hetero_mut = "heterozygous female (&female;) " . geno_span('+w')
+  . " and $mutant_word male (&male;) " . geno_span('w&ndash;');
+$choice_hetero_wt = "heterozygous female (&female;) " . geno_span('+w')
+  . " and $wildtype_word male (&male;) " . geno_span('+&ndash;');
+$choice_homo_mut_mut = "homozygous $mutant_word female (&female;) " . geno_span('ww')
+  . " and $mutant_word male (&male;) " . geno_span('w&ndash;');
+$choice_homo_mut_wt = "homozygous $mutant_word female (&female;) " . geno_span('ww')
+  . " and $wildtype_word male (&male;) " . geno_span('+&ndash;');
+$choice_homo_wt_unknown = "homozygous $wildtype_word female (&female;) " . geno_span('++')
+  . " and male (&male;) of unknown genotype";
+
+@choices = (
+  $choice_hetero_mut,
+  $choice_hetero_wt,
+  $choice_homo_mut_mut,
+  $choice_homo_mut_wt,
+  $choice_homo_wt_unknown,
+);
+
+my %choice_for = (
+  '++|w-' => $choice_homo_wt_unknown,
+  '+w|+-' => $choice_hetero_wt,
+  '+w|w-' => $choice_hetero_mut,
+  'ww|+-' => $choice_homo_mut_wt,
+  'ww|w-' => $choice_homo_mut_mut,
+);
+$correct = $choice_for{"$female_genotype|$male_genotype"};
+
+$rb = RadioButtons(
+  [@choices],
+  $correct,
+  labels        => 'ABC',
+  displayLabels => 1,
+  randomize     => 0,
+  separator     => '<div style="margin-bottom: 0.7em;"></div>',
+);
+
+# ----------------------------
+# 4) Problem text (PGML)
+# ----------------------------
+
+BEGIN_PGML
+The white-eyed phenotype is an X-linked recessive disorder in fruit flies. The red ([$wildtype_word]*)
+allele (+) is dominant to the white ([$mutant_word]*) allele (w). The offspring of size
+[$progeny_size] from the mating of a
+single female and a single male are shown in the table below:
+
+[@ $table @]*
+
+**What are the genotypes of the parents in this cross?**
+
+[@ $rb->buttons() @]*
+END_PGML
+
+ANS( $rb->cmp() );
+
+BEGIN_PGML_SOLUTION
+The correct parental genotypes are: $correct
+END_PGML_SOLUTION
+
+ENDDOCUMENT();

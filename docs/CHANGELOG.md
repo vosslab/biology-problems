@@ -61,6 +61,7 @@
 - Updated [docs/webwork/WEBWORK_HEADER_STYLE.md](webwork/WEBWORK_HEADER_STYLE.md) to cap KEYWORDS at 5 (prefer 3) and to use the author/institution defaults from `docs/AUTHORS.md`.
 - Updated [docs/webwork/WEBWORK_HEADER_STYLE.md](webwork/WEBWORK_HEADER_STYLE.md) to require a short TITLE line (single sentence, <= 80 chars) and a 2-3 sentence DESCRIPTION for ADAPT alignment.
 - Standardized RadioButtons labels to `labels => 'ABC'` in [problems/inheritance-problems/poisson_flies.pgml](../problems/inheritance-problems/poisson_flies.pgml) and [problems/multiple_choice_statements/multiple_choice_statements.pgml](../problems/multiple_choice_statements/multiple_choice_statements.pgml).
+- Standardized `labels => 'ABC'` in PGML RadioButtons usage and documented the requirement in [docs/webwork/WEBWORK_PROBLEM_AUTHOR_GUIDE.md](webwork/WEBWORK_PROBLEM_AUTHOR_GUIDE.md).
 
 ## 2026-01-27
 - Made the "hydrophobic" emphasis bold in [problems/biochemistry-problems/which_hydrophobic-simple.pgml](../problems/biochemistry-problems/which_hydrophobic-simple.pgml).
