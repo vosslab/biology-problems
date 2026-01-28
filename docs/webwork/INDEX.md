@@ -18,4 +18,4 @@ Guides:
 - [NICETABLES_TRANSLATION_PLAN.md](NICETABLES_TRANSLATION_PLAN.md)
 - [PGML_LINTER_EXPECTATIONS.md](PGML_LINTER_EXPECTATIONS.md)
 - [PG_2_17_RENDERER_MACROS.md](PG_2_17_RENDERER_MACROS.md)
-- HTML whitelist and blacklist constraints (including blocked `table`, `tr`, `td` tags) are covered in the matching and author guides.
+- HTML whitelist and blacklist constraints (including blocked `table`, `tr`, `td`, `th` tags) are covered in the matching and author guides.

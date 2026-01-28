@@ -65,14 +65,14 @@ Linter checks:
 ## Mismatch: HTML whitelist blocks tables
 
 Expectation:
-- Raw `<table>`, `<tr>`, `<td>` output renders.
+- Raw `<table>`, `<tr>`, `<td>`, or `<th>` output renders.
 
 What actually happens:
 - These tags are blocked; output is stripped or triggers PGML warnings.
 
 Linter checks:
-- Error on `<table`, `<tr`, `<td` in PGML output.
-- Suggest `niceTables.pl` or flexbox `div` layout.
+- Error on `<table`, `<tr`, `<td`, `<th` in PGML output.
+- Suggest `niceTables.pl` for any tables. It is the only supported path because it avoids the blocked tags.
 
 PG 2.17 exception:
 - Allow `<div>` and `<span>` in PGML output when emitted through HTML-only
@@ -108,8 +108,9 @@ Linter checks:
 - PGML tag wrappers inside Perl variables: `"[<"`, `"]{["`.
 - HTML in variables without `*`: `[$var]` with `<span` in value.
 - `MODES(` inside `[@ ... @]` eval blocks.
+- Consecutive `MODES(TeX => '', HTML => ...)` calls with no intervening content (merge them into one).
 - TeX color macros: `\\color{`, `\\textcolor{`.
-- Blocked tags: `<table`, `<tr`, `<td>`.
+- Blocked tags: `<table`, `<tr`, `<td`, `<th`.
 - Ordered list label patterns: `A.` / `B.` in right-column text.
 
 ## Additional checks for poorly formed PGML

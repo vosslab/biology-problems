@@ -2,7 +2,8 @@
 
 ## Purpose
 Define how HTML table content should be translated into WeBWorK outputs using
-niceTables.pl so that blocked HTML tags are avoided.
+niceTables.pl so that blocked HTML table tags are avoided. This is the only
+supported way to create tables in this install.
 
 ## Table types (choose the correct target)
 - Data tables: use `DataTable()` (semantic data with headers or captions).

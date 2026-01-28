@@ -47,6 +47,10 @@
 - Consolidated HTML-only strings into a shared `html_only()` helper in [problems/biochemistry-problems/chemical_group_pka_forms.pgml](../problems/biochemistry-problems/chemical_group_pka_forms.pgml).
 - Removed the `html_only()` helper and left plain strings for non-HTML values in [problems/biochemistry-problems/chemical_group_pka_forms.pgml](../problems/biochemistry-problems/chemical_group_pka_forms.pgml).
 - Clarified in [docs/webwork/WEBWORK_PROBLEM_AUTHOR_GUIDE.md](webwork/WEBWORK_PROBLEM_AUTHOR_GUIDE.md) that `MODES(...)` should only be used for mode-specific output and that TeX entries should be empty when used.
+- Aligned `MODES(...)` guidance across [docs/webwork/WEBWORK_PROBLEM_AUTHOR_GUIDE.md](webwork/WEBWORK_PROBLEM_AUTHOR_GUIDE.md) and [docs/webwork/MATCHING_PROBLEMS.md](webwork/MATCHING_PROBLEMS.md) to keep TeX output empty and avoid MODES wrappers for plain text.
+- Clarified across WebWork docs that HTML `table`/`tr`/`td`/`th` tags are blocked and that `niceTables.pl` is the only supported way to create tables in this install.
+- Added guidance to merge consecutive HTML-only `MODES(...)` calls into a single wrapper in [docs/webwork/WEBWORK_PROBLEM_AUTHOR_GUIDE.md](webwork/WEBWORK_PROBLEM_AUTHOR_GUIDE.md) and linter expectations in [docs/webwork/PGML_LINTER_EXPECTATIONS.md](webwork/PGML_LINTER_EXPECTATIONS.md).
+- Added a literal before/after example showing how to merge consecutive `MODES(...)` calls in [docs/webwork/WEBWORK_PROBLEM_AUTHOR_GUIDE.md](webwork/WEBWORK_PROBLEM_AUTHOR_GUIDE.md).
 
 ## 2026-01-27
 - Made the "hydrophobic" emphasis bold in [problems/biochemistry-problems/which_hydrophobic-simple.pgml](../problems/biochemistry-problems/which_hydrophobic-simple.pgml).

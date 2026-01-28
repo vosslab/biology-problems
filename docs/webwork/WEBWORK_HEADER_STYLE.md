@@ -223,7 +223,7 @@ For new problems:
 
 ## Related PGML HTML whitelist note
 
-This guide is about headers, but remember that PGML output is filtered by an HTML whitelist in this install. Tags like `table`, `tr`, and `td` are blocked and will warn or render badly. For safe layout patterns, see [MATCHING_PROBLEMS.md](MATCHING_PROBLEMS.md) and [WEBWORK_PROBLEM_AUTHOR_GUIDE.md](WEBWORK_PROBLEM_AUTHOR_GUIDE.md).
+This guide is about headers, but remember that PGML output is filtered by an HTML whitelist in this install. Tags like `table`, `tr`, `td`, and `th` are blocked and will warn or render badly. For safe layout patterns, see [MATCHING_PROBLEMS.md](MATCHING_PROBLEMS.md) and [WEBWORK_PROBLEM_AUTHOR_GUIDE.md](WEBWORK_PROBLEM_AUTHOR_GUIDE.md).
 
 ---
 

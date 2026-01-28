@@ -10,7 +10,7 @@
 - Do not add "smart" parsing inside PG/PGML.
 
 ## Hard constraints in this install
-- HTML tables (`table`, `tr`, `td`) are blocked and must not be emitted.
+- HTML tables (`table`, `tr`, `td`, `th`) are blocked and must not be emitted.
 - Use PGML for structure and PGML tag wrappers for allowed HTML (`span`, `div`).
 - PGML parses once; it will not re-parse PGML tag wrapper syntax constructed inside Perl variables.
 
@@ -22,7 +22,7 @@
 ## Translation rules (high level)
 - `span style="color: ..."` -> HTML span with inline style (current default), then output with `[$var]*` if stored in a variable. Class-based spans are a future option.
 - `<sub>`/`<sup>` -> Unicode conversion (digits and common signs; Greek baseline).
-- `<table>` -> translate via niceTables.pl or drop with a warning (see table plan).
+- `<table>` -> translate via niceTables.pl or drop with a warning (see table plan). niceTables is the only supported path for tables because it avoids the blocked tags.
 - All other unsupported HTML tags -> strip to plain text.
 
 ## Link map

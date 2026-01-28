@@ -121,13 +121,25 @@ Avoid relying on a blank in PGML while grading is done later elsewhere.
 
 ## HTML whitelist and sanitizers (required awareness)
 
-PGML output is filtered by an HTML whitelist in this install. Tags like `table`, `tr`, and `td` are blocked and will warn or render badly.
+PGML output is filtered by an HTML whitelist in this install. Tags like `table`, `tr`, `td`, and `th` are blocked and will warn or render badly.
 
 Rules:
 
-- Do not use HTML tables in PGML. Use flexbox `div` layouts, a TeX `array`, or `niceTables.pl` if that macro is available.
-- Keep TeX wrapper slots present in `MODES(...)` wrappers (or PGML tag wrappers) even for web-only problems.
-- For styling, use `span` and `MODES(HTML => '<span ...>', TeX => $text)`. If a sanitizer strips `<style>` blocks (for example in Blackboard), prefer inline styles or `<font color="...">` as a fallback.
+- Do not use HTML tables in PGML. The only supported way to create tables is `niceTables.pl`, which avoids the blocked HTML table tags.
+- TeX output is intentionally empty in this repo. When you must use `MODES(...)` for HTML-only output, set `TeX => ''`.
+- For styling, use `span` plus `MODES(TeX => '', HTML => '<span ...>')` or PGML tag wrappers. If the content is plain text with no HTML tags, do not use `MODES(...)`.
+- Avoid consecutive `MODES(...)` calls for adjacent HTML-only tags. Merge them into a single `MODES(TeX => '', HTML => '...')` so you do not add unnecessary wrappers.
+
+Example (merge consecutive MODES calls):
+
+```perl
+# Avoid this:
+MODES(TeX => '', HTML => '<div class="left">') .
+MODES(TeX => '', HTML => '<span class="label">')
+
+# Prefer this:
+MODES(TeX => '', HTML => '<div class="left"><span class="label">')
+```
 - PGML parses once. Do not build PGML tag wrapper syntax inside Perl variables and expect a second parse.
 - If you need to inject HTML stored in a Perl variable, render it with `[$var]*` so PGML does not escape the tags.
 - Only wrap strings in `MODES(...)` when you truly need mode-specific output (for example HTML tags). If a value is plain text with no HTML tags or mode differences, use a plain string instead. When `MODES(...)` is used in this repo, keep the TeX value empty.
