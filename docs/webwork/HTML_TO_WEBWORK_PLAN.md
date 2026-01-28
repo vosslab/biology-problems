@@ -2,7 +2,7 @@
 
 ## Scope
 - Translate HTML-ish content from YAML and generators into PGML-safe output.
-- Web rendering only unless a specific problem requires hardcopy support.
+- Web rendering only; TeX output is intentionally empty in this repo.
 
 ## Non-goals
 - Do not emit raw HTML tables in PGML output.
@@ -11,7 +11,7 @@
 
 ## Hard constraints in this install
 - HTML tables (`table`, `tr`, `td`, `th`) are blocked and must not be emitted.
-- Use PGML for structure and PGML tag wrappers for allowed HTML (`span`, `div`).
+- Use PGML for structure. For inline HTML, use PGML tag wrappers or raw HTML passed through with `*`. For layout in PG 2.17, use HTML-only `MODES(TeX => '', HTML => ...)` wrappers instead of tag wrappers.
 - PGML parses once; it will not re-parse PGML tag wrapper syntax constructed inside Perl variables.
 
 ## Pipeline contract (generator responsibilities)
@@ -32,6 +32,8 @@
 - Table translation: [NICETABLES_TRANSLATION_PLAN.md](NICETABLES_TRANSLATION_PLAN.md)
 
 ## Decision: YAML tables
-- Drop the four YAML tables and move on.
-- The generator will continue to treat table content as a special case and skip
-  risky conversions when `<table`, `<tr`, or `<td>` appears.
+- Convert YAML tables to niceTables output (no more skipping table content).
+- The generator should treat table content as a special case and route it to
+  the niceTables converter when `<table`, `<tr`, `<td`, or `<th>` appears.
+- If the table shape is unsupported, log a warning and keep the content for
+  manual rewrite rather than dropping it silently.

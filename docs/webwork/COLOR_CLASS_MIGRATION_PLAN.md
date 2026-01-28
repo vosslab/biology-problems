@@ -8,7 +8,7 @@
 ## Constraints (current install)
 - MathJax/TeX color injected in PGML does not render reliably.
 - PGML tag wrappers with span + CSS do render reliably.
-- HTML tables (`table`, `tr`, `td`) are blocked and must be avoided.
+- HTML tables (`table`, `tr`, `td`, `th`) are blocked and must be avoided.
 
 ## Current state
 - YAML replacement_rules often wrap terms with `<span style="color: ...">`.
@@ -47,9 +47,9 @@
 - Leave Greek letters on baseline (for example, `C<sub>&alpha;</sub>` -> `Calpha`).
 
 ### 6) Table guard
-- If any text contains `<table`, `<tr`, or `<td>`, skip class conversion for that
-  string and only apply the safe sanitize path (sub/sup, unescape, strip tags).
-- Log a warning so these entries can be cleaned up later.
+- If any text contains `<table`, `<tr`, `<td`, or `<th>`, skip class conversion for that
+  string and route it to the niceTables conversion path instead of stripping it.
+- Log a warning when the table shape is unsupported so these entries can be cleaned up.
 
 ### 7) Incremental migration
 - When touching a YAML file, optionally add `color_rules` and remove redundant

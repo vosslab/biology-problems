@@ -28,16 +28,40 @@ Use this guidance for any `.pg` file intended for long-term reuse. The goal is t
 
 A well-formed header usually contains:
 
-1. `DESCRIPTION` block (required)
-2. `KEYWORDS(...)` (strongly recommended)
-3. `DBsubject(...)`, `DBchapter(...)`, `DBsection(...)` (strongly recommended)
-4. Attribution and provenance fields (recommended, but valuable)
+1. `TITLE('...')` line (required)
+2. `DESCRIPTION` block (required)
+3. `KEYWORDS(...)` (strongly recommended)
+4. `DBsubject(...)`, `DBchapter(...)`, `DBsection(...)` (strongly recommended)
+5. Attribution and provenance fields (recommended, but valuable)
 
 Order is not technically required, but the canonical order below is recommended for consistency.
 
 ---
 
-## 1) DESCRIPTION block (required)
+## 1) TITLE('...') line (required)
+
+### Purpose
+
+Short, student-facing title that mirrors ADAPT's title field.
+
+### Format
+
+Use a single line:
+
+```text
+## TITLE('Short single-sentence title')
+```
+
+### Content requirements
+
+- One sentence.
+- 80 characters or fewer.
+- Describe the task, not the story wrapper.
+- Avoid commas if they make the title run long.
+
+---
+
+## 2) DESCRIPTION block (required)
 
 ### Purpose
 
@@ -49,7 +73,7 @@ Use `## DESCRIPTION` and `## ENDDESCRIPTION`. Put plain English in between.
 
 ### Content requirements
 
-- 1 to 4 sentences.
+- 2 to 3 sentences.
 - Describe the task, not the story wrapper.
 - Include constraints that affect adoption (rounding requirement, unit expectations, domain restrictions).
 - If adapted, say "Adapted from ..." or "Based on ...".
@@ -70,7 +94,7 @@ Use `## DESCRIPTION` and `## ENDDESCRIPTION`. Put plain English in between.
 
 ---
 
-## 2) KEYWORDS(...) (strongly recommended)
+## 3) KEYWORDS(...) (strongly recommended)
 
 ### Purpose
 
@@ -86,7 +110,7 @@ A single line:
 
 ### Rules
 
-- Use 3 to 10 keywords.
+- Use 3 to 5 keywords (prefer 3 when possible).
 - Use concepts and techniques, not character names or story nouns.
 - Prefer lower-case unless capitalization matters.
 - Prefer canonical spellings: integration by parts, chain rule, partial fraction, eigenvalues.
@@ -100,7 +124,7 @@ A single line:
 
 ---
 
-## 3) Library classification: DBsubject / DBchapter / DBsection (strongly recommended)
+## 4) Library classification: DBsubject / DBchapter / DBsection (strongly recommended)
 
 ### Purpose
 
@@ -133,7 +157,7 @@ Primary browse and analysis hooks. These are the most useful tags for corpus sta
 
 ---
 
-## 4) Attribution and provenance fields (recommended)
+## 5) Attribution and provenance fields (recommended)
 
 These fields are frequently present in OPL-style problems and are useful for credit, auditing, and licensing clarity.
 
@@ -143,6 +167,14 @@ These fields are frequently present in OPL-style problems and are useful for cre
 ## Date('YYYY-MM-DD')
 ## Author('Full Name')
 ## Institution('Institution or group')
+```
+
+In this repo, use the author/institution listed in `docs/AUTHORS.md` unless a
+different author is explicitly required for a specific problem. Current default:
+
+```text
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
 ```
 
 ### Source and textbook provenance (use when adapted)
@@ -165,7 +197,7 @@ Use these when the problem is adapted from a textbook, worksheet, or other sourc
 
 ---
 
-## 5) Optional header tags you may encounter
+## 6) Optional header tags you may encounter
 
 These vary by collection. Use them only if your corpus expects them.
 
@@ -202,16 +234,17 @@ For new problems:
 ## A copy-paste template
 
 ```text
+## TITLE('Short single-sentence title')
 ## DESCRIPTION
-## One to three sentences describing the task and any adoption-relevant constraints.
+## Two to three sentences describing the task and any adoption-relevant constraints.
 ## ENDDESCRIPTION
 ## KEYWORDS('keyword1','keyword2','keyword3')
 ## DBsubject('Subject')
 ## DBchapter('Chapter')
 ## DBsection('Section')
 ## Date('YYYY-MM-DD')
-## Author('Name')
-## Institution('Institution')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
 ## TitleText1('')
 ## EditionText1('')
 ## AuthorText1('')

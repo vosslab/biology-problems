@@ -203,7 +203,7 @@ Rules:
 - If a Perl variable contains HTML (`<span>`, `<div>`), output it as `[$var]*`.
 - Avoid PGML tag wrapper syntax (`[< ... >]{...}`) for complex layouts; it is
   fragile in PG 2.17.
-- Do not use blocked tags like `table`, `tr`, `td`.
+- Do not use blocked tags like `table`, `tr`, `td`, `th`.
 
 Example (HTML-only wrapper):
 
@@ -298,7 +298,7 @@ Randomization must be stable, readable, and avoid edge cases.
 
 Requirements:
 
-1. No custom seeding. Use WeBWorK's built-in seeding.
+1. No arbitrary seeding. Use WeBWorK's built-in `problemSeed` (including for any local `PGrandom` instances).
 2. Deterministic for a fixed seed. Do not rely on Perl hash key order; sort keys before randomized selection.
 3. Avoid degeneracy.
    - No division by zero.

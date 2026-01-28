@@ -27,19 +27,24 @@ def geno2pheno(genotype):
 
 #===========================================================
 #===========================================================
+def geno_span(genotype_html):
+	return f"<span style='font-family: monospace; font-size: 1.25em;'>{genotype_html}</span>"
+
+#===========================================================
+#===========================================================
 def get_answer(female_genotype, male_genotype):
 	if female_genotype == "++":
-		return 0
+		return 4
 	elif female_genotype == "+w":
 		if male_genotype == "+-":
 			return 1
 		elif male_genotype == "w-":
-			return 2
+			return 0
 	elif female_genotype == "ww":
 		if male_genotype == "+-":
 			return 3
 		elif male_genotype == "w-":
-			return 4
+			return 2
 
 #===========================================================
 #===========================================================
@@ -97,15 +102,23 @@ def print_distribution_table(distribution):
 #===========================================================
 #===========================================================
 def build_question(N, female_genotype, male_genotype, progeny_size):
+	wildtype_word = "<span style='color: #8b0000; font-weight: 600;'>wildtype</span>"
+	mutant_word = "<span style='color: #595959; font-weight: 600;'>mutant</span>"
+
 	choices_list = [
-		'homozygous wildtype female (++) and male of unknown genotype',
-		'heterozygous female (+w) and wildtype male (+&ndash;)',
-		'heterozygous female (+w) and mutant male (w&ndash;)',
-		'homozygous mutant female (ww) and wildtype male (+&ndash;)',
-		'homozygous mutant female (ww) and mutant male (w&ndash;)',
+		f"heterozygous female (&female;) {geno_span('+w')} and {mutant_word} male (&male;) {geno_span('w&ndash;')}",
+		f"heterozygous female (&female;) {geno_span('+w')} and {wildtype_word} male (&male;) {geno_span('+&ndash;')}",
+		f"homozygous {mutant_word} female (&female;) {geno_span('ww')} and {mutant_word} male (&male;) {geno_span('w&ndash;')}",
+		f"homozygous {mutant_word} female (&female;) {geno_span('ww')} and {wildtype_word} male (&male;) {geno_span('+&ndash;')}",
+		f"homozygous {wildtype_word} female (&female;) {geno_span('++')} and male (&male;) of unknown genotype",
 	]
 
-	pre_question = "<p>The white-eyed phenotype is an X-linked recessive disorder in fruit flies. The red allele, +, is dominant to the white allele, w. The offspring of size {0} from the mating of a single female and a single male are shown in the table below:</p>".format(progeny_size)
+	pre_question = (
+		"<p>The white-eyed phenotype is an X-linked recessive disorder in fruit flies. "
+		f"The red ({wildtype_word}) allele, +, is dominant to the white ({mutant_word}) allele, w. "
+		"The offspring of size {0} from the mating of a single female and a single male "
+		"are shown in the table below:</p>"
+	).format(progeny_size)
 
 	post_question = "<p><strong>What are the genotypes of the parents in this cross?</strong></p>"
 
@@ -126,7 +139,6 @@ def build_question(N, female_genotype, male_genotype, progeny_size):
 
 	question_txt = pre_question + table + post_question
 
-	random.shuffle(choices_list)
 	bbformat = bptools.formatBB_MC_Question(N, question_txt, choices_list, answer_txt)
 	return bbformat
 

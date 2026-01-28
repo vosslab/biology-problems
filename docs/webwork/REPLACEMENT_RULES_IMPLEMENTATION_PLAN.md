@@ -8,9 +8,10 @@
 ## Processing order (current + planned)
 1. Apply `replacement_rules` to raw text (existing behavior).
 2. Convert `<sub>`/`<sup>` to Unicode.
-3. Strip remaining HTML tags.
-4. Unescape HTML entities.
-5. Normalize non-breaking spaces to plain spaces.
+3. If strict color spans are present, extract/normalize them for HTML output.
+4. Strip remaining HTML tags (do not strip the spans you intend to preserve).
+5. Unescape HTML entities.
+6. Normalize non-breaking spaces to plain spaces.
 
 ## Subscript and superscript handling
 - Convert digits and common signs inside `<sub>`/`<sup>` to Unicode.
@@ -20,9 +21,11 @@
 - Normalize `&ndash;` and Unicode minus variants to `-` inside `<sup>`/`<sub>`.
 
 ## Table guard (required)
-- If a string contains `<table`, `<tr`, or `<td>`, skip any color conversion.
-- Apply only the safe sanitize path (sub/sup, unescape, strip tags).
-- Log a warning so the entry can be cleaned up later.
+- If a string contains `<table`, `<tr`, `<td`, or `<th>`, route it to the
+  niceTables conversion path instead of stripping the table.
+- Skip color conversion for table content; keep cell text after sub/sup and
+  entity unescape so the table converter sees clean strings.
+- Log a warning when the table shape is unsupported so it can be manually fixed.
 
 ## Color handling
 

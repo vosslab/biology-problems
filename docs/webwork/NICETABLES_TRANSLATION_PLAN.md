@@ -43,7 +43,7 @@ This is acceptable for generator output when it improves readability.
 
 ### Out-of-scope tables
 - Do not emit raw HTML.
-- Log a warning and fall back to plain text or require manual rewrite.
+- Log a warning and require manual rewrite (do not silently drop table content).
 
 ## Implementation notes
 - Keep table detection in Python.

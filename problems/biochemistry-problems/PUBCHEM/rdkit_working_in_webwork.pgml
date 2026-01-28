@@ -38,7 +38,7 @@ $PAR
   RadioButtons(
     ["Cysteine", "Alanine", "Serine", "Leucine"],
     "Cysteine",
-    labels => "ABC",
+    labels => 'ABC',
     displayLabels => 1
   )->buttons()
 \}
@@ -52,7 +52,7 @@ $PAR
   RadioButtons(
     ["Cysteine", "Alanine", "Serine", "Leucine"],
     "Alanine",
-    labels => "ABC",
+    labels => 'ABC',
     displayLabels => 1
   )->buttons()
 \}

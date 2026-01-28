@@ -51,6 +51,16 @@
 - Clarified across WebWork docs that HTML `table`/`tr`/`td`/`th` tags are blocked and that `niceTables.pl` is the only supported way to create tables in this install.
 - Added guidance to merge consecutive HTML-only `MODES(...)` calls into a single wrapper in [docs/webwork/WEBWORK_PROBLEM_AUTHOR_GUIDE.md](webwork/WEBWORK_PROBLEM_AUTHOR_GUIDE.md) and linter expectations in [docs/webwork/PGML_LINTER_EXPECTATIONS.md](webwork/PGML_LINTER_EXPECTATIONS.md).
 - Added a literal before/after example showing how to merge consecutive `MODES(...)` calls in [docs/webwork/WEBWORK_PROBLEM_AUTHOR_GUIDE.md](webwork/WEBWORK_PROBLEM_AUTHOR_GUIDE.md).
+- Clarified in [docs/webwork/HTML_TO_WEBWORK_PLAN.md](webwork/HTML_TO_WEBWORK_PLAN.md) that TeX output is intentionally empty and that HTML-only layout should use `MODES(TeX => '', HTML => ...)` rather than tag wrappers.
+- Updated WebWork docs to include `th` alongside `table`/`tr`/`td` in blocked-tag and table-guard guidance.
+- Updated the WebWork docs to move table handling into a niceTables conversion phase instead of skipping table content, and clarified table-guard behavior in replacement/color plans.
+- Clarified randomization guidance to use the built-in `problemSeed` when seeding local RNGs.
+- Added [problems/inheritance-problems/poisson_flies.pgml](../problems/inheritance-problems/poisson_flies.pgml) as a PGML version of the fly cross question, using niceTables for the phenotype table.
+- Fixed phenotype classification in [problems/inheritance-problems/poisson_flies.pgml](../problems/inheritance-problems/poisson_flies.pgml) to reliably detect red/white genotypes without regex escaping issues.
+- Updated [problems/inheritance-problems/poisson_flies.pgml](../problems/inheritance-problems/poisson_flies.pgml) and [problems/inheritance-problems/poisson_flies.py](../problems/inheritance-problems/poisson_flies.py) to alphabetize choices, add sex symbols, and style genotypes and wildtype/mutant labels for readability.
+- Updated [docs/webwork/WEBWORK_HEADER_STYLE.md](webwork/WEBWORK_HEADER_STYLE.md) to cap KEYWORDS at 5 (prefer 3) and to use the author/institution defaults from `docs/AUTHORS.md`.
+- Updated [docs/webwork/WEBWORK_HEADER_STYLE.md](webwork/WEBWORK_HEADER_STYLE.md) to require a short TITLE line (single sentence, <= 80 chars) and a 2-3 sentence DESCRIPTION for ADAPT alignment.
+- Standardized RadioButtons labels to `labels => 'ABC'` in [problems/inheritance-problems/poisson_flies.pgml](../problems/inheritance-problems/poisson_flies.pgml) and [problems/multiple_choice_statements/multiple_choice_statements.pgml](../problems/multiple_choice_statements/multiple_choice_statements.pgml).
 
 ## 2026-01-27
 - Made the "hydrophobic" emphasis bold in [problems/biochemistry-problems/which_hydrophobic-simple.pgml](../problems/biochemistry-problems/which_hydrophobic-simple.pgml).
