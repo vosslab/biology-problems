@@ -188,6 +188,7 @@ push @choices_candidates, $answer_value;
 
 my %seen;
 my @choices_values = grep { !$seen{$_}++ } @choices_candidates;
+@choices_values = PGsort(sub { $_[0] < $_[1] }, @choices_values);
 
 my @choices_text = map { pH_to_color_span($_) } @choices_values;
 $answer_text = pH_to_color_span($answer_value);
