@@ -1,5 +1,6 @@
 import pathlib
 import tokenize
+from typing import Optional
 
 import git_file_utils
 
@@ -90,7 +91,7 @@ def inspect_file(path: pathlib.Path) -> list[int]:
 
 
 #============================================
-def summarize_indentation(path: pathlib.Path) -> tuple[int, int] | None:
+def summarize_indentation(path: pathlib.Path) -> Optional[tuple[int, int]]:
 	"""
 	Return first tab line and first space line if both exist.
 
@@ -98,7 +99,7 @@ def summarize_indentation(path: pathlib.Path) -> tuple[int, int] | None:
 		path: File path.
 
 	Returns:
-		tuple[int, int] | None: First tab line and first space line, or None.
+		Optional[tuple[int, int]]: First tab line and first space line, or None.
 	"""
 	ignore_lines = multiline_string_lines(path)
 	with tokenize.open(path) as handle:

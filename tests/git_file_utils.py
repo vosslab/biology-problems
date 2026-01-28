@@ -1,4 +1,5 @@
 import subprocess
+from typing import Optional
 
 
 #============================================
@@ -42,8 +43,8 @@ def _split_null(output: str) -> list[str]:
 #============================================
 def list_tracked_files(
 	repo_root: str,
-	patterns: list[str] | None = None,
-	error_message: str | None = None,
+	patterns: Optional[list[str]] = None,
+	error_message: Optional[str] = None,
 ) -> list[str]:
 	"""
 	List tracked files using git ls-files.
@@ -61,7 +62,7 @@ def list_tracked_files(
 def list_changed_files(
 	repo_root: str,
 	diff_filter: str = "ACMRTUXB",
-	error_message: str | None = None,
+	error_message: Optional[str] = None,
 ) -> list[str]:
 	"""
 	List changed files using git diff and index lists.
