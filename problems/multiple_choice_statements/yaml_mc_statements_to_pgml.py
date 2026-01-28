@@ -15,6 +15,8 @@ import yaml
 # local repo modules
 import webwork_lib
 
+_DEFAULT_COLOR_MODE = object()
+
 #============================================
 def parse_args():
 	"""
@@ -291,10 +293,14 @@ def build_solution_text():
 	return text
 
 #============================================
-def build_pgml_text(yaml_data, color_mode):
+def build_pgml_text(yaml_data, color_mode=_DEFAULT_COLOR_MODE):
 	"""
 	Create the PGML file content as a string.
 	"""
+	return_warnings = True
+	if color_mode is _DEFAULT_COLOR_MODE:
+		color_mode = "inline"
+		return_warnings = False
 	replacement_rules = webwork_lib.normalize_replacement_rules(
 		yaml_data.get("replacement_rules")
 	)
@@ -404,7 +410,10 @@ def build_pgml_text(yaml_data, color_mode):
 		needs_bold_class,
 	)
 	solution_text = build_solution_text()
-	return preamble_text + setup_text + statement_text + solution_text, warnings
+	pgml_text = preamble_text + setup_text + statement_text + solution_text
+	if return_warnings:
+		return pgml_text, warnings
+	return pgml_text
 
 #============================================
 def main():

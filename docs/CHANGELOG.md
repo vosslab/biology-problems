@@ -1,6 +1,8 @@
 # Changelog
 
 ## 2026-01-28
+- Pointed [tests/yaml/test_matching_sets_yaml_generators.py](../tests/yaml/test_matching_sets_yaml_generators.py) at the current matching-set BBQ generators ([problems/matching_sets/yaml_match_to_bbq.py](../problems/matching_sets/yaml_match_to_bbq.py), [problems/matching_sets/yaml_which_one_mc_to_bbq.py](../problems/matching_sets/yaml_which_one_mc_to_bbq.py)).
+- Added a default inline color_mode for build_pgml_text in [problems/matching_sets/yaml_match_to_pgml.py](../problems/matching_sets/yaml_match_to_pgml.py) and [problems/multiple_choice_statements/yaml_mc_statements_to_pgml.py](../problems/multiple_choice_statements/yaml_mc_statements_to_pgml.py) so older callers still receive a plain PGML string.
 - Renamed `problems/biochemistry-problems/acid_base_pka_forms_checkbox.pgml` to [problems/biochemistry-problems/chemical_group_pka_forms.pgml](../problems/biochemistry-problems/chemical_group_pka_forms.pgml).
 - Removed MODES wrappers from scenario prompt strings in [problems/biochemistry-problems/chemical_group_pka_forms.pgml](../problems/biochemistry-problems/chemical_group_pka_forms.pgml).
 - Removed unnecessary temporary string variables for base form labels in [problems/biochemistry-problems/chemical_group_pka_forms.pgml](../problems/biochemistry-problems/chemical_group_pka_forms.pgml).

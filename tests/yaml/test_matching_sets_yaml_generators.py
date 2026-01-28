@@ -6,7 +6,7 @@ from lib_test_utils import import_from_repo_path
 
 
 def test_yaml_make_match_sets_permuteMatchingPairs_exclude_pairs_and_replacements(monkeypatch):
-	mod = import_from_repo_path("matching_sets/yaml_make_match_sets.py")
+	mod = import_from_repo_path("matching_sets/yaml_match_to_bbq.py")
 
 	def fake_format(N, question_text, answers_list, matching_list):
 		return f"MAT\t{N}\t{question_text}\t{answers_list}\t{matching_list}\n"
@@ -41,7 +41,7 @@ def test_yaml_make_match_sets_permuteMatchingPairs_exclude_pairs_and_replacement
 
 
 def test_yaml_make_which_one_multiple_choice_makeQuestions2_nonflip_and_flip(monkeypatch):
-	mod = import_from_repo_path("matching_sets/yaml_make_which_one_multiple_choice.py")
+	mod = import_from_repo_path("matching_sets/yaml_which_one_mc_to_bbq.py")
 
 	def fake_format(N, question_text, choices_list, answer_text):
 		return f"MC\t{N}\t{answer_text}\t{choices_list}\t{question_text}\n"
