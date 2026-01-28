@@ -1,6 +1,8 @@
 # Changelog
 
 ## 2026-01-28
+- Simplified fixed-length pKa wording in the diprotic, triprotic, and tetraprotic buffer PGML problems by replacing the generic list formatter with direct two/three/four-value strings in [problems/biochemistry-problems/buffers/pKa_buffer_state-diprotic.pgml](../problems/biochemistry-problems/buffers/pKa_buffer_state-diprotic.pgml), [problems/biochemistry-problems/buffers/pKa_buffer_state-triprotic.pgml](../problems/biochemistry-problems/buffers/pKa_buffer_state-triprotic.pgml), and [problems/biochemistry-problems/buffers/pKa_buffer_state-tetraprotic.pgml](../problems/biochemistry-problems/buffers/pKa_buffer_state-tetraprotic.pgml).
+- Replaced index-based buffer and pH selection with a local RNG helper for cleaner list choices in [problems/biochemistry-problems/buffers/pKa_buffer_state-diprotic.pgml](../problems/biochemistry-problems/buffers/pKa_buffer_state-diprotic.pgml), [problems/biochemistry-problems/buffers/pKa_buffer_state-triprotic.pgml](../problems/biochemistry-problems/buffers/pKa_buffer_state-triprotic.pgml), and [problems/biochemistry-problems/buffers/pKa_buffer_state-tetraprotic.pgml](../problems/biochemistry-problems/buffers/pKa_buffer_state-tetraprotic.pgml).
 - Removed randomization references that are not present in the local renderer snapshot from [docs/webwork/RANDOMIZATION_REFERENCE.md](webwork/RANDOMIZATION_REFERENCE.md).
 - Pruned non-renderer randomization notes from [docs/webwork/RANDOMIZATION_REFERENCE.md](webwork/RANDOMIZATION_REFERENCE.md) to keep only macros available in the local snapshot.
 - Updated [docs/webwork/RANDOMIZATION_REFERENCE.md](webwork/RANDOMIZATION_REFERENCE.md) to reflect the renderer snapshot (no `random_subset`, avoid deprecated `NchooseK`/`shuffle`, prefer local `PGrandom`).

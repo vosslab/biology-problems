@@ -60,30 +60,6 @@ sub max_value {
 	return $max;
 }
 
-sub pka_list_to_words {
-	my @pka_list = @_;
-	my $prefix = 'pK<sub>a</sub> value';
-	if (scalar(@pka_list) == 1) {
-		return $prefix . ' of <strong>' . sprintf('%.2f', $pka_list[0]) . '</strong>';
-	}
-	if (scalar(@pka_list) == 2) {
-		return $prefix . 's of <strong>' . sprintf('%.2f', $pka_list[0]) . '</strong> and <strong>'
-			. sprintf('%.2f', $pka_list[1]) . '</strong>';
-	}
-	if (scalar(@pka_list) == 3) {
-		return $prefix . 's of <strong>' . sprintf('%.2f', $pka_list[0]) . '</strong>, <strong>'
-			. sprintf('%.2f', $pka_list[1]) . '</strong>, and <strong>'
-			. sprintf('%.2f', $pka_list[2]) . '</strong>';
-	}
-	if (scalar(@pka_list) == 4) {
-		return $prefix . 's of <strong>' . sprintf('%.2f', $pka_list[0]) . '</strong>, <strong>'
-			. sprintf('%.2f', $pka_list[1]) . '</strong>, <strong>'
-			. sprintf('%.2f', $pka_list[2]) . '</strong>, and <strong>'
-			. sprintf('%.2f', $pka_list[3]) . '</strong>';
-	}
-	die 'Unsupported pKa list length.';
-}
-
 sub get_pH_values {
 	my @pka_list = @_;
 	my $min_pH_diff = 0.51;
@@ -167,6 +143,16 @@ sub format_list_of_chemical_formula_html {
 	return @formula_list;
 }
 
+sub random_choice {
+	my ($rng, @items) = @_;
+	my $item_count = scalar(@items);
+	if ($item_count < 1) {
+		die 'Random choice requires at least one item.';
+	}
+	my $index = $rng->random(0, $item_count - 1, 1);
+	return $items[$index];
+}
+
 # ----------------------------
 # 2b) Buffer data (triprotic)
 # ----------------------------
@@ -194,9 +180,7 @@ my @buffers = (
 	},
 );
 
-my %protic_names = (
-	3 => 'triprotic',
-);
+my $PROTIC_NAME = 'triprotic';
 my $PKA_COUNT = 3;
 
 # ----------------------------
@@ -205,15 +189,18 @@ my $PKA_COUNT = 3;
 my $local_random = PGrandom->new();
 $local_random->srand($problemSeed);
 
-my $buffer = $buffers[$local_random->random(0, $#buffers, 1)];
+my $buffer = random_choice($local_random, @buffers);
 my $acid_name = $buffer->{acid_name};
 my $base_name = $buffer->{base_name};
 my $description = $buffer->{description};
 my @pka_list = @{ $buffer->{pka_list} };
 my @state_list = @{ $buffer->{state_list} };
-my $protic_name = $protic_names{scalar(@pka_list)};
+my $protic_name = $PROTIC_NAME;
+my $pka_words = 'pK<sub>a</sub> values of <strong>' . sprintf('%.2f', $pka_list[0]) . '</strong>, <strong>'
+	. sprintf('%.2f', $pka_list[1]) . '</strong>, and <strong>'
+	. sprintf('%.2f', $pka_list[2]) . '</strong>';
 my @pH_list = get_pH_values(@pka_list);
-my $pH_value = $pH_list[$local_random->random(0, $#pH_list, 1)];
+my $pH_value = random_choice($local_random, @pH_list);
 
 my @choices_list = format_list_of_chemical_formula_html(@state_list);
 if ($local_random->random(0, 1, 0.0001) < 0.5) {
@@ -227,7 +214,7 @@ $question_text = '';
 $question_text .= '<p><strong>' . ucfirst($acid_name) . '</strong> and its conjugate base, '
 	. $base_name . ', ' . $description . '.</p> ';
 $question_text .= '<p>' . ucfirst($acid_name) . ' is ' . $protic_name . ' with '
-	. pka_list_to_words(@pka_list) . '.</p> ';
+	. $pka_words . '.</p> ';
 $question_text .= '<p>' . ucfirst($acid_name) . ' has ' . scalar(@state_list)
 	. ' possible protonation states in the choices below.</p> ';
 $question_text .= '<p>Which one of the following protonation states is the most abundant at <strong>pH '
