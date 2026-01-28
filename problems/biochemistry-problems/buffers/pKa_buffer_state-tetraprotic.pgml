@@ -1,0 +1,256 @@
+## TITLE('Biochemistry: Protonation state at a given pH (tetraprotic buffer)')
+## DESCRIPTION
+## Identify the most abundant protonation state of a tetraprotic buffer at a given pH using its pKa values and context.
+## ENDDESCRIPTION
+## KEYWORDS('buffers','pKa','protonation','pH','acid-base')
+## DBsubject('Biochemistry')
+## DBchapter('Chemistry of Water')
+## DBsection('Buffers')
+## Level(3)
+## Date('2026-01-28')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	'PGstandard.pl',
+	'PGML.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl',
+);
+
+$showPartialCorrectAnswers = 0;
+
+# ----------------------------
+# 2) Setup
+# ----------------------------
+
+# ----------------------------
+# 2a) Helpers
+# ----------------------------
+my @STATE_COLORS = ('#00008B', '#202060', '#404040', '#602020', '#8B0000');
+
+sub min_value {
+	my $min = shift;
+	for my $value (@_) {
+		if ($value < $min) {
+			$min = $value;
+		}
+	}
+	return $min;
+}
+
+sub max_value {
+	my $max = shift;
+	for my $value (@_) {
+		if ($value > $max) {
+			$max = $value;
+		}
+	}
+	return $max;
+}
+
+sub pka_list_to_words {
+	my @pka_list = @_;
+	my $prefix = 'pK<sub>a</sub> value';
+	if (scalar(@pka_list) == 1) {
+		return $prefix . ' of <strong>' . sprintf('%.2f', $pka_list[0]) . '</strong>';
+	}
+	if (scalar(@pka_list) == 2) {
+		return $prefix . 's of <strong>' . sprintf('%.2f', $pka_list[0]) . '</strong> and <strong>'
+			. sprintf('%.2f', $pka_list[1]) . '</strong>';
+	}
+	if (scalar(@pka_list) == 3) {
+		return $prefix . 's of <strong>' . sprintf('%.2f', $pka_list[0]) . '</strong>, <strong>'
+			. sprintf('%.2f', $pka_list[1]) . '</strong>, and <strong>'
+			. sprintf('%.2f', $pka_list[2]) . '</strong>';
+	}
+	if (scalar(@pka_list) == 4) {
+		return $prefix . 's of <strong>' . sprintf('%.2f', $pka_list[0]) . '</strong>, <strong>'
+			. sprintf('%.2f', $pka_list[1]) . '</strong>, <strong>'
+			. sprintf('%.2f', $pka_list[2]) . '</strong>, and <strong>'
+			. sprintf('%.2f', $pka_list[3]) . '</strong>';
+	}
+	die 'Unsupported pKa list length.';
+}
+
+sub get_pH_values {
+	my @pka_list = @_;
+	my $min_pH_diff = 0.51;
+	my $max_pH_diff = 1.9;
+	my @all_pH_list = ();
+	for (my $pH = 0.5; $pH <= 14.0; $pH += 0.5) {
+		push @all_pH_list, sprintf('%.1f', $pH) + 0;
+	}
+	my @pH_list = ();
+	for my $pH (@all_pH_list) {
+		my $good_value = 1;
+		for my $pKa (@pka_list) {
+			if (abs($pKa - $pH) < $min_pH_diff) {
+				$good_value = 0;
+				last;
+			}
+		}
+		if ($pH - max_value(@pka_list) > $max_pH_diff) {
+			$good_value = 0;
+		} elsif (min_value(@pka_list) - $pH > $max_pH_diff) {
+			$good_value = 0;
+		}
+		if ($good_value) {
+			push @pH_list, $pH;
+		}
+	}
+	return @pH_list;
+}
+
+sub get_protonation_state {
+	my ($pH_value, $pka_count, @values) = @_;
+	my @pka_list = @values[0 .. ($pka_count - 1)];
+	my @state_list = @values[$pka_count .. $#values];
+	my $state = $state_list[-1];
+	my $color = $STATE_COLORS[-1];
+	for (my $i = 0; $i < scalar(@pka_list); $i++) {
+		if ($pH_value < $pka_list[$i]) {
+			$state = $state_list[$i];
+			$color = $STATE_COLORS[$i];
+			last;
+		}
+	}
+	return ($state, $color);
+}
+
+sub format_chemical_formula_html {
+	my ($chem_state, $color) = @_;
+	my @string_list = split('', $chem_state);
+	my $chem_form = '';
+	my $charge;
+	for my $character (@string_list) {
+		if (defined($charge)) {
+			if ($character eq '1') {
+				$chem_form .= '<sup>' . $charge . '</sup>';
+			} else {
+				$chem_form .= '<sup>' . $character . $charge . '</sup>';
+			}
+		} elsif ($character eq '-' || $character eq '+') {
+			$charge = $character;
+		} elsif ($character =~ /[A-Za-z]/) {
+			$chem_form .= $character;
+		} elsif ($character =~ /[0-9]/) {
+			$chem_form .= '<sub>' . $character . '</sub>';
+		} else {
+			$chem_form .= $character;
+		}
+	}
+	if (defined($color)) {
+		$chem_form = '<span style="color: ' . $color . '">' . $chem_form . '</span>';
+	}
+	return $chem_form;
+}
+
+sub format_list_of_chemical_formula_html {
+	my @state_list = @_;
+	my @formula_list = ();
+	for (my $i = 0; $i < scalar(@state_list); $i++) {
+		my $formula = format_chemical_formula_html($state_list[$i], $STATE_COLORS[$i]);
+		push @formula_list, $formula;
+	}
+	return @formula_list;
+}
+
+# ----------------------------
+# 2b) Buffer data (tetraprotic)
+# ----------------------------
+my @buffers = (
+	{
+		acid_name => 'pyrophosphoric acid',
+		base_name => 'pyrophosphate',
+		description => 'is abbreviated PP<sub>i</sub> and is formed by cells from the hydrolysis of ATP into AMP',
+		pka_list => [0.91, 2.1, 6.7, 9.32],
+		state_list => ['H4P2O7', 'H3P2O7-1', 'H2P2O7-2', 'HP2O7-3', 'P2O7-4'],
+	},
+	{
+		acid_name => 'ethylenediaminetetraacetic acid',
+		base_name => 'EDTA',
+		description => 'is commonly used in chelation therapy and as a chelating agent in biochemical experiments',
+		pka_list => [2.00, 2.67, 6.16, 10.26],
+		state_list => ['C10H16N2O8', 'C10H15N2O8-1', 'C10H14N2O8-2', 'C10H13N2O8-3', 'C10H12N2O8-4'],
+	},
+);
+
+my %protic_names = (
+	4 => 'tetraprotic',
+);
+my $PKA_COUNT = 4;
+
+# ----------------------------
+# 2c) Randomization and choices
+# ----------------------------
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+
+my $buffer = $buffers[$local_random->random(0, $#buffers, 1)];
+my $acid_name = $buffer->{acid_name};
+my $base_name = $buffer->{base_name};
+my $description = $buffer->{description};
+my @pka_list = @{ $buffer->{pka_list} };
+my @state_list = @{ $buffer->{state_list} };
+my $protic_name = $protic_names{scalar(@pka_list)};
+my @pH_list = get_pH_values(@pka_list);
+my $pH_value = $pH_list[$local_random->random(0, $#pH_list, 1)];
+
+my @choices_list = format_list_of_chemical_formula_html(@state_list);
+if ($local_random->random(0, 1, 0.0001) < 0.5) {
+	@choices_list = reverse @choices_list;
+}
+
+my ($answer_state, $answer_color) = get_protonation_state($pH_value, $PKA_COUNT, @pka_list, @state_list);
+my $answer_formula = format_chemical_formula_html($answer_state, $answer_color);
+
+$question_text = '';
+$question_text .= '<p><strong>' . ucfirst($acid_name) . '</strong> and its conjugate base, '
+	. $base_name . ', ' . $description . '.</p> ';
+$question_text .= '<p>' . ucfirst($acid_name) . ' is ' . $protic_name . ' with '
+	. pka_list_to_words(@pka_list) . '.</p> ';
+$question_text .= '<p>' . ucfirst($acid_name) . ' has ' . scalar(@state_list)
+	. ' possible protonation states in the choices below.</p> ';
+$question_text .= '<p>Which one of the following protonation states is the most abundant at <strong>pH '
+	. sprintf('%.1f', $pH_value) . '</strong>?</p>';
+
+$answer_plain = $answer_state;
+
+$rb = RadioButtons(
+	[@choices_list],
+	$answer_formula,
+	labels        => 'ABC',
+	displayLabels => 1,
+	randomize     => 0,
+	separator     => '<div style="margin-bottom: 0.7em;"></div>',
+);
+
+# ----------------------------
+# 3) Statement (PGML)
+# ----------------------------
+BEGIN_PGML
+[$question_text]*
+
+[_]{$rb}
+END_PGML
+
+# ----------------------------
+# 4) Solution
+# ----------------------------
+BEGIN_PGML_SOLUTION
+The correct answer is: [$answer_plain].
+END_PGML_SOLUTION
+
+ENDDOCUMENT();

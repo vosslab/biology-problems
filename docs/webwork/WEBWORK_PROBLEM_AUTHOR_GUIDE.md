@@ -21,7 +21,7 @@ This document focuses on **problem authoring** (PGML usage, structure, randomiza
 Each problem should follow the same five components, in order:
 
 1) **OPL header** (tagging block)
-2) **Preamble** (macros, beginproblem, global flags)
+2) **Preamble** (macros, global flags)
 3) **Setup** (helpers, randomization, data prep, answer keys)
 4) **Statement** (PGML text and blanks)
 5) **Solution** (hints and solutions, when present)
@@ -42,8 +42,6 @@ loadMacros(
   "PGML.pl",
   "PGcourse.pl",
 );
-
-TEXT(beginproblem());
 
 $showPartialCorrectAnswers = 1;
 
@@ -70,6 +68,7 @@ Rules:
 
 - Always include `DOCUMENT();` and `ENDDOCUMENT();`.
 - Put all macro loads in one `loadMacros(...)` block.
+- Omit `TEXT(beginproblem());` in this repo (ADAPT handles numbering/points and `$problemPreamble` is not configured here).
 - Keep Preamble, Setup, Statement, and Solution in distinct sections with headings.
 - Use short subsections inside Setup when needed (for example, helpers, randomization, layout).
 
@@ -529,8 +528,6 @@ loadMacros(
   "PGML.pl",
   "PGcourse.pl",
 );
-
-TEXT(beginproblem());
 
 $showPartialCorrectAnswers = 1;
 

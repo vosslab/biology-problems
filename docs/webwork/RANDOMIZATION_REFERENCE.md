@@ -1,8 +1,8 @@
 # Randomization reference
 
-This note summarizes common PG randomization entry points (PG 2.17 to 2.20 era).
-Use it when you need seed-stable behavior, linting checks, or to choose the
-right helper macro.
+This note summarizes common PG randomization entry points for the local renderer
+snapshot (PG 2.17-based, trimmed macro set). Use it when you need seed-stable
+behavior, linting checks, or to choose the right helper macro.
 
 ## Core PG (PGbasicmacros.pl)
 - `random(begin, end, incr)`
@@ -11,19 +11,17 @@ right helper macro.
 - `SRAND(seed)` (resets the main PG random generator)
 
 ## Core PG auxiliary functions (PGauxiliaryFunctions.pl)
-- `random_subset(n, @set)`
 - `random_coprime([arrays...])`
 - `random_pairwise_coprime([arrays...])`
 
 ## Choice macros (PGchoicemacros.pl) [deprecated]
-- `NchooseK(N, K)` (wrapper around `random_subset`)
-- `shuffle(n)` (wrapper around `random_subset`)
+- `NchooseK(N, K)` (deprecated)
+- `shuffle(n)` (deprecated)
 
 ## Parser widgets (internal randomization helpers)
 - `randomOrder(...)` in:
   - `parserPopUp.pl`
   - `parserRadioButtons.pl`
-  - `parserCheckboxList.pl`
 
 ## Contexts
 - `randomPrime(start, end)` (contextInteger.pl)
@@ -40,22 +38,8 @@ right helper macro.
 - `bernoullirand(p, num, options)` (Bernoulli)
 - `discreterand(n, @table)` (discrete distribution)
 
-## Graph theory macros
-- `GRgraph_size_random(...)`
-- `GRgraph_size_random_weight_dweight(...)`
-- `GRgraphpic_dim_random_labels_weight_dweight(...)`
-
-## Miscellaneous
-- `randomPerson(...)` (randomPerson.pl)
-- `randomLastName(...)` (randomPerson.pl)
-
 ## Deprecated or legacy macros
-- `list_random_multi_uniq(n, @list)` (freemanMacros.pl)
-- `bkell_list_random_selection(n, @list)` (freemanMacros.pl)
-- `shufflemap(...)` (hhAdditionalMacros.pl)
 - `ProblemRandomize(...)` (problemRandomize.pl)
-- `PeriodicRerandomization(...)` (PeriodicRerandomization.pl)
-- `rand_button()` (littleneck.pl)
 
 ## RNG objects and direct usage
 - `PGrandom->random(...)` and `PGrandom->srand(...)`
@@ -68,4 +52,5 @@ right helper macro.
   problem.
 - If you select from hash keys, sort the keys before random selection so the
   same seed yields the same result across runs.
-- Prefer `random_subset` over deprecated wrappers like `NchooseK` when possible.
+- In this renderer snapshot, avoid `NchooseK`/`shuffle` and use a local
+  `PGrandom` plus manual selection for subsets or indices.

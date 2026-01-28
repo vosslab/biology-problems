@@ -24,13 +24,10 @@ DOCUMENT();
 # ----------------------------
 loadMacros(
 	'PGstandard.pl',
-	'PGchoicemacros.pl',
 	'PGML.pl',
 	'parserRadioButtons.pl',
 	'PGcourse.pl'
 );
-
-TEXT(beginproblem());
 $showPartialCorrectAnswers = 0;
 
 # ----------------------------
@@ -75,32 +72,34 @@ $showPartialCorrectAnswers = 0;
 # Number of choices to display
 $num_choices = 5;
 
+# Use a local RNG so choice ordering is stable for a given seed.
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+
 # Select one correct answer (hydrophobic compound)
-$correct_answer = list_random(@hydrophobic_compounds);
+my $correct_index = $local_random->random(0, $#hydrophobic_compounds, 1);
+$correct_answer = $hydrophobic_compounds[$correct_index];
 $correct_answer_plain = $correct_answer;
 $correct_answer_plain =~ s/<[^>]+>//g;
 
 # Select distractors (hydrophilic compounds)
-my @indices = NchooseK(scalar(@hydrophilic_compounds), $num_choices - 1);
-my @distractors = @hydrophilic_compounds[@indices];
-
-# Build complete choices list
-@choices = ($correct_answer, @distractors);
-
-# ----------------------------
-# 2c) Shuffle choices (seed-stable)
-# ----------------------------
-
-my $local_random = PGrandom->new();
-$local_random->srand($problemSeed);
-
-my @choice_indices = (0 .. $#choices);
-my @choice_shuffled = ();
-while (@choice_indices) {
-	my $pick = $local_random->random(0, $#choice_indices, 1);
-	push @choice_shuffled, splice(@choice_indices, $pick, 1);
+my %picked_distractors = ();
+my @distractors = ();
+while (scalar(@distractors) < ($num_choices - 1)) {
+	my $index = $local_random->random(0, $#hydrophilic_compounds, 1);
+	next if $picked_distractors{$index};
+	$picked_distractors{$index} = 1;
+	push @distractors, $hydrophilic_compounds[$index];
 }
-@choices = @choices[@choice_shuffled];
+
+# ----------------------------
+# 2c) Build choices
+# ----------------------------
+
+# Insert the correct answer at a random position.
+@choices = @distractors;
+my $insert_at = $local_random->random(0, scalar(@choices), 1);
+splice(@choices, $insert_at, 0, $correct_answer);
 
 # ----------------------------
 # 2d) Build radio buttons

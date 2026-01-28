@@ -5,8 +5,6 @@ loadMacros(
   "parserRadioButtons.pl",
 );
 
-TEXT(beginproblem());
-
 # Header to load RDKit.js
 HEADER_TEXT(<<'EOF');
 <script src="https://unpkg.com/@rdkit/rdkit/dist/RDKit_minimal.js"></script>

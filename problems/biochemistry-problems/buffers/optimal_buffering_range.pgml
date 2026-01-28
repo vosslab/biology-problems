@@ -1,0 +1,221 @@
+## TITLE('Biochemistry: Optimal buffering range from pKa values')
+## DESCRIPTION
+## Identify which pH value falls outside the optimal buffering range for a polyprotic buffer using its pKa values and context. Use the buffer description and pKa list to choose the out-of-range pH.
+## ENDDESCRIPTION
+## KEYWORDS('buffers','pKa','buffering range','polyprotic','acid-base')
+## DBsubject('Biochemistry')
+## DBchapter('Chemistry of Water')
+## DBsection('Buffers')
+## Level(3)
+## Date('2026-01-28')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	'PGstandard.pl',
+	'PGML.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl',
+);
+$showPartialCorrectAnswers = 0;
+
+# ----------------------------
+# 2) Setup
+# ----------------------------
+
+# ----------------------------
+# 2a) Helpers
+# ----------------------------
+sub pka_list_to_words {
+	my @pka_list = @_;
+	my $prefix = 'pK<sub>a</sub> value';
+	if (scalar(@pka_list) == 1) {
+		return $prefix . ' of <strong>' . sprintf('%.2f', $pka_list[0]) . '</strong>';
+	}
+	if (scalar(@pka_list) == 2) {
+		return $prefix . 's of <strong>' . sprintf('%.2f', $pka_list[0]) . '</strong> and <strong>'
+			. sprintf('%.2f', $pka_list[1]) . '</strong>';
+	}
+	if (scalar(@pka_list) == 3) {
+		return $prefix . 's of <strong>' . sprintf('%.2f', $pka_list[0]) . '</strong>, <strong>'
+			. sprintf('%.2f', $pka_list[1]) . '</strong>, and <strong>'
+			. sprintf('%.2f', $pka_list[2]) . '</strong>';
+	}
+	if (scalar(@pka_list) == 4) {
+		return $prefix . 's of <strong>' . sprintf('%.2f', $pka_list[0]) . '</strong>, <strong>'
+			. sprintf('%.2f', $pka_list[1]) . '</strong>, <strong>'
+			. sprintf('%.2f', $pka_list[2]) . '</strong>, and <strong>'
+			. sprintf('%.2f', $pka_list[3]) . '</strong>';
+	}
+	die 'Unsupported pKa list length.';
+}
+
+sub pH_to_color_span {
+	my ($ph_value) = @_;
+	my $min_color = 28;
+	my $max_color = 128;
+	my $g = $min_color;
+	my ($r, $b);
+	if ($ph_value < 7.0) {
+		$b = $min_color;
+		my $t = ($ph_value - 1.0) / (7.0 - 1.0);
+		$r = int(($max_color - $min_color) * (1 - $t) + $min_color);
+	} else {
+		$r = $min_color;
+		my $t = ($ph_value - 7.0) / (13.0 - 7.0);
+		$b = int(($max_color - $min_color) * $t + $min_color);
+	}
+	my $color_hex = sprintf('#%02x%02x%02x', $r, $g, $b);
+	return 'pH <span style="color: ' . $color_hex . ';">' . sprintf('%.1f', $ph_value) . '</span>';
+}
+
+sub random_float_not_near {
+	my ($local_random, $lower_bound, $upper_bound, $min_distance, $max_attempts, @number_list) = @_;
+	for (my $attempt = 0; $attempt < $max_attempts; $attempt++) {
+		my $candidate = $local_random->random($lower_bound, $upper_bound, 0.0001);
+		$candidate = sprintf('%.1f', $candidate) + 0;
+		my $ok = 1;
+		for my $value (@number_list) {
+			if (abs($candidate - $value) < $min_distance) {
+				$ok = 0;
+				last;
+			}
+		}
+		return $candidate if $ok;
+	}
+	die "Could not find a suitable float after $max_attempts attempts.";
+}
+
+sub shuffle_list {
+	my ($local_random, @items) = @_;
+	for (my $i = $#items; $i > 0; $i--) {
+		my $j = $local_random->random(0, $i, 1);
+		@items[$i, $j] = @items[$j, $i];
+	}
+	return @items;
+}
+
+# ----------------------------
+# 2b) Buffer data
+# ----------------------------
+my @buffers = (
+	{
+		acid_name => 'arsenic acid',
+		base_name => 'arsenate',
+		description => 'is extremely toxic, corrosive, and carcinogenic; it serves as a precursor to a variety of pesticides',
+		pka_list => [2.19, 6.94, 11.5],
+	},
+	{
+		acid_name => 'citric acid',
+		base_name => 'citrate',
+		description => 'is an intermediate in the citric acid cycle',
+		pka_list => [3.13, 4.76, 6.39],
+	},
+	{
+		acid_name => 'phosphoric acid',
+		base_name => 'phosphate',
+		description => 'is abbreviated P<sub>i</sub> and is formed by cells from the hydrolysis of ATP into ADP',
+		pka_list => [2.16, 7.21, 12.32],
+	},
+	{
+		acid_name => 'pyrophosphoric acid',
+		base_name => 'pyrophosphate',
+		description => 'is abbreviated PP<sub>i</sub> and is formed by cells from the hydrolysis of ATP into AMP',
+		pka_list => [0.91, 2.1, 6.7, 9.32],
+	},
+	{
+		acid_name => 'ethylenediaminetetraacetic acid',
+		base_name => 'EDTA',
+		description => 'is commonly used in chelation therapy and as a chelating agent in biochemical experiments',
+		pka_list => [2.00, 2.67, 6.16, 10.26],
+	},
+);
+
+my %protic_names = (
+	1 => 'monoprotic',
+	2 => 'diprotic',
+	3 => 'triprotic',
+	4 => 'tetraprotic',
+);
+
+# ----------------------------
+# 2c) Randomization and choices
+# ----------------------------
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+
+my $buffer = $buffers[$local_random->random(0, $#buffers, 1)];
+my $acid_name = $buffer->{acid_name};
+my $base_name = $buffer->{base_name};
+my $description = $buffer->{description};
+my @pka_list = @{ $buffer->{pka_list} };
+my $protic_name = $protic_names{scalar(@pka_list)};
+
+$question_text = '';
+$question_text .= '<p><strong>' . ucfirst($acid_name) . '</strong> and its conjugate base, '
+	. $base_name . ', ' . $description . '.</p> ';
+$question_text .= '<p>' . ucfirst($acid_name) . ' is ' . $protic_name . ' with '
+	. pka_list_to_words(@pka_list) . '.</p> ';
+$question_text .= '<p>Which one of the following pH values falls outside the optimal buffering range of '
+	. ucfirst($acid_name) . '?</p>';
+
+my $num_choices = 5;
+my $answer_value = random_float_not_near($local_random, 2.0, 12.0, 1.2, 1000, @pka_list);
+
+my @choices_candidates = ();
+for my $pka (@pka_list) {
+	my $delta_up = $local_random->random(0, 1, 0.0001);
+	my $delta_down = $local_random->random(0, 1, 0.0001);
+	push @choices_candidates, sprintf('%.1f', $pka + $delta_up) + 0;
+	push @choices_candidates, sprintf('%.1f', $pka - $delta_down) + 0;
+}
+@choices_candidates = shuffle_list($local_random, @choices_candidates);
+if (scalar(@choices_candidates) > ($num_choices - 1)) {
+	@choices_candidates = @choices_candidates[0 .. ($num_choices - 2)];
+}
+push @choices_candidates, $answer_value;
+
+my %seen;
+my @choices_values = grep { !$seen{$_}++ } @choices_candidates;
+
+my @choices_text = map { pH_to_color_span($_) } @choices_values;
+$answer_text = pH_to_color_span($answer_value);
+$answer_plain = 'pH ' . sprintf('%.1f', $answer_value);
+
+$rb = RadioButtons(
+	[@choices_text],
+	$answer_text,
+	labels        => 'ABC',
+	displayLabels => 1,
+	randomize     => 0,
+	separator     => '<div style="margin-bottom: 0.7em;"></div>',
+);
+
+# ----------------------------
+# 3) Statement (PGML)
+# ----------------------------
+BEGIN_PGML
+[$question_text]*
+
+[_]{$rb}
+END_PGML
+
+# ----------------------------
+# 4) Solution
+# ----------------------------
+BEGIN_PGML_SOLUTION
+The correct answer is: [$answer_plain].
+END_PGML_SOLUTION
+
+ENDDOCUMENT();
