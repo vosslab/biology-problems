@@ -235,6 +235,16 @@ BEGIN_PGML
 END_PGML
 
 # ----------------------------
+# 3b) Hint
+# ----------------------------
+BEGIN_PGML_HINT
+The protonation state of a molecule is determined by the relationship between the
+solution's pH and the molecule's pKa. If the pH is lower than the pKa, the molecule
+is mostly in its protonated form; if the pH is higher, it is mostly in its
+deprotonated form.
+END_PGML_HINT
+
+# ----------------------------
 # 4) Solution
 # ----------------------------
 BEGIN_PGML_SOLUTION
