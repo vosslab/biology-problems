@@ -182,7 +182,15 @@ my %choice_for = (
   'ww|+-' => $choice_homo_mut_wt,
   'ww|w-' => $choice_homo_mut_mut,
 );
+my %choice_for_plain = (
+  '++|w-' => 'homozygous wildtype female ++ and male of unknown genotype',
+  '+w|+-' => 'heterozygous female +w and wildtype male +-',
+  '+w|w-' => 'heterozygous female +w and mutant male w-',
+  'ww|+-' => 'homozygous mutant female ww and wildtype male +-',
+  'ww|w-' => 'homozygous mutant female ww and mutant male w-',
+);
 $correct = $choice_for{"$female_genotype|$male_genotype"};
+$correct_plain = $choice_for_plain{"$female_genotype|$male_genotype"};
 
 $rb = RadioButtons(
   [@choices],
@@ -210,7 +218,7 @@ allele ([$allele_plus]*) is dominant to the white ([$mutant_word]*) allele ([$al
 END_PGML
 
 BEGIN_PGML_SOLUTION
-The correct parental genotypes are: [$correct]*
+The correct parental genotypes are: [$correct_plain].
 END_PGML_SOLUTION
 
 ENDDOCUMENT();

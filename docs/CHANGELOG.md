@@ -1,6 +1,8 @@
 # Changelog
 
 ## 2026-01-28
+- Switched [problems/inheritance-problems/poisson_flies.pgml](../problems/inheritance-problems/poisson_flies.pgml) to use a plain ASCII solution string for ADAPT instead of the styled HTML choice text.
+- Clarified in [docs/webwork/WEBWORK_PROBLEM_AUTHOR_GUIDE.md](webwork/WEBWORK_PROBLEM_AUTHOR_GUIDE.md) that BEGIN_PGML_SOLUTION must be plain ASCII for ADAPT exports.
 - Pointed [tests/yaml/test_matching_sets_yaml_generators.py](../tests/yaml/test_matching_sets_yaml_generators.py) at the current matching-set BBQ generators ([problems/matching_sets/yaml_match_to_bbq.py](../problems/matching_sets/yaml_match_to_bbq.py), [problems/matching_sets/yaml_which_one_mc_to_bbq.py](../problems/matching_sets/yaml_which_one_mc_to_bbq.py)).
 - Added a default inline color_mode for build_pgml_text in [problems/matching_sets/yaml_match_to_pgml.py](../problems/matching_sets/yaml_match_to_pgml.py) and [problems/multiple_choice_statements/yaml_mc_statements_to_pgml.py](../problems/multiple_choice_statements/yaml_mc_statements_to_pgml.py) so older callers still receive a plain PGML string.
 - Renamed `problems/biochemistry-problems/acid_base_pka_forms_checkbox.pgml` to [problems/biochemistry-problems/chemical_group_pka_forms.pgml](../problems/biochemistry-problems/chemical_group_pka_forms.pgml).
