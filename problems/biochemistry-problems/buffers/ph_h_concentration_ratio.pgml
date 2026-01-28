@@ -1,0 +1,232 @@
+## TITLE('Biochemistry: pH difference and [H+] comparison')
+## DESCRIPTION
+## Determine the relative hydrogen ion concentration between two samples given their pH values.
+## ENDDESCRIPTION
+## KEYWORDS('pH','hydrogen ion','concentration','log scale','acid-base')
+## DBsubject('Biochemistry')
+## DBchapter('Chemistry of Water')
+## DBsection('Buffers')
+## Level(2)
+## Date('2026-01-28')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	'PGstandard.pl',
+	'PGML.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl',
+);
+
+$showPartialCorrectAnswers = 0;
+
+# ----------------------------
+# 2) Setup
+# ----------------------------
+
+# ----------------------------
+# 2a) Helpers
+# ----------------------------
+sub power_of_ten_words {
+	my ($exponent) = @_;
+	my %words = (
+		1 => '10 (10<sup>1</sup>)',
+		2 => '100 (10<sup>2</sup>)',
+		3 => '1,000 (10<sup>3</sup>)',
+		4 => '10,000 (10<sup>4</sup>)',
+		5 => '100,000 (10<sup>5</sup>)',
+		6 => '1 million (10<sup>6</sup>)',
+		7 => '10 million (10<sup>7</sup>)',
+		8 => '100 million (10<sup>8</sup>)',
+		9 => '1 billion (10<sup>9</sup>)',
+	);
+	if (exists $words{$exponent}) {
+		return $words{$exponent};
+	}
+	return '10^' . $exponent;
+}
+
+sub power_of_ten_plain {
+	my ($exponent) = @_;
+	my %words = (
+		1 => '10 (10^1)',
+		2 => '100 (10^2)',
+		3 => '1,000 (10^3)',
+		4 => '10,000 (10^4)',
+		5 => '100,000 (10^5)',
+		6 => '1 million (10^6)',
+		7 => '10 million (10^7)',
+		8 => '100 million (10^8)',
+		9 => '1 billion (10^9)',
+	);
+	if (exists $words{$exponent}) {
+		return $words{$exponent};
+	}
+	return '10^' . $exponent;
+}
+
+sub format_item_name_html {
+	my ($name, $color) = @_;
+	return "<span style='color: " . $color . "; font-weight: 700;'>" . $name . "</span>";
+}
+
+sub format_ph_html {
+	my ($ph_value) = @_;
+	return "<span style='font-family: monospace;'>" . $ph_value . "</span>";
+}
+
+sub shuffle_list {
+	my ($local_random, @items) = @_;
+	for (my $i = $#items; $i > 0; $i--) {
+		my $j = $local_random->random(0, $i, 1);
+		@items[$i, $j] = @items[$j, $i];
+	}
+	return @items;
+}
+
+# ----------------------------
+# 2b) Sample data
+# ----------------------------
+my @contexts = (
+	{ name => 'battery acid', pH => 0.8, color => '#7F1D1D' },
+	{ name => 'gastric juice', pH => 1.4, color => '#B45309' },
+	{ name => 'lemon juice', pH => 2.0, color => '#C2410C' },
+	{ name => 'vinegar', pH => 2.4, color => '#9A3412' },
+	{ name => 'cola', pH => 2.5, color => '#991B1B' },
+	{ name => 'orange juice', pH => 3.4, color => '#EA580C' },
+	{ name => 'tomato juice', pH => 4.1, color => '#B91C1C' },
+	{ name => 'black coffee', pH => 5.1, color => '#3F3F46' },
+	{ name => 'rainwater', pH => 5.6, color => '#2563EB' },
+	{ name => 'saliva', pH => 6.8, color => '#0F766E' },
+	{ name => 'pure water', pH => 7.0, color => '#1D4ED8' },
+	{ name => 'blood sample', pH => 7.4, color => '#7F1D1D' },
+	{ name => 'seawater', pH => 8.1, color => '#0EA5E9' },
+	{ name => 'baking soda solution', pH => 8.4, color => '#0F766E' },
+	{ name => 'egg white', pH => 9.0, color => '#6B7280' },
+	{ name => 'milk of magnesia', pH => 10.5, color => '#64748B' },
+	{ name => 'household ammonia', pH => 11.0, color => '#0B7285' },
+	{ name => 'bleach', pH => 12.0, color => '#7C3AED' },
+);
+
+# ----------------------------
+# 2c) Randomization and choices
+# ----------------------------
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+
+my @pairs = ();
+for my $i (0 .. $#contexts) {
+	for my $j (0 .. $#contexts) {
+		next if $i == $j;
+		my $hi = $contexts[$i];
+		my $lo = $contexts[$j];
+		next if $hi->{pH} <= $lo->{pH};
+		my $diff0 = $hi->{pH} - $lo->{pH};
+		my $delta_int = int($diff0 + 0.5);
+		next if abs($diff0 - $delta_int) > 0.2 + 1e-9;
+		push @pairs, {
+			hi => $hi,
+			lo => $lo,
+			diff0 => $diff0,
+			delta_int => $delta_int,
+		};
+	}
+}
+
+if (scalar(@pairs) < 1) {
+	die 'No valid pH pairs available.';
+}
+
+my $pick = $pairs[$local_random->random(0, $#pairs, 1)];
+my $high_name = $pick->{hi}{name};
+my $low_name = $pick->{lo}{name};
+my $high_color = $pick->{hi}{color};
+my $low_color = $pick->{lo}{color};
+my $diff0 = $pick->{diff0};
+my $delta_int = $pick->{delta_int};
+my $delta = $delta_int - $diff0;
+
+my @jitter_values = (-0.1, 0.0, 0.1);
+my @jitter_pairs = ();
+for my $dh (@jitter_values) {
+	my $dl = $dh - $delta;
+	my $dl_rounded = sprintf('%.1f', $dl) + 0;
+	next if abs($dl - $dl_rounded) > 1e-6;
+	next if $dl_rounded < -0.1 || $dl_rounded > 0.1;
+	push @jitter_pairs, { dh => $dh, dl => $dl_rounded };
+}
+
+if (scalar(@jitter_pairs) < 1) {
+	die 'No valid pH jitters available.';
+}
+
+my $jitter = $jitter_pairs[$local_random->random(0, $#jitter_pairs, 1)];
+my $high_pH = $pick->{hi}{pH} + $jitter->{dh};
+my $low_pH = $pick->{lo}{pH} + $jitter->{dl};
+my $high_pH_display = sprintf('%.1f', $high_pH) + 0;
+my $low_pH_display = sprintf('%.1f', $low_pH) + 0;
+my $high_pH_text = sprintf('%.1f', $high_pH_display);
+my $low_pH_text = sprintf('%.1f', $low_pH_display);
+my $high_pH_html = format_ph_html($high_pH_text);
+my $low_pH_html = format_ph_html($low_pH_text);
+my $high_name_html = format_item_name_html($high_name, $high_color);
+my $low_name_html = format_item_name_html($low_name, $low_color);
+
+my $factor_text = power_of_ten_words($delta_int);
+my $factor_plain = power_of_ten_plain($delta_int);
+my $correct_text = $factor_text . ' times higher [H+] than the ' . $high_name_html . '.';
+my $wrong_high = $delta_int . ' times higher [H+] than the ' . $high_name_html . '.';
+my $wrong_low = $delta_int . ' times lower [H+] than the ' . $high_name_html . '.';
+my $wrong_factor_low = $factor_text . ' times lower [H+] than the ' . $high_name_html . '.';
+
+my @choices_list = ($wrong_high, $correct_text, $wrong_low, $wrong_factor_low);
+@choices_list = shuffle_list($local_random, @choices_list);
+
+$answer_plain = $factor_plain . ' times higher [H+] than the ' . $high_name . '.';
+$display_high_name = $high_name_html;
+$display_low_name = $low_name_html;
+$display_high_pH = $high_pH_html;
+$display_low_pH = $low_pH_html;
+$display_delta_int = $delta_int;
+
+$rb = RadioButtons(
+	[@choices_list],
+	$correct_text,
+	labels        => 'ABC',
+	displayLabels => 1,
+	randomize     => 0,
+	separator     => '<div style="margin-bottom: 0.7em;"></div>',
+);
+
+# ----------------------------
+# 3) Statement (PGML)
+# ----------------------------
+BEGIN_PGML
+The pH of the [$display_high_name]* is [$display_high_pH]*, while the
+[$display_low_name]* is pH [$display_low_pH]*. This is a difference of
+[$display_delta_int] pH units.
+
+The [$display_low_name]* has:
+
+[_]{$rb}
+END_PGML
+
+# ----------------------------
+# 4) Solution
+# ----------------------------
+BEGIN_PGML_SOLUTION
+The correct answer is: [$answer_plain].
+END_PGML_SOLUTION
+
+ENDDOCUMENT();

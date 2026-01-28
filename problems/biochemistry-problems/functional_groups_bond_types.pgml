@@ -1,0 +1,209 @@
+## TITLE('Biochemistry: Functional groups with double vs single bonds')
+## DESCRIPTION
+## Identify which set of functional groups all share double bonds or only single bonds. The question randomly selects between a double-bond or single-bond prompt and asks for the correct trio. Answer choices are shuffled per seed.
+## ENDDESCRIPTION
+## KEYWORDS('functional groups','double bonds','single bonds','biomolecules')
+## DBsubject('Biochemistry')
+## DBchapter('Chemical Properties')
+## DBsection('Functional Groups')
+## Level(2)
+## Date('2026-01-28')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	'PGstandard.pl',
+	'PGML.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl',
+);
+
+$showPartialCorrectAnswers = 0;
+
+# ----------------------------
+# 2) Setup
+# ----------------------------
+
+# ----------------------------
+# 2a) Helpers
+# ----------------------------
+sub shuffle_list {
+	my (@items) = @_;
+	for (my $i = $#items; $i > 0; $i--) {
+		my $j = random(0, $i, 1);
+		@items[$i, $j] = @items[$j, $i];
+	}
+	return @items;
+}
+
+sub random_choice {
+	my (@items) = @_;
+	my $item_count = scalar(@items);
+	if ($item_count < 1) {
+		die 'Random choice requires at least one item.';
+	}
+	my $index = random(0, $item_count - 1, 1);
+	return $items[$index];
+}
+
+sub sample_unique_from_pool {
+	my ($count, @pool) = @_;
+	if ($count > scalar(@pool)) {
+		die 'Sample size exceeds pool size.';
+	}
+	my @shuffled = shuffle_list(@pool);
+	return @shuffled[0 .. ($count - 1)];
+}
+
+sub trio_key {
+	my (@items) = @_;
+	my @sorted = PGsort(sub { $_[0] lt $_[1] }, @items);
+	return join('|', @sorted);
+}
+
+# ----------------------------
+# 2b) Question data
+# ----------------------------
+
+my @single_bond_groups = (
+	'hydroxyl',
+	'sulfhydryl',
+	'amino',
+	'methyl',
+);
+
+my @double_bond_groups = (
+	'carbonyl',
+	'carboxyl',
+	'phosphate',
+);
+
+my %GROUP_COLORS = (
+	carboxyl => '#e60000',
+	sulfhydryl => '#b3b300',
+	amino => '#00b38f',
+	methyl => '#59b300',
+	phosphate => '#e65400',
+	carbonyl => '#00b3b3',
+	hydroxyl => '#0a9bf5',
+);
+
+sub format_group_name {
+	my ($group_name) = @_;
+	my $color = $GROUP_COLORS{$group_name};
+	if (defined($color)) {
+		return "<span style='color: " . $color . "; font-weight: 700;'>" . $group_name . "</span>";
+	}
+	return $group_name;
+}
+
+sub format_group_trio {
+	my (@groups) = @_;
+	my @formatted = map { format_group_name($_) } @groups;
+	return join(', ', @formatted);
+}
+
+# ----------------------------
+# 2c) Randomization and choices
+# ----------------------------
+my $requires_double = random(0, 1, 1);
+my @target_pool = $requires_double ? @double_bond_groups : @single_bond_groups;
+my $target_count = 3;
+my @all_groups = (@single_bond_groups, @double_bond_groups);
+
+my @answer_groups = ();
+if ($requires_double) {
+	@answer_groups = @double_bond_groups;
+} else {
+	my $omit_index = random(0, $#single_bond_groups, 1);
+	for (my $i = 0; $i < scalar(@single_bond_groups); $i++) {
+		next if $i == $omit_index;
+		push @answer_groups, $single_bond_groups[$i];
+	}
+}
+@answer_groups = shuffle_list(@answer_groups);
+my $answer_text = format_group_trio(@answer_groups);
+my @choices_list = ($answer_text);
+
+my $answer_key = trio_key(@answer_groups);
+my %seen_choices = ($answer_key => 1);
+
+my $max_attempts = 200;
+my $attempts = 0;
+while (scalar(@choices_list) < 4) {
+	$attempts++;
+	if ($attempts > $max_attempts) {
+		die 'Failed to generate unique distractors.';
+	}
+	my $pattern = random(0, 1, 1);
+	my @candidate = ();
+	if ($pattern == 0) {
+		my @singles = sample_unique_from_pool(2, @single_bond_groups);
+		my @doubles = sample_unique_from_pool(1, @double_bond_groups);
+		@candidate = (@singles, @doubles);
+	} else {
+		my @singles = sample_unique_from_pool(1, @single_bond_groups);
+		my @doubles = sample_unique_from_pool(2, @double_bond_groups);
+		@candidate = (@singles, @doubles);
+	}
+	my $candidate_key = trio_key(@candidate);
+	next if $seen_choices{$candidate_key};
+	$seen_choices{$candidate_key} = 1;
+	my @candidate_shuffled = shuffle_list(@candidate);
+	push @choices_list, format_group_trio(@candidate_shuffled);
+}
+
+@choices_list = shuffle_list(@choices_list);
+
+my $double_emph = '<span style="color: #B45309; font-size: 1.15em; font-weight: 700;">double bond</span>';
+my $single_emph = '<span style="color: #00008B; font-size: 1.15em; font-weight: 700;">only single bonds</span>';
+my $bond_emph = $requires_double ? $double_emph : $single_emph;
+
+$question_text = '';
+if ($requires_double) {
+	$question_text .= '<p>Which one of the following sets of three (3) functional groups all contain a '
+		. $bond_emph . '?</p>';
+} else {
+	$question_text .= '<p>Which one of the following sets of three (3) functional groups have '
+		. $bond_emph . '?</p>';
+}
+
+$answer_plain = join(', ', @answer_groups);
+
+$rb = RadioButtons(
+	[@choices_list],
+	$answer_text,
+	labels        => 'ABC',
+	displayLabels => 1,
+	randomize     => 0,
+	separator     => '<div style="margin-bottom: 0.7em;"></div>',
+);
+
+# ----------------------------
+# 3) Statement (PGML)
+# ----------------------------
+BEGIN_PGML
+[$question_text]*
+
+[_]{$rb}
+END_PGML
+
+# ----------------------------
+# 4) Solution
+# ----------------------------
+BEGIN_PGML_SOLUTION
+The correct answer is: [$answer_plain].
+END_PGML_SOLUTION
+
+ENDDOCUMENT();
