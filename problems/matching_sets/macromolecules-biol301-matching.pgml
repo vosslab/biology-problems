@@ -1,21 +1,18 @@
-## TITLE('Biochemistry: Match macromolecule types to examples')
 ## DESCRIPTION
 ## Match each of the following types of macromolecules with their corresponding macromolecules.
 ## ENDDESCRIPTION
 ## KEYWORDS('types of macromolecules','macromolecules')
 ## DBsubject('Biochemistry')
-## DBchapter('Macromolecules')
-## DBsection('Classification')
-## Level(2)
-## Date('2026-01-26')
-## Author('Dr. Neil R. Voss')
+## DBchapter('')
+## DBsection('')
+## Date('2026-01-28')
+## Author('Neil R. Voss')
 ## Institution('Roosevelt University')
-## Language(en)
-# https://github.com/vosslab
-# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
-# International License).
-# https://creativecommons.org/licenses/by/4.0/
-# Source code portions are licensed under LGPLv3.
+## TitleText1('')
+## EditionText1('')
+## AuthorText1('')
+## Section1('')
+## Problem1('')
 
 DOCUMENT();
 
@@ -264,7 +261,7 @@ my @answer_letters_with_blank = ('', @answer_letters);
 # -------------------------------
 # Render the question
 # -------------------------------
-HEADER_TEXT(MODES(TeX => '', HTML => <<END_STYLE));
+HEADER_TEXT(<<END_STYLE);
 <style>
 .pgml-bold { font-weight: 700; }
 .two-column {
@@ -281,8 +278,7 @@ BEGIN_PGML
 Match each of the following types of macromolecules with their corresponding macromolecules.
 Note: Each choice will be used exactly once.
 
-[@ MODES(TeX => '',
-	HTML => '<div class="two-column"><div>') @]*
+[@ MODES(HTML => '<div class="two-column"><div>') @]*
 [@ join(
     "\n\n",
     map {
@@ -291,15 +287,14 @@ Note: Each choice will be used exactly once.
             . '[$q_and_a[' . $_ . '][0]]'
     } 0 .. $#q_and_a
 ) @]**
-[@ MODES(TeX => '',
-	HTML => '</div><div class="right-col">') @]*
+[@ MODES(HTML => '</div><div class="right-col">') @]*
 [@ join(
     "\n\n",
     map {
         chr(65 + $_) . '\\.' . ' ' . '[$answers_sorted_html[' . $_ . ']]*'
     } 0 .. $#answers_sorted
 ) @]**
-[@ MODES(TeX => '', HTML => '</div></div>') @]*
+[@ MODES(HTML => '</div></div>') @]*
 END_PGML
 
 # -------------------------------
@@ -327,3 +322,4 @@ The correct answers are: [$answer_list].
 END_PGML_SOLUTION
 
 ENDDOCUMENT();
+
