@@ -9,8 +9,8 @@ and [MATCHING_PROBLEMS.md](MATCHING_PROBLEMS.md).
 - PGML-first: put student-facing text and blanks inside `BEGIN_PGML ... END_PGML`.
 - Inline graders: attach the answer evaluator in the PGML blank (for example
   `[_]{$rb}` or `[__________]{$ans}`), not via a separate `ANS(...)` call.
-- Use HTML-only `MODES(TeX => '', HTML => ...)` when HTML is required. Do not
-  wrap plain text in `MODES(...)`.
+- Use `MODES(...)` only when HTML must be emitted from Perl or PGML would escape
+  or misparse it. Do not wrap plain text in `MODES(...)`.
 - If you must pass HTML stored in a Perl variable into PGML, render it with
   `[$var]*` so PGML does not escape it.
 
@@ -97,8 +97,8 @@ Notes:
 ## Matching
 
 Follow [MATCHING_PROBLEMS.md](MATCHING_PROBLEMS.md): use `PopUp` widgets and
-HTML-only layout wrappers with `MODES(TeX => '', HTML => ...)`. PGML should
-render the layout and the PopUps inline.
+HTML layout wrappers with `MODES(...)` when the HTML must be emitted from Perl.
+PGML should render the layout and the PopUps inline.
 
 ```perl
 loadMacros(
@@ -116,7 +116,7 @@ END_PGML
 ```
 
 Notes:
-- Keep matching layout HTML-only and keep TeX empty.
+- Keep matching layout HTML-only.
 - Use the label and ordering rules in MATCHING_PROBLEMS.md.
 
 ## Ordering (not implemented)

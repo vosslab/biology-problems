@@ -1,19 +1,21 @@
+## TITLE('Biochemistry: Protonation states above or below pKa')
 ## DESCRIPTION
-## Identify protonation states for carboxyl, amine, and thiol groups when pH is two units above or below the pKa.
-## Select the group form and the net charge for the chosen scenario.
+## Identify protonation states for carboxyl, amine, and thiol groups when pH is two units above or below the pKa. Select the group form and the net charge for the chosen scenario.
 ## ENDDESCRIPTION
 ## KEYWORDS('pKa','acid-base','protonation','carboxyl','amine','thiol')
 ## DBsubject('Biochemistry')
-## DBchapter('Chemical Properties')
+## DBchapter('Chemistry of Water')
 ## DBsection('Acids and Bases')
+## Level(3)
 ## Date('2026-01-28')
-## Author('Neil R. Voss')
+## Author('Dr. Neil R. Voss')
 ## Institution('Roosevelt University')
-## TitleText1('')
-## EditionText1('')
-## AuthorText1('')
-## Section1('')
-## Problem1('')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
 
 DOCUMENT();
 
@@ -31,7 +33,7 @@ $showPartialCorrectAnswers = 1;
 # ----------------------------
 sub subscript {
 	my ($value) = @_;
-	return MODES(TeX => '', HTML => "<sub>$value</sub>");
+	return "<sub>$value</sub>";
 }
 
 my $amine_nh2 = 'NH' . subscript(2);
@@ -50,18 +52,9 @@ my @amine_forms = ($amine_nh4, $amine_nh3, $amine_nh2, 'NH');
 my @carboxyl_forms = ($carboxyl_cooh3, $carboxyl_cooh2, 'COOH', 'COO');
 my @thiol_forms = ($thiol_sh3, $thiol_sh2_pos, 'SH', 'S');
 
-my $charge_positive = MODES(
-	TeX => '',
-	HTML => "<span style='color:#b32020;'>positive charge (+)</span>",
-);
-my $charge_neutral = MODES(
-	TeX => '',
-	HTML => "<span style='color:#444444;'>neutral charge (0)</span>",
-);
-my $charge_negative = MODES(
-	TeX => '',
-	HTML => "<span style='color:#1a5fb4;'>negative charge (-)</span>",
-);
+my $charge_positive = "<span style='color:#b32020;'>positive charge (+)</span>";
+my $charge_neutral = "<span style='color:#444444;'>neutral charge (0)</span>";
+my $charge_negative = "<span style='color:#1a5fb4;'>negative charge (-)</span>";
 # Charge is selected separately to avoid embedding charge in the form options.
 my @charge_labels = ($charge_positive, $charge_neutral, $charge_negative);
 
@@ -164,15 +157,15 @@ BEGIN_PGML
 Select the group form and the net charge.
 Choose one option from each list.
 
-[@ MODES(TeX => '', HTML => '<div style="display:flex;gap:1.5em;align-items:flex-start;flex-wrap:wrap;"><div style="flex:1 1 260px;min-width:240px;"><div style="font-weight:600;margin-bottom:0.3em;">Form:</div>') @]*
+[@ MODES(HTML => '<div style="display:flex;gap:1.5em;align-items:flex-start;flex-wrap:wrap;"><div style="flex:1 1 260px;min-width:240px;"><div style="font-weight:600;margin-bottom:0.3em;">Form:</div>') @]*
 
 [_]{$form_radio}
 
-[@ MODES(TeX => '', HTML => '</div><div style="flex:1 1 260px;min-width:240px;"><div style="font-weight:600;margin-bottom:0.3em;">Charge:</div>') @]*
+[@ MODES(HTML => '</div><div style="flex:1 1 260px;min-width:240px;"><div style="font-weight:600;margin-bottom:0.3em;">Charge:</div>') @]*
 
 [_]{$charge_radio}
 
-[@ MODES(TeX => '', HTML => '</div></div>') @]*
+[@ MODES(HTML => '</div></div>') @]*
 END_PGML
 
 # ----------------------------

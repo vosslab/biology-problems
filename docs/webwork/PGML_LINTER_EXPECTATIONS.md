@@ -34,7 +34,8 @@ Linter checks:
 ## Mismatch: MODES(...) inside eval blocks
 
 Expectation:
-- Use `MODES(TeX => '', HTML => '<div>...')` inside `[@ ... @]` to emit HTML.
+- Use `MODES(HTML => '<div>...')` inside `[@ ... @]` to emit HTML when PGML
+  would otherwise escape or misparse it.
 
 What actually happens:
 - `MODES(...)` returns `1` in eval context; you get `1` rendered instead of HTML.
@@ -44,10 +45,9 @@ Linter checks:
 - Recommend using PGML tag wrappers or raw HTML outside eval blocks.
 
 PG 2.17 exception:
-- For two-column matching layouts, we intentionally use
-  `MODES(TeX => '', HTML => '<div ...>')` inside `[@ ... @]` to emit raw HTML.
-  In this repo, treat that pattern as allowed (warn at most) because the
-  PG 2.17 renderer requires it for stable layout.
+- For two-column matching layouts, we intentionally use `MODES(HTML => '<div ...>')`
+  inside `[@ ... @]` to emit raw HTML. In this repo, treat that pattern as allowed
+  (warn at most) because the PG 2.17 renderer requires it for stable layout.
 
 ## Mismatch: MathJax color does not render
 
@@ -75,9 +75,9 @@ Linter checks:
 - Suggest `niceTables.pl` for any tables. It is the only supported path because it avoids the blocked tags.
 
 PG 2.17 exception:
-- Allow `<div>` and `<span>` in PGML output when emitted through HTML-only
-  `MODES(TeX => '', HTML => ...)` wrappers. This is the recommended pattern in
-  `WEBWORK_PROBLEM_AUTHOR_GUIDE.md` for matching layouts.
+- Allow `<div>` and `<span>` in PGML output when emitted through `MODES(HTML => ...)`
+  wrappers. This is the recommended pattern in `WEBWORK_PROBLEM_AUTHOR_GUIDE.md`
+  for matching layouts.
 
 ## Mismatch: Ordered list auto-parsing
 
@@ -108,7 +108,7 @@ Linter checks:
 - PGML tag wrappers inside Perl variables: `"[<"`, `"]{["`.
 - HTML in variables without `*`: `[$var]` with `<span` in value.
 - `MODES(` inside `[@ ... @]` eval blocks.
-- Consecutive `MODES(TeX => '', HTML => ...)` calls with no intervening content (merge them into one).
+- Consecutive `MODES(HTML => ...)` calls with no intervening content (merge them into one).
 - TeX color macros: `\\color{`, `\\textcolor{`.
 - Blocked tags: `<table`, `<tr`, `<td`, `<th`.
 - Ordered list label patterns: `A.` / `B.` in right-column text.
@@ -122,7 +122,7 @@ Linter checks:
 - Unbalanced `[@ ... @]` eval blocks.
 
 ### HTML whitelist hazards
-- `<style>` blocks outside `HEADER_TEXT(MODES(TeX => '', HTML => ...))`.
+- `<style>` blocks outside `HEADER_TEXT(MODES(HTML => ...))`.
 - Disallowed tags inside PGML tag wrappers (install whitelist).
 
 ### MathJax color failures

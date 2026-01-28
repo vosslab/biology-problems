@@ -344,7 +344,7 @@ def build_statement_text(color_mode, color_classes, needs_bold_class):
 	text += "#==========================================================\n"
 	text += "\n"
 	if color_mode == "class" and (len(color_classes) > 0 or needs_bold_class):
-		text += "HEADER_TEXT(MODES(TeX => '', HTML => <<END_STYLE));\n"
+		text += "HEADER_TEXT(<<END_STYLE);\n"
 		text += "<style>\n"
 		for class_name in sorted(color_classes.keys()):
 			color_value = color_classes[class_name]

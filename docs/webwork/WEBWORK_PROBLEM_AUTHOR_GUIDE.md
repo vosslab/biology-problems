@@ -16,15 +16,26 @@ This document focuses on **problem authoring** (PGML usage, structure, randomiza
 
 ---
 
-## Canonical file skeleton (required)
+## Problem components and canonical skeleton (required)
 
-Use this layout unless you have a strong reason not to.
+Each problem should follow the same five components, in order:
+
+1) **OPL header** (tagging block)
+2) **Preamble** (macros, beginproblem, global flags)
+3) **Setup** (helpers, randomization, data prep, answer keys)
+4) **Statement** (PGML text and blanks)
+5) **Solution** (hints and solutions, when present)
+
+Use this layout unless you have a strong reason not to:
 
 ```perl
 ## (Tagging header block goes here)
 
 DOCUMENT();
 
+# ----------------------------
+# 1) Preamble
+# ----------------------------
 loadMacros(
   "PGstandard.pl",
   "MathObjects.pl",
@@ -37,26 +48,19 @@ TEXT(beginproblem());
 $showPartialCorrectAnswers = 1;
 
 # ----------------------------
-# 1) Context and configuration
+# 2) Setup
 # ----------------------------
+# Helpers, randomization, data prep, answer keys.
 
 # ----------------------------
-# 2) Randomization and setup
-# ----------------------------
-
-# ----------------------------
-# 3) Define correct answers
-# ----------------------------
-
-# ----------------------------
-# 4) Problem text (PGML)
+# 3) Statement (PGML)
 # ----------------------------
 BEGIN_PGML
 ...
 END_PGML
 
 # ----------------------------
-# 5) Solutions, hints (optional)
+# 4) Solution (optional)
 # ----------------------------
 
 ENDDOCUMENT();
@@ -66,7 +70,8 @@ Rules:
 
 - Always include `DOCUMENT();` and `ENDDOCUMENT();`.
 - Put all macro loads in one `loadMacros(...)` block.
-- Keep setup, answers, and PGML text in distinct sections with headings.
+- Keep Preamble, Setup, Statement, and Solution in distinct sections with headings.
+- Use short subsections inside Setup when needed (for example, helpers, randomization, layout).
 
 ---
 
@@ -130,43 +135,59 @@ PGML output is filtered by an HTML whitelist in this install. Tags like `table`,
 Rules:
 
 - Do not use HTML tables in PGML. The only supported way to create tables is `niceTables.pl`, which avoids the blocked HTML table tags.
-- TeX output is intentionally empty in this repo. When you must use `MODES(...)` for HTML-only output, set `TeX => ''`.
-- For styling, use `span` plus `MODES(TeX => '', HTML => '<span ...>')` or PGML tag wrappers. If the content is plain text with no HTML tags, do not use `MODES(...)`.
-- Avoid consecutive `MODES(...)` calls for adjacent HTML-only tags. Merge them into a single `MODES(TeX => '', HTML => '...')` so you do not add unnecessary wrappers.
+- Use plain HTML in PGML when it renders correctly.
+- Use `MODES(...)` only when HTML must be emitted from Perl or when PGML would
+  escape or misparse the HTML (for example, layout wrappers or conditional HTML).
+- Avoid consecutive `MODES(...)` calls for adjacent HTML-only tags. Merge them
+  into a single wrapper so you do not add unnecessary calls.
 
 Example (merge consecutive MODES calls):
 
 ```perl
 # Avoid this:
-MODES(TeX => '', HTML => '<div class="left">') .
-MODES(TeX => '', HTML => '<span class="label">')
+MODES(HTML => '<div class="left">') .
+MODES(HTML => '<span class="label">')
 
 # Prefer this:
-MODES(TeX => '', HTML => '<div class="left"><span class="label">')
+MODES(HTML => '<div class="left"><span class="label">')
 ```
 - PGML parses once. Do not build PGML tag wrapper syntax inside Perl variables and expect a second parse.
 - If you need to inject HTML stored in a Perl variable, render it with `[$var]*` so PGML does not escape the tags.
-- Only wrap strings in `MODES(...)` when you truly need mode-specific output (for example HTML tags). If a value is plain text with no HTML tags or mode differences, use a plain string instead. When `MODES(...)` is used in this repo, keep the TeX value empty.
+- Only wrap strings in `MODES(...)` when you truly need mode-specific output (for example HTML tags). If a value is plain text with no HTML tags or mode differences, use a plain string instead.
+
+---
+
+## MODES Usage Guidance Summary
+
+Use MODES only when HTML must be emitted from Perl (for example inside `[@ ... @]*`
+eval blocks). If you can place the HTML directly in PGML, do that and avoid MODES.
+
+Required cases (common):
+
+- Wrapper HTML emitted inside eval blocks (matching layouts, joined lists).
+- CSS blocks emitted via `HEADER_TEXT(...)` when the style is assembled in Perl.
+
+Not required (typical):
+
+- Inline HTML in PGML (`<span>`, `<sub>`, `<sup>`, `<div>`).
+- HTML stored in variables, when emitted with `[$var]*`.
+- Colored labels or plain HTML choices.
+
+Rule of thumb: if PGML would escape the HTML because it is produced inside Perl,
+use `MODES(HTML => '...')`. Otherwise, use plain HTML.
 
 ---
 
 ## Emphasis for critical words (recommended)
 
 Use concise visual emphasis for key terms like ABOVE/BELOW, NOT, or the target
-concept. Keep TeX output empty for these spans in this repo to avoid renderer
-and ADAPT mismatches. Prefer HTML `span` styles over MathJax color macros.
+concept. Prefer HTML `span` styles over MathJax color macros.
 
 Example:
 
 ```perl
-my $above_emph = MODES(
-  TeX => '',
-  HTML => "<span style='color:#d96500;font-weight:700;'>ABOVE</span>",
-);
-my $below_emph = MODES(
-  TeX => '',
-  HTML => "<span style='color:#1f7a1f;font-weight:700;'>BELOW</span>",
-);
+my $above_emph = "<span style='color:#d96500;font-weight:700;'>ABOVE</span>";
+my $below_emph = "<span style='color:#1f7a1f;font-weight:700;'>BELOW</span>";
 
 BEGIN_PGML
 When the pH is two units [$above_emph]* the pKa, what form is present?
@@ -197,13 +218,14 @@ before the prompt.
 
 ## HTML in PGML (PG 2.17)
 
-For PG 2.17, raw HTML layouts are reliable when you keep TeX output empty.
-This is the recommended pattern for two-column matching layouts.
+For PG 2.17, raw HTML layouts are reliable. This is the recommended pattern
+for two-column matching layouts.
 
 Rules:
 
-- Emit raw HTML only in `MODES(TeX => '', HTML => '...')` so TeX output is empty.
-- Use `HEADER_TEXT(MODES(TeX => '', HTML => <<'END_STYLE'))` for CSS blocks.
+- Emit raw HTML wrappers with `MODES(...)` when you need to inject HTML from Perl.
+- Use `HEADER_TEXT(MODES(HTML => <<'END_STYLE'))` for CSS blocks when you need
+  to emit CSS from Perl.
 - If a Perl variable contains HTML (`<span>`, `<div>`), output it as `[$var]*`.
 - Avoid PGML tag wrapper syntax (`[< ... >]{...}`) for complex layouts; it is
   fragile in PG 2.17.
@@ -212,11 +234,11 @@ Rules:
 Example (HTML-only wrapper):
 
 ```perl
-[@ MODES(TeX => '', HTML => '<div class="two-column"><div>') @]*
+[@ MODES(HTML => '<div class="two-column"><div>') @]*
 ... left column ...
-[@ MODES(TeX => '', HTML => '</div><div class="right-col">') @]*
+[@ MODES(HTML => '</div><div class="right-col">') @]*
 ... right column ...
-[@ MODES(TeX => '', HTML => '</div></div>') @]*
+[@ MODES(HTML => '</div></div>') @]*
 ```
 
 ---

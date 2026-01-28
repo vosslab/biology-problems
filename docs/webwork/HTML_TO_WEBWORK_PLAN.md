@@ -2,7 +2,7 @@
 
 ## Scope
 - Translate HTML-ish content from YAML and generators into PGML-safe output.
-- Web rendering only; TeX output is intentionally empty in this repo.
+- Web rendering only; use MODES only when HTML must be emitted from Perl.
 
 ## Non-goals
 - Do not emit raw HTML tables in PGML output.
@@ -11,7 +11,7 @@
 
 ## Hard constraints in this install
 - HTML tables (`table`, `tr`, `td`, `th`) are blocked and must not be emitted.
-- Use PGML for structure. For inline HTML, use PGML tag wrappers or raw HTML passed through with `*`. For layout in PG 2.17, use HTML-only `MODES(TeX => '', HTML => ...)` wrappers instead of tag wrappers.
+- Use PGML for structure. For inline HTML, use PGML tag wrappers or raw HTML passed through with `*`. For layout in PG 2.17, use `MODES(...)` wrappers only when HTML must be emitted from Perl.
 - PGML parses once; it will not re-parse PGML tag wrapper syntax constructed inside Perl variables.
 
 ## Pipeline contract (generator responsibilities)

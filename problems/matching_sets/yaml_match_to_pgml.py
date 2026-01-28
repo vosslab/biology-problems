@@ -364,7 +364,7 @@ def build_statement_text(question_text, note_text, use_answer_html, color_mode,
 	text += "# -------------------------------\n"
 	text += "# Render the question\n"
 	text += "# -------------------------------\n"
-	text += "HEADER_TEXT(MODES(TeX => '', HTML => <<END_STYLE));\n"
+	text += "HEADER_TEXT(<<END_STYLE);\n"
 	text += "<style>\n"
 	if color_mode == "class" and len(color_classes) > 0:
 		for class_name in sorted(color_classes.keys()):
@@ -386,8 +386,7 @@ def build_statement_text(question_text, note_text, use_answer_html, color_mode,
 	text += question_text + "\n"
 	text += note_text + "\n"
 	text += "\n"
-	text += "[@ MODES(TeX => '',\n"
-	text += "\tHTML => '<div class=\"two-column\"><div>') @]*\n"
+	text += "<div class=\"two-column\"><div>\n"
 	text += "[@ join(\n"
 	text += "    \"\\n\\n\",\n"
 	text += "    map {\n"
@@ -396,8 +395,7 @@ def build_statement_text(question_text, note_text, use_answer_html, color_mode,
 	text += "            . '[$q_and_a[' . $_ . '][0]]'\n"
 	text += "    } 0 .. $#q_and_a\n"
 	text += ") @]**\n"
-	text += "[@ MODES(TeX => '',\n"
-	text += "\tHTML => '</div><div class=\"right-col\">') @]*\n"
+	text += "</div><div class=\"right-col\">\n"
 	text += "[@ join(\n"
 	text += "    \"\\n\\n\",\n"
 	text += "    map {\n"
@@ -408,7 +406,7 @@ def build_statement_text(question_text, note_text, use_answer_html, color_mode,
 		text += "'[$answers_sorted[' . $_ . ']]'\n"
 	text += "    } 0 .. $#answers_sorted\n"
 	text += ") @]**\n"
-	text += "[@ MODES(TeX => '', HTML => '</div></div>') @]*\n"
+	text += "</div></div>\n"
 	text += "END_PGML\n"
 	text += "\n"
 	return text

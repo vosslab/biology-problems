@@ -1,3 +1,4 @@
+## TITLE('Biochemistry: Identify macromolecule type from a chemical structure')
 ## DESCRIPTION
 ## Identify the macromolecule type from a rendered chemical structure.
 ## ENDDESCRIPTION
@@ -5,14 +6,16 @@
 ## DBsubject('Biochemistry')
 ## DBchapter('Macromolecules')
 ## DBsection('Identification')
-## Date('')
-## Author('')
-## Institution('')
-## TitleText1('')
-## EditionText1('')
-## AuthorText1('')
-## Section1('')
-## Problem1('')
+## Level(2)
+## Date('2026-01-28')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
 
 DOCUMENT();
 loadMacros(
@@ -434,23 +437,11 @@ $mol_smiles_attr =~ s/"/&quot;/g;
 $mol_smiles_attr =~ s/</&lt;/g;
 $mol_smiles_attr =~ s/>/&gt;/g;
 
-# Create colorized choices (HTML) with plain TeX fallbacks
-$choice_carbohydrates = MODES(
-	TeX => '',
-	HTML => '<strong><span style="color: #0a9bf5;">Carbohydrates</span></strong> (monosaccharides)',
-);
-$choice_lipids = MODES(
-	TeX => '',
-	HTML => '<strong><span style="color: #e69100;">Lipids</span></strong> (fatty acids)',
-);
-$choice_proteins = MODES(
-	TeX => '',
-	HTML => '<strong><span style="color: #009900;">Proteins</span></strong> (amino acids and dipeptides)',
-);
-$choice_nucleic_acids = MODES(
-	TeX => '',
-	HTML => '<strong><span style="color: #e60000;">Nucleic acids</span></strong> (nucleobases)',
-);
+# Create colorized choices (HTML)
+$choice_carbohydrates = '<strong><span style="color: #0a9bf5;">Carbohydrates</span></strong> (monosaccharides)';
+$choice_lipids = '<strong><span style="color: #e69100;">Lipids</span></strong> (fatty acids)';
+$choice_proteins = '<strong><span style="color: #009900;">Proteins</span></strong> (amino acids and dipeptides)';
+$choice_nucleic_acids = '<strong><span style="color: #e60000;">Nucleic acids</span></strong> (nucleobases)';
 
 # Map the correct answer to its colored choice
 if ($selected_type eq 'proteins') {
@@ -517,11 +508,8 @@ if (document.readyState === 'loading') {
 </script>
 EOF
 
-# Canvas HTML (HTML-only)
-$canvas_html = MODES(
-	TeX => '',
-	HTML => '<canvas id="' . $canvas_id . '" width="480" height="270" data-smiles="' . $mol_smiles_attr . '"></canvas>',
-);
+# Canvas HTML
+$canvas_html = '<canvas id="' . $canvas_id . '" width="480" height="270" data-smiles="' . $mol_smiles_attr . '"></canvas>';
 
 # =============================================================================
 # PROBLEM TEXT

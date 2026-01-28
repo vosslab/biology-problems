@@ -1,3 +1,4 @@
+## TITLE('Biochemistry: Identify hydrophobic compounds from formulas')
 ## DESCRIPTION
 ## Based on their molecular formula, which one of the following compounds is most likely hydrophobic?
 ## ENDDESCRIPTION
@@ -5,17 +6,22 @@
 ## DBsubject('Biochemistry')
 ## DBchapter('Chemical Properties')
 ## DBsection('Hydrophobic and Hydrophilic')
+## Level(2)
 ## Date('2026-01-23')
-## Author('Neil R. Voss')
+## Author('Dr. Neil R. Voss')
 ## Institution('Roosevelt University')
-## TitleText1('')
-## EditionText1('')
-## AuthorText1('')
-## Section1('')
-## Problem1('')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
 
 DOCUMENT();
 
+# ----------------------------
+# 1) Preamble
+# ----------------------------
 loadMacros(
 	'PGstandard.pl',
 	'PGchoicemacros.pl',
@@ -27,9 +33,13 @@ loadMacros(
 TEXT(beginproblem());
 $showPartialCorrectAnswers = 0;
 
-########################################################
-# DATA POOLS
-########################################################
+# ----------------------------
+# 2) Setup
+# ----------------------------
+
+# ----------------------------
+# 2a) Data pools
+# ----------------------------
 
 @hydrophobic_compounds = (
 	'benzene, C<sub>6</sub>H<sub>6</sub>',
@@ -58,9 +68,9 @@ $showPartialCorrectAnswers = 0;
 	'urea, CO(NH<sub>2</sub>)<sub>2</sub>',
 );
 
-########################################################
-# GENERATE QUESTION
-########################################################
+# ----------------------------
+# 2b) Randomization and choices
+# ----------------------------
 
 # Number of choices to display
 $num_choices = 5;
@@ -77,9 +87,9 @@ my @distractors = @hydrophilic_compounds[@indices];
 # Build complete choices list
 @choices = ($correct_answer, @distractors);
 
-########################################################
-# SHUFFLE CHOICES (SEED-STABLE)
-########################################################
+# ----------------------------
+# 2c) Shuffle choices (seed-stable)
+# ----------------------------
 
 my $local_random = PGrandom->new();
 $local_random->srand($problemSeed);
@@ -92,9 +102,9 @@ while (@choice_indices) {
 }
 @choices = @choices[@choice_shuffled];
 
-########################################################
-# BUILD RADIO BUTTONS
-########################################################
+# ----------------------------
+# 2d) Build radio buttons
+# ----------------------------
 
 $rb = RadioButtons(
 	[@choices],
@@ -105,9 +115,9 @@ $rb = RadioButtons(
 	uncheckable   => 0,
 );
 
-########################################################
-# QUESTION TEXT
-########################################################
+# ----------------------------
+# 3) Statement (PGML)
+# ----------------------------
 
 $hydrophobic_emph = "<span style='color:#997300;font-size:1.25em;font-weight:700;'>hydrophobic</span>";
 
@@ -119,13 +129,9 @@ Based on their molecular formula, which one of the following compounds is most l
 
 END_PGML
 
-########################################################
-# ANSWER
-########################################################
-
-########################################################
-# HINT
-########################################################
+# ----------------------------
+# 4) Solution
+# ----------------------------
 
 BEGIN_PGML_HINT
 

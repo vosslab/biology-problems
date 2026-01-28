@@ -1,19 +1,27 @@
-## TITLE('Infer parental genotypes from X-linked fly offspring counts')
+## TITLE('Genetics: X-linked inheritance from fly offspring counts')
 ## DESCRIPTION
-## Determine parental genotypes from an X-linked recessive fly cross using offspring phenotype counts.
-## Use the table of offspring counts by sex and eye color to identify the parents.
-## Assume the white allele is recessive to the red allele.
+## Determine parental genotypes from an X-linked recessive fly cross using offspring phenotype counts. Use the table of offspring counts by sex and eye color to identify the parents. Assume the white allele is recessive to the red allele.
 ## ENDDESCRIPTION
 ## KEYWORDS('X-linked','recessive','genotype','phenotype')
-## DBsubject('Genetics')
-## DBchapter('Inheritance')
+## DBsubject('Inheritance Genetics')
+## DBchapter('Chromosomal Inheritance')
 ## DBsection('Sex-linked inheritance')
+## Level(4)
 ## Date('2026-01-28')
 ## Author('Dr. Neil R. Voss')
 ## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
 
 DOCUMENT();
 
+# ----------------------------
+# 1) Preamble
+# ----------------------------
 loadMacros(
   "PGstandard.pl",
   "MathObjects.pl",
@@ -27,11 +35,11 @@ TEXT(beginproblem());
 $showPartialCorrectAnswers = 1;
 
 # ----------------------------
-# 1) Context and configuration
+# 2) Setup
 # ----------------------------
 
 # ----------------------------
-# 2) Randomization and setup
+# 2a) Helpers
 # ----------------------------
 
 sub geno2pheno {
@@ -64,6 +72,9 @@ sub get_answer_index {
   die "Unknown genotype combo: $female_genotype x $male_genotype";
 }
 
+# ----------------------------
+# 2b) Randomization and data prep
+# ----------------------------
 my @progeny_sizes = (160, 200, 240, 320, 360, 400, 480, 600);
 my @crosses = (
   [ '++', 'w-' ],
@@ -129,6 +140,9 @@ $male_label = "$male_word <span style='font-weight:400;'>(</span>"
 $allele_plus = geno_span('+');
 $allele_w = geno_span('w');
 
+# ----------------------------
+# 2c) Table and layout
+# ----------------------------
 $table = LayoutTable(
   [
     [
@@ -153,7 +167,7 @@ $table = LayoutTable(
 );
 
 # ----------------------------
-# 3) Define correct answers
+# 2d) Answer choices and keys
 # ----------------------------
 
 $choice_hetero_mut = "heterozygous $female_label " . geno_span('+w')
@@ -202,7 +216,7 @@ $rb = RadioButtons(
 );
 
 # ----------------------------
-# 4) Problem text (PGML)
+# 3) Statement (PGML)
 # ----------------------------
 
 BEGIN_PGML
@@ -216,6 +230,10 @@ allele ([$allele_plus]*) is dominant to the white ([$mutant_word]*) allele ([$al
 
 [_]{$rb}
 END_PGML
+
+# ----------------------------
+# 4) Solution
+# ----------------------------
 
 BEGIN_PGML_SOLUTION
 The correct parental genotypes are: [$correct_plain].

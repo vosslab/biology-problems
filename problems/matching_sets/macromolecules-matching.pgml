@@ -1,18 +1,21 @@
+## TITLE('Biochemistry: Match macromolecule types to examples')
 ## DESCRIPTION
 ## Match each of the following types of macromolecules with their corresponding macromolecules.
 ## ENDDESCRIPTION
 ## KEYWORDS('types of macromolecules','macromolecules')
 ## DBsubject('Biochemistry')
-## DBchapter('')
-## DBsection('')
+## DBchapter('Macromolecules')
+## DBsection('Classification')
+## Level(2)
 ## Date('2026-01-26')
-## Author('Neil R. Voss')
+## Author('Dr. Neil R. Voss')
 ## Institution('Roosevelt University')
-## TitleText1('')
-## EditionText1('')
-## AuthorText1('')
-## Section1('')
-## Problem1('')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
 
 DOCUMENT();
 
@@ -322,4 +325,3 @@ The correct answers are: [$answer_list].
 END_PGML_SOLUTION
 
 ENDDOCUMENT();
-

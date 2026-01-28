@@ -57,8 +57,11 @@ Use a single line:
 ### Content requirements
 
 - One sentence.
-- 80 characters or fewer.
+- 90 characters or fewer.
 - Describe the task, not the story wrapper.
+- Include the discipline or course context when the title appears in a large bank
+  (for example, "Genetics: X-linked inheritance from fly offspring counts").
+- Avoid filler words like "practice" in titles.
 - Avoid commas if they make the title run long.
 
 ---
@@ -79,6 +82,8 @@ Use `## DESCRIPTION` and `## ENDDESCRIPTION`. Put plain English in between.
 - Describe the task, not the story wrapper.
 - Include constraints that affect adoption (rounding requirement, unit expectations, domain restrictions).
 - If adapted, say "Adapted from ..." or "Based on ...".
+- Prefer a single paragraph line within the DESCRIPTION block rather than one
+  sentence per line.
 
 ### Example
 
@@ -231,9 +236,9 @@ different author is explicitly required for a specific problem. Current default:
 ## Institution('Roosevelt University')
 ```
 
-### Contact links (comments only)
+### Contact links (comments only, required)
 
-If you want contact links, use plain comment lines (not tags) and avoid email:
+Use plain comment lines (not tags) and avoid email. The GitHub link is required:
 
 ```text
 # https://github.com/vosslab
@@ -280,20 +285,19 @@ Use ISO 639-1 language codes. For English, use:
 
 ---
 
-## 8) License comments (recommended, not an OPL tag)
+## 8) License comments (required, not an OPL tag)
 
 OPL does not define a standard license tag. Use plain comment lines to state
-licensing for the problem text and any included images or code. Default to CC BY
-4.0 for problem text unless otherwise specified, and note LGPLv3 for code
-portions if present.
+licensing for the problem text and any included images or code. The required
+license statement for this repo is CC BY 4.0 / LGPL v3.
 
 Example:
 
 ```text
-# This work is licensed under the Creative Commons Attribution 4.0
-# International License.
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
 # https://creativecommons.org/licenses/by/4.0/
-# Source code portions (if any) are licensed under LGPLv3.
+# Source code portions are licensed under LGPLv3.
 ```
 
 If a problem includes a separate image license, add an extra comment line for
