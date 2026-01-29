@@ -14,6 +14,7 @@ bptools.use_insert_hidden_terms = False
 bptools.use_add_no_click_div = False
 
 SCENARIOS: list[str] = []
+GLOBAL_PCL = None
 
 #======================================
 #======================================
@@ -40,9 +41,13 @@ def get_question_text(molecule_name, pcl):
 
 #======================================
 #======================================
-def write_question(N: int, amino_acid_name: str, pcl: object, num_choices: int, args) -> str:
+def write_question(N: int, args) -> str:
+	if N > 20 or N > len(SCENARIOS):
+		return None
+	idx = N - 1
+	amino_acid_name = SCENARIOS[idx]
 
-	question_text = get_question_text(amino_acid_name, pcl)
+	question_text = get_question_text(amino_acid_name, GLOBAL_PCL)
 	if question_text is None:
 		return None
 
@@ -56,7 +61,9 @@ def write_question(N: int, amino_acid_name: str, pcl: object, num_choices: int, 
 		# Complete the question formatting
 		complete_question = bptools.formatBB_FIB_Question(N, question_text, answers_list)
 	else:
-		choices_list = aminoacidlib.get_similar_amino_acids(amino_acid_name, num=num_choices-1, pcl=pcl)
+		choices_list = aminoacidlib.get_similar_amino_acids(
+			amino_acid_name, num=args.num_choices - 1, pcl=GLOBAL_PCL
+		)
 		choices_list.append(amino_acid_name)
 		choices_list.sort()
 		complete_question = bptools.formatBB_MC_Question(N, question_text, choices_list, amino_acid_name)
@@ -65,38 +72,8 @@ def write_question(N: int, amino_acid_name: str, pcl: object, num_choices: int, 
 
 #======================================
 #======================================
-def write_question_batch(start_num: int, args) -> list[str]:
-	if len(SCENARIOS) == 0:
-		return []
-
-	questions = []
-	pcl = pubchemlib.PubChemLib()
-
-	remaining = None
-	if args.max_questions is not None:
-		remaining = args.max_questions - (start_num - 1)
-		if remaining <= 0:
-			pcl.close()
-			return []
-	batch_size = len(SCENARIOS) if remaining is None else min(len(SCENARIOS), remaining)
-
-	for offset in range(batch_size):
-		N = start_num + offset
-		idx = (N - 1) % len(SCENARIOS)
-		amino_acid_name = SCENARIOS[idx]
-
-		complete_question = write_question(N, amino_acid_name, pcl, args.num_choices, args)
-		if complete_question is None:
-			continue
-		questions.append(complete_question)
-
-	pcl.close()
-	return questions
-
-#======================================
-#======================================
 def parse_arguments():
-	parser = bptools.make_arg_parser(description="Generate amino acid ID questions.", batch=True)
+	parser = bptools.make_arg_parser(description="Generate amino acid ID questions.")
 	parser = bptools.add_choice_args(parser, default=7)
 	parser = bptools.add_question_format_args(
 		parser,
@@ -112,8 +89,13 @@ def parse_arguments():
 #======================================
 def main():
 	global SCENARIOS
+	global GLOBAL_PCL
 
 	args = parse_arguments()
+	if args.max_questions is None or args.max_questions > 20:
+		args.max_questions = 20
+	if args.duplicates < args.max_questions:
+		args.duplicates = args.max_questions
 	outfile_suffix = args.question_type.upper()
 	if args.question_type == 'mc':
 		outfile = bptools.make_outfile(outfile_suffix, f"{args.num_choices}_choices")
@@ -126,8 +108,9 @@ def main():
 	else:
 		random.shuffle(SCENARIOS)
 
-	questions = bptools.collect_question_batches(write_question_batch, args)
-	bptools.write_questions_to_file(questions, outfile)
+	GLOBAL_PCL = pubchemlib.PubChemLib()
+	bptools.collect_and_write_questions(write_question, args, outfile)
+	GLOBAL_PCL.close()
 
 #======================================
 #======================================

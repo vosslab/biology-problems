@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-01-29
+- Capped amino-acid PubChem generators at 20 questions with early stop logic in [problems/biochemistry-problems/PUBCHEM/which_amino_acid.py](../problems/biochemistry-problems/PUBCHEM/which_amino_acid.py) and [problems/biochemistry-problems/PUBCHEM/match_amino_acid_structures.py](../problems/biochemistry-problems/PUBCHEM/match_amino_acid_structures.py).
+- Refactored the amino-acid PubChem generators to use single-question collection via `collect_and_write_questions` and a shared PubChem client in [problems/biochemistry-problems/PUBCHEM/which_amino_acid.py](../problems/biochemistry-problems/PUBCHEM/which_amino_acid.py) and [problems/biochemistry-problems/PUBCHEM/match_amino_acid_structures.py](../problems/biochemistry-problems/PUBCHEM/match_amino_acid_structures.py).
+
 ## 2026-01-28
 - Added functional-group color styling in both the PGML and BBQ generator for the bond-type question in [problems/biochemistry-problems/functional_groups_bond_types.pgml](../problems/biochemistry-problems/functional_groups_bond_types.pgml) and [problems/biochemistry-problems/functional_groups_bond_types.py](../problems/biochemistry-problems/functional_groups_bond_types.py).
 - Added a BBQ generator for the pH vs [H+] comparison question in [problems/biochemistry-problems/buffers/ph_h_concentration_ratio.py](../problems/biochemistry-problems/buffers/ph_h_concentration_ratio.py).
