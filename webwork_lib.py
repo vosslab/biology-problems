@@ -238,16 +238,63 @@ def apply_replacements_to_text(text_string, replacement_rules):
 	"""
 	Apply replacement rules to a single string.
 	"""
-	import bptools
-	return bptools.applyReplacementRulesToText(text_string, replacement_rules)
+	replacement_pairs = build_replacement_pairs(replacement_rules)
+	return apply_replacement_pairs_to_text(text_string, replacement_pairs)
 
 #============================================
 def apply_replacements_to_list(list_of_text_strings, replacement_rules):
 	"""
 	Apply replacement rules to a list of strings.
 	"""
+	replacement_pairs = build_replacement_pairs(replacement_rules)
+	new_list = []
+	for text_string in list_of_text_strings:
+		new_list.append(apply_replacement_pairs_to_text(text_string, replacement_pairs))
+	return new_list
+
+#============================================
+def build_replacement_pairs(replacement_rules):
+	"""
+	Build ordered replacement pairs while preserving insertion order.
+	"""
 	import bptools
-	return bptools.applyReplacementRulesToList(list_of_text_strings, replacement_rules)
+	replacement_pairs = []
+	if replacement_rules:
+		for find_text, replace_text in replacement_rules.items():
+			replacement_pairs.append((find_text, replace_text))
+	for find_text, replace_text in bptools.base_replacement_rule_dict.items():
+		replacement_pairs.append((find_text, replace_text))
+	final_pairs = []
+	for find_text, replace_text in replacement_pairs:
+		if not replace_text.startswith('<strong>'):
+			replace_text = f'<strong>{replace_text}</strong>'
+		final_pairs.append((find_text, replace_text))
+	return final_pairs
+
+#============================================
+def apply_replacement_pairs_to_text(text_string, replacement_pairs):
+	"""
+	Apply replacement pairs using placeholders to avoid nested replacements.
+	"""
+	if not isinstance(text_string, str):
+		raise TypeError(f"value is not string: {text_string}")
+	if not replacement_pairs:
+		return text_string
+	tokens = []
+	for idx, (find_text, replace_text) in enumerate(replacement_pairs):
+		if find_text not in text_string:
+			continue
+		token = f"@@@REPL_{idx}@@@"
+		if token in text_string:
+			counter = 0
+			while f"{token}_{counter}" in text_string:
+				counter += 1
+			token = f"{token}_{counter}"
+		text_string = text_string.replace(find_text, token)
+		tokens.append((token, replace_text))
+	for token, replace_text in tokens:
+		text_string = text_string.replace(token, replace_text)
+	return text_string
 
 #============================================
 def sanitize_replaced_text(text_string):
@@ -317,38 +364,44 @@ def format_label_html(text_string, color_mode, color_classes, warnings, label_na
 		warnings.append(f"table content skipped for replacement{label_note}")
 		return sanitize_text_for_html(text_string), False
 
-	parsed = extract_strict_color_span(text_string)
-	if parsed is None:
+	segments = extract_strict_color_spans(text_string)
+	if segments is None:
 		if re.search(r'<span[^>]*color', text_string, flags=re.IGNORECASE):
 			label_note = f": {label_name}" if label_name else ""
 			warnings.append(f"non-strict color span skipped for replacement{label_note}")
 		return sanitize_text_for_html(text_string), False
+	if len(segments) == 0:
+		return sanitize_text_for_html(text_string), False
 
-	prefix, inner_text, suffix, color_value, is_bold = parsed
-	prefix_html = sanitize_text_for_html(prefix)
-	suffix_html = sanitize_text_for_html(suffix)
+	segments_html = []
+	any_bold = False
+	for is_span, segment_text, color_value, is_bold in segments:
+		if not is_span:
+			segments_html.append(sanitize_text_for_html(segment_text))
+			continue
+		any_bold = any_bold or is_bold
+		if color_mode == "class":
+			normalized_color, class_name = normalize_color_value(color_value)
+			class_names = class_name
+			if is_bold:
+				class_names = f"{class_names} pgml-bold"
+			color_classes[class_name] = normalized_color
+			span_html = build_html_span(
+				segment_text,
+				class_name=class_names,
+			)
+		else:
+			normalized_color, _ = normalize_color_value(color_value)
+			style = f"color: {normalized_color};"
+			if is_bold:
+				style += " font-weight:700;"
+			span_html = build_html_span(
+				segment_text,
+				style=style,
+			)
+		segments_html.append(span_html)
 
-	if color_mode == "class":
-		normalized_color, class_name = normalize_color_value(color_value)
-		class_names = class_name
-		if is_bold:
-			class_names = f"{class_names} pgml-bold"
-		color_classes[class_name] = normalized_color
-		span_html = build_html_span(
-			inner_text,
-			class_name=class_names,
-		)
-	else:
-		normalized_color, _ = normalize_color_value(color_value)
-		style = f"color: {normalized_color};"
-		if is_bold:
-			style += " font-weight:700;"
-		span_html = build_html_span(
-			inner_text,
-			style=style,
-		)
-
-	return f"{prefix_html}{span_html}{suffix_html}", is_bold
+	return "".join(segments_html), any_bold
 
 #============================================
 def normalize_color_value(color_value):
@@ -479,6 +532,108 @@ def extract_strict_color_span(text_string):
 	return prefix, inner, suffix, color_value, is_bold
 
 #============================================
+def extract_strict_color_spans(text_string):
+	"""
+	Extract multiple strict color spans with optional strong wrappers.
+
+	Returns a list of segments [(is_span, text, color_value, is_bold), ...],
+	an empty list when no spans exist, or None if a span is not strict.
+	"""
+	if text_string is None:
+		return []
+	if not isinstance(text_string, str):
+		raise TypeError(f"value is not string: {text_string}")
+	span_matches = list(re.finditer(
+		r'<span\b[^>]*>.*?</span>',
+		text_string,
+		flags=re.IGNORECASE | re.DOTALL
+	))
+	if len(span_matches) == 0:
+		return []
+	segments = []
+	pos = 0
+	for span_match in span_matches:
+		prefix = text_string[pos:span_match.start()]
+		suffix = text_string[span_match.end():]
+
+		is_bold = False
+		strong_prefix = re.search(r'<strong>\s*$', prefix, flags=re.IGNORECASE)
+		strong_suffix = re.search(r'^\s*</strong>', suffix, flags=re.IGNORECASE)
+		if strong_prefix and strong_suffix:
+			is_bold = True
+			prefix = prefix[:strong_prefix.start()]
+			pos = span_match.end() + strong_suffix.end()
+		elif strong_prefix or strong_suffix:
+			return None
+		else:
+			pos = span_match.end()
+
+		if prefix:
+			segments.append((False, prefix, None, False))
+
+		span_block = span_match.group(0)
+		if re.search(r'<span\b', span_block[len('<span'):], flags=re.IGNORECASE):
+			return None
+
+		attr_match = re.search(r'<span\b([^>]*)>', span_block, flags=re.IGNORECASE)
+		if attr_match is None:
+			return None
+		attrs = attr_match.group(1)
+		style_match = re.search(
+			r'style\s*=\s*(?P<quote>[\"\'])(?P<style>.*?)(?P=quote)',
+			attrs,
+			flags=re.IGNORECASE | re.DOTALL,
+		)
+		if style_match is None:
+			style_match = re.search(
+				r'style\s*=\s*([^>]+)$',
+				attrs,
+				flags=re.IGNORECASE | re.DOTALL,
+			)
+		if style_match is None:
+			return None
+		style_text = style_match.groupdict().get("style") or style_match.group(1)
+		style_text = style_text.strip()
+		style_text = style_text.rstrip(";")
+		if not style_text:
+			return None
+		parts = [part.strip() for part in style_text.split(";") if part.strip()]
+		if len(parts) != 1:
+			return None
+		if ":" not in parts[0]:
+			return None
+		prop, value = parts[0].split(":", 1)
+		if prop.strip().lower() != "color":
+			return None
+		color_value = value.strip()
+		if not color_value:
+			return None
+
+		inner = re.sub(r'^<span\b[^>]*>', '', span_block, flags=re.IGNORECASE)
+		inner = re.sub(r'</span>\s*$', '', inner, flags=re.IGNORECASE)
+		inner_strong = re.fullmatch(
+			r'\s*<strong>(.*?)</strong>\s*',
+			inner,
+			flags=re.IGNORECASE | re.DOTALL,
+		)
+		if inner_strong is not None:
+			is_bold = True
+			inner = inner_strong.group(1)
+
+		inner = convert_sub_sup(inner)
+		inner = unescape_html(inner)
+		inner = normalize_nbsp(inner)
+		if re.search(r'<[^>]+>', inner):
+			return None
+
+		segments.append((True, inner, color_value, is_bold))
+
+	if pos < len(text_string):
+		segments.append((False, text_string[pos:], None, False))
+
+	return segments
+
+#============================================
 def normalize_keywords(raw_keywords):
 	"""
 	Normalize keywords to a list of strings.
@@ -543,11 +698,11 @@ def build_opl_header_lines(yaml_data, default_description=None, fallback_keyword
 	if not institution_text:
 		institution_text = 'Roosevelt University'
 	institution_text = sanitize_header_text(str(institution_text))
-	title_text = sanitize_header_text(str(get_yaml_value(yaml_data, 'titletext1', 'TitleText1') or ''))
-	edition_text = sanitize_header_text(str(get_yaml_value(yaml_data, 'editiontext1', 'EditionText1') or ''))
-	author_text_1 = sanitize_header_text(str(get_yaml_value(yaml_data, 'authortext1', 'AuthorText1') or ''))
-	section_text = sanitize_header_text(str(get_yaml_value(yaml_data, 'section1', 'Section1') or ''))
-	problem_text = sanitize_header_text(str(get_yaml_value(yaml_data, 'problem1', 'Problem1') or ''))
+	title_text = get_yaml_value(yaml_data, 'titletext1', 'TitleText1')
+	edition_text = get_yaml_value(yaml_data, 'editiontext1', 'EditionText1')
+	author_text_1 = get_yaml_value(yaml_data, 'authortext1', 'AuthorText1')
+	section_text = get_yaml_value(yaml_data, 'section1', 'Section1')
+	problem_text = get_yaml_value(yaml_data, 'problem1', 'Problem1')
 
 	header_lines = []
 	header_lines.append("## DESCRIPTION")
@@ -567,11 +722,21 @@ def build_opl_header_lines(yaml_data, default_description=None, fallback_keyword
 	header_lines.append(f"## Date('{escape_perl_string(date_text)}')")
 	header_lines.append(f"## Author('{escape_perl_string(author_text)}')")
 	header_lines.append(f"## Institution('{escape_perl_string(institution_text)}')")
-	header_lines.append(f"## TitleText1('{escape_perl_string(title_text)}')")
-	header_lines.append(f"## EditionText1('{escape_perl_string(edition_text)}')")
-	header_lines.append(f"## AuthorText1('{escape_perl_string(author_text_1)}')")
-	header_lines.append(f"## Section1('{escape_perl_string(section_text)}')")
-	header_lines.append(f"## Problem1('{escape_perl_string(problem_text)}')")
+	if title_text:
+		title_text = sanitize_header_text(str(title_text))
+		header_lines.append(f"## TitleText1('{escape_perl_string(title_text)}')")
+	if edition_text:
+		edition_text = sanitize_header_text(str(edition_text))
+		header_lines.append(f"## EditionText1('{escape_perl_string(edition_text)}')")
+	if author_text_1:
+		author_text_1 = sanitize_header_text(str(author_text_1))
+		header_lines.append(f"## AuthorText1('{escape_perl_string(author_text_1)}')")
+	if section_text:
+		section_text = sanitize_header_text(str(section_text))
+		header_lines.append(f"## Section1('{escape_perl_string(section_text)}')")
+	if problem_text:
+		problem_text = sanitize_header_text(str(problem_text))
+		header_lines.append(f"## Problem1('{escape_perl_string(problem_text)}')")
 	return header_lines
 
 #============================================

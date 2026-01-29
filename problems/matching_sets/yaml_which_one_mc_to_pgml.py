@@ -324,7 +324,7 @@ def build_setup_text(questions_data):
 	text += "$rb = RadioButtons(\n"
 	text += "  [@choices],\n"
 	text += "  $correct,\n"
-	text += "  labels        => ['A','B','C','D','E','F','G','H'],\n"
+	text += "  labels        => 'ABC',\n"
 	text += "  displayLabels => 1,\n"
 	text += "  randomize     => 0,\n"
 	text += "  separator     => '<div style=\"margin-bottom: 0.7em;\"></div>',\n"

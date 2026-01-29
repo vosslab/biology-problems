@@ -50,6 +50,10 @@ def parse_args():
 		'--no-color', dest='no_color', action='store_true',
 		help='Disable color styling.'
 	)
+	parser.add_argument(
+		'--flip', action='store_true', dest='flip',
+		help='Flip the keys and values from the YAML input'
+	)
 	args = parser.parse_args()
 	return args
 
@@ -86,7 +90,7 @@ def normalize_values(raw_values):
 	return normalized
 
 #============================================
-def build_match_data(yaml_data, replacement_rules, color_mode):
+def build_match_data(yaml_data, replacement_rules, color_mode, flip):
 	"""
 	Build match data and exclude pairs from YAML.
 	"""
@@ -100,6 +104,7 @@ def build_match_data(yaml_data, replacement_rules, color_mode):
 	color_classes = {}
 	needs_bold_class = False
 	warnings = []
+	key_to_values = {}
 	for raw_key, raw_values in raw_pairs.items():
 		key_raw = normalize_key(raw_key)
 		values_raw = normalize_values(raw_values)
@@ -108,6 +113,11 @@ def build_match_data(yaml_data, replacement_rules, color_mode):
 			replacement_rules,
 		)
 		key_plain = webwork_lib.sanitize_replaced_text(key_replaced)
+		if flip:
+			key_to_values.setdefault(key_plain, set())
+			for value_raw in values_raw:
+				key_to_values[key_plain].add(value_raw)
+			continue
 		key_html, is_bold = webwork_lib.format_label_html(
 			key_replaced,
 			color_mode,
@@ -127,6 +137,32 @@ def build_match_data(yaml_data, replacement_rules, color_mode):
 		match_data[key_plain] = values
 		answer_html_map[key_plain] = key_html
 
+	if flip:
+		for key_plain, values_raw in key_to_values.items():
+			key_list = [key_plain]
+			for value_raw in values_raw:
+				value_replaced = webwork_lib.apply_replacements_to_text(
+					value_raw,
+					replacement_rules,
+				)
+				value_plain = webwork_lib.sanitize_replaced_text(value_replaced)
+				value_html, is_bold = webwork_lib.format_label_html(
+					value_replaced,
+					color_mode,
+					color_classes,
+					warnings,
+					label_name=value_raw,
+				)
+				if is_bold:
+					needs_bold_class = True
+				if value_plain in match_data and match_data[value_plain] != key_list:
+					raise ValueError(
+						"flip creates duplicate keys after replacements: "
+						f"{value_plain}"
+					)
+				match_data[value_plain] = key_list
+				answer_html_map[value_plain] = value_html
+
 	exclude_pairs = []
 	raw_excludes = yaml_data.get('exclude pairs', [])
 	if raw_excludes is None:
@@ -144,11 +180,26 @@ def build_match_data(yaml_data, replacement_rules, color_mode):
 		right = webwork_lib.sanitize_replaced_text(
 			webwork_lib.apply_replacements_to_text(right, replacement_rules)
 		)
-		exclude_pairs.append([left, right])
+		if flip:
+			left_values = key_to_values.get(left, set())
+			right_values = key_to_values.get(right, set())
+			for left_value in left_values:
+				left_plain = webwork_lib.sanitize_replaced_text(
+					webwork_lib.apply_replacements_to_text(left_value, replacement_rules)
+				)
+				for right_value in right_values:
+					right_plain = webwork_lib.sanitize_replaced_text(
+						webwork_lib.apply_replacements_to_text(
+							right_value, replacement_rules
+						)
+					)
+					exclude_pairs.append([left_plain, right_plain])
+		else:
+			exclude_pairs.append([left, right])
 	return match_data, exclude_pairs, answer_html_map, color_classes, needs_bold_class, warnings
 
 #============================================
-def build_question_text(yaml_data, replacement_rules):
+def build_question_text(yaml_data, replacement_rules, flip):
 	"""
 	Build question text from YAML fields.
 	"""
@@ -158,6 +209,8 @@ def build_question_text(yaml_data, replacement_rules):
 		values_description = yaml_data.get('values description')
 		if keys_description is None or values_description is None:
 			raise KeyError("missing keys description or values description")
+		if flip:
+			keys_description, values_description = values_description, keys_description
 		question_text = (
 			f"Match each of the following {keys_description} "
 			f"with their corresponding {values_description}."
@@ -446,7 +499,7 @@ def build_solution_text():
 	return text
 
 #============================================
-def build_pgml_text(yaml_data, num_choices, color_mode=_DEFAULT_COLOR_MODE):
+def build_pgml_text(yaml_data, num_choices, color_mode=_DEFAULT_COLOR_MODE, flip=False):
 	"""
 	Create the PGML file content as a string.
 	"""
@@ -462,6 +515,7 @@ def build_pgml_text(yaml_data, num_choices, color_mode=_DEFAULT_COLOR_MODE):
 			yaml_data,
 			replacement_rules,
 			color_mode,
+			flip,
 		)
 	)
 	if num_choices is None:
@@ -473,12 +527,14 @@ def build_pgml_text(yaml_data, num_choices, color_mode=_DEFAULT_COLOR_MODE):
 	if num_choices > len(match_data):
 		raise ValueError("num_choices cannot exceed number of matching pairs")
 
-	question_text, note_text = build_question_text(yaml_data, replacement_rules)
+	question_text, note_text = build_question_text(yaml_data, replacement_rules, flip)
 
 	default_description = None
 	if yaml_data.get('description') is None:
 		keys_description = yaml_data.get('keys description', '')
 		values_description = yaml_data.get('values description', '')
+		if flip:
+			keys_description, values_description = values_description, keys_description
 		default_description = (
 			f"Match each of the following {keys_description} "
 			f"with their corresponding {values_description}."
@@ -526,6 +582,7 @@ def main():
 		yaml_data,
 		args.num_choices,
 		color_mode,
+		flip=args.flip,
 	)
 
 	output_pgml_file = args.output_pgml_file

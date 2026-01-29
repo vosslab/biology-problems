@@ -27,6 +27,11 @@
 - Set the dipeptide canvas to a 16:9 aspect ratio in [problems/biochemistry-problems/PUBCHEM/polypeptide_mc_sequence-easy.pgml](../problems/biochemistry-problems/PUBCHEM/polypeptide_mc_sequence-easy.pgml).
 - Converted [problems/biochemistry-problems/PUBCHEM/rdkit_working_in_webwork.pgml](../problems/biochemistry-problems/PUBCHEM/rdkit_working_in_webwork.pgml) to PGML structure with required numbered sections and a solution block for RDKit reference.
 - Made dipeptide choice generation seed-stable by tracking ordered choices instead of relying on hash key order in [problems/biochemistry-problems/PUBCHEM/polypeptide_mc_sequence-easy.pgml](../problems/biochemistry-problems/PUBCHEM/polypeptide_mc_sequence-easy.pgml).
+- Extended PGML color span handling to support multiple strict color spans in a single string for matching and which-one generators in [webwork_lib.py](../webwork_lib.py).
+- Updated WebWork replacement handling to avoid nested replacements while preserving rule order in [webwork_lib.py](../webwork_lib.py).
+- Stopped emitting empty TitleText/Edition/Author/Section/Problem header tags in YAML-to-PGML generators by omitting blank values in [webwork_lib.py](../webwork_lib.py).
+- Switched which-one PGML generator labels to the auto-expanding 'ABC' setting instead of a fixed A-H list in [problems/matching_sets/yaml_which_one_mc_to_pgml.py](../problems/matching_sets/yaml_which_one_mc_to_pgml.py).
+- Added `--flip` support to swap keys/values when generating matching PGML files in [problems/matching_sets/yaml_match_to_pgml.py](../problems/matching_sets/yaml_match_to_pgml.py).
 
 ## 2026-01-28
 - Added functional-group color styling in both the PGML and BBQ generator for the bond-type question in [problems/biochemistry-problems/functional_groups_bond_types.pgml](../problems/biochemistry-problems/functional_groups_bond_types.pgml) and [problems/biochemistry-problems/functional_groups_bond_types.py](../problems/biochemistry-problems/functional_groups_bond_types.py).
