@@ -105,6 +105,7 @@ def build_match_data(yaml_data, replacement_rules, color_mode, flip):
 	needs_bold_class = False
 	warnings = []
 	key_to_values = {}
+	key_to_value_plain = {}
 	for raw_key, raw_values in raw_pairs.items():
 		key_raw = normalize_key(raw_key)
 		values_raw = normalize_values(raw_values)
@@ -114,9 +115,10 @@ def build_match_data(yaml_data, replacement_rules, color_mode, flip):
 		)
 		key_plain = webwork_lib.sanitize_replaced_text(key_replaced)
 		if flip:
-			key_to_values.setdefault(key_plain, set())
+			key_to_values.setdefault(key_plain, [])
 			for value_raw in values_raw:
-				key_to_values[key_plain].add(value_raw)
+				if value_raw not in key_to_values[key_plain]:
+					key_to_values[key_plain].append(value_raw)
 			continue
 		key_html, is_bold = webwork_lib.format_label_html(
 			key_replaced,
@@ -127,19 +129,28 @@ def build_match_data(yaml_data, replacement_rules, color_mode, flip):
 		)
 		if is_bold:
 			needs_bold_class = True
-		values = [
-			webwork_lib.sanitize_replaced_text(value)
-			for value in webwork_lib.apply_replacements_to_list(
-				values_raw,
-				replacement_rules,
+		values = []
+		values_replaced = webwork_lib.apply_replacements_to_list(
+			values_raw,
+			replacement_rules,
+		)
+		for value_raw, value_replaced in zip(values_raw, values_replaced):
+			value_html, value_bold = webwork_lib.format_label_html(
+				value_replaced,
+				color_mode,
+				color_classes,
+				warnings,
+				label_name=value_raw,
 			)
-		]
+			if value_bold:
+				needs_bold_class = True
+			values.append(value_html)
 		match_data[key_plain] = values
 		answer_html_map[key_plain] = key_html
 
 	if flip:
+		value_to_keys = {}
 		for key_plain, values_raw in key_to_values.items():
-			key_list = [key_plain]
 			for value_raw in values_raw:
 				value_replaced = webwork_lib.apply_replacements_to_text(
 					value_raw,
@@ -155,13 +166,17 @@ def build_match_data(yaml_data, replacement_rules, color_mode, flip):
 				)
 				if is_bold:
 					needs_bold_class = True
-				if value_plain in match_data and match_data[value_plain] != key_list:
-					raise ValueError(
-						"flip creates duplicate keys after replacements: "
-						f"{value_plain}"
-					)
-				match_data[value_plain] = key_list
-				answer_html_map[value_plain] = value_html
+				value_to_keys.setdefault(value_plain, [])
+				if key_plain not in value_to_keys[value_plain]:
+					value_to_keys[value_plain].append(key_plain)
+				if value_plain not in answer_html_map:
+					answer_html_map[value_plain] = value_html
+
+		for value_plain, key_list in value_to_keys.items():
+			chosen_key = random.choice(key_list)
+			match_data[value_plain] = [chosen_key]
+			key_to_value_plain.setdefault(chosen_key, [])
+			key_to_value_plain[chosen_key].append(value_plain)
 
 	exclude_pairs = []
 	raw_excludes = yaml_data.get('exclude pairs', [])
@@ -181,18 +196,10 @@ def build_match_data(yaml_data, replacement_rules, color_mode, flip):
 			webwork_lib.apply_replacements_to_text(right, replacement_rules)
 		)
 		if flip:
-			left_values = key_to_values.get(left, set())
-			right_values = key_to_values.get(right, set())
-			for left_value in left_values:
-				left_plain = webwork_lib.sanitize_replaced_text(
-					webwork_lib.apply_replacements_to_text(left_value, replacement_rules)
-				)
-				for right_value in right_values:
-					right_plain = webwork_lib.sanitize_replaced_text(
-						webwork_lib.apply_replacements_to_text(
-							right_value, replacement_rules
-						)
-					)
+			left_values = key_to_value_plain.get(left, [])
+			right_values = key_to_value_plain.get(right, [])
+			for left_plain in left_values:
+				for right_plain in right_values:
 					exclude_pairs.append([left_plain, right_plain])
 		else:
 			exclude_pairs.append([left, right])
@@ -445,7 +452,7 @@ def build_statement_text(question_text, note_text, use_answer_html, color_mode,
 	text += "    map {\n"
 	text += "        '[_]{$answer_dropdowns[' . $_ . ']} '\n"
 	text += "            . '*' . ($_ + 1) . '.* '\n"
-	text += "            . '[$q_and_a[' . $_ . '][0]]'\n"
+	text += "            . '[$q_and_a[' . $_ . '][0]]*'\n"
 	text += "    } 0 .. $#q_and_a\n"
 	text += ") @]**\n"
 	text += "[@ MODES(HTML => '</div><div class=\"right-col\">') @]*\n"
@@ -588,7 +595,10 @@ def main():
 	output_pgml_file = args.output_pgml_file
 	if output_pgml_file is None:
 		base_name = os.path.splitext(os.path.basename(args.input_yaml_file))[0]
-		output_pgml_file = f"{base_name}-matching.pgml"
+		if args.flip:
+			output_pgml_file = f"{base_name}-matching-flip.pgml"
+		else:
+			output_pgml_file = f"{base_name}-matching.pgml"
 
 	with open(output_pgml_file, 'w') as outfile:
 		outfile.write(pgml_text)

@@ -31,7 +31,10 @@
 - Updated WebWork replacement handling to avoid nested replacements while preserving rule order in [webwork_lib.py](../webwork_lib.py).
 - Stopped emitting empty TitleText/Edition/Author/Section/Problem header tags in YAML-to-PGML generators by omitting blank values in [webwork_lib.py](../webwork_lib.py).
 - Switched which-one PGML generator labels to the auto-expanding 'ABC' setting instead of a fixed A-H list in [problems/matching_sets/yaml_which_one_mc_to_pgml.py](../problems/matching_sets/yaml_which_one_mc_to_pgml.py).
-- Added `--flip` support to swap keys/values when generating matching PGML files in [problems/matching_sets/yaml_match_to_pgml.py](../problems/matching_sets/yaml_match_to_pgml.py).
+- Added `--flip` support to swap keys/values when generating matching PGML files in [problems/matching_sets/yaml_match_to_pgml.py](../problems/matching_sets/yaml_match_to_pgml.py), choosing a single key when duplicate descriptions collide in the flipped direction.
+- Appended `-matching-flip` to the default output filename when `--flip` is used in [problems/matching_sets/yaml_match_to_pgml.py](../problems/matching_sets/yaml_match_to_pgml.py).
+- Preserved strict color spans in matching prompts by formatting value text through the HTML color formatter in [problems/matching_sets/yaml_match_to_pgml.py](../problems/matching_sets/yaml_match_to_pgml.py).
+- Rendered matching prompt values with PGML HTML output (`*`) so color spans display instead of escaping in [problems/matching_sets/yaml_match_to_pgml.py](../problems/matching_sets/yaml_match_to_pgml.py).
 
 ## 2026-01-28
 - Added functional-group color styling in both the PGML and BBQ generator for the bond-type question in [problems/biochemistry-problems/functional_groups_bond_types.pgml](../problems/biochemistry-problems/functional_groups_bond_types.pgml) and [problems/biochemistry-problems/functional_groups_bond_types.py](../problems/biochemistry-problems/functional_groups_bond_types.py).

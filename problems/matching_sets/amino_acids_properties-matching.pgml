@@ -1,0 +1,298 @@
+## DESCRIPTION
+## Match each of the following amino acids with their corresponding descriptions.
+## ENDDESCRIPTION
+## KEYWORDS('amino acids','descriptions')
+## DBsubject('Biochemistry')
+## DBchapter('')
+## DBsection('')
+## Date('2026-01-29')
+## Author('Neil R. Voss')
+## Institution('Roosevelt University')
+
+DOCUMENT();
+
+loadMacros(
+    'PGstandard.pl',
+    'PGML.pl',
+    'PGchoicemacros.pl',
+    'parserPopUp.pl',
+    'parserUtils.pl',
+    'PGgraders.pl',
+    'PGcourse.pl'
+);
+our @ALPHABET = ('A' .. 'Z');
+
+# ================================
+# Full matching data
+# ================================
+%match_data = (
+  'alanine' => [
+    'a <span style="color: #b3b300; font-weight:700;">non-polar amino acid</span>, with a single methyl group (-CH₃) as its <span style="color: #6d108e; font-weight:700;">side chain</span>',
+    'a <span style="color: #b3b300; font-weight:700;">non-polar amino acid</span>, with only a methyl group (-CH₃) attached to the α-carbon',
+  ],
+  'arginine' => [
+    'a <span style="color: #0d57a5; font-weight:700;">positively charged amino acid</span> with a long, flexible <span style="color: #6d108e; font-weight:700;">side chain</span> containing 3 nitrogen atoms (guanidinium)',
+  ],
+  'asparagine' => [
+    'a <span style="color: #009e4c; font-weight:700;">polar amino acid</span> with a shorter amine-substituted carboxylate (amide) -C(=O)NH₂ group',
+  ],
+  'aspartate' => [
+    'a <span style="color: #ff0000; font-weight:700;">negatively charged amino acid</span> with a small, carboxylate (-COOH) <span style="color: #6d108e; font-weight:700;">side chain</span>',
+  ],
+  'aspartic acid' => [
+    'a <span style="color: #ff0000; font-weight:700;">negatively charged amino acid</span> with a small, carboxylate (-COOH) <span style="color: #6d108e; font-weight:700;">side chain</span>',
+  ],
+  'cysteine' => [
+    'a <span style="color: #009e4c; font-weight:700;">polar amino acid</span> with a thiol (-SH) group that can form disulfide bonds',
+    'a <span style="color: #009e4c; font-weight:700;">polar amino acid</span> that can form disulfide bridges',
+    'a <span style="color: #009e4c; font-weight:700;">polar amino acid</span> that is capable of thiol (-SH) chemistry',
+  ],
+  'glutamine' => [
+    'a <span style="color: #009e4c; font-weight:700;">polar amino acid</span> with a longer amine-substituted carboxylate (amide) -C(=O)NH₂ group',
+  ],
+  'glutamate' => [
+    'a <span style="color: #ff0000; font-weight:700;">negatively charged amino acid</span> with a large, carboxylate (-COOH) <span style="color: #6d108e; font-weight:700;">side chain</span>',
+  ],
+  'glutamic acid' => [
+    'a <span style="color: #ff0000; font-weight:700;">negatively charged amino acid</span> with a large, carboxylate (-COOH) <span style="color: #6d108e; font-weight:700;">side chain</span>',
+  ],
+  'glycine' => [
+    'a <span style="color: #2fbd0f; font-weight:700;">small amino acid</span> with a single hydrogen atom as its <span style="color: #6d108e; font-weight:700;">side chain</span>',
+    'a <span style="color: #2fbd0f; font-weight:700;">small amino acid</span> with the simple chemical formula NH₂-CH₂-COOH',
+  ],
+  'histidine' => [
+    'an <span style="color: #ff5e00; font-weight:700;">aromatic amino acid</span> with a <span style="color: #6d108e; font-weight:700;">side chain</span> containing a 5-membered nitrogenous ring and a pKa close to pH 7',
+  ],
+  'isoleucine' => [
+    'a <span style="color: #ffa100; font-weight:700;">non-polar branched chain amino acid</span> that is an isomer of leucine',
+    'a <span style="color: #ffa100; font-weight:700;">non-polar branched chain amino acid</span> that is a valine with a extra methyl group (-CH₃) at the end',
+  ],
+  'leucine' => [
+    'a <span style="color: #ffa100; font-weight:700;">non-polar branched chain amino acid</span> that is an isomer of isoleucine',
+    'a <span style="color: #ffa100; font-weight:700;">non-polar branched chain amino acid</span> with a double methylated γ-carbon',
+    'a <span style="color: #ffa100; font-weight:700;">non-polar branched chain amino acid</span> that is a longer version of valine',
+  ],
+  'lysine' => [
+    'a <span style="color: #0d57a5; font-weight:700;">positively charged amino acid</span> with a long, flexible <span style="color: #6d108e; font-weight:700;">side chain</span> containing an amine group',
+  ],
+  'methionine' => [
+    'a <span style="color: #b3b300; font-weight:700;">non-polar amino acid</span> with a <span style="color: #6d108e; font-weight:700;">side chain</span> containing a sulfur atom that is NOT available for chemical reactions',
+  ],
+  'phenylalanine' => [
+    'a <span style="color: #b3b300; font-weight:700;">non-polar amino acid</span> with an aromatic <span style="color: #6d108e; font-weight:700;">side chain</span> containing a single benzene (-C₆H₆) ring',
+  ],
+  'proline' => [
+    'a <span style="color: #b3b300; font-weight:700;">non-polar amino acid</span> where the <span style="color: #6d108e; font-weight:700;">side chain</span> is bonded to the backbone amine, resulting in a rigid cyclic structure',
+  ],
+  'serine' => [
+    'a <span style="color: #009e4c; font-weight:700;">polar amino acid</span> with the smallest <span style="color: #6d108e; font-weight:700;">side chain</span> containing a hydroxyl group (-OH)',
+    'a <span style="color: #009e4c; font-weight:700;">polar amino acid</span> with the smallest polar <span style="color: #6d108e; font-weight:700;">side chain</span>',
+  ],
+  'threonine' => [
+    'a <span style="color: #009e4c; font-weight:700;">polar amino acid</span> that is a methylated form of serine',
+  ],
+  'tryptophan' => [
+    'an <span style="color: #ff5e00; font-weight:700;">aromatic amino acid</span> with the largest <span style="color: #6d108e; font-weight:700;">side chain</span> consisting of a fused pair of rings',
+  ],
+  'tyrosine' => [
+    'a <span style="color: #ff5e00; font-weight:700;">aromatic amino acid</span> with a <span style="color: #6d108e; font-weight:700;">side chain</span> containing a phenol (-C₆H₆OH) group, derived from phenylalanine',
+  ],
+  'valine' => [
+    'a <span style="color: #ffa100; font-weight:700;">non-polar branched chain amino acid</span> with the shortest hydrophobic <span style="color: #6d108e; font-weight:700;">side chain</span>',
+    'a <span style="color: #ffa100; font-weight:700;">non-polar branched chain amino acid</span> that is a shorter version of leucine',
+    'a <span style="color: #ffa100; font-weight:700;">non-polar branched chain amino acid</span> with a double methylated β-carbon',
+  ],
+);
+
+# -------------------------------
+# Exclude pairs
+# -------------------------------
+@exclude_pairs = (
+  ['glutamic acid', 'glutamate'],
+  ['aspartic acid', 'aspartate'],
+);
+
+# -------------------------------
+# Select N random keys
+# -------------------------------
+my $n = 3;
+@all_keys = PGsort(sub { $_[0] lt $_[1] }, keys %match_data);
+my $local_seed = (defined($problemSeed) && $problemSeed ne '') ? $problemSeed : 1;
+my $local_random = new PGrandom($local_seed);
+
+my @selected_keys = ();
+my $max_tries = 500;
+my $tries = 0;
+while (1) {
+  my @indices = (0 .. $#all_keys);
+  my @shuffled = ();
+  while (@indices) {
+    my $pick = $local_random->random(0, $#indices, 1);
+    push @shuffled, splice(@indices, $pick, 1);
+  }
+  @selected_keys = @all_keys[@shuffled[0..$n-1]];
+  my %selected = map { $_ => 1 } @selected_keys;
+  my $excluded = 0;
+  foreach my $pair (@exclude_pairs) {
+    my ($left, $right) = @$pair;
+    if ($selected{$left} && $selected{$right}) {
+      $excluded = 1;
+      last;
+    }
+  }
+  last if !$excluded;
+  $tries += 1;
+  if ($tries > $max_tries) {
+    die 'Unable to find a non-conflicting set of keys';
+  }
+}
+
+# -------------------------------
+# Build question/answer pairs
+# -------------------------------
+# Each entry: [prompt, choice]
+@q_and_a = ();
+foreach my $key (@selected_keys) {
+  my $values_ref = $match_data{$key};
+  my $i = $local_random->random(0, $#$values_ref, 1);
+  my $value = $values_ref->[$i];
+  push @q_and_a, [ $value, $key ];
+}
+
+# -------------------------------
+# Randomize the questions
+# -------------------------------
+my @q_indices = (0 .. $#q_and_a);
+my @q_shuffled = ();
+while (@q_indices) {
+  my $pick = $local_random->random(0, $#q_indices, 1);
+  push @q_shuffled, $q_and_a[splice(@q_indices, $pick, 1)];
+}
+@q_and_a = @q_shuffled;
+
+# -------------------------------
+# Sort the choices alphabetically
+# -------------------------------
+@answers = ();
+push(@answers, (map { $_->[1] } @q_and_a));
+@answers_sorted = PGsort(sub { $_[0] lt $_[1] }, @answers);
+
+# -------------------------------
+# HTML-safe answer labels
+# -------------------------------
+%answer_html = (
+  'alanine' => 'alanine',
+  'arginine' => 'arginine',
+  'asparagine' => 'asparagine',
+  'aspartate' => 'aspartate',
+  'aspartic acid' => 'aspartic acid',
+  'cysteine' => 'cysteine',
+  'glutamine' => 'glutamine',
+  'glutamate' => 'glutamate',
+  'glutamic acid' => 'glutamic acid',
+  'glycine' => 'glycine',
+  'histidine' => 'histidine',
+  'isoleucine' => 'isoleucine',
+  'leucine' => 'leucine',
+  'lysine' => 'lysine',
+  'methionine' => 'methionine',
+  'phenylalanine' => 'phenylalanine',
+  'proline' => 'proline',
+  'serine' => 'serine',
+  'threonine' => 'threonine',
+  'tryptophan' => 'tryptophan',
+  'tyrosine' => 'tyrosine',
+  'valine' => 'valine',
+);
+
+@answers_sorted_html = map { $answer_html{$_} || $_ } @answers_sorted;
+
+# -------------------------------
+# Create answer index lookup
+# -------------------------------
+our %answer_index;
+for (my $i = 0; $i <= $#answers_sorted; $i++) {
+  $answer_index{$answers_sorted[$i]} = $i;
+}
+
+# -------------------------------
+# PopUp/DropDown compatibility
+# -------------------------------
+sub make_popup {
+  return defined &DropDown ? DropDown(@_) : PopUp(@_);
+}
+
+# -------------------------------
+# Create popup objects (blank default)
+# -------------------------------
+my @answer_letters = @ALPHABET[0 .. $#answers_sorted];
+my @answer_letters_with_blank = ('', @answer_letters);
+@answer_dropdowns =
+  map { make_popup([ @answer_letters_with_blank ], $answer_index{$q_and_a[$_][1]} + 1 ) }
+  0 .. $#q_and_a;
+
+# -------------------------------
+# Render the question
+# -------------------------------
+HEADER_TEXT(<<END_STYLE);
+<style>
+.pgml-bold { font-weight: 700; }
+.two-column {
+    display: flex;
+	flex-wrap: wrap;
+	gap: 2rem;
+	align-items: center;
+	justify-content: space-evenly;
+}
+</style>
+END_STYLE
+
+BEGIN_PGML
+Match each of the following amino acids with their corresponding descriptions.
+Note: Each choice will be used exactly once.
+
+[@ MODES(HTML => '<div class="two-column"><div>') @]*
+[@ join(
+    "\n\n",
+    map {
+        '[_]{$answer_dropdowns[' . $_ . ']} '
+            . '*' . ($_ + 1) . '.* '
+            . '[$q_and_a[' . $_ . '][0]]*'
+    } 0 .. $#q_and_a
+) @]**
+[@ MODES(HTML => '</div><div class="right-col">') @]*
+[@ join(
+    "\n\n",
+    map {
+        chr(65 + $_) . '\\.' . ' ' . '[$answers_sorted_html[' . $_ . ']]*'
+    } 0 .. $#answers_sorted
+) @]**
+[@ MODES(HTML => '</div></div>') @]*
+END_PGML
+
+# -------------------------------
+# Dynamic Partial Credit Based on $n
+# -------------------------------
+$showPartialCorrectAnswers = 0;
+my @thresholds;
+my @scores;
+for (my $i = 1; $i <= $n; $i++) {
+  push @thresholds, $i;
+  push @scores, sprintf("%.2f", $i / $n);
+}
+
+install_problem_grader(~~&custom_problem_grader_fluid);
+$ENV{grader_numright} = [@thresholds];
+$ENV{grader_scores}   = [@scores];
+$ENV{grader_message} = 'You can earn partial credit.';
+
+# -------------------------------
+# Solution
+# -------------------------------
+$answer_list = join(', ', map { ($_ + 1) . '-' . $ALPHABET[$answer_index{$q_and_a[$_][1]}] } 0 .. $#q_and_a);
+BEGIN_PGML_SOLUTION
+The correct answers are: [$answer_list].
+END_PGML_SOLUTION
+
+ENDDOCUMENT();
+
