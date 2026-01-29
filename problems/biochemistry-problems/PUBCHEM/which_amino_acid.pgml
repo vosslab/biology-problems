@@ -1,0 +1,197 @@
+## TITLE('Biochemistry: Identify an amino acid from a chemical structure')
+## DESCRIPTION
+## Identify an amino acid from its chemical structure.
+## ENDDESCRIPTION
+## KEYWORDS('amino acids','structure identification','pubchem','rdkit')
+## DBsubject('Biochemistry')
+## DBchapter('Amino Acids and Peptides')
+## DBsection('Amino Acids')
+## Level(2)
+## Date('2026-01-29')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	'PGstandard.pl',
+	'PGML.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl'
+);
+$showPartialCorrectAnswers = 0;
+
+# ----------------------------
+# 2) Setup
+# ----------------------------
+
+# ----------------------------
+# 2a) Data
+# ----------------------------
+@amino_acid_names = (
+	'alanine',
+	'arginine',
+	'asparagine',
+	'aspartic acid',
+	'cysteine',
+	'glutamic acid',
+	'glutamine',
+	'glycine',
+	'histidine',
+	'isoleucine',
+	'leucine',
+	'lysine',
+	'methionine',
+	'phenylalanine',
+	'proline',
+	'serine',
+	'threonine',
+	'tryptophan',
+	'tyrosine',
+	'valine',
+);
+
+@amino_acid_smiles = (
+	'C[C@@H](C(=O)O)N',
+	'C(C[C@@H](C(=O)O)N)CN=C(N)N',
+	'C([C@@H](C(=O)O)N)C(=O)N',
+	'C([C@@H](C(=O)O)N)C(=O)O',
+	'C([C@@H](C(=O)O)N)S',
+	'C(CC(=O)O)[C@@H](C(=O)O)N',
+	'C(CC(=O)N)[C@@H](C(=O)O)N',
+	'C(C(=O)O)N',
+	'C1=C(NC=N1)C[C@@H](C(=O)O)N',
+	'CC[C@H](C)[C@@H](C(=O)O)N',
+	'CC(C)C[C@@H](C(=O)O)N',
+	'C(CCN)C[C@@H](C(=O)O)N',
+	'CSCC[C@@H](C(=O)O)N',
+	'C1=CC=C(C=C1)C[C@@H](C(=O)O)N',
+	'C1C[C@H](NC1)C(=O)O',
+	'C([C@@H](C(=O)O)N)O',
+	'C[C@H]([C@@H](C(=O)O)N)O',
+	'C1=CC=C2C(=C1)C(=CN2)C[C@@H](C(=O)O)N',
+	'C1=CC(=CC=C1C[C@@H](C(=O)O)N)O',
+	'CC(C)[C@@H](C(=O)O)N',
+);
+
+# ----------------------------
+# 2b) Helpers
+# ----------------------------
+
+sub escape_attr {
+	my ($text) = @_;
+	$text =~ s/&/&amp;/g;
+	$text =~ s/"/&quot;/g;
+	$text =~ s/</&lt;/g;
+	$text =~ s/>/&gt;/g;
+	return $text;
+}
+
+# ----------------------------
+# 2c) Randomization and choices
+# ----------------------------
+
+$num_choices = 7;
+
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+
+$correct_index = $local_random->random(0, $#amino_acid_names, 1);
+$correct_answer = $amino_acid_names[$correct_index];
+$correct_smiles = $amino_acid_smiles[$correct_index];
+
+my %picked_indices = ( $correct_index => 1 );
+@choices = ();
+while (scalar(@choices) < ($num_choices - 1)) {
+	my $idx = $local_random->random(0, $#amino_acid_names, 1);
+	next if $picked_indices{$idx};
+	$picked_indices{$idx} = 1;
+	push @choices, $amino_acid_names[$idx];
+}
+
+my $insert_at = $local_random->random(0, scalar(@choices), 1);
+splice(@choices, $insert_at, 0, $correct_answer);
+
+$rb = RadioButtons(
+	[@choices],
+	$correct_answer,
+	labels        => 'ABC',
+	displayLabels => 1,
+	separator     => '<div style="margin-bottom: 0.7em;"></div>',
+	randomize     => 0,
+	uncheckable   => 0,
+);
+
+$correct_smiles_attr = escape_attr($correct_smiles);
+$canvas_html = '<canvas id="aa_canvas" width="480" height="320" data-smiles="' . $correct_smiles_attr . '"></canvas>';
+
+# ----------------------------
+# 2d) Header (RDKit)
+# ----------------------------
+
+HEADER_TEXT(<<'END_HEADER');
+<script src="https://unpkg.com/@rdkit/rdkit/dist/RDKit_minimal.js"></script>
+<script>
+let RDKitReady = null;
+function getRDKit() {
+	if (!RDKitReady) {
+		RDKitReady = initRDKitModule();
+	}
+	return RDKitReady;
+}
+function initMoleculeCanvases() {
+	getRDKit().then(function(RDKit) {
+		const canvases = document.querySelectorAll('canvas[data-smiles]');
+		canvases.forEach((canvas) => {
+			const smiles = canvas.dataset.smiles;
+			if (!smiles) {
+				return;
+			}
+			const mol = RDKit.get_mol(smiles);
+			const mdetails = {"explicitMethyl": true};
+			if (canvas && mol) {
+				mol.draw_to_canvas_with_highlights(canvas, JSON.stringify(mdetails));
+			}
+		});
+	}).catch(error => {
+		console.error('Error initializing RDKit:', error);
+	});
+}
+if (document.readyState === 'loading') {
+	document.addEventListener('DOMContentLoaded', initMoleculeCanvases);
+} else {
+	initMoleculeCanvases();
+}
+</script>
+END_HEADER
+
+# ----------------------------
+# 3) Statement (PGML)
+# ----------------------------
+
+BEGIN_PGML
+Which amino acid is represented by the chemical structure shown below?
+
+[$canvas_html]*
+
+[_]{$rb}
+END_PGML
+
+# ----------------------------
+# 4) Solution
+# ----------------------------
+
+BEGIN_PGML_SOLUTION
+The correct answer is [$correct_answer].
+END_PGML_SOLUTION
+
+ENDDOCUMENT();

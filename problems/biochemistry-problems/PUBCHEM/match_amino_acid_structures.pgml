@@ -1,0 +1,236 @@
+## TITLE('Biochemistry: Match amino acid structures to names')
+## DESCRIPTION
+## Match amino acid structures to their names using dropdown selections.
+## ENDDESCRIPTION
+## KEYWORDS('amino acids','matching','pubchem','rdkit')
+## DBsubject('Biochemistry')
+## DBchapter('Amino Acids and Peptides')
+## DBsection('Amino Acids')
+## Level(2)
+## Date('2026-01-29')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	'PGstandard.pl',
+	'PGML.pl',
+	'parserPopUp.pl',
+	'PGcourse.pl'
+);
+$showPartialCorrectAnswers = 0;
+
+# ----------------------------
+# 2) Setup
+# ----------------------------
+
+# ----------------------------
+# 2a) Data
+# ----------------------------
+@amino_acid_names = (
+	'alanine',
+	'arginine',
+	'asparagine',
+	'aspartic acid',
+	'cysteine',
+	'glutamic acid',
+	'glutamine',
+	'glycine',
+	'histidine',
+	'isoleucine',
+	'leucine',
+	'lysine',
+	'methionine',
+	'phenylalanine',
+	'proline',
+	'serine',
+	'threonine',
+	'tryptophan',
+	'tyrosine',
+	'valine',
+);
+
+@amino_acid_smiles = (
+	'C[C@@H](C(=O)O)N',
+	'C(C[C@@H](C(=O)O)N)CN=C(N)N',
+	'C([C@@H](C(=O)O)N)C(=O)N',
+	'C([C@@H](C(=O)O)N)C(=O)O',
+	'C([C@@H](C(=O)O)N)S',
+	'C(CC(=O)O)[C@@H](C(=O)O)N',
+	'C(CC(=O)N)[C@@H](C(=O)O)N',
+	'C(C(=O)O)N',
+	'C1=C(NC=N1)C[C@@H](C(=O)O)N',
+	'CC[C@H](C)[C@@H](C(=O)O)N',
+	'CC(C)C[C@@H](C(=O)O)N',
+	'C(CCN)C[C@@H](C(=O)O)N',
+	'CSCC[C@@H](C(=O)O)N',
+	'C1=CC=C(C=C1)C[C@@H](C(=O)O)N',
+	'C1C[C@H](NC1)C(=O)O',
+	'C([C@@H](C(=O)O)N)O',
+	'C[C@H]([C@@H](C(=O)O)N)O',
+	'C1=CC=C2C(=C1)C(=CN2)C[C@@H](C(=O)O)N',
+	'C1=CC(=CC=C1C[C@@H](C(=O)O)N)O',
+	'CC(C)[C@@H](C(=O)O)N',
+);
+
+# ----------------------------
+# 2b) Helpers
+# ----------------------------
+
+sub escape_attr {
+	my ($text) = @_;
+	$text =~ s/&/&amp;/g;
+	$text =~ s/"/&quot;/g;
+	$text =~ s/</&lt;/g;
+	$text =~ s/>/&gt;/g;
+	return $text;
+}
+
+# ----------------------------
+# 2c) Randomization
+# ----------------------------
+
+$num_choices = 4;
+
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+
+my %picked_indices = ();
+@selected_indices = ();
+while (scalar(@selected_indices) < $num_choices) {
+	my $idx = $local_random->random(0, $#amino_acid_names, 1);
+	next if $picked_indices{$idx};
+	$picked_indices{$idx} = 1;
+	push @selected_indices, $idx;
+}
+
+@selected_names = map { $amino_acid_names[$_] } @selected_indices;
+@selected_smiles = map { $amino_acid_smiles[$_] } @selected_indices;
+
+@dropdown_options = @selected_names;
+for (my $i = $#dropdown_options; $i > 0; $i--) {
+	my $j = $local_random->random(0, $i, 1);
+	@dropdown_options[$i, $j] = @dropdown_options[$j, $i];
+}
+
+@name_order = (0 .. $#selected_names);
+for (my $i = $#name_order; $i > 0; $i--) {
+	my $j = $local_random->random(0, $i, 1);
+	@name_order[$i, $j] = @name_order[$j, $i];
+}
+
+@answer_dropdowns = ();
+for my $i (0 .. $#selected_names) {
+	$answer_dropdowns[$i] = PopUp(['', @dropdown_options], $selected_names[$i]);
+}
+
+@prompt_html = ();
+for my $i (0 .. $#selected_names) {
+	my $smiles_attr = escape_attr($selected_smiles[$i]);
+	my $canvas_id = 'aa_canvas_' . ($i + 1);
+	my $canvas_html = '<canvas id="' . $canvas_id . '" width="480" height="320" data-smiles="' . $smiles_attr . '"></canvas>';
+	push @prompt_html, '<div class="aa-structure">' . $canvas_html . '</div>';
+}
+
+@right_names = map { $selected_names[$_] } @name_order;
+$answer_list = join(', ', map { ($_ + 1) . ' - ' . $selected_names[$_] } 0 .. $#selected_names);
+
+# ----------------------------
+# 2d) Header (RDKit + layout)
+# ----------------------------
+
+HEADER_TEXT(<<'END_HEADER');
+<style>
+.two-column {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 2rem;
+	align-items: flex-start;
+	justify-content: space-evenly;
+}
+.aa-structure {
+	margin: 0.4em 0 1.1em 0;
+}
+</style>
+<script src="https://unpkg.com/@rdkit/rdkit/dist/RDKit_minimal.js"></script>
+<script>
+let RDKitReady = null;
+function getRDKit() {
+	if (!RDKitReady) {
+		RDKitReady = initRDKitModule();
+	}
+	return RDKitReady;
+}
+function initMoleculeCanvases() {
+	getRDKit().then(function(RDKit) {
+		const canvases = document.querySelectorAll('canvas[data-smiles]');
+		canvases.forEach((canvas) => {
+			const smiles = canvas.dataset.smiles;
+			if (!smiles) {
+				return;
+			}
+			const mol = RDKit.get_mol(smiles);
+			const mdetails = {"explicitMethyl": true};
+			if (canvas && mol) {
+				mol.draw_to_canvas_with_highlights(canvas, JSON.stringify(mdetails));
+			}
+		});
+	}).catch(error => {
+		console.error('Error initializing RDKit:', error);
+	});
+}
+if (document.readyState === 'loading') {
+	document.addEventListener('DOMContentLoaded', initMoleculeCanvases);
+} else {
+	initMoleculeCanvases();
+}
+</script>
+END_HEADER
+
+# ----------------------------
+# 3) Statement (PGML)
+# ----------------------------
+
+BEGIN_PGML
+Match the amino acid structures to their names.
+
+Note: Each choice will be used exactly once.
+
+[@ MODES(HTML => '<div class="two-column"><div>') @]*
+[@ join(
+	"\n\n",
+	map {
+		'[_]{$answer_dropdowns[' . $_ . ']} '
+			. '*' . ($_ + 1) . '.* '
+			. '[$prompt_html[' . $_ . ']]*'
+	} 0 .. $#prompt_html
+) @]**
+[@ MODES(HTML => '</div><div>') @]*
+[@ join(
+	"\n\n",
+	map {
+		chr(65 + $_) . '\\.' . ' ' . '[$right_names[' . $_ . ']]'
+	} 0 .. $#right_names
+) @]**
+[@ MODES(HTML => '</div></div>') @]*
+END_PGML
+
+# ----------------------------
+# 4) Solution
+# ----------------------------
+
+BEGIN_PGML_SOLUTION
+The correct matches are: [$answer_list].
+END_PGML_SOLUTION
+
+ENDDOCUMENT();

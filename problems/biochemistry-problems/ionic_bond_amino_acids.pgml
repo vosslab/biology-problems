@@ -1,0 +1,167 @@
+## TITLE('Biochemistry: Ionic bonds between amino acid side chains')
+## DESCRIPTION
+## Identify which amino acid pair can form an ionic bond between side chains.
+## ENDDESCRIPTION
+## KEYWORDS('amino acids','ionic bond','side chains')
+## DBsubject('Biochemistry')
+## DBchapter('Macromolecules')
+## DBsection('Amino Acids')
+## Level(2)
+## Date('2026-01-29')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	'PGstandard.pl',
+	'PGML.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl'
+);
+$showPartialCorrectAnswers = 0;
+
+# ----------------------------
+# 2) Setup
+# ----------------------------
+
+# ----------------------------
+# 2a) Data
+# ----------------------------
+
+@positive_amino_acids = ('lysine', 'arginine', 'histidine');
+@negative_amino_acids = ('aspartic acid', 'glutamic acid', 'aspartate', 'glutamate');
+@other_amino_acids = (
+	'alanine',
+	'isoleucine',
+	'leucine',
+	'methionine',
+	'phenylalanine',
+	'proline',
+	'tryptophan',
+	'valine',
+	'asparagine',
+	'cysteine',
+	'glutamine',
+	'glycine',
+	'serine',
+	'threonine',
+	'tyrosine'
+);
+
+# ----------------------------
+# 2b) Helpers
+# ----------------------------
+
+sub random_index {
+	my ($rng, $max) = @_;
+	return $rng->random(0, $max, 1);
+}
+
+sub title_case {
+	my ($text) = @_;
+	$text =~ s/(\w+)/\u\L$1/g;
+	return $text;
+}
+
+# ----------------------------
+# 2c) Randomization and choices
+# ----------------------------
+
+$num_choices = 5;
+
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+
+$positive_aa = $positive_amino_acids[random_index($local_random, $#positive_amino_acids)];
+$negative_aa = $negative_amino_acids[random_index($local_random, $#negative_amino_acids)];
+@answer_pair = ($positive_aa, $negative_aa);
+if ($local_random->random(0, 1, 1) == 1) {
+	@answer_pair = reverse @answer_pair;
+}
+$correct_answer = title_case($answer_pair[0]) . ' and ' . title_case($answer_pair[1]);
+
+my %wrong_choices = ();
+while (scalar(keys %wrong_choices) < 4) {
+	$neg = $negative_amino_acids[random_index($local_random, $#negative_amino_acids)];
+	$other = $other_amino_acids[random_index($local_random, $#other_amino_acids)];
+	$wrong_choices{title_case($other) . ' and ' . title_case($neg)} = 1;
+
+	$pos = $positive_amino_acids[random_index($local_random, $#positive_amino_acids)];
+	$other = $other_amino_acids[random_index($local_random, $#other_amino_acids)];
+	$wrong_choices{title_case($other) . ' and ' . title_case($pos)} = 1;
+
+	$other1 = $other_amino_acids[random_index($local_random, $#other_amino_acids)];
+	$other2 = $other1;
+	while ($other2 eq $other1) {
+		$other2 = $other_amino_acids[random_index($local_random, $#other_amino_acids)];
+	}
+	$wrong_choices{title_case($other1) . ' and ' . title_case($other2)} = 1;
+}
+
+delete $wrong_choices{$correct_answer};
+@wrong_choices_list = keys %wrong_choices;
+for (my $i = $#wrong_choices_list; $i > 0; $i--) {
+	my $j = $local_random->random(0, $i, 1);
+	@wrong_choices_list[$i, $j] = @wrong_choices_list[$j, $i];
+}
+
+@choices = ($correct_answer, @wrong_choices_list);
+if (scalar(@choices) > $num_choices) {
+	@choices = @choices[0 .. $num_choices - 1];
+}
+for (my $i = $#choices; $i > 0; $i--) {
+	my $j = $local_random->random(0, $i, 1);
+	@choices[$i, $j] = @choices[$j, $i];
+}
+
+$rb = RadioButtons(
+	[@choices],
+	$correct_answer,
+	labels        => 'ABC',
+	displayLabels => 1,
+	separator     => '<div style="margin-bottom: 0.7em;"></div>',
+	randomize     => 0,
+	uncheckable   => 0,
+);
+
+# ----------------------------
+# 2d) Formatting helpers
+# ----------------------------
+
+$ionic_emph = "<span style='color:#005cb3;font-size:1.15em;font-weight:700;'>ionic bond</span>";
+
+# ----------------------------
+# 3) Statement (PGML)
+# ----------------------------
+
+BEGIN_PGML
+Based on the chemical properties of amino acid side chains, which pair of amino
+acids listed below can form an [$ionic_emph]* between their side chains?
+
+[_]{$rb}
+END_PGML
+
+# ----------------------------
+# 4) Solution
+# ----------------------------
+
+BEGIN_PGML_SOLUTION
+The correct answer is [$correct_answer].
+END_PGML_SOLUTION
+
+BEGIN_PGML_HINT
+An ionic bond forms between a positively charged side chain and a negatively
+charged side chain.
+END_PGML_HINT
+
+ENDDOCUMENT();

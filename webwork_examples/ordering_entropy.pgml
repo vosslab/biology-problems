@@ -1,0 +1,81 @@
+## TITLE('Ordering: Increasing Entropy')
+## DESCRIPTION
+## Drag and arrange items in order of increasing entropy.
+## ENDDESCRIPTION
+## KEYWORDS('ordering','entropy','draggableProof')
+## DBsubject('Biochemistry')
+## DBchapter('Thermodynamics')
+## DBsection('Entropy')
+## Level(2)
+## Date('2026-01-29')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	'PGstandard.pl',
+	'MathObjects.pl',
+	'PGML.pl',
+	'draggableProof.pl',
+	'PGcourse.pl'
+);
+$showPartialCorrectAnswers = 1;
+
+# ----------------------------
+# 2) Setup
+# ----------------------------
+
+@ordered_items = (
+	'Option 1',
+	'Option 2',
+	'Option 3',
+);
+
+$ordering = DraggableProof(
+	[@ordered_items],
+	[],
+	SourceLabel => 'Options',
+	TargetLabel => 'Rank in order of increasing entropy',
+	DamerauLevenshtein => 1,
+);
+
+$ordering_html = $ordering->Print;
+
+# ----------------------------
+# 3) Statement (PGML)
+# ----------------------------
+
+BEGIN_PGML
+Drag and arrange the following sets of systems in order of increasing entropy.
+Assume one mole of each substance and the same temperature for each member of a
+set.
+
+[$ordering_html]*
+END_PGML
+
+# ----------------------------
+# 4) Answer evaluation
+# ----------------------------
+
+ANS($ordering->cmp);
+
+# ----------------------------
+# 5) Solution
+# ----------------------------
+
+$answer_list = join(', ', @ordered_items);
+BEGIN_PGML_SOLUTION
+The correct order (lowest to highest entropy) is: [$answer_list].
+END_PGML_SOLUTION
+
+ENDDOCUMENT();

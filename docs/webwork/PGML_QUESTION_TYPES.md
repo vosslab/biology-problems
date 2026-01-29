@@ -119,11 +119,43 @@ Notes:
 - Keep matching layout HTML-only.
 - Use the label and ordering rules in MATCHING_PROBLEMS.md.
 
-## Ordering (not implemented)
+## Ordering (DraggableProof)
 
-We do not have a standard PGML ordering widget in this repo. If ordering is
-required, approximate it with a sequence of PopUps (position 1, 2, 3, ...) or
-convert to multiple choice. Document any workaround and test with the renderer.
+Use `draggableProof.pl` and emit the widget HTML from Perl, then inject it into
+PGML with `[$var]*`. The inline `[_]{$ordering}` pattern is not supported by the
+current PG 2.17 renderer in this repo (it errors with an unrecognized evaluator),
+so use the legacy `->Print` + `ANS(...)` form here.
+
+```perl
+loadMacros(
+  "PGstandard.pl",
+  "MathObjects.pl",
+  "PGML.pl",
+  "draggableProof.pl",
+  "PGcourse.pl",
+);
+
+$ordering = DraggableProof(
+  [ "Option 1", "Option 2", "Option 3" ],
+  [],
+  SourceLabel => "Options",
+  TargetLabel => "Rank in order of increasing property",
+);
+$ordering_html = $ordering->Print;
+BEGIN_PGML
+Arrange the options in order.
+
+[$ordering_html]*
+END_PGML
+
+ANS($ordering->cmp);
+```
+
+Notes:
+- Keep the correct order in the first list; the second list holds items that
+  should start in the target (usually empty).
+- Include `MathObjects.pl`; it is required by the macro.
+- See [ORDERING_PROBLEMS.md](ORDERING_PROBLEMS.md) for full guidance.
 
 ## Multipart (mixed formats or repeated formats)
 

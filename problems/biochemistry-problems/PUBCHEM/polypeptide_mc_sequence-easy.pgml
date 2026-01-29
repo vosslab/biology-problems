@@ -1,0 +1,260 @@
+## TITLE('Biochemistry: Identify a dipeptide sequence (easy)')
+## DESCRIPTION
+## Identify the two-letter sequence of a dipeptide from its structure.
+## ENDDESCRIPTION
+## KEYWORDS('dipeptide','amino acids','sequence','structure identification')
+## DBsubject('Biochemistry')
+## DBchapter('Macromolecules')
+## DBsection('Amino Acids')
+## Level(2)
+## Date('2026-01-29')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	'PGstandard.pl',
+	'PGML.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl'
+);
+$showPartialCorrectAnswers = 0;
+
+# ----------------------------
+# 2) Setup
+# ----------------------------
+
+# ----------------------------
+# 2a) Data
+# ----------------------------
+
+@amino_acid_letters = split('', 'ACDEFGHIKLMNQRSTVWY');
+
+%amino_acid_mapping = (
+	'A' => 'Ala',
+	'C' => 'Cys',
+	'D' => 'Asp',
+	'E' => 'Glu',
+	'F' => 'Phe',
+	'G' => 'Gly',
+	'H' => 'His',
+	'I' => 'Ile',
+	'K' => 'Lys',
+	'L' => 'Leu',
+	'M' => 'Met',
+	'N' => 'Asn',
+	'Q' => 'Gln',
+	'R' => 'Arg',
+	'S' => 'Ser',
+	'T' => 'Thr',
+	'V' => 'Val',
+	'W' => 'Trp',
+	'Y' => 'Tyr'
+);
+
+%side_chains = (
+	'Gly' => '([H])',
+	'Ala' => '(C)',
+	'Ser' => '(CO)',
+	'Thr' => '([C@H](O)C)',
+	'Asn' => '(CC(=O)N)',
+	'Gln' => '(CCC(=O)N)',
+	'Asp' => '(CC(=O)[O-])',
+	'Glu' => '(CCC(=O)[O-])',
+	'Lys' => '(CCCC[NH3+])',
+	'Arg' => '(CCCNC(=[NH2+])N)',
+	'His' => '(CC1=C[NH]C=N1)',
+	'Val' => '(C(C)C)',
+	'Leu' => '(CC(C)C)',
+	'Ile' => '([C@H](CC)C)',
+	'Met' => '(CCSC)',
+	'Phe' => '(Cc1ccccc1)',
+	'Tyr' => '(Cc1ccc(O)cc1)',
+	'Trp' => '(CC1=CC=C2C(=C1)C(=CN2))',
+	'Cys' => '(CS)'
+);
+
+# ----------------------------
+# 2b) Helpers
+# ----------------------------
+
+sub escape_attr {
+	my ($text) = @_;
+	$text =~ s/&/&amp;/g;
+	$text =~ s/"/&quot;/g;
+	$text =~ s/</&lt;/g;
+	$text =~ s/>/&gt;/g;
+	return $text;
+}
+
+sub random_sequence {
+	my ($rng, $length, @letters) = @_;
+	for (my $i = $#letters; $i > 0; $i--) {
+		my $j = $rng->random(0, $i, 1);
+		@letters[$i, $j] = @letters[$j, $i];
+	}
+	my @seq = @letters[0 .. $length - 1];
+	return join('', @seq);
+}
+
+sub make_generic_polypeptide {
+	my ($length) = @_;
+	my $amino_terminal_end = '[NH3+][C@@H]';
+	my $carboxyl_terminal_end = '(C(=O)[O-])';
+	my $peptide_bond = '(C(=O)N[C@@H]';
+	my $peptide_chain = $amino_terminal_end;
+	for (my $i = 1; $i <= $length; $i++) {
+		$peptide_chain .= 'R' . $i;
+		if ($i < $length) {
+			$peptide_chain .= $peptide_bond;
+		}
+	}
+	$peptide_chain .= $carboxyl_terminal_end;
+	for (my $i = 1; $i <= $length - 1; $i++) {
+		$peptide_chain .= ')';
+	}
+	return $peptide_chain;
+}
+
+sub make_polypeptide_smiles_from_sequence {
+	my ($seq) = @_;
+	my $polypeptide_smiles = make_generic_polypeptide(length($seq));
+	my @letters = split('', uc($seq));
+	for (my $i = 0; $i <= $#letters; $i++) {
+		my $letter = $letters[$i];
+		my $three_letter = $amino_acid_mapping{$letter};
+		my $side_chain = $side_chains{$three_letter};
+		my $idx = $i + 1;
+		$polypeptide_smiles =~ s/R$idx/$side_chain/g;
+	}
+	return $polypeptide_smiles;
+}
+
+# ----------------------------
+# 2c) Randomization and choices
+# ----------------------------
+
+$num_amino = 2;
+$num_choices = 4;
+
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+
+$correct_sequence = random_sequence($local_random, $num_amino, @amino_acid_letters);
+$smiles = make_polypeptide_smiles_from_sequence($correct_sequence);
+
+%choice_set = ( $correct_sequence => 1 );
+while (scalar(keys %choice_set) < $num_choices) {
+	my $candidate = random_sequence($local_random, $num_amino, @amino_acid_letters);
+	$choice_set{$candidate} = 1;
+}
+@choices = keys %choice_set;
+for (my $i = $#choices; $i > 0; $i--) {
+	my $j = $local_random->random(0, $i, 1);
+	@choices[$i, $j] = @choices[$j, $i];
+}
+
+$rb = RadioButtons(
+	[@choices],
+	$correct_sequence,
+	labels        => 'ABC',
+	displayLabels => 1,
+	separator     => '<div style="margin-bottom: 0.7em;"></div>',
+	randomize     => 0,
+	uncheckable   => 0,
+);
+
+$smiles_attr = escape_attr($smiles);
+$canvas_id = 'peptide_canvas_' . $local_random->random(10000, 99999, 1);
+$canvas_html = '<canvas id="' . $canvas_id . '" width="480" height="512" data-smiles="' . $smiles_attr . '"></canvas>';
+
+# ----------------------------
+# 2d) Header (RDKit)
+# ----------------------------
+
+HEADER_TEXT(<<'END_HEADER');
+<script src="https://unpkg.com/@rdkit/rdkit/dist/RDKit_minimal.js"></script>
+<script>
+let RDKitReady = null;
+function getRDKit() {
+	if (!RDKitReady) {
+		RDKitReady = initRDKitModule();
+	}
+	return RDKitReady;
+}
+function getPeptideBonds(mol) {
+	let peptideBond = "CC(=O)NC";
+	let qmol = RDKitReady.get_qmol(peptideBond);
+	let matches = JSON.parse(mol.get_substruct_matches(qmol));
+	let aggregatedBonds = [];
+	for (let i = 0; i < matches.length; i++) {
+		let match = matches[i];
+		if (Array.isArray(match["bonds"])) {
+			aggregatedBonds.push(match["bonds"].slice(-2)[0]);
+		}
+	}
+	return aggregatedBonds;
+}
+function initMoleculeCanvases() {
+	getRDKit().then(function(RDKit) {
+		window.RDKitReady = RDKit;
+		const canvases = document.querySelectorAll('canvas[data-smiles]');
+		canvases.forEach((canvas) => {
+			const smiles = canvas.dataset.smiles;
+			if (!smiles) {
+				return;
+			}
+			const mol = RDKit.get_mol(smiles);
+			const mdetails = {"explicitMethyl": true};
+			mdetails["bonds"] = getPeptideBonds(mol);
+			mdetails["atoms"] = [0];
+			mdetails["highlightColour"] = [0, 1, 0];
+			if (canvas && mol) {
+				mol.draw_to_canvas_with_highlights(canvas, JSON.stringify(mdetails));
+			}
+		});
+	}).catch(error => {
+		console.error('Error initializing RDKit:', error);
+	});
+}
+if (document.readyState === 'loading') {
+	document.addEventListener('DOMContentLoaded', initMoleculeCanvases);
+} else {
+	initMoleculeCanvases();
+}
+</script>
+END_HEADER
+
+# ----------------------------
+# 3) Statement (PGML)
+# ----------------------------
+
+BEGIN_PGML
+A dipeptide is made up of two amino acids. The structure below shows a
+dipeptide with an unknown sequence. Identify the two-letter sequence in the
+amino to carboxyl (N to C) direction.
+
+[$canvas_html]*
+
+[_]{$rb}
+END_PGML
+
+# ----------------------------
+# 4) Solution
+# ----------------------------
+
+BEGIN_PGML_SOLUTION
+The correct dipeptide sequence (N to C) is [$correct_sequence].
+END_PGML_SOLUTION
+
+ENDDOCUMENT();

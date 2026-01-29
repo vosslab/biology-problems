@@ -24,7 +24,7 @@ Each problem should follow the same five components, in order:
 2) **Preamble** (macros, global flags)
 3) **Setup** (helpers, randomization, data prep, answer keys)
 4) **Statement** (PGML text and blanks)
-5) **Solution** (hints and solutions, when present)
+5) **Solution** (required; include a solution block and optional hints)
 
 Use this layout unless you have a strong reason not to:
 
@@ -58,8 +58,11 @@ BEGIN_PGML
 END_PGML
 
 # ----------------------------
-# 4) Solution (optional)
+# 4) Solution
 # ----------------------------
+BEGIN_PGML_SOLUTION
+Provide a concise solution here.
+END_PGML_SOLUTION
 
 ENDDOCUMENT();
 ```
@@ -70,6 +73,7 @@ Rules:
 - Put all macro loads in one `loadMacros(...)` block.
 - Omit `TEXT(beginproblem());` in this repo (ADAPT handles numbering/points and `$problemPreamble` is not configured here).
 - Keep Preamble, Setup, Statement, and Solution in distinct sections with headings.
+- Always include a `BEGIN_PGML_SOLUTION ... END_PGML_SOLUTION` block, even if it is a single sentence.
 - Use short subsections inside Setup when needed (for example, helpers, randomization, layout).
 
 ---
@@ -442,9 +446,9 @@ If you use interactive widgets, treat them as first-class and keep grading expli
 
 ## Solutions and hints
 
-### Use PGML solution/hint blocks when available
+### Use PGML solution/hint blocks (required)
 
-Prefer standard PGML solution/hint mechanisms if your environment supports them.
+Include a PGML solution block for every problem. Hints are optional.
 
 Rules:
 
@@ -548,6 +552,11 @@ Compute [`\\frac{[$a]}{[$b]}`].
 
 Answer: [__________]{$ans}
 END_PGML
+
+# 5) Solution
+BEGIN_PGML_SOLUTION
+The correct value is [$ans].
+END_PGML_SOLUTION
 
 ENDDOCUMENT();
 ```
