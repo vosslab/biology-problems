@@ -84,6 +84,28 @@ $showPartialCorrectAnswers = 0;
 	'Cys' => '(CS)'
 );
 
+%amino_acid_fullnames = (
+	'A' => 'alanine',
+	'C' => 'cysteine',
+	'D' => 'aspartic acid',
+	'E' => 'glutamic acid',
+	'F' => 'phenylalanine',
+	'G' => 'glycine',
+	'H' => 'histidine',
+	'I' => 'isoleucine',
+	'K' => 'lysine',
+	'L' => 'leucine',
+	'M' => 'methionine',
+	'N' => 'asparagine',
+	'Q' => 'glutamine',
+	'R' => 'arginine',
+	'S' => 'serine',
+	'T' => 'threonine',
+	'V' => 'valine',
+	'W' => 'tryptophan',
+	'Y' => 'tyrosine'
+);
+
 # ----------------------------
 # 2b) Helpers
 # ----------------------------
@@ -105,6 +127,19 @@ sub random_sequence {
 	}
 	my @seq = @letters[0 .. $length - 1];
 	return join('', @seq);
+}
+
+sub title_case {
+	my ($text) = @_;
+	$text =~ s/(\\w+)/\\u\\L$1/g;
+	return $text;
+}
+
+sub sequence_to_names {
+	my ($seq) = @_;
+	my @letters = split('', uc($seq));
+	my @names = map { title_case($amino_acid_fullnames{$_}) } @letters;
+	return join(' and ', @names);
 }
 
 sub make_generic_polypeptide {
@@ -152,21 +187,26 @@ $local_random->srand($problemSeed);
 
 $correct_sequence = random_sequence($local_random, $num_amino, @amino_acid_letters);
 $smiles = make_polypeptide_smiles_from_sequence($correct_sequence);
+$correct_choice = sequence_to_names($correct_sequence);
 
 %choice_set = ( $correct_sequence => 1 );
-while (scalar(keys %choice_set) < $num_choices) {
+@choices = ($correct_sequence);
+while (scalar(@choices) < $num_choices) {
 	my $candidate = random_sequence($local_random, $num_amino, @amino_acid_letters);
+	next if $choice_set{$candidate};
 	$choice_set{$candidate} = 1;
+	push @choices, $candidate;
 }
-@choices = keys %choice_set;
 for (my $i = $#choices; $i > 0; $i--) {
 	my $j = $local_random->random(0, $i, 1);
 	@choices[$i, $j] = @choices[$j, $i];
 }
 
+@choice_names = map { sequence_to_names($_) } @choices;
+
 $rb = RadioButtons(
-	[@choices],
-	$correct_sequence,
+	[@choice_names],
+	$correct_choice,
 	labels        => 'ABC',
 	displayLabels => 1,
 	separator     => '<div style="margin-bottom: 0.7em;"></div>',
@@ -176,7 +216,7 @@ $rb = RadioButtons(
 
 $smiles_attr = escape_attr($smiles);
 $canvas_id = 'peptide_canvas_' . $local_random->random(10000, 99999, 1);
-$canvas_html = '<canvas id="' . $canvas_id . '" width="480" height="512" data-smiles="' . $smiles_attr . '"></canvas>';
+$canvas_html = '<canvas id="' . $canvas_id . '" width="480" height="270" data-smiles="' . $smiles_attr . '"></canvas>';
 
 # ----------------------------
 # 2d) Header (RDKit)
@@ -186,16 +226,36 @@ HEADER_TEXT(<<'END_HEADER');
 <script src="https://unpkg.com/@rdkit/rdkit/dist/RDKit_minimal.js"></script>
 <script>
 let RDKitReady = null;
+let RDKitModule = null;
 function getRDKit() {
 	if (!RDKitReady) {
 		RDKitReady = initRDKitModule();
 	}
 	return RDKitReady;
 }
-function getPeptideBonds(mol) {
+function getPeptideBonds(RDKit, mol) {
 	let peptideBond = "CC(=O)NC";
-	let qmol = RDKitReady.get_qmol(peptideBond);
-	let matches = JSON.parse(mol.get_substruct_matches(qmol));
+	if (!RDKit || !RDKit.get_qmol || !mol) {
+		return [];
+	}
+	let qmol = null;
+	try {
+		qmol = RDKit.get_qmol(peptideBond);
+	} catch (error) {
+		return [];
+	}
+	if (!qmol) {
+		return [];
+	}
+	let matches = [];
+	try {
+		matches = JSON.parse(mol.get_substruct_matches(qmol));
+	} catch (error) {
+		if (qmol && qmol.delete) {
+			qmol.delete();
+		}
+		return [];
+	}
 	let aggregatedBonds = [];
 	for (let i = 0; i < matches.length; i++) {
 		let match = matches[i];
@@ -203,11 +263,14 @@ function getPeptideBonds(mol) {
 			aggregatedBonds.push(match["bonds"].slice(-2)[0]);
 		}
 	}
+	if (qmol && qmol.delete) {
+		qmol.delete();
+	}
 	return aggregatedBonds;
 }
 function initMoleculeCanvases() {
 	getRDKit().then(function(RDKit) {
-		window.RDKitReady = RDKit;
+		RDKitModule = RDKit;
 		const canvases = document.querySelectorAll('canvas[data-smiles]');
 		canvases.forEach((canvas) => {
 			const smiles = canvas.dataset.smiles;
@@ -216,7 +279,7 @@ function initMoleculeCanvases() {
 			}
 			const mol = RDKit.get_mol(smiles);
 			const mdetails = {"explicitMethyl": true};
-			mdetails["bonds"] = getPeptideBonds(mol);
+			mdetails["bonds"] = getPeptideBonds(RDKit, mol);
 			mdetails["atoms"] = [0];
 			mdetails["highlightColour"] = [0, 1, 0];
 			if (canvas && mol) {
@@ -254,7 +317,7 @@ END_PGML
 # ----------------------------
 
 BEGIN_PGML_SOLUTION
-The correct dipeptide sequence (N to C) is [$correct_sequence].
+The correct dipeptide sequence (N to C) is [$correct_choice] ([$correct_sequence]).
 END_PGML_SOLUTION
 
 ENDDOCUMENT();

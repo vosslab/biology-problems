@@ -21,6 +21,12 @@
 - Added an ionic-bond hint block to [problems/biochemistry-problems/ionic_bond_amino_acids.pgml](../problems/biochemistry-problems/ionic_bond_amino_acids.pgml).
 - Emphasized the ionic bond phrase in [problems/biochemistry-problems/ionic_bond_amino_acids.pgml](../problems/biochemistry-problems/ionic_bond_amino_acids.pgml).
 - Added an easy-mode dipeptide sequence PGML question in [problems/biochemistry-problems/PUBCHEM/polypeptide_mc_sequence-easy.pgml](../problems/biochemistry-problems/PUBCHEM/polypeptide_mc_sequence-easy.pgml).
+- Updated the easy dipeptide PGML choices to use full amino acid names in [problems/biochemistry-problems/PUBCHEM/polypeptide_mc_sequence-easy.pgml](../problems/biochemistry-problems/PUBCHEM/polypeptide_mc_sequence-easy.pgml).
+- Fixed RDKit peptide bond highlighting initialization in [problems/biochemistry-problems/PUBCHEM/polypeptide_mc_sequence-easy.pgml](../problems/biochemistry-problems/PUBCHEM/polypeptide_mc_sequence-easy.pgml) to prevent rendering failures.
+- Hardened RDKit peptide bond matching in [problems/biochemistry-problems/PUBCHEM/polypeptide_mc_sequence-easy.pgml](../problems/biochemistry-problems/PUBCHEM/polypeptide_mc_sequence-easy.pgml) so missing query support falls back to unhighlighted rendering instead of stopping the draw.
+- Set the dipeptide canvas to a 16:9 aspect ratio in [problems/biochemistry-problems/PUBCHEM/polypeptide_mc_sequence-easy.pgml](../problems/biochemistry-problems/PUBCHEM/polypeptide_mc_sequence-easy.pgml).
+- Converted [problems/biochemistry-problems/PUBCHEM/rdkit_working_in_webwork.pgml](../problems/biochemistry-problems/PUBCHEM/rdkit_working_in_webwork.pgml) to PGML structure with required numbered sections and a solution block for RDKit reference.
+- Made dipeptide choice generation seed-stable by tracking ordered choices instead of relying on hash key order in [problems/biochemistry-problems/PUBCHEM/polypeptide_mc_sequence-easy.pgml](../problems/biochemistry-problems/PUBCHEM/polypeptide_mc_sequence-easy.pgml).
 
 ## 2026-01-28
 - Added functional-group color styling in both the PGML and BBQ generator for the bond-type question in [problems/biochemistry-problems/functional_groups_bond_types.pgml](../problems/biochemistry-problems/functional_groups_bond_types.pgml) and [problems/biochemistry-problems/functional_groups_bond_types.py](../problems/biochemistry-problems/functional_groups_bond_types.py).
