@@ -1,6 +1,8 @@
 # Changelog
 
 ## 2026-01-30
+- Removed state number headers from histidine and alanine protonation state questions to simplify UI and keep focus on chemistry in [problems/biochemistry-problems/histidine_protonation_states.pgml](../problems/biochemistry-problems/histidine_protonation_states.pgml) and [problems/biochemistry-problems/alanine_protonation_states.pgml](../problems/biochemistry-problems/alanine_protonation_states.pgml).
+- Converted Python BBQ alpha-helix hydrogen bonding question to WebWork PGML with randomized amino acid selection (6-12) and sorted shift choices (1-6 positions) in [problems/biochemistry-problems/alpha_helix_h-bonds.pgml](../problems/biochemistry-problems/alpha_helix_h-bonds.pgml).
 - Added RDKit-based histidine protonation state PGML question in [problems/biochemistry-problems/histidine_protonation_states.pgml](../problems/biochemistry-problems/histidine_protonation_states.pgml) showing all four charge states across pH ranges with pKa values of 1.82, 6.00, and 9.17.
 - Corrected imidazole ring SMILES in histidine protonation states to use NH and NH+ for the protonated form (not NH2+) and NH and N for the neutral form in [problems/biochemistry-problems/histidine_protonation_states.pgml](../problems/biochemistry-problems/histidine_protonation_states.pgml).
 - Removed pKa-to-group assignments from the histidine question prompt so students must determine which pKa corresponds to which ionizable group, keeping assignments in the solution for learning in [problems/biochemistry-problems/histidine_protonation_states.pgml](../problems/biochemistry-problems/histidine_protonation_states.pgml).

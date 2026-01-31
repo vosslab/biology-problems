@@ -1,0 +1,148 @@
+## TITLE('Biochemistry: Alpha-Helix Hydrogen Bonding Pattern')
+## DESCRIPTION
+## Identify which amino acids form hydrogen bonds in an alpha-helix.
+## ENDDESCRIPTION
+## KEYWORDS('alpha helix','hydrogen bonding','protein structure','secondary structure')
+## DBsubject('Biochemistry')
+## DBchapter('Macromolecules')
+## DBsection('Protein Structure')
+## Level(2)
+## Date('2026-01-30')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	'PGstandard.pl',
+	'PGML.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl'
+);
+$showPartialCorrectAnswers = 0;
+
+# ----------------------------
+# 2) Setup
+# ----------------------------
+
+# ----------------------------
+# 2a) Select amino acid number
+# ----------------------------
+
+# Pick amino acid number between 6 and 12
+# (6 is minimum to allow shift of 4 downward without negative numbers)
+$amino_acid_num = random(6, 12, 1);
+
+# ----------------------------
+# 2b) Helper function to format choice text
+# ----------------------------
+
+sub format_choice {
+	my ($aa_num, $shift) = @_;
+	my $lower = $aa_num - $shift;
+	my $upper = $aa_num + $shift;
+	my $position_text = ($shift == 1) ? "position" : "positions";
+	return "amino acids $lower and $upper (a residue shift of $shift $position_text)";
+}
+
+# ----------------------------
+# 2c) Build choices
+# ----------------------------
+
+# Correct answer: shift of 4
+$correct_shift = 4;
+$correct_answer = format_choice($amino_acid_num, $correct_shift);
+
+# Always include shifts 3 and 5 as close distractors
+@all_shifts = (3, 4, 5);
+
+# Additional possible shifts (avoiding those that give negative numbers)
+# Add shifts in order until we have 6 total choices
+for my $test_shift (1, 2, 6, 7) {
+	last if scalar(@all_shifts) >= 6;
+	if ($amino_acid_num - $test_shift > 0) {
+		push @all_shifts, $test_shift;
+	}
+}
+
+# Sort all shifts numerically
+@all_shifts = PGsort(sub {$_[0] < $_[1]}, @all_shifts);
+
+# Build sorted choices by shift value
+@sorted_choices = ();
+for my $shift (@all_shifts) {
+	push @sorted_choices, format_choice($amino_acid_num, $shift);
+}
+
+# ----------------------------
+# 2d) Build radio buttons
+# ----------------------------
+
+$rb = RadioButtons(
+	[@sorted_choices],
+	$correct_answer,
+	labels        => 'ABC',
+	displayLabels => 1,
+	separator     => '<div style="margin-bottom: 0.7em;"></div>',
+	uncheckable   => 0,
+);
+
+# ----------------------------
+# 3) Statement (PGML)
+# ----------------------------
+
+# Emphasize the amino acid number
+$aa_emph = "<span style='color:#cc3300;font-size:1.25em;font-weight:700;'>number $amino_acid_num</span>";
+
+BEGIN_PGML
+
+The α-helix is a right-handed coil in which each backbone N–H group forms a hydrogen bond with the C=O group of an amino acid located a few residues away. The regular pattern of hydrogen bonding stabilizes the helix, preventing it from unraveling.
+
+In a long α-helix, amino acid [$aa_emph]* would form a hydrogen bond with which two other amino acids?
+
+Select the correct pair of amino acids below.
+
+[_]{$rb}
+
+END_PGML
+
+# ----------------------------
+# 4) Solution
+# ----------------------------
+
+BEGIN_PGML_HINT
+
+In an α-helix, each amino acid forms hydrogen bonds with amino acids that are located a specific number of positions away along the chain. Think about the regular repeating structure of the helix.
+
+END_PGML_HINT
+
+BEGIN_PGML_SOLUTION
+
+**Solution:**
+
+The correct answer is: [$correct_answer].
+
+**Explanation:**
+
+In an α-helix, the regular pattern of hydrogen bonding follows the *i* ± 4 rule:
+- Each backbone C=O group of residue *i* forms a hydrogen bond with the N–H group of residue *i* + 4
+- Each backbone N–H group of residue *i* forms a hydrogen bond with the C=O group of residue *i* − 4
+
+For amino acid [$amino_acid_num]:
+- It bonds with amino acid [$amino_acid_num - 4] ([$amino_acid_num] − 4)
+- It bonds with amino acid [$amino_acid_num + 4] ([$amino_acid_num] + 4)
+
+This *i* ± 4 pattern creates the characteristic 3.6 residues per turn of the α-helix, with each turn rising 5.4 Å along the helix axis. The regular spacing of these hydrogen bonds is what gives the α-helix its remarkable stability.
+
+END_PGML_SOLUTION
+
+ENDDOCUMENT();
