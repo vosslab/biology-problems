@@ -1,0 +1,348 @@
+## TITLE('Biochemistry: Histidine Protonation States')
+## DESCRIPTION
+## Histidine pKa values and protonation states at different pH.
+## ENDDESCRIPTION
+## KEYWORDS('amino acids','histidine','pKa','protonation','acid-base')
+## DBsubject('Biochemistry')
+## DBchapter('Macromolecules')
+## DBsection('Amino Acids')
+## Level(4)
+## Date('2026-01-30')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	"PGstandard.pl",
+	"PGML.pl",
+	"parserRadioButtons.pl"
+);
+$showPartialCorrectAnswers = 0;
+
+# ----------------------------
+# 2) Setup
+# ----------------------------
+
+# ----------------------------
+# 2a) Histidine SMILES for each protonation state
+# ----------------------------
+
+# State 1: pH < 1.82 (fully protonated, +2 charge)
+# COOH, NH3+, imidazole ring with NH and NH+
+$smiles_state1 = 'C1=C([NH]C=[NH+]1)C[C@@H](C(=O)O)[NH3+]';
+
+# State 2: pH 1.82-6.00 (+1 charge, zwitterion)
+# COO-, NH3+, imidazole ring with NH and NH+
+$smiles_state2 = 'C1=C([NH]C=[NH+]1)C[C@@H](C(=O)[O-])[NH3+]';
+
+# State 3: pH 6.00-9.17 (0 charge, zwitterion)
+# COO-, NH3+, neutral imidazole ring with NH and N
+$smiles_state3 = 'C1=CN=C([NH]1)C[C@@H](C(=O)[O-])[NH3+]';
+
+# State 4: pH > 9.17 (-1 charge)
+# COO-, NH2, neutral imidazole ring with NH and N
+$smiles_state4 = 'C1=CN=C([NH]1)C[C@@H](C(=O)[O-])N';
+
+# Impossible State 5: Imidazole protonated but amino deprotonated (contradicts pKa order!)
+# COO-, NH2, imidazole ring with NH and NH+ (IMPOSSIBLE - if pH > 9.17 for NH2, imidazole can't be protonated)
+$smiles_state5 = 'C1=C([NH]C=[NH+]1)C[C@@H](C(=O)[O-])N';
+
+# Impossible State 6: Carboxyl protonated but amino deprotonated (contradicts pKa order!)
+# COOH, NH2, neutral imidazole ring (IMPOSSIBLE - amino can't deprotonate before carboxyl)
+$smiles_state6 = 'C1=CNC=C1C[C@@H](C(=O)O)N';
+
+# ----------------------------
+# 2b) pH selection and answer determination
+# ----------------------------
+
+# Define pH ranges and their corresponding states
+@ph_ranges = (
+	{ph => 0.5,  state => 1, label => 'State 1', desc => 'pH 0.5 (highly acidic)'},
+	{ph => 1.0,  state => 1, label => 'State 1', desc => 'pH 1.0'},
+	{ph => 3.0,  state => 2, label => 'State 2', desc => 'pH 3.0'},
+	{ph => 5.0,  state => 2, label => 'State 2', desc => 'pH 5.0'},
+	{ph => 7.4,  state => 3, label => 'State 3', desc => 'pH 7.4 (physiological)'},
+	{ph => 8.0,  state => 3, label => 'State 3', desc => 'pH 8.0'},
+	{ph => 10.0, state => 4, label => 'State 4', desc => 'pH 10.0'},
+	{ph => 12.0, state => 4, label => 'State 4', desc => 'pH 12.0 (highly basic)'},
+);
+
+# Randomly select a pH
+$selected_index = random(0, scalar(@ph_ranges)-1, 1);
+$selected_ph = $ph_ranges[$selected_index]{ph};
+$correct_state = $ph_ranges[$selected_index]{state};
+
+# ----------------------------
+# 2c) Create canvas elements for each state
+# ----------------------------
+
+$canvas_state1 = '<canvas id="canvas_state1" width="320" height="240" data-smiles="' . $smiles_state1 . '"></canvas>';
+$canvas_state2 = '<canvas id="canvas_state2" width="320" height="240" data-smiles="' . $smiles_state2 . '"></canvas>';
+$canvas_state3 = '<canvas id="canvas_state3" width="320" height="240" data-smiles="' . $smiles_state3 . '"></canvas>';
+$canvas_state4 = '<canvas id="canvas_state4" width="320" height="240" data-smiles="' . $smiles_state4 . '"></canvas>';
+$canvas_state5 = '<canvas id="canvas_state5" width="320" height="240" data-smiles="' . $smiles_state5 . '"></canvas>';
+$canvas_state6 = '<canvas id="canvas_state6" width="320" height="240" data-smiles="' . $smiles_state6 . '"></canvas>';
+
+# ----------------------------
+# 2d) Create HTML cards with canvas, radio button, and text description
+# Radio buttons all share same name so only one can be selected
+$card1 = '<div style="border: 1px solid #ddd; border-radius: 8px; padding: 1em; margin-bottom: 1em;">' .
+         '<div style="margin-bottom: 0.5em;"><strong>State 1</strong></div>' .
+         '<div style="display: flex; align-items: center; gap: 1.5em;">' .
+         '<div style="flex-shrink: 0;">' . $canvas_state1 . '</div>' .
+         '<div style="flex-grow: 1;">' .
+         '<label style="display: flex; align-items: center; gap: 0.5em; font-size: 1.1em; cursor: pointer; margin-bottom: 0.5em;">' .
+         '<input type="radio" name="protonation_state" value="State 1" style="width: 20px; height: 20px; cursor: pointer;">' .
+         '<span><strong>Select this state</strong></span></label>' .
+         '<div style="font-size: 0.9em; line-height: 1.4; margin-left: 28px;">' .
+         'Carboxyl: <strong>COOH</strong><br>' .
+         'Amino: <strong>NH<sub>3</sub><sup>+</sup></strong><br>' .
+         'Imidazole: <strong>NH and NH<sup>+</sup></strong>' .
+         '</div></div></div></div>';
+
+$card2 = '<div style="border: 1px solid #ddd; border-radius: 8px; padding: 1em; margin-bottom: 1em;">' .
+         '<div style="margin-bottom: 0.5em;"><strong>State 2</strong></div>' .
+         '<div style="display: flex; align-items: center; gap: 1.5em;">' .
+         '<div style="flex-shrink: 0;">' . $canvas_state2 . '</div>' .
+         '<div style="flex-grow: 1;">' .
+         '<label style="display: flex; align-items: center; gap: 0.5em; font-size: 1.1em; cursor: pointer; margin-bottom: 0.5em;">' .
+         '<input type="radio" name="protonation_state" value="State 2" style="width: 20px; height: 20px; cursor: pointer;">' .
+         '<span><strong>Select this state</strong></span></label>' .
+         '<div style="font-size: 0.9em; line-height: 1.4; margin-left: 28px;">' .
+         'Carboxyl: <strong>COO<sup>-</sup></strong><br>' .
+         'Amino: <strong>NH<sub>3</sub><sup>+</sup></strong><br>' .
+         'Imidazole: <strong>NH and NH<sup>+</sup></strong>' .
+         '</div></div></div></div>';
+
+$card3 = '<div style="border: 1px solid #ddd; border-radius: 8px; padding: 1em; margin-bottom: 1em;">' .
+         '<div style="margin-bottom: 0.5em;"><strong>State 3</strong></div>' .
+         '<div style="display: flex; align-items: center; gap: 1.5em;">' .
+         '<div style="flex-shrink: 0;">' . $canvas_state3 . '</div>' .
+         '<div style="flex-grow: 1;">' .
+         '<label style="display: flex; align-items: center; gap: 0.5em; font-size: 1.1em; cursor: pointer; margin-bottom: 0.5em;">' .
+         '<input type="radio" name="protonation_state" value="State 3" style="width: 20px; height: 20px; cursor: pointer;">' .
+         '<span><strong>Select this state</strong></span></label>' .
+         '<div style="font-size: 0.9em; line-height: 1.4; margin-left: 28px;">' .
+         'Carboxyl: <strong>COO<sup>-</sup></strong><br>' .
+         'Amino: <strong>NH<sub>3</sub><sup>+</sup></strong><br>' .
+         'Imidazole: <strong>NH and N</strong>' .
+         '</div></div></div></div>';
+
+$card4 = '<div style="border: 1px solid #ddd; border-radius: 8px; padding: 1em; margin-bottom: 1em;">' .
+         '<div style="margin-bottom: 0.5em;"><strong>State 4</strong></div>' .
+         '<div style="display: flex; align-items: center; gap: 1.5em;">' .
+         '<div style="flex-shrink: 0;">' . $canvas_state4 . '</div>' .
+         '<div style="flex-grow: 1;">' .
+         '<label style="display: flex; align-items: center; gap: 0.5em; font-size: 1.1em; cursor: pointer; margin-bottom: 0.5em;">' .
+         '<input type="radio" name="protonation_state" value="State 4" style="width: 20px; height: 20px; cursor: pointer;">' .
+         '<span><strong>Select this state</strong></span></label>' .
+         '<div style="font-size: 0.9em; line-height: 1.4; margin-left: 28px;">' .
+         'Carboxyl: <strong>COO<sup>-</sup></strong><br>' .
+         'Amino: <strong>NH<sub>2</sub></strong><br>' .
+         'Imidazole: <strong>NH and N</strong>' .
+         '</div></div></div></div>';
+
+# Impossible State 5 card (imidazole charged but amino not - violates pKa order!)
+$card5 = '<div style="border: 1px solid #ddd; border-radius: 8px; padding: 1em; margin-bottom: 1em;">' .
+         '<div style="margin-bottom: 0.5em;"><strong>State 5</strong></div>' .
+         '<div style="display: flex; align-items: center; gap: 1.5em;">' .
+         '<div style="flex-shrink: 0;">' . $canvas_state5 . '</div>' .
+         '<div style="flex-grow: 1;">' .
+         '<label style="display: flex; align-items: center; gap: 0.5em; font-size: 1.1em; cursor: pointer; margin-bottom: 0.5em;">' .
+         '<input type="radio" name="protonation_state" value="State 5" style="width: 20px; height: 20px; cursor: pointer;">' .
+         '<span><strong>Select this state</strong></span></label>' .
+         '<div style="font-size: 0.9em; line-height: 1.4; margin-left: 28px;">' .
+         'Carboxyl: <strong>COO<sup>-</sup></strong><br>' .
+         'Amino: <strong>NH<sub>2</sub></strong><br>' .
+         'Imidazole: <strong>NH and NH<sup>+</sup></strong>' .
+         '</div></div></div></div>';
+
+# Impossible State 6 card (carboxyl charged but amino not - violates pKa order!)
+$card6 = '<div style="border: 1px solid #ddd; border-radius: 8px; padding: 1em; margin-bottom: 1em;">' .
+         '<div style="margin-bottom: 0.5em;"><strong>State 6</strong></div>' .
+         '<div style="display: flex; align-items: center; gap: 1.5em;">' .
+         '<div style="flex-shrink: 0;">' . $canvas_state6 . '</div>' .
+         '<div style="flex-grow: 1;">' .
+         '<label style="display: flex; align-items: center; gap: 0.5em; font-size: 1.1em; cursor: pointer; margin-bottom: 0.5em;">' .
+         '<input type="radio" name="protonation_state" value="State 6" style="width: 20px; height: 20px; cursor: pointer;">' .
+         '<span><strong>Select this state</strong></span></label>' .
+         '<div style="font-size: 0.9em; line-height: 1.4; margin-left: 28px;">' .
+         'Carboxyl: <strong>COOH</strong><br>' .
+         'Amino: <strong>NH<sub>2</sub></strong><br>' .
+         'Imidazole: <strong>NH and N</strong>' .
+         '</div></div></div></div>';
+
+# ----------------------------
+# 2d-2) Shuffle the cards (must be AFTER cards are defined!)
+# ----------------------------
+
+# Create array of all card HTML strings
+@all_cards = ($card1, $card2, $card3, $card4, $card5, $card6);
+
+# Shuffle the array using built-in random (seeded with problemSeed)
+@shuffled_cards = ();
+@temp_cards = @all_cards;
+while (@temp_cards) {
+	my $index = random(0, $#temp_cards, 1);
+	push @shuffled_cards, splice(@temp_cards, $index, 1);
+}
+
+# The correct answer label stays the same regardless of shuffle
+$correct_label = "State $correct_state";
+
+# ----------------------------
+# 2e) Header (RDKit)
+# ----------------------------
+
+HEADER_TEXT(<<'END_HEADER');
+<script src="https://unpkg.com/@rdkit/rdkit/dist/RDKit_minimal.js"></script>
+<script>
+let RDKitReady = null;
+function getRDKit() {
+	if (!RDKitReady) {
+		RDKitReady = initRDKitModule();
+	}
+	return RDKitReady;
+}
+function initMoleculeCanvases() {
+	getRDKit().then(function(RDKit) {
+		const canvases = document.querySelectorAll('canvas[data-smiles]');
+		canvases.forEach((canvas) => {
+			const smiles = canvas.dataset.smiles;
+			if (!smiles) {
+				return;
+			}
+			const mol = RDKit.get_mol(smiles);
+			const mdetails = {
+				"legend": "",
+				"explicitMethyl": true,
+				"addAtomIndices": false,
+				"addBondIndices": false
+			};
+			if (canvas && mol) {
+				mol.draw_to_canvas_with_highlights(canvas, JSON.stringify(mdetails));
+				mol.delete();
+			}
+		});
+	}).catch(error => {
+		console.error('Error initializing RDKit:', error);
+	});
+}
+if (document.readyState === 'loading') {
+	document.addEventListener('DOMContentLoaded', initMoleculeCanvases);
+} else {
+	initMoleculeCanvases();
+}
+</script>
+END_HEADER
+
+# ----------------------------
+# 3) Statement (PGML)
+# ----------------------------
+
+# Emphasize the pH value so it stands out
+$ph_emph = "<span style='color:#0066cc;font-size:1.35em;font-weight:700;background-color:#e6f2ff;padding:0.1em 0.4em;border-radius:4px;'>pH $selected_ph</span>";
+
+BEGIN_PGML
+**Histidine Protonation States**
+
+Histidine has three pKa values: 1.82, 6.00, and 9.17.
+
+**Question:** Which one of the following is the correct protonation state of histidine at [$ph_emph]*?
+
+---
+END_PGML
+
+# Output the shuffled cards using BEGIN_TEXT to avoid PGML parsing
+BEGIN_TEXT
+$PAR
+\{ MODES(HTML => $shuffled_cards[0], TeX => '') \}
+$PAR
+\{ MODES(HTML => $shuffled_cards[1], TeX => '') \}
+$PAR
+\{ MODES(HTML => $shuffled_cards[2], TeX => '') \}
+$PAR
+\{ MODES(HTML => $shuffled_cards[3], TeX => '') \}
+$PAR
+\{ MODES(HTML => $shuffled_cards[4], TeX => '') \}
+$PAR
+\{ MODES(HTML => $shuffled_cards[5], TeX => '') \}
+$PAR
+$BR
+\{ MODES(HTML => '<div style="display:none;">' . ans_rule(20) . '</div>', TeX => '') \}
+END_TEXT
+
+# Simple JavaScript to sync custom radio buttons to answer field
+HEADER_TEXT(<<'END_SYNC');
+<script>
+// Sync custom radio buttons to WebWork answer field
+document.addEventListener('DOMContentLoaded', function() {
+	// Find the WebWork answer input (created by ans_rule)
+	const answerInput = document.querySelector('input[name="AnSwEr0001"]');
+	if (!answerInput) return;
+
+	// Sync custom radio buttons to answer field
+	const customRadios = document.querySelectorAll('input[name="protonation_state"]');
+	customRadios.forEach(function(radio) {
+		radio.addEventListener('change', function() {
+			if (this.checked) {
+				answerInput.value = this.value;
+			}
+		});
+
+		// Restore selection if page reloaded
+		if (answerInput.value === radio.value) {
+			radio.checked = true;
+		}
+	});
+});
+</script>
+END_SYNC
+
+# Answer checker using str_cmp for simple string comparison
+ANS(str_cmp($correct_label));
+
+# ----------------------------
+# 4) Solution
+# ----------------------------
+
+BEGIN_PGML_SOLUTION
+**Solution:**
+
+At pH [$selected_ph], histidine exists in [$correct_label].
+
+**pKa Assignments:**
+
+The three pKa values correspond to:
+- pKa = 1.82: Carboxylic acid group (COOH/COO-)
+- pKa = 6.00: Imidazole side chain (the ring with two nitrogens)
+- pKa = 9.17: Amino group (NH3+/NH2)
+
+**Protonation States:**
+
+- **State 1** (pH < 1.82): All three groups are protonated. Carboxyl is COOH, amino is NH3+, and imidazole ring has both NH and NH+. Net charge: +2
+- **State 2** (pH 1.82-6.00): Carboxyl is deprotonated to COO-, amino is NH3+, and imidazole ring has both NH and NH+. Net charge: +1
+- **State 3** (pH 6.00-9.17): Carboxyl is COO-, amino is NH3+, and imidazole ring is neutral with NH and N. Net charge: 0
+- **State 4** (pH > 9.17): Carboxyl is COO-, amino is deprotonated to NH2, and imidazole ring is neutral with NH and N. Net charge: -1
+
+**Impossible States (violate pKa order):**
+
+- **State 5**: IMPOSSIBLE - Shows amino as NH2 (requires pH > 9.17) but imidazole as NH and NH+ (requires pH < 6.00). Cannot satisfy both conditions!
+- **State 6**: IMPOSSIBLE - Shows amino as NH2 (requires pH > 9.17) but carboxyl as COOH (requires pH < 1.82). Violates the deprotonation order: carboxyl (pKa 1.82) must deprotonate before amino (pKa 9.17).
+
+**Key principle:** Groups deprotonate in order of increasing pKa. Once a group with higher pKa deprotonates, all groups with lower pKa must already be deprotonated.
+
+At pH [$selected_ph], which is in the range for [$correct_label], the predominant form has the charge state shown above.
+END_PGML_SOLUTION
+
+ENDDOCUMENT();

@@ -178,3 +178,115 @@ Notes:
 - For mixed formats (for example radio + numeric), define and place each blank
   near its text.
 - If repeated formats are used, keep naming consistent (`$ans1`, `$ans2`, etc.).
+
+## Molecular structures (RDKit.js)
+
+Use RDKit.js to render chemical structures from SMILES strings without requiring
+image files. This pattern is preferred for biochemistry and organic chemistry
+questions involving molecular visualization.
+
+```perl
+loadMacros(
+  "PGstandard.pl",
+  "PGML.pl",
+  "parserRadioButtons.pl",
+  "PGcourse.pl",
+);
+
+# ----------------------------
+# 2) Setup
+# ----------------------------
+
+# Define SMILES for L-alanine (zwitterion)
+$smiles_alanine = 'C[C@@H](C(=O)[O-])[NH3+]';
+
+# Create canvas element with data-smiles attribute
+$canvas = '<canvas id="canvas_alanine" width="320" height="240" data-smiles="' . $smiles_alanine . '"></canvas>';
+
+# Create answer widget
+$answer = RadioButtons(
+  ['Alanine', 'Glycine', 'Serine', 'Valine'],
+  'Alanine',
+  labels => 'ABC',
+  displayLabels => 1,
+);
+
+# ----------------------------
+# 2) Header - Load RDKit.js
+# ----------------------------
+
+HEADER_TEXT(<<'END_HEADER');
+<script src="https://unpkg.com/@rdkit/rdkit/dist/RDKit_minimal.js"></script>
+<script>
+let RDKitReady = null;
+function getRDKit() {
+	if (!RDKitReady) {
+		RDKitReady = initRDKitModule();
+	}
+	return RDKitReady;
+}
+function initMoleculeCanvases() {
+	getRDKit().then(function(RDKit) {
+		const canvases = document.querySelectorAll('canvas[data-smiles]');
+		canvases.forEach((canvas) => {
+			const smiles = canvas.dataset.smiles;
+			if (!smiles) return;
+			const mol = RDKit.get_mol(smiles);
+			const mdetails = {"legend": "", "explicitMethyl": true};
+			if (canvas && mol) {
+				mol.draw_to_canvas_with_highlights(canvas, JSON.stringify(mdetails));
+				mol.delete();
+			}
+		});
+	}).catch(error => {
+		console.error('Error initializing RDKit:', error);
+	});
+}
+if (document.readyState === 'loading') {
+	document.addEventListener('DOMContentLoaded', initMoleculeCanvases);
+} else {
+	initMoleculeCanvases();
+}
+</script>
+END_HEADER
+
+# ----------------------------
+# 3) Statement (PGML)
+# ----------------------------
+
+BEGIN_PGML
+**Identify this amino acid:**
+
+[$canvas]*
+
+[_]{$answer}
+END_PGML
+```
+
+Notes:
+- Use `[$canvas]*` to render HTML without escaping (the `*` is critical).
+- Each canvas must have a unique `id` attribute.
+- SMILES strings must be valid and properly escaped in the data attribute.
+- Always validate SMILES with Python RDKit or online tools before use.
+- For charged species, use square brackets: `[NH3+]`, `[O-]`, `[NH+]`, etc.
+- **Critical for imidazole:** Protonated form is `NH + NH+`, NOT `NH2+`.
+
+### Working examples in this repository
+
+- **Basic:** `problems/biochemistry-problems/PUBCHEM/rdkit_working_in_webwork.pgml`
+  - Minimal working example, good starting template
+
+- **Intermediate:** `problems/biochemistry-problems/PUBCHEM/which_amino_acid.pgml`
+  - Random molecule selection from database
+
+- **Advanced:** `problems/biochemistry-problems/histidine_protonation_states.pgml`
+  - Multiple charge states, pH-dependent protonation
+
+### Detailed guide
+
+See [RDKIT_MOLECULAR_STRUCTURES.md](RDKIT_MOLECULAR_STRUCTURES.md) for:
+- SMILES syntax reference
+- Charged species notation (amino acids, nucleotides)
+- Common chemistry pitfalls (especially imidazole protonation)
+- Validation workflow
+- Troubleshooting rendering issues

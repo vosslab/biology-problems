@@ -214,6 +214,54 @@ Format:
 ## Level(2)
 ```
 
+### Level assessment examples (biochemistry and molecular biology)
+
+These examples help calibrate level assignments for chemistry-heavy biology questions:
+
+**Level 1 (Remember):**
+- "Which amino acid has a sulfur atom in its side chain?"
+- "What is the name of this functional group?" (given a labeled structure)
+- "List the three components of a nucleotide."
+
+Direct recall, no inference or multi-step reasoning needed.
+
+**Level 2 (Understand):**
+- "Classify this molecule as a carbohydrate, lipid, protein, or nucleic acid." (given structure)
+- "Explain why histidine acts as a buffer at physiological pH."
+- "Which of these amino acids is hydrophobic?"
+
+Requires understanding and classification, but pKa values or group assignments are given.
+
+**Level 3 (Apply):**
+- "Calculate the net charge on lysine at pH 7.4 given pKa values: 2.18 (COOH), 8.95 (NH3+), 10.53 (side chain)."
+- "Determine the number of peptide bonds in a tetrapeptide."
+- "Using the genetic code table, translate this mRNA sequence."
+
+Direct application of rules or formulas with clear instructions and provided data.
+
+**Level 4 (Analyze):**
+- "Histidine has pKa values of 1.82, 6.00, and 9.17. Determine the protonation state at pH 7.4."
+- "Compare the solubility of Arg-Asp-Glu at pH 3.0 vs pH 11.0."
+- "Analyze this gel electrophoresis result to determine which protein is largest."
+
+Student must infer relationships (which pKa → which group), analyze multiple factors, or
+synthesize information from different knowledge domains.
+
+**Level 5 (Evaluate):**
+- "Justify why an Arg-Glu-Asp peptide would be more soluble than Leu-Val-Ile at pH 7.0."
+- "Critique this proposed mechanism for enzyme inhibition based on the kinetic data."
+- "Evaluate which buffer system (acetate vs phosphate) would be better for maintaining pH 6.5."
+
+Requires defending a conclusion, evaluating competing explanations, or justifying choices
+based on multiple criteria.
+
+**Level 6 (Create):**
+- "Design a peptide sequence that would be maximally soluble at pH 7.0 and explain your design."
+- "Propose an experimental protocol to determine the pKa of an unknown amino acid."
+- "Create a metabolic pathway diagram showing how glucose is converted to lactate."
+
+Requires synthesizing knowledge to create novel solutions, designs, or models.
+
 ---
 
 ## 6) Attribution and provenance fields (recommended)
