@@ -22,6 +22,7 @@
 - Fixed canvas rendering bug by moving shuffle code after card definitions to ensure variables are defined before use in [problems/biochemistry-problems/histidine_protonation_states.pgml](../problems/biochemistry-problems/histidine_protonation_states.pgml).
 - Created comprehensive PG common pitfalls guide in [docs/webwork/PG_COMMON_PITFALLS.md](webwork/PG_COMMON_PITFALLS.md) covering order of operations, PGML parsing issues, HTML escaping, loops in BEGIN_TEXT, shuffling patterns, answer checking, debugging strategies, and prevention checklist.
 - Added PG_COMMON_PITFALLS.md to WebWork documentation index in [docs/webwork/INDEX.md](webwork/INDEX.md).
+- Created simpler alanine protonation states question with 4 total states (3 possible + 1 impossible distractor) using 2 pKa values (2.34, 9.69) as teaching example in [problems/biochemistry-problems/alanine_protonation_states.pgml](../problems/biochemistry-problems/alanine_protonation_states.pgml).
 - Added molecular structures question type section with RDKit.js pattern and example references to [docs/webwork/PGML_QUESTION_TYPES.md](webwork/PGML_QUESTION_TYPES.md).
 - Added RDKIT_MOLECULAR_STRUCTURES.md and ORDERING_PROBLEMS.md to the WebWork documentation index in [docs/webwork/INDEX.md](webwork/INDEX.md).
 - Added biochemistry and molecular biology Level assessment examples (Levels 1-6) to help authors calibrate question difficulty in [docs/webwork/WEBWORK_HEADER_STYLE.md](webwork/WEBWORK_HEADER_STYLE.md).
