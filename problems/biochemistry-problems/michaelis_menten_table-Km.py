@@ -185,6 +185,8 @@ def main():
 		raise ValueError("No scenarios were generated.")
 	if args.scenario_order == 'random':
 		random.shuffle(SCENARIOS)
+	if args.max_questions is None or args.max_questions > len(SCENARIOS):
+		args.max_questions = len(SCENARIOS)
 	outfile = bptools.make_outfile()
 	bptools.collect_and_write_questions(write_question, args, outfile)
 

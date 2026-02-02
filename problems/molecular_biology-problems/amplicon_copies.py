@@ -89,6 +89,8 @@ if __name__ == '__main__':
 		SCENARIOS.sort()
 	else:
 		random.shuffle(SCENARIOS)
+	if args.max_questions is None or args.max_questions > len(SCENARIOS):
+		args.max_questions = len(SCENARIOS)
 	outfile = bptools.make_outfile()
 	questions = bptools.collect_question_batches(write_question_batch, args)
 	bptools.write_questions_to_file(questions, outfile)
