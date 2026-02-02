@@ -3,6 +3,7 @@
 import math
 import os
 import random
+import re
 import sys
 
 import bptools
@@ -51,25 +52,25 @@ def get_Henderson_Hasselbalch_equation(
 	else:
 		# Numeric HA value if provided
 		ha_conj_base = open_bracket + f"<mn>{HA:.2f}</mn>" + close_bracket
-		# Define MathML representation for the conjugate base (A-)
-		if A_ is None:
-			# Symbolic A- if no value is provided
-			a_mathml = "<msup><mi mathvariant='normal'>A</mi><mo>&#8211;</mo></msup>"
-			if words is True:
-				a__conj_acid = open_bracket + "<mi>Base</mi>" + close_bracket
-			else:
-				a__conj_acid = open_bracket + a_mathml + close_bracket
+	# Define MathML representation for the conjugate base (A-)
+	if A_ is None:
+		# Symbolic A- if no value is provided
+		a_mathml = "<msup><mi mathvariant='normal'>A</mi><mo>&#8211;</mo></msup>"
+		if words is True:
+			a__conj_acid = open_bracket + "<mi>Base</mi>" + close_bracket
 		else:
-			# Numeric A- value if provided
-			a__conj_acid = open_bracket + f"<mn>{A_:.2f}</mn>" + close_bracket
+			a__conj_acid = open_bracket + a_mathml + close_bracket
+	else:
+		# Numeric A- value if provided
+		a__conj_acid = open_bracket + f"<mn>{A_:.2f}</mn>" + close_bracket
 	# Determine the correct or intentionally incorrect structure of the equation
 	# Set whether [HA] appears in the numerator
-		if wrong is False:
-			# Correct format: [A-] / [HA]
-			ha_on_top = False
-		else:
-			# Incorrect format: [HA] / [A-]
-			ha_on_top = True
+	if wrong is False:
+		# Correct format: [A-] / [HA]
+		ha_on_top = False
+	else:
+		# Incorrect format: [HA] / [A-]
+		ha_on_top = True
 	# Initialize the MathML string for the equation
 	equation_text = ""
 	equation_text += "<p><math xmlns='http://www.w3.org/1998/Math/MathML'>"
@@ -90,31 +91,32 @@ def get_Henderson_Hasselbalch_equation(
 	# Add the plus or minus sign based on the 'plus' argument
 	if plus == "-" or plus == "minus":
 		# Add minus sign and flip numerator and denominator
-		equation_text += "<mo>&#160;</mo><mo>&ndash;</mo><mo>&#8201;</mo>"
+		sign_text = "&ndash;"
 		ha_on_top = not ha_on_top
 	else:
 		# Add plus sign
-		equation_text += "<mo>&#160;</mo><mo>+</mo><mo>&#8201;</mo>"
-		# Add the log function and start the fraction
-		equation_text += "<msub><mo>log</mo><mn>10</mn></msub>"
-		# Begin the numerator of the fraction
-		equation_text += "<mfenced><mfrac><mrow>"
-		# Insert the numerator based on the 'ha_on_top' flag
-		if ha_on_top is False:
-			# A- goes on top in the correct format
-			equation_text += a__conj_acid
-		else:
-			# HA goes on top in the incorrect format
-			equation_text += ha_conj_base
-		# Close the numerator
-		equation_text += "</mrow><mrow>"
-		# Insert the denominator based on the 'ha_on_top' flag
-		if ha_on_top is False:
-			# HA goes on bottom in the correct format
-			equation_text += ha_conj_base
-		else:
-			# A- goes on bottom in the incorrect format
-			equation_text += a__conj_acid
+		sign_text = "+"
+	equation_text += f"<mo>&#160;</mo><mo>{sign_text}</mo><mo>&#8201;</mo>"
+	# Add the log function and start the fraction
+	equation_text += "<msub><mo>log</mo><mn>10</mn></msub>"
+	# Begin the numerator of the fraction
+	equation_text += "<mfenced><mfrac><mrow>"
+	# Insert the numerator based on the 'ha_on_top' flag
+	if ha_on_top is False:
+		# A- goes on top in the correct format
+		equation_text += a__conj_acid
+	else:
+		# HA goes on top in the incorrect format
+		equation_text += ha_conj_base
+	# Close the numerator
+	equation_text += "</mrow><mrow>"
+	# Insert the denominator based on the 'ha_on_top' flag
+	if ha_on_top is False:
+		# HA goes on bottom in the correct format
+		equation_text += ha_conj_base
+	else:
+		# A- goes on bottom in the incorrect format
+		equation_text += a__conj_acid
 	# Close the denominator and log function
 	equation_text += "</mrow></mfrac></mfenced>"
 	# Complete the MathML structure
@@ -208,8 +210,58 @@ def _format_pH(value: float, decimals: int = 2) -> str:
 #===========================================================
 def _format_ratio(value: float) -> str:
 	if value < 0.01 or value > 100.0:
-		return _html_monospace(f"{value:.3g}")
-	return _html_monospace(f"{value:.3f}")
+		value_text = f"{value:.3g}"
+	else:
+		value_text = f"{value:.3f}"
+	if re.match(r'^[0-9]\.', value_text):
+		value_text = f"&nbsp;{value_text}"
+	return _html_monospace(value_text)
+
+#===========================================================
+#===========================================================
+def _build_ratio_choices(answer_value: float, num_choices: int) -> tuple[list[str], str]:
+	answer_rounded = round(float(answer_value), 3)
+	answer_text = _format_ratio(answer_rounded)
+	used_texts = {answer_text}
+	choice_texts = [answer_text]
+
+	candidates = [
+		answer_value,
+		1.0 / answer_value,
+		answer_value * 10.0,
+		answer_value / 10.0,
+		answer_value * 2.0,
+		answer_value / 2.0,
+	]
+	random.shuffle(candidates)
+	for v in candidates:
+		if len(choice_texts) >= num_choices:
+			break
+		if v <= 0.0:
+			continue
+		rounded = round(float(v), 3)
+		text = _format_ratio(rounded)
+		if text in used_texts:
+			continue
+		used_texts.add(text)
+		choice_texts.append(text)
+
+	attempts = 0
+	while len(choice_texts) < num_choices:
+		attempts += 1
+		if attempts > 1000:
+			raise ValueError("Could not build unique ratio choices.")
+		rounded = round(float(answer_value) * pow(10.0, _pick_float(-0.6, 0.6, 2)), 3)
+		if rounded <= 0.0:
+			continue
+		text = _format_ratio(rounded)
+		if text in used_texts:
+			continue
+		used_texts.add(text)
+		choice_texts.append(text)
+
+	random.shuffle(choice_texts)
+	return choice_texts, answer_text
 
 
 #===========================================================
@@ -478,36 +530,7 @@ def _write_ratio_question(N: int, args) -> str:
 		question_text += "<p>Hint: pK<sub>a</sub> + pK<sub>b</sub> = 14.00 for a conjugate acid-base pair.</p>"
 
 		if args.question_format == 'mc':
-			answer_value = float(ratio_value)
-			choice_values = [
-				answer_value,
-				1.0 / answer_value,
-				answer_value * 10.0,
-				answer_value / 10.0,
-				answer_value * 2.0,
-				answer_value / 2.0,
-			]
-			random.shuffle(choice_values)
-			unique_values: list[float] = []
-			for v in choice_values:
-				if len(unique_values) >= int(args.num_choices):
-					break
-				if v <= 0.0:
-					continue
-				rounded = round(float(v), 3)
-				if rounded in unique_values:
-					continue
-				unique_values.append(rounded)
-			while len(unique_values) < int(args.num_choices):
-				rounded = round(float(answer_value) * pow(10.0, _pick_float(-0.6, 0.6, 2)), 3)
-				if rounded <= 0.0:
-					continue
-				if rounded in unique_values:
-					continue
-				unique_values.append(rounded)
-			random.shuffle(unique_values)
-			choices_list = [_format_ratio(v) for v in unique_values]
-			answer_text = _format_ratio(answer_value)
+			choices_list, answer_text = _build_ratio_choices(ratio_value, int(args.num_choices))
 			return bptools.formatBB_MC_Question(N, question_text, choices_list, answer_text)
 
 		answer_value = float(ratio_value)
@@ -525,36 +548,7 @@ def _write_ratio_question(N: int, args) -> str:
 	question_text += "<p><b>What is the ratio</b> [A<sup>-</sup>] / [HA] ?</p>"
 
 	if args.question_format == 'mc':
-		answer_value = float(ratio_value)
-		choice_values = [
-			answer_value,
-			1.0 / answer_value,
-			answer_value * 10.0,
-			answer_value / 10.0,
-			answer_value * 2.0,
-			answer_value / 2.0,
-		]
-		random.shuffle(choice_values)
-		unique_values: list[float] = []
-		for v in choice_values:
-			if len(unique_values) >= int(args.num_choices):
-				break
-			if v <= 0.0:
-				continue
-			rounded = round(float(v), 3)
-			if rounded in unique_values:
-				continue
-			unique_values.append(rounded)
-		while len(unique_values) < int(args.num_choices):
-			rounded = round(float(answer_value) * pow(10.0, _pick_float(-0.6, 0.6, 2)), 3)
-			if rounded <= 0.0:
-				continue
-			if rounded in unique_values:
-				continue
-			unique_values.append(rounded)
-		random.shuffle(unique_values)
-		choices_list = [_format_ratio(v) for v in unique_values]
-		answer_text = _format_ratio(answer_value)
+		choices_list, answer_text = _build_ratio_choices(ratio_value, int(args.num_choices))
 		return bptools.formatBB_MC_Question(N, question_text, choices_list, answer_text)
 
 	answer_value = float(ratio_value)

@@ -118,44 +118,49 @@ def generate_choices(buffer_dict, num_choices: int) -> (list, str):
 	# Define possible correct choices and incorrect choices
 	#print(buffer_dict.keys())
 	pka_list = buffer_dict['pKa_list']
-	choices_list = []
-	answer_value = random_float_not_near(pka_list)
-	answer_text = pH_to_color_span(answer_value)
-	used_texts = {answer_text}
+	for _ in range(200):
+		choices_list = []
+		answer_value = round(random_float_not_near(pka_list), 1)
+		used_values = {answer_value}
 
-	candidates = []
-	for pka in pka_list:
-		candidates.append(pka + random.random())
-		candidates.append(pka - random.random())
-	random.shuffle(candidates)
-	for candidate in candidates:
-		if len(choices_list) >= num_choices - 1:
-			break
-		choice_text = pH_to_color_span(candidate)
-		if choice_text in used_texts:
+		candidates = []
+		for pka in pka_list:
+			candidates.append(pka + random.random())
+			candidates.append(pka - random.random())
+		random.shuffle(candidates)
+		for candidate in candidates:
+			if len(choices_list) >= num_choices - 1:
+				break
+			rounded = round(candidate, 1)
+			if rounded in used_values:
+				continue
+			used_values.add(rounded)
+			choices_list.append(rounded)
+
+		attempts = 0
+		while len(choices_list) < num_choices - 1:
+			attempts += 1
+			if attempts > 1000:
+				break
+			pka = random.choice(pka_list)
+			candidate = round(pka + random.uniform(-0.9, 0.9), 1)
+			if candidate in used_values:
+				continue
+			used_values.add(candidate)
+			choices_list.append(candidate)
+
+		if len(choices_list) < num_choices - 1:
 			continue
-		used_texts.add(choice_text)
-		choices_list.append(candidate)
 
-	attempts = 0
-	while len(choices_list) < num_choices - 1:
-		attempts += 1
-		if attempts > 1000:
-			raise ValueError("Could not build a unique set of pH choices.")
-		pka = random.choice(pka_list)
-		candidate = pka + random.uniform(-0.9, 0.9)
-		choice_text = pH_to_color_span(candidate)
-		if choice_text in used_texts:
+		choices_list.append(answer_value)
+		choices_list.sort()
+		choices_text_list = [pH_to_color_span(choice_value) for choice_value in choices_list]
+		answer_text = pH_to_color_span(answer_value)
+		if len(set(choices_text_list)) != len(choices_text_list):
 			continue
-		used_texts.add(choice_text)
-		choices_list.append(candidate)
+		return choices_text_list, answer_text
 
-	choices_list.append(answer_value)
-	choices_list.sort()
-	choices_text_list = [pH_to_color_span(choice_value) for choice_value in choices_list]
-	answer_text = pH_to_color_span(answer_value)
-
-	return choices_text_list, answer_text
+	raise ValueError("Could not build a unique set of rounded pH choices.")
 
 #======================================
 #======================================

@@ -22,6 +22,7 @@ class PubChemLib():
 		self.cache_file = bptools.get_repo_data_path('pubchem_molecules_data.yml')
 		self.legacy_cache_file = os.path.join(os.path.dirname(__file__), 'cache_pubchem_molecules.yml')
 		self.api_count = 0
+		self.cache_dirty = False
 		self.molecule_data_lookup_count = 0
 		self.molecule_cid_lookup_count = 0
 		self.expected_molecule_data_keys = 7
@@ -51,6 +52,7 @@ class PubChemLib():
 				'name_to_cid': {},
 				'time_stamp': int(time.time()),
 			}
+			self.cache_dirty = True
 		#print(len(self.molecular_data_cache['cid_to_data']))
 		print('==== END CACHE ====')
 
@@ -67,7 +69,7 @@ class PubChemLib():
 	#============================
 	#============================
 	def save_cache(self):
-		if self.api_count == 0:
+		if self.api_count == 0 or self.cache_dirty is False:
 			return
 		print('==== SAVE CACHE ====')
 		t0 = time.time()
@@ -77,6 +79,7 @@ class PubChemLib():
 				yaml.dump(self.molecular_data_cache, file)
 			print('.. wrote {0} entires to {1} in {2:,d} usec'.format(
 				len(self.molecular_data_cache['cid_to_data']), self.cache_file, int((time.time()-t0)*1e6)))
+			self.cache_dirty = False
 		print('==== END CACHE ====')
 
 	#============================
@@ -107,6 +110,7 @@ class PubChemLib():
 			cid_number = response_json['IdentifierList']['CID'][0]
 			cid_number = int(cid_number)
 			self.molecular_data_cache['name_to_cid'][low_molecule_name] = cid_number
+			self.cache_dirty = True
 			return cid_number
 		else:
 			return None
@@ -231,6 +235,7 @@ class PubChemLib():
 		}
 
 		self.molecular_data_cache['cid_to_data'][cid_number] = molecule_data
+		self.cache_dirty = True
 
 		if self.molecule_data_lookup_count % 10 == 0:
 			self.save_cache()
