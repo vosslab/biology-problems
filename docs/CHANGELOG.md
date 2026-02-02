@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-02-02
+- Added base replacement rule stubs to the PGML test helpers so webwork_lib replacement pairing works in [tests/conftest.py](tests/conftest.py) and [tests/test_pgml_generators.py](tests/test_pgml_generators.py).
+- Relaxed inline color assertions in the PGML generator tests to allow bolded color spans from replacement rules in [tests/test_pgml_generators.py](tests/test_pgml_generators.py).
+
 ## 2026-01-30
 - Removed state number headers from histidine and alanine protonation state questions to simplify UI and keep focus on chemistry in [problems/biochemistry-problems/histidine_protonation_states.pgml](../problems/biochemistry-problems/histidine_protonation_states.pgml) and [problems/biochemistry-problems/alanine_protonation_states.pgml](../problems/biochemistry-problems/alanine_protonation_states.pgml).
 - Converted Python BBQ alpha-helix hydrogen bonding question to WebWork PGML with randomized amino acid selection (6-12) and sorted shift choices (1-6 positions) in [problems/biochemistry-problems/alpha_helix_h-bonds.pgml](../problems/biochemistry-problems/alpha_helix_h-bonds.pgml).

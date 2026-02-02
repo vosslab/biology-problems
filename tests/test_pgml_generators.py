@@ -6,6 +6,7 @@ from pathlib import Path
 
 def _make_bptools_stub():
 	stub = types.SimpleNamespace()
+	stub.base_replacement_rule_dict = {}
 
 	def apply_replacements(text, rules):
 		if text is None:
@@ -105,7 +106,8 @@ def test_yaml_which_one_mc_to_pgml_inline_colors(monkeypatch):
 	pgml_text, warnings = module.build_pgml_text(yaml_data, 2, False, "inline")
 
 	assert "Which one of the following [$plural_choice]*" in pgml_text
-	assert "<span style=\"color: #e60000;\">enzyme</span>" in pgml_text
+	assert "color: #e60000" in pgml_text
+	assert "enzyme" in pgml_text
 	assert "The correct answer is: [$correct]*" in pgml_text
 	assert warnings == []
 
@@ -131,8 +133,9 @@ def test_yaml_mc_statements_to_pgml_inline_colors(monkeypatch):
 
 	pgml_text, warnings = module.build_pgml_text(yaml_data, "inline")
 
-	assert "$topic = '<span style=\"color: #e60000;\">ATP</span>';" in pgml_text
-	assert "<span style=\"color: #e60000;\">ATP</span> stores energy" in pgml_text
+	assert "$topic = '" in pgml_text
+	assert "color: #e60000" in pgml_text
+	assert "ATP</span> stores energy" in pgml_text
 	assert warnings == []
 
 

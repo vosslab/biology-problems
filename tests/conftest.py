@@ -68,5 +68,6 @@ def stub_bptools(monkeypatch):
 
 	module.applyReplacementRulesToText = applyReplacementRulesToText
 	module.applyReplacementRulesToList = applyReplacementRulesToList
+	module.base_replacement_rule_dict = {}
 	monkeypatch.setitem(sys.modules, "bptools", module)
 	return module
