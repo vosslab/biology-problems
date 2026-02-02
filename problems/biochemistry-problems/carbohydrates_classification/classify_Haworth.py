@@ -216,6 +216,8 @@ def main():
 	SCENARIOS = _build_scenarios(sugar_names_list, args.ring_type, SUGAR_CODES_CLS)
 	if args.scenario_order == 'random':
 		random.shuffle(SCENARIOS)
+	if args.max_questions is None or args.max_questions > len(SCENARIOS):
+		args.max_questions = len(SCENARIOS)
 	print(f"Using {len(SCENARIOS)} scenarios")
 	if len(SCENARIOS) == 0:
 		raise ValueError("No valid Haworth scenarios were generated.")

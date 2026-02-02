@@ -198,6 +198,8 @@ def main():
 		raise ValueError("No valid Haworth-to-Fischer scenarios were generated.")
 	if args.scenario_order == 'random':
 		random.shuffle(SCENARIOS)
+	if args.max_questions is None or args.max_questions > len(SCENARIOS):
+		args.max_questions = len(SCENARIOS)
 	print(f"Using {len(SCENARIOS)} scenarios")
 
 	hint_mode = 'with_hint' if args.hint else 'no_hint'

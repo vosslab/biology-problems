@@ -158,6 +158,8 @@ def main():
 		SUGAR_NAMES_LIST = sorted(SUGAR_NAMES_LIST)
 	else:
 		random.shuffle(SUGAR_NAMES_LIST)
+	if args.max_questions is None or args.max_questions > len(SUGAR_NAMES_LIST):
+		args.max_questions = len(SUGAR_NAMES_LIST)
 	print(f"Using {len(SUGAR_NAMES_LIST)} scenarios")
 	if len(SUGAR_NAMES_LIST) == 0:
 		raise ValueError("No valid Fischer scenarios were generated.")
