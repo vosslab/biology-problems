@@ -20,6 +20,7 @@ These are **Blackboard** generators, not WeBWorK PGML.
 
 Primary bptools generators:
 
+- `alpha_amino_acid_identification.py`: identify the alpha-amino acid structure (RDKit canvas + MC).
 - `which_macromolecule.py`: macromolecule ID (RDKit canvas + MC).
 - `which_amino_acid.py`: amino acid ID (RDKit canvas + MC or FIB).
 - `match_amino_acid_structures.py`: structure-to-name matching (MAT).
@@ -31,6 +32,8 @@ Utility and one-off scripts (not bptools outputs):
 - `pubchemlib.py`: PubChem API wrapper + cache.
 - `moleculelib.py`: RDKit.js HTML/JS builders for generic molecules.
 - `aminoacidlib.py`: amino acid helpers + RDKit.js builders.
+- `generate_alpha_amino_acid_identification_pg.py`: builds the WebWork `.pg` file from shared YAML.
+- `generate_alpha_amino_acid_review_html.py`: builds a combined HTML review page (RDKit canvas) from shared YAML.
 - `molecule_lookup.py`, `molecule_search.py`: ad-hoc data tools (not production generators).
 - `get_molecules_from_reactions.py`: YAML extractor for reaction lists.
 - `generate_macromolecule_id_pgml.py`: PGML conversion helper.
@@ -53,6 +56,8 @@ Generated files are `bbq-*.txt` and should not be committed.
 - `data/pubchem_molecules_data.yml`: primary PubChem cache (repo data file).
 - `cache_pubchem_molecules.yml`: legacy cache fallback in this folder.
 - `macromolecules.yml`, `molecules.yml`, `compounds.yml`: source lists.
+- `amino_acid_distractors.yml`: shared alpha/distractor sets for the
+  alpha-amino-acid identification questions (used by both Python and PG).
 
 ## PubChem API and caching
 
@@ -117,6 +122,27 @@ These are intentional to reduce Blackboard HTML interference with RDKit output.
 - Use `bptools.formatBB_*_Question(...)` for final formatting.
 - Use `bptools.collect_and_write_questions(write_question, args, outfile)`.
 - Keep output names predictable via `bptools.make_outfile(...)`.
+
+## Shared choice data (alpha amino acid question)
+
+The alpha-amino-acid identification question uses a shared YAML file with
+aligned distractor sets:
+
+- `amino_acid_distractors.yml`
+
+Each set defines an `alpha` name and at least three `distractors`. The Python
+generator (`alpha_amino_acid_identification.py`) reads it directly and can
+optionally target a specific set with `-a/--amino-acid`. The WebWork `.pg` file
+is generated from the same YAML via `generate_alpha_amino_acid_identification_pg.py`.
+
+When you update the YAML list, re-run the generator to refresh
+`alpha_amino_acid_identification.pg`.
+
+You can also generate an instructor review page:
+
+```bash
+python3 problems/biochemistry-problems/PUBCHEM/generate_alpha_amino_acid_review_html.py
+```
 
 ## Known pitfalls (avoid these)
 

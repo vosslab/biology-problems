@@ -1,0 +1,22 @@
+# Shared choice data for alpha-amino-acid identification questions.
+# Names must match PubChem search terms.
+
+amino_acid_sets:
+  alanine:
+    alpha: alanine
+    distractors:
+      - beta-alanine
+      - gamma-aminobutyric acid
+      - ethanolamine
+  glutamate:
+    alpha: glutamic acid
+    distractors:
+      - 4-aminobutyric acid
+      - 5-aminovaleric acid
+      - glutaric acid
+  histidine:
+    alpha: histidine
+    distractors:
+      - histamine
+      - imidazoleacetic acid
+      - urocanic acid

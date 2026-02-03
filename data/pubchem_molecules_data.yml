@@ -15,6 +15,22 @@ cid_to_data:
     Molecular weight: 186.06
     Partition coefficient: -2.6
     SMILES: C(C(C(=O)O)OP(=O)(O)O)O
+  119:
+    Abbreviation: gamma-aminobutyric acid
+    CID: 119
+    Full name: gamma-aminobutyric acid
+    Molecular formula: C4H9NO2
+    Molecular weight: 103.12
+    Partition coefficient: -3.2
+    SMILES: C(CC(=O)O)CN
+  138:
+    Abbreviation: 5-aminovaleric acid
+    CID: 138
+    Full name: 5-Aminovaleric acid
+    Molecular formula: C5H11NO2
+    Molecular weight: 117.15
+    Partition coefficient: -2.6
+    SMILES: C(CCN)CC(=O)O
   190:
     Abbreviation: adenine
     CID: 190
@@ -31,6 +47,14 @@ cid_to_data:
     Molecular weight: 18.039
     Partition coefficient: -0.7
     SMILES: '[NH4+]'
+  239:
+    Abbreviation: beta-alanine
+    CID: 239
+    Full name: beta-alanine
+    Molecular formula: C3H7NO2
+    Molecular weight: 89.09
+    Partition coefficient: -3.0
+    SMILES: C(CN)C(=O)O
   264:
     Abbreviation: butyric acid
     CID: 264
@@ -79,6 +103,14 @@ cid_to_data:
     Molecular weight: 170.06
     Partition coefficient: -2.5
     SMILES: C(C(=O)COP(=O)(O)O)O
+  700:
+    Abbreviation: ethanolamine
+    CID: 700
+    Full name: Ethanolamine
+    Molecular formula: C2H7NO
+    Molecular weight: 61.08
+    Partition coefficient: -1.3
+    SMILES: C(CO)N
   724:
     Abbreviation: 3-phosphoglycerate
     CID: 724
@@ -87,6 +119,14 @@ cid_to_data:
     Molecular weight: 186.06
     Partition coefficient: -2.6
     SMILES: C(C(C(=O)O)O)OP(=O)(O)O
+  743:
+    Abbreviation: glutaric acid
+    CID: 743
+    Full name: Glutaric Acid
+    Molecular formula: C5H8O4
+    Molecular weight: 132.11
+    Partition coefficient: -0.3
+    SMILES: C(CC(=O)O)CC(=O)O
   750:
     Abbreviation: glycine
     CID: 750
@@ -119,6 +159,14 @@ cid_to_data:
     Molecular weight: 61.017
     Partition coefficient: 0.5
     SMILES: C(=O)(O)[O-]
+  774:
+    Abbreviation: histamine
+    CID: 774
+    Full name: histamine
+    Molecular formula: C5H9N3
+    Molecular weight: 111.15
+    Partition coefficient: -0.7
+    SMILES: C1=C(NC=N1)CCN
   850:
     Abbreviation: xylulose-5-phosphate
     CID: 850
@@ -191,6 +239,14 @@ cid_to_data:
     Molecular weight: 1.008
     Partition coefficient: 0.0
     SMILES: '[H+]'
+  1123:
+    Abbreviation: taurine
+    CID: 1123
+    Full name: taurine
+    Molecular formula: C2H7NO3S
+    Molecular weight: 125.15
+    Partition coefficient: -4.1
+    SMILES: C(CS(=O)(=O)O)N
   1135:
     Abbreviation: thymine
     CID: 1135
@@ -1247,6 +1303,14 @@ cid_to_data:
     Molecular weight: 246.22
     Partition coefficient: -2.1
     SMILES: C1CN(C(=O)NC1=O)[C@H]2[C@@H]([C@@H]([C@H](O2)CO)O)O
+  96215:
+    Abbreviation: imidazoleacetic acid
+    CID: 96215
+    Full name: 645-65-8
+    Molecular formula: C5H6N2O2
+    Molecular weight: 126.11
+    Partition coefficient: -0.4
+    SMILES: C1=C(NC=N1)CC(=O)O
   96814:
     Abbreviation: l-ala-l-phe
     CID: 96814
@@ -1623,6 +1687,14 @@ cid_to_data:
     Molecular weight: 122.12
     Partition coefficient: -2.3
     SMILES: C([C@H]([C@H](CO)O)O)O
+  223130:
+    Abbreviation: 4-aminobutyric acid
+    CID: 223130
+    Full name: RefChem:1070325
+    Molecular formula: C5H11NO2
+    Molecular weight: 117.15
+    Partition coefficient: -2.7
+    SMILES: CC(CCC(=O)O)N
   224004:
     Abbreviation: drostanolone propionate
     CID: 224004
@@ -2047,6 +2119,14 @@ cid_to_data:
     Molecular weight: 328.4
     Partition coefficient: -1.7
     SMILES: C1=CC=C(C=C1)C[C@@H](C(=O)N[C@@H](CC2=CC=C(C=C2)O)C(=O)O)N
+  736715:
+    Abbreviation: urocanic acid
+    CID: 736715
+    Full name: urocanic acid
+    Molecular formula: C6H6N2O2
+    Molecular weight: 138.12
+    Partition coefficient: 0.0
+    SMILES: C1=C(NC=N1)/C=C/C(=O)O
   2723872:
     Abbreviation: fructose
     CID: 2723872
@@ -3122,9 +3202,11 @@ name_to_cid:
   3-oxopropane-1-sulfonate: 23568116
   3-phosphoglycerate: 724
   3-phosphoglyceroyl phosphate: 439191
+  4-aminobutyric acid: 223130
   4-hydroxy-2-butynal: 439778
   5,6-dihydrouracil: 649
   5-amino-1-(5-phospho-beta-d-ribosyl)imidazole: 161500
+  5-aminovaleric acid: 138
   5-dehydro-4-deoxy-d-glucuronate: 9548606
   5-hydroxymethylcytosine: 70751
   5-methylcytidine: 92918
@@ -3258,6 +3340,7 @@ name_to_cid:
   aspartic acid: 5960
   atp: 5957
   beta,beta-trehalose: 10783457
+  beta-alanine: 239
   beta-allolactose: 446588
   beta-cellobiose: 10712
   beta-gentiobiose: 441422
@@ -3348,6 +3431,7 @@ name_to_cid:
   erythrulose: 162406
   estradiol: 5757
   estrone: 5870
+  ethanolamine: 700
   ethylestrenol: 13765
   exemestane: 60198
   fructose: 2723872
@@ -3359,6 +3443,7 @@ name_to_cid:
   galactobiose: 448925
   galactose: 6036
   galactose-1-phosphate: 123912
+  gamma-aminobutyric acid: 119
   gamma-glutamylglycine: 100099
   gamma-linolenic acid: 5280933
   gentiobiose: 20056559
@@ -3392,6 +3477,7 @@ name_to_cid:
   glutamate: 33032
   glutamic acid: 33032
   glutamine: 5961
+  glutaric acid: 743
   glutathione: 124886
   gly-gln-pro-arg: 127555
   gly-glu-lys-gly: 42630677
@@ -3422,6 +3508,7 @@ name_to_cid:
   his-dphe-arg-trp: 10258635
   his-met-phe: 145455921
   his-thr: 145453493
+  histamine: 774
   histidine: 6274
   hydrogencarbonate: 769
   hydroxyprogesterone: 6238
@@ -3430,6 +3517,7 @@ name_to_cid:
   idose: 11030410
   ile-leu-glu: 145456189
   ile-lys-tyr: 44234335
+  imidazoleacetic acid: 96215
   inosine: 135398641
   inositol: 892
   insulin b22-b25-nh2: 3082397
@@ -3566,6 +3654,7 @@ name_to_cid:
   sucrose: 5988
   tagatose: 439312
   talose: 441035
+  taurine: 1123
   testosterone: 6013
   testosterone cypionate: 441404
   testosterone enanthate: 9416
@@ -3621,6 +3710,7 @@ name_to_cid:
   uridine-5'-diphosphate: 6031
   uridine-5'-monophosphate: 6030
   uridine-5'-triphosphate: 6133
+  urocanic acid: 736715
   vaccenic acid: 5281127
   val-cys-cys: 145458879
   val-met-ile: 145458997
@@ -3636,4 +3726,4 @@ name_to_cid:
   xylulose-5-phosphate: 850
   zidovudine triphosphate: 72187
   zidovudine-triphosphate: 72187
-time_stamp: 1770063348
+time_stamp: 1770126222
