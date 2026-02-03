@@ -151,7 +151,6 @@ def generate_choices(pick: dict) -> tuple[list[str], str]:
 def write_question(question_num: int, args) -> str:
 	"""Create a complete formatted question."""
 	assert question_num > 0, "Question number must be positive"
-	assert args.num_choices == 4, "This question uses exactly 4 choices"
 
 	pairs = build_pairs(CONTEXTS)
 	pick = select_pair_and_jitter(pairs)
@@ -164,7 +163,6 @@ def write_question(question_num: int, args) -> str:
 #======================================
 def main() -> None:
 	parser = bptools.make_arg_parser(description="Generate pH vs [H+] ratio questions.")
-	parser = bptools.add_choice_args(parser, default=4)
 	args = parser.parse_args()
 
 	outfile = bptools.make_outfile()

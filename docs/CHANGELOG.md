@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-02-03
+- Emphasized macromolecule names with a gold highlight span in the question prompt for [problems/biochemistry-problems/macromolecules_categorize_by_name.py](../problems/biochemistry-problems/macromolecules_categorize_by_name.py).
+- Updated [source_me.sh](../source_me.sh) to add the QTI package maker path directly to PYTHONPATH instead of sourcing its setup script.
+- Removed the unused `--num-choices` argument from [problems/biochemistry-problems/buffers/ph_h_concentration_ratio.py](../problems/biochemistry-problems/buffers/ph_h_concentration_ratio.py) since the question always uses four choices.
+- Added a Python/bptools generator for the protonation-state question in [problems/biochemistry-problems/chemical_group_pka_forms.py](../problems/biochemistry-problems/chemical_group_pka_forms.py) with fixed seven-option multiple-answer choices (four hydrogen counts and three charges).
+
 ## 2026-02-02
 - Added base replacement rule stubs to the PGML test helpers so webwork_lib replacement pairing works in [tests/conftest.py](tests/conftest.py) and [tests/test_pgml_generators.py](tests/test_pgml_generators.py).
 - Relaxed inline color assertions in the PGML generator tests to allow bolded color spans from replacement rules in [tests/test_pgml_generators.py](tests/test_pgml_generators.py).

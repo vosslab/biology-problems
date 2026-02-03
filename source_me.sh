@@ -11,20 +11,18 @@ PGML_LINTER_DIR="$REPO_PARENT_DIR/webwork-pgml-linter"
 CLEANPATH_PY="$REPO_PARENT_DIR/junk-drawer/cleanpath.py"
 PYTHON_EXE="python3"
 
-SETUP_SCRIPT="$QTI_PACKAGE_MAKER_DIR/source_me_for_testing.sh"
-if [[ ! -f "$SETUP_SCRIPT" ]]; then
-  echo "Error: missing $SETUP_SCRIPT" >&2
-  return 1 2>/dev/null || exit 1
-fi
-
-# shellcheck source=/dev/null
-source "$SETUP_SCRIPT"
-
 PYTHONPATH_PROPOSED="${PYTHONPATH-}"
 if [[ -z "$PYTHONPATH_PROPOSED" ]]; then
   PYTHONPATH_PROPOSED="$THIS_SCRIPT_DIR"
 else
   PYTHONPATH_PROPOSED="$THIS_SCRIPT_DIR:$PYTHONPATH_PROPOSED"
+fi
+
+# Add QTI package maker to PYTHONPATH if it exists
+if [[ -d "$QTI_PACKAGE_MAKER_DIR" ]]; then
+  PYTHONPATH_PROPOSED="$QTI_PACKAGE_MAKER_DIR:$PYTHONPATH_PROPOSED"
+else
+  echo "Warning: QTI package maker not found at $QTI_PACKAGE_MAKER_DIR" >&2
 fi
 
 # Add PGML linter to PYTHONPATH if it exists
