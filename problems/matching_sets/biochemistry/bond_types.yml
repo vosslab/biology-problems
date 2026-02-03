@@ -32,8 +32,8 @@ matching pairs:
   - Na<sup>+</sup> &bull; Cl<sup>-</sup> (sodium chloride)
   - NH<sub>4</sub><sup>+</sup> &bull; NO<sub>3</sub><sup>-</sup> (ammonium nitrate)
   hydrogen bond:
-  - "N-H &#183;&#183;&#183;&#183; N (bond represented by the dots)"
-  - "N-H &#183;&#183;&#183;&#183; O (bond represented by the dots)"
-  - "O-H &#183;&#183;&#183;&#183; N (bond represented by the dots)"
-  - "O-H &#183;&#183;&#183;&#183; O (bond represented by the dots)"
+  - "N-H &middot;&middot;&middot;&middot; N (bond represented by the dots)"
+  - "N-H &middot;&middot;&middot;&middot; O (bond represented by the dots)"
+  - "O-H &middot;&middot;&middot;&middot; N (bond represented by the dots)"
+  - "O-H &middot;&middot;&middot;&middot; O (bond represented by the dots)"
 dbsubject: Biochemistry
