@@ -113,6 +113,13 @@ loadMacros(
 
 New problems should put the statement, formatting, and blanks inside `BEGIN_PGML ... END_PGML`.
 
+### File extensions: `.pgml` vs `.pg` (required)
+
+Use `.pgml` only for full PGML-first problems where the statement and graders
+are entirely inside PGML blocks. If a problem uses legacy `ANS(...)` wiring,
+mixed PG/PGML structure, or non-PGML statement text, keep the extension as `.pg`.
+The extension signals whether tooling should expect pure PGML structure.
+
 ### Use PGML blanks, not legacy answer rules (strongly preferred)
 
 Prefer:

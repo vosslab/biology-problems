@@ -5,6 +5,10 @@
 - Updated [source_me.sh](../source_me.sh) to add the QTI package maker path directly to PYTHONPATH instead of sourcing its setup script.
 - Removed the unused `--num-choices` argument from [problems/biochemistry-problems/buffers/ph_h_concentration_ratio.py](../problems/biochemistry-problems/buffers/ph_h_concentration_ratio.py) since the question always uses four choices.
 - Added a Python/bptools generator for the protonation-state question in [problems/biochemistry-problems/chemical_group_pka_forms.py](../problems/biochemistry-problems/chemical_group_pka_forms.py) with fixed seven-option multiple-answer choices (four hydrogen counts and three charges).
+- Documented `.pgml` vs `.pg` extension rules in [docs/webwork/WEBWORK_PROBLEM_AUTHOR_GUIDE.md](webwork/WEBWORK_PROBLEM_AUTHOR_GUIDE.md) and [docs/webwork/PGML_QUESTION_TYPES.md](webwork/PGML_QUESTION_TYPES.md).
+- Documented Blackboard JavaScript sanitization quirks and the comment-split workaround in [docs/QUESTION_AUTHORING_GUIDE.md](QUESTION_AUTHORING_GUIDE.md).
+- Added a PubChem Python/bptools authoring guide in [problems/biochemistry-problems/PUBCHEM/README_PUBCHEM_BPTOOLS.md](../problems/biochemistry-problems/PUBCHEM/README_PUBCHEM_BPTOOLS.md) and linked it from [problems/biochemistry-problems/PUBCHEM/README_PUBCHEM_PGML.md](../problems/biochemistry-problems/PUBCHEM/README_PUBCHEM_PGML.md).
+- Expanded the PubChem bptools authoring guide with script map, caching notes, RDKit flow, and pitfalls in [problems/biochemistry-problems/PUBCHEM/README_PUBCHEM_BPTOOLS.md](../problems/biochemistry-problems/PUBCHEM/README_PUBCHEM_BPTOOLS.md).
 
 ## 2026-02-02
 - Added base replacement rule stubs to the PGML test helpers so webwork_lib replacement pairing works in [tests/conftest.py](tests/conftest.py) and [tests/test_pgml_generators.py](tests/test_pgml_generators.py).

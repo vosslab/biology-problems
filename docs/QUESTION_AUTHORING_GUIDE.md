@@ -108,6 +108,20 @@ Generated files like `bbq-*.txt` should not be committed.
 - Avoid `import *`, avoid heredocs, and avoid environment variables for config.
 - Keep line length under 100 characters when practical.
 
+## Blackboard HTML and JavaScript sanitization
+
+Blackboard aggressively rewrites HTML/JS and can inject whitespace inside
+JavaScript function tokens. When embedding JavaScript in bptools-generated
+HTML, keep function declarations tightly controlled and use the split-comment
+pattern already used in PUBCHEM generators to prevent Blackboard from
+rewriting whitespace. Example patterns seen in this repo include:
+
+- `function/* */handlerName()` (breaks the keyword to avoid sanitizer edits)
+- `sub/* */function_name()` (legacy pattern kept for compatibility)
+
+Do not "clean up" these comment splits unless you have verified Blackboard
+renders the script correctly after the change.
+
 ## Testing and sanity checks
 
 Run the script with a small duplicate count and choices count:

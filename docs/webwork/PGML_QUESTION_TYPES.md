@@ -7,6 +7,8 @@ and [MATCHING_PROBLEMS.md](MATCHING_PROBLEMS.md).
 ## General rules (all question types)
 
 - PGML-first: put student-facing text and blanks inside `BEGIN_PGML ... END_PGML`.
+- File extensions: use `.pgml` only for full PGML-first problems; use `.pg` when
+  legacy `ANS(...)` or mixed PG/PGML structure is required.
 - Inline graders: attach the answer evaluator in the PGML blank (for example
   `[_]{$rb}` or `[__________]{$ans}`), not via a separate `ANS(...)` call.
 - Use `MODES(...)` only when HTML must be emitted from Perl or PGML would escape

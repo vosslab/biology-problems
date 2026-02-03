@@ -15,6 +15,10 @@ The generated question:
 - Includes molecular formula and weight information
 - Provides hints for identifying each macromolecule type
 
+## Related guides
+
+- `README_PUBCHEM_BPTOOLS.md` for Python/bptools Blackboard generators in this folder.
+
 ## Files
 
 - **`generate_macromolecule_id_pgml.py`**: Python script that generates the PG file

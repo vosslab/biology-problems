@@ -1014,13 +1014,14 @@ def main() -> None:
 		print_step("Check-only mode: exiting after version check.")
 		return
 
-	print_step("Upgrading build tools...")
+	print_step("Upgrading build tools (excluding pip)...")
 	log_path = os.path.join(project_dir, BUILD_LOG_NAME)
 	with open(log_path, "a") as handle:
 		handle.write("\nUpgrade tools output\n")
 	print_info(f"Build output: {log_path}")
+	build_tools = ["setuptools", "wheel", "build", "twine"]
 	run_command_to_log(
-		[sys.executable, "-m", "pip", "install", "--upgrade", "pip", "setuptools", "wheel", "build", "twine"],
+		[sys.executable, "-m", "pip", "install", "--upgrade"] + build_tools,
 		project_dir,
 		log_path,
 	)

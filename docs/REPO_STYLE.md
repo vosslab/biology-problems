@@ -18,17 +18,10 @@ Repo-wide conventions for this project and related repos.
 - Keep filenames descriptive, and consistent with the primary thing the file provides.
 
 ## Git moves, renames, and index locks
-- Use `git mv` for all renames and moves.
-- Do not use `mv` plus add/remove as a fallback. Do not use `git rm` unless deleting a file permanently.
-- Before any index-writing Git command (including `git mv`, `git add`, `git rm`, `git checkout`, `git switch`, `git restore`, `git merge`, `git rebase`, `git reset`, `git commit`), verify `.git` is writable by the current user. If not, stop and report a permissions error.
-- If `.git/index.lock` exists:
-  - Do not modify files and do not run Git commands. Stop and report:
-    - lock owner, permissions, and age (mtime)
-    - process holding the lock, if detectable (for example, `lsof .git/index.lock`)
-  - If a process holds the lock, report an active concurrent Git operation.
-  - If no process holds the lock and the lock age is > 5 minutes, report a likely stale lock. Do not delete it automatically.
-- If any Git command fails with an index lock error (cannot create `.git/index.lock`), stop immediately. Do not retry and do not fall back to `mv`.
-- Error report must include: the command run and full stderr, plus a short next step: close other Git processes, remove a stale lock only if no process holds it, or fix `.git` permissions.
+- Use `git mv` for renames when Git is available.
+- Never simulate renames with `mv` plus delete/add. Only use `git rm` for intentional permanent deletes (not renames).
+- If Git is not available (codex and other sandboxed agents), do not run `.git` checks or lock diagnostics unless the user explicitly asks for Git operations; proceed with file edits and note that Git was not run. If a rename is required, do not perform the rename; log the exact rename(s) needed to a file in <repo root> and finish the task without prompting.
+- If the user explicitly requests Git operations, ensure `.git` is writable and that `.git/index.lock` is not present before running index-writing commands; if a lock or permissions issue exists, log it, and try to finish any other tasks before stopping.
 
 ## Versioning
 - Prefer `pyproject.toml` as the single source of truth when the repo is a single Python package with a single `pyproject.toml`.
