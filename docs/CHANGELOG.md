@@ -1,5 +1,16 @@
 # Changelog
 
+## 2026-02-04
+- Added a GraphTool titration buffer region proof-of-concept with a static cubic curve and point-based checker in [webwork_examples/titration_buffer_graph_tool.pg](../webwork_examples/titration_buffer_graph_tool.pg).
+- Added tick settings, coordinate feedback, and explicit no-partial-credit grading to the titration GraphTool POC in [webwork_examples/titration_buffer_graph_tool.pg](../webwork_examples/titration_buffer_graph_tool.pg).
+- Logged the required rename from `.pgml` to `.pg` for the titration GraphTool POC in [rename_log.txt](../rename_log.txt).
+- Added a client-side readout showing the last clicked point for the titration GraphTool POC in [webwork_examples/titration_buffer_graph_tool.pg](../webwork_examples/titration_buffer_graph_tool.pg).
+- Renamed the titration GraphTool POC from `.pgml` to `.pg` and updated the rename log in [rename_log.txt](../rename_log.txt).
+- Parsed GraphTool clicks from the raw answer string to fix buffer-region scoring in [webwork_examples/titration_buffer_graph_tool.pg](../webwork_examples/titration_buffer_graph_tool.pg).
+- Updated PUBCHEM directory path injection to resolve the repo root via git rev-parse (bptools) so imports of pubchemlib, moleculelib, and aminoacidlib work when running from repo root.
+- Updated the PubChem bptools guide to reflect the new TOOLS/ locations for molecules.txt, molecules.yml, and compounds.yml.
+- Pointed the PubChem molecule lookup tool at TOOLS/molecules.txt via __file__ so it no longer depends on the current working directory.
+
 ## 2026-02-03
 - Emphasized macromolecule names with a gold highlight span in the question prompt for [problems/biochemistry-problems/macromolecules_categorize_by_name.py](../problems/biochemistry-problems/macromolecules_categorize_by_name.py).
 - Updated [source_me.sh](../source_me.sh) to add the QTI package maker path directly to PYTHONPATH instead of sourcing its setup script.

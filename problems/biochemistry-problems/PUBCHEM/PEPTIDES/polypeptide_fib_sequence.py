@@ -2,10 +2,24 @@
 
 
 # general built-in/pip libraries
+import os
+import sys
 import random
 
 # local libraries
 import bptools
+
+def get_pubchem_dir():
+	git_root = bptools._get_git_root(os.path.dirname(__file__))
+	if git_root is None:
+		raise RuntimeError("Unable to locate git root for PubChem imports.")
+	return os.path.join(git_root, 'problems', 'biochemistry-problems', 'PUBCHEM')
+
+
+_PUBCHEM_DIR = get_pubchem_dir()
+if _PUBCHEM_DIR not in sys.path:
+	sys.path.insert(0, _PUBCHEM_DIR)
+
 import aminoacidlib
 bptools.use_insert_hidden_terms = False
 bptools.use_add_no_click_div = False

@@ -55,7 +55,9 @@ Generated files are `bbq-*.txt` and should not be committed.
 - `aminoacidlib.py`: amino-acid and peptide rendering helpers.
 - `data/pubchem_molecules_data.yml`: primary PubChem cache (repo data file).
 - `cache_pubchem_molecules.yml`: legacy cache fallback in this folder.
-- `macromolecules.yml`, `molecules.yml`, `compounds.yml`: source lists.
+- `MACROMOLECULE_CATEGORIZE/macromolecules.yml`: source list for macromolecule types.
+- `TOOLS/molecules.yml`, `TOOLS/compounds.yml`: source lists for PubChem lookups.
+- `TOOLS/molecules.txt`: ad-hoc source list for molecule lookup tooling.
 - `amino_acid_distractors.yml`: shared alpha/distractor sets for the
   alpha-amino-acid identification questions (used by both Python and PG).
 
