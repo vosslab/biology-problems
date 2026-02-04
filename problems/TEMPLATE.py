@@ -4,7 +4,6 @@
 # Import built-in Python modules
 # Provides functions for interacting with the operating system
 import os
-import time
 # Provides functions to generate random numbers and selections
 import random
 
@@ -144,7 +143,6 @@ def main():
 	args = parse_arguments()
 
 	# Generate the output file name based on the script name and arguments
-	script_name = os.path.splitext(os.path.basename(__file__))[0]
 	hint_mode = 'with_hint' if args.hint else 'no_hint'
 	outfile = bptools.make_outfile(
 		args.question_type.upper(),
