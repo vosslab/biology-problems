@@ -151,7 +151,7 @@ def makeQuestions2(yaml_data, num_choices=None, flip=False):
 
 #=======================
 #=======================
-if __name__ == '__main__':
+def parse_arguments():
 	parser = argparse.ArgumentParser(description='Process some integers.')
 	parser.add_argument('-f', '-y', '--file', metavar='<file>', type=str, dest='input_yaml_file',
 		help='yaml input file to process')
@@ -164,6 +164,12 @@ if __name__ == '__main__':
 	parser.add_argument('--flip', action='store_true', dest='flip', help='Flip the keys and values from the YAML input')
 	parser = bptools.add_anticheat_args(parser)
 	args = parser.parse_args()
+	return args
+
+#=======================
+#=======================
+def main():
+	args = parse_arguments()
 	bptools.apply_anticheat_args(args)
 
 	if args.input_yaml_file is None or not os.path.isfile(args.input_yaml_file):
@@ -195,3 +201,8 @@ if __name__ == '__main__':
 	print("Wrote {0} questions to file.".format(N))
 	print('')
 	bptools.print_histogram()
+
+#=======================
+#=======================
+if __name__ == '__main__':
+	main()
