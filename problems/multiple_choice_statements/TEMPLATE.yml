@@ -7,21 +7,6 @@ topic: the structure of DNA
 override_question_true: ~
 override_question_false: ~
 
-RED: #e60000;
-DARK ORANGE: #e65400;
-LIGHT ORANGE: #e69100;
-DARK YELLOW: #b3b300;
-LIME GREEN: #59b300;
-GREEN: #009900;
-TEAL: #00b38f;
-CYAN: #00b3b3;
-SKY BLUE: #0a9bf5;
-BLUE: #0039e6;
-NAVY: #004d99;
-PURPLE: #7b12a1;
-MAGENTA: #b30077;
-PINK: #cc0066;
-
 replacement_rules:
     AAAAAAAA: '<span style="color: #e60000;">AAAAAAAA</span>' #RED
     BBBBBBBB: '<span style="color: #e65400;">BBBBBBBB</span>' #DARK ORANGE
