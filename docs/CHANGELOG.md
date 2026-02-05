@@ -1,6 +1,12 @@
 # Changelog
 
 ## 2026-02-04
+- Simplified bptools anti-cheat state to only use the `allow_*` locks plus CLI flags, removing the extra `use_*` globals from [bptools.py](../bptools.py).
+- Renamed the anti-cheat lock flag to `bptools.allow_insert_hidden_terms` to match the AntiCheat field name in [bptools.py](../bptools.py) and updated affected scripts and docs.
+- Removed redundant per-script `bptools.use_* = False` lines when `allow_* = False` is present, keeping only the lock flags in affected generators and the PubChem bptools guide.
+- Added per-script anti-cheat locks (`bptools.allow_insert_hidden_terms` and `bptools.allow_no_click_div`) so scripts that must disable these protections keep them off even when CLI flags are used in [bptools.py](../bptools.py) and the PubChem generators.
+- Standardized anti-cheat toggles on `bptools.use_no_click_div` (removing `use_add_no_click_div`) and updated affected generators and docs to match in [bptools.py](../bptools.py) and the PubChem generator scripts.
+- Added hidden-terms and no-click CLI toggles to the base bptools argument parser and applied them automatically before collecting questions in [bptools.py](../bptools.py).
 - Switched the histidine protonation-state generator to use the same randomized one-decimal pH range (1.0-12.5) and scenario ordering controls as alanine in [problems/biochemistry-problems/PUBCHEM/AMINO_ACIDS/histidine_protonation_states.py](../problems/biochemistry-problems/PUBCHEM/AMINO_ACIDS/histidine_protonation_states.py).
 - Wired `--sorted/--random` to alanine pH scenario ordering so the scenario flag is honored in [problems/biochemistry-problems/PUBCHEM/AMINO_ACIDS/alanine_protonation_states.py](../problems/biochemistry-problems/PUBCHEM/AMINO_ACIDS/alanine_protonation_states.py).
 - Shortened the alanine generator `main()` to rely on the standard bptools loop without extra count adjustments in [problems/biochemistry-problems/PUBCHEM/AMINO_ACIDS/alanine_protonation_states.py](../problems/biochemistry-problems/PUBCHEM/AMINO_ACIDS/alanine_protonation_states.py).

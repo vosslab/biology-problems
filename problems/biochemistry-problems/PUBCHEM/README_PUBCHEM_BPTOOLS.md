@@ -113,8 +113,8 @@ instead of reformatting.
 
 Many PubChem scripts set these flags:
 
-- `bptools.use_insert_hidden_terms = False`
-- `bptools.use_add_no_click_div = False`
+- `bptools.allow_insert_hidden_terms = False`
+- `bptools.allow_no_click_div = False`
 - `bptools.use_nocopy_script = False` (in peptide generators)
 
 These are intentional to reduce Blackboard HTML interference with RDKit output.

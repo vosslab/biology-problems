@@ -22,7 +22,7 @@ if _PUBCHEM_DIR not in sys.path:
 
 import moleculelib
 
-bptools.use_insert_hidden_terms = False
+bptools.allow_insert_hidden_terms = False
 GLOBAL_MOLECULE_DATA = None
 
 #======================================

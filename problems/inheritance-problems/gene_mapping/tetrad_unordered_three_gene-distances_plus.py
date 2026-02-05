@@ -10,7 +10,7 @@ import phenotypes_for_yeast
 import tetrad_solver_lib as tusl
 
 #need this so students can add info to the box
-bptools.use_add_no_click_div = False
+bptools.allow_no_click_div = False
 debug = False
 
 DISTANCE_TRIPLETS: list[tuple[int, int, int]] = []

@@ -25,6 +25,9 @@ question_count = 0
 letters = 'ABCDEFGHJKMNPQRSTUWXYZ'
 crc16_dict = {}
 
+allow_insert_hidden_terms = True
+allow_no_click_div = True
+
 nocheater = anti_cheat.AntiCheat()
 nocheater.use_insert_hidden_terms = True
 nocheater.use_no_click_div = True
@@ -48,6 +51,29 @@ def _patch_anticheat_insert_hidden_terms():
 
 
 _patch_anticheat_insert_hidden_terms()
+
+#==========================
+def _get_hidden_terms_default() -> bool:
+	return bool(allow_insert_hidden_terms)
+
+#==========================
+def _get_no_click_default() -> bool:
+	return bool(allow_no_click_div)
+
+#==========================
+def _apply_anticheat_args(args):
+	hidden_terms = _get_hidden_terms_default()
+	noclick_div = _get_no_click_default()
+	if hasattr(args, 'hidden_terms') and args.hidden_terms is not None:
+		hidden_terms = bool(args.hidden_terms)
+	if hasattr(args, 'noclick_div') and args.noclick_div is not None:
+		noclick_div = bool(args.noclick_div)
+	if not allow_insert_hidden_terms:
+		hidden_terms = False
+	if not allow_no_click_div:
+		noclick_div = False
+	nocheater.use_insert_hidden_terms = bool(hidden_terms)
+	nocheater.use_no_click_div = bool(noclick_div)
 
 #==========================
 def _get_git_root(path=None):
@@ -192,6 +218,26 @@ def _add_base_args(parser):
 		'-x', '--max-questions', type=int, dest='max_questions',
 		default=None, help='Maximum number of questions to keep.'
 	)
+	hidden_terms_group = parser.add_mutually_exclusive_group(required=False)
+	hidden_terms_group.add_argument(
+		'--hidden-terms', dest='hidden_terms', action='store_true',
+		help='Enable hidden terms (default).'
+	)
+	hidden_terms_group.add_argument(
+		'--no-hidden-terms', dest='hidden_terms', action='store_false',
+		help='Disable hidden terms.'
+	)
+	parser.set_defaults(hidden_terms=_get_hidden_terms_default())
+	noclick_group = parser.add_mutually_exclusive_group(required=False)
+	noclick_group.add_argument(
+		'--noclick-div', dest='noclick_div', action='store_true',
+		help='Enable the no-click div wrapper (default).'
+	)
+	noclick_group.add_argument(
+		'--allow-click', dest='noclick_div', action='store_false',
+		help='Disable the no-click div wrapper.'
+	)
+	parser.set_defaults(noclick_div=_get_no_click_default())
 	return parser
 
 #==========================
@@ -492,6 +538,7 @@ def _collect_questions(write_question, args, print_histogram_flag=True) -> list:
 	Returns:
 		list: List of question strings.
 	"""
+	_apply_anticheat_args(args)
 	questions = []
 	n = 0
 	max_questions = args.max_questions
@@ -527,6 +574,7 @@ def collect_question_batches(write_question_batch, args, print_histogram_flag=Tr
 	Returns:
 		list: List of question strings.
 	"""
+	_apply_anticheat_args(args)
 	global _warned_collect_question_batches
 	try:
 		warned = _warned_collect_question_batches

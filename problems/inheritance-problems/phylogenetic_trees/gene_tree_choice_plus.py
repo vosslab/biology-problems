@@ -9,8 +9,8 @@ import colorsys
 
 #local
 import bptools
-bptools.use_add_no_click_div = False
-bptools.use_insert_hidden_terms = False
+bptools.allow_no_click_div = False
+bptools.allow_insert_hidden_terms = False
 
 from treelib import tools
 from treelib import lookup

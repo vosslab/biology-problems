@@ -23,8 +23,8 @@ if _PUBCHEM_DIR not in sys.path:
 import pubchemlib
 import moleculelib
 
-bptools.use_insert_hidden_terms = False
-bptools.use_add_no_click_div = False
+bptools.allow_insert_hidden_terms = False
+bptools.allow_no_click_div = False
 used_macromolecule_names = {}
 GLOBAL_PCL = None
 GLOBAL_MACRO_DATA = None

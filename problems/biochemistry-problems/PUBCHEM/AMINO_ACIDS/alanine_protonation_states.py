@@ -21,8 +21,8 @@ if _PUBCHEM_DIR not in sys.path:
 
 import moleculelib
 
-bptools.use_insert_hidden_terms = False
-bptools.use_add_no_click_div = False
+bptools.allow_insert_hidden_terms = False
+bptools.allow_no_click_div = False
 bptools.use_nocopy_script = False
 
 ALANINE_STATES = [
