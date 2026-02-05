@@ -162,7 +162,9 @@ if __name__ == '__main__':
 	parser.add_argument('-c', '--num-choices', metavar='#', type=int, dest='num_choices',
 		help='how many choices to have for each question', default=None)
 	parser.add_argument('--flip', action='store_true', dest='flip', help='Flip the keys and values from the YAML input')
+	parser = bptools.add_anticheat_args(parser)
 	args = parser.parse_args()
+	bptools.apply_anticheat_args(args)
 
 	if args.input_yaml_file is None or not os.path.isfile(args.input_yaml_file):
 		print("Usage: {0} -y <input_yaml_file>".format(__file__))

@@ -95,7 +95,9 @@ if __name__ == '__main__':
 		help='if more than one value is provided for each choice, run duplicates', default=1)
 	parser.add_argument('-c', '--num-choices', metavar='#', type=int, dest='num_choices',
 		help='how many choices to have for each question', default=None)
+	parser = bptools.add_anticheat_args(parser)
 	args = parser.parse_args()
+	bptools.apply_anticheat_args(args)
 
 	if args.input_yaml_file is None or not os.path.isfile(args.input_yaml_file):
 		print("Usage: {0} -y <input_yaml_file>".format(__file__))

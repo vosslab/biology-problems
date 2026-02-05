@@ -58,9 +58,15 @@ def import_from_repo_path(rel_path: str):
 	rel_path = resolve_repo_rel_path(rel_path)
 	abs_path = os.path.join(root, rel_path)
 	module_dir = os.path.dirname(abs_path)
+	sibling_root = os.path.abspath(os.path.join(root, ".."))
+	extra_paths: list[str] = []
+	for repo_name in ("qti_package_maker",):
+		candidate = os.path.join(sibling_root, repo_name)
+		if os.path.isdir(candidate):
+			extra_paths.append(candidate)
 
 	added: list[str] = []
-	for path_item in (root, module_dir):
+	for path_item in (root, module_dir, *extra_paths):
 		if path_item not in sys.path:
 			sys.path.insert(0, path_item)
 			added.append(path_item)

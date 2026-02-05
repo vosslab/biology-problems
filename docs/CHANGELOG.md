@@ -1,6 +1,9 @@
 # Changelog
 
 ## 2026-02-04
+- Added reusable anti-cheat CLI helpers to bptools and wired them into the YAML-to-BBQ generators so those scripts accept the new flags in [bptools.py](../bptools.py), [problems/matching_sets/yaml_match_to_bbq.py](../problems/matching_sets/yaml_match_to_bbq.py), [problems/matching_sets/yaml_which_one_mc_to_bbq.py](../problems/matching_sets/yaml_which_one_mc_to_bbq.py), and [problems/multiple_choice_statements/yaml_mc_statements_to_bbq.py](../problems/multiple_choice_statements/yaml_mc_statements_to_bbq.py).
+- Added sibling-repo path injection for `qti_package_maker` in test imports so bptools-backed modules load under pytest in [tests/lib_test_utils.py](../tests/lib_test_utils.py).
+- Updated test path resolution for PubChem generators and PGML/YAML tests to avoid hard-coded absolute paths and stale generator locations in [tests/libs/pubchem/test_pubchem_generators.py](../tests/libs/pubchem/test_pubchem_generators.py), [tests/test_pgml_generators.py](../tests/test_pgml_generators.py), and [tests/yaml/test_mc_statements.py](../tests/yaml/test_mc_statements.py).
 - Simplified bptools anti-cheat state to only use the `allow_*` locks plus CLI flags, removing the extra `use_*` globals from [bptools.py](../bptools.py).
 - Renamed the anti-cheat lock flag to `bptools.allow_insert_hidden_terms` to match the AntiCheat field name in [bptools.py](../bptools.py) and updated affected scripts and docs.
 - Removed redundant per-script `bptools.use_* = False` lines when `allow_* = False` is present, keeping only the lock flags in affected generators and the PubChem bptools guide.

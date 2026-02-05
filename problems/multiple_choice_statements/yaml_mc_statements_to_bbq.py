@@ -275,6 +275,7 @@ def parse_arguments():
 		help='Number of duplicate runs to do or number of questions to create',
 		default=1
 	)
+	parser = bptools.add_anticheat_args(parser)
 
 	# Parse the provided command-line arguments and return them
 	args = parser.parse_args()
@@ -286,6 +287,7 @@ def parse_arguments():
 # This function serves as the entry point for generating and saving questions.
 def main():
 	args = parse_arguments()
+	bptools.apply_anticheat_args(args)
 
 	if args.input_yaml_file is None or not os.path.isfile(args.input_yaml_file):
 		print("Usage: {0} -y <input_yaml_file>".format(__file__))

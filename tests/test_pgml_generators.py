@@ -3,6 +3,8 @@ import sys
 import types
 from pathlib import Path
 
+from lib_test_utils import repo_abs_path
+
 
 def _make_bptools_stub():
 	stub = types.SimpleNamespace()
@@ -36,9 +38,7 @@ def _load_module(monkeypatch, name, path):
 
 
 def test_yaml_match_to_pgml_inline_colors(monkeypatch):
-	module_path = Path(
-		"/Users/vosslab/nsh/biology-problems/problems/matching_sets/yaml_match_to_pgml.py"
-	)
+	module_path = Path(repo_abs_path("problems/matching_sets/yaml_match_to_pgml.py"))
 	module = _load_module(monkeypatch, "yaml_match_to_pgml_test", module_path)
 
 	yaml_data = {
@@ -63,9 +63,7 @@ def test_yaml_match_to_pgml_inline_colors(monkeypatch):
 
 
 def test_yaml_match_to_pgml_seed_determinism(monkeypatch):
-	module_path = Path(
-		"/Users/vosslab/nsh/biology-problems/problems/matching_sets/yaml_match_to_pgml.py"
-	)
+	module_path = Path(repo_abs_path("problems/matching_sets/yaml_match_to_pgml.py"))
 	module = _load_module(monkeypatch, "yaml_match_to_pgml_seed_test", module_path)
 
 	yaml_data = {
@@ -84,9 +82,7 @@ def test_yaml_match_to_pgml_seed_determinism(monkeypatch):
 
 
 def test_yaml_which_one_mc_to_pgml_inline_colors(monkeypatch):
-	module_path = Path(
-		"/Users/vosslab/nsh/biology-problems/problems/matching_sets/yaml_which_one_mc_to_pgml.py"
-	)
+	module_path = Path(repo_abs_path("problems/matching_sets/yaml_which_one_mc_to_pgml.py"))
 	module = _load_module(monkeypatch, "yaml_which_one_mc_to_pgml_test", module_path)
 
 	yaml_data = {
@@ -113,9 +109,7 @@ def test_yaml_which_one_mc_to_pgml_inline_colors(monkeypatch):
 
 
 def test_yaml_mc_statements_to_pgml_inline_colors(monkeypatch):
-	module_path = Path(
-		"/Users/vosslab/nsh/biology-problems/problems/multiple_choice_statements/yaml_mc_statements_to_pgml.py"
-	)
+	module_path = Path(repo_abs_path("problems/multiple_choice_statements/yaml_mc_statements_to_pgml.py"))
 	module = _load_module(monkeypatch, "yaml_mc_statements_to_pgml_test", module_path)
 
 	yaml_data = {
@@ -143,17 +137,17 @@ def test_pgml_generator_smoke_outputs(tmp_path, monkeypatch):
 	match_module = _load_module(
 		monkeypatch,
 		"yaml_match_to_pgml_smoke",
-		Path("/Users/vosslab/nsh/biology-problems/problems/matching_sets/yaml_match_to_pgml.py"),
+		Path(repo_abs_path("problems/matching_sets/yaml_match_to_pgml.py")),
 	)
 	which_module = _load_module(
 		monkeypatch,
 		"yaml_which_one_mc_to_pgml_smoke",
-		Path("/Users/vosslab/nsh/biology-problems/problems/matching_sets/yaml_which_one_mc_to_pgml.py"),
+		Path(repo_abs_path("problems/matching_sets/yaml_which_one_mc_to_pgml.py")),
 	)
 	mc_module = _load_module(
 		monkeypatch,
 		"yaml_mc_statements_to_pgml_smoke",
-		Path("/Users/vosslab/nsh/biology-problems/problems/multiple_choice_statements/yaml_mc_statements_to_pgml.py"),
+		Path(repo_abs_path("problems/multiple_choice_statements/yaml_mc_statements_to_pgml.py")),
 	)
 
 	match_yaml = {
