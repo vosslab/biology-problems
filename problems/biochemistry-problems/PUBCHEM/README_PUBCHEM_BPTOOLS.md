@@ -54,7 +54,6 @@ Generated files are `bbq-*.txt` and should not be committed.
 - `moleculelib.py`: RDKit.js HTML/JS rendering helpers.
 - `aminoacidlib.py`: amino-acid and peptide rendering helpers.
 - `data/pubchem_molecules_data.yml`: primary PubChem cache (repo data file).
-- `cache_pubchem_molecules.yml`: legacy cache fallback in this folder.
 - `MACROMOLECULE_CATEGORIZE/macromolecules.yml`: source list for macromolecule types.
 - `TOOLS/molecules.yml`, `TOOLS/compounds.yml`: source lists for PubChem lookups.
 - `TOOLS/molecules.txt`: ad-hoc source list for molecule lookup tooling.

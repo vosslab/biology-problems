@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-02-05
+- Removed the legacy PubChem cache file [problems/biochemistry-problems/PUBCHEM/cache_pubchem_molecules.yml](../problems/biochemistry-problems/PUBCHEM/cache_pubchem_molecules.yml) and dropped the legacy fallback handling in [problems/biochemistry-problems/PUBCHEM/pubchemlib.py](../problems/biochemistry-problems/PUBCHEM/pubchemlib.py).
+- Updated the PubChem bptools guide to remove mention of the legacy cache file in [problems/biochemistry-problems/PUBCHEM/README_PUBCHEM_BPTOOLS.md](../problems/biochemistry-problems/PUBCHEM/README_PUBCHEM_BPTOOLS.md).
+- Removed the legacy PubChem cache file from the safe-load exceptions in [tests/yaml/test_repo_yaml_files_parse.py](../tests/yaml/test_repo_yaml_files_parse.py).
+
 ## 2026-02-04
 - Removed unused color-name keys from the allowed key list in the MC statements YAML checker in [problems/multiple_choice_statements/check_mc_statements_yaml.py](../problems/multiple_choice_statements/check_mc_statements_yaml.py).
 - Added strict YAML validators for matching_sets and multiple_choice_statements and switched the quality tests to use them in [problems/matching_sets/check_matching_yaml.py](../problems/matching_sets/check_matching_yaml.py), [problems/multiple_choice_statements/check_mc_statements_yaml.py](../problems/multiple_choice_statements/check_mc_statements_yaml.py), [tests/yaml/test_matching_sets_yaml_quality.py](../tests/yaml/test_matching_sets_yaml_quality.py), and [tests/yaml/test_mc_statements_yaml_quality.py](../tests/yaml/test_mc_statements_yaml_quality.py).

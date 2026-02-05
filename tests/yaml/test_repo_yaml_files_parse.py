@@ -33,7 +33,6 @@ _YAML_FILES = sorted(_iter_repo_yaml_files(), key=lambda p: str(p))
 
 _SAFE_LOAD_ONLY = {
 	"data/pubchem_molecules_data.yml",
-	"problems/biochemistry-problems/PUBCHEM/cache_pubchem_molecules.yml",
 }
 
 

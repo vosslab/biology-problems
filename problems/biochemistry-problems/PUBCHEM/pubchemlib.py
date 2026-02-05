@@ -20,7 +20,6 @@ class PubChemLib():
 		self.start_time = time.time()
 		self.BASE_URL = "https://pubchem.ncbi.nlm.nih.gov/rest/pug"
 		self.cache_file = bptools.get_repo_data_path('pubchem_molecules_data.yml')
-		self.legacy_cache_file = os.path.join(os.path.dirname(__file__), 'cache_pubchem_molecules.yml')
 		self.api_count = 0
 		self.cache_dirty = False
 		self.molecule_data_lookup_count = 0
@@ -36,9 +35,6 @@ class PubChemLib():
 	#============================
 	def load_cache(self):
 		print('==== LOAD CACHE ====')
-		if not os.path.isfile(self.cache_file) and os.path.isfile(self.legacy_cache_file):
-			print(f".. migrating legacy cache file {self.legacy_cache_file}")
-			self.cache_file = self.legacy_cache_file
 		if os.path.isfile(self.cache_file):
 			t0 = time.time()
 			with open(self.cache_file, 'r') as file:
@@ -59,8 +55,6 @@ class PubChemLib():
 	#============================
 	#============================
 	def close(self):
-		if self.cache_file == self.legacy_cache_file:
-			self.cache_file = bptools.get_repo_data_path('pubchem_molecules_data.yml')
 		self.save_cache()
 		print(f"{self.molecule_cid_lookup_count} cid lookup requests were made")
 		print(f"{self.molecule_data_lookup_count} molecular data dict requests were made")
