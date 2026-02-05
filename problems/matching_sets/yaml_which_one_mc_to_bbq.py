@@ -184,7 +184,7 @@ if __name__ == '__main__':
 		less_questions.sort()
 		list_of_complete_questions = less_questions
 
-	outfile = 'bbq-MC-' + os.path.splitext(os.path.basename(args.input_yaml_file))[0] + '-questions.txt'
+	outfile = 'bbq-WOMC-' + os.path.splitext(os.path.basename(args.input_yaml_file))[0] + '-questions.txt'
 	print('writing to file: '+outfile)
 	f = open(outfile, 'w')
 	N = 0
