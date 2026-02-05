@@ -1,18 +1,5 @@
 topic: the enzyme function of Chymotrypsin
-RED: null
-DARK ORANGE: null
-LIGHT ORANGE: null
-DARK YELLOW: null
-LIME GREEN: null
-GREEN: null
-TEAL: null
-CYAN: null
-SKY BLUE: null
-BLUE: null
-NAVY: null
-PURPLE: null
-MAGENTA: null
-PINK: null
+
 replacement_rules:
   AAAAAAAA: '<span style="color: #e60000;">AAAAAAAA</span>'
   BBBBBBBB: '<span style="color: #e65400;">BBBBBBBB</span>'
@@ -28,7 +15,7 @@ replacement_rules:
   LLLLLLLL: '<span style="color: #7b12a1;">LLLLLLLL</span>'
   MMMMMMMM: '<span style="color: #b30077;">MMMMMMMM</span>'
   NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>'
-connection_words: null
+
 true_statements:
   truth1a: Chymotrypsin prefers to cleave after large aromatic amino acids.
   truth2a: The shape of the S1 pocket of Chymotrypsin helps determine which residues

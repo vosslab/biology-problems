@@ -1,18 +1,5 @@
 topic: Enzyme Catalytic Strategies and Methods for Lowering Activation Energy
-RED: null
-DARK ORANGE: null
-LIGHT ORANGE: null
-DARK YELLOW: null
-LIME GREEN: null
-GREEN: null
-TEAL: null
-CYAN: null
-SKY BLUE: null
-BLUE: null
-NAVY: null
-PURPLE: null
-MAGENTA: null
-PINK: null
+
 replacement_rules:
   Acid-base catalysis: '<span style="color: #e60000;">Acid-base catalysis</span>'
   acid-base catalysis: '<span style="color: #e60000;">acid-base catalysis</span>'
@@ -35,7 +22,7 @@ replacement_rules:
   covalent catalysis: '<span style="color: #7b12a1;">covalent catalysis</span>'
   active site microenvironment: '<span style="color: #b30077;">active site microenvironment</span>'
   NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>'
-connection_words: null
+
 true_statements:
   truth1a: Acid-base catalysis involves amino acid side chains donating or accepting
     protons.
