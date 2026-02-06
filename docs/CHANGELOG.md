@@ -44,6 +44,9 @@
 - Moved the GraphTool list checker into cmpOptions to avoid duplicate answer evaluators and fixed the solution text labels in [webwork_examples/titration_buffer_graph_tool.pg](../webwork_examples/titration_buffer_graph_tool.pg).
 - Switched the titration GraphTool POC to a single PG ans_rule/ANS path and improved client-side click parsing in [webwork_examples/titration_buffer_graph_tool.pg](../webwork_examples/titration_buffer_graph_tool.pg).
 - Returned full-score values from the GraphTool list checker to avoid maxscore mismatches in [webwork_examples/titration_buffer_graph_tool.pg](../webwork_examples/titration_buffer_graph_tool.pg).
+- Disabled parenthesis matching for the GraphTool list checker so the custom grading runs in [webwork_examples/titration_buffer_graph_tool.pg](../webwork_examples/titration_buffer_graph_tool.pg).
+- Extracted click coordinates from the parsed student list (with raw-string fallback) for the GraphTool checker in [webwork_examples/titration_buffer_graph_tool.pg](../webwork_examples/titration_buffer_graph_tool.pg).
+- Replaced the GraphTool cmp path with a labeled custom AnswerEvaluator that grades the raw point string in [webwork_examples/titration_buffer_graph_tool.pg](../webwork_examples/titration_buffer_graph_tool.pg).
 - Updated PUBCHEM directory path injection to resolve the repo root via git rev-parse (bptools) so imports of pubchemlib, moleculelib, and aminoacidlib work when running from repo root.
 - Updated the PubChem bptools guide to reflect the new TOOLS/ locations for molecules.txt, molecules.yml, and compounds.yml.
 - Pointed the PubChem molecule lookup tool at TOOLS/molecules.txt via __file__ so it no longer depends on the current working directory.

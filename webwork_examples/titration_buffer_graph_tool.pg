@@ -51,51 +51,7 @@ $buffer_xmax = 7;
 $buffer_ymin = 3.4;
 $buffer_ymax = 5.4;
 
-$gt_checker = sub {
-	my ($correct, $student, $ans_hash, $value) = @_;
-	my @errors = ();
-	my $raw = '';
-	my @points = ();
-	my $m = scalar(@$student);
-	my $M = scalar(@$correct);
-	my $maxscore = ($m > $M) ? $m : $M;
-	$maxscore = 1 if $maxscore < 1;
-
-	if (defined $ans_hash->{original_student_ans}) {
-		$raw = $ans_hash->{original_student_ans};
-	} elsif (defined $ans_hash->{student_ans}) {
-		$raw = $ans_hash->{student_ans};
-	} elsif (defined $ans_hash->{student_value}) {
-		$raw = $ans_hash->{student_value};
-	}
-
-	if (ref($raw) eq 'ARRAY') {
-		$raw = join(',', @$raw);
-	} elsif (ref($raw)) {
-		$raw = "$raw";
-	}
-
-	while ($raw =~ /point, *\\((-?\\d+(?:\\.\\d+)?), *(-?\\d+(?:\\.\\d+)?)\\)/g) {
-		push(@points, [$1, $2]);
-	}
-
-	if (scalar(@points) != 1) {
-		push(@errors, 'Place exactly one point using the point tool.');
-		return (0, @errors);
-	}
-
-	my ($x, $y) = @{ $points[0] };
-	my $click_message = sprintf('You clicked at (%.2f, %.2f).', $x, $y);
-	if ($x < $buffer_xmin || $x > $buffer_xmax || $y < $buffer_ymin || $y > $buffer_ymax) {
-		push(@errors, $click_message);
-		push(@errors, 'That point is outside the buffered (flat) region.');
-		return (0, @errors);
-	}
-
-	return ($maxscore);
-};
-
-$gt = GraphTool("{point,(5,4.5)}")->with(
+$gt = GraphTool()->with(
 	bBox => [-1, 14, 14, -1],
 	gridX => 1,
 	gridY => 1,
@@ -110,17 +66,49 @@ $gt = GraphTool("{point,(5,4.5)}")->with(
 	showCoordinateHints => 1,
 	availableTools => ['PointTool'],
 	staticObjects => [$curve_object],
-	ariaDescription => 'Titration curve with a buffered region.',
-	cmpOptions => {
-		list_checker => $gt_checker,
-		partialCredit => 0,
-		showHints => 1,
-		showLengthHints => 1
-	}
+	ariaDescription => 'Titration curve with a buffered region.'
 );
 $gt_ans_id = $gt->ANS_NAME;
 $feedback_id = $gt_ans_id . '_feedback';
 $feedback_html = '<div id="' . $feedback_id . '" style="margin-top:0.5em;">Last click: (none)</div>';
+
+$gt_checker = AnswerEvaluator->new;
+$gt_checker->install_evaluator(sub {
+	my ($ans) = @_;
+	my $raw = $ans->{student_ans} || '';
+	my ($x, $y) = (undef, undef);
+
+	if (ref($raw) eq 'ARRAY') {
+		$raw = join(',', @$raw);
+	} elsif (ref($raw)) {
+		$raw = "$raw";
+	}
+
+	if ($raw =~ /point, *\\((-?\\d+(?:\\.\\d+)?), *(-?\\d+(?:\\.\\d+)?)\\)/) {
+		$x = $1;
+		$y = $2;
+	}
+
+	if (!defined $x || !defined $y) {
+		$ans->{score} = 0;
+		$ans->{ans_message} = 'Place exactly one point using the point tool.';
+		$ans->{error_message} = $ans->{ans_message};
+		return $ans;
+	}
+
+	if ($x < $buffer_xmin || $x > $buffer_xmax || $y < $buffer_ymin || $y > $buffer_ymax) {
+		my $click_message = sprintf('You clicked at (%.2f, %.2f).', $x, $y);
+		$ans->{score} = 0;
+		$ans->{ans_message} = $click_message . ' That point is outside the buffered (flat) region.';
+		$ans->{error_message} = $ans->{ans_message};
+		return $ans;
+	}
+
+	$ans->{score} = 1;
+	$ans->{ans_message} = '';
+	$ans->{error_message} = '';
+	return $ans;
+});
 
 HEADER_TEXT(<<END_HEADER);
 <script>
@@ -169,7 +157,7 @@ END_TEXT
 # 4) Answer evaluation
 # ----------------------------
 
-ANS($gt->cmp);
+LABELED_ANS($gt_ans_id, $gt_checker);
 
 # ----------------------------
 # 5) Solution
