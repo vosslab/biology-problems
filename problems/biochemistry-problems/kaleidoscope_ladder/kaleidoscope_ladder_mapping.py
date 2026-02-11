@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
-import math
-import random
 import os
 import sys
+import math
+import random
 
 import bptools
 
@@ -14,6 +14,7 @@ if _BIOCHEM_DIR not in sys.path:
 import protein_ladder_lib
 
 
+#====================================================================
 def _color_swatch(hex_color: str, width_px: int=26, height_px: int=12) -> str:
 	return (
 		'<span style="'
@@ -23,6 +24,7 @@ def _color_swatch(hex_color: str, width_px: int=26, height_px: int=12) -> str:
 	)
 
 
+#====================================================================
 def write_prelim_mapping_question(N: int, table_height: int=450) -> str:
 	mw_values = protein_ladder_lib.get_kaleidoscope_mw_values()
 	ladder_html = protein_ladder_lib.gen_kaleidoscope_table(
@@ -49,10 +51,12 @@ def write_prelim_mapping_question(N: int, table_height: int=450) -> str:
 	return bptools.formatBB_MAT_Question(N, question_text, prompts_list, choices_list)
 
 
+#====================================================================
 def _mw_to_distance_mm(mw_kda: float, intercept_mm: float=120.0, slope_mm: float=18.0) -> float:
 	return intercept_mm - slope_mm * math.log(mw_kda)
 
 
+#====================================================================
 def _interp_mw_from_two_markers(mw_high: float, dist_high: float, mw_low: float, dist_low: float, dist_unknown: float) -> float:
 	"""
 	Estimate MW assuming ln(MW) is linear with migration distance.
@@ -67,6 +71,7 @@ def _interp_mw_from_two_markers(mw_high: float, dist_high: float, mw_low: float,
 	return math.exp(ln_unknown)
 
 
+#====================================================================
 def write_prelim_estimate_unknown_question(N: int) -> str:
 	mw_values = protein_ladder_lib.get_kaleidoscope_mw_values()
 	gap_index = random.randint(0, len(mw_values) - 2)
@@ -99,35 +104,46 @@ def write_prelim_estimate_unknown_question(N: int) -> str:
 	return bptools.formatBB_NUM_Question(N, question_text, round(unknown_mw, 3), tolerance)
 
 
-def main():
+#====================================================================
+def write_question(N: int, args) -> str:
+	if args.question_type == "mapping":
+		return write_prelim_mapping_question(N, table_height=args.table_height)
+	if args.question_type == "estimate":
+		return write_prelim_estimate_unknown_question(N)
+	if args.question_type == "both":
+		if N % 2 == 1:
+			return write_prelim_mapping_question(N, table_height=args.table_height)
+		return write_prelim_estimate_unknown_question(N)
+	raise ValueError(f"Unknown question type: {args.question_type}")
+
+
+#====================================================================
+def parse_arguments():
 	parser = bptools.make_arg_parser(description="Kaleidoscope-style protein ladder mapping questions.")
-	parser.add_argument("--table-height", type=int, default=450, help="Ladder table height (px)")
+	parser.add_argument("--table-height", dest="table_height", type=int, default=450, help="Ladder table height (px)")
 	parser.add_argument(
-		"--question-type",
+		"--question-type", dest="question_type",
 		choices=("mapping", "estimate", "both"),
 		default="mapping",
 		help="Question type to generate",
 	)
-	parser.add_argument("--seed", type=int, default=None, help="Random seed (for estimate/both)")
-	args = parser.parse_args()
+	parser.add_argument("--seed", dest="seed", type=int, default=None, help="Random seed (for estimate/both)")
+	return parser.parse_args()
+
+
+#====================================================================
+#====================================================================
+def main():
+	args = parse_arguments()
 
 	if args.seed is not None:
 		random.seed(args.seed)
-
-	def write_question(N: int, args):
-		if args.question_type == "mapping":
-			return write_prelim_mapping_question(N, table_height=args.table_height)
-		if args.question_type == "estimate":
-			return write_prelim_estimate_unknown_question(N)
-		if args.question_type == "both":
-			if N % 2 == 1:
-				return write_prelim_mapping_question(N, table_height=args.table_height)
-			return write_prelim_estimate_unknown_question(N)
-		raise ValueError(f"Unknown question type: {args.question_type}")
 
 	outfile = bptools.make_outfile()
 	bptools.collect_and_write_questions(write_question, args, outfile)
 
 
+#====================================================================
+#====================================================================
 if __name__ == "__main__":
 	main()

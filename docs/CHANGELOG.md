@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-02-11
+- Merged [problems/biochemistry-problems/kaleidoscope_ladder/kaleidoscope_ladder_unknown_band_mw.py](../problems/biochemistry-problems/kaleidoscope_ladder/kaleidoscope_ladder_unknown_band_mw.py) and [problems/biochemistry-problems/kaleidoscope_ladder/kaleidoscope_ladder_unknown_band_protein_mc.py](../problems/biochemistry-problems/kaleidoscope_ladder/kaleidoscope_ladder_unknown_band_protein_mc.py) into a single [problems/biochemistry-problems/kaleidoscope_ladder/kaleidoscope_ladder_unknown_band.py](../problems/biochemistry-problems/kaleidoscope_ladder/kaleidoscope_ladder_unknown_band.py) with `--mc`/`--num` format flag following the `bptools.add_question_format_args` pattern.
+- Added a standard Kaleidoscope ladder reference table (MW labels and colors) to both question formats in [problems/biochemistry-problems/kaleidoscope_ladder/kaleidoscope_ladder_unknown_band.py](../problems/biochemistry-problems/kaleidoscope_ladder/kaleidoscope_ladder_unknown_band.py) so students can compare the manufacturer's card to the actual gel run.
+- Added `mw_to_y_px()` helper to [problems/biochemistry-problems/kaleidoscope_ladder/protein_ladder_lib.py](../problems/biochemistry-problems/kaleidoscope_ladder/protein_ladder_lib.py) to eliminate hardcoded margin magic numbers in consumer scripts.
+- Removed unused backward-compat aliases (`mw_color_map`, `default_blue_color_map`) and changed `from collections import defaultdict` to `import collections` in [problems/biochemistry-problems/kaleidoscope_ladder/protein_ladder_lib.py](../problems/biochemistry-problems/kaleidoscope_ladder/protein_ladder_lib.py).
+- Added a descriptive message to the bare `raise ValueError` in `calculate_mw_gaps()` in [problems/biochemistry-problems/kaleidoscope_ladder/protein_ladder_lib.py](../problems/biochemistry-problems/kaleidoscope_ladder/protein_ladder_lib.py).
+- Moved `write_question` from nested function to module level, extracted `parse_arguments()`, and added `dest=` to argparse flags in [problems/biochemistry-problems/kaleidoscope_ladder/kaleidoscope_ladder_mapping.py](../problems/biochemistry-problems/kaleidoscope_ladder/kaleidoscope_ladder_mapping.py).
+- Updated tests in [tests/libs/test_protein_ladder_lib.py](../tests/libs/test_protein_ladder_lib.py) to reference the merged unknown-band script and use the explicit `rng` pattern.
+
 ## 2026-02-05
 - Removed the legacy PubChem cache file [problems/biochemistry-problems/PUBCHEM/cache_pubchem_molecules.yml](../problems/biochemistry-problems/PUBCHEM/cache_pubchem_molecules.yml) and dropped the legacy fallback handling in [problems/biochemistry-problems/PUBCHEM/pubchemlib.py](../problems/biochemistry-problems/PUBCHEM/pubchemlib.py).
 - Updated the PubChem bptools guide to remove mention of the legacy cache file in [problems/biochemistry-problems/PUBCHEM/README_PUBCHEM_BPTOOLS.md](../problems/biochemistry-problems/PUBCHEM/README_PUBCHEM_BPTOOLS.md).

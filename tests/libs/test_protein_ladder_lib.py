@@ -53,14 +53,14 @@ def test_kaleidoscope_ladder_mapping_estimate_unknown_question_smoke(monkeypatch
 
 
 def test_kaleidoscope_ladder_lane2_unknown_mw_question_smoke(monkeypatch):
-	mod = import_from_repo_path("problems/biochemistry-problems/kaleidoscope_ladder/kaleidoscope_ladder_unknown_band_mw.py")
+	mod = import_from_repo_path("problems/biochemistry-problems/kaleidoscope_ladder/kaleidoscope_ladder_unknown_band.py")
 
 	def fake_num(N, question_text, answer_float, tolerance_float, tol_message=True):
 		return f"NUM\t{N}\t{answer_float}\t{tolerance_float}\t{question_text}\n"
 
 	monkeypatch.setattr(bptools, "formatBB_NUM_Question", fake_num)
-	mod.random.seed(0)
-	q = mod.write_lane2_unknown_band_mw_question(1, gel_height_px=280, run_scenario="too_long")
+	rng = mod.random.Random(0)
+	q = mod.write_lane2_unknown_band_mw_question(1, gel_height_px=280, run_scenario="too_long", rng=rng)
 	assert q.startswith("NUM\t1\t")
 	assert "Lane 1" in q
 	assert "Lane 2" in q
@@ -69,7 +69,7 @@ def test_kaleidoscope_ladder_lane2_unknown_mw_question_smoke(monkeypatch):
 
 
 def test_kaleidoscope_ladder_lane2_unknown_protein_mc_question_smoke(monkeypatch):
-	mod = import_from_repo_path("problems/biochemistry-problems/kaleidoscope_ladder/kaleidoscope_ladder_unknown_band_protein_mc.py")
+	mod = import_from_repo_path("problems/biochemistry-problems/kaleidoscope_ladder/kaleidoscope_ladder_unknown_band.py")
 
 	def fake_mc(N, question_text, choices_list, answer_text):
 		return f"MC\t{N}\t{answer_text}\t{len(choices_list)}\t{question_text}\n"

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import math
-from collections import defaultdict
+import collections
 
 KALEIDOSCOPE_MW_COLOR_MAP = {
 	250: "#99dbfb",
@@ -15,11 +15,7 @@ KALEIDOSCOPE_MW_COLOR_MAP = {
 	15:  "#b3def6",
 	10:  "#ffee00",
 }
-DEFAULT_BLUE_COLOR_MAP = defaultdict(lambda: "#83c6ee")
-
-# Backwards-compat aliases (older scripts used these names)
-mw_color_map = KALEIDOSCOPE_MW_COLOR_MAP
-default_blue_color_map = DEFAULT_BLUE_COLOR_MAP
+DEFAULT_BLUE_COLOR_MAP = collections.defaultdict(lambda: "#83c6ee")
 
 band_height = 9
 band_width = 50
@@ -90,6 +86,29 @@ def simulate_kaleidoscope_band_y_positions_px(
 		y = float(top_margin_px) + float(run_factor) * frac * usable
 		positions[mw] = y
 	return positions
+
+
+#====================================================================
+def mw_to_y_px(
+	mw_kda: float,
+	gel_height_px: int,
+	run_factor: float,
+	top_margin_px: int=28,
+	bottom_margin_px: int=22,
+) -> float:
+	"""
+	Convert a molecular weight (kDa) to a y-position (px from top) on a simulated gel.
+
+	Uses the same ln(MW)-linear mapping and margin defaults as
+	`simulate_kaleidoscope_band_y_positions_px`.
+	"""
+	mw_values = get_kaleidoscope_mw_values()
+	mw_top = float(mw_values[0])
+	mw_bottom = float(mw_values[-1])
+	ln_range = math.log(mw_top) - math.log(mw_bottom)
+	usable = float(gel_height_px - top_margin_px - bottom_margin_px)
+	frac_from_top = (math.log(mw_top) - math.log(float(mw_kda))) / ln_range
+	return float(top_margin_px) + run_factor * frac_from_top * usable
 
 
 #====================================================================
@@ -238,7 +257,7 @@ def calculate_mw_gaps(mw_values: list[int], scale_constant: float) -> list[int]:
 	range_ln = max(ln_mw) - min(ln_mw)
 	sum_diff = sum(differences)
 	if not math.isclose(range_ln, sum_diff):
-		raise ValueError
+		raise ValueError(f"Sum of ln(MW) differences ({sum_diff:.6f}) does not match total range ({range_ln:.6f})")
 
 	# Step 4: Scale by the given scale constant
 	# Step 5: Round to nearest integer
