@@ -1,0 +1,285 @@
+## TITLE('Biochemistry: Two-protein migration from pI values at fixed pH')
+## DESCRIPTION
+## Predict the migration direction of two proteins in an electric field during isoelectric-style separation using their pI values and a fixed gel pH. Students identify each protein's charge sign at that pH and map it to migration toward the opposite terminal.
+## ENDDESCRIPTION
+## KEYWORDS('isoelectric point','protein migration','pH','electric field')
+## DBsubject('Biochemistry')
+## DBchapter('Laboratory Techniques')
+## DBsection('Isoelectric Focusing')
+## Level(3)
+## Date('2026-02-12')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	'PGstandard.pl',
+	'PGML.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl',
+);
+
+$showPartialCorrectAnswers = 0;
+
+# ----------------------------
+# 2) Setup
+# ----------------------------
+
+my @PROTEIN_BANK = (
+	{ name => 'alpha-Amylase', abbr => 'Amy', pi => 5.9, mw => 61.0 },
+	{ name => 'beta-Galactosidase', abbr => 'Gal', pi => 4.6, mw => 175.0 },
+	{ name => 'gamma-Globulin', abbr => 'Glob', pi => 6.6, mw => 57.0 },
+	{ name => 'Actin', abbr => 'Act', pi => 5.3, mw => 43.0 },
+	{ name => 'Agglutinin', abbr => 'Agg', pi => 4.8, mw => 22.0 },
+	{ name => 'Aldehyde Dehydrogenase', abbr => 'Alde', pi => 5.3, mw => 53.0 },
+	{ name => 'Aldolase', abbr => 'Aldo', pi => 8.5, mw => 47.5 },
+	{ name => 'Aprotinin', abbr => 'Apr', pi => 9.2, mw => 6.5 },
+	{ name => 'Avidin', abbr => 'Av', pi => 10.5, mw => 16.9 },
+	{ name => 'Casein', abbr => 'Cas', pi => 4.9, mw => 24.0 },
+	{ name => 'Catalase', abbr => 'Cat', pi => 6.7, mw => 65.5 },
+	{ name => 'Chymotrypsin', abbr => 'Chy', pi => 8.4, mw => 25.0 },
+	{ name => 'Cobra Venom Factor', abbr => 'CVF', pi => 5.2, mw => 149.0 },
+	{ name => 'Collagen', abbr => 'Col', pi => 6.6, mw => 134.0 },
+	{ name => 'Cytochrome c', abbr => 'Cyt', pi => 10.2, mw => 13.0 },
+	{ name => 'DNA Ligase', abbr => 'Lig', pi => 6.0, mw => 60.0 },
+	{ name => 'Elastase II', abbr => 'Ela', pi => 8.5, mw => 26.5 },
+	{ name => 'Enolase', abbr => 'Eno', pi => 8.4, mw => 42.5 },
+	{ name => 'Epidermal Growth Factor', abbr => 'EGF', pi => 4.5, mw => 40.0 },
+	{ name => 'Estrogen Binding Protein', abbr => 'EBP', pi => 4.9, mw => 115.0 },
+	{ name => 'Ferritin', abbr => 'Fer', pi => 5.5, mw => 19.8 },
+	{ name => 'Fibrinogen', abbr => 'Fib', pi => 5.8, mw => 63.5 },
+	{ name => 'Fumerase', abbr => 'Fum', pi => 7.6, mw => 48.5 },
+	{ name => 'G3P Dehydrogenase', abbr => 'GDH', pi => 8.3, mw => 36.0 },
+	{ name => 'Green Fluorescent Protein', abbr => 'GFP', pi => 6.2, mw => 28.0 },
+	{ name => 'Heat Shock Protein', abbr => 'HSP', pi => 5.5, mw => 70.1 },
+	{ name => 'Hemoglobin', abbr => 'Hem', pi => 7.1, mw => 16.7 },
+	{ name => 'Hexokinase', abbr => 'Hex', pi => 5.8, mw => 120.0 },
+	{ name => 'Histone', abbr => 'His', pi => 10.8, mw => 15.0 },
+	{ name => 'Horseradish peroxidase', abbr => 'HP', pi => 9.0, mw => 34.0 },
+	{ name => 'Immunoglobulin', abbr => 'IgG', pi => 7.3, mw => 145.0 },
+	{ name => 'Insulin', abbr => 'Ins', pi => 5.4, mw => 5.8 },
+	{ name => 'Lactalbumin', abbr => 'Lac', pi => 4.3, mw => 13.0 },
+	{ name => 'Leghemoglobin', abbr => 'Leg', pi => 4.7, mw => 16.0 },
+	{ name => 'Lipase', abbr => 'Lip', pi => 4.7, mw => 40.0 },
+	{ name => 'Luciferase', abbr => 'Luc', pi => 5.7, mw => 50.0 },
+	{ name => 'Lysozyme', abbr => 'Lys', pi => 11.0, mw => 14.4 },
+	{ name => 'Myelin Basic Protein', abbr => 'MBP', pi => 9.5, mw => 18.0 },
+	{ name => 'Myoglobin', abbr => 'Myo', pi => 7.0, mw => 18.0 },
+	{ name => 'Neuraminidase', abbr => 'Neu', pi => 5.8, mw => 50.0 },
+	{ name => 'Ovalbumin', abbr => 'Ova', pi => 4.6, mw => 45.0 },
+	{ name => 'Pepsin', abbr => 'Pep', pi => 3.7, mw => 34.5 },
+	{ name => 'Phospholypase', abbr => 'Pho', pi => 4.2, mw => 19.5 },
+	{ name => 'Prostate-Specific Antigen', abbr => 'PSA', pi => 6.8, mw => 30.0 },
+	{ name => 'Pyruvate Kinase', abbr => 'PK', pi => 6.2, mw => 60.0 },
+	{ name => 'Ribonuclease A', abbr => 'RibA', pi => 9.6, mw => 13.7 },
+	{ name => 'SARS-CoV-2 Spike Protein', abbr => 'Spike', pi => 6.2, mw => 149.9 },
+	{ name => 'Serine Protease', abbr => 'Ser', pi => 8.8, mw => 22.0 },
+	{ name => 'Serum Albumin', abbr => 'Alb', pi => 4.8, mw => 66.2 },
+	{ name => 'Streptavidin', abbr => 'Stp', pi => 6.1, mw => 13.2 },
+	{ name => 'Succinate Ligase', abbr => 'SL', pi => 6.5, mw => 20.9 },
+	{ name => 'Sucrase', abbr => 'Suc', pi => 5.5, mw => 51.0 },
+	{ name => 'Transferrin', abbr => 'Trf', pi => 5.6, mw => 80.0 },
+	{ name => 'Tropomyosin', abbr => 'Trop', pi => 4.8, mw => 35.0 },
+	{ name => 'Trypsin', abbr => 'Tryp', pi => 10.5, mw => 23.5 },
+	{ name => 'Urease A', abbr => 'Ure', pi => 5.0, mw => 26.5 },
+	{ name => 'Xylosidase', abbr => 'Xyl', pi => 4.2, mw => 100.0 },
+);
+
+# ----------------------------
+# 2a) Helpers
+# ----------------------------
+sub random_choice {
+	my (@items) = @_;
+	my $count = scalar(@items);
+	die 'Random choice requires at least one item.' if $count < 1;
+	my $idx = random(0, $count - 1, 1);
+	return $items[$idx];
+}
+
+sub random_select_proteins {
+	my @tree = @_;
+	my $protein1 = random_choice(@tree);
+	my $protein2 = $protein1;
+	my $tries = 0;
+	while (1) {
+		$tries += 1;
+		last if $tries > 500;
+		$protein2 = random_choice(@tree);
+		next if $protein1->{abbr} eq $protein2->{abbr};
+		my $delta = abs($protein1->{pi} - $protein2->{pi});
+		next if $delta < 1.5;
+		last;
+	}
+	return ($protein1, $protein2);
+}
+
+sub get_midpoint_ph {
+	my ($p1, $p2) = @_;
+	return round($p1->{pi} + $p2->{pi}) / 2.0;
+}
+
+sub get_peak_ph {
+	my ($p1, $p2) = @_;
+	my $min_pi = $p1->{pi};
+	my $max_pi = $p2->{pi};
+	if ($p1->{pi} > $p2->{pi}) {
+		$min_pi = $p2->{pi};
+		$max_pi = $p1->{pi};
+	}
+	my $best_peak = 0.0;
+	my $other_peak = 0.0;
+	if (abs($min_pi - 7.0) < abs($max_pi - 7.0)) {
+		$best_peak = floor(2.0 * $min_pi) / 2.0 - 1.0;
+		$other_peak = ceil(2.0 * $max_pi) / 2.0 + 1.0;
+	} else {
+		$best_peak = ceil(2.0 * $max_pi) / 2.0 + 1.0;
+		$other_peak = floor(2.0 * $min_pi) / 2.0 - 1.0;
+	}
+	return ($best_peak, $other_peak);
+}
+
+sub get_random_ph {
+	my ($p1, $p2) = @_;
+	my $mid = get_midpoint_ph($p1, $p2);
+	my ($best_peak, $other_peak) = get_peak_ph($p1, $p2);
+	my @ph_list = ($mid, $best_peak, $other_peak, $mid);
+	my @valid = ();
+	for my $ph (@ph_list) {
+		if ($ph >= 2.0 && $ph <= 12.0) {
+			push @valid, $ph;
+		}
+	}
+	return undef if scalar(@valid) < 1;
+	return random_choice(@valid);
+}
+
+sub protein_table_html {
+	my ($p1, $p2) = @_;
+	my $html = '';
+	$html .= "<div style='display:grid; grid-template-columns: 46% 27% 27%; border:1px solid #000; width:100%; max-width:760px; font-size:14px;'>";
+	$html .= "<div style='padding:6px; background:#f2f2f2; font-weight:700; border-bottom:1px solid #888;'>Protein Name</div>";
+	$html .= "<div style='padding:6px; background:#f2f2f2; font-weight:700; border-bottom:1px solid #888; text-align:center;'>Isoelectric Point (pI)</div>";
+	$html .= "<div style='padding:6px; background:#f2f2f2; font-weight:700; border-bottom:1px solid #888; text-align:center;'>Molecular Weight (kDa)</div>";
+	$html .= "<div style='padding:6px;'>" . $p1->{name} . " (" . $p1->{abbr} . ")</div>";
+	$html .= sprintf("<div style='padding:6px; text-align:right;'>%.1f</div>", $p1->{pi});
+	$html .= sprintf("<div style='padding:6px; text-align:right;'>%.1f</div>", $p1->{mw});
+	$html .= "<div style='padding:6px; border-top:1px solid #ddd;'>" . $p2->{name} . " (" . $p2->{abbr} . ")</div>";
+	$html .= sprintf("<div style='padding:6px; border-top:1px solid #ddd; text-align:right;'>%.1f</div>", $p2->{pi});
+	$html .= sprintf("<div style='padding:6px; border-top:1px solid #ddd; text-align:right;'>%.1f</div>", $p2->{mw});
+	$html .= "</div>";
+	return $html;
+}
+
+sub generate_choices {
+	my ($p1, $p2, $ph) = @_;
+	my $ab1 = $p1->{abbr};
+	my $ab2 = $p2->{abbr};
+
+	my $choice1 =
+		"Both $ab1 and $ab2 will have a <span style='color:darkred'>negative (&ndash;)</span> charge and travel towards the <span style='color:darkblue'>positive (+)</span> terminal";
+	my $choice2 =
+		"Both $ab1 and $ab2 will have a <span style='color:darkblue'>positive (+)</span> charge and travel towards the <span style='color:darkred'>negative (&ndash;)</span> terminal";
+	my $choice3 =
+		"$ab1 will have a <span style='color:darkblue'>positive (+)</span> charge and travel towards the <span style='color:darkred'>negative (&ndash;)</span> terminal<br/>"
+		. "$ab2 will have a <span style='color:darkred'>negative (&ndash;)</span> charge and travel towards the <span style='color:darkblue'>positive (+)</span> terminal";
+	my $choice4 =
+		"$ab1 will have a <span style='color:darkred'>negative (&ndash;)</span> charge and travel towards the <span style='color:darkblue'>positive (+)</span> terminal<br/>"
+		. "$ab2 will have a <span style='color:darkblue'>positive (+)</span> charge and travel towards the <span style='color:darkred'>negative (&ndash;)</span> terminal";
+
+	my @choices = ($choice1, $choice2, $choice3, $choice4);
+	my $answer_idx = 0;
+	if ($ph > $p1->{pi} && $ph > $p2->{pi}) {
+		$answer_idx = 0;
+	} elsif ($ph < $p1->{pi} && $ph < $p2->{pi}) {
+		$answer_idx = 1;
+	} elsif ($p1->{pi} > $ph && $ph > $p2->{pi}) {
+		$answer_idx = 2;
+	} else {
+		$answer_idx = 3;
+	}
+	return ($choices[$answer_idx], @choices);
+}
+
+# ----------------------------
+# 2b) Randomization and choices
+# ----------------------------
+my $built = 0;
+my $max_attempts = 120;
+
+for my $attempt (1 .. $max_attempts) {
+	my ($protein1, $protein2) = random_select_proteins(@PROTEIN_BANK);
+	my $ph = get_random_ph($protein1, $protein2);
+	next if !defined($ph);
+
+	$ph_display = sprintf('%.1f', $ph);
+	$table_html = protein_table_html($protein1, $protein2);
+	($answer_text, @choices) = generate_choices($protein1, $protein2, $ph);
+	$ab1 = $protein1->{abbr};
+	$ab2 = $protein2->{abbr};
+	$p1_display = sprintf('%.1f', $protein1->{pi});
+	$p2_display = sprintf('%.1f', $protein2->{pi});
+
+	$rb = RadioButtons(
+		[@choices],
+		$answer_text,
+		labels        => 'ABC',
+		displayLabels => 1,
+		randomize     => 0,
+		separator     => '<div style="margin-bottom: 0.7em;"></div>',
+	);
+
+	$built = 1;
+	last;
+}
+
+if (!$built) {
+	die 'Failed to build an isoelectric two-proteins problem.';
+}
+
+# ----------------------------
+# 3) Statement (PGML)
+# ----------------------------
+BEGIN_PGML
+A protein's isoelectric point (pI) is the pH at which it carries no net charge. When pH differs from pI, the protein acquires net charge and migrates in an electric field.
+
+A mixture of two proteins is separated by isoelectric-style focusing.
+
+[$table_html]*
+
+Both protein samples are placed into a gel with constant pH [$ph_display], and the gel is then placed into an electric field.
+
+In which direction will each protein migrate at pH [$ph_display]?
+
+[_]{$rb}
+END_PGML
+
+BEGIN_PGML_HINT
+Charge rule for this model:
+- if pH > pI, protein is net negative and moves toward the positive terminal
+- if pH < pI, protein is net positive and moves toward the negative terminal
+END_PGML_HINT
+
+# ----------------------------
+# 4) Solution
+# ----------------------------
+BEGIN_PGML_SOLUTION
+At pH [$ph_display]:
+- [$ab1] has pI [$p1_display]
+- [$ab2] has pI [$p2_display]
+
+Apply pH-vs-pI to determine each charge, then send each protein toward the opposite terminal. The correct choice is:
+
+[$answer_text]*
+END_PGML_SOLUTION
+
+ENDDOCUMENT();

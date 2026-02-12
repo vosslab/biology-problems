@@ -1,0 +1,363 @@
+## TITLE('Biochemistry: Estimate unknown protein size from SDS-PAGE migration')
+## DESCRIPTION
+## Use SDS-PAGE standard protein migration distances to estimate the molecular weight of an unknown protein. The standards and unknown migration distance are shown in a structured results panel, and students select the best molecular-weight estimate.
+## ENDDESCRIPTION
+## KEYWORDS('SDS-PAGE','gel migration','molecular weight','protein')
+## DBsubject('Biochemistry')
+## DBchapter('Laboratory Techniques')
+## DBsection('Protein Electrophoresis')
+## Level(3)
+## Date('2026-02-12')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	'PGstandard.pl',
+	'PGML.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl',
+);
+
+$showPartialCorrectAnswers = 0;
+
+# ----------------------------
+# 2) Setup
+# ----------------------------
+
+my $SLOPE = 0.8;
+my $INTERCEPT = 5.5;
+my $NUM_CHOICES = 5;
+my $SUBSET_SIZE = 24;
+my $PULL_SIZE = 3;
+
+my @PROTEIN_BANK = (
+	{ name => 'alpha-Amylase', abbr => 'Amy', mw => 61.0 },
+	{ name => 'gamma-Globulin', abbr => 'Glob', mw => 57.0 },
+	{ name => 'Actin', abbr => 'Act', mw => 43.0 },
+	{ name => 'Agglutinin', abbr => 'Agg', mw => 22.0 },
+	{ name => 'Aldehyde Dehydrogenase', abbr => 'Alde', mw => 53.0 },
+	{ name => 'Aldolase', abbr => 'Aldo', mw => 47.5 },
+	{ name => 'Avidin', abbr => 'Av', mw => 16.9 },
+	{ name => 'Casein', abbr => 'Cas', mw => 24.0 },
+	{ name => 'Catalase', abbr => 'Cat', mw => 65.5 },
+	{ name => 'Chymotrypsin', abbr => 'Chy', mw => 25.0 },
+	{ name => 'Cytochrome c', abbr => 'Cyt', mw => 13.0 },
+	{ name => 'DNA Ligase', abbr => 'Lig', mw => 60.0 },
+	{ name => 'Elastase II', abbr => 'Ela', mw => 26.5 },
+	{ name => 'Enolase', abbr => 'Eno', mw => 42.5 },
+	{ name => 'Epidermal Growth Factor', abbr => 'EGF', mw => 40.0 },
+	{ name => 'Ferritin', abbr => 'Fer', mw => 19.8 },
+	{ name => 'Fibrinogen', abbr => 'Fib', mw => 63.5 },
+	{ name => 'Fumerase', abbr => 'Fum', mw => 48.5 },
+	{ name => 'G3P Dehydrogenase', abbr => 'GDH', mw => 36.0 },
+	{ name => 'Green Fluorescent Protein', abbr => 'GFP', mw => 28.0 },
+	{ name => 'Hemoglobin', abbr => 'Hem', mw => 16.7 },
+	{ name => 'Histone', abbr => 'His', mw => 15.0 },
+	{ name => 'Horseradish peroxidase', abbr => 'HP', mw => 34.0 },
+	{ name => 'Lactalbumin', abbr => 'Lac', mw => 13.0 },
+	{ name => 'Leghemoglobin', abbr => 'Leg', mw => 16.0 },
+	{ name => 'Lipase', abbr => 'Lip', mw => 40.0 },
+	{ name => 'Luciferase', abbr => 'Luc', mw => 50.0 },
+	{ name => 'Lysozyme', abbr => 'Lys', mw => 14.4 },
+	{ name => 'Myelin Basic Protein', abbr => 'MBP', mw => 18.0 },
+	{ name => 'Myoglobin', abbr => 'Myo', mw => 18.0 },
+	{ name => 'Neuraminidase', abbr => 'Neu', mw => 50.0 },
+	{ name => 'Ovalbumin', abbr => 'Ova', mw => 45.0 },
+	{ name => 'Pepsin', abbr => 'Pep', mw => 34.5 },
+	{ name => 'Phospholypase', abbr => 'Pho', mw => 19.5 },
+	{ name => 'Prostate-Specific Antigen', abbr => 'PSA', mw => 30.0 },
+	{ name => 'Pyruvate Kinase', abbr => 'PK', mw => 60.0 },
+	{ name => 'Ribonuclease A', abbr => 'RibA', mw => 13.7 },
+	{ name => 'Serine Protease', abbr => 'Ser', mw => 22.0 },
+	{ name => 'Serum Albumin', abbr => 'Alb', mw => 66.2 },
+	{ name => 'Streptavidin', abbr => 'Stp', mw => 13.2 },
+	{ name => 'Succinate Ligase', abbr => 'SL', mw => 20.9 },
+	{ name => 'Sucrase', abbr => 'Suc', mw => 51.0 },
+	{ name => 'Tropomyosin', abbr => 'Trop', mw => 35.0 },
+	{ name => 'Trypsin', abbr => 'Tryp', mw => 23.5 },
+	{ name => 'Urease A', abbr => 'Ure', mw => 26.5 },
+);
+
+# ----------------------------
+# 2a) Helpers
+# ----------------------------
+sub random_choice {
+	my (@items) = @_;
+	my $count = scalar(@items);
+	die 'Random choice requires at least one item.' if $count < 1;
+	my $idx = random(0, $count - 1, 1);
+	return $items[$idx];
+}
+
+sub shuffle_list {
+	my (@items) = @_;
+	for (my $i = $#items; $i > 0; $i--) {
+		my $j = random(0, $i, 1);
+		@items[$i, $j] = @items[$j, $i];
+	}
+	return @items;
+}
+
+sub sample_unique {
+	my ($count, @items) = @_;
+	die 'Sample size exceeds pool size.' if $count > scalar(@items);
+	my @pool = @items;
+	my @sampled = ();
+	for my $k (1 .. $count) {
+		my $idx = random(0, $#pool, 1);
+		push @sampled, $pool[$idx];
+		splice(@pool, $idx, 1);
+	}
+	return @sampled;
+}
+
+sub sort_proteins_by_mw {
+	my (@pool) = @_;
+	my @sorted = ();
+	for my $protein (@pool) {
+		my $inserted = 0;
+		for (my $i = 0; $i < scalar(@sorted); $i++) {
+			if ($protein->{mw} < $sorted[$i]->{mw}) {
+				splice(@sorted, $i, 0, $protein);
+				$inserted = 1;
+				last;
+			}
+		}
+		if (!$inserted) {
+			push @sorted, $protein;
+		}
+	}
+	return @sorted;
+}
+
+sub sort_choice_labels_by_numeric_mw {
+	my (@labels) = @_;
+	my @pairs = ();
+	for my $label (@labels) {
+		my $mw = 0.0;
+		if ($label =~ /([0-9]+(?:\.[0-9]+)?)/) {
+			$mw = $1 + 0.0;
+		}
+		push @pairs, { label => $label, mw => $mw };
+	}
+
+	my @sorted_pairs = ();
+	for my $entry (@pairs) {
+		my $inserted = 0;
+		for (my $i = 0; $i < scalar(@sorted_pairs); $i++) {
+			if ($entry->{mw} < $sorted_pairs[$i]->{mw}) {
+				splice(@sorted_pairs, $i, 0, $entry);
+				$inserted = 1;
+				last;
+			}
+		}
+		if (!$inserted) {
+			push @sorted_pairs, $entry;
+		}
+	}
+	return map { $_->{label} } @sorted_pairs;
+}
+
+sub molecular_weight_to_distance {
+	my ($mw) = @_;
+	return $INTERCEPT - log($mw) * $SLOPE;
+}
+
+sub distance_to_molecular_weight {
+	my ($dist) = @_;
+	return exp(($INTERCEPT - $dist) / $SLOPE);
+}
+
+sub get_protein_set_for_gel {
+	my ($num_proteins) = @_;
+	my @protein_subset = sample_unique($SUBSET_SIZE, @PROTEIN_BANK);
+	@protein_subset = sort_proteins_by_mw(@protein_subset);
+
+	my @gel_set = ();
+
+	my @first_few_entries = ();
+	for my $k (1 .. $PULL_SIZE) {
+		last if scalar(@protein_subset) < 1;
+		push @first_few_entries, shift @protein_subset;
+	}
+	return () if scalar(@first_few_entries) < 1;
+	my $first_entry = random_choice(@first_few_entries);
+	push @gel_set, $first_entry;
+	my $min_log_mw = log($first_entry->{mw});
+
+	my @last_few_entries = ();
+	for my $k (1 .. $PULL_SIZE) {
+		last if scalar(@protein_subset) < 1;
+		push @last_few_entries, pop @protein_subset;
+	}
+	return () if scalar(@last_few_entries) < 1;
+	my $last_entry = random_choice(@last_few_entries);
+	push @gel_set, $last_entry;
+	my $max_log_mw = log($last_entry->{mw});
+
+	my $log_slope = ($max_log_mw - $min_log_mw) / $num_proteins;
+
+	my $prev_mw = 0.0;
+	my $prev_prot = undef;
+	my $index = 1;
+	my $ideal_mw = exp($log_slope * $index + $min_log_mw);
+
+	for my $protein (@protein_subset) {
+		my $current_mw = $protein->{mw};
+		if ($current_mw < $ideal_mw) {
+			$prev_prot = $protein;
+			$prev_mw = $current_mw;
+			next;
+		}
+
+		my $chosen = $protein;
+		if (defined($prev_prot)) {
+			if (abs($ideal_mw - $current_mw) >= abs($ideal_mw - $prev_mw)) {
+				$chosen = $prev_prot;
+			}
+		}
+		push @gel_set, $chosen;
+
+		$index += 1;
+		$ideal_mw = exp($log_slope * $index + $min_log_mw);
+		last if $index > $num_proteins;
+		last if $ideal_mw > $last_entry->{mw};
+	}
+
+	@gel_set = sort_proteins_by_mw(@gel_set);
+	if (scalar(@gel_set) < $num_proteins || scalar(@gel_set) > $num_proteins + 1) {
+		return ();
+	}
+	return @gel_set;
+}
+
+sub get_unknown {
+	my ($gap, @gel_set) = @_;
+	if (!defined($gap)) {
+		$gap = random(1, scalar(@gel_set) - 1, 1);
+	}
+
+	my $low_mw = $gel_set[$gap - 1]->{mw};
+	my $high_mw = $gel_set[$gap]->{mw};
+	my $mw_range = ($high_mw - $low_mw) / 4.0;
+
+	my $low_dist = molecular_weight_to_distance($low_mw);
+	my $high_dist = molecular_weight_to_distance($high_mw);
+	my $adj_rand = random(0, 10000, 1) / 10000.0 * 0.4 + 0.3;
+
+	my $unknown_dist = $adj_rand * ($high_dist - $low_dist) + $low_dist;
+	my $unknown_mw = distance_to_molecular_weight($unknown_dist);
+
+	return ($unknown_mw, $unknown_dist, $mw_range, $gap);
+}
+
+sub format_results_grid_html {
+	my ($unknown_dist, @gel_set) = @_;
+	my $html = '';
+	$html .= "<div style='display:grid; grid-template-columns: 47% 26% 27%; border:2px solid #000; font-size:14px; width:100%; max-width:760px;'>";
+	$html .= "<div style='padding:6px; font-weight:700; background:#f2f2f2; border-bottom:2px solid #888;'>Protein Name</div>";
+	$html .= "<div style='padding:6px; font-weight:700; background:#f2f2f2; border-bottom:2px solid #888; text-align:center;'>Molecular Weight (kDa)</div>";
+	$html .= "<div style='padding:6px; font-weight:700; background:#f2f2f2; border-bottom:2px solid #888; text-align:center;'>Migration Distance (cm)</div>";
+
+	for my $protein (@gel_set) {
+		my $dist = molecular_weight_to_distance($protein->{mw});
+		$html .= "<div style='padding:6px; border-top:1px solid #ddd;'>" . $protein->{name} . " (" . $protein->{abbr} . ")</div>";
+		$html .= sprintf("<div style='padding:6px; border-top:1px solid #ddd; text-align:center;'>%.1f</div>", $protein->{mw});
+		$html .= sprintf("<div style='padding:6px; border-top:1px solid #ddd; text-align:center;'>%.2f</div>", $dist);
+	}
+
+	$html .= "<div style='padding:6px; border-top:3px double #777; background:#fffacd; font-weight:700;'>Unknown</div>";
+	$html .= "<div style='padding:6px; border-top:3px double #777; background:#fffacd; text-align:center; font-weight:700;'>?</div>";
+	$html .= sprintf("<div style='padding:6px; border-top:3px double #777; background:#fffacd; text-align:center; font-weight:700;'>%.2f</div>", $unknown_dist);
+	$html .= "</div>";
+	return $html;
+}
+
+# ----------------------------
+# 2b) Randomization and choices
+# ----------------------------
+my $max_attempts = 60;
+my $question_built = 0;
+
+for my $attempt (1 .. $max_attempts) {
+	my @gel_set = get_protein_set_for_gel($NUM_CHOICES + 1);
+	next if scalar(@gel_set) < ($NUM_CHOICES + 1);
+
+	my ($unknown_mw, $unknown_dist, $mw_range, $gap) = get_unknown(undef, @gel_set);
+	my @choices_unsorted = ();
+
+	for my $i (0 .. $NUM_CHOICES - 1) {
+		my $j = $i + 1;
+		next if $j == $gap;
+		my ($mw_alt, $d_alt, $r_alt, $g_alt) = get_unknown($j, @gel_set);
+		push @choices_unsorted, sprintf('%.0f kDa', $mw_alt);
+	}
+
+	$answer_text = sprintf('%.0f kDa', $unknown_mw);
+	push @choices_unsorted, $answer_text;
+
+	my %seen = ();
+	my @choices_unique = ();
+	for my $choice (@choices_unsorted) {
+		next if $seen{$choice};
+		$seen{$choice} = 1;
+		push @choices_unique, $choice;
+	}
+	next if scalar(@choices_unique) < 3;
+
+	my @choices_sorted = sort_choice_labels_by_numeric_mw(@choices_unique);
+	@choices = @choices_sorted;
+
+	$table_html = format_results_grid_html($unknown_dist, @gel_set);
+	$mw_range_solution = sprintf('%.1f', $mw_range);
+	$rb = RadioButtons(
+		[@choices],
+		$answer_text,
+		labels        => 'ABC',
+		displayLabels => 1,
+		randomize     => 0,
+		separator     => '<div style="margin-bottom: 0.7em;"></div>',
+	);
+
+	$question_built = 1;
+	last;
+}
+
+if (!$question_built) {
+	die 'Failed to build a valid protein gel migration question after repeated attempts.';
+}
+
+# ----------------------------
+# 3) Statement (PGML)
+# ----------------------------
+BEGIN_PGML
+In this task, data from an SDS-PAGE experiment is provided. Proteins are separated by molecular weight, and the results panel includes standard proteins with known molecular weights plus one unknown protein.
+
+[$table_html]*
+
+Estimate the molecular weight of the unknown protein by comparing its migration distance with those of the standards.
+
+[_]{$rb}
+END_PGML
+
+# ----------------------------
+# 4) Solution
+# ----------------------------
+BEGIN_PGML_SOLUTION
+The best estimate is <b>[$answer_text]</b>.
+
+The unknown migration distance falls between neighboring standards, and SDS-PAGE migration is approximately linear with ln(MW). The generated numeric tolerance for this instance is about +/- [$mw_range_solution] kDa.
+END_PGML_SOLUTION
+
+ENDDOCUMENT();
