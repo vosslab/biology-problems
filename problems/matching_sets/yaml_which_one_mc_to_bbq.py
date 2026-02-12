@@ -252,7 +252,6 @@ def main():
 		print("Too many questions, trimming down to {0} questions".format(args.max_questions))
 		random.shuffle(list_of_complete_questions)
 		less_questions = list_of_complete_questions[:args.max_questions]
-		less_questions.sort()
 		list_of_complete_questions = less_questions
 
 	outfile = 'bbq-WOMC-' + os.path.splitext(os.path.basename(args.input_yaml_file))[0] + '-questions.txt'
@@ -262,7 +261,10 @@ def main():
 	skipped_dupes = 0
 	seen_content_ids = set()
 	output_item_bank = item_bank.ItemBank(allow_mixed=False)
-	for bbformat_question in list_of_complete_questions:
+	for i, question_output in enumerate(list_of_complete_questions, start=1):
+		bbformat_question = bptools.normalize_question_output(question_output, str(i))
+		if bbformat_question is None:
+			continue
 		content_id = get_question_content_id(bbformat_question)
 		if content_id is not None:
 			if content_id in seen_content_ids:

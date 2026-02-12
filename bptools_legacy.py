@@ -5,7 +5,6 @@ import random
 import zlib
 import sys
 import inspect
-import copy
 import argparse
 import subprocess
 from collections import defaultdict
@@ -511,100 +510,6 @@ def _prepare_question_text(question_text: str, question_label: str):
 	return question_text
 
 #==========================
-def _is_item_cls_like(value) -> bool:
-	"""
-	Check whether a value looks like a qti_package_maker item class.
-	"""
-	if value is None:
-		return False
-	if isinstance(value, str):
-		return False
-	if hasattr(value, "_validate") is False:
-		return False
-	if hasattr(value, "item_type") is False:
-		return False
-	return True
-
-#==========================
-def _get_item_kind(item_cls) -> str:
-	"""
-	Resolve canonical item kind name used by bbq writer functions.
-	"""
-	item_type = getattr(item_cls, "item_type", None)
-	if isinstance(item_type, str) and len(item_type) > 0:
-		item_type = item_type.upper()
-		if item_type == "MAT":
-			return "MATCH"
-		return item_type
-	class_name = item_cls.__class__.__name__.upper()
-	if class_name == "MAT":
-		return "MATCH"
-	return class_name
-
-#==========================
-def _serialize_item_cls_to_bbq_text(item_cls):
-	"""
-	Convert an item class into a single-line BBQ text question.
-	"""
-	item_kind = _get_item_kind(item_cls)
-	item_copy = copy.deepcopy(item_cls)
-
-	use_no_click_before = nocheater.use_no_click_div
-	if item_kind in ("FIB", "MULTI_FIB", "NUM", "ORDER"):
-		nocheater.use_no_click_div = False
-
-	try:
-		nocheat_item_cls = nocheater.modify_item_cls(item_copy)
-	finally:
-		nocheater.use_no_click_div = use_no_click_before
-
-	if item_kind == "MC":
-		nocheat_item_cls.answer_text = nocheat_item_cls.choices_list[nocheat_item_cls.answer_index]
-	elif item_kind == "MA":
-		nocheat_item_cls.answers_list = [nocheat_item_cls.choices_list[idx] for idx in nocheat_item_cls.answer_index_list]
-	elif item_kind == "FIB":
-		nocheat_item_cls.answers_list = item_copy.answers_list
-
-	nocheat_item_cls._validate()
-
-	writer_map = {
-		"MC": bbq_write_item.MC,
-		"MA": bbq_write_item.MA,
-		"MATCH": bbq_write_item.MATCH,
-		"FIB": bbq_write_item.FIB,
-		"MULTI_FIB": bbq_write_item.MULTI_FIB,
-		"NUM": bbq_write_item.NUM,
-		"ORDER": bbq_write_item.ORDER,
-	}
-	writer_fn = writer_map.get(item_kind)
-	if writer_fn is None:
-		raise TypeError(f"unsupported item type for BBQ serialization: {item_kind}")
-	return writer_fn(nocheat_item_cls)
-
-#==========================
-def normalize_question_output(question_value, question_label: str = "?"):
-	"""
-	Normalize a generated question output into a BBQ line string.
-
-	Args:
-		question_value: Either a legacy BBQ string or an item_cls object.
-		question_label (str): Label for warnings.
-
-	Returns:
-		str | None: Prepared BBQ line text or None when invalid.
-	"""
-	if _is_item_cls_like(question_value):
-		try:
-			question_text = _serialize_item_cls_to_bbq_text(question_value)
-		except Exception as exc:
-			sys.stderr.write(
-				"WARNING: item serialization failed ({0}): {1}\n".format(question_label, exc)
-			)
-			return None
-		return _prepare_question_text(question_text, question_label)
-	return _prepare_question_text(question_value, question_label)
-
-#==========================
 def _should_print_histogram(questions_list: list) -> bool:
 	"""
 	Check whether questions include MC/MA prefixes.
@@ -616,52 +521,9 @@ def _should_print_histogram(questions_list: list) -> bool:
 		bool: True when MC/MA questions are present.
 	"""
 	for question_text in questions_list:
-		if _is_item_cls_like(question_text):
-			return len(answer_histogram) > 0
 		if question_text.startswith("MC\t") or question_text.startswith("MA\t"):
 			return True
 	return False
-
-#==========================
-def _get_question_identity(question_value):
-	"""
-	Build a stable identity key for duplicate filtering.
-	"""
-	if _is_item_cls_like(question_value):
-		item_crc16 = getattr(question_value, "item_crc16", None)
-		if isinstance(item_crc16, str) and len(item_crc16) > 0:
-			return ("item_crc16", item_crc16)
-		return ("item_repr", repr(question_value))
-	if isinstance(question_value, str):
-		prepared = _prepare_question_text(question_value, "?")
-		if prepared is None:
-			return None
-		return ("string", prepared.rstrip("\n"))
-	return None
-
-#==========================
-def _sync_histogram_from_item_cls_questions(questions: list):
-	"""
-	Rebuild MC/MA histogram counters from accepted item_cls questions only.
-	"""
-	bptools_has_only_item_cls = True
-	for question_value in questions:
-		if _is_item_cls_like(question_value) is False:
-			bptools_has_only_item_cls = False
-			break
-	if bptools_has_only_item_cls is False:
-		return
-	answer_histogram.clear()
-	global question_count
-	question_count = 0
-	for item_cls in questions:
-		item_type = getattr(item_cls, "item_type", "").upper()
-		if item_type == "MC":
-			answer_histogram[letters[item_cls.answer_index]] += 1
-		elif item_type == "MA":
-			for answer_index in item_cls.answer_index_list:
-				answer_histogram[letters[answer_index]] += 1
-		question_count += 1
 
 #==========================
 def _collect_questions(write_question, args, print_histogram_flag=True) -> list:
@@ -678,8 +540,6 @@ def _collect_questions(write_question, args, print_histogram_flag=True) -> list:
 	"""
 	_apply_anticheat_args(args)
 	questions = []
-	seen_question_ids = set()
-	skipped_duplicates = 0
 	n = 0
 	max_questions = args.max_questions
 	for _ in range(args.duplicates):
@@ -689,27 +549,13 @@ def _collect_questions(write_question, args, print_histogram_flag=True) -> list:
 				"WARNING: write_question returned a list; use collect_question_batches\n"
 			)
 			continue
-		if _is_item_cls_like(question_text):
-			prepared_question = question_text
-		else:
-			prepared_question = _prepare_question_text(question_text, str(n + 1))
+		prepared_question = _prepare_question_text(question_text, str(n + 1))
 		if prepared_question is None:
 			continue
-		question_identity = _get_question_identity(prepared_question)
-		if question_identity is not None and question_identity in seen_question_ids:
-			skipped_duplicates += 1
-			continue
-		if question_identity is not None:
-			seen_question_ids.add(question_identity)
 		questions.append(prepared_question)
 		n += 1
 		if max_questions is not None and n >= max_questions:
 			break
-	if skipped_duplicates > 0:
-		sys.stderr.write(
-			"INFO: skipped {0} duplicate questions during collection\n".format(skipped_duplicates)
-		)
-	_sync_histogram_from_item_cls_questions(questions)
 	if print_histogram_flag and _should_print_histogram(questions):
 		print_histogram()
 	_warn_shortfall(n, args)
@@ -743,8 +589,6 @@ def collect_question_batches(write_question_batch, args, print_histogram_flag=Tr
 			"Only use batch writers when one attempt must emit multiple questions.\n"
 		)
 	questions = []
-	seen_question_ids = set()
-	skipped_duplicates = 0
 	n = 0
 	max_questions = args.max_questions
 	for _ in range(args.duplicates):
@@ -762,29 +606,15 @@ def collect_question_batches(write_question_batch, args, print_histogram_flag=Tr
 		if len(batch) == 0:
 			continue
 		for question_text in batch:
-			if _is_item_cls_like(question_text):
-				prepared_question = question_text
-			else:
-				prepared_question = _prepare_question_text(question_text, str(n + 1))
+			prepared_question = _prepare_question_text(question_text, str(n + 1))
 			if prepared_question is None:
 				continue
-			question_identity = _get_question_identity(prepared_question)
-			if question_identity is not None and question_identity in seen_question_ids:
-				skipped_duplicates += 1
-				continue
-			if question_identity is not None:
-				seen_question_ids.add(question_identity)
 			questions.append(prepared_question)
 			n += 1
 			if max_questions is not None and n >= max_questions:
 				break
 		if max_questions is not None and n >= max_questions:
 			break
-	if skipped_duplicates > 0:
-		sys.stderr.write(
-			"INFO: skipped {0} duplicate questions during collection\n".format(skipped_duplicates)
-		)
-	_sync_histogram_from_item_cls_questions(questions)
 	if print_histogram_flag and _should_print_histogram(questions):
 		print_histogram()
 	_warn_shortfall(n, args)
@@ -863,11 +693,8 @@ def _write_questions_to_file(questions: list, outfile: str):
 	word = "question" if question_count == 1 else "questions"
 	print(f"\nWriting {question_count} {word} to file: {outfile}")
 	with open(outfile, "w") as f:
-		for i, question_text in enumerate(questions, start=1):
-			prepared_question = normalize_question_output(question_text, str(i))
-			if prepared_question is None:
-				continue
-			f.write(prepared_question)
+		for question_text in questions:
+			f.write(question_text)
 	print(f"... saved {question_count} {word} to {outfile}\n")
 
 #==========================
@@ -905,20 +732,23 @@ def formatBB_MC_Question(N: int, question_text: str, choices_list, answer_text):
 	# deal with item classes
 	item_cls = item_types.MC(question_text, choices_list, answer_text)
 	item_cls.item_number = N
-	item_cls._validate()
+	nocheat_item_cls = nocheater.modify_item_cls(item_cls)
+	nocheat_item_cls.answer_text = nocheat_item_cls.choices_list[nocheat_item_cls.answer_index]
+	nocheat_item_cls._validate()
 	# update histogram
 	for i, choice_text in enumerate(choices_list):
 		if choice_text == answer_text:
 			answer_histogram[letters[i]] += 1
 	# get format
 	human_readable_text = human_write_item.MC(item_cls)
+	bb_question_text = bbq_write_item.MC(nocheat_item_cls)
 	if human_readable_text is not None:
 		print(f"{N:3d}. {human_readable_text}")
 
 	# update countr and return
 	global question_count
 	question_count += 1
-	return item_cls
+	return bb_question_text
 
 #=====================
 def formatBB_MA_Question(N: int, question_text: str, choices_list, answers_list,
@@ -926,20 +756,23 @@ def formatBB_MA_Question(N: int, question_text: str, choices_list, answers_list,
 	# deal with item classes
 	item_cls = item_types.MA(question_text, choices_list, answers_list, min_answers_required, allow_all_correct)
 	item_cls.item_number = N
-	item_cls._validate()
+	nocheat_item_cls = nocheater.modify_item_cls(item_cls)
+	nocheat_item_cls.answers_list = [nocheat_item_cls.choices_list[idx] for idx in nocheat_item_cls.answer_index_list]
+	nocheat_item_cls._validate()
 	# update histogram
 	for i, choice_text in enumerate(choices_list):
 		if choice_text in answers_list:
 			answer_histogram[letters[i]] += 1
 	# get format
 	human_readable_text = human_write_item.MA(item_cls)
+	bb_question_text = bbq_write_item.MA(nocheat_item_cls)
 	if human_readable_text is not None:
 		print(f"{N:3d}. {human_readable_text}")
 
 	# update counter and return
 	global question_count
 	question_count += 1
-	return item_cls
+	return bb_question_text
 
 #=====================
 def formatBB_MAT_Question(N: int, question_text: str, prompts_list, choices_list):
@@ -978,79 +811,95 @@ def formatBB_MAT_Question(N: int, question_text: str, prompts_list, choices_list
 	colored_prompts_list = _maybe_color_prompts_deterministic(prompts_list)
 	item_cls = item_types.MATCH(question_text, colored_prompts_list, choices_list)
 	item_cls.item_number = N
-	item_cls._validate()
+	nocheat_item_cls = nocheater.modify_item_cls(item_cls)
+	nocheat_item_cls._validate()
 	# get format
 	human_readable_text = human_write_item.MATCH(item_cls)
+	bb_question_text = bbq_write_item.MATCH(nocheat_item_cls)
 	if human_readable_text is not None:
 		print(f"{N:3d}. {human_readable_text}")
 	# update counter and return
 	global question_count
 	question_count += 1
-	return item_cls
+	return bb_question_text
 
 #=====================
 def formatBB_FIB_Question(N: int, question_text: str, answers_list):
 	# deal with item classes
 	item_cls = item_types.FIB(question_text, answers_list)
 	item_cls.item_number = N
-	item_cls._validate()
+	nocheater.use_no_click_div = False
+	nocheat_item_cls = nocheater.modify_item_cls(item_cls)
+	nocheat_item_cls.answers_list = item_cls.answers_list
+	nocheat_item_cls._validate()
 	# get format
 	human_readable_text = human_write_item.FIB(item_cls)
+	bb_question_text = bbq_write_item.FIB(nocheat_item_cls)
 	if human_readable_text is not None:
 		print(f"{N:3d}. {human_readable_text}")
 
 	# update counter and return
 	global question_count
 	question_count += 1
-	return item_cls
+	return bb_question_text
 
 #=====================
 def formatBB_FIB_PLUS_Question(N: int, question_text: str, answer_map: dict) -> str:
 	# deal with item classes
 	item_cls = item_types.MULTI_FIB(question_text, answer_map)
 	item_cls.item_number = N
-	item_cls._validate()
+	nocheater.use_no_click_div = False
+	nocheat_item_cls = nocheater.modify_item_cls(item_cls)
+	#nocheat_item_cls.answer_map = item_cls.answer_map
+	nocheat_item_cls._validate()
 	# get format
 	human_readable_text = human_write_item.MULTI_FIB(item_cls)
+	bb_question_text = bbq_write_item.MULTI_FIB(nocheat_item_cls)
 	if human_readable_text is not None:
 		print(f"{N:3d}. {human_readable_text}")
 
 	# update counter and return
 	global question_count
 	question_count += 1
-	return item_cls
+	return bb_question_text
 
 #=====================
 def formatBB_NUM_Question(N: int, question_text: str, answer_float, tolerance_float, tol_message=True):
 	# deal with item classes
 	item_cls = item_types.NUM(question_text, answer_float, tolerance_float, tol_message)
 	item_cls.item_number = N
-	item_cls._validate()
+	nocheater.use_no_click_div = False
+	nocheat_item_cls = nocheater.modify_item_cls(item_cls)
+	nocheat_item_cls._validate()
 	# get format
 	human_readable_text = human_write_item.NUM(item_cls)
+	bb_question_text = bbq_write_item.NUM(nocheat_item_cls)
 	if human_readable_text is not None:
 		print(f"{N:3d}. {human_readable_text}")
 
 	# update counter and return
 	global question_count
 	question_count += 1
-	return item_cls
+	return bb_question_text
 
 #=====================
 def formatBB_ORD_Question(N: int, question_text: str, ordered_answers_list):
 	# deal with item classes
 	item_cls = item_types.ORDER(question_text, ordered_answers_list)
 	item_cls.item_number = N
-	item_cls._validate()
+	nocheater.use_no_click_div = False
+	nocheat_item_cls = nocheater.modify_item_cls(item_cls)
+	nocheat_item_cls._validate()
 	# get format
 	human_readable_text = human_write_item.ORDER(item_cls)
+	bb_question_text = bbq_write_item.ORDER(nocheat_item_cls)
 	if human_readable_text is not None:
 		print(f"{N:3d}. {human_readable_text}")
 
 	# update counter and return
 	global question_count
 	question_count += 1
-	return item_cls
+	return bb_question_text
 
 #===================================================================================
 #===================================================================================
@@ -1110,38 +959,6 @@ def applyReplacementRulesToList(list_of_text_strings, replacement_rule_dict):
 		replacement_rule_dict |= base_replacement_rule_dict
 	new_list_of_text_strings = []
 	for text_string in list_of_text_strings:
-		if _is_item_cls_like(text_string):
-			for attr_name in (
-				"question_text",
-				"answer_text",
-				"choices_list",
-				"answers_list",
-				"prompts_list",
-				"matching_list",
-			):
-				if hasattr(text_string, attr_name):
-					attr_value = getattr(text_string, attr_name)
-					if isinstance(attr_value, str):
-						for find_text, replace_text in replacement_rule_dict.items():
-							if not replace_text.startswith('<strong>'):
-								replace_text = f'<strong>{replace_text}</strong>'
-							attr_value = attr_value.replace(find_text, replace_text)
-						setattr(text_string, attr_name, attr_value)
-					elif isinstance(attr_value, list):
-						new_values = []
-						for value in attr_value:
-							if not isinstance(value, str):
-								new_values.append(value)
-								continue
-							new_value = value
-							for find_text, replace_text in replacement_rule_dict.items():
-								if not replace_text.startswith('<strong>'):
-									replace_text = f'<strong>{replace_text}</strong>'
-								new_value = new_value.replace(find_text, replace_text)
-							new_values.append(new_value)
-						setattr(text_string, attr_name, new_values)
-			new_list_of_text_strings.append(text_string)
-			continue
 		if not isinstance(text_string, str):
 			raise TypeError(f"value is not string: {text_string}")
 		for find_text, replace_text in replacement_rule_dict.items():

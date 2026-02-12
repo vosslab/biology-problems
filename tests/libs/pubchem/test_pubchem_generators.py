@@ -65,9 +65,10 @@ def test_glycolysis_write_question_contains_prompt():
 	)
 	mod.GLOBAL_MOLECULE_DATA = mod.load_molecules()
 	args = SimpleNamespace(num_choices=4)
-	text = mod.write_question(1, args)
-	assert "Glycolysis" in text
-	assert "metabolic pathway" in text
+	item = mod.write_question(1, args)
+	question_text = getattr(item, "question_text", "")
+	assert "Glycolysis" in question_text
+	assert "metabolic pathway" in question_text
 
 
 def test_macromolecule_guide_text_mentions_phosphate_groups():

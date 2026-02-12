@@ -125,14 +125,16 @@ def main():
 		print("Too many questions ({0}), trimming down to {1} questions".format(len(list_of_complete_questions), args.max_questions))
 		random.shuffle(list_of_complete_questions)
 		less_questions = list_of_complete_questions[:args.max_questions]
-		less_questions.sort()
 		list_of_complete_questions = less_questions
 
 	outfile = 'bbq-MATCH-' + os.path.splitext(os.path.basename(args.input_yaml_file))[0] + '-questions.txt'
 	print('writing to file: '+outfile)
 	f = open(outfile, 'w')
 	N = 0
-	for bbformat_question in list_of_complete_questions:
+	for i, question_output in enumerate(list_of_complete_questions, start=1):
+		bbformat_question = bptools.normalize_question_output(question_output, str(i))
+		if bbformat_question is None:
+			continue
 		N += 1
 		#crc16_value = bptools.getCrc16_FromString(bbformat_question)
 		#MAT TAB question text TAB answer text TAB matching text TAB answer two text TAB matching two text

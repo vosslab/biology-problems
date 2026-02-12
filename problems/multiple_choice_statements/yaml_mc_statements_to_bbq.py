@@ -309,7 +309,6 @@ def main():
 		print(f"\nToo many questions, trimming down to {args.max_questions} questions.")
 		random.shuffle(list_of_complete_questions)
 		less_questions = list_of_complete_questions[:args.max_questions]
-		less_questions.sort()
 		list_of_complete_questions = less_questions
 
 	#list_of_complete_questions = bptools.applyReplacementRulesToList(list_of_complete_questions,
@@ -333,7 +332,10 @@ def main():
 		N = 0
 
 		# Generate the specified number of questions
-		for bbformat_question in list_of_complete_questions:
+		for i, question_output in enumerate(list_of_complete_questions, start=1):
+			bbformat_question = bptools.normalize_question_output(question_output, str(i))
+			if bbformat_question is None:
+				continue
 			N += 1
 			f.write(bbformat_question)
 
