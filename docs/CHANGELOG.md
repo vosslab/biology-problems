@@ -1,6 +1,9 @@
 # Changelog
 
 ## 2026-02-12
+- Updated [problems/matching_sets/yaml_match_to_bbq.py](../problems/matching_sets/yaml_match_to_bbq.py) so each duplicate run generates two sampled matching scenarios (instead of producing large combination batches), reducing runtime and oversized intermediate question lists.
+- Removed the `--questions-per-run` argument from [problems/matching_sets/yaml_which_one_mc_to_bbq.py](../problems/matching_sets/yaml_which_one_mc_to_bbq.py) and fixed generation to one question per duplicate run.
+- Updated [problems/matching_sets/yaml_which_one_mc_to_bbq.py](../problems/matching_sets/yaml_which_one_mc_to_bbq.py) so answer histogram totals are rebuilt from unique written questions after deduplication, preventing duplicate attempts from inflating reported question counts.
 - Reworked scenario selection in [problems/matching_sets/yaml_which_one_mc_to_bbq.py](../problems/matching_sets/yaml_which_one_mc_to_bbq.py) to avoid materializing all key combinations; the script now builds lightweight per-key scenario pools and uses Option 2b selection (shuffle once, then modulo) for faster generation.
 - Updated [problems/matching_sets/yaml_which_one_mc_to_bbq.py](../problems/matching_sets/yaml_which_one_mc_to_bbq.py) to de-duplicate at file-write time by question content ID (CRC token), so duplicate generation attempts are allowed but duplicate questions are skipped from the output file.
 - Added a PGML conversion of the two-protein isoelectric-migration generator in [problems/biochemistry-problems/isoelectric_two_proteins.pgml](../problems/biochemistry-problems/isoelectric_two_proteins.pgml), preserving paired-protein pI separation, pH scenario generation, and migration-direction multiple-choice logic.

@@ -11,11 +11,11 @@ import sys
 import pprint
 import random
 import argparse
-import itertools
 
 import bptools
 
 N = 0
+QUESTIONS_PER_RUN = 2
 
 #=======================
 #=======================
@@ -43,24 +43,29 @@ def permuteMatchingPairs(yaml_data, num_choices=None, max_questions=None):
 		num_choices = yaml_data.get('items to match per question', 5)
 
 	all_keys = list(matching_pairs_dict.keys())
-	all_combs = list(itertools.combinations(all_keys, num_choices))
-	print('Created {0} combinations from {1} items'.format(len(all_combs), len(all_keys)))
-	#filter combinations
-	if len(exclude_pairs_list) > 0:
-		filter_combs = []
-		for comb in all_combs:
-			excluded_comb = False
-			#print(comb)
-			for a,b in exclude_pairs_list:
-				if a in comb and b in comb:
-					excluded_comb = True
-			if excluded_comb is False:
-				filter_combs.append(comb)
-		print('Filtered {0} combinations from {1} items'.format(len(filter_combs), len(all_combs)))
-		all_combs = filter_combs
-	random.shuffle(all_combs)
-	for comb in all_combs:
+	if num_choices > len(all_keys):
+		print('No scenarios: num_choices ({0}) exceeds items ({1})'.format(num_choices, len(all_keys)))
+		return list_of_complete_questions
+
+	exclude_pair_set = {tuple(sorted((a, b))) for a, b in exclude_pairs_list}
+
+	def _is_allowed(answers_list) -> bool:
+		if len(exclude_pair_set) == 0:
+			return True
+		answer_set = set(answers_list)
+		for a, b in exclude_pair_set:
+			if a in answer_set and b in answer_set:
+				return False
+		return True
+
+	attempts = 0
+	max_attempts = max(50, QUESTIONS_PER_RUN * 40)
+	while len(list_of_complete_questions) < QUESTIONS_PER_RUN and attempts < max_attempts:
+		attempts += 1
+		comb = tuple(sorted(random.sample(all_keys, num_choices)))
 		answers_list = list(comb)
+		if _is_allowed(answers_list) is False:
+			continue
 		random.shuffle(answers_list)
 		matching_list = []
 		for key in answers_list:
@@ -77,8 +82,8 @@ def permuteMatchingPairs(yaml_data, num_choices=None, max_questions=None):
 		#matching_list = bptools.append_clear_font_space_to_list(matching_list)
 		complete_question = bptools.formatBB_MAT_Question(N, question, answers_list, matching_list)
 		list_of_complete_questions.append(complete_question)
-		if len(list_of_complete_questions) > max_questions*10:
-			break
+
+	print('Generated {0} scenarios this run (attempts: {1})'.format(len(list_of_complete_questions), attempts))
 
 	#list_of_complete_questions = bptools.applyReplacementRulesToList(list_of_complete_questions, yaml_data.get('replacement_rules'))
 	return list_of_complete_questions

@@ -87,6 +87,7 @@ def makeQuestions2(yaml_data, num_choices=None, flip=False):
 		for value in matching_pairs_dict[key]:
 			pair = (key, value)
 			key_value_pairs.append(pair)
+	random.shuffle(key_value_pairs)
 	print('Preparing scenario pools from {0} items'.format(len(all_keys)))
 	if num_choices > len(all_keys):
 		print("No questions generated: num_choices exceeds available key count.")
@@ -137,7 +138,7 @@ def makeQuestions2(yaml_data, num_choices=None, flip=False):
 	print('Prepared {0} scenarios across {1} keys'.format(total_scenarios, len(all_keys)))
 
 	N = 0
-	for pair in key_value_pairs:
+	for pair in key_value_pairs[:2]:
 		key, value = pair
 		key_scenarios = scenarios_by_key.get(key, [])
 		if len(key_scenarios) == 0:
@@ -211,6 +212,23 @@ def get_question_content_id(bbformat_question: str) -> str | None:
 
 #=======================
 #=======================
+def sync_bptools_histogram_to_item_bank(output_item_bank):
+	bptools.answer_histogram.clear()
+	bptools.question_count = 0
+
+	for crc_key in output_item_bank.items_dict_key_list:
+		item_cls = output_item_bank.items_dict[crc_key]
+		if item_cls.item_type == "MC":
+			letter = bptools.letters[item_cls.answer_index]
+			bptools.answer_histogram[letter] += 1
+		elif item_cls.item_type == "MA":
+			for answer_index in item_cls.answer_index_list:
+				letter = bptools.letters[answer_index]
+				bptools.answer_histogram[letter] += 1
+		bptools.question_count += 1
+
+#=======================
+#=======================
 def main():
 	args = parse_arguments()
 	bptools.apply_anticheat_args(args)
@@ -267,6 +285,7 @@ def main():
 	print("Wrote {0} questions to file.".format(N))
 	if skipped_dupes > 0:
 		print("Skipped {0} duplicate questions at write time.".format(skipped_dupes))
+	sync_bptools_histogram_to_item_bank(output_item_bank)
 	print('')
 	bptools.print_histogram()
 
