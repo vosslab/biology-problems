@@ -1,0 +1,408 @@
+## TITLE('Biochemistry: Identify protein on a 2D gel')
+## DESCRIPTION
+## A simulated 2D gel shows lettered protein spots separated by isoelectric
+## focusing and SDS-PAGE. Students use a protein data table to identify which
+## spot matches a given protein.
+## ENDDESCRIPTION
+## KEYWORDS('2D gel','isoelectric focusing','SDS-PAGE','protein','biochemistry')
+## DBsubject('Biochemistry')
+## DBchapter('Laboratory Techniques')
+## DBsection('Protein Electrophoresis')
+## Level(3)
+## Date('2026-02-12')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	'PGstandard.pl',
+	'PGML.pl',
+	'parserPopUp.pl',
+	'niceTables.pl',
+	'PGcourse.pl',
+);
+
+$showPartialCorrectAnswers = 0;
+
+# ----------------------------
+# 2) Setup
+# ----------------------------
+
+# ----------------------------
+# 2a) Constants
+# ----------------------------
+my $NUM_PROTEINS = 6;
+my $GRID_SIZE = 16;
+my $PI_MIN = 3.0;
+my $PI_MAX = 11.0;
+my $PI_STEP = ($PI_MAX - $PI_MIN) / $GRID_SIZE;
+my $MW_MAX = 200.0;
+my $MW_MIN = 10.0;
+my $LN_MW_MAX = log($MW_MAX);
+my $LN_MW_MIN = log($MW_MIN);
+my $LN_MW_RANGE = $LN_MW_MAX - $LN_MW_MIN;
+
+# ----------------------------
+# 2b) Protein bank
+# ----------------------------
+my @PROTEIN_BANK = (
+	{ name => 'alpha-Amylase', abbr => 'Amy', pi => 5.9, mw => 61.0 },
+	{ name => 'beta-Galactosidase', abbr => 'Gal', pi => 4.6, mw => 175.0 },
+	{ name => 'gamma-Globulin', abbr => 'Glob', pi => 6.6, mw => 57.0 },
+	{ name => 'Actin', abbr => 'Act', pi => 5.3, mw => 43.0 },
+	{ name => 'Agglutinin', abbr => 'Agg', pi => 4.8, mw => 22.0 },
+	{ name => 'Aldehyde Dehydrogenase', abbr => 'Alde', pi => 5.3, mw => 53.0 },
+	{ name => 'Aldolase', abbr => 'Aldo', pi => 8.5, mw => 47.5 },
+	{ name => 'Avidin', abbr => 'Av', pi => 10.5, mw => 16.9 },
+	{ name => 'Casein', abbr => 'Cas', pi => 4.9, mw => 24.0 },
+	{ name => 'Catalase', abbr => 'Cat', pi => 6.7, mw => 65.5 },
+	{ name => 'Chymotrypsin', abbr => 'Chy', pi => 8.4, mw => 25.0 },
+	{ name => 'Cobra Venom Factor', abbr => 'CVF', pi => 5.2, mw => 149.0 },
+	{ name => 'Collagen', abbr => 'Col', pi => 6.6, mw => 134.0 },
+	{ name => 'Cytochrome c', abbr => 'Cyt', pi => 10.2, mw => 13.0 },
+	{ name => 'DNA Ligase', abbr => 'Lig', pi => 6.0, mw => 60.0 },
+	{ name => 'Elastase II', abbr => 'Ela', pi => 8.5, mw => 26.5 },
+	{ name => 'Enolase', abbr => 'Eno', pi => 8.4, mw => 42.5 },
+	{ name => 'Epidermal Growth Factor', abbr => 'EGF', pi => 4.5, mw => 40.0 },
+	{ name => 'Estrogen Binding Protein', abbr => 'EBP', pi => 4.9, mw => 115.0 },
+	{ name => 'Ferritin', abbr => 'Fer', pi => 5.5, mw => 19.8 },
+	{ name => 'Fibrinogen', abbr => 'Fib', pi => 5.8, mw => 63.5 },
+	{ name => 'Fumerase', abbr => 'Fum', pi => 7.6, mw => 48.5 },
+	{ name => 'G3P Dehydrogenase', abbr => 'GDH', pi => 8.3, mw => 36.0 },
+	{ name => 'Green Fluorescent Protein', abbr => 'GFP', pi => 6.2, mw => 28.0 },
+	{ name => 'Heat Shock Protein', abbr => 'HSP', pi => 5.5, mw => 70.1 },
+	{ name => 'Hemoglobin', abbr => 'Hem', pi => 7.1, mw => 16.7 },
+	{ name => 'Hexokinase', abbr => 'Hex', pi => 5.8, mw => 120.0 },
+	{ name => 'Histone', abbr => 'His', pi => 10.8, mw => 15.0 },
+	{ name => 'Horseradish peroxidase', abbr => 'HP', pi => 9.0, mw => 34.0 },
+	{ name => 'Immunoglobulin', abbr => 'IgG', pi => 7.3, mw => 145.0 },
+	{ name => 'Lactalbumin', abbr => 'Lac', pi => 4.3, mw => 13.0 },
+	{ name => 'Leghemoglobin', abbr => 'Leg', pi => 4.7, mw => 16.0 },
+	{ name => 'Lipase', abbr => 'Lip', pi => 4.7, mw => 40.0 },
+	{ name => 'Luciferase', abbr => 'Luc', pi => 5.7, mw => 50.0 },
+	{ name => 'Lysozyme', abbr => 'Lys', pi => 11.0, mw => 14.4 },
+	{ name => 'Myelin Basic Protein', abbr => 'MBP', pi => 9.5, mw => 18.0 },
+	{ name => 'Myoglobin', abbr => 'Myo', pi => 7.0, mw => 18.0 },
+	{ name => 'Neuraminidase', abbr => 'Neu', pi => 5.8, mw => 50.0 },
+	{ name => 'Ovalbumin', abbr => 'Ova', pi => 4.6, mw => 45.0 },
+	{ name => 'Pepsin', abbr => 'Pep', pi => 3.7, mw => 34.5 },
+	{ name => 'Phospholypase', abbr => 'Pho', pi => 4.2, mw => 19.5 },
+	{ name => 'Prostate-Specific Antigen', abbr => 'PSA', pi => 6.8, mw => 30.0 },
+	{ name => 'Pyruvate Kinase', abbr => 'PK', pi => 6.2, mw => 60.0 },
+	{ name => 'Ribonuclease A', abbr => 'RibA', pi => 9.6, mw => 13.7 },
+	{ name => 'SARS-CoV-2 Spike Protein', abbr => 'Spike', pi => 6.2, mw => 149.9 },
+	{ name => 'Serine Protease', abbr => 'Ser', pi => 8.8, mw => 22.0 },
+	{ name => 'Serum Albumin', abbr => 'Alb', pi => 4.8, mw => 66.2 },
+	{ name => 'Streptavidin', abbr => 'Stp', pi => 6.1, mw => 13.2 },
+	{ name => 'Succinate Ligase', abbr => 'SL', pi => 6.5, mw => 20.9 },
+	{ name => 'Sucrase', abbr => 'Suc', pi => 5.5, mw => 51.0 },
+	{ name => 'Transferrin', abbr => 'Trf', pi => 5.6, mw => 80.0 },
+	{ name => 'Tropomyosin', abbr => 'Trop', pi => 4.8, mw => 35.0 },
+	{ name => 'Trypsin', abbr => 'Tryp', pi => 10.5, mw => 23.5 },
+	{ name => 'Urease A', abbr => 'Ure', pi => 5.0, mw => 26.5 },
+	{ name => 'Xylosidase', abbr => 'Xyl', pi => 4.2, mw => 100.0 },
+);
+
+# ----------------------------
+# 2c) Helpers
+# ----------------------------
+sub shuffle_list {
+	my (@items) = @_;
+	for (my $i = $#items; $i > 0; $i--) {
+		my $j = random(0, $i, 1);
+		@items[$i, $j] = @items[$j, $i];
+	}
+	return @items;
+}
+
+sub random_choice {
+	my (@items) = @_;
+	my $count = scalar(@items);
+	die 'Random choice requires at least one item.' if $count < 1;
+	my $idx = random(0, $count - 1, 1);
+	return $items[$idx];
+}
+
+sub pi_to_col {
+	my ($pi) = @_;
+	my $col = int(($pi - $PI_MIN) / $PI_STEP);
+	$col = 0 if $col < 0;
+	$col = $GRID_SIZE - 1 if $col >= $GRID_SIZE;
+	return $col;
+}
+
+sub mw_to_row {
+	my ($mw) = @_;
+	if ($mw <= $MW_MIN) { return $GRID_SIZE - 1; }
+	if ($mw >= $MW_MAX) { return 0; }
+	my $row = int(($LN_MW_MAX - log($mw)) / $LN_MW_RANGE * $GRID_SIZE);
+	$row = 0 if $row < 0;
+	$row = $GRID_SIZE - 1 if $row >= $GRID_SIZE;
+	return $row;
+}
+
+sub gel_cell_css {
+	my ($r, $c) = @_;
+	my $css = 'background:#dcdcdc;width:24px;height:24px;border:1px solid #b8b8b8;';
+	$css .= 'border-top:2px solid #000;' if $r == 0;
+	$css .= 'border-bottom:2px solid #000;' if $r == $GRID_SIZE - 1;
+	$css .= 'border-left:2px solid #000;' if $c == 0;
+	$css .= 'border-right:2px solid #000;' if $c == $GRID_SIZE - 1;
+	return $css;
+}
+
+sub spot_html {
+	my ($letter) = @_;
+	return '<div style="width:20px;height:20px;background:#3a1505;border-radius:50%;'
+		. 'color:#fff;font-weight:700;text-align:center;line-height:20px;'
+		. 'font-size:11px;margin:auto;">' . $letter . '</div>';
+}
+
+sub sort_by_name {
+	my (@pool) = @_;
+	my @sorted = ();
+	for my $protein (@pool) {
+		my $inserted = 0;
+		for (my $i = 0; $i < scalar(@sorted); $i++) {
+			if ($protein->{name} lt $sorted[$i]->{name}) {
+				splice(@sorted, $i, 0, $protein);
+				$inserted = 1;
+				last;
+			}
+		}
+		if (!$inserted) {
+			push @sorted, $protein;
+		}
+	}
+	return @sorted;
+}
+
+sub sort_by_grid_position {
+	my (@pool) = @_;
+	my @sorted = ();
+	for my $protein (@pool) {
+		my $key = $protein->{row} * 100 + $protein->{col};
+		my $inserted = 0;
+		for (my $i = 0; $i < scalar(@sorted); $i++) {
+			my $existing_key = $sorted[$i]->{row} * 100 + $sorted[$i]->{col};
+			if ($key < $existing_key) {
+				splice(@sorted, $i, 0, $protein);
+				$inserted = 1;
+				last;
+			}
+		}
+		if (!$inserted) {
+			push @sorted, $protein;
+		}
+	}
+	return @sorted;
+}
+
+# ----------------------------
+# 2d) Filter protein bank
+# ----------------------------
+my @eligible = ();
+for my $p (@PROTEIN_BANK) {
+	next if $p->{mw} < $MW_MIN;
+	next if $p->{mw} > $MW_MAX;
+	next if $p->{pi} < $PI_MIN;
+	next if $p->{pi} > $PI_MAX;
+	push @eligible, $p;
+}
+
+# Map each protein to its grid cell
+for my $p (@eligible) {
+	$p->{col} = pi_to_col($p->{pi});
+	$p->{row} = mw_to_row($p->{mw});
+}
+
+# ----------------------------
+# 2e) Select 6 well-separated proteins
+# ----------------------------
+my @selected = ();
+my %used_cells = ();
+
+for my $min_dist (3, 2, 1) {
+	@selected = ();
+	%used_cells = ();
+	for my $p (shuffle_list(@eligible)) {
+		last if scalar(@selected) >= $NUM_PROTEINS;
+		my $key = $p->{col} . ',' . $p->{row};
+		next if $used_cells{$key};
+		my $too_close = 0;
+		for my $s (@selected) {
+			my $dist = abs($p->{col} - $s->{col}) + abs($p->{row} - $s->{row});
+			if ($dist < $min_dist) {
+				$too_close = 1;
+				last;
+			}
+		}
+		next if $too_close;
+		push @selected, $p;
+		$used_cells{$key} = 1;
+	}
+	last if scalar(@selected) >= $NUM_PROTEINS;
+}
+
+if (scalar(@selected) < $NUM_PROTEINS) {
+	die 'Could not select enough well-separated proteins for the 2D gel.';
+}
+
+# ----------------------------
+# 2f) Assign letters and pick target
+# ----------------------------
+@selected = sort_by_grid_position(@selected);
+my @letters = ('A', 'B', 'C', 'D', 'E', 'F');
+for my $i (0 .. $#selected) {
+	$selected[$i]->{letter} = $letters[$i];
+}
+
+my $target = random_choice(@selected);
+$target_abbr = $target->{abbr};
+$target_label = '<strong>' . $target->{name} . ' (' . $target->{abbr} . ')</strong>';
+$target_name = $target->{name};
+$target_pi = sprintf('%.1f', $target->{pi});
+$target_mw = sprintf('%.1f', $target->{mw});
+$correct_letter = $target->{letter};
+
+# ----------------------------
+# 2g) Build protein data table
+# ----------------------------
+my @sorted_for_table = sort_by_name(@selected);
+
+my $hdr_css = 'font-weight:700;background:#336699;color:#fff;border-bottom:2px solid #1a3d5c;';
+my @data_rows = ();
+push @data_rows, [
+	[ 'Protein name', cellcss => $hdr_css ],
+	[ 'Abbr.', cellcss => $hdr_css ],
+	[ 'Isoelectric Point (pI)', cellcss => $hdr_css ],
+	[ 'Molecular weight (kDa)', cellcss => $hdr_css ],
+];
+
+for my $p (@sorted_for_table) {
+	push @data_rows, [
+		$p->{name},
+		$p->{abbr},
+		sprintf('%.1f', $p->{pi}),
+		sprintf('%.1f', $p->{mw}),
+	];
+}
+
+$data_table = LayoutTable(
+	[@data_rows],
+	center => 1,
+	tablecss => 'border-collapse:collapse;border:1px solid #000;font-size:14px;',
+	allcellcss => 'border:1px solid #000;padding:6px 10px;text-align:center;',
+);
+
+# ----------------------------
+# 2h) Build 2D gel grid
+# ----------------------------
+
+# Initialize empty grid
+my @grid = ();
+for my $r (0 .. $GRID_SIZE - 1) {
+	for my $c (0 .. $GRID_SIZE - 1) {
+		$grid[$r][$c] = '';
+	}
+}
+
+# Place protein spots
+for my $p (@selected) {
+	$grid[$p->{row}][$p->{col}] = $p->{letter};
+}
+
+# Build LayoutTable rows (no MW tick labels; students infer position from data table)
+my @gel_rows = ();
+
+for my $r (0 .. $GRID_SIZE - 1) {
+	my @row_data = ();
+
+	# Gel cells only (16 columns)
+	for my $c (0 .. $GRID_SIZE - 1) {
+		my $css = gel_cell_css($r, $c);
+		if ($grid[$r][$c]) {
+			push @row_data, [ spot_html($grid[$r][$c]), cellcss => $css ];
+		} else {
+			push @row_data, [ '', cellcss => $css ];
+		}
+	}
+
+	push @gel_rows, [@row_data];
+}
+
+$gel_table = LayoutTable(
+	[@gel_rows],
+	center => 0,
+	tablecss => 'border-collapse:collapse;',
+	allcellcss => 'padding:0;text-align:center;vertical-align:middle;',
+);
+
+# ----------------------------
+# 2i) Axis labels
+# ----------------------------
+$ief_header = '<div style="text-align:center;font-size:13px;margin-bottom:6px;">'
+	. '<b>(+)</b> '
+	. '&larr;&mdash;&mdash; direction of isoelectric focusing &mdash;&mdash;&rarr; '
+	. '<b>(&ndash;)</b>'
+	. '</div>';
+
+$sds_right = '<div style="display:flex;flex-direction:column;align-items:center;'
+	. 'justify-content:center;padding:0 8px;font-size:12px;line-height:1.3;">'
+	. '<div style="writing-mode:vertical-rl;text-orientation:mixed;'
+	. 'text-align:center;margin-bottom:6px;">direction of<br>electrophoresis</div>'
+	. '<div style="font-size:28px;line-height:1;">&darr;</div>'
+	. '</div>';
+
+# ----------------------------
+# 2j) Answer widget
+# ----------------------------
+sub make_popup {
+	return defined &DropDown ? DropDown(@_) : PopUp(@_);
+}
+
+$popup = make_popup(['?', @letters], $correct_letter);
+
+# ----------------------------
+# 3) Statement (PGML)
+# ----------------------------
+BEGIN_PGML
+This is a simulated 2D gel. The proteins in the table were subjected to isoelectric focusing and SDS-PAGE.
+
+[@ $data_table @]*
+
+Select which spot in the 2D gel corresponds to the protein [$target_label]*.
+
+[@ $ief_header @]*
+[@ MODES(HTML => '<div style="display:flex;align-items:center;justify-content:center;gap:6px;">') @]*
+[@ $gel_table @]*
+[@ MODES(HTML => $sds_right) @]*
+[@ MODES(HTML => '</div>') @]*
+
+[_]{$popup}
+END_PGML
+
+# ----------------------------
+# 4) Solution
+# ----------------------------
+BEGIN_PGML_SOLUTION
+The protein [$target_name] ([$target_abbr]) has pI = [$target_pi] and MW = [$target_mw] kDa.
+
+On the 2D gel:
+- The horizontal axis separates by pI (isoelectric point): low pI (acidic) proteins migrate toward the (+) side on the left, and high pI (basic) proteins migrate toward the (-) side on the right.
+- The vertical axis separates by molecular weight via SDS-PAGE: larger proteins remain near the top, while smaller proteins migrate toward the bottom.
+
+Therefore, [$target_abbr] (pI [$target_pi], [$target_mw] kDa) corresponds to spot [$correct_letter].
+END_PGML_SOLUTION
+
+ENDDOCUMENT();
