@@ -244,7 +244,7 @@ Direct application of rules or formulas with clear instructions and provided dat
 - "Compare the solubility of Arg-Asp-Glu at pH 3.0 vs pH 11.0."
 - "Analyze this gel electrophoresis result to determine which protein is largest."
 
-Student must infer relationships (which pKa → which group), analyze multiple factors, or
+Student must infer relationships (which pKa -> which group), analyze multiple factors, or
 synthesize information from different knowledge domains.
 
 **Level 5 (Evaluate):**

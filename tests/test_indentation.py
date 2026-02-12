@@ -1,10 +1,11 @@
 import pathlib
 import tokenize
-from typing import Optional
+
+import pytest
 
 import git_file_utils
 
-REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
+REPO_ROOT = pathlib.Path(git_file_utils.get_repo_root())
 
 
 #============================================
@@ -91,7 +92,7 @@ def inspect_file(path: pathlib.Path) -> list[int]:
 
 
 #============================================
-def summarize_indentation(path: pathlib.Path) -> Optional[tuple[int, int]]:
+def summarize_indentation(path: pathlib.Path) -> tuple[int, int] | None:
 	"""
 	Return first tab line and first space line if both exist.
 
@@ -99,7 +100,7 @@ def summarize_indentation(path: pathlib.Path) -> Optional[tuple[int, int]]:
 		path: File path.
 
 	Returns:
-		Optional[tuple[int, int]]: First tab line and first space line, or None.
+		tuple or None: First tab line and first space line, or None.
 	"""
 	ignore_lines = multiline_string_lines(path)
 	with tokenize.open(path) as handle:
@@ -130,29 +131,25 @@ def summarize_indentation(path: pathlib.Path) -> Optional[tuple[int, int]]:
 	return None
 
 
+_FILES = sorted(list_tracked_python_files())
+
+
 #============================================
-def test_indentation_style() -> None:
-	"""
-	Fail on mixed indentation within a line or within a file.
-	"""
-	errors = []
-	for path in sorted(list_tracked_python_files()):
-		bad_lines = inspect_file(path)
-		if bad_lines:
-			display_path = path.relative_to(REPO_ROOT)
-			for line_number in bad_lines[:5]:
-				errors.append(
-					f"{display_path}:{line_number}: mixed indentation within line"
-				)
-			continue
-		indent_lines = summarize_indentation(path)
-		if indent_lines is not None:
-			display_path = path.relative_to(REPO_ROOT)
-			tab_line, space_line = indent_lines
-			errors.append(
-				f"{display_path}: tabs and spaces in file "
-				f"(tab line {tab_line}, space line {space_line})"
-			)
-	if errors:
-		message = "\n".join(errors)
-		raise AssertionError(f"Indentation issues found:\n{message}")
+@pytest.mark.parametrize(
+	"file_path", _FILES,
+	ids=lambda p: str(p.relative_to(REPO_ROOT)),
+)
+def test_indentation_style(file_path: pathlib.Path) -> None:
+	"""Fail on mixed indentation within a line or within a file."""
+	display_path = file_path.relative_to(REPO_ROOT)
+	bad_lines = inspect_file(file_path)
+	if bad_lines:
+		details = [f"{display_path}:{ln}: mixed indentation within line" for ln in bad_lines[:5]]
+		raise AssertionError("\n".join(details))
+	indent_lines = summarize_indentation(file_path)
+	if indent_lines is not None:
+		tab_line, space_line = indent_lines
+		raise AssertionError(
+			f"{display_path}: tabs and spaces in file "
+			f"(tab line {tab_line}, space line {space_line})"
+		)

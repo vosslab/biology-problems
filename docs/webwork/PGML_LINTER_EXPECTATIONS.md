@@ -132,8 +132,6 @@ Linter checks:
 - Right-column labels like `A.` or `B.` in plain text (suggest `*A.*` or `A\\.`).
 
 ### Encoding and mojibake
-- Replacement character `�`.
-- Common mojibake patterns: `A`, `A`, `a€™`, `a€"`, `a€"`, `a€¢`.
 - Non-printable control characters (ASCII 0x00-0x1F excluding `\n`, `\r`, `\t`).
 
 ### Macro/widget sanity

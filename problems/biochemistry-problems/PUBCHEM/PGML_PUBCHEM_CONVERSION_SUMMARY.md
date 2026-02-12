@@ -1,6 +1,6 @@
 # Python to PGML Conversion Summary
 
-## Conversion Complete ✓
+## Conversion Complete
 
 Successfully converted the `which_macromolecule.py` Python question generator into a self-contained PGML question file.
 
@@ -73,12 +73,12 @@ $mol_smiles = $proteins[random(0, $#proteins)];  # if proteins selected
 
 ## Key Features
 
-✓ RDKit.js for high-quality molecular rendering
-✓ Randomized macromolecule type selection
-✓ Randomized answer order
-✓ Built-in hints for identification
-✓ Clean, maintainable code
-✓ No external dependencies (except RDKit.js CDN)
+- RDKit.js for high-quality molecular rendering
+- Randomized macromolecule type selection
+- Randomized answer order
+- Built-in hints for identification
+- Clean, maintainable code
+- No external dependencies (except RDKit.js CDN)
 
 ## Generator Script
 

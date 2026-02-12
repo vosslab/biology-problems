@@ -296,7 +296,7 @@ BEGIN_PGML_HINT
 * Should have about the same number of oxygens as carbons
 * Look for hydroxyl groups (-OH) attached to carbon atoms
 * Carbonyl groups (C=O) are often present
-* Look for the base unit of CH₂O
+* Look for the base unit of CH&acirc;&#x82;&#x82;O
 * Larger carbohydrates form hexagon or pentagon ring structures
 
 **Lipids (fatty acids)**
@@ -307,9 +307,9 @@ BEGIN_PGML_HINT
 * Steroids have four interconnected carbon rings
 
 **Proteins (amino acids and dipeptides)**
-* Always have a nitrogen/amino group (-NH₂ or -NH₃⁺)
-* Always have a carboxyl group (-COOH or -COO⁻)
-* Identify the central Cα (alpha-carbon) attached to amino and carboxyl groups
+* Always have a nitrogen/amino group (-NH&acirc;&#x82;&#x82; or -NH&acirc;&#x82;&#x83;&acirc;&#x81;&ordm;)
+* Always have a carboxyl group (-COOH or -COO&acirc;&#x81;&raquo;)
+* Identify the central C&Icirc;&plusmn; (alpha-carbon) attached to amino and carboxyl groups
 * Larger proteins have characteristic peptide bonds (C-N)
 * Try to identify common side chains (R groups)
 
@@ -317,7 +317,7 @@ BEGIN_PGML_HINT
 * Must have a nucleobase: rings containing carbon and nitrogen
 * Larger nucleic acids have a sugar backbone and phosphate groups
 
-**Note:** Phosphate groups (-PO₄²⁻) can be found in all macromolecule types, so they may be confusing markers.
+**Note:** Phosphate groups (-PO&acirc;&#x82;&#x84;&Acirc;&sup2;&acirc;&#x81;&raquo;) can be found in all macromolecule types, so they may be confusing markers.
 
 END_PGML_HINT
 

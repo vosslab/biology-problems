@@ -222,20 +222,20 @@ END_PGML
 ## Best Practices
 
 ### Do:
-- ✅ Emphasize 1-3 key elements per question
-- ✅ Use consistent colors for similar element types (blue for data, gold for terms)
-- ✅ Test rendering to ensure spans display correctly
-- ✅ Use meaningful color contrast (check accessibility)
-- ✅ Create emphasis variables in Setup, not in PGML
-- ✅ Use `[$var]*` syntax to render HTML in PGML
+- Emphasize 1-3 key elements per question
+- Use consistent colors for similar element types (blue for data, gold for terms)
+- Test rendering to ensure spans display correctly
+- Use meaningful color contrast (check accessibility)
+- Create emphasis variables in Setup, not in PGML
+- Use `[$var]*` syntax to render HTML in PGML
 
 ### Don't:
-- ❌ Emphasize everything (defeats the purpose)
-- ❌ Use more than 3 colors in one question
-- ❌ Make text too large (>1.5em)
-- ❌ Use red for non-warning content
-- ❌ Forget the `*` in `[$var]*` (HTML will be escaped)
-- ❌ Use italics/bold for critical values (use color + size instead)
+- Emphasize everything (defeats the purpose)
+- Use more than 3 colors in one question
+- Make text too large (>1.5em)
+- Use red for non-warning content
+- Forget the `*` in `[$var]*` (HTML will be escaped)
+- Use italics/bold for critical values (use color + size instead)
 
 ---
 

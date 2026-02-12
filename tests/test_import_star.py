@@ -2,26 +2,12 @@ import ast
 import os
 import tokenize
 
+import pytest
+
 import git_file_utils
 
-SCOPE_ENV = "REPO_HYGIENE_SCOPE"
-FAST_ENV = "FAST_REPO_HYGIENE"
-SKIP_ENV = "SKIP_REPO_HYGIENE"
-REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+REPO_ROOT = git_file_utils.get_repo_root()
 SKIP_DIRS = {".git", ".venv", "__pycache__", "old_shell_folder"}
-
-
-#============================================
-def resolve_scope() -> str:
-	"""
-	Resolve the scan scope from environment.
-	"""
-	scope = os.environ.get(SCOPE_ENV, "").strip().lower()
-	if not scope and os.environ.get(FAST_ENV) == "1":
-		scope = "changed"
-	if scope in ("all", "changed"):
-		return scope
-	return "all"
 
 
 #============================================
@@ -132,32 +118,19 @@ def format_issue(rel_path: str, line_no: int, module_name: str) -> str:
 	return f"{rel_path}:{line_no}: import *"
 
 
+_FILES = git_file_utils.collect_files(REPO_ROOT, gather_files, gather_changed_files)
+
+
 #============================================
-def test_import_star() -> None:
-	"""
-	Report import * usage.
-	"""
-	if os.environ.get(SKIP_ENV) == "1":
+@pytest.mark.parametrize(
+	"file_path", _FILES,
+	ids=lambda p: os.path.relpath(p, REPO_ROOT),
+)
+def test_import_star(file_path: str) -> None:
+	"""Report import * usage in a single Python file."""
+	matches = find_import_star(file_path)
+	if not matches:
 		return
-
-	scope = resolve_scope()
-	if scope == "changed":
-		paths = gather_changed_files(REPO_ROOT)
-	else:
-		paths = gather_files(REPO_ROOT)
-
-	if not paths:
-		print(f"import *: no Python files matched scope {scope}.")
-		return
-
-	issues = []
-	for path in paths:
-		matches = find_import_star(path)
-		if not matches:
-			continue
-		rel_path = os.path.relpath(path, REPO_ROOT)
-		for line_no, module_name in matches:
-			issues.append(format_issue(rel_path, line_no, module_name))
-
-	if issues:
-		raise AssertionError("import * usage detected:\n" + "\n".join(issues))
+	rel_path = os.path.relpath(file_path, REPO_ROOT)
+	issues = [format_issue(rel_path, line_no, module_name) for line_no, module_name in matches]
+	raise AssertionError("import * usage detected:\n" + "\n".join(issues))

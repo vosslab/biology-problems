@@ -18,10 +18,17 @@ Repo-wide conventions for this project and related repos.
 - Keep filenames descriptive, and consistent with the primary thing the file provides.
 
 ## Git moves, renames, and index locks
-- Use `git mv` for renames when Git is available.
-- Never simulate renames with `mv` plus delete/add. Only use `git rm` for intentional permanent deletes (not renames).
-- If Git is not available (codex and other sandboxed agents), do not run `.git` checks or lock diagnostics unless the user explicitly asks for Git operations; proceed with file edits and note that Git was not run. If a rename is required, do not perform the rename; log the exact rename(s) needed to a file in <repo root> and finish the task without prompting.
-- If the user explicitly requests Git operations, ensure `.git` is writable and that `.git/index.lock` is not present before running index-writing commands; if a lock or permissions issue exists, log it, and try to finish any other tasks before stopping.
+- Use `git mv` for all renames and moves.
+- Do not use `mv` plus add/remove as a fallback. Do not use `git rm` unless deleting a file permanently.
+- Before any index-writing Git command (including `git mv`, `git add`, `git rm`, `git checkout`, `git switch`, `git restore`, `git merge`, `git rebase`, `git reset`, `git commit`), verify `.git` is writable by the current user. If not, stop and report a permissions error.
+- If `.git/index.lock` exists:
+  - Do not modify files and do not run Git commands. Stop and report:
+    - lock owner, permissions, and age (mtime)
+    - process holding the lock, if detectable (for example, `lsof .git/index.lock`)
+  - If a process holds the lock, report an active concurrent Git operation.
+  - If no process holds the lock and the lock age is > 5 minutes, report a likely stale lock. Do not delete it automatically.
+- If any Git command fails with an index lock error (cannot create `.git/index.lock`), stop immediately. Do not retry and do not fall back to `mv`.
+- Error report must include: the command run and full stderr, plus a short next step: close other Git processes, remove a stale lock only if no process holds it, or fix `.git` permissions.
 
 ## Versioning
 - Prefer `pyproject.toml` as the single source of truth when the repo is a single Python package with a single `pyproject.toml`.
@@ -40,6 +47,12 @@ Repo-wide conventions for this project and related repos.
 - Document shared helpers and modules in `docs/USAGE.md` when used across scripts.
 - Use `tests/test_pyflakes_code_lint.py` and `tests/test_ascii_compliance.py` for repo-wide lint checks, with `tests/check_ascii_compliance.py` for single-file ASCII/ISO-8859-1 checks and `tests/fix_ascii_compliance.py` for single-file fixes.
 - For smoke tests, reuse stable output folder names (for example `output_smoke/`) instead of creating one-off output directory names; reusing/overwriting avoids repeated delete-approval prompts.
+- In test scripts that need the repository root, import and use the shared `tests/get_repo_root.py` module:
+  ```python
+  from get_repo_root import get_repo_root
+  REPO_ROOT = get_repo_root()
+  ```
+  This module uses `git rev-parse --show-toplevel` and is propagated across repos automatically.
 
 ## Dependency manifests
 - Store Python standard dependencies in `pip_requirements.txt` at the repo root and developer dependencies, e.g., pytest in `pip_requirements-dev.txt`.

@@ -357,17 +357,12 @@ def write_question(N: int, args) -> str:
 	if args.question_type == 'num':
 		return write_lane2_unknown_band_mw_question(
 			N,
-			gel_height_px=args.gel_height,
-			run_scenario=args.run_scenario,
 			rng=rng,
 		)
 	if args.question_type == 'mc':
 		return write_lane2_unknown_band_protein_mc_question(
 			N,
 			num_choices=args.num_choices,
-			gel_height_px=args.gel_height,
-			run_scenario=args.run_scenario,
-			unknown_label=args.unknown_label,
 			rng=rng,
 		)
 	raise ValueError(f"Unknown question_type: {args.question_type}")
@@ -385,15 +380,7 @@ def parse_arguments():
 		required=False,
 		default='num',
 	)
-	parser.add_argument(
-		"--run-scenario", dest="run_scenario",
-		choices=("random", "normal", "too_short", "too_long"),
-		default="random",
-		help="Choose how the gel was run.",
-	)
-	parser.add_argument("--gel-height", dest="gel_height", type=int, default=340, help="Gel height (px).")
 	parser.add_argument("--seed", dest="seed", type=int, default=None, help="Random seed.")
-	parser.add_argument("--unknown-label", dest="unknown_label", type=str, default="Protein X17", help="Label to show for lane 2 (MC only).")
 	return parser.parse_args()
 
 

@@ -1,3 +1,4 @@
+data taken from
 https://wiki.openwebwork.org/wiki/Release_notes_for_WeBWorK_2.19
 
 New WeBWorK 2.19 Features
@@ -114,12 +115,12 @@ Also see the POD for parserGraphTool.pl.
 There is a new DropDown method provided by the parserPopup.pl macro. See the POD for parserPopUp.pl and a sample problem.
 
 Mathquill changes
-Typing deg will automatically turn into a degree symbol. So for example, if 23degF is typed it will become 23°F.
+Typing deg will automatically turn into a degree symbol. So for example, if 23degF is typed it will become 23Â°F.
 Trigonometric functions such as sin, cos, tan, arcsin, arccos, etc, and logarithmic functions ln and log will now automatically wrap the function argument in parentheses. Exponents (or subscripts) on these functions can be typed before the parentheses or after.
 Double and triple click selection behavior has been implemented for MathQuill inputs.
 
 Changes to Units:
-Students can enter °C or °F instead of degC or degF for Celsius and Fahrenheit degrees. This can be done easily if MathQuill is enabled as described above. Students may also paste unicode characters for these from other websites.
+Students can enter Â°C or Â°F instead of degC or degF for Celsius and Fahrenheit degrees. This can be done easily if MathQuill is enabled as described above. Students may also paste unicode characters for these from other websites.
 Several new units have been added, including angstroms, microseconds, nanoseconds, picometers, femtometers, tera electron volts, Megawatts, milliwatts, milliCoulombs, microCoulombs, nanoCoulombs, milli-amperes, milli-teslas, Becquerels, (US) gallons, (US) quarts, and (US) pints.
 Many unicode characters for units have been added.
 More forms of units are now allowed including plural forms. For example, one may enter 30 ft, 30 feet, or 1 foot.

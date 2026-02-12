@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 #============================================
 def format_monospace(text):
 	return f"<span style='font-family: monospace;'>{text}</span>"

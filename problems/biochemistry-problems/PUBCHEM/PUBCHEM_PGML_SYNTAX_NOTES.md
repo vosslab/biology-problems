@@ -4,7 +4,7 @@
 
 The `>>...<<` syntax in PGML is for **verbatim HTML** - it escapes the content rather than executing it. This means script tags get displayed as text instead of executing.
 
-### What Doesn't Work ❌
+### What Doesn't Work
 ```perl
 BEGIN_PGML
 
@@ -22,7 +22,7 @@ END_PGML
 
 For dynamic HTML with JavaScript, use `[@ @]*` which **evaluates** the Perl expression and inserts the result as HTML.
 
-### What Works ✓
+### What Works
 ```perl
 BEGIN_PGML
 
