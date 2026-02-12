@@ -83,15 +83,83 @@ def _simulate_gel_setup(
 
 #====================================================================
 def _build_reference_table_html(gel_height_px: int) -> str:
-	"""Generate the standard Kaleidoscope ladder reference card with MW labels."""
+	"""Generate a classic Kaleidoscope ladder reference card with centered labels."""
 	mw_values = protein_ladder_lib.get_kaleidoscope_mw_values()
-	return protein_ladder_lib.gen_kaleidoscope_table(
-		mw_values,
-		protein_ladder_lib.KALEIDOSCOPE_MW_COLOR_MAP,
-		gel_height_px,
-		show_labels=True,
-		label_prefix="",
+	marker_positions = protein_ladder_lib.simulate_kaleidoscope_band_y_positions_px(
+		gel_height_px=gel_height_px,
+		run_factor=1.0,
 	)
+
+	band_height_px = 9
+	left_gutter_width = 15
+	lane_width = 50
+	center_gutter_width = 15
+	right_gutter_width = 15
+	label_width = 54
+
+	def _band_top(mw: int) -> int:
+		y_px = float(marker_positions[mw])
+		return round(y_px - band_height_px / 2.0)
+
+	band_tops = [_band_top(mw) for mw in mw_values]
+	inter_band_gaps: list[int] = []
+	for i in range(len(band_tops) - 1):
+		gap_px = band_tops[i + 1] - (band_tops[i] + band_height_px)
+		inter_band_gaps.append(max(0, gap_px))
+	top_gap = max(0, band_tops[0])
+	bottom_gap = max(0, gel_height_px - (band_tops[-1] + band_height_px))
+
+	html = (
+		f'<div style="display:inline-block; height:{gel_height_px}px;">'
+		'<table cellspacing="0" cellpadding="0" style="'
+		'height:100%; '
+		'border-spacing: 0; border-collapse: collapse; border: 1px solid black; '
+		'display: inline-block; background-color: #fff;">'
+	)
+
+	for idx, mw in enumerate(mw_values):
+		if idx == 0:
+			spacer_before = top_gap
+		else:
+			prev_gap = inter_band_gaps[idx - 1]
+			spacer_before = prev_gap // 2
+
+		if idx == len(mw_values) - 1:
+			spacer_after = bottom_gap
+		else:
+			next_gap = inter_band_gaps[idx]
+			spacer_after = next_gap - (next_gap // 2)
+		color = protein_ladder_lib.KALEIDOSCOPE_MW_COLOR_MAP[mw]
+
+		html += (
+			'<tr>'
+			f'<td style="width:{left_gutter_width}px; height:{spacer_before}px;"></td>'
+			f'<td style="width:{lane_width}px; height:{spacer_before}px;"></td>'
+			f'<td style="width:{center_gutter_width}px; height:{spacer_before}px;"></td>'
+			f'<td rowspan="3" style="width:{label_width}px; vertical-align:middle;" align="left">'
+			f'&ndash; {mw}</td>'
+			f'<td style="width:{right_gutter_width}px; height:{spacer_before}px;"></td>'
+			'</tr>'
+		)
+		html += (
+			'<tr>'
+			f'<td style="height:{band_height_px}px;"></td>'
+			f'<td style="height:{band_height_px}px; background-color:{color};"></td>'
+			f'<td style="height:{band_height_px}px;"></td>'
+			f'<td style="height:{band_height_px}px;"></td>'
+			'</tr>'
+		)
+		html += (
+			'<tr>'
+			f'<td style="height:{spacer_after}px;"></td>'
+			f'<td style="height:{spacer_after}px;"></td>'
+			f'<td style="height:{spacer_after}px;"></td>'
+			f'<td style="height:{spacer_after}px;"></td>'
+			'</tr>'
+		)
+
+	html += '</table></div>'
+	return html
 
 
 #====================================================================
@@ -217,6 +285,8 @@ def _choice_text(protein: dict) -> str:
 def _pick_distractors(
 	proteins_sorted: list[dict],
 	correct_index: int,
+	unknown_mw: float,
+	marker_mw_values: list[int],
 	num_choices: int,
 	rng: random.Random,
 ) -> list[dict]:
@@ -224,25 +294,103 @@ def _pick_distractors(
 	if target_count == 0:
 		return []
 
-	near = proteins_sorted[max(0, correct_index - 18):correct_index] + proteins_sorted[correct_index + 1:correct_index + 19]
-	rest = proteins_sorted[:correct_index] + proteins_sorted[correct_index + 1:]
+	def _marker_interval_index(mw: float) -> int | None:
+		for hi, lo in zip(marker_mw_values[:-1], marker_mw_values[1:]):
+			if float(lo) <= mw <= float(hi):
+				return marker_mw_values.index(hi)
+		return None
+
+	unknown_interval_idx = _marker_interval_index(float(unknown_mw))
+	total_intervals = len(marker_mw_values) - 1
+	interval_to_candidates: dict[int, list[dict]] = {}
+
+	for idx, protein in enumerate(proteins_sorted):
+		if idx == correct_index:
+			continue
+		try:
+			mw = float(protein["MW"])
+		except (TypeError, ValueError, KeyError):
+			continue
+		interval_idx = _marker_interval_index(mw)
+		if interval_idx is None:
+			continue
+		if unknown_interval_idx is not None and interval_idx == unknown_interval_idx:
+			continue
+		interval_to_candidates.setdefault(interval_idx, []).append(protein)
 
 	picked: list[dict] = []
 	seen_names: set[str] = set()
+	seen_mw_rounded: set[float] = {round(float(unknown_mw), 1)}
+	used_intervals: set[int] = set()
 
-	def _try_add(pool: list[dict]):
-		for cand in rng.sample(pool, k=min(len(pool), max(1, target_count * 4))):
-			if len(picked) >= target_count:
-				return
+	if unknown_interval_idx is None:
+		interval_order = list(range(total_intervals))
+		rng.shuffle(interval_order)
+	else:
+		interval_order = []
+		upper_idx = unknown_interval_idx - 1
+		lower_idx = unknown_interval_idx + 1
+		if upper_idx >= 0:
+			interval_order.append(upper_idx)
+		if lower_idx < total_intervals:
+			interval_order.append(lower_idx)
+		remaining = [
+			i for i in range(total_intervals)
+			if i != unknown_interval_idx and i not in interval_order
+		]
+		remaining.sort(key=lambda i: abs(i - unknown_interval_idx))
+		interval_order.extend(remaining)
+
+	def _pick_one_from_interval(interval_idx: int):
+		if len(picked) >= target_count or interval_idx in used_intervals:
+			return
+		pool = interval_to_candidates.get(interval_idx, [])
+		if len(pool) == 0:
+			return
+		for cand in rng.sample(pool, k=len(pool)):
 			name = str(cand.get("fullname", "")).strip()
+			try:
+				mw_val = round(float(cand["MW"]), 1)
+			except (TypeError, ValueError, KeyError):
+				continue
 			if len(name) == 0 or name in seen_names:
 				continue
+			if mw_val in seen_mw_rounded:
+				continue
 			seen_names.add(name)
+			seen_mw_rounded.add(mw_val)
+			used_intervals.add(interval_idx)
+			picked.append(cand)
+			return
+
+	for interval_idx in interval_order:
+		_pick_one_from_interval(interval_idx)
+		if len(picked) >= target_count:
+			break
+
+	# Fallback if not enough distinct-interval picks exist for this run.
+	if len(picked) < target_count:
+		fallback_pool = []
+		for interval_idx, pool in interval_to_candidates.items():
+			for cand in pool:
+				fallback_pool.append((interval_idx, cand))
+		rng.shuffle(fallback_pool)
+		for interval_idx, cand in fallback_pool:
+			if len(picked) >= target_count:
+				break
+			name = str(cand.get("fullname", "")).strip()
+			try:
+				mw_val = round(float(cand["MW"]), 1)
+			except (TypeError, ValueError, KeyError):
+				continue
+			if len(name) == 0 or name in seen_names:
+				continue
+			if mw_val in seen_mw_rounded:
+				continue
+			seen_names.add(name)
+			seen_mw_rounded.add(mw_val)
 			picked.append(cand)
 
-	_try_add(near)
-	if len(picked) < target_count:
-		_try_add(rest)
 	return picked[:target_count]
 
 
@@ -313,25 +461,16 @@ def write_lane2_unknown_band_protein_mc_question(
 
 	proteins_sorted = sorted(candidates, key=lambda p: float(p["MW"]))
 	correct_index = proteins_sorted.index(correct_protein)
-	distractors = _pick_distractors(proteins_sorted, correct_index, num_choices, rng)
+	distractors = _pick_distractors(
+		proteins_sorted,
+		correct_index,
+		unknown_mw,
+		mw_values,
+		num_choices,
+		rng,
+	)
 
 	choices = [_choice_text(correct_protein)] + [_choice_text(p) for p in distractors]
-	# Ensure uniqueness; top off from remaining if collisions occur.
-	unique = []
-	seen = set()
-	for c in choices:
-		if c in seen:
-			continue
-		seen.add(c)
-		unique.append(c)
-	choices = unique
-
-	if len(choices) < num_choices:
-		remaining = [p for p in proteins_sorted if _choice_text(p) not in seen]
-		for p in rng.sample(remaining, k=min(len(remaining), num_choices - len(choices))):
-			choices.append(_choice_text(p))
-			seen.add(choices[-1])
-
 	choices = choices[:max(2, int(num_choices))]
 	rng.shuffle(choices)
 	answer_text = _choice_text(correct_protein)
@@ -353,7 +492,7 @@ def write_lane2_unknown_band_protein_mc_question(
 
 #====================================================================
 def write_question(N: int, args) -> str:
-	rng = random.Random(args.seed) if args.seed is not None else random.Random()
+	rng = random.Random()
 	if args.question_type == 'num':
 		return write_lane2_unknown_band_mw_question(
 			N,
@@ -380,9 +519,7 @@ def parse_arguments():
 		required=False,
 		default='num',
 	)
-	parser.add_argument("--seed", dest="seed", type=int, default=None, help="Random seed.")
 	return parser.parse_args()
-
 
 #====================================================================
 #====================================================================

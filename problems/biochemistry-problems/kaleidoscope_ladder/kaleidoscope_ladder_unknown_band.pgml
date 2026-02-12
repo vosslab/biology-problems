@@ -1,0 +1,545 @@
+## TITLE('Biochemistry: Identify unknown protein from kaleidoscope ladder band')
+## DESCRIPTION
+## Analyze a simulated SDS-PAGE gel where lane 1 contains a kaleidoscope-style ladder and lane 2 contains one unknown band. Use the ladder reference to estimate band size and choose the protein name plus molecular weight that best matches the unknown.
+## ENDDESCRIPTION
+## KEYWORDS('SDS-PAGE','protein ladder','molecular weight','biochemistry')
+## DBsubject('Biochemistry')
+## DBchapter('Laboratory Techniques')
+## DBsection('Protein Electrophoresis')
+## Level(4)
+## Date('2026-02-12')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	'PGstandard.pl',
+	'PGML.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl',
+);
+
+$showPartialCorrectAnswers = 0;
+
+# ----------------------------
+# 2) Setup
+# ----------------------------
+
+my @MARKER_MW_VALUES = (250, 150, 100, 75, 50, 37, 25, 20, 15, 10);
+our @VISIBLE_MARKERS = ();
+my %KALEIDOSCOPE_MW_COLOR_MAP = (
+	250 => '#99dbfb',
+	150 => '#adafdf',
+	100 => '#83c6ee',
+	75  => '#feacd6',
+	50  => '#80caf1',
+	37  => '#9adb7f',
+	25  => '#ffbbdc',
+	20  => '#6dbfec',
+	15  => '#b3def6',
+	10  => '#ffee00',
+);
+
+my @PROTEIN_BANK = (
+	{ name => 'Cytochrome c', mw => 13.0 },
+	{ name => 'Lactalbumin', mw => 13.0 },
+	{ name => 'Streptavidin', mw => 13.2 },
+	{ name => 'Ribonuclease A', mw => 13.7 },
+	{ name => 'Lysozyme', mw => 14.4 },
+	{ name => 'Histone', mw => 15.0 },
+	{ name => 'Leghemoglobin', mw => 16.0 },
+	{ name => 'Hemoglobin', mw => 16.7 },
+	{ name => 'Avidin', mw => 16.9 },
+	{ name => 'Myelin Basic Protein', mw => 18.0 },
+	{ name => 'Myoglobin', mw => 18.0 },
+	{ name => 'Phospholypase', mw => 19.5 },
+	{ name => 'Ferritin', mw => 19.8 },
+	{ name => 'Succinate Ligase', mw => 20.9 },
+	{ name => 'Agglutinin', mw => 22.0 },
+	{ name => 'Serine Protease', mw => 22.0 },
+	{ name => 'Trypsin', mw => 23.5 },
+	{ name => 'Casein', mw => 24.0 },
+	{ name => 'Chymotrypsin', mw => 25.0 },
+	{ name => 'Elastase II', mw => 26.5 },
+	{ name => 'Urease A', mw => 26.5 },
+	{ name => 'Green Fluorescent Protein', mw => 28.0 },
+	{ name => 'Prostate-Specific Antigen', mw => 30.0 },
+	{ name => 'Horseradish peroxidase', mw => 34.0 },
+	{ name => 'Pepsin', mw => 34.5 },
+	{ name => 'Tropomyosin', mw => 35.0 },
+	{ name => 'G3P Dehydrogenase', mw => 36.0 },
+	{ name => 'Epidermal Growth Factor', mw => 40.0 },
+	{ name => 'Lipase', mw => 40.0 },
+	{ name => 'Enolase', mw => 42.5 },
+	{ name => 'Actin', mw => 43.0 },
+	{ name => 'Ovalbumin', mw => 45.0 },
+	{ name => 'Aldolase', mw => 47.5 },
+	{ name => 'Fumerase', mw => 48.5 },
+	{ name => 'Luciferase', mw => 50.0 },
+	{ name => 'Neuraminidase', mw => 50.0 },
+	{ name => 'Sucrase', mw => 51.0 },
+	{ name => 'Aldehyde Dehydrogenase', mw => 53.0 },
+	{ name => 'gamma-Globulin', mw => 57.0 },
+	{ name => 'DNA Ligase', mw => 60.0 },
+	{ name => 'Pyruvate Kinase', mw => 60.0 },
+	{ name => 'alpha-Amylase', mw => 61.0 },
+	{ name => 'Fibrinogen', mw => 63.5 },
+	{ name => 'Catalase', mw => 65.5 },
+	{ name => 'Serum Albumin', mw => 66.2 },
+	{ name => 'Heat Shock Protein', mw => 70.1 },
+	{ name => 'Transferrin', mw => 80.0 },
+	{ name => 'Xylosidase', mw => 100.0 },
+	{ name => 'Estrogen Binding Protein', mw => 115.0 },
+	{ name => 'Hexokinase', mw => 120.0 },
+	{ name => 'Collagen', mw => 134.0 },
+	{ name => 'Immunoglobulin', mw => 145.0 },
+	{ name => 'Cobra Venom Factor', mw => 149.0 },
+	{ name => 'SARS-CoV-2 Spike Protein', mw => 149.9 },
+	{ name => 'beta-Galactosidase', mw => 175.0 },
+);
+
+# ----------------------------
+# 2a) Helpers
+# ----------------------------
+sub shuffle_list {
+	my (@items) = @_;
+	for (my $i = $#items; $i > 0; $i--) {
+		my $j = random(0, $i, 1);
+		@items[$i, $j] = @items[$j, $i];
+	}
+	return @items;
+}
+
+sub random_choice {
+	my (@items) = @_;
+	my $count = scalar(@items);
+	if ($count < 1) {
+		die 'Random choice requires at least one item.';
+	}
+	my $idx = random(0, $count - 1, 1);
+	return $items[$idx];
+}
+
+sub choice_text {
+	my ($protein_ref) = @_;
+	my $name = $protein_ref->{name};
+	my $mw = $protein_ref->{mw};
+	return sprintf('%s (%.1f kDa)', $name, $mw);
+}
+
+sub run_factor_for_scenario {
+	my ($scenario_name) = @_;
+	my $scenario_text = '';
+	my $run_factor = 1.0;
+	if ($scenario_name eq 'normal') {
+		$run_factor = random(0, 10000, 1) / 10000.0 * 0.12 + 0.94;
+		$scenario_text = '<p>The gel was run for a typical amount of time.</p>';
+	} elsif ($scenario_name eq 'too_short') {
+		$run_factor = random(0, 10000, 1) / 10000.0 * 0.15 + 0.70;
+		$scenario_text = '<p>The gel was run for <b>too short</b> a time (bands are compressed near the top).</p>';
+	} elsif ($scenario_name eq 'too_long') {
+		$run_factor = random(0, 10000, 1) / 10000.0 * 0.45 + 1.15;
+		$scenario_text = '<p>The gel was run for <b>too long</b> a time (some small bands may run off the bottom).</p>';
+	} else {
+		die 'Unknown run scenario.';
+	}
+	return ($run_factor, $scenario_text);
+}
+
+sub simulate_kaleidoscope_band_y_positions_px {
+	my ($gel_height_px, $run_factor) = @_;
+	my $top_margin_px = 28.0;
+	my $bottom_margin_px = 22.0;
+	my %positions = ();
+	my $mw_high = $MARKER_MW_VALUES[0];
+	my $mw_low = $MARKER_MW_VALUES[$#MARKER_MW_VALUES];
+	my $usable = $gel_height_px - $top_margin_px - $bottom_margin_px;
+	my $ln_range = log($mw_high) - log($mw_low);
+	for my $mw (@MARKER_MW_VALUES) {
+		my $frac = (log($mw_high) - log($mw)) / $ln_range;
+		$positions{$mw} = $top_margin_px + $run_factor * $frac * $usable;
+	}
+	return %positions;
+}
+
+sub band_is_visible {
+	my ($y_px, $gel_height_px, $band_height_px) = @_;
+	my $top = $y_px - $band_height_px / 2.0;
+	my $bottom = $y_px + $band_height_px / 2.0;
+	return ($top >= 0.0 && $bottom <= $gel_height_px);
+}
+
+sub mw_to_y_px {
+	my ($mw_kda, $gel_height_px, $run_factor) = @_;
+	my $top_margin_px = 28.0;
+	my $bottom_margin_px = 22.0;
+	my $mw_top = $MARKER_MW_VALUES[0];
+	my $mw_bottom = $MARKER_MW_VALUES[$#MARKER_MW_VALUES];
+	my $ln_range = log($mw_top) - log($mw_bottom);
+	my $usable = $gel_height_px - $top_margin_px - $bottom_margin_px;
+	my $frac_from_top = (log($mw_top) - log($mw_kda)) / $ln_range;
+	return $top_margin_px + $run_factor * $frac_from_top * $usable;
+}
+
+sub build_reference_html {
+	my ($gel_height_px) = @_;
+	my %marker_positions = simulate_kaleidoscope_band_y_positions_px($gel_height_px, 1.0);
+	my $band_height_px = 9;
+	my $left_gutter_px = 16;
+	my $lane_width_px = 50;
+	my $center_gutter_px = 14;
+	my $label_width_px = 56;
+	my $total_width_px = $left_gutter_px + $lane_width_px + $center_gutter_px + $label_width_px + 16;
+
+	my $html = '';
+	$html .= "<div style='position:relative; width:${total_width_px}px; height:${gel_height_px}px; border:1px solid #000; background-color:#fff;'>";
+	for my $mw (@MARKER_MW_VALUES) {
+		my $y = $marker_positions{$mw};
+		my $top = $y - $band_height_px / 2.0;
+		my $color = $KALEIDOSCOPE_MW_COLOR_MAP{$mw};
+		$html .= "<div style='position:absolute; left:${left_gutter_px}px; width:${lane_width_px}px; top:${top}px; height:${band_height_px}px; background-color:${color}; border:1px solid #000;'></div>";
+		$html .= "<div style='position:absolute; left:" . ($left_gutter_px + $lane_width_px + $center_gutter_px) . "px; top:" . ($top - 1) . "px; width:${label_width_px}px; font-size:13px;'>&ndash; ${mw}</div>";
+	}
+	$html .= '</div>';
+	return $html;
+}
+
+sub build_gel_html {
+	my ($gel_height_px, $unknown_y, %marker_positions) = @_;
+	my $band_height_px = 8;
+	my $lane_width_px = 72;
+	my $lane_gap_px = 18;
+	my $inner_pad_px = 6;
+	my $lane_label_h_px = 22;
+
+	my $total_width = $lane_width_px * 2 + $lane_gap_px;
+	my $lane2_left = $lane_width_px + $lane_gap_px;
+
+	my $html = '';
+	$html .= "<div style='position:relative; width:${total_width}px; height:" . ($gel_height_px + $lane_label_h_px) . "px;'>";
+	$html .= "<div style='position:absolute; left:0px; top:0px; width:${lane_width_px}px; text-align:center; font-weight:700;'>Lane 1</div>";
+	$html .= "<div style='position:absolute; left:${lane2_left}px; top:0px; width:${lane_width_px}px; text-align:center; font-weight:700;'>Lane 2</div>";
+	$html .= "<div style='position:absolute; left:0px; top:${lane_label_h_px}px; width:${lane_width_px}px; height:${gel_height_px}px; border:2px solid #000; background-color:#f7f7f7;'></div>";
+	$html .= "<div style='position:absolute; left:${lane2_left}px; top:${lane_label_h_px}px; width:${lane_width_px}px; height:${gel_height_px}px; border:2px solid #000; background-color:#f7f7f7;'></div>";
+
+	for my $mw (@MARKER_MW_VALUES) {
+		my $y = $marker_positions{$mw};
+		next if !band_is_visible($y, $gel_height_px, $band_height_px);
+		my $top = $lane_label_h_px + $y - $band_height_px / 2.0;
+		my $color = $KALEIDOSCOPE_MW_COLOR_MAP{$mw};
+		$html .= "<div style='position:absolute; left:${inner_pad_px}px; width:" . ($lane_width_px - 2 * $inner_pad_px) . "px; top:${top}px; height:${band_height_px}px; background-color:${color}; border:1px solid #000;'></div>";
+	}
+
+	my $unknown_top = $lane_label_h_px + $unknown_y - $band_height_px / 2.0;
+	$html .= "<div style='position:absolute; left:" . ($lane2_left + $inner_pad_px) . "px; width:" . ($lane_width_px - 2 * $inner_pad_px) . "px; top:${unknown_top}px; height:${band_height_px}px; background-color:#111111; border:1px solid #000;'></div>";
+	$html .= '</div>';
+	return $html;
+}
+
+sub pick_distractors {
+	my ($correct_index, $target_count, $correct_interval_idx, @proteins_sorted) = @_;
+	if ($target_count <= 0) {
+		return ();
+	}
+
+	my $start = $correct_index - 18;
+	my $end = $correct_index + 18;
+	$start = 0 if $start < 0;
+	$end = $#proteins_sorted if $end > $#proteins_sorted;
+
+	my @near = ();
+	for my $idx ($start .. $end) {
+		next if $idx == $correct_index;
+		push @near, $proteins_sorted[$idx];
+	}
+
+	my @rest = ();
+	for my $idx (0 .. $#proteins_sorted) {
+		next if $idx == $correct_index;
+		if ($idx < $start || $idx > $end) {
+			push @rest, $proteins_sorted[$idx];
+		}
+	}
+
+	my @picked = ();
+	my %seen = ();
+	my %used_interval = ();
+	$used_interval{$correct_interval_idx} = 1;
+	my @adjacent_pool = ();
+	my @far_pool = ();
+	my @same_pool = ();
+
+	for my $candidate (shuffle_list(@near, @rest)) {
+		my $candidate_idx = marker_interval_index_for_mw($candidate->{mw}, @VISIBLE_MARKERS);
+		my $delta = abs($candidate_idx - $correct_interval_idx);
+		if ($delta == 1) {
+			push @adjacent_pool, $candidate;
+		} elsif ($delta >= 2) {
+			push @far_pool, $candidate;
+		} else {
+			push @same_pool, $candidate;
+		}
+	}
+
+	for my $candidate (@adjacent_pool) {
+		last if scalar(@picked) >= $target_count;
+		my $key = choice_text($candidate);
+		my $candidate_idx = marker_interval_index_for_mw($candidate->{mw}, @VISIBLE_MARKERS);
+		next if $seen{$key};
+		next if $used_interval{$candidate_idx};
+		$seen{$key} = 1;
+		$used_interval{$candidate_idx} = 1;
+		push @picked, $candidate;
+	}
+	for my $candidate (@far_pool) {
+		last if scalar(@picked) >= $target_count;
+		my $key = choice_text($candidate);
+		my $candidate_idx = marker_interval_index_for_mw($candidate->{mw}, @VISIBLE_MARKERS);
+		next if $seen{$key};
+		next if $used_interval{$candidate_idx};
+		$seen{$key} = 1;
+		$used_interval{$candidate_idx} = 1;
+		push @picked, $candidate;
+	}
+	for my $candidate (@same_pool) {
+		last if scalar(@picked) >= $target_count;
+		my $key = choice_text($candidate);
+		my $candidate_idx = marker_interval_index_for_mw($candidate->{mw}, @VISIBLE_MARKERS);
+		next if $seen{$key};
+		next if $used_interval{$candidate_idx};
+		$seen{$key} = 1;
+		$used_interval{$candidate_idx} = 1;
+		push @picked, $candidate;
+	}
+
+	return @picked;
+}
+
+sub sort_proteins_by_mw {
+	my (@pool) = @_;
+	my @sorted = ();
+	for my $protein (@pool) {
+		my $inserted = 0;
+		for (my $i = 0; $i < scalar(@sorted); $i++) {
+			if ($protein->{mw} < $sorted[$i]->{mw}) {
+				splice(@sorted, $i, 0, $protein);
+				$inserted = 1;
+				last;
+			}
+		}
+		if (!$inserted) {
+			push @sorted, $protein;
+		}
+	}
+	return @sorted;
+}
+
+sub marker_interval_for_mw {
+	my ($target_mw, @visible_markers) = @_;
+	for my $idx (0 .. $#visible_markers - 1) {
+		my $hi = $visible_markers[$idx];
+		my $lo = $visible_markers[$idx + 1];
+		if ($target_mw <= $hi && $target_mw >= $lo) {
+			return ($hi, $lo);
+		}
+	}
+	return ($visible_markers[0], $visible_markers[$#visible_markers]);
+}
+
+sub marker_interval_index_for_mw {
+	my ($target_mw, @visible_markers) = @_;
+	for my $idx (0 .. $#visible_markers - 1) {
+		my $hi = $visible_markers[$idx];
+		my $lo = $visible_markers[$idx + 1];
+		if ($target_mw <= $hi && $target_mw >= $lo) {
+			return $idx;
+		}
+	}
+	return 0;
+}
+
+# ----------------------------
+# 2b) Randomization and choices
+# ----------------------------
+my $gel_height_px = 340;
+my $num_choices = 5;
+my @scenario_pool = ('normal', 'too_short', 'too_long');
+$run_scenario = random_choice(@scenario_pool);
+my ($run_factor, $scenario_text_local) = run_factor_for_scenario($run_scenario);
+$scenario_text = $scenario_text_local;
+
+my %marker_positions = simulate_kaleidoscope_band_y_positions_px($gel_height_px, $run_factor);
+my @visible_markers = ();
+for my $mw (@MARKER_MW_VALUES) {
+	if (band_is_visible($marker_positions{$mw}, $gel_height_px, 8)) {
+		push @visible_markers, $mw;
+	}
+}
+
+if (scalar(@visible_markers) < 3) {
+	$run_factor = 1.0;
+	%marker_positions = simulate_kaleidoscope_band_y_positions_px($gel_height_px, $run_factor);
+	@visible_markers = ();
+	for my $mw (@MARKER_MW_VALUES) {
+		if (band_is_visible($marker_positions{$mw}, $gel_height_px, 8)) {
+			push @visible_markers, $mw;
+		}
+	}
+	$scenario_text = '<p>The gel was run for a typical amount of time.</p>';
+}
+@VISIBLE_MARKERS = @visible_markers;
+
+my $mw_high_visible = $visible_markers[0];
+my $mw_low_visible = $visible_markers[$#visible_markers];
+
+my @candidate_pool = ();
+for my $protein (@PROTEIN_BANK) {
+	my $mw = $protein->{mw};
+	next if $mw < $mw_low_visible;
+	next if $mw > $mw_high_visible;
+	my $too_close = 0;
+	for my $marker_mw (@MARKER_MW_VALUES) {
+		if (abs($mw - $marker_mw) < 2.0) {
+			$too_close = 1;
+			last;
+		}
+	}
+	next if $too_close;
+	push @candidate_pool, $protein;
+}
+
+if (scalar(@candidate_pool) < 2) {
+	for my $protein (@PROTEIN_BANK) {
+		my $mw = $protein->{mw};
+		next if $mw < $mw_low_visible;
+		next if $mw > $mw_high_visible;
+		push @candidate_pool, $protein;
+	}
+}
+
+if (scalar(@candidate_pool) < 2) {
+	die 'Could not build enough protein candidates for this ladder run.';
+}
+
+my $correct_protein = random_choice(@candidate_pool);
+my $unknown_y = mw_to_y_px($correct_protein->{mw}, $gel_height_px, $run_factor);
+$answer_text = choice_text($correct_protein);
+my $correct_interval_idx = marker_interval_index_for_mw($correct_protein->{mw}, @visible_markers);
+
+my @proteins_sorted = sort_proteins_by_mw(@candidate_pool);
+my $correct_index = -1;
+for my $idx (0 .. $#proteins_sorted) {
+	my $candidate_key = choice_text($proteins_sorted[$idx]);
+	if ($candidate_key eq $answer_text) {
+		$correct_index = $idx;
+		last;
+	}
+}
+if ($correct_index < 0) {
+	die 'Could not locate correct protein in sorted candidates.';
+}
+
+my @distractors = pick_distractors(
+	$correct_index,
+	$num_choices - 1,
+	$correct_interval_idx,
+	@proteins_sorted,
+);
+my @choice_proteins = ($correct_protein, @distractors);
+
+my @deduped = ();
+my %seen_choice = ();
+my %seen_interval = ();
+for my $protein (@choice_proteins) {
+	my $choice_text_val = choice_text($protein);
+	my $interval_idx = marker_interval_index_for_mw($protein->{mw}, @visible_markers);
+	next if $seen_choice{$choice_text_val};
+	next if $seen_interval{$interval_idx};
+	$seen_choice{$choice_text_val} = 1;
+	$seen_interval{$interval_idx} = 1;
+	push @deduped, $protein;
+}
+@choice_proteins = @deduped;
+
+if (scalar(@choice_proteins) < $num_choices) {
+	for my $pass (1, 2, 3) {
+		for my $protein (shuffle_list(@proteins_sorted)) {
+			last if scalar(@choice_proteins) >= $num_choices;
+			my $choice_label = choice_text($protein);
+			next if $seen_choice{$choice_label};
+			my $candidate_idx = marker_interval_index_for_mw($protein->{mw}, @visible_markers);
+			my $delta = abs($candidate_idx - $correct_interval_idx);
+			next if ($pass == 1 && $delta != 1);
+			next if ($pass == 2 && $delta < 2);
+			next if $seen_interval{$candidate_idx};
+			$seen_choice{$choice_label} = 1;
+			$seen_interval{$candidate_idx} = 1;
+			push @choice_proteins, $protein;
+		}
+		last if scalar(@choice_proteins) >= $num_choices;
+	}
+}
+
+@choice_proteins = @choice_proteins[0 .. ($num_choices - 1)] if scalar(@choice_proteins) > $num_choices;
+my @choices = map { choice_text($_) } @choice_proteins;
+@choices = shuffle_list(@choices);
+
+my $ref_html_local = build_reference_html($gel_height_px);
+my $gel_html_local = build_gel_html($gel_height_px, $unknown_y, %marker_positions);
+$ref_html = $ref_html_local;
+$gel_html = $gel_html_local;
+
+$rb = RadioButtons(
+	[@choices],
+	$answer_text,
+	labels        => 'ABC',
+	displayLabels => 1,
+	randomize     => 0,
+	separator     => '<div style="margin-bottom: 0.7em;"></div>',
+);
+
+# ----------------------------
+# 3) Statement (PGML)
+# ----------------------------
+BEGIN_PGML
+Below is a simulated SDS-PAGE gel.
+
+Lane 1 contains a kaleidoscope-style pre-stained protein ladder.
+
+Lane 2 contains a single band labeled **Protein X17**.
+
+[$scenario_text]*
+
+**Standard ladder reference (kDa):**
+
+[$ref_html]*
+
+**Gel results:**
+
+[$gel_html]*
+
+**Which protein (name and molecular weight) best matches Protein X17?**
+
+Use the ladder to estimate the band size. You do not need outside knowledge about the proteins.
+
+[_]{$rb}
+END_PGML
+
+# ----------------------------
+# 4) Solution
+# ----------------------------
+BEGIN_PGML_SOLUTION
+The unknown band in lane 2 best matches: [$answer_text].
+END_PGML_SOLUTION
+
+ENDDOCUMENT();

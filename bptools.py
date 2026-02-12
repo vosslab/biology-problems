@@ -398,38 +398,22 @@ def add_question_format_args(parser, types_list=None, required=True, default=Non
 	)
 	if 'mc' in clean_types:
 		question_group.add_argument(
-			'--mc', dest=dest, action='store_const', const='mc',
-			help='Set question format to multiple choice'
-		)
-		question_group.add_argument(
-			'--multiple-choice', dest=dest, action='store_const', const='mc',
+			'--mc', '--multiple-choice', dest=dest, action='store_const', const='mc',
 			help='Set question format to multiple choice'
 		)
 	if 'ma' in clean_types:
 		question_group.add_argument(
-			'--ma', dest=dest, action='store_const', const='ma',
-			help='Set question format to multiple answer'
-		)
-		question_group.add_argument(
-			'--multiple-answer', dest=dest, action='store_const', const='ma',
+			'--ma', '--multiple-answer', dest=dest, action='store_const', const='ma',
 			help='Set question format to multiple answer'
 		)
 	if 'num' in clean_types:
 		question_group.add_argument(
-			'--num', dest=dest, action='store_const', const='num',
-			help='Set question format to numeric'
-		)
-		question_group.add_argument(
-			'--numeric', dest=dest, action='store_const', const='num',
+			'--num', '--numeric', dest=dest, action='store_const', const='num',
 			help='Set question format to numeric'
 		)
 	if 'fib' in clean_types:
 		question_group.add_argument(
-			'--fib', dest=dest, action='store_const', const='fib',
-			help='Set question format to fill in the blank'
-		)
-		question_group.add_argument(
-			'--fill-in-blank', dest=dest, action='store_const', const='fib',
+			'--fib', '--fill-in-blank', dest=dest, action='store_const', const='fib',
 			help='Set question format to fill in the blank'
 		)
 	if required is False and default is not None:
