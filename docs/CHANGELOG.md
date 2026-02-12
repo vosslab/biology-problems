@@ -1,6 +1,8 @@
 # Changelog
 
 ## 2026-02-12
+- Reworked scenario selection in [problems/matching_sets/yaml_which_one_mc_to_bbq.py](../problems/matching_sets/yaml_which_one_mc_to_bbq.py) to avoid materializing all key combinations; the script now builds lightweight per-key scenario pools and uses Option 2b selection (shuffle once, then modulo) for faster generation.
+- Updated [problems/matching_sets/yaml_which_one_mc_to_bbq.py](../problems/matching_sets/yaml_which_one_mc_to_bbq.py) to de-duplicate at file-write time by question content ID (CRC token), so duplicate generation attempts are allowed but duplicate questions are skipped from the output file.
 - Added a PGML conversion of the two-protein isoelectric-migration generator in [problems/biochemistry-problems/isoelectric_two_proteins.pgml](../problems/biochemistry-problems/isoelectric_two_proteins.pgml), preserving paired-protein pI separation, pH scenario generation, and migration-direction multiple-choice logic.
 - Added a PGML conversion of the single-protein isoelectric-point generator in [problems/biochemistry-problems/isoelectric_one_protein.pgml](../problems/biochemistry-problems/isoelectric_one_protein.pgml), preserving pH-versus-pI charge logic with inline multiple-choice grading and a div-based protein data panel.
 - Added a PGML multiple-choice conversion of the SDS-PAGE migration generator in [problems/biochemistry-problems/protein_gel_migration.pgml](../problems/biochemistry-problems/protein_gel_migration.pgml), translating gel-set selection, unknown-band interpolation, and sorted kDa choices from the Python script.

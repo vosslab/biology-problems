@@ -11,9 +11,14 @@ import sys
 import pprint
 import random
 import argparse
-import itertools
+import re
 
 import bptools
+from qti_package_maker.assessment_items import item_bank
+from qti_package_maker.engines.bbq_text_upload import read_package as bbq_read_package
+
+CONTENT_ID_RE = re.compile(r"<p>([0-9a-f]{4}_[0-9a-f]{4})</p>")
+
 
 #=======================
 #=======================
@@ -82,40 +87,71 @@ def makeQuestions2(yaml_data, num_choices=None, flip=False):
 		for value in matching_pairs_dict[key]:
 			pair = (key, value)
 			key_value_pairs.append(pair)
-	### Generate Combiniations
-	print('Shuffling {0} items'.format(len(all_keys)))
-	all_combs = list(itertools.combinations(all_keys, num_choices))
-	print('Created {0} combinations from {1} items'.format(len(all_combs), len(all_keys)))
-	#filter combinations
-	if len(exclude_pairs_list) > 0:
-		filter_combs = []
-		for comb in all_combs:
-			excluded_comb = False
-			#print(comb)
-			for a,b in exclude_pairs_list:
-				if a in comb and b in comb:
-					excluded_comb = True
-			if excluded_comb is False:
-				filter_combs.append(comb)
-		print('Filtered down to {0} combinations from {1} items'.format(len(filter_combs), len(all_combs)))
-		all_combs = filter_combs
-	random.shuffle(all_combs)
+	print('Preparing scenario pools from {0} items'.format(len(all_keys)))
+	if num_choices > len(all_keys):
+		print("No questions generated: num_choices exceeds available key count.")
+		return list_of_complete_questions
+
+	exclude_pair_set = {tuple(sorted((a, b))) for a, b in exclude_pairs_list}
+
+	def _scenario_is_allowed(scenario_tuple: tuple) -> bool:
+		if len(exclude_pair_set) == 0:
+			return True
+		scenario_key_set = set(scenario_tuple)
+		for a, b in exclude_pair_set:
+			if a in scenario_key_set and b in scenario_key_set:
+				return False
+		return True
+
+	def _build_scenarios_for_key(key: str, target_count: int=24) -> list[tuple]:
+		other_keys = [k for k in all_keys if k != key]
+		pick_count = num_choices - 1
+		if pick_count < 0 or pick_count > len(other_keys):
+			return []
+		if pick_count == 0:
+			singleton = (key,)
+			return [singleton] if _scenario_is_allowed(singleton) else []
+
+		scenario_set = set()
+		max_attempts = max(64, target_count * 20)
+		for _ in range(max_attempts):
+			distractors = random.sample(other_keys, pick_count)
+			scenario_tuple = tuple(sorted([key] + distractors))
+			if not _scenario_is_allowed(scenario_tuple):
+				continue
+			scenario_set.add(scenario_tuple)
+			if len(scenario_set) >= target_count:
+				break
+		return list(scenario_set)
+
+	scenarios_by_key = {}
+	scenario_index_by_key = {}
+	for key in all_keys:
+		key_scenarios = _build_scenarios_for_key(key)
+		# Option 2b (random order, no repeats until exhausted): shuffle once, then modulo index.
+		random.shuffle(key_scenarios)
+		scenarios_by_key[key] = key_scenarios
+		scenario_index_by_key[key] = 0
+
+	total_scenarios = sum(len(v) for v in scenarios_by_key.values())
+	print('Prepared {0} scenarios across {1} keys'.format(total_scenarios, len(all_keys)))
+
 	N = 0
 	for pair in key_value_pairs:
 		key, value = pair
-		comb = random.choice(all_combs)
-		count = 0
-		while not key in comb:
-			comb = random.choice(all_combs)
-			count += 1
-			if count > 200:
-				print("something probably wrong, too many combinations searched")
-				sys.exit(1)
+		key_scenarios = scenarios_by_key.get(key, [])
+		if len(key_scenarios) == 0:
+			continue
+
+		scenario_idx = scenario_index_by_key[key] % len(key_scenarios)
+		scenario = key_scenarios[scenario_idx]
+		scenario_index_by_key[key] += 1
+
 		if flip is False:
 			item_name = value
 			plural_choice_description = yaml_data['keys description']
 			singular_item_description = yaml_data['value description']
-			choices_list = list(comb)
+			choices_list = list(scenario)
 			choices_list.sort()
 			answer = key
 		else:
@@ -124,26 +160,25 @@ def makeQuestions2(yaml_data, num_choices=None, flip=False):
 			plural_choice_description = yaml_data['values description']
 			singular_item_description =yaml_data['key description']
 			choices_list = [value, ]
-			for comb_key in comb:
-				if comb_key == key:
+			for scenario_key in scenario:
+				if scenario_key == key:
 					continue
-				choice = random.choice(matching_pairs_dict[comb_key])
+				choice = random.choice(matching_pairs_dict[scenario_key])
 				choices_list.append(choice)
 			choices_list.sort()
 			answer = value
+
 		question = (
 			f"<p>Which one of the following {plural_choice_description} "
 			f"correspond to the {singular_item_description} "
 			f"<span style='font-size: 1em;'><strong>'{item_name}'</strong></span>.</p>"
 		)
-		N += 1
 		question = bptools.applyReplacementRulesToText(question, yaml_data.get('replacement_rules'))
 		choices_list = bptools.applyReplacementRulesToList(choices_list, yaml_data.get('replacement_rules'))
-		#choices_list = bptools.append_clear_font_space_to_list(choices_list)
 		answer = bptools.applyReplacementRulesToText(answer, yaml_data.get('replacement_rules'))
-		#answer = bptools.append_clear_font_space_to_text(answer)
-		complete_question = bptools.formatBB_MC_Question(N, question, choices_list, answer)
 
+		N += 1
+		complete_question = bptools.formatBB_MC_Question(N, question, choices_list, answer)
 		list_of_complete_questions.append(complete_question)
 
 	#list_of_complete_questions = bptools.applyReplacementRulesToList(list_of_complete_questions, yaml_data.get('replacement_rules'))
@@ -168,6 +203,14 @@ def parse_arguments():
 
 #=======================
 #=======================
+def get_question_content_id(bbformat_question: str) -> str | None:
+	match = CONTENT_ID_RE.search(bbformat_question)
+	if match is None:
+		return None
+	return match.group(1)
+
+#=======================
+#=======================
 def main():
 	args = parse_arguments()
 	bptools.apply_anticheat_args(args)
@@ -181,7 +224,11 @@ def main():
 
 	list_of_complete_questions = []
 	for i in range(args.duplicate_runs):
-		list_of_complete_questions += makeQuestions2(yaml_data, args.num_choices, args.flip)
+		list_of_complete_questions += makeQuestions2(
+			yaml_data,
+			args.num_choices,
+			args.flip,
+		)
 
 	if len(list_of_complete_questions) > args.max_questions:
 		print("Too many questions, trimming down to {0} questions".format(args.max_questions))
@@ -194,11 +241,32 @@ def main():
 	print('writing to file: '+outfile)
 	f = open(outfile, 'w')
 	N = 0
+	skipped_dupes = 0
+	seen_content_ids = set()
+	output_item_bank = item_bank.ItemBank(allow_mixed=False)
 	for bbformat_question in list_of_complete_questions:
+		content_id = get_question_content_id(bbformat_question)
+		if content_id is not None:
+			if content_id in seen_content_ids:
+				skipped_dupes += 1
+				continue
+			seen_content_ids.add(content_id)
+
+		item_cls = bbq_read_package.make_item_cls_from_line(bbformat_question)
+		if item_cls is None:
+			continue
+		before_count = len(output_item_bank.items_dict_key_list)
+		output_item_bank.add_item_cls(item_cls)
+		after_count = len(output_item_bank.items_dict_key_list)
+		if after_count == before_count:
+			skipped_dupes += 1
+			continue
 		N += 1
 		f.write(bbformat_question)
 	f.close()
 	print("Wrote {0} questions to file.".format(N))
+	if skipped_dupes > 0:
+		print("Skipped {0} duplicate questions at write time.".format(skipped_dupes))
 	print('')
 	bptools.print_histogram()
 
