@@ -39,6 +39,9 @@ else
   export PYTHONPATH="$PYTHONPATH_PROPOSED"
 fi
 
+export JUNKPATH="/Users/vosslab/nsh/junk-drawer"
+export PYTHONPATH=$("$JUNKPATH/cleanpath.py" --separator ':' --path "$PYTHONPATH")
+
 echo "PYTHONPATH is now: $PYTHONPATH"
 echo "You can now run generators with: python3 path/to/script.py"
 

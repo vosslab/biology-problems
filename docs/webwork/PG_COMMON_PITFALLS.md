@@ -238,6 +238,156 @@ $selected = list_random(@sorted_keys);
 
 ---
 
+## Variable Scoping
+
+### Pitfall: Using `my` on Variables Referenced in PGML
+
+**Problem:** Declaring a variable with `my` makes it a Perl lexical variable, invisible to PGML's `[_]{$var}` and `[$var]` interpolation. PGML resolves variables in the package symbol table (the Safe compartment's namespace), not the lexical scope.
+
+```perl
+# WRONG - lexical variable invisible to PGML
+my $radio = RadioButtons(['Alpha', 'Beta'], 'Alpha', labels => 'AB');
+
+BEGIN_PGML
+[_]{$radio}
+END_PGML
+# Result: renders as a plain text input, grading fails with
+# "Error in Translator.pm::process_answers" and "HASH is not defined"
+```
+
+**Symptom:** RadioButtons (or any widget) renders as a bare text input `<input type=text>` instead of the expected radio list / dropdown / checkbox. Grading fails with `Answer evaluator was not executed due to errors`.
+
+**Fix:** Remove `my` so the variable is a package variable.
+
+```perl
+# RIGHT - package variable visible to PGML
+$radio = RadioButtons(['Alpha', 'Beta'], 'Alpha', labels => 'AB');
+
+BEGIN_PGML
+[_]{$radio}
+END_PGML
+# Result: renders as radio buttons, grading works
+```
+
+**The rule:** Any variable referenced inside `BEGIN_PGML ... END_PGML` (via `[_]{$var}`, `[$var]`, or `[$var]*`) **must be a package variable** (no `my`). Using `my` for intermediate helpers (RNG objects, loop counters, temporary arrays) is fine as long as those variables are never referenced in PGML.
+
+```perl
+# OK - my for intermediates, package var for PGML-visible results
+my $local_random = PGrandom->new();
+my $idx = $local_random->random(0, 3, 1);
+$rb = RadioButtons([@choices], $choices[$idx], labels => 'ABC');
+```
+
+**Why this happens:** PG evaluates problem source inside a `Safe` compartment. The PGML parser uses Perl's symbol table lookup (`${$package . '::' . $varname}`) to resolve variables, which only finds package-scoped variables. Lexical `my` variables live on the Perl pad stack and are unreachable from this lookup path.
+
+**Examples from this repo (all correct -- no `my` on PGML-visible vars):**
+- `which_hydrophobic-simple.pgml`: `$rb = RadioButtons(...)`
+- `chemical_group_pka_forms.pgml`: `$form_radio = RadioButtons(...)`
+- `titration_pI.pgml`: `$rb_neutral = RadioButtons(...)`
+
+---
+
+### Pitfall: `\@` and `\%` References Are Broken -- Use `~~@` or `[...]`
+
+**Problem:** The standard Perl backslash reference operators (`\@array`, `\%hash`) produce unusable references inside the Safe compartment. Dereferencing them with `@$ref` or `$ref->{key}` fails with "Not an ARRAY/HASH reference".
+
+```perl
+# WRONG - \@ produces a broken reference in PG
+@choices = ('Alpha', 'Beta', 'Gamma');
+$ref = \@choices;
+$count = scalar(@$ref);   # Dies: "Not an ARRAY reference"
+
+# WRONG - same issue with RadioButtons
+$rb = RadioButtons(\@choices, 'Alpha');  # Dies
+```
+
+**Symptom:** `Not an ARRAY reference` or `Not a HASH reference` error at the line where the reference is dereferenced or passed to a function.
+
+**Fix:** Use PG's `~~` (double-tilde) operator for references, or use `[...]`/`{...}` to create anonymous copies.
+
+```perl
+# Option 1: ~~@ creates a Safe-compatible array reference
+$rb = RadioButtons(~~@choices, 'Alpha', labels => 'ABC');
+
+# Option 2: [...] creates an anonymous array copy (most common in this repo)
+$rb = RadioButtons([@choices], 'Alpha', labels => 'ABC');
+
+# Option 3: For hash references, use ~~% or {...}
+$href = ~~%data;      # Safe-compatible hash ref
+$href = {%data};      # Anonymous hash copy
+```
+
+**Why this happens:** PG's Safe compartment overrides the backslash operator. The `\` opcode is restricted, so `\@array` does not produce a normal Perl array reference. The `~~` operator is PG's replacement that works within the sandbox. The `[...]` anonymous constructor also works because it uses a different opcode path.
+
+**Recommendation:** Prefer `[@array]` for clarity; use `~~@array` when you need to avoid copying (rare in problem files).
+
+---
+
+### Pitfall: `use` Is Trapped -- Use `loadMacros` Instead
+
+**Problem:** Perl's `use` statement calls `require` internally, which is blocked by the Safe compartment's operation mask.
+
+```perl
+# WRONG - trapped in PG
+use POSIX qw(floor);
+use List::Util qw(shuffle);
+```
+
+**Symptom:** `'require' trapped by operation mask`
+
+**Fix:** Use PG's `loadMacros()` for PG macros, or find PG-native alternatives for standard library functions.
+
+```perl
+# RIGHT - load PG macros
+loadMacros('PGstandard.pl', 'PGML.pl', 'parserRadioButtons.pl');
+
+# For math functions, PG provides built-ins:
+$val = int(3.7);              # truncate (built-in)
+$val = sprintf("%.0f", 3.7);  # round via formatting
+
+# For shuffling, PG provides random() and manual shuffle:
+@temp = @items;
+@shuffled = ();
+while (@temp) {
+  $i = random(0, $#temp, 1);
+  push @shuffled, splice(@temp, $i, 1);
+}
+```
+
+**Also trapped:** `eval "string"`, `open()`, `close()`, backtick execution (`` `cmd` ``), `system()`, `exec()`. These are all blocked for security -- PG problems run on shared servers and must not access the filesystem or execute shell commands.
+
+---
+
+### Pitfall: `local` Works But `my` Does Not in PGML
+
+**Problem:** Authors who know that `my` is "more modern" than `local` may avoid `local` entirely. But in PG, `local` and `my` have critically different PGML visibility.
+
+```perl
+# WORKS - local modifies the package variable dynamically
+local $greeting = "Hello from local";
+
+# FAILS - my creates a lexical variable invisible to PGML
+my $greeting = "Hello from my";
+
+BEGIN_PGML
+[$greeting]
+END_PGML
+# With local: displays "Hello from local"
+# With my: displays nothing (empty string)
+```
+
+**Why:** `local` temporarily modifies a **package** variable (it stays in the symbol table), so PGML can find it. `my` creates a **lexical** variable on the pad stack, invisible to symbol-table lookups. For PG problems, the simplest approach is to use bare package variables (no `my`, no `local`) for anything PGML needs to see.
+
+**When to use each:**
+
+| Keyword | PGML visible? | Use for |
+|---------|--------------|---------|
+| `$var = ...` (bare) | Yes | Variables displayed or graded in PGML |
+| `local $var = ...` | Yes | Temporary override of a package variable inside a block |
+| `my $var = ...` | No | Helper variables, loop counters, RNG objects, temporary computation |
+
+---
+
 ## Answer Checking
 
 ### Pitfall: Legacy ANS() vs PGML Inline Grading Complexity
@@ -396,6 +546,9 @@ grep '\*\[' file.pgml
 Before committing a new PG file:
 
 - [ ] Variables defined before use (check line numbers)
+- [ ] No `my` on variables referenced in PGML (`$rb`, `$popup`, display vars)
+- [ ] No `\@` or `\%` references -- use `~~@`, `[@array]`, `~~%`, or `{%hash}`
+- [ ] No `use` statements -- use `loadMacros()` for PG macros
 - [ ] No `*` or `**` immediately around `[$variables]` in PGML
 - [ ] HTML variables use `[$var]*` syntax (with the asterisk)
 - [ ] No Perl loops inside `BEGIN_TEXT...END_TEXT` blocks
@@ -417,7 +570,13 @@ Before committing a new PG file:
 | Empty output / no canvas | Variable used before defined | Move definition before usage |
 | HTML shown literally | Missing `*` in `[$var]*` | Add asterisk: `[$var]*` |
 | Answer always wrong | Answer field name mismatch | Use `ans_rule()` before `ANS()` |
-| RadioButtons error | Wrong argument type | Check RadioButtons syntax |
+| RadioButtons renders as text input | `my $rb = RadioButtons(...)` | Remove `my`: `$rb = RadioButtons(...)` |
+| `Not an ARRAY reference` | `\@array` backslash ref in PG | Use `~~@array` or `[@array]` |
+| `Not a HASH reference` | `\%hash` backslash ref in PG | Use `~~%hash` or `{%hash}` |
+| `'require' trapped by operation mask` | `use Module` in PG source | Use `loadMacros()` or PG built-ins |
+| `'eval "string"' trapped` | `eval $code` in PG | Restructure to avoid string eval |
+| `'open' trapped by operation mask` | File I/O in PG | Not possible; use PG data macros |
+| Variable shows empty in PGML | `my $var` instead of `$var` | Remove `my` for PGML-visible vars |
 | Random order changes | Hash keys not sorted | Sort keys before selection |
 
 ---

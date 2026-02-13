@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-02-13
+- Added buffer-plateau dot markers to [table_curve_lib.py](../table_curve_lib.py) at the horizontal-tangent connection points between consecutive sigmoids, matching the existing pKa midpoint dots for visual consistency (5 total dots for 3 transitions).
+- Added dedicated x-axis line row to [table_curve_lib.py](../table_curve_lib.py) as a thin solid row spanning all columns, replacing per-cell `border-bottom` injection for a continuous bottom axis.
+- Removed hardcoded `font-size:12px` from all axis labels in [table_curve_lib.py](../table_curve_lib.py) so labels inherit the surrounding text size and match question text.
+- Changed positive charge badge color in [problems/biochemistry-problems/electrophoresis/titration_pI.py](../problems/biochemistry-problems/electrophoresis/titration_pI.py) from green (`#1f7a1f`) to dark blue (`#003399`) to match CPK nitrogen coloring convention.
+- Changed "hypothetical amino acid" to "hypothetical molecule" in [problems/biochemistry-problems/electrophoresis/titration_pI.py](../problems/biochemistry-problems/electrophoresis/titration_pI.py) for broader randomization scope.
+- Reworked pI distractor generation in [problems/biochemistry-problems/electrophoresis/titration_pI.py](../problems/biochemistry-problems/electrophoresis/titration_pI.py) to draw one distractor from each of the three non-answer pH ranges (below pKa1, pKa1-pKaR, pKaR-pKa2, above pKa2), with exactly 4 sorted choices instead of shuffled duplicates.
+- Backported to [problems/biochemistry-problems/electrophoresis/titration_pI.pgml](../problems/biochemistry-problems/electrophoresis/titration_pI.pgml): positive charge badge dark blue (`#003399`), range-based pI distractors with 4 sorted choices.
+- Added Safe compartment pitfalls to [docs/webwork/PG_COMMON_PITFALLS.md](docs/webwork/PG_COMMON_PITFALLS.md): `my` scoping (lexical variables invisible to PGML), `\@`/`\%` broken references (use `~~@` or `[@array]`), `use` trapped (use `loadMacros`), `local` vs `my` visibility, and updated quick reference table and prevention checklist.
+
 ## 2026-02-12
 - Added [table_curve_lib.py](../table_curve_lib.py) reusable CSS border-radius sigmoid curve renderer that draws N sigmoid transitions as quarter-ellipse arcs in a (2N x 2N) HTML table grid, with dynamic row heights from transition y-values, right-side annotations, x-axis labels, optional dashed crosshair guide lines, and configurable stroke/color -- producing ~2-3 KB per chart vs ~145 KB from the raster approach.
 - Switched [problems/biochemistry-problems/electrophoresis/titration_pI.py](../problems/biochemistry-problems/electrophoresis/titration_pI.py) from `table_image_raster_lib` raster grid (12,221 cells) to `table_curve_lib` CSS border-radius arcs (36 cells), reducing per-question titration curve HTML from ~145 KB to ~2-3 KB with browser-rendered smooth curves.

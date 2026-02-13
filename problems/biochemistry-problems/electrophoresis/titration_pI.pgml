@@ -36,7 +36,8 @@ $showPartialCorrectAnswers = 0;
 # --- Helpers ---
 sub badge {
   my ($txt, $sign) = @_;
-  return "<span style='color:#1f7a1f;font-weight:800;'>$txt</span>" if $sign eq '+';
+  # Dark blue for positive charges (CPK nitrogen coloring)
+  return "<span style='color:#003399;font-weight:800;'>$txt</span>" if $sign eq '+';
   return "<span style='color:#b00020;font-weight:800;'>$txt</span>" if $sign eq '-';
   return "<span style='color:#333;font-weight:700;'>$txt</span>";
 }
@@ -304,15 +305,30 @@ $correct_state = $state_labels[$neutral_i];
 $rb_neutral = RadioButtons(~~@state_labels, $correct_state, labels => "ABCD", separator => "&nbsp;&nbsp;&nbsp;");
 
 # --- RadioButtons: Q2 - pI value ---
-# Prefix with "pI = " so PG treats choices as strings, not numbers
-# Distractors: wrong adjacent pair, middle pKa, average of outer pair
-$choice_1R  = "pI = " . sprintf("%.1f", 0.5 * ($pKa1_num + $pKaR_num));
-$choice_R2  = "pI = " . sprintf("%.1f", 0.5 * ($pKaR_num + $pKa2_num));
-$choice_mid = "pI = " . sprintf("%.1f", $pKaR_num);
-$choice_12  = "pI = " . sprintf("%.1f", 0.5 * ($pKa1_num + $pKa2_num));
+# Range-based distractors: one from each of 3 non-answer pH ranges
+# Four ranges: below pKa1, pKa1-pKaR, pKaR-pKa2, above pKa2
+@range_lo = (0.0, $pKa1_num, $pKaR_num, $pKa2_num);
+@range_hi = ($pKa1_num, $pKaR_num, $pKa2_num, 14.0);
 
+@pI_choices = ();
 $pI_correct = "pI = $pI";
-@pI_choices = ($choice_1R, $choice_R2, $choice_mid, $choice_12);
+for $ri (0..3) {
+  if ($ri == $neutral_i) {
+    # Correct answer from this range
+    push @pI_choices, $pI_correct;
+    next;
+  }
+  # Midpoint of range with small random offset
+  $mid = 0.5 * ($range_lo[$ri] + $range_hi[$ri]);
+  $off = random(-3, 3, 1) / 10.0;
+  $val = $mid + $off;
+  # Clamp within range boundaries
+  if ($val < $range_lo[$ri] + 0.1) { $val = $range_lo[$ri] + 0.1; }
+  if ($val > $range_hi[$ri] - 0.1) { $val = $range_hi[$ri] - 0.1; }
+  push @pI_choices, "pI = " . sprintf("%.1f", $val);
+}
+
+# Choices are already in ascending order by range
 $rb_pI = RadioButtons(~~@pI_choices, $pI_correct, labels => "ABCD", separator => "&nbsp;&nbsp;&nbsp;");
 
 # --- Question header HTML ---

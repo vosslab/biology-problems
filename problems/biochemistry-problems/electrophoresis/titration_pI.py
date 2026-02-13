@@ -22,7 +22,8 @@ def badge(txt: str, sign: str) -> str:
 		str: Colored HTML span string.
 	"""
 	if sign == '+':
-		colored_text = f"<span style='color:#1f7a1f;font-weight:800;'>{txt}</span>"
+		# Dark blue for positive charges (CPK nitrogen coloring)
+		colored_text = f"<span style='color:#003399;font-weight:800;'>{txt}</span>"
 	elif sign == '-':
 		colored_text = f"<span style='color:#b00020;font-weight:800;'>{txt}</span>"
 	else:
@@ -66,7 +67,7 @@ def mol_tile_2x2(label: str, TL: str, TR: str, BL: str, BR: str) -> str:
 
 #===========================================================
 #===========================================================
-# Generate randomized pKa values for a random amino acid family
+# Generate randomized pKa values for a random molecule family
 def generate_pka_values() -> tuple:
 	"""
 	Pick acidic or basic family and generate three pKa values with
@@ -173,10 +174,10 @@ def make_protonation_states(family: int) -> list:
 
 #===========================================================
 #===========================================================
-# Build the 4-tile layout as an HTML table (2 per row with arrows)
+# Build the 4-tile layout as a single-row HTML table with arrows
 def build_tile_layout(tiles_html: list) -> str:
 	"""
-	Arrange four state tiles in a 2x2 grid with arrows between them.
+	Arrange four state tiles in a single row with arrows between them.
 
 	Args:
 		tiles_html: list of 4 HTML tile strings.
@@ -186,15 +187,12 @@ def build_tile_layout(tiles_html: list) -> str:
 	"""
 	arrow = "<div style='text-align:center;font-size:20px;'>&rarr;</div>"
 	layout = ""
-	layout += "<table style='margin:0 auto;border-collapse:collapse;'>"
-	# Row 1: State 1 -> State 2
+	layout += "<table style='border-collapse:collapse;'>"
 	layout += "<tr>"
 	layout += f"<td style='padding:4px;'>{tiles_html[0]}</td>"
 	layout += f"<td style='padding:4px;'>{arrow}</td>"
 	layout += f"<td style='padding:4px;'>{tiles_html[1]}</td>"
-	layout += "</tr>"
-	# Row 2: State 3 -> State 4
-	layout += "<tr>"
+	layout += f"<td style='padding:4px;'>{arrow}</td>"
 	layout += f"<td style='padding:4px;'>{tiles_html[2]}</td>"
 	layout += f"<td style='padding:4px;'>{arrow}</td>"
 	layout += f"<td style='padding:4px;'>{tiles_html[3]}</td>"
@@ -221,7 +219,7 @@ def build_titration_curve_html(pKa1: float, pKaR: float, pKa2: float) -> str:
 	Returns:
 		str: HTML table string for the titration curve chart.
 	"""
-	return table_curve_lib.render_sigmoid_curve(
+	result = table_curve_lib.render_sigmoid_curve(
 		transitions=[pKa1, pKaR, pKa2],
 		y_range=(0.0, 12.5),
 		x_labels=["0", "1", "2", "3"],
@@ -231,7 +229,10 @@ def build_titration_curve_html(pKa1: float, pKaR: float, pKa2: float) -> str:
 			(pKa2, "pK<sub>a2</sub>"),
 		],
 		x_axis_title="OH<sup>&minus;</sup> (equivalents)",
+		show_crosshairs=True,
+		y_tick_interval=2,
 	)
+	return result
 
 #===========================================================
 #===========================================================
@@ -253,16 +254,17 @@ def find_neutral_index(net_charges: list) -> int:
 
 #===========================================================
 #===========================================================
-# Calculate pI and generate distractor values
+# Calculate pI and generate distractor values from distinct pH ranges
 def calculate_pI_and_distractors(
 	pKa1: float, pKaR: float, pKa2: float, neutral_index: int
 ) -> tuple:
 	"""
-	Calculate the correct pI and three distractors.
+	Calculate the correct pI and three distractors from distinct ranges.
 
-	The pI is the average of the two pKa values that bracket the
-	neutral protonation state. Distractors use wrong pKa pairs
-	and the middle pKa alone.
+	Four pH ranges map to the four charge states: below pKa1,
+	pKa1-to-pKaR, pKaR-to-pKa2, and above pKa2. The correct pI
+	falls in one range; each distractor comes from a different
+	remaining range to avoid ambiguity on the imprecise graph.
 
 	Args:
 		pKa1: N-terminus pKa.
@@ -273,25 +275,33 @@ def calculate_pI_and_distractors(
 	Returns:
 		tuple: (correct_pI, distractor_values)
 	"""
-	# Transitions: state 0->1 at pKa1, 1->2 at pKaR, 2->3 at pKa2
+	# pI is the average of the two pKas flanking the neutral state
 	pKa_list = [pKa1, pKaR, pKa2]
-	# Bracket pKa values flanking the neutral state
 	pKa_lo = pKa_list[neutral_index - 1]
 	pKa_hi = pKa_list[neutral_index]
 	correct_pI = 0.5 * (pKa_lo + pKa_hi)
 
-	# All four candidate pI values (one is correct, three are distractors)
-	avg_1R = 0.5 * (pKa1 + pKaR)
-	avg_R2 = 0.5 * (pKaR + pKa2)
-	avg_12 = 0.5 * (pKa1 + pKa2)
-	mid_pKaR = pKaR
+	# Four pH ranges matching the four charge states
+	ranges = [
+		(0.0, pKa1),
+		(pKa1, pKaR),
+		(pKaR, pKa2),
+		(pKa2, 14.0),
+	]
 
-	# Filter to get exactly 3 distractors
-	correct_rounded = round(correct_pI, 1)
-	all_candidates = [avg_1R, avg_R2, mid_pKaR, avg_12]
-	distractors = [v for v in all_candidates
-		if round(v, 1) != correct_rounded]
-	distractors = distractors[:3]
+	# One distractor from each range except the correct answer's range
+	distractors = []
+	for i, (lo, hi) in enumerate(ranges):
+		if i == neutral_index:
+			# Skip the range containing the correct pI
+			continue
+		# Midpoint of the range with small random offset
+		mid = 0.5 * (lo + hi)
+		offset = random.randint(-3, 3) / 10.0
+		val = mid + offset
+		# Clamp to stay within range boundaries
+		val = max(lo + 0.1, min(hi - 0.1, val))
+		distractors.append(round(val, 1))
 	return (correct_pI, distractors)
 
 #===========================================================
@@ -317,7 +327,7 @@ def get_question_text(
 	question_text = ""
 	question_text += "<h6>Isoelectric Point from Titration Curve</h6> "
 	question_text += "<p>Below are four protonation states of a hypothetical "
-	question_text += "amino acid, shown in order as the solution is titrated "
+	question_text += "molecule, shown in order as the solution is titrated "
 	question_text += "from low pH to high pH.</p> "
 	question_text += tile_layout_html
 	question_text += " "
@@ -348,7 +358,8 @@ def generate_pI_choices(correct_pI: float, distractors: list) -> tuple:
 	choices_list = [answer_text]
 	for d in distractors:
 		choices_list.append(f"pI = {d:.1f}")
-	random.shuffle(choices_list)
+	# Sort choices by increasing numeric value
+	choices_list.sort(key=lambda c: float(c.split('= ')[1]))
 	return (choices_list, answer_text)
 
 #===========================================================
@@ -402,7 +413,7 @@ def parse_arguments():
 		argparse.Namespace: parsed arguments.
 	"""
 	parser = bptools.make_arg_parser(
-		description="Generate amino acid titration pI questions."
+		description="Generate molecule titration pI questions."
 	)
 	args = parser.parse_args()
 	return args
