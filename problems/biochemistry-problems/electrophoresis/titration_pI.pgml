@@ -1,0 +1,371 @@
+## TITLE('Advanced titration curve: neutral form and pI')
+## DESCRIPTION
+## Read a stylized titration curve (three pKa values) and identify the
+## net-neutral state and the pI.
+## ENDDESCRIPTION
+## KEYWORDS('titration curve','pI','pKa','charge states')
+## DBsubject('Biochemistry')
+## DBchapter('Amino acids')
+## DBsection('Isoelectric point and titration curves')
+## Level(4)
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+  'PGstandard.pl',
+  'MathObjects.pl',
+  'PGML.pl',
+  'niceTables.pl',
+  'parserRadioButtons.pl',
+  'PGgraphmacros.pl',
+  'PGcourse.pl',
+);
+
+$showPartialCorrectAnswers = 0;
+
+# ----------------------------
+# 2) Setup
+# ----------------------------
+
+# --- Helpers ---
+sub badge {
+  my ($txt, $sign) = @_;
+  return "<span style='color:#1f7a1f;font-weight:800;'>$txt</span>" if $sign eq '+';
+  return "<span style='color:#b00020;font-weight:800;'>$txt</span>" if $sign eq '-';
+  return "<span style='color:#333;font-weight:700;'>$txt</span>";
+}
+
+sub mol_tile_2x2 {
+  my (%p) = @_;
+  my $label = $p{label} // "";
+  my $TL = $p{TL} // "";
+  my $TR = $p{TR} // "";
+  my $BL = $p{BL} // "";
+  my $BR = $p{BR} // "CH<sub>3</sub>";
+
+  return join("",
+    "<div style='border:1px solid #ccc;border-radius:10px;padding:8px 10px;min-width:160px;background:#fff;'>",
+      "<div style='text-align:center;font-size:13px;font-weight:700;margin-bottom:6px;'>$label</div>",
+      "<div style='position:relative;height:72px;'>",
+        "<div style='position:absolute;left:0;top:0;font-size:14px;'>$TL</div>",
+        "<div style='position:absolute;right:0;top:0;font-size:14px;text-align:right;'>$TR</div>",
+        "<div style='position:absolute;left:0;bottom:0;font-size:14px;'>$BL</div>",
+        "<div style='position:absolute;right:0;bottom:0;font-size:14px;text-align:right;'>$BR</div>",
+      "</div>",
+    "</div>"
+  );
+}
+
+sub make_state_tile {
+  my (%g) = @_;
+  my %p = ( label => $g{label} );
+  $p{ $place{"N"} } = $g{N};
+  $p{ $place{"C"} } = $g{C};
+  $p{ $place{"R"} } = $g{R};
+  $p{ $place{"M"} } = $g{M};
+  return mol_tile_2x2(%p);
+}
+
+# --- Curated families (acidic-like vs basic-like) ---
+$family = random(0, 1, 1);
+
+$pKa1_num = random(18, 25, 1) / 10;    # 1.8 - 2.5
+$pKa2_num = random(90, 105, 1) / 10;   # 9.0 - 10.5
+
+if ($family == 0) {
+  # Acidic-like: +1 -> 0 -> -1 -> -2
+  $pKaR_num = random(35, 50, 1) / 10;  # 3.5 - 5.0
+  @netQ = (+1, 0, -1, -2);
+} else {
+  # Basic-like: +2 -> +1 -> 0 -> -1
+  $pKaR_num = random(55, 80, 1) / 10;  # 5.5 - 8.0
+  @netQ = (+2, +1, 0, -1);
+}
+
+# Enforce ordering and minimum 1.0 pH-unit gaps
+if ($pKaR_num < $pKa1_num + 1.0) { $pKaR_num = $pKa1_num + 1.0; }
+if ($pKa2_num < $pKaR_num + 1.0) { $pKa2_num = $pKaR_num + 1.0; }
+
+# --- Find neutral state and pI bracket ---
+$neutral_i = 0;
+for $idx (0..3) {
+  if ($netQ[$idx] == 0) { $neutral_i = $idx; }
+}
+
+# Bracket: pKa values flanking the neutral state
+# Transition 0->1 at pKa1, 1->2 at pKaR, 2->3 at pKa2
+@pKa_nums = ($pKa1_num, $pKaR_num, $pKa2_num);
+$pLo_num = $pKa_nums[$neutral_i - 1];
+$pHi_num = $pKa_nums[$neutral_i];
+$pI_num  = 0.5 * ($pLo_num + $pHi_num);
+
+# Format for display
+$pKa1    = sprintf("%.1f", $pKa1_num);
+$pKaR    = sprintf("%.1f", $pKaR_num);
+$pKa2    = sprintf("%.1f", $pKa2_num);
+$pI      = sprintf("%.1f", $pI_num);
+$pLo_fmt = sprintf("%.1f", $pLo_num);
+$pHi_fmt = sprintf("%.1f", $pHi_num);
+
+# --- Corner rotation: randomize group placement per seed ---
+# Groups: N=N-terminus, C=C-terminus, R=R-group, M=methyl
+@corners = ("TL", "TR", "BL", "BR");
+@groups = ("N", "C", "R", "M");
+$rot = random(0, 3, 1);
+@groups_rot = (@groups[$rot..$#groups], @groups[0..$rot-1]);
+
+%place = ();
+for $ci (0..3) {
+  $place{$groups_rot[$ci]} = $corners[$ci];
+}
+
+# --- Build molecule tiles per family ---
+# No net charge shown: students must infer it from functional groups
+@tiles = ();
+if ($family == 0) {
+  # Acidic side chain family: +1 -> 0 -> -1 -> -2
+  $tiles[0] = make_state_tile(
+    label => "State 1",
+    N => badge("H<sub>3</sub>N<sup>+</sup>", '+'),
+    C => "COOH",
+    R => "COOH",
+    M => "CH<sub>3</sub>",
+  );
+  $tiles[1] = make_state_tile(
+    label => "State 2",
+    N => badge("H<sub>3</sub>N<sup>+</sup>", '+'),
+    C => badge("COO<sup>&minus;</sup>", '-'),
+    R => "COOH",
+    M => "CH<sub>3</sub>",
+  );
+  $tiles[2] = make_state_tile(
+    label => "State 3",
+    N => badge("H<sub>3</sub>N<sup>+</sup>", '+'),
+    C => badge("COO<sup>&minus;</sup>", '-'),
+    R => badge("COO<sup>&minus;</sup>", '-'),
+    M => "CH<sub>3</sub>",
+  );
+  $tiles[3] = make_state_tile(
+    label => "State 4",
+    N => "H<sub>2</sub>N",
+    C => badge("COO<sup>&minus;</sup>", '-'),
+    R => badge("COO<sup>&minus;</sup>", '-'),
+    M => "CH<sub>3</sub>",
+  );
+} else {
+  # Basic side chain family: +2 -> +1 -> 0 -> -1
+  $tiles[0] = make_state_tile(
+    label => "State 1",
+    N => badge("H<sub>3</sub>N<sup>+</sup>", '+'),
+    C => "COOH",
+    R => badge("NH<sub>3</sub><sup>+</sup>", '+'),
+    M => "CH<sub>3</sub>",
+  );
+  $tiles[1] = make_state_tile(
+    label => "State 2",
+    N => badge("H<sub>3</sub>N<sup>+</sup>", '+'),
+    C => badge("COO<sup>&minus;</sup>", '-'),
+    R => badge("NH<sub>3</sub><sup>+</sup>", '+'),
+    M => "CH<sub>3</sub>",
+  );
+  $tiles[2] = make_state_tile(
+    label => "State 3",
+    N => badge("H<sub>3</sub>N<sup>+</sup>", '+'),
+    C => badge("COO<sup>&minus;</sup>", '-'),
+    R => "NH<sub>2</sub>",
+    M => "CH<sub>3</sub>",
+  );
+  $tiles[3] = make_state_tile(
+    label => "State 4",
+    N => "H<sub>2</sub>N",
+    C => badge("COO<sup>&minus;</sup>", '-'),
+    R => "NH<sub>2</sub>",
+    M => "CH<sub>3</sub>",
+  );
+}
+
+# --- Two-row tile layout (2 tiles per row, not 4-across) ---
+$arrow_cell = "<div style='text-align:center;font-size:20px;'>&rarr;</div>";
+
+$mol_row = LayoutTable(
+  [
+    [
+      { data => $tiles[0], align => 'center' },
+      { data => $arrow_cell, align => 'center' },
+      { data => $tiles[1], align => 'center' },
+    ],
+    [
+      { data => $tiles[2], align => 'center' },
+      { data => $arrow_cell, align => 'center' },
+      { data => $tiles[3], align => 'center' },
+    ],
+  ],
+  padding => 4,
+  center  => 1,
+);
+
+# --- Static titration curve (PGgraphmacros, display only) ---
+# 1x resolution; tighter bounds give more plot area for labels
+
+$gr = init_graph(-0.6, -1.2, 3.4, 12.5,
+  axes  => [0, 0],
+  grid  => [8, 5],
+  size  => [520, 420],
+);
+
+# Physical titration curve: sweep pH, compute equivalents via speciation
+$Ka1_val = 10**(-$pKa1_num);
+$Ka2_val = 10**(-$pKaR_num);
+$Ka3_val = 10**(-$pKa2_num);
+
+$num_pts = 400;
+$ph_lo = 0.5;
+$ph_hi = 12.5;
+$first_pt = 1;
+for $i (0..$num_pts) {
+  $ph_sweep = $ph_lo + ($ph_hi - $ph_lo) * $i / $num_pts;
+  $H_conc = 10**(-$ph_sweep);
+
+  $denom = $H_conc**3
+         + $Ka1_val * $H_conc**2
+         + $Ka1_val * $Ka2_val * $H_conc
+         + $Ka1_val * $Ka2_val * $Ka3_val;
+  $nbar = ($Ka1_val * $H_conc**2
+         + 2 * $Ka1_val * $Ka2_val * $H_conc
+         + 3 * $Ka1_val * $Ka2_val * $Ka3_val) / $denom;
+
+  if ($nbar >= 0 && $nbar <= 3.0 && $ph_sweep <= 12.5) {
+    if ($first_pt) {
+      $gr->moveTo($nbar, $ph_sweep);
+      $first_pt = 0;
+    } else {
+      $gr->lineTo($nbar, $ph_sweep, 'blue', 2);
+    }
+  }
+}
+
+# Dashed guide lines at each pKa (crosshairs from axes to curve)
+@half_eqs = (0.5, 1.5, 2.5);
+@pKa_vals = ($pKa1_num, $pKaR_num, $pKa2_num);
+
+for $gi (0..2) {
+  $xeq = $half_eqs[$gi];
+  $pka_g = $pKa_vals[$gi];
+
+  # Horizontal dashes from y-axis to half-eq point
+  for $d (0..29) {
+    $x1d = $d * 0.10;
+    $x2d = $x1d + 0.05;
+    if ($x1d < $xeq) {
+      if ($x2d > $xeq) { $x2d = $xeq; }
+      $gr->moveTo($x1d, $pka_g);
+      $gr->lineTo($x2d, $pka_g, 'gray', 1);
+    }
+  }
+
+  # Vertical dashes from x-axis up to pKa level
+  for $d (0..59) {
+    $y1d = $d * 0.20;
+    $y2d = $y1d + 0.10;
+    if ($y1d < $pka_g) {
+      if ($y2d > $pka_g) { $y2d = $pka_g; }
+      $gr->moveTo($xeq, $y1d);
+      $gr->lineTo($xeq, $y2d, 'gray', 1);
+    }
+  }
+
+  # Dot at intersection
+  $gr->stamps(closed_circle($xeq, $pka_g, 'black'));
+}
+
+# Axis labels at edges
+$gr->lb(new Label(3.4, -0.7, 'OH- (equivalents)', 'black', 'right', 'top'));
+$gr->lb(new Label(-0.1, 12.5, 'pH', 'black', 'right', 'top'));
+
+# Tick labels (fewer to reduce crowding)
+for $yv (0, 2, 4, 6, 8, 10, 12) {
+  $gr->lb(new Label(-0.08, $yv, $yv, 'black', 'right', 'middle'));
+}
+for $xv (0, 1, 2, 3) {
+  $gr->lb(new Label($xv, -0.3, $xv, 'black', 'center', 'top'));
+}
+
+$graph_img = image(insertGraph($gr), width => 520, height => 420, tex_size => 700);
+
+# --- RadioButtons: Q1 - which state has no net charge? ---
+@state_labels = ("State 1", "State 2", "State 3", "State 4");
+$correct_state = $state_labels[$neutral_i];
+$rb_neutral = RadioButtons(~~@state_labels, $correct_state, labels => "ABCD", separator => "&nbsp;&nbsp;&nbsp;");
+
+# --- RadioButtons: Q2 - pI value ---
+# Prefix with "pI = " so PG treats choices as strings, not numbers
+# Distractors: wrong adjacent pair, middle pKa, average of outer pair
+$choice_1R  = "pI = " . sprintf("%.1f", 0.5 * ($pKa1_num + $pKaR_num));
+$choice_R2  = "pI = " . sprintf("%.1f", 0.5 * ($pKaR_num + $pKa2_num));
+$choice_mid = "pI = " . sprintf("%.1f", $pKaR_num);
+$choice_12  = "pI = " . sprintf("%.1f", 0.5 * ($pKa1_num + $pKa2_num));
+
+$pI_correct = "pI = $pI";
+@pI_choices = ($choice_1R, $choice_R2, $choice_mid, $choice_12);
+$rb_pI = RadioButtons(~~@pI_choices, $pI_correct, labels => "ABCD", separator => "&nbsp;&nbsp;&nbsp;");
+
+# --- Question header HTML ---
+$q1_header = "<div style='font-size:1.15em;font-weight:700;margin:10px 0 4px;'>1. Which state has no net charge?</div>";
+$q2_header = "<div style='font-size:1.15em;font-weight:700;margin:10px 0 4px;'>2. The isoelectric point (pI) is closest to which value?</div>";
+
+# ----------------------------
+# 3) Statement (PGML)
+# ----------------------------
+BEGIN_PGML
+
+Below are four protonation states of a fake molecule, shown in order
+as the solution is titrated from low pH to high pH.
+
+[$mol_row]*
+
+[$q1_header]*
+
+[_]{$rb_neutral}
+
+[$graph_img]*
+
+Given [`pK_a`] values: [`pK_{a1}`] = [$pKa1], [`pK_{aR}`] = [$pKaR], [`pK_{a2}`] = [$pKa2].
+
+[$q2_header]*
+
+[_]{$rb_pI}
+
+END_PGML
+
+# ----------------------------
+# 4) Hint
+# ----------------------------
+BEGIN_PGML_HINT
+
+The isoelectric point (pI) is the pH at which a molecule has no net
+charge. It is calculated as the average of the two [`pK_a`] values
+that bracket the neutral form.
+
+END_PGML_HINT
+
+# ----------------------------
+# 5) Solution
+# ----------------------------
+BEGIN_PGML_SOLUTION
+
+The net-neutral form is [$correct_state] (charge = 0).
+
+The pI is the midpoint between the two [`pK_a`] values that bracket
+the neutral form:
+
+pI = ([$pLo_fmt] + [$pHi_fmt]) / 2 = [$pI].
+
+END_PGML_SOLUTION
+
+ENDDOCUMENT();

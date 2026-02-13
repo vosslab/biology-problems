@@ -1,6 +1,8 @@
 # Changelog
 
 ## 2026-02-12
+- Added [docs/webwork/HOW_TO_MAKE_GRAPHS.md](docs/webwork/HOW_TO_MAKE_GRAPHS.md) documenting PGgraphmacros vs GraphTool usage, init_graph/add_functions API, label placement, Lagrange cubic interpolation for titration curves, variable scoping, aspect ratio tips, and the GraphTool answer-evaluator interference issue.
+- Rewrote [problems/biochemistry-problems/electrophoresis/titration_pI.pgml](../problems/biochemistry-problems/electrophoresis/titration_pI.pgml) using PGgraphmacros for a static titration curve image (replacing GraphTool to avoid answer-evaluator interference with PGML RadioButtons), added two-row molecule tile layout with functional-group badges via niceTables LayoutTable, curated acidic-like and basic-like amino acid families with randomized pKa values, and used pure PGML with two RadioButtons questions (identify net-neutral state and calculate pI).
 - Added duplicate filtering to [bptools.py](../bptools.py) collection paths (`_collect_questions` and `collect_question_batches`) using stable item identities (`item_cls.item_crc16` when available), so duplicate generated questions are skipped before writing and no longer counted toward accepted question totals.
 - Updated [bptools.py](../bptools.py) histogram synchronization so MC/MA answer histograms are rebuilt from accepted unique `item_cls` questions, keeping reported totals aligned with deduplicated outputs.
 - Updated [tests/yaml/test_matching_sets_yaml_generators.py](../tests/yaml/test_matching_sets_yaml_generators.py) expectations for current generator behavior (2 questions per run in matching-set scripts and conditional replacement assertions based on sampled content).
