@@ -5,7 +5,7 @@ import random
 
 # Local repo modules
 import bptools
-import table_image_raster_lib
+import table_curve_lib
 
 #===========================================================
 #===========================================================
@@ -207,11 +207,11 @@ def build_tile_layout(tiles_html: list) -> str:
 # Render a titration curve as an HTML table of colored cells
 def build_titration_curve_html(pKa1: float, pKaR: float, pKa2: float) -> str:
 	"""
-	Build an HTML table that renders a titration curve using colored cells.
+	Build an HTML table that renders a titration curve using CSS arcs.
 
-	Uses TableImageRaster at doubled resolution (61x51 grid, 6px cells)
-	for a smooth curve. The curve plots pH (y-axis) vs equivalents of
-	OH- added (x-axis) using the three-proton speciation formula.
+	Uses CSS border-radius quarter-ellipses to draw smooth sigmoid
+	transitions at each pKa value. Produces ~2-3 KB of HTML instead
+	of ~145 KB from the raster approach.
 
 	Args:
 		pKa1: first pKa (N-terminus).
@@ -221,49 +221,17 @@ def build_titration_curve_html(pKa1: float, pKaR: float, pKa2: float) -> str:
 	Returns:
 		str: HTML table string for the titration curve chart.
 	"""
-	# Create raster chart: 121x101 grid at 3px cells (4x resolution)
-	chart = table_image_raster_lib.TableImageRaster(
-		x_range=(0.0, 3.0),
+	return table_curve_lib.render_sigmoid_curve(
+		transitions=[pKa1, pKaR, pKa2],
 		y_range=(0.0, 12.5),
-		cols=121, rows=101, cell_px=3
+		x_labels=["0", "1", "2", "3"],
+		y_labels=[
+			(pKa1, "pK<sub>a1</sub>"),
+			(pKaR, "pK<sub>aR</sub>"),
+			(pKa2, "pK<sub>a2</sub>"),
+		],
+		x_axis_title="OH<sup>&minus;</sup> (equivalents)",
 	)
-	chart.set_y_tick_interval(2)
-	chart.set_x_tick_values([0, 1, 2, 3])
-	chart.set_x_axis_title("OH<sup>&minus;</sup> (equivalents)")
-
-	# Compute dissociation constants from pKa values
-	Ka1 = 10 ** (-pKa1)
-	Ka2 = 10 ** (-pKaR)
-	Ka3 = 10 ** (-pKa2)
-
-	# Sweep pH and compute curve points via speciation formula
-	# n-bar = average number of protons lost (0 to 3)
-	points = []
-	num_sweep = 2400
-	for i in range(num_sweep + 1):
-		ph = 0.5 + (12.0 * i / num_sweep)
-		H = 10 ** (-ph)
-		denom = (H ** 3
-			+ Ka1 * H ** 2
-			+ Ka1 * Ka2 * H
-			+ Ka1 * Ka2 * Ka3)
-		nbar = (Ka1 * H ** 2
-			+ 2 * Ka1 * Ka2 * H
-			+ 3 * Ka1 * Ka2 * Ka3) / denom
-		points.append((nbar, ph))
-	chart.plot_curve(points, antialiased=True)
-
-	# Dashed crosshair guide lines and labels at each pKa
-	pKa_vals = [pKa1, pKaR, pKa2]
-	half_eqs = [0.5, 1.5, 2.5]
-	pka_names = ['pK<sub>a1</sub>', 'pK<sub>aR</sub>', 'pK<sub>a2</sub>']
-	for pka, half_eq, name in zip(pKa_vals, half_eqs, pka_names):
-		chart.add_crosshair(half_eq, pka)
-		chart.add_dot(half_eq, pka)
-		chart.add_right_label(pka, name)
-
-	result_html = chart.to_html()
-	return result_html
 
 #===========================================================
 #===========================================================

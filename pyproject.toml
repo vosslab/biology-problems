@@ -11,7 +11,7 @@ requires-python = ">=3.12"
 license = { text = "GPL-3.0-or-later" }
 
 [tool.setuptools]
-py-modules = ["bptools", "logger_config", "table_image_raster_lib"]
+py-modules = ["bptools", "logger_config", "table_image_raster_lib", "table_curve_lib"]
 include-package-data = true
 
 [tool.pytest.ini_options]
