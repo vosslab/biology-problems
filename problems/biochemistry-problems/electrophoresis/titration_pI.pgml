@@ -1,4 +1,4 @@
-## TITLE('Advanced titration curve: neutral form and pI')
+## TITLE('Isoelectric point from a titration curve')
 ## DESCRIPTION
 ## Read a stylized titration curve (three pKa values) and identify the
 ## net-neutral state and the pI.
