@@ -5,18 +5,7 @@ import random
 
 # Local repo modules
 import bptools
-
-# Grid constants for the HTML table-based titration curve
-GRID_X_STEP = 0.1    # equivalents per column
-GRID_Y_STEP = 0.5    # pH per row
-GRID_COLS = 31        # columns: 0.0 to 3.0 equivalents
-GRID_ROWS = 26        # rows: pH 0.0 to 12.5
-CELL_PX = 12          # pixel size of each grid cell
-
-# Colors for the curve rendering
-COLOR_CURVE = '#2563eb'
-COLOR_GUIDE = '#d1d5db'
-COLOR_DOT = '#1f2937'
+import table_image_raster_lib
 
 #===========================================================
 #===========================================================
@@ -220,9 +209,9 @@ def build_titration_curve_html(pKa1: float, pKaR: float, pKa2: float) -> str:
 	"""
 	Build an HTML table that renders a titration curve using colored cells.
 
-	The curve plots pH (y-axis) vs equivalents of OH- added (x-axis).
-	Uses the three-proton speciation formula to compute the curve shape.
-	Dashed crosshair guide lines mark each pKa inflection point.
+	Uses TableImageRaster at doubled resolution (61x51 grid, 6px cells)
+	for a smooth curve. The curve plots pH (y-axis) vs equivalents of
+	OH- added (x-axis) using the three-proton speciation formula.
 
 	Args:
 		pKa1: first pKa (N-terminus).
@@ -232,15 +221,25 @@ def build_titration_curve_html(pKa1: float, pKaR: float, pKa2: float) -> str:
 	Returns:
 		str: HTML table string for the titration curve chart.
 	"""
+	# Create raster chart: 121x101 grid at 3px cells (4x resolution)
+	chart = table_image_raster_lib.TableImageRaster(
+		x_range=(0.0, 3.0),
+		y_range=(0.0, 12.5),
+		cols=121, rows=101, cell_px=3
+	)
+	chart.set_y_tick_interval(2)
+	chart.set_x_tick_values([0, 1, 2, 3])
+	chart.set_x_axis_title("OH<sup>&minus;</sup> (equivalents)")
+
 	# Compute dissociation constants from pKa values
 	Ka1 = 10 ** (-pKa1)
 	Ka2 = 10 ** (-pKaR)
 	Ka3 = 10 ** (-pKa2)
 
-	# Sweep pH from 0.5 to 12.5 and compute n-bar at each point
+	# Sweep pH and compute curve points via speciation formula
 	# n-bar = average number of protons lost (0 to 3)
-	curve_cells = set()
-	num_sweep = 600
+	points = []
+	num_sweep = 2400
 	for i in range(num_sweep + 1):
 		ph = 0.5 + (12.0 * i / num_sweep)
 		H = 10 ** (-ph)
@@ -251,105 +250,20 @@ def build_titration_curve_html(pKa1: float, pKaR: float, pKa2: float) -> str:
 		nbar = (Ka1 * H ** 2
 			+ 2 * Ka1 * Ka2 * H
 			+ 3 * Ka1 * Ka2 * Ka3) / denom
-		# Map continuous (nbar, ph) to grid cell indices
-		col = int(round(nbar / GRID_X_STEP))
-		row = int(round(ph / GRID_Y_STEP))
-		if 0 <= col < GRID_COLS and 0 <= row < GRID_ROWS:
-			curve_cells.add((row, col))
+		points.append((nbar, ph))
+	chart.plot_curve(points, antialiased=True)
 
-	# Build dashed crosshair guide lines at each pKa
-	guide_cells = set()
-	dot_cells = set()
+	# Dashed crosshair guide lines and labels at each pKa
 	pKa_vals = [pKa1, pKaR, pKa2]
-	# Half-equivalence points where pH = pKa on the curve
 	half_eqs = [0.5, 1.5, 2.5]
-	for pka, half_eq in zip(pKa_vals, half_eqs):
-		pka_row = int(round(pka / GRID_Y_STEP))
-		half_col = int(round(half_eq / GRID_X_STEP))
-		# Horizontal dashes from y-axis to the half-equivalence point
-		for c in range(half_col + 1):
-			if c % 2 == 0:
-				if 0 <= pka_row < GRID_ROWS and 0 <= c < GRID_COLS:
-					guide_cells.add((pka_row, c))
-		# Vertical dashes from x-axis up to the pKa level
-		for r in range(pka_row + 1):
-			if r % 2 == 0:
-				if 0 <= r < GRID_ROWS and 0 <= half_col < GRID_COLS:
-					guide_cells.add((r, half_col))
-		# Dot at the intersection point
-		if 0 <= pka_row < GRID_ROWS and 0 <= half_col < GRID_COLS:
-			dot_cells.add((pka_row, half_col))
-
-	# Map pKa rows to labels for the right margin
-	pka_labels = {}
 	pka_names = ['pK<sub>a1</sub>', 'pK<sub>aR</sub>', 'pK<sub>a2</sub>']
-	for pka, name in zip(pKa_vals, pka_names):
-		label_row = int(round(pka / GRID_Y_STEP))
-		pka_labels[label_row] = name
+	for pka, half_eq, name in zip(pKa_vals, half_eqs, pka_names):
+		chart.add_crosshair(half_eq, pka)
+		chart.add_dot(half_eq, pka)
+		chart.add_right_label(pka, name)
 
-	# Shared style fragments for cell sizing
-	cell_style = f"width:{CELL_PX}px;height:{CELL_PX}px"
-
-	# Build the HTML table row by row, top (high pH) to bottom (low pH)
-	html = ""
-	html += "<table style='border-collapse:collapse;margin:8px auto;"
-	html += "background:#f8fafc;border:1px solid #e5e7eb;'>"
-
-	for row_idx in range(GRID_ROWS - 1, -1, -1):
-		ph_val = row_idx * GRID_Y_STEP
-		html += "<tr>"
-
-		# Left column: pH axis labels (show every 2 pH units)
-		ph_int = int(ph_val)
-		show_label = (ph_val == ph_int and ph_int % 2 == 0)
-		label_text = str(ph_int) if show_label else ""
-		html += "<td style='width:20px;font-size:10px;"
-		html += f"text-align:right;padding-right:2px;'>{label_text}</td>"
-
-		# Data cells for the curve grid
-		for col_idx in range(GRID_COLS):
-			cell_key = (row_idx, col_idx)
-			# Priority: dot > curve > guide > empty
-			if cell_key in dot_cells:
-				bg = COLOR_DOT
-			elif cell_key in curve_cells:
-				bg = COLOR_CURVE
-			elif cell_key in guide_cells:
-				bg = COLOR_GUIDE
-			else:
-				bg = None
-			if bg is not None:
-				html += f"<td style='{cell_style};background:{bg}'></td>"
-			else:
-				html += f"<td style='{cell_style}'></td>"
-
-		# Right column: pKa labels next to guide lines
-		right_label = pka_labels.get(row_idx, "")
-		html += "<td style='width:50px;font-size:9px;"
-		html += f"padding-left:3px;'>{right_label}</td>"
-
-		html += "</tr>"
-
-	# Bottom row: equivalents axis tick labels at 0, 1, 2, 3
-	html += "<tr><td></td>"
-	for col_idx in range(GRID_COLS):
-		equiv_val = col_idx * GRID_X_STEP
-		if col_idx % 10 == 0:
-			html += "<td style='font-size:10px;text-align:center;'>"
-			html += f"{int(equiv_val)}</td>"
-		else:
-			html += "<td></td>"
-	html += "<td></td></tr>"
-
-	# Bottom row: axis title
-	html += "<tr><td></td>"
-	html += f"<td colspan='{GRID_COLS}' style='font-size:10px;"
-	html += "text-align:center;padding-top:2px;'>"
-	html += "OH<sup>&minus;</sup> (equivalents)</td>"
-	html += "<td></td></tr>"
-
-	html += "</table>"
-	return html
+	result_html = chart.to_html()
+	return result_html
 
 #===========================================================
 #===========================================================
