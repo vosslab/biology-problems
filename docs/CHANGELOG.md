@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-02-15
+- Added [docs/webwork/PG_2.20_to_2.16_features.md](webwork/PG_2.20_to_2.16_features.md) as a Markdown-formatted version of the WeBWorK 2.20-2.16 feature notes sourced from [docs/webwork/PG_2.20_to_2.16_features.txt](webwork/PG_2.20_to_2.16_features.txt), while leaving the original `.txt` file unchanged.
+
 ## 2026-02-13
 - Added buffer-plateau dot markers to [table_curve_lib.py](../table_curve_lib.py) at the horizontal-tangent connection points between consecutive sigmoids, matching the existing pKa midpoint dots for visual consistency (5 total dots for 3 transitions).
 - Added dedicated x-axis line row to [table_curve_lib.py](../table_curve_lib.py) as a thin solid row spanning all columns, replacing per-cell `border-bottom` injection for a continuous bottom axis.
