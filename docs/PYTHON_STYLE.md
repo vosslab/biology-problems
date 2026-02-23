@@ -5,6 +5,8 @@ Language Model guide to Neil python3 programming
 ## Python version
 
 * I like using one of the latest versions of python, but not the latest, of python3, currently **3.12**.
+* In this repo, run python commands through the bootstrap pattern:
+* `source source_me.sh && python ...`
 
 ## FILENAMES
 * Prefer snake_case for Python filenames and module names.
@@ -39,6 +41,50 @@ Language Model guide to Neil python3 programming
 - Return statements should be simple and should not perform calculations, fill out a dict, or build strings. Store computed values and assembled strings in variables first, including any multiline HTML or text, then return the variable.
 - add comments within the code to describe what different lines are doing, to make for better readability later. especially for complex lines!
 - Please only use ascii characters in the script, if utf characters are need they should be escape e.g. `&alpha;` `&lrarr;`
+
+## `__init__.py` FILES
+
+`__init__.py` is not where coders look for bugs, so hiding logic there disguises problems. Keep these files minimal.
+
+- Keep `__init__.py` empty or limited to a one-line docstring.
+- No implementation code belongs in `__init__.py`.
+- No hardcoded import lines or re-export facades.
+- No manually curated lists (`__all__`, `_EXPORTED_MODULES`, etc.).
+- No class or function maps (`_MODE_CLASS_MAP`, `_FUNCTION_MAP`, etc.).
+- No auto-discovery or registrar logic (put that in a dedicated loader module).
+- No aliases except as temporary migration shims (mark with a removal date comment).
+- No global variables -- they disguise bugs in a file coders rarely inspect.
+- No `__version__` assignments. Version lives in `pyproject.toml` as the single source of truth. Scattering `__version__` across `__init__.py` files is a maintenance nightmare when upgrading.
+- No `importlib`-based lazy loaders inline. If a package needs lazy loading for startup performance, put the loader in a dedicated module, not in `__init__.py`.
+- Do not add re-exports to satisfy type-checker public API inference. Type checkers that expect names in `__init__.py` can be configured with `py.typed` markers or explicit stubs. Convenience for tooling does not justify cluttering `__init__.py`.
+- Every caller should import from submodules directly.
+
+Good:
+```python
+# __init__.py
+"""Package docstring."""
+```
+
+Bad:
+```python
+# __init__.py
+from .widget import Widget
+from .parser import parse_input
+__all__ = ["Widget", "parse_input"]
+_CLASS_MAP = {"widget": Widget}
+```
+
+Good (caller imports from the submodule):
+```python
+import mypackage.widget
+w = mypackage.widget.Widget()
+```
+
+Bad (caller relies on re-exports in `__init__.py`):
+```python
+import mypackage
+w = mypackage.Widget()
+```
 
 ## QUOTING
 * Avoid backslash escaping quotes inside strings when possible.
@@ -80,8 +126,7 @@ volume_text = f"<span style='font-family: monospace;'>{vol1:.1f} mL</span>"
 - create a folder in most projects called tests for storing test scripts
 - a good repo-wide pyflakes gate is `tests/test_pyflakes_code_lint.py` (run with pytest)
 ```bash
-python3 -m pytest tests/test_pyflakes_code_lint.py
-/opt/homebrew/opt/python@3.12/bin/python3.12 -m pytest tests/test_pyflakes_code_lint.py
+source source_me.sh && python -m pytest tests/test_pyflakes_code_lint.py
 ```
 
 ## DO NOT USE HEREDOCS

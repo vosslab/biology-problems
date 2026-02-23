@@ -9,11 +9,6 @@ bbq-*.txt
 qti*.zip
 selftest-*.html
 .DS_Store
-report_shebang.txt
-report_pyflakes.txt
-report_ascii_compliance.txt
-report_bandit.txt
-report_pyright.txt
 
 # Byte-compiled / optimized / DLL files
 *.py[cod]
@@ -27,3 +22,4 @@ ENV/
 env.bak/
 venv.bak/
 
+report_*.txt

@@ -12,7 +12,7 @@ SKIP_ENV = "SKIP_REPO_HYGIENE"
 CHECK_OPTIONAL_IMPORTS_ENV = "CHECK_OPTIONAL_IMPORTS"
 REPO_ROOT = git_file_utils.get_repo_root()
 SKIP_DIRS = {".git", ".venv", "__pycache__", "old_shell_folder"}
-REPORT_NAME = "report_imports.txt"
+REPORT_NAME = "report_import_requirements.txt"
 REQUIREMENT_FILES = (
 	"pip_requirements.txt",
 	"pip_requirements-dev.txt",
@@ -338,7 +338,7 @@ def write_import_report(
 	import_issues: list[str],
 ) -> str:
 	"""
-	Write import-policy findings to report_imports.txt.
+	Write import-policy findings to the import-requirements report file.
 	"""
 	report_path = os.path.join(repo_root, REPORT_NAME)
 	lines = [

@@ -1,0 +1,4 @@
+@AGENTS.md
+@docs/REPO_STYLE.md
+@docs/PYTHON_STYLE.md
+@docs/MARKDOWN_STYLE.md

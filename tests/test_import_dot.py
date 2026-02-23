@@ -8,7 +8,7 @@ import git_file_utils
 
 REPO_ROOT = git_file_utils.get_repo_root()
 SKIP_DIRS = {".git", ".venv", "__pycache__", "old_shell_folder"}
-REPORT_NAME = "report_import_star.txt"
+REPORT_NAME = "report_import_dot.txt"
 
 
 #============================================
@@ -84,9 +84,9 @@ def read_source(path: str) -> str:
 
 
 #============================================
-def find_import_star(path: str) -> list[tuple[int, str]]:
+def find_relative_imports(path: str) -> list[tuple[int, str]]:
 	"""
-	Return line numbers for from-import * statements.
+	Return line numbers for from-import statements using relative imports.
 	"""
 	source = read_source(path)
 	try:
@@ -97,26 +97,21 @@ def find_import_star(path: str) -> list[tuple[int, str]]:
 	for node in ast.walk(tree):
 		if not isinstance(node, ast.ImportFrom):
 			continue
-		for alias in node.names:
-			if alias.name != "*":
-				continue
-			line_no = getattr(node, "lineno", 0) or 0
-			module_name = node.module or ""
-			if getattr(node, "level", 0):
-				module_name = f"{'.' * node.level}{module_name}"
-			matches.append((line_no, module_name))
-			break
+		if getattr(node, "level", 0) <= 0:
+			continue
+		line_no = getattr(node, "lineno", 0) or 0
+		module_name = node.module or ""
+		import_root = f"{'.' * node.level}{module_name}"
+		matches.append((line_no, import_root))
 	return matches
 
 
 #============================================
-def format_issue(rel_path: str, line_no: int, module_name: str) -> str:
+def format_issue(rel_path: str, line_no: int, import_root: str) -> str:
 	"""
-	Format a report line for an import * usage.
+	Format a report line for a relative from-import statement.
 	"""
-	if module_name:
-		return f"{rel_path}:{line_no}: import * from {module_name}"
-	return f"{rel_path}:{line_no}: import *"
+	return f"{rel_path}:{line_no}: relative import from {import_root}"
 
 
 _FILES = git_file_utils.collect_files(REPO_ROOT, gather_files, gather_changed_files)
@@ -124,7 +119,7 @@ _FILES = git_file_utils.collect_files(REPO_ROOT, gather_files, gather_changed_fi
 
 #============================================
 @pytest.fixture(scope="module", autouse=True)
-def reset_import_star_report() -> None:
+def reset_import_dot_report() -> None:
 	"""
 	Remove stale report file before this module runs.
 	"""
@@ -134,15 +129,15 @@ def reset_import_star_report() -> None:
 
 
 #============================================
-def append_import_star_report(issues: list[str]) -> str:
+def append_import_dot_report(issues: list[str]) -> str:
 	"""
-	Append import-star violations to the dedicated report file.
+	Append relative import violations to the dedicated report file.
 	"""
 	report_path = os.path.join(REPO_ROOT, REPORT_NAME)
 	file_exists = os.path.exists(report_path)
 	with open(report_path, "a", encoding="utf-8") as handle:
 		if not file_exists:
-			handle.write("Import star report\n")
+			handle.write("Import dot report\n")
 			handle.write("Violations:\n")
 		for issue in issues:
 			handle.write(issue + "\n")
@@ -154,18 +149,18 @@ def append_import_star_report(issues: list[str]) -> str:
 	"file_path", _FILES,
 	ids=lambda p: os.path.relpath(p, REPO_ROOT),
 )
-def test_import_star(file_path: str) -> None:
-	"""Report import * usage in a single Python file."""
-	matches = find_import_star(file_path)
+def test_import_dot(file_path: str) -> None:
+	"""Report relative from-import usage in a single Python file."""
+	matches = find_relative_imports(file_path)
 	if not matches:
 		return
 	rel_path = os.path.relpath(file_path, REPO_ROOT)
-	issues = [format_issue(rel_path, line_no, module_name) for line_no, module_name in matches]
+	issues = [format_issue(rel_path, line_no, import_root) for line_no, import_root in matches]
 	issues = sorted(set(issues))
-	report_path = append_import_star_report(issues)
+	report_path = append_import_dot_report(issues)
 	display_report = os.path.relpath(report_path, REPO_ROOT)
 	raise AssertionError(
-		"import * usage detected:\n"
+		"relative import usage detected:\n"
 		+ "\n".join(issues)
 		+ f"\nFull report: {display_report}"
 	)
