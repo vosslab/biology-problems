@@ -4,6 +4,9 @@
 - Fixed encoding corruption in [docs/webwork/PG_2.20_to_2.16_features.txt](webwork/PG_2.20_to_2.16_features.txt) by replacing non-UTF-8 degree-symbol bytes with ASCII-only wording so ASCII compliance checks pass.
 - Updated UTF-8 decode error reporting in [tests/check_ascii_compliance.py](../tests/check_ascii_compliance.py) and [tests/fix_ascii_compliance.py](../tests/fix_ascii_compliance.py) to report calculated line/column from the failing byte offset instead of always `0:0`.
 
+## 2026-02-20
+- Added [data/READING_PUBCHEM_MOLECULES_DATA_YAML.md](../data/READING_PUBCHEM_MOLECULES_DATA_YAML.md), a practical guide to the `data/pubchem_molecules_data.yml` cache schema and usage patterns, including recommended `PubChemLib` access and offline direct-YAML lookup examples aligned with `problems/biochemistry-problems/PUBCHEM/pubchemlib.py`.
+
 ## 2026-02-15
 - Added [docs/webwork/PG_2.20_to_2.16_features.md](webwork/PG_2.20_to_2.16_features.md) as a Markdown-formatted version of the WeBWorK 2.20-2.16 feature notes sourced from [docs/webwork/PG_2.20_to_2.16_features.txt](webwork/PG_2.20_to_2.16_features.txt), while leaving the original `.txt` file unchanged.
 
