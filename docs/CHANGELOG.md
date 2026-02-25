@@ -2,6 +2,11 @@
 
 ## 2026-02-25
 
+### Fixes and Maintenance
+- Added ItemBank-based duplicate detection to [problems/matching_sets/yaml_match_to_bbq.py](../problems/matching_sets/yaml_match_to_bbq.py) using content_id CRC16 check and ItemBank re-parse. Dedup now runs before trimming to `max_questions` so the full quota of unique questions is preserved.
+- Added ItemBank-based duplicate detection to [problems/multiple_choice_statements/yaml_mc_statements_to_bbq.py](../problems/multiple_choice_statements/yaml_mc_statements_to_bbq.py) with the same content_id + ItemBank dedup-before-trim pattern.
+- Fixed dedup ordering in [problems/matching_sets/yaml_which_one_mc_to_bbq.py](../problems/matching_sets/yaml_which_one_mc_to_bbq.py) so duplicates are removed before trimming to `max_questions`, matching the fix applied to the other two scripts. Previously duplicates were discarded after trimming, which could yield fewer than `max_questions` unique questions.
+
 ### Additions and New Features
 - Added [problems/biochemistry-problems/free_energy_keq_relationship.pgml](../problems/biochemistry-problems/free_energy_keq_relationship.pgml), a PGML RadioButtons problem testing the relationship between standard transformed Gibbs free energy change and the equilibrium constant, with 7 scenario variants (K'eq to delta-G sign, delta-G sign to K'eq, and actual delta-G at equilibrium) selected randomly per seed.
 - Added [problems/biochemistry-problems/free_energy_keq_relationship.py](../problems/biochemistry-problems/free_energy_keq_relationship.py), a bptools MC generator for the same 7 free energy / equilibrium constant scenarios, producing BBQ-format output with anti-cheat spans and 3 categorical answer choices per question.

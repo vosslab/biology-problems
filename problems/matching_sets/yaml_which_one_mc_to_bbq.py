@@ -248,16 +248,8 @@ def main():
 			args.flip,
 		)
 
-	if len(list_of_complete_questions) > args.max_questions:
-		print("Too many questions, trimming down to {0} questions".format(args.max_questions))
-		random.shuffle(list_of_complete_questions)
-		less_questions = list_of_complete_questions[:args.max_questions]
-		list_of_complete_questions = less_questions
-
-	outfile = 'bbq-WOMC-' + os.path.splitext(os.path.basename(args.input_yaml_file))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	N = 0
+	# dedup pass: remove duplicates BEFORE trimming to max_questions
+	deduped_questions = []
 	skipped_dupes = 0
 	seen_content_ids = set()
 	output_item_bank = item_bank.ItemBank(allow_mixed=False)
@@ -265,13 +257,14 @@ def main():
 		bbformat_question = bptools.normalize_question_output(question_output, str(i))
 		if bbformat_question is None:
 			continue
+		# check for duplicate content_id from the embedded CRC16
 		content_id = get_question_content_id(bbformat_question)
 		if content_id is not None:
 			if content_id in seen_content_ids:
 				skipped_dupes += 1
 				continue
 			seen_content_ids.add(content_id)
-
+		# check for duplicate via ItemBank re-parse
 		item_cls = bbq_read_package.make_item_cls_from_line(bbformat_question)
 		if item_cls is None:
 			continue
@@ -281,12 +274,25 @@ def main():
 		if after_count == before_count:
 			skipped_dupes += 1
 			continue
-		N += 1
-		f.write(bbformat_question)
-	f.close()
-	print("Wrote {0} questions to file.".format(N))
+		deduped_questions.append(bbformat_question)
+
 	if skipped_dupes > 0:
-		print("Skipped {0} duplicate questions at write time.".format(skipped_dupes))
+		print(f"Removed {skipped_dupes} duplicate questions.")
+	print(f"{len(deduped_questions)} unique questions remain after dedup.")
+
+	# trim after dedup so we keep as many unique questions as possible
+	if len(deduped_questions) > args.max_questions:
+		print(f"Too many questions ({len(deduped_questions)}), trimming to {args.max_questions}")
+		random.shuffle(deduped_questions)
+		deduped_questions = deduped_questions[:args.max_questions]
+
+	# write deduped questions to file
+	outfile = 'bbq-WOMC-' + os.path.splitext(os.path.basename(args.input_yaml_file))[0] + '-questions.txt'
+	print('writing to file: ' + outfile)
+	with open(outfile, 'w') as f:
+		for bbformat_question in deduped_questions:
+			f.write(bbformat_question)
+	print(f"Wrote {len(deduped_questions)} questions to file.")
 	sync_bptools_histogram_to_item_bank(output_item_bank)
 	print('')
 	bptools.print_histogram()

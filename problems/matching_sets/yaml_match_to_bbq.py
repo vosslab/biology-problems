@@ -7,12 +7,17 @@ MAT TAB question text TAB answer text TAB matching text TAB answer two text TAB 
 """
 
 import os
+import re
 import sys
 import pprint
 import random
 import argparse
 
 import bptools
+from qti_package_maker.assessment_items import item_bank
+from qti_package_maker.engines.bbq_text_upload import read_package as bbq_read_package
+
+CONTENT_ID_RE = re.compile(r"<p>([0-9a-f]{4}_[0-9a-f]{4})</p>")
 
 N = 0
 QUESTIONS_PER_RUN = 2
@@ -121,31 +126,53 @@ def main():
 	for i in range(args.duplicate_runs):
 		list_of_complete_questions += permuteMatchingPairs(yaml_data, args.num_choices, args.max_questions)
 
-	if len(list_of_complete_questions) > args.max_questions:
-		print("Too many questions ({0}), trimming down to {1} questions".format(len(list_of_complete_questions), args.max_questions))
-		random.shuffle(list_of_complete_questions)
-		less_questions = list_of_complete_questions[:args.max_questions]
-		list_of_complete_questions = less_questions
-
-	outfile = 'bbq-MATCH-' + os.path.splitext(os.path.basename(args.input_yaml_file))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	N = 0
+	# dedup pass: remove duplicates BEFORE trimming to max_questions
+	deduped_questions = []
+	skipped_dupes = 0
+	seen_content_ids = set()
+	output_item_bank = item_bank.ItemBank(allow_mixed=False)
 	for i, question_output in enumerate(list_of_complete_questions, start=1):
 		bbformat_question = bptools.normalize_question_output(question_output, str(i))
 		if bbformat_question is None:
 			continue
-		N += 1
-		#crc16_value = bptools.getCrc16_FromString(bbformat_question)
-		#MAT TAB question text TAB answer text TAB matching text TAB answer two text TAB matching two text
-		#formatBB_MAT_Question(N, question, answers_list, matching_list)
-		#output_format = "MAT\t<p>{0:03d}. {1}</p> {2}\n".format(N, crc16_value, bbformat_question)
-		f.write(bbformat_question)
-	f.close()
-	print("Wrote {0} questions to file.".format(N))
+		# check for duplicate content_id from the embedded CRC16
+		match = CONTENT_ID_RE.search(bbformat_question)
+		if match is not None:
+			content_id = match.group(1)
+			if content_id in seen_content_ids:
+				skipped_dupes += 1
+				continue
+			seen_content_ids.add(content_id)
+		# check for duplicate via ItemBank re-parse
+		item_cls = bbq_read_package.make_item_cls_from_line(bbformat_question)
+		if item_cls is None:
+			continue
+		before_count = len(output_item_bank.items_dict_key_list)
+		output_item_bank.add_item_cls(item_cls)
+		after_count = len(output_item_bank.items_dict_key_list)
+		if after_count == before_count:
+			skipped_dupes += 1
+			continue
+		deduped_questions.append(bbformat_question)
+
+	if skipped_dupes > 0:
+		print(f"Removed {skipped_dupes} duplicate questions.")
+	print(f"{len(deduped_questions)} unique questions remain after dedup.")
+
+	# trim after dedup so we keep as many unique questions as possible
+	if len(deduped_questions) > args.max_questions:
+		print(f"Too many questions ({len(deduped_questions)}), trimming to {args.max_questions}")
+		random.shuffle(deduped_questions)
+		deduped_questions = deduped_questions[:args.max_questions]
+
+	# write deduped questions to file
+	outfile = 'bbq-MATCH-' + os.path.splitext(os.path.basename(args.input_yaml_file))[0] + '-questions.txt'
+	print('writing to file: ' + outfile)
+	with open(outfile, 'w') as f:
+		for bbformat_question in deduped_questions:
+			f.write(bbformat_question)
+	print(f"Wrote {len(deduped_questions)} questions to file.")
 	print('')
-	#does not make sense for matching questions
-	#bptools.print_histogram()
 
 #=======================
 #=======================

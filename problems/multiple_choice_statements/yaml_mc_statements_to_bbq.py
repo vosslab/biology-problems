@@ -10,6 +10,7 @@ C.
 """
 
 import os
+import re
 import sys
 import copy
 import math
@@ -18,7 +19,12 @@ import pprint
 import random
 import argparse
 import itertools
+
 import bptools
+from qti_package_maker.assessment_items import item_bank
+from qti_package_maker.engines.bbq_text_upload import read_package as bbq_read_package
+
+CONTENT_ID_RE = re.compile(r"<p>([0-9a-f]{4}_[0-9a-f]{4})</p>")
 
 answer_histogram = {}
 
@@ -304,46 +310,64 @@ def main():
 		if len(list_of_complete_questions) > 2*args.max_questions:
 			break
 
-	#list_of_complete_questions = list(set(list_of_complete_questions))
-	if len(list_of_complete_questions) > args.max_questions:
-		print(f"\nToo many questions, trimming down to {args.max_questions} questions.")
-		random.shuffle(list_of_complete_questions)
-		less_questions = list_of_complete_questions[:args.max_questions]
-		list_of_complete_questions = less_questions
+	# dedup pass: remove duplicates BEFORE trimming to max_questions
+	deduped_questions = []
+	skipped_dupes = 0
+	seen_content_ids = set()
+	output_item_bank = item_bank.ItemBank(allow_mixed=False)
+	for i, question_output in enumerate(list_of_complete_questions, start=1):
+		bbformat_question = bptools.normalize_question_output(question_output, str(i))
+		if bbformat_question is None:
+			continue
+		# check for duplicate content_id from the embedded CRC16
+		match = CONTENT_ID_RE.search(bbformat_question)
+		if match is not None:
+			content_id = match.group(1)
+			if content_id in seen_content_ids:
+				skipped_dupes += 1
+				continue
+			seen_content_ids.add(content_id)
+		# check for duplicate via ItemBank re-parse
+		item_cls = bbq_read_package.make_item_cls_from_line(bbformat_question)
+		if item_cls is None:
+			continue
+		before_count = len(output_item_bank.items_dict_key_list)
+		output_item_bank.add_item_cls(item_cls)
+		after_count = len(output_item_bank.items_dict_key_list)
+		if after_count == before_count:
+			skipped_dupes += 1
+			continue
+		deduped_questions.append(bbformat_question)
 
-	#list_of_complete_questions = bptools.applyReplacementRulesToList(list_of_complete_questions,
-	#	yaml_data.get('replacement_rules'))
+	if skipped_dupes > 0:
+		print(f"Removed {skipped_dupes} duplicate questions.")
+	print(f"{len(deduped_questions)} unique questions remain after dedup.")
+
+	# trim after dedup so we keep as many unique questions as possible
+	if len(deduped_questions) > args.max_questions:
+		print(f"Too many questions ({len(deduped_questions)}), trimming to {args.max_questions}")
+		random.shuffle(deduped_questions)
+		deduped_questions = deduped_questions[:args.max_questions]
 
 	# Generate the output file name based on the script name and question type
 	base_name = os.path.splitext(os.path.basename(args.input_yaml_file))[0]
 	outfile = (
 		'bbq'
 		'-TFMS'
-		f'-{base_name}'  # Add the script name to the file name
-		'-questions.txt'  # Add the file extension
+		f'-{base_name}'
+		'-questions.txt'
 	)
 
-	# Print a message indicating where the file will be saved
+	# write deduped questions to file
 	print(f'Writing to file: {outfile}\n')
-
-	# Open the output file in write mode
 	with open(outfile, 'w') as f:
-		# Initialize the question number counter
-		N = 0
-
-		# Generate the specified number of questions
-		for i, question_output in enumerate(list_of_complete_questions, start=1):
-			bbformat_question = bptools.normalize_question_output(question_output, str(i))
-			if bbformat_question is None:
-				continue
-			N += 1
+		for bbformat_question in deduped_questions:
 			f.write(bbformat_question)
 
 	# print a histogram of results
 	bptools.print_histogram()
 
-	# Print a message indicating how many questions were saved
-	print(f'saved {N} questions to {outfile}')
+	print(f'Wrote {len(deduped_questions)} questions to {outfile}')
 
 #===========================================================
 #===========================================================
