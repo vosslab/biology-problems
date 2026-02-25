@@ -442,9 +442,15 @@ def build_statement_text(question_text, note_text, use_answer_html, color_mode,
 	text += "</style>\n"
 	text += "END_STYLE\n"
 	text += "\n"
+	# store question and note text as Perl variables so PGML renders entities
+	escaped_question = webwork_lib.escape_perl_string(question_text)
+	text += f"$question_text = '{escaped_question}';\n"
+	escaped_note = webwork_lib.escape_perl_string(note_text)
+	text += f"$note_text = '{escaped_note}';\n"
+	text += "\n"
 	text += "BEGIN_PGML\n"
-	text += question_text + "\n"
-	text += note_text + "\n"
+	text += "[$question_text]*\n"
+	text += "[$note_text]*\n"
 	text += "\n"
 	text += "[@ MODES(HTML => '<div class=\"two-column\"><div>') @]*\n"
 	text += "[@ join(\n"

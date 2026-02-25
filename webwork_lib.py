@@ -299,12 +299,40 @@ def apply_replacement_pairs_to_text(text_string, replacement_pairs):
 #============================================
 def sanitize_replaced_text(text_string):
 	"""
-	Sanitize replacement output into PGML-safe plain text.
+	Sanitize replacement output into PGML-safe text.
+
+	Preserves <sub> and <sup> tags and HTML entities for rendering.
 	"""
-	text_string = convert_sub_sup(text_string)
+	# shelter sub/sup tags from stripping
+	_sub_sup_placeholders = {
+		'<sub>': '\x00OSUB\x00', '</sub>': '\x00CSUB\x00',
+		'<sup>': '\x00OSUP\x00', '</sup>': '\x00CSUP\x00',
+	}
+	for tag, placeholder in _sub_sup_placeholders.items():
+		text_string = text_string.replace(tag, placeholder)
 	text_string = strip_html_tags(text_string, preserve_pgml_wrappers=True)
-	text_string = unescape_html(text_string)
 	text_string = normalize_nbsp(text_string)
+	# restore sub/sup tags
+	for tag, placeholder in _sub_sup_placeholders.items():
+		text_string = text_string.replace(placeholder, tag)
+	return text_string
+
+#============================================
+def escape_html_preserving_entities(text_string):
+	"""
+	Escape < and > for HTML, but preserve existing HTML entities.
+
+	Only escapes & when it is NOT part of a valid HTML entity.
+	"""
+	if text_string is None:
+		return ""
+	if not isinstance(text_string, str):
+		raise TypeError(f"value is not string: {text_string}")
+	# escape < and >
+	text_string = text_string.replace("<", "&lt;")
+	text_string = text_string.replace(">", "&gt;")
+	# escape bare & that are not part of an HTML entity
+	text_string = re.sub(r'&(?!#?\w+;)', '&amp;', text_string)
 	return text_string
 
 #============================================
@@ -322,16 +350,27 @@ def escape_html_text(text_string):
 def sanitize_text_for_html(text_string):
 	"""
 	Sanitize text for raw HTML output (tags stripped, entities escaped).
+
+	Preserves <sub> and <sup> tags for HTML rendering.
 	"""
 	if text_string is None:
 		return ""
 	if not isinstance(text_string, str):
 		raise TypeError(f"value is not string: {text_string}")
-	text_string = convert_sub_sup(text_string)
+	# shelter sub/sup tags from strip and escape using placeholders
+	_sub_sup_placeholders = {
+		'<sub>': '\x00OSUB\x00', '</sub>': '\x00CSUB\x00',
+		'<sup>': '\x00OSUP\x00', '</sup>': '\x00CSUP\x00',
+	}
+	for tag, placeholder in _sub_sup_placeholders.items():
+		text_string = text_string.replace(tag, placeholder)
 	text_string = strip_html_tags(text_string, preserve_pgml_wrappers=True)
-	text_string = unescape_html(text_string)
 	text_string = normalize_nbsp(text_string)
-	return escape_html_text(text_string)
+	text_string = escape_html_preserving_entities(text_string)
+	# restore sub/sup tags from placeholders
+	for tag, placeholder in _sub_sup_placeholders.items():
+		text_string = text_string.replace(placeholder, tag)
+	return text_string
 
 #============================================
 def build_html_span(text_string, class_name=None, style=None):
@@ -350,7 +389,13 @@ def build_html_span(text_string, class_name=None, style=None):
 	attr_blob = ""
 	if len(attrs) > 0:
 		attr_blob = " " + " ".join(attrs)
-	return f"<span{attr_blob}>{escape_html_text(text_string)}</span>"
+	# escape HTML but preserve sub/sup tags for rendering
+	safe_text = escape_html_preserving_entities(text_string)
+	safe_text = safe_text.replace('&lt;sub&gt;', '<sub>')
+	safe_text = safe_text.replace('&lt;/sub&gt;', '</sub>')
+	safe_text = safe_text.replace('&lt;sup&gt;', '<sup>')
+	safe_text = safe_text.replace('&lt;/sup&gt;', '</sup>')
+	return f"<span{attr_blob}>{safe_text}</span>"
 
 #============================================
 def format_label_html(text_string, color_mode, color_classes, warnings, label_name=None):
@@ -523,10 +568,10 @@ def extract_strict_color_span(text_string):
 		is_bold = True
 		inner = inner_strong.group(1)
 
-	inner = convert_sub_sup(inner)
-	inner = unescape_html(inner)
 	inner = normalize_nbsp(inner)
-	if re.search(r'<[^>]+>', inner):
+	# reject inner text with HTML tags other than sub/sup
+	cleaned = re.sub(r'</?su[bp]>', '', inner)
+	if re.search(r'<[^>]+>', cleaned):
 		return None
 
 	return prefix, inner, suffix, color_value, is_bold
@@ -620,10 +665,10 @@ def extract_strict_color_spans(text_string):
 			is_bold = True
 			inner = inner_strong.group(1)
 
-		inner = convert_sub_sup(inner)
-		inner = unescape_html(inner)
 		inner = normalize_nbsp(inner)
-		if re.search(r'<[^>]+>', inner):
+		# reject inner text with HTML tags other than sub/sup
+		cleaned = re.sub(r'</?su[bp]>', '', inner)
+		if re.search(r'<[^>]+>', cleaned):
 			return None
 
 		segments.append((True, inner, color_value, is_bold))

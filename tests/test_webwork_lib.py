@@ -102,16 +102,116 @@ def test_extract_strict_color_span_basic():
 	) is None
 
 
+def test_extract_strict_color_span_preserves_entities():
+	# HTML entities should pass through without conversion to Unicode
+	parsed = webwork_lib.extract_strict_color_span(
+		"<span style=\"color: #e65400;\">&alpha;</span>"
+	)
+	assert parsed == ("", "&alpha;", "", "#e65400", False)
+
+	parsed = webwork_lib.extract_strict_color_span(
+		"<span style=\"color: #e65400;\">chi-square (&chi;&sup2;)</span>"
+	)
+	assert parsed == ("", "chi-square (&chi;&sup2;)", "", "#e65400", False)
+
+
+def test_extract_strict_color_span_preserves_sub_sup():
+	# sub/sup tags should pass through without conversion to Unicode
+	parsed = webwork_lib.extract_strict_color_span(
+		"<span style=\"color: #e65400;\">H<sub>0</sub></span>"
+	)
+	assert parsed == ("", "H<sub>0</sub>", "", "#e65400", False)
+
+	# em tags should still be rejected
+	assert webwork_lib.extract_strict_color_span(
+		"<span style=\"color: #e65400;\">H<em>0</em></span>"
+	) is None
+
+
+def test_extract_strict_color_spans_preserves_entities():
+	# entities and sub/sup should pass through in multi-span extraction
+	segments = webwork_lib.extract_strict_color_spans(
+		"level of significance, <span style=\"color: #e65400;\">&alpha;</span>"
+	)
+	assert len(segments) == 2
+	assert segments[0] == (False, "level of significance, ", None, False)
+	assert segments[1] == (True, "&alpha;", "#e65400", False)
+
+	segments = webwork_lib.extract_strict_color_spans(
+		"<span style=\"color: #e65400;\">H<sub>0</sub></span>"
+	)
+	assert len(segments) == 1
+	assert segments[0] == (True, "H<sub>0</sub>", "#e65400", False)
+
+
+def test_escape_html_preserving_entities():
+	# preserves named HTML entities
+	assert webwork_lib.escape_html_preserving_entities("&Delta;G") == "&Delta;G"
+	assert webwork_lib.escape_html_preserving_entities("&alpha; &rarr; &beta;") == "&alpha; &rarr; &beta;"
+	# preserves numeric entities
+	assert webwork_lib.escape_html_preserving_entities("&#916;") == "&#916;"
+	# escapes bare ampersands
+	assert webwork_lib.escape_html_preserving_entities("A & B") == "A &amp; B"
+	# escapes angle brackets
+	assert webwork_lib.escape_html_preserving_entities("a < b > c") == "a &lt; b &gt; c"
+	# handles None
+	assert webwork_lib.escape_html_preserving_entities(None) == ""
+
+
+def test_sanitize_text_for_html_preserves_entities():
+	# HTML entities like &Delta; should pass through unchanged
+	text = "&Delta;G = &minus;30 kJ/mol"
+	result = webwork_lib.sanitize_text_for_html(text)
+	assert "&Delta;" in result
+	assert "&minus;" in result
+
+	# bare ampersands should still be escaped
+	text = "A & B"
+	result = webwork_lib.sanitize_text_for_html(text)
+	assert result == "A &amp; B"
+
+
+def test_sanitize_replaced_text_preserves_entities():
+	# entities should pass through sanitize_replaced_text unchanged
+	text = "&alpha; and &beta;"
+	result = webwork_lib.sanitize_replaced_text(text)
+	assert "&alpha;" in result
+	assert "&beta;" in result
+
+
+def test_sanitize_replaced_text_preserves_sub_sup():
+	# sub/sup tags should be preserved as HTML, not converted to Unicode
+	text = "H<sub>0</sub>"
+	result = webwork_lib.sanitize_replaced_text(text)
+	assert result == "H<sub>0</sub>"
+	# no Unicode subscript characters
+	assert "\u2080" not in result
+
+	# other HTML tags should still be stripped
+	text = "H<em>0</em>"
+	result = webwork_lib.sanitize_replaced_text(text)
+	assert result == "H0"
+
+
 def test_sanitize_text_for_html_and_span_builder():
+	# sub/sup tags are preserved as HTML, not converted to Unicode
 	text = "C<sub>2</sub>H<sub>6</sub> &amp; CO<sub>2</sub>"
 	result = webwork_lib.sanitize_text_for_html(text)
-	assert result == "C\u2082H\u2086 &amp; CO\u2082"
+	assert result == "C<sub>2</sub>H<sub>6</sub> &amp; CO<sub>2</sub>"
 
 	span = webwork_lib.build_html_span("ionic bond", style="color: #009900;")
 	assert span == "<span style=\"color: #009900;\">ionic bond</span>"
 
 	span = webwork_lib.build_html_span("bold", class_name="color-test pgml-bold")
 	assert span == "<span class=\"color-test pgml-bold\">bold</span>"
+
+	# build_html_span preserves HTML entities in text
+	span = webwork_lib.build_html_span("&Delta;G", style="color: #009900;")
+	assert span == "<span style=\"color: #009900;\">&Delta;G</span>"
+
+	# build_html_span preserves sub/sup tags
+	span = webwork_lib.build_html_span("H<sub>0</sub>", style="color: #009900;")
+	assert span == "<span style=\"color: #009900;\">H<sub>0</sub></span>"
 
 
 def test_format_label_html_strict_span():
