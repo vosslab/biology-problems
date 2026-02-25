@@ -1,0 +1,201 @@
+## TITLE('Biochemistry: Exergonic and Endergonic Reaction Properties')
+## DESCRIPTION
+## Given a reaction type (exergonic or endergonic) or a sign of delta-G,
+## identify the correct property: sign of delta-G, spontaneity, or
+## relative free energies of reactants vs products.
+## ENDDESCRIPTION
+## KEYWORDS('free energy','exergonic','endergonic','delta G','spontaneous')
+## DBsubject('Biochemistry')
+## DBchapter('Thermodynamics')
+## DBsection('Free Energy and Reactions')
+## Level(3)
+## Date('2026-02-25')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+loadMacros(
+	'PGstandard.pl',
+	'PGML.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl',
+);
+
+$showPartialCorrectAnswers = 0;
+
+# ----------------------------
+# 1) HTML emphasis spans
+# ----------------------------
+my $dg_symbol = "&Delta;G";
+my $dg_emph = "<span style='color:#0066cc;font-weight:700;'>&Delta;G</span>";
+my $exergonic_emph = "<span style='color:#0077bb;font-weight:700;'>exergonic</span>";
+my $endergonic_emph = "<span style='color:#cc6600;font-weight:700;'>endergonic</span>";
+my $negative_emph = "<span style='color:#0077bb;font-weight:700;'>negative</span>";
+my $positive_emph = "<span style='color:#cc6600;font-weight:700;'>positive</span>";
+
+# ----------------------------
+# 2) Distractor choices shared across templates
+# ----------------------------
+# distractors that sound plausible but are wrong
+my $distractor_activation = "no activation energy is required for this reaction";
+my $distractor_enzyme = "the number of substrates exceeds the number of enzymes";
+my $distractor_dg_zero = "$dg_symbol = 0 (the reaction is at equilibrium)";
+
+# ----------------------------
+# 3) Scenario definitions
+# ----------------------------
+my @scenarios = (
+	# Template A: given reaction type, ask about relative free energies
+	{
+		prompt => "In an $exergonic_emph reaction, which of the following statements about the free energy is <strong>true</strong>?",
+		choices => [
+			"reactants have <strong>more</strong> free energy than products",
+			"reactants have <strong>less</strong> free energy than products",
+			$distractor_activation,
+			$distractor_enzyme,
+		],
+		correct_index => 0,
+		solution => "An exergonic reaction releases free energy. The reactants start with more free energy than the products, and the difference is released (${dg_symbol} < 0).",
+	},
+	{
+		prompt => "In an $endergonic_emph reaction, which of the following statements about the free energy is <strong>true</strong>?",
+		choices => [
+			"reactants have <strong>less</strong> free energy than products",
+			"reactants have <strong>more</strong> free energy than products",
+			$distractor_activation,
+			$distractor_enzyme,
+		],
+		correct_index => 0,
+		solution => "An endergonic reaction absorbs free energy. The reactants start with less free energy than the products, and energy input is needed (${dg_symbol} > 0).",
+	},
+	# Template B: given reaction type, ask about sign of delta-G
+	{
+		prompt => "A reaction is classified as $exergonic_emph. Which statement about $dg_emph is <strong>true</strong>?",
+		choices => [
+			"$dg_symbol < 0 (negative)",
+			"$dg_symbol > 0 (positive)",
+			$distractor_dg_zero,
+			$distractor_activation,
+		],
+		correct_index => 0,
+		solution => "Exergonic literally means energy-releasing. By definition, an exergonic reaction has ${dg_symbol} < 0.",
+	},
+	{
+		prompt => "A reaction is classified as $endergonic_emph. Which statement about $dg_emph is <strong>true</strong>?",
+		choices => [
+			"$dg_symbol > 0 (positive)",
+			"$dg_symbol < 0 (negative)",
+			$distractor_dg_zero,
+			$distractor_activation,
+		],
+		correct_index => 0,
+		solution => "Endergonic literally means energy-absorbing. By definition, an endergonic reaction has ${dg_symbol} > 0.",
+	},
+	# Template C: given sign of delta-G, ask about free energy relationship
+	{
+		prompt => "A reaction has a $negative_emph $dg_emph (${dg_symbol} < 0). Which statement about the free energy is <strong>true</strong>?",
+		choices => [
+			"reactants have <strong>more</strong> free energy than products",
+			"reactants have <strong>less</strong> free energy than products",
+			$distractor_activation,
+			"cannot be determined from the information given",
+		],
+		correct_index => 0,
+		solution => "A negative ${dg_symbol} means free energy decreases going from reactants to products. Therefore, reactants have more free energy than products.",
+	},
+	{
+		prompt => "A reaction has a $positive_emph $dg_emph (${dg_symbol} > 0). Which statement about the free energy is <strong>true</strong>?",
+		choices => [
+			"reactants have <strong>less</strong> free energy than products",
+			"reactants have <strong>more</strong> free energy than products",
+			$distractor_activation,
+			"cannot be determined from the information given",
+		],
+		correct_index => 0,
+		solution => "A positive ${dg_symbol} means free energy increases going from reactants to products. Therefore, reactants have less free energy than products.",
+	},
+	# Template D: given sign of delta-G, ask about reaction classification
+	{
+		prompt => "A reaction has a $negative_emph $dg_emph (${dg_symbol} < 0). This reaction is classified as:",
+		choices => [
+			"exergonic (energy-releasing)",
+			"endergonic (energy-absorbing)",
+			"at equilibrium",
+			"activation-energy independent",
+		],
+		correct_index => 0,
+		solution => "A negative ${dg_symbol} means the reaction releases free energy. This is the definition of an exergonic reaction.",
+	},
+	{
+		prompt => "A reaction has a $positive_emph $dg_emph (${dg_symbol} > 0). This reaction is classified as:",
+		choices => [
+			"endergonic (energy-absorbing)",
+			"exergonic (energy-releasing)",
+			"at equilibrium",
+			"activation-energy independent",
+		],
+		correct_index => 0,
+		solution => "A positive ${dg_symbol} means the reaction absorbs free energy. This is the definition of an endergonic reaction.",
+	},
+);
+
+# ----------------------------
+# 4) Randomization
+# ----------------------------
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+my $scenario_index = $local_random->random(0, $#scenarios, 1);
+my $scenario = $scenarios[$scenario_index];
+$prompt = $scenario->{prompt};
+$solution = $scenario->{solution};
+
+# ----------------------------
+# 5) Build RadioButtons
+# ----------------------------
+$rb = RadioButtons(
+	$scenario->{choices},
+	$scenario->{correct_index},
+	labels        => 'ABC',
+	displayLabels => 1,
+	separator     => '<div style="margin-bottom: 0.6em;"></div>',
+);
+
+# ----------------------------
+# 6) Problem text (PGML)
+# ----------------------------
+BEGIN_PGML
+[@ $prompt @]*
+
+[_]{$rb}
+END_PGML
+
+# ----------------------------
+# 7) Hint
+# ----------------------------
+BEGIN_PGML_HINT
+Imagine a free-energy diagram with reactants on the left and products on the right.
+
+- In an *exergonic* reaction the curve goes *downhill*: reactants sit higher,
+products sit lower, and free energy is released ([`\Delta G < 0`]).
+- In an *endergonic* reaction the curve goes *uphill*: reactants sit lower,
+products sit higher, and free energy must be supplied ([`\Delta G > 0`]).
+
+The prefix tells you the direction: *ex-* means out (energy exits),
+*endo-* means in (energy enters).
+END_PGML_HINT
+
+# ----------------------------
+# 8) Solution
+# ----------------------------
+BEGIN_PGML_SOLUTION
+[$solution]*
+END_PGML_SOLUTION
+
+ENDDOCUMENT();

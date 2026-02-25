@@ -320,6 +320,15 @@ def get_diff(path: str) -> str:
 
 #============================================
 
+def get_cached_diff(path: str) -> str:
+	"""Get cached (staged) diff for a path with minimal context and no color."""
+	result = run_git(["diff", "--cached", "--no-color", "--unified=0", "--", path])
+	if result.returncode != 0:
+		raise RuntimeError(result.stderr.strip() or f"git diff --cached failed for {path}")
+	return result.stdout.strip()
+
+#============================================
+
 def extract_added_lines(diff_text: str) -> list[str]:
 	"""Extract added lines from a git diff (no headers, no blanks)."""
 	added: list[str] = []
@@ -487,6 +496,9 @@ def main() -> None:
 			return
 
 	diff_text = get_diff(CHANGELOG_PATHSPEC)
+	if not diff_text:
+		# check for staged changes
+		diff_text = get_cached_diff(CHANGELOG_PATHSPEC)
 	if not diff_text:
 		message = f"No changes in {changelog_path}. Nothing to commit."
 		console.print(message, style="yellow")

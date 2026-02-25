@@ -1,0 +1,159 @@
+## TITLE('Biochemistry: Free Energy and Equilibrium Constant Relationship')
+## DESCRIPTION
+## Given either the sign of the standard transformed Gibbs free energy change or the
+## magnitude of the equilibrium constant relative to 1, determine the other quantity.
+## Includes a special case for actual delta-G at equilibrium.
+## ENDDESCRIPTION
+## KEYWORDS('free energy','equilibrium constant','thermodynamics','delta G','Keq')
+## DBsubject('Biochemistry')
+## DBchapter('Thermodynamics')
+## DBsection('Free Energy and Equilibrium')
+## Level(3)
+## Date('2026-02-25')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+loadMacros(
+	'PGstandard.pl',
+	'PGML.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl',
+);
+
+$showPartialCorrectAnswers = 0;
+
+# ----------------------------
+# 1) HTML entity variables
+# ----------------------------
+# delta-G standard prime symbol
+my $dg_symbol = "&Delta;G&deg;&prime;";
+my $dg_actual = "&Delta;G";
+my $keq_symbol = "K&prime;<sub>eq</sub>";
+
+# colored emphasis spans for key terms in stems
+my $dg_emph = "<span style='color:#0066cc;font-weight:700;'>$dg_symbol</span>";
+my $dg_actual_emph = "<span style='color:#0066cc;font-weight:700;'>$dg_actual</span>";
+my $keq_emph = "<span style='color:#997300;font-weight:700;'>$keq_symbol</span>";
+
+# ----------------------------
+# 2) Scenario definitions
+# ----------------------------
+# Type A choices (sign of delta-G standard prime)
+my @sign_choices = ('negative', 'zero', 'positive');
+
+# Type B choices (K'eq relative to 1)
+my @keq_choices = ('less than 1', 'equal to 1', 'greater than 1');
+
+# Type C choices (value of actual delta-G at equilibrium)
+my @actual_dg_choices = ('zero', 'negative', 'positive');
+
+my @scenarios = (
+	{
+		prompt => "If the equilibrium constant ($keq_emph) is <strong>greater than 1</strong>, what is the sign of the standard transformed Gibbs free energy change ($dg_emph)?",
+		choices => [@sign_choices],
+		correct_index => 0,
+		solution => "When $keq_symbol > 1, products are favored at equilibrium, which means $dg_symbol is negative.",
+	},
+	{
+		prompt => "If the equilibrium constant ($keq_emph) is <strong>equal to 1</strong>, what is the sign of the standard transformed Gibbs free energy change ($dg_emph)?",
+		choices => [@sign_choices],
+		correct_index => 1,
+		solution => "When $keq_symbol = 1, reactants and products are equally favored, so $dg_symbol is zero.",
+	},
+	{
+		prompt => "If the equilibrium constant ($keq_emph) is <strong>less than 1</strong>, what is the sign of the standard transformed Gibbs free energy change ($dg_emph)?",
+		choices => [@sign_choices],
+		correct_index => 2,
+		solution => "When $keq_symbol < 1, reactants are favored at equilibrium, which means $dg_symbol is positive.",
+	},
+	{
+		prompt => "If the standard transformed Gibbs free energy change ($dg_emph) is <strong>negative</strong> (less than zero), what is the value of the equilibrium constant ($keq_emph) relative to 1?",
+		choices => [@keq_choices],
+		correct_index => 2,
+		solution => "A negative $dg_symbol means products are favored, so $keq_symbol is greater than 1.",
+	},
+	{
+		prompt => "If the standard transformed Gibbs free energy change ($dg_emph) is <strong>equal to zero</strong>, what is the value of the equilibrium constant ($keq_emph) relative to 1?",
+		choices => [@keq_choices],
+		correct_index => 1,
+		solution => "When $dg_symbol = 0, reactants and products are equally favored, so $keq_symbol equals 1.",
+	},
+	{
+		prompt => "If the standard transformed Gibbs free energy change ($dg_emph) is <strong>positive</strong> (greater than zero), what is the value of the equilibrium constant ($keq_emph) relative to 1?",
+		choices => [@keq_choices],
+		correct_index => 0,
+		solution => "A positive $dg_symbol means reactants are favored, so $keq_symbol is less than 1.",
+	},
+	{
+		prompt => "When a reaction has reached equilibrium, what is the value of the <strong>actual</strong> (not standard) Gibbs free energy change ($dg_actual_emph)?",
+		choices => [@actual_dg_choices],
+		correct_index => 0,
+		solution => "At equilibrium, the actual $dg_actual (not $dg_symbol) is always zero. The system has no net driving force in either direction.",
+	},
+);
+
+# ----------------------------
+# 3) Randomization
+# ----------------------------
+# Choose one scenario per seed for deterministic selection
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+my $scenario_index = $local_random->random(0, $#scenarios, 1);
+my $scenario = $scenarios[$scenario_index];
+$prompt = $scenario->{prompt};
+$solution = $scenario->{solution};
+
+# ----------------------------
+# 4) Build RadioButtons
+# ----------------------------
+$rb = RadioButtons(
+	$scenario->{choices},
+	$scenario->{correct_index},
+	labels        => 'ABC',
+	displayLabels => 1,
+	separator     => '<div style="margin-bottom: 0.6em;"></div>',
+);
+
+# ----------------------------
+# 5) Problem text (PGML)
+# ----------------------------
+BEGIN_PGML
+[@ $prompt @]*
+
+[_]{$rb}
+END_PGML
+
+# ----------------------------
+# 6) Hint
+# ----------------------------
+BEGIN_PGML_HINT
+The relationship between the standard transformed Gibbs free energy change and the
+equilibrium constant is given by:
+
+[`` \Delta G^{\circ\prime} = -RT \ln K'_{eq} ``]
+
+From this equation:
+
+- If [`K'_{eq} > 1`], then [`\ln K'_{eq} > 0`], so [`\Delta G^{\circ\prime} < 0`] (negative)
+- If [`K'_{eq} = 1`], then [`\ln K'_{eq} = 0`], so [`\Delta G^{\circ\prime} = 0`] (zero)
+- If [`K'_{eq} < 1`], then [`\ln K'_{eq} < 0`], so [`\Delta G^{\circ\prime} > 0`] (positive)
+
+Note: at equilibrium, the *actual* [`\Delta G`] (not [`\Delta G^{\circ\prime}`]) is always zero.
+END_PGML_HINT
+
+# ----------------------------
+# 7) Solution
+# ----------------------------
+BEGIN_PGML_SOLUTION
+[$solution]*
+END_PGML_SOLUTION
+
+ENDDOCUMENT();

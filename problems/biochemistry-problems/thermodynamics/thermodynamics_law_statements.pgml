@@ -1,0 +1,170 @@
+## TITLE('Biochemistry: Identify the Law of Thermodynamics')
+## DESCRIPTION
+## Given the first or second law of thermodynamics, select the statement
+## that correctly describes it from a mix of the two core statements
+## and two misconception-based distractors.
+## ENDDESCRIPTION
+## KEYWORDS('thermodynamics','first law','second law','energy','entropy','spontaneous')
+## DBsubject('Biochemistry')
+## DBchapter('Thermodynamics')
+## DBsection('Laws of Thermodynamics')
+## Level(2)
+## Date('2026-02-25')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+loadMacros(
+	'PGstandard.pl',
+	'PGML.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl',
+);
+
+$showPartialCorrectAnswers = 0;
+
+# ----------------------------
+# 1) HTML emphasis spans
+# ----------------------------
+my $first_emph = "<span style='color:#0077bb;font-weight:700;'>First</span>";
+my $second_emph = "<span style='color:#cc6600;font-weight:700;'>Second</span>";
+
+# ----------------------------
+# 2) Core correct statements (always both present)
+# ----------------------------
+my $energy_statement = "the total energy of a system and its surroundings is constant";
+my $entropy_statement = "the total entropy of a system and its surroundings increases for a spontaneous process";
+
+# ----------------------------
+# 3) Misconception distractor pool (pick 2 per question)
+# ----------------------------
+my @distractor_pool = (
+	"energy is always increasing in a spontaneous process",
+	"entropy of the system always increases for a spontaneous process",
+	"entropy of the universe is constant",
+	"a spontaneous process always releases heat",
+	"free energy of the universe always decreases",
+	"temperatures will always decrease in a spontaneous process",
+);
+
+# ----------------------------
+# 4) Stem wording variants
+# ----------------------------
+my @stem_templates = (
+	"The %s Law of Thermodynamics states:",
+	"Which statement best describes the %s Law of Thermodynamics?",
+	"Select the statement that matches the %s Law of Thermodynamics.",
+);
+
+# ----------------------------
+# 5) Randomization
+# ----------------------------
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+
+# pick which law (0 = First, 1 = Second)
+my $law_index = $local_random->random(0, 1, 1);
+
+# pick a stem wording variant
+my $stem_index = $local_random->random(0, $#stem_templates, 1);
+
+# shuffle distractor pool and pick 2
+my @shuffled_indices = (0 .. $#distractor_pool);
+# Fisher-Yates shuffle using local_random
+for my $i (reverse 1 .. $#shuffled_indices) {
+	my $j = $local_random->random(0, $i, 1);
+	@shuffled_indices[$i, $j] = @shuffled_indices[$j, $i];
+}
+my @picked_distractors = (
+	$distractor_pool[$shuffled_indices[0]],
+	$distractor_pool[$shuffled_indices[1]],
+);
+
+# ----------------------------
+# 6) Assemble prompt and choices
+# ----------------------------
+my $law_label;
+my $correct_text;
+my $hint_text;
+my $solution_text;
+
+if ($law_index == 0) {
+	$law_label = $first_emph;
+	$correct_text = $energy_statement;
+	$hint_text = "This law is about conservation. Think about what cannot be created or destroyed.";
+	$solution_text = "The First Law of Thermodynamics is the law of conservation of energy. The total energy of a system and its surroundings is always constant; energy can be converted from one form to another but cannot be created or destroyed.";
+} else {
+	$law_label = $second_emph;
+	$correct_text = $entropy_statement;
+	$hint_text = "This law is about the directionality of spontaneous change. Think about what tends to increase overall.";
+	$solution_text = "The Second Law of Thermodynamics states that the total entropy of a system and its surroundings increases for any spontaneous process. Note: it is the combined entropy of the system AND surroundings that must increase, not the system alone.";
+}
+
+# build stem from template
+$prompt = sprintf($stem_templates[$stem_index], $law_label);
+
+# build the 4 choices: both core statements + 2 distractors
+# then shuffle them so the correct answer moves around
+my @raw_choices = ($energy_statement, $entropy_statement, @picked_distractors);
+
+# shuffle the choices using local_random (Fisher-Yates)
+for my $i (reverse 1 .. $#raw_choices) {
+	my $j = $local_random->random(0, $i, 1);
+	@raw_choices[$i, $j] = @raw_choices[$j, $i];
+}
+
+# find correct index after shuffle
+my $correct_index = 0;
+for my $i (0 .. $#raw_choices) {
+	if ($raw_choices[$i] eq $correct_text) {
+		$correct_index = $i;
+		last;
+	}
+}
+
+# store for PGML
+$hint = $hint_text;
+$solution = $solution_text;
+
+# ----------------------------
+# 7) Build RadioButtons
+# ----------------------------
+$rb = RadioButtons(
+	[@raw_choices],
+	$correct_index,
+	labels        => 'ABC',
+	displayLabels => 1,
+	separator     => '<div style="margin-bottom: 0.6em;"></div>',
+);
+
+# ----------------------------
+# 8) Problem text (PGML)
+# ----------------------------
+BEGIN_PGML
+[@ $prompt @]*
+
+[_]{$rb}
+END_PGML
+
+# ----------------------------
+# 9) Hint
+# ----------------------------
+BEGIN_PGML_HINT
+[$hint]*
+END_PGML_HINT
+
+# ----------------------------
+# 10) Solution
+# ----------------------------
+BEGIN_PGML_SOLUTION
+[$solution]*
+END_PGML_SOLUTION
+
+ENDDOCUMENT();

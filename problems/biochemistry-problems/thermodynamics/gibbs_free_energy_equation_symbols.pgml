@@ -1,0 +1,206 @@
+## TITLE('Biochemistry: Gibbs Free Energy Equation Symbol Matching')
+## DESCRIPTION
+## Match each symbol in the Gibbs free energy equation (delta-G = delta-H - T delta-S)
+## to its meaning. Randomly selects 3 or 4 items and shuffles presentation order.
+## ENDDESCRIPTION
+## KEYWORDS('free energy','enthalpy','entropy','temperature','Gibbs equation','matching')
+## DBsubject('Biochemistry')
+## DBchapter('Thermodynamics')
+## DBsection('Free Energy')
+## Level(2)
+## Date('2026-02-25')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+loadMacros(
+	'PGstandard.pl',
+	'PGML.pl',
+	'PGchoicemacros.pl',
+	'parserPopUp.pl',
+	'parserUtils.pl',
+	'PGgraders.pl',
+	'PGcourse.pl',
+);
+our @ALPHABET = ('A' .. 'Z');
+
+# ================================
+# Symbol-to-term mapping
+# ================================
+# sorted key order: dG, dH, dS, T (alphabetical by symbol key)
+my @all_items = (
+	{ symbol => '&Delta;G', term => 'change in Gibbs free energy' },
+	{ symbol => '&Delta;H', term => 'change in enthalpy' },
+	{ symbol => '&Delta;S', term => 'change in entropy' },
+	{ symbol => 'T',        term => 'absolute temperature (Kelvin)' },
+);
+
+# ================================
+# Randomization
+# ================================
+my $local_seed = (defined($problemSeed) && $problemSeed ne '') ? $problemSeed : 1;
+my $local_random = new PGrandom($local_seed);
+
+# pick subset size: 3 or 4 items
+my $n = $local_random->random(3, 4, 1);
+
+# shuffle all_items indices to pick which items to include
+my @pool_indices = (0 .. $#all_items);
+my @pool_shuffled = ();
+while (@pool_indices) {
+	my $pick = $local_random->random(0, $#pool_indices, 1);
+	push @pool_shuffled, splice(@pool_indices, $pick, 1);
+}
+my @selected = @all_items[@pool_shuffled[0 .. $n - 1]];
+
+# build q_and_a pairs: [symbol_html, term]
+@q_and_a = ();
+foreach my $item (@selected) {
+	push @q_and_a, [ $item->{symbol}, $item->{term} ];
+}
+
+# shuffle questions (left column order)
+my @q_indices = (0 .. $#q_and_a);
+my @q_shuffled = ();
+while (@q_indices) {
+	my $pick = $local_random->random(0, $#q_indices, 1);
+	push @q_shuffled, $q_and_a[splice(@q_indices, $pick, 1)];
+}
+@q_and_a = @q_shuffled;
+
+# build answers list and sort alphabetically (right column)
+@answers = map { $_->[1] } @q_and_a;
+@answers_sorted = PGsort(sub { $_[0] lt $_[1] }, @answers);
+
+# colored answer labels for the right column
+my %term_colors = (
+	'change in Gibbs free energy' => '#0066cc',
+	'change in enthalpy'          => '#cc6600',
+	'change in entropy'           => '#6b21a8',
+	'absolute temperature (Kelvin)' => '#b32020',
+);
+
+%answer_html = ();
+foreach my $term (@answers_sorted) {
+	my $color = $term_colors{$term} || '#333333';
+	$answer_html{$term} = "<span style='color: $color; font-weight:700;'>$term</span>";
+}
+@answers_sorted_html = map { $answer_html{$_} || $_ } @answers_sorted;
+
+# build answer index lookup
+our %answer_index;
+for (my $i = 0; $i <= $#answers_sorted; $i++) {
+	$answer_index{$answers_sorted[$i]} = $i;
+}
+
+# ================================
+# PopUp/DropDown compatibility
+# ================================
+sub make_popup {
+	return defined &DropDown ? DropDown(@_) : PopUp(@_);
+}
+
+# create popup objects (blank default)
+my @answer_letters = @ALPHABET[0 .. $#answers_sorted];
+my @answer_letters_with_blank = ('', @answer_letters);
+@answer_dropdowns =
+	map { make_popup([ @answer_letters_with_blank ], $answer_index{$q_and_a[$_][1]} + 1) }
+	0 .. $#q_and_a;
+
+# ================================
+# Stem wording variant
+# ================================
+my @stem_variants = (
+	"The Gibbs free energy equation is <strong>&Delta;G = &Delta;H &minus; T&Delta;S</strong>. Match each symbol to its meaning.",
+	"In the equation <strong>&Delta;G = &Delta;H &minus; T&Delta;S</strong>, match each symbol to the quantity it represents.",
+	"Given the relationship <strong>&Delta;G = &Delta;H &minus; T&Delta;S</strong>, identify what each symbol stands for.",
+);
+my $stem_index = $local_random->random(0, $#stem_variants, 1);
+$stem = $stem_variants[$stem_index];
+
+# ================================
+# Layout and rendering
+# ================================
+HEADER_TEXT(<<END_STYLE);
+<style>
+.pgml-bold { font-weight: 700; }
+.two-column {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 2rem;
+	align-items: center;
+	justify-content: space-evenly;
+}
+</style>
+END_STYLE
+
+BEGIN_PGML
+[@ $stem @]*
+
+Note: Each choice will be used exactly once.
+
+[@ MODES(HTML => '<div class="two-column"><div>') @]*
+[@ join(
+	"\n\n",
+	map {
+		'[_]{$answer_dropdowns[' . $_ . ']} '
+			. '*' . ($_ + 1) . '.* '
+			. '[$q_and_a[' . $_ . '][0]]*'
+	} 0 .. $#q_and_a
+) @]**
+[@ MODES(HTML => '</div><div class="right-col">') @]*
+[@ join(
+	"\n\n",
+	map {
+		chr(65 + $_) . '\\.' . ' ' . '[$answers_sorted_html[' . $_ . ']]*'
+	} 0 .. $#answers_sorted
+) @]**
+[@ MODES(HTML => '</div></div>') @]*
+END_PGML
+
+# ================================
+# Partial credit grading
+# ================================
+$showPartialCorrectAnswers = 0;
+my @thresholds;
+my @scores;
+for (my $i = 1; $i <= $n; $i++) {
+	push @thresholds, $i;
+	push @scores, sprintf("%.2f", $i / $n);
+}
+
+install_problem_grader(~~&custom_problem_grader_fluid);
+$ENV{grader_numright} = [@thresholds];
+$ENV{grader_scores}   = [@scores];
+$ENV{grader_message} = 'You can earn partial credit.';
+
+# ================================
+# Hint
+# ================================
+BEGIN_PGML_HINT
+The Gibbs free energy equation connects four thermodynamic quantities:
+
+- [`\Delta G`] = change in Gibbs free energy (the overall "driving force")
+- [`\Delta H`] = change in enthalpy (heat content)
+- [`\Delta S`] = change in entropy (disorder)
+- [`T`] = absolute temperature in Kelvin
+
+The prefix [`\Delta`] (delta) always means "change in."
+END_PGML_HINT
+
+# ================================
+# Solution
+# ================================
+$answer_list = join(', ', map { ($_ + 1) . '-' . $ALPHABET[$answer_index{$q_and_a[$_][1]}] } 0 .. $#q_and_a);
+BEGIN_PGML_SOLUTION
+The correct matches are: [$answer_list].
+END_PGML_SOLUTION
+
+ENDDOCUMENT();

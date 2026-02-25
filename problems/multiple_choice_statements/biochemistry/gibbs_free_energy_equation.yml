@@ -29,6 +29,9 @@ true_statements:
   truth4a: When &Delta;G = 0 the reaction has reached equilibrium
   truth5a: When &Delta;G &gt; 0 the reaction is called non-spontaneous
   truth5b: When &Delta;G &lt; 0 the reaction is called spontaneous
+
+  truth6a: Negative enthalpy makes a reaction more favorable
+  truth6b: Positive entropy makes a reaction more favorable
 false_statements:
   false1a: '&Delta;H is the change in free energy'
   false1b: '&Delta;S is the change in free energy'
@@ -58,5 +61,12 @@ false_statements:
   false5h: When &Delta;S &gt; 0 the reaction is called non-spontaneous
   false5i: When &Delta;G &lt; 0 the reaction is called non-spontaneous
   false5j: When &Delta;G &gt; 0 the reaction is called spontaneous
+
+  false6a: Negative entropy makes a reaction more favorable
+  false6b: Positive enthalpy makes a reaction more favorable
+
+  false16a: colder temperature makes a reaction more favorable
+  false16b: warmer temperature makes a reaction more favorable
+
 conflict_rules: null
 dbsubject: Biochemistry

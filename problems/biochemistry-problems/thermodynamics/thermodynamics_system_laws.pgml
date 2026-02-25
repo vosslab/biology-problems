@@ -1,0 +1,148 @@
+## TITLE('Biochemistry: Thermodynamic Laws and System Types')
+## DESCRIPTION
+## Given a thermodynamic property (energy or entropy) and a system type
+## (isolated, closed, or open), determine what is always true about
+## that property according to the first or second law of thermodynamics.
+## ENDDESCRIPTION
+## KEYWORDS('thermodynamics','energy','entropy','isolated system','closed system','open system')
+## DBsubject('Biochemistry')
+## DBchapter('Thermodynamics')
+## DBsection('Laws of Thermodynamics')
+## Level(3)
+## Date('2026-02-25')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+loadMacros(
+	'PGstandard.pl',
+	'PGML.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl',
+);
+
+$showPartialCorrectAnswers = 0;
+
+# ----------------------------
+# 1) HTML emphasis spans
+# ----------------------------
+my $energy_emph = "<span style='color:#b32020;font-weight:700;'>total energy</span>";
+my $entropy_emph = "<span style='color:#1a5fb4;font-weight:700;'>total entropy</span>";
+my $first_law_emph = "<span style='color:#b32020;font-weight:700;'>first law</span>";
+my $second_law_emph = "<span style='color:#1a5fb4;font-weight:700;'>second law</span>";
+
+my $isolated_emph = "<span style='color:#6b21a8;font-weight:700;'>isolated</span>";
+my $closed_emph = "<span style='color:#6b21a8;font-weight:700;'>closed</span>";
+my $open_emph = "<span style='color:#6b21a8;font-weight:700;'>open</span>";
+
+# ----------------------------
+# 2) Answer choices
+# ----------------------------
+# ordered logically: the two "always" answers first, then alternatives
+my @choices = (
+	'always zero',
+	'always increasing',
+	'always decreasing',
+	'always constant (conserved)',
+	'cannot be determined without more information',
+);
+
+# ----------------------------
+# 3) Scenario definitions (2 properties x 3 systems = 6)
+# ----------------------------
+my @scenarios = (
+	{
+		prompt => "According to the $first_law_emph of thermodynamics, the $energy_emph of an $isolated_emph system is:",
+		correct_index => 3,
+		solution => "In an isolated system, no energy enters or leaves. The first law (conservation of energy) tells us the total energy is always constant.",
+	},
+	{
+		prompt => "According to the $second_law_emph of thermodynamics, the $entropy_emph of an $isolated_emph system is:",
+		correct_index => 1,
+		solution => "In an isolated system, no matter or energy crosses the boundary. The second law tells us the total entropy of an isolated system always increases (or stays constant in the reversible limit).",
+	},
+	{
+		prompt => "According to the $first_law_emph of thermodynamics, the $energy_emph of a $closed_emph system is:",
+		correct_index => 4,
+		solution => "A closed system can exchange energy (as heat or work) with its surroundings, so the total energy of the system can increase, decrease, or stay the same depending on the process.",
+	},
+	{
+		prompt => "According to the $second_law_emph of thermodynamics, the $entropy_emph of a $closed_emph system is:",
+		correct_index => 4,
+		solution => "A closed system can exchange energy with its surroundings. The entropy of the system itself can increase or decrease (for example, a refrigerator lowers entropy inside), so the answer cannot be determined without more information.",
+	},
+	{
+		prompt => "According to the $first_law_emph of thermodynamics, the $energy_emph of an $open_emph system is:",
+		correct_index => 4,
+		solution => "An open system can exchange both matter and energy with its surroundings. The total energy of the system can change in any direction, so it cannot be determined without more information.",
+	},
+	{
+		prompt => "According to the $second_law_emph of thermodynamics, the $entropy_emph of an $open_emph system is:",
+		correct_index => 4,
+		solution => "An open system can exchange both matter and energy with its surroundings. The entropy of the system can increase or decrease depending on the process, so it cannot be determined without more information.",
+	},
+);
+
+# ----------------------------
+# 4) Randomization
+# ----------------------------
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+my $scenario_index = $local_random->random(0, $#scenarios, 1);
+my $scenario = $scenarios[$scenario_index];
+$prompt = $scenario->{prompt};
+$solution = $scenario->{solution};
+
+# ----------------------------
+# 5) Build RadioButtons
+# ----------------------------
+$rb = RadioButtons(
+	[@choices],
+	$scenario->{correct_index},
+	labels        => 'ABC',
+	displayLabels => 1,
+	separator     => '<div style="margin-bottom: 0.6em;"></div>',
+);
+
+# ----------------------------
+# 6) Problem text (PGML)
+# ----------------------------
+BEGIN_PGML
+[@ $prompt @]*
+
+[_]{$rb}
+END_PGML
+
+# ----------------------------
+# 7) Hint
+# ----------------------------
+BEGIN_PGML_HINT
+The key is which system type allows energy and matter exchange:
+
+- An *isolated* system exchanges *neither* energy nor matter with the surroundings.
+- A *closed* system can exchange *energy* (heat/work) but not matter.
+- An *open* system can exchange *both* energy and matter.
+
+The first law (conservation of energy) says energy is neither created nor destroyed.
+Only in an *isolated* system does this guarantee constant total energy.
+
+The second law says the total entropy of an isolated system always increases
+(or stays constant for a reversible process). For non-isolated systems, the
+system's entropy can go either way because energy and/or matter cross the boundary.
+END_PGML_HINT
+
+# ----------------------------
+# 8) Solution
+# ----------------------------
+BEGIN_PGML_SOLUTION
+[$solution]*
+END_PGML_SOLUTION
+
+ENDDOCUMENT();

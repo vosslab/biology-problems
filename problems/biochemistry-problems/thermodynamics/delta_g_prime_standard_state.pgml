@@ -1,0 +1,152 @@
+## TITLE('Biochemistry: Standard vs Biochemical Standard State')
+## DESCRIPTION
+## Identify what distinguishes the biochemical standard free energy change
+## (delta G naught-prime) from the chemical standard free energy change
+## (delta G naught): the pH is fixed at 7.
+## ENDDESCRIPTION
+## KEYWORDS('free energy','standard state','biochemical standard','delta G prime','pH')
+## DBsubject('Biochemistry')
+## DBchapter('Thermodynamics')
+## DBsection('Free Energy')
+## Level(2)
+## Date('2026-02-25')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+loadMacros(
+	'PGstandard.pl',
+	'PGML.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl',
+);
+
+$showPartialCorrectAnswers = 0;
+
+# ----------------------------
+# 1) HTML symbol variables
+# ----------------------------
+# symbolic notation with HTML entities
+my $dg_std = "&Delta;G&deg;";
+my $dg_prime = "&Delta;G&deg;&prime;";
+
+# colored emphasis versions
+my $dg_std_emph = "<span style='color:#0077bb;font-weight:700;'>&Delta;G&deg;</span>";
+my $dg_prime_emph = "<span style='color:#cc6600;font-weight:700;'>&Delta;G&deg;&prime;</span>";
+
+# spoken-form parenthetical
+my $dg_std_spoken = "(delta G naught, $dg_std_emph)";
+my $dg_prime_spoken = "(delta G naught-prime, $dg_prime_emph)";
+
+# ----------------------------
+# 2) Core choices (always present, shuffled)
+# ----------------------------
+# correct answer
+my $correct = "pH is fixed at 7 ([H<sup>+</sup>] = 1 &times; 10<sup>&minus;7</sup> M instead of 1 M)";
+
+# always-present distractors
+my @core_distractors = (
+	"temperature is different from 298 K (25 &deg;C)",
+	"pressure is different from 1 atm",
+	"all reactant concentrations are at 1 M",
+);
+
+# optional distractor pool (pick 1 to swap in)
+my @extra_distractors = (
+	"volume of the system is standardized to 1 liter",
+	"ionic strength is fixed at 0.1 M",
+	"a buffer is required in the reaction mixture",
+	"a catalyst must be present for the reaction",
+);
+
+# ----------------------------
+# 3) Stem wording variants
+# ----------------------------
+my @stem_variants = (
+	"The biochemical standard free energy change $dg_prime_spoken differs from the chemical standard free energy change $dg_std_spoken. Which factor is treated differently?",
+	"$dg_prime_emph $dg_prime_spoken adjusts the standard state conditions used in $dg_std_emph $dg_std_spoken. What does it adjust?",
+	"What additional condition is assumed when using the biochemical standard free energy change $dg_prime_spoken instead of $dg_std_spoken?",
+	"Which condition is specified differently in the biochemical standard state $dg_prime_spoken compared to the chemical standard state $dg_std_spoken?",
+);
+
+# ----------------------------
+# 4) Randomization
+# ----------------------------
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+
+# pick stem wording
+my $stem_index = $local_random->random(0, $#stem_variants, 1);
+$prompt = $stem_variants[$stem_index];
+
+# pick 1 extra distractor
+my $extra_index = $local_random->random(0, $#extra_distractors, 1);
+my $extra_pick = $extra_distractors[$extra_index];
+
+# assemble 5 choices: correct + 3 core distractors + 1 extra
+my @choices = ($correct, @core_distractors, $extra_pick);
+
+# Fisher-Yates shuffle the choices
+for my $i (reverse 1 .. $#choices) {
+	my $j = $local_random->random(0, $i, 1);
+	@choices[$i, $j] = @choices[$j, $i];
+}
+
+# find the correct answer index after shuffle
+my $correct_index = 0;
+for my $i (0 .. $#choices) {
+	if ($choices[$i] eq $correct) {
+		$correct_index = $i;
+		last;
+	}
+}
+
+# ----------------------------
+# 5) Build RadioButtons
+# ----------------------------
+$rb = RadioButtons(
+	[@choices],
+	$correct_index,
+	labels        => 'ABC',
+	displayLabels => 1,
+	separator     => '<div style="margin-bottom: 0.6em;"></div>',
+);
+
+# ----------------------------
+# 6) Problem text (PGML)
+# ----------------------------
+BEGIN_PGML
+[@ $prompt @]*
+
+[_]{$rb}
+END_PGML
+
+# ----------------------------
+# 7) Hint
+# ----------------------------
+BEGIN_PGML_HINT
+Think about why biochemistry uses a prime symbol ([`'`]).
+Which condition is held at a biologically typical value rather than
+the standard chemistry convention of 1 M for all species?
+END_PGML_HINT
+
+# ----------------------------
+# 8) Solution
+# ----------------------------
+BEGIN_PGML_SOLUTION
+The prime symbol in [`\Delta G^{\circ\prime}`] (delta G naught-prime) indicates
+that the biochemical standard state fixes the pH at 7, meaning
+[`[\mathrm{H}^{+}] = 1 \times 10^{-7}\,\mathrm{M}`] instead of
+the chemical standard of 1 M. All other standard conditions
+(temperature 298 K, pressure 1 atm, 1 M concentrations for other
+species) remain the same.
+END_PGML_SOLUTION
+
+ENDDOCUMENT();
