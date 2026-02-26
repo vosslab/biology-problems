@@ -1,0 +1,227 @@
+## TITLE('Biochemistry: Identify Protein Structure Representation')
+## DESCRIPTION
+## Interactive JSmol viewer shows hen egg-white lysozyme (PDB 2LYZ) in a
+## randomized molecular representation. Students identify which representation
+## style is displayed.
+## ENDDESCRIPTION
+## KEYWORDS('protein structure','lysozyme','jmol','jsmol','3D viewer','representation')
+## DBsubject('Biochemistry')
+## DBchapter('Protein Structure')
+## DBsection('Visualization')
+## Level(2)
+## Date('2026-02-25')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	"PGstandard.pl",
+	"PGML.pl",
+	"parserRadioButtons.pl",
+	"PGcourse.pl",
+);
+
+$showPartialCorrectAnswers = 0;
+
+# ----------------------------
+# 2) Setup
+# ----------------------------
+
+# Five scene presets: each has a Jmol script fragment, a correct answer label,
+# and a short description for the solution section.
+@scene_presets = (
+	{
+		name   => 'Cartoon',
+		script => 'select all; cartoon on; wireframe off; spacefill off; color structure;',
+		answer => 'Cartoon / Ribbon',
+		desc   => 'a smooth ribbon tracing the protein backbone, colored by secondary structure',
+	},
+	{
+		name   => 'Sticks',
+		script => 'select all; cartoon off; wireframe 0.15; spacefill off; color cpk;',
+		answer => 'Sticks / Wireframe',
+		desc   => 'thin cylinders connecting bonded atoms, colored by element (CPK)',
+	},
+	{
+		name   => 'Ball-and-Stick',
+		script => 'select all; cartoon off; wireframe 0.1; spacefill 25%; color cpk;',
+		answer => 'Ball-and-Stick',
+		desc   => 'small spheres at atom centers connected by thin sticks, colored by element',
+	},
+	{
+		name   => 'Surface',
+		script => 'select all; cartoon off; wireframe off; spacefill off; color cpk; isosurface solvent 1.4;',
+		answer => 'Molecular Surface',
+		desc   => 'a continuous envelope showing the solvent-accessible surface of the protein',
+	},
+	{
+		name   => 'Spacefill',
+		script => 'select all; cartoon off; wireframe off; spacefill on; color cpk;',
+		answer => 'Space-filling (CPK)',
+		desc   => 'large overlapping spheres sized to van der Waals radii, colored by element',
+	},
+);
+
+# Pick one scene at random (server-side, seeded by problemSeed).
+$scene_index = random(0, 4, 1);
+$scene_ref = $scene_presets[$scene_index];
+$correct_answer = $scene_ref->{answer};
+$scene_script_str = $scene_ref->{script};
+$scene_desc = $scene_ref->{desc};
+
+# Build RadioButtons from all five answer labels.
+@all_answers = (
+	'Cartoon / Ribbon',
+	'Sticks / Wireframe',
+	'Ball-and-Stick',
+	'Molecular Surface',
+	'Space-filling (CPK)',
+);
+
+$rb = RadioButtons(
+	[@all_answers],
+	$correct_answer,
+	labels        => 'ABC',
+	displayLabels => 1,
+	separator     => '<div style="margin-bottom: 0.7em;"></div>',
+	uncheckable   => 0,
+);
+
+# ----------------------------
+# 2b) Header (JSmol CDN + CSS)
+# ----------------------------
+
+# Build the Jmol initialization script with the selected scene.
+# The scene script is interpolated server-side so it varies per seed.
+$jsmol_scene_js = $scene_script_str;
+
+HEADER_TEXT(<<END_JSMOL_HEADER);
+<script src="https://chemapps.stolaf.edu/jmol/jsmol/JSmol.min.js"></script>
+<script>
+(function() {
+	// Scene script chosen server-side for this seed.
+	var sceneScript = "$jsmol_scene_js";
+
+	// Common setup: white background, no frank logo, no popup menu,
+	// depth cueing off, slab off, fixed orientation for active-site cleft.
+	var setupScript = "set frank off; set disablePopupMenu true; "
+		+ "background white; set zoomlarge false; "
+		+ "slab off; depth off; "
+		+ "set antialiasDisplay true; set hermiteLevel 8; "
+		+ "load https://files.rcsb.org/download/2LYZ.pdb; "
+		+ "delete solvent; "
+		+ "zoom 120; "
+		+ sceneScript;
+
+	var Info = {
+		width: 640,
+		height: 360,
+		debug: false,
+		color: "0xFFFFFF",
+		use: "HTML5",
+		j2sPath: "https://chemapps.stolaf.edu/jmol/jsmol/j2s",
+		disableJ2SLoadMonitor: true,
+		disableInitialConsole: true,
+		allowJavaScript: false,
+		script: setupScript
+	};
+
+	// Wait for DOM then create the applet inside the target div.
+	function initJSmol() {
+		var container = document.getElementById("jsmol_container");
+		if (container) {
+			container.innerHTML = Jmol.getAppletHtml("jmolApplet0", Info);
+		}
+	}
+
+	if (document.readyState === "loading") {
+		document.addEventListener("DOMContentLoaded", initJSmol);
+	} else {
+		initJSmol();
+	}
+})();
+</script>
+<style>
+#jsmol_container {
+	width: 660px;
+	height: 380px;
+	margin: 1em auto;
+	border: 2px solid #999;
+	border-radius: 6px;
+	background: #fff;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+</style>
+END_JSMOL_HEADER
+
+# ----------------------------
+# 3) Statement (PGML)
+# ----------------------------
+
+# JSmol viewer container div rendered as raw HTML via [$var]*.
+$jsmol_div = '<div id="jsmol_container"><noscript>JavaScript is required for the 3D viewer.</noscript></div>';
+
+$fallback_link = "<p style='font-size: 0.9em; color: #666; text-align: center;'>"
+	. "If the 3D viewer does not load, "
+	. "<a href='https://www.rcsb.org/structure/2LYZ' target='_blank'>view 2LYZ on RCSB PDB</a>."
+	. "</p>";
+
+BEGIN_PGML
+
+*Lysozyme* (PDB: 2LYZ) is a small enzyme found in tears, saliva, and egg whites that destroys bacterial cell walls by cleaving polysaccharide chains.
+
+The interactive 3D viewer below shows the crystal structure of hen egg-white lysozyme rendered in a particular molecular representation. You can *rotate* (click and drag) and *zoom* (scroll wheel) to examine the structure.
+
+[$jsmol_div]*
+
+[$fallback_link]*
+
+*Which molecular representation style is shown in the viewer above?*
+
+Select one answer.
+
+[_]{$rb}
+
+END_PGML
+
+# ----------------------------
+# 4) Solution
+# ----------------------------
+
+# Bold-styled correct answer for solution display (avoids PGML parsing issue
+# with slashes inside ** markers).
+$answer_emph = "<strong>$correct_answer</strong>";
+
+BEGIN_PGML_SOLUTION
+**Solution:**
+
+The correct answer is [$answer_emph]*.
+
+This representation shows [$scene_desc].
+
+Here is a brief summary of each representation style:
+
+- **Cartoon**: A smooth ribbon traces the protein backbone. Helices appear as coiled ribbons, sheets as flat arrows, and loops as thin tubes. Colored by secondary structure type.
+
+- **Sticks**: Every covalent bond is drawn as a thin cylinder. Individual atoms are visible at bond junctions but have no explicit radius. Colored by element (CPK convention).
+
+- **Ball-and-Stick**: Atoms are shown as small spheres connected by thin sticks representing bonds. This combines atom identity with bonding information. Colored by element.
+
+- **Molecular Surface**: A continuous solvent-accessible envelope wraps the outside of the protein, showing its overall shape and any surface clefts or pockets.
+
+- **Space-filling (CPK)**: Each atom is drawn as a sphere scaled to its van der Waals radius. Spheres overlap where atoms are bonded. This shows the physical space the molecule occupies.
+END_PGML_SOLUTION
+
+ENDDOCUMENT();
