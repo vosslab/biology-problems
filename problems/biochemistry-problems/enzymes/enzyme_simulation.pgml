@@ -1,0 +1,997 @@
+## TITLE('Biochemistry: Enzyme Kinetics Simulation')
+## DESCRIPTION
+## Interactive canvas-based enzyme simulation showing amylase and maltase
+## catalyzed reactions. Students manipulate starting concentrations and answer
+## multiple-choice questions about enzyme mechanisms.
+## ENDDESCRIPTION
+## KEYWORDS('enzymes','kinetics','amylase','maltase','substrate','catalyst','simulation')
+## DBsubject('Biochemistry')
+## DBchapter('Enzymes')
+## DBsection('Kinetics')
+## Level(2)
+## Date('2026-02-26')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+#
+# Derived from the Enzyme Simulation by Jolene Pappas / Biology Simulations LLC.
+# Original: https://www.biologysimulations.com/enzymes
+# Original simulation built with Phaser 3 and Plotly.js.
+# Copyright 2026 Biology Simulations LLC.
+#
+# Both the original and this derived work are licensed under
+# CC BY-NC-SA 4.0 (Creative Commons Attribution-NonCommercial-ShareAlike 4.0
+# International License).
+# https://creativecommons.org/licenses/by-nc-sa/4.0/
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	"PGstandard.pl",
+	"PGML.pl",
+	"parserRadioButtons.pl",
+	"PGcourse.pl",
+);
+
+$showPartialCorrectAnswers = 0;
+
+# ----------------------------
+# 2) Setup
+# ----------------------------
+
+# ----------------------------
+# 2a) Molecule colors (easy to change)
+# ----------------------------
+$color_starch  = '#888899';
+$color_maltose = '#df7700';
+$color_glucose = '#cc9900';
+$color_amylase = '#4488ff';
+$color_maltase = '#44bb44';
+$color_bg      = '#d8e0e8';
+
+# ----------------------------
+# 2b) Question pool
+# ----------------------------
+my @question_pool = (
+	{
+		text => 'If you increase the starch concentration while keeping amylase constant, '
+			. 'what happens to the initial rate of maltose production?',
+		choices => [
+			'Increases',
+			'Decreases',
+			'Stays the same',
+			'Depends on maltase concentration',
+		],
+		correct => 'Increases',
+		explain => 'With more substrate molecules present, the enzyme encounters substrate '
+			. 'more frequently, so the initial reaction rate increases.',
+	},
+	{
+		text => 'Why does the rate of starch breakdown slow down over time even though '
+			. 'amylase is still present?',
+		choices => [
+			'The enzyme is used up in the reaction',
+			'The substrate concentration decreases',
+			'The enzyme becomes denatured',
+			'The products inhibit the enzyme',
+		],
+		correct => 'The substrate concentration decreases',
+		explain => 'As starch is consumed, fewer substrate molecules are available for the '
+			. 'enzyme to act on, so collisions become less frequent and the rate drops.',
+	},
+	{
+		text => 'If you set amylase to 0 mM but maltase to 5 mM, and start with 5 mM starch, '
+			. 'what happens?',
+		choices => [
+			'Starch is converted to glucose',
+			'Maltose is produced but not glucose',
+			'Nothing happens -- no reaction occurs',
+			'Glucose is produced directly from starch',
+		],
+		correct => 'Nothing happens -- no reaction occurs',
+		explain => 'Without amylase, starch cannot be broken down. Maltase can only act on '
+			. 'maltose, which is not present and cannot be produced without amylase.',
+	},
+	{
+		text => 'What is the role of the enzyme in this simulation?',
+		choices => [
+			'It is consumed during the reaction',
+			'It provides energy for the reaction',
+			'It lowers the activation energy and speeds up the reaction',
+			'It changes the equilibrium of the reaction',
+		],
+		correct => 'It lowers the activation energy and speeds up the reaction',
+		explain => 'Enzymes are biological catalysts. They lower the activation energy barrier, '
+			. 'increasing the reaction rate without being consumed.',
+	},
+	{
+		text => 'If you double the amount of amylase, what happens to the final amount of '
+			. 'maltose produced (after a long time with the same starting starch)?',
+		choices => [
+			'It doubles',
+			'It stays the same',
+			'It decreases',
+			'It depends on the glucose concentration',
+		],
+		correct => 'It stays the same',
+		explain => 'The final amount of product depends on the amount of substrate, not the '
+			. 'amount of enzyme. More enzyme makes the reaction faster but does not change '
+			. 'how much product is ultimately produced from the same amount of substrate.',
+	},
+	{
+		text => 'Why does glucose only appear after a delay, even when maltase is present '
+			. 'from the start?',
+		choices => [
+			'Maltase needs time to activate',
+			'Maltose must first be produced by amylase before maltase can act',
+			'Glucose is unstable and breaks down initially',
+			'The simulation has a built-in delay',
+		],
+		correct => 'Maltose must first be produced by amylase before maltase can act',
+		explain => 'Glucose production requires maltose as a substrate. Maltose is the product '
+			. 'of the first reaction (amylase + starch), so there is a sequential dependency.',
+	},
+);
+
+# ----------------------------
+# 2c) Randomization
+# ----------------------------
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+
+# Shuffle indices and pick 3 questions
+my @indices = (0 .. $#question_pool);
+for (my $i = $#indices; $i > 0; $i--) {
+	my $j = $local_random->random(0, $i, 1);
+	@indices[$i, $j] = @indices[$j, $i];
+}
+my @selected = @indices[0, 1, 2];
+
+# Build RadioButtons for each selected question
+my @rb_list = ();
+my @q_texts = ();
+my @q_explains = ();
+for my $idx (@selected) {
+	my $q = $question_pool[$idx];
+	my $rb = RadioButtons(
+		$q->{choices},
+		$q->{correct},
+		labels        => 'ABC',
+		displayLabels => 1,
+		separator     => '<div style="margin-bottom: 0.5em;"></div>',
+	);
+	push @rb_list, $rb;
+	push @q_texts, $q->{text};
+	push @q_explains, $q->{explain};
+}
+
+$rb1 = $rb_list[0];
+$rb2 = $rb_list[1];
+$rb3 = $rb_list[2];
+
+$q1_text = $q_texts[0];
+$q2_text = $q_texts[1];
+$q3_text = $q_texts[2];
+
+$q1_explain = $q_explains[0];
+$q2_explain = $q_explains[1];
+$q3_explain = $q_explains[2];
+
+# ----------------------------
+# 2d) HEADER_TEXT (JS + CSS)
+# ----------------------------
+
+# Inject color variables into JS and CSS (interpolated block).
+HEADER_TEXT(MODES(
+	TeX => '',
+	HTML => <<"END_COLOR_BLOCK"
+<script>
+/* molecule colors injected from Perl variables */
+var ESIM_COLORS = {
+	starch:  "$color_starch",
+	maltose: "$color_maltose",
+	glucose: "$color_glucose",
+	amylase: "$color_amylase",
+	maltase: "$color_maltase",
+	bg:      "$color_bg",
+};
+</script>
+<style>
+input.eslider-starch  { accent-color: $color_starch; }
+input.eslider-maltose { accent-color: $color_maltose; }
+input.eslider-glucose { accent-color: $color_glucose; }
+input.eslider-amylase { accent-color: $color_amylase; }
+input.eslider-maltase { accent-color: $color_maltase; }
+.enzyme-sim-canvases canvas { background: $color_bg; }
+</style>
+END_COLOR_BLOCK
+));
+
+HEADER_TEXT(MODES(
+	TeX => '',
+	HTML => <<'END_HEADER_TEXT'
+<style>
+/* -- enzyme simulation layout -- */
+.enzyme-sim-wrap {
+	max-width: 860px;
+	margin: 1em auto;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+}
+.enzyme-sim-canvases {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+	justify-content: center;
+	margin-bottom: 12px;
+}
+.enzyme-sim-canvases canvas {
+	border: 2px solid #8899aa;
+	border-radius: 6px;
+	/* background set by interpolated color block */
+}
+.enzyme-sim-controls {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px 16px;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 10px;
+}
+.enzyme-slider-group {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+}
+.enzyme-slider-group label {
+	min-width: 62px;
+	text-align: right;
+	font-weight: bold;
+}
+.enzyme-slider-group input[type=range] {
+	width: 100px;
+}
+.enzyme-slider-group .eslider-val {
+	min-width: 32px;
+	text-align: left;
+	font-family: monospace;
+}
+.enzyme-sim-buttons {
+	display: flex;
+	gap: 8px;
+	justify-content: center;
+	margin-bottom: 8px;
+}
+.enzyme-sim-buttons button {
+	padding: 6px 18px;
+	font-size: 14px;
+	border: 1px solid #888;
+	border-radius: 4px;
+	cursor: pointer;
+	background: #e8e8e8;
+}
+.enzyme-sim-buttons button:hover {
+	background: #d0d0d0;
+}
+.enzyme-legend {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px 18px;
+	justify-content: center;
+	font-size: 15px;
+	font-weight: bold;
+	margin-bottom: 8px;
+}
+.enzyme-legend span {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+}
+.enzyme-legend .eleg-dot {
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+}
+/* color-coded slider tracks set by interpolated color block */
+</style>
+
+<script>
+(function() {
+"use strict";
+
+/* ---- constants ---- */
+var BEAKER_W = 420, BEAKER_H = 320;
+var GRAPH_W = 420, GRAPH_H = 320;
+var SPEED = 2.4;
+var PARTICLE_SCALE = 2; /* mM to particle count */
+
+/* molecule visual config: color from ESIM_COLORS (injected by Perl), radius, isEnzyme
+   ry = y-radius for ovals (defaults to r if absent) */
+var C = window.ESIM_COLORS || {};
+var MOL_CFG = {
+	starch:  { color: C.starch  || "#888899", r: 12, enzyme: false },
+	maltose: { color: C.maltose || "#df7700", r: 8,  enzyme: false },
+	glucose: { color: C.glucose || "#cc9900", r: 6,  enzyme: false },
+	amylase: { color: C.amylase || "#4488ff", r: 12, enzyme: true },
+	maltase: { color: C.maltase || "#44bb44", r: 16, ry: 13, enzyme: true },
+};
+var BG_COLOR = C.bg || "#d8e0e8";
+
+/* ---- state ---- */
+var particles = [];
+var running = false;
+var simTime = 0;
+var lastRecordTime = 0;
+var history = { time: [], starch: [], maltose: [], glucose: [] };
+var animId = null;
+var beakerCtx, graphCtx;
+var lastFrameTime = 0;
+var zeroSinceTime = -1; /* simTime when starch+maltose first hit 0, -1 = not yet */
+
+/* ---- helpers ---- */
+function randDir() {
+	return (Math.random() - 0.5) * 2;
+}
+
+function sliderVal(id) {
+	return parseFloat(document.getElementById("esim_" + id).value);
+}
+
+function createParticle(type, x, y) {
+	var cfg = MOL_CFG[type];
+	var ry = cfg.ry || cfg.r;
+	var maxR = Math.max(cfg.r, ry);
+	return {
+		type: type,
+		x: x || (maxR + Math.random() * (BEAKER_W - 2 * maxR)),
+		y: y || (maxR + Math.random() * (BEAKER_H - 2 * maxR)),
+		vx: SPEED * randDir() * 60,
+		vy: SPEED * randDir() * 60,
+		r: cfg.r,
+		ry: ry,
+		alive: true,
+	};
+}
+
+function countType(t) {
+	var n = 0;
+	for (var i = 0; i < particles.length; i++) {
+		if (particles[i].alive && particles[i].type === t) n++;
+	}
+	return n;
+}
+
+function countmM(t) {
+	return countType(t) / PARTICLE_SCALE;
+}
+
+/* ---- init from sliders ---- */
+function initParticles() {
+	particles = [];
+	var types = ["starch", "maltose", "glucose", "amylase", "maltase"];
+	for (var ti = 0; ti < types.length; ti++) {
+		var t = types[ti];
+		var num = Math.round(sliderVal(t) * PARTICLE_SCALE);
+		for (var i = 0; i < num; i++) {
+			particles.push(createParticle(t));
+		}
+	}
+}
+
+/* ---- physics update ---- */
+function updateParticles(dt) {
+	/* clamp dt to avoid huge jumps when tab is backgrounded */
+	if (dt > 0.1) dt = 0.1;
+	/* move */
+	for (var i = 0; i < particles.length; i++) {
+		var p = particles[i];
+		if (!p.alive) continue;
+		p.x += p.vx * dt;
+		p.y += p.vy * dt;
+		/* bounce off walls (use r for x, ry for y) */
+		if (p.x - p.r < 0)         { p.x = p.r;              p.vx = Math.abs(p.vx); }
+		if (p.x + p.r > BEAKER_W)  { p.x = BEAKER_W - p.r;   p.vx = -Math.abs(p.vx); }
+		if (p.y - p.ry < 0)        { p.y = p.ry;             p.vy = Math.abs(p.vy); }
+		if (p.y + p.ry > BEAKER_H) { p.y = BEAKER_H - p.ry;  p.vy = -Math.abs(p.vy); }
+	}
+
+	/* collision detection and reactions */
+	for (var i = 0; i < particles.length; i++) {
+		var a = particles[i];
+		if (!a.alive) continue;
+		for (var j = i + 1; j < particles.length; j++) {
+			var b = particles[j];
+			if (!b.alive) continue;
+			var dx = a.x - b.x;
+			var dy = a.y - b.y;
+			var dist = Math.sqrt(dx * dx + dy * dy);
+			var minDist = Math.max(a.r, a.ry) + Math.max(b.r, b.ry);
+			if (dist >= minDist) continue;
+
+			/* check for reactions */
+			var reacted = false;
+
+			/* amylase + starch -> 2 maltose */
+			var sub = null;
+			if (a.type === "amylase" && b.type === "starch") { sub = b; }
+			if (b.type === "amylase" && a.type === "starch") { sub = a; }
+			if (sub) {
+				sub.alive = false;
+				particles.push(createParticle("maltose", sub.x + 6, sub.y));
+				particles.push(createParticle("maltose", sub.x - 6, sub.y));
+				reacted = true;
+			}
+
+			/* maltase + maltose -> 2 glucose */
+			if (!reacted) {
+				sub = null;
+				if (a.type === "maltase" && b.type === "maltose") { sub = b; }
+				if (b.type === "maltase" && a.type === "maltose") { sub = a; }
+				if (sub) {
+					sub.alive = false;
+					particles.push(createParticle("glucose", sub.x + 4, sub.y));
+					particles.push(createParticle("glucose", sub.x - 4, sub.y));
+					reacted = true;
+				}
+			}
+
+			/* elastic-ish bounce for non-reacting collisions */
+			if (!reacted && dist > 0) {
+				var nx = dx / dist;
+				var ny = dy / dist;
+				var overlap = minDist - dist;
+				a.x += nx * overlap * 0.5;
+				a.y += ny * overlap * 0.5;
+				b.x -= nx * overlap * 0.5;
+				b.y -= ny * overlap * 0.5;
+				/* swap velocity components along collision normal */
+				var dvx = a.vx - b.vx;
+				var dvy = a.vy - b.vy;
+				var dotN = dvx * nx + dvy * ny;
+				if (dotN > 0) {
+					a.vx -= dotN * nx;
+					a.vy -= dotN * ny;
+					b.vx += dotN * nx;
+					b.vy += dotN * ny;
+				}
+			}
+		}
+	}
+	/* prune dead particles */
+	var live = [];
+	for (var i = 0; i < particles.length; i++) {
+		if (particles[i].alive) live.push(particles[i]);
+	}
+	particles = live;
+}
+
+/* ---- draw beaker ---- */
+function drawBeaker() {
+	var ctx = beakerCtx;
+	ctx.clearRect(0, 0, BEAKER_W, BEAKER_H);
+	/* background beaker */
+	ctx.fillStyle = BG_COLOR;
+	ctx.fillRect(0, 0, BEAKER_W, BEAKER_H);
+	/* beaker outline */
+	ctx.strokeStyle = "#446688";
+	ctx.lineWidth = 2;
+	ctx.strokeRect(1, 1, BEAKER_W - 2, BEAKER_H - 2);
+	/* label */
+	ctx.fillStyle = "#334455";
+	ctx.font = "12px Arial";
+	ctx.textAlign = "left";
+	ctx.fillText("Reaction Beaker", 8, 16);
+	/* time */
+	ctx.textAlign = "right";
+	ctx.fillText("Time: " + simTime.toFixed(0) + " s", BEAKER_W - 8, 16);
+
+	/* draw particles */
+	for (var i = 0; i < particles.length; i++) {
+		var p = particles[i];
+		var cfg = MOL_CFG[p.type];
+		ctx.beginPath();
+		if (cfg.enzyme) {
+			/* enzyme body (circle or ellipse) with circular cleft at top */
+			/* draw main body */
+			ctx.ellipse(p.x, p.y, p.r, p.ry, 0, 0, Math.PI * 2);
+			ctx.fillStyle = cfg.color;
+			ctx.fill();
+			ctx.strokeStyle = "rgba(0,0,0,0.25)";
+			ctx.lineWidth = 1;
+			ctx.stroke();
+			/* cut out the binding cleft: smaller circle at top */
+			ctx.save();
+			ctx.globalCompositeOperation = "destination-out";
+			ctx.beginPath();
+			var cleftR = Math.min(p.r, p.ry) * 0.45;
+			ctx.arc(p.x, p.y - p.ry + cleftR * 0.4, cleftR, 0, Math.PI * 2);
+			ctx.fill();
+			ctx.restore();
+			continue; /* skip the normal fill/stroke below */
+		} else {
+			ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+		}
+		ctx.fillStyle = cfg.color;
+		ctx.fill();
+		/* outline for visibility */
+		ctx.strokeStyle = "rgba(0,0,0,0.25)";
+		ctx.lineWidth = 1;
+		ctx.stroke();
+	}
+
+	/* concentration readout at bottom */
+	ctx.textAlign = "center";
+	ctx.font = "bold 12px monospace";
+	var y = BEAKER_H - 8;
+	var labels = [
+		{ t: "starch", lbl: "Starch" },
+		{ t: "maltose", lbl: "Maltose" },
+		{ t: "glucose", lbl: "Glucose" },
+	];
+	var xStep = BEAKER_W / (labels.length + 1);
+	for (var i = 0; i < labels.length; i++) {
+		var lx = xStep * (i + 1);
+		ctx.fillStyle = MOL_CFG[labels[i].t].color;
+		ctx.fillText(labels[i].lbl + ": " + countmM(labels[i].t).toFixed(1) + " mM", lx, y);
+	}
+}
+
+/* ---- draw graph ---- */
+function drawGraph() {
+	var ctx = graphCtx;
+	var pad = { l: 52, r: 12, t: 28, b: 36 };
+	var gw = GRAPH_W - pad.l - pad.r;
+	var gh = GRAPH_H - pad.t - pad.b;
+	ctx.clearRect(0, 0, GRAPH_W, GRAPH_H);
+	ctx.fillStyle = BG_COLOR;
+	ctx.fillRect(0, 0, GRAPH_W, GRAPH_H);
+
+	/* title */
+	ctx.fillStyle = "#334455";
+	ctx.font = "13px Arial";
+	ctx.textAlign = "center";
+	ctx.fillText("Concentration Graph", GRAPH_W / 2, 16);
+
+	/* axes */
+	ctx.strokeStyle = "#445566";
+	ctx.lineWidth = 1;
+	ctx.beginPath();
+	ctx.moveTo(pad.l, pad.t);
+	ctx.lineTo(pad.l, pad.t + gh);
+	ctx.lineTo(pad.l + gw, pad.t + gh);
+	ctx.stroke();
+
+	/* axis labels */
+	ctx.fillStyle = "#445566";
+	ctx.font = "11px Arial";
+	ctx.textAlign = "center";
+	ctx.fillText("Time (seconds)", pad.l + gw / 2, GRAPH_H - 4);
+	ctx.save();
+	ctx.translate(14, pad.t + gh / 2);
+	ctx.rotate(-Math.PI / 2);
+	ctx.fillText("Concentration (mM)", 0, 0);
+	ctx.restore();
+
+	if (history.time.length < 2) return;
+
+	/* determine axis ranges */
+	var maxT = history.time[history.time.length - 1];
+	if (maxT < 5) maxT = 5;
+	/* find max concentration across all three series */
+	var maxC = 1;
+	var series = ["starch", "maltose", "glucose"];
+	for (var s = 0; s < series.length; s++) {
+		var arr = history[series[s]];
+		for (var i = 0; i < arr.length; i++) {
+			if (arr[i] > maxC) maxC = arr[i];
+		}
+	}
+	maxC = Math.ceil(maxC + 0.5);
+
+	/* tick marks on y axis */
+	ctx.fillStyle = "#445566";
+	ctx.font = "10px monospace";
+	ctx.textAlign = "right";
+	var yTicks = 5;
+	for (var i = 0; i <= yTicks; i++) {
+		var val = (maxC * i / yTicks);
+		var yy = pad.t + gh - (i / yTicks) * gh;
+		ctx.fillText(val.toFixed(1), pad.l - 4, yy + 3);
+		if (i > 0) {
+			ctx.strokeStyle = "#b0bcc8";
+			ctx.beginPath();
+			ctx.moveTo(pad.l, yy);
+			ctx.lineTo(pad.l + gw, yy);
+			ctx.stroke();
+		}
+	}
+
+	/* tick marks on x axis */
+	ctx.textAlign = "center";
+	var xTicks = 5;
+	for (var i = 0; i <= xTicks; i++) {
+		var val = (maxT * i / xTicks);
+		var xx = pad.l + (i / xTicks) * gw;
+		ctx.fillStyle = "#445566";
+		ctx.fillText(val.toFixed(0), xx, pad.t + gh + 14);
+	}
+
+	/* plot lines */
+	var colors = { starch: MOL_CFG.starch.color, maltose: MOL_CFG.maltose.color, glucose: MOL_CFG.glucose.color };
+	for (var s = 0; s < series.length; s++) {
+		var key = series[s];
+		var arr = history[key];
+		ctx.strokeStyle = colors[key];
+		ctx.lineWidth = 2;
+		ctx.beginPath();
+		for (var i = 0; i < arr.length; i++) {
+			var px = pad.l + (history.time[i] / maxT) * gw;
+			var py = pad.t + gh - (arr[i] / maxC) * gh;
+			if (i === 0) ctx.moveTo(px, py);
+			else ctx.lineTo(px, py);
+		}
+		ctx.stroke();
+	}
+
+	/* legend inside graph */
+	ctx.font = "11px Arial";
+	var legX = pad.l + gw - 8;
+	var legY = pad.t + 12;
+	ctx.textAlign = "right";
+	for (var s = 0; s < series.length; s++) {
+		ctx.fillStyle = colors[series[s]];
+		ctx.fillRect(legX + 2, legY + s * 16 - 8, 10, 10);
+		ctx.fillText(series[s].charAt(0).toUpperCase() + series[s].slice(1),
+			legX - 2, legY + s * 16);
+	}
+}
+
+/* ---- record data point ---- */
+function recordData() {
+	history.time.push(simTime);
+	history.starch.push(countmM("starch"));
+	history.maltose.push(countmM("maltose"));
+	history.glucose.push(countmM("glucose"));
+}
+
+/* ---- animation loop ---- */
+function frame(timestamp) {
+	if (!running) return;
+	if (!lastFrameTime) lastFrameTime = timestamp;
+	var dt = (timestamp - lastFrameTime) / 1000;
+	lastFrameTime = timestamp;
+	simTime += dt;
+
+	updateParticles(dt);
+
+	/* record every ~1 second */
+	if (simTime - lastRecordTime >= 1.0) {
+		lastRecordTime = simTime;
+		recordData();
+	}
+
+	/* auto-pause when starch and maltose are both 0 for 2 seconds */
+	if (countType("starch") === 0 && countType("maltose") === 0) {
+		if (zeroSinceTime < 0) zeroSinceTime = simTime;
+		if (simTime - zeroSinceTime >= 2.0) {
+			showOverlay("Paused: all substrate was consumed");
+			drawBeaker();
+			drawOverlay();
+			drawGraph();
+			doPause();
+			return;
+		}
+	} else {
+		zeroSinceTime = -1;
+	}
+
+	drawBeaker();
+	drawOverlay();
+	drawGraph();
+	animId = requestAnimationFrame(frame);
+}
+
+/* slider value spans always show the slider setting, not live counts.
+   Live concentrations are displayed on the beaker canvas. */
+
+/* ---- button state styling ---- */
+function updateButtons() {
+	var runBtn = document.getElementById("esim_run");
+	var pauseBtn = document.getElementById("esim_pause");
+	if (running) {
+		runBtn.style.background = "#b0ddb0";
+		runBtn.style.fontWeight = "bold";
+		pauseBtn.style.background = "#e8e8e8";
+		pauseBtn.style.fontWeight = "normal";
+	} else {
+		runBtn.style.background = "#e8e8e8";
+		runBtn.style.fontWeight = "normal";
+		pauseBtn.style.background = "#f0c0c0";
+		pauseBtn.style.fontWeight = "bold";
+	}
+}
+
+/* ---- beaker overlay message ---- */
+var overlayMsg = "";
+var overlayFadeStart = 0;
+function showOverlay(msg) {
+	overlayMsg = msg;
+	overlayFadeStart = Date.now();
+}
+function drawOverlay() {
+	if (!overlayMsg) return;
+	/* fade out over 5 seconds */
+	var elapsed = (Date.now() - overlayFadeStart) / 1000;
+	if (elapsed > 5) { overlayMsg = ""; return; }
+	var alpha = elapsed < 4 ? 0.85 : 0.85 * (1 - (elapsed - 4));
+	var ctx = beakerCtx;
+	/* semi-transparent background box */
+	ctx.save();
+	ctx.globalAlpha = alpha;
+	var boxW = 280, boxH = 36;
+	var bx = (BEAKER_W - boxW) / 2;
+	var by = (BEAKER_H - boxH) / 2;
+	ctx.fillStyle = "#223344";
+	ctx.beginPath();
+	ctx.roundRect(bx, by, boxW, boxH, 6);
+	ctx.fill();
+	/* text */
+	ctx.fillStyle = "#ffffff";
+	ctx.font = "bold 13px Arial";
+	ctx.textAlign = "center";
+	ctx.textBaseline = "middle";
+	ctx.fillText(overlayMsg, BEAKER_W / 2, BEAKER_H / 2);
+	ctx.restore();
+}
+
+/* ---- control handlers ---- */
+function doRun() {
+	if (running) return;
+	/* disable sliders during run */
+	setSliderState(true);
+	running = true;
+	lastFrameTime = 0;
+	overlayMsg = "";
+	updateButtons();
+	animId = requestAnimationFrame(frame);
+}
+
+function doPause() {
+	running = false;
+	if (animId) cancelAnimationFrame(animId);
+	updateButtons();
+}
+
+function doReset() {
+	doPause();
+	zeroSinceTime = -1;
+	simTime = 0;
+	lastRecordTime = 0;
+	overlayMsg = "";
+	history = { time: [], starch: [], maltose: [], glucose: [] };
+	particles = [];
+	setSliderState(false);
+	/* populate particles from current slider values and draw initial state */
+	initParticles();
+	drawBeaker();
+	drawGraph();
+	/* reset buttons to neutral (neither running nor paused-from-run) */
+	var runBtn = document.getElementById("esim_run");
+	var pauseBtn = document.getElementById("esim_pause");
+	runBtn.style.background = "#e8e8e8";
+	runBtn.style.fontWeight = "normal";
+	pauseBtn.style.background = "#e8e8e8";
+	pauseBtn.style.fontWeight = "normal";
+}
+
+function setSliderState(disabled) {
+	var types = ["starch", "maltose", "glucose", "amylase", "maltase"];
+	for (var i = 0; i < types.length; i++) {
+		document.getElementById("esim_" + types[i]).disabled = disabled;
+	}
+}
+
+/* ---- slider change handler ---- */
+function onSliderChange(type) {
+	var el = document.getElementById("esim_" + type);
+	var valEl = document.getElementById("esim_val_" + type);
+	if (valEl) valEl.textContent = parseFloat(el.value).toFixed(1);
+	/* if not running, update the beaker preview to match slider values */
+	if (!running) {
+		initParticles();
+		drawBeaker();
+	}
+}
+
+/* ---- init on DOM ready ---- */
+function initEnzymeSim() {
+	var bc = document.getElementById("esim_beaker");
+	var gc = document.getElementById("esim_graph");
+	if (!bc || !gc) return;
+	bc.width = BEAKER_W;
+	bc.height = BEAKER_H;
+	gc.width = GRAPH_W;
+	gc.height = GRAPH_H;
+	beakerCtx = bc.getContext("2d");
+	graphCtx = gc.getContext("2d");
+
+	/* wire slider change events */
+	var types = ["starch", "maltose", "glucose", "amylase", "maltase"];
+	for (var i = 0; i < types.length; i++) {
+		(function(t) {
+			var el = document.getElementById("esim_" + t);
+			if (el) el.addEventListener("input", function() { onSliderChange(t); });
+		})(types[i]);
+	}
+
+	/* wire buttons */
+	document.getElementById("esim_run").addEventListener("click", function() {
+		initParticles();
+		recordData();
+		doRun();
+	});
+	document.getElementById("esim_pause").addEventListener("click", doPause);
+	document.getElementById("esim_reset").addEventListener("click", doReset);
+
+	/* show initial particles from slider values */
+	initParticles();
+	drawBeaker();
+	drawGraph();
+}
+
+if (document.readyState === "loading") {
+	document.addEventListener("DOMContentLoaded", initEnzymeSim);
+} else {
+	initEnzymeSim();
+}
+
+})();
+</script>
+END_HEADER_TEXT
+));
+
+# ----------------------------
+# 2e) Build simulation HTML
+# ----------------------------
+
+$sim_html = '';
+
+# legend
+$sim_html .= '<div class="enzyme-sim-wrap">';
+$sim_html .= '<div class="enzyme-legend">';
+$sim_html .= "<span><span class='eleg-dot' style='background:$color_starch;'></span> Starch</span>";
+$sim_html .= "<span><span class='eleg-dot' style='background:$color_maltose;'></span> Maltose</span>";
+$sim_html .= "<span><span class='eleg-dot' style='background:$color_glucose;'></span> Glucose</span>";
+$sim_html .= "<span><span class='eleg-dot' style='background:$color_amylase;'></span> Amylase (enzyme)</span>";
+$sim_html .= "<span><span class='eleg-dot' style='background:$color_maltase;'></span> Maltase (enzyme)</span>";
+$sim_html .= '</div>';
+
+# canvases
+$sim_html .= '<div class="enzyme-sim-canvases">';
+$sim_html .= '<canvas id="esim_beaker" width="420" height="320">Reaction Beaker</canvas>';
+$sim_html .= '<canvas id="esim_graph" width="420" height="320">Concentration Graph</canvas>';
+$sim_html .= '</div>';
+
+# sliders
+$sim_html .= '<div class="enzyme-sim-controls">';
+
+$sim_html .= '<div class="enzyme-slider-group">';
+$sim_html .= "<label style='color:$color_starch;'>Starch:</label>";
+$sim_html .= '<input type="range" id="esim_starch" class="eslider-starch" min="0" max="5" step="0.5" value="3">';
+$sim_html .= '<span id="esim_val_starch" class="eslider-val">3.0</span> mM';
+$sim_html .= '</div>';
+
+$sim_html .= '<div class="enzyme-slider-group">';
+$sim_html .= "<label style='color:$color_maltose;'>Maltose:</label>";
+$sim_html .= '<input type="range" id="esim_maltose" class="eslider-maltose" min="0" max="5" step="0.5" value="0">';
+$sim_html .= '<span id="esim_val_maltose" class="eslider-val">0.0</span> mM';
+$sim_html .= '</div>';
+
+$sim_html .= '<div class="enzyme-slider-group">';
+$sim_html .= "<label style='color:$color_glucose;'>Glucose:</label>";
+$sim_html .= '<input type="range" id="esim_glucose" class="eslider-glucose" min="0" max="5" step="0.5" value="0">';
+$sim_html .= '<span id="esim_val_glucose" class="eslider-val">0.0</span> mM';
+$sim_html .= '</div>';
+
+$sim_html .= '<div class="enzyme-slider-group">';
+$sim_html .= "<label style='color:$color_amylase;'>Amylase:</label>";
+$sim_html .= '<input type="range" id="esim_amylase" class="eslider-amylase" min="0" max="5" step="0.5" value="2">';
+$sim_html .= '<span id="esim_val_amylase" class="eslider-val">2.0</span> mM';
+$sim_html .= '</div>';
+
+$sim_html .= '<div class="enzyme-slider-group">';
+$sim_html .= "<label style='color:$color_maltase;'>Maltase:</label>";
+$sim_html .= '<input type="range" id="esim_maltase" class="eslider-maltase" min="0" max="5" step="0.5" value="2">';
+$sim_html .= '<span id="esim_val_maltase" class="eslider-val">2.0</span> mM';
+$sim_html .= '</div>';
+
+$sim_html .= '</div>';
+
+# buttons
+$sim_html .= '<div class="enzyme-sim-buttons">';
+$sim_html .= '<button id="esim_run" type="button">Run</button>';
+$sim_html .= '<button id="esim_pause" type="button">Pause</button>';
+$sim_html .= '<button id="esim_reset" type="button">Reset</button>';
+$sim_html .= '</div>';
+$sim_html .= '</div>';
+
+# ----------------------------
+# 2f) Colored reaction descriptions
+# ----------------------------
+$rxn1_desc = "<span style='color:$color_amylase; font-weight:bold;'>Amylase</span>"
+	. " breaks down <span style='color:$color_starch; font-weight:bold;'>starch</span>"
+	. " into <span style='color:$color_maltose; font-weight:bold;'>maltose</span>";
+$rxn1_formula = "<span style='color:$color_starch;'>Starch</span>"
+	. " + <span style='color:$color_amylase;'>Amylase</span>"
+	. " &rarr; 2 <span style='color:$color_maltose;'>Maltose</span>";
+
+$rxn2_desc = "<span style='color:$color_maltase; font-weight:bold;'>Maltase</span>"
+	. " breaks down <span style='color:$color_maltose; font-weight:bold;'>maltose</span>"
+	. " into <span style='color:$color_glucose; font-weight:bold;'>glucose</span>";
+$rxn2_formula = "<span style='color:$color_maltose;'>Maltose</span>"
+	. " + <span style='color:$color_maltase;'>Maltase</span>"
+	. " &rarr; 2 <span style='color:$color_glucose;'>Glucose</span>";
+
+# ----------------------------
+# 3) Statement (PGML)
+# ----------------------------
+BEGIN_PGML
+
+This simulation models a two-step enzymatic pathway:
+
+- [$rxn1_desc]*
+[$rxn1_formula]*
+
+- [$rxn2_desc]*
+[$rxn2_formula]*
+
+Enzymes are shown as circles with a small notch (representing the active site). Substrates and products are shown as filled circles of varying size.
+
+Use the sliders to set starting concentrations (0-5 mM), then click *Run* to start the simulation. Observe how concentrations change over time in the graph.
+
+[$sim_html]*
+
+---
+
+*Answer the following questions about enzyme mechanisms based on what you observe.*
+
+*Question 1.* [$q1_text]*
+
+[_]{$rb1}
+
+*Question 2.* [$q2_text]*
+
+[_]{$rb2}
+
+*Question 3.* [$q3_text]*
+
+[_]{$rb3}
+
+END_PGML
+
+# ----------------------------
+# 4) Solution
+# ----------------------------
+BEGIN_PGML_SOLUTION
+*Explanations:*
+
+*Q1.* [$q1_explain]*
+
+*Q2.* [$q2_explain]*
+
+*Q3.* [$q3_explain]*
+
+*Key concepts:*
+
+- Enzymes are catalysts: they speed up reactions without being consumed.
+- Reaction rate depends on both enzyme and substrate concentration.
+- The final amount of product depends on the starting substrate, not the enzyme amount.
+- Sequential pathways create delays: maltose must be produced before maltase can generate glucose.
+END_PGML_SOLUTION
+
+ENDDOCUMENT();

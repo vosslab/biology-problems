@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-02-26
+
+### Additions and New Features
+- Added [problems/biochemistry-problems/enzymes/enzyme_simulation.pgml](../problems/biochemistry-problems/enzymes/enzyme_simulation.pgml), a WeBWorK PGML problem embedding an interactive canvas-based enzyme kinetics simulation. Models a two-step pathway (amylase + starch -> 2 maltose, maltase + maltose -> 2 glucose) with colored bouncing particles, pac-man enzyme shapes, real-time concentration graph, and 5 color-coded sliders (0-5 mM). Randomly selects 3 of 6 MC questions about enzyme mechanisms (substrate concentration effects, catalysis, sequential pathways). Derived from Biology Simulations (biologysimulations.com), licensed CC BY-NC-SA 4.0. Pure JS with no external dependencies.
+
 ## 2026-02-25
 
 ### Fixes and Maintenance
