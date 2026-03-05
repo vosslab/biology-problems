@@ -9,7 +9,7 @@ replacement_rules:
   aromatic amino acid: '<span style="color: #ff5e00;">aromatic amino acid</span>'
   non-polar branched chain amino acid: '<span style="color: #ffa100;">non-polar branched
     chain amino acid</span>'
-  non-polar amino acid: '<span style="color: #b3b300;">non-polar amino acid</span>'
+  non-polar amino acid: '<span style="color: #6c6c00;">non-polar amino acid</span>'
   small amino acid: '<span style="color: #2fbd0f;">small amino acid</span>'
   polar amino acid: '<span style="color: #009e4c;">polar amino acid</span>'
   positively charged amino acid: '<span style="color: #0d57a5;">positively charged

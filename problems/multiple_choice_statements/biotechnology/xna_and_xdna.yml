@@ -1,7 +1,7 @@
 topic: the structure of xDNA and XNA
 replacement_rules:
   XNA: '<span style="color: #990000;">XNA</span>'
-  xDNA: '<span style="color: #009900;">xDNA</span>'
+  xDNA: '<span style="color: #007a00;">xDNA</span>'
   natural DNA: '<i><span style="color: #000099;">natural DNA</span></i>'
 connection_words: null
 true_statements:

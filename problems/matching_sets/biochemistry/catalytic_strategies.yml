@@ -4,20 +4,20 @@ keys description: mechanisms of enzyme catalysis
 value description: definition
 values description: definitions
 replacement_rules:
-  Acid-base Catalysis: '<span style="color: #e60000;">Acid-base catalysis</span>'
-  BBBBBBBB: '<span style="color: #e65400;">BBBBBBBB</span>'
-  ATP Hydrolysis: '<span style="color: #e69100;">ATP Hydrolysis</span>'
-  DDDDDDDD: '<span style="color: #b3b300;">DDDDDDDD</span>'
-  Catalysis by Approximation: '<span style="color: #59b300;">Catalysis by Approximation</span>'
-  FFFFFFFF: '<span style="color: #009900;">FFFFFFFF</span>'
-  Metal Ion and Electrostatic Catalysis: '<span style="color: #00b38f;">Metal Ion
+  Acid-base Catalysis: '<span style="color: #d40000;">Acid-base catalysis</span>'
+  BBBBBBBB: '<span style="color: #b74300;">BBBBBBBB</span>'
+  ATP Hydrolysis: '<span style="color: #935d00;">ATP Hydrolysis</span>'
+  DDDDDDDD: '<span style="color: #6c6c00;">DDDDDDDD</span>'
+  Catalysis by Approximation: '<span style="color: #3b7600;">Catalysis by Approximation</span>'
+  FFFFFFFF: '<span style="color: #007a00;">FFFFFFFF</span>'
+  Metal Ion and Electrostatic Catalysis: '<span style="color: #00775f;">Metal Ion
     and Electrostatic Catalysis</span>'
-  HHHHHHHH: '<span style="color: #00b3b3;">HHHHHHHH</span>'
-  IIIIIIII: '<span style="color: #0a9bf5;">IIIIIIII</span>'
-  Bond Strain or Distortion: '<span style="color: #0039e6;">Bond Strain or Distortion</span>'
-  KKKKKKKK: '<span style="color: #004d99;">KKKKKKKK</span>'
-  Covalent Catalysis: '<span style="color: #7b12a1;">Covalent Catalysis</span>'
-  Active Site Microenvironment: '<span style="color: #b30077;">Active Site Microenvironment</span>'
+  HHHHHHHH: '<span style="color: #007576;">HHHHHHHH</span>'
+  IIIIIIII: '<span style="color: #076dad;">IIIIIIII</span>'
+  Bond Strain or Distortion: '<span style="color: #003fff;">Bond Strain or Distortion</span>'
+  KKKKKKKK: '<span style="color: #0067cc;">KKKKKKKK</span>'
+  Covalent Catalysis: '<span style="color: #a719db;">Covalent Catalysis</span>'
+  Active Site Microenvironment: '<span style="color: #c80085;">Active Site Microenvironment</span>'
   NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>'
 matching pairs:
   Acid-base Catalysis:

@@ -4,19 +4,19 @@ keys description: stages of meiosis prophase I
 value description: partial description
 values description: partial descriptions
 replacement_rules:
-  AAAAAAAA: '<span style="color: #e60000;">AAAAAAAA</span>'
-  Leptotene: '<span style="color: #e65400;">Leptotene</span>'
-  CCCCCCCC: '<span style="color: #e69100;">CCCCCCCC</span>'
-  DDDDDDDD: '<span style="color: #b3b300;">DDDDDDDD</span>'
-  EEEEEEEE: '<span style="color: #59b300;">EEEEEEEE</span>'
-  FFFFFFFF: '<span style="color: #009900;">FFFFFFFF</span>'
-  Zygotene: '<span style="color: #00b38f;">Zygotene</span>'
-  HHHHHHHH: '<span style="color: #00b3b3;">HHHHHHHH</span>'
-  IIIIIIII: '<span style="color: #0a9bf5;">IIIIIIII</span>'
-  JJJJJJJJ: '<span style="color: #0039e6;">JJJJJJJJ</span>'
-  Pachytene, early or late: '<span style="color: #004d99;">Pachytene, early or late</span>'
-  LLLLLLLL: '<span style="color: #7b12a1;">LLLLLLLL</span>'
-  MMMMMMMM: '<span style="color: #b30077;">MMMMMMMM</span>'
+  AAAAAAAA: '<span style="color: #d40000;">AAAAAAAA</span>'
+  Leptotene: '<span style="color: #b74300;">Leptotene</span>'
+  CCCCCCCC: '<span style="color: #935d00;">CCCCCCCC</span>'
+  DDDDDDDD: '<span style="color: #6c6c00;">DDDDDDDD</span>'
+  EEEEEEEE: '<span style="color: #3b7600;">EEEEEEEE</span>'
+  FFFFFFFF: '<span style="color: #007a00;">FFFFFFFF</span>'
+  Zygotene: '<span style="color: #00775f;">Zygotene</span>'
+  HHHHHHHH: '<span style="color: #007576;">HHHHHHHH</span>'
+  IIIIIIII: '<span style="color: #076dad;">IIIIIIII</span>'
+  JJJJJJJJ: '<span style="color: #003fff;">JJJJJJJJ</span>'
+  Pachytene, early or late: '<span style="color: #0067cc;">Pachytene, early or late</span>'
+  LLLLLLLL: '<span style="color: #a719db;">LLLLLLLL</span>'
+  MMMMMMMM: '<span style="color: #c80085;">MMMMMMMM</span>'
   Diplotene or Diakinesis, combined: '<span style="color: #cc0066;">Diplotene or Diakinesis,
     combined</span>'
 matching pairs:

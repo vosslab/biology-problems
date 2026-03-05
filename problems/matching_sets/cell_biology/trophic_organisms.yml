@@ -4,19 +4,19 @@ keys description: trophic organisms
 value description: definition
 values description: definitions
 replacement_rules:
-  chemoorganoheterotroph: '<span style="color: #e60000;">chemoorganoheterotroph</span>'
-  inorganic: '<span style="color: #e65400;">inorganic</span>'
-  organisms: '<span style="color: #e69100;">organisms</span>'
-  photolithoautotroph: '<span style="color: #b3b300;">photolithoautotroph</span>'
-  light: '<span style="color: #59b300;">light</span>'
-  photoorganoheterotroph: '<span style="color: #009900;">photoorganoheterotroph</span>'
-  ' organic': ' <span style="color: #00b38f;">organic</span>'
-  carbon&nbsp;dioxide: '<span style="color: #00b3b3;">carbon&nbsp;dioxide</span>'
-  chemolithoheterotroph: '<span style="color: #0a9bf5;">chemolithoheterotroph</span>'
-  JJJJJJJJ: '<span style="color: #0039e6;">JJJJJJJJ</span>'
-  carbon&nbsp;source: '<span style="color: #004d99;">carbon&nbsp;source</span>'
-  chemolithoautotroph: '<span style="color: #7b12a1;">chemolithoautotroph</span>'
-  MMMMMMMM: '<span style="color: #b30077;">MMMMMMMM</span>'
+  chemoorganoheterotroph: '<span style="color: #d40000;">chemoorganoheterotroph</span>'
+  inorganic: '<span style="color: #b74300;">inorganic</span>'
+  organisms: '<span style="color: #935d00;">organisms</span>'
+  photolithoautotroph: '<span style="color: #6c6c00;">photolithoautotroph</span>'
+  light: '<span style="color: #3b7600;">light</span>'
+  photoorganoheterotroph: '<span style="color: #007a00;">photoorganoheterotroph</span>'
+  ' organic': ' <span style="color: #00775f;">organic</span>'
+  carbon&nbsp;dioxide: '<span style="color: #007576;">carbon&nbsp;dioxide</span>'
+  chemolithoheterotroph: '<span style="color: #076dad;">chemolithoheterotroph</span>'
+  JJJJJJJJ: '<span style="color: #003fff;">JJJJJJJJ</span>'
+  carbon&nbsp;source: '<span style="color: #0067cc;">carbon&nbsp;source</span>'
+  chemolithoautotroph: '<span style="color: #a719db;">chemolithoautotroph</span>'
+  MMMMMMMM: '<span style="color: #c80085;">MMMMMMMM</span>'
   energy: '<span style="color: #cc0066;">energy</span>'
 matching pairs:
   photolithoautotroph:

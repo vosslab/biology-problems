@@ -474,6 +474,58 @@ $imidazole_protonated = 'C1=C([NH]C=[NH+]1)...';
 
 ---
 
+## Safe Compartment: sort Is Trapped
+
+### Pitfall: `sort` trapped by operation mask
+
+**Problem:** Perl's `sort { $a <=> $b } @array` is blocked in the PG safe compartment.
+
+```perl
+# WRONG - trapped in PG
+@sorted = sort { $a <=> $b } @values;
+```
+
+**Symptom:** `'sort' trapped by operation mask`
+
+**Fix:** Hardcode values in sorted order, or implement a manual insertion sort.
+
+```perl
+# Option 1: Hardcode in order (preferred when values are known)
+@concentrations = (0.5, 1.0, 2.0, 4.0, 8.0, 16.0);
+
+# Option 2: Manual insertion sort
+@sorted = ($values[0]);
+for my $i (1 .. $#values) {
+    my $val = $values[$i];
+    my $pos = 0;
+    $pos++ while ($pos < scalar(@sorted) && $sorted[$pos] < $val);
+    splice(@sorted, $pos, 0, $val);
+}
+```
+
+**Example from this repo:** `michaelis_menten_table_km.pgml` originally tried `sort` and hit this error.
+
+---
+
+## Input Box Width Is CSS-Controlled
+
+### Pitfall: PGML underscore count does not control visual width
+
+**Problem:** The number of underscores in `[__________]{$answer}` sets the HTML `size` attribute, but the WeBWorK renderer CSS (`.codeshard` class) overrides the visual width. Authors cannot control input box width from PGML.
+
+```perl
+# These all render at the SAME visual width:
+[____]{$answer}       # size=4
+[__________]{$answer} # size=10
+[____________________]{$answer}  # size=20
+```
+
+**Why:** The renderer applies CSS rules that set a fixed width on input elements regardless of the `size` attribute. This is a renderer-level constraint, not a bug in the problem code.
+
+**Recommendation:** Use a reasonable underscore count (5-10) for readability in source code. Do not try to fine-tune input width via underscore count -- it has no visual effect.
+
+---
+
 ## Debugging Strategies
 
 ### Strategy 1: Check Line Numbers
@@ -578,6 +630,7 @@ Before committing a new PG file:
 | `'open' trapped by operation mask` | File I/O in PG | Not possible; use PG data macros |
 | Variable shows empty in PGML | `my $var` instead of `$var` | Remove `my` for PGML-visible vars |
 | Random order changes | Hash keys not sorted | Sort keys before selection |
+| `'sort' trapped by operation mask` | `sort { ... }` in PG | Hardcode sorted order or manual insertion sort |
 
 ---
 

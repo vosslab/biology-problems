@@ -50,6 +50,39 @@ This is acceptable for generator output when it improves readability.
 - Avoid parsing HTML beyond the supported subset.
 - Maintain a warning list so failures are visible in generator output logs.
 
+## Per-row styling with cellcss
+
+niceTables supports per-cell `cellcss` for alternating row colors and custom formatting.
+Apply the same CSS string to every cell in a row to get row-level styling.
+
+```perl
+# Build data rows with alternating background colors
+my @data_rows = ();
+for my $row_num (0 .. $#data) {
+    # alternate between pale yellow and white
+    my $bg = ($row_num % 2 == 0) ? '#FFFFDD' : '#FFFFFF';
+    my $row_css = "background:$bg;font-family:courier,monospace;"
+        . "text-align:right;padding:4px 10px;";
+    push @data_rows, [
+        [ $data[$row_num][0], cellcss => $row_css ],
+        [ $data[$row_num][1], cellcss => $row_css ],
+    ];
+}
+
+$table = LayoutTable(
+    [ @header_row, @data_rows ],
+    center => 1,
+    allcellcss => 'padding:4px 10px;',
+);
+```
+
+Key points:
+- `cellcss` is set per cell, not per row. Repeat the same CSS for each cell in a row.
+- This pattern works with both `DataTable()` and `LayoutTable()`.
+- Use `allcellcss` for table-wide defaults and `cellcss` for per-cell overrides.
+
+**Working example:** `michaelis_menten_table_km.pgml`
+
 ## Validation
 - Add a small PGML table probe problem to check:
   - no blocked HTML tags in output

@@ -4,20 +4,20 @@ keys description: hypothesis tests
 value description: description
 values description: descriptions
 replacement_rules:
-  Benchmark Z-test: '<span style="color: #e60000;">Benchmark Z-test</span>'
-  sample size: '<span style="color: #e65400;">sample size</span>'
-  mean: '<span style="color: #e69100;">mean</span>'
-  average: '<span style="color: #e69100;">average</span>'
-  Benchmark T-test: '<span style="color: #b3b300;">Benchmark T-test</span>'
-  population: '<span style="color: #59b300;">population</span>'
-  samples: '<span style="color: #009900;">samples</span>'
-  Two-Sample T-test: '<span style="color: #00b38f;">Two-Sample T-test</span>'
-  standard deviation: '<span style="color: #00b3b3;">standard deviation</span>'
-  variability: '<span style="color: #0a9bf5;">variability</span>'
-  Two-Sample F-test: '<span style="color: #0039e6;">Two-Sample F-test</span>'
-  significantly different: '<span style="color: #004d99;">significantly different</span>'
-  unknown: '<span style="color: #7b12a1;">unknown</span>'
-  Analysis of Variance (ANOVA): '<span style="color: #b30077;">Analysis of Variance
+  Benchmark Z-test: '<span style="color: #d40000;">Benchmark Z-test</span>'
+  sample size: '<span style="color: #b74300;">sample size</span>'
+  mean: '<span style="color: #935d00;">mean</span>'
+  average: '<span style="color: #935d00;">average</span>'
+  Benchmark T-test: '<span style="color: #6c6c00;">Benchmark T-test</span>'
+  population: '<span style="color: #3b7600;">population</span>'
+  samples: '<span style="color: #007a00;">samples</span>'
+  Two-Sample T-test: '<span style="color: #00775f;">Two-Sample T-test</span>'
+  standard deviation: '<span style="color: #007576;">standard deviation</span>'
+  variability: '<span style="color: #076dad;">variability</span>'
+  Two-Sample F-test: '<span style="color: #003fff;">Two-Sample F-test</span>'
+  significantly different: '<span style="color: #0067cc;">significantly different</span>'
+  unknown: '<span style="color: #a719db;">unknown</span>'
+  Analysis of Variance (ANOVA): '<span style="color: #c80085;">Analysis of Variance
     (ANOVA)</span>'
   variances: '<span style="color: #cc0066;">variances</span>'
 matching pairs:

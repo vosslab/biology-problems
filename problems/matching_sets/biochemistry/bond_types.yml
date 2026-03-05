@@ -4,10 +4,10 @@ keys description: types of chemical bonds
 value description: example
 values description: examples
 replacement_rules:
-  hydrogen bond: '<span style="color: #e60000;">hydrogen bond</span>'
-  non-polar covalent bond: '<span style="color: #b3b300;">non-polar covalent bond</span>'
-  ionic bond: '<span style="color: #009900;">ionic bond</span>'
-  polar covalent&nbsp;bond: '<span style="color: #00b3b3;">polar covalent&nbsp;bond</span>'
+  hydrogen bond: '<span style="color: #d40000;">hydrogen bond</span>'
+  non-polar covalent bond: '<span style="color: #6c6c00;">non-polar covalent bond</span>'
+  ionic bond: '<span style="color: #007a00;">ionic bond</span>'
+  polar covalent&nbsp;bond: '<span style="color: #007576;">polar covalent&nbsp;bond</span>'
 matching pairs:
   polar covalent&nbsp;bond:
   - H - O - H (water)

@@ -5,7 +5,7 @@ replacement_rules:
   cells: '<span style="color: #ffa100;">cells</span>'
   'cell ': '<span style="color: #ffa100;">cell </span>'
   hydrophobic: '<span style="color: #ffa100;">hydrophobic</span>'
-  ' proteins': '<span style="color: #b3b300;"> proteins</span>'
+  ' proteins': '<span style="color: #6c6c00;"> proteins</span>'
   substances: '<span style="color: #2fbd0f;">substances</span>'
   transport: '<span style="color: #009e4c;">transport</span>'
   molecules: '<span style="color: #0d57a5;">molecules</span>'

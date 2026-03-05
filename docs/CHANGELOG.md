@@ -1,5 +1,19 @@
 # Changelog
 
+## 2026-03-05
+
+### Additions and New Features
+- Added [tools/contrast_calculator.py](../tools/contrast_calculator.py), a WCAG v2 contrast ratio calculator that implements backward solving via binary search on HSL lightness. Supports single-color check mode, audit mode for the 14-color rainbow palette, and a `--normalize` flag that brightens over-dark colors closer to the target ratio. Uses sRGB gamma correction and the standard relative luminance formula.
+- Added [docs/webwork/COLOR_CONTRAST_ACCESSIBILITY.md](webwork/COLOR_CONTRAST_ACCESSIBILITY.md), a new accessibility reference documenting our 5.5:1 contrast ratio target (exceeding WCAG AA 4.5:1), contrast ratio and relative luminance formulas, WebAIM API usage, an audit of current PGML problem colors with pass/fail status, and recommended replacement colors verified via WebAIM.
+
+### Behavior or Interface Changes
+- Updated the 14-color rainbow `replacement_rules` palette across 47 YAML files in `problems/matching_sets/` and `problems/multiple_choice_statements/` to meet the 5.5:1 WCAG contrast ratio target against white backgrounds. Colors A-I (RED through SKY BLUE) were darkened to meet the minimum; colors J-M (BLUE, NAVY, PURPLE, MAGENTA) were brightened to be more vivid while still passing. Color N (PINK) was already at 5.59:1 and unchanged. Hex replacements computed by `tools/contrast_calculator.py` and spot-checked against WebAIM API. Custom per-file colors outside the standard palette were not modified.
+- Revised [docs/webwork/COLOR_CONTRAST_ACCESSIBILITY.md](webwork/COLOR_CONTRAST_ACCESSIBILITY.md) target from 10:1 to 5.5:1, added full 14-color palette audit table with old-vs-new hex values and ratios, added reference to `tools/contrast_calculator.py`, and documented custom-color follow-up task.
+- Added alternating row color pattern section to [docs/webwork/NICETABLES_TRANSLATION_PLAN.md](webwork/NICETABLES_TRANSLATION_PLAN.md) documenting per-cell `cellcss` usage for row-level styling with `LayoutTable` and `DataTable`.
+- Added two new pitfalls to [docs/webwork/PG_COMMON_PITFALLS.md](webwork/PG_COMMON_PITFALLS.md): `sort` trapped by operation mask (workaround: hardcode sorted order or manual insertion sort), and PGML input box width being CSS-controlled regardless of underscore count. Added `sort` to the quick reference error table.
+- Added [docs/webwork/COLOR_CONTRAST_ACCESSIBILITY.md](webwork/COLOR_CONTRAST_ACCESSIBILITY.md) link to [docs/webwork/INDEX.md](webwork/INDEX.md).
+- Added [problems/biochemistry-problems/enzymes/michaelis_menten_table_km.pgml](../problems/biochemistry-problems/enzymes/michaelis_menten_table_km.pgml), a WeBWorK PGML problem adapted from the Blackboard Python generator `michaelis_menten_table-Km.py`. Presents a Michaelis-Menten data table with substrate concentrations and initial velocities, then asks two questions: (1) numeric entry for V_max from the plateau, and (2) PopUp dropdown for K_M as the [S] at which V_0 = V_max/2. K_M uses a dropdown to avoid decimal-place entry frustration. Uses LayoutTable with alternating row colors and monospace numeric cells. Randomizes V_max (40-200, multiples of 20), concentration scale (two modes), and K_M selection. Includes a hint steering students away from Lineweaver-Burk plots.
+
 ## 2026-02-26
 
 ### Additions and New Features

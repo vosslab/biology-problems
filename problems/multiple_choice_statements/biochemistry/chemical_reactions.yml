@@ -3,7 +3,7 @@ replacement_rules:
   AAAAAAA: '<span style="color: #ff0000;">AAAAAAA</span>'
   exothermic: '<span style="color: #ff5e00;">exothermic</span>'
   BBBBBBB: '<span style="color: #ffa100;">BBBBBBB</span>'
-  CCCCCCC: '<span style="color: #b3b300;">CCCCCCC</span>'
+  CCCCCCC: '<span style="color: #6c6c00;">CCCCCCC</span>'
   physical changes: '<span style="color: #2fbd0f;">physical changes</span>'
   energy: '<span style="color: #009e4c;">energy</span>'
   endothermic: '<span style="color: #0d57a5;">endothermic</span>'

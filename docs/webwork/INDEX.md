@@ -24,4 +24,5 @@ Guides:
 - [RDKIT_MOLECULAR_STRUCTURES.md](RDKIT_MOLECULAR_STRUCTURES.md)
 - [ORDERING_PROBLEMS.md](ORDERING_PROBLEMS.md)
 - [HOW_TO_MAKE_GRAPHS.md](HOW_TO_MAKE_GRAPHS.md)
+- [COLOR_CONTRAST_ACCESSIBILITY.md](COLOR_CONTRAST_ACCESSIBILITY.md)
 - HTML whitelist and blacklist constraints (including blocked `table`, `tr`, `td`, `th` tags) are covered in the matching and author guides.

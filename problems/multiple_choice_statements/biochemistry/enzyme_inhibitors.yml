@@ -4,7 +4,7 @@ replacement_rules:
   ' substrate': ' <span style="color: #ff5e00;">substrate</span>'
   Enzyme$inhibitors: '<span style="color: #ffa100;">Enzyme&nbsp;inhibitors</span>'
   enzyme$inhibitors: '<span style="color: #ffa100;">enzyme&nbsp;inhibitors</span>'
-  enzyme-substrate complex: '<span style="color: #b3b300;">enzyme-substrate complex</span>'
+  enzyme-substrate complex: '<span style="color: #6c6c00;">enzyme-substrate complex</span>'
   Noncompetitive$inhibitors: '<span style="color: #2fbd0f;">Noncompetitive&nbsp;inhibitors</span>'
   product: '<span style="color: #009e4c;">product</span>'
   Uncompetitive$inhibitors: '<span style="color: #0d57a5;">Uncompetitive&nbsp;inhibitors</span>'

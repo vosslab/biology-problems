@@ -4,22 +4,22 @@ keys description: genetic terms
 value description: definition
 values description: definitions
 replacement_rules:
-  haploid: '<span style="color: #e60000;">haploid</span>'
-  'gene ': '<span style="color: #e65400;">gene</span> '
-  locus: '<span style="color: #e69100;">locus</span>'
-  genomes: '<span style="color: #b3b300;">genomes</span>'
-  'genome ': '<span style="color: #b3b300;">genome</span> '
-  single nucleotide polymorphism (SNP): '<span style="color: #59b300;">single nucleotide
+  haploid: '<span style="color: #d40000;">haploid</span>'
+  'gene ': '<span style="color: #b74300;">gene</span> '
+  locus: '<span style="color: #935d00;">locus</span>'
+  genomes: '<span style="color: #6c6c00;">genomes</span>'
+  'genome ': '<span style="color: #6c6c00;">genome</span> '
+  single nucleotide polymorphism (SNP): '<span style="color: #3b7600;">single nucleotide
     polymorphism (SNP)</span>'
-  genetics: '<span style="color: #009900;">genetics</span>'
-  homologous chromosomes: '<span style="color: #00b38f;">homologous chromosomes</span>'
-  diploid: '<span style="color: #00b3b3;">diploid</span>'
-  IIIIIIII: '<span style="color: #0a9bf5;">IIIIIIII</span>'
-  genetic code: '<span style="color: #0039e6;">genetic code</span>'
-  KKKKKKKK: '<span style="color: #004d99;">KKKKKKKK</span>'
-  'genetic term ': '<span style="color: #7b12a1;">genetic term</span> '
-  genetic terms: '<span style="color: #7b12a1;">genetic terms</span>'
-  genomics: '<span style="color: #b30077;">genomics</span>'
+  genetics: '<span style="color: #007a00;">genetics</span>'
+  homologous chromosomes: '<span style="color: #00775f;">homologous chromosomes</span>'
+  diploid: '<span style="color: #007576;">diploid</span>'
+  IIIIIIII: '<span style="color: #076dad;">IIIIIIII</span>'
+  genetic code: '<span style="color: #003fff;">genetic code</span>'
+  KKKKKKKK: '<span style="color: #0067cc;">KKKKKKKK</span>'
+  'genetic term ': '<span style="color: #a719db;">genetic term</span> '
+  genetic terms: '<span style="color: #a719db;">genetic terms</span>'
+  genomics: '<span style="color: #c80085;">genomics</span>'
   NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>'
 matching pairs:
   haploid:

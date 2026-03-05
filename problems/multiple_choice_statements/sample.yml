@@ -4,19 +4,19 @@ topic: the structure of DNA
 connection_words: ~
 
 replacement_rules:
-    AAAAAAAA: '<span style="color: #e60000;">AAAAAAAA</span>' #RED
-    phosphate: '<span style="color: #e65400;">phosphate</span>' #DARK ORANGE
-    CCCCCCCC: '<span style="color: #e69100;">CCCCCCCC</span>' #LIGHT ORANGE
-    covalent bonds: '<span style="color: #b3b300;">covalent bonds</span>' #DARK YELLOW
-    inside: '<span style="color: #59b300;">inside</span>' #LIME GREEN
-    purine bases: '<span style="color: #009900;">purine bases</span>' #GREEN
-    double helix: '<span style="color: #00b38f;">double helix</span>' #TEAL
-    ' parallel': ' <span style="color: #00b3b3;">parallel</span>' #CYAN
-    outside: '<span style="color: #0a9bf5;">outside</span>' #SKY BLUE
-    backbone: '<span style="color: #0039e6;">backbone</span>' #BLUE
-    hydrogen bonds: '<span style="color: #004d99;">hydrogen bonds</span>' #NAVY
-    DNA: '<span style="color: #7b12a1;"><Strong>DNA</Strong></span>' #PURPLE
-    pyrimidine bases: '<span style="color: #b30077;">pyrimidine bases</span>' #MAGENTA
+    AAAAAAAA: '<span style="color: #d40000;">AAAAAAAA</span>' #RED
+    phosphate: '<span style="color: #b74300;">phosphate</span>' #DARK ORANGE
+    CCCCCCCC: '<span style="color: #935d00;">CCCCCCCC</span>' #LIGHT ORANGE
+    covalent bonds: '<span style="color: #6c6c00;">covalent bonds</span>' #DARK YELLOW
+    inside: '<span style="color: #3b7600;">inside</span>' #LIME GREEN
+    purine bases: '<span style="color: #007a00;">purine bases</span>' #GREEN
+    double helix: '<span style="color: #00775f;">double helix</span>' #TEAL
+    ' parallel': ' <span style="color: #007576;">parallel</span>' #CYAN
+    outside: '<span style="color: #076dad;">outside</span>' #SKY BLUE
+    backbone: '<span style="color: #003fff;">backbone</span>' #BLUE
+    hydrogen bonds: '<span style="color: #0067cc;">hydrogen bonds</span>' #NAVY
+    DNA: '<span style="color: #a719db;"><Strong>DNA</Strong></span>' #PURPLE
+    pyrimidine bases: '<span style="color: #c80085;">pyrimidine bases</span>' #MAGENTA
     anti-parallel: '<span style="color: #cc0066;">anti-parallel</span>' #PINK
 
 true_statements:

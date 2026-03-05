@@ -4,19 +4,19 @@ keys description: cell disruption techniques
 value description: description
 values description: descriptions
 replacement_rules:
-  cells: '<span style="color: #e60000;">cells</span>'
-  'cell ': '<span style="color: #e65400;">cell</span> '
-  Enzymatic Method: '<span style="color: #e69100;">Enzymatic Method</span>'
-  Bead-beating: '<span style="color: #b3b300;">Bead-beating</span>'
-  Sonication: '<span style="color: #59b300;">Sonication</span>'
-  Freeze-thaw: '<span style="color: #009900;">Freeze-thaw</span>'
-  Mortar &amp; Pestle: '<span style="color: #00b38f;">Mortar &amp; Pestle</span>'
-  Dounce Homogenizer: '<span style="color: #00b3b3;">Dounce Homogenizer</span>'
-  Mechanical Homogenizer: '<span style="color: #0a9bf5;">Mechanical Homogenizer</span>'
-  French Press: '<span style="color: #0039e6;">French Press</span>'
-  Microfluidizer: '<span style="color: #004d99;">Microfluidizer</span>'
-  High-throughput Homogenizer: '<span style="color: #7b12a1;">High-throughput Homogenizer</span>'
-  MMMMMMMM: '<span style="color: #b30077;">MMMMMMMM</span>'
+  cells: '<span style="color: #d40000;">cells</span>'
+  'cell ': '<span style="color: #b74300;">cell</span> '
+  Enzymatic Method: '<span style="color: #935d00;">Enzymatic Method</span>'
+  Bead-beating: '<span style="color: #6c6c00;">Bead-beating</span>'
+  Sonication: '<span style="color: #3b7600;">Sonication</span>'
+  Freeze-thaw: '<span style="color: #007a00;">Freeze-thaw</span>'
+  Mortar &amp; Pestle: '<span style="color: #00775f;">Mortar &amp; Pestle</span>'
+  Dounce Homogenizer: '<span style="color: #007576;">Dounce Homogenizer</span>'
+  Mechanical Homogenizer: '<span style="color: #076dad;">Mechanical Homogenizer</span>'
+  French Press: '<span style="color: #003fff;">French Press</span>'
+  Microfluidizer: '<span style="color: #0067cc;">Microfluidizer</span>'
+  High-throughput Homogenizer: '<span style="color: #a719db;">High-throughput Homogenizer</span>'
+  MMMMMMMM: '<span style="color: #c80085;">MMMMMMMM</span>'
   NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>'
 matching pairs:
   Enzymatic Method:

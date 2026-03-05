@@ -3,8 +3,8 @@ replacement_rules:
   enzymes: <i>enzymes</i>
   free energy: '<span style="color: #006600;">free energy</span>'
   activation energy: '<span style="color: #660000;">activation energy</span>'
-  increase: '<span style="color: #009900;">increase</span>'
-  raise: '<span style="color: #009900;">raise</span>'
+  increase: '<span style="color: #007a00;">increase</span>'
+  raise: '<span style="color: #007a00;">raise</span>'
   decrease: '<span style="color: #990000;">decrease</span>'
   reduce: '<span style="color: #990000;">reduce</span>'
   lower: '<span style="color: #990000;">lower</span>'

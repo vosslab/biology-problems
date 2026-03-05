@@ -8,19 +8,19 @@ override_question_true: ~
 override_question_false: ~
 
 replacement_rules:
-    AAAAAAAA: '<span style="color: #e60000;">AAAAAAAA</span>' #RED
-    BBBBBBBB: '<span style="color: #e65400;">BBBBBBBB</span>' #DARK ORANGE
-    CCCCCCCC: '<span style="color: #e69100;">CCCCCCCC</span>' #LIGHT ORANGE
-    DDDDDDDD: '<span style="color: #b3b300;">DDDDDDDD</span>' #DARK YELLOW
-    EEEEEEEE: '<span style="color: #59b300;">EEEEEEEE</span>' #LIME GREEN
-    FFFFFFFF: '<span style="color: #009900;">FFFFFFFF</span>' #GREEN
-    GGGGGGGG: '<span style="color: #00b38f;">GGGGGGGG</span>' #TEAL
-    HHHHHHHH: '<span style="color: #00b3b3;">HHHHHHHH</span>' #CYAN
-    IIIIIIII: '<span style="color: #0a9bf5;">IIIIIIII</span>' #SKY BLUE
-    JJJJJJJJ: '<span style="color: #0039e6;">JJJJJJJJ</span>' #BLUE
-    KKKKKKKK: '<span style="color: #004d99;">KKKKKKKK</span>' #NAVY
-    LLLLLLLL: '<span style="color: #7b12a1;">LLLLLLLL</span>' #PURPLE
-    MMMMMMMM: '<span style="color: #b30077;">MMMMMMMM</span>' #MAGENTA
+    AAAAAAAA: '<span style="color: #d40000;">AAAAAAAA</span>' #RED
+    BBBBBBBB: '<span style="color: #b74300;">BBBBBBBB</span>' #DARK ORANGE
+    CCCCCCCC: '<span style="color: #935d00;">CCCCCCCC</span>' #LIGHT ORANGE
+    DDDDDDDD: '<span style="color: #6c6c00;">DDDDDDDD</span>' #DARK YELLOW
+    EEEEEEEE: '<span style="color: #3b7600;">EEEEEEEE</span>' #LIME GREEN
+    FFFFFFFF: '<span style="color: #007a00;">FFFFFFFF</span>' #GREEN
+    GGGGGGGG: '<span style="color: #00775f;">GGGGGGGG</span>' #TEAL
+    HHHHHHHH: '<span style="color: #007576;">HHHHHHHH</span>' #CYAN
+    IIIIIIII: '<span style="color: #076dad;">IIIIIIII</span>' #SKY BLUE
+    JJJJJJJJ: '<span style="color: #003fff;">JJJJJJJJ</span>' #BLUE
+    KKKKKKKK: '<span style="color: #0067cc;">KKKKKKKK</span>' #NAVY
+    LLLLLLLL: '<span style="color: #a719db;">LLLLLLLL</span>' #PURPLE
+    MMMMMMMM: '<span style="color: #c80085;">MMMMMMMM</span>' #MAGENTA
     NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
 
 connection_words: ~

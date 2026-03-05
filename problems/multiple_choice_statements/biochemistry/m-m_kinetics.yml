@@ -4,7 +4,7 @@ replacement_rules:
   enzyme-product complex [EP]: '<span style="color: #ff5e00;">enzyme-product complex
     [EP]</span>'
   CCCCCCC: '<span style="color: #ffa100;">CCCCCCC</span>'
-  DDDDDDD: '<span style="color: #b3b300;">DDDDDDD</span>'
+  DDDDDDD: '<span style="color: #6c6c00;">DDDDDDD</span>'
   enzyme-substrate complex [ES]: '<span style="color: #2fbd0f;">enzyme-substrate complex
     [ES]</span>'
   proportional: '<span style="color: #009e4c;"><i>proportional</i></span>'

@@ -3,7 +3,7 @@ replacement_rules:
   plasma&nbsp;membrane: '<span style="color: #ff0000;">plasma&nbsp;membrane</span>'
   structure: '<span style="color: #ff5e00;">structure</span>'
   rigid: '<span style="color: #ffa100;">rigid</span>'
-  liquid: '<span style="color: #b3b300;">liquid</span>'
+  liquid: '<span style="color: #6c6c00;">liquid</span>'
   flexible: '<span style="color: #2fbd0f;">flexible</span>'
   cell: '<span style="color: #009e4c;">cell</span>'
   proteins: '<span style="color: #0d57a5;">proteins</span>'
