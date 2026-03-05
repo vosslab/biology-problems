@@ -1,0 +1,267 @@
+## TITLE('Biochemistry: Optimal Enzyme Activity Type 3')
+## DESCRIPTION
+## Students examine a table of four enzymes with temperature ranges and
+## optimum pH values. Given a specific enzyme, they determine under which
+## set of conditions the enzyme would be most active.
+## ENDDESCRIPTION
+## KEYWORDS('enzyme','temperature','pH','optimal conditions','activity')
+## DBsubject('Biochemistry')
+## DBchapter('Enzymes')
+## DBsection('Activity')
+## Level(3)
+## Date('2026-03-05')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	'PGstandard.pl',
+	'MathObjects.pl',
+	'PGML.pl',
+	'niceTables.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl',
+);
+
+$showPartialCorrectAnswers = 0;
+
+# ----------------------------
+# 2) Setup
+# ----------------------------
+
+# ----------------------------
+# 2a) Randomization
+# ----------------------------
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+
+# ----------------------------
+# 2b) Generate enzyme data
+# ----------------------------
+my @pH_pool = (1 .. 10);
+my @temp_pool = ();
+for (my $t = 15; $t <= 75; $t += 5) {
+	push @temp_pool, $t;
+}
+my @temp_jumps = (8, 10, 10, 12, 15, 18);
+
+my @enzyme_names = ('A', 'B', 'C', 'D');
+my @enzymes = ();
+
+for my $ename (@enzyme_names) {
+	# shuffle and pick a pH value
+	for (my $i = $#pH_pool; $i > 0; $i--) {
+		my $j = $local_random->random(0, $i, 1);
+		@pH_pool[$i, $j] = @pH_pool[$j, $i];
+	}
+	my $pH = pop @pH_pool;
+	@pH_pool = grep { $_ != $pH + 1 && $_ != $pH - 1 } @pH_pool;
+
+	# shuffle temp pool and pick a start temp
+	for (my $i = $#temp_pool; $i > 0; $i--) {
+		my $j = $local_random->random(0, $i, 1);
+		@temp_pool[$i, $j] = @temp_pool[$j, $i];
+	}
+
+	# shuffle temp jumps
+	for (my $i = $#temp_jumps; $i > 0; $i--) {
+		my $j = $local_random->random(0, $i, 1);
+		@temp_jumps[$i, $j] = @temp_jumps[$j, $i];
+	}
+
+	my $temp1;
+	my $jump;
+	if (scalar(@temp_pool) > 0 && scalar(@temp_jumps) > 0) {
+		$temp1 = pop @temp_pool;
+		$jump = pop @temp_jumps;
+	} else {
+		$temp1 = 10;
+		$jump = 7;
+	}
+	my $temp2 = $temp1 + $jump;
+	$temp2 = 85 if $temp2 > 85;
+
+	for (my $r = $temp1 - 5; $r <= $temp2 + 1; $r += 5) {
+		@temp_pool = grep { $_ != $r } @temp_pool;
+	}
+
+	push @enzymes, {
+		name => $ename,
+		optim_pH => $pH,
+		temp1 => $temp1,
+		temp2 => $temp2,
+	};
+}
+
+# ----------------------------
+# 2c) Build enzyme table with niceTables
+# ----------------------------
+my $hdr_css = 'font-weight:700;background:#cccccc;color:#000;'
+	. 'border-bottom:2px solid #333;font-size:11px;padding:5px;';
+my $mono_css = 'font-family:courier,monospace;';
+
+my @data_rows = ();
+push @data_rows, [
+	[ 'Enzyme', cellcss => $hdr_css ],
+	[ 'Effective Temperature<br/>Range (&deg;C)', cellcss => $hdr_css ],
+	[ 'Optimum pH', cellcss => $hdr_css ],
+];
+
+for (my $i = 0; $i < 4; $i++) {
+	my $e = $enzymes[$i];
+	my $bg = ($i % 2 == 0) ? '#FFFFDD' : '#FFFFFF';
+	my $row_css = "background:$bg;${mono_css}"
+		. 'text-align:center;padding:4px 10px;';
+	my $temp_range = "$e->{temp1}&ndash;$e->{temp2}";
+	my $pH_str = sprintf('%.1f', $e->{optim_pH});
+	push @data_rows, [
+		[ $e->{name}, cellcss => $row_css ],
+		[ $temp_range, cellcss => $row_css ],
+		[ "$pH_str&nbsp;", cellcss => $row_css ],
+	];
+}
+
+$enzyme_table = LayoutTable(
+	[@data_rows],
+	center => 1,
+	tablecss => 'border-collapse:collapse;border:1px solid #000;font-size:14px;',
+	allcellcss => 'border:1px solid #000;padding:6px 10px;text-align:center;',
+);
+
+# ----------------------------
+# 2d) Pick a random enzyme
+# ----------------------------
+my $chosen_idx = $local_random->random(0, 3, 1);
+my $chosen = $enzymes[$chosen_idx];
+
+# ----------------------------
+# 2e) Generate correct answer: temp in range, pH near optimum
+# ----------------------------
+my $good_pH_offset = $local_random->random(-2, 2, 1);
+my $good_pH = $chosen->{optim_pH} + $good_pH_offset / 5.0;
+my $good_temp = $chosen->{temp1} + 1
+	+ $local_random->random(0, $chosen->{temp2} - $chosen->{temp1} - 2, 1);
+
+my $answer_text = "The temperature is ${good_temp}&deg;C and the pH is "
+	. sprintf('%.1f', $good_pH) . ".";
+
+# ----------------------------
+# 2f) Generate wrong choices (3x3 grid minus center = 8 options)
+# ----------------------------
+my @values = (-1, 0, 1);
+my @wrong_choices = ();
+
+for my $pH_mult (@values) {
+	for my $temp_mult (@values) {
+		# skip the center cell (correct answer)
+		next if ($pH_mult == 0 && $temp_mult == 0);
+
+		my $w_temp;
+		if ($temp_mult == -1) {
+			$w_temp = $chosen->{temp1}
+				- 6 - $local_random->random(0, 9, 1);
+		} elsif ($temp_mult == 1) {
+			$w_temp = $chosen->{temp2}
+				+ 6 + $local_random->random(0, 9, 1);
+		} else {
+			$w_temp = $chosen->{temp1} + 1
+				+ $local_random->random(0, $chosen->{temp2} - $chosen->{temp1} - 2, 1);
+		}
+
+		my $w_pH;
+		if ($pH_mult == 0) {
+			my $w_pH_off = $local_random->random(-2, 2, 1);
+			$w_pH = $chosen->{optim_pH} + $w_pH_off / 5.0;
+		} else {
+			my $w_pH_shift = 3 + $local_random->random(0, 2, 1);
+			$w_pH = $chosen->{optim_pH} + $pH_mult * $w_pH_shift / 2.0;
+		}
+
+		my $choice = "The temperature is ${w_temp}&deg;C and the pH is "
+			. sprintf('%.1f', $w_pH) . ".";
+		push @wrong_choices, $choice;
+	}
+}
+
+# shuffle wrong choices and take 4
+for (my $i = $#wrong_choices; $i > 0; $i--) {
+	my $j = $local_random->random(0, $i, 1);
+	@wrong_choices[$i, $j] = @wrong_choices[$j, $i];
+}
+my @selected_wrong = @wrong_choices[0 .. 3];
+
+# combine with correct answer
+my @all_choices = (@selected_wrong, $answer_text);
+# shuffle all choices
+for (my $i = $#all_choices; $i > 0; $i--) {
+	my $j = $local_random->random(0, $i, 1);
+	@all_choices[$i, $j] = @all_choices[$j, $i];
+}
+
+$radio = RadioButtons(
+	[@all_choices],
+	$answer_text,
+	labels        => 'ABC',
+	displayLabels => 1,
+	separator     => '<div style="margin-bottom: 0.5em;"></div>',
+);
+
+# ----------------------------
+# 2g) Solution text variables (HTML for PGML passthrough)
+# ----------------------------
+$sol_enzyme = $chosen->{name};
+$sol_temp_html = "$chosen->{temp1}&ndash;$chosen->{temp2} &deg;C";
+$sol_pH_html = sprintf('%.1f', $chosen->{optim_pH});
+$most_active_html = '<span style="color:DarkGreen;font-weight:700;">most active</span>';
+$question_html = "Under which one of the following conditions would"
+	. " <b>enzyme $chosen->{name}</b> be ${most_active_html}?";
+$sol_explain_html = "An enzyme is most active when the temperature is within"
+	. " its effective range and the pH is close to its optimum."
+	. " The correct answer provides conditions where the temperature"
+	. " falls within $chosen->{temp1}&ndash;$chosen->{temp2} &deg;C"
+	. " and the pH is near " . sprintf('%.1f', $chosen->{optim_pH}) . ".";
+
+# ----------------------------
+# 3) Statement (PGML)
+# ----------------------------
+BEGIN_PGML
+
+*Optimal Enzyme Activity*
+
+The following table shows the effective temperature ranges and optimum pH values for four different enzymes.
+
+[@ $enzyme_table @]*
+
+[$question_html]*
+
+[_]{$radio}
+
+END_PGML
+
+# ----------------------------
+# 4) Solution
+# ----------------------------
+BEGIN_PGML_SOLUTION
+
+*Enzyme [$sol_enzyme]:*
+
+- Effective temperature range: [$sol_temp_html]*
+- Optimum pH: [$sol_pH_html]*
+
+[$sol_explain_html]*
+
+The wrong answers each have either the temperature outside the effective range, the pH far from the optimum, or both.
+
+END_PGML_SOLUTION
+
+ENDDOCUMENT();

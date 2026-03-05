@@ -1,0 +1,232 @@
+## TITLE('Biochemistry: Optimal Enzyme Activity Type 2')
+## DESCRIPTION
+## Students examine a table of four enzymes with temperature ranges and
+## optimum pH values. Given specific temperature and pH conditions, they
+## determine which enzyme would be most active.
+## ENDDESCRIPTION
+## KEYWORDS('enzyme','temperature','pH','optimal conditions','activity')
+## DBsubject('Biochemistry')
+## DBchapter('Enzymes')
+## DBsection('Activity')
+## Level(3)
+## Date('2026-03-05')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	'PGstandard.pl',
+	'MathObjects.pl',
+	'PGML.pl',
+	'niceTables.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl',
+);
+
+$showPartialCorrectAnswers = 0;
+
+# ----------------------------
+# 2) Setup
+# ----------------------------
+
+# ----------------------------
+# 2a) Randomization
+# ----------------------------
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+
+# ----------------------------
+# 2b) Generate enzyme data
+# ----------------------------
+# pH pool: integers 1 through 10
+my @pH_pool = (1 .. 10);
+# temp pool: 15 to 75 by 5
+my @temp_pool = ();
+for (my $t = 15; $t <= 75; $t += 5) {
+	push @temp_pool, $t;
+}
+my @temp_jumps = (8, 10, 10, 12, 15, 18);
+
+my @enzyme_names = ('A', 'B', 'C', 'D');
+my @enzymes = ();
+
+for my $ename (@enzyme_names) {
+	# shuffle and pick a pH value
+	for (my $i = $#pH_pool; $i > 0; $i--) {
+		my $j = $local_random->random(0, $i, 1);
+		@pH_pool[$i, $j] = @pH_pool[$j, $i];
+	}
+	my $pH = pop @pH_pool;
+	# remove neighbors from pool
+	@pH_pool = grep { $_ != $pH + 1 && $_ != $pH - 1 } @pH_pool;
+
+	# shuffle temp pool and pick a start temp
+	for (my $i = $#temp_pool; $i > 0; $i--) {
+		my $j = $local_random->random(0, $i, 1);
+		@temp_pool[$i, $j] = @temp_pool[$j, $i];
+	}
+
+	# shuffle temp jumps
+	for (my $i = $#temp_jumps; $i > 0; $i--) {
+		my $j = $local_random->random(0, $i, 1);
+		@temp_jumps[$i, $j] = @temp_jumps[$j, $i];
+	}
+
+	my $temp1;
+	my $jump;
+	if (scalar(@temp_pool) > 0 && scalar(@temp_jumps) > 0) {
+		$temp1 = pop @temp_pool;
+		$jump = pop @temp_jumps;
+	} else {
+		# fallback for enzyme D
+		$temp1 = 10;
+		$jump = 7;
+	}
+	my $temp2 = $temp1 + $jump;
+	$temp2 = 85 if $temp2 > 85;
+
+	# remove overlapping temps from pool
+	for (my $r = $temp1 - 5; $r <= $temp2 + 1; $r += 5) {
+		@temp_pool = grep { $_ != $r } @temp_pool;
+	}
+
+	push @enzymes, {
+		name => $ename,
+		optim_pH => $pH,
+		temp1 => $temp1,
+		temp2 => $temp2,
+	};
+}
+
+# ----------------------------
+# 2c) Build enzyme table with niceTables
+# ----------------------------
+my $hdr_css = 'font-weight:700;background:#cccccc;color:#000;'
+	. 'border-bottom:2px solid #333;font-size:11px;padding:5px;';
+my $mono_css = 'font-family:courier,monospace;';
+
+my @data_rows = ();
+# header row
+push @data_rows, [
+	[ 'Enzyme', cellcss => $hdr_css ],
+	[ 'Effective Temperature<br/>Range (&deg;C)', cellcss => $hdr_css ],
+	[ 'Optimum pH', cellcss => $hdr_css ],
+];
+
+for (my $i = 0; $i < 4; $i++) {
+	my $e = $enzymes[$i];
+	my $bg = ($i % 2 == 0) ? '#FFFFDD' : '#FFFFFF';
+	my $row_css = "background:$bg;${mono_css}"
+		. 'text-align:center;padding:4px 10px;';
+	my $temp_range = "$e->{temp1}&ndash;$e->{temp2}";
+	my $pH_str = sprintf('%.1f', $e->{optim_pH});
+	push @data_rows, [
+		[ $e->{name}, cellcss => $row_css ],
+		[ $temp_range, cellcss => $row_css ],
+		[ "$pH_str&nbsp;", cellcss => $row_css ],
+	];
+}
+
+$enzyme_table = LayoutTable(
+	[@data_rows],
+	center => 1,
+	tablecss => 'border-collapse:collapse;border:1px solid #000;font-size:14px;',
+	allcellcss => 'border:1px solid #000;padding:6px 10px;text-align:center;',
+);
+
+# ----------------------------
+# 2d) Pick a random enzyme and generate conditions
+# ----------------------------
+my $chosen_idx = $local_random->random(0, 3, 1);
+my $chosen = $enzymes[$chosen_idx];
+
+# temperature within effective range
+my $cond_temp = $chosen->{temp1} + 1
+	+ $local_random->random(0, $chosen->{temp2} - $chosen->{temp1} - 2, 1);
+# pH near optimum with small offset
+my $pH_offset_raw = $local_random->random(-2, 2, 1);
+my $cond_pH = $chosen->{optim_pH} + $pH_offset_raw / 5.0;
+my $cond_pH_str = sprintf('%.1f', $cond_pH);
+
+$answer_name = "Enzyme $chosen->{name}";
+
+# build HTML text for PGML passthrough (entities need [$var]*)
+$condition_html = "The temperature is ${cond_temp}&deg;C and the pH is ${cond_pH_str}.";
+
+# ----------------------------
+# 2e) Build choices (the four enzymes)
+# ----------------------------
+my @choices = ();
+for my $e (@enzymes) {
+	push @choices, "Enzyme $e->{name}";
+}
+
+$radio = RadioButtons(
+	[@choices],
+	$answer_name,
+	labels        => 'ABC',
+	displayLabels => 1,
+	separator     => '<div style="margin-bottom: 0.5em;"></div>',
+);
+
+# ----------------------------
+# 2f) Solution text (HTML for PGML passthrough)
+# ----------------------------
+$sol_enzyme = $chosen->{name};
+$sol_temp_html = "$chosen->{temp1}&ndash;$chosen->{temp2} &deg;C";
+$sol_pH_html = sprintf('%.1f', $chosen->{optim_pH});
+$sol_condition_html = "The given conditions are ${cond_temp}&deg;C and pH ${cond_pH_str}.";
+$sol_explain_html = "The temperature ${cond_temp}&deg;C falls within enzyme"
+	. " $chosen->{name}'s effective range of $chosen->{temp1}&ndash;$chosen->{temp2}"
+	. " &deg;C, and the pH ${cond_pH_str} is very close to enzyme"
+	. " $chosen->{name}'s optimum pH of ${sol_pH_html}."
+	. " No other enzyme has both conditions within its optimal parameters.";
+
+# ----------------------------
+# 3) Statement (PGML)
+# ----------------------------
+BEGIN_PGML
+
+*Optimal Enzyme Activity*
+
+The following table shows the effective temperature ranges and optimum pH values for four different enzymes.
+
+[@ $enzyme_table @]*
+
+Which one of the enzymes would be *most active* under the following conditions?
+
+[$condition_html]*
+
+[_]{$radio}
+
+END_PGML
+
+# ----------------------------
+# 4) Solution
+# ----------------------------
+BEGIN_PGML_SOLUTION
+
+[$sol_condition_html]*
+
+Enzyme [$sol_enzyme]:
+
+- Effective temperature range: [$sol_temp_html]*
+- Optimum pH: [$sol_pH_html]*
+
+[$sol_explain_html]*
+
+Therefore, Enzyme [$sol_enzyme] would be the most active under these conditions.
+
+END_PGML_SOLUTION
+
+ENDDOCUMENT();

@@ -4,19 +4,19 @@ import sys
 # Define the set of letters to be used and their associated colors
 all_letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 all_colors = [
-	'#e60000', #RED
-	'#e65400', #DARK ORANGE
-	'#e69100', #LIGHT ORANGE
-	'#b3b300', #DARK YELLOW
-	'#59b300', #LIME GREEN
-	'#009900', #GREEN
-	'#00b38f', #TEAL
-	'#00b3b3', #CYAN
-	'#0a9bf5', #SKY BLUE
-	'#0039e6', #BLUE
-	'#004d99', #NAVY
-	'#7b12a1', #PURPLE
-	'#b30077', #MAGENTA
+	'#d40000', #RED
+	'#b74300', #DARK ORANGE
+	'#935d00', #LIGHT ORANGE
+	'#6c6c00', #DARK YELLOW
+	'#3b7600', #LIME GREEN
+	'#007a00', #GREEN
+	'#00775f', #TEAL
+	'#007576', #CYAN
+	'#076dad', #SKY BLUE
+	'#003fff', #BLUE
+	'#0067cc', #NAVY
+	'#a719db', #PURPLE
+	'#c80085', #MAGENTA
 	'#cc0066', #PINK
 ]
 

@@ -1,0 +1,203 @@
+## TITLE('Biochemistry: Allosteric Enzyme in a Metabolic Pathway')
+## DESCRIPTION
+## Students examine a colored metabolic pathway diagram and identify which
+## enzyme is most likely allosteric based on feedback inhibition by the
+## end product targeting the first committed step.
+## ENDDESCRIPTION
+## KEYWORDS('metabolic pathway','allosteric','feedback inhibition','enzyme regulation')
+## DBsubject('Biochemistry')
+## DBchapter('Enzymes')
+## DBsection('Regulation')
+## Level(2)
+## Date('2026-03-05')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	'PGstandard.pl',
+	'MathObjects.pl',
+	'PGML.pl',
+	'niceTables.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl',
+);
+
+$showPartialCorrectAnswers = 0;
+
+# ----------------------------
+# 2) Setup
+# ----------------------------
+
+# ----------------------------
+# 2a) Randomization
+# ----------------------------
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+
+# Number of molecules in the pathway (4-7)
+my $num_letters = $local_random->random(4, 7, 1);
+
+# Shift rotates which letters and colors are used (0-13)
+my $shift = $local_random->random(0, 13, 1);
+
+# ----------------------------
+# 2b) Color and letter palette (ported from metaboliclib.py)
+# ----------------------------
+my @all_letters = ('A'..'Z');
+my @all_colors = (
+	'#d40000', '#b74300', '#935d00', '#6c6c00', '#3b7600',
+	'#007a00', '#00775f', '#007576', '#076dad', '#003fff',
+	'#0067cc', '#a719db', '#c80085', '#cc0066',
+);
+
+# Compute letter and color slices based on shift
+my $letter_index = $shift % (scalar(@all_letters) - $num_letters);
+my @letters = @all_letters[$letter_index .. $letter_index + $num_letters - 1];
+
+# Double the color array to handle rollover
+my @double_colors = (@all_colors, @all_colors);
+my $color_index = $shift % scalar(@all_colors);
+my @colors = @double_colors[$color_index .. $color_index + $num_letters - 1];
+
+# Build HTML-formatted colored bold letters
+my @html_letters = ();
+for my $i (0 .. $num_letters - 1) {
+	my $html = "<strong><span style='color: $colors[$i]'>$letters[$i]</span></strong>";
+	push @html_letters, $html;
+}
+
+# ----------------------------
+# 2c) Build pathway LayoutTable
+# ----------------------------
+# Row 1: enzyme labels above arrows
+my @enzyme_row = ();
+for my $i (0 .. $num_letters - 2) {
+	# empty cell above molecule
+	push @enzyme_row, ['', cellcss => 'border:0;padding:2px 6px;'];
+	# enzyme label above arrow
+	my $enzyme_num = $i + 1;
+	push @enzyme_row, ["enzyme $enzyme_num",
+		cellcss => 'border:0;font-size:75%;text-align:center;vertical-align:bottom;padding:2px 6px;'];
+}
+# empty cell above last molecule
+push @enzyme_row, ['', cellcss => 'border:0;padding:2px 6px;'];
+
+# Row 2: molecules and arrows
+my @mol_row = ();
+for my $i (0 .. $num_letters - 2) {
+	push @mol_row, [$html_letters[$i],
+		cellcss => 'border:0;font-size:150%;text-align:center;padding:0 6px;'];
+	push @mol_row, ['&rarr;',
+		cellcss => 'border:0;text-align:center;padding:0 6px;'];
+}
+push @mol_row, [$html_letters[$num_letters - 1],
+	cellcss => 'border:0;font-size:150%;text-align:center;padding:0 6px;'];
+
+$pathway_table = LayoutTable(
+	[[@enzyme_row], [@mol_row]],
+	center => 1,
+	tablecss => 'border-collapse:collapse;border:0;',
+	allcellcss => 'border:0;padding:4px;',
+);
+
+# ----------------------------
+# 2d) Package-level scalars for PGML references
+# ----------------------------
+$first_molecule = $html_letters[0];
+$second_molecule = $html_letters[1];
+$end_product = $html_letters[$num_letters - 1];
+
+# ----------------------------
+# 2e) Build RadioButtons choices
+# ----------------------------
+my $num_enzymes = $num_letters - 1;
+
+# Build choice strings with colored letters
+my @choices = ();
+for my $i (0 .. $num_enzymes - 1) {
+	my $enzyme_num = $i + 1;
+	my $choice_text = "<b>enzyme $enzyme_num</b> "
+		. "that catalyzes the reaction from substrate $html_letters[$i] "
+		. "to product $html_letters[$i + 1]";
+	push @choices, $choice_text;
+}
+
+# Save correct answer before shuffling
+my $correct_answer = $choices[0];
+
+# Fisher-Yates shuffle
+for my $i (reverse 1 .. $#choices) {
+	my $j = $local_random->random(0, $i, 1);
+	@choices[$i, $j] = @choices[$j, $i];
+}
+
+$radio = RadioButtons(
+	[[@choices]],
+	$correct_answer,
+	separator => '<br/>',
+);
+
+# ----------------------------
+# 3) Statement (PGML)
+# ----------------------------
+BEGIN_PGML
+
+*Allosteric Enzyme in a Metabolic Pathway*
+
+A series of enzymes catalyze the reactions in the following metabolic pathway:
+
+[@ $pathway_table @]*
+
+In a typical metabolic pathway, an allosteric enzyme is sensitive to changes
+in concentration of specific molecules and can regulate the rate of reactions.
+
+*Which one of the enzymes in the metabolic pathway above is most likely to be
+an allosteric enzyme?*
+
+[@ $radio->buttons() @]*
+
+END_PGML
+
+ANS($radio->cmp());
+
+# ----------------------------
+# 4) Hint
+# ----------------------------
+BEGIN_PGML_HINT
+Allosteric enzymes in metabolic pathways are typically regulated by
+end-product feedback inhibition. In feedback inhibition, the final product
+of the pathway inhibits the enzyme that catalyzes the first committed step,
+preventing the unnecessary buildup of intermediates.
+
+Think about which enzyme would be the most effective target for feedback
+inhibition to regulate the entire pathway.
+END_PGML_HINT
+
+# ----------------------------
+# 5) Solution
+# ----------------------------
+BEGIN_PGML_SOLUTION
+The correct answer is *enzyme 1*, which catalyzes the first committed step
+of the pathway (converting [$first_molecule]* to [$second_molecule]*).
+
+In feedback inhibition, the end product [$end_product]* of the pathway
+binds to the allosteric enzyme at the first committed step. This is the most
+efficient point of regulation because inhibiting enzyme 1 prevents the
+unnecessary production of all downstream intermediates.
+
+Enzymes further along the pathway would be less effective targets for
+regulation because intermediates would still accumulate upstream.
+END_PGML_SOLUTION
+
+ENDDOCUMENT();

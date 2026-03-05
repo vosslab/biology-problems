@@ -1,0 +1,262 @@
+## TITLE('Biochemistry: Enzyme Inhibition Type in a Metabolic Pathway')
+## DESCRIPTION
+## Students examine a colored metabolic pathway diagram and a description of
+## how the end product binds to the first enzyme.  Based on the binding
+## location and effect on enzyme activity, they identify the type of
+## inhibition or activation.
+## ENDDESCRIPTION
+## KEYWORDS('metabolic pathway','enzyme inhibition','competitive','non-competitive','un-competitive','activator')
+## DBsubject('Biochemistry')
+## DBchapter('Enzymes')
+## DBsection('Inhibition')
+## Level(2)
+## Date('2026-03-05')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	'PGstandard.pl',
+	'MathObjects.pl',
+	'PGML.pl',
+	'niceTables.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl',
+);
+
+$showPartialCorrectAnswers = 0;
+
+# ----------------------------
+# 2) Setup
+# ----------------------------
+
+# ----------------------------
+# 2a) Randomization
+# ----------------------------
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+
+# Number of molecules in the pathway (4-6)
+my $num_letters = $local_random->random(4, 6, 1);
+
+# Shift rotates which letters and colors are used (0-13)
+my $shift = $local_random->random(0, 13, 1);
+
+# Question type: 0=competitive, 1=non-competitive, 2=un-competitive, 3=activator
+my $question_type_id = $local_random->random(0, 3, 1);
+
+# ----------------------------
+# 2b) Color and letter palette (ported from metaboliclib.py)
+# ----------------------------
+my @all_letters = ('A'..'Z');
+my @all_colors = (
+	'#d40000', '#b74300', '#935d00', '#6c6c00', '#3b7600',
+	'#007a00', '#00775f', '#007576', '#076dad', '#003fff',
+	'#0067cc', '#a719db', '#c80085', '#cc0066',
+);
+
+# Compute letter and color slices based on shift
+my $letter_index = $shift % (scalar(@all_letters) - $num_letters);
+my @letters = @all_letters[$letter_index .. $letter_index + $num_letters - 1];
+
+# Double the color array to handle rollover
+my @double_colors = (@all_colors, @all_colors);
+my $color_index = $shift % scalar(@all_colors);
+my @colors = @double_colors[$color_index .. $color_index + $num_letters - 1];
+
+# Build HTML-formatted colored bold letters
+my @html_letters = ();
+for my $i (0 .. $num_letters - 1) {
+	my $html = "<strong><span style='color: $colors[$i]'>$letters[$i]</span></strong>";
+	push @html_letters, $html;
+}
+
+# ----------------------------
+# 2c) Build pathway LayoutTable
+# ----------------------------
+# Row 1: enzyme labels above arrows
+my @enzyme_row = ();
+for my $i (0 .. $num_letters - 2) {
+	push @enzyme_row, ['', cellcss => 'border:0;padding:2px 6px;'];
+	my $enzyme_num = $i + 1;
+	push @enzyme_row, ["enzyme $enzyme_num",
+		cellcss => 'border:0;font-size:75%;text-align:center;vertical-align:bottom;padding:2px 6px;'];
+}
+push @enzyme_row, ['', cellcss => 'border:0;padding:2px 6px;'];
+
+# Row 2: molecules and arrows
+my @mol_row = ();
+for my $i (0 .. $num_letters - 2) {
+	push @mol_row, [$html_letters[$i],
+		cellcss => 'border:0;font-size:150%;text-align:center;padding:0 6px;'];
+	push @mol_row, ['&rarr;',
+		cellcss => 'border:0;text-align:center;padding:0 6px;'];
+}
+push @mol_row, [$html_letters[$num_letters - 1],
+	cellcss => 'border:0;font-size:150%;text-align:center;padding:0 6px;'];
+
+$pathway_table = LayoutTable(
+	[[@enzyme_row], [@mol_row]],
+	center => 1,
+	tablecss => 'border-collapse:collapse;border:0;',
+	allcellcss => 'border:0;padding:4px;',
+);
+
+# ----------------------------
+# 2d) Package-level scalars for PGML references
+# ----------------------------
+$first_molecule = $html_letters[0];
+$second_molecule = $html_letters[1];
+$end_product = $html_letters[$num_letters - 1];
+$enzyme1_label = "<b>enzyme 1</b>";
+
+# ----------------------------
+# 2e) Build question scenario text
+# ----------------------------
+# Binding description for each question type
+my @binding_descriptions = (
+	"in its active site, blocking the substrate",
+	"at a location far away from its active site",
+	"along with its substrate in the active site at the same time",
+	"at a location far away from its active site",
+);
+$binding_text = $binding_descriptions[$question_type_id];
+
+# Activity change: types 0-2 decrease, type 3 increases
+if ($question_type_id == 3) {
+	$activity_html = "<strong><span style='color: seagreen'>increases</span></strong>";
+} else {
+	$activity_html = "<strong><span style='color: brown'>decreases</span></strong>";
+}
+
+# ----------------------------
+# 2f) Build RadioButtons choices
+# ----------------------------
+my @real_choices = (
+	'competitive inhibitor',
+	'non-competitive inhibitor',
+	'un-competitive inhibitor',
+	'enzyme activator',
+);
+$correct_answer = $real_choices[$question_type_id];
+
+# Pool of fake distractors
+my @fake_pool = (
+	'molecular stopper',
+	'metabolic blocker',
+	'enzyme suppressor',
+	'substrate displacer',
+	'catalytic converter',
+	'enzyme enhancer',
+	'biochemical brake',
+	'proteomic pothole',
+);
+
+# Fisher-Yates shuffle fake pool to pick one
+for my $i (reverse 1 .. $#fake_pool) {
+	my $j = $local_random->random(0, $i, 1);
+	@fake_pool[$i, $j] = @fake_pool[$j, $i];
+}
+
+# Combine 4 real + 1 fake distractor
+my @choices = @real_choices;
+push @choices, $fake_pool[0];
+
+# Fisher-Yates shuffle all choices
+for my $i (reverse 1 .. $#choices) {
+	my $j = $local_random->random(0, $i, 1);
+	@choices[$i, $j] = @choices[$j, $i];
+}
+
+$radio = RadioButtons(
+	[[@choices]],
+	$correct_answer,
+	separator => '<br/>',
+);
+
+# ----------------------------
+# 2g) Build solution explanation
+# ----------------------------
+my @solution_texts = (
+	"The end product binds in the active site of enzyme 1, blocking the substrate. "
+	. "This direct competition for the active site, combined with the decrease in "
+	. "enzyme activity, is characteristic of a <b>competitive inhibitor</b>.",
+
+	"The end product binds to enzyme 1 at a location far away from the active site, "
+	. "and the enzyme activity decreases. Binding at an allosteric site (not the "
+	. "active site) that reduces activity is the hallmark of a <b>non-competitive inhibitor</b>.",
+
+	"The end product binds to enzyme 1 along with the substrate in the active site "
+	. "at the same time, and the enzyme activity decreases. Binding to the "
+	. "enzyme-substrate complex is characteristic of an <b>un-competitive inhibitor</b>.",
+
+	"The end product binds to enzyme 1 at a location far away from the active site, "
+	. "and the enzyme activity increases. A molecule that binds at an allosteric site "
+	. "and enhances enzyme activity is an <b>enzyme activator</b>.",
+);
+$solution_text = $solution_texts[$question_type_id];
+
+# ----------------------------
+# 3) Statement (PGML)
+# ----------------------------
+BEGIN_PGML
+
+*Enzyme Inhibition Type in a Metabolic Pathway*
+
+A series of enzymes catalyze the reactions in the following metabolic pathway:
+
+[@ $pathway_table @]*
+
+Understanding the type of enzyme inhibition or activation is crucial for
+developing effective drugs and understanding metabolic regulation.
+
+[$enzyme1_label]* converts substrate [$first_molecule]* into product [$second_molecule]*.
+
+The end product [$end_product]* of this pathway binds to [$enzyme1_label]*
+[$binding_text].
+
+This binding [$activity_html]* the activity of the enzyme.
+
+Determine the type of enzyme inhibition or activation described:
+
+[@ $radio->buttons() @]*
+
+END_PGML
+
+ANS($radio->cmp());
+
+# ----------------------------
+# 4) Hint
+# ----------------------------
+BEGIN_PGML_HINT
+To identify the type of inhibition or activation, consider two factors:
+
+1. *Where* does the molecule bind? (active site vs. allosteric site)
+2. *What effect* does it have on enzyme activity? (increase vs. decrease)
+
+- *Competitive inhibitor:* binds in the active site, blocks substrate, activity decreases
+- *Non-competitive inhibitor:* binds away from active site, activity decreases
+- *Un-competitive inhibitor:* binds to the enzyme-substrate complex, activity decreases
+- *Enzyme activator:* binds away from active site, activity increases
+END_PGML_HINT
+
+# ----------------------------
+# 5) Solution
+# ----------------------------
+BEGIN_PGML_SOLUTION
+[$solution_text]*
+
+The correct answer is [$correct_answer].
+END_PGML_SOLUTION
+
+ENDDOCUMENT();
