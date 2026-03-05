@@ -1,14 +1,14 @@
 topic: the fluid mosaic model of membrane lipid bilayers
 replacement_rules:
-  plasma&nbsp;membrane: '<span style="color: #ff0000;">plasma&nbsp;membrane</span>'
-  structure: '<span style="color: #ff5e00;">structure</span>'
-  rigid: '<span style="color: #ffa100;">rigid</span>'
+  plasma&nbsp;membrane: '<span style="color: #d40000;">plasma&nbsp;membrane</span>'
+  structure: '<span style="color: #b74300;">structure</span>'
+  rigid: '<span style="color: #935d00;">rigid</span>'
   liquid: '<span style="color: #6c6c00;">liquid</span>'
-  flexible: '<span style="color: #2fbd0f;">flexible</span>'
-  cell: '<span style="color: #009e4c;">cell</span>'
-  proteins: '<span style="color: #0d57a5;">proteins</span>'
-  lipids: '<span style="color: #6d108e;">lipids</span>'
-  external&nbsp;environment: '<span style="color: #a1005e;">external&nbsp;environment</span>'
+  flexible: '<span style="color: #3b7600;">flexible</span>'
+  cell: '<span style="color: #007a00;">cell</span>'
+  proteins: '<span style="color: #076dad;">proteins</span>'
+  lipids: '<span style="color: #a719db;">lipids</span>'
+  external&nbsp;environment: '<span style="color: #c80085;">external&nbsp;environment</span>'
 connection_words: null
 true_statements:
   truth1a: The plasma&nbsp;membrane is a liquid-like structure

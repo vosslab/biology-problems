@@ -1,16 +1,16 @@
 topic: enzyme$inhibitors
 replacement_rules:
-  Competitive$inhibitors: '<span style="color: #ff0000;">Competitive&nbsp;inhibitors</span>'
-  ' substrate': ' <span style="color: #ff5e00;">substrate</span>'
-  Enzyme$inhibitors: '<span style="color: #ffa100;">Enzyme&nbsp;inhibitors</span>'
-  enzyme$inhibitors: '<span style="color: #ffa100;">enzyme&nbsp;inhibitors</span>'
+  Competitive$inhibitors: '<span style="color: #d40000;">Competitive&nbsp;inhibitors</span>'
+  ' substrate': ' <span style="color: #b74300;">substrate</span>'
+  Enzyme$inhibitors: '<span style="color: #935d00;">Enzyme&nbsp;inhibitors</span>'
+  enzyme$inhibitors: '<span style="color: #935d00;">enzyme&nbsp;inhibitors</span>'
   enzyme-substrate complex: '<span style="color: #6c6c00;">enzyme-substrate complex</span>'
-  Noncompetitive$inhibitors: '<span style="color: #2fbd0f;">Noncompetitive&nbsp;inhibitors</span>'
-  product: '<span style="color: #009e4c;">product</span>'
-  Uncompetitive$inhibitors: '<span style="color: #0d57a5;">Uncompetitive&nbsp;inhibitors</span>'
-  binding: '<span style="color: #6d108e;">binding</span>'
-  'bind ': '<span style="color: #6d108e;">bind</span> '
-  active site: '<span style="color: #a1005e;">active site</span>'
+  Noncompetitive$inhibitors: '<span style="color: #3b7600;">Noncompetitive&nbsp;inhibitors</span>'
+  product: '<span style="color: #007a00;">product</span>'
+  Uncompetitive$inhibitors: '<span style="color: #076dad;">Uncompetitive&nbsp;inhibitors</span>'
+  binding: '<span style="color: #a719db;">binding</span>'
+  'bind ': '<span style="color: #a719db;">bind</span> '
+  active site: '<span style="color: #c80085;">active site</span>'
 connection_words: null
 true_statements:
   truth01a: Competitive$inhibitors bind to the active site of an enzyme and compete

@@ -4,18 +4,18 @@ keys description: amino acids
 value description: description
 values description: descriptions
 replacement_rules:
-  negatively charged amino acid: '<span style="color: #ff0000;">negatively charged
+  negatively charged amino acid: '<span style="color: #d40000;">negatively charged
     amino acid</span>'
-  aromatic amino acid: '<span style="color: #ff5e00;">aromatic amino acid</span>'
-  non-polar branched chain amino acid: '<span style="color: #ffa100;">non-polar branched
+  aromatic amino acid: '<span style="color: #b74300;">aromatic amino acid</span>'
+  non-polar branched chain amino acid: '<span style="color: #935d00;">non-polar branched
     chain amino acid</span>'
   non-polar amino acid: '<span style="color: #6c6c00;">non-polar amino acid</span>'
-  small amino acid: '<span style="color: #2fbd0f;">small amino acid</span>'
-  polar amino acid: '<span style="color: #009e4c;">polar amino acid</span>'
-  positively charged amino acid: '<span style="color: #0d57a5;">positively charged
+  small amino acid: '<span style="color: #3b7600;">small amino acid</span>'
+  polar amino acid: '<span style="color: #007a00;">polar amino acid</span>'
+  positively charged amino acid: '<span style="color: #076dad;">positively charged
     amino acid</span>'
-  side chain: '<span style="color: #6d108e;">side chain</span>'
-  IIIIIII: '<span style="color: #a1005e;">IIIIIII</span>'
+  side chain: '<span style="color: #a719db;">side chain</span>'
+  IIIIIII: '<span style="color: #c80085;">IIIIIII</span>'
 matching pairs:
   alanine:
   - a non-polar amino acid, with a single methyl group (-CH<sub>3</sub>) as its side

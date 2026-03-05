@@ -1,16 +1,16 @@
 topic: Michaelis-Menten kinetics
 replacement_rules:
-  concentration: '<span style="color: #ff0000;">concentration</span>'
-  enzyme-product complex [EP]: '<span style="color: #ff5e00;">enzyme-product complex
+  concentration: '<span style="color: #d40000;">concentration</span>'
+  enzyme-product complex [EP]: '<span style="color: #b74300;">enzyme-product complex
     [EP]</span>'
-  CCCCCCC: '<span style="color: #ffa100;">CCCCCCC</span>'
+  CCCCCCC: '<span style="color: #935d00;">CCCCCCC</span>'
   DDDDDDD: '<span style="color: #6c6c00;">DDDDDDD</span>'
-  enzyme-substrate complex [ES]: '<span style="color: #2fbd0f;">enzyme-substrate complex
+  enzyme-substrate complex [ES]: '<span style="color: #3b7600;">enzyme-substrate complex
     [ES]</span>'
-  proportional: '<span style="color: #009e4c;"><i>proportional</i></span>'
-  M-M kinetics: '<span style="color: #0d57a5;">M-M kinetics</span>'
-  constant: '<span style="color: #6d108e;"><i>constant</i></span>'
-  reaction rate: '<span style="color: #a1005e;">reaction rate</span>'
+  proportional: '<span style="color: #007a00;"><i>proportional</i></span>'
+  M-M kinetics: '<span style="color: #076dad;">M-M kinetics</span>'
+  constant: '<span style="color: #a719db;"><i>constant</i></span>'
+  reaction rate: '<span style="color: #c80085;">reaction rate</span>'
 connection_words: null
 true_statements:
   truth1a: The reaction rate is proportional to the substrate concentration.

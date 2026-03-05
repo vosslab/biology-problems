@@ -1,17 +1,17 @@
 topic: functions of membrane&nbsp;proteins
 replacement_rules:
-  membrane&nbsp;proteins: '<span style="color: #ff0000;">membrane&nbsp;proteins</span>'
-  passage: '<span style="color: #ff5e00;">passage</span>'
-  cells: '<span style="color: #ffa100;">cells</span>'
-  'cell ': '<span style="color: #ffa100;">cell </span>'
-  hydrophobic: '<span style="color: #ffa100;">hydrophobic</span>'
+  membrane&nbsp;proteins: '<span style="color: #d40000;">membrane&nbsp;proteins</span>'
+  passage: '<span style="color: #b74300;">passage</span>'
+  cells: '<span style="color: #935d00;">cells</span>'
+  'cell ': '<span style="color: #935d00;">cell </span>'
+  hydrophobic: '<span style="color: #935d00;">hydrophobic</span>'
   ' proteins': '<span style="color: #6c6c00;"> proteins</span>'
-  substances: '<span style="color: #2fbd0f;">substances</span>'
-  transport: '<span style="color: #009e4c;">transport</span>'
-  molecules: '<span style="color: #0d57a5;">molecules</span>'
-  ' membrane ': '<span style="color: #6d108e;"> membrane</span>'
-  enzymatic&nbsp;activity: '<span style="color: #a1005e;">enzymatic&nbsp;activity</span>'
-  enzymes: '<span style="color: #a1005e;">enzymes</span>'
+  substances: '<span style="color: #3b7600;">substances</span>'
+  transport: '<span style="color: #007a00;">transport</span>'
+  molecules: '<span style="color: #076dad;">molecules</span>'
+  ' membrane ': '<span style="color: #a719db;"> membrane</span>'
+  enzymatic&nbsp;activity: '<span style="color: #c80085;">enzymatic&nbsp;activity</span>'
+  enzymes: '<span style="color: #c80085;">enzymes</span>'
 connection_words: null
 true_statements:
   truth1a: They facilitate transport of molecules across the membrane

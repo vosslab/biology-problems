@@ -1,10 +1,10 @@
 topic: chi-square (&chi;&sup2;) tests
 override_question_false: null
 replacement_rules:
-  yesrej: 'is <span style="color: #d9534f;">REJECTED</span>'
-  notrej: 'is <span style="color: #367c36;">NOT REJECTED</span>'
-  yessupp: 'is <span style="color: #367c36;">SUPPORTED</span>'
-  notsupp: 'is <span style="color: #d9534f;">NOT SUPPORTED</span>'
+  yesrej: 'is <span style="color: #d40000;">REJECTED</span>'
+  notrej: 'is <span style="color: #007a00;">NOT REJECTED</span>'
+  yessupp: 'is <span style="color: #007a00;">SUPPORTED</span>'
+  notsupp: 'is <span style="color: #d40000;">NOT SUPPORTED</span>'
   c2s: '<span style="color: #0067cc;">chi-square (&chi;&sup2;) statistic</span>'
   p-value: '<span style="color: #3b7600;">p-value</span>'
   losa: '<span style="color: #b74300;">level of significance, &alpha;</span>'
