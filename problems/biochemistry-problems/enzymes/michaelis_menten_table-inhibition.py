@@ -28,42 +28,6 @@ def makeXvals(mode=1):
 	return xvals
 
 #=============================
-#=============================
-def makeTable2(xvals, yvals, inhibvals, Vmax, inhib_Vmax):
-	table = ''
-	table += '<table cellpadding="2" cellspacing="2" '
-	table += ' style="text-align:center; border-collapse: collapse; border: 1px solid black; font-size: 14px;">'
-	w = 160
-	table += '<colgroup width="{0}"></colgroup> '.format(w)
-	table += '<colgroup width="{0}"></colgroup> '.format(w)
-	table += '<colgroup width="{0}"></colgroup> '.format(w)
-	table += '<tr>'
-	table += ' <th align="center">substrate<br/>concentration, [S]</th>'
-	table += ' <th align="center">initial reaction<br/>velocity no inhibitor<br/>V<sub>0</sub> (&ndash;inh)</th>'
-	table += ' <th align="center">initial reaction<br/>velocity with inhibitor<br/>V<sub>0</sub> (+inh)</th>'
-	table += '</tr>'
-	mono_span = '<span style="font-family: courier, monospace;">'
-	numrows = min(len(xvals), len(yvals))
-	for i in range(numrows):
-		x = xvals[i]
-		y = yvals[i]
-		z = inhibvals[i]
-		table += '<tr>'
-		if xvals[0] < 0.0002:
-			table += ' <td align="right">{1}{0:.4f}&nbsp;</span></td>'.format(x, mono_span)
-		else:
-			table += ' <td align="right">{1}{0:.3f}&nbsp;</span></td>'.format(x, mono_span)
-		table += ' <td align="right">{1}{0:.1f}&nbsp;</span></td>'.format(y, mono_span)
-		table += ' <td align="right">{1}{0:.1f}&nbsp;</span></td>'.format(z, mono_span)
-		table += '</tr>'
-		if (Vmax - y) < 0.099:
-			#print(y)
-			#print(Vmax - y)
-			break
-	table += '</table>'
-	return table
-
-#=============================
 # Function to create an HTML table with specified data and styling improvements
 def makeTable(xvals, yvals, inhibvals, Vmax, inhib_Vmax):
 	# Initialize the table with basic properties and custom styling
@@ -77,9 +41,11 @@ def makeTable(xvals, yvals, inhibvals, Vmax, inhib_Vmax):
 
 	# Header row with custom styling for smaller text and same size variable names
 	table += '<tr style="background-color: lightgray; border-bottom: 2px solid black;">'
-	table += '<th align="center" style="padding: 5px; font-size: 10px;">substrate<br/>concentration, <span style="font-size: 14px;">[S]</span></th>'
-	table += '<th align="center" style="padding: 5px; font-size: 10px;">initial reaction<br/>velocity no inhibitor<br/><span style="font-size: 14px;">V<sub>0</sub> (&ndash;inh)</span></th>'
-	table += '<th align="center" style="padding: 5px; font-size: 10px;">initial reaction<br/>velocity with inhibitor<br/><span style="font-size: 14px;">V<sub>0</sub> (+inh)</span></th>'
+	table += '<th align="center" style="padding: 5px; font-size: 12px;">substrate<br/>concentration, <span style="font-size: 14px;">[S]</span></th>'
+	table += '<th align="center" style="padding: 5px; font-size: 12px;">initial reaction<br/>velocity no inhibitor<br/>'
+	table += "<span style='font-size: 14px; color: #00008B; font-weight: bold;'>V<sub>0</sub> (&ndash;inh)</span></th>"
+	table += '<th align="center" style="padding: 5px; font-size: 12px;">initial reaction<br/>velocity with inhibitor<br/>'
+	table += "<span style='font-size: 14px; color: #8B0000; font-weight: bold;'>V<sub>0</sub> (+inh)</span></th>"
 	table += '</tr>'
 
 	# Styling for monospace font span

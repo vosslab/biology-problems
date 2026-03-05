@@ -23,36 +23,6 @@ def makeXvals(mode=1):
 	xvals.sort()
 	return xvals
 
-def makeTable2(xvals, yvals, Vmax):
-	table = ''
-	table += '<table cellpadding="2" cellspacing="2" '
-	table += ' style="text-align:center; border-collapse: collapse; border: 1px solid black; font-size: 14px;">'
-	w = 120
-	table += '<colgroup width="{0}"></colgroup> '.format(w)
-	table += '<colgroup width="{0}"></colgroup> '.format(w)
-	table += '<tr>'
-	table += ' <th align="center">substrate<br/>concentration<br/>[S]</th>'
-	table += ' <th align="center">initial<br/>reaction<br/>velocity<br/>V<sub>0</sub></th>'
-	table += '</tr>'
-	mono_span = '<span style="font-family: courier, monospace;">'
-	numrows = min(len(xvals), len(yvals))
-	for i in range(numrows):
-		x = xvals[i]
-		y = yvals[i]
-		table += '<tr>'
-		if xvals[0] < 0.0002:
-			table += ' <td align="right">{1}{0:.4f}&nbsp;</span></td>'.format(x, mono_span)
-		else:
-			table += ' <td align="right">{1}{0:.3f}&nbsp;</span></td>'.format(x, mono_span)
-		table += ' <td align="right">{1}{0:.1f}&nbsp;</span></td>'.format(y, mono_span)
-		table += '</tr>'
-		if (Vmax - y) < 0.099:
-			print(y)
-			print(Vmax - y)
-			break
-	table += '</table>'
-	return table
-
 #=============================
 # Function to create an HTML table with specified data and styling improvements
 def makeTable(xvals, yvals, Vmax):
@@ -67,10 +37,10 @@ def makeTable(xvals, yvals, Vmax):
 
 	# Header row with custom styling for smaller text and same size variable names
 	table += '<tr style="background-color: lightgray; border-bottom: 2px solid black;">'
-	table += ('<th align="center" style="padding: 5px; font-size: 10px;">'
+	table += ('<th align="center" style="padding: 5px; font-size: 12px;">'
 		+'substrate<br/>concentration, '
 		+'<span style="font-size: 14px;">[S]</span></th>')
-	table += ('<th align="center" style="padding: 5px; font-size: 10px;">'
+	table += ('<th align="center" style="padding: 5px; font-size: 12px;">'
 		+'initial reaction<br/>velocity<br/>'
 		+'<span style="font-size: 14px;">V<sub>0</sub></span></th>')
 	table += '</tr>'

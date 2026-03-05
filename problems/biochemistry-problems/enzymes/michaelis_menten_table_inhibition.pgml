@@ -1,0 +1,435 @@
+## TITLE('Biochemistry: Michaelis-Menten Inhibition Type from Data Table')
+## DESCRIPTION
+## Students examine a Michaelis-Menten enzyme kinetics data table showing
+## initial velocity (V_0) at various substrate concentrations ([S]) with and
+## without an inhibitor.  They determine V_max and K_M for each condition,
+## then identify the inhibition type from the parameter changes.
+## ENDDESCRIPTION
+## KEYWORDS('Michaelis-Menten','enzyme kinetics','K_M','V_max','inhibition','competitive','non-competitive','un-competitive')
+## DBsubject('Biochemistry')
+## DBchapter('Enzymes')
+## DBsection('Inhibition')
+## Level(3)
+## Date('2026-03-05')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	'PGstandard.pl',
+	'MathObjects.pl',
+	'PGML.pl',
+	'niceTables.pl',
+	'parserPopUp.pl',
+	'PGcourse.pl',
+);
+
+$showPartialCorrectAnswers = 1;
+
+# ----------------------------
+# 2) Setup
+# ----------------------------
+
+# ----------------------------
+# 2a) Randomization
+# ----------------------------
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+
+# V_max choices: multiples of 20 from 40 to 200
+my @vmax_choices = (40, 60, 80, 100, 120, 140, 160, 180, 200);
+my $vmax_idx = $local_random->random(0, $#vmax_choices, 1);
+$Vmax = $vmax_choices[$vmax_idx];
+
+# Mode 1 only for this problem (matches Python source)
+my $mode = 1;
+
+# ----------------------------
+# 2b) Build substrate concentration values (pre-sorted)
+# ----------------------------
+my @xvals = (0.0001, 0.0002, 0.0005, 0.001, 0.002, 0.005,
+	0.01, 0.02, 0.05, 0.1, 1, 10);
+
+# K_M is chosen from xvals[1..5] so V_0 = V_max/2 appears in the table
+my $km_idx = $local_random->random(1, 5, 1);
+$Km = $xvals[$km_idx];
+
+# Pick inhibition type
+my @inhib_types = ('competitive', 'non-competitive', 'un-competitive');
+my $inhib_idx = $local_random->random(0, 2, 1);
+$inhibition = $inhib_types[$inhib_idx];
+
+# ----------------------------
+# 2c) Compute normal V_0 values using Michaelis-Menten equation
+# ----------------------------
+# V_0 = V_max * [S] / ([S] + K_M), ceiling to 1 decimal place
+my @yvals = ();
+for my $x (@xvals) {
+	my $v0_raw = $Vmax * $x / ($x + $Km);
+	# ceiling to 1 decimal place (same as Python: math.ceil(v0*10)/10)
+	my $v0_scaled = $v0_raw * 10.0;
+	my $v0_int = int($v0_scaled);
+	# manual ceiling: if fractional part exists, round up
+	$v0_int++ if ($v0_scaled - $v0_int) > 1e-9;
+	my $v0 = $v0_int / 10.0;
+	push @yvals, $v0;
+}
+
+# ----------------------------
+# 2d) Compute inhibited parameters (port of adjust_MM_values)
+# ----------------------------
+$inhib_Vmax = $Vmax;
+$inhib_Km = $Km;
+
+if ($inhibition eq 'competitive') {
+	# Vmax unchanged, Km increases
+	$inhib_Vmax = $Vmax;
+	# build shuffled candidate list from xvals (excluding last two)
+	my @km_candidates = @xvals[0..9];
+	# Fisher-Yates shuffle with local_random
+	for my $i (reverse 1 .. $#km_candidates) {
+		my $j = $local_random->random(0, $i, 1);
+		@km_candidates[$i, $j] = @km_candidates[$j, $i];
+	}
+	# pick first candidate > Km
+	$inhib_Km = $Km;
+	for my $candidate (@km_candidates) {
+		if ($candidate > $Km) {
+			$inhib_Km = $candidate;
+			last;
+		}
+	}
+	# fallback: if none found, use next xval above Km
+	if ($inhib_Km <= $Km) {
+		for my $x (@xvals) {
+			if ($x > $Km) {
+				$inhib_Km = $x;
+				last;
+			}
+		}
+	}
+} elsif ($inhibition eq 'un-competitive') {
+	# KM/Vmax ratio roughly unchanged; both decrease
+	# check if Km ends with 5 (log10(Km/5) mod 1 ~ 0)
+	my $log_test = log($Km / 5.0) / log(10.0);
+	my $frac_part = $log_test - int($log_test);
+	# handle negative fractional parts
+	$frac_part += 1.0 if $frac_part < 0;
+	if (sprintf('%.3f', $frac_part) + 0 < 0.001 || sprintf('%.3f', abs($frac_part - 1.0)) + 0 < 0.001) {
+		# ends with 5 (e.g. 0.0005, 0.005)
+		$inhib_Km = sprintf('%.5f', $Km / 2.5) + 0;
+	} else {
+		# ends with 1 or 2
+		$inhib_Km = sprintf('%.5f', $Km / 2.0) + 0;
+	}
+	# slope KM/Vmax unchanged
+	my $raw_vmax = $Vmax * $inhib_Km / $Km;
+	$inhib_Vmax = sprintf('%.0f', $raw_vmax / 20.0) * 20;
+} elsif ($inhibition eq 'non-competitive') {
+	# Km unchanged, Vmax decreases
+	$inhib_Km = $Km;
+	my @vmax_cands = (20, 40, 60, 80, 100, 120, 140, 160, 180);
+	# Fisher-Yates shuffle with local_random
+	for my $i (reverse 1 .. $#vmax_cands) {
+		my $j = $local_random->random(0, $i, 1);
+		@vmax_cands[$i, $j] = @vmax_cands[$j, $i];
+	}
+	# pick first candidate < Vmax
+	$inhib_Vmax = 20;
+	for my $v (@vmax_cands) {
+		if ($v < $Vmax) {
+			$inhib_Vmax = $v;
+			last;
+		}
+	}
+}
+
+# ----------------------------
+# 2e) Compute inhibited V_0 values
+# ----------------------------
+my @inhibvals = ();
+for my $x (@xvals) {
+	my $v0_raw = $inhib_Vmax * $x / ($x + $inhib_Km);
+	my $v0_scaled = $v0_raw * 10.0;
+	my $v0_int = int($v0_scaled);
+	$v0_int++ if ($v0_scaled - $v0_int) > 1e-9;
+	my $v0 = $v0_int / 10.0;
+	push @inhibvals, $v0;
+}
+
+# ----------------------------
+# 2f) Build 3-column niceTables LayoutTable
+# ----------------------------
+my $x_fmt = '%.4f';
+
+my $hdr_css = 'font-weight:700;background:#cccccc;color:#000;'
+	. 'border-bottom:2px solid #333;font-size:12px;padding:5px;';
+my $mono_css = 'font-family:courier,monospace;';
+
+my @data_rows = ();
+# header row
+push @data_rows, [
+	[ 'substrate<br/>concentration, [S]',
+		cellcss => $hdr_css ],
+	[ 'initial reaction<br/>velocity no inhibitor<br/><span style="color:#00008B;font-size:14px;">V<sub>0</sub> (&ndash;inh)</span>',
+		cellcss => $hdr_css ],
+	[ 'initial reaction<br/>velocity with inhibitor<br/><span style="color:#8B0000;font-size:14px;">V<sub>0</sub> (+inh)</span>',
+		cellcss => $hdr_css ],
+];
+
+my $num_rows = 0;
+for (my $i = 0; $i < scalar(@xvals); $i++) {
+	my $x = $xvals[$i];
+	my $y = $yvals[$i];
+	my $z = $inhibvals[$i];
+	# alternate row colors: subtle yellow and white
+	my $bg = ($num_rows % 2 == 0) ? '#FFFFDD' : '#FFFFFF';
+	my $row_css = "background:$bg;$mono_css"
+		. 'text-align:right;padding:4px 10px;';
+	my $x_str = sprintf($x_fmt, $x);
+	my $y_str = sprintf('%.1f', $y);
+	my $z_str = sprintf('%.1f', $z);
+	push @data_rows, [
+		[ $x_str, cellcss => $row_css ],
+		[ $y_str, cellcss => $row_css ],
+		[ $z_str, cellcss => $row_css ],
+	];
+	$num_rows++;
+	# stop when normal V_0 is within 0.1 of V_max
+	last if ($Vmax - $y) < 0.099;
+}
+
+$data_table = LayoutTable(
+	[@data_rows],
+	center => 1,
+	tablecss => 'border-collapse:collapse;border:1px solid #000;font-size:14px;',
+	allcellcss => 'border:1px solid #000;padding:6px 10px;text-align:center;',
+);
+
+# ----------------------------
+# 2g) Answer definitions
+# ----------------------------
+Context("Numeric");
+
+# Part 1: V_max without inhibitor (numeric, tolerance 0.5)
+$ans_vmax = Compute("$Vmax")->with(
+	tolType => 'absolute',
+	tolerance => 0.5,
+);
+
+# Part 2: V_max with inhibitor (numeric, tolerance 0.5)
+$ans_inhib_vmax = Compute("$inhib_Vmax")->with(
+	tolType => 'absolute',
+	tolerance => 0.5,
+);
+
+# Helper for PopUp/DropDown compatibility
+sub make_popup {
+	return defined &DropDown ? DropDown(@_) : PopUp(@_);
+}
+
+# Part 3: K_M without inhibitor (PopUp dropdown from first 7 xvals)
+my $km_correct = sprintf($x_fmt, $Km);
+my @km_choices = ();
+for my $i (0 .. 6) {
+	push @km_choices, sprintf($x_fmt, $xvals[$i]);
+}
+$ans_km = make_popup(['?', @km_choices], $km_correct);
+
+# Part 4: K_M with inhibitor (PopUp dropdown)
+# build choices list, ensuring inhib_Km is included
+my $inhib_km_str = sprintf($x_fmt, $inhib_Km);
+my @inhib_km_choices = @km_choices;
+# add inhib_Km if not already in the list
+my $found_inhib_km = 0;
+for my $c (@inhib_km_choices) {
+	if ($c eq $inhib_km_str) {
+		$found_inhib_km = 1;
+		last;
+	}
+}
+if (!$found_inhib_km) {
+	# insert inhib_km in sorted position (avoid bare sort in Safe compartment)
+	my @tmp = ();
+	my $inserted = 0;
+	for my $c (@inhib_km_choices) {
+		if (!$inserted && $inhib_km_str lt $c) {
+			push @tmp, $inhib_km_str;
+			$inserted = 1;
+		}
+		push @tmp, $c;
+	}
+	push @tmp, $inhib_km_str if !$inserted;
+	@inhib_km_choices = @tmp;
+}
+$ans_inhib_km = make_popup(['?', @inhib_km_choices], $inhib_km_str);
+
+# Part 5: Inhibition type (PopUp dropdown)
+# 3 real types plus 2 fake "-competitive" entries
+my @extra_prefixes = (
+	'ultra', 'hetero', 'homo', 'anti', 'super', 'dis', 'over', 'self',
+	'contra', 'intra', 'omni', 'ortho', 'inter', 'mis', 'semi', 'auto',
+	'extra', 'hyper', 'pre', 'post', 'eco', 'hypo', 'iso', 'mega', 'para',
+	'poly', 'oligo', 'proto', 'pseudo', 'quasi', 'supra', 'idio', 'epi',
+);
+# Fisher-Yates shuffle with local_random
+for my $i (reverse 1 .. $#extra_prefixes) {
+	my $j = $local_random->random(0, $i, 1);
+	@extra_prefixes[$i, $j] = @extra_prefixes[$j, $i];
+}
+my @inhib_choices = ('competitive', 'non-competitive', 'un-competitive');
+# take first 2 shuffled prefixes and append -competitive
+push @inhib_choices, $extra_prefixes[0] . '-competitive';
+push @inhib_choices, $extra_prefixes[1] . '-competitive';
+# manual alphabetical sort (avoid bare sort in Safe compartment)
+my @sorted_inhib = ();
+for my $item (@inhib_choices) {
+	my $pos = scalar(@sorted_inhib);
+	for my $k (0 .. $#sorted_inhib) {
+		if ($item lt $sorted_inhib[$k]) {
+			$pos = $k;
+			last;
+		}
+	}
+	splice(@sorted_inhib, $pos, 0, $item);
+}
+@inhib_choices = @sorted_inhib;
+$ans_inhib = make_popup(['?', @inhib_choices], $inhibition);
+
+# Color-coded labels for (-inh) and (+inh) in PGML text
+# dark blue for no inhibitor, dark red for with inhibitor
+$no_inh_label = "<span style='color:#00008B;font-weight:bold;'>(&ndash;inh)</span>";
+$with_inh_label = "<span style='color:#8B0000;font-weight:bold;'>(+inh)</span>";
+
+# Pre-compute display strings for solution
+$half_vmax = $Vmax / 2.0;
+$half_vmax_str = sprintf('%.1f', $half_vmax);
+$km_str = sprintf($x_fmt, $Km);
+$vmax_str = sprintf('%.0f', $Vmax);
+$inhib_vmax_str = sprintf('%.0f', $inhib_Vmax);
+$half_inhib_vmax = $inhib_Vmax / 2.0;
+$half_inhib_vmax_str = sprintf('%.1f', $half_inhib_vmax);
+$inhib_km_display = sprintf($x_fmt, $inhib_Km);
+
+# Build explanation text for inhibition type identification
+if ($inhibition eq 'competitive') {
+	$explain_text = 'V_max is unchanged while K_M increased. '
+		. 'This pattern indicates competitive inhibition, where the inhibitor '
+		. 'competes with the substrate for the active site.';
+} elsif ($inhibition eq 'un-competitive') {
+	$explain_text = 'Both V_max and K_M decreased. '
+		. 'This pattern indicates un-competitive inhibition, where the inhibitor '
+		. 'binds only to the enzyme-substrate complex.';
+} else {
+	$explain_text = 'K_M is unchanged while V_max decreased. '
+		. 'This pattern indicates non-competitive inhibition, where the inhibitor '
+		. 'binds to the enzyme regardless of substrate binding.';
+}
+
+# ----------------------------
+# 3) Statement (PGML)
+# ----------------------------
+BEGIN_PGML
+
+*Michaelis-Menten Kinetics and Inhibition Type Determination*
+
+The table below presents data on enzyme activity measured as initial reaction
+velocities (V[`_0`]) with and without the presence of an inhibitor at various
+substrate concentrations (\[S\]).
+
+[@ $data_table @]*
+
+Based on the data provided, determine the kinetic parameters and the type of
+inhibition shown by the inhibitor.
+
+*Part 1.* Using the table above, determine the maximum reaction velocity
+with and without the inhibitor.
+
+V[`_{max}`] [$no_inh_label]* = [__________]{$ans_vmax} and V[`_{max}`] [$with_inh_label]* = [__________]{$ans_inhib_vmax}
+
+*Part 2.* Using the table above and your V[`_{max}`] values, determine the
+Michaelis-Menten constant with and without the inhibitor.
+
+K[`_M`] [$no_inh_label]* = [_]{$ans_km} and K[`_M`] [$with_inh_label]* = [_]{$ans_inhib_km}
+
+*Part 3.* Based on the changes in V[`_{max}`] and K[`_M`] with and without
+the inhibitor, determine the type of inhibition.
+
+Inhibition type: [_]{$ans_inhib}
+
+END_PGML
+
+# ----------------------------
+# 4) Hint
+# ----------------------------
+BEGIN_PGML_HINT
+Consider how each type of inhibition affects V[`_{max}`] and K[`_M`]:
+
+Competitive: V[`_{max}`] stays the same, K[`_M`] increases.
+
+Un-competitive: both V[`_{max}`] and K[`_M`] decrease.
+
+Non-competitive: K[`_M`] stays the same, V[`_{max}`] decreases.
+
+Find V[`_{max}`] from where V[`_0`] plateaus. Find K[`_M`] as the \[S\]
+where V[`_0`] = V[`_{max}`] / 2. Compare parameters with and without
+inhibitor to determine the type.
+END_PGML_HINT
+
+# ----------------------------
+# 5) Solution
+# ----------------------------
+BEGIN_PGML_SOLUTION
+
+*Step 1: Find V[`_{max}`] without inhibitor*
+
+Looking at the table, as \[S\] increases the velocity V[`_0`] [$no_inh_label]* approaches
+a plateau.
+
+V[`_{max}`] [$no_inh_label]* = [$vmax_str]
+
+*Step 2: Find V[`_{max}`] with inhibitor*
+
+Similarly, V[`_0`] [$with_inh_label]* approaches a plateau.
+
+V[`_{max}`] [$with_inh_label]* = [$inhib_vmax_str]
+
+*Step 3: Find K[`_M`] without inhibitor*
+
+K[`_M`] is the substrate concentration at which V[`_0`] = V[`_{max}`] / 2.
+
+V[`_{max}`] / 2 = [$vmax_str] / 2 = [$half_vmax_str]
+
+Looking in the table for V[`_0`] [$no_inh_label]* = [$half_vmax_str], the
+corresponding \[S\] value is [$km_str].
+
+K[`_M`] [$no_inh_label]* = [$km_str]
+
+*Step 4: Find K[`_M`] with inhibitor*
+
+V[`_{max}`] [$with_inh_label]* / 2 = [$inhib_vmax_str] / 2 = [$half_inhib_vmax_str]
+
+Looking in the table for V[`_0`] [$with_inh_label]* near [$half_inhib_vmax_str], the
+corresponding \[S\] value is [$inhib_km_display].
+
+K[`_M`] [$with_inh_label]* = [$inhib_km_display]
+
+*Step 5: Identify the inhibition type*
+
+[$explain_text]
+
+Therefore, the inhibition type is [$inhibition].
+
+END_PGML_SOLUTION
+
+ENDDOCUMENT();
