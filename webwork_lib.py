@@ -395,6 +395,11 @@ def build_html_span(text_string, class_name=None, style=None):
 	safe_text = safe_text.replace('&lt;/sub&gt;', '</sub>')
 	safe_text = safe_text.replace('&lt;sup&gt;', '<sup>')
 	safe_text = safe_text.replace('&lt;/sup&gt;', '</sup>')
+	# restore italic tags for chemistry notation and emphasis
+	safe_text = safe_text.replace('&lt;i&gt;', '<i>')
+	safe_text = safe_text.replace('&lt;/i&gt;', '</i>')
+	safe_text = safe_text.replace('&lt;em&gt;', '<em>')
+	safe_text = safe_text.replace('&lt;/em&gt;', '</em>')
 	return f"<span{attr_blob}>{safe_text}</span>"
 
 #============================================
@@ -569,8 +574,8 @@ def extract_strict_color_span(text_string):
 		inner = inner_strong.group(1)
 
 	inner = normalize_nbsp(inner)
-	# reject inner text with HTML tags other than sub/sup
-	cleaned = re.sub(r'</?su[bp]>', '', inner)
+	# reject inner text with HTML tags other than sub/sup/i/em
+	cleaned = re.sub(r'</?(?:su[bp]|i|em)>', '', inner)
 	if re.search(r'<[^>]+>', cleaned):
 		return None
 
@@ -666,8 +671,8 @@ def extract_strict_color_spans(text_string):
 			inner = inner_strong.group(1)
 
 		inner = normalize_nbsp(inner)
-		# reject inner text with HTML tags other than sub/sup
-		cleaned = re.sub(r'</?su[bp]>', '', inner)
+		# reject inner text with HTML tags other than sub/sup/i/em
+		cleaned = re.sub(r'</?(?:su[bp]|i|em)>', '', inner)
 		if re.search(r'<[^>]+>', cleaned):
 			return None
 

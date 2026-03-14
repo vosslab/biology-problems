@@ -1,0 +1,176 @@
+## DESCRIPTION
+## Select the statement that is TRUE or FALSE about Michaelis-Menten kinetics.
+## ENDDESCRIPTION
+## KEYWORDS('Michaelis-Menten kinetics','true/false','multiple choice')
+## DBsubject('Biochemistry')
+## DBchapter('')
+## DBsection('')
+## Date('2026-03-14')
+## Author('Neil R. Voss')
+## Institution('Roosevelt University')
+
+DOCUMENT();
+
+loadMacros(
+  "PGstandard.pl",
+  "PGML.pl",
+  "PGchoicemacros.pl",
+  "parserRadioButtons.pl",
+  "PGcourse.pl",
+);
+
+TEXT(beginproblem());
+$showPartialCorrectAnswers = 1;
+
+#==========================================================
+# AUTO-GENERATED GROUPS FROM YAML
+#==========================================================
+
+@true_groups = (
+  [
+    'The <span style="color: #c80085; font-weight:700;">reaction rate</span> is <span style="color: #007a00; font-weight:700;">proportional</span> to the substrate <span style="color: #d40000; font-weight:700;">concentration</span>.',
+  ],
+  [
+    '<span style="color: #076dad; font-weight:700;">M-M kinetics</span> assumes the enzyme has a single active site.',
+    '<span style="color: #076dad; font-weight:700;">M-M kinetics</span> does NOT apply to allosteric enzymes.',
+  ],
+  [
+    '<span style="color: #076dad; font-weight:700;">M-M kinetics</span> was developed by German biochemist Leonor Michaelis and Canadian physician Maud Menten in 1913.',
+  ],
+  [
+    '<span style="color: #076dad; font-weight:700;">M-M kinetics</span> assumes a quasi-steady state, that the <span style="color: #3b7600; font-weight:700;">enzyme-substrate complex [ES]</span> is <span style="color: #a719db; font-weight:700;">constant</span>.',
+    '<span style="color: #076dad; font-weight:700;">M-M kinetics</span> assumes that the change in <span style="color: #d40000; font-weight:700;">concentration</span> of <span style="color: #3b7600; font-weight:700;">enzyme-substrate complex [ES]</span> does NOT change.',
+    '<span style="color: #076dad; font-weight:700;">M-M kinetics</span> assumes that the <span style="color: #d40000; font-weight:700;">concentration</span> of <span style="color: #3b7600; font-weight:700;">enzyme-substrate complex [ES]</span> is <span style="color: #a719db; font-weight:700;">constant</span>.',
+    '<span style="color: #076dad; font-weight:700;">M-M kinetics</span> assumes that the rate of breaking the <span style="color: #3b7600; font-weight:700;">enzyme-substrate complex [ES]</span> is equal to the rate of its formation.',
+  ],
+  [
+    '<span style="color: #076dad; font-weight:700;">M-M kinetics</span> assumes that the enzyme bound to the product [EP] is short lived and does NOT contribute to the <span style="color: #c80085; font-weight:700;">reaction rate</span>.',
+    '<span style="color: #076dad; font-weight:700;">M-M kinetics</span> assumes that the <span style="color: #b74300; font-weight:700;">enzyme-product complex [EP]</span> is short lived and does NOT contribute to the <span style="color: #c80085; font-weight:700;">reaction rate</span>.',
+  ],
+  [
+    '<span style="color: #076dad; font-weight:700;">M-M kinetics</span> assumes that there is no product available and there is no measureable reverse <span style="color: #c80085; font-weight:700;">reaction rate</span>.',
+    '<span style="color: #076dad; font-weight:700;">M-M kinetics</span> assumes that the product is NOT available and there is no measureable reverse <span style="color: #c80085; font-weight:700;">reaction rate</span>.',
+  ],
+  [
+    'When the substrate <span style="color: #d40000; font-weight:700;">concentration</span>, [S], is much larger than K<sub>M</sub>, the <span style="color: #c80085; font-weight:700;">reaction rate</span> is <span style="color: #a719db; font-weight:700;">constant</span>.',
+    'When the substrate <span style="color: #d40000; font-weight:700;">concentration</span>, [S], is much smaller than K<sub>M</sub>, the <span style="color: #c80085; font-weight:700;">reaction rate</span> is linear.',
+  ],
+);
+@false_groups = (
+  [
+    'The <span style="color: #c80085; font-weight:700;">reaction rate</span> is <span style="color: #007a00; font-weight:700;">proportional</span> to the product <span style="color: #d40000; font-weight:700;">concentration</span>.',
+  ],
+  [
+    '<span style="color: #076dad; font-weight:700;">M-M kinetics</span> was developed by American linguist Laura Michaelis and Belgian cyclist Milan Menten in 1913.',
+    '<span style="color: #076dad; font-weight:700;">M-M kinetics</span> was developed by Greek economist Leo Michelis and Dutch bobsledder Hubert Menten in 1913.',
+  ],
+  [
+    '<span style="color: #076dad; font-weight:700;">M-M kinetics</span> assumes that the <span style="color: #b74300; font-weight:700;">enzyme-product complex [EP]</span> is <span style="color: #a719db; font-weight:700;">constant</span>.',
+    '<span style="color: #076dad; font-weight:700;">M-M kinetics</span> assumes that the change in <span style="color: #d40000; font-weight:700;">concentration</span> of <span style="color: #b74300; font-weight:700;">enzyme-product complex [EP]</span> does NOT change.',
+    '<span style="color: #076dad; font-weight:700;">M-M kinetics</span> assumes that the <span style="color: #d40000; font-weight:700;">concentration</span> of <span style="color: #b74300; font-weight:700;">enzyme-product complex [EP]</span> is <span style="color: #a719db; font-weight:700;">constant</span>.',
+    '<span style="color: #076dad; font-weight:700;">M-M kinetics</span> assumes that the rate of breaking the <span style="color: #b74300; font-weight:700;">enzyme-product complex [EP]</span> is equal to the rate of its formation.',
+  ],
+  [
+    '<span style="color: #076dad; font-weight:700;">M-M kinetics</span> assumes that the enzyme bound to the substrate [ES] is short lived and does NOT contribute to the <span style="color: #c80085; font-weight:700;">reaction rate</span>.',
+    '<span style="color: #076dad; font-weight:700;">M-M kinetics</span> assumes that the <span style="color: #3b7600; font-weight:700;">enzyme-substrate complex [ES]</span> is short lived and does NOT contribute to the <span style="color: #c80085; font-weight:700;">reaction rate</span>.',
+  ],
+  [
+    '<span style="color: #076dad; font-weight:700;">M-M kinetics</span> assumes that there is no substrate available and there is no measureable reverse <span style="color: #c80085; font-weight:700;">reaction rate</span>.',
+    '<span style="color: #076dad; font-weight:700;">M-M kinetics</span> assumes that the substrate is NOT available and there is no measureable reverse <span style="color: #c80085; font-weight:700;">reaction rate</span>.',
+  ],
+  [
+    'When the substrate <span style="color: #d40000; font-weight:700;">concentration</span>, [S], is much larger than K<sub>M</sub>, the <span style="color: #c80085; font-weight:700;">reaction rate</span> is linear.',
+    'When the substrate <span style="color: #d40000; font-weight:700;">concentration</span>, [S], is much smaller than K<sub>M</sub>, the <span style="color: #c80085; font-weight:700;">reaction rate</span> is <span style="color: #a719db; font-weight:700;">constant</span>.',
+  ],
+);
+
+#==========================================================
+# GLOBAL SETTINGS
+#==========================================================
+
+$topic = 'Michaelis-Menten kinetics';
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+my @mode_choices = ("TRUE", "FALSE");
+$mode = $mode_choices[$local_random->random(0, $#mode_choices, 1)];
+$num_distractors = 4;
+#==========================================================
+# SELECT GROUP
+#==========================================================
+
+my (@selected_group, @opposite_groups);
+
+if ($mode eq "TRUE") {
+  $group_index      = $local_random->random(0, scalar(@true_groups)-1, 1);
+  @selected_group   = @{ $true_groups[$group_index] };
+  @opposite_groups  = @false_groups;
+} else {
+  $group_index      = $local_random->random(0, scalar(@false_groups)-1, 1);
+  @selected_group   = @{ $false_groups[$group_index] };
+  @opposite_groups  = @true_groups;
+}
+
+#==========================================================
+# PICK CORRECT + DISTRACTORS
+#==========================================================
+
+my $correct_index = $local_random->random(0, $#selected_group, 1);
+$correct = $selected_group[$correct_index];
+
+my @available_group_indices = (0 .. $#opposite_groups);
+my @selected_distractor_indices = ();
+
+while (@selected_distractor_indices < $num_distractors && @available_group_indices > 0) {
+  my $random_index = $local_random->random(0, scalar(@available_group_indices)-1, 1);
+  push @selected_distractor_indices, splice(@available_group_indices, $random_index, 1);
+}
+
+@distractors = ();
+foreach my $group_idx (@selected_distractor_indices) {
+  my @group = @{ $opposite_groups[$group_idx] };
+  my $distractor_index = $local_random->random(0, $#group, 1);
+  my $distractor = $group[$distractor_index];
+  push @distractors, $distractor;
+}
+
+@choices = ($correct, @distractors);
+
+#==========================================================
+# SHUFFLE CHOICES (SEED-STABLE)
+#==========================================================
+
+my @choice_indices = (0 .. $#choices);
+my @choice_shuffled = ();
+while (@choice_indices) {
+  my $pick = $local_random->random(0, $#choice_indices, 1);
+  push @choice_shuffled, splice(@choice_indices, $pick, 1);
+}
+@choices = @choices[@choice_shuffled];
+
+#==========================================================
+# RADIO BUTTONS WITH A/B/C/D/E LABELS
+#==========================================================
+
+$rb = RadioButtons(
+  [@choices],
+  $correct,
+  labels        => ['A','B','C','D','E'],
+  displayLabels => 1,
+  randomize     => 0,
+  separator     => '<div style="margin-bottom: 0.7em;"></div>',
+);
+
+#==========================================================
+# PGML
+#==========================================================
+
+BEGIN_PGML
+
+[@ $mode eq "TRUE" ? "Which one of the following statements is <strong>TRUE</strong> about $topic?" : "Which one of the following statements is <strong>FALSE</strong> about $topic?" @]*
+
+[_]{$rb}
+
+END_PGML
+
+ENDDOCUMENT();
+

@@ -1,0 +1,171 @@
+## DESCRIPTION
+## Select the statement that is TRUE or FALSE about enzyme kinetics.
+## ENDDESCRIPTION
+## KEYWORDS('enzyme kinetics','true/false','multiple choice')
+## DBsubject('Biochemistry')
+## DBchapter('')
+## DBsection('')
+## Date('2026-03-14')
+## Author('Neil R. Voss')
+## Institution('Roosevelt University')
+
+DOCUMENT();
+
+loadMacros(
+  "PGstandard.pl",
+  "PGML.pl",
+  "PGchoicemacros.pl",
+  "parserRadioButtons.pl",
+  "PGcourse.pl",
+);
+
+TEXT(beginproblem());
+$showPartialCorrectAnswers = 1;
+
+#==========================================================
+# AUTO-GENERATED GROUPS FROM YAML
+#==========================================================
+
+@true_groups = (
+  [
+    'enzymes cannot <span style="color: #000099; font-weight:700;">change</span> the standard <span style="color: #006600; font-weight:700;">free energy</span> (&Delta;G&deg;&prime;) of a chemical reaction',
+    'enzymes cannot <span style="color: #000099; font-weight:700;">change</span> the Gibbs <span style="color: #006600; font-weight:700;">free energy</span> (&Delta;G) of a chemical reaction',
+  ],
+  [
+    'enzymes cannot <span style="color: #000099; font-weight:700;">change</span> the equilibrium of the chemical reaction',
+  ],
+  [
+    'enzymes <span style="color: #990000; font-weight:700;">reduce</span> the <span style="color: #660000; font-weight:700;">activation energy</span> of a chemical reaction',
+    'enzymes <span style="color: #990000; font-weight:700;">decrease</span> the <span style="color: #660000; font-weight:700;">activation energy</span> of a chemical reaction',
+    'enzymes <span style="color: #990000; font-weight:700;">lower</span> the <span style="color: #660000; font-weight:700;">activation energy</span> of a chemical reaction',
+  ],
+  [
+    'enzymes <span style="color: #007a00; font-weight:700;">increase</span> the rate of a chemical reaction',
+  ],
+  [
+    'enzymes stabilize the transition state in a chemical reaction',
+  ],
+  [
+    'enzymes can provide favorable microenvironments for a chemical reaction',
+  ],
+);
+@false_groups = (
+  [
+    'enzymes only allow chemical reactions to go forward',
+    'enzymes force chemical reactions to go forward',
+    'enzymes produce more product than substrate in a chemical reaction',
+    'enzymes only convert substrate to product and NOT the reverse',
+  ],
+  [
+    'enzymes <span style="color: #000099; font-weight:700;">alter</span> the Gibbs <span style="color: #006600; font-weight:700;">free energy</span> (&Delta;G) of a chemical reaction',
+    'enzymes <span style="color: #000099; font-weight:700;">alter</span> the standard <span style="color: #006600; font-weight:700;">free energy</span> (&Delta;G&deg;&prime;) of a chemical reaction',
+    'enzymes make endergonic reactions proceed spontaneously',
+  ],
+  [
+    'enzymes <span style="color: #000099; font-weight:700;">alter</span> the equilibrium of the chemical reaction',
+  ],
+  [
+    'enzymes <span style="color: #007a00; font-weight:700;">increase</span> the <span style="color: #660000; font-weight:700;">activation energy</span> of a chemical reaction',
+    'enzymes <span style="color: #007a00; font-weight:700;">raise</span> the <span style="color: #660000; font-weight:700;">activation energy</span> of a chemical reaction',
+    'enzymes eliminate the <span style="color: #660000; font-weight:700;">activation energy</span> of a chemical reaction.',
+    'enzymes cannot <span style="color: #000099; font-weight:700;">change</span> the <span style="color: #660000; font-weight:700;">activation energy</span> of the chemical reaction',
+    'enzymes provide the needed <span style="color: #660000; font-weight:700;">activation energy</span> for a chemical reaction',
+  ],
+  [
+    'enzymes <span style="color: #990000; font-weight:700;">reduce</span> the rate of a chemical reaction',
+  ],
+  [
+    'enzymes are needed in large quantities as they are used up in a chemical reaction',
+  ],
+);
+
+#==========================================================
+# GLOBAL SETTINGS
+#==========================================================
+
+$topic = 'enzyme kinetics';
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+my @mode_choices = ("TRUE", "FALSE");
+$mode = $mode_choices[$local_random->random(0, $#mode_choices, 1)];
+$num_distractors = 4;
+#==========================================================
+# SELECT GROUP
+#==========================================================
+
+my (@selected_group, @opposite_groups);
+
+if ($mode eq "TRUE") {
+  $group_index      = $local_random->random(0, scalar(@true_groups)-1, 1);
+  @selected_group   = @{ $true_groups[$group_index] };
+  @opposite_groups  = @false_groups;
+} else {
+  $group_index      = $local_random->random(0, scalar(@false_groups)-1, 1);
+  @selected_group   = @{ $false_groups[$group_index] };
+  @opposite_groups  = @true_groups;
+}
+
+#==========================================================
+# PICK CORRECT + DISTRACTORS
+#==========================================================
+
+my $correct_index = $local_random->random(0, $#selected_group, 1);
+$correct = $selected_group[$correct_index];
+
+my @available_group_indices = (0 .. $#opposite_groups);
+my @selected_distractor_indices = ();
+
+while (@selected_distractor_indices < $num_distractors && @available_group_indices > 0) {
+  my $random_index = $local_random->random(0, scalar(@available_group_indices)-1, 1);
+  push @selected_distractor_indices, splice(@available_group_indices, $random_index, 1);
+}
+
+@distractors = ();
+foreach my $group_idx (@selected_distractor_indices) {
+  my @group = @{ $opposite_groups[$group_idx] };
+  my $distractor_index = $local_random->random(0, $#group, 1);
+  my $distractor = $group[$distractor_index];
+  push @distractors, $distractor;
+}
+
+@choices = ($correct, @distractors);
+
+#==========================================================
+# SHUFFLE CHOICES (SEED-STABLE)
+#==========================================================
+
+my @choice_indices = (0 .. $#choices);
+my @choice_shuffled = ();
+while (@choice_indices) {
+  my $pick = $local_random->random(0, $#choice_indices, 1);
+  push @choice_shuffled, splice(@choice_indices, $pick, 1);
+}
+@choices = @choices[@choice_shuffled];
+
+#==========================================================
+# RADIO BUTTONS WITH A/B/C/D/E LABELS
+#==========================================================
+
+$rb = RadioButtons(
+  [@choices],
+  $correct,
+  labels        => ['A','B','C','D','E'],
+  displayLabels => 1,
+  randomize     => 0,
+  separator     => '<div style="margin-bottom: 0.7em;"></div>',
+);
+
+#==========================================================
+# PGML
+#==========================================================
+
+BEGIN_PGML
+
+[@ $mode eq "TRUE" ? "Which one of the following statements is <strong>TRUE</strong> about $topic?" : "Which one of the following statements is <strong>FALSE</strong> about $topic?" @]*
+
+[_]{$rb}
+
+END_PGML
+
+ENDDOCUMENT();
+

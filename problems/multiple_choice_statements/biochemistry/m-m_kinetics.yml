@@ -7,9 +7,9 @@ replacement_rules:
   DDDDDDD: '<span style="color: #6c6c00;">DDDDDDD</span>'
   enzyme-substrate complex [ES]: '<span style="color: #3b7600;">enzyme-substrate complex
     [ES]</span>'
-  proportional: '<span style="color: #007a00;"><i>proportional</i></span>'
+  proportional: '<span style="color: #007a00;"><strong>proportional</strong></span>'
   M-M kinetics: '<span style="color: #076dad;">M-M kinetics</span>'
-  constant: '<span style="color: #a719db;"><i>constant</i></span>'
+  constant: '<span style="color: #a719db;"><strong>constant</strong></span>'
   reaction rate: '<span style="color: #c80085;">reaction rate</span>'
 connection_words: null
 true_statements:

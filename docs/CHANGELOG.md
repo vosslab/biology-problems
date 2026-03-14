@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-03-14
+
+### Fixes and Maintenance
+- Updated `extract_strict_color_spans()` in [webwork_lib.py](../webwork_lib.py) to allow `<i>` and `<em>` tags inside color `<span>` elements, alongside the existing `<sub>`/`<sup>` allowlist. This eliminates "non-strict color span skipped for replacement" warnings for YAML files using italic tags in colored spans (e.g., chemistry notation like `&Delta;<i>H</i>`).
+- Updated `build_html_span()` in [webwork_lib.py](../webwork_lib.py) to restore `<i>`, `</i>`, `<em>`, and `</em>` tags after HTML escaping, matching the existing `<sub>`/`<sup>` restore logic.
+- Converted whole-word `<i>` emphasis to `<strong>` in [problems/multiple_choice_statements/biochemistry/m-m_kinetics.yml](../problems/multiple_choice_statements/biochemistry/m-m_kinetics.yml) (`proportional`, `constant`) and [problems/multiple_choice_statements/biochemistry/gibbs_free_energy_equation.yml](../problems/multiple_choice_statements/biochemistry/gibbs_free_energy_equation.yml) (`spontaneous`, `non-spontaneous`). Italic was incorrect for emphasis words; `<strong>` provides better readability with colored text. Chemistry notation italic (e.g., `<i>H</i>`, `<i>T</i>`, `<i>S</i>`, `<i>G</i>`) and genus abbreviations (e.g., `<i>Taq</i>`) were left unchanged.
+
+### Behavior or Interface Changes
+- Changed output file extension in [problems/multiple_choice_statements/yaml_mc_statements_to_pgml.py](../problems/multiple_choice_statements/yaml_mc_statements_to_pgml.py) from `.pg` to `.pgml` to match the other PGML generators in `problems/matching_sets/`.
+
 ## 2026-03-05
 
 ### Additions and New Features

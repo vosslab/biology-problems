@@ -1,0 +1,179 @@
+## DESCRIPTION
+## Select the statement that is TRUE or FALSE about enzyme$inhibitors.
+## ENDDESCRIPTION
+## KEYWORDS('enzyme$inhibitors','true/false','multiple choice')
+## DBsubject('Biochemistry')
+## DBchapter('')
+## DBsection('')
+## Date('2026-03-14')
+## Author('Neil R. Voss')
+## Institution('Roosevelt University')
+
+DOCUMENT();
+
+loadMacros(
+  "PGstandard.pl",
+  "PGML.pl",
+  "PGchoicemacros.pl",
+  "parserRadioButtons.pl",
+  "PGcourse.pl",
+);
+
+TEXT(beginproblem());
+$showPartialCorrectAnswers = 1;
+
+#==========================================================
+# AUTO-GENERATED GROUPS FROM YAML
+#==========================================================
+
+@true_groups = (
+  [
+    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> <span style="color: #a719db; font-weight:700;">bind</span>to the <span style="color: #c80085; font-weight:700;">active site</span> of an enzyme and compete with the<span style="color: #b74300; font-weight:700;">substrate</span> for <span style="color: #a719db; font-weight:700;">binding</span>.',
+    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> <span style="color: #a719db; font-weight:700;">bind</span>to the <span style="color: #c80085; font-weight:700;">active site</span> of an enzyme.',
+    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> compete with the<span style="color: #b74300; font-weight:700;">substrate</span> for <span style="color: #c80085; font-weight:700;">active site</span> <span style="color: #a719db; font-weight:700;">binding</span>.',
+    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> have a structure that is similar to the<span style="color: #b74300; font-weight:700;">substrate</span>.',
+    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> can be overcome by increasing the concentration of the<span style="color: #b74300; font-weight:700;">substrate</span>.',
+  ],
+  [
+    '<span style="color: #3b7600; font-weight:700;">Noncompetitive&nbsp;inhibitors</span> do NOT <span style="color: #a719db; font-weight:700;">bind</span>the <span style="color: #c80085; font-weight:700;">active site</span>, but can alter <span style="color: #c80085; font-weight:700;">active site</span> conformation.',
+    '<span style="color: #3b7600; font-weight:700;">Noncompetitive&nbsp;inhibitors</span> do NOT <span style="color: #a719db; font-weight:700;">bind</span>the <span style="color: #c80085; font-weight:700;">active site</span>, but can reduce <span style="color: #c80085; font-weight:700;">active site</span> activity.',
+    '<span style="color: #3b7600; font-weight:700;">Noncompetitive&nbsp;inhibitors</span> <span style="color: #a719db; font-weight:700;">bind</span>to a site on the enzyme that is distinct from the <span style="color: #c80085; font-weight:700;">active site</span>',
+    '<span style="color: #3b7600; font-weight:700;">Noncompetitive&nbsp;inhibitors</span> do NOT affect<span style="color: #b74300; font-weight:700;">substrate</span> <span style="color: #a719db; font-weight:700;">binding</span>, but they do decrease catalysis.',
+  ],
+  [
+    '<span style="color: #076dad; font-weight:700;">Uncompetitive&nbsp;inhibitors</span> <span style="color: #a719db; font-weight:700;">bind</span>to the <span style="color: #6c6c00; font-weight:700;">enzyme-substrate complex</span> and prevent <span style="color: #007a00; font-weight:700;">product</span> formation.',
+    '<span style="color: #076dad; font-weight:700;">Uncompetitive&nbsp;inhibitors</span> only <span style="color: #a719db; font-weight:700;">bind</span>to the <span style="color: #6c6c00; font-weight:700;">enzyme-substrate complex</span>.',
+    '<span style="color: #076dad; font-weight:700;">Uncompetitive&nbsp;inhibitors</span> have a higher affinity for the <span style="color: #6c6c00; font-weight:700;">enzyme-substrate complex</span> than for the free enzyme.',
+  ],
+  [
+    '<span style="color: #935d00; font-weight:700;">Enzyme&nbsp;inhibitors</span> can be used as probes to study enzyme structure and function.',
+    '<span style="color: #935d00; font-weight:700;">Enzyme&nbsp;inhibitors</span> can be used as therapeutic agents to treat a variety of diseases.',
+  ],
+);
+@false_groups = (
+  [
+    '<span style="color: #3b7600; font-weight:700;">Noncompetitive&nbsp;inhibitors</span> <span style="color: #a719db; font-weight:700;">bind</span>to the <span style="color: #c80085; font-weight:700;">active site</span> of an enzyme and compete with the<span style="color: #b74300; font-weight:700;">substrate</span> for <span style="color: #a719db; font-weight:700;">binding</span>.',
+    '<span style="color: #3b7600; font-weight:700;">Noncompetitive&nbsp;inhibitors</span> <span style="color: #a719db; font-weight:700;">bind</span>to the <span style="color: #c80085; font-weight:700;">active site</span> of an enzyme.',
+    '<span style="color: #3b7600; font-weight:700;">Noncompetitive&nbsp;inhibitors</span> compete with the<span style="color: #b74300; font-weight:700;">substrate</span> for <span style="color: #c80085; font-weight:700;">active site</span> <span style="color: #a719db; font-weight:700;">binding</span>.',
+    '<span style="color: #3b7600; font-weight:700;">Noncompetitive&nbsp;inhibitors</span> <span style="color: #a719db; font-weight:700;">bind</span>the <span style="color: #c80085; font-weight:700;">active site</span> to reduce <span style="color: #c80085; font-weight:700;">active site</span> activity.',
+    '<span style="color: #076dad; font-weight:700;">Uncompetitive&nbsp;inhibitors</span> <span style="color: #a719db; font-weight:700;">bind</span>to the <span style="color: #c80085; font-weight:700;">active site</span> of an enzyme and compete with the<span style="color: #b74300; font-weight:700;">substrate</span> for <span style="color: #a719db; font-weight:700;">binding</span>.',
+    '<span style="color: #076dad; font-weight:700;">Uncompetitive&nbsp;inhibitors</span> <span style="color: #a719db; font-weight:700;">bind</span>to the <span style="color: #c80085; font-weight:700;">active site</span> of an enzyme.',
+    '<span style="color: #076dad; font-weight:700;">Uncompetitive&nbsp;inhibitors</span> compete with the<span style="color: #b74300; font-weight:700;">substrate</span> for <span style="color: #c80085; font-weight:700;">active site</span> <span style="color: #a719db; font-weight:700;">binding</span>.',
+    '<span style="color: #076dad; font-weight:700;">Uncompetitive&nbsp;inhibitors</span> <span style="color: #a719db; font-weight:700;">bind</span>to the enzyme and prevent<span style="color: #b74300; font-weight:700;">substrate</span> <span style="color: #a719db; font-weight:700;">binding</span>.',
+    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> do NOT compete with the<span style="color: #b74300; font-weight:700;">substrate</span> for <span style="color: #c80085; font-weight:700;">active site</span> <span style="color: #a719db; font-weight:700;">binding</span>.',
+    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> do NOT <span style="color: #a719db; font-weight:700;">bind</span>to the <span style="color: #c80085; font-weight:700;">active site</span> of an enzyme.',
+    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> do NOT <span style="color: #a719db; font-weight:700;">bind</span>to the enzyme to prevent<span style="color: #b74300; font-weight:700;">substrate</span> <span style="color: #a719db; font-weight:700;">binding</span>.',
+  ],
+  [
+    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> <span style="color: #a719db; font-weight:700;">bind</span>to a site on the enzyme that is distinct from the <span style="color: #c80085; font-weight:700;">active site</span>.',
+    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> do NOT <span style="color: #a719db; font-weight:700;">bind</span>the <span style="color: #c80085; font-weight:700;">active site</span>, but can alter <span style="color: #c80085; font-weight:700;">active site</span> conformation.',
+    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> do NOT <span style="color: #a719db; font-weight:700;">bind</span>the <span style="color: #c80085; font-weight:700;">active site</span>, but can reduce <span style="color: #c80085; font-weight:700;">active site</span> activity.',
+    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> do NOT affect<span style="color: #b74300; font-weight:700;">substrate</span> <span style="color: #a719db; font-weight:700;">binding</span>, but they do decrease catalysis.',
+    '<span style="color: #076dad; font-weight:700;">Uncompetitive&nbsp;inhibitors</span> <span style="color: #a719db; font-weight:700;">bind</span>to a site on the enzyme that is distinct from the <span style="color: #c80085; font-weight:700;">active site</span>.',
+    '<span style="color: #3b7600; font-weight:700;">Noncompetitive&nbsp;inhibitors</span> affect<span style="color: #b74300; font-weight:700;">substrate</span> <span style="color: #a719db; font-weight:700;">binding</span>, but do NOT decrease catalysis.',
+  ],
+  [
+    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> only <span style="color: #a719db; font-weight:700;">bind</span>to the <span style="color: #6c6c00; font-weight:700;">enzyme-substrate complex</span>.',
+    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> <span style="color: #a719db; font-weight:700;">bind</span>to the <span style="color: #6c6c00; font-weight:700;">enzyme-substrate complex</span> and prevent <span style="color: #007a00; font-weight:700;">product</span> formation.',
+    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> have a higher affinity for the <span style="color: #6c6c00; font-weight:700;">enzyme-substrate complex</span> than for the free enzyme.',
+    '<span style="color: #3b7600; font-weight:700;">Noncompetitive&nbsp;inhibitors</span> only <span style="color: #a719db; font-weight:700;">bind</span>to the <span style="color: #6c6c00; font-weight:700;">enzyme-substrate complex</span>.',
+    '<span style="color: #3b7600; font-weight:700;">Noncompetitive&nbsp;inhibitors</span> <span style="color: #a719db; font-weight:700;">bind</span>to the <span style="color: #6c6c00; font-weight:700;">enzyme-substrate complex</span> and prevent <span style="color: #007a00; font-weight:700;">product</span> formation.',
+    '<span style="color: #3b7600; font-weight:700;">Noncompetitive&nbsp;inhibitors</span> have a higher affinity for the <span style="color: #6c6c00; font-weight:700;">enzyme-substrate complex</span> than for the free enzyme.',
+    '<span style="color: #076dad; font-weight:700;">Uncompetitive&nbsp;inhibitors</span> have a higher affinity for the free enzyme than for the <span style="color: #6c6c00; font-weight:700;">enzyme-substrate complex</span>.',
+  ],
+  [
+    '<span style="color: #935d00; font-weight:700;">Enzyme&nbsp;inhibitors</span> completely block all enzyme activity regardless of their concentration.',
+    '<span style="color: #935d00; font-weight:700;">Enzyme&nbsp;inhibitors</span> have no impact on the structure or function of enzymes.',
+  ],
+);
+
+#==========================================================
+# GLOBAL SETTINGS
+#==========================================================
+
+$topic = '<span style="color: #935d00; font-weight:700;">enzyme&nbsp;inhibitors</span>';
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+my @mode_choices = ("TRUE", "FALSE");
+$mode = $mode_choices[$local_random->random(0, $#mode_choices, 1)];
+$num_distractors = 4;
+#==========================================================
+# SELECT GROUP
+#==========================================================
+
+my (@selected_group, @opposite_groups);
+
+if ($mode eq "TRUE") {
+  $group_index      = $local_random->random(0, scalar(@true_groups)-1, 1);
+  @selected_group   = @{ $true_groups[$group_index] };
+  @opposite_groups  = @false_groups;
+} else {
+  $group_index      = $local_random->random(0, scalar(@false_groups)-1, 1);
+  @selected_group   = @{ $false_groups[$group_index] };
+  @opposite_groups  = @true_groups;
+}
+
+#==========================================================
+# PICK CORRECT + DISTRACTORS
+#==========================================================
+
+my $correct_index = $local_random->random(0, $#selected_group, 1);
+$correct = $selected_group[$correct_index];
+
+my @available_group_indices = (0 .. $#opposite_groups);
+my @selected_distractor_indices = ();
+
+while (@selected_distractor_indices < $num_distractors && @available_group_indices > 0) {
+  my $random_index = $local_random->random(0, scalar(@available_group_indices)-1, 1);
+  push @selected_distractor_indices, splice(@available_group_indices, $random_index, 1);
+}
+
+@distractors = ();
+foreach my $group_idx (@selected_distractor_indices) {
+  my @group = @{ $opposite_groups[$group_idx] };
+  my $distractor_index = $local_random->random(0, $#group, 1);
+  my $distractor = $group[$distractor_index];
+  push @distractors, $distractor;
+}
+
+@choices = ($correct, @distractors);
+
+#==========================================================
+# SHUFFLE CHOICES (SEED-STABLE)
+#==========================================================
+
+my @choice_indices = (0 .. $#choices);
+my @choice_shuffled = ();
+while (@choice_indices) {
+  my $pick = $local_random->random(0, $#choice_indices, 1);
+  push @choice_shuffled, splice(@choice_indices, $pick, 1);
+}
+@choices = @choices[@choice_shuffled];
+
+#==========================================================
+# RADIO BUTTONS WITH A/B/C/D/E LABELS
+#==========================================================
+
+$rb = RadioButtons(
+  [@choices],
+  $correct,
+  labels        => ['A','B','C','D','E'],
+  displayLabels => 1,
+  randomize     => 0,
+  separator     => '<div style="margin-bottom: 0.7em;"></div>',
+);
+
+#==========================================================
+# PGML
+#==========================================================
+
+BEGIN_PGML
+
+[@ $mode eq "TRUE" ? "Which one of the following statements is <strong>TRUE</strong> about $topic?" : "Which one of the following statements is <strong>FALSE</strong> about $topic?" @]*
+
+[_]{$rb}
+
+END_PGML
+
+ENDDOCUMENT();
+

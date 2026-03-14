@@ -1,0 +1,195 @@
+## DESCRIPTION
+## Select the statement that is TRUE or FALSE about being an enzymatic cofactor.
+## ENDDESCRIPTION
+## KEYWORDS('being an enzymatic cofactor','true/false','multiple choice')
+## DBsubject('Biochemistry')
+## DBchapter('')
+## DBsection('')
+## Date('2026-03-14')
+## Author('Neil R. Voss')
+## Institution('Roosevelt University')
+
+DOCUMENT();
+
+loadMacros(
+  "PGstandard.pl",
+  "PGML.pl",
+  "PGchoicemacros.pl",
+  "parserRadioButtons.pl",
+  "PGcourse.pl",
+);
+
+TEXT(beginproblem());
+$showPartialCorrectAnswers = 1;
+
+#==========================================================
+# AUTO-GENERATED GROUPS FROM YAML
+#==========================================================
+
+@true_groups = (
+  [
+    'wrong choice, do NOT select',
+  ],
+  [
+    'magnesium <span style="color: #663300; font-weight:700;">ion</span>, Mg<sup>2+</sup>',
+    'calcium <span style="color: #663300; font-weight:700;">ion</span>, Ca<sup>2+</sup>',
+    'sodium <span style="color: #663300; font-weight:700;">ion</span>, Na<sup>+</sup>',
+    'potassium <span style="color: #663300; font-weight:700;">ion</span>, K<sup>+</sup>',
+    'iron <span style="color: #663300; font-weight:700;">ion</span>s, Fe<sup>+2</sup>/Fe<sup>+3</sup>',
+    'zinc <span style="color: #663300; font-weight:700;">ion</span>, Zn<sup>2+</sup>',
+    'copper <span style="color: #663300; font-weight:700;">ion</span>, Cu<sup>2+</sup>',
+    'chloride <span style="color: #663300; font-weight:700;">ion</span>, Cl<sup>-</sup>',
+    'manganese <span style="color: #663300; font-weight:700;">ion</span>s (Mn<sup>2+</sup>)',
+  ],
+  [
+    'flavin adenine dinucleotide (FAD &rarr; FADH<sub>2</sub>)',
+    'nicotinamide adenine dinucleotide (NAD<sup>+</sup> &rarr; NADH)',
+    'nicotinamide adenine dinucleotide phosphate (NADP<sup>+</sup> &rarr; NADPH)',
+    'co<span style="color: darkblue; font-weight:700;">enzyme</span> A (CoA)',
+    'flavin mononucleotide (FMN &rarr; FMNH<sub>2</sub>)',
+    'co<span style="color: darkblue; font-weight:700;">enzyme</span> Q10, ubiquinone',
+    'pyridoxal phosphate (PLP), a derivative of Vitamin B<sub>6</sub>',
+    'tetrahydrofolate (THF), a form of folic acid, Vitamin B<sub>9</sub>',
+    'methylcobalamin, a form of Vitamin B<sub>12</sub>',
+  ],
+  [
+    '<span style="color: darkgreen; font-weight:700;">vitamin</span> B<sub>1</sub>, thiamin',
+    '<span style="color: darkgreen; font-weight:700;">vitamin</span> B<sub>2</sub>, riboflavin',
+    '<span style="color: darkgreen; font-weight:700;">vitamin</span> B<sub>3</sub>, niacin',
+    '<span style="color: darkgreen; font-weight:700;">vitamin</span> B<sub>5</sub>, pantothenic acid',
+    '<span style="color: darkgreen; font-weight:700;">vitamin</span> B<sub>6</sub>, pyridoxamine',
+    '<span style="color: darkgreen; font-weight:700;">vitamin</span> B<sub>7</sub>, biotin',
+    '<span style="color: darkgreen; font-weight:700;">vitamin</span> B<sub>9</sub>, folate',
+    '<span style="color: darkgreen; font-weight:700;">vitamin</span> B<sub>12</sub>, cobalamins',
+    '<span style="color: darkgreen; font-weight:700;">vitamin</span> A, retinol',
+  ],
+  [
+    'testosterone, an anabolic-androgenic <span style="color: #6600cc; font-weight:700;">steroid</span> and the principal male sex hormone',
+    'cholesterol, a cell membrane <span style="color: #6600cc; font-weight:700;">steroid</span>',
+    'aldosterone, a <span style="color: #6600cc; font-weight:700;">steroid</span> hormone that acts on the kidney',
+    'cortisol, a cortico<span style="color: #6600cc; font-weight:700;">steroid</span> hormone that is produced in response to stress',
+    'estrone (E1), one of the estrogen <span style="color: #6600cc; font-weight:700;">steroid</span> hormones responsible for female sex characteristics',
+    'estradiol (E2), one of the estrogen <span style="color: #6600cc; font-weight:700;">steroid</span> hormones responsible for female sex characteristics',
+    'estriol (E3), one of the estrogen <span style="color: #6600cc; font-weight:700;">steroid</span> hormones responsible for female sex characteristics',
+    'progesterone (P4), a <span style="color: #6600cc; font-weight:700;">steroid</span> hormone involved in the menstrual cycle',
+    'dehydroepiandrosterone (DHEA), a <span style="color: #6600cc; font-weight:700;">steroid</span> hormone precursor',
+  ],
+  [
+    '<span style="color: #990033; font-weight:700;">adenosine</span> monophosphate (AMP)',
+    '<span style="color: #990033; font-weight:700;">adenosine</span> diphosphate (ADP)',
+    '<span style="color: #990033; font-weight:700;">adenosine</span> triphosphate (ATP)',
+  ],
+  [
+    'the <span style="color: darkred; font-weight:700;">organic molecule </span> of a heme porphyrin with an iron <span style="color: #663300; font-weight:700;">ion</span>, Fe<sup>2+</sup>, attached',
+    'creatine, an <span style="color: darkred; font-weight:700;">organic molecule </span> that recharges ATP',
+    'S-adenosyl meth<span style="color: #663300; font-weight:700;">ion</span>ine (SAM), an <span style="color: darkred; font-weight:700;">organic molecule </span> used for methyl group transfer',
+    'quinone, an organic compound involved in electron transport',
+  ],
+);
+@false_groups = (
+  [
+    'polyalanine peptide',
+    'ACTH protein',
+    'transcript<span style="color: #663300; font-weight:700;">ion</span> factor proteins',
+    'the glycolysis <span style="color: darkblue; font-weight:700;">enzyme</span>, hexokinase',
+    'the glycolysis <span style="color: darkblue; font-weight:700;">enzyme</span>, pyruvate kinase',
+    'the glycolysis <span style="color: darkblue; font-weight:700;">enzyme</span>, glyceraldehyde 3-phosphate dehydrogenase',
+    'the oxygen transport protein, hemoglobin',
+    'insulin, a hormone and a protein',
+    'the structural protein, keratin',
+    'immunoglobulin proteins',
+  ],
+);
+
+#==========================================================
+# GLOBAL SETTINGS
+#==========================================================
+
+$topic = 'being an enzymatic cofactor';
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+my @mode_choices = ("TRUE", "FALSE");
+$mode = $mode_choices[$local_random->random(0, $#mode_choices, 1)];
+$num_distractors = 4;
+# Question text with FALSE override
+$question_false = 'Which one of the following molecular entities <span style="color: orangered; font-weight:700;">CANNOT</span> be classified as an enzymatic cofactor?';
+#==========================================================
+# SELECT GROUP
+#==========================================================
+
+my (@selected_group, @opposite_groups);
+
+if ($mode eq "TRUE") {
+  $group_index      = $local_random->random(0, scalar(@true_groups)-1, 1);
+  @selected_group   = @{ $true_groups[$group_index] };
+  @opposite_groups  = @false_groups;
+} else {
+  $group_index      = $local_random->random(0, scalar(@false_groups)-1, 1);
+  @selected_group   = @{ $false_groups[$group_index] };
+  @opposite_groups  = @true_groups;
+}
+
+#==========================================================
+# PICK CORRECT + DISTRACTORS
+#==========================================================
+
+my $correct_index = $local_random->random(0, $#selected_group, 1);
+$correct = $selected_group[$correct_index];
+
+my @available_group_indices = (0 .. $#opposite_groups);
+my @selected_distractor_indices = ();
+
+while (@selected_distractor_indices < $num_distractors && @available_group_indices > 0) {
+  my $random_index = $local_random->random(0, scalar(@available_group_indices)-1, 1);
+  push @selected_distractor_indices, splice(@available_group_indices, $random_index, 1);
+}
+
+@distractors = ();
+foreach my $group_idx (@selected_distractor_indices) {
+  my @group = @{ $opposite_groups[$group_idx] };
+  my $distractor_index = $local_random->random(0, $#group, 1);
+  my $distractor = $group[$distractor_index];
+  push @distractors, $distractor;
+}
+
+@choices = ($correct, @distractors);
+
+#==========================================================
+# SHUFFLE CHOICES (SEED-STABLE)
+#==========================================================
+
+my @choice_indices = (0 .. $#choices);
+my @choice_shuffled = ();
+while (@choice_indices) {
+  my $pick = $local_random->random(0, $#choice_indices, 1);
+  push @choice_shuffled, splice(@choice_indices, $pick, 1);
+}
+@choices = @choices[@choice_shuffled];
+
+#==========================================================
+# RADIO BUTTONS WITH A/B/C/D/E LABELS
+#==========================================================
+
+$rb = RadioButtons(
+  [@choices],
+  $correct,
+  labels        => ['A','B','C','D','E'],
+  displayLabels => 1,
+  randomize     => 0,
+  separator     => '<div style="margin-bottom: 0.7em;"></div>',
+);
+
+#==========================================================
+# PGML
+#==========================================================
+
+BEGIN_PGML
+
+[@ $mode eq "TRUE" ? "Which one of the following statements is <strong>TRUE</strong> about $topic?" : $question_false @]*
+
+[_]{$rb}
+
+END_PGML
+
+ENDDOCUMENT();
+

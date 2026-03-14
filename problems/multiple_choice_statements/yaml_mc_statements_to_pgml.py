@@ -430,7 +430,7 @@ def main():
 
 	output_path = args.output_pg_file
 	if output_path is None:
-		output_path = str(yml_path.with_suffix(".pg"))
+		output_path = str(yml_path.with_suffix(".pgml"))
 	with open(output_path, 'w') as handle:
 		handle.write(pgml_text)
 	print(f"Generated: {output_path}")
