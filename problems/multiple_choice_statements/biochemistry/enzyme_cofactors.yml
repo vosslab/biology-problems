@@ -1,4 +1,12 @@
+title: 'Biochemistry: Enzymatic Cofactor Classification'
 topic: being an enzymatic cofactor
+description: Identify which molecular entities can or cannot be classified as enzymatic cofactors,
+  including metal ions, coenzymes, and vitamins.
+keywords:
+  - enzymatic cofactors
+  - coenzymes
+  - metal ions
+  - multiple choice
 override_question_true: null
 override_question_false: Which one of the following molecular entities cannot be classified
   as an enzymatic cofactor?

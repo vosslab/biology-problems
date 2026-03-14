@@ -1066,9 +1066,9 @@ base_replacement_rule_dict = {
 	' false ': ' <span style="color: #ba372a;"><strong>FALSE</strong></span> ', #BOLD RED
 	' False ': ' <span style="color: #ba372a;"><strong>FALSE</strong></span> ', #BOLD RED
 	' FALSE ': ' <span style="color: #ba372a;"><strong>FALSE</strong></span> ', #BOLD RED
-	' true ': ' <span style="color: #169179;"><strong>TRUE</strong></span> ', #BOLD GREEN
-	' True ': ' <span style="color: #169179;"><strong>TRUE</strong></span> ', #BOLD GREEN
-	' TRUE ': ' <span style="color: #169179;"><strong>TRUE</strong></span> ', #BOLD GREEN
+	' true ': ' <span style="color: #127663;"><strong>TRUE</strong></span> ', #BOLD GREEN
+	' True ': ' <span style="color: #127663;"><strong>TRUE</strong></span> ', #BOLD GREEN
+	' TRUE ': ' <span style="color: #127663;"><strong>TRUE</strong></span> ', #BOLD GREEN
 	'  ': ' ',
 }
 

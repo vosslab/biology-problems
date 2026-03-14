@@ -1,4 +1,13 @@
+title: 'Biochemistry: Gibbs Free Energy Equation True/False'
 topic: the Gibbs free energy, &Delta;G = &Delta;H &ndash; T &Delta;S
+description: Evaluate true or false statements about the Gibbs free energy equation,
+  including the roles of enthalpy, entropy, and temperature in determining spontaneity.
+keywords:
+  - Gibbs free energy
+  - enthalpy
+  - entropy
+  - spontaneity
+  - multiple choice
 connection_words: null
 replacement_rules:
   '&Delta;H': '<span style="color: #d40000;"><strong>&Delta;<i>H</i></strong></span>'

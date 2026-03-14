@@ -1,7 +1,8 @@
+## TITLE('Biochemistry: Gibbs Free Energy Equation True/False')
 ## DESCRIPTION
-## Select the statement that is TRUE or FALSE about the Gibbs free energy, &Delta;G = &Delta;H &ndash; T &Delta;S.
+## Evaluate true or false statements about the Gibbs free energy equation, including the roles of enthalpy, entropy, and temperature in determining spontaneity.
 ## ENDDESCRIPTION
-## KEYWORDS('the Gibbs free energy, &Delta;G = &Delta;H &ndash; T &Delta;S','true/false','multiple choice')
+## KEYWORDS('Gibbs free energy','enthalpy','entropy','spontaneity','multiple choice')
 ## DBsubject('Biochemistry')
 ## DBchapter('')
 ## DBsection('')
@@ -184,7 +185,7 @@ $rb = RadioButtons(
 
 BEGIN_PGML
 
-[@ $mode eq "TRUE" ? "Which one of the following statements is <strong>TRUE</strong> about $topic?" : "Which one of the following statements is <strong>FALSE</strong> about $topic?" @]*
+[@ $mode eq "TRUE" ? "Which one of the following statements is <span style='color: #127663;'><strong>TRUE</strong></span> about $topic?" : "Which one of the following statements is <span style='color: #ba372a;'><strong>FALSE</strong></span> about $topic?" @]*
 
 [_]{$rb}
 

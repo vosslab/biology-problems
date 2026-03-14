@@ -1,4 +1,12 @@
+title: 'Biochemistry: Michaelis-Menten Kinetics True/False'
 topic: Michaelis-Menten kinetics
+description: Evaluate true or false statements about Michaelis-Menten enzyme kinetics,
+  including assumptions about steady state, substrate concentration, and reaction rate.
+keywords:
+  - Michaelis-Menten kinetics
+  - enzyme kinetics
+  - steady state
+  - multiple choice
 replacement_rules:
   concentration: '<span style="color: #d40000;">concentration</span>'
   enzyme-product complex [EP]: '<span style="color: #b74300;">enzyme-product complex

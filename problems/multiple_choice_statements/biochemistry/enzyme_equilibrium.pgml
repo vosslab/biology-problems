@@ -1,7 +1,8 @@
+## TITLE('Biochemistry: Enzymes, Equilibrium, and Activation Energy')
 ## DESCRIPTION
-## Select the statement that is TRUE or FALSE about enzyme kinetics.
+## Evaluate true or false statements about how enzymes affect reaction equilibrium, activation energy, free energy, and reaction rates.
 ## ENDDESCRIPTION
-## KEYWORDS('enzyme kinetics','true/false','multiple choice')
+## KEYWORDS('enzyme kinetics','activation energy','reaction equilibrium','multiple choice')
 ## DBsubject('Biochemistry')
 ## DBchapter('')
 ## DBsection('')
@@ -161,7 +162,7 @@ $rb = RadioButtons(
 
 BEGIN_PGML
 
-[@ $mode eq "TRUE" ? "Which one of the following statements is <strong>TRUE</strong> about $topic?" : "Which one of the following statements is <strong>FALSE</strong> about $topic?" @]*
+[@ $mode eq "TRUE" ? "Which one of the following statements is <span style='color: #127663;'><strong>TRUE</strong></span> about $topic?" : "Which one of the following statements is <span style='color: #ba372a;'><strong>FALSE</strong></span> about $topic?" @]*
 
 [_]{$rb}
 

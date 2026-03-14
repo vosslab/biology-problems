@@ -1,7 +1,8 @@
+## TITLE('Biochemistry: Enzymatic Cofactor Classification')
 ## DESCRIPTION
-## Select the statement that is TRUE or FALSE about being an enzymatic cofactor.
+## Identify which molecular entities can or cannot be classified as enzymatic cofactors, including metal ions, coenzymes, and vitamins.
 ## ENDDESCRIPTION
-## KEYWORDS('being an enzymatic cofactor','true/false','multiple choice')
+## KEYWORDS('enzymatic cofactors','coenzymes','metal ions','multiple choice')
 ## DBsubject('Biochemistry')
 ## DBchapter('')
 ## DBsection('')
@@ -185,7 +186,7 @@ $rb = RadioButtons(
 
 BEGIN_PGML
 
-[@ $mode eq "TRUE" ? "Which one of the following statements is <strong>TRUE</strong> about $topic?" : $question_false @]*
+[@ $mode eq "TRUE" ? "Which one of the following statements is <span style='color: #127663;'><strong>TRUE</strong></span> about $topic?" : $question_false @]*
 
 [_]{$rb}
 

@@ -1,7 +1,8 @@
+## TITLE('Biochemistry: Enzyme Inhibitor Types and Kinetic Effects')
 ## DESCRIPTION
-## Select the statement that is TRUE or FALSE about enzyme$inhibitors.
+## Evaluate true or false statements about competitive, non-competitive, uncompetitive, and mixed enzyme inhibitors and their effects on kinetic parameters.
 ## ENDDESCRIPTION
-## KEYWORDS('enzyme$inhibitors','true/false','multiple choice')
+## KEYWORDS('enzyme inhibitors','competitive inhibition','non-competitive inhibition','multiple choice')
 ## DBsubject('Biochemistry')
 ## DBchapter('')
 ## DBsection('')
@@ -91,7 +92,7 @@ $showPartialCorrectAnswers = 1;
 # GLOBAL SETTINGS
 #==========================================================
 
-$topic = '<span style="color: #935d00; font-weight:700;">enzyme&nbsp;inhibitors</span>';
+$topic = 'enzyme&nbsp;inhibitors';
 my $local_random = PGrandom->new();
 $local_random->srand($problemSeed);
 my @mode_choices = ("TRUE", "FALSE");
@@ -169,7 +170,7 @@ $rb = RadioButtons(
 
 BEGIN_PGML
 
-[@ $mode eq "TRUE" ? "Which one of the following statements is <strong>TRUE</strong> about $topic?" : "Which one of the following statements is <strong>FALSE</strong> about $topic?" @]*
+[@ $mode eq "TRUE" ? "Which one of the following statements is <span style='color: #127663;'><strong>TRUE</strong></span> about $topic?" : "Which one of the following statements is <span style='color: #ba372a;'><strong>FALSE</strong></span> about $topic?" @]*
 
 [_]{$rb}
 

@@ -748,6 +748,9 @@ def build_opl_header_lines(yaml_data, default_description=None, fallback_keyword
 	if not institution_text:
 		institution_text = 'Roosevelt University'
 	institution_text = sanitize_header_text(str(institution_text))
+	# TITLE is a short problem title shown in problem lists
+	problem_title = get_yaml_value(yaml_data, 'title', 'TITLE')
+
 	title_text = get_yaml_value(yaml_data, 'titletext1', 'TitleText1')
 	edition_text = get_yaml_value(yaml_data, 'editiontext1', 'EditionText1')
 	author_text_1 = get_yaml_value(yaml_data, 'authortext1', 'AuthorText1')
@@ -755,6 +758,9 @@ def build_opl_header_lines(yaml_data, default_description=None, fallback_keyword
 	problem_text = get_yaml_value(yaml_data, 'problem1', 'Problem1')
 
 	header_lines = []
+	if problem_title:
+		problem_title = sanitize_header_text(str(problem_title))
+		header_lines.append(f"## TITLE('{escape_perl_string(problem_title)}')")
 	header_lines.append("## DESCRIPTION")
 	header_lines.append(f"## {description_text}")
 	header_lines.append("## ENDDESCRIPTION")

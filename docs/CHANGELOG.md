@@ -7,8 +7,23 @@
 - Updated `build_html_span()` in [webwork_lib.py](../webwork_lib.py) to restore `<i>`, `</i>`, `<em>`, and `</em>` tags after HTML escaping, matching the existing `<sub>`/`<sup>` restore logic.
 - Converted whole-word `<i>` emphasis to `<strong>` in [problems/multiple_choice_statements/biochemistry/m-m_kinetics.yml](../problems/multiple_choice_statements/biochemistry/m-m_kinetics.yml) (`proportional`, `constant`) and [problems/multiple_choice_statements/biochemistry/gibbs_free_energy_equation.yml](../problems/multiple_choice_statements/biochemistry/gibbs_free_energy_equation.yml) (`spontaneous`, `non-spontaneous`). Italic was incorrect for emphasis words; `<strong>` provides better readability with colored text. Chemistry notation italic (e.g., `<i>H</i>`, `<i>T</i>`, `<i>S</i>`, `<i>G</i>`) and genus abbreviations (e.g., `<i>Taq</i>`) were left unchanged.
 
+### Additions and New Features
+- Added [problems/biochemistry-problems/enzymes/enzyme_ph_activity_graph.pgml](../problems/biochemistry-problems/enzymes/enzyme_ph_activity_graph.pgml), a WeBWorK PGML problem showing enzyme activity vs pH for 3 enzymes with Gaussian bell curves. Each enzyme gets a randomized optimal pH (integer 1-11, minimum 2-unit separation), sigma (1.0-1.6), and peak height (9-11). Curves drawn using PGgraphmacros Fun objects in blue, red, and green. Asks which enzyme has the highest activity at a query pH near one enzyme's optimum. Uses PGrandom seeded with problemSeed for deterministic randomization. pH axis limited to 0-12.
+- Added [problems/biochemistry-problems/enzymes/enzyme_temp_activity_graph.pgml](../problems/biochemistry-problems/enzymes/enzyme_temp_activity_graph.pgml), a WeBWorK PGML problem showing enzyme activity vs temperature for 3 enzymes with asymmetric Gumbel-like curves (gradual rise, sharp denaturation drop). Each enzyme gets a randomized optimal temperature (10-65 by 5, minimum 10-degree separation) and sharpness parameter (3.0-5.0). Two-pass normalization scales peak heights to 9-11 units. Asks which enzyme has the highest activity at a query temperature near one enzyme's optimum.
+- Both graph problems use custom accessible colors via `$gr->new_color()`: blue `#003fff` (6.66:1), red `#d40000` (5.53:1), and teal `#00775f` (5.52:1). All meet the 5.5:1 WCAG contrast target and are distinguishable for colorblind users (blue/red/teal avoids the red-green confusion axis).
+
+### Developer Tests and Notes
+- Added degree symbol pitfall section to [docs/webwork/PG_COMMON_PITFALLS.md](webwork/PG_COMMON_PITFALLS.md): documents `&deg;` double-escaping in PGML (use `[$var]*` passthrough), `\x{B0}` for GD graph labels, and PG 2.17+ `deg` auto-conversion in MathQuill student input. Added corresponding row to quick reference table and prevention checklist.
+
+### Fixes and Maintenance
+- Added `## TITLE(...)` support to `build_opl_header_lines()` in [webwork_lib.py](../webwork_lib.py). YAML files with a `title:` field now emit a `## TITLE('...')` line before `## DESCRIPTION`, matching the format used by hand-written PGML files.
+- Added `title:`, `description:`, and `keywords:` fields to 5 biochemistry YAML files in `problems/multiple_choice_statements/biochemistry/`: `enzyme_cofactors.yml`, `enzyme_equilibrium.yml`, `enzyme_inhibitors.yml`, `m-m_kinetics.yml`, and `gibbs_free_energy_equation.yml`. Previously these derived sparse descriptions and generic keywords from the `topic:` field alone.
+- Added colored TRUE/FALSE text in the question prompt for multiple choice statement PGML files in [problems/multiple_choice_statements/yaml_mc_statements_to_pgml.py](../problems/multiple_choice_statements/yaml_mc_statements_to_pgml.py), matching the bptools style. TRUE is green (`#127663`, 5.53:1 contrast) and FALSE is red (`#ba372a`, 5.73:1 contrast), both meeting the 5.5:1 WCAG target.
+
 ### Behavior or Interface Changes
 - Changed output file extension in [problems/multiple_choice_statements/yaml_mc_statements_to_pgml.py](../problems/multiple_choice_statements/yaml_mc_statements_to_pgml.py) from `.pg` to `.pgml` to match the other PGML generators in `problems/matching_sets/`.
+- Fixed `enzyme$inhibitors` topic in [problems/multiple_choice_statements/biochemistry/enzyme_inhibitors.yml](../problems/multiple_choice_statements/biochemistry/enzyme_inhibitors.yml) to use `&nbsp;` instead of `$`, which was leaking a Perl variable sigil into the OPL header.
+- Updated TRUE color in [bptools.py](../bptools.py) from `#169179` (3.92:1 contrast) to `#127663` (5.53:1 contrast) to meet the 5.5:1 WCAG target.
 
 ## 2026-03-05
 

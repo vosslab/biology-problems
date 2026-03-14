@@ -103,13 +103,17 @@ def build_question_text(override_true, override_false):
 	has_true_override = override_true is not None
 	has_false_override = override_false is not None
 
+	# color TRUE green and FALSE red to match bptools style
+	# green #127663 meets 5.5:1 WCAG contrast (original #169179 was 3.92:1)
+	colored_true = "<span style='color: #127663;'><strong>TRUE</strong></span>"
+	colored_false = "<span style='color: #ba372a;'><strong>FALSE</strong></span>"
 	default_true = (
 		"Which one of the following statements is "
-		"<strong>TRUE</strong> about $topic?"
+		f"{colored_true} about $topic?"
 	)
 	default_false = (
 		"Which one of the following statements is "
-		"<strong>FALSE</strong> about $topic?"
+		f"{colored_false} about $topic?"
 	)
 
 	question_setup_lines = []

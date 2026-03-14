@@ -1,4 +1,12 @@
+title: 'Biochemistry: Enzymes, Equilibrium, and Activation Energy'
 topic: enzyme kinetics
+description: Evaluate true or false statements about how enzymes affect reaction equilibrium,
+  activation energy, free energy, and reaction rates.
+keywords:
+  - enzyme kinetics
+  - activation energy
+  - reaction equilibrium
+  - multiple choice
 replacement_rules:
   enzymes: <i>enzymes</i>
   free energy: '<span style="color: #006600;">free energy</span>'

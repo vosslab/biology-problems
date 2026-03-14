@@ -1,4 +1,12 @@
-topic: enzyme$inhibitors
+title: 'Biochemistry: Enzyme Inhibitor Types and Kinetic Effects'
+topic: enzyme&nbsp;inhibitors
+description: Evaluate true or false statements about competitive, non-competitive,
+  uncompetitive, and mixed enzyme inhibitors and their effects on kinetic parameters.
+keywords:
+  - enzyme inhibitors
+  - competitive inhibition
+  - non-competitive inhibition
+  - multiple choice
 replacement_rules:
   Competitive$inhibitors: '<span style="color: #d40000;">Competitive&nbsp;inhibitors</span>'
   ' substrate': ' <span style="color: #b74300;">substrate</span>'
