@@ -1,0 +1,372 @@
+## TITLE('Biochemistry: Enzyme pH Activity Graph')
+## DESCRIPTION
+## Students examine a graph showing enzyme activity vs pH for three
+## enzymes with Gaussian activity curves. Three-part question: identify
+## the enzyme most active at acidic/basic pH, determine the optimal pH
+## of a specific enzyme, and explain why activity decreases away from
+## the optimum.
+## ENDDESCRIPTION
+## KEYWORDS('enzyme','pH','activity','graph','optimal conditions')
+## DBsubject('Biochemistry')
+## DBchapter('Enzymes')
+## DBsection('Activity')
+## Level(2)
+## Date('2026-03-14')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	'PGstandard.pl',
+	'MathObjects.pl',
+	'PGML.pl',
+	'PGgraphmacros.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl',
+);
+
+$showPartialCorrectAnswers = 0;
+
+# ----------------------------
+# 2) Setup
+# ----------------------------
+
+# ----------------------------
+# 2a) Randomization
+# ----------------------------
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+
+# ----------------------------
+# 2b) Generate enzyme pH optima
+# ----------------------------
+# pool of odd integer pH values (avoid even numbers which overlap grid lines)
+my @pH_pool = (3, 5, 7, 9, 11);
+
+# shuffle the pool using Fisher-Yates
+for (my $i = $#pH_pool; $i > 0; $i--) {
+	my $j = $local_random->random(0, $i, 1);
+	@pH_pool[$i, $j] = @pH_pool[$j, $i];
+}
+
+# pick 3 pH values with minimum 2-unit separation
+my @enzyme_names = ('A', 'B', 'C');
+my @optim_pHs = ();
+
+for my $ename (@enzyme_names) {
+	# pick from remaining pool
+	my $pH = pop @pH_pool;
+	# add small random offset so peak never lands on a whole number
+	my $offset = $local_random->random(1, 8, 1) / 10.0;
+	$pH = $pH + $offset;
+	push @optim_pHs, $pH;
+	# remove neighbors within 2 units to enforce separation
+	@pH_pool = grep { abs($_ - $pH) >= 2 } @pH_pool;
+}
+
+# ----------------------------
+# 2c) Build enzyme parameters
+# ----------------------------
+# accessible color names (defined after init_graph below)
+my @colors = ('enzyme_purple', 'enzyme_magenta', 'enzyme_teal');
+# hex colors for HTML text (must match GD colors below)
+my @hex_colors = ('#871DFF', '#CC0763', '#00775f');
+my @enzymes = ();
+
+for (my $i = 0; $i < 3; $i++) {
+	# randomize Gaussian width (sigma) between 1.0 and 1.6
+	my $sigma = 1.0 + $local_random->random(0, 6, 1) / 10.0;
+	# randomize peak height between 4.5 and 5.5 (fits widescreen y-axis)
+	my $peak_height = 4.5 + $local_random->random(0, 10, 1) / 10.0;
+	push @enzymes, {
+		name    => $enzyme_names[$i],
+		optim   => $optim_pHs[$i],
+		sigma   => $sigma,
+		peak    => $peak_height,
+		color   => $colors[$i],
+		hexcolor => $hex_colors[$i],
+	};
+}
+
+# ----------------------------
+# 2d) Create the graph
+# ----------------------------
+# widescreen: x spans ~13 units, y spans ~8.5 units
+$gr = init_graph(-0.8, -1.1, 12.3, 7,
+	axes => [0, 0],
+	size => [520, 300],
+);
+
+# draw manual grid lines (no auto-labels)
+$gr->v_grid('gray', 2, 4, 6, 8, 10, 12);
+$gr->h_grid('gray', 2, 4, 6);
+
+# define enzyme colors (WCAG 5.5:1+ on white, colorblind-safe)
+# purple #871DFF (5.75:1), magenta #CC0763 (5.55:1), teal #00775f (5.52:1)
+$gr->new_color('enzyme_purple', 135, 29, 255);
+$gr->new_color('enzyme_magenta', 204, 7, 99);
+$gr->new_color('enzyme_teal', 0, 119, 95);
+
+# add x-axis tick labels
+for (my $x = 2; $x <= 12; $x += 2) {
+	$gr->lb(new Label($x, -0.3, "$x", 'black', 'center', 'middle'));
+}
+
+# add x-axis label
+$gr->lb(new Label(6, -0.7, 'pH', 'black', 'center', 'middle'));
+
+# add y-axis label (vertical text, rotated 90 degrees)
+# no y-axis numbers since activity units are arbitrary
+$gr->lb(new Label(-0.4, 3.2, 'Enzyme Activity', 'black', 'center', 'middle', 'vertical'));
+
+# ----------------------------
+# 2e) Draw each enzyme curve
+# ----------------------------
+my $num_points = 400;
+
+for (my $e = 0; $e < 3; $e++) {
+	my $opt = $enzymes[$e]->{optim};
+	my $sig = $enzymes[$e]->{sigma};
+	my $pk = $enzymes[$e]->{peak};
+	my $col = $enzymes[$e]->{color};
+
+	# create a new function object for this curve
+	my $fn = new Fun(
+		sub {
+			my $t = shift;
+			return $t;
+		},
+		sub {
+			my $t = shift;
+			# Gaussian: height * exp(-0.5 * ((x - mu) / sigma)^2)
+			my $z = ($t - $opt) / $sig;
+			my $val = $pk * exp(-0.5 * $z * $z);
+			return $val;
+		},
+		$gr,
+	);
+	# domain extends past visible axes so curves aren't clipped at edges
+	$fn->domain(-2, 14);
+	$fn->steps($num_points);
+	$fn->weight(2);
+	$fn->color($col);
+
+	# label at peak position with large font for readability
+	my $label_y = $pk + 0.3;
+	$gr->lb(new Label($opt, $label_y, $enzymes[$e]->{name},
+		$col, 'center', 'bottom', 'giant'));
+}
+
+
+# add tick marks on x-axis (drawn after functions so they're on top)
+$gr->h_ticks(0, 'black', 2, 4, 6, 8, 10, 12);
+# add tick marks on y-axis
+$gr->v_ticks(0, 'black', 2, 4, 6);
+
+# ----------------------------
+# 2f) Build colored enzyme name lookup for HTML question text
+# ----------------------------
+my %enzyme_html = ();
+for (my $i = 0; $i < 3; $i++) {
+	my $n = $enzymes[$i]->{name};
+	my $h = $enzymes[$i]->{hexcolor};
+	$enzyme_html{$n} = "<span style='color:${h}; font-weight:700;'>"
+		. "Enzyme ${n}</span>";
+}
+
+# ----------------------------
+# 2g) Q1: Which enzyme is most active at acidic/basic pH?
+# ----------------------------
+# find enzymes with lowest and highest optimal pH
+my $lowest_pH_enzyme = $enzymes[0];
+my $highest_pH_enzyme = $enzymes[0];
+for (my $i = 1; $i < 3; $i++) {
+	if ($enzymes[$i]->{optim} < $lowest_pH_enzyme->{optim}) {
+		$lowest_pH_enzyme = $enzymes[$i];
+	}
+	if ($enzymes[$i]->{optim} > $highest_pH_enzyme->{optim}) {
+		$highest_pH_enzyme = $enzymes[$i];
+	}
+}
+
+# randomly pick acidic or basic
+my $ask_acidic = $local_random->random(0, 1, 1);
+my $q1_condition;
+my $q1_answer_enzyme;
+# color: red #d40000 for acidic (CPK), blue #003fff for basic (CPK)
+my $q1_color;
+if ($ask_acidic) {
+	$q1_condition = 'acidic';
+	$q1_color = '#d40000';
+	# enzyme with lowest optimal pH is most active at acidic pH
+	$q1_answer_enzyme = $lowest_pH_enzyme;
+} else {
+	$q1_condition = 'basic';
+	$q1_color = '#003fff';
+	# enzyme with highest optimal pH is most active at basic pH
+	$q1_answer_enzyme = $highest_pH_enzyme;
+}
+
+# build colored enzyme name choices in alphabetical order (A, B, C)
+my $q1_answer = $enzyme_html{$q1_answer_enzyme->{name}};
+my @q1_choices = ($enzyme_html{'A'}, $enzyme_html{'B'}, $enzyme_html{'C'});
+
+$rb1 = RadioButtons(
+	[@q1_choices],
+	$q1_answer,
+	labels        => 'ABC',
+	displayLabels => 1,
+	separator     => '<div style="margin-bottom: 0.5em;"></div>',
+);
+# colored keyword in question text
+my $q1_styled = "<span style='color:${q1_color}; font-weight:700;'>"
+	. "${q1_condition}</span>";
+$q1_html = "Which enzyme is most active at ${q1_styled} pH?";
+
+# ----------------------------
+# 2g) Q2: What is the optimal pH of Enzyme X?
+# ----------------------------
+my $q2_target_idx = $local_random->random(0, 2, 1);
+my $q2_target = $enzymes[$q2_target_idx];
+
+# round optimal pH to nearest 0.5
+my $q2_optim_rounded = int($q2_target->{optim} * 2 + 0.5) / 2.0;
+my $q2_answer = sprintf('pH %.1f', $q2_optim_rounded);
+
+# collect all pH values: correct + other enzymes + 2 extra distractors
+my @q2_values = ($q2_optim_rounded);
+my %q2_used = ($q2_optim_rounded => 1);
+for (my $i = 0; $i < 3; $i++) {
+	next if $i == $q2_target_idx;
+	my $other_rounded = int($enzymes[$i]->{optim} * 2 + 0.5) / 2.0;
+	next if $q2_used{$other_rounded};
+	push @q2_values, $other_rounded;
+	$q2_used{$other_rounded} = 1;
+}
+# generate 2 extra distractors offset from the correct answer
+my @offsets = (-2.0, -1.5, -1.0, 1.0, 1.5, 2.0);
+# shuffle offsets to pick random ones
+for (my $i = $#offsets; $i > 0; $i--) {
+	my $j = $local_random->random(0, $i, 1);
+	@offsets[$i, $j] = @offsets[$j, $i];
+}
+my $extra_count = 0;
+for my $off (@offsets) {
+	last if $extra_count >= 2;
+	my $candidate = $q2_optim_rounded + $off;
+	# keep within valid pH range 1.0-13.0 and avoid duplicates
+	next if $candidate < 1.0 || $candidate > 13.0;
+	next if $q2_used{$candidate};
+	push @q2_values, $candidate;
+	$q2_used{$candidate} = 1;
+	$extra_count++;
+}
+# bubble sort values in ascending order (sort is blocked by sandbox)
+for (my $i = 0; $i < scalar(@q2_values); $i++) {
+	for (my $j = $i + 1; $j < scalar(@q2_values); $j++) {
+		if ($q2_values[$j] < $q2_values[$i]) {
+			my $tmp = $q2_values[$i];
+			$q2_values[$i] = $q2_values[$j];
+			$q2_values[$j] = $tmp;
+		}
+	}
+}
+# format as display strings
+my @q2_choices = ();
+for my $val (@q2_values) {
+	push @q2_choices, sprintf('pH %.1f', $val);
+}
+
+$rb2 = RadioButtons(
+	[@q2_choices],
+	$q2_answer,
+	labels        => 'ABC',
+	displayLabels => 1,
+	separator     => '<div style="margin-bottom: 0.5em;"></div>',
+);
+$q2_html = "What is the optimal pH of $enzyme_html{$q2_target->{name}}?";
+
+# ----------------------------
+# 2h) Q3: Molecular-level explanation
+# ----------------------------
+my $q3_answer = "pH changes alter ionization of amino acid side chains, "
+	. "disrupting the active site shape";
+my @q3_choices = (
+	$q3_answer,
+	"The substrate breaks down into smaller molecules "
+		. "at extreme pH values",
+	"Peptide bonds in the enzyme are hydrolyzed, "
+		. "fragmenting the protein chain",
+	"Disulfide bonds re-form in wrong positions, "
+		. "locking the enzyme in an inactive shape",
+);
+# shuffle choices
+for (my $i = $#q3_choices; $i > 0; $i--) {
+	my $j = $local_random->random(0, $i, 1);
+	@q3_choices[$i, $j] = @q3_choices[$j, $i];
+}
+
+$rb3 = RadioButtons(
+	[@q3_choices],
+	$q3_answer,
+	labels        => 'ABC',
+	displayLabels => 1,
+	separator     => '<div style="margin-bottom: 0.5em;"></div>',
+);
+$q3_html = "Why does enzyme activity decrease at pH values far from the optimum?";
+
+# solution variables
+$sol_q1_enzyme = $q1_answer_enzyme->{name};
+$sol_q1_pH = sprintf('%.1f', $q1_answer_enzyme->{optim});
+$sol_q2_enzyme = $q2_target->{name};
+$sol_q2_pH = $q2_answer;
+
+# ----------------------------
+# 3) Statement (PGML)
+# ----------------------------
+BEGIN_PGML
+
+*Enzyme Activity vs pH*
+
+The following graph shows the enzyme activity as a function of pH for three different enzymes (A, B, and C).
+
+[@ image(insertGraph($gr), width => 520, height => 300, tex_size => 700) @]*
+
+*Part 1.* [$q1_html]*
+
+[_]{$rb1}
+
+*Part 2.* [$q2_html]*
+
+[_]{$rb2}
+
+*Part 3.* [$q3_html]*
+
+[_]{$rb3}
+
+END_PGML
+
+# ----------------------------
+# 4) Solution
+# ----------------------------
+BEGIN_PGML_SOLUTION
+
+*Part 1.* Enzyme [$sol_q1_enzyme] is most active at [$q1_condition] pH. Its optimal pH of [$sol_q1_pH] is the most [$q1_condition] among the three enzymes.
+
+*Part 2.* The optimal pH of Enzyme [$sol_q2_enzyme] is [$sol_q2_pH]. This is the pH where the activity curve for Enzyme [$sol_q2_enzyme] reaches its peak.
+
+*Part 3.* Changes in pH alter the ionization of amino acid side chains in the enzyme. These charged groups are critical for maintaining the enzyme's three-dimensional shape and active site geometry. When the pH shifts away from the optimum, key residues gain or lose protons, disrupting non-covalent interactions (hydrogen bonds, ionic bonds) and reducing catalytic activity.
+
+END_PGML_SOLUTION
+
+ENDDOCUMENT();

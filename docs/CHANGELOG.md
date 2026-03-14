@@ -2,6 +2,19 @@
 
 ## 2026-03-14
 
+### Additions and New Features
+- Created [problems/biochemistry-problems/enzymes/optimal_enzyme_activity.pgml](../problems/biochemistry-problems/enzymes/optimal_enzyme_activity.pgml), a 3-part multipart WeBWorK problem merging the former `optimal_enzyme_type_1.pgml`, `optimal_enzyme_type_2.pgml`, and `optimal_enzyme_type_3.pgml`. Students read one shared enzyme data table (4 enzymes with temperature ranges and optimum pH values) and answer progressively harder questions: (1) forward lookup -- identify which enzyme is most active at given conditions, (2) reverse lookup -- identify conditions under which a given enzyme is most active (5 choices from 3x3 grid), (3) application -- determine which parameter change would increase enzyme activity (3 subtypes: low pH, high pH, low temp). Enzyme names in the table and question text are color-coded using a 4-color WCAG-accessible palette: purple `#871DFF`, magenta `#CC0763`, teal `#00775f`, brown `#8B4513`.
+
+### Removals and Deprecations
+- Removed `optimal_enzyme_type_1.pgml`, `optimal_enzyme_type_2.pgml`, and `optimal_enzyme_type_3.pgml` (superseded by the merged `optimal_enzyme_activity.pgml`). The three separate files duplicated ~110 lines of identical enzyme data generation and table-building code; the merged version eliminates this redundancy and provides better pedagogical flow as a single 3-part question.
+
+### Behavior or Interface Changes
+- Converted [problems/biochemistry-problems/enzymes/enzyme_ph_activity_graph.pgml](../problems/biochemistry-problems/enzymes/enzyme_ph_activity_graph.pgml) from single-question to 3-part multipart format: (1) identify the enzyme most active at acidic or basic pH, (2) determine the optimal pH of a randomly chosen enzyme, (3) explain why activity decreases away from the optimum (ionization of amino acid side chains).
+- Converted [problems/biochemistry-problems/enzymes/enzyme_temp_activity_graph.pgml](../problems/biochemistry-problems/enzymes/enzyme_temp_activity_graph.pgml) from single-question to 4-part multipart format: (1) identify the enzyme for human body temperature or thermophilic conditions, (2) identify the enzyme most active at high or low temperatures, (3) determine the optimal temperature of a randomly chosen enzyme, (4) explain the curve shape -- either why activity drops sharply above the optimum (denaturation) or rises gradually below (collision theory / kinetic energy).
+- Both graph problems now use `$rb1`-`$rb4` RadioButtons pattern matching `enzyme_simulation.pgml`. Q1 choices are in alphabetical order (Enzyme A/B/C), Q2 has 5 choices (A-E) in numerical order with 2 extra distractors offset from the correct value, Q3/Q4 have 4 choices with distractors length-matched to the correct answer. The `sort` function is avoided (blocked by WeBWorK sandbox); manual bubble sort and min/max loops are used instead.
+- Changed graph curve colors from blue/orange/teal to purple `#a719db` (5.51:1), magenta `#c80085` (5.53:1), teal `#00775f` (5.52:1) -- a colorblind-safe triplet that avoids overlap with keyword emphasis colors (acidic=red, basic=blue, high=orange, low=navy, body temp=sienna). Enzyme names in question text are colored to match their graph curves via inline HTML spans.
+- Added colored keyword emphasis to question text: pH graph uses red `#d40000` for "acidic" and blue `#003fff` for "basic" (CPK convention); temperature graph uses dark orange `#b74300` for "high", navy `#0067cc` for "low", and sienna `#A0522D` for "human body temperature". All colors pass the 5.5:1 WCAG contrast target.
+
 ### Fixes and Maintenance
 - Updated `extract_strict_color_spans()` in [webwork_lib.py](../webwork_lib.py) to allow `<i>` and `<em>` tags inside color `<span>` elements, alongside the existing `<sub>`/`<sup>` allowlist. This eliminates "non-strict color span skipped for replacement" warnings for YAML files using italic tags in colored spans (e.g., chemistry notation like `&Delta;<i>H</i>`).
 - Updated `build_html_span()` in [webwork_lib.py](../webwork_lib.py) to restore `<i>`, `</i>`, `<em>`, and `</em>` tags after HTML escaping, matching the existing `<sub>`/`<sup>` restore logic.
@@ -14,6 +27,8 @@
 
 ### Developer Tests and Notes
 - Added degree symbol pitfall section to [docs/webwork/PG_COMMON_PITFALLS.md](webwork/PG_COMMON_PITFALLS.md): documents `&deg;` double-escaping in PGML (use `[$var]*` passthrough), `\x{B0}` for GD graph labels, and PG 2.17+ `deg` auto-conversion in MathQuill student input. Added corresponding row to quick reference table and prevention checklist.
+- Added PGgraphmacros sections to [docs/webwork/HOW_TO_MAKE_GRAPHS.md](webwork/HOW_TO_MAKE_GRAPHS.md): custom accessible colors via `new_color()`, Fun objects for complex curves, aspect ratio control via coordinate range, manual grid/tick/label workflow (avoiding auto-labels), degree symbol in GD labels, peak label positioning to avoid grid lines, and documented limitations (functions draw twice covering axes, 2px hardcoded ticks, grid overrides ticks, no font larger than giant).
+- Added PGgraphmacros draw-order pitfall to [docs/webwork/PG_COMMON_PITFALLS.md](webwork/PG_COMMON_PITFALLS.md): documents that curves always cover axes (WWPlot draws functions twice), and that clamping/off-graph returns both make things worse. Added rows to quick reference table.
 
 ### Fixes and Maintenance
 - Added `## TITLE(...)` support to `build_opl_header_lines()` in [webwork_lib.py](../webwork_lib.py). YAML files with a `title:` field now emit a `## TITLE('...')` line before `## DESCRIPTION`, matching the format used by hand-written PGML files.

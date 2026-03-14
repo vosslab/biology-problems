@@ -1,0 +1,543 @@
+## TITLE('Biochemistry: Optimal Enzyme Activity')
+## DESCRIPTION
+## Students examine a table of four enzymes with temperature ranges and
+## optimum pH values. Three progressive questions test: (1) forward lookup
+## of the most active enzyme, (2) reverse lookup of optimal conditions for
+## a given enzyme, and (3) reasoning about which parameter change increases
+## enzyme activity.
+## ENDDESCRIPTION
+## KEYWORDS('enzyme','temperature','pH','optimal conditions','activity')
+## DBsubject('Biochemistry')
+## DBchapter('Enzymes')
+## DBsection('Activity')
+## Level(3)
+## Date('2026-03-14')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	'PGstandard.pl',
+	'MathObjects.pl',
+	'PGML.pl',
+	'niceTables.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl',
+);
+
+$showPartialCorrectAnswers = 0;
+
+# ----------------------------
+# 2) Setup
+# ----------------------------
+
+# ----------------------------
+# 2a) Randomization
+# ----------------------------
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+
+# ----------------------------
+# 2b) Generate enzyme data
+# ----------------------------
+my @pH_pool = (1 .. 10);
+my @temp_pool = ();
+for (my $t = 15; $t <= 75; $t += 5) {
+	push @temp_pool, $t;
+}
+my @temp_jumps = (8, 10, 10, 12, 15, 18);
+
+my @enzyme_names = ('A', 'B', 'C', 'D');
+my @enzymes = ();
+
+for my $ename (@enzyme_names) {
+	# shuffle and pick a pH value
+	for (my $i = $#pH_pool; $i > 0; $i--) {
+		my $j = $local_random->random(0, $i, 1);
+		@pH_pool[$i, $j] = @pH_pool[$j, $i];
+	}
+	my $pH = pop @pH_pool;
+	# remove neighbors from pool
+	@pH_pool = grep { $_ != $pH + 1 && $_ != $pH - 1 } @pH_pool;
+
+	# shuffle temp pool and pick a start temp
+	for (my $i = $#temp_pool; $i > 0; $i--) {
+		my $j = $local_random->random(0, $i, 1);
+		@temp_pool[$i, $j] = @temp_pool[$j, $i];
+	}
+
+	# shuffle temp jumps
+	for (my $i = $#temp_jumps; $i > 0; $i--) {
+		my $j = $local_random->random(0, $i, 1);
+		@temp_jumps[$i, $j] = @temp_jumps[$j, $i];
+	}
+
+	my $temp1;
+	my $jump;
+	if (scalar(@temp_pool) > 0 && scalar(@temp_jumps) > 0) {
+		$temp1 = pop @temp_pool;
+		$jump = pop @temp_jumps;
+	} else {
+		# fallback for enzyme D
+		$temp1 = 10;
+		$jump = 7;
+	}
+	my $temp2 = $temp1 + $jump;
+	$temp2 = 85 if $temp2 > 85;
+
+	# remove overlapping temps from pool
+	for (my $r = $temp1 - 5; $r <= $temp2 + 1; $r += 5) {
+		@temp_pool = grep { $_ != $r } @temp_pool;
+	}
+
+	push @enzymes, {
+		name => $ename,
+		optim_pH => $pH,
+		temp1 => $temp1,
+		temp2 => $temp2,
+	};
+}
+
+# ----------------------------
+# 2c) Enzyme colors (WCAG 5:1+ on white, colorblind-safe)
+# ----------------------------
+# purple #871DFF (5.75:1), magenta #CC0763 (5.55:1),
+# teal #00775f (5.52:1), brown #8B4513 (6.35:1)
+my @hex_colors = ('#871DFF', '#CC0763', '#00775f', '#8B4513');
+
+# build colored enzyme name lookup for HTML question text
+my %enzyme_html = ();
+for (my $i = 0; $i < 4; $i++) {
+	my $n = $enzymes[$i]->{name};
+	my $h = $hex_colors[$i];
+	$enzyme_html{$n} = "<span style='color:${h}; font-weight:700;'>"
+		. "Enzyme ${n}</span>";
+}
+
+# ----------------------------
+# 2d) Build enzyme table with niceTables
+# ----------------------------
+my $hdr_css = 'font-weight:700;background:#cccccc;color:#000;'
+	. 'border-bottom:2px solid #333;font-size:11px;padding:5px;';
+my $mono_css = 'font-family:courier,monospace;';
+
+my @data_rows = ();
+# header row
+push @data_rows, [
+	[ 'Enzyme', cellcss => $hdr_css ],
+	[ 'Effective Temperature<br/>Range (&deg;C)', cellcss => $hdr_css ],
+	[ 'Optimum pH', cellcss => $hdr_css ],
+];
+
+for (my $i = 0; $i < 4; $i++) {
+	my $e = $enzymes[$i];
+	my $bg = ($i % 2 == 0) ? '#FFFFDD' : '#FFFFFF';
+	# color-code the enzyme name column to match question text
+	my $name_css = "background:$bg;${mono_css}"
+		. "text-align:center;padding:4px 10px;"
+		. "color:$hex_colors[$i];font-weight:700;";
+	my $row_css = "background:$bg;${mono_css}"
+		. 'text-align:center;padding:4px 10px;';
+	my $temp_range = "$e->{temp1}&ndash;$e->{temp2}";
+	my $pH_str = sprintf('%.1f', $e->{optim_pH});
+	push @data_rows, [
+		[ "Enzyme $e->{name}", cellcss => $name_css ],
+		[ $temp_range, cellcss => $row_css ],
+		[ "$pH_str&nbsp;", cellcss => $row_css ],
+	];
+}
+
+$enzyme_table = LayoutTable(
+	[@data_rows],
+	center => 1,
+	tablecss => 'border-collapse:collapse;border:1px solid #000;font-size:14px;',
+	allcellcss => 'border:1px solid #000;padding:6px 10px;text-align:center;',
+);
+
+# ============================================================
+# PART 1: Forward lookup -- "Which enzyme is most active?"
+# ============================================================
+
+# pick a random enzyme and generate conditions near its optimal
+my $p1_idx = $local_random->random(0, 3, 1);
+my $p1_enzyme = $enzymes[$p1_idx];
+
+# temperature within effective range
+my $p1_temp = $p1_enzyme->{temp1} + 1
+	+ $local_random->random(0, $p1_enzyme->{temp2} - $p1_enzyme->{temp1} - 2, 1);
+# pH near optimum with small offset
+my $p1_pH_offset = $local_random->random(-2, 2, 1);
+my $p1_pH = $p1_enzyme->{optim_pH} + $p1_pH_offset / 5.0;
+my $p1_pH_str = sprintf('%.1f', $p1_pH);
+
+# use colored enzyme name as answer text
+my $p1_answer = $enzyme_html{$p1_enzyme->{name}};
+
+# build choices (the four enzymes in alphabetical order, color-coded)
+my @p1_choices = ();
+for my $e (@enzymes) {
+	push @p1_choices, $enzyme_html{$e->{name}};
+}
+
+$rb1 = RadioButtons(
+	[@p1_choices],
+	$p1_answer,
+	labels        => 'ABC',
+	displayLabels => 1,
+	separator     => '<div style="margin-bottom: 0.5em;"></div>',
+);
+
+# question and solution text for Part 1
+$q1_html = "Which one of the enzymes would be <b>most active</b>"
+	. " at a temperature of ${p1_temp}&deg;C and a pH of ${p1_pH_str}?";
+
+$sol1_enzyme = $p1_enzyme->{name};
+$sol1_temp_html = "$p1_enzyme->{temp1}&ndash;$p1_enzyme->{temp2} &deg;C";
+$sol1_pH_html = sprintf('%.1f', $p1_enzyme->{optim_pH});
+$sol1_explain = "The temperature ${p1_temp}&deg;C falls within enzyme"
+	. " $p1_enzyme->{name}'s effective range of $p1_enzyme->{temp1}"
+	. "&ndash;$p1_enzyme->{temp2} &deg;C, and the pH ${p1_pH_str}"
+	. " is very close to enzyme $p1_enzyme->{name}'s optimum pH of"
+	. " ${sol1_pH_html}. No other enzyme has both conditions within"
+	. " its optimal parameters.";
+
+# ============================================================
+# PART 2: Reverse lookup -- "Under which conditions?"
+# ============================================================
+
+my $p2_idx = $local_random->random(0, 3, 1);
+my $p2_enzyme = $enzymes[$p2_idx];
+
+# generate correct answer: temp in range, pH near optimum
+my $p2_good_pH_offset = $local_random->random(-2, 2, 1);
+my $p2_good_pH = $p2_enzyme->{optim_pH} + $p2_good_pH_offset / 5.0;
+my $p2_good_temp = $p2_enzyme->{temp1} + 1
+	+ $local_random->random(0, $p2_enzyme->{temp2} - $p2_enzyme->{temp1} - 2, 1);
+
+my $p2_answer = "The temperature is ${p2_good_temp}&deg;C and the pH is "
+	. sprintf('%.1f', $p2_good_pH) . ".";
+
+# generate wrong choices (3x3 grid minus center = 8 options)
+my @values = (-1, 0, 1);
+my @p2_wrong = ();
+
+for my $pH_mult (@values) {
+	for my $temp_mult (@values) {
+		# skip the center cell (correct answer)
+		next if ($pH_mult == 0 && $temp_mult == 0);
+
+		my $w_temp;
+		if ($temp_mult == -1) {
+			$w_temp = $p2_enzyme->{temp1}
+				- 6 - $local_random->random(0, 9, 1);
+		} elsif ($temp_mult == 1) {
+			$w_temp = $p2_enzyme->{temp2}
+				+ 6 + $local_random->random(0, 9, 1);
+		} else {
+			$w_temp = $p2_enzyme->{temp1} + 1
+				+ $local_random->random(0, $p2_enzyme->{temp2} - $p2_enzyme->{temp1} - 2, 1);
+		}
+
+		my $w_pH;
+		if ($pH_mult == 0) {
+			my $w_pH_off = $local_random->random(-2, 2, 1);
+			$w_pH = $p2_enzyme->{optim_pH} + $w_pH_off / 5.0;
+		} else {
+			my $w_pH_shift = 3 + $local_random->random(0, 2, 1);
+			$w_pH = $p2_enzyme->{optim_pH} + $pH_mult * $w_pH_shift / 2.0;
+		}
+
+		my $choice = "The temperature is ${w_temp}&deg;C and the pH is "
+			. sprintf('%.1f', $w_pH) . ".";
+		push @p2_wrong, $choice;
+	}
+}
+
+# shuffle wrong choices and take 4
+for (my $i = $#p2_wrong; $i > 0; $i--) {
+	my $j = $local_random->random(0, $i, 1);
+	@p2_wrong[$i, $j] = @p2_wrong[$j, $i];
+}
+my @p2_selected_wrong = @p2_wrong[0 .. 3];
+
+# combine with correct answer and shuffle
+my @p2_all = (@p2_selected_wrong, $p2_answer);
+for (my $i = $#p2_all; $i > 0; $i--) {
+	my $j = $local_random->random(0, $i, 1);
+	@p2_all[$i, $j] = @p2_all[$j, $i];
+}
+
+$rb2 = RadioButtons(
+	[@p2_all],
+	$p2_answer,
+	labels        => 'ABC',
+	displayLabels => 1,
+	separator     => '<div style="margin-bottom: 0.5em;"></div>',
+);
+
+# question and solution text for Part 2
+$most_active_html = '<span style="color:DarkGreen;font-weight:700;">most active</span>';
+$q2_html = "Under which one of the following conditions would"
+	. " $enzyme_html{$p2_enzyme->{name}} be ${most_active_html}?";
+
+$sol2_enzyme = $p2_enzyme->{name};
+$sol2_temp_html = "$p2_enzyme->{temp1}&ndash;$p2_enzyme->{temp2} &deg;C";
+$sol2_pH_html = sprintf('%.1f', $p2_enzyme->{optim_pH});
+$sol2_explain = "An enzyme is most active when the temperature is within"
+	. " its effective range and the pH is close to its optimum."
+	. " The correct answer provides conditions where the temperature"
+	. " falls within $p2_enzyme->{temp1}&ndash;$p2_enzyme->{temp2}"
+	. " &deg;C and the pH is near ${sol2_pH_html}.";
+
+# ============================================================
+# PART 3: Application -- "What change increases activity?"
+# ============================================================
+
+# colored text spans for choices
+my $increased_html = '<span style="color: DarkGreen;">increased</span>';
+my $decreased_html = '<span style="color: DarkRed;">decreased</span>';
+my $kept_same_html = '<i><span style="color: #686868;">kept the same</span></i>';
+$increase_html = '<strong><span style="color: DarkGreen;">increase</span></strong>';
+
+# pick a random enzyme and question subtype
+my $p3_idx = $local_random->random(0, 3, 1);
+my $p3_enzyme = $enzymes[$p3_idx];
+
+# subtypes: A=good temp/too-low pH, B=good temp/too-high pH, C=too-low temp/good pH
+my @subtypes = ('A', 'B', 'C');
+my $subtype_idx = $local_random->random(0, 2, 1);
+my $subtype = $subtypes[$subtype_idx];
+
+my $p3_optim_pH = $p3_enzyme->{optim_pH};
+# good temp: within effective range
+my $p3_good_temp = $p3_enzyme->{temp1} + 1
+	+ $local_random->random(0, $p3_enzyme->{temp2} - $p3_enzyme->{temp1} - 2, 1);
+# too-low pH: 1.5 to 2.5 below optimum
+my $too_low_pH_shift = 3 + $local_random->random(0, 2, 1);
+my $too_low_pH = $p3_optim_pH - $too_low_pH_shift / 2.0;
+# too-high pH: 1.5 to 2.5 above optimum
+my $too_high_pH_shift = 3 + $local_random->random(0, 2, 1);
+my $too_high_pH = $p3_optim_pH + $too_high_pH_shift / 2.0;
+# too-low temp: 6 to 15 below temp1
+my $too_low_temp = $p3_enzyme->{temp1}
+	- 6 - $local_random->random(0, 9, 1);
+
+# build question and choices based on subtype
+my $p3_current_temp;
+my $p3_current_pH;
+my $p3_answer = '';
+my @p3_choices = ();
+
+if ($subtype eq 'A') {
+	# good temp, too-low pH -> answer is increase pH
+	$p3_current_temp = $p3_good_temp;
+	$p3_current_pH = $too_low_pH;
+
+	# wrong: decrease temp
+	my $low_temp = $p3_current_temp - 5 - $local_random->random(0, 9, 1);
+	push @p3_choices,
+		"The temperature is ${decreased_html} to ${low_temp}&deg;C"
+		. " and the pH is ${kept_same_html}.";
+
+	# wrong: increase temp (but already in range)
+	my $high_temp = $p3_enzyme->{temp1} + 5 + $local_random->random(0, 9, 1);
+	push @p3_choices,
+		"The temperature is ${increased_html} to ${high_temp}&deg;C"
+		. " and the pH is ${kept_same_html}.";
+
+	# wrong: decrease pH further
+	my $lower_pH_shift = 2 + $local_random->random(0, 3, 1);
+	my $lower_pH = $p3_current_pH - $lower_pH_shift / 2.0;
+	push @p3_choices,
+		"The temperature is ${kept_same_html}"
+		. " and the pH is ${decreased_html} to ${lower_pH}.";
+
+	# correct: increase pH toward optimum
+	my $new_pH = $p3_optim_pH - 0.5;
+	$p3_answer =
+		"The temperature is ${kept_same_html}"
+		. " and the pH is ${increased_html} to ${new_pH}.";
+
+} elsif ($subtype eq 'B') {
+	# good temp, too-high pH -> answer is decrease pH
+	$p3_current_temp = $p3_good_temp;
+	$p3_current_pH = $too_high_pH;
+
+	# wrong: decrease temp
+	my $low_temp = $p3_current_temp - 5 - $local_random->random(0, 9, 1);
+	push @p3_choices,
+		"The temperature is ${decreased_html} to ${low_temp}&deg;C"
+		. " and the pH is ${kept_same_html}.";
+
+	# wrong: increase temp
+	my $high_temp = $p3_enzyme->{temp1} + 5 + $local_random->random(0, 9, 1);
+	push @p3_choices,
+		"The temperature is ${increased_html} to ${high_temp}&deg;C"
+		. " and the pH is ${kept_same_html}.";
+
+	# wrong: increase pH further
+	my $higher_pH_shift = 2 + $local_random->random(0, 3, 1);
+	my $higher_pH = $p3_current_pH + $higher_pH_shift / 2.0;
+	push @p3_choices,
+		"The temperature is ${kept_same_html}"
+		. " and the pH is ${increased_html} to ${higher_pH}.";
+
+	# correct: decrease pH toward optimum
+	my $new_pH = $p3_optim_pH + 0.5;
+	$p3_answer =
+		"The temperature is ${kept_same_html}"
+		. " and the pH is ${decreased_html} to ${new_pH}.";
+
+} else {
+	# C: too-low temp, good pH -> answer is increase temp
+	$p3_current_temp = $too_low_temp;
+	$p3_current_pH = $p3_optim_pH;
+
+	# wrong: decrease temp further
+	my $low_temp = $p3_current_temp - 5 - $local_random->random(0, 9, 1);
+	push @p3_choices,
+		"The temperature is ${decreased_html} to ${low_temp}&deg;C"
+		. " and the pH is ${kept_same_html}.";
+
+	# wrong: increase pH
+	my $high_pH_shift = 2 + $local_random->random(0, 3, 1);
+	my $high_pH = $p3_current_pH + $high_pH_shift / 2.0;
+	push @p3_choices,
+		"The temperature is ${kept_same_html}"
+		. " and the pH is ${increased_html} to ${high_pH}.";
+
+	# wrong: decrease pH
+	my $low_pH_shift = 2 + $local_random->random(0, 3, 1);
+	my $low_pH = $p3_current_pH - $low_pH_shift / 2.0;
+	push @p3_choices,
+		"The temperature is ${kept_same_html}"
+		. " and the pH is ${decreased_html} to ${low_pH}.";
+
+	# correct: increase temp into effective range
+	$p3_answer =
+		"The temperature is ${increased_html} to ${p3_good_temp}&deg;C"
+		. " and the pH is ${kept_same_html}.";
+}
+
+# add answer and shuffle
+push @p3_choices, $p3_answer;
+for (my $i = $#p3_choices; $i > 0; $i--) {
+	my $j = $local_random->random(0, $i, 1);
+	@p3_choices[$i, $j] = @p3_choices[$j, $i];
+}
+
+$rb3 = RadioButtons(
+	[@p3_choices],
+	$p3_answer,
+	labels        => 'ABC',
+	displayLabels => 1,
+	separator     => '<div style="margin-bottom: 0.5em;"></div>',
+);
+
+# question and solution text for Part 3
+my $p3_current_pH_str = sprintf('%.1f', $p3_current_pH);
+$q3_html = "If $enzyme_html{$p3_enzyme->{name}} is currently functioning"
+	. " at ${p3_current_temp}&deg;C and a pH of ${p3_current_pH_str}.";
+
+$sol3_enzyme = $p3_enzyme->{name};
+$sol3_temp_html = "$p3_enzyme->{temp1}&ndash;$p3_enzyme->{temp2} &deg;C";
+$sol3_pH_html = sprintf('%.1f', $p3_optim_pH);
+
+if ($subtype eq 'A') {
+	$sol3_explain = "The temperature (${p3_current_temp}&deg;C) is already within"
+		. " the effective range, but the pH (${p3_current_pH_str}) is below"
+		. " the optimum of ${sol3_pH_html}. Increasing the pH moves the"
+		. " conditions closer to optimal, which increases enzyme activity.";
+} elsif ($subtype eq 'B') {
+	$sol3_explain = "The temperature (${p3_current_temp}&deg;C) is already within"
+		. " the effective range, but the pH (${p3_current_pH_str}) is above"
+		. " the optimum of ${sol3_pH_html}. Decreasing the pH moves the"
+		. " conditions closer to optimal, which increases enzyme activity.";
+} else {
+	$sol3_explain = "The pH (${p3_current_pH_str}) is already near the optimum,"
+		. " but the temperature (${p3_current_temp}&deg;C) is below the"
+		. " effective range of $p3_enzyme->{temp1}&ndash;$p3_enzyme->{temp2}"
+		. " &deg;C. Increasing the temperature into the effective range"
+		. " increases enzyme activity.";
+}
+
+# ----------------------------
+# 3) Statement (PGML)
+# ----------------------------
+BEGIN_PGML
+
+*Optimal Enzyme Activity*
+
+The following table shows the effective temperature ranges and optimum pH values for four different enzymes.
+
+[@ $enzyme_table @]*
+
+*Part 1.* [$q1_html]*
+
+[_]{$rb1}
+
+---
+
+*Part 2.* [$q2_html]*
+
+[_]{$rb2}
+
+---
+
+*Part 3.* [$q3_html]*
+
+Which one of the following conditions would [$increase_html]* the rate of enzyme activity?
+
+[_]{$rb3}
+
+END_PGML
+
+# ----------------------------
+# 4) Solution
+# ----------------------------
+BEGIN_PGML_SOLUTION
+
+*Part 1: Enzyme [$sol1_enzyme]:*
+
+- Effective temperature range: [$sol1_temp_html]*
+- Optimum pH: [$sol1_pH_html]*
+
+[$sol1_explain]*
+
+Therefore, Enzyme [$sol1_enzyme] would be the most active under these conditions.
+
+---
+
+*Part 2: Enzyme [$sol2_enzyme]:*
+
+- Effective temperature range: [$sol2_temp_html]*
+- Optimum pH: [$sol2_pH_html]*
+
+[$sol2_explain]*
+
+The wrong answers each have either the temperature outside the effective range, the pH far from the optimum, or both.
+
+---
+
+*Part 3: Enzyme [$sol3_enzyme]:*
+
+- Effective temperature range: [$sol3_temp_html]*
+- Optimum pH: [$sol3_pH_html]*
+
+[$sol3_explain]*
+
+The other choices either move conditions further from optimal (decreasing temperature when already below range, moving pH further from optimum) or change a parameter that is already in its optimal range.
+
+END_PGML_SOLUTION
+
+ENDDOCUMENT();

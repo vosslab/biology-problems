@@ -1,0 +1,494 @@
+## TITLE('Biochemistry: Enzyme Temperature Activity Graph')
+## DESCRIPTION
+## Students examine a graph showing enzyme activity vs temperature for three
+## enzymes with asymmetric (Gumbel-like) activity curves. Four-part question:
+## (1) identify the enzyme for human body temp or thermophilic conditions,
+## (2) identify the enzyme most active at high or low temperatures,
+## (3) determine the optimal temperature of a specific enzyme, and
+## (4) explain the curve shape (denaturation or collision theory).
+## ENDDESCRIPTION
+## KEYWORDS('enzyme','temperature','activity','graph','optimal conditions','denaturation')
+## DBsubject('Biochemistry')
+## DBchapter('Enzymes')
+## DBsection('Activity')
+## Level(2)
+## Date('2026-03-14')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	'PGstandard.pl',
+	'MathObjects.pl',
+	'PGML.pl',
+	'PGgraphmacros.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl',
+);
+
+$showPartialCorrectAnswers = 0;
+
+# ----------------------------
+# 2) Setup
+# ----------------------------
+
+# ----------------------------
+# 2a) Randomization
+# ----------------------------
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+
+# ----------------------------
+# 2b) Generate enzyme temperature optima
+# ----------------------------
+# pool of temperatures from 10 to 65 by 5
+my @temp_pool = ();
+for (my $t = 10; $t <= 65; $t += 5) {
+	push @temp_pool, $t;
+}
+
+# shuffle the pool using Fisher-Yates
+for (my $i = $#temp_pool; $i > 0; $i--) {
+	my $j = $local_random->random(0, $i, 1);
+	@temp_pool[$i, $j] = @temp_pool[$j, $i];
+}
+
+# pick 4 temperatures with minimum 10-degree separation
+my @enzyme_names = ('A', 'B', 'C');
+my @optim_temps = ();
+
+for my $ename (@enzyme_names) {
+	my $temp = pop @temp_pool;
+	push @optim_temps, $temp;
+	# remove neighbors within 10 degrees to enforce separation
+	@temp_pool = grep { abs($_ - $temp) >= 10 } @temp_pool;
+}
+
+# ----------------------------
+# 2c) Build enzyme parameters for Gumbel curves
+# ----------------------------
+# accessible color names (defined after init_graph below)
+my @colors = ('enzyme_purple', 'enzyme_magenta', 'enzyme_teal');
+# hex colors for HTML text (must match GD colors below)
+my @hex_colors = ('#871DFF', '#CC0763', '#00775f');
+my $slope = 0.05;
+my @enzymes = ();
+
+for (my $i = 0; $i < 3; $i++) {
+	# randomize sharpness parameter between 3.0 and 5.0
+	my $sharp = 3.0 + $local_random->random(0, 20, 1) / 10.0;
+	my $opt_temp = $optim_temps[$i];
+
+	# compute Td so peak occurs at opt_temp
+	# Td = opt_temp - sharp * ln(slope * sharp)
+	my $Td = $opt_temp - $sharp * log($slope * $sharp);
+
+	# two-pass normalization: find raw max, then scale
+	# pass 1: find maximum raw value
+	my $raw_max = 0;
+	for (my $t = 0; $t <= 80; $t += 0.2) {
+		my $raw = exp($slope * $t) * exp(-exp(($t - $Td) / $sharp));
+		$raw_max = $raw if $raw > $raw_max;
+	}
+
+	# randomize target peak height between 4.5 and 5.5 (fits widescreen y-axis)
+	my $peak_height = 4.5 + $local_random->random(0, 10, 1) / 10.0;
+	# scale factor to normalize
+	my $scale = ($raw_max > 0) ? $peak_height / $raw_max : 1;
+
+	push @enzymes, {
+		name     => $enzyme_names[$i],
+		optim    => $opt_temp,
+		sharp    => $sharp,
+		Td       => $Td,
+		scale    => $scale,
+		peak     => $peak_height,
+		color    => $colors[$i],
+		hexcolor => $hex_colors[$i],
+	};
+}
+
+# ----------------------------
+# 2d) Create the graph
+# ----------------------------
+# widescreen: x spans ~84 units, y spans ~7.5 units
+$gr = init_graph(-6, -0.8, 78, 6.7,
+	axes => [0, 0],
+	size => [520, 300],
+);
+
+# draw manual grid lines (no auto-labels)
+$gr->v_grid('gray', 10, 20, 30, 40, 50, 60, 70);
+$gr->h_grid('gray', 2, 4, 6);
+
+# define enzyme colors (WCAG 5.5:1+ on white, colorblind-safe)
+# purple #871DFF (5.75:1), magenta #CC0763 (5.55:1), teal #00775f (5.52:1)
+$gr->new_color('enzyme_purple', 135, 29, 255);
+$gr->new_color('enzyme_magenta', 204, 7, 99);
+$gr->new_color('enzyme_teal', 0, 119, 95);
+
+# add x-axis tick labels every 10 degrees
+for (my $x = 10; $x <= 70; $x += 10) {
+	$gr->lb(new Label($x, -0.3, "$x", 'black', 'center', 'middle'));
+}
+
+# add x-axis label
+$gr->lb(new Label(39, -0.9, "Temperature (\x{B0}C)", 'black', 'center', 'middle'));
+
+# add y-axis label (vertical text, rotated 90 degrees)
+# no y-axis numbers since activity units are arbitrary
+$gr->lb(new Label(-3, 3.2, 'Enzyme Activity', 'black', 'center', 'middle', 'vertical'));
+
+# ----------------------------
+# 2e) Draw each enzyme curve
+# ----------------------------
+my $num_points = 400;
+
+for (my $e = 0; $e < 3; $e++) {
+	my $sharp = $enzymes[$e]->{sharp};
+	my $Td = $enzymes[$e]->{Td};
+	my $sc = $enzymes[$e]->{scale};
+	my $col = $enzymes[$e]->{color};
+	my $opt = $enzymes[$e]->{optim};
+	my $pk = $enzymes[$e]->{peak};
+
+	# create function object for this Gumbel curve
+	my $fn = new Fun(
+		sub {
+			my $t = shift;
+			return $t;
+		},
+		sub {
+			my $t = shift;
+			# Gumbel-like curve: scale * exp(slope*T) * exp(-exp((T-Td)/sharp))
+			my $val = $sc * exp($slope * $t)
+				* exp(-exp(($t - $Td) / $sharp));
+			return $val;
+		},
+		$gr,
+	);
+	# domain extends past visible axes so curves aren't clipped at edges
+	$fn->domain(-5, 85);
+	$fn->steps($num_points);
+	$fn->weight(2);
+	$fn->color($col);
+
+	# label at peak position with large font for readability
+	my $label_y = $pk + 0.3;
+	$gr->lb(new Label($opt, $label_y, $enzymes[$e]->{name},
+		$col, 'center', 'bottom', 'giant'));
+}
+
+
+# add tick marks on x-axis (drawn after functions so they're on top)
+$gr->h_ticks(0, 'black', 10, 20, 30, 40, 50, 60, 70);
+# add tick marks on y-axis
+$gr->v_ticks(0, 'black', 2, 4, 6);
+
+# ----------------------------
+# 2f) Build colored enzyme name lookup for HTML question text
+# ----------------------------
+my %enzyme_html = ();
+for (my $i = 0; $i < 3; $i++) {
+	my $n = $enzymes[$i]->{name};
+	my $h = $enzymes[$i]->{hexcolor};
+	$enzyme_html{$n} = "<span style='color:${h}; font-weight:700;'>"
+		. "Enzyme ${n}</span>";
+}
+
+# ----------------------------
+# 2g) Q1: High or low temperatures
+# ----------------------------
+# find enzymes with lowest and highest optimal temperature
+my $lowest_temp_enzyme = $enzymes[0];
+my $highest_temp_enzyme = $enzymes[0];
+for (my $i = 1; $i < 3; $i++) {
+	if ($enzymes[$i]->{optim} < $lowest_temp_enzyme->{optim}) {
+		$lowest_temp_enzyme = $enzymes[$i];
+	}
+	if ($enzymes[$i]->{optim} > $highest_temp_enzyme->{optim}) {
+		$highest_temp_enzyme = $enzymes[$i];
+	}
+}
+
+# randomly ask about high or low temperatures
+# colors: dark orange #b74300 for hot, navy #0067cc for cold
+my $ask_high = $local_random->random(0, 1, 1);
+my $q1_answer_enzyme;
+my $q1_condition;
+my $q1_color;
+
+if ($ask_high) {
+	$q1_condition = 'high';
+	$q1_color = '#b74300';
+	$q1_answer_enzyme = $highest_temp_enzyme;
+} else {
+	$q1_condition = 'low';
+	$q1_color = '#0067cc';
+	$q1_answer_enzyme = $lowest_temp_enzyme;
+}
+
+my $q1_answer = $enzyme_html{$q1_answer_enzyme->{name}};
+my @q1_choices = ($enzyme_html{'A'}, $enzyme_html{'B'}, $enzyme_html{'C'});
+
+$rb1 = RadioButtons(
+	[@q1_choices],
+	$q1_answer,
+	labels        => 'ABC',
+	displayLabels => 1,
+	separator     => '<div style="margin-bottom: 0.5em;"></div>',
+);
+my $q1_styled = "<span style='color:${q1_color}; font-weight:700;'>"
+	. "${q1_condition}</span>";
+$q1_html = "Which enzyme is most active at ${q1_styled} temperatures?";
+
+# ----------------------------
+# 2g) Q2: What is the optimal temperature of Enzyme X?
+# ----------------------------
+my $q2_target_idx = $local_random->random(0, 2, 1);
+my $q2_target = $enzymes[$q2_target_idx];
+
+# round optimal temp to nearest 5 degrees for clean display
+my $q2_optim_rounded = int($q2_target->{optim} / 5 + 0.5) * 5;
+my $q2_answer = "${q2_optim_rounded}&deg;C";
+
+# collect all temp values: correct + other enzymes + 2 extra distractors
+my @q2_values = ($q2_optim_rounded);
+my %q2_used = ($q2_optim_rounded => 1);
+for (my $i = 0; $i < 3; $i++) {
+	next if $i == $q2_target_idx;
+	my $other_rounded = int($enzymes[$i]->{optim} / 5 + 0.5) * 5;
+	next if $q2_used{$other_rounded};
+	push @q2_values, $other_rounded;
+	$q2_used{$other_rounded} = 1;
+}
+# generate 2 extra distractors offset from the correct answer
+my @offsets = (-15, -10, -5, 5, 10, 15);
+# shuffle offsets to pick random ones
+for (my $i = $#offsets; $i > 0; $i--) {
+	my $j = $local_random->random(0, $i, 1);
+	@offsets[$i, $j] = @offsets[$j, $i];
+}
+my $extra_count = 0;
+for my $off (@offsets) {
+	last if $extra_count >= 2;
+	my $candidate = $q2_optim_rounded + $off;
+	# keep within valid range 0-80 and avoid duplicates
+	next if $candidate < 0 || $candidate > 80;
+	next if $q2_used{$candidate};
+	push @q2_values, $candidate;
+	$q2_used{$candidate} = 1;
+	$extra_count++;
+}
+# bubble sort values in ascending order (sort is blocked by sandbox)
+for (my $i = 0; $i < scalar(@q2_values); $i++) {
+	for (my $j = $i + 1; $j < scalar(@q2_values); $j++) {
+		if ($q2_values[$j] < $q2_values[$i]) {
+			my $tmp = $q2_values[$i];
+			$q2_values[$i] = $q2_values[$j];
+			$q2_values[$j] = $tmp;
+		}
+	}
+}
+# format as display strings
+my @q2_choices = ();
+for my $val (@q2_values) {
+	push @q2_choices, "${val}&deg;C";
+}
+
+$rb2 = RadioButtons(
+	[@q2_choices],
+	$q2_answer,
+	labels        => 'ABC',
+	displayLabels => 1,
+	separator     => '<div style="margin-bottom: 0.5em;"></div>',
+);
+$q2_html = "What is the approximate optimal temperature of "
+	. "$enzyme_html{$q2_target->{name}}?";
+
+# ----------------------------
+# 2h) Q3: Organism-based temperature question
+# ----------------------------
+# find enzyme closest to 37 and enzyme farthest from 37
+my $closest_enzyme = $enzymes[0];
+my $farthest_enzyme = $enzymes[0];
+my $closest_dist = abs($enzymes[0]->{optim} - 37);
+my $farthest_dist = abs($enzymes[0]->{optim} - 37);
+for (my $i = 1; $i < 3; $i++) {
+	my $dist = abs($enzymes[$i]->{optim} - 37);
+	if ($dist < $closest_dist) {
+		$closest_dist = $dist;
+		$closest_enzyme = $enzymes[$i];
+	}
+	if ($dist > $farthest_dist) {
+		$farthest_dist = $dist;
+		$farthest_enzyme = $enzymes[$i];
+	}
+}
+
+# 4 variants: body temp active, body temp inactive, thermophilic, psychrophilic
+# colors: sienna #A0522D for body temp, dark orange #b74300 for thermo,
+#          navy #0067cc for psychro
+my $q3_variant = $local_random->random(0, 3, 1);
+my $q3_answer_enzyme;
+if ($q3_variant == 0) {
+	$q3_answer_enzyme = $closest_enzyme;
+	my $q3_styled = "<span style='color:#A0522D; font-weight:700;'>"
+		. "human body temperature (~37&deg;C)</span>";
+	$q3_html = "Which enzyme is most active at ${q3_styled}?";
+} elsif ($q3_variant == 1) {
+	$q3_answer_enzyme = $farthest_enzyme;
+	my $q3_styled = "<span style='color:#A0522D; font-weight:700;'>"
+		. "human body temperature (~37&deg;C)</span>";
+	$q3_html = "Which enzyme has no measurable activity at ${q3_styled}?";
+} elsif ($q3_variant == 2) {
+	$q3_answer_enzyme = $highest_temp_enzyme;
+	my $q3_styled = "<span style='color:#b74300; font-weight:700;'>"
+		. "thermophilic (heat-loving)</span>";
+	$q3_html = "Which enzyme would most likely be found in a "
+		. "${q3_styled} organism?";
+} else {
+	$q3_answer_enzyme = $lowest_temp_enzyme;
+	my $q3_styled = "<span style='color:#0067cc; font-weight:700;'>"
+		. "psychrophilic (cold-loving)</span>";
+	$q3_html = "Which enzyme would most likely be found in a "
+		. "${q3_styled} organism?";
+}
+
+my $q3_answer = $enzyme_html{$q3_answer_enzyme->{name}};
+my @q3_choices = ($enzyme_html{'A'}, $enzyme_html{'B'}, $enzyme_html{'C'});
+
+$rb3 = RadioButtons(
+	[@q3_choices],
+	$q3_answer,
+	labels        => 'ABC',
+	displayLabels => 1,
+	separator     => '<div style="margin-bottom: 0.5em;"></div>',
+);
+
+# ----------------------------
+# 2i) Q4: Why does the curve have its characteristic shape?
+# ----------------------------
+# randomly ask about the sharp right drop (denaturation) or gradual left rise
+my $ask_right_side = $local_random->random(0, 1, 1);
+
+if ($ask_right_side) {
+	# ask about sharp dropoff above optimum
+	$q4_html = "Why does enzyme activity decrease <strong>sharply</strong> "
+		. "above the optimal temperature?";
+	$q4_answer = "Heat disrupts non-covalent interactions, "
+		. "denaturing the three-dimensional enzyme shape";
+	@q4_wrong = (
+		"The substrate evaporates or decomposes, "
+			. "reducing the amount available for the reaction",
+		"Covalent peptide bonds in the enzyme break, "
+			. "splitting the protein into inactive fragments",
+		"The enzyme converts into a different protein "
+			. "that catalyzes a different reaction",
+	);
+	$sol_q4_explain = "Above the optimal temperature, the enzyme denatures. "
+		. "Heat disrupts the non-covalent interactions (hydrogen bonds, "
+		. "hydrophobic interactions, ionic bonds) that maintain the "
+		. "three-dimensional folded structure. Once unfolded, the active site "
+		. "loses its shape and can no longer bind substrate, causing a sharp "
+		. "and often irreversible loss of activity.";
+} else {
+	# ask about gradual rise below optimum
+	$q4_html = "Why does enzyme activity increase <strong>gradually</strong> "
+		. "as temperature rises toward the optimum?";
+	$q4_answer = "Higher kinetic energy causes more frequent "
+		. "enzyme-substrate collisions";
+	@q4_wrong = (
+		"The enzyme gradually changes shape to better "
+			. "fit the substrate at higher temperatures",
+		"The substrate becomes more flexible and fits "
+			. "more easily into the active site",
+		"Higher temperatures activate dormant enzyme "
+			. "copies, increasing total active sites",
+	);
+	$sol_q4_explain = "As temperature increases toward the optimum, molecules "
+		. "move faster due to increased kinetic energy. This leads to more "
+		. "frequent collisions between enzyme and substrate molecules, and more "
+		. "collisions have enough energy to overcome the activation energy "
+		. "barrier. The rise is gradual because kinetic energy increases "
+		. "continuously with temperature.";
+}
+
+my @q4_choices = ($q4_answer, @q4_wrong);
+# shuffle choices
+for (my $i = $#q4_choices; $i > 0; $i--) {
+	my $j = $local_random->random(0, $i, 1);
+	@q4_choices[$i, $j] = @q4_choices[$j, $i];
+}
+
+$rb4 = RadioButtons(
+	[@q4_choices],
+	$q4_answer,
+	labels        => 'ABC',
+	displayLabels => 1,
+	separator     => '<div style="margin-bottom: 0.5em;"></div>',
+);
+
+# solution variables
+$sol_q1_enzyme = $q1_answer_enzyme->{name};
+$sol_q1_temp = "$q1_answer_enzyme->{optim}&deg;C";
+$sol_q2_enzyme = $q2_target->{name};
+$sol_q2_temp = $q2_answer;
+$sol_q3_enzyme = $q3_answer_enzyme->{name};
+$sol_q3_temp = "$q3_answer_enzyme->{optim}&deg;C";
+
+# ----------------------------
+# 3) Statement (PGML)
+# ----------------------------
+BEGIN_PGML
+
+*Enzyme Activity vs Temperature*
+
+The following graph shows the enzyme activity as a function of temperature for three different enzymes (A, B, and C).
+
+[@ image(insertGraph($gr), width => 520, height => 300, tex_size => 700) @]*
+
+*Part 1.* [$q1_html]*
+
+[_]{$rb1}
+
+*Part 2.* [$q2_html]*
+
+[_]{$rb2}
+
+*Part 3.* [$q3_html]*
+
+[_]{$rb3}
+
+*Part 4.* [$q4_html]*
+
+[_]{$rb4}
+
+END_PGML
+
+# ----------------------------
+# 4) Solution
+# ----------------------------
+BEGIN_PGML_SOLUTION
+
+*Part 1.* Enzyme [$sol_q1_enzyme] is most active at [$q1_condition] temperatures. Its optimal temperature of [$sol_q1_temp]* is the [$q1_condition]est among the three enzymes.
+
+*Part 2.* The optimal temperature of Enzyme [$sol_q2_enzyme] is [$sol_q2_temp]*. This is the temperature where the activity curve for Enzyme [$sol_q2_enzyme] reaches its peak.
+
+*Part 3.* Enzyme [$sol_q3_enzyme] has an optimal temperature of [$sol_q3_temp]*.
+
+*Part 4.* [$sol_q4_explain]*
+
+END_PGML_SOLUTION
+
+ENDDOCUMENT();
