@@ -1,0 +1,201 @@
+## DESCRIPTION
+## Select the statement that is TRUE or FALSE about Enzyme Catalytic Strategies and Methods for Lowering Activation Energy.
+## ENDDESCRIPTION
+## KEYWORDS('Enzyme Catalytic Strategies and Methods for Lowering Activation Energy','true/false','multiple choice')
+## DBsubject('Biochemistry')
+## DBchapter('')
+## DBsection('')
+## Date('2026-03-18')
+## Author('Neil R. Voss')
+## Institution('Roosevelt University')
+
+DOCUMENT();
+
+loadMacros(
+  "PGstandard.pl",
+  "PGML.pl",
+  "PGchoicemacros.pl",
+  "parserRadioButtons.pl",
+  "PGcourse.pl",
+);
+
+TEXT(beginproblem());
+$showPartialCorrectAnswers = 1;
+
+#==========================================================
+# AUTO-GENERATED GROUPS FROM YAML
+#==========================================================
+
+@true_groups = (
+  [
+    '<span style="color: #d40000; font-weight:700;">Acid-base catalysis</span> involves amino acid side chains donating or accepting protons.',
+    'Amino acid side chains can participate in proton transfers during catalysis.',
+    'Amino acid side chains in enzyme active sites often act as proton donors or acceptors.',
+  ],
+  [
+    '<span style="color: #935d00; font-weight:700;">ATP hydrolysis</span> is used by certain enzymes to drive conformational changes or reaction steps.',
+  ],
+  [
+    '<span style="color: #3b7600; font-weight:700;">Catalysis by approximation</span> involves binding two or more substrates in close proximity.',
+    'Enzymes enhance catalysis by holding multiple substrates close together and properly aligned.',
+    'Enzymes increase reaction rates by holding substrates in close proximity and correct orientation.',
+    'Many enzymes enhance reaction rates by positioning multiple substrates near each other.',
+    'Orientation of substrate reactive groups by enzyme residues facilitates selective bond formation.',
+  ],
+  [
+    '<span style="color: #a719db; font-weight:700;">Covalent catalysis</span> involves transient covalent bonds between enzyme and substrate.',
+    'A transient covalent bond may form between enzyme and substrate to create a reactive intermediate.',
+    'Covalent bonds between catalytic residues and substrates can form during some reaction mechanisms.',
+    'In <span style="color: #a719db; font-weight:700;">covalent catalysis</span>, the enzyme acts as a temporary electron sink to stabilize intermediates.',
+    'Nucleophilic residues may form covalent intermediates with the substrate.',
+  ],
+  [
+    '<span style="color: #007576; font-weight:700;">Metal ions</span> in the active site stabilize negative charges or mediate redox reactions.',
+    '<span style="color: #007576; font-weight:700;">Metal ions</span> stabilize negative charges or assist in redox reactions.',
+    'Electrostatic interactions in the active site can stabilize charged intermediates.',
+    'In <span style="color: #00775f; font-weight:700;">metal ion catalysis</span>, the <span style="color: #007576; font-weight:700;">metal ions</span> can help position water molecules for nucleophilic attack.',
+    'Positively charged side chains or bound <span style="color: #007576; font-weight:700;">metal ions</span> can stabilize anionic transition states.',
+  ],
+  [
+    'Enzymes may use local changes in pH or polarity to provide a favorable <span style="color: #c80085; font-weight:700;">active site microenvironment</span>.',
+  ],
+  [
+    'Enzymes can distort substrate bonds to resemble the transition state, lowering the activation energy.',
+    'Enzymes can strain substrate bonds to help lower the activation energy.',
+  ],
+);
+@false_groups = (
+  [
+    '<span style="color: #d40000; font-weight:700;">Acid-base catalysis</span> is a mechanism where water is always the proton donor or acceptor.',
+    '<span style="color: #d40000; font-weight:700;">Acid-base catalysis</span> is when an enzyme uses a metal ion to coordinate charges in the active site.',
+    '<span style="color: #d40000; font-weight:700;">Acid-base catalysis</span> requires the active site to be completely nonpolar.',
+    '<span style="color: #d40000; font-weight:700;">Acid-base catalysis</span> requires the substrate to donate a proton to the enzyme.',
+    '<span style="color: #d40000; font-weight:700;">Acid-base catalysis</span> requires the substrate to protonate the enzyme.',
+    'In <span style="color: #d40000; font-weight:700;">acid-base catalysis</span>, the substrate serves as the proton donor to activate the enzyme.',
+  ],
+  [
+    '<span style="color: #935d00; font-weight:700;">ATP hydrolysis</span> directly powers the chemical step of all enzymatic reactions.',
+    '<span style="color: #935d00; font-weight:700;">ATP hydrolysis</span> is required for enzyme-catalyzed reactions.',
+  ],
+  [
+    '<span style="color: #3b7600; font-weight:700;">Catalysis by approximation</span> brings in a strong nucleophile and electrophile for catalysis.',
+    '<span style="color: #3b7600; font-weight:700;">Catalysis by approximation</span> decreases the local concentration of reactants.',
+    '<span style="color: #3b7600; font-weight:700;">Catalysis by approximation</span> functions by randomly increasing substrate diffusion.',
+    '<span style="color: #3b7600; font-weight:700;">Catalysis by approximation</span> increases entropy to drive reactions.',
+    '<span style="color: #3b7600; font-weight:700;">Catalysis by approximation</span> involves aligning enzyme functional groups, NOT substrates.',
+  ],
+  [
+    'All enzyme-catalyzed reactions proceed through a covalent enzyme-substrate intermediate.',
+    'Covalent bonding in the active site permanently links the enzyme to the product.',
+    '<span style="color: #a719db; font-weight:700;">Covalent catalysis</span> avoids charged intermediates by eliminating electron transfer steps.',
+    '<span style="color: #a719db; font-weight:700;">Covalent catalysis</span> eliminates the need for nucleophilic residues in the active site.',
+    '<span style="color: #a719db; font-weight:700;">Covalent catalysis</span> involves stable covalent bonds that permanently link enzyme to product.',
+    '<span style="color: #a719db; font-weight:700;">Covalent catalysis</span> prevents the formation of any charged intermediates.',
+  ],
+  [
+    '<span style="color: #00775f; font-weight:700;">Metal ion catalysis</span> eliminates the need for substrate binding specificity.',
+    '<span style="color: #00775f; font-weight:700;">Metal ion catalysis</span> is effective only in acidic conditions.',
+    '<span style="color: #00775f; font-weight:700;">Metal ion catalysis</span> is effective only when <span style="color: #007576; font-weight:700;">metal ions</span> form covalent bonds with substrates.',
+    '<span style="color: #007576; font-weight:700;">Metal ion cofactors</span> in enzymes only serve structural roles.',
+    'The catalytic role of <span style="color: #007576; font-weight:700;">metal ions</span> is limited to maintaining structural stability.',
+    'The only function of <span style="color: #007576; font-weight:700;">metal ions</span> is to stabilize the tertiary structure of the enzyme.',
+  ],
+  [
+    'The <span style="color: #c80085; font-weight:700;">active site microenvironment</span> cannot influence charge stabilization.',
+  ],
+  [
+    'Substrate strain slows down enzymatic reactions by destabilizing intermediates.',
+    'Substrate distortion slows down enzymatic reactions by destabilizing intermediates.',
+  ],
+);
+
+#==========================================================
+# GLOBAL SETTINGS
+#==========================================================
+
+$topic = 'Enzyme Catalytic Strategies and Methods for Lowering Activation Energy';
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+my @mode_choices = ("TRUE", "FALSE");
+$mode = $mode_choices[$local_random->random(0, $#mode_choices, 1)];
+$num_distractors = 4;
+#==========================================================
+# SELECT GROUP
+#==========================================================
+
+my (@selected_group, @opposite_groups);
+
+if ($mode eq "TRUE") {
+  $group_index      = $local_random->random(0, scalar(@true_groups)-1, 1);
+  @selected_group   = @{ $true_groups[$group_index] };
+  @opposite_groups  = @false_groups;
+} else {
+  $group_index      = $local_random->random(0, scalar(@false_groups)-1, 1);
+  @selected_group   = @{ $false_groups[$group_index] };
+  @opposite_groups  = @true_groups;
+}
+
+#==========================================================
+# PICK CORRECT + DISTRACTORS
+#==========================================================
+
+my $correct_index = $local_random->random(0, $#selected_group, 1);
+$correct = $selected_group[$correct_index];
+
+my @available_group_indices = (0 .. $#opposite_groups);
+my @selected_distractor_indices = ();
+
+while (@selected_distractor_indices < $num_distractors && @available_group_indices > 0) {
+  my $random_index = $local_random->random(0, scalar(@available_group_indices)-1, 1);
+  push @selected_distractor_indices, splice(@available_group_indices, $random_index, 1);
+}
+
+@distractors = ();
+foreach my $group_idx (@selected_distractor_indices) {
+  my @group = @{ $opposite_groups[$group_idx] };
+  my $distractor_index = $local_random->random(0, $#group, 1);
+  my $distractor = $group[$distractor_index];
+  push @distractors, $distractor;
+}
+
+@choices = ($correct, @distractors);
+
+#==========================================================
+# SHUFFLE CHOICES (SEED-STABLE)
+#==========================================================
+
+my @choice_indices = (0 .. $#choices);
+my @choice_shuffled = ();
+while (@choice_indices) {
+  my $pick = $local_random->random(0, $#choice_indices, 1);
+  push @choice_shuffled, splice(@choice_indices, $pick, 1);
+}
+@choices = @choices[@choice_shuffled];
+
+#==========================================================
+# RADIO BUTTONS WITH A/B/C/D/E LABELS
+#==========================================================
+
+$rb = RadioButtons(
+  [@choices],
+  $correct,
+  labels        => ['A','B','C','D','E'],
+  displayLabels => 1,
+  randomize     => 0,
+  separator     => '<div style="margin-bottom: 0.7em;"></div>',
+);
+
+#==========================================================
+# PGML
+#==========================================================
+
+BEGIN_PGML
+
+[@ $mode eq "TRUE" ? "Which one of the following statements is <span style='color: #127663;'><strong>TRUE</strong></span> about $topic?" : "Which one of the following statements is <span style='color: #ba372a;'><strong>FALSE</strong></span> about $topic?" @]*
+
+[_]{$rb}
+
+END_PGML
+
+ENDDOCUMENT();
+

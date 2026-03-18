@@ -6,7 +6,7 @@
 ## DBsubject('Biochemistry')
 ## DBchapter('')
 ## DBsection('')
-## Date('2026-03-14')
+## Date('2026-03-18')
 ## Author('Neil R. Voss')
 ## Institution('Roosevelt University')
 
@@ -29,21 +29,21 @@ $showPartialCorrectAnswers = 1;
 
 @true_groups = (
   [
-    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> <span style="color: #a719db; font-weight:700;">bind</span>to the <span style="color: #c80085; font-weight:700;">active site</span> of an enzyme and compete with the<span style="color: #b74300; font-weight:700;">substrate</span> for <span style="color: #a719db; font-weight:700;">binding</span>.',
-    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> <span style="color: #a719db; font-weight:700;">bind</span>to the <span style="color: #c80085; font-weight:700;">active site</span> of an enzyme.',
-    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> compete with the<span style="color: #b74300; font-weight:700;">substrate</span> for <span style="color: #c80085; font-weight:700;">active site</span> <span style="color: #a719db; font-weight:700;">binding</span>.',
-    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> have a structure that is similar to the<span style="color: #b74300; font-weight:700;">substrate</span>.',
-    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> can be overcome by increasing the concentration of the<span style="color: #b74300; font-weight:700;">substrate</span>.',
+    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> bind to the <span style="color: #c80085; font-weight:700;">active site</span> of an enzyme and compete with the <span style="color: #b74300; font-weight:700;">substrate</span> for binding.',
+    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> bind to the <span style="color: #c80085; font-weight:700;">active site</span> of an enzyme.',
+    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> compete with the <span style="color: #b74300; font-weight:700;">substrate</span> for <span style="color: #c80085; font-weight:700;">active site</span> binding.',
+    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> have a structure that is similar to the <span style="color: #b74300; font-weight:700;">substrate</span>.',
+    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> can be overcome by increasing the concentration of the <span style="color: #b74300; font-weight:700;">substrate</span>.',
   ],
   [
-    '<span style="color: #3b7600; font-weight:700;">Noncompetitive&nbsp;inhibitors</span> do NOT <span style="color: #a719db; font-weight:700;">bind</span>the <span style="color: #c80085; font-weight:700;">active site</span>, but can alter <span style="color: #c80085; font-weight:700;">active site</span> conformation.',
-    '<span style="color: #3b7600; font-weight:700;">Noncompetitive&nbsp;inhibitors</span> do NOT <span style="color: #a719db; font-weight:700;">bind</span>the <span style="color: #c80085; font-weight:700;">active site</span>, but can reduce <span style="color: #c80085; font-weight:700;">active site</span> activity.',
-    '<span style="color: #3b7600; font-weight:700;">Noncompetitive&nbsp;inhibitors</span> <span style="color: #a719db; font-weight:700;">bind</span>to a site on the enzyme that is distinct from the <span style="color: #c80085; font-weight:700;">active site</span>',
-    '<span style="color: #3b7600; font-weight:700;">Noncompetitive&nbsp;inhibitors</span> do NOT affect<span style="color: #b74300; font-weight:700;">substrate</span> <span style="color: #a719db; font-weight:700;">binding</span>, but they do decrease catalysis.',
+    '<span style="color: #3b7600; font-weight:700;">Noncompetitive&nbsp;inhibitors</span> do NOT bind the <span style="color: #c80085; font-weight:700;">active site</span>, but can alter <span style="color: #c80085; font-weight:700;">active site</span> conformation.',
+    '<span style="color: #3b7600; font-weight:700;">Noncompetitive&nbsp;inhibitors</span> do NOT bind the <span style="color: #c80085; font-weight:700;">active site</span>, but can reduce <span style="color: #c80085; font-weight:700;">active site</span> activity.',
+    '<span style="color: #3b7600; font-weight:700;">Noncompetitive&nbsp;inhibitors</span> bind to a site on the enzyme that is distinct from the <span style="color: #c80085; font-weight:700;">active site</span>',
+    '<span style="color: #3b7600; font-weight:700;">Noncompetitive&nbsp;inhibitors</span> do NOT affect <span style="color: #b74300; font-weight:700;">substrate</span> binding, but they do decrease catalysis.',
   ],
   [
-    '<span style="color: #076dad; font-weight:700;">Uncompetitive&nbsp;inhibitors</span> <span style="color: #a719db; font-weight:700;">bind</span>to the <span style="color: #6c6c00; font-weight:700;">enzyme-substrate complex</span> and prevent <span style="color: #007a00; font-weight:700;">product</span> formation.',
-    '<span style="color: #076dad; font-weight:700;">Uncompetitive&nbsp;inhibitors</span> only <span style="color: #a719db; font-weight:700;">bind</span>to the <span style="color: #6c6c00; font-weight:700;">enzyme-substrate complex</span>.',
+    '<span style="color: #076dad; font-weight:700;">Uncompetitive&nbsp;inhibitors</span> bind to the <span style="color: #6c6c00; font-weight:700;">enzyme-substrate complex</span> and prevent product formation.',
+    '<span style="color: #076dad; font-weight:700;">Uncompetitive&nbsp;inhibitors</span> only bind to the <span style="color: #6c6c00; font-weight:700;">enzyme-substrate complex</span>.',
     '<span style="color: #076dad; font-weight:700;">Uncompetitive&nbsp;inhibitors</span> have a higher affinity for the <span style="color: #6c6c00; font-weight:700;">enzyme-substrate complex</span> than for the free enzyme.',
   ],
   [
@@ -53,32 +53,32 @@ $showPartialCorrectAnswers = 1;
 );
 @false_groups = (
   [
-    '<span style="color: #3b7600; font-weight:700;">Noncompetitive&nbsp;inhibitors</span> <span style="color: #a719db; font-weight:700;">bind</span>to the <span style="color: #c80085; font-weight:700;">active site</span> of an enzyme and compete with the<span style="color: #b74300; font-weight:700;">substrate</span> for <span style="color: #a719db; font-weight:700;">binding</span>.',
-    '<span style="color: #3b7600; font-weight:700;">Noncompetitive&nbsp;inhibitors</span> <span style="color: #a719db; font-weight:700;">bind</span>to the <span style="color: #c80085; font-weight:700;">active site</span> of an enzyme.',
-    '<span style="color: #3b7600; font-weight:700;">Noncompetitive&nbsp;inhibitors</span> compete with the<span style="color: #b74300; font-weight:700;">substrate</span> for <span style="color: #c80085; font-weight:700;">active site</span> <span style="color: #a719db; font-weight:700;">binding</span>.',
-    '<span style="color: #3b7600; font-weight:700;">Noncompetitive&nbsp;inhibitors</span> <span style="color: #a719db; font-weight:700;">bind</span>the <span style="color: #c80085; font-weight:700;">active site</span> to reduce <span style="color: #c80085; font-weight:700;">active site</span> activity.',
-    '<span style="color: #076dad; font-weight:700;">Uncompetitive&nbsp;inhibitors</span> <span style="color: #a719db; font-weight:700;">bind</span>to the <span style="color: #c80085; font-weight:700;">active site</span> of an enzyme and compete with the<span style="color: #b74300; font-weight:700;">substrate</span> for <span style="color: #a719db; font-weight:700;">binding</span>.',
-    '<span style="color: #076dad; font-weight:700;">Uncompetitive&nbsp;inhibitors</span> <span style="color: #a719db; font-weight:700;">bind</span>to the <span style="color: #c80085; font-weight:700;">active site</span> of an enzyme.',
-    '<span style="color: #076dad; font-weight:700;">Uncompetitive&nbsp;inhibitors</span> compete with the<span style="color: #b74300; font-weight:700;">substrate</span> for <span style="color: #c80085; font-weight:700;">active site</span> <span style="color: #a719db; font-weight:700;">binding</span>.',
-    '<span style="color: #076dad; font-weight:700;">Uncompetitive&nbsp;inhibitors</span> <span style="color: #a719db; font-weight:700;">bind</span>to the enzyme and prevent<span style="color: #b74300; font-weight:700;">substrate</span> <span style="color: #a719db; font-weight:700;">binding</span>.',
-    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> do NOT compete with the<span style="color: #b74300; font-weight:700;">substrate</span> for <span style="color: #c80085; font-weight:700;">active site</span> <span style="color: #a719db; font-weight:700;">binding</span>.',
-    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> do NOT <span style="color: #a719db; font-weight:700;">bind</span>to the <span style="color: #c80085; font-weight:700;">active site</span> of an enzyme.',
-    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> do NOT <span style="color: #a719db; font-weight:700;">bind</span>to the enzyme to prevent<span style="color: #b74300; font-weight:700;">substrate</span> <span style="color: #a719db; font-weight:700;">binding</span>.',
+    '<span style="color: #3b7600; font-weight:700;">Noncompetitive&nbsp;inhibitors</span> bind to the <span style="color: #c80085; font-weight:700;">active site</span> of an enzyme and compete with the <span style="color: #b74300; font-weight:700;">substrate</span> for binding.',
+    '<span style="color: #3b7600; font-weight:700;">Noncompetitive&nbsp;inhibitors</span> bind to the <span style="color: #c80085; font-weight:700;">active site</span> of an enzyme.',
+    '<span style="color: #3b7600; font-weight:700;">Noncompetitive&nbsp;inhibitors</span> compete with the <span style="color: #b74300; font-weight:700;">substrate</span> for <span style="color: #c80085; font-weight:700;">active site</span> binding.',
+    '<span style="color: #3b7600; font-weight:700;">Noncompetitive&nbsp;inhibitors</span> bind the <span style="color: #c80085; font-weight:700;">active site</span> to reduce <span style="color: #c80085; font-weight:700;">active site</span> activity.',
+    '<span style="color: #076dad; font-weight:700;">Uncompetitive&nbsp;inhibitors</span> bind to the <span style="color: #c80085; font-weight:700;">active site</span> of an enzyme and compete with the <span style="color: #b74300; font-weight:700;">substrate</span> for binding.',
+    '<span style="color: #076dad; font-weight:700;">Uncompetitive&nbsp;inhibitors</span> bind to the <span style="color: #c80085; font-weight:700;">active site</span> of an enzyme.',
+    '<span style="color: #076dad; font-weight:700;">Uncompetitive&nbsp;inhibitors</span> compete with the <span style="color: #b74300; font-weight:700;">substrate</span> for <span style="color: #c80085; font-weight:700;">active site</span> binding.',
+    '<span style="color: #076dad; font-weight:700;">Uncompetitive&nbsp;inhibitors</span> bind to the enzyme and prevent <span style="color: #b74300; font-weight:700;">substrate</span> binding.',
+    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> do NOT compete with the <span style="color: #b74300; font-weight:700;">substrate</span> for <span style="color: #c80085; font-weight:700;">active site</span> binding.',
+    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> do NOT bind to the <span style="color: #c80085; font-weight:700;">active site</span> of an enzyme.',
+    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> do NOT bind to the enzyme to prevent <span style="color: #b74300; font-weight:700;">substrate</span> binding.',
   ],
   [
-    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> <span style="color: #a719db; font-weight:700;">bind</span>to a site on the enzyme that is distinct from the <span style="color: #c80085; font-weight:700;">active site</span>.',
-    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> do NOT <span style="color: #a719db; font-weight:700;">bind</span>the <span style="color: #c80085; font-weight:700;">active site</span>, but can alter <span style="color: #c80085; font-weight:700;">active site</span> conformation.',
-    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> do NOT <span style="color: #a719db; font-weight:700;">bind</span>the <span style="color: #c80085; font-weight:700;">active site</span>, but can reduce <span style="color: #c80085; font-weight:700;">active site</span> activity.',
-    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> do NOT affect<span style="color: #b74300; font-weight:700;">substrate</span> <span style="color: #a719db; font-weight:700;">binding</span>, but they do decrease catalysis.',
-    '<span style="color: #076dad; font-weight:700;">Uncompetitive&nbsp;inhibitors</span> <span style="color: #a719db; font-weight:700;">bind</span>to a site on the enzyme that is distinct from the <span style="color: #c80085; font-weight:700;">active site</span>.',
-    '<span style="color: #3b7600; font-weight:700;">Noncompetitive&nbsp;inhibitors</span> affect<span style="color: #b74300; font-weight:700;">substrate</span> <span style="color: #a719db; font-weight:700;">binding</span>, but do NOT decrease catalysis.',
+    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> bind to a site on the enzyme that is distinct from the <span style="color: #c80085; font-weight:700;">active site</span>.',
+    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> do NOT bind the <span style="color: #c80085; font-weight:700;">active site</span>, but can alter <span style="color: #c80085; font-weight:700;">active site</span> conformation.',
+    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> do NOT bind the <span style="color: #c80085; font-weight:700;">active site</span>, but can reduce <span style="color: #c80085; font-weight:700;">active site</span> activity.',
+    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> do NOT affect <span style="color: #b74300; font-weight:700;">substrate</span> binding, but they do decrease catalysis.',
+    '<span style="color: #076dad; font-weight:700;">Uncompetitive&nbsp;inhibitors</span> bind to a site on the enzyme that is distinct from the <span style="color: #c80085; font-weight:700;">active site</span>.',
+    '<span style="color: #3b7600; font-weight:700;">Noncompetitive&nbsp;inhibitors</span> affect <span style="color: #b74300; font-weight:700;">substrate</span> binding, but do NOT decrease catalysis.',
   ],
   [
-    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> only <span style="color: #a719db; font-weight:700;">bind</span>to the <span style="color: #6c6c00; font-weight:700;">enzyme-substrate complex</span>.',
-    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> <span style="color: #a719db; font-weight:700;">bind</span>to the <span style="color: #6c6c00; font-weight:700;">enzyme-substrate complex</span> and prevent <span style="color: #007a00; font-weight:700;">product</span> formation.',
+    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> only bind to the <span style="color: #6c6c00; font-weight:700;">enzyme-substrate complex</span>.',
+    '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> bind to the <span style="color: #6c6c00; font-weight:700;">enzyme-substrate complex</span> and prevent product formation.',
     '<span style="color: #d40000; font-weight:700;">Competitive&nbsp;inhibitors</span> have a higher affinity for the <span style="color: #6c6c00; font-weight:700;">enzyme-substrate complex</span> than for the free enzyme.',
-    '<span style="color: #3b7600; font-weight:700;">Noncompetitive&nbsp;inhibitors</span> only <span style="color: #a719db; font-weight:700;">bind</span>to the <span style="color: #6c6c00; font-weight:700;">enzyme-substrate complex</span>.',
-    '<span style="color: #3b7600; font-weight:700;">Noncompetitive&nbsp;inhibitors</span> <span style="color: #a719db; font-weight:700;">bind</span>to the <span style="color: #6c6c00; font-weight:700;">enzyme-substrate complex</span> and prevent <span style="color: #007a00; font-weight:700;">product</span> formation.',
+    '<span style="color: #3b7600; font-weight:700;">Noncompetitive&nbsp;inhibitors</span> only bind to the <span style="color: #6c6c00; font-weight:700;">enzyme-substrate complex</span>.',
+    '<span style="color: #3b7600; font-weight:700;">Noncompetitive&nbsp;inhibitors</span> bind to the <span style="color: #6c6c00; font-weight:700;">enzyme-substrate complex</span> and prevent product formation.',
     '<span style="color: #3b7600; font-weight:700;">Noncompetitive&nbsp;inhibitors</span> have a higher affinity for the <span style="color: #6c6c00; font-weight:700;">enzyme-substrate complex</span> than for the free enzyme.',
     '<span style="color: #076dad; font-weight:700;">Uncompetitive&nbsp;inhibitors</span> have a higher affinity for the free enzyme than for the <span style="color: #6c6c00; font-weight:700;">enzyme-substrate complex</span>.',
   ],

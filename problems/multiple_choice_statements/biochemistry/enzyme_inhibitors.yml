@@ -14,10 +14,7 @@ replacement_rules:
   enzyme$inhibitors: '<span style="color: #935d00;">enzyme&nbsp;inhibitors</span>'
   enzyme-substrate complex: '<span style="color: #6c6c00;">enzyme-substrate complex</span>'
   Noncompetitive$inhibitors: '<span style="color: #3b7600;">Noncompetitive&nbsp;inhibitors</span>'
-  product: '<span style="color: #007a00;">product</span>'
   Uncompetitive$inhibitors: '<span style="color: #076dad;">Uncompetitive&nbsp;inhibitors</span>'
-  binding: '<span style="color: #a719db;">binding</span>'
-  'bind ': '<span style="color: #a719db;">bind</span> '
   active site: '<span style="color: #c80085;">active site</span>'
 connection_words: null
 true_statements:

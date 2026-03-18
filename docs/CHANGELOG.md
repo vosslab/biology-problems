@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-03-18
+
+### Additions and New Features
+- Created [problems/biochemistry-problems/enzymes/inhibitor_lineweaver_burk_graph.pgml](../problems/biochemistry-problems/enzymes/inhibitor_lineweaver_burk_graph.pgml), a WeBWorK PGML problem showing a Lineweaver-Burk (double reciprocal) plot with four lines: uninhibited (black) and three inhibitor types (competitive, non-competitive, un-competitive) in randomized colors. Randomizes Km, Vmax, alpha, and alpha_prime each render. Fisher-Yates shuffle assigns red `#d40000`, blue `#003fff`, and teal `#00775f` to inhibitor types for anti-cheating. Two question formats selected randomly: Format A asks which colored line matches a named inhibitor type (3 color-coded RadioButton choices with behavior descriptions); Format B asks what inhibition type a colored line represents (5 text choices: 3 real types + 2 fake-prefix distractors like "proto-competitive"). Graph uses PGgraphmacros Fun objects with dynamic axis bounds computed from line parameters. Solution explains the three Lineweaver-Burk intersection properties and the specific color assignments.
+
+### Fixes and Maintenance
+- Fixed whitespace-stripping bug in `extract_strict_color_span()` and `extract_strict_color_spans()` in [webwork_lib.py](../webwork_lib.py). When a replacement rule had a leading space before a color `<span>` (e.g., `' substrate': ' <span style="color: ...">substrate</span>'`), the `<strong>` wrapper detection regex `<strong>\s*$` consumed the significant whitespace, causing words to merge (e.g., "thesubstrate" instead of "the substrate"). Changed the regex to capture the whitespace and preserve it in the prefix text. Affects all three PGML generators that use replacement rules: `yaml_mc_statements_to_pgml.py`, `yaml_which_one_mc_to_pgml.py`, and `yaml_match_to_pgml.py`.
+
 ## 2026-03-14
 
 ### Additions and New Features

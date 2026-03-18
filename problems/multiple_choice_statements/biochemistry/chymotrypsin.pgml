@@ -1,0 +1,194 @@
+## DESCRIPTION
+## Select the statement that is TRUE or FALSE about the enzyme function of Chymotrypsin.
+## ENDDESCRIPTION
+## KEYWORDS('the enzyme function of Chymotrypsin','true/false','multiple choice')
+## DBsubject('Biochemistry')
+## DBchapter('')
+## DBsection('')
+## Date('2026-03-18')
+## Author('Neil R. Voss')
+## Institution('Roosevelt University')
+
+DOCUMENT();
+
+loadMacros(
+  "PGstandard.pl",
+  "PGML.pl",
+  "PGchoicemacros.pl",
+  "parserRadioButtons.pl",
+  "PGcourse.pl",
+);
+
+TEXT(beginproblem());
+$showPartialCorrectAnswers = 1;
+
+#==========================================================
+# AUTO-GENERATED GROUPS FROM YAML
+#==========================================================
+
+@true_groups = (
+  [
+    '<span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span> prefers to cleave after large aromatic amino acids.',
+  ],
+  [
+    'The shape of the <span style="color: #0067cc; font-weight:700;">S1 pocket</span> of <span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span> helps determine which residues are cut.',
+    'The amino acid tyrosine fits well into the <span style="color: #0067cc; font-weight:700;">S1 pocket</span> of <span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span>.',
+    'The amino acid phenylalanine fits well into the <span style="color: #0067cc; font-weight:700;">S1 pocket</span> of <span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span>.',
+    'The amino acid tryptophan fits well into the <span style="color: #0067cc; font-weight:700;">S1 pocket</span> of <span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span>.',
+  ],
+  [
+    'The <span style="color: #0067cc; font-weight:700;">S1 pocket</span> of <span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span> is designed to bind hydrophobic side chains.',
+    'The <span style="color: #0067cc; font-weight:700;">S1 pocket</span> of <span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span> is deep and hydrophobic.',
+    'The substrate specificity of <span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span> is mostly due to the properties of its <span style="color: #0067cc; font-weight:700;">S1 pocket</span>.',
+  ],
+  [
+    '<span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span> helps break down dietary proteins into smaller peptides.',
+    '<span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span> is used to digest proteins in the small intestine.',
+  ],
+  [
+    '<span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span> sometimes cleaves after hydrophobic amino acids, leucine and methionine.',
+  ],
+  [
+    '<span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span> works in two main phases, cutting and resetting.',
+    'The free <span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span> enzyme is regenerated using water in the second phase of the reaction.',
+  ],
+  [
+    '<span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span> contains a cleft where peptide bonds are broken.',
+  ],
+);
+@false_groups = (
+  [
+    '<span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span> prefers to cleave after positively charged amino acids.',
+    '<span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span> cleaves randomly along the protein backbone.',
+    '<span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span> prefers to cleave after negatively charged amino acids.',
+    '<span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span> prefers to cleave after small, polar amino acids.',
+    '<span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span> cleaves only at the N-terminus of peptides.',
+  ],
+  [
+    'The <span style="color: #0067cc; font-weight:700;">S1 pocket</span> of <span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span> is shallow and positively charged.',
+    'The <span style="color: #0067cc; font-weight:700;">S1 pocket</span> of <span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span> is shallow and negatively charged.',
+    'The <span style="color: #0067cc; font-weight:700;">S1 pocket</span> of <span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span> is deep and positively charged.',
+    'The <span style="color: #0067cc; font-weight:700;">S1 pocket</span> of <span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span> is deep and negatively charged.',
+    'The <span style="color: #0067cc; font-weight:700;">S1 pocket</span> of <span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span> prefers charged polar side chains.',
+  ],
+  [
+    '<span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span> only acts on carbohydrate side chains.',
+    '<span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span> only acts on triglyceride fatty acid side chains.',
+    '<span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span> works to break down polysaccharides.',
+    '<span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span> assembles peptide chains from free amino acids.',
+    '<span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span> digests carbohydrates in the stomach.',
+    '<span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span> digests fats and oils in the stomach.',
+    '<span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span> is primarily used to digest nucleic acids.',
+    '<span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span> is active in the acidic environment of the stomach.',
+  ],
+  [
+    '<span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span> sometimes cleaves after small amino acids, glycine and alanine.',
+    '<span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span> sometimes cleaves after polar amino acids, serine and threonine.',
+    '<span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span> sometimes cleaves after the negatively charged amino acid, glutamine.',
+    '<span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span> sometimes cleaves after the positively charged amino acid, lysine.',
+  ],
+  [
+    '<span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span> cuts proteins all at once, without forming intermediates.',
+  ],
+  [
+    'Water has no role in the enzyme function of <span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span>.',
+    '<span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span> does NOT require water at any point in its mechanism.',
+  ],
+  [
+    '<span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span> requires ATP to cleave peptide bonds.',
+  ],
+  [
+    'The <span style="color: #0067cc; font-weight:700;">S1 pocket</span> of <span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span> binds metal ions to stabilize the substrate.',
+  ],
+);
+
+#==========================================================
+# GLOBAL SETTINGS
+#==========================================================
+
+$topic = 'the enzyme function of <span style="color: #6c6c00; font-weight:700;">Chymotrypsin</span>';
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+my @mode_choices = ("TRUE", "FALSE");
+$mode = $mode_choices[$local_random->random(0, $#mode_choices, 1)];
+$num_distractors = 4;
+#==========================================================
+# SELECT GROUP
+#==========================================================
+
+my (@selected_group, @opposite_groups);
+
+if ($mode eq "TRUE") {
+  $group_index      = $local_random->random(0, scalar(@true_groups)-1, 1);
+  @selected_group   = @{ $true_groups[$group_index] };
+  @opposite_groups  = @false_groups;
+} else {
+  $group_index      = $local_random->random(0, scalar(@false_groups)-1, 1);
+  @selected_group   = @{ $false_groups[$group_index] };
+  @opposite_groups  = @true_groups;
+}
+
+#==========================================================
+# PICK CORRECT + DISTRACTORS
+#==========================================================
+
+my $correct_index = $local_random->random(0, $#selected_group, 1);
+$correct = $selected_group[$correct_index];
+
+my @available_group_indices = (0 .. $#opposite_groups);
+my @selected_distractor_indices = ();
+
+while (@selected_distractor_indices < $num_distractors && @available_group_indices > 0) {
+  my $random_index = $local_random->random(0, scalar(@available_group_indices)-1, 1);
+  push @selected_distractor_indices, splice(@available_group_indices, $random_index, 1);
+}
+
+@distractors = ();
+foreach my $group_idx (@selected_distractor_indices) {
+  my @group = @{ $opposite_groups[$group_idx] };
+  my $distractor_index = $local_random->random(0, $#group, 1);
+  my $distractor = $group[$distractor_index];
+  push @distractors, $distractor;
+}
+
+@choices = ($correct, @distractors);
+
+#==========================================================
+# SHUFFLE CHOICES (SEED-STABLE)
+#==========================================================
+
+my @choice_indices = (0 .. $#choices);
+my @choice_shuffled = ();
+while (@choice_indices) {
+  my $pick = $local_random->random(0, $#choice_indices, 1);
+  push @choice_shuffled, splice(@choice_indices, $pick, 1);
+}
+@choices = @choices[@choice_shuffled];
+
+#==========================================================
+# RADIO BUTTONS WITH A/B/C/D/E LABELS
+#==========================================================
+
+$rb = RadioButtons(
+  [@choices],
+  $correct,
+  labels        => ['A','B','C','D','E'],
+  displayLabels => 1,
+  randomize     => 0,
+  separator     => '<div style="margin-bottom: 0.7em;"></div>',
+);
+
+#==========================================================
+# PGML
+#==========================================================
+
+BEGIN_PGML
+
+[@ $mode eq "TRUE" ? "Which one of the following statements is <span style='color: #127663;'><strong>TRUE</strong></span> about $topic?" : "Which one of the following statements is <span style='color: #ba372a;'><strong>FALSE</strong></span> about $topic?" @]*
+
+[_]{$rb}
+
+END_PGML
+
+ENDDOCUMENT();
+
