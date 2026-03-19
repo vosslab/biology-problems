@@ -1,0 +1,580 @@
+## TITLE('Biochemistry: Michaelis-Menten Inhibition Graph')
+## DESCRIPTION
+## Students examine a Michaelis-Menten ([S] vs V0) plot showing
+## the uninhibited enzyme curve and three inhibitor types (competitive,
+## non-competitive, un-competitive). They identify which colored curve
+## corresponds to a given inhibitor type, or identify the inhibitor type
+## from a described colored curve.
+## ENDDESCRIPTION
+## KEYWORDS('Michaelis-Menten','enzyme kinetics','enzyme inhibition','competitive','non-competitive','un-competitive')
+## DBsubject('Biochemistry')
+## DBchapter('Enzymes')
+## DBsection('Inhibition')
+## Level(2)
+## Date('2026-03-18')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	'PGstandard.pl',
+	'MathObjects.pl',
+	'PGML.pl',
+	'PGgraphmacros.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl',
+);
+
+$showPartialCorrectAnswers = 0;
+
+# ----------------------------
+# 2) Setup
+# ----------------------------
+
+# ----------------------------
+# 2a) Randomization
+# ----------------------------
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+
+# fixed uninhibited Km and Vmax (unitless axes)
+my $Km = 2.0;
+my $Vmax = 60;
+
+# inhibition factor pool -- independently randomized per inhibitor type
+my @factor_pool = (2.0, 2.5, 3.0);
+
+# competitive: apparent Km increases by factor, Vmax unchanged
+my $comp_factor_idx = $local_random->random(0, $#factor_pool, 1);
+my $comp_factor = $factor_pool[$comp_factor_idx];
+my $Km_comp = $Km * $comp_factor;
+my $Vmax_comp = $Vmax;
+
+# non-competitive and un-competitive share the same Vmax reduction
+# so their curves plateau at the same height -- this makes the Km
+# difference between them the key visual distinction
+# use a smaller factor pool so inhibited Vmax > Vmax/2 (not too small)
+my @vmax_factor_pool = (1.4, 1.6, 1.8);
+my $shared_vmax_factor_idx = $local_random->random(0, $#vmax_factor_pool, 1);
+my $shared_vmax_factor = $vmax_factor_pool[$shared_vmax_factor_idx];
+
+# non-competitive: Km unchanged, apparent Vmax decreases by shared factor
+my $Km_noncomp = $Km;
+my $Vmax_noncomp = $Vmax / $shared_vmax_factor;
+
+# un-competitive: both apparent Km and Vmax decrease by shared factor
+my $Km_uncomp = $Km / $shared_vmax_factor;
+my $Vmax_uncomp = $Vmax / $shared_vmax_factor;
+
+# ----------------------------
+# 2b) Color-to-inhibitor shuffling (anti-cheating)
+# ----------------------------
+# 3 WCAG 5.5:1+ colorblind-safe colors (matches LB graph)
+my @color_names = ('red', 'blue', 'purple');
+my @hex_colors = ('#bd3c00', '#003fff', '#7b2d8e');
+my @gd_rgb = ([189, 60, 0], [0, 63, 255], [123, 45, 142]);
+my @gd_names = ('inhib_red', 'inhib_blue', 'inhib_purple');
+
+# 3 inhibitor types to assign
+my @inhib_types = ('competitive', 'non-competitive', 'un-competitive');
+
+# Fisher-Yates shuffle of inhibitor types
+for (my $i = $#inhib_types; $i > 0; $i--) {
+	my $j = $local_random->random(0, $i, 1);
+	@inhib_types[$i, $j] = @inhib_types[$j, $i];
+}
+
+# build parallel arrays: color index -> inhibitor type
+# $inhib_types[0] = type assigned to color_names[0], etc.
+my %type_to_color_idx = ();
+for (my $i = 0; $i < 3; $i++) {
+	$type_to_color_idx{$inhib_types[$i]} = $i;
+}
+
+# look up apparent Km and Vmax for each color slot
+my @inhib_Km = ();
+my @inhib_Vmax = ();
+for (my $i = 0; $i < 3; $i++) {
+	my $t = $inhib_types[$i];
+	if ($t eq 'competitive') {
+		push @inhib_Km, $Km_comp;
+		push @inhib_Vmax, $Vmax_comp;
+	} elsif ($t eq 'non-competitive') {
+		push @inhib_Km, $Km_noncomp;
+		push @inhib_Vmax, $Vmax_noncomp;
+	} else {
+		push @inhib_Km, $Km_uncomp;
+		push @inhib_Vmax, $Vmax_uncomp;
+	}
+}
+
+# ----------------------------
+# 2c) Compute axis bounds
+# ----------------------------
+# x-axis: negative space for V0 label and tick marks, wide enough for plateaus
+my $x_min = -$Km * 0.6;
+my $x_max = $Km * 8.0;
+
+# y-axis: tight fit -- small headroom above Vmax so curves fill the space
+my $y_min = -$Vmax * 0.08;
+my $y_max = $Vmax * 1.12;
+
+# ----------------------------
+# 2d) Create the graph
+# ----------------------------
+$gr = init_graph($x_min, $y_min, $x_max, $y_max,
+	axes => [0, 0],
+	size => [520, 390],
+);
+
+# register custom colors
+$gr->new_color('inhib_red', 189, 60, 0);
+$gr->new_color('inhib_blue', 0, 63, 255);
+$gr->new_color('inhib_purple', 123, 45, 142);
+$gr->new_color('dashed_gray', 140, 140, 140);
+
+# axis labels -- V0 label in negative x-space, [S] label near right edge
+my $x_label_y = $y_min * 0.5;
+$gr->lb(new Label($x_max * 0.90, $x_label_y, '[S]', 'black', 'center', 'middle'));
+# V0 label at top of y-axis
+$gr->lb(new Label($x_min * 0.35, $y_max * 0.97, 'V0', 'black', 'center', 'middle'));
+
+# ----------------------------
+# 2e) Draw dashed Vmax reference line (gray)
+# ----------------------------
+# use short segments with gaps to simulate dashing
+my $dash_seg = ($x_max - $x_min) * 0.02;
+my $dash_gap = $dash_seg * 0.8;
+my $dash_x = $x_min;
+while ($dash_x < $x_max) {
+	my $seg_end = $dash_x + $dash_seg;
+	if ($seg_end > $x_max) { $seg_end = $x_max; }
+	my $dx = $dash_x;
+	my $de = $seg_end;
+	my $fn_dash = new Fun(
+		sub { my $t = shift; return $dx + $t * ($de - $dx); },
+		sub { my $t = shift; return $Vmax; },
+		$gr,
+	);
+	$fn_dash->domain(0, 1);
+	$fn_dash->steps(2);
+	$fn_dash->weight(1);
+	$fn_dash->color('dashed_gray');
+	$dash_x = $seg_end + $dash_gap;
+}
+# label the Vmax line (upper right, above the dashed line)
+$gr->lb(new Label($x_max * 0.85, $Vmax * 1.05,
+	'Vmax (uninhibited)', 'dashed_gray', 'center', 'bottom'));
+# y-axis tick mark for Vmax
+my $tick_half = ($x_max - $x_min) * 0.008;
+my $fn_tick_vmax = new Fun(
+	sub { my $t = shift; return -$tick_half + $t * 2 * $tick_half; },
+	sub { my $t = shift; return $Vmax; },
+	$gr,
+);
+$fn_tick_vmax->domain(0, 1);
+$fn_tick_vmax->steps(2);
+$fn_tick_vmax->weight(1);
+$fn_tick_vmax->color('dashed_gray');
+
+# ----------------------------
+# 2e2) Draw dashed 1/2 Vmax reference line (gray)
+# ----------------------------
+my $half_Vmax = $Vmax / 2.0;
+my $dash_x2 = 0;
+while ($dash_x2 < $x_max) {
+	my $seg_end2 = $dash_x2 + $dash_seg;
+	if ($seg_end2 > $x_max) { $seg_end2 = $x_max; }
+	my $dx2 = $dash_x2;
+	my $de2 = $seg_end2;
+	my $fn_dash2 = new Fun(
+		sub { my $t = shift; return $dx2 + $t * ($de2 - $dx2); },
+		sub { my $t = shift; return $half_Vmax; },
+		$gr,
+	);
+	$fn_dash2->domain(0, 1);
+	$fn_dash2->steps(2);
+	$fn_dash2->weight(1);
+	$fn_dash2->color('dashed_gray');
+	$dash_x2 = $seg_end2 + $dash_gap;
+}
+# label and tick mark for 1/2 Vmax (right-aligned just left of y-axis)
+$gr->lb(new Label($x_max * 0.92, $half_Vmax * 0.94,
+	'Vmax/2', 'dashed_gray', 'center', 'top'));
+my $fn_tick_half = new Fun(
+	sub { my $t = shift; return -$tick_half + $t * 2 * $tick_half; },
+	sub { my $t = shift; return $half_Vmax; },
+	$gr,
+);
+$fn_tick_half->domain(0, 1);
+$fn_tick_half->steps(2);
+$fn_tick_half->weight(1);
+$fn_tick_half->color('dashed_gray');
+
+# ----------------------------
+# 2e3) Km tick mark on x-axis for uninhibited enzyme
+# ----------------------------
+my $tick_y_half = ($y_max - $y_min) * 0.008;
+my $fn_tick_km = new Fun(
+	sub { my $t = shift; return $Km; },
+	sub { my $t = shift; return -$tick_y_half + $t * 2 * $tick_y_half; },
+	$gr,
+);
+$fn_tick_km->domain(0, 1);
+$fn_tick_km->steps(2);
+$fn_tick_km->weight(1);
+$fn_tick_km->color('dashed_gray');
+$gr->lb(new Label($Km, -$tick_y_half * 4,
+	'Km (uninhibited)', 'dashed_gray', 'left', 'top'));
+
+# ----------------------------
+# 2f) Draw curves using Fun parametric objects
+# ----------------------------
+# Michaelis-Menten: V0 = Vmax_app * [S] / (Km_app + [S])
+
+# uninhibited curve (black, thin dashed so inhibitor curves stand out)
+my $uninh_dash_seg = ($x_max - $x_min) * 0.015;
+my $uninh_dash_gap = $uninh_dash_seg * 0.7;
+my $uninh_num_steps = 40;
+my $uninh_step_size = ($x_max - $x_min) / $uninh_num_steps;
+for (my $seg_i = 0; $seg_i < $uninh_num_steps; $seg_i++) {
+	# alternate between drawing a dash segment and skipping a gap
+	my $seg_start = $seg_i * ($uninh_dash_seg + $uninh_dash_gap);
+	if ($seg_start >= $x_max) { last; }
+	my $seg_end_val = $seg_start + $uninh_dash_seg;
+	if ($seg_end_val > $x_max) { $seg_end_val = $x_max; }
+	my $us = $seg_start;
+	my $ue = $seg_end_val;
+	my $fn_ud = new Fun(
+		sub { my $t = shift; return $us + $t * ($ue - $us); },
+		sub { my $t = shift; my $x = $us + $t * ($ue - $us); return $Vmax * $x / ($Km + $x); },
+		$gr,
+	);
+	$fn_ud->domain(0, 1);
+	$fn_ud->steps(20);
+	$fn_ud->weight(1);
+	$fn_ud->color('black');
+}
+
+# draw the 3 inhibitor curves in their assigned colors
+# capture Km_app/Vmax_app into loop-local lexicals to avoid closure bug
+for (my $i = 0; $i < 3; $i++) {
+	my $km_app = $inhib_Km[$i];
+	my $vmax_app = $inhib_Vmax[$i];
+	my $fn = new Fun(
+		sub { my $t = shift; return $t; },
+		sub { my $t = shift; return $vmax_app * $t / ($km_app + $t); },
+		$gr,
+	);
+	$fn->domain(0, $x_max);
+	$fn->steps(400);
+	$fn->weight(2);
+	$fn->color($gd_names[$i]);
+}
+
+# ----------------------------
+# 2g) Legend box in upper-left corner
+# ----------------------------
+# legend positioned right of y-axis, shifted to avoid blocking it
+my $leg_x = $x_max * 0.06;
+my $leg_y_top = $y_max * 0.96;
+my $leg_line_len = ($x_max - $x_min) * 0.08;
+my $leg_dy = $y_max * 0.07;
+
+# white background for legend: paint thick white horizontal lines
+# to cover any underlying content (fillRegion leaks through dash gaps)
+$gr->new_color('legend_bg', 238, 238, 238);
+$gr->new_color('legend_border', 120, 120, 120);
+my $leg_pad_x = $leg_line_len * 0.3;
+my $leg_pad_y = $leg_dy * 0.4;
+my $leg_box_left = $leg_x - $leg_pad_x;
+my $leg_box_right = $leg_x + $leg_line_len * 1.3 + ($x_max - $x_min) * 0.17;
+my $leg_box_top = $leg_y_top + $leg_pad_y;
+my $leg_box_bottom = $leg_y_top - 3 * $leg_dy - $leg_pad_y;
+# sweep thick white lines across the legend area (each line is weight 4)
+my $sweep_y = $leg_box_bottom;
+my $sweep_step = ($y_max - $y_min) * 0.005;
+while ($sweep_y <= $leg_box_top) {
+	my $sy = $sweep_y;
+	my $fn_bg = new Fun(
+		sub { my $t = shift; return $leg_box_left + $t * ($leg_box_right - $leg_box_left); },
+		sub { my $t = shift; return $sy; },
+		$gr,
+	);
+	$fn_bg->domain(0, 1);
+	$fn_bg->steps(2);
+	$fn_bg->weight(4);
+	$fn_bg->color('legend_bg');
+	$sweep_y = $sweep_y + $sweep_step;
+}
+# draw box border on top of the white fill
+$gr->moveTo($leg_box_left, $leg_box_top);
+$gr->lineTo($leg_box_right, $leg_box_top, 'legend_border');
+$gr->lineTo($leg_box_right, $leg_box_bottom, 'legend_border');
+$gr->lineTo($leg_box_left, $leg_box_bottom, 'legend_border');
+$gr->lineTo($leg_box_left, $leg_box_top, 'legend_border');
+
+# entry 0: black uninhibited curve (dashed to match the graph line)
+my $ey = $leg_y_top;
+my $leg_dash_len = $leg_line_len * 0.22;
+my $leg_dash_gap = $leg_line_len * 0.12;
+my $leg_dx = 0;
+while ($leg_dx < $leg_line_len) {
+	my $d_end = $leg_dx + $leg_dash_len;
+	if ($d_end > $leg_line_len) { $d_end = $leg_line_len; }
+	my $ldx = $leg_dx;
+	my $lde = $d_end;
+	my $fn_ld = new Fun(
+		sub { my $t = shift; return $leg_x + $ldx + $t * ($lde - $ldx); },
+		sub { my $t = shift; return $ey; },
+		$gr,
+	);
+	$fn_ld->domain(0, 1);
+	$fn_ld->steps(2);
+	$fn_ld->weight(1);
+	$fn_ld->color('black');
+	$leg_dx = $d_end + $leg_dash_gap;
+}
+$gr->lb(new Label($leg_x + $leg_line_len * 1.3, $ey,
+	'no inhibitor', 'black', 'left', 'middle'));
+
+# entries 1-3: colored inhibitor curves
+for (my $i = 0; $i < 3; $i++) {
+	my $entry_y = $leg_y_top - ($i + 1) * $leg_dy;
+	my $ley = $entry_y;
+	my $fn_leg = new Fun(
+		sub { my $t = shift; return $leg_x + $t * $leg_line_len; },
+		sub { my $t = shift; return $ley; },
+		$gr,
+	);
+	$fn_leg->domain(0, 1);
+	$fn_leg->steps(2);
+	$fn_leg->weight(2);
+	$fn_leg->color($gd_names[$i]);
+	$gr->lb(new Label($leg_x + $leg_line_len * 1.3, $entry_y,
+		$color_names[$i], $gd_names[$i], 'left', 'middle'));
+}
+
+# ----------------------------
+# 2h) Build colored HTML labels for choices
+# ----------------------------
+my %color_html = ();
+for (my $i = 0; $i < 3; $i++) {
+	# wrap "color line" together so more text is colored
+	$color_html{$color_names[$i]} = "<span style='color:${hex_colors[$i]}; font-weight:700;'>"
+		. "${color_names[$i]} curve</span>";
+}
+
+# behavior descriptions for each inhibitor type (Michaelis-Menten curve shapes)
+my %behavior_desc = (
+	'competitive'     => "reaches the same V<sub>max</sub> but requires a higher substrate concentration to reach half-maximal velocity",
+	'non-competitive' => "reaches a lower V<sub>max</sub> but requires the same substrate concentration to reach half-maximal velocity",
+	'un-competitive'  => "reaches a lower V<sub>max</sub> and requires a lower substrate concentration to reach half-maximal velocity",
+);
+
+# ----------------------------
+# 2i) Choose question format: A or B
+# ----------------------------
+my $format_pick = $local_random->random(0, 1, 1);
+
+if ($format_pick == 0) {
+	# Format A: "Which curve corresponds to [type]?"
+	# pick a random inhibitor type to ask about
+	my $ask_idx = $local_random->random(0, 2, 1);
+	my $ask_type = $inhib_types[$ask_idx];
+	my $correct_color_idx = $type_to_color_idx{$ask_type};
+	my $ask_behavior = $behavior_desc{$ask_type};
+
+	# build choice strings with colored text only (no behavior descriptions)
+	my @choices = ();
+	for (my $i = 0; $i < 3; $i++) {
+		push @choices, $color_html{$color_names[$i]};
+	}
+	my $answer_str = $choices[$correct_color_idx];
+
+	$rb1 = RadioButtons(
+		[@choices],
+		$answer_str,
+		labels        => 'ABC',
+		displayLabels => 1,
+		separator     => '<div style="margin-bottom: 0.5em;"></div>',
+	);
+
+	$q_html = "Which colored curve on the Michaelis-Menten plot represents "
+		. "<b>${ask_type}</b> inhibition?";
+
+	# solution text
+	$sol_text = "The ${ask_type} inhibitor is shown by the "
+		. "${color_names[$correct_color_idx]} curve. "
+		. "This curve ${ask_behavior}, which is the hallmark of "
+		. "${ask_type} inhibition on a Michaelis-Menten plot.";
+
+} else {
+	# Format B: "What type is the [color] curve?"
+	# pick a random color to ask about
+	my $ask_color_idx = $local_random->random(0, 2, 1);
+	my $ask_color_html = $color_html{$color_names[$ask_color_idx]};
+	my $correct_type = $inhib_types[$ask_color_idx];
+	my $ask_behavior = $behavior_desc{$correct_type};
+
+	# build choices: 3 real types + 2 fake-prefix distractors
+	my @real_types = ('competitive', 'non-competitive', 'un-competitive');
+	my @extra_prefixes = (
+		'proto', 'quasi', 'semi', 'anti', 'counter', 'pseudo',
+		'ultra', 'hetero', 'homo', 'super', 'contra', 'intra',
+	);
+	# Fisher-Yates shuffle of extra prefixes
+	for (my $i = $#extra_prefixes; $i > 0; $i--) {
+		my $j = $local_random->random(0, $i, 1);
+		@extra_prefixes[$i, $j] = @extra_prefixes[$j, $i];
+	}
+	my @all_choices = @real_types;
+	push @all_choices, $extra_prefixes[0] . '-competitive';
+	push @all_choices, $extra_prefixes[1] . '-competitive';
+
+	# manual alphabetical sort (avoid bare sort in Safe compartment)
+	my @sorted_choices = ();
+	for my $item (@all_choices) {
+		my $pos = scalar(@sorted_choices);
+		for my $k (0 .. $#sorted_choices) {
+			if ($item lt $sorted_choices[$k]) {
+				$pos = $k;
+				last;
+			}
+		}
+		splice(@sorted_choices, $pos, 0, $item);
+	}
+
+	$rb1 = RadioButtons(
+		[@sorted_choices],
+		$correct_type,
+		labels        => 'ABC',
+		displayLabels => 1,
+		separator     => '<div style="margin-bottom: 0.5em;"></div>',
+	);
+
+	$q_html = "The ${ask_color_html} on the Michaelis-Menten plot "
+		. "${ask_behavior}. "
+		. "What type of enzyme inhibition does this ${ask_color_html} represent?";
+
+	# solution text
+	$sol_text = "The ${color_names[$ask_color_idx]} curve "
+		. "${ask_behavior}. This is the signature of "
+		. "${correct_type} inhibition on a Michaelis-Menten plot.";
+
+}
+
+# build format-specific hint content
+$hint_format = $format_pick;
+
+# curve behavior descriptions keyed by color (for Format A hint)
+my %curve_desc = ();
+for (my $i = 0; $i < 3; $i++) {
+	my $t = $inhib_types[$i];
+	if ($t eq 'competitive') {
+		$curve_desc{$color_names[$i]} = "reaches the same plateau height but is shifted to the right (needs more substrate to reach half-maximal velocity)";
+	} elsif ($t eq 'non-competitive') {
+		$curve_desc{$color_names[$i]} = "has a lower plateau but reaches half-maximal velocity at the same substrate concentration";
+	} else {
+		$curve_desc{$color_names[$i]} = "has a lower plateau AND is shifted to the left (reaches half-maximal velocity at a lower substrate concentration)";
+	}
+}
+$hint_red = $curve_desc{'red'};
+$hint_blue = $curve_desc{'blue'};
+$hint_purple = $curve_desc{'purple'};
+# colored labels for hint text
+$hint_red_label = "<span style='color:#bd3c00; font-weight:700;'>red</span>";
+$hint_blue_label = "<span style='color:#003fff; font-weight:700;'>blue</span>";
+$hint_purple_label = "<span style='color:#7b2d8e; font-weight:700;'>purple</span>";
+
+# build color assignment summary for solution
+$sol_colors = "";
+for (my $i = 0; $i < 3; $i++) {
+	$sol_colors = $sol_colors
+		. ucfirst($color_names[$i]) . " curve = "
+		. $inhib_types[$i] . " inhibition";
+	if ($i < 2) { $sol_colors = $sol_colors . "; "; }
+}
+
+# ----------------------------
+# 3) Statement (PGML)
+# ----------------------------
+BEGIN_PGML
+
+*Michaelis-Menten Plot: Enzyme Inhibition*
+
+The following Michaelis-Menten plot shows the *black* uninhibited enzyme curve and three colored inhibitor curves (red, blue, and purple), each representing a different type of reversible inhibition. The dashed gray line indicates the uninhibited V[`_{max}`].
+
+[@ image(insertGraph($gr), width => 520, height => 390, tex_size => 700) @]*
+
+[$q_html]*
+
+[_]{$rb1}
+
+END_PGML
+
+# ----------------------------
+# 4) Hint (shown when student clicks "Show Hint")
+# ----------------------------
+if ($hint_format == 0) {
+# Format A: student picks a color -- hint describes curve shapes
+BEGIN_PGML_HINT
+
+Look at how each colored curve compares to the uninhibited (black dashed) curve:
+
+- The [$hint_red_label]* curve [$hint_red]*.
+
+- The [$hint_blue_label]* curve [$hint_blue]*.
+
+- The [$hint_purple_label]* curve [$hint_purple]*.
+
+END_PGML_HINT
+} else {
+# Format B: student picks an inhibitor type -- hint describes biochemistry
+BEGIN_PGML_HINT
+
+There are only three types of reversible enzyme inhibition. Two of the five choices are made-up terms that do not exist.
+
+- A *competitive* inhibitor increases the apparent K[`_M`] but does not change V[`_{max}`].
+
+- A *non-competitive* inhibitor decreases the apparent V[`_{max}`] but does not change K[`_M`].
+
+- An *un-competitive* inhibitor decreases both the apparent K[`_M`] and V[`_{max}`] by the same factor.
+
+END_PGML_HINT
+}
+
+# ----------------------------
+# 5) Solution
+# ----------------------------
+BEGIN_PGML_SOLUTION
+
+*Understanding the Michaelis-Menten Plot*
+
+The Michaelis-Menten equation is V[`_0`] = V[`_{max}`] \[S\] / (K[`_M`] + \[S\]). This produces a hyperbolic curve that approaches V[`_{max}`] as \[S\] increases.
+
+Each type of reversible inhibition alters the curve shape in a characteristic way:
+
+- *Competitive* inhibition: the apparent K[`_M`] increases (more substrate needed for half-max velocity) but V[`_{max}`] is unchanged. The curve *shifts right* but reaches the same plateau.
+
+- *Non-competitive* inhibition: the apparent V[`_{max}`] decreases (lower plateau) but K[`_M`] is unchanged. The curve reaches half-max at the same \[S\] but plateaus at a *lower* value.
+
+- *Un-competitive* inhibition: both the apparent K[`_M`] and V[`_{max}`] decrease by the same factor. The curve reaches a *lower plateau* and appears to *shift left* (half-max at lower \[S\]).
+
+*Color assignments for this problem:* [$sol_colors]*
+
+[$sol_text]*
+
+END_PGML_SOLUTION
+
+ENDDOCUMENT();

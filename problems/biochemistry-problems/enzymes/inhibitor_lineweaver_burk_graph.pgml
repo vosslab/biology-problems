@@ -47,59 +47,66 @@ $showPartialCorrectAnswers = 0;
 my $local_random = PGrandom->new();
 $local_random->srand($problemSeed);
 
-# Km in mM (controls x-intercept position)
-my @km_pool = (1.0, 1.5, 2.0, 2.5, 3.0);
-my $km_idx = $local_random->random(0, $#km_pool, 1);
-my $Km = $km_pool[$km_idx];
+# fixed uninhibited Km and Vmax (no units on axes, so exact values
+# do not matter -- only the line geometry matters to students)
+my $Km = 2.0;
+my $Vmax = 60;
 
-# Vmax in arbitrary units (controls y-intercept scale)
-my @vmax_pool = (40, 50, 60, 80, 100);
-my $vmax_idx = $local_random->random(0, $#vmax_pool, 1);
-my $Vmax = $vmax_pool[$vmax_idx];
+# inhibition factor pool -- consistent scaling across all 3 types
+my @factor_pool = (2.0, 2.5, 3.0);
 
-# alpha for competitive and non-competitive inhibition
-my @alpha_pool = (1.8, 2.0, 2.5, 3.0);
-my $alpha_idx = $local_random->random(0, $#alpha_pool, 1);
-my $alpha = $alpha_pool[$alpha_idx];
+# competitive: Km increases by factor, Vmax unchanged (same y-intercept)
+my $comp_factor_idx = $local_random->random(0, $#factor_pool, 1);
+my $comp_factor = $factor_pool[$comp_factor_idx];
+my $Km_comp = $Km * $comp_factor;
+my $Vmax_comp = $Vmax;
 
-# alpha_prime for un-competitive inhibition (independent)
-my $alpha_prime_idx = $local_random->random(0, $#alpha_pool, 1);
-my $alpha_prime = $alpha_pool[$alpha_prime_idx];
+# non-competitive: Km unchanged, Vmax decreases by factor (same x-intercept)
+my $noncomp_factor_idx = $local_random->random(0, $#factor_pool, 1);
+my $noncomp_factor = $factor_pool[$noncomp_factor_idx];
+my $Km_noncomp = $Km;
+my $Vmax_noncomp = $Vmax / $noncomp_factor;
+
+# un-competitive: both Km and Vmax decrease by same factor (parallel lines)
+my $uncomp_factor_idx = $local_random->random(0, $#factor_pool, 1);
+my $uncomp_factor = $factor_pool[$uncomp_factor_idx];
+my $Km_uncomp = $Km / $uncomp_factor;
+my $Vmax_uncomp = $Vmax / $uncomp_factor;
 
 # ----------------------------
 # 2b) Compute line parameters (1/V0 = slope * 1/[S] + y_intercept)
 # ----------------------------
-# Uninhibited:     slope = Km/Vmax,         y-int = 1/Vmax
-# Competitive:     slope = alpha*Km/Vmax,   y-int = 1/Vmax          (same y-int)
-# Non-competitive: slope = alpha*Km/Vmax,   y-int = alpha/Vmax      (same x-int)
-# Un-competitive:  slope = Km/Vmax,         y-int = alpha'/Vmax     (parallel)
+# slope = Km_app / Vmax_app, y-intercept = 1 / Vmax_app, x-intercept = -1 / Km_app
+# Competitive:     increased Km, same Vmax     -> steeper slope, same y-int
+# Non-competitive: same Km, decreased Vmax     -> steeper slope, same x-int
+# Un-competitive:  both decrease by same factor -> same slope, higher y-int (parallel)
 
 my $slope_uninh = $Km / $Vmax;
 my $yint_uninh = 1.0 / $Vmax;
 
-my $slope_comp = $alpha * $Km / $Vmax;
-my $yint_comp = 1.0 / $Vmax;
+my $slope_comp = $Km_comp / $Vmax_comp;
+my $yint_comp = 1.0 / $Vmax_comp;
 
-my $slope_noncomp = $alpha * $Km / $Vmax;
-my $yint_noncomp = $alpha / $Vmax;
+my $slope_noncomp = $Km_noncomp / $Vmax_noncomp;
+my $yint_noncomp = 1.0 / $Vmax_noncomp;
 
-my $slope_uncomp = $Km / $Vmax;
-my $yint_uncomp = $alpha_prime / $Vmax;
+my $slope_uncomp = $Km_uncomp / $Vmax_uncomp;
+my $yint_uncomp = 1.0 / $Vmax_uncomp;
 
 # x-intercepts (for axis range calculation)
 my $xint_uninh = -1.0 / $Km;
-my $xint_comp = -1.0 / ($alpha * $Km);
-my $xint_noncomp = -1.0 / $Km;
-my $xint_uncomp = -$alpha_prime / $Km;
+my $xint_comp = -1.0 / $Km_comp;
+my $xint_noncomp = -1.0 / $Km_noncomp;
+my $xint_uncomp = -1.0 / $Km_uncomp;
 
 # ----------------------------
 # 2c) Color-to-inhibitor shuffling (anti-cheating)
 # ----------------------------
-# 3 WCAG 5.5:1+ accessible colors
-my @color_names = ('red', 'blue', 'teal');
-my @hex_colors = ('#d40000', '#003fff', '#00775f');
-my @gd_rgb = ([212, 0, 0], [0, 63, 255], [0, 119, 95]);
-my @gd_names = ('inhib_red', 'inhib_blue', 'inhib_teal');
+# 3 WCAG 5.5:1+ colorblind-safe colors
+my @color_names = ('red', 'blue', 'purple');
+my @hex_colors = ('#bd3c00', '#003fff', '#7b2d8e');
+my @gd_rgb = ([189, 60, 0], [0, 63, 255], [123, 45, 142]);
+my @gd_names = ('inhib_red', 'inhib_blue', 'inhib_purple');
 
 # 3 inhibitor types to assign
 my @inhib_types = ('competitive', 'non-competitive', 'un-competitive');
@@ -145,16 +152,12 @@ my $x_min = $most_neg_xint * 1.3;
 # x-axis right: show clear divergence (~3/Km)
 my $x_max = 3.0 / $Km;
 
-# y-axis: max y at x_max across all 4 lines + 15% padding
-my $y_at_max_uninh = $slope_uninh * $x_max + $yint_uninh;
-my $y_at_max_comp = $slope_comp * $x_max + $yint_comp;
-my $y_at_max_noncomp = $slope_noncomp * $x_max + $yint_noncomp;
-my $y_at_max_uncomp = $slope_uncomp * $x_max + $yint_uncomp;
-my $y_max = $y_at_max_uninh;
-if ($y_at_max_comp > $y_max) { $y_max = $y_at_max_comp; }
-if ($y_at_max_noncomp > $y_max) { $y_max = $y_at_max_noncomp; }
-if ($y_at_max_uncomp > $y_max) { $y_max = $y_at_max_uncomp; }
-$y_max = $y_max * 1.15;
+# y-axis: 1.75x the highest y-intercept so intercepts are visible
+my $max_yint = $yint_uninh;
+if ($yint_comp > $max_yint) { $max_yint = $yint_comp; }
+if ($yint_noncomp > $max_yint) { $max_yint = $yint_noncomp; }
+if ($yint_uncomp > $max_yint) { $max_yint = $yint_uncomp; }
+my $y_max = $max_yint * 1.75;
 
 # y-axis min: small negative for labels
 my $y_min = -$y_max * 0.12;
@@ -168,13 +171,13 @@ $gr = init_graph($x_min, $y_min, $x_max, $y_max,
 );
 
 # register custom colors
-$gr->new_color('inhib_red', 212, 0, 0);
+$gr->new_color('inhib_red', 189, 60, 0);
 $gr->new_color('inhib_blue', 0, 63, 255);
-$gr->new_color('inhib_teal', 0, 119, 95);
+$gr->new_color('inhib_purple', 123, 45, 142);
 
 # axis labels
 my $x_label_y = $y_min * 0.5;
-my $y_label_x = $x_min * 0.4;
+my $y_label_x = -($x_max - $x_min) * 0.03;
 $gr->lb(new Label($x_max * 0.85, $x_label_y, '1/[S]', 'black', 'center', 'middle'));
 $gr->lb(new Label($y_label_x, $y_max * 0.85, '1/V0', 'black', 'center', 'middle', 'vertical'));
 
@@ -192,17 +195,14 @@ $fn_uninh->steps(200);
 $fn_uninh->weight(3);
 $fn_uninh->color('black');
 
-# label the uninhibited line near y-axis
-my $label_x_pos = $x_max * 0.15;
-my $label_y_uninh = $slope_uninh * $label_x_pos + $yint_uninh + $y_max * 0.04;
-$gr->lb(new Label($label_x_pos, $label_y_uninh,
-	'no inhibitor', 'black', 'center', 'bottom'));
-
 # draw the 3 inhibitor lines in their assigned colors
+# capture slope/yint into loop-local lexicals to avoid closure bug
 for (my $i = 0; $i < 3; $i++) {
+	my $s = $inhib_slopes[$i];
+	my $y = $inhib_yints[$i];
 	my $fn = new Fun(
 		sub { my $t = shift; return $t; },
-		sub { my $t = shift; return $inhib_slopes[$i] * $t + $inhib_yints[$i]; },
+		sub { my $t = shift; return $s * $t + $y; },
 		$gr,
 	);
 	$fn->domain($x_min, $x_max);
@@ -212,12 +212,85 @@ for (my $i = 0; $i < 3; $i++) {
 }
 
 # ----------------------------
-# 2g) Build colored HTML labels for choices
+# 2g) Legend box in upper-left corner (always empty due to line directions)
+# ----------------------------
+my $leg_x = $x_min * 0.90;
+my $leg_y_top = $y_max * 0.96;
+my $leg_line_len = ($x_max - $x_min) * 0.08;
+my $leg_dy = $y_max * 0.07;
+
+# draw legend background (light gray fill with border)
+$gr->new_color('legend_bg', 238, 238, 238);
+$gr->new_color('legend_border', 120, 120, 120);
+my $leg_pad_x = $leg_line_len * 0.3;
+my $leg_pad_y = $leg_dy * 0.4;
+my $leg_box_left = $leg_x - $leg_pad_x;
+my $leg_box_right = $leg_x + $leg_line_len * 1.3 + ($x_max - $x_min) * 0.17;
+my $leg_box_top = $leg_y_top + $leg_pad_y;
+my $leg_box_bottom = $leg_y_top - 3 * $leg_dy - $leg_pad_y;
+# sweep thick lines to fill the background
+my $sweep_y = $leg_box_bottom;
+my $sweep_step = ($y_max - $y_min) * 0.005;
+while ($sweep_y <= $leg_box_top) {
+	my $sy = $sweep_y;
+	my $fn_bg = new Fun(
+		sub { my $t = shift; return $leg_box_left + $t * ($leg_box_right - $leg_box_left); },
+		sub { my $t = shift; return $sy; },
+		$gr,
+	);
+	$fn_bg->domain(0, 1);
+	$fn_bg->steps(2);
+	$fn_bg->weight(4);
+	$fn_bg->color('legend_bg');
+	$sweep_y = $sweep_y + $sweep_step;
+}
+# draw border
+$gr->moveTo($leg_box_left, $leg_box_top);
+$gr->lineTo($leg_box_right, $leg_box_top, 'legend_border');
+$gr->lineTo($leg_box_right, $leg_box_bottom, 'legend_border');
+$gr->lineTo($leg_box_left, $leg_box_bottom, 'legend_border');
+$gr->lineTo($leg_box_left, $leg_box_top, 'legend_border');
+
+# draw legend entries: short colored line + label text
+# entry 0: black uninhibited line
+my $ey = $leg_y_top;
+my $fn_leg0 = new Fun(
+	sub { my $t = shift; return $leg_x + $t * $leg_line_len; },
+	sub { my $t = shift; return $ey; },
+	$gr,
+);
+$fn_leg0->domain(0, 1);
+$fn_leg0->steps(2);
+$fn_leg0->weight(3);
+$fn_leg0->color('black');
+$gr->lb(new Label($leg_x + $leg_line_len * 1.3, $ey,
+	'no inhibitor', 'black', 'left', 'middle'));
+
+# entries 1-3: colored inhibitor lines
+for (my $i = 0; $i < 3; $i++) {
+	my $entry_y = $leg_y_top - ($i + 1) * $leg_dy;
+	my $ley = $entry_y;
+	my $fn_leg = new Fun(
+		sub { my $t = shift; return $leg_x + $t * $leg_line_len; },
+		sub { my $t = shift; return $ley; },
+		$gr,
+	);
+	$fn_leg->domain(0, 1);
+	$fn_leg->steps(2);
+	$fn_leg->weight(2);
+	$fn_leg->color($gd_names[$i]);
+	$gr->lb(new Label($leg_x + $leg_line_len * 1.3, $entry_y,
+		$color_names[$i], $gd_names[$i], 'left', 'middle'));
+}
+
+# ----------------------------
+# 2h) Build colored HTML labels for choices
 # ----------------------------
 my %color_html = ();
 for (my $i = 0; $i < 3; $i++) {
+	# wrap "color line" together so more text is colored
 	$color_html{$color_names[$i]} = "<span style='color:${hex_colors[$i]}; font-weight:700;'>"
-		. "${color_names[$i]}</span>";
+		. "${color_names[$i]} line</span>";
 }
 
 # behavior descriptions for each inhibitor type
@@ -228,7 +301,7 @@ my %behavior_desc = (
 );
 
 # ----------------------------
-# 2h) Choose question format: A or B
+# 2i) Choose question format: A or B
 # ----------------------------
 my $format_pick = $local_random->random(0, 1, 1);
 
@@ -245,7 +318,7 @@ if ($format_pick == 0) {
 	for (my $i = 0; $i < 3; $i++) {
 		my $desc = $behavior_desc{$inhib_types[$i]};
 		my $choice_str = $color_html{$color_names[$i]}
-			. " line ($desc)";
+			. " ($desc)";
 		push @choices, $choice_str;
 	}
 	my $answer_str = $choices[$correct_color_idx];
@@ -312,15 +385,39 @@ if ($format_pick == 0) {
 		separator     => '<div style="margin-bottom: 0.5em;"></div>',
 	);
 
-	$q_html = "The ${ask_color_html} line on the Lineweaver-Burk plot "
+	$q_html = "The ${ask_color_html} on the Lineweaver-Burk plot "
 		. "${ask_behavior}. "
-		. "What type of enzyme inhibition does this line represent?";
+		. "What type of enzyme inhibition does this ${ask_color_html} represent?";
 
 	# solution text
 	$sol_text = "The ${color_names[$ask_color_idx]} line "
 		. "${ask_behavior}. This is the signature of "
 		. "${correct_type} inhibition on a Lineweaver-Burk plot.";
+
 }
+
+# build format-specific hint content
+$hint_format = $format_pick;
+
+# line behavior descriptions keyed by color (for Format A hint)
+my %line_desc = ();
+for (my $i = 0; $i < 3; $i++) {
+	my $t = $inhib_types[$i];
+	if ($t eq 'competitive') {
+		$line_desc{$color_names[$i]} = "intersects the uninhibited line at the y-axis (same y-intercept, steeper slope)";
+	} elsif ($t eq 'non-competitive') {
+		$line_desc{$color_names[$i]} = "intersects the uninhibited line at the x-axis (same x-intercept, higher y-intercept)";
+	} else {
+		$line_desc{$color_names[$i]} = "runs parallel to the uninhibited line (same slope, shifted upward)";
+	}
+}
+$hint_red = $line_desc{'red'};
+$hint_blue = $line_desc{'blue'};
+$hint_purple = $line_desc{'purple'};
+# colored labels for hint text
+$hint_red_label = "<span style='color:#bd3c00; font-weight:700;'>red</span>";
+$hint_blue_label = "<span style='color:#003fff; font-weight:700;'>blue</span>";
+$hint_purple_label = "<span style='color:#7b2d8e; font-weight:700;'>purple</span>";
 
 # build color assignment summary for solution
 $sol_colors = "";
@@ -338,11 +435,9 @@ BEGIN_PGML
 
 *Lineweaver-Burk Plot: Enzyme Inhibition*
 
-The following Lineweaver-Burk (double reciprocal) plot shows four lines: the *black* uninhibited enzyme and three colored lines representing different types of reversible inhibition.
+The following Lineweaver-Burk (double reciprocal) plot shows the *black* uninhibited enzyme line and three colored inhibitor lines (red, blue, and purple), each representing a different type of reversible inhibition.
 
 [@ image(insertGraph($gr), width => 520, height => 390, tex_size => 700) @]*
-
-_Note: The three inhibitor lines are colored red, blue, and teal. Each color represents a different type of inhibition._
 
 [$q_html]*
 
@@ -351,7 +446,38 @@ _Note: The three inhibitor lines are colored red, blue, and teal. Each color rep
 END_PGML
 
 # ----------------------------
-# 4) Solution
+# 4) Hint (shown when student clicks "Show Hint")
+# ----------------------------
+if ($hint_format == 0) {
+# Format A: student picks a color -- hint describes line geometry
+BEGIN_PGML_HINT
+
+Look at how each colored line relates to the uninhibited (black) line:
+
+- The [$hint_red_label]* line [$hint_red]*.
+
+- The [$hint_blue_label]* line [$hint_blue]*.
+
+- The [$hint_purple_label]* line [$hint_purple]*.
+
+END_PGML_HINT
+} else {
+# Format B: student picks an inhibitor type -- hint describes biochemistry
+BEGIN_PGML_HINT
+
+There are only three types of reversible enzyme inhibition. Two of the five choices are made-up terms that do not exist.
+
+- A *competitive* inhibitor increases the apparent K[`_M`] but does not change V[`_{max}`].
+
+- A *non-competitive* inhibitor decreases the apparent V[`_{max}`] but does not change K[`_M`].
+
+- An *un-competitive* inhibitor decreases both the apparent K[`_M`] and V[`_{max}`] by the same factor.
+
+END_PGML_HINT
+}
+
+# ----------------------------
+# 5) Solution
 # ----------------------------
 BEGIN_PGML_SOLUTION
 
