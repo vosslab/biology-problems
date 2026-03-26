@@ -133,19 +133,11 @@ for my $i (0 .. $num_enzymes - 1) {
 	push @choices, $choice_text;
 }
 
-# Save correct answer before shuffling
-my $correct_answer = $choices[0];
-
-# Fisher-Yates shuffle
-for my $i (reverse 1 .. $#choices) {
-	my $j = $local_random->random(0, $i, 1);
-	@choices[$i, $j] = @choices[$j, $i];
-}
-
 $radio = RadioButtons(
 	[[@choices]],
-	$correct_answer,
+	$choices[0],
 	separator => '<br/>',
+	noOrder => 1,
 );
 
 # ----------------------------
@@ -165,11 +157,9 @@ in concentration of specific molecules and can regulate the rate of reactions.
 *Which one of the enzymes in the metabolic pathway above is most likely to be
 an allosteric enzyme?*
 
-[@ $radio->buttons() @]*
+[_]{$radio}
 
 END_PGML
-
-ANS($radio->cmp());
 
 # ----------------------------
 # 4) Hint

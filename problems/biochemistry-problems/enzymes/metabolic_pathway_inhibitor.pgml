@@ -172,16 +172,11 @@ for my $i (reverse 1 .. $#fake_pool) {
 my @choices = @real_choices;
 push @choices, $fake_pool[0];
 
-# Fisher-Yates shuffle all choices
-for my $i (reverse 1 .. $#choices) {
-	my $j = $local_random->random(0, $i, 1);
-	@choices[$i, $j] = @choices[$j, $i];
-}
-
 $radio = RadioButtons(
 	[[@choices]],
 	$correct_answer,
 	separator => '<br/>',
+	noOrder => 1,
 );
 
 # ----------------------------
@@ -229,11 +224,9 @@ This binding [$activity_html]* the activity of the enzyme.
 
 Determine the type of enzyme inhibition or activation described:
 
-[@ $radio->buttons() @]*
+[_]{$radio}
 
 END_PGML
-
-ANS($radio->cmp());
 
 # ----------------------------
 # 4) Hint

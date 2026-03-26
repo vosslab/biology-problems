@@ -1,0 +1,780 @@
+## TITLE('Biochemistry: Allosteric Regulation of O2-Binding Protein')
+## DESCRIPTION
+## Three-part progressive problem about allosteric regulation of a
+## tetrameric O2-binding protein. Part 1 uses the sequential model
+## with a subunit state diagram. Part 2 introduces the concerted model with a
+## sigmoidal binding curve. Part 3 adds allosteric regulators that shift
+## the curve left (activator) or right (inhibitor).
+## ENDDESCRIPTION
+## KEYWORDS('allosteric','cooperativity','concerted model','sequential model','Hill equation','O2 binding','T state','R state')
+## DBsubject('Biochemistry')
+## DBchapter('Enzymes')
+## DBsection('Allosteric Regulation')
+## Level(3)
+## Date('2026-03-19')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	'PGstandard.pl',
+	'MathObjects.pl',
+	'PGML.pl',
+	'PGgraphmacros.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl',
+);
+
+$showPartialCorrectAnswers = 0;
+
+# ----------------------------
+# 2) Setup
+# ----------------------------
+
+# ----------------------------
+# 2a) Randomization
+# ----------------------------
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+
+# ----------------------------
+# 2b) Color palette for subunit cells
+# ----------------------------
+# two color pairs for low-affinity vs high-affinity subunits
+# each pair has good contrast and is colorblind-friendly
+my @color_pairs = (
+	['#8B4513', '#006400'],   # brown (low) / dark green (high)
+	['#871DFF', '#CC0763'],   # purple (low) / magenta (high)
+	['#003fff', '#bd3c00'],   # blue (low) / red (high)
+);
+my $pair_idx = $local_random->random(0, $#color_pairs, 1);
+my $low_bg = $color_pairs[$pair_idx][0];
+my $high_bg = $color_pairs[$pair_idx][1];
+
+# ----------------------------
+# 2c) Build Part 1 subunit state diagram (5 blocks with arrows)
+# ----------------------------
+# Fisher-Yates shuffle of positions [0,1,2,3] to determine
+# which subunit flips to high-affinity at each binding step
+my @flip_order = (0, 1, 2, 3);
+for (my $i = $#flip_order; $i > 0; $i--) {
+	my $j = $local_random->random(0, $i, 1);
+	@flip_order[$i, $j] = @flip_order[$j, $i];
+}
+
+# build the subunit state for each of the 5 states
+# state_grid[state][subunit] = 0 (low) or 1 (high)
+my @state_grid = ();
+for (my $s = 0; $s < 5; $s++) {
+	my @row = (0, 0, 0, 0);
+	# flip subunits according to flip_order for first $s positions
+	for (my $f = 0; $f < $s; $f++) {
+		$row[$flip_order[$f]] = 1;
+	}
+	push @state_grid, [@row];
+}
+
+# cell size for each subunit
+my $cell_size = 48;
+my $cell_gap = 3;
+# border-radius values: square=4px, round=50%, partial=14px
+my $radius_low = '4px';
+my $radius_high = '50%';
+my $radius_partial = '14px';
+
+# build the 5-state diagram as inline HTML
+# outer flex container for horizontal layout
+$state_table = "<div style='display:flex; align-items:center; "
+	. "justify-content:center; gap:6px; flex-wrap:wrap;'>";
+
+for (my $s = 0; $s < 5; $s++) {
+	# insert arrow between states (equilibrium arrow with K label)
+	if ($s > 0) {
+		my $k_label = "K<sub>${s}</sub>";
+		$state_table .= "<div style='text-align:center; padding:0 2px;'>"
+			. "<div style='font-style:italic; font-weight:700; "
+			. "font-size:14px;'>${k_label}</div>"
+			. "<div style='font-size:22px; line-height:1;'>&#8652;</div>"
+			. "</div>";
+	}
+
+	# count how many subunits are high in this state
+	my $n_high = 0;
+	for my $v (@{$state_grid[$s]}) { $n_high += $v; }
+
+	# build the 2x2 block for this state
+	my $block_w = $cell_size * 2 + $cell_gap;
+	$state_table .= "<div style='text-align:center;'>";
+	# state label
+	my $state_num = $s + 1;
+	$state_table .= "<div style='font-weight:700; font-size:12px; "
+		. "margin-bottom:2px;'>State ${state_num}</div>";
+	# 2x2 grid using flex-wrap
+	$state_table .= "<div style='display:flex; flex-wrap:wrap; "
+		. "width:${block_w}px; margin:0 auto;'>";
+
+	# subunit positions: 0=top-left, 1=top-right, 2=bottom-left, 3=bottom-right
+	for (my $sub = 0; $sub < 4; $sub++) {
+		my $is_high = $state_grid[$s][$sub];
+		my $bg_color;
+		my $border_rad;
+		my $cell_text;
+
+		if ($is_high) {
+			# high-affinity subunit (round, with O2 label)
+			$bg_color = $high_bg;
+			$border_rad = $radius_high;
+			$cell_text = "O<sub>2</sub>";
+		} else {
+			# low-affinity subunit
+			$bg_color = $low_bg;
+			# use partial rounding for subunits adjacent to high-affinity ones
+			if ($n_high > 0 && $n_high < 4) {
+				$border_rad = $radius_partial;
+			} else {
+				$border_rad = $radius_low;
+			}
+			$cell_text = "";
+		}
+
+		# margin for gap between cells
+		my $margin_r = ($sub == 0 || $sub == 2) ? "${cell_gap}px" : "0";
+		my $margin_b = ($sub < 2) ? "${cell_gap}px" : "0";
+
+		$state_table .= "<div style='"
+			. "width:${cell_size}px; height:${cell_size}px; "
+			. "background:${bg_color}; color:#fff; font-weight:700; "
+			. "font-size:12px; border:2px solid #333; "
+			. "border-radius:${border_rad}; "
+			. "display:flex; align-items:center; justify-content:center; "
+			. "margin-right:${margin_r}; margin-bottom:${margin_b}; "
+			. "'>${cell_text}</div>";
+	}
+
+	$state_table .= "</div>";
+	# O2 bound count label
+	$state_table .= "<div style='font-size:11px; color:#555; "
+		. "margin-top:2px;'>${s} O<sub>2</sub> bound</div>";
+	$state_table .= "</div>";
+}
+
+$state_table .= "</div>";
+
+# ----------------------------
+# 2d) Part 1 RadioButtons (highest or lowest affinity variant)
+# ----------------------------
+my $p1_variant = $local_random->random(0, 1, 1);
+
+my @p1_choices = ('State 1', 'State 2', 'State 3', 'State 4');
+my $p1_answer;
+if ($p1_variant == 0) {
+	# highest affinity variant
+	$p1_answer = 'State 4';
+	$q1_html = "Which state has the <b>highest</b> affinity for binding "
+		. "an <b>additional</b> O<sub>2</sub> molecule?";
+	$sol1_explain = "State 4 has three subunits already in the high-affinity "
+		. "conformation. The cooperative effect is strongest here: the remaining "
+		. "subunit is most likely to adopt the high-affinity conformation, giving "
+		. "State 4 the highest affinity for binding one more O<sub>2</sub>. "
+		. "State 5 is excluded because it is fully saturated.";
+} else {
+	# lowest affinity variant
+	$p1_answer = 'State 1';
+	$q1_html = "Which state has the <b>lowest</b> affinity for binding "
+		. "an <b>additional</b> O<sub>2</sub> molecule?";
+	$sol1_explain = "State 1 has all four subunits in the low-affinity conformation "
+		. "and zero O<sub>2</sub> bound. Without any prior binding events to promote "
+		. "the high-affinity conformation, it has the lowest affinity for "
+		. "O<sub>2</sub>. State 5 is excluded because it is fully saturated.";
+}
+
+# Part 1 choices kept in sequential order (matches diagram labels)
+$rb1 = RadioButtons(
+	[@p1_choices],
+	$p1_answer,
+	labels        => 'ABC',
+	displayLabels => 1,
+	noRandom      => 1,
+	separator     => '<div style="margin-bottom: 0.5em;"></div>',
+);
+
+# ----------------------------
+# 2e) Hill equation parameters
+# ----------------------------
+my @n_pool = (3, 4);
+my $n = $n_pool[$local_random->random(0, $#n_pool, 1)];
+
+my @Kd_pool = (2.0, 2.5, 3.0);
+my $Kd = $Kd_pool[$local_random->random(0, $#Kd_pool, 1)];
+
+# shift factor for activator/inhibitor curves
+my @shift_pool = (1.8, 2.0, 2.5);
+my $shift_factor = $shift_pool[$local_random->random(0, $#shift_pool, 1)];
+
+# derived Kd values for activator and inhibitor
+my $Kd_act = $Kd / $shift_factor;
+my $Kd_inh = $Kd * $shift_factor;
+
+# ----------------------------
+# 2f) Graph for Part 2 (wild-type sigmoidal + mutant hyperbolic)
+# ----------------------------
+# mutant parameters: n=1 (no cooperativity), lower Kd (left-shifted)
+# locked-in-R mutant has 4 independent high-affinity sites -> pure hyperbola
+my $n_mut = 1;
+my $Kd_mut = $Kd / $shift_factor;
+
+# precompute Kd^n for Hill equation (avoid ** operator)
+my $kd_n = 1;
+for (1 .. $n) { $kd_n = $kd_n * $Kd; }
+
+# find the crossover point where wild-type overtakes mutant
+# truncate x-axis before this to keep mutant visibly above wild-type
+my $cross_x = $Kd * 4;
+for (my $xi = 1; $xi < 1000; $xi++) {
+	my $x = $xi * $Kd * 0.005;
+	# compute wild-type Y: x^n / (Kd^n + x^n)
+	my $xn = 1;
+	for (1 .. $n) { $xn = $xn * $x; }
+	my $wt_y = $xn / ($kd_n + $xn);
+	# compute mutant Y: x / (Kd_mut + x)
+	my $mut_y = $x / ($Kd_mut + $x);
+	if ($wt_y > $mut_y) {
+		$cross_x = $x;
+		last;
+	}
+}
+# x-axis stops at 90% of crossover so mutant stays clearly above
+my $x_max_graph = $cross_x * 0.90;
+# compute y_max from mutant value at x_max plus headroom
+my $mut_y_at_max = $x_max_graph / ($Kd_mut + $x_max_graph);
+my $x_min_graph = -$x_max_graph * 0.08;
+my $y_min_graph = -0.06;
+my $y_max_graph = $mut_y_at_max + 0.15;
+
+$gr1 = init_graph($x_min_graph, $y_min_graph, $x_max_graph, $y_max_graph,
+	axes => [0, 0],
+	size => [520, 390],
+);
+
+$gr1->new_color('dashed_gray', 140, 140, 140);
+$gr1->new_color('mutant_blue', 0, 63, 255);
+$gr1->new_color('legend_bg1', 238, 238, 238);
+$gr1->new_color('legend_border1', 120, 120, 120);
+
+# axis labels
+my $xlab_y = $y_min_graph * 0.5;
+$gr1->lb(new Label($x_max_graph * 0.90, $xlab_y, 'pO2', 'black', 'center', 'middle'));
+$gr1->lb(new Label($x_min_graph * 0.25, $y_max_graph * 0.97, 'Y', 'black', 'center', 'middle'));
+
+# dashed reference line at Y = 0.5
+my $dash_seg = ($x_max_graph - $x_min_graph) * 0.02;
+my $dash_gap = $dash_seg * 0.8;
+my $dash_x = 0;
+while ($dash_x < $x_max_graph) {
+	my $seg_end = $dash_x + $dash_seg;
+	if ($seg_end > $x_max_graph) { $seg_end = $x_max_graph; }
+	my $dx = $dash_x;
+	my $de = $seg_end;
+	my $fn_d = new Fun(
+		sub { my $t = shift; return $dx + $t * ($de - $dx); },
+		sub { my $t = shift; return 0.5; },
+		$gr1,
+	);
+	$fn_d->domain(0, 1);
+	$fn_d->steps(2);
+	$fn_d->weight(1);
+	$fn_d->color('dashed_gray');
+	$dash_x = $seg_end + $dash_gap;
+}
+$gr1->lb(new Label($x_max_graph * 0.92, 0.53, 'Y = 0.5', 'dashed_gray', 'center', 'bottom'));
+
+# y-axis tick mark at Y = 0.5
+my $tick_half = ($x_max_graph - $x_min_graph) * 0.008;
+for my $yv (0.5) {
+	my $yval = $yv;
+	my $fn_tick = new Fun(
+		sub { my $t = shift; return -$tick_half + $t * 2 * $tick_half; },
+		sub { my $t = shift; return $yval; },
+		$gr1,
+	);
+	$fn_tick->domain(0, 1);
+	$fn_tick->steps(2);
+	$fn_tick->weight(1);
+	$fn_tick->color('dashed_gray');
+}
+
+# draw wild-type sigmoidal curve (black, weight 2)
+# Hill equation: Y = x^n / (Kd^n + x^n)
+# $kd_n already computed above for crossover calculation
+my $hill_n = $n;
+my $hill_kd_n = $kd_n;
+my $fn_wt1 = new Fun(
+	sub { my $t = shift; return $t; },
+	sub {
+		my $t = shift;
+		if ($t <= 0) { return 0; }
+		my $xn = 1;
+		for (1 .. $hill_n) { $xn = $xn * $t; }
+		return $xn / ($hill_kd_n + $xn);
+	},
+	$gr1,
+);
+$fn_wt1->domain(0, $x_max_graph);
+$fn_wt1->steps(400);
+$fn_wt1->weight(2);
+$fn_wt1->color('black');
+
+# draw mutant hyperbolic curve (blue, weight 2)
+# locked-in-R mutant: n=1, Y = x / (Kd_mut + x)
+my $hill_kd_mut = $Kd_mut;
+my $fn_mut = new Fun(
+	sub { my $t = shift; return $t; },
+	sub {
+		my $t = shift;
+		if ($t <= 0) { return 0; }
+		return $t / ($hill_kd_mut + $t);
+	},
+	$gr1,
+);
+$fn_mut->domain(0, $x_max_graph);
+$fn_mut->steps(400);
+$fn_mut->weight(2);
+$fn_mut->color('mutant_blue');
+
+# legend box for Part 2 graph (lower-right to avoid overlap with curves)
+my $leg1_x = $x_max_graph * 0.06;
+my $leg1_y_top = $y_max_graph * 0.96;
+my $leg1_line_len = ($x_max_graph - $x_min_graph) * 0.08;
+my $leg1_dy = $y_max_graph * 0.07;
+my $leg1_pad_x = $leg1_line_len * 0.3;
+my $leg1_pad_y = $leg1_dy * 0.4;
+my $leg1_box_left = $leg1_x - $leg1_pad_x;
+my $leg1_box_right = $leg1_x + $leg1_line_len * 1.3 + ($x_max_graph - $x_min_graph) * 0.12;
+my $leg1_box_top = $leg1_y_top + $leg1_pad_y;
+my $leg1_box_bottom = $leg1_y_top - 1 * $leg1_dy - $leg1_pad_y;
+
+# legend background fill
+my $sweep1_y = $leg1_box_bottom;
+my $sweep1_step = ($y_max_graph - $y_min_graph) * 0.005;
+while ($sweep1_y <= $leg1_box_top) {
+	my $sy1 = $sweep1_y;
+	my $fn_bg1 = new Fun(
+		sub { my $t = shift; return $leg1_box_left + $t * ($leg1_box_right - $leg1_box_left); },
+		sub { my $t = shift; return $sy1; },
+		$gr1,
+	);
+	$fn_bg1->domain(0, 1);
+	$fn_bg1->steps(2);
+	$fn_bg1->weight(4);
+	$fn_bg1->color('legend_bg1');
+	$sweep1_y = $sweep1_y + $sweep1_step;
+}
+# legend border
+$gr1->moveTo($leg1_box_left, $leg1_box_top);
+$gr1->lineTo($leg1_box_right, $leg1_box_top, 'legend_border1');
+$gr1->lineTo($leg1_box_right, $leg1_box_bottom, 'legend_border1');
+$gr1->lineTo($leg1_box_left, $leg1_box_bottom, 'legend_border1');
+$gr1->lineTo($leg1_box_left, $leg1_box_top, 'legend_border1');
+
+# legend entries: wild-type (black) and mutant (blue)
+my @leg1_colors = ('black', 'mutant_blue');
+my @leg1_labels = ('wild-type', 'mutant');
+for (my $i = 0; $i < 2; $i++) {
+	my $entry_y1 = $leg1_y_top - $i * $leg1_dy;
+	my $ley1 = $entry_y1;
+	my $lc1 = $leg1_colors[$i];
+	my $fn_leg1 = new Fun(
+		sub { my $t = shift; return $leg1_x + $t * $leg1_line_len; },
+		sub { my $t = shift; return $ley1; },
+		$gr1,
+	);
+	$fn_leg1->domain(0, 1);
+	$fn_leg1->steps(2);
+	$fn_leg1->weight(2);
+	$fn_leg1->color($lc1);
+	$gr1->lb(new Label($leg1_x + $leg1_line_len * 1.3, $entry_y1,
+		$leg1_labels[$i], $lc1, 'left', 'middle'));
+}
+
+# ----------------------------
+# 2g) Graph for Part 3 (wild-type + activator + inhibitor)
+# ----------------------------
+# x-axis: wide enough for inhibitor to show sigmoid shape clearly
+# truncate where inhibitor reaches ~0.92 so curves fill the space
+my $x_max_g2 = $Kd_inh * 2.2;
+my $x_min_g2 = -$x_max_g2 * 0.08;
+my $y_min_g2 = -0.06;
+my $y_max_g2 = 1.10;
+
+$gr2 = init_graph($x_min_g2, $y_min_g2, $x_max_g2, $y_max_g2,
+	axes => [0, 0],
+	size => [520, 390],
+);
+
+$gr2->new_color('dashed_gray', 140, 140, 140);
+$gr2->new_color('act_green', 0, 119, 95);
+$gr2->new_color('inh_red', 189, 60, 0);
+$gr2->new_color('legend_bg', 238, 238, 238);
+$gr2->new_color('legend_border', 120, 120, 120);
+
+# axis labels
+my $xlab_y2 = $y_min_g2 * 0.5;
+$gr2->lb(new Label($x_max_g2 * 0.90, $xlab_y2, 'pO2', 'black', 'center', 'middle'));
+$gr2->lb(new Label($x_min_g2 * 0.25, $y_max_g2 * 0.97, 'Y', 'black', 'center', 'middle'));
+
+# dashed reference lines at Y = 0.5 and Y = 1.0
+my $dash_seg2 = ($x_max_g2 - $x_min_g2) * 0.02;
+my $dash_gap2 = $dash_seg2 * 0.8;
+
+for my $ref_y (0.5, 1.0) {
+	my $ref_val = $ref_y;
+	my $dx2 = 0;
+	while ($dx2 < $x_max_g2) {
+		my $se2 = $dx2 + $dash_seg2;
+		if ($se2 > $x_max_g2) { $se2 = $x_max_g2; }
+		my $d2s = $dx2;
+		my $d2e = $se2;
+		my $fn_ref = new Fun(
+			sub { my $t = shift; return $d2s + $t * ($d2e - $d2s); },
+			sub { my $t = shift; return $ref_val; },
+			$gr2,
+		);
+		$fn_ref->domain(0, 1);
+		$fn_ref->steps(2);
+		$fn_ref->weight(1);
+		$fn_ref->color('dashed_gray');
+		$dx2 = $se2 + $dash_gap2;
+	}
+}
+$gr2->lb(new Label($x_max_g2 * 0.92, 0.53, 'Y = 0.5', 'dashed_gray', 'center', 'bottom'));
+$gr2->lb(new Label($x_max_g2 * 0.92, 1.03, 'Y = 1.0', 'dashed_gray', 'center', 'bottom'));
+
+# y-axis tick marks
+my $tick_half2 = ($x_max_g2 - $x_min_g2) * 0.008;
+for my $yv2 (0.5, 1.0) {
+	my $yval2 = $yv2;
+	my $fn_tk2 = new Fun(
+		sub { my $t = shift; return -$tick_half2 + $t * 2 * $tick_half2; },
+		sub { my $t = shift; return $yval2; },
+		$gr2,
+	);
+	$fn_tk2->domain(0, 1);
+	$fn_tk2->steps(2);
+	$fn_tk2->weight(1);
+	$fn_tk2->color('dashed_gray');
+}
+
+# wild-type curve (black, weight 2)
+my $hill_n2 = $n;
+my $hill_kd_n2 = $kd_n;
+my $fn_wt2 = new Fun(
+	sub { my $t = shift; return $t; },
+	sub {
+		my $t = shift;
+		if ($t <= 0) { return 0; }
+		my $xn = 1;
+		for (1 .. $hill_n2) { $xn = $xn * $t; }
+		return $xn / ($hill_kd_n2 + $xn);
+	},
+	$gr2,
+);
+$fn_wt2->domain(0, $x_max_g2);
+$fn_wt2->steps(400);
+$fn_wt2->weight(2);
+$fn_wt2->color('black');
+
+# activator curve (green, left-shifted)
+my $kd_act_n = 1;
+for (1 .. $n) { $kd_act_n = $kd_act_n * $Kd_act; }
+my $hill_n_act = $n;
+my $hill_kd_act_n = $kd_act_n;
+my $fn_act = new Fun(
+	sub { my $t = shift; return $t; },
+	sub {
+		my $t = shift;
+		if ($t <= 0) { return 0; }
+		my $xn = 1;
+		for (1 .. $hill_n_act) { $xn = $xn * $t; }
+		return $xn / ($hill_kd_act_n + $xn);
+	},
+	$gr2,
+);
+$fn_act->domain(0, $x_max_g2);
+$fn_act->steps(400);
+$fn_act->weight(2);
+$fn_act->color('act_green');
+
+# inhibitor curve (red, right-shifted)
+my $kd_inh_n = 1;
+for (1 .. $n) { $kd_inh_n = $kd_inh_n * $Kd_inh; }
+my $hill_n_inh = $n;
+my $hill_kd_inh_n = $kd_inh_n;
+my $fn_inh = new Fun(
+	sub { my $t = shift; return $t; },
+	sub {
+		my $t = shift;
+		if ($t <= 0) { return 0; }
+		my $xn = 1;
+		for (1 .. $hill_n_inh) { $xn = $xn * $t; }
+		return $xn / ($hill_kd_inh_n + $xn);
+	},
+	$gr2,
+);
+$fn_inh->domain(0, $x_max_g2);
+$fn_inh->steps(400);
+$fn_inh->weight(2);
+$fn_inh->color('inh_red');
+
+# legend box for Part 3 graph (lower-right to avoid blocking curves)
+my $leg_x = $x_max_g2 * 0.65;
+my $leg_y_top = 0.32;
+my $leg_line_len = ($x_max_g2 - $x_min_g2) * 0.08;
+my $leg_dy = $y_max_g2 * 0.07;
+my $leg_pad_x = $leg_line_len * 0.3;
+my $leg_pad_y = $leg_dy * 0.4;
+my $leg_box_left = $leg_x - $leg_pad_x;
+my $leg_box_right = $leg_x + $leg_line_len * 1.3 + ($x_max_g2 - $x_min_g2) * 0.14;
+my $leg_box_top = $leg_y_top + $leg_pad_y;
+my $leg_box_bottom = $leg_y_top - 2 * $leg_dy - $leg_pad_y;
+
+# white background fill
+my $sweep_y = $leg_box_bottom;
+my $sweep_step = ($y_max_g2 - $y_min_g2) * 0.005;
+while ($sweep_y <= $leg_box_top) {
+	my $sy = $sweep_y;
+	my $fn_bg = new Fun(
+		sub { my $t = shift; return $leg_box_left + $t * ($leg_box_right - $leg_box_left); },
+		sub { my $t = shift; return $sy; },
+		$gr2,
+	);
+	$fn_bg->domain(0, 1);
+	$fn_bg->steps(2);
+	$fn_bg->weight(4);
+	$fn_bg->color('legend_bg');
+	$sweep_y = $sweep_y + $sweep_step;
+}
+# legend border
+$gr2->moveTo($leg_box_left, $leg_box_top);
+$gr2->lineTo($leg_box_right, $leg_box_top, 'legend_border');
+$gr2->lineTo($leg_box_right, $leg_box_bottom, 'legend_border');
+$gr2->lineTo($leg_box_left, $leg_box_bottom, 'legend_border');
+$gr2->lineTo($leg_box_left, $leg_box_top, 'legend_border');
+
+# legend entries
+my @leg_colors = ('black', 'act_green', 'inh_red');
+my @leg_labels = ('wild-type', 'activator', 'inhibitor');
+for (my $i = 0; $i < 3; $i++) {
+	my $entry_y = $leg_y_top - $i * $leg_dy;
+	my $ley = $entry_y;
+	my $lc = $leg_colors[$i];
+	my $fn_leg = new Fun(
+		sub { my $t = shift; return $leg_x + $t * $leg_line_len; },
+		sub { my $t = shift; return $ley; },
+		$gr2,
+	);
+	$fn_leg->domain(0, 1);
+	$fn_leg->steps(2);
+	$fn_leg->weight(2);
+	$fn_leg->color($lc);
+	$gr2->lb(new Label($leg_x + $leg_line_len * 1.3, $entry_y,
+		$leg_labels[$i], $lc, 'left', 'middle'));
+}
+
+# ----------------------------
+# 2h) Part 2 RadioButtons (mutant explanation)
+# ----------------------------
+my @p2_choices = (
+	"The mutation stabilizes the R state, increasing apparent affinity "
+		. "and reducing cooperativity",
+	"The mutation stabilizes the T state, decreasing apparent affinity "
+		. "for O<sub>2</sub>",
+	"The mutation eliminates O<sub>2</sub> binding entirely",
+	"The mutation causes each subunit to bind O<sub>2</sub> independently "
+		. "with lower affinity",
+);
+my $p2_answer = $p2_choices[0];
+
+# shuffle
+for (my $i = $#p2_choices; $i > 0; $i--) {
+	my $j = $local_random->random(0, $i, 1);
+	@p2_choices[$i, $j] = @p2_choices[$j, $i];
+}
+
+$rb2 = RadioButtons(
+	[@p2_choices],
+	$p2_answer,
+	labels        => 'ABC',
+	displayLabels => 1,
+	separator     => '<div style="margin-bottom: 0.5em;"></div>',
+);
+
+$q2_html = "In the plotted pO<sub>2</sub> range, the "
+	. "<span style='color:#003fff; font-weight:700;'>mutant</span> "
+	. "(blue) shows higher fractional saturation and less sigmoidal "
+	. "behavior than the wild-type (black). Which statement best "
+	. "explains this change?";
+
+# ----------------------------
+# 2j) Part 3 RadioButtons (regulation)
+# ----------------------------
+my $p3_variant = $local_random->random(0, 1, 1);
+
+my @p3_choices;
+my $p3_answer;
+
+if ($p3_variant == 0) {
+	# left-shift question (activator)
+	$q3_html = "A regulator shifts the binding curve to the <b>left</b> "
+		. "(shown in <span style='color:#00775f; font-weight:700;'>green</span>). "
+		. "Which interpretation best integrates the concepts from Parts 1 and 2?";
+	@p3_choices = (
+		"The regulator stabilizes the R state, increasing the protein's "
+			. "apparent affinity for O<sub>2</sub>",
+		"The regulator stabilizes the T state, decreasing the protein's "
+			. "apparent affinity for O<sub>2</sub>",
+		"The regulator eliminates conformational changes between subunits",
+		"The regulator makes all binding sites independent of each other",
+	);
+	$p3_answer = $p3_choices[0];
+	$sol3_explain = "A left-shifted curve means the protein reaches half-saturation "
+		. "at a <i>lower</i> pO<sub>2</sub>, indicating higher apparent "
+		. "affinity. In the concerted model, this occurs when a regulator stabilizes "
+		. "the R (relaxed, high-affinity) state, shifting the T&harr;R equilibrium "
+		. "toward R. In sequential model terms, the regulator favors the high-affinity "
+		. "conformation of each subunit.";
+} else {
+	# right-shift question (inhibitor)
+	$q3_html = "A regulator shifts the binding curve to the <b>right</b> "
+		. "(shown in <span style='color:#bd3c00; font-weight:700;'>red</span>). "
+		. "Which interpretation best integrates the concepts from Parts 1 and 2?";
+	@p3_choices = (
+		"The regulator stabilizes the T state, decreasing the protein's "
+			. "apparent affinity for O<sub>2</sub>",
+		"The regulator stabilizes the R state, increasing the protein's "
+			. "apparent affinity for O<sub>2</sub>",
+		"The regulator prevents O<sub>2</sub> from binding to any subunit",
+		"The regulator converts the tetrameric protein into a monomer",
+	);
+	$p3_answer = $p3_choices[0];
+	$sol3_explain = "A right-shifted curve means the protein requires a <i>higher</i> "
+		. "pO<sub>2</sub> to reach half-saturation, indicating lower "
+		. "apparent affinity. In the concerted model, this occurs when a regulator "
+		. "stabilizes the T (tense, low-affinity) state. In sequential model terms, "
+		. "the regulator favors the low-affinity conformation of each subunit.";
+}
+
+# shuffle Part 3 choices
+for (my $i = $#p3_choices; $i > 0; $i--) {
+	my $j = $local_random->random(0, $i, 1);
+	@p3_choices[$i, $j] = @p3_choices[$j, $i];
+}
+
+$rb3 = RadioButtons(
+	[@p3_choices],
+	$p3_answer,
+	labels        => 'ABC',
+	displayLabels => 1,
+	separator     => '<div style="margin-bottom: 0.5em;"></div>',
+);
+
+# concerted model transition text for Part 2
+$transition_text = "The same tetrameric protein can also be described using "
+	. "the <b>concerted (MWC)</b> model. In this model, "
+	. "the entire protein exists in one of two global conformational states: "
+	. "<b>T</b> (tense, low affinity) or <b>R</b> (relaxed, high affinity). "
+	. "Binding of O<sub>2</sub> shifts the equilibrium toward the R state, "
+	. "producing a sigmoidal (S-shaped) binding curve.";
+
+$mutant_text = "A mutant form of this protein has been isolated. "
+	. "The graph below compares the O<sub>2</sub> binding curves of "
+	. "the <b>wild-type</b> (black) and "
+	. "<span style='color:#003fff; font-weight:700;'>mutant</span> "
+	. "(blue) proteins over a low-to-mid pO<sub>2</sub> range. "
+	. "Both proteins can fully saturate (Y = 1.0) at high pO<sub>2</sub>.";
+
+# ----------------------------
+# 3) Statement (PGML)
+# ----------------------------
+BEGIN_PGML
+
+*Allosteric Regulation of a Tetrameric O2-Binding Protein*
+
+*Part 1.* The sequential (KNF) model describes how O[`_2`] binding to one subunit can progressively increase the affinity of the remaining subunits. The diagram below shows five binding states of a tetrameric protein. Square cells represent subunits in the *low-affinity* conformation; round cells (labeled O[`_2`]) represent subunits that have bound O[`_2`] and adopted the *high-affinity* conformation. Partially rounded corners indicate subunits influenced by neighboring conformational changes.
+
+[$state_table]*
+
+[$q1_html]*
+
+[_]{$rb1}
+
+---
+
+*Part 2.* [$transition_text]*
+
+[$mutant_text]*
+
+[@ image(insertGraph($gr1), width => 520, height => 390, tex_size => 700) @]*
+
+[$q2_html]*
+
+[_]{$rb2}
+
+---
+
+*Part 3.* The black curve below is the same wild-type protein from Part 2. Allosteric regulators can shift this curve by stabilizing either the T state or the R state.
+
+[@ image(insertGraph($gr2), width => 520, height => 390, tex_size => 700) @]*
+
+[$q3_html]*
+
+[_]{$rb3}
+
+END_PGML
+
+# ----------------------------
+# 4) Hint
+# ----------------------------
+BEGIN_PGML_HINT
+
+*Part 1:* In the sequential model, each O[`_2`] that binds converts one subunit from low-affinity to high-affinity. The more subunits already in the high-affinity conformation, the greater the cooperative effect on the remaining subunits. State 5 is fully saturated and cannot bind more O[`_2`].
+
+*Part 2:* Compare the two curves. The mutant reaches half-saturation at a lower pO[`_2`] (left-shifted) and lacks the S-shape (more hyperbolic). What does a hyperbolic curve imply about cooperativity? Which conformational state (T or R) would need to be stabilized to produce both effects simultaneously?
+
+*Part 3:* A left-shifted curve means higher affinity (lower pO[`_2`] needed for half-saturation). A right-shifted curve means lower affinity. Which conformational state (T or R) would a regulator need to stabilize to produce each shift?
+
+END_PGML_HINT
+
+# ----------------------------
+# 5) Solution
+# ----------------------------
+BEGIN_PGML_SOLUTION
+
+*Part 1: Sequential Model*
+
+[$sol1_explain]*
+
+---
+
+*Part 2: Mutant Binding Curve*
+
+The wild-type protein shows a sigmoidal curve because it starts predominantly in the T state. O[`_2`] binding must overcome the T[`\leftrightarrow`]R equilibrium, producing cooperative (S-shaped) binding. The mutant stabilizes the R state even without O[`_2`] bound, so the protein already favors the high-affinity conformation. This has two consequences: (1) the curve shifts left because the apparent affinity for O[`_2`] is higher, and (2) the curve becomes more hyperbolic because there is less T-to-R switching left to drive cooperativity. A protein locked entirely in R would bind O[`_2`] with simple hyperbolic kinetics, like independent binding sites.
+
+---
+
+*Part 3: Allosteric Regulation*
+
+[$sol3_explain]*
+
+END_PGML_SOLUTION
+
+ENDDOCUMENT();

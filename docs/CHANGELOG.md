@@ -1,5 +1,19 @@
 # Changelog
 
+## 2026-03-20
+
+### Fixes and Maintenance
+- Converted [problems/biochemistry-problems/enzymes/metabolic_pathway_allosteric.pgml](../problems/biochemistry-problems/enzymes/metabolic_pathway_allosteric.pgml) from legacy `ANS($radio->cmp())` with `[@ $radio->buttons() @]*` to pure PGML inline `[_]{$radio}`. Removed Fisher-Yates shuffle and `$correct_answer` variable since enzyme choices are numbered and should stay in order. Added `noOrder => 1` to RadioButtons constructor.
+- Converted [problems/biochemistry-problems/enzymes/metabolic_pathway_inhibitor.pgml](../problems/biochemistry-problems/enzymes/metabolic_pathway_inhibitor.pgml) from legacy `ANS($radio->cmp())` with `[@ $radio->buttons() @]*` to pure PGML inline `[_]{$radio}`. Removed Fisher-Yates shuffle of the 5 answer choices (4 real types + 1 fake distractor) to keep canonical order. Added `noOrder => 1` to RadioButtons constructor. Fake distractor pool shuffle retained so the selected distractor still varies per seed.
+
+## 2026-03-19
+
+### Fixes and Maintenance
+- Fixed [problems/multiple_choice_statements/molecular_biology/proofreading.pgml](../problems/multiple_choice_statements/molecular_biology/proofreading.pgml): Perl syntax error caused by escaped single quotes (`\'`) inside single-quoted strings. The renderer interpreted `\\'` as an escaped backslash followed by a bare quote, terminating the string prematurely. Switched the three affected strings (containing `'starting from scratch'`) to `q{}` quoting.
+
+### Additions and New Features
+- Created [problems/biochemistry-problems/enzymes/allosteric_oxygen_binding.pgml](../problems/biochemistry-problems/enzymes/allosteric_oxygen_binding.pgml), a 3-part progressive WeBWorK PGML problem about allosteric regulation of a tetrameric O2-binding protein. Part 1 uses the sequential (KNF) model with a textbook-style diagram: five separate 2x2 subunit blocks connected by equilibrium arrows (K1-K4), built with inline HTML flexbox divs. Square cells (low-affinity, border-radius 4px) transition through partially rounded cells (14px) to fully round cells (50%) as O2 binds, with randomized subunit flip order via Fisher-Yates shuffle. Part 2 introduces the concerted (MWC) model with wild-type (black, sigmoidal, n from [3,4]) and mutant (blue, hyperbolic, n=1) binding curves -- the mutant stabilizes R, producing higher affinity and reduced cooperativity. Part 3 adds allosteric regulation with three curves (wild-type black, activator green `#00775f`, inhibitor red `#bd3c00`) and asks about left-shift or right-shift interpretation. X-axis uses pO2 (partial pressure). Three color pair palettes for subunit cells randomized per seed. All answer choices shuffled via Fisher-Yates. Descriptive model names (sequential, concerted) used as primary labels with abbreviations (KNF, MWC) in parentheses at first mention only.
+
 ## 2026-03-18
 
 ### Additions and New Features
