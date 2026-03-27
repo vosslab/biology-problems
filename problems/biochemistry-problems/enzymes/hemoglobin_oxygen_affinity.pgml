@@ -1,0 +1,256 @@
+## TITLE('Biochemistry: Hemoglobin Oxygen Binding Affinity Factors')
+## DESCRIPTION
+## Algorithmic MC question that randomly selects one physiological
+## condition or molecular state and asks how it affects hemoglobin
+## oxygen binding affinity. Covers the Bohr effect, cooperativity,
+## 2,3-BPG, T/R states, temperature, pH, CO2, and fetal hemoglobin.
+## ENDDESCRIPTION
+## KEYWORDS('hemoglobin','oxygen affinity','Bohr effect','cooperativity','2,3-BPG')
+## DBsubject('Biochemistry')
+## DBchapter('Enzymes')
+## DBsection('Allosteric Regulation')
+## Level(2)
+## Date('2026-03-27')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# https://bsky.app/profile/neilvosslab.bsky.social
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	'PGstandard.pl',
+	'MathObjects.pl',
+	'PGML.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl',
+);
+
+$showPartialCorrectAnswers = 0;
+
+# ----------------------------
+# 2) Setup
+# ----------------------------
+
+# ----------------------------
+# 2a) Deterministic local RNG
+# ----------------------------
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+
+# ----------------------------
+# 2b) Question pool: [condition_text, answer_key, explanation]
+# ----------------------------
+# answer_key values:
+#   'increase' = Increases affinity for oxygen (O2) binding
+#   'decrease' = Decreases affinity for oxygen (O2) binding
+#   'no_change' = Would show no major change in oxygen binding affinity
+
+my @question_pool = (
+	# --- Temperature effects ---
+	[
+		"Cooler temperatures of the lungs",
+		'increase',
+		"Cooler temperatures stabilize the R (relaxed) state of hemoglobin, "
+		. "which has a higher affinity for oxygen. In the lungs, the cooler "
+		. "environment promotes oxygen loading onto hemoglobin.",
+	],
+	[
+		"Warmer temperatures of the bodily tissues",
+		'decrease',
+		"Warmer temperatures favor the T (tense) state and destabilize "
+		. "oxygen-hemoglobin bonds. This promotes oxygen unloading "
+		. "in metabolically active tissues that generate heat.",
+	],
+	# --- 2,3-BPG effects ---
+	[
+		"The presence of 2,3-bisphosphoglycerate (2,3-BPG)",
+		'decrease',
+		"2,3-BPG binds in the central cavity of deoxyhemoglobin (T state), "
+		. "stabilizing it and reducing oxygen affinity. This promotes "
+		. "oxygen release to the tissues.",
+	],
+	[
+		"The presence of 2,3-bisphosphoglycerate (2,3-BPG) on the "
+		. "<b>fetal hemoglobin</b> protein when compared to its "
+		. "effect on adult hemoglobin",
+		'no_change',
+		"Fetal hemoglobin (HbF) has gamma subunits that lack the positively "
+		. "charged residues in the central cavity needed to bind 2,3-BPG. "
+		. "As a result, 2,3-BPG has little effect on fetal hemoglobin oxygen "
+		. "affinity, unlike its strong effect on adult hemoglobin (HbA).",
+	],
+	# --- CO2 effects (Bohr effect) ---
+	[
+		"An increase in the partial pressure of carbon dioxide (CO<sub>2</sub>)",
+		'decrease',
+		"Increased CO<sub>2</sub> forms carbamate groups on hemoglobin "
+		. "N-termini and lowers pH through carbonic acid formation. Both "
+		. "effects stabilize the T state and decrease oxygen affinity "
+		. "(the Bohr effect).",
+	],
+	[
+		"A decrease in the partial pressure of carbon dioxide (CO<sub>2</sub>)",
+		'increase',
+		"Decreased CO<sub>2</sub> reduces carbamate formation and raises "
+		. "pH, both of which favor the R state. This increases oxygen "
+		. "affinity, promoting oxygen loading in the lungs.",
+	],
+	# --- T and R states ---
+	[
+		"The R state",
+		'increase',
+		"The R (relaxed) state is the high-affinity conformation of "
+		. "hemoglobin. When hemoglobin is in the R state, it binds "
+		. "oxygen more readily.",
+	],
+	[
+		"The T state",
+		'decrease',
+		"The T (tense) state is the low-affinity conformation of "
+		. "hemoglobin. When hemoglobin is in the T state, it has "
+		. "reduced affinity for oxygen and tends to release it.",
+	],
+	# --- Cooperativity effects ---
+	[
+		"The binding of oxygen at two other subunits",
+		'increase',
+		"Oxygen binding is cooperative in hemoglobin. When two subunits "
+		. "already have oxygen bound, the conformational shift toward the "
+		. "R state increases the affinity of the remaining subunits for "
+		. "oxygen (positive cooperativity).",
+	],
+	[
+		"Having three subunits already bound to oxygen (O<sub>2</sub>)",
+		'increase',
+		"With three of four subunits already oxygenated, hemoglobin is "
+		. "strongly shifted toward the R state. The last subunit has the "
+		. "highest affinity for oxygen due to maximal cooperative effect.",
+	],
+	# --- pH effects (Bohr effect) ---
+	[
+		"A lower pH of 7.2",
+		'decrease',
+		"Lower pH means more protons (H<sup>+</sup>), which protonate "
+		. "key histidine residues and stabilize the T state. This is the "
+		. "Bohr effect: acidic conditions decrease oxygen affinity, "
+		. "promoting oxygen release in metabolically active tissues.",
+	],
+	[
+		"A higher pH of 7.6",
+		'increase',
+		"Higher pH means fewer protons (H<sup>+</sup>), which "
+		. "deprotonates histidine residues and favors the R state. "
+		. "This increases oxygen affinity, as seen in the lungs "
+		. "where CO<sub>2</sub> is expelled and pH rises.",
+	],
+	# --- H+ concentration effects ---
+	[
+		"A lower concentration of hydrogen ions [H<sup>+</sup>]",
+		'increase',
+		"Lower [H<sup>+</sup>] corresponds to higher pH. Fewer protons "
+		. "favor the R state, increasing oxygen affinity. This is the "
+		. "inverse of the Bohr effect.",
+	],
+	[
+		"A higher concentration of hydrogen ions [H<sup>+</sup>]",
+		'decrease',
+		"Higher [H<sup>+</sup>] corresponds to lower pH. More protons "
+		. "stabilize the T state through the Bohr effect, decreasing "
+		. "oxygen affinity and promoting oxygen release.",
+	],
+);
+
+# ----------------------------
+# 2c) Select one random question from the pool
+# ----------------------------
+my $num_questions = scalar(@question_pool);
+my $q_idx = $local_random->random(0, $num_questions - 1, 1);
+my $condition_text = $question_pool[$q_idx][0];
+my $answer_key = $question_pool[$q_idx][1];
+my $explanation = $question_pool[$q_idx][2];
+
+# ----------------------------
+# 2d) Map answer key to display text
+# ----------------------------
+# color-coded answer choices for visual distinction
+# green = increases, red-orange = decreases, gray = no change
+my $color_increase = '#1a7a1a';
+my $color_decrease = '#c93030';
+my $color_no_change = '#555555';
+
+my $choice_increase = "<span style='color:${color_increase}; font-weight:700;'>"
+	. "Increases</span> affinity for oxygen (O<sub>2</sub>) binding";
+my $choice_decrease = "<span style='color:${color_decrease}; font-weight:700;'>"
+	. "Decreases</span> affinity for oxygen (O<sub>2</sub>) binding";
+my $choice_no_change = "Would show <span style='color:${color_no_change}; "
+	. "font-weight:700;'>no major change</span> in oxygen binding affinity";
+
+my $correct_text;
+if ($answer_key eq 'increase') {
+	$correct_text = $choice_increase;
+} elsif ($answer_key eq 'decrease') {
+	$correct_text = $choice_decrease;
+} else {
+	$correct_text = $choice_no_change;
+}
+
+# ----------------------------
+# 2e) Build RadioButtons
+# ----------------------------
+$radio = RadioButtons(
+	[
+		$choice_increase,
+		$choice_decrease,
+		$choice_no_change,
+	],
+	$correct_text,
+	labels        => 'ABC',
+	displayLabels => 1,
+	separator     => '<div style="margin-bottom: 0.5em;"></div>',
+);
+
+# ----------------------------
+# 2f) Emphasis HTML for the condition
+# ----------------------------
+# emphasized condition: dark blue, bold, slightly larger
+$condition_html = "<span style='font-weight:700; color:#1a3a6e; "
+	. "font-size:1.1em;'>${condition_text}</span>";
+
+# ----------------------------
+# 3) Statement (PGML)
+# ----------------------------
+BEGIN_PGML
+
+Hemoglobin is one of the most heavily modulated proteins in the body. Its oxygen binding affinity is regulated by multiple physiological factors that shift the balance between different conformational states of the protein.
+
+[$condition_html]* has this effect on the normal adult hemoglobin protein:
+
+[_]{$radio}
+
+END_PGML
+
+# ----------------------------
+# 4) Solution
+# ----------------------------
+BEGIN_PGML_SOLUTION
+[$explanation]*
+
+The three key concepts tested by this question are:
+
+1. *The Bohr effect:* Lower pH or higher CO2 decreases oxygen affinity (shifts the curve right). Higher pH or lower CO2 increases affinity (shifts left).
+
+2. *Cooperativity:* Oxygen binding at one subunit increases affinity at remaining subunits (positive cooperativity via the T-to-R state transition).
+
+3. *Allosteric regulators:* 2,3-BPG and temperature modulate the T/R equilibrium. 2,3-BPG stabilizes the T state. Cooler temperatures favor the R state; warmer temperatures favor the T state.
+END_PGML_SOLUTION
+
+ENDDOCUMENT();

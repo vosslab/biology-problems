@@ -1,0 +1,248 @@
+DOCUMENT();
+loadMacros("PGstandard.pl");
+
+TEXT(beginproblem());
+
+sub show { TEXT(shift . $BR); }
+
+# Complete macro list from PG versions 2.15 through 2.19 (207 unique files)
+my @macros = qw(
+  Alfredmacros.pl
+  algebraMacros.pl
+  alignedChoice.pl
+  answerComposition.pl
+  answerCustom.pl
+  answerDiscussion.pl
+  AnswerFormatHelp.pl
+  answerHints.pl
+  answerUtils.pl
+  answerVariableList.pl
+  AppletObjects.pl
+  bizarroArithmetic.pl
+  BrockPhysicsMacros.pl
+  CanvasObject.pl
+  choiceUtils.pl
+  CofIdaho_macros.pl
+  compoundProblem.pl
+  compoundProblem2.pl
+  compoundProblem5.pl
+  ConditionalHint.pl
+  contextABCD.pl
+  contextAlternateDecimal.pl
+  contextAlternateIntervals.pl
+  contextArbitraryString.pl
+  contextBaseN.pl
+  contextBoolean.pl
+  contextComplexExtras.pl
+  contextComplexJ.pl
+  contextCongruence.pl
+  contextCurrency.pl
+  contextFiniteSolutionSets.pl
+  contextForm.pl
+  contextFraction.pl
+  contextFunctionAssign.pl
+  contextInequalities.pl
+  contextInequalitiesAllowStrings.pl
+  contextInequalitySetBuilder.pl
+  contextInteger.pl
+  contextIntegerFunctions.pl
+  contextLeadingZero.pl
+  contextLimitedComplex.pl
+  contextLimitedFactor.pl
+  contextLimitedNumeric.pl
+  contextLimitedPoint.pl
+  contextLimitedPolynomial.pl
+  contextLimitedPowers.pl
+  contextLimitedRadical.pl
+  contextLimitedRadicalComplex.pl
+  contextLimitedVector.pl
+  contextMatrixExtras.pl
+  contextOrdering.pl
+  contextPartition.pl
+  contextPercent.pl
+  contextPeriodic.pl
+  contextPermutation.pl
+  contextPermutationUBC.pl
+  contextPiecewiseFunction.pl
+  contextPolynomialFactors.pl
+  contextRationalExponent.pl
+  contextRationalFunction.pl
+  contextReaction.pl
+  contextRestrictedDomains.pl
+  contextScientificNotation.pl
+  contextString.pl
+  contextTF.pl
+  contextTrigDegrees.pl
+  contextTypeset.pl
+  customizeLaTeX.pl
+  Dartmouthmacros.pl
+  draggableProof.pl
+  draggableSubsets.pl
+  externalData.pl
+  extraAnswerEvaluators.pl
+  fixedPrecision.pl
+  freemanMacros.pl
+  Generic.pl
+  hhAdditionalMacros.pl
+  imageChoice.pl
+  interpMacros.pl
+  LinearProgramming.pl
+  littleneck.pl
+  LiveGraphics3D.pl
+  LiveGraphicsCylindricalPlot3D.pl
+  LiveGraphicsParametricCurve3D.pl
+  LiveGraphicsParametricSurface3D.pl
+  LiveGraphicsRectangularPlot3D.pl
+  LiveGraphicsVectorField2D.pl
+  LiveGraphicsVectorField3D.pl
+  MathObjects.pl
+  MatrixCheckers.pl
+  MatrixReduce.pl
+  MatrixUnimodular.pl
+  MatrixUnits.pl
+  MUHelp.pl
+  niceTables.pl
+  Parser.pl
+  parserAssignment.pl
+  parserAutoStrings.pl
+  parserCheckboxList.pl
+  parserCustomization.pl
+  parserDifferenceQuotient.pl
+  parserFormulaAnyVar.pl
+  parserFormulaUpToConstant.pl
+  parserFormulaWithUnits.pl
+  parserFunction.pl
+  parserFunctionPrime.pl
+  parserGraphTool.pl
+  parserImplicitEquation.pl
+  parserImplicitPlane.pl
+  parserLinearInequality.pl
+  parserLinearRelation.pl
+  parserMultiAnswer.pl
+  parserMultiPart.pl
+  parserMultipleChoice.pl
+  parserNumberWithUnits.pl
+  parserOneOf.pl
+  parserParametricLine.pl
+  parserParametricPlane.pl
+  parserPopUp.pl
+  parserPrime.pl
+  parserQuotedString.pl
+  parserRadioButtons.pl
+  parserRadioMultiAnswer.pl
+  parserRoot.pl
+  parserSolutionFor.pl
+  parserUtils.pl
+  parserVectorUtils.pl
+  parserWordCompletion.pl
+  PCCfactor.pl
+  PCCgraphMacros.pl
+  PCCmacros.pl
+  pccTables.pl
+  PeriodicRerandomization.pl
+  PG.pl
+  PG_CAPAmacros.pl
+  PG_module_list.pl
+  PGanalyzeGraph.pl
+  PGanswermacros.pl
+  PGasu.pl
+  PGauxiliaryFunctions.pl
+  PGbasicmacros.pl
+  PGchoicemacros.pl
+  PGcommonFunctions.pl
+  PGcomplexmacros.pl
+  PGcomplexmacros2.pl
+  PGcourse.pl
+  PGdiffeqmacros.pl
+  PGessaymacros.pl
+  PGfunctionevaluators.pl
+  PGgraders.pl
+  PGgraphgrid.pl
+  PGgraphmacros.pl
+  PGinfo.pl
+  PGlateximage.pl
+  PGmatrixmacros.pl
+  PGmiscevaluators.pl
+  PGML.pl
+  PGmorematrixmacros.pl
+  PGnauBinpacking.pl
+  PGnauGraphCatalog.pl
+  PGnauGraphics.pl
+  PGnauGraphtheory.pl
+  PGnauScheduling.pl
+  PGnauSet.pl
+  PGnauStats.pl
+  PGnumericalmacros.pl
+  PGnumericevaluators.pl
+  PGpolynomialmacros.pl
+  PGsequentialmacros.pl
+  PGstandard.pl
+  PGstatisticsGraphMacros.pl
+  PGstatisticsmacros.pl
+  PGstringevaluators.pl
+  PGtextevaluators.pl
+  PGtikz.pl
+  PGunion.pl
+  plotly3D.pl
+  problemPanic.pl
+  problemPreserveAnswers.pl
+  problemRandomize.pl
+  quickMatrixEntry.pl
+  randomPerson.pl
+  regrfnsPG.pl
+  RserveClient.pl
+  sage.pl
+  scaffold.pl
+  SI_property_tables.pl
+  SolveLinearEquationPCC.pl
+  source.pl
+  specialTrigValues.pl
+  SystemsOfLinearEquationsProblemPCC.pl
+  tableau.pl
+  tableau_main_subroutines.pl
+  text2PG.pl
+  unionImage.pl
+  unionInclude.pl
+  unionLists.pl
+  unionMacros.pl
+  unionMessages.pl
+  unionProblem.pl
+  unionTables.pl
+  unionUtils.pl
+  unorderedAnswer.pl
+  Value.pl
+  VectorField2D.pl
+  VectorListCheckers.pl
+  weightedGrader.pl
+);
+
+my @ok;
+my @fail;
+my $count = 0;
+
+# test each macro
+my $total = scalar(@macros);
+show("Testing $total macros from PG 2.15-2.19...");
+show("");
+
+# cannot use foreach in Safe compartment, use C-style loop
+my $i = 0;
+while ($i < scalar(@macros)) {
+  my $m = $macros[$i];
+  if (eval { loadMacros($m); 1 }) {
+    push @ok, $m;
+  } else {
+    push @fail, $m;
+  }
+  $i++;
+}
+
+show("=== LOADABLE MACROS: " . scalar(@ok) . " ===");
+$i = 0;
+while ($i < scalar(@ok)) { show($ok[$i]); $i++; }
+show("");
+show("=== FAILED MACROS: " . scalar(@fail) . " ===");
+$i = 0;
+while ($i < scalar(@fail)) { show($fail[$i]); $i++; }
+
+ENDDOCUMENT();

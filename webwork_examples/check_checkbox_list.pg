@@ -1,0 +1,44 @@
+DOCUMENT();
+loadMacros("PGstandard.pl");
+
+TEXT(beginproblem());
+
+sub yesno { $_[0] ? "yes" : "no" }
+
+# --- Test 1: Can we load parserCheckboxList.pl? ---
+my $before = defined(&main::CheckboxList) ? 1 : 0;
+my $ok = eval { loadMacros("parserCheckboxList.pl"); 1 };
+my $err = $@ // "";
+$err =~ s/\s+/ /g;
+my $after = defined(&main::CheckboxList) ? 1 : 0;
+
+TEXT("parserCheckboxList.pl$BR");
+TEXT("  loadMacros: " . ($ok ? "OK" : "FAIL $err") . $BR);
+TEXT("  CheckboxList symbol before: " . yesno($before) . $BR);
+TEXT("  CheckboxList symbol after:  " . yesno($after) . $BR);
+TEXT($BR);
+
+# --- Test 2: Can we construct a CheckboxList object? ---
+if ($after) {
+  my $obj = eval { CheckboxList([["Alpha", "Bravo", "Charlie"]], [0, 2]) };
+  my $cerr = $@ // "";
+  $cerr =~ s/\s+/ /g;
+  TEXT("CheckboxList constructor: " . (defined($obj) ? "OK (ref=" . ref($obj) . ")" : "FAIL $cerr") . $BR);
+  if (defined($obj)) {
+    my $html = eval { $obj->checks() };
+    TEXT("  checks() output: " . (defined($html) ? "OK (" . length($html) . " chars)" : "FAIL") . $BR);
+  }
+} else {
+  TEXT("CheckboxList constructor: SKIPPED (symbol not available)$BR");
+}
+TEXT($BR);
+
+# --- Test 3: Also check RadioButtons for comparison ---
+my $rb_before = defined(&main::RadioButtons) ? 1 : 0;
+my $rb_ok = eval { loadMacros("parserRadioButtons.pl"); 1 };
+my $rb_after = defined(&main::RadioButtons) ? 1 : 0;
+TEXT("parserRadioButtons.pl (comparison)$BR");
+TEXT("  loadMacros: " . ($rb_ok ? "OK" : "FAIL") . $BR);
+TEXT("  RadioButtons symbol after: " . yesno($rb_after) . $BR);
+
+ENDDOCUMENT();

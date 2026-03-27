@@ -1,0 +1,271 @@
+## TITLE('Biochemistry: Predict Chymotrypsin Cleavage Site in a Peptide')
+## DESCRIPTION
+## Students are given a color-coded peptide sequence and must predict which
+## peptide bond chymotrypsin will cleave.  Chymotrypsin cuts after large
+## hydrophobic residues (Phe, Trp, Tyr, Leu).  One cleavable residue is
+## placed at a random internal position among non-hydrophobic filler residues.
+## ENDDESCRIPTION
+## KEYWORDS('chymotrypsin','protease','peptide bond','enzyme specificity','hydrophobic')
+## DBsubject('Biochemistry')
+## DBchapter('Enzymes')
+## DBsection('Specificity')
+## Level(3)
+## Date('2026-03-27')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	'PGstandard.pl',
+	'MathObjects.pl',
+	'PGML.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl',
+);
+
+$showPartialCorrectAnswers = 0;
+
+# ----------------------------
+# 2) Setup
+# ----------------------------
+
+# ----------------------------
+# 2a) Randomization
+# ----------------------------
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+
+# Peptide length between 7 and 11 residues
+my $peptide_length = $local_random->random(7, 11, 1);
+
+# Number of answer choices
+my $num_choices = 5;
+
+# ----------------------------
+# 2b) Amino acid data
+# ----------------------------
+
+# Chymotrypsin cleaves after large hydrophobic amino acids
+my @cleavage_aminos = ('Phe', 'Trp', 'Tyr', 'Leu');
+
+# Non-hydrophobic filler residues (safe distractors)
+my @regular_aminos = ('Gly', 'Ala', 'Asn', 'Ser', 'Thr', 'Gln', 'Glu', 'Asp', 'Cys', 'Arg', 'Lys');
+
+# Color map for amino acid display (CPK-inspired)
+my %aa_color = (
+	'Ala' => '#666666', 'Arg' => '#0039e6', 'Asn' => '#00b3b3',
+	'Asp' => '#e60000', 'Cys' => '#b3b300', 'Gln' => '#00b3b3',
+	'Glu' => '#e60000', 'Gly' => '#707070', 'His' => '#8282d2',
+	'Ile' => '#009900', 'Leu' => '#009900', 'Lys' => '#0039e6',
+	'Met' => '#b3b300', 'Phe' => '#004d99', 'Pro' => '#cc0066',
+	'Ser' => '#e69100', 'Thr' => '#e69100', 'Trp' => '#7b12a1',
+	'Tyr' => '#004d99', 'Val' => '#009900',
+);
+
+# ----------------------------
+# 2c) Generate peptide sequence
+# ----------------------------
+
+# Pick the cleavable amino acid
+my $cleavage_idx = $local_random->random(0, $#cleavage_aminos, 1);
+my $cleavage_aa = $cleavage_aminos[$cleavage_idx];
+
+# Choose an internal position for the cleavage site (not first two or last two)
+my $cleavage_pos = $local_random->random(2, $peptide_length - 3, 1);
+
+# Build the peptide with constraints: no adjacent duplicates, no repeated dipeptides
+my @peptide = ();
+my %used_pairs = ();
+my $prev_aa = '';
+
+for my $pos (0 .. $peptide_length - 1) {
+	if ($pos == $cleavage_pos) {
+		# Place the cleavable residue
+		push @peptide, $cleavage_aa;
+		if ($prev_aa ne '') {
+			$used_pairs{"${prev_aa}_${cleavage_aa}"} = 1;
+		}
+		$prev_aa = $cleavage_aa;
+	} else {
+		# Filter valid choices: no adjacent duplicate, no repeated dipeptide
+		my @valid = ();
+		for my $aa (@regular_aminos) {
+			next if $aa eq $prev_aa;
+			if ($prev_aa ne '') {
+				next if exists $used_pairs{"${prev_aa}_${aa}"};
+			}
+			push @valid, $aa;
+		}
+		# Pick a random valid amino acid
+		my $pick_idx = $local_random->random(0, $#valid, 1);
+		my $picked = $valid[$pick_idx];
+		if ($prev_aa ne '') {
+			$used_pairs{"${prev_aa}_${picked}"} = 1;
+		}
+		push @peptide, $picked;
+		$prev_aa = $picked;
+	}
+}
+
+# ----------------------------
+# 2d) Build color-coded peptide HTML display
+# ----------------------------
+
+# Format a single amino acid as a colored bold span
+sub aa_html {
+	my ($aa) = @_;
+	my $c = $aa_color{$aa} || '#000000';
+	my $html = "<span style='color:${c}; font-weight:700;'>${aa}</span>";
+	return $html;
+}
+
+# Build the full peptide string with termini and em-dash separators
+my @aa_html_list = ();
+for my $aa (@peptide) {
+	push @aa_html_list, aa_html($aa);
+}
+$peptide_display = "NH<sub>3</sub><sup>+</sup>&mdash;"
+	. join("&mdash;", @aa_html_list)
+	. "&mdash;COO<sup>&ndash;</sup>";
+
+# ----------------------------
+# 2e) Build answer choices
+# ----------------------------
+
+# Format a peptide bond between positions i and i+1
+sub bond_html {
+	my ($i) = @_;
+	my $aa1 = $peptide[$i];
+	my $aa2 = $peptide[$i + 1];
+	my $html = "<strong>" . aa_html($aa1) . "&mdash;" . aa_html($aa2) . "</strong>";
+	return $html;
+}
+
+# Correct answer: bond after the cleavable residue
+$answer_text = bond_html($cleavage_pos);
+
+# Build the list of distractor indices (all bonds except the correct one)
+my @distractor_indices = ();
+for my $i (0 .. $peptide_length - 2) {
+	next if $i == $cleavage_pos;
+	push @distractor_indices, $i;
+}
+
+# Fisher-Yates shuffle the distractor indices
+for my $i (reverse 1 .. $#distractor_indices) {
+	my $j = $local_random->random(0, $i, 1);
+	@distractor_indices[$i, $j] = @distractor_indices[$j, $i];
+}
+
+# Take the first (num_choices - 1) distractors, always include the bond before correct
+my @choice_texts = ($answer_text);
+
+# Add the bond just before the correct one as a plausible distractor
+if ($cleavage_pos > 0) {
+	push @choice_texts, bond_html($cleavage_pos - 1);
+	# Remove that index from the distractor pool
+	@distractor_indices = grep { $_ != $cleavage_pos - 1 } @distractor_indices;
+}
+
+# Fill remaining choices from shuffled distractors
+my $remaining = $num_choices - scalar(@choice_texts);
+for my $k (0 .. $remaining - 1) {
+	push @choice_texts, bond_html($distractor_indices[$k]);
+}
+
+# Fisher-Yates shuffle the final choices
+for my $i (reverse 1 .. $#choice_texts) {
+	my $j = $local_random->random(0, $i, 1);
+	@choice_texts[$i, $j] = @choice_texts[$j, $i];
+}
+
+# ----------------------------
+# 2f) Build RadioButtons
+# ----------------------------
+$radio = RadioButtons(
+	[[@choice_texts]],
+	$answer_text,
+	separator => '<br/>',
+	labels => 'ABC',
+	displayLabels => 1,
+);
+
+# ----------------------------
+# 2g) Solution explanation
+# ----------------------------
+$cleavage_aa_html = aa_html($cleavage_aa);
+
+# Build the common wrong-answer bond (the one just before the cleavage site)
+$wrong_bond_html = bond_html($cleavage_pos - 1);
+$prev_aa_html = aa_html($peptide[$cleavage_pos - 1]);
+
+# ----------------------------
+# 3) Statement (PGML)
+# ----------------------------
+BEGIN_PGML
+
+*Predict Chymotrypsin Cleavage Site*
+
+Your professor provides your group with a peptide that will be the focus
+of your next enzymatic digestion experiment. Before performing the reaction,
+you are asked to predict where cleavage is most likely to occur under the
+planned conditions.
+
+The peptide sequence is:
+
+[$peptide_display]*
+
+You will be incubating the peptide with *chymotrypsin* in a buffered solution
+at physiological pH. Following digestion, you will analyze the products using
+mass spectrometry.
+
+*Which peptide bond will most likely be cleaved during the incubation?*
+
+[_]{$radio}
+
+END_PGML
+
+# ----------------------------
+# 4) Hint
+# ----------------------------
+BEGIN_PGML_HINT
+Chymotrypsin is a serine protease that preferentially recognizes amino acids
+with large hydrophobic side chains. Pay attention to which side of the
+recognized residue the enzyme cuts on.
+END_PGML_HINT
+
+# ----------------------------
+# 5) Solution
+# ----------------------------
+BEGIN_PGML_SOLUTION
+Chymotrypsin preferentially cleaves peptide bonds AFTER large hydrophobic
+amino acid residues: phenylalanine (Phe), tryptophan (Trp), tyrosine (Tyr),
+and leucine (Leu).
+
+In this peptide, the cleavable residue is [$cleavage_aa_html]* at position
+[$cleavage_pos + 1] (counting from the N-terminus).
+
+The correct answer is the bond immediately AFTER [$cleavage_aa_html]*:
+[$answer_text]*
+
+A common mistake is to choose [$wrong_bond_html]* instead. That bond is
+the one just *before* [$cleavage_aa_html]* (between [$prev_aa_html]* and
+[$cleavage_aa_html]*). Chymotrypsin recognizes [$cleavage_aa_html]* and
+cuts on the C-terminal side, meaning the bond between [$cleavage_aa_html]*
+and the *next* residue in the sequence, not the bond leading into it.
+
+The other residues in the peptide are not recognized by chymotrypsin because
+they do not have large hydrophobic side chains.
+END_PGML_SOLUTION
+
+ENDDOCUMENT();

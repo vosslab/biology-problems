@@ -1,0 +1,187 @@
+## TITLE('Biochemistry: Identify Allosteric Enzyme Model by Description')
+## DESCRIPTION
+## Algorithmic MC question that randomly presents a description of either
+## the concerted (MWC) or sequential (KNF) allosteric model and asks
+## students to identify which model is being described. Covers the key
+## distinction: concerted requires all subunits in the same state while
+## sequential allows mixed T/R states. Wrong answers are drawn from a
+## larger distractor pool with fake abbreviations and vary per seed.
+## ENDDESCRIPTION
+## KEYWORDS('allosteric','concerted model','sequential model','MWC','KNF')
+## DBsubject('Biochemistry')
+## DBchapter('Enzymes')
+## DBsection('Allosteric Regulation')
+## Level(1)
+## Date('2026-03-27')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# https://bsky.app/profile/neilvosslab.bsky.social
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	'PGstandard.pl',
+	'MathObjects.pl',
+	'PGML.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl',
+);
+
+$showPartialCorrectAnswers = 0;
+
+# ----------------------------
+# 2) Setup
+# ----------------------------
+
+# ----------------------------
+# 2a) Deterministic local RNG
+# ----------------------------
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+
+# ----------------------------
+# 2b) Question pool: [question_html, correct_answer, explanation]
+# ----------------------------
+# Each entry builds a full sentence with an HTML blank for the model name.
+# Two variants testing the concerted vs sequential model distinction.
+
+# emphasized key phrases: dark blue bold for critical distinction
+my $emph_style = "font-weight:700; color:#1a3a6e; font-size:1.05em;";
+
+# blank-line style for the missing model name
+my $blank = "<span style='border-bottom:2px solid #333; "
+	. "padding:0 2em;'>&nbsp;</span>";
+
+my @question_pool = (
+	[
+		"The ${blank} model states that "
+		. "<span style='${emph_style}'>all subunits</span> "
+		. "in an allosteric enzyme must be in either the T or the R state; "
+		. "there <span style='${emph_style}'>cannot be hybrids</span>.",
+		'concerted (MWC)',
+		"The concerted (MWC) model, proposed by Monod, Wyman, and Changeux, "
+		. "requires that all subunits of an allosteric protein undergo the "
+		. "conformational change simultaneously. The entire oligomer exists "
+		. "in either the T (tense) state or the R (relaxed) state, with no "
+		. "mixed intermediates allowed.",
+	],
+	[
+		"The ${blank} model allows a "
+		. "<span style='${emph_style}'>mixture of states</span> "
+		. "in an allosteric enzyme and "
+		. "<span style='${emph_style}'>each individual subunit</span> "
+		. "can be in either the T or the R state.",
+		'sequential (KNF)',
+		"The sequential (KNF) model, proposed by Koshland, Nemethy, and "
+		. "Filmer, allows each subunit to change conformation independently. "
+		. "Ligand binding to one subunit induces a conformational change in "
+		. "that subunit, which then influences neighboring subunits. This "
+		. "permits hybrid states where some subunits are in T and others "
+		. "are in R.",
+	],
+);
+
+# ----------------------------
+# 2c) Select one random question from the pool
+# ----------------------------
+my $q_idx = $local_random->random(0, $#question_pool, 1);
+# package-scoped so PGML can access them
+$question_html = $question_pool[$q_idx][0];
+$correct_answer = $question_pool[$q_idx][1];
+$explanation = $question_pool[$q_idx][2];
+
+# ----------------------------
+# 2d) Build answer choices with varied distractors
+# ----------------------------
+# The other model is always included as a strong distractor.
+# Additional wrong answers drawn from a larger pool with fake abbreviations.
+
+my $other_model;
+if ($correct_answer eq 'concerted (MWC)') {
+	$other_model = 'sequential (KNF)';
+} else {
+	$other_model = 'concerted (MWC)';
+}
+
+# Pool of plausible wrong answers with fake abbreviations in parentheses
+# Abbreviations vary in length (2-4 letters) for realism
+my @distractor_pool = (
+	'induced fit (IF)',
+	'cooperative (COOP)',
+	'equilibrium (EQ)',
+	'Michaelis-Menten (MM)',
+	'lock and key (LK)',
+	'competitive (CI)',
+	'allosteric (ALLO)',
+	'Hill (HC)',
+);
+
+# Fisher-Yates shuffle the distractor pool
+for my $i (reverse 1 .. $#distractor_pool) {
+	my $j = $local_random->random(0, $i, 1);
+	@distractor_pool[$i, $j] = @distractor_pool[$j, $i];
+}
+
+# Take 3 random distractors from the shuffled pool
+my @wrong_choices = ($other_model, @distractor_pool[0..2]);
+
+# Combine correct answer with wrong choices
+my @all_choices = ($correct_answer, @wrong_choices);
+
+# Fisher-Yates shuffle the final choice list
+for my $i (reverse 1 .. $#all_choices) {
+	my $j = $local_random->random(0, $i, 1);
+	@all_choices[$i, $j] = @all_choices[$j, $i];
+}
+
+# ----------------------------
+# 2e) Build RadioButtons
+# ----------------------------
+$radio = RadioButtons(
+	[[@all_choices]],
+	$correct_answer,
+	labels        => 'ABC',
+	displayLabels => 1,
+	separator     => '<div style="margin-bottom: 0.3em;"></div>',
+);
+
+# ----------------------------
+# 3) Statement (PGML)
+# ----------------------------
+BEGIN_PGML
+
+Allosteric enzymes are regulated by conformational changes between the T (tense, low-affinity) and R (relaxed, high-affinity) states. Two classical models describe how these transitions occur across subunits.
+
+[$question_html]*
+
+[_]{$radio}
+
+END_PGML
+
+# ----------------------------
+# 4) Solution
+# ----------------------------
+BEGIN_PGML_SOLUTION
+The correct answer is [$correct_answer].
+
+[$explanation]*
+
+The two models differ in a key way:
+
+1. Concerted (MWC) model: All subunits switch states together. The protein is either all-T or all-R with no hybrids.
+
+2. Sequential (KNF) model: Each subunit can change state independently upon ligand binding, allowing mixed T/R conformations.
+
+Common distractors: "induced fit" describes substrate-induced changes in enzyme shape at the active site (not allosteric subunit transitions). "Lock and key" is the rigid active-site model. "Michaelis-Menten" describes simple enzyme kinetics without cooperativity. "Cooperative" describes binding behavior, not a specific model. "Hill" refers to the Hill equation for cooperativity measurement. The abbreviations on the wrong answers are fictional.
+END_PGML_SOLUTION
+
+ENDDOCUMENT();
