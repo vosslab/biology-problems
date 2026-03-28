@@ -1,0 +1,237 @@
+## TITLE('Biochemistry: Classify Haworth Projection - Furanose')
+## DESCRIPTION
+## Students view a Haworth projection of a randomly selected furanose sugar
+## (aldopentose or ketohexose) and classify it along five dimensions:
+## carbon count, aldose/ketose, D/L configuration, ring type, and anomeric
+## configuration. Each dimension is a separate RadioButtons part.
+## ENDDESCRIPTION
+## KEYWORDS('carbohydrate','Haworth','furanose','classification','sugar')
+## DBsubject('Biochemistry')
+## DBchapter('Carbohydrates')
+## DBsection('Classification')
+## Level(2)
+## Date('2026-03-27')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+loadMacros(
+	'PGstandard.pl',
+	'PGML.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl',
+);
+
+$showPartialCorrectAnswers = 0;
+
+# ----------------------------
+# SVG helper subs
+# ----------------------------
+
+sub svg_line {
+	my ($x1, $y1, $x2, $y2) = @_;
+	return '<line x1="' . $x1 . '" y1="' . $y1
+		. '" x2="' . $x2 . '" y2="' . $y2
+		. '" stroke-width="1.2" stroke="#000" stroke-linecap="round"/>';
+}
+
+sub svg_text {
+	my ($x, $y, $anchor, $size, $content) = @_;
+	return '<text x="' . $x . '" y="' . $y
+		. '" font-family="sans-serif" font-size="' . $size
+		. '" text-anchor="' . $anchor . '" fill="#000">'
+		. $content . '</text>';
+}
+
+# add a single OH substituent at a position
+sub add_oh {
+	my ($goes_down,
+		$ld1, $ld2, $ld3, $ld4, $td1, $td2, $td3, $td4, $td5,
+		$lu1, $lu2, $lu3, $lu4, $tu1, $tu2, $tu3, $tu4, $tu5) = @_;
+	my $out = '';
+	if ($goes_down) {
+		$out .= svg_line($ld1, $ld2, $ld3, $ld4);
+		$out .= svg_text($td1, $td2, $td3, $td4, $td5);
+	} else {
+		$out .= svg_line($lu1, $lu2, $lu3, $lu4);
+		$out .= svg_text($tu1, $tu2, $tu3, $tu4, $tu5);
+	}
+	return $out;
+}
+
+sub color_span {
+	my ($color, $text) = @_;
+	return "<span style='color:$color;'>$text</span>";
+}
+
+sub make_rb {
+	my ($color, $choices_ref, $correct_text) = @_;
+	my @colored = map { color_span($color, $_) } @$choices_ref;
+	my $correct = color_span($color, $correct_text);
+	return RadioButtons([@colored], $correct,
+		labels    => 'ABC',
+		separator => '<div style="margin-bottom: 0.3em;"></div>',
+	);
+}
+
+# ----------------------------
+# Sugar data
+# ----------------------------
+%aldo_sugars = (
+	'ribose' => 'RR', 'arabinose' => 'LR', 'xylose' => 'RL', 'lyxose' => 'LL',
+);
+%keto_sugars = (
+	'psicose' => 'LL', 'fructose' => 'LR', 'sorbose' => 'RL', 'tagatose' => 'RR',
+);
+@aldo_names = ('arabinose', 'lyxose', 'ribose', 'xylose');
+@keto_names = ('fructose', 'psicose', 'sorbose', 'tagatose');
+
+# ----------------------------
+# Randomization
+# ----------------------------
+$is_ketose = random(0, 1, 1);
+$sugar_base = $is_ketose ? list_random(@keto_names) : list_random(@aldo_names);
+$is_L = random(0, 1, 1);
+$is_beta = random(0, 1, 1);
+
+$pattern = $is_ketose ? $keto_sugars{$sugar_base} : $aldo_sugars{$sugar_base};
+$pattern =~ tr/RL/LR/ if $is_L;
+@chirals = split('', $pattern);
+
+$config_letter = $is_L ? 'L' : 'D';
+$anomer_name = $is_beta ? 'beta' : 'alpha';
+$full_name = $config_letter . '-' . $sugar_base;
+$num_carbons = $is_ketose ? 6 : 5;
+
+$anom_oh_down = ((!$is_L && !$is_beta) || ($is_L && $is_beta)) ? 1 : 0;
+$ch2oh_up = $is_L ? 0 : 1;
+
+# ----------------------------
+# Build SVG (furanose ring skeleton)
+# ----------------------------
+$haworth_svg = '<svg xmlns="http://www.w3.org/2000/svg" version="1.0" width="570" height="285" viewBox="-80.7 -45 190 95">';
+$haworth_svg .= '<g>';
+$haworth_svg .= '<path d="M -29.587 -7.493 L -17.167 17.43 A 1.125 1.125 0 0 0 -15.602 17.905 L -13.763 16.854 A 1.125 1.125 0 0 0 -13.378 15.265 L -13.378 15.265 L -28.545 -8.089 Z" fill="#000" stroke="none"/>';
+$haworth_svg .= '<rect x="-14.683" y="15.13" width="29.366" height="4.5" rx="2.25" ry="2.25" fill="#000" stroke="none"/>';
+$haworth_svg .= '<path d="M 28.545 -8.089 L 13.378 15.265 A 1.125 1.125 0 0 0 13.763 16.854 L 15.602 17.905 A 1.125 1.125 0 0 0 17.167 17.43 L 17.167 17.43 L 29.587 -7.493 Z" fill="#000" stroke="none"/>';
+$haworth_svg .= '<polygon points="17.675,-13.018 17.227,-11.904 5.612,-16.574 6.059,-17.688" fill="#8b0000" stroke="none"/>';
+$haworth_svg .= '<polygon points="29.29,-8.348 28.842,-7.234 17.227,-11.904 17.675,-13.018" fill="#000" stroke="none"/>';
+$haworth_svg .= '<polygon points="-6.059,-17.688 -5.612,-16.574 -17.227,-11.904 -17.675,-13.018" fill="#8b0000" stroke="none"/>';
+$haworth_svg .= '<polygon points="-17.675,-13.018 -17.227,-11.904 -28.842,-7.234 -29.29,-8.348" fill="#000" stroke="none"/>';
+$haworth_svg .= '<circle cx="-29.066" cy="-7.791" r="0.6" fill="#000" stroke="none"/>';
+$haworth_svg .= '<circle cx="29.066" cy="-7.791" r="0.6" fill="#000" stroke="none"/>';
+$haworth_svg .= '<text x="0" y="-15.277" font-family="sans-serif" font-size="12" text-anchor="middle" fill="#8b0000" font-weight="bold">O</text>';
+
+# right-side anomeric position
+if ($is_ketose) {
+	# ketohexose: two bonds at anomeric C2 (CH&#8322;OH + OH)
+	if ($anom_oh_down) {
+		$haworth_svg .= svg_line('29.066', '-7.791', '29.066', '-27.721');
+		$haworth_svg .= svg_text('24.402', '-29.437', 'start', '12', 'CH&#8322;OH');
+		$haworth_svg .= svg_line('29.066', '-7.791', '29.066', '3.663');
+		$haworth_svg .= svg_text('24.736', '13.959', 'start', '12', 'OH');
+	} else {
+		$haworth_svg .= svg_line('29.066', '-7.791', '29.066', '-27.721');
+		$haworth_svg .= svg_text('24.402', '-29.437', 'start', '12', 'OH');
+		$haworth_svg .= svg_line('29.066', '-7.791', '29.066', '3.663');
+		$haworth_svg .= svg_text('24.736', '13.959', 'start', '12', 'CH&#8322;OH');
+	}
+} else {
+	# aldopentose: single OH at anomeric C1
+	if ($anom_oh_down) {
+		$haworth_svg .= svg_line('29.066', '-7.791', '29.066', '6.093');
+		$haworth_svg .= svg_text('24.402', '16.509', 'start', '12', 'OH');
+	} else {
+		$haworth_svg .= svg_line('29.066', '-7.791', '29.066', '-20.775');
+		$haworth_svg .= svg_text('24.402', '-22.491', 'start', '12', 'OH');
+	}
+}
+
+# two middle chiral positions
+$haworth_svg .= add_oh($chirals[0] eq 'R',
+	'14.683','17.38','14.683','31.264', '10.019','41.68','start','12','OH',
+	'14.683','17.38','14.683','6.016',  '19.353','4.3','end','12','HO');
+$haworth_svg .= add_oh($chirals[1] eq 'R',
+	'-14.683','17.38','-14.683','31.264', '-10.013','41.68','end','12','HO',
+	'-14.683','17.38','-14.683','6.0',    '-18.88','4.3','start','10.8','OH');
+
+# left position: HOH&#8322;C/CH&#8322;OH
+if ($ch2oh_up) {
+	$haworth_svg .= svg_line('-29.066', '-7.791', '-29.066', '-27.841');
+	$haworth_svg .= svg_text('-24.73', '-29.437', 'end', '12', 'HOH&#8322;C');
+} else {
+	$haworth_svg .= svg_line('-29.066', '-7.791', '-29.066', '6.093');
+	$haworth_svg .= svg_text('-24.73', '16.509', 'end', '12', 'CH&#8322;OH');
+}
+
+$haworth_svg .= '</g></svg>';
+
+# ----------------------------
+# Correct answers and RadioButtons
+# ----------------------------
+$carbon_ans = ($num_carbons == 5) ? "pentose (5 carbons)" : "hexose (6 carbons)";
+$type_ans   = $is_ketose ? "ketose" : "aldose";
+$config_ans = $is_L ? "L-configuration" : "D-configuration";
+$ring_ans   = "furanose";
+$anomer_ans = $is_beta ? "&beta;-anomer" : "&alpha;-anomer";
+
+$rb1 = make_rb('#0000b3',
+	["triose (3 carbons)", "tetrose (4 carbons)", "pentose (5 carbons)",
+	 "hexose (6 carbons)", "septose (7 carbons)"], $carbon_ans);
+$rb2 = make_rb('#b34700', ["aldose", "ketose"], $type_ans);
+$rb3 = make_rb('#008000', ["D-configuration", "L-configuration"], $config_ans);
+$rb4 = make_rb('#b300b3', ["furanose", "pyranose"], $ring_ans);
+$rb5 = make_rb('#996633', ["&alpha;-anomer", "&beta;-anomer"], $anomer_ans);
+
+$q1 = "<b>Part 1.</b> How many carbon atoms does this monosaccharide contain?";
+$q2 = "<b>Part 2.</b> What type of sugar is this monosaccharide?";
+$q3 = "<b>Part 3.</b> What is the stereochemical configuration of this sugar?";
+$q4 = "<b>Part 4.</b> What type of ring structure is shown?";
+$q5 = "<b>Part 5.</b> What is the anomeric configuration at the anomeric carbon?";
+
+# ----------------------------
+# PGML
+# ----------------------------
+
+BEGIN_PGML
+
+The diagram below shows a *Haworth projection* of an unnamed monosaccharide.
+Carefully analyze the structure and answer all five classification questions.
+
+[$haworth_svg]*
+
+[$q1]*
+
+[_]{$rb1}
+
+[$q2]*
+
+[_]{$rb2}
+
+[$q3]*
+
+[_]{$rb3}
+
+[$q4]*
+
+[_]{$rb4}
+
+[$q5]*
+
+[_]{$rb5}
+
+END_PGML
+
+BEGIN_PGML_SOLUTION
+This sugar is [$anomer_name]-[$full_name] ([$carbon_ans], [$type_ans],
+[$config_ans], [$ring_ans], [$anomer_ans]).
+END_PGML_SOLUTION
+
+ENDDOCUMENT();
