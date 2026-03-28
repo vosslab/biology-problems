@@ -1,0 +1,570 @@
+## TITLE('Biochemistry: Negative Feedback Regulation in a Branched Pathway')
+## DESCRIPTION
+## Five-part progressive problem about negative feedback inhibition in a
+## branched metabolic pathway. The diagram shows a trunk with two branches
+## but no feedback arrows -- students must infer where feedback occurs.
+## Parts A and B use checkboxes (select all that apply) to identify the
+## three feedback inhibitors and three regulated enzymes. Parts C-E use
+## MC for accumulation/depletion, removing feedback, and rerouting.
+## An ellipsis before the first metabolite indicates upstream continuation.
+## ENDDESCRIPTION
+## KEYWORDS('negative feedback','metabolic pathway','feedback inhibition','committed step','accumulation','depletion','branched pathway')
+## DBsubject('Biochemistry')
+## DBchapter('Enzymes')
+## DBsection('Regulation')
+## Level(4)
+## Date('2026-03-27')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# https://bsky.app/profile/neilvosslab.bsky.social
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	'PGstandard.pl',
+	'MathObjects.pl',
+	'PGML.pl',
+	'niceTables.pl',
+	'parserCheckboxList.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl',
+);
+
+$showPartialCorrectAnswers = 0;
+
+# ============================================
+# 2) Setup
+# ============================================
+
+# ----------------------------
+# 2a) Deterministic local RNG
+# ----------------------------
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+
+# ----------------------------
+# 2b) Pathway data
+# ----------------------------
+my $trunk_len = $local_random->random(3, 4, 1);
+my $b1_len    = $local_random->random(3, 4, 1);
+my $b2_len    = $local_random->random(3, 4, 1);
+my $total_mols = $trunk_len + $b1_len + $b2_len;
+
+# color palette (14 high-contrast colors)
+my @palette = (
+	'#d40000', '#b74300', '#935d00', '#6c6c00', '#3b7600',
+	'#007a00', '#00775f', '#007576', '#076dad', '#003fff',
+	'#0067cc', '#a719db', '#c80085', '#cc0066',
+);
+my $c_shift = $local_random->random(0, $#palette, 1);
+my @dbl_pal = (@palette, @palette);
+my @colors = @dbl_pal[$c_shift .. $c_shift + $total_mols - 1];
+
+# letter assignment
+my @alpha = ('A'..'Z');
+my $l_shift = $local_random->random(0, 26 - $total_mols - 1, 1);
+my @letters = @alpha[$l_shift .. $l_shift + $total_mols - 1];
+
+# assign metabolites
+my @trunk = ();
+for my $i (0 .. $trunk_len - 1) {
+	push @trunk, { L => $letters[$i], C => $colors[$i] };
+}
+my @b1 = ();
+for my $i (0 .. $b1_len - 1) {
+	my $idx = $trunk_len + $i;
+	push @b1, { L => $letters[$idx], C => $colors[$idx] };
+}
+my @b2 = ();
+for my $i (0 .. $b2_len - 1) {
+	my $idx = $trunk_len + $b1_len + $i;
+	push @b2, { L => $letters[$idx], C => $colors[$idx] };
+}
+
+# ----------------------------
+# 2c) Enzyme numbering and feedback biology
+# ----------------------------
+# Three feedback relationships (matching the lecture slide):
+#   1. Branch-point metabolite -> inhibits E1 (first trunk enzyme)
+#   2. Upper branch end product -> inhibits committed step of upper branch
+#   3. Lower branch end product -> inhibits committed step of lower branch
+my $e_b1_first = $trunk_len;
+my $e_b2_first = $trunk_len + $b1_len;
+my $total_enzymes = $trunk_len + $b1_len + $b2_len - 1;
+
+my $bp_mol = $trunk[$#trunk];
+my $b1_end = $b1[$#b1];
+my $b2_end = $b2[$#b2];
+
+# pick one branch randomly for parts C-E
+my $focus_branch = $local_random->random(1, 2, 1);
+my $focus_name = ($focus_branch == 1) ? 'upper' : 'lower';
+my $other_name = ($focus_branch == 1) ? 'lower' : 'upper';
+my $focus_enzyme = ($focus_branch == 1) ? $e_b1_first : $e_b2_first;
+my $focus_end = ($focus_branch == 1) ? $b1_end : $b2_end;
+my $other_end = ($focus_branch == 1) ? $b2_end : $b1_end;
+my $focus_first = ($focus_branch == 1) ? $b1[0] : $b2[0];
+
+# ============================================
+# 2d) HTML helpers
+# ============================================
+my $css_met   = 'border:0; text-align:center; padding:2px 4px;';
+my $css_arr   = 'border:0; text-align:center; padding:2px 2px; font-size:150%;';
+my $css_lbl   = 'border:0; text-align:center; padding:0 2px; '
+	. 'font-size:75%; vertical-align:bottom;';
+my $css_empty = 'border:0; padding:2px 4px;';
+my $css_dots  = 'border:0; text-align:center; padding:2px 2px; '
+	. 'font-size:120%; color:#888; letter-spacing:2px;';
+
+sub met_node {
+	my ($letter, $color) = @_;
+	return "<span style='display:inline-block; width:38px; height:38px; "
+		. "line-height:38px; border-radius:50%; background:${color}; "
+		. "color:#fff; font-weight:700; font-size:16px; "
+		. "border:2px solid #333; text-align:center;'>${letter}</span>";
+}
+
+sub met_txt {
+	my ($letter, $color) = @_;
+	return "<strong><span style='color:${color};'>${letter}</span></strong>";
+}
+
+# ============================================
+# 2e) Grid geometry
+# ============================================
+# col 0 = ellipsis, col 1 = unlabeled arrow (hidden upstream enzyme)
+my $ellipsis_col = 0;
+my $hidden_arrow_col = 1;
+my $first_trunk_met_col = 2;
+my $last_trunk_met_col = $first_trunk_met_col + 2 * ($trunk_len - 1);
+my $junction_col = $last_trunk_met_col + 1;
+my $branch_met_start = $junction_col + 1;
+my $max_branch_len = ($b1_len > $b2_len) ? $b1_len : $b2_len;
+my $total_cols = $branch_met_start + 2 * $max_branch_len - 1;
+
+# ============================================
+# 2f) Build diagram rows (no feedback arrows)
+# ============================================
+
+# --- Branch 1 enzyme label row ---
+my @b1_enzyme_row = ();
+for (1 .. $total_cols) { push @b1_enzyme_row, ['', cellcss => $css_empty]; }
+$b1_enzyme_row[$junction_col] = ["E<sub>${e_b1_first}</sub>",
+	cellcss => $css_lbl];
+for my $i (1 .. $b1_len - 1) {
+	my $en = $e_b1_first + $i;
+	my $col = $branch_met_start + 2 * $i - 1;
+	$b1_enzyme_row[$col] = ["E<sub>${en}</sub>", cellcss => $css_lbl];
+}
+
+# --- Branch 1 structure row ---
+my @b1_struct_row = ();
+for (1 .. $total_cols) { push @b1_struct_row, ['', cellcss => $css_empty]; }
+$b1_struct_row[$junction_col] = ['&#8599;', cellcss => $css_arr];
+for my $i (0 .. $b1_len - 1) {
+	my $col = $branch_met_start + 2 * $i;
+	$b1_struct_row[$col] = [met_node($b1[$i]->{L}, $b1[$i]->{C}),
+		cellcss => $css_met];
+	if ($i < $b1_len - 1) {
+		$b1_struct_row[$col + 1] = ['&rarr;', cellcss => $css_arr];
+	}
+}
+
+# --- Trunk enzyme label row ---
+my @trunk_enzyme_row = ();
+for (1 .. $total_cols) { push @trunk_enzyme_row, ['', cellcss => $css_empty]; }
+for my $i (0 .. $trunk_len - 2) {
+	my $en = $i + 1;
+	my $col = $first_trunk_met_col + 1 + 2 * $i;
+	$trunk_enzyme_row[$col] = ["E<sub>${en}</sub>", cellcss => $css_lbl];
+}
+
+# --- Trunk structure row (with ... at start) ---
+my @trunk_struct_row = ();
+for (1 .. $total_cols) { push @trunk_struct_row, ['', cellcss => $css_empty]; }
+# center ellipsis + unlabeled arrow (hidden upstream enzyme)
+$trunk_struct_row[$ellipsis_col] = ['&middot;&middot;&middot;', cellcss => $css_dots];
+$trunk_struct_row[$hidden_arrow_col] = ['&rarr;', cellcss => $css_arr];
+for my $i (0 .. $trunk_len - 1) {
+	my $col = $first_trunk_met_col + 2 * $i;
+	$trunk_struct_row[$col] = [met_node($trunk[$i]->{L}, $trunk[$i]->{C}),
+		cellcss => $css_met];
+	if ($i < $trunk_len - 1) {
+		$trunk_struct_row[$col + 1] = ['&rarr;', cellcss => $css_arr];
+	}
+}
+
+# --- Branch 2 enzyme label row ---
+my @b2_enzyme_row = ();
+for (1 .. $total_cols) { push @b2_enzyme_row, ['', cellcss => $css_empty]; }
+$b2_enzyme_row[$junction_col] = ["E<sub>${e_b2_first}</sub>",
+	cellcss => $css_lbl];
+for my $i (1 .. $b2_len - 1) {
+	my $en = $e_b2_first + $i;
+	my $col = $branch_met_start + 2 * $i - 1;
+	$b2_enzyme_row[$col] = ["E<sub>${en}</sub>", cellcss => $css_lbl];
+}
+
+# --- Branch 2 structure row ---
+my @b2_struct_row = ();
+for (1 .. $total_cols) { push @b2_struct_row, ['', cellcss => $css_empty]; }
+$b2_struct_row[$junction_col] = ['&#8600;', cellcss => $css_arr];
+for my $i (0 .. $b2_len - 1) {
+	my $col = $branch_met_start + 2 * $i;
+	$b2_struct_row[$col] = [met_node($b2[$i]->{L}, $b2[$i]->{C}),
+		cellcss => $css_met];
+	if ($i < $b2_len - 1) {
+		$b2_struct_row[$col + 1] = ['&rarr;', cellcss => $css_arr];
+	}
+}
+
+# --- Assemble: b1 above trunk, b2 below ---
+my @all_rows = ();
+push @all_rows, [@b1_enzyme_row];
+push @all_rows, [@b1_struct_row];
+push @all_rows, [@trunk_enzyme_row];
+push @all_rows, [@trunk_struct_row];
+push @all_rows, [@b2_enzyme_row];
+push @all_rows, [@b2_struct_row];
+
+$diagram = LayoutTable(
+	[@all_rows],
+	center => 0,
+	tablecss => 'border-collapse:collapse; border:0;',
+	allcellcss => 'border:0; padding:2px;',
+);
+
+# ============================================
+# 2g) Text references
+# ============================================
+my $bp_txt        = met_txt($bp_mol->{L}, $bp_mol->{C});
+my $first_txt     = met_txt($trunk[0]->{L}, $trunk[0]->{C});
+my $b1_end_txt    = met_txt($b1_end->{L}, $b1_end->{C});
+my $b2_end_txt    = met_txt($b2_end->{L}, $b2_end->{C});
+my $focus_end_txt = met_txt($focus_end->{L}, $focus_end->{C});
+my $other_end_txt = met_txt($other_end->{L}, $other_end->{C});
+my $focus_first_txt = met_txt($focus_first->{L}, $focus_first->{C});
+
+# color lookup
+my %met_color = ();
+for my $m (@trunk) { $met_color{$m->{L}} = $m->{C}; }
+for my $m (@b1) { $met_color{$m->{L}} = $m->{C}; }
+for my $m (@b2) { $met_color{$m->{L}} = $m->{C}; }
+
+# ============================================
+# 2h) Part A: Identify ALL feedback inhibitors (CheckboxList)
+# ============================================
+# Three correct: branch-point metabolite + both branch end products
+# All metabolites listed in pathway order (no shuffle)
+
+# Select 6 strategic metabolites: 2 correct + 4 distractors
+# correct: upper end product, lower end product
+# distractors: first trunk met, one b1 intermediate, one b2 intermediate,
+#              and one additional trunk or branch intermediate
+# branch-point metabolite is excluded from choices
+my @pA_selected = (
+	$trunk[0],
+	$b1[0],
+	$b1_end,
+	$b2[0],
+	$b2_end,
+);
+# add a trunk intermediate if available
+if ($trunk_len >= 3) {
+	my @temp = ($pA_selected[0], $trunk[1], @pA_selected[1 .. $#pA_selected]);
+	@pA_selected = @temp;
+}
+
+my @pA_choices = ();
+my @pA_correct_indices = ();
+for my $i (0 .. $#pA_selected) {
+	my $m = $pA_selected[$i];
+	push @pA_choices, "metabolite " . met_txt($m->{L}, $m->{C});
+	# correct: only the two branch end products
+	if ($m->{L} eq $b1_end->{L}
+		|| $m->{L} eq $b2_end->{L}) {
+		push @pA_correct_indices, $i;
+	}
+}
+
+$cbA = CheckboxList(
+	[@pA_choices],
+	[@pA_correct_indices],
+	separator => '<br/>',
+);
+
+$qA = "<b>Which metabolites are most likely to act as feedback "
+	. "inhibitors in this pathway? (Select all that apply.)</b>";
+
+$solA = "The two branch feedback inhibitors are: ${b1_end_txt} "
+	. "(end product of the upper branch) and ${b2_end_txt} "
+	. "(end product of the lower branch). In negative feedback, the "
+	. "end product of each branch inhibits the committed step enzyme "
+	. "of that branch. Intermediates are not feedback inhibitors "
+	. "because they are not terminal products.";
+
+# ============================================
+# 2i) Part B: Identify ALL regulated enzymes (CheckboxList)
+# ============================================
+# Three correct: E1, E(b1_first), E(b2_first)
+# All enzymes listed in numerical order (no shuffle)
+
+# Select 6 strategic enzymes: 2 correct + 4 meaningful distractors
+# correct: committed step of each branch
+# distractors: trunk enzymes and downstream branch enzymes
+my @pB_selected_nums = (1);
+if ($trunk_len >= 3) { push @pB_selected_nums, 2; }
+# committed steps (correct)
+push @pB_selected_nums, $e_b1_first;
+# one downstream enzyme in upper branch
+if ($e_b1_first + 1 <= $e_b2_first - 1) {
+	push @pB_selected_nums, $e_b1_first + 1;
+}
+# committed step of lower branch (correct)
+push @pB_selected_nums, $e_b2_first;
+# one downstream enzyme in lower branch
+if ($e_b2_first + 1 <= $total_enzymes) {
+	push @pB_selected_nums, $e_b2_first + 1;
+}
+
+# deduplicate and keep order
+my %pB_seen;
+my @pB_unique = ();
+for my $e (@pB_selected_nums) {
+	next if $pB_seen{$e}++;
+	push @pB_unique, $e;
+}
+
+my @pB_choices = ();
+my @pB_correct_indices = ();
+for my $i (0 .. $#pB_unique) {
+	my $e = $pB_unique[$i];
+	push @pB_choices, "enzyme E<sub>${e}</sub>";
+	# correct: only the two branch committed steps
+	if ($e == $e_b1_first || $e == $e_b2_first) {
+		push @pB_correct_indices, $i;
+	}
+}
+
+$cbB = CheckboxList(
+	[@pB_choices],
+	[@pB_correct_indices],
+	separator => '<br/>',
+);
+
+$qB = "<b>Which enzymes are most likely targets of feedback inhibition "
+	. "in this pathway? (Select all that apply.)</b>";
+
+$solB = "The two regulated enzymes are: "
+	. "E<sub>${e_b1_first}</sub> (committed step of the upper branch, "
+	. "inhibited by ${b1_end_txt}) and "
+	. "E<sub>${e_b2_first}</sub> (committed step of the lower branch, "
+	. "inhibited by ${b2_end_txt}). The committed step is the first "
+	. "enzyme unique to each branch. Trunk enzymes are shared by both "
+	. "branches and are not targets of branch-specific feedback.";
+
+# ============================================
+# 2j) Part C: Accumulation/depletion (MC, one branch)
+# ============================================
+$qC = "If the concentration of ${focus_end_txt} becomes <b>very high</b>, "
+	. "how would this most likely affect the pathway?";
+
+my $pC_correct = "metabolite ${bp_txt} accumulates; "
+	. "metabolite ${other_end_txt} increases";
+
+my @pC_choices = (
+	$pC_correct,
+	"metabolite ${focus_first_txt} increases; "
+	. "metabolite ${other_end_txt} decreases",
+	"metabolite ${bp_txt} decreases; "
+	. "metabolite ${focus_end_txt} continues to increase",
+	"all metabolites downstream of ${bp_txt} decrease equally",
+	"metabolite ${bp_txt} decreases; "
+	. "metabolite ${other_end_txt} increases",
+);
+for my $i (reverse 1 .. $#pC_choices) {
+	my $j = $local_random->random(0, $i, 1);
+	@pC_choices[$i, $j] = @pC_choices[$j, $i];
+}
+
+$rbC = RadioButtons(
+	[[@pC_choices]], $pC_correct,
+	labels => 'ABC', displayLabels => 1,
+	separator => '<div style="margin-bottom: 0.4em;"></div>',
+);
+
+$solC = "When ${focus_end_txt} inhibits E<sub>${focus_enzyme}</sub>, "
+	. "flux into the ${focus_name} branch is blocked. The branch-point "
+	. "metabolite ${bp_txt} accumulates because it can no longer enter "
+	. "that branch. More ${bp_txt} is then redirected into the "
+	. "${other_name} branch, increasing ${other_end_txt} production.";
+
+# ============================================
+# 2k) Part D: Remove feedback (MC)
+# ============================================
+$qD = "If the inhibition of E<sub>${focus_enzyme}</sub> is "
+	. "<b>eliminated</b> by a mutation, but the E<sub>${focus_enzyme}"
+	. "</sub> enzyme remains functional, what is the most likely outcome?";
+
+my @pD_choices = (
+	"metabolite ${focus_end_txt} accumulates because "
+	. "enzyme E<sub>${focus_enzyme}</sub> remains active",
+	"metabolite ${focus_end_txt} decreases because feedback is "
+	. "required for enzyme activity",
+	"metabolite ${other_end_txt} increases because both branches "
+	. "are activated",
+	"metabolite ${bp_txt} accumulates because upstream reactions stop",
+	"metabolite ${other_end_txt} decreases because less ${bp_txt} "
+	. "is available",
+);
+my $pD_correct = $pD_choices[0];
+for my $i (reverse 1 .. $#pD_choices) {
+	my $j = $local_random->random(0, $i, 1);
+	@pD_choices[$i, $j] = @pD_choices[$j, $i];
+}
+
+$rbD = RadioButtons(
+	[[@pD_choices]], $pD_correct,
+	labels => 'ABC', displayLabels => 1,
+	separator => '<div style="margin-bottom: 0.4em;"></div>',
+);
+
+$solD = "Without feedback, E<sub>${focus_enzyme}</sub> remains active "
+	. "regardless of how much ${focus_end_txt} has accumulated. The "
+	. "${focus_name} branch continues producing ${focus_end_txt} without "
+	. "regulation, causing it to accumulate.";
+
+# ============================================
+# 2l) Part E: Branch rerouting (MC)
+# ============================================
+$qE = "If enzyme <b>E<sub>${focus_enzyme}</sub></b> is completely "
+	. "inactivated, what happens to the production of "
+	. "${other_end_txt}?";
+
+my @pE_choices = (
+	"metabolite ${other_end_txt} "
+	. "<span style='color:#1a7a1a; font-weight:700;'>increases</span> "
+	. "because ${bp_txt} is redirected into the ${other_name} branch",
+	"metabolite ${other_end_txt} "
+	. "<span style='color:#c93030; font-weight:700;'>decreases</span> "
+	. "because ${bp_txt} accumulates upstream",
+	"metabolite ${other_end_txt} production is "
+	. "<span style='font-weight:700;'>unchanged</span> because "
+	. "the branches are independent",
+	"metabolite ${other_end_txt} "
+	. "<span style='color:#c93030; font-weight:700;'>stops</span> "
+	. "because one branch is blocked",
+);
+my $pE_correct = $pE_choices[0];
+for my $i (reverse 1 .. $#pE_choices) {
+	my $j = $local_random->random(0, $i, 1);
+	@pE_choices[$i, $j] = @pE_choices[$j, $i];
+}
+
+$rbE = RadioButtons(
+	[[@pE_choices]], $pE_correct,
+	labels => 'ABC', displayLabels => 1,
+	separator => '<div style="margin-bottom: 0.4em;"></div>',
+);
+
+$solE = "When E<sub>${focus_enzyme}</sub> is inactivated, ${bp_txt} "
+	. "can no longer enter the ${focus_name} branch. The ${bp_txt} is "
+	. "redirected into the ${other_name} branch, increasing "
+	. "${other_end_txt} production.";
+
+# ============================================
+# 3) Statement (PGML)
+# ============================================
+# Parts A and B use legacy ANS() pattern for checkbox grading.
+# Parts C-E use inline [_]{$rb} pattern for RadioButtons.
+
+BEGIN_PGML
+
+*Negative Feedback in a Branched Metabolic Pathway*
+
+A series of enzymes catalyze reactions involving the metabolites in the branched metabolic pathway shown below. The ellipsis (...) indicates that additional upstream steps are not shown.
+
+[$diagram]*
+
+---
+
+*Part A: Identify the Feedback Inhibitors*
+
+[$qA]*
+
+[_]{$cbA}
+
+---
+
+*Part B: Identify the Regulated Enzymes*
+
+[$qB]*
+
+[_]{$cbB}
+
+---
+
+*Part C: Downstream Effects of Feedback*
+
+[$qC]*
+
+[_]{$rbC}
+
+---
+
+*Part D: Breaking the Feedback Loop*
+
+[$qD]*
+
+[_]{$rbD}
+
+---
+
+*Part E: Branch Rerouting*
+
+[$qE]*
+
+[_]{$rbE}
+
+END_PGML
+
+# ----------------------------
+# 4) Hint
+# ----------------------------
+BEGIN_PGML_HINT
+*Part A:* End products of each pathway segment can inhibit earlier enzymes. How many end products does this branched pathway have?
+
+*Part B:* The committed step is the first enzyme unique to each segment. Where does each segment begin?
+
+*Part C:* When an enzyme is inhibited, everything downstream starves. What about the other branch?
+
+*Part D:* Feedback acts like a thermostat. What happens if the thermostat breaks?
+
+*Part E:* If one path for the branch-point metabolite is blocked, where does it all go?
+END_PGML_HINT
+
+# ----------------------------
+# 5) Solution
+# ----------------------------
+BEGIN_PGML_SOLUTION
+*Part A:* [$solA]*
+
+*Part B:* [$solB]*
+
+*Part C:* [$solC]*
+
+*Part D:* [$solD]*
+
+*Part E:* [$solE]*
+END_PGML_SOLUTION
+
+ENDDOCUMENT();
