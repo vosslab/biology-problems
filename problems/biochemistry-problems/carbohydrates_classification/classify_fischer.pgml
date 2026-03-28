@@ -1,0 +1,418 @@
+## TITLE('Biochemistry: Classify Fischer Projection')
+## DESCRIPTION
+## Students view a Fischer projection of a randomly selected monosaccharide
+## (tetrose, pentose, or hexose) and classify it along three dimensions:
+## carbon count, D/L configuration, and functional group type (aldose,
+## ketose, or 3-ketose). Each dimension is a separate RadioButtons part.
+## ENDDESCRIPTION
+## KEYWORDS('carbohydrate','Fischer','classification','sugar','stereochemistry')
+## DBsubject('Biochemistry')
+## DBchapter('Carbohydrates')
+## DBsection('Classification')
+## Level(2)
+## Date('2026-03-27')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+loadMacros(
+	'PGstandard.pl',
+	'PGML.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl',
+);
+
+$showPartialCorrectAnswers = 0;
+
+# ============================================================
+# SVG primitives
+# ============================================================
+
+sub svg_text {
+	my ($x, $y, $anchor, $size, $fill, $content) = @_;
+	return '<text x="' . $x . '" y="' . $y
+		. '" font-family="sans-serif" font-size="' . $size
+		. '" text-anchor="' . $anchor
+		. '" fill="' . $fill . '">' . $content . '</text>';
+}
+
+sub svg_rect {
+	my ($x, $y, $w, $h) = @_;
+	return '<rect x="' . $x . '" y="' . $y
+		. '" width="' . $w . '" height="' . $h
+		. '" rx="1" ry="1" fill="#000"/>';
+}
+
+# ============================================================
+# Fischer layout constants
+# ============================================================
+
+$BX     = 88;    # backbone center x
+$FS     = 30;    # font size
+$RSPACE = 50;    # row spacing
+$VBX    = 87;    # vertical bond x
+$VBW    = 2.15;  # vertical bond width
+$VBH    = 22;    # vertical bond height
+$HLX    = 52;    # horizontal bond left x
+$HRX    = 100;   # horizontal bond right x
+$HBW    = 25;    # horizontal bond width
+$HBH    = 2.15;  # horizontal bond height
+$RED    = '#8b0000';  # dark red for OH groups and carbonyl O
+
+# ============================================================
+# Sugar code decoder
+# ============================================================
+# Sugar code grammar (from sugarlib.py / sugar_codes.yml):
+#   A = aldose prefix
+#   MK = 2-ketose prefix (M + K at position 2)
+#   M[RL]K = 3-ketose prefix (M + chiral + K at position 3)
+#   R/L = chiral center stereochemistry
+#   D/L at penultimate position = absolute configuration
+#   M = terminal hydroxymethyl
+
+sub decode_sugar_code {
+	my ($code) = @_;
+	my $type = '';
+	my $chirals = '';
+
+	# strip terminal M
+	my $body = $code;
+	$body =~ s/M$//;
+
+	# extract D/L from penultimate position
+	my $config = 'D';
+	if ($body =~ s/([DL])$//) {
+		$config = $1;
+	}
+
+	# parse prefix to determine sugar type
+	if ($body =~ s/^A//) {
+		$type = 'aldose';
+	} elsif ($body =~ s/^MK//) {
+		$type = 'ketose';
+	} elsif ($body =~ s/^M([RL])K//) {
+		$type = '3-ketose';
+		# the captured [RL] is the C2 chiral center
+		$chirals = $1;
+	}
+
+	# remaining characters are chiral centers (R/L)
+	$chirals .= $body;
+
+	# append penultimate stereocenter from D/L flag
+	# D means penultimate OH is on the right (R), L means left (L)
+	$chirals .= ($config eq 'L') ? 'L' : 'R';
+
+	# carbon count = code length (each letter = one carbon)
+	my $num_carbons = length($code);
+
+	my $is_L = ($config eq 'L') ? 1 : 0;
+
+	return ($type, $chirals, $num_carbons, $is_L);
+}
+
+# ============================================================
+# Row spec builder
+# ============================================================
+# converts decoded sugar info into a flat list of row types:
+#   aldehyde_top, top_ch2oh, ketone, chiral_R, chiral_L, terminal_ch2oh
+
+sub build_row_specs {
+	my ($type, $chirals_str) = @_;
+	my @chirals = split('', $chirals_str);
+	my @rows = ();
+
+	if ($type eq 'aldose') {
+		push @rows, 'aldehyde_top';
+		for my $c (@chirals) {
+			push @rows, ($c eq 'R') ? 'chiral_R' : 'chiral_L';
+		}
+		push @rows, 'terminal_ch2oh';
+
+	} elsif ($type eq 'ketose') {
+		push @rows, 'top_ch2oh';
+		push @rows, 'ketone';
+		for my $c (@chirals) {
+			push @rows, ($c eq 'R') ? 'chiral_R' : 'chiral_L';
+		}
+		push @rows, 'terminal_ch2oh';
+
+	} elsif ($type eq '3-ketose') {
+		push @rows, 'top_ch2oh';
+		# first chiral is C2 (already in chirals from decoder)
+		push @rows, ($chirals[0] eq 'R') ? 'chiral_R' : 'chiral_L';
+		push @rows, 'ketone';
+		for my $i (1 .. $#chirals) {
+			push @rows, ($chirals[$i] eq 'R') ? 'chiral_R' : 'chiral_L';
+		}
+		push @rows, 'terminal_ch2oh';
+	}
+
+	return @rows;
+}
+
+# ============================================================
+# SVG row renderers (one per row type)
+# ============================================================
+
+sub render_row {
+	my ($y, $row_type) = @_;
+	my $out = '';
+	my $yb = $y - 11;  # horizontal bond y
+
+	if ($row_type eq 'aldehyde_top') {
+		# C label at row position + aldehyde H-C=O bonds above
+		$out .= svg_text($BX, $y, 'middle', $FS, '#000', 'C');
+		$out .= svg_text('34', '32', 'start', $FS, '#000', 'H');
+		$out .= svg_text('120', '32', 'start', $FS, $RED, 'O');
+		# Wikipedia aldehyde diagonal double bond + single bond rects
+		$out .= '<rect width="21.47" height="2.15" x="68.39" y="77.50" transform="matrix(0.8674,-0.4976,0.4976,0.8674,0,0)" fill="#000"/>';
+		$out .= '<rect width="21.47" height="2.15" x="68.47" y="84.66" transform="matrix(0.8674,-0.4976,0.4976,0.8674,0,0)" fill="#000"/>';
+		$out .= '<rect width="21.47" height="2.15" x="-86.14" y="-6.97" transform="matrix(-0.8674,-0.4976,-0.4976,0.8674,0,0)" fill="#000"/>';
+
+	} elsif ($row_type eq 'top_ch2oh') {
+		# CH2OH at C1 position (same y as aldose C1)
+		$out .= svg_text($BX, $y, 'middle', $FS, '#000', 'C');
+		$out .= svg_text('97', $y, 'start', $FS, '#000', 'H&#8322;');
+		$out .= svg_text('127', $y, 'start', $FS, $RED, 'OH');
+
+	} elsif ($row_type eq 'ketone') {
+		# C=O double bond on right side
+		$out .= svg_text($BX, $y, 'middle', $FS, '#000', 'C');
+		$out .= svg_rect($HRX, $yb, $HBW, $HBH);
+		$out .= svg_rect($HRX, $yb + 4, $HBW, $HBH);
+		$out .= svg_text('127', $y, 'start', $FS, $RED, 'O');
+
+	} elsif ($row_type eq 'chiral_R') {
+		# R: H left, OH right (OH in red)
+		$out .= svg_text($BX, $y, 'middle', $FS, '#000', 'C');
+		$out .= svg_rect($HLX, $yb, $HBW, $HBH);
+		$out .= svg_rect($HRX, $yb, $HBW, $HBH);
+		$out .= svg_text('28', $y, 'start', $FS, '#000', 'H');
+		$out .= svg_text('127', $y, 'start', $FS, $RED, 'O');
+		$out .= svg_text('151', $y, 'start', $FS, $RED, 'H');
+
+	} elsif ($row_type eq 'chiral_L') {
+		# L: HO left (red), H right
+		$out .= svg_text($BX, $y, 'middle', $FS, '#000', 'C');
+		$out .= svg_rect($HLX, $yb, $HBW, $HBH);
+		$out .= svg_rect($HRX, $yb, $HBW, $HBH);
+		$out .= svg_text('5', $y, 'start', $FS, $RED, 'H');
+		$out .= svg_text('27', $y, 'start', $FS, $RED, 'O');
+		$out .= svg_text('128', $y, 'start', $FS, '#000', 'H');
+
+	} elsif ($row_type eq 'terminal_ch2oh') {
+		# CH2OH at bottom: C centered, H2 black, OH red
+		$out .= svg_text($BX, $y, 'middle', $FS, '#000', 'C');
+		$out .= svg_text('97', $y, 'start', $FS, '#000', 'H&#8322;');
+		$out .= svg_text('127', $y, 'start', $FS, $RED, 'OH');
+	}
+
+	return $out;
+}
+
+# ============================================================
+# Main Fischer SVG builder -- only consumes the row list
+# ============================================================
+
+sub build_fischer_svg {
+	my (@rows) = @_;
+	my $num_rows = scalar @rows;
+
+	# compute y positions and SVG dimensions
+	my $last_y = 56 + ($num_rows - 1) * $RSPACE;
+	my $svg_h = $last_y + 20;
+	my $disp_h = int($svg_h * 0.75);
+
+	my $out = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1"'
+		. ' width="135" height="' . $disp_h
+		. '" viewBox="0 0 180 ' . $svg_h . '">';
+
+	# render each row
+	for (my $i = 0; $i < $num_rows; $i++) {
+		my $y = 56 + $i * $RSPACE;
+		$out .= render_row($y, $rows[$i]);
+	}
+
+	# vertical backbone bonds between consecutive rows
+	for (my $i = 0; $i < $num_rows - 1; $i++) {
+		my $bond_y = 56 + $i * $RSPACE + 3.5;
+		$out .= svg_rect($VBX, $bond_y, $VBW, $VBH);
+	}
+
+	$out .= '</svg>';
+	return $out;
+}
+
+# ============================================================
+# Sugar code to name lookup (single source of truth)
+# ============================================================
+# From data/sugar_codes.yml -- code maps to display name
+# The code encodes everything: type, chirality, D/L, carbon count
+
+%code_to_name = (
+	# aldotetroses
+	'ARDM' => 'D-erythrose', 'ALDM' => 'D-threose',
+	'ARLM' => 'L-threose',   'ALLM' => 'L-erythrose',
+	# ketotetroses
+	'MKDM' => 'D-erythrulose', 'MKLM' => 'L-erythrulose',
+	# aldopentoses
+	'ARRDM' => 'D-ribose',     'ALRDM' => 'D-arabinose',
+	'ARLDM' => 'D-xylose',     'ALLDM' => 'D-lyxose',
+	'ARRLM' => 'L-lyxose',     'ALRLM' => 'L-xylose',
+	'ARLLM' => 'L-arabinose',  'ALLLM' => 'L-ribose',
+	# ketopentoses
+	'MKRDM' => 'D-ribulose',   'MKLDM' => 'D-xylulose',
+	'MKRLM' => 'L-xylulose',   'MKLLM' => 'L-ribulose',
+	# 3-ketopentoses
+	'MLKDM' => 'D-3-ketopentose', 'MRKLM' => 'L-3-ketopentose',
+	# aldohexoses
+	'ARRRDM' => 'D-allose',    'ALRRDM' => 'D-altrose',
+	'ARLRDM' => 'D-glucose',   'ALLRDM' => 'D-mannose',
+	'ARRLDM' => 'D-gulose',    'ALRLDM' => 'D-idose',
+	'ARLLDM' => 'D-galactose', 'ALLLDM' => 'D-talose',
+	'ARRRLM' => 'L-talose',    'ARRLLM' => 'L-mannose',
+	'ARLRLM' => 'L-idose',     'ARLLLM' => 'L-altrose',
+	'ALRRLM' => 'L-galactose', 'ALRLLM' => 'L-glucose',
+	'ALLRLM' => 'L-gulose',    'ALLLLM' => 'L-allose',
+	# ketohexoses
+	'MKRRDM' => 'D-tagatose',  'MKRLDM' => 'D-sorbose',
+	'MKLRDM' => 'D-fructose',  'MKLLDM' => 'D-psicose',
+	'MKRRLM' => 'L-psicose',   'MKRLLM' => 'L-fructose',
+	'MKLRLM' => 'L-sorbose',   'MKLLLM' => 'L-tagatose',
+	# 3-ketohexoses
+	'MRKRDM' => 'D-3-keto-allose',   'MRKLDM' => 'D-3-keto-altrose',
+	'MLKRDM' => 'D-3-keto-glucose',  'MLKLDM' => 'D-3-keto-mannose',
+	'MRKRLM' => 'L-3-keto-allose',   'MRKLLM' => 'L-3-keto-altrose',
+	'MLKRLM' => 'L-3-keto-glucose',  'MLKLLM' => 'L-3-keto-mannose',
+);
+
+# all valid codes as a flat pre-sorted list (sort() is sandbox-blocked)
+@all_codes = (
+	'ALDM', 'ALLDM', 'ALLLM', 'ALLLDM', 'ALLLLM', 'ALLRDM', 'ALLRLM',
+	'ALRDM', 'ALRLDM', 'ALRLLM', 'ALRLM', 'ALRRDM', 'ALRRLM',
+	'ARDM', 'ARLDM', 'ARLLM', 'ARLLDM', 'ARLLLM', 'ARLRDM', 'ARLRLM',
+	'ARRDM', 'ARRLDM', 'ARRLLM', 'ARRLM', 'ARRRDM', 'ARRRLM',
+	'MKDM', 'MKLDM', 'MKLLDM', 'MKLLLM', 'MKLM', 'MKLRDM', 'MKLRLM',
+	'MKRDM', 'MKRLDM', 'MKRLLM', 'MKRLM', 'MKRRDM', 'MKRRLM',
+	'MLKDM', 'MLKLDM', 'MLKLLM', 'MLKRDM', 'MLKRLM',
+	'MRKDM', 'MRKLDM', 'MRKLLM', 'MRKLM', 'MRKRDM', 'MRKRLM',
+);
+
+# excluded codes (too recognizable)
+%excluded = (
+	'ARLRDM' => 1, 'ARLLDM' => 1, 'ALRLDM' => 1,
+	'ARRDM' => 1, 'MKLRDM' => 1,
+);
+
+# ============================================================
+# Randomization
+# ============================================================
+
+# pick a random sugar code
+$sugar_code = list_random(@all_codes);
+
+# re-roll if excluded
+$retries = 0;
+while ($excluded{$sugar_code}) {
+	$sugar_code = list_random(@all_codes);
+	$retries++;
+	last if $retries > 20;
+}
+
+# decode the sugar code
+($sugar_type, $chirals_str, $num_carbons, $is_L) = decode_sugar_code($sugar_code);
+
+# no flip needed: the sugar code already encodes the actual Fischer
+# stereochemistry (R = OH right, L = OH left) for both D and L sugars
+
+# look up the sugar name
+$full_name = $code_to_name{$sugar_code};
+
+# build row specs from decoded info
+@row_specs = build_row_specs($sugar_type, $chirals_str);
+
+# ============================================================
+# Build SVG from row specs
+# ============================================================
+
+$fischer_svg = build_fischer_svg(@row_specs);
+
+# ============================================================
+# Correct answers and RadioButtons
+# ============================================================
+
+sub color_span {
+	my ($color, $text) = @_;
+	return "<span style='color:$color;'>$text</span>";
+}
+
+sub make_rb {
+	my ($color, $choices_ref, $correct_text) = @_;
+	my @colored = map { color_span($color, $_) } @$choices_ref;
+	my $correct = color_span($color, $correct_text);
+	return RadioButtons([@colored], $correct,
+		labels    => 'ABC',
+		separator => '<div style="margin-bottom: 0.3em;"></div>',
+	);
+}
+
+%carbon_names = (3 => 'triose (3)', 4 => 'tetrose (4)',
+	5 => 'pentose (5)', 6 => 'hexose (6)');
+$carbon_ans = $carbon_names{$num_carbons};
+$config_ans = $is_L ? "L-configuration" : "D-configuration";
+$type_ans = $sugar_type;
+# normalize display: "3-ketose" stays, "ketose" and "aldose" stay
+$type_ans = '3-ketose' if $sugar_type eq '3-ketose';
+
+$rb1 = make_rb('#0000b3',
+	["triose (3)", "tetrose (4)", "pentose (5)", "hexose (6)"],
+	$carbon_ans);
+$rb2 = make_rb('#008000',
+	["D-configuration", "L-configuration"],
+	$config_ans);
+$rb3 = make_rb('#b34700',
+	["aldose", "ketose", "3-ketose"],
+	$type_ans);
+
+$q1 = "<b>Part 1.</b> How many carbon atoms does this monosaccharide contain?";
+$q2 = "<b>Part 2.</b> What is the stereochemical configuration of this sugar?";
+$q3 = "<b>Part 3.</b> What type of sugar is this monosaccharide?";
+
+# ============================================================
+# PGML
+# ============================================================
+
+BEGIN_PGML
+
+The diagram below shows a *Fischer projection* of an unnamed monosaccharide.
+Carefully analyze the structure and answer all three classification questions.
+
+[$fischer_svg]*
+
+[$q1]*
+
+[_]{$rb1}
+
+[$q2]*
+
+[_]{$rb2}
+
+[$q3]*
+
+[_]{$rb3}
+
+END_PGML
+
+BEGIN_PGML_SOLUTION
+This sugar is [$full_name] ([$carbon_ans], [$config_ans], [$type_ans]).
+END_PGML_SOLUTION
+
+ENDDOCUMENT();
