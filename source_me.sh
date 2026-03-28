@@ -11,7 +11,7 @@ REPO_TOPLEVEL_DIR="$(git -C "$THIS_SCRIPT_DIR" rev-parse --show-toplevel 2>/dev/
 }
 
 REPO_PARENT_DIR="$(dirname "$REPO_TOPLEVEL_DIR")"
-QTI_PACKAGE_MAKER_DIR="$REPO_PARENT_DIR/qti_package_maker"
+QTI_PACKAGE_MAKER_DIR="$REPO_PARENT_DIR/qti-package-maker"
 CLEANPATH_PY="$REPO_PARENT_DIR/junk-drawer/cleanpath.py"
 PYTHON_EXE="python3"
 
