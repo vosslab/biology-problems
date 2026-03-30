@@ -1,19 +1,20 @@
-## TITLE('Biochemistry: Negative Feedback Regulation in a Branched Pathway')
+## TITLE('Biochemistry: Feedback Regulation in a Splitting Pathway')
 ## DESCRIPTION
-## Five-part progressive problem about negative feedback inhibition in a
-## branched metabolic pathway. The diagram shows a trunk with two branches
+## Four-part progressive problem about negative feedback inhibition in a
+## splitting metabolic pathway. The diagram shows a trunk with two branches
 ## but no feedback arrows -- students must infer where feedback occurs.
 ## Parts A and B use checkboxes (select all that apply) to identify the
-## three feedback inhibitors and three regulated enzymes. Parts C-E use
-## MC for accumulation/depletion, removing feedback, and rerouting.
-## An ellipsis before the first metabolite indicates upstream continuation.
+## feedback inhibitors and regulated enzymes. Part C randomly selects between
+## two sub-scenarios: accumulation (high end product) or mutation (feedback
+## removal). Part D uses MC for branch rerouting. An ellipsis before the
+## first metabolite indicates upstream continuation.
 ## ENDDESCRIPTION
-## KEYWORDS('negative feedback','metabolic pathway','feedback inhibition','committed step','accumulation','depletion','branched pathway')
+## KEYWORDS('negative feedback','metabolic pathway','feedback inhibition','committed step','accumulation','depletion','splitting pathway','branch rerouting')
 ## DBsubject('Biochemistry')
 ## DBchapter('Enzymes')
 ## DBsection('Regulation')
 ## Level(4)
-## Date('2026-03-27')
+## Date('2026-03-30')
 ## Author('Dr. Neil R. Voss')
 ## Institution('Roosevelt University')
 ## Language(en)
@@ -377,84 +378,93 @@ $solB = "The two regulated enzymes are: "
 	. "branches and are not targets of branch-specific feedback.";
 
 # ============================================
-# 2j) Part C: Accumulation/depletion (MC, one branch)
+# 2j) Part C: Feedback Effects (merged A & M, randomly selected)
 # ============================================
-$qC = "If the concentration of ${focus_end_txt} becomes <b>very high</b>, "
-	. "how would this most likely affect the pathway?";
+# Randomly pick between two sub-scenarios:
+# 1 = Accumulation (high end product)
+# 2 = Mutation (feedback removal)
+my $pC_subscenario = $local_random->random(1, 2, 1);
 
-my $pC_correct = "metabolite ${bp_txt} accumulates; "
-	. "metabolite ${other_end_txt} increases";
+# $qC, $rbC, $solC are package variables (no my) so PGML can see them
 
-my @pC_choices = (
-	$pC_correct,
-	"metabolite ${focus_first_txt} increases; "
-	. "metabolite ${other_end_txt} decreases",
-	"metabolite ${bp_txt} decreases; "
-	. "metabolite ${focus_end_txt} continues to increase",
-	"all metabolites downstream of ${bp_txt} decrease equally",
-	"metabolite ${bp_txt} decreases; "
-	. "metabolite ${other_end_txt} increases",
-);
-for my $i (reverse 1 .. $#pC_choices) {
-	my $j = $local_random->random(0, $i, 1);
-	@pC_choices[$i, $j] = @pC_choices[$j, $i];
+if ($pC_subscenario == 1) {
+	# Sub-scenario 1: Accumulation
+	$qC = "If the concentration of ${focus_end_txt} becomes <b>very high</b>, "
+		. "how would this most likely affect the pathway?";
+
+	my $pC_correct = "metabolite ${bp_txt} accumulates; "
+		. "metabolite ${other_end_txt} increases";
+
+	my @pC_choices = (
+		$pC_correct,
+		"metabolite ${focus_first_txt} increases; "
+		. "metabolite ${other_end_txt} decreases",
+		"metabolite ${bp_txt} decreases; "
+		. "metabolite ${focus_end_txt} continues to increase",
+		"all metabolites downstream of ${bp_txt} decrease equally",
+		"metabolite ${bp_txt} decreases; "
+		. "metabolite ${other_end_txt} increases",
+	);
+	for my $i (reverse 1 .. $#pC_choices) {
+		my $j = $local_random->random(0, $i, 1);
+		@pC_choices[$i, $j] = @pC_choices[$j, $i];
+	}
+
+	$rbC = RadioButtons(
+		[[@pC_choices]], $pC_correct,
+		labels => 'ABC', displayLabels => 1,
+		separator => '<div style="margin-bottom: 0.4em;"></div>',
+	);
+
+	$solC = "When ${focus_end_txt} inhibits E<sub>${focus_enzyme}</sub>, "
+		. "flux into the ${focus_name} branch is blocked. The branch-point "
+		. "metabolite ${bp_txt} accumulates because it can no longer enter "
+		. "that branch. More ${bp_txt} is then redirected into the "
+		. "${other_name} branch, increasing ${other_end_txt} production.";
+}
+else {
+	# Sub-scenario 2: Mutation (feedback removal)
+	$qC = "If the inhibition of E<sub>${focus_enzyme}</sub> is "
+		. "<b>eliminated</b> by a mutation, but the E<sub>${focus_enzyme}"
+		. "</sub> enzyme remains functional, what is the most likely outcome?";
+
+	my @pC_choices = (
+		"metabolite ${focus_end_txt} accumulates because "
+		. "enzyme E<sub>${focus_enzyme}</sub> remains active",
+		"metabolite ${focus_end_txt} decreases because feedback is "
+		. "required for enzyme activity",
+		"metabolite ${other_end_txt} increases because both branches "
+		. "are activated",
+		"metabolite ${bp_txt} accumulates because upstream reactions stop",
+		"metabolite ${other_end_txt} decreases because less ${bp_txt} "
+		. "is available",
+	);
+	my $pC_correct = $pC_choices[0];
+	for my $i (reverse 1 .. $#pC_choices) {
+		my $j = $local_random->random(0, $i, 1);
+		@pC_choices[$i, $j] = @pC_choices[$j, $i];
+	}
+
+	$rbC = RadioButtons(
+		[[@pC_choices]], $pC_correct,
+		labels => 'ABC', displayLabels => 1,
+		separator => '<div style="margin-bottom: 0.4em;"></div>',
+	);
+
+	$solC = "Without feedback, E<sub>${focus_enzyme}</sub> remains active "
+		. "regardless of how much ${focus_end_txt} has accumulated. The "
+		. "${focus_name} branch continues producing ${focus_end_txt} without "
+		. "regulation, causing it to accumulate.";
 }
 
-$rbC = RadioButtons(
-	[[@pC_choices]], $pC_correct,
-	labels => 'ABC', displayLabels => 1,
-	separator => '<div style="margin-bottom: 0.4em;"></div>',
-);
-
-$solC = "When ${focus_end_txt} inhibits E<sub>${focus_enzyme}</sub>, "
-	. "flux into the ${focus_name} branch is blocked. The branch-point "
-	. "metabolite ${bp_txt} accumulates because it can no longer enter "
-	. "that branch. More ${bp_txt} is then redirected into the "
-	. "${other_name} branch, increasing ${other_end_txt} production.";
-
 # ============================================
-# 2k) Part D: Remove feedback (MC)
+# 2k) Part D: Branch rerouting (was Part E, relabeled)
 # ============================================
-$qD = "If the inhibition of E<sub>${focus_enzyme}</sub> is "
-	. "<b>eliminated</b> by a mutation, but the E<sub>${focus_enzyme}"
-	. "</sub> enzyme remains functional, what is the most likely outcome?";
-
-my @pD_choices = (
-	"metabolite ${focus_end_txt} accumulates because "
-	. "enzyme E<sub>${focus_enzyme}</sub> remains active",
-	"metabolite ${focus_end_txt} decreases because feedback is "
-	. "required for enzyme activity",
-	"metabolite ${other_end_txt} increases because both branches "
-	. "are activated",
-	"metabolite ${bp_txt} accumulates because upstream reactions stop",
-	"metabolite ${other_end_txt} decreases because less ${bp_txt} "
-	. "is available",
-);
-my $pD_correct = $pD_choices[0];
-for my $i (reverse 1 .. $#pD_choices) {
-	my $j = $local_random->random(0, $i, 1);
-	@pD_choices[$i, $j] = @pD_choices[$j, $i];
-}
-
-$rbD = RadioButtons(
-	[[@pD_choices]], $pD_correct,
-	labels => 'ABC', displayLabels => 1,
-	separator => '<div style="margin-bottom: 0.4em;"></div>',
-);
-
-$solD = "Without feedback, E<sub>${focus_enzyme}</sub> remains active "
-	. "regardless of how much ${focus_end_txt} has accumulated. The "
-	. "${focus_name} branch continues producing ${focus_end_txt} without "
-	. "regulation, causing it to accumulate.";
-
-# ============================================
-# 2l) Part E: Branch rerouting (MC)
-# ============================================
-$qE = "If enzyme <b>E<sub>${focus_enzyme}</sub></b> is completely "
+$qD = "If enzyme <b>E<sub>${focus_enzyme}</sub></b> is completely "
 	. "inactivated, what happens to the production of "
 	. "${other_end_txt}?";
 
-my @pE_choices = (
+my @pD_choices = (
 	"metabolite ${other_end_txt} "
 	. "<span style='color:#1a7a1a; font-weight:700;'>increases</span> "
 	. "because ${bp_txt} is redirected into the ${other_name} branch",
@@ -468,19 +478,19 @@ my @pE_choices = (
 	. "<span style='color:#c93030; font-weight:700;'>stops</span> "
 	. "because one branch is blocked",
 );
-my $pE_correct = $pE_choices[0];
-for my $i (reverse 1 .. $#pE_choices) {
+my $pD_correct = $pD_choices[0];
+for my $i (reverse 1 .. $#pD_choices) {
 	my $j = $local_random->random(0, $i, 1);
-	@pE_choices[$i, $j] = @pE_choices[$j, $i];
+	@pD_choices[$i, $j] = @pD_choices[$j, $i];
 }
 
-$rbE = RadioButtons(
-	[[@pE_choices]], $pE_correct,
+$rbD = RadioButtons(
+	[[@pD_choices]], $pD_correct,
 	labels => 'ABC', displayLabels => 1,
 	separator => '<div style="margin-bottom: 0.4em;"></div>',
 );
 
-$solE = "When E<sub>${focus_enzyme}</sub> is inactivated, ${bp_txt} "
+$solD = "When E<sub>${focus_enzyme}</sub> is inactivated, ${bp_txt} "
 	. "can no longer enter the ${focus_name} branch. The ${bp_txt} is "
 	. "redirected into the ${other_name} branch, increasing "
 	. "${other_end_txt} production.";
@@ -489,11 +499,11 @@ $solE = "When E<sub>${focus_enzyme}</sub> is inactivated, ${bp_txt} "
 # 3) Statement (PGML)
 # ============================================
 # Parts A and B use legacy ANS() pattern for checkbox grading.
-# Parts C-E use inline [_]{$rb} pattern for RadioButtons.
+# Parts C and D use inline [_]{$rb} pattern for RadioButtons.
 
 BEGIN_PGML
 
-*Negative Feedback in a Branched Metabolic Pathway*
+*Feedback Regulation in a Splitting Metabolic Pathway*
 
 A series of enzymes catalyze reactions involving the metabolites in the branched metabolic pathway shown below. The ellipsis (...) indicates that additional upstream steps are not shown.
 
@@ -517,7 +527,7 @@ A series of enzymes catalyze reactions involving the metabolites in the branched
 
 ---
 
-*Part C: Downstream Effects of Feedback*
+*Part C: Feedback Effects*
 
 [$qC]*
 
@@ -525,19 +535,11 @@ A series of enzymes catalyze reactions involving the metabolites in the branched
 
 ---
 
-*Part D: Breaking the Feedback Loop*
+*Part D: Branch Rerouting*
 
 [$qD]*
 
 [_]{$rbD}
-
----
-
-*Part E: Branch Rerouting*
-
-[$qE]*
-
-[_]{$rbE}
 
 END_PGML
 
@@ -545,15 +547,13 @@ END_PGML
 # 4) Hint
 # ----------------------------
 BEGIN_PGML_HINT
-*Part A:* End products of each pathway segment can inhibit earlier enzymes. How many end products does this branched pathway have?
+*Part A:* End products of each pathway segment can inhibit earlier enzymes. How many end products does this pathway have?
 
 *Part B:* The committed step is the first enzyme unique to each segment. Where does each segment begin?
 
-*Part C:* When an enzyme is inhibited, everything downstream starves. What about the other branch?
+*Part C:* When an enzyme is inhibited, what happens to metabolites that accumulate? What about the other branch?
 
-*Part D:* Feedback acts like a thermostat. What happens if the thermostat breaks?
-
-*Part E:* If one path for the branch-point metabolite is blocked, where does it all go?
+*Part D:* If one path for the branch-point metabolite is blocked, where does it all go?
 END_PGML_HINT
 
 # ----------------------------
@@ -567,8 +567,6 @@ BEGIN_PGML_SOLUTION
 *Part C:* [$solC]*
 
 *Part D:* [$solD]*
-
-*Part E:* [$solE]*
 END_PGML_SOLUTION
 
 ENDDOCUMENT();

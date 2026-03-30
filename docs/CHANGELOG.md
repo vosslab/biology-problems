@@ -2,6 +2,19 @@
 
 ## 2026-03-30
 
+### Additions and New Features
+- Created [problems/biochemistry-problems/enzymes/feedback_merging_pathway.py](../problems/biochemistry-problems/enzymes/feedback_merging_pathway.py), a sister script to the splitting pathway generator. Produces MC questions about negative feedback in a merging (anabolic) pathway where two input branches converge into a shared trunk. Four question parts: A (identify feedback inhibitor), B (identify regulated enzyme), C (feedback effects with accumulation/mutation sub-scenarios), D (blocked branch reduces trunk output, no rerouting possible). Uses `metaboliclib` shared helpers. Mirrored 6-row HTML table diagram with branches on left converging rightward.
+- Created [problems/biochemistry-problems/enzymes/feedback_merging_pathway.pgml](../problems/biochemistry-problems/enzymes/feedback_merging_pathway.pgml), the WeBWorK PGML version of the merging pathway problem. Four parts using CheckboxList (A, B) and RadioButtons (C, D). LayoutTable diagram with branches left, trunk right.
+
+### Behavior or Interface Changes
+- Renamed `negative_feedback_pathway.py` to [problems/biochemistry-problems/enzymes/feedback_splitting_pathway.py](../problems/biochemistry-problems/enzymes/feedback_splitting_pathway.py) and `negative_feedback_pathway.pgml` to [problems/biochemistry-problems/enzymes/feedback_splitting_pathway.pgml](../problems/biochemistry-problems/enzymes/feedback_splitting_pathway.pgml) for topology clarity alongside the new merging sister scripts.
+- Refactored splitting pathway from 5 parts to 4 parts: merged Part C (accumulation) and Part D (mutation) into a single Part C (feedback effects) with two randomly-selected sub-scenarios. Relabeled old Part E (rerouting) as Part D. Both `.py` and `.pgml` versions updated.
+- Refactored `feedback_splitting_pathway.py` to import `color_text()`, `met_node()`, `pathway_intro_text()`, and `assign_metabolites()` from `metaboliclib` instead of inline definitions. Removed duplicate `PALETTE`, `_color_text`, `_met_node`, and `_pathway_intro` functions.
+- Expanded [problems/biochemistry-problems/enzymes/metaboliclib.py](../problems/biochemistry-problems/enzymes/metaboliclib.py) with shared helpers: `color_text()`, `met_node()`, `assign_metabolites()`, `pathway_intro_text()`. These are used by both the splitting and merging pathway generators.
+
+### Fixes and Maintenance
+- Refactored `_make_pathway_diagram()` in [feedback_merging_pathway.py](../problems/biochemistry-problems/enzymes/feedback_merging_pathway.py) to use shared helpers from `metaboliclib`: `make_empty_row()`, `make_enzyme_label_row()`, `make_metabolite_row()`, and `assemble_pathway_table()`. Replaced inline CSS definitions with `CSS_MET`, `CSS_ARR`, `CSS_LBL`, `CSS_EMPTY`, `CSS_DOTS` constants. Kept grid geometry calculation and special junction/ellipsis elements (↗, ↘, ellipsis) inline since they cannot be generalized to the shared helpers.
+
 ### Fixes and Maintenance
 - Changed text table renderer in qti-package-maker `string_functions.py` from `tablefmt="fancy_outline"` to `tablefmt="fancy_grid"` so data rows have visible horizontal separators in the human-readable preview output.
 - Merged duplicate Michaelis-Menten Km-from-table generators (`michaelis_menten_km_from_table.py` and `michaelis_menten_table-Km.py`) into single `michaelis_menten_table-Km.py` to eliminate implementation drift and preserve richer scenario generation. Removed mode 1 (very small substrate concentrations with 4 decimal places) in favor of mode 2 only (0.001-100 mM, 3 decimal places) for student clarity.
