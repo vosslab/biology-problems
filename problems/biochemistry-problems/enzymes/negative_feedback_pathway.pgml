@@ -154,6 +154,10 @@ my $total_cols = $branch_met_start + 2 * $max_branch_len - 1;
 # ============================================
 # 2f) Build diagram rows (no feedback arrows)
 # ============================================
+# LayoutTable does not support rowspan, so the PGML diagram uses
+# a 6-row flat layout. The Python generator uses rowspan for a
+# vertically centered trunk; this version keeps the same content
+# arrangement without spanning.
 
 # --- Branch 1 enzyme label row ---
 my @b1_enzyme_row = ();

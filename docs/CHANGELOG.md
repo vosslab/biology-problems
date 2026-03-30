@@ -3,6 +3,7 @@
 ## 2026-03-30
 
 ### Fixes and Maintenance
+- Changed text table renderer in qti-package-maker `string_functions.py` from `tablefmt="fancy_outline"` to `tablefmt="fancy_grid"` so data rows have visible horizontal separators in the human-readable preview output.
 - Merged duplicate Michaelis-Menten Km-from-table generators (`michaelis_menten_km_from_table.py` and `michaelis_menten_table-Km.py`) into single `michaelis_menten_table-Km.py` to eliminate implementation drift and preserve richer scenario generation. Removed mode 1 (very small substrate concentrations with 4 decimal places) in favor of mode 2 only (0.001-100 mM, 3 decimal places) for student clarity.
 - Created [problems/biochemistry-problems/enzymes/mm_lib.py](../problems/biochemistry-problems/enzymes/mm_lib.py), shared helper library for Michaelis-Menten table question generators. Contains `SUBSTRATE_CONCS`, `KM_CHOICES`, `michaelis_menten()`, and `make_data_table()` (supports both 2-column Km and 3-column inhibition tables). Used by both `michaelis_menten_table-Km.py` and `michaelis_menten_table-inhibition.py`.
 - Refactored [problems/biochemistry-problems/enzymes/michaelis_menten_table-inhibition.py](../problems/biochemistry-problems/enzymes/michaelis_menten_table-inhibition.py): imports shared helpers from `mm_lib.py`, renamed variables for clarity (`xvals` to `substrate_concs`, `Km` to `km`, etc.), replaced `sys.exit(1)` with `raise ValueError`, removed `import copy` and `import sys`.
