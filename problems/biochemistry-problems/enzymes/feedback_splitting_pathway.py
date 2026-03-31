@@ -13,7 +13,7 @@ SCENARIOS = None
 #============================================
 #============================================
 def _build_pathway(trunk_len: int, b1_len: int, b2_len: int,
-		color_shift: int, letter_shift: int) -> dict:
+		letter_shift: int) -> dict:
 	"""Build pathway via shorthand pipeline: letters -> shorthand -> schema -> display model.
 
 	Adds question context (convenience aliases) on top of the display model.
@@ -22,7 +22,6 @@ def _build_pathway(trunk_len: int, b1_len: int, b2_len: int,
 		trunk_len (int): Number of metabolites in trunk (3 or 4).
 		b1_len (int): Number of metabolites in upper branch (3 or 4).
 		b2_len (int): Number of metabolites in lower branch (3 or 4).
-		color_shift (int): Starting index in the color palette.
 		letter_shift (int): Starting index in the alphabet.
 
 	Returns:
@@ -38,7 +37,7 @@ def _build_pathway(trunk_len: int, b1_len: int, b2_len: int,
 	# build shorthand, parse, and decorate
 	shorthand = metaboliclib.build_shorthand('split', trunk_letters, b1_letters, b2_letters)
 	schema = metaboliclib.parse_shorthand(shorthand)
-	display = metaboliclib.build_display_model(schema, color_shift)
+	display = metaboliclib.build_display_model(schema)
 
 	# add question-context convenience aliases
 	display['bp_mol'] = display['junction_mol']
@@ -46,26 +45,7 @@ def _build_pathway(trunk_len: int, b1_len: int, b2_len: int,
 	display['b2_end'] = display['end_products']['b2']
 	display['e_b1_first'] = display['committed_step_enzymes']['b1']
 	display['e_b2_first'] = display['committed_step_enzymes']['b2']
-	display['trunk_len'] = trunk_len
-	display['b1_len'] = b1_len
-	display['b2_len'] = b2_len
-	display['shorthand'] = shorthand
 	return display
-
-#============================================
-#============================================
-def _make_pathway_diagram(pathway: dict) -> str:
-	"""Render the pathway diagram via the layout pipeline.
-
-	Args:
-		pathway (dict): Display model from _build_pathway.
-
-	Returns:
-		str: HTML table string.
-	"""
-	layout = metaboliclib.build_layout_plan(pathway)
-	table = metaboliclib.render_pathway_table(layout)
-	return table
 
 #============================================
 #============================================
@@ -103,7 +83,8 @@ def _make_feedback_inhibitor_question(pathway: dict, focus_branch: int) -> tuple
 	choices_list = metaboliclib.build_metabolite_choices(answer_text, correct_mol, distractors)
 
 	# question text
-	diagram = _make_pathway_diagram(pathway)
+	# build diagram inline for this question
+	diagram = metaboliclib.render_pathway_table(metaboliclib.build_layout_plan(pathway))
 	question_text = metaboliclib.pathway_intro_text(diagram)
 	question_text += "<p>In feedback regulation, end products inhibit "
 	question_text += "earlier enzymes in their own branch. "
@@ -135,10 +116,8 @@ def _make_regulated_enzyme_question(pathway: dict, focus_branch: int) -> tuple:
 		correct_enzyme = e_b2_first
 	answer_text = f"enzyme E<sub>{correct_enzyme}</sub>"
 
-	# build distractor enzyme IDs
-	distractor_ids = [1]
-	if pathway['trunk_len'] >= 3:
-		distractor_ids.append(2)
+	# build distractor enzyme IDs (trunk always has 3+ metabolites, so E2 always exists)
+	distractor_ids = [1, 2]
 	if e_b1_first + 1 <= total_enzymes:
 		distractor_ids.append(e_b1_first + 1)
 	if e_b2_first + 1 <= total_enzymes:
@@ -156,7 +135,8 @@ def _make_regulated_enzyme_question(pathway: dict, focus_branch: int) -> tuple:
 		end_txt = metaboliclib.color_text(pathway['b2_end'][0], pathway['b2_end'][1])
 
 	# question text
-	diagram = _make_pathway_diagram(pathway)
+	# build diagram inline for this question
+	diagram = metaboliclib.render_pathway_table(metaboliclib.build_layout_plan(pathway))
 	question_text = metaboliclib.pathway_intro_text(diagram)
 	question_text += f"<p>The end product {end_txt} acts as a feedback inhibitor. "
 	question_text += "<b>Which enzyme is the most likely target of this feedback "
@@ -195,7 +175,8 @@ def _make_accumulation_question(pathway: dict, focus_branch: int) -> tuple:
 	focus_first_txt = metaboliclib.color_text(focus_first[0], focus_first[1])
 
 	# question text
-	diagram = _make_pathway_diagram(pathway)
+	# build diagram inline for this question
+	diagram = metaboliclib.render_pathway_table(metaboliclib.build_layout_plan(pathway))
 	question_text = metaboliclib.pathway_intro_text(diagram)
 	question_text += f"<p>If the concentration of {focus_end_txt} becomes "
 	question_text += "<b>very high</b>, how would this most likely affect the pathway?</p>"
@@ -245,7 +226,8 @@ def _make_mutation_question(pathway: dict, focus_branch: int) -> tuple:
 	other_end_txt = metaboliclib.color_text(other_end[0], other_end[1])
 
 	# question text
-	diagram = _make_pathway_diagram(pathway)
+	# build diagram inline for this question
+	diagram = metaboliclib.render_pathway_table(metaboliclib.build_layout_plan(pathway))
 	question_text = metaboliclib.pathway_intro_text(diagram)
 	question_text += f"<p>If the inhibition of E<sub>{focus_enzyme}</sub> is "
 	question_text += "<b>eliminated</b> by a mutation, but the "
@@ -296,7 +278,8 @@ def _make_rerouting_question(pathway: dict, focus_branch: int) -> tuple:
 	other_end_txt = metaboliclib.color_text(other_end[0], other_end[1])
 
 	# question text
-	diagram = _make_pathway_diagram(pathway)
+	# build diagram inline for this question
+	diagram = metaboliclib.render_pathway_table(metaboliclib.build_layout_plan(pathway))
 	question_text = metaboliclib.pathway_intro_text(diagram)
 	question_text += f"<p>If enzyme <b>E<sub>{focus_enzyme}</sub></b> is completely "
 	question_text += f"inactivated, what happens to the production of {other_end_txt}?</p>"
@@ -367,7 +350,7 @@ def _get_scenarios(question_types: list) -> list:
 		question_types (list): List of question type keys to include.
 
 	Returns:
-		list: Each entry is (trunk_len, b1_len, b2_len, color_shift, letter_shift,
+		list: Each entry is (trunk_len, b1_len, b2_len, letter_shift,
 		      question_type, focus_branch, sub_type).
 	"""
 	scenarios = []
@@ -375,23 +358,22 @@ def _get_scenarios(question_types: list) -> list:
 		for b1_len in (3, 4):
 			for b2_len in (3, 4):
 				total_mols = trunk_len + b1_len + b2_len
-				for c_shift in range(0, len(metaboliclib.ALL_COLORS), 3):
-					for l_shift in range(0, 26 - total_mols, 4):
-						for qtype in question_types:
-							for focus_branch in (1, 2):
-								if qtype == 'feedback_effects':
-									for sub_type in ('accumulation', 'mutation'):
-										scenarios.append((
-											trunk_len, b1_len, b2_len,
-											c_shift, l_shift, qtype,
-											focus_branch, sub_type
-										))
-								else:
+				for l_shift in range(0, 26 - total_mols, 4):
+					for qtype in question_types:
+						for focus_branch in (1, 2):
+							if qtype == 'feedback_effects':
+								for sub_type in ('accumulation', 'mutation'):
 									scenarios.append((
 										trunk_len, b1_len, b2_len,
-										c_shift, l_shift, qtype,
-										focus_branch, None
+										l_shift, qtype,
+										focus_branch, sub_type
 									))
+							else:
+								scenarios.append((
+									trunk_len, b1_len, b2_len,
+									l_shift, qtype,
+									focus_branch, None
+								))
 	return scenarios
 
 #============================================
@@ -409,10 +391,10 @@ def write_question(N: int, args) -> str:
 	if SCENARIOS is None:
 		raise ValueError("Scenarios not initialized; run main().")
 	idx = (N - 1) % len(SCENARIOS)
-	trunk_len, b1_len, b2_len, c_shift, l_shift, qtype, focus_branch, sub_type = SCENARIOS[idx]
+	trunk_len, b1_len, b2_len, l_shift, qtype, focus_branch, sub_type = SCENARIOS[idx]
 
 	# build the pathway via shorthand pipeline
-	pathway = _build_pathway(trunk_len, b1_len, b2_len, c_shift, l_shift)
+	pathway = _build_pathway(trunk_len, b1_len, b2_len, l_shift)
 
 	# generate the question using the dispatch table
 	make_fn = QUESTION_MAKERS[qtype]

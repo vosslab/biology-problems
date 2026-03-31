@@ -11,85 +11,75 @@ import random
 # PIP3 modules / local shared library
 import qti_package_maker.common.color_wheel
 
-# Define the set of letters to be used and their associated colors
+# Define the set of letters to be used
 ALL_LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-# Generate 16 perceptually distinct dark colors via CAM16 color wheel
-ALL_COLORS = [f"#{c}" for c in qti_package_maker.common.color_wheel.generate_color_wheel(16, mode="dark")]
 
-#======================================
-#======================================
-def get_letters(num_letters=6, shift=0):
-	"""Fetch a list of HTML-formatted letters with a given color.
+#============================================
+#============================================
+def _generate_colors(num_colors: int) -> list:
+	"""Generate perceptually distinct colors, rotated by a random offset.
 
 	Args:
-		num_letters (int): The number of letters to get.
-		shift (int): The index to start from for letter and color.
+		num_colors (int): Number of colors to generate.
 
 	Returns:
-		html_letters (list): List of HTML formatted letters with color.
+		list: Hex color strings with '#' prefix.
 	"""
+	raw = qti_package_maker.common.color_wheel.generate_color_wheel(num_colors, mode="dark")
+	colors = [f"#{c}" for c in raw]
+	# rotate by a random offset for variety between questions
+	offset = random.randint(0, num_colors - 1)
+	colors = colors[offset:] + colors[:offset]
+	return colors
 
-	# Determine the starting index for fetching letters and colors
+#============================================
+#============================================
+def get_metabolite_data(num_letters: int, shift: int = 0) -> list:
+	"""Generate (letter, color) tuples for a linear pathway.
+
+	Args:
+		num_letters (int): Number of metabolite letters.
+		shift (int): Starting index in the alphabet.
+
+	Returns:
+		list: List of (letter, color) tuples.
+	"""
 	letter_index = shift % (len(ALL_LETTERS) - num_letters)
+	letters = list(ALL_LETTERS[letter_index:letter_index + num_letters])
+	colors = _generate_colors(num_letters)
+	metabolites = list(zip(letters, colors))
+	return metabolites
 
-	# Extract letters and colors based on the calculated index
-	letters = list(ALL_LETTERS[letter_index:letter_index+num_letters])
-	local_colors = ALL_COLORS + ALL_COLORS  # Double the list to handle rollover
-	color_index = shift % len(ALL_COLORS)
-	colors = local_colors[color_index:color_index+num_letters]
-
-	# Format letters as HTML with color
-	html_letters = []
-	for i, ltr in enumerate(letters):
-		clr = colors[i]
-		html_text = f"<strong><span style='color: {clr}'>{ltr}</span></strong>"
-		html_letters.append(html_text)
-
-	return html_letters
-
-#======================================
-#======================================
-def generate_metabolic_pathway(num_letters, shift=0):
-	"""Generate an HTML table showing a metabolic pathway.
+#============================================
+#============================================
+def generate_metabolic_pathway(metabolites: list) -> str:
+	"""Generate an HTML table showing a linear metabolic pathway with circular nodes.
 
 	Args:
-		num_letters (int): Number of molecules (letters) in the pathway.
-		shift (int): Index to start from for letter and color selection.
+		metabolites (list): List of (letter, color) tuples from get_metabolite_data().
 
 	Returns:
-		metabolic_table (str): HTML-formatted table representing the metabolic pathway.
+		str: HTML-formatted table representing the metabolic pathway.
 	"""
-
-	# Validate the number of molecules
-	if num_letters < 3:
+	if len(metabolites) < 3:
 		raise ValueError('Not enough molecules provided for the pathway.')
 
-	# Fetch HTML-formatted letters
-	letters = get_letters(num_letters, shift)
+	# enzyme label row
+	enzyme_positions = []
+	for i in range(len(metabolites) - 1):
+		# arrows are at odd columns (1, 3, 5, ...), metabolites at even (0, 2, 4, ...)
+		enzyme_positions.append((2 * i + 1, i + 1))
+	total_cols = 2 * len(metabolites) - 1
+	label_row = make_enzyme_label_row(total_cols, enzyme_positions)
 
-	# Initialize the HTML table (avoid colspan-heavy layouts which render as extra columns in text previews)
-	metabolic_table = "<table border='0' style='border-collapse: collapse;'>"
+	# metabolite + arrow row
+	met_row = make_metabolite_row(total_cols, metabolites, 0)
 
-	# Row for enzyme labels (aligned above the arrows)
-	metabolic_table += "<tr>"
-	for i in range(len(letters) - 1):
-		metabolic_table += "<td>&nbsp;</td>"
-		metabolic_table += ("<td style='font-size: 75%; text-align:center; vertical-align: bottom;'>"
-			f"enzyme {i+1}</td>")
-	metabolic_table += "<td>&nbsp;</td></tr>"
-
-	# Row for molecules and arrows
-	metabolic_table += "<tr>"
-	for i in range(len(letters) - 1):
-		metabolic_table += f"<td style='font-size: 150%; text-align:center; padding: 0 6px;'>{letters[i]}</td>"
-		metabolic_table += "<td style='text-align:center; padding: 0 6px;'>&xrarr;</td>"
-	metabolic_table += f"<td style='font-size: 150%; text-align:center; padding: 0 6px;'>{letters[-1]}</td>"
-	metabolic_table += "</tr></table>"
-
+	metabolic_table = assemble_pathway_table([label_row, met_row])
 	return metabolic_table
 
-#======================================
-#======================================
+#============================================
+#============================================
 def color_text(letter: str, color: str) -> str:
 	"""Wrap a metabolite letter in colored bold HTML.
 
@@ -103,8 +93,8 @@ def color_text(letter: str, color: str) -> str:
 	html = f"<strong><span style='color: {color};'>{letter}</span></strong>"
 	return html
 
-#======================================
-#======================================
+#============================================
+#============================================
 def met_node(letter: str, color: str) -> str:
 	"""Create a circular metabolite node for pathway diagrams.
 
@@ -123,8 +113,8 @@ def met_node(letter: str, color: str) -> str:
 	)
 	return html
 
-#======================================
-#======================================
+#============================================
+#============================================
 # CSS styles for branched pathway diagram table cells
 CSS_MET = "border: 0; text-align: center; padding: 2px 4px;"
 CSS_ARR = "border: 0; text-align: center; padding: 2px 2px; font-size: 150%;"
@@ -132,8 +122,8 @@ CSS_LBL = "border: 0; text-align: center; padding: 0 2px; font-size: 75%; vertic
 CSS_EMPTY = "border: 0; padding: 2px 4px;"
 CSS_DOTS = "border: 0; text-align: center; padding: 2px 2px; font-size: 120%; color: #888; letter-spacing: 2px;"
 
-#======================================
-#======================================
+#============================================
+#============================================
 def make_empty_row(total_cols: int) -> list:
 	"""Create a row of empty table cells.
 
@@ -146,8 +136,8 @@ def make_empty_row(total_cols: int) -> list:
 	row = [f"<td style='{CSS_EMPTY}'></td>"] * total_cols
 	return row
 
-#======================================
-#======================================
+#============================================
+#============================================
 def make_enzyme_label_row(total_cols: int, enzyme_positions: list) -> list:
 	"""Create a row with enzyme labels placed at specific columns.
 
@@ -164,8 +154,8 @@ def make_enzyme_label_row(total_cols: int, enzyme_positions: list) -> list:
 			row[col] = f"<td style='{CSS_LBL}'>E<sub>{en}</sub></td>"
 	return row
 
-#======================================
-#======================================
+#============================================
+#============================================
 def make_metabolite_row(total_cols: int, metabolites: list, start_col: int) -> list:
 	"""Create a row with metabolite nodes and arrows between them.
 
@@ -191,8 +181,8 @@ def make_metabolite_row(total_cols: int, metabolites: list, start_col: int) -> l
 				row[arrow_col] = f"<td style='{CSS_ARR}'>&rarr;</td>"
 	return row
 
-#======================================
-#======================================
+#============================================
+#============================================
 def assemble_pathway_table(rows: list) -> str:
 	"""Wrap a list of table rows into a borderless HTML table.
 
@@ -208,8 +198,8 @@ def assemble_pathway_table(rows: list) -> str:
 	table += "</table>"
 	return table
 
-#======================================
-#======================================
+#============================================
+#============================================
 def pathway_intro_text(diagram: str) -> str:
 	"""Build the common intro paragraph with a pathway diagram.
 
@@ -253,8 +243,8 @@ def build_shorthand(topology: str, trunk_letters: list, b1_letters: list, b2_let
 		raise ValueError(f"Unknown topology: {topology!r}. Use 'split' or 'merge'.")
 	return shorthand
 
-#======================================
-#======================================
+#============================================
+#============================================
 def parse_shorthand(shorthand: str) -> dict:
 	"""Parse a pathway shorthand string into a schema dict.
 
@@ -310,8 +300,8 @@ def parse_shorthand(shorthand: str) -> dict:
 	}
 	return schema
 
-#======================================
-#======================================
+#============================================
+#============================================
 def _parse_side(raw: str) -> list:
 	"""Parse one side of a shorthand into a list of letter lists.
 
@@ -346,9 +336,9 @@ def _parse_side(raw: str) -> list:
 			raise ValueError("Empty strand in shorthand")
 	return strands
 
-#======================================
-#======================================
-def build_display_model(schema: dict, color_shift: int) -> dict:
+#============================================
+#============================================
+def build_display_model(schema: dict) -> dict:
 	"""Build a display model from a parsed schema: add colors and enzyme IDs.
 
 	Assigns colors from the palette in metabolite traversal order.
@@ -360,7 +350,6 @@ def build_display_model(schema: dict, color_shift: int) -> dict:
 
 	Args:
 		schema (dict): Parsed schema from parse_shorthand().
-		color_shift (int): Starting index in the color palette.
 
 	Returns:
 		dict: Display model with colored metabolites, enzyme edges, and junction info.
@@ -383,11 +372,13 @@ def build_display_model(schema: dict, color_shift: int) -> dict:
 		trunk_letters = right_strands[0]
 	traversal_order = trunk_letters + b1_letters + b2_letters
 
+	# generate exactly the colors needed, rotated by a random offset
+	colors = _generate_colors(len(traversal_order))
+
 	# assign colors to each metabolite letter in traversal order
 	color_map = {}
-	dbl_pal = ALL_COLORS + ALL_COLORS
 	for i, letter in enumerate(traversal_order):
-		color_map[letter] = (letter, dbl_pal[color_shift + i])
+		color_map[letter] = (letter, colors[i])
 
 	# color each strand
 	colored_trunk = [color_map[ch] for ch in trunk_letters]
@@ -498,8 +489,8 @@ def build_display_model(schema: dict, color_shift: int) -> dict:
 
 	return display
 
-#======================================
-#======================================
+#============================================
+#============================================
 def build_layout_plan(display: dict) -> list:
 	"""Convert a display model into a flat row/column layout plan.
 
@@ -523,8 +514,8 @@ def build_layout_plan(display: dict) -> list:
 	else:
 		return _build_merge_layout(display, trunk, b1, b2)
 
-#======================================
-#======================================
+#============================================
+#============================================
 def _build_split_layout(display: dict, trunk: list, b1: list, b2: list) -> list:
 	"""Build layout plan for a splitting pathway: trunk -> junction -> branches.
 
@@ -593,8 +584,8 @@ def _build_split_layout(display: dict, trunk: list, b1: list, b2: list) -> list:
 
 	return rows
 
-#======================================
-#======================================
+#============================================
+#============================================
 def _build_merge_layout(display: dict, trunk: list, b1: list, b2: list) -> list:
 	"""Build layout plan for a merging pathway: branches -> junction -> trunk.
 
@@ -669,8 +660,8 @@ def _build_merge_layout(display: dict, trunk: list, b1: list, b2: list) -> list:
 
 	return rows
 
-#======================================
-#======================================
+#============================================
+#============================================
 def _make_cell_row_metabolites(total_cols: int, metabolites: list, start_col: int) -> list:
 	"""Build a row of cell dicts for metabolites with arrows between them.
 
@@ -693,8 +684,8 @@ def _make_cell_row_metabolites(total_cols: int, metabolites: list, start_col: in
 				row[arrow_col] = {'type': 'arrow', 'direction': 'right'}
 	return row
 
-#======================================
-#======================================
+#============================================
+#============================================
 def _make_cell_row_enzyme_labels(total_cols: int, positions: list) -> list:
 	"""Build a row of cell dicts for enzyme labels.
 
@@ -711,16 +702,16 @@ def _make_cell_row_enzyme_labels(total_cols: int, positions: list) -> list:
 			row[col] = {'type': 'enzyme_label', 'id': eid}
 	return row
 
-#======================================
-#======================================
+#============================================
+#============================================
 # cell type -> HTML rendering
 _JUNCTION_ARROWS = {
 	'NE': '&#8599;',  # north-east arrow
 	'SE': '&#8600;',  # south-east arrow
 }
 
-#======================================
-#======================================
+#============================================
+#============================================
 def render_pathway_table(layout_plan: list) -> str:
 	"""Render a layout plan into an HTML table.
 
@@ -747,8 +738,8 @@ def render_pathway_table(layout_plan: list) -> str:
 		html_rows.append(cells)
 	return assemble_pathway_table(html_rows)
 
-#======================================
-#======================================
+#============================================
+#============================================
 def _render_cell(cell: dict) -> str:
 	"""Render a single cell dict to an HTML <td> string.
 
@@ -777,8 +768,8 @@ def _render_cell(cell: dict) -> str:
 	else:
 		raise ValueError(f"Unknown cell type: {cell_type!r}")
 
-#======================================
-#======================================
+#============================================
+#============================================
 def build_metabolite_choices(answer_text: str, correct_mol: tuple,
 		distractors: list, max_distractors: int = 4) -> list:
 	"""Build a shuffled MC choices list from metabolite distractors.
@@ -806,8 +797,8 @@ def build_metabolite_choices(answer_text: str, correct_mol: tuple,
 	random.shuffle(choices)
 	return choices
 
-#======================================
-#======================================
+#============================================
+#============================================
 def build_enzyme_choices(answer_text: str, correct_enzyme: int,
 		all_enzyme_ids: list, max_distractors: int = 4) -> list:
 	"""Build a shuffled MC choices list from enzyme ID distractors.

@@ -56,11 +56,10 @@ def generate_question_text(letters: list, metabolic_table: str, question_type_id
 
 #============================================
 #============================================
-def generate_choices(letters: list, question_type_id: int) -> tuple:
+def generate_choices(question_type_id: int) -> tuple:
 	"""Create a list of answer choices and identify the correct answer.
 
 	Args:
-		letters (list): Sequence of letters representing metabolites in the pathway.
 		question_type_id (int): Identifier to select the type of question and its answer.
 
 	Returns:
@@ -112,27 +111,29 @@ def write_question(N: int, args) -> str:
 		# BIOL 301: competitive and non-competitive only
 		question_type_id = random.randint(0, 1)
 
-	letters = metaboliclib.get_letters(args.num_letters, N)
-	metabolic_table = metaboliclib.generate_metabolic_pathway(args.num_letters, N)
+	# Randomly pick pathway length for variety between questions
+	num_letters = random.randint(4, 7)
+	# Generate metabolite data once, use for both diagram and question text
+	metabolites = metaboliclib.get_metabolite_data(num_letters, N)
+	metabolic_table = metaboliclib.generate_metabolic_pathway(metabolites)
+
+	# Format colored text for use in question prose
+	letters = [metaboliclib.color_text(m[0], m[1]) for m in metabolites]
 
 	# Add more to the question based on the given letters
 	question_text = generate_question_text(letters, metabolic_table, question_type_id)
 
 	# Choices and answers
-	new_choices_list, answer_text = generate_choices(letters, question_type_id)
+	new_choices_list, answer_text = generate_choices(question_type_id)
 
 	# Complete the question formatting
 	complete_question = bptools.formatBB_MC_Question(N, question_text, new_choices_list, answer_text)
 	return complete_question
 
-#======================================
-#======================================
+#============================================
+#============================================
 def parse_arguments():
 	parser = bptools.make_arg_parser(description="Generate questions about metabolic pathways.")
-	parser.add_argument(
-		'-n', '--num-letters', type=int, default=5, dest='num_letters',
-		help="Number of letters in the metabolic pathway."
-	)
 	course_group = parser.add_mutually_exclusive_group(required=False)
 	course_group.add_argument(
 		'-c', '--course', dest='course', type=str,
@@ -151,14 +152,14 @@ def parse_arguments():
 	args = parser.parse_args()
 	return args
 
-#======================================
-#======================================
+#============================================
+#============================================
 def main():
 	args = parse_arguments()
 	outfile = bptools.make_outfile(args.course.upper())
 	bptools.collect_and_write_questions(write_question, args, outfile)
 
-#======================================
-#======================================
+#============================================
+#============================================
 if __name__ == '__main__':
 	main()
