@@ -38,8 +38,8 @@ def write_question(N, sugar_name, anomeric, ring_type, sugar_codes_cls, num_choi
 		return None
 
 	question = ''
-	question += 'Above is a Haworth projection of the monosaccharide &{0};-{1}. '.format(anomeric, sugar_name)
-	question += 'Which one of the following Fischer projections is of the monosaccharide <b>{0}</b>? '.format(sugar_name)
+	question += f'Above is a Haworth projection of the monosaccharide &{anomeric};-{sugar_name}. '
+	question += f'Which one of the following Fischer projections is of the monosaccharide <b>{sugar_name}</b>? '
 	answer_code = sugar_code
 	enantiomer_code = sugar_codes_cls.get_enantiomer_code_from_code(sugar_code)
 	choice_codes = [answer_code, enantiomer_code,]
@@ -68,9 +68,9 @@ def write_question(N, sugar_name, anomeric, ring_type, sugar_codes_cls, num_choi
 	if prelen != postlen:
 		raise ValueError("Lost some choices {0} -> {1}".format(prelen, postlen))
 
-	full_quesiton = '<p>&{0};-{1}&xrarr;{1}</p> '.format(anomeric, sugar_name)
-	full_quesiton += haworth
-	full_quesiton += question
+	full_question = f'<p>&{anomeric};-{sugar_name}&xrarr;{sugar_name}</p> '
+	full_question += haworth
+	full_question += question
 
 	random.shuffle(choice_codes)
 	choices_list = []
@@ -82,7 +82,7 @@ def write_question(N, sugar_name, anomeric, ring_type, sugar_codes_cls, num_choi
 		choices_list.append(my_fischer)
 	random.shuffle(choices_list)
 
-	bbformat = bptools.formatBB_MC_Question(N, full_quesiton, choices_list, answer)
+	bbformat = bptools.formatBB_MC_Question(N, full_question, choices_list, answer)
 
 	return bbformat
 

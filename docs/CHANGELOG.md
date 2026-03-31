@@ -3,6 +3,9 @@
 ## 2026-03-30
 
 ### Fixes and Maintenance
+- Fixed typo `full_quesiton` to `full_question` in both [convert_Haworth_to_Fischer.py](../problems/biochemistry-problems/carbs/convert_Haworth_to_Fischer.py) and [convert_Fischer_to_Haworth.py](../problems/biochemistry-problems/carbs/convert_Fischer_to_Haworth.py).
+- Converted `.format()` calls to f-strings in question text construction in both carbs conversion scripts.
+- Removed redundant nested `if` check with unreachable `else` branch in `color_question_choices()` in [sugarlib.py](../problems/biochemistry-problems/carbs/sugarlib.py).
 - Replaced module-level `ALL_COLORS` constant in [metaboliclib.py](../problems/biochemistry-problems/enzymes/metaboliclib.py) with on-demand `generate_color_wheel()` calls. Colors are now generated with exactly the count needed per question and rotated by a random offset for variety. Removed `color_shift` parameter from `build_display_model()`.
 - Removed `c_shift` loop from `_get_scenarios()` in both [feedback_splitting_pathway.py](../problems/biochemistry-problems/enzymes/feedback_splitting_pathway.py) and [feedback_merging_pathway.py](../problems/biochemistry-problems/enzymes/feedback_merging_pathway.py), reducing scenario count since color variation is now handled by random rotation.
 - Deleted trivial `_make_pathway_diagram()` wrapper from both feedback scripts; diagram construction is now inlined where needed.

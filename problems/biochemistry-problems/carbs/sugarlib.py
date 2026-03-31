@@ -118,11 +118,8 @@ def color_question_choices(choices_list):
 	for choice in choices_list:
 		# Check if the choice exists in the color mapping
 		if choice in color_choice_mapping:
-			if choice in color_choice_mapping:
-				colored = f'<span style="color:{color_choice_mapping[choice]};">{choice}</span>'
-				colored_choices_list.append(colored)
-			else:
-				colored_choices_list.append(choice)
+			colored = f'<span style="color:{color_choice_mapping[choice]};">{choice}</span>'
+			colored_choices_list.append(colored)
 		else:
 			# Keep uncolored if not found in the mapping
 			colored_choices_list.append(choice)
