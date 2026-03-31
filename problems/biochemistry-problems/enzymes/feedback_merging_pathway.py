@@ -12,9 +12,11 @@ SCENARIOS = None
 
 #============================================
 #============================================
-def _build_pathway(b1_len: int, b2_len: int, trunk_len: int, color_shift: int, letter_shift: int) -> dict:
-	"""
-	Build the pathway data for a merging topology: two branches converge to a trunk.
+def _build_pathway(b1_len: int, b2_len: int, trunk_len: int,
+		color_shift: int, letter_shift: int) -> dict:
+	"""Build pathway via shorthand pipeline: letters -> shorthand -> schema -> display model.
+
+	Adds question context (convenience aliases) on top of the display model.
 
 	Args:
 		b1_len (int): Number of metabolites in upper branch (3 or 4).
@@ -24,143 +26,59 @@ def _build_pathway(b1_len: int, b2_len: int, trunk_len: int, color_shift: int, l
 		letter_shift (int): Starting index in the alphabet.
 
 	Returns:
-		dict: Pathway structure with trunk, branches, enzyme info, and merge point.
+		dict: Display model + question context keys.
 	"""
-	# total molecules: both branches + trunk
-	total_mols = b1_len + b2_len + trunk_len
+	# pick sequential letters starting at letter_shift
+	# merging order: b1 first, then b2, then trunk (matches original assignment)
+	total = b1_len + b2_len + trunk_len
+	letters = list(metaboliclib.ALL_LETTERS[letter_shift:letter_shift + total])
+	b1_letters = letters[:b1_len]
+	b2_letters = letters[b1_len:b1_len + b2_len]
+	trunk_letters = letters[b1_len + b2_len:]
 
-	# use metaboliclib to assign letters and colors
-	all_metabolites = metaboliclib.assign_metabolites(total_mols, color_shift, letter_shift)
+	# build shorthand, parse, and decorate
+	shorthand = metaboliclib.build_shorthand('merge', trunk_letters, b1_letters, b2_letters)
+	schema = metaboliclib.parse_shorthand(shorthand)
+	display = metaboliclib.build_display_model(schema, color_shift)
 
-	# assign metabolites: b1 first, then b2, then trunk
-	b1 = all_metabolites[:b1_len]
-	b2 = all_metabolites[b1_len:b1_len + b2_len]
-	trunk = all_metabolites[b1_len + b2_len:]
-
-	# enzyme numbering:
-	# E1 through E(b1_len-1) are b1 internal enzymes
-	# E(b1_len) is the merge enzyme
-	# E(b1_len+1) through E(b1_len+trunk_len-1) are trunk enzymes
-	# E(b1_len+trunk_len) through E(b1_len+trunk_len+b2_len-1) are b2 internal enzymes
-	# Actually: b1 has b1_len-1 internal steps, then merge step, then trunk has trunk_len-1 steps,
-	# then b2 has b2_len-1 steps.
-	# Simpler: E1 thru E(b1_len-1) = b1, E(b1_len) = merge, E(b1_len+1) thru E(b1_len+trunk_len-1) = trunk,
-	# E(b1_len+trunk_len) thru E(b1_len+trunk_len+b2_len-1) = b2
-
-	e_b1_first = 1
-	e_merge = b1_len
-	e_trunk_first = b1_len + 1
-	e_b2_first = b1_len + trunk_len
-
-	pathway = {
-		'b1': b1,
-		'b2': b2,
-		'trunk': trunk,
-		'b1_len': b1_len,
-		'b2_len': b2_len,
-		'trunk_len': trunk_len,
-		'e_b1_first': e_b1_first,
-		'e_merge': e_merge,
-		'e_trunk_first': e_trunk_first,
-		'e_b2_first': e_b2_first,
-		'mp_mol': trunk[0],
-		'trunk_end': trunk[-1],
-		'b1_end': b1[-1],
-		'b2_end': b2[-1],
-	}
-	return pathway
+	# add question-context convenience aliases
+	display['mp_mol'] = display['junction_mol']
+	display['trunk_end'] = display['end_products']['trunk']
+	display['b1_end'] = display['end_products']['b1']
+	display['b2_end'] = display['end_products']['b2']
+	display['e_b1_first'] = display['committed_step_enzymes']['b1']
+	display['e_b2_first'] = display['committed_step_enzymes']['b2']
+	display['trunk_len'] = trunk_len
+	display['b1_len'] = b1_len
+	display['b2_len'] = b2_len
+	display['shorthand'] = shorthand
+	return display
 
 #============================================
 #============================================
 def _make_pathway_diagram(pathway: dict) -> str:
-	"""
-	Build an HTML table showing a merging metabolic pathway.
-	Branches converge from left (down and up arrows) into a single trunk on the right.
+	"""Render the pathway diagram via the layout pipeline.
 
 	Args:
-		pathway (dict): Pathway structure from _build_pathway.
+		pathway (dict): Display model from _build_pathway.
 
 	Returns:
-		str: HTML table string for the pathway diagram.
+		str: HTML table string.
 	"""
-	b1 = pathway['b1']
-	b2 = pathway['b2']
-	trunk = pathway['trunk']
-	e_b1_first = pathway['e_b1_first']
-	e_merge = pathway['e_merge']
-	e_trunk_first = pathway['e_trunk_first']
-	e_b2_first = pathway['e_b2_first']
-
-	# grid geometry:
-	# branch columns on the left (max(b1_len, b2_len) determines width)
-	# junction column in the middle
-	# trunk columns on the right
-	max_branch = max(len(b1), len(b2))
-	branch_start = 0
-	branch_cols = 2 * max_branch - 1
-	junction_col = branch_cols
-	# junction_col = merge arrow-tail, junction_col+1 = regular arrow, then trunk metabolites
-	trunk_start = junction_col + 2
-	trunk_cols = 2 * len(trunk) - 1
-	total_cols = trunk_start + trunk_cols + 1  # +1 for ellipsis on far right
-
-	# === Row 0: B1 enzyme labels (left columns only) ===
-	b1_enzyme_positions = [
-		(branch_start + 2 * i + 1, e_b1_first + i)
-		for i in range(len(b1) - 1)
-	]
-	b1_enzyme_row = metaboliclib.make_enzyme_label_row(total_cols, b1_enzyme_positions)
-
-	# === Row 1: B1 metabolites + arrows, then SE arrow at junction ===
-	b1_struct_row = metaboliclib.make_metabolite_row(total_cols, b1, branch_start)
-	# SE arrow at junction (b1 goes down to merge)
-	b1_struct_row[junction_col] = f"<td style='{metaboliclib.CSS_ARR}'>&#8600;</td>"
-
-	# === Row 2: Trunk enzyme labels (right columns only) ===
-	trunk_enzyme_positions = [
-		(trunk_start + 1 + 2 * i, e_trunk_first + i)
-		for i in range(len(trunk) - 1)
-	]
-	trunk_enzyme_row = metaboliclib.make_enzyme_label_row(total_cols, trunk_enzyme_positions)
-	# merge enzyme label (at junction)
-	trunk_enzyme_row[junction_col] = f"<td style='{metaboliclib.CSS_LBL}'>E<sub>{e_merge}</sub></td>"
-
-	# === Row 3: Trunk metabolites + arrows (starting after junction) ===
-	trunk_struct_row = metaboliclib.make_metabolite_row(total_cols, trunk, trunk_start)
-	# merge arrow-tail + regular arrow before first trunk metabolite
-	trunk_struct_row[junction_col] = f"<td style='{metaboliclib.CSS_ARR}'>&#x291A;</td>"
-	trunk_struct_row[junction_col + 1] = f"<td style='{metaboliclib.CSS_ARR}'>&rarr;</td>"
-	# ellipsis on far right to show continuation
-	if trunk_cols + trunk_start + 2 < total_cols:
-		trunk_struct_row[-1] = f"<td style='{metaboliclib.CSS_DOTS}'>&middot;&middot;&middot;</td>"
-
-	# === Row 4: B2 metabolites + arrows, then NE arrow at junction ===
-	b2_struct_row = metaboliclib.make_metabolite_row(total_cols, b2, branch_start)
-	# NE arrow at junction (b2 goes up to merge)
-	b2_struct_row[junction_col] = f"<td style='{metaboliclib.CSS_ARR}'>&#8599;</td>"
-
-	# === Row 5: B2 enzyme labels (left columns only) ===
-	b2_enzyme_positions = [
-		(branch_start + 2 * i + 1, e_b2_first + i)
-		for i in range(len(b2) - 1)
-	]
-	b2_enzyme_row = metaboliclib.make_enzyme_label_row(total_cols, b2_enzyme_positions)
-
-	# assemble the table in 6 rows: B1 enzymes, B1 struct, Trunk enzymes, Trunk struct, B2 struct, B2 enzymes
-	rows = [b1_enzyme_row, b1_struct_row, trunk_enzyme_row, trunk_struct_row, b2_struct_row, b2_enzyme_row]
-	table = metaboliclib.assemble_pathway_table(rows)
-
+	layout = metaboliclib.build_layout_plan(pathway)
+	table = metaboliclib.render_pathway_table(layout)
 	return table
 
 #============================================
 #============================================
 def _make_feedback_inhibitor_question(pathway: dict, focus_branch: int) -> tuple:
-	"""
-	MC question: which metabolite is most likely a feedback inhibitor.
+	"""MC question: which metabolite is most likely a feedback inhibitor.
+
+	In a merging pathway, the trunk end product inhibits both input branches.
 
 	Args:
 		pathway (dict): Pathway structure.
-		focus_branch (int): 1 for upper branch, 2 for lower branch (not used, trunk_end is always correct).
+		focus_branch (int): 1 or 2 (not used; trunk_end is always correct).
 
 	Returns:
 		tuple: (question_text, choices_list, answer_text).
@@ -170,7 +88,7 @@ def _make_feedback_inhibitor_question(pathway: dict, focus_branch: int) -> tuple
 	trunk_end = pathway['trunk_end']
 	mp_mol = pathway['mp_mol']
 
-	# correct answer is the trunk end product (it inhibits both input branches)
+	# correct answer is the trunk end product
 	correct_mol = trunk_end
 	answer_text = f"metabolite {metaboliclib.color_text(correct_mol[0], correct_mol[1])}"
 
@@ -180,20 +98,7 @@ def _make_feedback_inhibitor_question(pathway: dict, focus_branch: int) -> tuple
 		distractors.append(b1[1])
 	if len(b2) > 1:
 		distractors.append(b2[1])
-
-	# deduplicate
-	seen = {correct_mol[0]}
-	unique_distractors = []
-	for mol in distractors:
-		if mol[0] not in seen:
-			seen.add(mol[0])
-			unique_distractors.append(mol)
-
-	# build choices
-	choices_list = [answer_text]
-	for mol in unique_distractors[:4]:
-		choices_list.append(f"metabolite {metaboliclib.color_text(mol[0], mol[1])}")
-	random.shuffle(choices_list)
+	choices_list = metaboliclib.build_metabolite_choices(answer_text, correct_mol, distractors)
 
 	# question text
 	diagram = _make_pathway_diagram(pathway)
@@ -208,8 +113,7 @@ def _make_feedback_inhibitor_question(pathway: dict, focus_branch: int) -> tuple
 #============================================
 #============================================
 def _make_regulated_enzyme_question(pathway: dict, focus_branch: int) -> tuple:
-	"""
-	MC question: which enzyme is most likely a target of feedback inhibition.
+	"""MC question: which enzyme is most likely a target of feedback inhibition.
 
 	Args:
 		pathway (dict): Pathway structure.
@@ -218,14 +122,12 @@ def _make_regulated_enzyme_question(pathway: dict, focus_branch: int) -> tuple:
 	Returns:
 		tuple: (question_text, choices_list, answer_text).
 	"""
-	b1 = pathway['b1']
-	b2 = pathway['b2']
-	trunk = pathway['trunk']
 	e_b1_first = pathway['e_b1_first']
 	e_b2_first = pathway['e_b2_first']
 	e_trunk_first = pathway['e_trunk_first']
 	e_merge = pathway['e_merge']
 	trunk_end = pathway['trunk_end']
+	total_enzymes = len(pathway['enzymes'])
 
 	# correct answer is the committed step of the focus branch
 	if focus_branch == 1:
@@ -234,33 +136,18 @@ def _make_regulated_enzyme_question(pathway: dict, focus_branch: int) -> tuple:
 		correct_enzyme = e_b2_first
 	answer_text = f"enzyme E<sub>{correct_enzyme}</sub>"
 
-	# build distractor enzyme numbers
-	distractor_nums = [e_merge]
-	if e_trunk_first < len(b1) + len(b2) + len(trunk):
-		distractor_nums.append(e_trunk_first)
-	if e_trunk_first + 1 < len(b1) + len(b2) + len(trunk):
-		distractor_nums.append(e_trunk_first + 1)
-	# add the other branch's committed step
+	# build distractor enzyme IDs
+	distractor_ids = [e_merge]
+	if e_trunk_first <= total_enzymes:
+		distractor_ids.append(e_trunk_first)
+	if e_trunk_first + 1 <= total_enzymes:
+		distractor_ids.append(e_trunk_first + 1)
 	if focus_branch == 1:
-		distractor_nums.append(e_b2_first)
+		distractor_ids.append(e_b2_first)
 	else:
-		distractor_nums.append(e_b1_first)
+		distractor_ids.append(e_b1_first)
+	choices_list = metaboliclib.build_enzyme_choices(answer_text, correct_enzyme, distractor_ids)
 
-	# deduplicate, remove correct
-	seen = {correct_enzyme}
-	unique_distractors = []
-	for e in distractor_nums:
-		if e not in seen:
-			seen.add(e)
-			unique_distractors.append(e)
-
-	# build choices
-	choices_list = [answer_text]
-	for e in unique_distractors[:4]:
-		choices_list.append(f"enzyme E<sub>{e}</sub>")
-	random.shuffle(choices_list)
-
-	# determine which end product inhibits this enzyme
 	trunk_end_txt = metaboliclib.color_text(trunk_end[0], trunk_end[1])
 
 	# question text
@@ -275,8 +162,7 @@ def _make_regulated_enzyme_question(pathway: dict, focus_branch: int) -> tuple:
 #============================================
 #============================================
 def _make_accumulation_question(pathway: dict, focus_branch: int) -> tuple:
-	"""
-	MC question: what happens when the trunk end product concentration becomes very high.
+	"""MC question: what happens when trunk end product concentration becomes very high.
 
 	Args:
 		pathway (dict): Pathway structure.
@@ -285,17 +171,15 @@ def _make_accumulation_question(pathway: dict, focus_branch: int) -> tuple:
 	Returns:
 		tuple: (question_text, choices_list, answer_text).
 	"""
-	b1 = pathway['b1']
-	b2 = pathway['b2']
 	trunk_end = pathway['trunk_end']
 	mp_mol = pathway['mp_mol']
 
 	if focus_branch == 1:
-		focus_first = b1[0]
-		other_first = b2[0]
+		focus_first = pathway['b1'][0]
+		other_first = pathway['b2'][0]
 	else:
-		focus_first = b2[0]
-		other_first = b1[0]
+		focus_first = pathway['b2'][0]
+		other_first = pathway['b1'][0]
 
 	trunk_end_txt = metaboliclib.color_text(trunk_end[0], trunk_end[1])
 	mp_txt = metaboliclib.color_text(mp_mol[0], mp_mol[1])
@@ -326,8 +210,7 @@ def _make_accumulation_question(pathway: dict, focus_branch: int) -> tuple:
 #============================================
 #============================================
 def _make_mutation_question(pathway: dict, focus_branch: int) -> tuple:
-	"""
-	MC question: what happens when feedback inhibition is eliminated by mutation.
+	"""MC question: what happens when feedback inhibition is eliminated by mutation.
 
 	Args:
 		pathway (dict): Pathway structure.
@@ -359,8 +242,8 @@ def _make_mutation_question(pathway: dict, focus_branch: int) -> tuple:
 	question_text += "what is the most likely outcome?</p>"
 
 	answer_text = (
-		f"metabolite {focus_first_txt} accumulates and overproduces {mp_txt} "
-		f"from that branch; {trunk_end_txt} increases"
+		f"enzyme E<sub>{focus_enzyme}</sub> runs unchecked, overproducing "
+		f"{mp_txt} from that branch; {trunk_end_txt} increases"
 	)
 	choices_list = [
 		answer_text,
@@ -376,8 +259,8 @@ def _make_mutation_question(pathway: dict, focus_branch: int) -> tuple:
 #============================================
 #============================================
 def _make_blocked_branch_question(pathway: dict, focus_branch: int) -> tuple:
-	"""
-	MC question: what happens when a branch enzyme is completely inactivated.
+	"""MC question: what happens when a branch enzyme is completely inactivated.
+
 	In a merging pathway, blocking one branch reduces total input to the trunk.
 
 	Args:
@@ -437,8 +320,7 @@ def _make_blocked_branch_question(pathway: dict, focus_branch: int) -> tuple:
 #============================================
 #============================================
 def _make_feedback_effects_question(pathway: dict, focus_branch: int, sub_type: str) -> tuple:
-	"""
-	MC question about feedback effects: either accumulation or mutation.
+	"""MC question about feedback effects: either accumulation or mutation.
 
 	Args:
 		pathway (dict): Pathway structure.
@@ -468,10 +350,7 @@ QUESTION_MAKERS = {
 #============================================
 #============================================
 def _get_scenarios(question_types: list) -> list:
-	"""
-	Generate all scenario combinations: pathway parameters x question type x branch.
-
-	For 'feedback_effects', generates both 'accumulation' and 'mutation' sub-types.
+	"""Generate all scenario combinations: pathway parameters x question type x branch.
 
 	Args:
 		question_types (list): List of question type keys to include.
@@ -479,40 +358,35 @@ def _get_scenarios(question_types: list) -> list:
 	Returns:
 		list: Each entry is (b1_len, b2_len, trunk_len, color_shift, letter_shift,
 		      question_type, focus_branch, sub_type).
-		      sub_type is a string ('accumulation' or 'mutation') for 'feedback_effects',
-		      or None for other question types.
 	"""
 	scenarios = []
 	for b1_len in (3, 4):
 		for b2_len in (3, 4):
 			for trunk_len in (3, 4):
 				total_mols = b1_len + b2_len + trunk_len
-				# color shifts (sample 5 from the palette)
-				for c_shift in range(0, len(metaboliclib.all_colors), 3):
-					# letter shifts (sample a few starting positions)
+				for c_shift in range(0, len(metaboliclib.ALL_COLORS), 3):
 					for l_shift in range(0, 26 - total_mols, 4):
 						for qtype in question_types:
 							for focus_branch in (1, 2):
 								if qtype == 'feedback_effects':
-									# generate both sub-types for feedback effects
 									for sub_type in ('accumulation', 'mutation'):
 										scenarios.append((
 											b1_len, b2_len, trunk_len,
-											c_shift, l_shift, qtype, focus_branch, sub_type
+											c_shift, l_shift, qtype,
+											focus_branch, sub_type
 										))
 								else:
-									# other question types have no sub_type
 									scenarios.append((
 										b1_len, b2_len, trunk_len,
-										c_shift, l_shift, qtype, focus_branch, None
+										c_shift, l_shift, qtype,
+										focus_branch, None
 									))
 	return scenarios
 
 #============================================
 #============================================
 def write_question(N: int, args) -> str:
-	"""
-	Creates a complete formatted MC question about feedback regulation in a merging pathway.
+	"""Creates a formatted MC question about feedback regulation in a merging pathway.
 
 	Args:
 		N (int): The question number.
@@ -526,7 +400,7 @@ def write_question(N: int, args) -> str:
 	idx = (N - 1) % len(SCENARIOS)
 	b1_len, b2_len, trunk_len, c_shift, l_shift, qtype, focus_branch, sub_type = SCENARIOS[idx]
 
-	# build the pathway
+	# build the pathway via shorthand pipeline
 	pathway = _build_pathway(b1_len, b2_len, trunk_len, c_shift, l_shift)
 
 	# generate the question using the dispatch table
@@ -536,7 +410,6 @@ def write_question(N: int, args) -> str:
 	else:
 		question_text, choices_list, answer_text = make_fn(pathway, focus_branch)
 
-	# format as MC question
 	complete_question = bptools.formatBB_MC_Question(
 		N, question_text, choices_list, answer_text
 	)
@@ -555,8 +428,7 @@ PART_MAP = {
 #============================================
 #============================================
 def parse_arguments():
-	"""
-	Parses command-line arguments for the script.
+	"""Parses command-line arguments for the script.
 
 	Returns:
 		argparse.Namespace: Parsed arguments.
@@ -565,7 +437,6 @@ def parse_arguments():
 		description="Generate feedback merging pathway MC questions."
 	)
 	parser = bptools.add_scenario_args(parser)
-	# part selection: restrict to one or more question types
 	valid_parts = list(PART_MAP.keys())
 	parser.add_argument(
 		'-p', '--part', dest='question_part', type=str.upper,
@@ -583,9 +454,7 @@ def parse_arguments():
 #============================================
 #============================================
 def main():
-	"""
-	Main function that orchestrates question generation and file output.
-	"""
+	"""Main function that orchestrates question generation and file output."""
 	args = parse_arguments()
 
 	# determine which question types to include

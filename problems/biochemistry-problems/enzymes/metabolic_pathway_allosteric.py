@@ -1,18 +1,25 @@
 #!/usr/bin/env python3
 
+# local repo modules
 import bptools
 import metaboliclib
 
-#======================================
-#======================================
-# Generate a multiple-choice question about metabolic pathways
-def write_question(N, args):
+#============================================
+#============================================
+def write_question(N: int, args) -> str:
+	"""Create an MC question about which enzyme is most likely allosteric.
+
+	Args:
+		N (int): The question number.
+		args (argparse.Namespace): Parsed command-line arguments.
+
+	Returns:
+		str: A formatted MC question string.
+	"""
 	# Create the question stem and generate the metabolic pathway table
 	question_text = '<p>A series of enzymes catalyze the reactions in the following metabolic pathway:</p>'
 	metabolic_table = metaboliclib.generate_metabolic_pathway(args.num_letters, N)
 	letters = metaboliclib.get_letters(args.num_letters, N)
-	#print(metabolic_table)
-
 	# Add the generated metabolic table to the question
 	question_text += metabolic_table
 
@@ -30,9 +37,8 @@ def write_question(N, args):
 	complete_question = bptools.formatBB_MC_Question(N, question_text, choices_list, answer_text)
 	return complete_question
 
-#======================================
-#======================================
-#======================================
+#============================================
+#============================================
 def parse_arguments():
 	parser = bptools.make_arg_parser(description="Generate questions about metabolic pathways.")
 	parser.add_argument(
@@ -42,16 +48,15 @@ def parse_arguments():
 	args = parser.parse_args()
 	return args
 
-#======================================
-#======================================
+#============================================
+#============================================
 def main():
 	args = parse_arguments()
 	outfile = bptools.make_outfile()
 	bptools.collect_and_write_questions(write_question, args, outfile)
 
-#===========================================================
-#===========================================================
-# This block ensures the script runs only when executed directly
+#============================================
+#============================================
 if __name__ == '__main__':
 	main()
 
