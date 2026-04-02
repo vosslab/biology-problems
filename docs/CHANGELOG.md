@@ -1,5 +1,23 @@
 # Changelog
 
+## 2026-04-01
+
+### Behavior or Interface Changes
+- Redesigned [feedback_merging_pathway.py](../problems/biochemistry-problems/enzymes/feedback_merging_pathway.py) and [feedback_merging_pathway.pgml](../problems/biochemistry-problems/enzymes/feedback_merging_pathway.pgml) around feed-forward cross-activation instead of negative feedback from the trunk end product. Questions now test coordination between branches (cross-communication), not linear feedback which is covered by simpler problems.
+- New 5-part question structure: Part A (identify feed-forward activators), Part B (identify cross-activation target enzymes), Part C (perturbation reasoning with 3 sub-scenarios: overproduction, lost cross-activation, branch imbalance), Part D (blocked branch constraint), Part E (why cross-activation exists).
+- Part C sub-scenarios test constraint-based reasoning: overproduction stimulates the other branch, lost cross-activation causes imbalance, and excess from one branch cannot compensate for insufficient supply from the other.
+- Distractors target specific student misconceptions: splitting-pathway rerouting logic, branch independence, mass action without stoichiometry, binary thinking.
+
+### Fixes and Maintenance
+- Fixed PGML merge point variable: `$mp_mol` was incorrectly set to `$b1[$#b1]` (last branch 1 metabolite) instead of `$trunk[0]` (first trunk metabolite).
+- Fixed PGML diagram: ellipsis was overwriting the last trunk metabolite due to `total_cols` being one column too small.
+- Fixed duplicate metabolite in PGML Part A choices caused by `$mp_mol` and `$trunk[0]` referencing the same metabolite after the merge point fix.
+- Sorted PGML Part A metabolite choices alphabetically by letter.
+
+### Decisions and Failures
+- Removed trunk end product (K) from all assessed questions. Linear negative feedback is addressed in simpler pathway problems; the merging pathway problem now focuses exclusively on cross-branch coordination, which is unique to converging topologies.
+- Feed-forward cross-activation biology based on Tymoczko et al., Biochemistry: A Short Course, 4e. Each branch's end product activates the committed step of the other branch to coordinate substrate supply for the merge reaction.
+
 ## 2026-03-30
 
 ### Fixes and Maintenance

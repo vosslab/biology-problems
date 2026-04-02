@@ -1,15 +1,15 @@
-## TITLE('Biochemistry: Feedback Regulation in a Merging Pathway')
+## TITLE('Biochemistry: Cross-Communication in a Merging Pathway')
 ## DESCRIPTION
-## Four-part progressive problem about negative feedback inhibition in a
+## Five-part progressive problem about feed-forward cross-activation in a
 ## merging metabolic pathway. The diagram shows two input branches that
-## converge into a shared trunk. Students must identify feedback inhibitors,
-## regulated enzymes, and interpret regulatory effects. Parts A and B use
-## checkboxes (select all that apply) to identify the feedback inhibitors
-## and regulated enzymes. Part C randomly selects between accumulation or
-## mutation scenarios. Part D examines effects of complete enzyme inactivation.
-## No explicit feedback arrows shown -- students must infer based on biology.
+## converge into a shared trunk. Students must identify feed-forward
+## activators, cross-activation targets, and predict coordination effects.
+## Parts A and B use checkboxes (select all that apply). Part C randomly
+## selects between overproduction, lost cross-activation, or imbalance
+## scenarios. Part D examines blocked branch effects. Part E tests
+## understanding of why cross-activation exists.
 ## ENDDESCRIPTION
-## KEYWORDS('negative feedback','metabolic pathway','feedback inhibition','committed step','anabolic pathway','merging pathway','convergent pathway')
+## KEYWORDS('feed-forward','cross-activation','metabolic pathway','committed step','anabolic pathway','merging pathway','convergent pathway','coordination')
 ## DBsubject('Biochemistry')
 ## DBchapter('Enzymes')
 ## DBsection('Regulation')
@@ -107,7 +107,7 @@ my $total_enzymes = $b1_len + $b2_len + $trunk_len - 1;
 
 my $b1_start = $b1[0];
 my $b2_start = $b2[0];
-my $mp_mol = $b1[$#b1];  # first trunk metabolite (merge point)
+my $mp_mol = $trunk[0];  # first trunk metabolite (merge point)
 my $trunk_end = $trunk[$#trunk];
 
 # pick one branch randomly for parts C-D
@@ -119,6 +119,9 @@ my $focus_branch_start = ($focus_branch == 1) ? $b1_start : $b2_start;
 my $other_branch_start = ($focus_branch == 1) ? $b2_start : $b1_start;
 my $focus_branch_obj = ($focus_branch == 1) ? \@b1 : \@b2;
 my $other_branch_obj = ($focus_branch == 1) ? \@b2 : \@b1;
+my $other_enzyme = ($focus_branch == 1) ? $e_b2_first : $e_b1_first;
+my $focus_branch_end = ($focus_branch == 1) ? $b1[$#b1] : $b2[$#b2];
+my $other_branch_end = ($focus_branch == 1) ? $b2[$#b2] : $b1[$#b1];
 
 # ============================================
 # 2d) HTML helpers
@@ -155,7 +158,7 @@ my $branch_cols = 2 * $max_branch_len - 1;  # met + arrow + met + ... pairs
 my $merge_col = $branch_cols;
 my $trunk_arrow_col = $merge_col + 1;
 my $trunk_met_start = $trunk_arrow_col + 1;
-my $total_cols = $trunk_met_start + 2 * $trunk_len - 1;
+my $total_cols = $trunk_met_start + 2 * $trunk_len;
 
 # ============================================
 # 2f) Build diagram rows (no feedback arrows)
@@ -279,6 +282,8 @@ my $mp_txt         = met_txt($mp_mol->{L}, $mp_mol->{C});
 my $trunk_end_txt  = met_txt($trunk_end->{L}, $trunk_end->{C});
 my $focus_start_txt = met_txt($focus_branch_start->{L}, $focus_branch_start->{C});
 my $other_start_txt = met_txt($other_branch_start->{L}, $other_branch_start->{C});
+my $focus_end_txt   = met_txt($focus_branch_end->{L}, $focus_branch_end->{C});
+my $other_end_txt   = met_txt($other_branch_end->{L}, $other_branch_end->{C});
 
 # color lookup
 my %met_color = ();
@@ -287,23 +292,35 @@ for my $m (@b2) { $met_color{$m->{L}} = $m->{C}; }
 for my $m (@trunk) { $met_color{$m->{L}} = $m->{C}; }
 
 # ============================================
-# 2h) Part A: Identify feedback inhibitor (CheckboxList)
+# 2h) Part A: Identify feed-forward activators (CheckboxList)
 # ============================================
-# In a merging pathway, only the trunk end product acts as feedback inhibitor.
-# It inhibits the committed steps (first enzymes) of both input branches.
-# The merge point metabolite is NOT a feedback inhibitor.
+# In a merging pathway, each branch's end product activates the committed
+# step of the OTHER branch (cross-activation for coordinated supply).
+# Correct: both branch end products. Distractors: starting mols, intermediates.
 
-my @pA_selected = (
+# collect all candidate metabolites for Part A, then order by letter
+my @pA_pool = (
 	$b1_start,
 	$b2_start,
+	$focus_branch_end,
+	$other_branch_end,
 	$mp_mol,
-	$trunk[0],
-	$trunk_end,
 );
-# Optionally add a branch intermediate if available
 if ($b1_len >= 3) {
-	my @temp = ($pA_selected[0], $b1[1], @pA_selected[1 .. $#pA_selected]);
-	@pA_selected = @temp;
+	push @pA_pool, $b1[1];
+}
+# insertion sort by letter (avoids blocked 'sort' in safe compartment)
+my @pA_selected = ($pA_pool[0]);
+for my $k (1 .. $#pA_pool) {
+	my $inserted = 0;
+	for my $j (0 .. $#pA_selected) {
+		if ($pA_pool[$k]->{L} lt $pA_selected[$j]->{L}) {
+			splice(@pA_selected, $j, 0, $pA_pool[$k]);
+			$inserted = 1;
+			last;
+		}
+	}
+	if (!$inserted) { push @pA_selected, $pA_pool[$k]; }
 }
 
 my @pA_choices = ();
@@ -311,8 +328,9 @@ my @pA_correct_indices = ();
 for my $i (0 .. $#pA_selected) {
 	my $m = $pA_selected[$i];
 	push @pA_choices, "metabolite " . met_txt($m->{L}, $m->{C});
-	# correct: only the trunk end product
-	if ($m->{L} eq $trunk_end->{L}) {
+	# correct: both branch end products
+	if ($m->{L} eq $focus_branch_end->{L}
+		|| $m->{L} eq $other_branch_end->{L}) {
 		push @pA_correct_indices, $i;
 	}
 }
@@ -323,31 +341,32 @@ $cbA = CheckboxList(
 	separator => '<br/>',
 );
 
-$qA = "<b>Which metabolite is most likely to act as a feedback inhibitor "
-	. "in this merging pathway? (Select all that apply.)</b>";
+$qA = "<b>Which metabolites provide positive regulatory signals "
+	. "to enzymes in the other branch? "
+	. "(Select all that apply.)</b>";
 
-$solA = "The feedback inhibitor is: ${trunk_end_txt} "
-	. "(the end product of the shared trunk pathway). In negative feedback "
-	. "regulation of a merging (anabolic) pathway, the final product inhibits "
-	. "the committed steps (first unique enzymes) of both input branches. This "
-	. "prevents accumulation when product is abundant. Intermediate metabolites "
-	. "do not serve as feedback inhibitors.";
+$solA = "The two feed-forward activators are: ${focus_end_txt} "
+	. "(end product of the ${focus_name} branch, activates "
+	. "E<sub>${other_enzyme}</sub>) and ${other_end_txt} "
+	. "(end product of the ${other_name} branch, activates "
+	. "E<sub>${focus_enzyme}</sub>). Each branch's end product "
+	. "cross-activates the other branch's committed step, coordinating "
+	. "supply of both substrates for the merge reaction.";
 
 # ============================================
-# 2i) Part B: Identify regulated enzymes (CheckboxList)
+# 2i) Part B: Identify cross-activation targets (CheckboxList)
 # ============================================
 # Correct: E(e_b1_first) and E(e_b2_first) -- the committed steps
-# Distractors: trunk enzymes and downstream branch enzymes
+# These are targets of feed-forward cross-activation from the other branch
+# Distractors: merge enzyme, trunk enzymes, downstream branch enzymes
 
 my @pB_selected_nums = ();
-# Add first enzyme of each branch (correct)
+# committed steps of both branches (correct -- targets of cross-activation)
 push @pB_selected_nums, $e_b1_first;
 push @pB_selected_nums, $e_b2_first;
-# Add a trunk enzyme as distractor
-if ($trunk_len >= 2) {
-	push @pB_selected_nums, $e_trunk_first;
-}
-# Add a downstream branch enzyme if available
+# merge enzyme as distractor
+push @pB_selected_nums, $e_merge;
+# downstream branch enzymes as distractors
 if ($b1_len >= 2) {
 	push @pB_selected_nums, $e_b1_first + 1;
 }
@@ -368,7 +387,7 @@ my @pB_correct_indices = ();
 for my $i (0 .. $#pB_unique) {
 	my $e = $pB_unique[$i];
 	push @pB_choices, "enzyme E<sub>${e}</sub>";
-	# correct: only the committed steps of the two input branches
+	# correct: committed steps (targets of cross-activation)
 	if ($e == $e_b1_first || $e == $e_b2_first) {
 		push @pB_correct_indices, $i;
 	}
@@ -380,73 +399,168 @@ $cbB = CheckboxList(
 	separator => '<br/>',
 );
 
-$qB = "<b>Which enzymes are most likely targets of feedback inhibition "
-	. "in this pathway? (Select all that apply.)</b>";
+$qB = "<b>Which enzymes receive positive regulatory signals "
+	. "from a metabolite in the other branch? "
+	. "(Select all that apply.)</b>";
 
-$solB = "The two regulated enzymes are: "
-	. "E<sub>${e_b1_first}</sub> (committed step of the first input branch, "
-	. "inhibited by ${trunk_end_txt}) and "
-	. "E<sub>${e_b2_first}</sub> (committed step of the second input branch, "
-	. "inhibited by ${trunk_end_txt}). The committed step is the first enzyme "
-	. "unique to each input branch. Trunk enzymes are downstream of the merge "
-	. "point and are not directly regulated by the end product.";
+$solB = "The two cross-activation targets are: "
+	. "E<sub>${e_b1_first}</sub> (committed step of the ${focus_name} branch, "
+	. "activated by ${other_end_txt}) and "
+	. "E<sub>${e_b2_first}</sub> (committed step of the ${other_name} branch, "
+	. "activated by ${focus_end_txt}). The committed step is the first enzyme "
+	. "unique to each branch. Cross-activation ensures coordinated "
+	. "substrate supply for the merge reaction.";
 
 # ============================================
-# 2j) Part C: Accumulation scenario (MC, one branch)
+# 2j) Part C: Coordination reasoning (3 sub-scenarios)
 # ============================================
-$qC = "If the concentration of ${trunk_end_txt} becomes <b>very high</b>, "
-	. "how would this most likely affect the pathway?";
+# Randomly select: 1=overproduction, 2=lost cross-activation, 3=branch imbalance
+my $pC_subscenario = $local_random->random(1, 3, 1);
 
-my $pC_correct = "flux through the ${focus_name} input branch slows; "
-	. "metabolite ${focus_start_txt} accumulates";
+if ($pC_subscenario == 1) {
+	# Sub-scenario 1: One branch overproduces (cross-activation consequence)
+	$qC = "If the ${focus_name} branch overproduces ${focus_end_txt}, "
+		. "what is the most likely effect on the ${other_name} branch?";
 
-my @pC_choices = (
-	$pC_correct,
-	"flux through the ${focus_name} input branch increases; "
-	. "metabolite ${focus_start_txt} decreases",
-	"metabolite ${mp_txt} decreases; "
-	. "metabolite ${trunk_end_txt} continues to increase",
-	"flux through both input branches increases equally",
-	"metabolite ${focus_start_txt} decreases; "
-	. "metabolite ${other_start_txt} increases",
-);
-for my $i (reverse 1 .. $#pC_choices) {
-	my $j = $local_random->random(0, $i, 1);
-	@pC_choices[$i, $j] = @pC_choices[$j, $i];
+	my $pC_correct = "the ${other_name} branch is stimulated because "
+		. "${focus_end_txt} activates E<sub>${other_enzyme}</sub>, "
+		. "tending to increase ${other_end_txt} production";
+
+	my @pC_choices = (
+		$pC_correct,
+		"the ${other_name} branch slows because "
+		. "${focus_end_txt} inhibits E<sub>${other_enzyme}</sub>",
+		"the ${other_name} branch is unaffected because "
+		. "the two branches are independent",
+		"the excess ${focus_end_txt} is rerouted into "
+		. "the ${other_name} branch",
+		"the ${other_name} branch shuts down because "
+		. "only one branch is needed",
+	);
+	for my $i (reverse 1 .. $#pC_choices) {
+		my $j = $local_random->random(0, $i, 1);
+		@pC_choices[$i, $j] = @pC_choices[$j, $i];
+	}
+
+	$rbC = RadioButtons(
+		[[@pC_choices]], $pC_correct,
+		labels => 'ABC', displayLabels => 1,
+		separator => '<div style="margin-bottom: 0.4em;"></div>',
+	);
+
+	$solC = "When the ${focus_name} branch overproduces ${focus_end_txt}, "
+		. "the excess ${focus_end_txt} cross-activates "
+		. "E<sub>${other_enzyme}</sub> (the committed step of the "
+		. "${other_name} branch). This stimulates the ${other_name} branch "
+		. "to increase ${other_end_txt} production, coordinating substrate "
+		. "supply for the merge reaction.";
 }
+elsif ($pC_subscenario == 2) {
+	# Sub-scenario 2: Lost cross-activation (mutation)
+	$qC = "If a mutation eliminates the activation of "
+		. "E<sub>${other_enzyme}</sub> by ${focus_end_txt}, "
+		. "but all enzymes remain functional, "
+		. "what is the most likely effect on the pathway?";
 
-$rbC = RadioButtons(
-	[[@pC_choices]], $pC_correct,
-	labels => 'ABC', displayLabels => 1,
-	separator => '<div style="margin-bottom: 0.4em;"></div>',
-);
+	my $pC_correct = "the ${other_name} branch loses feed-forward "
+		. "stimulation; substrate supply becomes imbalanced; the merge "
+		. "step tends to be limited by ${other_end_txt} availability";
 
-$solC = "When ${trunk_end_txt} accumulates to high levels, it inhibits "
-	. "E<sub>${focus_enzyme}</sub> (the committed step of the ${focus_name} "
-	. "input branch). This slows flux through that branch, causing "
-	. "metabolite ${focus_start_txt} to accumulate. The other input branch "
-	. "is unaffected because it enters the pathway after the merge point.";
+	my @pC_choices = (
+		$pC_correct,
+		"the ${other_name} branch shuts down completely because "
+		. "E<sub>${other_enzyme}</sub> requires activation to function",
+		"the ${focus_name} branch compensates by increasing its "
+		. "own production of ${focus_end_txt}",
+		"the pathway is unaffected because feed-forward activation "
+		. "is not essential for enzyme function",
+		"${mp_txt} production increases because the "
+		. "${other_name} branch runs unchecked",
+	);
+	my $pC_lost_correct = $pC_correct;
+	for my $i (reverse 1 .. $#pC_choices) {
+		my $j = $local_random->random(0, $i, 1);
+		@pC_choices[$i, $j] = @pC_choices[$j, $i];
+	}
+
+	$rbC = RadioButtons(
+		[[@pC_choices]], $pC_lost_correct,
+		labels => 'ABC', displayLabels => 1,
+		separator => '<div style="margin-bottom: 0.4em;"></div>',
+	);
+
+	$solC = "Without feed-forward activation from ${focus_end_txt}, "
+		. "E<sub>${other_enzyme}</sub> still functions but at its basal "
+		. "rate. The ${other_name} branch is no longer stimulated when the "
+		. "${focus_name} branch speeds up, breaking the coordination "
+		. "mechanism. The merge step tends to become limited by "
+		. "${other_end_txt} availability because the two branches "
+		. "are no longer balanced.";
+}
+else {
+	# Sub-scenario 3: Branch imbalance (core constraint question)
+	$qC = "If the ${focus_name} branch produces an excess of "
+		. "${focus_end_txt} but the ${other_name} branch produces "
+		. "less ${other_end_txt} than normal, what is the most "
+		. "likely effect on ${mp_txt} production?";
+
+	my $pC_correct = "${mp_txt} production is limited by the "
+		. "${other_name} branch; excess ${focus_end_txt} cannot "
+		. "compensate for insufficient ${other_end_txt}";
+
+	my @pC_choices = (
+		$pC_correct,
+		"${mp_txt} increases because more ${focus_end_txt} "
+		. "is available for the merge reaction",
+		"excess ${focus_end_txt} drives the merge reaction forward "
+		. "despite low ${other_end_txt}",
+		"the excess ${focus_end_txt} is rerouted to increase "
+		. "${other_end_txt} production",
+		"${mp_txt} is unchanged because the branches "
+		. "are independent of each other",
+	);
+	my $pC_imb_correct = $pC_correct;
+	for my $i (reverse 1 .. $#pC_choices) {
+		my $j = $local_random->random(0, $i, 1);
+		@pC_choices[$i, $j] = @pC_choices[$j, $i];
+	}
+
+	$rbC = RadioButtons(
+		[[@pC_choices]], $pC_imb_correct,
+		labels => 'ABC', displayLabels => 1,
+		separator => '<div style="margin-bottom: 0.4em;"></div>',
+	);
+
+	$solC = "The merge reaction requires both ${focus_end_txt} and "
+		. "${other_end_txt} as substrates. When the ${other_name} branch "
+		. "produces less ${other_end_txt} than normal, the merge step "
+		. "becomes limited by ${other_end_txt} availability. Excess "
+		. "${focus_end_txt} from the ${focus_name} branch cannot "
+		. "compensate, because the merge reaction requires both inputs. "
+		. "This is the key constraint in converging pathways: flux is "
+		. "limited by whichever input branch is slower.";
+}
 
 # ============================================
 # 2k) Part D: Blocked input branch (MC)
 # ============================================
 $qD = "If enzyme <b>E<sub>${focus_enzyme}</sub></b> is completely "
-	. "inactivated, what happens to the production of ${trunk_end_txt}?";
+	. "inactivated, what happens to the production of ${mp_txt}?";
 
 my @pD_choices = (
-	"metabolite ${trunk_end_txt} "
+	"metabolite ${mp_txt} "
 	. "<span style='color:#c93030; font-weight:700;'>decreases</span> "
 	. "because the ${focus_name} input branch is blocked; "
-	. "the ${other_name} branch alone cannot supply enough ${mp_txt}",
-	"metabolite ${trunk_end_txt} production is "
+	. "the ${other_name} branch alone cannot supply enough substrate",
+	"metabolite ${mp_txt} "
+	. "<span style='color:#1a7a1a; font-weight:700;'>increases</span> "
+	. "because the ${other_name} branch compensates fully",
+	"metabolite ${mp_txt} production is "
 	. "<span style='font-weight:700;'>unchanged</span> because "
-	. "the ${other_name} branch can compensate for the missing input",
-	"metabolite ${trunk_end_txt} "
-	. "<span style='color:#1a7a1a; font-weight:700;'>increases</span> "
-	. "because feedback on the ${other_name} branch is relieved",
-	"metabolite ${focus_start_txt} "
-	. "<span style='color:#1a7a1a; font-weight:700;'>increases</span> "
-	. "because it no longer enters the trunk pathway",
+	. "both branches contribute equally",
+	"metabolite ${mp_txt} production "
+	. "<span style='color:#c93030; font-weight:700;'>stops completely</span> "
+	. "because the merge reaction requires input from both branches",
 );
 my $pD_correct = $pD_choices[0];
 for my $i (reverse 1 .. $#pD_choices) {
@@ -461,11 +575,53 @@ $rbD = RadioButtons(
 );
 
 $solD = "When E<sub>${focus_enzyme}</sub> is inactivated, the "
-	. "${focus_name} input branch can no longer contribute to trunk "
-	. "metabolism. The ${other_name} branch alone must supply all the "
-	. "${mp_txt}. Because both input branches are required to generate "
-	. "sufficient ${mp_txt} for the trunk (no rerouting or alternative "
-	. "pathways), ${trunk_end_txt} production decreases significantly.";
+	. "${focus_name} input branch can no longer supply substrate for "
+	. "the merge. The ${other_name} branch alone must supply all the "
+	. "input to produce ${mp_txt}. Because the merge reaction requires "
+	. "both substrates (no rerouting is possible), ${mp_txt} production "
+	. "decreases but does not stop entirely, since the ${other_name} "
+	. "branch still provides some input.";
+
+# ============================================
+# 2l) Part E: Feed-forward coordination (advanced, MC)
+# ============================================
+$qE = "In many converging pathways, each branch's end product activates "
+	. "the committed step of the <i>other</i> branch (feed-forward "
+	. "cross-activation). If ${focus_end_txt} activates "
+	. "E<sub>${other_enzyme}</sub>, what problem does this "
+	. "regulatory mechanism solve?";
+
+my @pE_choices = (
+	"it matches production of both substrates required for the "
+	. "merge reaction; when one branch increases output, it stimulates "
+	. "the other branch to keep pace",
+	"it provides a backup pathway if one branch fails, ensuring "
+	. "${trunk_end_txt} is still produced",
+	"it inhibits the ${other_name} branch to prevent overproduction "
+	. "of ${other_end_txt}",
+	"it has no functional advantage; it is an evolutionary artifact "
+	. "with no effect on pathway flux",
+);
+my $pE_correct = $pE_choices[0];
+for my $i (reverse 1 .. $#pE_choices) {
+	my $j = $local_random->random(0, $i, 1);
+	@pE_choices[$i, $j] = @pE_choices[$j, $i];
+}
+
+$rbE = RadioButtons(
+	[[@pE_choices]], $pE_correct,
+	labels => 'ABC', displayLabels => 1,
+	separator => '<div style="margin-bottom: 0.4em;"></div>',
+);
+
+$solE = "Feed-forward cross-activation solves the stoichiometric "
+	. "coordination problem in converging pathways. The merge reaction "
+	. "requires both ${focus_end_txt} and ${other_end_txt} as substrates. "
+	. "When the ${focus_name} branch produces more ${focus_end_txt}, "
+	. "that excess activates E<sub>${other_enzyme}</sub>, stimulating "
+	. "the ${other_name} branch to increase ${other_end_txt} production "
+	. "to match. This ensures balanced supply of both substrates for "
+	. "the merge step (Tymoczko et al., Biochemistry: A Short Course).";
 
 # ============================================
 # 3) Statement (PGML)
@@ -481,7 +637,7 @@ A series of enzymes catalyze reactions involving the metabolites in the merging 
 
 ---
 
-*Part A: Identify the Feedback Inhibitor*
+*Part A: Identify the Feed-Forward Activators*
 
 [$qA]*
 
@@ -489,7 +645,7 @@ A series of enzymes catalyze reactions involving the metabolites in the merging 
 
 ---
 
-*Part B: Identify the Regulated Enzymes*
+*Part B: Identify the Cross-Activation Targets*
 
 [$qB]*
 
@@ -497,7 +653,7 @@ A series of enzymes catalyze reactions involving the metabolites in the merging 
 
 ---
 
-*Part C: Downstream Effects of Feedback*
+*Part C: Perturbation Reasoning*
 
 [$qC]*
 
@@ -511,19 +667,29 @@ A series of enzymes catalyze reactions involving the metabolites in the merging 
 
 [_]{$rbD}
 
+---
+
+*Part E: Feed-Forward Coordination (Advanced)*
+
+[$qE]*
+
+[_]{$rbE}
+
 END_PGML
 
 # ----------------------------
 # 4) Hint
 # ----------------------------
 BEGIN_PGML_HINT
-*Part A:* End products provide negative feedback in anabolic pathways. Which metabolite is the "final product" of this converging pathway?
+*Part A:* Look at the regulatory signals in the diagram. Which metabolites send positive signals across branches?
 
-*Part B:* The committed step is the first enzyme unique to each segment. Where does each input branch begin?
+*Part B:* Follow the positive regulatory arrows. Where do they point?
 
-*Part C:* When an enzyme is inhibited, flux is blocked. What accumulates when flow is blocked at the beginning of a pathway?
+*Part C:* If one metabolite increases, trace its regulatory arrows to predict what changes downstream.
 
-*Part D:* If one input to a converging system is shut off, can the other input alone maintain output?
+*Part D:* The merge reaction requires both substrates. What happens if one source is removed?
+
+*Part E:* Consider what would happen without this coordination. What problem would arise at the merge step?
 END_PGML_HINT
 
 # ----------------------------
@@ -537,6 +703,8 @@ BEGIN_PGML_SOLUTION
 *Part C:* [$solC]*
 
 *Part D:* [$solD]*
+
+*Part E:* [$solE]*
 END_PGML_SOLUTION
 
 ENDDOCUMENT();
