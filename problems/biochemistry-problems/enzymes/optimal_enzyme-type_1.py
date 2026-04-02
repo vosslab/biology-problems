@@ -25,8 +25,9 @@ def write_question(N, args):
 
 	good_temp = random.randint(enzyme_dict['temp1']+1, enzyme_dict['temp2']-1)
 	optim_pH = enzyme_dict['optim_pH']
-	too_low_pH = enzyme_dict['optim_pH'] - random.randint(3,5)/2.0
-	too_high_pH = enzyme_dict['optim_pH'] + random.randint(3,5)/2.0
+	# clamp pH to biologically reasonable range [0.5, 14.0]
+	too_low_pH = max(0.5, enzyme_dict['optim_pH'] - random.randint(3,5)/2.0)
+	too_high_pH = min(14.0, enzyme_dict['optim_pH'] + random.randint(3,5)/2.0)
 	too_low_temp = enzyme_dict['temp1'] - random.randint(6,15)
 
 	question = '<br/>'
@@ -53,7 +54,7 @@ def write_question(N, args):
 	if question_type == 'A': ## A. good temp, too low pH
 		high_temp = enzyme_dict['temp1'] + random.randint(5,14)
 		choice2 = 'The temperature is {1} to {0}&deg;C and the pH is {2}.'.format(high_temp, increased, kept_same)
-		low_pH = current_pH - random.randint(2,5)/2.0
+		low_pH = max(0.5, current_pH - random.randint(2,5)/2.0)
 		choice3 = 'The temperature is {2} and the pH is {1} to {0}.'.format(low_pH, decreased, kept_same)
 		new_pH = enzyme_dict['optim_pH'] - 0.5
 		answer_text = 'The temperature is {2} and the pH is {1} to {0}.'.format(new_pH, increased, kept_same)
@@ -64,7 +65,7 @@ def write_question(N, args):
 	elif question_type == 'B': ## B. good temp, too high pH
 		high_temp = enzyme_dict['temp1'] + random.randint(5,14)
 		choice2 = 'The temperature is {1} to {0}&deg;C and the pH is {2}.'.format(high_temp, increased, kept_same)
-		high_pH = current_pH + random.randint(2,5)/2.0
+		high_pH = min(14.0, current_pH + random.randint(2,5)/2.0)
 		choice3 = 'The temperature is {2} and the pH is {1} to {0}.'.format(high_pH, increased, kept_same)
 		new_pH = enzyme_dict['optim_pH'] + 0.5
 		answer_text = 'The temperature is {2} and the pH is {1} to {0}.'.format(new_pH, decreased, kept_same)
@@ -73,9 +74,9 @@ def write_question(N, args):
 			print(new_pH, current_pH, enzyme_dict['optim_pH'])
 			sys.exit(1)
 	elif question_type == 'C': ## C. too low temp, good pH
-		high_pH = current_pH + random.randint(2,5)/2.0
+		high_pH = min(14.0, current_pH + random.randint(2,5)/2.0)
 		choice2 = 'The temperature is {2} and the pH is {1} to {0}.'.format(high_pH, increased, kept_same)
-		low_pH = current_pH - random.randint(2,5)/2.0
+		low_pH = max(0.5, current_pH - random.randint(2,5)/2.0)
 		choice3 = 'The temperature is {2} and the pH is {1} to {0}.'.format(low_pH, decreased, kept_same)
 		answer_text = 'The temperature is {1} to {0}&deg;C and the pH is {2}.'.format(good_temp, increased, kept_same)
 

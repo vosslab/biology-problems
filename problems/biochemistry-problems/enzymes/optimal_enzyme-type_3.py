@@ -44,7 +44,8 @@ def write_question(N, args):
 			if pH_mult == 0:
 				pH = enzyme_dict['optim_pH'] + random.randint(-2,2)/5.0
 			else:
-				pH = enzyme_dict['optim_pH'] + pH_mult * random.randint(3,5)/2.0
+				# clamp pH to biologically reasonable range [0.5, 14.0]
+				pH = max(0.5, min(14.0, enzyme_dict['optim_pH'] + pH_mult * random.randint(3,5)/2.0))
 			choice = f'The temperature is {temp}&deg;C and the pH is {pH:.1f}.'
 			choices_list.append(choice)
 	random.shuffle(choices_list)

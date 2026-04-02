@@ -256,6 +256,9 @@ for my $pH_mult (@values) {
 			my $w_pH_shift = 3 + $local_random->random(0, 2, 1);
 			$w_pH = $p2_enzyme->{optim_pH} + $pH_mult * $w_pH_shift / 2.0;
 		}
+		# clamp pH to biologically reasonable range [0.5, 14.0]
+		$w_pH = 0.5 if $w_pH < 0.5;
+		$w_pH = 14.0 if $w_pH > 14.0;
 
 		my $choice = "The temperature is ${w_temp}&deg;C and the pH is "
 			. sprintf('%.1f', $w_pH) . ".";
@@ -324,10 +327,13 @@ my $p3_good_temp = $p3_enzyme->{temp1} + 1
 	+ $local_random->random(0, $p3_enzyme->{temp2} - $p3_enzyme->{temp1} - 2, 1);
 # too-low pH: 1.5 to 2.5 below optimum
 my $too_low_pH_shift = 3 + $local_random->random(0, 2, 1);
+# clamp pH to biologically reasonable range [0.5, 14.0]
 my $too_low_pH = $p3_optim_pH - $too_low_pH_shift / 2.0;
+$too_low_pH = 0.5 if $too_low_pH < 0.5;
 # too-high pH: 1.5 to 2.5 above optimum
 my $too_high_pH_shift = 3 + $local_random->random(0, 2, 1);
 my $too_high_pH = $p3_optim_pH + $too_high_pH_shift / 2.0;
+$too_high_pH = 14.0 if $too_high_pH > 14.0;
 # too-low temp: 6 to 15 below temp1
 my $too_low_temp = $p3_enzyme->{temp1}
 	- 6 - $local_random->random(0, 9, 1);
@@ -358,6 +364,7 @@ if ($subtype eq 'A') {
 	# wrong: decrease pH further
 	my $lower_pH_shift = 2 + $local_random->random(0, 3, 1);
 	my $lower_pH = $p3_current_pH - $lower_pH_shift / 2.0;
+	$lower_pH = 0.5 if $lower_pH < 0.5;
 	push @p3_choices,
 		"The temperature is ${kept_same_html}"
 		. " and the pH is ${decreased_html} to ${lower_pH}.";
@@ -388,6 +395,7 @@ if ($subtype eq 'A') {
 	# wrong: increase pH further
 	my $higher_pH_shift = 2 + $local_random->random(0, 3, 1);
 	my $higher_pH = $p3_current_pH + $higher_pH_shift / 2.0;
+	$higher_pH = 14.0 if $higher_pH > 14.0;
 	push @p3_choices,
 		"The temperature is ${kept_same_html}"
 		. " and the pH is ${increased_html} to ${higher_pH}.";
@@ -412,6 +420,7 @@ if ($subtype eq 'A') {
 	# wrong: increase pH
 	my $high_pH_shift = 2 + $local_random->random(0, 3, 1);
 	my $high_pH = $p3_current_pH + $high_pH_shift / 2.0;
+	$high_pH = 14.0 if $high_pH > 14.0;
 	push @p3_choices,
 		"The temperature is ${kept_same_html}"
 		. " and the pH is ${increased_html} to ${high_pH}.";
@@ -419,6 +428,7 @@ if ($subtype eq 'A') {
 	# wrong: decrease pH
 	my $low_pH_shift = 2 + $local_random->random(0, 3, 1);
 	my $low_pH = $p3_current_pH - $low_pH_shift / 2.0;
+	$low_pH = 0.5 if $low_pH < 0.5;
 	push @p3_choices,
 		"The temperature is ${kept_same_html}"
 		. " and the pH is ${decreased_html} to ${low_pH}.";

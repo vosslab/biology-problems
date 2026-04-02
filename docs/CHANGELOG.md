@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-04-02
+
+### Fixes and Maintenance
+- Clamped computed pH values to biologically reasonable range [0.5, 14.0] in [optimal_enzyme-type_1.py](../problems/biochemistry-problems/enzymes/optimal_enzyme-type_1.py), [optimal_enzyme-type_3.py](../problems/biochemistry-problems/enzymes/optimal_enzyme-type_3.py), and [optimal_enzyme_activity.pgml](../problems/biochemistry-problems/enzymes/optimal_enzyme_activity.pgml). Previously, enzymes with low optimum pH (e.g., pH 1) could produce negative pH values in question text.
+
 ## 2026-04-01
 
 ### Behavior or Interface Changes
