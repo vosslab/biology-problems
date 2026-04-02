@@ -116,11 +116,11 @@ def met_node(letter: str, color: str) -> str:
 #============================================
 #============================================
 # CSS styles for branched pathway diagram table cells
-CSS_MET = "border: 0; text-align: center; padding: 2px 4px;"
-CSS_ARR = "border: 0; text-align: center; padding: 2px 2px; font-size: 150%;"
-CSS_LBL = "border: 0; text-align: center; padding: 0 2px; font-size: 75%; vertical-align: bottom;"
-CSS_EMPTY = "border: 0; padding: 2px 4px;"
-CSS_DOTS = "border: 0; text-align: center; padding: 2px 2px; font-size: 120%; color: #888; letter-spacing: 2px;"
+CSS_MET = "text-align: center; padding: 2px 4px;"
+CSS_ARR = "text-align: center; padding: 2px 2px; font-size: 150%;"
+CSS_LBL = "text-align: center; padding: 0 2px; font-size: 75%; vertical-align: bottom;"
+CSS_EMPTY = "padding: 2px 4px;"
+CSS_DOTS = "text-align: center; padding: 2px 2px; font-size: 120%; color: #888; letter-spacing: 2px;"
 
 #============================================
 #============================================
