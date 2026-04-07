@@ -1,5 +1,6 @@
 # output files
 
+topic_classifier/output/
 topic_classifier/results/
 temp.html
 tools/bptools_scripts_audit.md
