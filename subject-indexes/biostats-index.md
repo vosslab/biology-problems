@@ -1,6 +1,8 @@
 # List of Biostatistics Topics
 
-Explore the foundational concepts and techniques in Biostatistics. Click on a topic to dive deeper.
+Statistical methods applied to biological data: distributions, hypothesis testing, regression.
+Focus on data analysis, probability, and statistical reasoning.
+Not about biological molecules or lab techniques.
 
 ## Topics
 

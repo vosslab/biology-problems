@@ -16,6 +16,36 @@ def get_repo_root() -> str:
 	return repo_root
 
 #============================================
+def parse_subject_description(filepath: str) -> str:
+	"""Extract the subject description from the intro section of an index file.
+
+	The description is the text between the title (# heading) and the
+	first ## heading. This contains contrastive scope/focus/not lines.
+
+	Args:
+		filepath: path to the index markdown file
+
+	Returns:
+		description string (may be empty)
+	"""
+	with open(filepath, "r") as f:
+		content = f.read()
+	# Extract text between first # heading and first ## heading
+	lines = content.split("\n")
+	intro_lines = []
+	past_title = False
+	for line in lines:
+		if line.startswith("# ") and not past_title:
+			past_title = True
+			continue
+		if line.startswith("## "):
+			break
+		if past_title and line.strip():
+			intro_lines.append(line.strip())
+	description = "\n".join(intro_lines)
+	return description
+
+#============================================
 def parse_index_file(filepath: str) -> list:
 	"""Parse a single subject index markdown file into topic entries.
 
@@ -117,13 +147,21 @@ def load_all_indexes(index_dir: str = None) -> dict:
 
 		subject = derive_subject_from_filename(filename)
 		topics = parse_index_file(filepath)
-		all_indexes[subject] = topics
+		description = parse_subject_description(filepath)
+		all_indexes[subject] = {
+			"topics": topics,
+			"description": description,
+		}
 
 	return all_indexes
 
 #============================================
 def format_subject_list(all_indexes: dict) -> str:
-	"""Format all subjects with descriptions for LLM prompt.
+	"""Format all subjects with contrastive definitions for LLM prompt.
+
+	Each subject gets its intro description (scope/focus/not lines)
+	plus all topic names. Descriptions are read from the index files
+	so adding a new subject only requires editing one file.
 
 	Args:
 		all_indexes: output of load_all_indexes()
@@ -132,14 +170,16 @@ def format_subject_list(all_indexes: dict) -> str:
 		formatted string listing all subjects
 	"""
 	lines = []
-	for subject, topics in sorted(all_indexes.items()):
-		# Summarize the subject by its topic names
+	for subject, data in sorted(all_indexes.items()):
+		topics = data["topics"]
+		description = data["description"]
 		topic_names = [t["name"] for t in topics]
-		summary = ", ".join(topic_names[:5])
-		if len(topic_names) > 5:
-			summary += ", ..."
-		line = f"- {subject}: {summary}"
-		lines.append(line)
+		topic_list = ", ".join(topic_names)
+		lines.append(f"### {subject}")
+		if description:
+			lines.append(f"  {description}")
+		lines.append(f"  Topics: {topic_list}")
+		lines.append("")
 	result = "\n".join(lines)
 	return result
 

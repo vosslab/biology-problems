@@ -53,7 +53,13 @@ examples: |
 
 response_format: |
   Respond with these XML tags:
-  <primary_concept>The central biological concept being tested.</primary_concept>
-  <decisive_keywords>Terms that decided the classification.</decisive_keywords>
-  <final_topic>topicNN</final_topic>
-  <confidence>high, medium, or low</confidence>
+  <topic>topicNN</topic>
+  <confidence>3</confidence>
+  <reasoning>Brief explanation of why this topic fits.</reasoning>
+
+  Confidence is a single integer from 1 to 5:
+    1 = wild guess, no clear signal
+    2 = weak match, could easily be a different topic
+    3 = reasonable match, one topic fits better than others
+    4 = strong match, key terms clearly point to this topic
+    5 = unambiguous, no other topic is plausible

@@ -1,6 +1,8 @@
 # List of Molecular Biology Topics
 
-Explore the main topics in Molecular Biology. Click on a topic to dive deeper.
+DNA replication, transcription, translation, RNA processing, gene cloning, CRISPR.
+Focus on molecular mechanisms of gene expression inside the cell.
+Not about inheritance patterns, not about lab math or protocols.
 
 ## Topics
 

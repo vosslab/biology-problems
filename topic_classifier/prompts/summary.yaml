@@ -27,18 +27,6 @@ instructions: |
   <primary_concept>One sentence: the single most specific biological
   concept being tested.</primary_concept>
 
-  <biomolecules_or_structures>Named biological entities that appear
-  in the questions (e.g., alpha helix, Fischer projection, ATP,
-  hemoglobin). Comma-separated.</biomolecules_or_structures>
-
-  <question_actions>What students must do: classify, identify, compare,
-  calculate, predict, explain, match, order.
-  Comma-separated.</question_actions>
-
-  <topic_hints>Write short phrases that clearly describe the topic
-  using specific biological terms. Use concrete names.
-  Comma-separated.</topic_hints>
-
   Example of a good response:
 
   <summary>These questions test student ability to classify monosaccharides
@@ -46,6 +34,3 @@ instructions: |
   of sugar molecules.</summary>
   <key_terms>Fischer projection, monosaccharide, D-sugar, L-sugar, epimer, anomer, aldose, ketose</key_terms>
   <primary_concept>Classification of monosaccharides using Fischer projections</primary_concept>
-  <biomolecules_or_structures>monosaccharide, Fischer projection</biomolecules_or_structures>
-  <question_actions>classify, identify</question_actions>
-  <topic_hints>Fischer projection sugar classification, monosaccharide stereochemistry</topic_hints>

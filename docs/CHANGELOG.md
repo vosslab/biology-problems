@@ -3,6 +3,8 @@
 ## 2026-04-07
 
 ### Additions and New Features
+- Added `-v`/`--verbose` flag to [classify_scripts.py](../topic_classifier/classify_scripts.py) showing full summary fields, LLM reasoning, decisive keywords, response lengths, source trimming, and existing assignment comparison inline.
+- Converted all `print()` calls in [classify_scripts.py](../topic_classifier/classify_scripts.py) to `rich.console.print()` with consistent color: dim for progress steps, cyan for values/paths, bold for counts, colored confidence levels (green/yellow/red for high/medium/low).
 - Added `topic_classifier/` directory with LLM-based script-to-textbook-topic classification system.
   - [classify_scripts.py](../topic_classifier/classify_scripts.py) -- main CLI with two-stage classification (subject, then topic), dry-run mode, and diff reporting.
   - [index_parser.py](../topic_classifier/index_parser.py) -- parses `subject-indexes/*.md` into structured topic lists.
@@ -12,12 +14,17 @@
 - Uses `local-llm-wrapper` with Apple Intelligence (primary) and Ollama (fallback) transports.
 
 ### Behavior or Interface Changes
-- Rewrote summarizer prompt to produce rich classification-oriented artifact with key_terms, primary_concept, biomolecules_or_structures, disambiguators, and question_actions fields. Summary now preserves domain-specific terms verbatim instead of over-compressing.
-- Rewrote stage 2 classifier prompt with explicit decision rules and priority rules (primary-concept matching, biochemistry-specific trap rules). Stage 2 now outputs primary_concept, decisive_keywords, excluded_topics, final_topic, and confidence.
-- Stage 2 receives ranked summary fields (primary_concept first, question_actions last) instead of a plain text summary.
-- Added summary-quality validation that flags weak summaries (missing primary_concept, too few key_terms, missing disambiguators).
+- Simplified LLM prompts to reduce hallucination risk and improve pipeline separation:
+  - Summary stage now returns only `summary`, `key_terms`, `primary_concept` (removed `biomolecules_or_structures`, `question_actions`, `topic_hints`).
+  - Stage 2 now returns `topic`, `confidence`, `reasoning` (removed `primary_concept`, `decisive_keywords`; renamed `final_topic` to `topic`).
+  - Stage 2 prompt no longer receives `topic_hints` or `biomolecules` from the summarizer.
+  - Confidence score max reduced from 5 to 4; classified threshold lowered from 4 to 3.
+  - Changed LLM confidence from categorical (high/medium/low) to numerical 1-5 scale with defined meanings (1=wild guess, 3=reasonable, 5=unambiguous). Display now shows `N/5` with color thresholds.
+- Added retry-on-bad-response: retries (up to 3 fresh attempts) if LLM response exceeds 2000 chars or is missing required XML tags. Tracks best attempt. Verbose mode shows failed response text.
+- Trimmed [biotech-index.md](../subject-indexes/biotech-index.md) descriptions from avg 609 chars to avg 150 chars per topic, matching the density of other subject indexes. Keeps discriminative terms, removes exhaustive keyword lists.
+- Stage 1 subject list now shows all topic names instead of truncating at 5, giving the LLM full visibility into each subject's scope.
+- Added contrastive subject definitions in [subject_definitions.yaml](../topic_classifier/prompts/subject_definitions.yaml). Each subject now has scope, focus, and "not about" lines to help the LLM draw clear boundaries (e.g., genetics=inheritance patterns, molecular_biology=gene expression mechanisms, laboratory=experimental protocols).
 - Added [regression_tests.yaml](../topic_classifier/regression_tests.yaml) with 15 confusable biochemistry and genetics examples including negative pairs.
-- Enriched debug JSONL log with summary source, quality flag, all summary fields, and stage 2 decisive_keywords and excluded_topics.
 
 ### Fixes and Maintenance
 - Fixed broken symlinks in `subject-indexes/` -- changed relative paths from `../biology-problems-website/` to `../../biology-problems-website/` to resolve correctly from the symlink directory.

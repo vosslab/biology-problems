@@ -154,14 +154,10 @@ def build_stage2_prompt(
 		# Present summary fields in ranked order (most discriminating first)
 		user_parts.append("### Question analysis\n")
 		user_parts.append(f"**Primary concept:** {summary_result['primary_concept']}\n")
-		if summary_result.get("topic_hints"):
-			user_parts.append(f"**Topic hints:** {summary_result['topic_hints']}\n")
 		if summary_result.get("key_terms"):
 			user_parts.append(f"**Key terms:** {summary_result['key_terms']}\n")
 		if summary_result.get("summary"):
 			user_parts.append(f"**Summary:** {summary_result['summary']}\n")
-		if summary_result.get("biomolecules"):
-			user_parts.append(f"**Biomolecules/structures:** {summary_result['biomolecules']}\n")
 	else:
 		# Fallback: use source code only
 		user_parts.append("### Source code (no question analysis available)\n```python\n")

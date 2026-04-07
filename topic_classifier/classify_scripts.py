@@ -80,6 +80,10 @@ def parse_args() -> argparse.Namespace:
 		'--source-only', dest='source_only', action='store_true',
 		help="Skip script execution, classify from source code only",
 	)
+	parser.add_argument(
+		'-v', '--verbose', dest='verbose', action='store_true',
+		help="Show extra debug output (summary fields, reasoning, keywords)",
+	)
 	args = parser.parse_args()
 	return args
 
@@ -137,11 +141,86 @@ def create_llm_client(model: str = None) -> llm.LLMClient:
 	client = llm.LLMClient(transports=transports, quiet=True)
 	return client
 
+MAX_RESPONSE_LENGTH = 2000
+
+#============================================
+def _check_response(response: str, required_tags: list = None) -> list:
+	"""Check an LLM response for quality problems.
+
+	Args:
+		response: raw LLM response text
+		required_tags: XML tag names that must have non-empty content
+
+	Returns:
+		list of problem description strings (empty if OK)
+	"""
+	problems = []
+	if len(response) > MAX_RESPONSE_LENGTH:
+		problems.append(f"too long ({len(response)} chars)")
+	if required_tags:
+		missing = [
+			tag for tag in required_tags
+			if not llm.extract_xml_tag_content(response, tag)
+		]
+		if missing:
+			problems.append(f"missing tags: {', '.join(missing)}")
+	return problems
+
+#============================================
+def _generate_with_retry(
+	client: llm.LLMClient,
+	messages: list,
+	max_tokens: int,
+	required_tags: list = None,
+	max_retries: int = 3,
+	verbose: bool = False,
+) -> str:
+	"""Call client.generate and retry on bad responses.
+
+	Retries with a fresh call (no conversation stacking) since
+	small local models do not reliably self-correct from their
+	own broken output.
+
+	Args:
+		client: LLM client
+		messages: chat message list
+		max_tokens: token limit for generation
+		required_tags: list of XML tag names that must be present
+		max_retries: total number of attempts
+		verbose: show full failed response text
+
+	Returns:
+		LLM response string (best attempt)
+	"""
+	best_response = None
+	fewest_problems = None
+	for attempt in range(max_retries):
+		response = client.generate(messages=messages, max_tokens=max_tokens)
+		problems = _check_response(response, required_tags)
+		# Track the best response (fewest problems)
+		if fewest_problems is None or len(problems) < fewest_problems:
+			best_response = response
+			fewest_problems = len(problems)
+		if not problems:
+			return response
+		console.print(f"  {', '.join(problems)}", style="yellow")
+		if verbose:
+			# Show less for length-only failures, more for missing tags
+			is_length_only = len(problems) == 1 and "too long" in problems[0]
+			trim = 250 if is_length_only else 1500
+			display = response[:trim] if len(response) > trim else response
+			console.print(f"  failed response ({len(response)} chars):", style="dim")
+			console.print(f"    {display}", style="dim")
+		console.print(f"  retrying... {attempt + 1} of {max_retries}", style="yellow")
+	# Return best attempt
+	return best_response
+
 #============================================
 def summarize_questions(
 	client: llm.LLMClient,
 	script_path: str,
 	bbq_output: str,
+	verbose: bool = False,
 ) -> dict:
 	"""Run the summarizer stage: describe question content.
 
@@ -149,31 +228,27 @@ def summarize_questions(
 		client: LLM client
 		script_path: relative path to script
 		bbq_output: human-readable question text
+		verbose: show failed response details on retry
 
 	Returns:
-		dict with summary, key_terms, primary_concept, biomolecules,
-		question_actions, topic_hints, question_type, quality
+		dict with summary, key_terms, primary_concept, quality
 	"""
 	messages = prompt_builder.build_summary_prompt(script_path, bbq_output)
-	response = client.generate(messages=messages, max_tokens=800)
+	response = _generate_with_retry(
+		client, messages, max_tokens=800,
+		required_tags=["summary", "primary_concept"],
+		verbose=verbose,
+	)
 
-	# Parse all structured fields
+	# Parse structured fields
 	summary = llm.extract_xml_tag_content(response, "summary")
 	key_terms = llm.extract_xml_tag_content(response, "key_terms")
 	primary_concept = llm.extract_xml_tag_content(response, "primary_concept")
-	biomolecules = llm.extract_xml_tag_content(response, "biomolecules_or_structures")
-	question_actions = llm.extract_xml_tag_content(response, "question_actions")
-	topic_hints = llm.extract_xml_tag_content(response, "topic_hints")
-	question_type = llm.extract_xml_tag_content(response, "question_type")
 
 	result = {
 		"summary": summary.strip() if summary else None,
 		"key_terms": key_terms.strip() if key_terms else None,
 		"primary_concept": primary_concept.strip() if primary_concept else None,
-		"biomolecules": biomolecules.strip() if biomolecules else None,
-		"question_actions": question_actions.strip() if question_actions else None,
-		"topic_hints": topic_hints.strip() if topic_hints else None,
-		"question_type": question_type.strip() if question_type else None,
 		"raw_response": response,
 	}
 
@@ -198,14 +273,35 @@ def _validate_summary_quality(summary_result: dict) -> str:
 		warnings.append("missing key_terms")
 	elif len(summary_result["key_terms"].split(",")) < 3:
 		warnings.append("too few key_terms")
-	if not summary_result["topic_hints"]:
-		warnings.append("missing topic_hints")
 	if not summary_result["summary"]:
 		warnings.append("missing summary")
 	if warnings:
 		console.print(f"  SUMMARY QUALITY WARN: {', '.join(warnings)}", style="yellow")
 		return "warn"
 	return "pass"
+
+#============================================
+def _parse_confidence(raw: str) -> int:
+	"""Parse LLM confidence string to an integer 1-5, default 1.
+
+	Args:
+		raw: raw string from LLM (e.g. '4', 'high', etc.)
+
+	Returns:
+		integer 1-5
+	"""
+	if not raw:
+		return 1
+	cleaned = raw.strip()
+	# Extract first digit if present
+	for ch in cleaned:
+		if ch.isdigit():
+			val = int(ch)
+			# Clamp to 1-5
+			return max(1, min(5, val))
+	# Fallback for legacy categorical values
+	mapping = {"high": 4, "medium": 3, "low": 2}
+	return mapping.get(cleaned.lower(), 1)
 
 #============================================
 def classify_stage1(
@@ -215,6 +311,7 @@ def classify_stage1(
 	question_summary: str,
 	all_indexes: dict,
 	cross_examples: list,
+	verbose: bool = False,
 ) -> dict:
 	"""Run stage 1 classification: determine subject.
 
@@ -225,6 +322,7 @@ def classify_stage1(
 		question_summary: LLM-generated summary or None
 		all_indexes: subject index data
 		cross_examples: few-shot examples across subjects
+		verbose: show failed response details on retry
 
 	Returns:
 		dict with subject, confidence, reasoning, raw_response
@@ -234,15 +332,19 @@ def classify_stage1(
 		all_indexes, cross_examples,
 	)
 
-	response = client.generate(messages=messages, max_tokens=500)
+	response = _generate_with_retry(
+		client, messages, max_tokens=500,
+		required_tags=["subject", "confidence"],
+		verbose=verbose,
+	)
 
 	subject = llm.extract_xml_tag_content(response, "subject")
-	confidence = llm.extract_xml_tag_content(response, "confidence")
+	confidence_raw = llm.extract_xml_tag_content(response, "confidence")
 	reasoning = llm.extract_xml_tag_content(response, "reasoning")
 
 	result = {
 		"subject": subject.strip() if subject else None,
-		"confidence": confidence.strip() if confidence else None,
+		"confidence": _parse_confidence(confidence_raw),
 		"reasoning": reasoning.strip() if reasoning else None,
 		"raw_response": response,
 	}
@@ -257,6 +359,7 @@ def classify_stage2(
 	subject: str,
 	topics: list,
 	subject_examples: list,
+	verbose: bool = False,
 ) -> dict:
 	"""Run stage 2 classification: determine topic within subject.
 
@@ -268,6 +371,7 @@ def classify_stage2(
 		subject: predicted subject from stage 1
 		topics: topic list for this subject
 		subject_examples: few-shot examples from this subject
+		verbose: show failed response details on retry
 
 	Returns:
 		dict with topic, confidence, reasoning, raw_response
@@ -277,19 +381,21 @@ def classify_stage2(
 		subject, topics, subject_examples,
 	)
 
-	response = client.generate(messages=messages, max_tokens=800)
+	response = _generate_with_retry(
+		client, messages, max_tokens=800,
+		required_tags=["topic", "confidence"],
+		verbose=verbose,
+	)
 
-	# Parse new structured output
-	final_topic = llm.extract_xml_tag_content(response, "final_topic")
-	confidence = llm.extract_xml_tag_content(response, "confidence")
-	primary_concept = llm.extract_xml_tag_content(response, "primary_concept")
-	decisive_keywords = llm.extract_xml_tag_content(response, "decisive_keywords")
+	# Parse structured output
+	topic = llm.extract_xml_tag_content(response, "topic")
+	confidence_raw = llm.extract_xml_tag_content(response, "confidence")
+	reasoning = llm.extract_xml_tag_content(response, "reasoning")
 
 	result = {
-		"topic": final_topic.strip() if final_topic else None,
-		"confidence": confidence.strip() if confidence else None,
-		"primary_concept": primary_concept.strip() if primary_concept else None,
-		"decisive_keywords": decisive_keywords.strip() if decisive_keywords else None,
+		"topic": topic.strip() if topic else None,
+		"confidence": _parse_confidence(confidence_raw),
+		"reasoning": reasoning.strip() if reasoning else None,
 		"raw_response": response,
 	}
 	return result
@@ -326,28 +432,12 @@ def compute_confidence_score(
 	subject = stage1["subject"]
 	topic = stage2["topic"]
 	if subject in all_indexes:
-		valid_topics = [t["topic_id"] for t in all_indexes[subject]]
+		valid_topics = [t["topic_id"] for t in all_indexes[subject]["topics"]]
 		if topic in valid_topics:
 			score += 1
 
-	# +1 for decisive_keywords containing topic-related terms
-	decisive = stage2.get("decisive_keywords") or ""
-	if decisive and subject in all_indexes:
-		topic_entry = None
-		for t in all_indexes[subject]:
-			if t["topic_id"] == topic:
-				topic_entry = t
-				break
-		if topic_entry is not None:
-			# Check if decisive keywords mention topic name or description words
-			decisive_lower = decisive.lower()
-			topic_words = topic_entry["name"].lower().split()
-			keyword_match = any(w in decisive_lower for w in topic_words if len(w) > 3)
-			if keyword_match:
-				score += 1
-
-	# +1 for LLM self-reported high confidence (both stages)
-	if stage1["confidence"] == "high" and stage2["confidence"] == "high":
+	# +1 for LLM self-reported high confidence (both stages >= 4)
+	if stage1["confidence"] >= 4 and stage2["confidence"] >= 4:
 		score += 1
 
 	return score
@@ -361,6 +451,7 @@ def classify_one_script(
 	cross_examples: list,
 	assignments: dict,
 	source_only: bool = False,
+	verbose: bool = False,
 ) -> dict:
 	"""Classify a single script through summarize + subject + topic stages.
 
@@ -379,6 +470,11 @@ def classify_one_script(
 	# Read source code
 	source_code = script_runner.read_source_code(script_path, repo_root)
 	source_for_llm = prompt_builder.summarize_source(source_code)
+	if verbose:
+		src_lines = len(source_code.split("\n"))
+		llm_lines = len(source_for_llm.split("\n"))
+		if src_lines != llm_lines:
+			console.print(f"  source: {src_lines} lines -> trimmed to {llm_lines} lines", style="dim")
 
 	# Get bbq output
 	bbq_output = None
@@ -387,9 +483,9 @@ def classify_one_script(
 		# Build extra args from existing CSV assignment (flags, input)
 		extra_args = _get_run_args(script_path, assignments)
 		if extra_args:
-			print(f"  Running {script_path} {' '.join(extra_args)}...")
+			console.print(f"  Running [cyan]{script_path}[/cyan] {' '.join(extra_args)}", style="dim")
 		else:
-			print(f"  Running {script_path}...")
+			console.print(f"  Running [cyan]{script_path}[/cyan]", style="dim")
 		run_result = script_runner.run_script(
 			script_path, repo_root, extra_args=extra_args,
 		)
@@ -408,50 +504,73 @@ def classify_one_script(
 	question_summary = None
 	summary_result = None
 	if bbq_output:
-		print("  Summarizing questions...")
-		summary_result = summarize_questions(client, script_path, bbq_output)
+		console.print("  Summarizing questions...", style="dim")
+		summary_result = summarize_questions(client, script_path, bbq_output, verbose=verbose)
 		question_summary = summary_result["summary"]
 		if question_summary:
-			print(f"  Summary: {question_summary[:100]}")
+			console.print(f"  Summary: [cyan]{question_summary[:100]}[/cyan]")
 		else:
 			console.print("  WARNING: summary extraction failed", style="yellow")
+		if verbose and summary_result:
+			# Show all summary fields
+			console.print(f"    LLM response length: {len(summary_result['raw_response'])} chars", style="dim")
+			if summary_result.get("primary_concept"):
+				console.print(f"    primary_concept: [bright_cyan]{summary_result['primary_concept']}[/bright_cyan]")
+			if summary_result.get("key_terms"):
+				console.print(f"    key_terms: {summary_result['key_terms']}", style="dim")
+			console.print(f"    quality: {summary_result['quality']}", style="dim")
 
 	# Stage 1: subject classification
-	print("  Classifying subject...")
+	console.print("  Classifying subject...", style="dim")
 	stage1 = classify_stage1(
 		client, script_path, source_for_llm, question_summary,
-		all_indexes, cross_examples,
+		all_indexes, cross_examples, verbose=verbose,
 	)
 
 	if stage1["subject"] is None:
+		console.print("  FAILED: could not determine subject", style="bold red")
 		result = _make_failed_result(script_path, execution_status, stage1)
 		return result
 
 	subject = stage1["subject"]
-	print(f"  Subject: {subject} ({stage1['confidence']})")
+	# Color confidence level (1-5 scale)
+	conf = stage1["confidence"]
+	conf_color = "green" if conf >= 4 else ("yellow" if conf >= 3 else "red")
+	console.print(f"  Subject: [bold cyan]{subject}[/bold cyan] ([{conf_color}]{conf}/5[/{conf_color}])")
+	if verbose:
+		console.print(f"    LLM response length: {len(stage1['raw_response'])} chars", style="dim")
+		if stage1.get("reasoning"):
+			console.print(f"    reasoning: {stage1['reasoning']}", style="dim")
 
 	# Stage 2: topic classification
 	topics = all_indexes.get(subject, [])
 	subject_examples = csv_handler.get_examples_for_subject(assignments, subject)
 
-	print(f"  Classifying topic within {subject}...")
+	console.print(f"  Classifying topic within [bold cyan]{subject}[/bold cyan]...", style="dim")
 	stage2 = classify_stage2(
 		client, script_path, source_for_llm, summary_result,
-		subject, topics, subject_examples,
+		subject, topics, subject_examples, verbose=verbose,
 	)
 
 	if stage2["topic"] is None:
+		console.print("  FAILED: could not determine topic", style="bold red")
 		result = _make_failed_result(script_path, execution_status, stage1, stage2)
 		return result
 
 	# Look up topic name for display
 	topic_name = _get_topic_name(topics, stage2["topic"])
-	print(f"  Stage 2 result: {stage2['topic']} {topic_name} ({stage2['confidence']})")
+	conf2 = stage2["confidence"]
+	conf2_color = "green" if conf2 >= 4 else ("yellow" if conf2 >= 3 else "red")
+	console.print(f"  Topic: [bold cyan]{stage2['topic']}[/bold cyan] {topic_name} ([{conf2_color}]{conf2}/5[/{conf2_color}])")
+	if verbose:
+		console.print(f"    LLM response length: {len(stage2['raw_response'])} chars", style="dim")
+		if stage2.get("reasoning"):
+			console.print(f"    reasoning: {stage2['reasoning']}", style="dim")
 
-	# Compute confidence score
+	# Compute confidence score (max 4 after removing decisive_keywords scoring)
 	has_bbq = bbq_output is not None
 	confidence_score = compute_confidence_score(stage1, stage2, has_bbq, all_indexes)
-	status = "classified" if confidence_score >= 4 else "review"
+	status = "classified" if confidence_score >= 3 else "review"
 
 	# Check against existing assignments
 	bp_root_path = "{bp_root}/" + script_path.replace("problems/", "", 1)
@@ -467,6 +586,11 @@ def classify_one_script(
 	if existing_entry is not None:
 		existing_assignment = f"{existing_entry['chapter']}/{existing_entry['topic']}"
 		match = (existing_entry["chapter"] == subject and existing_entry["topic"] == stage2["topic"])
+		if verbose:
+			if match:
+				console.print(f"    existing: [green]{existing_assignment} (match)[/green]")
+			else:
+				console.print(f"    existing: [red]{existing_assignment} (disagree)[/red]")
 
 	result = {
 		"script": script_path,
@@ -486,15 +610,11 @@ def classify_one_script(
 		"summary_quality": summary_result["quality"] if summary_result else None,
 		"key_terms": summary_result["key_terms"] if summary_result else None,
 		"primary_concept_summary": summary_result["primary_concept"] if summary_result else None,
-		"biomolecules": summary_result["biomolecules"] if summary_result else None,
-		"topic_hints": summary_result["topic_hints"] if summary_result else None,
-		"question_type": summary_result["question_type"] if summary_result else None,
 		# Stage 1 fields
 		"stage1_reasoning": stage1["reasoning"],
 		"stage1_confidence": stage1["confidence"],
 		# Stage 2 fields
-		"stage2_primary_concept": stage2.get("primary_concept"),
-		"stage2_decisive_keywords": stage2.get("decisive_keywords"),
+		"stage2_reasoning": stage2.get("reasoning"),
 		"stage2_confidence": stage2["confidence"],
 		"topic_name": topic_name,
 	}
@@ -583,9 +703,9 @@ def _make_failed_result(
 		"existing": None,
 		"match": None,
 		"stage1_reasoning": stage1.get("reasoning", ""),
-		"stage1_confidence": stage1.get("confidence", ""),
-		"stage2_primary_concept": stage2.get("primary_concept", "") if stage2 else "",
-		"stage2_confidence": stage2.get("confidence", "") if stage2 else "",
+		"stage1_confidence": stage1.get("confidence", 1),
+		"stage2_reasoning": stage2.get("reasoning", "") if stage2 else "",
+		"stage2_confidence": stage2.get("confidence", 1) if stage2 else 1,
 	}
 	return result
 
@@ -653,26 +773,26 @@ def main():
 	)
 
 	# Load subject indexes
-	print("Loading subject indexes...")
+	console.print("Loading subject indexes...", style="dim italic")
 	all_indexes = index_parser.load_all_indexes()
 
 	# Load existing CSV assignments
-	print("Loading existing CSV assignments...")
+	console.print("Loading existing CSV assignments...", style="dim italic")
 	bbq_control_dir = os.path.realpath(BBQ_CONTROL_DIR)
 	if os.path.isdir(bbq_control_dir):
 		assignments = csv_handler.read_existing_assignments(bbq_control_dir)
-		print(f"  Loaded {len(assignments)} existing assignments")
+		console.print(f"  Loaded [bold]{len(assignments)}[/bold] existing assignments")
 	else:
-		print(f"  WARNING: bbq_control dir not found at {bbq_control_dir}")
+		console.print(f"  WARNING: bbq_control dir not found at {bbq_control_dir}", style="yellow")
 		assignments = {}
 
 	# Get cross-subject examples for stage 1
 	cross_examples = csv_handler.get_cross_subject_examples(assignments)
 
 	# Discover generator scripts
-	print("Discovering generator scripts...")
+	console.print("Discovering generator scripts...", style="dim italic")
 	scripts = script_runner.discover_generator_scripts(repo_root)
-	print(f"  Found {len(scripts)} generator scripts")
+	console.print(f"  Found [bold]{len(scripts)}[/bold] generator scripts")
 
 	# Shuffle if requested (useful with --limit for testing variety)
 	if args.shuffle:
@@ -681,20 +801,20 @@ def main():
 	# Apply limit if specified
 	if args.limit is not None:
 		scripts = scripts[:args.limit]
-		print(f"  Limited to {args.limit} scripts")
+		console.print(f"  Limited to [bold]{args.limit}[/bold] scripts")
 
 	# Dry run: just show what would be classified
 	if args.dry_run:
-		print("\n--- Dry run: scripts to classify ---")
+		console.print("\n--- Dry run: scripts to classify ---", style="bold")
 		for s in scripts:
-			print(f"  {s}")
-		print(f"\nTotal: {len(scripts)} scripts")
-		print(f"Subjects available: {', '.join(sorted(all_indexes.keys()))}")
-		print(f"Existing assignments: {len(assignments)}")
+			console.print(f"  [cyan]{s}[/cyan]")
+		console.print(f"\nTotal: [bold]{len(scripts)}[/bold] scripts")
+		console.print(f"Subjects available: [cyan]{', '.join(sorted(all_indexes.keys()))}[/cyan]")
+		console.print(f"Existing assignments: [bold]{len(assignments)}[/bold]")
 		return
 
 	# Create LLM client
-	print("Initializing LLM client...")
+	console.print("Initializing LLM client...", style="dim italic")
 	client = create_llm_client(args.model)
 
 	# Classify all scripts
@@ -702,12 +822,13 @@ def main():
 	no_bbq_scripts = []
 	llm_error_scripts = []
 	for i, script_path in enumerate(scripts):
-		print(f"\n[{i+1}/{len(scripts)}] Classifying {script_path}")
+		console.print(f"\n[bold][{i+1}/{len(scripts)}][/bold] Classifying [cyan]{script_path}[/cyan]")
 		try:
 			result = classify_one_script(
 				client, script_path, repo_root,
 				all_indexes, cross_examples, assignments,
 				source_only=args.source_only,
+				verbose=args.verbose,
 			)
 		except (RuntimeError, llm.LLMError, subprocess.TimeoutExpired) as exc:
 			console.print(f"  ERROR: {exc}", style="bold red")
@@ -735,10 +856,10 @@ def main():
 				f"[cyan]{topic_label}[/cyan] (score: {result['confidence_score']})")
 
 	# Write result CSVs in one pass
-	print(f"\nWriting result CSVs to {results_dir}...")
+	console.print(f"\nWriting result CSVs to [cyan]{results_dir}[/cyan]...", style="dim italic")
 	written = csv_handler.write_result_csvs(results, results_dir)
 	for f in written:
-		print(f"  Written: {f}")
+		console.print(f"  Written: [green]{f}[/green]")
 
 	# Write no_bbq_file.csv for scripts that produced no output
 	if no_bbq_scripts:
@@ -747,7 +868,7 @@ def main():
 			f.write("script\n")
 			for s in sorted(no_bbq_scripts):
 				f.write(f"{s}\n")
-		print(f"  Written: {no_bbq_path} ({len(no_bbq_scripts)} scripts)")
+		console.print(f"  Written: [green]{no_bbq_path}[/green] ([bold]{len(no_bbq_scripts)}[/bold] scripts)")
 
 	# Write llm_errors.csv for scripts that failed during LLM classification
 	if llm_error_scripts:
@@ -756,11 +877,11 @@ def main():
 			f.write("script\n")
 			for s in sorted(llm_error_scripts):
 				f.write(f"{s}\n")
-		print(f"  Written: {error_path} ({len(llm_error_scripts)} scripts)")
+		console.print(f"  Written: [green]{error_path}[/green] ([bold]{len(llm_error_scripts)}[/bold] scripts)")
 
 	# Show diff report if requested or always show summary
 	if args.diff_mode or True:
-		print("\n--- Classification Report ---")
+		console.print("\n--- Classification Report ---", style="bold")
 		print_diff_report(results)
 
 #============================================

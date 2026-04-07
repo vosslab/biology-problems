@@ -1,6 +1,8 @@
 # List of Genetics Topics
 
-Explore the main topics in genetics. Click on a topic to dive deeper.
+Inheritance patterns, pedigrees, gene mapping, chromosome behavior, population genetics.
+Focus on how traits are passed across generations and how genes are organized on chromosomes.
+Not about molecular mechanisms of gene expression, not about lab protocols.
 
 ## Topics
 

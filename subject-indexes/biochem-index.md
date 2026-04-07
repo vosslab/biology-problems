@@ -1,6 +1,8 @@
 # List of Biochemistry Topics
 
-Explore the foundational concepts and techniques in Biochemistry. Click on a topic to dive deeper.
+Structure and function of biological molecules: proteins, enzymes, carbohydrates, lipids, nucleic acids.
+Focus on molecular properties, chemical reactions, and thermodynamics.
+Not about inheritance patterns, not about lab protocols, not about gene expression regulation.
 
 ## Topics
 

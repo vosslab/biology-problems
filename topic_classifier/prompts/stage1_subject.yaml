@@ -11,7 +11,12 @@ instructions: |
   Classify this script into exactly one subject.
   Respond with these XML tags:
   <subject>subject_name</subject>
-  <confidence>high</confidence>
+  <confidence>3</confidence>
   <reasoning>Brief explanation of why this subject fits.</reasoning>
 
-  For confidence, use exactly one of: high, medium, or low.
+  Confidence is a single integer from 1 to 5:
+    1 = wild guess, no clear signal
+    2 = weak match, could easily be a different subject
+    3 = reasonable match, one subject fits better than others
+    4 = strong match, key terms clearly point to this subject
+    5 = unambiguous, no other subject is plausible

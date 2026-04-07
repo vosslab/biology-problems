@@ -1,6 +1,8 @@
 # List of laboratory topics
 
-Practice lab math and preparation skills for common lab workflows.
+Experimental techniques: measurements, solutions, dilutions, chromatography, spectrophotometry, electrophoresis.
+Focus on how experiments are performed, not the biology itself.
+Not about inheritance or molecular theory. Protocols and calculations, not concepts.
 
 ## Topics
 
