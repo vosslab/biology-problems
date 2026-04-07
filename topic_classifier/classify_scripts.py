@@ -134,11 +134,44 @@ def create_llm_client(model: str = None) -> llm.LLMClient:
 	return client
 
 #============================================
+def summarize_questions(
+	client: llm.LLMClient,
+	script_path: str,
+	bbq_output: str,
+) -> dict:
+	"""Run the summarizer stage: describe question content.
+
+	Args:
+		client: LLM client
+		script_path: relative path to script
+		bbq_output: human-readable question text
+
+	Returns:
+		dict with summary, keywords, question_type, core_concept
+	"""
+	messages = prompt_builder.build_summary_prompt(script_path, bbq_output)
+	response = client.generate(messages=messages, max_tokens=400)
+
+	summary = llm.extract_xml_tag_content(response, "summary")
+	keywords = llm.extract_xml_tag_content(response, "keywords")
+	question_type = llm.extract_xml_tag_content(response, "question_type")
+	core_concept = llm.extract_xml_tag_content(response, "core_concept")
+
+	result = {
+		"summary": summary.strip() if summary else None,
+		"keywords": keywords.strip() if keywords else None,
+		"question_type": question_type.strip() if question_type else None,
+		"core_concept": core_concept.strip() if core_concept else None,
+		"raw_response": response,
+	}
+	return result
+
+#============================================
 def classify_stage1(
 	client: llm.LLMClient,
 	script_path: str,
 	source_code: str,
-	bbq_output: str,
+	question_summary: str,
 	all_indexes: dict,
 	cross_examples: list,
 ) -> dict:
@@ -148,7 +181,7 @@ def classify_stage1(
 		client: LLM client
 		script_path: relative path to script
 		source_code: source code (full or summarized)
-		bbq_output: sample output or None
+		question_summary: LLM-generated summary or None
 		all_indexes: subject index data
 		cross_examples: few-shot examples across subjects
 
@@ -156,7 +189,7 @@ def classify_stage1(
 		dict with subject, confidence, reasoning, raw_response
 	"""
 	messages = prompt_builder.build_stage1_prompt(
-		script_path, source_code, bbq_output,
+		script_path, source_code, question_summary,
 		all_indexes, cross_examples,
 	)
 
@@ -179,7 +212,7 @@ def classify_stage2(
 	client: llm.LLMClient,
 	script_path: str,
 	source_code: str,
-	bbq_output: str,
+	question_summary: str,
 	subject: str,
 	topics: list,
 	subject_examples: list,
@@ -190,7 +223,7 @@ def classify_stage2(
 		client: LLM client
 		script_path: relative path to script
 		source_code: source code (full or summarized)
-		bbq_output: sample output or None
+		question_summary: LLM-generated summary or None
 		subject: predicted subject from stage 1
 		topics: topic list for this subject
 		subject_examples: few-shot examples from this subject
@@ -199,7 +232,7 @@ def classify_stage2(
 		dict with topic, confidence, reasoning, raw_response
 	"""
 	messages = prompt_builder.build_stage2_prompt(
-		script_path, source_code, bbq_output,
+		script_path, source_code, question_summary,
 		subject, topics, subject_examples,
 	)
 
@@ -334,29 +367,39 @@ def classify_one_script(
 				print("  SKIP: no bbq file produced")
 				return None
 
+	# Stage 0: summarize questions
+	question_summary = None
+	summary_result = None
+	if bbq_output:
+		print("  Summarizing questions...")
+		summary_result = summarize_questions(client, script_path, bbq_output)
+		question_summary = summary_result["summary"]
+		if question_summary:
+			print(f"  Summary: {question_summary[:100]}")
+		else:
+			print("  WARNING: summary extraction failed")
+
 	# Stage 1: subject classification
-	print("  Stage 1: classifying subject...")
+	print("  Classifying subject...")
 	stage1 = classify_stage1(
-		client, script_path, source_for_llm, bbq_output,
+		client, script_path, source_for_llm, question_summary,
 		all_indexes, cross_examples,
 	)
 
 	if stage1["subject"] is None:
-		# Failed to classify subject
 		result = _make_failed_result(script_path, execution_status, stage1)
 		return result
 
 	subject = stage1["subject"]
-	print(f"  Stage 1 result: {subject} ({stage1['confidence']})")
+	print(f"  Subject: {subject} ({stage1['confidence']})")
 
-	# Get topics and examples for stage 2
+	# Stage 2: topic classification
 	topics = all_indexes.get(subject, [])
 	subject_examples = csv_handler.get_examples_for_subject(assignments, subject)
 
-	# Stage 2: topic classification
-	print(f"  Stage 2: classifying topic within {subject}...")
+	print(f"  Classifying topic within {subject}...")
 	stage2 = classify_stage2(
-		client, script_path, source_for_llm, bbq_output,
+		client, script_path, source_for_llm, question_summary,
 		subject, topics, subject_examples,
 	)
 
@@ -400,6 +443,10 @@ def classify_one_script(
 		"execution": execution_status,
 		"existing": existing_assignment,
 		"match": match,
+		"summary": question_summary,
+		"keywords": summary_result["keywords"] if summary_result else None,
+		"core_concept": summary_result["core_concept"] if summary_result else None,
+		"question_type": summary_result["question_type"] if summary_result else None,
 		"stage1_reasoning": stage1["reasoning"],
 		"stage2_reasoning": stage2["reasoning"],
 		"stage1_confidence": stage1["confidence"],
@@ -606,13 +653,20 @@ def main():
 	# Classify all scripts
 	results = []
 	no_bbq_scripts = []
+	llm_error_scripts = []
 	for i, script_path in enumerate(scripts):
 		print(f"\n[{i+1}/{len(scripts)}] Classifying {script_path}")
-		result = classify_one_script(
-			client, script_path, repo_root, cache_dir,
-			all_indexes, cross_examples, assignments,
-			source_only=args.source_only,
-		)
+		try:
+			result = classify_one_script(
+				client, script_path, repo_root, cache_dir,
+				all_indexes, cross_examples, assignments,
+				source_only=args.source_only,
+			)
+		except (RuntimeError, llm.LLMError) as exc:
+			print(f"  LLM ERROR: {exc}")
+			llm_error_scripts.append(script_path)
+			continue
+
 		if result is None:
 			# Script produced no bbq file -- record for no_bbq_file.csv
 			no_bbq_scripts.append(script_path)
@@ -642,6 +696,15 @@ def main():
 			for s in sorted(no_bbq_scripts):
 				f.write(f"{s}\n")
 		print(f"  Written: {no_bbq_path} ({len(no_bbq_scripts)} scripts)")
+
+	# Write llm_errors.csv for scripts that failed during LLM classification
+	if llm_error_scripts:
+		error_path = os.path.join(results_dir, "llm_errors.csv")
+		with open(error_path, "w") as f:
+			f.write("script\n")
+			for s in sorted(llm_error_scripts):
+				f.write(f"{s}\n")
+		print(f"  Written: {error_path} ({len(llm_error_scripts)} scripts)")
 
 	# Show diff report if requested or always show summary
 	if args.diff_mode or True:

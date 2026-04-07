@@ -6,6 +6,9 @@ import glob
 import shutil
 import subprocess
 
+# qti-package-maker modules (on PYTHONPATH via source_me.sh)
+import qti_package_maker.package_interface as package_interface
+
 #============================================
 def get_repo_root() -> str:
 	"""Get the repository root directory via git."""
@@ -246,23 +249,41 @@ def cache_bbq_file(bbq_file: str, cache_dir: str) -> str:
 	return cached_path
 
 #============================================
-def read_bbq_output(bbq_file: str, max_lines: int = 80) -> str:
-	"""Read a bbq output file, limited to max_lines.
+def read_bbq_output(bbq_file: str, max_questions: int = 5) -> str:
+	"""Read a bbq file and convert to human-readable text via qti-package-maker.
+
+	Uses the package interface to parse the bbq format, save as
+	human_readable to a temp file, then read back the clean text.
 
 	Args:
 		bbq_file: path to the bbq output file
-		max_lines: maximum number of lines to read
+		max_questions: maximum number of questions to include
 
 	Returns:
-		string content of the file (truncated)
+		human-readable question text without HTML tags
 	"""
-	lines = []
-	with open(bbq_file, "r") as f:
-		for i, line in enumerate(f):
-			if i >= max_lines:
-				break
-			lines.append(line)
-	content = "".join(lines)
+	import tempfile
+
+	# Read bbq file through qti-package-maker
+	packer = package_interface.QTIPackageInterface(
+		package_name="classifier_temp",
+		verbose=False,
+		allow_mixed=True,
+	)
+	packer.read_package(bbq_file, "bbq_text")
+
+	# Trim to max_questions
+	packer.trim_item_bank(max_questions)
+
+	# Save as human_readable to a temp file, then read it back
+	with tempfile.TemporaryDirectory() as tmpdir:
+		outfile = os.path.join(tmpdir, "human_output.txt")
+		packer.save_package("human_readable", outfile)
+		if not os.path.isfile(outfile):
+			return ""
+		with open(outfile, "r") as f:
+			content = f.read()
+
 	return content
 
 #============================================

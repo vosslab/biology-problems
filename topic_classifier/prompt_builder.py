@@ -4,6 +4,15 @@
 import topic_classifier.index_parser as index_parser
 
 #============================================
+SUMMARY_SYSTEM = (
+	"You are a biology education assistant. "
+	"Summarize the content of generated quiz questions. "
+	"Focus on what biological concept is being tested, not how the "
+	"script works. Be specific (e.g., 'amino acid protonation states' "
+	"not just 'biochemistry')."
+)
+
+#============================================
 STAGE1_SYSTEM = (
 	"You are a biology textbook topic classifier. "
 	"Given a Python question generator script and its output, "
@@ -19,10 +28,41 @@ STAGE2_SYSTEM = (
 )
 
 #============================================
+def build_summary_prompt(script_path: str, bbq_output: str) -> list:
+	"""Build chat messages for summarizing question output.
+
+	The summarizer describes biological content only, not script mechanics.
+
+	Args:
+		script_path: relative path to the script
+		bbq_output: human-readable question text
+
+	Returns:
+		list of message dicts for LLMClient.generate(messages=...)
+	"""
+	user_content = (
+		f"## Script: {script_path}\n\n"
+		f"### Generated questions\n```\n"
+		f"{bbq_output}\n```\n\n"
+		"Summarize the biological content of these questions. "
+		"Do not describe the script or its implementation. "
+		"Respond with these XML tags:\n"
+		"<summary>1-2 sentence description of what these questions test.</summary>\n"
+		"<keywords>keyword1, keyword2, keyword3</keywords>\n"
+		"<question_type>multiple_choice or numeric or fill_in_blank or matching or ordering</question_type>\n"
+		"<core_concept>The single most specific biological concept tested.</core_concept>\n"
+	)
+	messages = [
+		{"role": "system", "content": SUMMARY_SYSTEM},
+		{"role": "user", "content": user_content},
+	]
+	return messages
+
+#============================================
 def build_stage1_prompt(
 	script_path: str,
 	source_code: str,
-	bbq_output: str,
+	question_summary: str,
 	all_indexes: dict,
 	cross_examples: list,
 ) -> list:
@@ -31,7 +71,7 @@ def build_stage1_prompt(
 	Args:
 		script_path: relative path to the script
 		source_code: full or summarized source code
-		bbq_output: sample output from running the script, or None
+		question_summary: LLM-generated summary of the questions, or None
 		all_indexes: output of index_parser.load_all_indexes()
 		cross_examples: output of csv_handler.get_cross_subject_examples()
 
@@ -44,20 +84,20 @@ def build_stage1_prompt(
 	# Build few-shot examples section
 	examples_text = _format_cross_examples(cross_examples)
 
-	# Build the user prompt
+	# Build the user prompt -- question summary is primary, source is fallback
 	user_parts = []
 	user_parts.append("## Available subjects\n")
 	user_parts.append(subject_list)
 	user_parts.append("\n\n## Examples of assigned scripts\n")
 	user_parts.append(examples_text)
 	user_parts.append(f"\n\n## Script to classify: {script_path}\n")
-	user_parts.append("### Source code\n```python\n")
-	user_parts.append(source_code)
-	user_parts.append("\n```\n")
 
-	if bbq_output is not None:
-		user_parts.append("### Sample output\n```\n")
-		user_parts.append(bbq_output)
+	if question_summary:
+		user_parts.append(f"### Question summary\n{question_summary}\n")
+	else:
+		# Fallback: use source code only when no summary available
+		user_parts.append("### Source code (no question output available)\n```python\n")
+		user_parts.append(source_code)
 		user_parts.append("\n```\n")
 
 	user_parts.append(_stage1_instructions())
@@ -74,7 +114,7 @@ def build_stage1_prompt(
 def build_stage2_prompt(
 	script_path: str,
 	source_code: str,
-	bbq_output: str,
+	question_summary: str,
 	subject: str,
 	topics: list,
 	subject_examples: list,
@@ -84,7 +124,7 @@ def build_stage2_prompt(
 	Args:
 		script_path: relative path to the script
 		source_code: full or summarized source code
-		bbq_output: sample output or None
+		question_summary: LLM-generated summary of the questions, or None
 		subject: predicted subject from stage 1
 		topics: topic list for this subject from index_parser
 		subject_examples: few-shot examples from this subject
@@ -105,13 +145,12 @@ def build_stage2_prompt(
 	user_parts.append("\n\n## Examples of scripts assigned to this subject\n")
 	user_parts.append(examples_text)
 	user_parts.append(f"\n\n## Script to classify: {script_path}\n")
-	user_parts.append("### Source code\n```python\n")
-	user_parts.append(source_code)
-	user_parts.append("\n```\n")
 
-	if bbq_output is not None:
-		user_parts.append("### Sample output\n```\n")
-		user_parts.append(bbq_output)
+	if question_summary:
+		user_parts.append(f"### Question summary\n{question_summary}\n")
+	else:
+		user_parts.append("### Source code (no question output available)\n```python\n")
+		user_parts.append(source_code)
 		user_parts.append("\n```\n")
 
 	user_parts.append(_stage2_instructions(subject))
@@ -190,11 +229,13 @@ def _format_subject_examples(examples: list) -> str:
 	return result
 
 #============================================
-def summarize_source(source_code: str, max_lines: int = 200) -> str:
-	"""Summarize source code if it exceeds max_lines.
+def summarize_source(source_code: str, max_lines: int = 120) -> str:
+	"""Summarize source code if it exceeds max_lines or max_chars.
 
 	For short scripts, returns the full source. For longer scripts,
 	extracts key signals: docstring, imports, argparse, key functions.
+	The bbq output is the primary classification signal, so source
+	is trimmed aggressively to stay within context limits.
 
 	Args:
 		source_code: full source code string
@@ -204,7 +245,7 @@ def summarize_source(source_code: str, max_lines: int = 200) -> str:
 		source code or summary string
 	"""
 	lines = source_code.split("\n")
-	if len(lines) <= max_lines:
+	if len(lines) <= max_lines and len(source_code) <= 4000:
 		return source_code
 
 	# Extract key sections for long scripts
