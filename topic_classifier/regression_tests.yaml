@@ -1,0 +1,86 @@
+# Regression test set for topic classifier
+# Handpicked confusable examples with expected topics and nearby wrong topics
+# Run after every prompt change to catch regressions
+
+# Biochemistry -- Protein Structure vs Thermodynamics vs Water/pH
+- script: problems/biochemistry-problems/alpha_helix_h-bonds.py
+  subject: biochemistry
+  expected: topic04  # Protein Structure
+  not: [topic06, topic02]  # not Thermodynamics, not Water and pH
+
+# Biochemistry -- Carbohydrates vs other topics
+- script: problems/biochemistry-problems/carbs/convert_Fischer_to_Haworth.py
+  subject: biochemistry
+  expected: topic10  # Carbohydrates
+  not: [topic06, topic09]  # not Thermodynamics, not Enzyme Allostery
+
+- script: problems/biochemistry-problems/carbs/convert_Haworth_to_Fischer.py
+  subject: biochemistry
+  expected: topic10  # Carbohydrates
+  not: [topic06, topic09]  # not Thermodynamics, not Enzyme Allostery
+
+# Biochemistry -- Amino Acids vs Protein Structure
+- script: problems/biochemistry-problems/ionic_bond_amino_acids.py
+  subject: biochemistry
+  expected: topic03  # Amino Acids
+  not: [topic04, topic02]  # not Protein Structure, not Water and pH
+
+# Biochemistry -- Water and pH
+- script: problems/biochemistry-problems/buffers/Henderson-Hasselbalch.py
+  subject: biochemistry
+  expected: topic02  # Water and pH
+  not: [topic03, topic06]  # not Amino Acids, not Thermodynamics
+
+# Biochemistry -- Thermodynamics
+- script: problems/biochemistry-problems/delta_G_spontaneous.py
+  subject: biochemistry
+  expected: topic06  # Thermodynamics
+  not: [topic04, topic07]  # not Protein Structure, not Enzyme Kinetics
+
+# Biochemistry -- Enzyme Kinetics
+- script: problems/biochemistry-problems/enzymes/Km_Vmax_table.py
+  subject: biochemistry
+  expected: topic07  # Enzyme Kinetics
+  not: [topic08, topic06]  # not Enzyme Inhibition, not Thermodynamics
+
+# Biochemistry -- Enzyme Inhibition
+- script: problems/biochemistry-problems/enzymes/inhibition_type_table.py
+  subject: biochemistry
+  expected: topic08  # Enzyme Inhibition
+  not: [topic07, topic09]  # not Enzyme Kinetics, not Enzyme Allostery
+
+# Biochemistry -- Enzyme Allostery
+- script: problems/biochemistry-problems/enzymes/cooperativity_hill.py
+  subject: biochemistry
+  expected: topic09  # Enzyme Allostery
+  not: [topic07, topic08]  # not Enzyme Kinetics, not Enzyme Inhibition
+
+# Biochemistry -- Lipids vs Membranes
+- script: problems/biochemistry-problems/which_hydrophobic-simple.py
+  subject: biochemistry
+  expected: topic01  # Life Molecules
+  not: [topic12, topic13]  # not Lipids, not Membranes
+
+# Biochemistry -- Protein Purification
+- script: problems/biochemistry-problems/gel_filtration_order.py
+  subject: biochemistry
+  expected: topic05  # Protein Purification
+  not: [topic04, topic03]  # not Protein Structure, not Amino Acids
+
+# Genetics -- Mendelian vs Gene Interactions
+- script: problems/inheritance-problems/monohybrid_cross.py
+  subject: genetics
+  expected: topic04  # Mendelian Genetics
+  not: [topic05, topic06]  # not Gene Interactions, not Chromosomal Inheritance
+
+# Genetics -- Population Genetics
+- script: problems/inheritance-problems/hardy_weinberg_two_alleles.py
+  subject: genetics
+  expected: topic10  # Population Genetics
+  not: [topic04, topic07]  # not Mendelian Genetics, not Chi Square Analysis
+
+# Genetics -- Gene Mapping
+- script: problems/inheritance-problems/three_point_test_cross.py
+  subject: genetics
+  expected: topic08  # Gene Mapping
+  not: [topic04, topic06]  # not Mendelian Genetics, not Chromosomal Inheritance

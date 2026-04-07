@@ -18,6 +18,9 @@ import shlex
 import argparse
 import subprocess
 
+# PIP3 modules
+import rich.console
+
 # Add local-llm-wrapper to path if not already importable
 _LLM_WRAPPER_DIR = os.path.join(os.path.expanduser("~"), "nsh", "local-llm-wrapper")
 if _LLM_WRAPPER_DIR not in sys.path:
@@ -25,6 +28,8 @@ if _LLM_WRAPPER_DIR not in sys.path:
 
 # PIP3 modules
 import local_llm_wrapper.llm as llm
+
+console = rich.console.Console(highlight=False)
 
 # local repo modules
 import topic_classifier.index_parser as index_parser
@@ -97,20 +102,19 @@ def setup_output_dirs(repo_root: str, output_dir: str) -> tuple:
 		output_dir: user-specified output dir or None
 
 	Returns:
-		tuple of (results_dir, cache_dir, debug_dir)
+		tuple of (results_dir, debug_dir)
 	"""
 	classifier_dir = os.path.join(repo_root, "topic_classifier")
 	if output_dir is None:
 		results_dir = os.path.join(classifier_dir, "results")
 	else:
 		results_dir = output_dir
-	cache_dir = os.path.join(classifier_dir, "output")
-	debug_dir = cache_dir
+	debug_dir = os.path.join(classifier_dir, "output")
 
 	os.makedirs(results_dir, exist_ok=True)
-	os.makedirs(cache_dir, exist_ok=True)
+	os.makedirs(debug_dir, exist_ok=True)
 
-	return results_dir, cache_dir, debug_dir
+	return results_dir, debug_dir
 
 #============================================
 def create_llm_client(model: str = None) -> llm.LLMClient:
@@ -147,24 +151,61 @@ def summarize_questions(
 		bbq_output: human-readable question text
 
 	Returns:
-		dict with summary, keywords, question_type, core_concept
+		dict with summary, key_terms, primary_concept, biomolecules,
+		question_actions, disambiguators, question_type, quality
 	"""
 	messages = prompt_builder.build_summary_prompt(script_path, bbq_output)
-	response = client.generate(messages=messages, max_tokens=400)
+	response = client.generate(messages=messages, max_tokens=800)
 
+	# Parse all structured fields
 	summary = llm.extract_xml_tag_content(response, "summary")
-	keywords = llm.extract_xml_tag_content(response, "keywords")
+	key_terms = llm.extract_xml_tag_content(response, "key_terms")
+	primary_concept = llm.extract_xml_tag_content(response, "primary_concept")
+	biomolecules = llm.extract_xml_tag_content(response, "biomolecules_or_structures")
+	question_actions = llm.extract_xml_tag_content(response, "question_actions")
+	disambiguators = llm.extract_xml_tag_content(response, "disambiguators")
 	question_type = llm.extract_xml_tag_content(response, "question_type")
-	core_concept = llm.extract_xml_tag_content(response, "core_concept")
 
 	result = {
 		"summary": summary.strip() if summary else None,
-		"keywords": keywords.strip() if keywords else None,
+		"key_terms": key_terms.strip() if key_terms else None,
+		"primary_concept": primary_concept.strip() if primary_concept else None,
+		"biomolecules": biomolecules.strip() if biomolecules else None,
+		"question_actions": question_actions.strip() if question_actions else None,
+		"disambiguators": disambiguators.strip() if disambiguators else None,
 		"question_type": question_type.strip() if question_type else None,
-		"core_concept": core_concept.strip() if core_concept else None,
 		"raw_response": response,
 	}
+
+	# Summary quality validation
+	result["quality"] = _validate_summary_quality(result)
 	return result
+
+#============================================
+def _validate_summary_quality(summary_result: dict) -> str:
+	"""Check summary quality and return 'pass' or 'warn'.
+
+	Args:
+		summary_result: parsed summary dict
+
+	Returns:
+		'pass' or 'warn'
+	"""
+	warnings = []
+	if not summary_result["primary_concept"]:
+		warnings.append("missing primary_concept")
+	if not summary_result["key_terms"]:
+		warnings.append("missing key_terms")
+	elif len(summary_result["key_terms"].split(",")) < 3:
+		warnings.append("too few key_terms")
+	if not summary_result["disambiguators"]:
+		warnings.append("missing disambiguators")
+	if not summary_result["summary"]:
+		warnings.append("missing summary")
+	if warnings:
+		console.print(f"  SUMMARY QUALITY WARN: {', '.join(warnings)}", style="yellow")
+		return "warn"
+	return "pass"
 
 #============================================
 def classify_stage1(
@@ -212,7 +253,7 @@ def classify_stage2(
 	client: llm.LLMClient,
 	script_path: str,
 	source_code: str,
-	question_summary: str,
+	summary_result: dict,
 	subject: str,
 	topics: list,
 	subject_examples: list,
@@ -223,7 +264,7 @@ def classify_stage2(
 		client: LLM client
 		script_path: relative path to script
 		source_code: source code (full or summarized)
-		question_summary: LLM-generated summary or None
+		summary_result: full summary dict from summarizer, or None
 		subject: predicted subject from stage 1
 		topics: topic list for this subject
 		subject_examples: few-shot examples from this subject
@@ -232,20 +273,25 @@ def classify_stage2(
 		dict with topic, confidence, reasoning, raw_response
 	"""
 	messages = prompt_builder.build_stage2_prompt(
-		script_path, source_code, question_summary,
+		script_path, source_code, summary_result,
 		subject, topics, subject_examples,
 	)
 
-	response = client.generate(messages=messages, max_tokens=500)
+	response = client.generate(messages=messages, max_tokens=800)
 
-	topic = llm.extract_xml_tag_content(response, "topic")
+	# Parse new structured output
+	final_topic = llm.extract_xml_tag_content(response, "final_topic")
 	confidence = llm.extract_xml_tag_content(response, "confidence")
-	reasoning = llm.extract_xml_tag_content(response, "reasoning")
+	primary_concept = llm.extract_xml_tag_content(response, "primary_concept")
+	decisive_keywords = llm.extract_xml_tag_content(response, "decisive_keywords")
+	excluded_topics = llm.extract_xml_tag_content(response, "excluded_topics")
 
 	result = {
-		"topic": topic.strip() if topic else None,
+		"topic": final_topic.strip() if final_topic else None,
 		"confidence": confidence.strip() if confidence else None,
-		"reasoning": reasoning.strip() if reasoning else None,
+		"primary_concept": primary_concept.strip() if primary_concept else None,
+		"decisive_keywords": decisive_keywords.strip() if decisive_keywords else None,
+		"excluded_topics": excluded_topics.strip() if excluded_topics else None,
 		"raw_response": response,
 	}
 	return result
@@ -286,18 +332,19 @@ def compute_confidence_score(
 		if topic in valid_topics:
 			score += 1
 
-	# +1 for reasoning containing topic keywords
-	if stage2["reasoning"] and subject in all_indexes:
+	# +1 for decisive_keywords containing topic-related terms
+	decisive = stage2.get("decisive_keywords") or ""
+	if decisive and subject in all_indexes:
 		topic_entry = None
 		for t in all_indexes[subject]:
 			if t["topic_id"] == topic:
 				topic_entry = t
 				break
 		if topic_entry is not None:
-			# Check if reasoning mentions topic name or description words
-			reasoning_lower = stage2["reasoning"].lower()
+			# Check if decisive keywords mention topic name or description words
+			decisive_lower = decisive.lower()
 			topic_words = topic_entry["name"].lower().split()
-			keyword_match = any(w in reasoning_lower for w in topic_words if len(w) > 3)
+			keyword_match = any(w in decisive_lower for w in topic_words if len(w) > 3)
 			if keyword_match:
 				score += 1
 
@@ -312,19 +359,17 @@ def classify_one_script(
 	client: llm.LLMClient,
 	script_path: str,
 	repo_root: str,
-	cache_dir: str,
 	all_indexes: dict,
 	cross_examples: list,
 	assignments: dict,
 	source_only: bool = False,
 ) -> dict:
-	"""Classify a single script through both stages.
+	"""Classify a single script through summarize + subject + topic stages.
 
 	Args:
 		client: LLM client
 		script_path: relative path to script
 		repo_root: repository root
-		cache_dir: directory for caching bbq output
 		all_indexes: subject index data
 		cross_examples: cross-subject few-shot examples
 		assignments: existing CSV assignments
@@ -341,31 +386,25 @@ def classify_one_script(
 	bbq_output = None
 	execution_status = "skipped"
 	if not source_only:
-		# Check cache first
-		cached = script_runner.get_cached_bbq(script_path, cache_dir)
-		if cached is not None:
-			bbq_output = script_runner.read_bbq_output(cached)
-			execution_status = "cached"
+		# Build extra args from existing CSV assignment (flags, input)
+		extra_args = _get_run_args(script_path, assignments)
+		if extra_args:
+			print(f"  Running {script_path} {' '.join(extra_args)}...")
 		else:
-			# Build extra args from existing CSV assignment (flags, input)
-			extra_args = _get_run_args(script_path, assignments)
-			if extra_args:
-				print(f"  Running {script_path} {' '.join(extra_args)}...")
-			else:
-				print(f"  Running {script_path}...")
-			run_result = script_runner.run_script(
-				script_path, repo_root, extra_args=extra_args,
-			)
-			if run_result["success"] and run_result["bbq_file"]:
-				cached_path = script_runner.cache_bbq_file(
-					run_result["bbq_file"], cache_dir,
-				)
-				bbq_output = script_runner.read_bbq_output(cached_path)
-				execution_status = "success"
-			else:
-				# No bbq file produced -- skip classification
-				print("  SKIP: no bbq file produced")
-				return None
+			print(f"  Running {script_path}...")
+		run_result = script_runner.run_script(
+			script_path, repo_root, extra_args=extra_args,
+		)
+		if run_result["success"] and run_result["bbq_file"]:
+			# Read human-readable output, then clean up the bbq file
+			bbq_file = run_result["bbq_file"]
+			bbq_output = script_runner.read_bbq_output(bbq_file)
+			os.remove(bbq_file)
+			execution_status = "success"
+		else:
+			# No bbq file produced -- skip classification
+			console.print("  SKIP: no bbq file produced", style="yellow")
+			return None
 
 	# Stage 0: summarize questions
 	question_summary = None
@@ -377,7 +416,7 @@ def classify_one_script(
 		if question_summary:
 			print(f"  Summary: {question_summary[:100]}")
 		else:
-			print("  WARNING: summary extraction failed")
+			console.print("  WARNING: summary extraction failed", style="yellow")
 
 	# Stage 1: subject classification
 	print("  Classifying subject...")
@@ -399,7 +438,7 @@ def classify_one_script(
 
 	print(f"  Classifying topic within {subject}...")
 	stage2 = classify_stage2(
-		client, script_path, source_for_llm, question_summary,
+		client, script_path, source_for_llm, summary_result,
 		subject, topics, subject_examples,
 	)
 
@@ -443,13 +482,22 @@ def classify_one_script(
 		"execution": execution_status,
 		"existing": existing_assignment,
 		"match": match,
+		# Summary fields
 		"summary": question_summary,
-		"keywords": summary_result["keywords"] if summary_result else None,
-		"core_concept": summary_result["core_concept"] if summary_result else None,
+		"summary_source": "bbq" if bbq_output else "source_fallback",
+		"summary_quality": summary_result["quality"] if summary_result else None,
+		"key_terms": summary_result["key_terms"] if summary_result else None,
+		"primary_concept_summary": summary_result["primary_concept"] if summary_result else None,
+		"biomolecules": summary_result["biomolecules"] if summary_result else None,
+		"disambiguators": summary_result["disambiguators"] if summary_result else None,
 		"question_type": summary_result["question_type"] if summary_result else None,
+		# Stage 1 fields
 		"stage1_reasoning": stage1["reasoning"],
-		"stage2_reasoning": stage2["reasoning"],
 		"stage1_confidence": stage1["confidence"],
+		# Stage 2 fields
+		"stage2_primary_concept": stage2.get("primary_concept"),
+		"stage2_decisive_keywords": stage2.get("decisive_keywords"),
+		"stage2_excluded_topics": stage2.get("excluded_topics"),
 		"stage2_confidence": stage2["confidence"],
 		"topic_name": topic_name,
 	}
@@ -538,8 +586,8 @@ def _make_failed_result(
 		"existing": None,
 		"match": None,
 		"stage1_reasoning": stage1.get("reasoning", ""),
-		"stage2_reasoning": stage2.get("reasoning", "") if stage2 else "",
 		"stage1_confidence": stage1.get("confidence", ""),
+		"stage2_primary_concept": stage2.get("primary_concept", "") if stage2 else "",
 		"stage2_confidence": stage2.get("confidence", "") if stage2 else "",
 	}
 	return result
@@ -577,22 +625,24 @@ def print_diff_report(results: list) -> None:
 			predicted = f"{r['chapter']}/{r['topic']}"
 
 		if r["status"] == "review":
-			print(f"REVIEW:   {script_name} -> {predicted} "
+			console.print(f"[yellow]REVIEW[/yellow]   {script_name} -> {predicted} "
 				f"(score: {r['confidence_score']}, exec: {r['execution']})")
 			reviews += 1
 		elif r["existing"] is None:
-			print(f"NEW:      {script_name} -> {predicted}")
+			console.print(f"[cyan]NEW[/cyan]      {script_name} -> {predicted}")
 			new_scripts += 1
 		elif r["match"]:
-			print(f"MATCH:    {script_name} -> {predicted}")
+			console.print(f"[green]MATCH[/green]    {script_name} -> {predicted}")
 			matches += 1
 		else:
-			print(f"DISAGREE: {script_name} -> {predicted} "
+			console.print(f"[red]DISAGREE[/red] {script_name} -> {predicted} "
 				f"(existing: {r['existing']})")
 			disagreements += 1
 
-	print(f"\nSummary: {matches} matches, {new_scripts} new, "
-		f"{disagreements} disagreements, {reviews} review")
+	console.print(f"\nSummary: [green]{matches} matches[/green], "
+		f"[cyan]{new_scripts} new[/cyan], "
+		f"[red]{disagreements} disagreements[/red], "
+		f"[yellow]{reviews} review[/yellow]")
 
 #============================================
 def main():
@@ -601,7 +651,7 @@ def main():
 	repo_root = get_repo_root()
 
 	# Set up directories
-	results_dir, cache_dir, debug_dir = setup_output_dirs(
+	results_dir, debug_dir = setup_output_dirs(
 		repo_root, args.output_dir,
 	)
 
@@ -658,12 +708,12 @@ def main():
 		print(f"\n[{i+1}/{len(scripts)}] Classifying {script_path}")
 		try:
 			result = classify_one_script(
-				client, script_path, repo_root, cache_dir,
+				client, script_path, repo_root,
 				all_indexes, cross_examples, assignments,
 				source_only=args.source_only,
 			)
-		except (RuntimeError, llm.LLMError) as exc:
-			print(f"  LLM ERROR: {exc}")
+		except (RuntimeError, llm.LLMError, subprocess.TimeoutExpired) as exc:
+			console.print(f"  ERROR: {exc}", style="bold red")
 			llm_error_scripts.append(script_path)
 			continue
 
@@ -677,10 +727,15 @@ def main():
 		# Write debug log incrementally for crash recovery
 		write_debug_log(result, debug_dir)
 
-		status_icon = "OK" if result["status"] == "classified" else "??"
 		topic_label = result.get("topic_name", result["topic"])
-		print(f"  [{status_icon}] {result['chapter']}/{result['topic']} {topic_label} "
-			f"(score: {result['confidence_score']})")
+		if result["status"] == "classified":
+			console.print(
+				f"  [bold green][OK][/bold green] {result['chapter']}/{result['topic']} "
+				f"[cyan]{topic_label}[/cyan] (score: {result['confidence_score']})")
+		else:
+			console.print(
+				f"  [bold yellow][??][/bold yellow] {result['chapter']}/{result['topic']} "
+				f"[cyan]{topic_label}[/cyan] (score: {result['confidence_score']})")
 
 	# Write result CSVs in one pass
 	print(f"\nWriting result CSVs to {results_dir}...")

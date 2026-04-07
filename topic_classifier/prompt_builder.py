@@ -1,31 +1,58 @@
-"""Build LLM classification prompts for both stages."""
+"""Build LLM classification prompts for both stages.
+
+Prompt text is stored in topic_classifier/prompts/*.yaml for easy editing.
+Rendering logic, variable substitution, and validation stay in Python.
+"""
+
+# Standard Library
+import os
+
+# PIP3 modules
+import yaml
 
 # local repo modules
 import topic_classifier.index_parser as index_parser
 
 #============================================
-SUMMARY_SYSTEM = (
-	"You are a biology education assistant. "
-	"Summarize the content of generated quiz questions. "
-	"Focus on what biological concept is being tested, not how the "
-	"script works. Be specific (e.g., 'amino acid protonation states' "
-	"not just 'biochemistry')."
-)
+# Load prompt YAML files at module init
+_PROMPTS_DIR = os.path.join(os.path.dirname(__file__), "prompts")
+
+def _load_prompt(filename: str) -> dict:
+	"""Load a YAML prompt file from the prompts directory.
+
+	Args:
+		filename: name of the YAML file (e.g., 'summary.yaml')
+
+	Returns:
+		parsed dict from YAML
+	"""
+	filepath = os.path.join(_PROMPTS_DIR, filename)
+	with open(filepath, "r") as f:
+		data = yaml.safe_load(f)
+	return data
+
+# Cache loaded prompts
+_SUMMARY_PROMPT = _load_prompt("summary.yaml")
+_STAGE1_PROMPT = _load_prompt("stage1_subject.yaml")
+_STAGE2_PROMPT = _load_prompt("stage2_topic.yaml")
 
 #============================================
-STAGE1_SYSTEM = (
-	"You are a biology textbook topic classifier. "
-	"Given a Python question generator script and its output, "
-	"assign it to exactly one subject from the provided list. "
-	"Respond using XML tags as shown in the instructions."
-)
+def _load_subject_rules(subject: str) -> str:
+	"""Load subject-specific trap rules if available.
 
-STAGE2_SYSTEM = (
-	"You are a biology textbook topic classifier. "
-	"Given a Python question generator script and its output, "
-	"assign it to exactly one topic from the provided list. "
-	"Respond using XML tags as shown in the instructions."
-)
+	Args:
+		subject: subject name (e.g., 'biochemistry')
+
+	Returns:
+		rules string, or empty string if no rules file exists
+	"""
+	filepath = os.path.join(_PROMPTS_DIR, f"{subject}.yaml")
+	if not os.path.isfile(filepath):
+		return ""
+	with open(filepath, "r") as f:
+		data = yaml.safe_load(f)
+	rules = data.get("rules", "")
+	return rules
 
 #============================================
 def build_summary_prompt(script_path: str, bbq_output: str) -> list:
@@ -40,20 +67,14 @@ def build_summary_prompt(script_path: str, bbq_output: str) -> list:
 	Returns:
 		list of message dicts for LLMClient.generate(messages=...)
 	"""
-	user_content = (
-		f"## Script: {script_path}\n\n"
-		f"### Generated questions\n```\n"
-		f"{bbq_output}\n```\n\n"
-		"Summarize the biological content of these questions. "
-		"Do not describe the script or its implementation. "
-		"Respond with these XML tags:\n"
-		"<summary>1-2 sentence description of what these questions test.</summary>\n"
-		"<keywords>keyword1, keyword2, keyword3</keywords>\n"
-		"<question_type>multiple_choice or numeric or fill_in_blank or matching or ordering</question_type>\n"
-		"<core_concept>The single most specific biological concept tested.</core_concept>\n"
-	)
+	user_parts = []
+	user_parts.append(f"## Script: {script_path}\n\n")
+	user_parts.append(f"### Generated questions\n```\n{bbq_output}\n```\n\n")
+	user_parts.append(_SUMMARY_PROMPT["instructions"])
+	user_content = "".join(user_parts)
+
 	messages = [
-		{"role": "system", "content": SUMMARY_SYSTEM},
+		{"role": "system", "content": _SUMMARY_PROMPT["system"].strip()},
 		{"role": "user", "content": user_content},
 	]
 	return messages
@@ -100,12 +121,13 @@ def build_stage1_prompt(
 		user_parts.append(source_code)
 		user_parts.append("\n```\n")
 
-	user_parts.append(_stage1_instructions())
+	user_parts.append("\n")
+	user_parts.append(_STAGE1_PROMPT["instructions"])
 
 	user_content = "".join(user_parts)
 
 	messages = [
-		{"role": "system", "content": STAGE1_SYSTEM},
+		{"role": "system", "content": _STAGE1_PROMPT["system"].strip()},
 		{"role": "user", "content": user_content},
 	]
 	return messages
@@ -114,7 +136,7 @@ def build_stage1_prompt(
 def build_stage2_prompt(
 	script_path: str,
 	source_code: str,
-	question_summary: str,
+	summary_result: dict,
 	subject: str,
 	topics: list,
 	subject_examples: list,
@@ -124,7 +146,7 @@ def build_stage2_prompt(
 	Args:
 		script_path: relative path to the script
 		source_code: full or summarized source code
-		question_summary: LLM-generated summary of the questions, or None
+		summary_result: full summary dict from summarizer stage, or None
 		subject: predicted subject from stage 1
 		topics: topic list for this subject from index_parser
 		subject_examples: few-shot examples from this subject
@@ -146,51 +168,49 @@ def build_stage2_prompt(
 	user_parts.append(examples_text)
 	user_parts.append(f"\n\n## Script to classify: {script_path}\n")
 
-	if question_summary:
-		user_parts.append(f"### Question summary\n{question_summary}\n")
+	if summary_result and summary_result.get("primary_concept"):
+		# Present summary fields in ranked order (most discriminating first)
+		user_parts.append("### Question analysis\n")
+		user_parts.append(f"**Primary concept:** {summary_result['primary_concept']}\n")
+		if summary_result.get("disambiguators"):
+			user_parts.append(f"**Disambiguators:** {summary_result['disambiguators']}\n")
+		if summary_result.get("key_terms"):
+			user_parts.append(f"**Key terms:** {summary_result['key_terms']}\n")
+		if summary_result.get("summary"):
+			user_parts.append(f"**Summary:** {summary_result['summary']}\n")
+		if summary_result.get("biomolecules"):
+			user_parts.append(f"**Biomolecules/structures:** {summary_result['biomolecules']}\n")
+		if summary_result.get("question_actions"):
+			user_parts.append(f"**Student actions:** {summary_result['question_actions']}\n")
 	else:
-		user_parts.append("### Source code (no question output available)\n```python\n")
+		# Fallback: use source code only
+		user_parts.append("### Source code (no question analysis available)\n```python\n")
 		user_parts.append(source_code)
 		user_parts.append("\n```\n")
 
-	user_parts.append(_stage2_instructions(subject))
+	# Add instructions, decision rules, subject-specific rules, and response format
+	user_parts.append("\n## Instructions\n")
+	user_parts.append(f"This script belongs to the subject '{subject}'. ")
+	user_parts.append("Classify it into exactly one topic from the list above.\n\n")
+	user_parts.append("## Decision rules\n")
+	user_parts.append(_STAGE2_PROMPT["decision_rules"])
+
+	# Subject-specific trap rules
+	subject_rules = _load_subject_rules(subject)
+	if subject_rules:
+		user_parts.append(f"\n## {subject.title()}-specific rules\n")
+		user_parts.append(subject_rules)
+
+	user_parts.append("\n## Response format\n")
+	user_parts.append(_STAGE2_PROMPT["response_format"])
 
 	user_content = "".join(user_parts)
 
 	messages = [
-		{"role": "system", "content": STAGE2_SYSTEM},
+		{"role": "system", "content": _STAGE2_PROMPT["system"].strip()},
 		{"role": "user", "content": user_content},
 	]
 	return messages
-
-#============================================
-def _stage1_instructions() -> str:
-	"""Return the XML response instructions for stage 1."""
-	text = (
-		"\n## Instructions\n"
-		"Classify this script into exactly one subject. "
-		"Respond with these XML tags:\n"
-		"<subject>subject_name</subject>\n"
-		"<confidence>high</confidence>\n"
-		"<reasoning>Brief explanation of why this subject fits.</reasoning>\n\n"
-		"For confidence, use exactly one of: high, medium, or low.\n"
-	)
-	return text
-
-#============================================
-def _stage2_instructions(subject: str) -> str:
-	"""Return the XML response instructions for stage 2."""
-	text = (
-		"\n## Instructions\n"
-		f"This script belongs to the subject '{subject}'. "
-		"Now classify it into exactly one topic from the list above. "
-		"Respond with these XML tags:\n"
-		"<topic>topicNN</topic>\n"
-		"<confidence>high</confidence>\n"
-		"<reasoning>Brief explanation of why this topic fits.</reasoning>\n\n"
-		"For confidence, use exactly one of: high, medium, or low.\n"
-	)
-	return text
 
 #============================================
 def _format_cross_examples(examples: list) -> str:

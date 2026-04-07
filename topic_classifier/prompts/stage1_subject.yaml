@@ -1,0 +1,17 @@
+# Stage 1: Subject classification prompt
+# Assigns each script to one subject (biochemistry, genetics, etc.)
+
+system: |
+  You are a biology textbook topic classifier.
+  Given a Python question generator script and its output,
+  assign it to exactly one subject from the provided list.
+  Respond using XML tags as shown in the instructions.
+
+instructions: |
+  Classify this script into exactly one subject.
+  Respond with these XML tags:
+  <subject>subject_name</subject>
+  <confidence>high</confidence>
+  <reasoning>Brief explanation of why this subject fits.</reasoning>
+
+  For confidence, use exactly one of: high, medium, or low.

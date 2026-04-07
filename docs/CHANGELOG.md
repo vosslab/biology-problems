@@ -11,6 +11,14 @@
   - [prompt_builder.py](../topic_classifier/prompt_builder.py) -- builds LLM prompts for both classification stages with few-shot examples.
 - Uses `local-llm-wrapper` with Apple Intelligence (primary) and Ollama (fallback) transports.
 
+### Behavior or Interface Changes
+- Rewrote summarizer prompt to produce rich classification-oriented artifact with key_terms, primary_concept, biomolecules_or_structures, disambiguators, and question_actions fields. Summary now preserves domain-specific terms verbatim instead of over-compressing.
+- Rewrote stage 2 classifier prompt with explicit decision rules and priority rules (primary-concept matching, biochemistry-specific trap rules). Stage 2 now outputs primary_concept, decisive_keywords, excluded_topics, final_topic, and confidence.
+- Stage 2 receives ranked summary fields (primary_concept first, question_actions last) instead of a plain text summary.
+- Added summary-quality validation that flags weak summaries (missing primary_concept, too few key_terms, missing disambiguators).
+- Added [regression_tests.yaml](../topic_classifier/regression_tests.yaml) with 15 confusable biochemistry and genetics examples including negative pairs.
+- Enriched debug JSONL log with summary source, quality flag, all summary fields, and stage 2 decisive_keywords and excluded_topics.
+
 ### Fixes and Maintenance
 - Fixed broken symlinks in `subject-indexes/` -- changed relative paths from `../biology-problems-website/` to `../../biology-problems-website/` to resolve correctly from the symlink directory.
 
