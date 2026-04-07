@@ -1,5 +1,19 @@
 # Changelog
 
+## 2026-04-07
+
+### Additions and New Features
+- Added `topic_classifier/` directory with LLM-based script-to-textbook-topic classification system.
+  - [classify_scripts.py](../topic_classifier/classify_scripts.py) -- main CLI with two-stage classification (subject, then topic), dry-run mode, and diff reporting.
+  - [index_parser.py](../topic_classifier/index_parser.py) -- parses `subject-indexes/*.md` into structured topic lists.
+  - [csv_handler.py](../topic_classifier/csv_handler.py) -- reads existing `bbq_control/*.csv` assignments and writes bbq_control-format result CSVs.
+  - [script_runner.py](../topic_classifier/script_runner.py) -- discovers generator scripts, runs them with timeout, detects `bbq-*-questions.txt` output files.
+  - [prompt_builder.py](../topic_classifier/prompt_builder.py) -- builds LLM prompts for both classification stages with few-shot examples.
+- Uses `local-llm-wrapper` with Apple Intelligence (primary) and Ollama (fallback) transports.
+
+### Fixes and Maintenance
+- Fixed broken symlinks in `subject-indexes/` -- changed relative paths from `../biology-problems-website/` to `../../biology-problems-website/` to resolve correctly from the symlink directory.
+
 ## 2026-04-02
 
 ### Fixes and Maintenance

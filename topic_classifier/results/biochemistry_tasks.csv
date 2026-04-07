@@ -1,0 +1,4 @@
+chapter,topic,script,flags,input,notes
+biochemistry,topic02,problems/biochemistry-problems/PUBCHEM/AMINO_ACIDS/alanine_protonation_states.py,,,
+biochemistry,topic03,problems/biochemistry-problems/PUBCHEM/AMINO_ACIDS/alpha_amino_acid_identification.py,,,
+biochemistry,topic03,problems/biochemistry-problems/PUBCHEM/AMINO_ACIDS/generate_alpha_amino_acid_identification_pg.py,,,
