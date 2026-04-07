@@ -152,7 +152,7 @@ def summarize_questions(
 
 	Returns:
 		dict with summary, key_terms, primary_concept, biomolecules,
-		question_actions, disambiguators, question_type, quality
+		question_actions, topic_hints, question_type, quality
 	"""
 	messages = prompt_builder.build_summary_prompt(script_path, bbq_output)
 	response = client.generate(messages=messages, max_tokens=800)
@@ -163,7 +163,7 @@ def summarize_questions(
 	primary_concept = llm.extract_xml_tag_content(response, "primary_concept")
 	biomolecules = llm.extract_xml_tag_content(response, "biomolecules_or_structures")
 	question_actions = llm.extract_xml_tag_content(response, "question_actions")
-	disambiguators = llm.extract_xml_tag_content(response, "disambiguators")
+	topic_hints = llm.extract_xml_tag_content(response, "topic_hints")
 	question_type = llm.extract_xml_tag_content(response, "question_type")
 
 	result = {
@@ -172,7 +172,7 @@ def summarize_questions(
 		"primary_concept": primary_concept.strip() if primary_concept else None,
 		"biomolecules": biomolecules.strip() if biomolecules else None,
 		"question_actions": question_actions.strip() if question_actions else None,
-		"disambiguators": disambiguators.strip() if disambiguators else None,
+		"topic_hints": topic_hints.strip() if topic_hints else None,
 		"question_type": question_type.strip() if question_type else None,
 		"raw_response": response,
 	}
@@ -198,8 +198,8 @@ def _validate_summary_quality(summary_result: dict) -> str:
 		warnings.append("missing key_terms")
 	elif len(summary_result["key_terms"].split(",")) < 3:
 		warnings.append("too few key_terms")
-	if not summary_result["disambiguators"]:
-		warnings.append("missing disambiguators")
+	if not summary_result["topic_hints"]:
+		warnings.append("missing topic_hints")
 	if not summary_result["summary"]:
 		warnings.append("missing summary")
 	if warnings:
@@ -284,14 +284,12 @@ def classify_stage2(
 	confidence = llm.extract_xml_tag_content(response, "confidence")
 	primary_concept = llm.extract_xml_tag_content(response, "primary_concept")
 	decisive_keywords = llm.extract_xml_tag_content(response, "decisive_keywords")
-	excluded_topics = llm.extract_xml_tag_content(response, "excluded_topics")
 
 	result = {
 		"topic": final_topic.strip() if final_topic else None,
 		"confidence": confidence.strip() if confidence else None,
 		"primary_concept": primary_concept.strip() if primary_concept else None,
 		"decisive_keywords": decisive_keywords.strip() if decisive_keywords else None,
-		"excluded_topics": excluded_topics.strip() if excluded_topics else None,
 		"raw_response": response,
 	}
 	return result
@@ -489,7 +487,7 @@ def classify_one_script(
 		"key_terms": summary_result["key_terms"] if summary_result else None,
 		"primary_concept_summary": summary_result["primary_concept"] if summary_result else None,
 		"biomolecules": summary_result["biomolecules"] if summary_result else None,
-		"disambiguators": summary_result["disambiguators"] if summary_result else None,
+		"topic_hints": summary_result["topic_hints"] if summary_result else None,
 		"question_type": summary_result["question_type"] if summary_result else None,
 		# Stage 1 fields
 		"stage1_reasoning": stage1["reasoning"],
@@ -497,7 +495,6 @@ def classify_one_script(
 		# Stage 2 fields
 		"stage2_primary_concept": stage2.get("primary_concept"),
 		"stage2_decisive_keywords": stage2.get("decisive_keywords"),
-		"stage2_excluded_topics": stage2.get("excluded_topics"),
 		"stage2_confidence": stage2["confidence"],
 		"topic_name": topic_name,
 	}

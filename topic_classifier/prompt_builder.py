@@ -37,24 +37,6 @@ _STAGE1_PROMPT = _load_prompt("stage1_subject.yaml")
 _STAGE2_PROMPT = _load_prompt("stage2_topic.yaml")
 
 #============================================
-def _load_subject_rules(subject: str) -> str:
-	"""Load subject-specific trap rules if available.
-
-	Args:
-		subject: subject name (e.g., 'biochemistry')
-
-	Returns:
-		rules string, or empty string if no rules file exists
-	"""
-	filepath = os.path.join(_PROMPTS_DIR, f"{subject}.yaml")
-	if not os.path.isfile(filepath):
-		return ""
-	with open(filepath, "r") as f:
-		data = yaml.safe_load(f)
-	rules = data.get("rules", "")
-	return rules
-
-#============================================
 def build_summary_prompt(script_path: str, bbq_output: str) -> list:
 	"""Build chat messages for summarizing question output.
 
@@ -172,16 +154,14 @@ def build_stage2_prompt(
 		# Present summary fields in ranked order (most discriminating first)
 		user_parts.append("### Question analysis\n")
 		user_parts.append(f"**Primary concept:** {summary_result['primary_concept']}\n")
-		if summary_result.get("disambiguators"):
-			user_parts.append(f"**Disambiguators:** {summary_result['disambiguators']}\n")
+		if summary_result.get("topic_hints"):
+			user_parts.append(f"**Topic hints:** {summary_result['topic_hints']}\n")
 		if summary_result.get("key_terms"):
 			user_parts.append(f"**Key terms:** {summary_result['key_terms']}\n")
 		if summary_result.get("summary"):
 			user_parts.append(f"**Summary:** {summary_result['summary']}\n")
 		if summary_result.get("biomolecules"):
 			user_parts.append(f"**Biomolecules/structures:** {summary_result['biomolecules']}\n")
-		if summary_result.get("question_actions"):
-			user_parts.append(f"**Student actions:** {summary_result['question_actions']}\n")
 	else:
 		# Fallback: use source code only
 		user_parts.append("### Source code (no question analysis available)\n```python\n")
@@ -195,11 +175,11 @@ def build_stage2_prompt(
 	user_parts.append("## Decision rules\n")
 	user_parts.append(_STAGE2_PROMPT["decision_rules"])
 
-	# Subject-specific trap rules
-	subject_rules = _load_subject_rules(subject)
-	if subject_rules:
-		user_parts.append(f"\n## {subject.title()}-specific rules\n")
-		user_parts.append(subject_rules)
+	# Add positive examples if available
+	examples = _STAGE2_PROMPT.get("examples", "")
+	if examples:
+		user_parts.append("\n")
+		user_parts.append(examples)
 
 	user_parts.append("\n## Response format\n")
 	user_parts.append(_STAGE2_PROMPT["response_format"])
