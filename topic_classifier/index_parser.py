@@ -177,7 +177,9 @@ def format_subject_list(all_indexes: dict) -> str:
 		topic_list = ", ".join(topic_names)
 		lines.append(f"### {subject}")
 		if description:
-			lines.append(f"  {description}")
+			# Indent each line of the description
+			for desc_line in description.split("\n"):
+				lines.append(f"  {desc_line}")
 		lines.append(f"  Topics: {topic_list}")
 		lines.append("")
 	result = "\n".join(lines)
@@ -204,7 +206,8 @@ def format_topic_list(topics: list) -> str:
 if __name__ == '__main__':
 	# Quick test: load and print all indexes
 	all_indexes = load_all_indexes()
-	for subject, topics in sorted(all_indexes.items()):
+	for subject, data in sorted(all_indexes.items()):
+		topics = data["topics"]
 		print(f"\n{subject} ({len(topics)} topics):")
 		for t in topics:
 			print(f"  {t['topic_id']}: {t['name']}")

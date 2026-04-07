@@ -543,7 +543,8 @@ def classify_one_script(
 			console.print(f"    reasoning: {stage1['reasoning']}", style="dim")
 
 	# Stage 2: topic classification
-	topics = all_indexes.get(subject, [])
+	subject_data = all_indexes.get(subject, {"topics": []})
+	topics = subject_data["topics"]
 	subject_examples = csv_handler.get_examples_for_subject(assignments, subject)
 
 	console.print(f"  Classifying topic within [bold cyan]{subject}[/bold cyan]...", style="dim")
