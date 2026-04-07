@@ -95,6 +95,15 @@ def build_stage1_prompt(
 	user_parts.append(examples_text)
 	user_parts.append(f"\n\n## Script to classify: {script_path}\n")
 
+	# Extract subject hint from script path folder name (redundant for copying)
+	path_parts = script_path.split("/")
+	for part in path_parts:
+		if part.endswith("-problems"):
+			folder_hint = part.replace("-problems", "").replace("-", "_")
+			user_parts.append(f"Script folder: {part}\n")
+			user_parts.append(f"Folder subject: {folder_hint}\n")
+			break
+
 	if question_summary:
 		user_parts.append(f"### Question summary\n{question_summary}\n")
 	else:
@@ -105,6 +114,12 @@ def build_stage1_prompt(
 
 	user_parts.append("\n")
 	user_parts.append(_STAGE1_PROMPT["instructions"])
+
+	# Add disambiguation micro-examples if available
+	micro_examples = _STAGE1_PROMPT.get("micro_examples", "")
+	if micro_examples:
+		user_parts.append("\n")
+		user_parts.append(micro_examples)
 
 	user_content = "".join(user_parts)
 

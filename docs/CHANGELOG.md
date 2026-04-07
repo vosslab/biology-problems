@@ -3,6 +3,14 @@
 ## 2026-04-07
 
 ### Additions and New Features
+- Added `-r`/`--repeat` flag to [classify_scripts.py](../topic_classifier/classify_scripts.py) for running each script N times and reporting consistency. Flags scripts where subject or topic agreement is below 2/3 threshold. Reports vote counts, confidence ranges, and stability summary.
+- Added cross-subject boundary regression cases to [regression_tests.yaml](../topic_classifier/regression_tests.yaml) covering molecular biology vs biochemistry, biochemistry vs molecular biology, and genetics vs molecular biology confusions.
+- Added 3 literal disambiguation micro-examples to [stage1_subject.yaml](../topic_classifier/prompts/stage1_subject.yaml) as copy templates for small LLMs (consensus sequence -> molecular_biology, chemical bonds in DNA -> biochemistry, Punnett square -> genetics).
+- Added classification hint tag examples to [summary.yaml](../topic_classifier/prompts/summary.yaml) (parenthetical tags like "sequence analysis", "chemical structure", "inheritance pattern") to improve downstream subject classification.
+- Added redundant path hint extraction in [prompt_builder.py](../topic_classifier/prompt_builder.py) showing both script folder name and derived subject for small LLM substring copying.
+
+### Behavior or Interface Changes
+- Rewrote all 6 subject index intro descriptions in `subject-indexes/` to use consistent keyword-dense format: 2 definition lines + 1 "Includes:" line with dense lexical anchors. Removed all "Not about" negative phrasing that confused small LLMs. Subjects updated: biochemistry, genetics, molecular_biology, biostatistics, biotech, laboratory.
 - Added `-v`/`--verbose` flag to [classify_scripts.py](../topic_classifier/classify_scripts.py) showing full summary fields, LLM reasoning, decisive keywords, response lengths, source trimming, and existing assignment comparison inline.
 - Converted all `print()` calls in [classify_scripts.py](../topic_classifier/classify_scripts.py) to `rich.console.print()` with consistent color: dim for progress steps, cyan for values/paths, bold for counts, colored confidence levels (green/yellow/red for high/medium/low).
 - Added `topic_classifier/` directory with LLM-based script-to-textbook-topic classification system.

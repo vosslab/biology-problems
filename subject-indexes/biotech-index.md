@@ -1,8 +1,8 @@
 # List of Biotechnology Topics
 
-Applied biotechnology: genetic engineering, recombinant systems, gene therapy, GMOs, regulation, ethics.
-Focus on real-world applications and societal implications of biological tools.
-Not about basic molecular mechanisms or inheritance theory.
+Biotechnology is the application of biological systems and molecular tools to develop technologies and products.
+Biotechnologists manipulate DNA, RNA, proteins, and cells for practical and industrial purposes.
+Includes: recombinant DNA, cloning vectors, plasmids, restriction enzymes, PCR, gel electrophoresis, DNA sequencing, CRISPR, gene editing, transformation, expression systems, gene therapy, synthetic biology, bioreactors.
 
 ## Topics
 

@@ -84,6 +84,10 @@ def parse_args() -> argparse.Namespace:
 		'-v', '--verbose', dest='verbose', action='store_true',
 		help="Show extra debug output (summary fields, reasoning, keywords)",
 	)
+	parser.add_argument(
+		'-r', '--repeat', dest='repeat', type=int, default=1,
+		help="Classify each script N times and report consistency (default: 1)",
+	)
 	args = parser.parse_args()
 	return args
 
@@ -763,6 +767,71 @@ def print_diff_report(results: list) -> None:
 		f"[yellow]{reviews} review[/yellow]")
 
 #============================================
+def print_consistency_report(repeat_results: dict, num_repeats: int) -> None:
+	"""Print a consistency report for repeated classification runs.
+
+	Args:
+		repeat_results: dict mapping script_path to list of result dicts
+		num_repeats: number of repeats per script
+	"""
+	console.print(f"\n--- Consistency Report ({num_repeats} runs per script) ---", style="bold")
+	stable_count = 0
+	flagged_count = 0
+	total_scripts = len(repeat_results)
+
+	for script_path, run_results in sorted(repeat_results.items()):
+		script_name = os.path.basename(script_path)
+		# Count subject votes
+		subject_votes = {}
+		topic_votes = {}
+		confidences = []
+		for r in run_results:
+			subj = r["chapter"]
+			subject_votes[subj] = subject_votes.get(subj, 0) + 1
+			top = r["topic"]
+			topic_votes[top] = topic_votes.get(top, 0) + 1
+			confidences.append(r["confidence_score"])
+
+		# Find majority subject and topic
+		top_subject = max(subject_votes, key=subject_votes.get)
+		top_subject_count = subject_votes[top_subject]
+		top_topic = max(topic_votes, key=topic_votes.get)
+		top_topic_count = topic_votes[top_topic]
+
+		# Check stability threshold (2/3 agreement)
+		threshold = (2 * num_repeats + 2) // 3
+		subject_stable = top_subject_count >= threshold
+		topic_stable = top_topic_count >= threshold
+
+		# Format confidence range
+		conf_min = min(confidences)
+		conf_max = max(confidences)
+		conf_str = f"{conf_min}" if conf_min == conf_max else f"{conf_min}-{conf_max}"
+
+		if subject_stable and topic_stable:
+			stable_count += 1
+			console.print(
+				f"  [green]STABLE[/green]  {script_name} -> "
+				f"{top_subject}/{top_topic} "
+				f"({top_subject_count}/{num_repeats} subject, "
+				f"{top_topic_count}/{num_repeats} topic, "
+				f"conf: {conf_str})")
+		else:
+			flagged_count += 1
+			# Show all votes for flagged scripts
+			subj_detail = ", ".join(f"{s}: {c}" for s, c in sorted(subject_votes.items()))
+			topic_detail = ", ".join(f"{t}: {c}" for t, c in sorted(topic_votes.items()))
+			console.print(
+				f"  [red]UNSTABLE[/red] {script_name} -> "
+				f"subjects=[{subj_detail}] topics=[{topic_detail}] "
+				f"conf: {conf_str}")
+
+	# Summary
+	console.print(
+		f"\n  [green]{stable_count}[/green]/{total_scripts} stable, "
+		f"[red]{flagged_count}[/red] flagged")
+
+#============================================
 def main():
 	"""Main entry point for the topic classifier."""
 	args = parse_args()
@@ -818,47 +887,73 @@ def main():
 	console.print("Initializing LLM client...", style="dim italic")
 	client = create_llm_client(args.model)
 
+	num_repeats = max(1, args.repeat)
+
 	# Classify all scripts
 	results = []
 	no_bbq_scripts = []
 	llm_error_scripts = []
+	# For repeat mode: collect all runs per script
+	repeat_results = {}
 	for i, script_path in enumerate(scripts):
-		console.print(f"\n[bold][{i+1}/{len(scripts)}][/bold] Classifying [cyan]{script_path}[/cyan]")
-		try:
-			result = classify_one_script(
-				client, script_path, repo_root,
-				all_indexes, cross_examples, assignments,
-				source_only=args.source_only,
-				verbose=args.verbose,
-			)
-		except (RuntimeError, llm.LLMError, subprocess.TimeoutExpired) as exc:
-			console.print(f"  ERROR: {exc}", style="bold red")
-			llm_error_scripts.append(script_path)
-			continue
+		for run_num in range(num_repeats):
+			if num_repeats > 1:
+				console.print(
+					f"\n[bold][{i+1}/{len(scripts)} run {run_num+1}/{num_repeats}][/bold] "
+					f"Classifying [cyan]{script_path}[/cyan]")
+			else:
+				console.print(
+					f"\n[bold][{i+1}/{len(scripts)}][/bold] "
+					f"Classifying [cyan]{script_path}[/cyan]")
+			try:
+				result = classify_one_script(
+					client, script_path, repo_root,
+					all_indexes, cross_examples, assignments,
+					source_only=args.source_only,
+					verbose=args.verbose,
+				)
+			except (RuntimeError, llm.LLMError, subprocess.TimeoutExpired) as exc:
+				console.print(f"  ERROR: {exc}", style="bold red")
+				if run_num == 0:
+					llm_error_scripts.append(script_path)
+				continue
 
-		if result is None:
-			# Script produced no bbq file -- record for no_bbq_file.csv
-			no_bbq_scripts.append(script_path)
-			continue
+			if result is None:
+				if run_num == 0:
+					no_bbq_scripts.append(script_path)
+				# No point repeating if no bbq file
+				break
 
-		results.append(result)
+			results.append(result)
 
-		# Write debug log incrementally for crash recovery
-		write_debug_log(result, debug_dir)
+			# Collect for consistency report
+			if script_path not in repeat_results:
+				repeat_results[script_path] = []
+			repeat_results[script_path].append(result)
 
-		topic_label = result.get("topic_name", result["topic"])
-		if result["status"] == "classified":
-			console.print(
-				f"  [bold green][OK][/bold green] {result['chapter']}/{result['topic']} "
-				f"[cyan]{topic_label}[/cyan] (score: {result['confidence_score']})")
-		else:
-			console.print(
-				f"  [bold yellow][??][/bold yellow] {result['chapter']}/{result['topic']} "
-				f"[cyan]{topic_label}[/cyan] (score: {result['confidence_score']})")
+			# Write debug log incrementally for crash recovery
+			write_debug_log(result, debug_dir)
 
-	# Write result CSVs in one pass
+			topic_label = result.get("topic_name", result["topic"])
+			if result["status"] == "classified":
+				console.print(
+					f"  [bold green][OK][/bold green] {result['chapter']}/{result['topic']} "
+					f"[cyan]{topic_label}[/cyan] (score: {result['confidence_score']})")
+			else:
+				console.print(
+					f"  [bold yellow][??][/bold yellow] {result['chapter']}/{result['topic']} "
+					f"[cyan]{topic_label}[/cyan] (score: {result['confidence_score']})")
+
+	# Write result CSVs using first run results only (avoid duplicates)
+	first_run_results = []
+	seen_scripts = set()
+	for r in results:
+		if r["script"] not in seen_scripts:
+			first_run_results.append(r)
+			seen_scripts.add(r["script"])
+
 	console.print(f"\nWriting result CSVs to [cyan]{results_dir}[/cyan]...", style="dim italic")
-	written = csv_handler.write_result_csvs(results, results_dir)
+	written = csv_handler.write_result_csvs(first_run_results, results_dir)
 	for f in written:
 		console.print(f"  Written: [green]{f}[/green]")
 
@@ -883,7 +978,11 @@ def main():
 	# Show diff report if requested or always show summary
 	if args.diff_mode or True:
 		console.print("\n--- Classification Report ---", style="bold")
-		print_diff_report(results)
+		print_diff_report(first_run_results)
+
+	# Show consistency report for repeat mode
+	if num_repeats > 1 and repeat_results:
+		print_consistency_report(repeat_results, num_repeats)
 
 #============================================
 if __name__ == '__main__':

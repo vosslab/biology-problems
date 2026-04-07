@@ -1,8 +1,8 @@
 # List of Biostatistics Topics
 
-Statistical methods applied to biological data: distributions, hypothesis testing, regression.
-Focus on data analysis, probability, and statistical reasoning.
-Not about biological molecules or lab techniques.
+Biostatistics is the study of statistical methods applied to biological data and experiments.
+Biostatisticians analyze data, quantify uncertainty, and test hypotheses using probability and statistical models.
+Includes: probability distributions, mean, median, variance, standard deviation, normal distribution, hypothesis testing, p-values, confidence intervals, chi-squared tests, t-tests, regression, correlation, experimental design, data interpretation.
 
 ## Topics
 

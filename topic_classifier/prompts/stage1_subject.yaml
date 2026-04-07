@@ -20,3 +20,17 @@ instructions: |
     3 = reasonable match, one subject fits better than others
     4 = strong match, key terms clearly point to this subject
     5 = unambiguous, no other subject is plausible
+
+micro_examples: |
+  ## Classification examples
+  Script: problems/molecular_biology-problems/consensus_sequence.py
+  Summary: determine consensus sequence from DNA sequences (sequence analysis)
+  Subject: molecular_biology
+
+  Script: problems/biochemistry-problems/dna_nucleotide_chemistry.py
+  Summary: identify chemical bonds and base pairing in DNA (chemical structure)
+  Subject: biochemistry
+
+  Script: problems/genetics-problems/monohybrid_cross.py
+  Summary: predict offspring ratios from a single-gene cross (inheritance pattern)
+  Subject: genetics

@@ -27,10 +27,20 @@ instructions: |
   <primary_concept>One sentence: the single most specific biological
   concept being tested.</primary_concept>
 
+  End the summary with a parenthetical classification hint.
+
+  Example summaries:
+  - "classify monosaccharides using Fischer projections (chemical structure)"
+  - "determine consensus sequence from aligned DNA sequences (sequence analysis)"
+  - "predict offspring phenotype ratios using a Punnett square (inheritance pattern)"
+  - "identify the role of sigma factor in transcription initiation (gene expression)"
+  - "calculate pH from pKa values using Henderson-Hasselbalch equation (chemical properties)"
+  - "calculate dilution volumes for a serial dilution (laboratory technique)"
+
   Example of a good response:
 
   <summary>These questions test student ability to classify monosaccharides
   using Fischer projections, including D/L notation and stereochemistry
-  of sugar molecules.</summary>
+  of sugar molecules (chemical structure).</summary>
   <key_terms>Fischer projection, monosaccharide, D-sugar, L-sugar, epimer, anomer, aldose, ketose</key_terms>
   <primary_concept>Classification of monosaccharides using Fischer projections</primary_concept>

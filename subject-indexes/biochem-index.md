@@ -1,8 +1,8 @@
 # List of Biochemistry Topics
 
-Structure and function of biological molecules: proteins, enzymes, carbohydrates, lipids, nucleic acids.
-Focus on molecular properties, chemical reactions, and thermodynamics.
-Not about inheritance patterns, not about lab protocols, not about gene expression regulation.
+Biochemistry is the study of chemical substances and vital processes in living organisms.
+Biochemists focus on the role, function, and structure of biomolecules and the chemistry behind biological processes.
+Includes: enzyme kinetics, Michaelis-Menten, reaction mechanisms, chemical bonds, protein folding, metabolic pathways, thermodynamics, pH, pKa, Henderson-Hasselbalch, amino acid structure, lipid bilayers, carbohydrate rings, nucleotide chemistry.
 
 ## Topics
 

@@ -1,8 +1,8 @@
 # List of Molecular Biology Topics
 
-DNA replication, transcription, translation, RNA processing, gene cloning, CRISPR.
-Focus on molecular mechanisms of gene expression inside the cell.
-Not about inheritance patterns, not about lab math or protocols.
+Molecular biology is the study of the central dogma: replication, transcription, translation, and cell function at the molecular level.
+Molecular biologists study how genetic information is copied, read, and expressed as proteins.
+Includes: DNA replication, mRNA processing, splicing, codon tables, reading frames, consensus sequences, promoters, gene regulation, operons, restriction enzymes, gel electrophoresis of nucleic acids, sequencing, cloning, CRISPR, plasmids.
 
 ## Topics
 

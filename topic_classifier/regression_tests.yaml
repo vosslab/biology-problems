@@ -84,3 +84,38 @@
   subject: genetics
   expected: topic08  # Gene Mapping
   not: [topic04, topic06]  # not Mendelian Genetics, not Chromosomal Inheritance
+
+# === Cross-subject boundary cases ===
+# These test whether the classifier assigns the correct SUBJECT, not just topic.
+# Use wrong_subject to flag the most likely misclassification.
+
+# Molecular biology scripts confused with biochemistry
+- script: problems/molecular_biology-problems/consensus_sequence_FIB-hard.py
+  subject: molecular_biology
+  wrong_subject: [biochemistry]
+
+- script: problems/molecular_biology-problems/complementary_sequences.py
+  subject: molecular_biology
+  wrong_subject: [biochemistry]
+
+- script: problems/molecular_biology-problems/overhang_sequence.py
+  subject: molecular_biology
+  wrong_subject: [biochemistry]
+
+# Biochemistry scripts confused with molecular biology
+- script: problems/biochemistry-problems/buffers/Henderson-Hasselbalch.py
+  subject: biochemistry
+  wrong_subject: [molecular_biology]
+
+- script: problems/biochemistry-problems/ionic_bond_amino_acids.py
+  subject: biochemistry
+  wrong_subject: [molecular_biology]
+
+# Genetics scripts confused with molecular biology or biochemistry
+- script: problems/inheritance-problems/monohybrid_cross.py
+  subject: genetics
+  wrong_subject: [molecular_biology, biochemistry]
+
+- script: problems/inheritance-problems/hardy_weinberg_two_alleles.py
+  subject: genetics
+  wrong_subject: [biostatistics, biochemistry]

@@ -1,8 +1,8 @@
 # List of Genetics Topics
 
-Inheritance patterns, pedigrees, gene mapping, chromosome behavior, population genetics.
-Focus on how traits are passed across generations and how genes are organized on chromosomes.
-Not about molecular mechanisms of gene expression, not about lab protocols.
+Genetics is the study of the effect of genetic differences on organisms, often inferred by the absence of a normal component.
+Geneticists study how traits are inherited across generations, how mutations alter phenotype, and how genes are organized on chromosomes.
+Includes: Mendelian inheritance, Punnett squares, dihybrid crosses, pedigrees, gene mapping, linkage, recombination frequency, chi-squared tests, Hardy-Weinberg equilibrium, epistasis, pleiotropy, polygenic traits, population allele frequencies.
 
 ## Topics
 
