@@ -2,6 +2,9 @@
 
 ## 2026-04-08
 
+### Additions and New Features
+- Added per-script timing, running ETA, and total elapsed time to [classify_scripts.py](../topic_classifier/classify_scripts.py). Each script shows completion time, and the progress header displays cumulative elapsed and estimated time remaining.
+
 ### Behavior or Interface Changes
 - Replaced `--model` flag in [classify_scripts.py](../topic_classifier/classify_scripts.py) with strict transport selection: default uses Apple Intelligence only, `-O`/`--ollama` uses Ollama only (RAM-selected model), `-m`/`--model NAME` uses Ollama with an exact local model (implies `--ollama`). No fallback between transports. Missing models fail immediately with a clear error listing installed models and install instructions. Help text now shows example model names.
 - Rewrote all 13 topic descriptions in [laboratory-index.md](../subject-indexes/laboratory-index.md) from terse labels to task-oriented sentences matching lab PDF structure. Sharpened conceptual splits: topic01 (SI prefixes/orders of magnitude), topic02 (prepare solutions from solids/stocks), topic03 (single-step c1V1=c2V2 dilutions), topic04 (multi-step serial dilution series).

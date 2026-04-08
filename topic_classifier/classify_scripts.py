@@ -13,6 +13,7 @@ Output: per-subject CSV files in bbq_control format + diff report.
 import os
 import sys
 import json
+import time
 import random
 import shlex
 import argparse
@@ -813,6 +814,22 @@ def print_consistency_report(repeat_results: dict, num_repeats: int) -> None:
 		f"[red]{flagged_count}[/red] flagged")
 
 #============================================
+def _format_duration(seconds: float) -> str:
+	"""Format a duration in seconds to a human-readable string.
+
+	Args:
+		seconds: duration in seconds
+
+	Returns:
+		formatted string like '12.3s' or '2m 15s'
+	"""
+	if seconds < 60:
+		return f"{seconds:.1f}s"
+	minutes = int(seconds) // 60
+	secs = int(seconds) % 60
+	return f"{minutes}m {secs:02d}s"
+
+#============================================
 def main():
 	"""Main entry point for the topic classifier."""
 	args = parse_args()
@@ -886,8 +903,20 @@ def main():
 	llm_error_scripts = []
 	# For repeat mode: collect all runs per script
 	repeat_results = {}
+	total_start = time.monotonic()
 	for i, script_path in enumerate(scripts):
-		console.print(f"\n[bold][{i+1}/{len(scripts)}][/bold] Classifying [cyan]{script_path}[/cyan]")
+		# Build ETA string from average of completed scripts
+		if i > 0:
+			elapsed_so_far = time.monotonic() - total_start
+			avg_per_script = elapsed_so_far / i
+			remaining = avg_per_script * (len(scripts) - i)
+			eta_str = _format_duration(remaining)
+			elapsed_str = _format_duration(elapsed_so_far)
+			timing_info = f" | elapsed {elapsed_str} | ETA {eta_str}"
+		else:
+			timing_info = ""
+		console.print(f"\n[bold][{i+1}/{len(scripts)}][/bold] Classifying [cyan]{script_path}[/cyan]{timing_info}")
+		script_start = time.monotonic()
 		for run_num in range(num_repeats):
 			if num_repeats > 1:
 				console.print(f"  run {run_num+1}/{num_repeats}", style="dim")
@@ -995,6 +1024,14 @@ def main():
 			console.print("  [magenta]--------------------------------------------------[/magenta]")
 			console.print(f"  [magenta][{n}x][/magenta] final=[cyan]{final_label}[/cyan] | status={status_label}")
 			console.print(f"  [magenta]votes:[/magenta] {subj_str} | {topic_str}")
+
+		# Per-script timing
+		script_elapsed = time.monotonic() - script_start
+		console.print(f"  completed in {_format_duration(script_elapsed)}", style="dim")
+
+	# Total elapsed time
+	total_elapsed = time.monotonic() - total_start
+	console.print(f"\nTotal classification time: [bold]{_format_duration(total_elapsed)}[/bold]")
 
 	# Write result CSVs using first run results only (avoid duplicates)
 	first_run_results = []
