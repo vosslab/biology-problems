@@ -235,7 +235,7 @@ def summarize_questions(
 		verbose: show failed response details on retry
 
 	Returns:
-		dict with summary, key_terms, primary_concept, quality
+		dict with summary, primary_concept, quality
 	"""
 	messages = prompt_builder.build_summary_prompt(script_path, bbq_output)
 	response = _generate_with_retry(
@@ -246,12 +246,10 @@ def summarize_questions(
 
 	# Parse structured fields
 	summary = llm.extract_xml_tag_content(response, "summary")
-	key_terms = llm.extract_xml_tag_content(response, "key_terms")
 	primary_concept = llm.extract_xml_tag_content(response, "primary_concept")
 
 	result = {
 		"summary": summary.strip() if summary else None,
-		"key_terms": key_terms.strip() if key_terms else None,
 		"primary_concept": primary_concept.strip() if primary_concept else None,
 		"raw_response": response,
 	}
@@ -273,10 +271,6 @@ def _validate_summary_quality(summary_result: dict) -> str:
 	warnings = []
 	if not summary_result["primary_concept"]:
 		warnings.append("missing primary_concept")
-	if not summary_result["key_terms"]:
-		warnings.append("missing key_terms")
-	elif len(summary_result["key_terms"].split(",")) < 3:
-		warnings.append("too few key_terms")
 	if not summary_result["summary"]:
 		warnings.append("missing summary")
 	if warnings:
@@ -316,6 +310,7 @@ def classify_stage1(
 	all_indexes: dict,
 	cross_examples: list,
 	verbose: bool = False,
+	bbq_output: str = None,
 ) -> dict:
 	"""Run stage 1 classification: determine subject.
 
@@ -327,13 +322,14 @@ def classify_stage1(
 		all_indexes: subject index data
 		cross_examples: few-shot examples across subjects
 		verbose: show failed response details on retry
+		bbq_output: cleaned question text from the script, or None
 
 	Returns:
 		dict with subject, confidence, reasoning, raw_response
 	"""
 	messages = prompt_builder.build_stage1_prompt(
 		script_path, source_code, question_summary,
-		all_indexes, cross_examples,
+		all_indexes, cross_examples, bbq_output=bbq_output,
 	)
 
 	response = _generate_with_retry(
@@ -364,6 +360,7 @@ def classify_stage2(
 	topics: list,
 	subject_examples: list,
 	verbose: bool = False,
+	bbq_output: str = None,
 ) -> dict:
 	"""Run stage 2 classification: determine topic within subject.
 
@@ -376,13 +373,14 @@ def classify_stage2(
 		topics: topic list for this subject
 		subject_examples: few-shot examples from this subject
 		verbose: show failed response details on retry
+		bbq_output: cleaned question text from the script, or None
 
 	Returns:
 		dict with topic, confidence, reasoning, raw_response
 	"""
 	messages = prompt_builder.build_stage2_prompt(
 		script_path, source_code, summary_result,
-		subject, topics, subject_examples,
+		subject, topics, subject_examples, bbq_output=bbq_output,
 	)
 
 	response = _generate_with_retry(
@@ -499,29 +497,32 @@ def classify_one_script(
 			bbq_output = script_runner.read_bbq_output(bbq_file)
 			os.remove(bbq_file)
 			execution_status = "success"
+			if verbose and bbq_output:
+				# Show the question text so the user can see what the LLM is classifying
+				console.print("  --- Question text ---", style="dim")
+				for line in bbq_output.strip().split("\n"):
+					console.print(f"    {line}", style="dim")
+				console.print("  --- End question text ---", style="dim")
 		else:
 			# No bbq file produced -- skip classification
 			console.print("  SKIP: no bbq file produced", style="yellow")
 			return None
 
-	# Stage 0: summarize questions
+	# Summarize questions (secondary signal; question text is primary)
 	question_summary = None
 	summary_result = None
 	if bbq_output:
-		console.print("  Summarizing questions...", style="dim")
+		if verbose:
+			console.print("  Summarizing questions...", style="dim")
 		summary_result = summarize_questions(client, script_path, bbq_output, verbose=verbose)
 		question_summary = summary_result["summary"]
-		if question_summary:
-			console.print(f"  Summary: [cyan]{question_summary[:100]}[/cyan]")
-		else:
-			console.print("  WARNING: summary extraction failed", style="yellow")
-		if verbose and summary_result:
-			# Show all summary fields
-			console.print(f"    LLM response length: {len(summary_result['raw_response'])} chars", style="dim")
+		if verbose:
+			if question_summary:
+				console.print(f"  Summary: [cyan]{question_summary[:100]}[/cyan]")
+			else:
+				console.print("  WARNING: summary extraction failed", style="yellow")
 			if summary_result.get("primary_concept"):
 				console.print(f"    primary_concept: [bright_cyan]{summary_result['primary_concept']}[/bright_cyan]")
-			if summary_result.get("key_terms"):
-				console.print(f"    key_terms: {summary_result['key_terms']}", style="dim")
 			console.print(f"    quality: {summary_result['quality']}", style="dim")
 
 	# Stage 1: subject classification
@@ -529,6 +530,7 @@ def classify_one_script(
 	stage1 = classify_stage1(
 		client, script_path, source_for_llm, question_summary,
 		all_indexes, cross_examples, verbose=verbose,
+		bbq_output=bbq_output,
 	)
 
 	if stage1["subject"] is None:
@@ -555,6 +557,7 @@ def classify_one_script(
 	stage2 = classify_stage2(
 		client, script_path, source_for_llm, summary_result,
 		subject, topics, subject_examples, verbose=verbose,
+		bbq_output=bbq_output,
 	)
 
 	if stage2["topic"] is None:
@@ -609,12 +612,6 @@ def classify_one_script(
 		"execution": execution_status,
 		"existing": existing_assignment,
 		"match": match,
-		# Summary fields
-		"summary": question_summary,
-		"summary_source": "bbq" if bbq_output else "source_fallback",
-		"summary_quality": summary_result["quality"] if summary_result else None,
-		"key_terms": summary_result["key_terms"] if summary_result else None,
-		"primary_concept_summary": summary_result["primary_concept"] if summary_result else None,
 		# Stage 1 fields
 		"stage1_reasoning": stage1["reasoning"],
 		"stage1_confidence": stage1["confidence"],
@@ -768,7 +765,10 @@ def print_diff_report(results: list) -> None:
 
 #============================================
 def print_consistency_report(repeat_results: dict, num_repeats: int) -> None:
-	"""Print a consistency report for repeated classification runs.
+	"""Print a condensed per-script rollup for repeated classification runs.
+
+	Shows one block per script with vote counts, topic name, existing
+	assignment comparison, and stability status.
 
 	Args:
 		repeat_results: dict mapping script_path to list of result dicts
@@ -781,50 +781,74 @@ def print_consistency_report(repeat_results: dict, num_repeats: int) -> None:
 
 	for script_path, run_results in sorted(repeat_results.items()):
 		script_name = os.path.basename(script_path)
-		# Count subject votes
+
+		# Count subject and topic votes
 		subject_votes = {}
 		topic_votes = {}
 		confidences = []
+		topic_names = {}
+		existing = None
 		for r in run_results:
 			subj = r["chapter"]
 			subject_votes[subj] = subject_votes.get(subj, 0) + 1
 			top = r["topic"]
 			topic_votes[top] = topic_votes.get(top, 0) + 1
 			confidences.append(r["confidence_score"])
+			# Track topic names for display
+			if r.get("topic_name"):
+				topic_names[top] = r["topic_name"]
+			if r.get("existing") and existing is None:
+				existing = r["existing"]
 
 		# Find majority subject and topic
 		top_subject = max(subject_votes, key=subject_votes.get)
 		top_subject_count = subject_votes[top_subject]
 		top_topic = max(topic_votes, key=topic_votes.get)
 		top_topic_count = topic_votes[top_topic]
+		top_topic_name = topic_names.get(top_topic, "")
 
 		# Check stability threshold (2/3 agreement)
 		threshold = (2 * num_repeats + 2) // 3
 		subject_stable = top_subject_count >= threshold
 		topic_stable = top_topic_count >= threshold
+		is_stable = subject_stable and topic_stable
 
 		# Format confidence range
 		conf_min = min(confidences)
 		conf_max = max(confidences)
 		conf_str = f"{conf_min}" if conf_min == conf_max else f"{conf_min}-{conf_max}"
 
-		if subject_stable and topic_stable:
+		# Build final assignment string
+		final_label = f"{top_subject}/{top_topic}"
+		if top_topic_name:
+			final_label += f" ({top_topic_name})"
+
+		# Status tag
+		if is_stable:
 			stable_count += 1
-			console.print(
-				f"  [green]STABLE[/green]  {script_name} -> "
-				f"{top_subject}/{top_topic} "
-				f"({top_subject_count}/{num_repeats} subject, "
-				f"{top_topic_count}/{num_repeats} topic, "
-				f"conf: {conf_str})")
+			tag = "[green]STABLE[/green]  "
 		else:
 			flagged_count += 1
-			# Show all votes for flagged scripts
-			subj_detail = ", ".join(f"{s}: {c}" for s, c in sorted(subject_votes.items()))
-			topic_detail = ", ".join(f"{t}: {c}" for t, c in sorted(topic_votes.items()))
-			console.print(
-				f"  [red]UNSTABLE[/red] {script_name} -> "
-				f"subjects=[{subj_detail}] topics=[{topic_detail}] "
-				f"conf: {conf_str}")
+			tag = "[red]UNSTABLE[/red]"
+
+		# One-line rollup
+		console.print(f"  {tag} {script_name}")
+		# Subject votes
+		subj_parts = [f"{s}: {c}/{num_repeats}" for s, c in sorted(subject_votes.items(), key=lambda x: -x[1])]
+		console.print(f"    subject: {', '.join(subj_parts)}", style="dim")
+		# Topic votes
+		topic_parts = []
+		for t, c in sorted(topic_votes.items(), key=lambda x: -x[1]):
+			tname = topic_names.get(t, "")
+			tlabel = f"{t} {tname}" if tname else t
+			topic_parts.append(f"{tlabel}: {c}/{num_repeats}")
+		console.print(f"    topic:   {', '.join(topic_parts)}", style="dim")
+		# Final and confidence
+		console.print(f"    final:   [cyan]{final_label}[/cyan]  conf: {conf_str}")
+		# Existing comparison
+		if existing:
+			match_str = "[green]match[/green]" if existing == f"{top_subject}/{top_topic}" else "[red]disagree[/red]"
+			console.print(f"    existing: {existing} ({match_str})")
 
 	# Summary
 	console.print(

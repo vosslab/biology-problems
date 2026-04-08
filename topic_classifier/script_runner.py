@@ -138,6 +138,8 @@ def run_script(
 	# Build command and environment, matching run_bbq_tasks.py approach
 	abs_script = os.path.join(repo_root, script_path)
 	cmd = ["python3", abs_script]
+	# Disable anti-cheat that injects random words into question text
+	cmd.extend(["--no-hidden-terms", "--allow-click"])
 	if extra_args:
 		cmd.extend(extra_args)
 
@@ -249,18 +251,18 @@ def cache_bbq_file(bbq_file: str, cache_dir: str) -> str:
 	return cached_path
 
 #============================================
-def read_bbq_output(bbq_file: str, max_questions: int = 5) -> str:
-	"""Read a bbq file and convert to human-readable text via qti-package-maker.
+def read_bbq_output(bbq_file: str) -> str:
+	"""Read a bbq file and extract the first question statement.
 
 	Uses the package interface to parse the bbq format, save as
-	human_readable to a temp file, then read back the clean text.
+	human_readable to a temp file, then extract just the question
+	statement (no choices or answers) for classification.
 
 	Args:
 		bbq_file: path to the bbq output file
-		max_questions: maximum number of questions to include
 
 	Returns:
-		human-readable question text without HTML tags
+		question statement text (no HTML, no choices)
 	"""
 	import tempfile
 
@@ -272,8 +274,8 @@ def read_bbq_output(bbq_file: str, max_questions: int = 5) -> str:
 	)
 	packer.read_package(bbq_file, "bbq_text")
 
-	# Trim to max_questions
-	packer.trim_item_bank(max_questions)
+	# Only need the first question for classification
+	packer.trim_item_bank(1)
 
 	# Save as human_readable to a temp file, then read it back
 	with tempfile.TemporaryDirectory() as tmpdir:
@@ -284,6 +286,27 @@ def read_bbq_output(bbq_file: str, max_questions: int = 5) -> str:
 		with open(outfile, "r") as f:
 			content = f.read()
 
+	# Strip HTML wrapper if present (human_readable includes HTML header for browser display)
+	if "<pre>" in content:
+		content = content.split("<pre>", 1)[1]
+	if "</pre>" in content:
+		content = content.rsplit("</pre>", 1)[0]
+	content = content.strip()
+
+	# Extract just the question statement, strip choices and answers
+	# Choices start with letter-dot (A. B. C.) or dash-space for answers
+	statement_lines = []
+	for line in content.split("\n"):
+		stripped = line.strip()
+		# Stop at first choice or answer line
+		if stripped and stripped[0].isalpha() and len(stripped) > 2 and stripped[1] == '.':
+			# Could be "A. choice" or "1. question" -- only stop for A-Z single letter
+			if len(stripped[0]) == 1 and stripped[0].upper() in "ABCDEFGH":
+				break
+		if stripped.startswith("- ") or stripped.startswith("Answer:"):
+			break
+		statement_lines.append(line)
+	content = "\n".join(statement_lines).strip()
 	return content
 
 #============================================

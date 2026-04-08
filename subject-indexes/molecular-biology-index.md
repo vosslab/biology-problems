@@ -2,7 +2,7 @@
 
 Molecular biology is the study of the central dogma: replication, transcription, translation, and cell function at the molecular level.
 Molecular biologists study how genetic information is copied, read, and expressed as proteins.
-Includes: DNA replication, mRNA processing, splicing, codon tables, reading frames, consensus sequences, promoters, gene regulation, operons, restriction enzymes, gel electrophoresis of nucleic acids, sequencing, cloning, CRISPR, plasmids.
+Questions ask students to transcribe DNA to mRNA, translate codons to amino acids, identify consensus sequences, analyze reading frames, and understand gene regulation through operons and promoters.
 
 ## Topics
 
@@ -29,3 +29,6 @@ Includes: DNA replication, mRNA processing, splicing, codon tables, reading fram
 
 8. [RNA Processing and CRISPR](topic08/index.md)
     - RNA splicing, mRNA maturation, and CRISPR gene editing.
+
+9. [Translation](topic09/index.md)
+    - Translation of mRNA into protein, codons, anticodons, genetic code, ribosomes, tRNA, and peptide synthesis.

@@ -2,7 +2,7 @@
 
 Laboratory science is the study of experimental methods, measurements, and techniques used in biological research.
 Laboratory work focuses on how experiments are designed, performed, and quantified using standard protocols and instruments.
-Includes: pipetting, serial dilution, solution concentration, standard curves, spectrophotometry, chromatography, centrifugation, microscopy, buffer preparation, units, significant figures, error analysis, controls, calibration.
+Questions ask students to calculate dilution volumes, prepare solutions at specific concentrations, read spectrophotometer absorbance data, interpret standard curves, and apply significant figures to measurements.
 
 ## Topics
 

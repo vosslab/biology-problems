@@ -43,11 +43,16 @@
   expected: topic07  # Enzyme Kinetics
   not: [topic08, topic06]  # not Enzyme Inhibition, not Thermodynamics
 
-# Biochemistry -- Enzyme Inhibition
+# Biochemistry -- Enzyme Inhibition (task is classify inhibition, not measure kinetics)
 - script: problems/biochemistry-problems/enzymes/inhibition_type_table.py
   subject: biochemistry
   expected: topic08  # Enzyme Inhibition
   not: [topic07, topic09]  # not Enzyme Kinetics, not Enzyme Allostery
+
+- script: problems/biochemistry-problems/enzymes/michaelis_menten_table-inhibition.py
+  subject: biochemistry
+  expected: topic08  # Enzyme Inhibition (asks to classify inhibition type from MM data)
+  not: [topic07]  # not Enzyme Kinetics
 
 # Biochemistry -- Enzyme Allostery
 - script: problems/biochemistry-problems/enzymes/cooperativity_hill.py
@@ -119,3 +124,9 @@
 - script: problems/inheritance-problems/hardy_weinberg_two_alleles.py
   subject: genetics
   wrong_subject: [biostatistics, biochemistry]
+
+# Genetics -- Deletion mutants = Gene Mapping, not DNA Profiling
+- script: problems/inheritance-problems/deletion_mutants/deletion_mutant_words.py
+  subject: genetics
+  expected: topic08  # Gene Mapping
+  not: [topic03]  # not DNA Profiling

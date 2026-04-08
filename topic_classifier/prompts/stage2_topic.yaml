@@ -6,22 +6,21 @@ system: |
   You are a biology textbook topic classifier.
   Assign a question to exactly one topic from the provided list.
   Choose the topic that best matches the biological content.
-  Focus on the molecule or structure, the main concept being tested,
-  and the key terms provided.
-  Match the summary and key terms to the topic description.
+  Focus on what the question asks the student to do.
+  Match the question content to the topic description.
   Choose the closest match.
   Respond using XML tags as shown in the instructions.
 
 decision_rules: |
-  Choose the topic whose description best matches the primary concept
-  and key terms from the question analysis.
+  Choose the topic whose description best matches what the
+  question asks the student to do.
 
   Focus on:
-  - the molecule or structure being tested
-  - the main biological concept
-  - the key terms and topic hints provided
+  - what task the student performs
+  - which biological concept is being tested
+  - the specific molecules or structures in the question
 
-  Match the summary and key terms to the topic description.
+  Match the question content to the topic description.
   Choose the closest match.
 
 examples: |
@@ -51,6 +50,24 @@ examples: |
   Summary: Gel filtration chromatography separation by molecular weight
   -> topic05
 
+  Summary: Classify lipids from molecular formulas, identifying fatty acids and triacylglycerols
+  -> topic12
+
+  Summary: Identify nucleotide components and base pairing rules in DNA and RNA
+  -> topic11
+
+  Summary: Phospholipid bilayer structure and membrane protein transport mechanisms
+  -> topic13
+
+  Summary: Identify hydrophobic and hydrophilic biomolecule categories
+  -> topic01
+
+  Summary: Classify carbohydrate stereoisomers using Fischer and Haworth projections
+  -> topic10
+
+  Summary: Translate mRNA codons into amino acid sequences using the genetic code
+  -> topic09
+
 response_format: |
   Respond with these XML tags:
   <topic>topicNN</topic>
@@ -61,5 +78,5 @@ response_format: |
     1 = wild guess, no clear signal
     2 = weak match, could easily be a different topic
     3 = reasonable match, one topic fits better than others
-    4 = strong match, key terms clearly point to this topic
+    4 = strong match, content clearly matches this topic
     5 = unambiguous, no other topic is plausible

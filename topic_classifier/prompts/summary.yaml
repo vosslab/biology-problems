@@ -14,20 +14,14 @@ system: |
 instructions: |
   Analyze the biological content of these questions.
 
-  Respond with ALL of these XML tags:
+  Respond with these XML tags:
 
   <summary>2-4 sentences describing what these questions test.
-  Be detail-preserving. Use specific biological terms.</summary>
-
-  <key_terms>5-15 exact terms copied verbatim from the questions.
-  Prefer nouns and named phrases. Avoid generic verbs.
-  Deduplicate. Preserve original casing.
-  Comma-separated.</key_terms>
+  Be detail-preserving. Use specific biological terms.
+  End with a parenthetical classification hint.</summary>
 
   <primary_concept>One sentence: the single most specific biological
   concept being tested.</primary_concept>
-
-  End the summary with a parenthetical classification hint.
 
   Example summaries:
   - "classify monosaccharides using Fischer projections (chemical structure)"
@@ -42,5 +36,4 @@ instructions: |
   <summary>These questions test student ability to classify monosaccharides
   using Fischer projections, including D/L notation and stereochemistry
   of sugar molecules (chemical structure).</summary>
-  <key_terms>Fischer projection, monosaccharide, D-sugar, L-sugar, epimer, anomer, aldose, ketose</key_terms>
   <primary_concept>Classification of monosaccharides using Fischer projections</primary_concept>

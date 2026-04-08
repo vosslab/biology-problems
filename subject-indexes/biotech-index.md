@@ -2,7 +2,7 @@
 
 Biotechnology is the application of biological systems and molecular tools to develop technologies and products.
 Biotechnologists manipulate DNA, RNA, proteins, and cells for practical and industrial purposes.
-Includes: recombinant DNA, cloning vectors, plasmids, restriction enzymes, PCR, gel electrophoresis, DNA sequencing, CRISPR, gene editing, transformation, expression systems, gene therapy, synthetic biology, bioreactors.
+Questions ask students to design cloning strategies with restriction enzymes and plasmids, evaluate gene therapy approaches, analyze PCR and transformation protocols, and discuss bioethics and regulation of GMOs.
 
 ## Topics
 

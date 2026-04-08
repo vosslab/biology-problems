@@ -68,6 +68,7 @@ def build_stage1_prompt(
 	question_summary: str,
 	all_indexes: dict,
 	cross_examples: list,
+	bbq_output: str = None,
 ) -> list:
 	"""Build chat messages for stage 1 (subject classification).
 
@@ -77,6 +78,7 @@ def build_stage1_prompt(
 		question_summary: LLM-generated summary of the questions, or None
 		all_indexes: output of index_parser.load_all_indexes()
 		cross_examples: output of csv_handler.get_cross_subject_examples()
+		bbq_output: cleaned question text from the script, or None
 
 	Returns:
 		list of message dicts for LLMClient.generate(messages=...)
@@ -87,7 +89,7 @@ def build_stage1_prompt(
 	# Build few-shot examples section
 	examples_text = _format_cross_examples(cross_examples)
 
-	# Build the user prompt -- question summary is primary, source is fallback
+	# Build the user prompt -- question text is primary, source is fallback
 	user_parts = []
 	user_parts.append("## Available subjects\n")
 	user_parts.append(subject_list)
@@ -104,10 +106,13 @@ def build_stage1_prompt(
 			user_parts.append(f"Folder subject: {folder_hint}\n")
 			break
 
+	# Include actual question text when available
+	if bbq_output:
+		user_parts.append(f"### Generated questions\n```\n{bbq_output}\n```\n")
 	if question_summary:
 		user_parts.append(f"### Question summary\n{question_summary}\n")
-	else:
-		# Fallback: use source code only when no summary available
+	if not bbq_output and not question_summary:
+		# Fallback: use source code only when no question output available
 		user_parts.append("### Source code (no question output available)\n```python\n")
 		user_parts.append(source_code)
 		user_parts.append("\n```\n")
@@ -137,6 +142,7 @@ def build_stage2_prompt(
 	subject: str,
 	topics: list,
 	subject_examples: list,
+	bbq_output: str = None,
 ) -> list:
 	"""Build chat messages for stage 2 (topic classification within subject).
 
@@ -147,6 +153,7 @@ def build_stage2_prompt(
 		subject: predicted subject from stage 1
 		topics: topic list for this subject from index_parser
 		subject_examples: few-shot examples from this subject
+		bbq_output: cleaned question text from the script, or None
 
 	Returns:
 		list of message dicts for LLMClient.generate(messages=...)
@@ -165,15 +172,31 @@ def build_stage2_prompt(
 	user_parts.append(examples_text)
 	user_parts.append(f"\n\n## Script to classify: {script_path}\n")
 
+	# Extract subfolder path hint for stage 2 (e.g., PUBCHEM/AMINO_ACIDS -> amino acids)
+	path_parts = script_path.split("/")
+	# Find parts after the *-problems folder and before the filename
+	problems_idx = None
+	for idx, part in enumerate(path_parts):
+		if part.endswith("-problems"):
+			problems_idx = idx
+			break
+	if problems_idx is not None and len(path_parts) > problems_idx + 2:
+		# There are subdirectories between the subject folder and the script
+		subfolders = path_parts[problems_idx + 1:-1]
+		if subfolders:
+			subfolder_hint = "/".join(subfolders).replace("_", " ").lower()
+			user_parts.append(f"Script subfolder: {subfolder_hint}\n")
+
+	# Include actual question text when available
+	if bbq_output:
+		user_parts.append(f"### Generated questions\n```\n{bbq_output}\n```\n")
 	if summary_result and summary_result.get("primary_concept"):
-		# Present summary fields in ranked order (most discriminating first)
+		# Present summary fields as additional signal
 		user_parts.append("### Question analysis\n")
 		user_parts.append(f"**Primary concept:** {summary_result['primary_concept']}\n")
-		if summary_result.get("key_terms"):
-			user_parts.append(f"**Key terms:** {summary_result['key_terms']}\n")
 		if summary_result.get("summary"):
 			user_parts.append(f"**Summary:** {summary_result['summary']}\n")
-	else:
+	if not bbq_output and not (summary_result and summary_result.get("primary_concept")):
 		# Fallback: use source code only
 		user_parts.append("### Source code (no question analysis available)\n```python\n")
 		user_parts.append(source_code)
