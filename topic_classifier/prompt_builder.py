@@ -32,40 +32,13 @@ def _load_prompt(filename: str) -> dict:
 	return data
 
 # Cache loaded prompts
-_SUMMARY_PROMPT = _load_prompt("summary.yaml")
 _STAGE1_PROMPT = _load_prompt("stage1_subject.yaml")
 _STAGE2_PROMPT = _load_prompt("stage2_topic.yaml")
-
-#============================================
-def build_summary_prompt(script_path: str, bbq_output: str) -> list:
-	"""Build chat messages for summarizing question output.
-
-	The summarizer describes biological content only, not script mechanics.
-
-	Args:
-		script_path: relative path to the script
-		bbq_output: human-readable question text
-
-	Returns:
-		list of message dicts for LLMClient.generate(messages=...)
-	"""
-	user_parts = []
-	user_parts.append(f"## Script: {script_path}\n\n")
-	user_parts.append(f"### Generated questions\n```\n{bbq_output}\n```\n\n")
-	user_parts.append(_SUMMARY_PROMPT["instructions"])
-	user_content = "".join(user_parts)
-
-	messages = [
-		{"role": "system", "content": _SUMMARY_PROMPT["system"].strip()},
-		{"role": "user", "content": user_content},
-	]
-	return messages
 
 #============================================
 def build_stage1_prompt(
 	script_path: str,
 	source_code: str,
-	question_summary: str,
 	all_indexes: dict,
 	cross_examples: list,
 	bbq_output: str = None,
@@ -75,7 +48,6 @@ def build_stage1_prompt(
 	Args:
 		script_path: relative path to the script
 		source_code: full or summarized source code
-		question_summary: LLM-generated summary of the questions, or None
 		all_indexes: output of index_parser.load_all_indexes()
 		cross_examples: output of csv_handler.get_cross_subject_examples()
 		bbq_output: cleaned question text from the script, or None
@@ -109,9 +81,7 @@ def build_stage1_prompt(
 	# Include actual question text when available
 	if bbq_output:
 		user_parts.append(f"### Generated questions\n```\n{bbq_output}\n```\n")
-	if question_summary:
-		user_parts.append(f"### Question summary\n{question_summary}\n")
-	if not bbq_output and not question_summary:
+	else:
 		# Fallback: use source code only when no question output available
 		user_parts.append("### Source code (no question output available)\n```python\n")
 		user_parts.append(source_code)
@@ -138,7 +108,6 @@ def build_stage1_prompt(
 def build_stage2_prompt(
 	script_path: str,
 	source_code: str,
-	summary_result: dict,
 	subject: str,
 	topics: list,
 	subject_examples: list,
@@ -149,7 +118,6 @@ def build_stage2_prompt(
 	Args:
 		script_path: relative path to the script
 		source_code: full or summarized source code
-		summary_result: full summary dict from summarizer stage, or None
 		subject: predicted subject from stage 1
 		topics: topic list for this subject from index_parser
 		subject_examples: few-shot examples from this subject
@@ -190,15 +158,9 @@ def build_stage2_prompt(
 	# Include actual question text when available
 	if bbq_output:
 		user_parts.append(f"### Generated questions\n```\n{bbq_output}\n```\n")
-	if summary_result and summary_result.get("primary_concept"):
-		# Present summary fields as additional signal
-		user_parts.append("### Question analysis\n")
-		user_parts.append(f"**Primary concept:** {summary_result['primary_concept']}\n")
-		if summary_result.get("summary"):
-			user_parts.append(f"**Summary:** {summary_result['summary']}\n")
-	if not bbq_output and not (summary_result and summary_result.get("primary_concept")):
+	else:
 		# Fallback: use source code only
-		user_parts.append("### Source code (no question analysis available)\n```python\n")
+		user_parts.append("### Source code (no question output available)\n```python\n")
 		user_parts.append(source_code)
 		user_parts.append("\n```\n")
 

@@ -220,65 +220,6 @@ def _generate_with_retry(
 	return best_response
 
 #============================================
-def summarize_questions(
-	client: llm.LLMClient,
-	script_path: str,
-	bbq_output: str,
-	verbose: bool = False,
-) -> dict:
-	"""Run the summarizer stage: describe question content.
-
-	Args:
-		client: LLM client
-		script_path: relative path to script
-		bbq_output: human-readable question text
-		verbose: show failed response details on retry
-
-	Returns:
-		dict with summary, primary_concept, quality
-	"""
-	messages = prompt_builder.build_summary_prompt(script_path, bbq_output)
-	response = _generate_with_retry(
-		client, messages, max_tokens=800,
-		required_tags=["summary", "primary_concept"],
-		verbose=verbose,
-	)
-
-	# Parse structured fields
-	summary = llm.extract_xml_tag_content(response, "summary")
-	primary_concept = llm.extract_xml_tag_content(response, "primary_concept")
-
-	result = {
-		"summary": summary.strip() if summary else None,
-		"primary_concept": primary_concept.strip() if primary_concept else None,
-		"raw_response": response,
-	}
-
-	# Summary quality validation
-	result["quality"] = _validate_summary_quality(result)
-	return result
-
-#============================================
-def _validate_summary_quality(summary_result: dict) -> str:
-	"""Check summary quality and return 'pass' or 'warn'.
-
-	Args:
-		summary_result: parsed summary dict
-
-	Returns:
-		'pass' or 'warn'
-	"""
-	warnings = []
-	if not summary_result["primary_concept"]:
-		warnings.append("missing primary_concept")
-	if not summary_result["summary"]:
-		warnings.append("missing summary")
-	if warnings:
-		console.print(f"  SUMMARY QUALITY WARN: {', '.join(warnings)}", style="yellow")
-		return "warn"
-	return "pass"
-
-#============================================
 def _parse_confidence(raw: str) -> int:
 	"""Parse LLM confidence string to an integer 1-5, default 1.
 
@@ -306,7 +247,6 @@ def classify_stage1(
 	client: llm.LLMClient,
 	script_path: str,
 	source_code: str,
-	question_summary: str,
 	all_indexes: dict,
 	cross_examples: list,
 	verbose: bool = False,
@@ -318,7 +258,6 @@ def classify_stage1(
 		client: LLM client
 		script_path: relative path to script
 		source_code: source code (full or summarized)
-		question_summary: LLM-generated summary or None
 		all_indexes: subject index data
 		cross_examples: few-shot examples across subjects
 		verbose: show failed response details on retry
@@ -328,7 +267,7 @@ def classify_stage1(
 		dict with subject, confidence, reasoning, raw_response
 	"""
 	messages = prompt_builder.build_stage1_prompt(
-		script_path, source_code, question_summary,
+		script_path, source_code,
 		all_indexes, cross_examples, bbq_output=bbq_output,
 	)
 
@@ -355,7 +294,6 @@ def classify_stage2(
 	client: llm.LLMClient,
 	script_path: str,
 	source_code: str,
-	summary_result: dict,
 	subject: str,
 	topics: list,
 	subject_examples: list,
@@ -368,7 +306,6 @@ def classify_stage2(
 		client: LLM client
 		script_path: relative path to script
 		source_code: source code (full or summarized)
-		summary_result: full summary dict from summarizer, or None
 		subject: predicted subject from stage 1
 		topics: topic list for this subject
 		subject_examples: few-shot examples from this subject
@@ -379,7 +316,7 @@ def classify_stage2(
 		dict with topic, confidence, reasoning, raw_response
 	"""
 	messages = prompt_builder.build_stage2_prompt(
-		script_path, source_code, summary_result,
+		script_path, source_code,
 		subject, topics, subject_examples, bbq_output=bbq_output,
 	)
 
@@ -508,26 +445,10 @@ def classify_one_script(
 			console.print("  SKIP: no bbq file produced", style="yellow")
 			return None
 
-	# Summarize questions (secondary signal; question text is primary)
-	question_summary = None
-	summary_result = None
-	if bbq_output:
-		console.print("  Summarizing questions...", style="dim")
-		summary_result = summarize_questions(client, script_path, bbq_output, verbose=verbose)
-		question_summary = summary_result["summary"]
-		if question_summary:
-			console.print(f"  Summary: [magenta]{question_summary[:100]}[/magenta]")
-		else:
-			console.print("  WARNING: summary extraction failed", style="yellow")
-		if verbose:
-			if summary_result.get("primary_concept"):
-				console.print(f"    primary_concept: [bright_magenta]{summary_result['primary_concept']}[/bright_magenta]")
-			console.print(f"    quality: {summary_result['quality']}", style="dim")
-
 	# Stage 1: subject classification
 	console.print("  Classifying subject...", style="dim")
 	stage1 = classify_stage1(
-		client, script_path, source_for_llm, question_summary,
+		client, script_path, source_for_llm,
 		all_indexes, cross_examples, verbose=verbose,
 		bbq_output=bbq_output,
 	)
@@ -554,7 +475,7 @@ def classify_one_script(
 
 	console.print(f"  Classifying topic within [bold cyan]{subject}[/bold cyan]...", style="dim")
 	stage2 = classify_stage2(
-		client, script_path, source_for_llm, summary_result,
+		client, script_path, source_for_llm,
 		subject, topics, subject_examples, verbose=verbose,
 		bbq_output=bbq_output,
 	)
@@ -919,15 +840,10 @@ def main():
 	# For repeat mode: collect all runs per script
 	repeat_results = {}
 	for i, script_path in enumerate(scripts):
+		console.print(f"\n[bold][{i+1}/{len(scripts)}][/bold] Classifying [cyan]{script_path}[/cyan]")
 		for run_num in range(num_repeats):
 			if num_repeats > 1:
-				console.print(
-					f"\n[bold][{i+1}/{len(scripts)} run {run_num+1}/{num_repeats}][/bold] "
-					f"Classifying [cyan]{script_path}[/cyan]")
-			else:
-				console.print(
-					f"\n[bold][{i+1}/{len(scripts)}][/bold] "
-					f"Classifying [cyan]{script_path}[/cyan]")
+				console.print(f"  run {run_num+1}/{num_repeats}", style="dim")
 			try:
 				result = classify_one_script(
 					client, script_path, repo_root,
@@ -958,14 +874,80 @@ def main():
 			write_debug_log(result, debug_dir)
 
 			topic_label = result.get("topic_name", result["topic"])
-			if result["status"] == "classified":
+			if num_repeats > 1:
+				# Condensed one-liner per run in repeat mode
+				status_tag = "[green]OK[/green]" if result["status"] == "classified" else "[yellow]??[/yellow]"
 				console.print(
-					f"  [bold green][OK][/bold green] {result['chapter']}/{result['topic']} "
-					f"[cyan]{topic_label}[/cyan] (score: {result['confidence_score']})")
+					f"    {status_tag} {result['chapter']}/{result['topic']} "
+					f"[cyan]{topic_label}[/cyan] ({result['confidence_score']})")
 			else:
-				console.print(
-					f"  [bold yellow][??][/bold yellow] {result['chapter']}/{result['topic']} "
-					f"[cyan]{topic_label}[/cyan] (score: {result['confidence_score']})")
+				if result["status"] == "classified":
+					console.print(
+						f"  [bold green][OK][/bold green] {result['chapter']}/{result['topic']} "
+						f"[cyan]{topic_label}[/cyan] (score: {result['confidence_score']})")
+				else:
+					console.print(
+						f"  [bold yellow][??][/bold yellow] {result['chapter']}/{result['topic']} "
+						f"[cyan]{topic_label}[/cyan] (score: {result['confidence_score']})")
+
+		# Per-script mini-rollup after all repeats
+		if num_repeats > 1 and script_path in repeat_results:
+			runs = repeat_results[script_path]
+			# Count votes
+			subj_votes = {}
+			topic_votes = {}
+			for r in runs:
+				subj_votes[r["chapter"]] = subj_votes.get(r["chapter"], 0) + 1
+				topic_votes[r["topic"]] = topic_votes.get(r["topic"], 0) + 1
+			top_subj = max(subj_votes, key=subj_votes.get)
+			top_topic = max(topic_votes, key=topic_votes.get)
+			top_topic_name = ""
+			for r in runs:
+				if r["topic"] == top_topic and r.get("topic_name"):
+					top_topic_name = r["topic_name"]
+					break
+			# Stability check
+			n = len(runs)
+			threshold = (2 * n + 2) // 3
+			all_same = (subj_votes[top_subj] == n and topic_votes[top_topic] == n)
+			subj_stable = subj_votes[top_subj] >= threshold
+			topic_stable = topic_votes[top_topic] >= threshold
+			if all_same:
+				status_label = "[green]STABLE[/green]"
+			elif subj_stable and topic_stable:
+				status_label = "[yellow]MOSTLY_STABLE[/yellow]"
+			elif n > len(runs):
+				status_label = "[dim]INCOMPLETE[/dim]"
+			else:
+				status_label = "[red]UNSTABLE[/red]"
+			# Format vote strings -- compact when unanimous
+			if subj_votes[top_subj] == n:
+				subj_str = f"subject {top_subj} {n}/{n}"
+			else:
+				subj_str = "subject " + ", ".join(
+					f"{s} {c}" for s, c in sorted(subj_votes.items(), key=lambda x: -x[1]))
+			if topic_votes[top_topic] == n:
+				topic_str = f"topic {top_topic} {n}/{n}"
+			else:
+				# Include subject prefix when subjects differ
+				if len(subj_votes) > 1:
+					# Build subject/topic pairs from runs
+					pair_votes = {}
+					for r in runs:
+						pair = f"{r['chapter']}/{r['topic']}"
+						pair_votes[pair] = pair_votes.get(pair, 0) + 1
+					topic_str = "topic " + ", ".join(
+						f"{p} {c}" for p, c in sorted(pair_votes.items(), key=lambda x: -x[1]))
+				else:
+					topic_str = "topic " + ", ".join(
+						f"{t} {c}" for t, c in sorted(topic_votes.items(), key=lambda x: -x[1]))
+			# Print 2-3 line rollup
+			final_label = f"{top_subj}/{top_topic}"
+			if top_topic_name:
+				final_label += f" {top_topic_name}"
+			console.print("  [magenta]--------------------------------------------------[/magenta]")
+			console.print(f"  [magenta][{n}x][/magenta] final=[cyan]{final_label}[/cyan] | status={status_label}")
+			console.print(f"  [magenta]votes:[/magenta] {subj_str} | {topic_str}")
 
 	# Write result CSVs using first run results only (avoid duplicates)
 	first_run_results = []
