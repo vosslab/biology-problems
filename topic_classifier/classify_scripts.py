@@ -512,17 +512,16 @@ def classify_one_script(
 	question_summary = None
 	summary_result = None
 	if bbq_output:
-		if verbose:
-			console.print("  Summarizing questions...", style="dim")
+		console.print("  Summarizing questions...", style="dim")
 		summary_result = summarize_questions(client, script_path, bbq_output, verbose=verbose)
 		question_summary = summary_result["summary"]
+		if question_summary:
+			console.print(f"  Summary: [magenta]{question_summary[:100]}[/magenta]")
+		else:
+			console.print("  WARNING: summary extraction failed", style="yellow")
 		if verbose:
-			if question_summary:
-				console.print(f"  Summary: [cyan]{question_summary[:100]}[/cyan]")
-			else:
-				console.print("  WARNING: summary extraction failed", style="yellow")
 			if summary_result.get("primary_concept"):
-				console.print(f"    primary_concept: [bright_cyan]{summary_result['primary_concept']}[/bright_cyan]")
+				console.print(f"    primary_concept: [bright_magenta]{summary_result['primary_concept']}[/bright_magenta]")
 			console.print(f"    quality: {summary_result['quality']}", style="dim")
 
 	# Stage 1: subject classification
