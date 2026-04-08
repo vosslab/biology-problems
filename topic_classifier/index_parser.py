@@ -101,24 +101,13 @@ def derive_subject_from_filename(filename: str) -> str:
 	"""Derive subject name from an index filename.
 
 	Args:
-		filename: e.g. 'biochem-index.md' or 'genetics-index.md'
+		filename: e.g. 'biochemistry-index.md' or 'genetics-index.md'
 
 	Returns:
 		subject name, e.g. 'biochemistry' or 'genetics'
 	"""
-	# Map short names to full subject names
-	name_map = {
-		"biochem": "biochemistry",
-		"biostats": "biostatistics",
-		"biotech": "biotechnology",
-		"genetics": "genetics",
-		"laboratory": "laboratory",
-		"molecular-biology": "molecular_biology",
-		"other": "other",
-	}
-	# Strip '-index.md' suffix
-	stem = filename.replace("-index.md", "")
-	subject = name_map.get(stem, stem)
+	# Strip '-index.md' suffix to get subject name directly
+	subject = filename.replace("-index.md", "")
 	return subject
 
 #============================================

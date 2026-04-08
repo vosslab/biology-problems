@@ -144,7 +144,12 @@ def validate_ollama_model(model: str, base_url: str = "http://localhost:11434") 
 	"""
 	url = f"{base_url}/api/tags"
 	request = urllib.request.Request(url)
-	response = urllib.request.urlopen(request, timeout=5)
+	try:
+		response = urllib.request.urlopen(request, timeout=15)
+	except (urllib.error.URLError, TimeoutError):
+		raise RuntimeError(
+			f"Cannot connect to Ollama at {base_url}\n"
+			"Start Ollama first: ollama serve")
 	data = json.loads(response.read().decode("utf-8"))
 	# Extract model names from Ollama API response
 	local_models = [m["name"] for m in data.get("models", [])]
