@@ -13,7 +13,7 @@ Questions ask students to calculate means, standard deviations, and p-values, in
     - Students summarize datasets using frequency tables, calculate proportions, and choose appropriate graphical representations for data.
 
 3. [Center, Variance, and Distributions](topic03/index.md)
-    - Students calculate mean, median, standard deviation, and variance, convert values to z-scores, and interpret percentiles and boxplots.
+    - Students calculate mean, median, standard deviation, and variance, convert values to z-scores, and determine percentile ranks from sorted data.
 
 4. [Probability Distributions](topic04/index.md)
     - Students apply the normal distribution to calculate probabilities, use z-tables, and identify properties of probability distributions.
@@ -22,7 +22,7 @@ Questions ask students to calculate means, standard deviations, and p-values, in
     - Students formulate null and alternative hypotheses, interpret p-values and significance levels, and perform t-tests and ANOVA.
 
 6. [Grouping with Z-Scores](topic06/index.md)
-    - Students use z-scores to classify observations into groups, identify outliers, and compare values across distributions.
+    - Students convert raw scores to z-scores, use z-score thresholds to classify observations into groups, and identify statistical outliers using standard deviation cutoffs.
 
 7. [Linear Regression](topic07/index.md)
     - Students calculate correlation coefficients, fit least-squares regression lines, and interpret slope, intercept, and R-squared values.

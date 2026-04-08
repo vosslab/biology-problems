@@ -912,12 +912,12 @@ def main():
 			all_same = (subj_votes[top_subj] == n and topic_votes[top_topic] == n)
 			subj_stable = subj_votes[top_subj] >= threshold
 			topic_stable = topic_votes[top_topic] >= threshold
-			if all_same:
+			if n < num_repeats:
+				status_label = "[dim]INCOMPLETE[/dim]"
+			elif all_same:
 				status_label = "[green]STABLE[/green]"
 			elif subj_stable and topic_stable:
 				status_label = "[yellow]MOSTLY_STABLE[/yellow]"
-			elif n > len(runs):
-				status_label = "[dim]INCOMPLETE[/dim]"
 			else:
 				status_label = "[red]UNSTABLE[/red]"
 			# Format vote strings -- compact when unanimous

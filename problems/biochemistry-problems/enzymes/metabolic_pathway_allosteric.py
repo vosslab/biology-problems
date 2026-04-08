@@ -26,7 +26,8 @@ def write_question(N: int, args) -> str:
 	metabolic_table = metaboliclib.generate_metabolic_pathway(metabolites)
 
 	# Build question stem with pathway diagram
-	question_text = '<p>A series of enzymes catalyze the reactions in the following metabolic pathway:</p>'
+	question_text = '<p>Allosteric regulation of metabolic pathways:</p>'
+	question_text += '<p>A series of enzymes catalyze the reactions in the following metabolic pathway:</p>'
 	question_text += metabolic_table
 	question_text += '<p>In a typical metabolic pathway, an allosteric enzyme is sensitive to changes in concentration of specific molecules and can regulate the rate of reactions.</p>'
 	question_text += '<p>Which one of the enzymes in the metabolic pathway above is most likely to be an allosteric enzyme?</p>'

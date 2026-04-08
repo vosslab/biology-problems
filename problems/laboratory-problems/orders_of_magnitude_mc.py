@@ -64,8 +64,8 @@ SCENARIOS = build_scenarios()
 #==================================================
 def question_text(value, first_prefix, unit):
 	formed_str = format_value(value, first_prefix, unit)
-	question = "<p>Order of Magnitude Units</p>"
-	question = "<p>Which one of the following values is equal to: <strong>{0}</strong>?</p>".format(formed_str)
+	question = "<p>Convert between metric prefixes and orders of magnitude for laboratory measurements.</p>"
+	question += f"<p>Which one of the following values is equal to: <strong>{formed_str}</strong>?</p>"
 	return question
 
 #==================================================
