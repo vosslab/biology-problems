@@ -110,9 +110,11 @@ def derive_subject_from_filename(filename: str) -> str:
 	name_map = {
 		"biochem": "biochemistry",
 		"biostats": "biostatistics",
+		"biotech": "biotechnology",
 		"genetics": "genetics",
 		"laboratory": "laboratory",
 		"molecular-biology": "molecular_biology",
+		"other": "other",
 	}
 	# Strip '-index.md' suffix
 	stem = filename.replace("-index.md", "")

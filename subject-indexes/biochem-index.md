@@ -69,5 +69,3 @@ Questions ask students to identify molecular structures, classify biomolecules, 
 21. [Nitrogen Metabolism](topic21/index.md)
     - Students trace amino acid degradation through transamination to glutamate and ammonium entry into the urea cycle, classify carbon skeletons entering glycolysis or citric acid cycle, describe amino acid synthesis through glutamate and glutamine intermediates, outline pyrimidine and purine nucleotide biosynthesis pathways, explain deoxyribonucleotide formation and nucleotide salvage, and identify regulatory mechanisms including feedback inhibition.
 
-22. [Biophysics](topic22/index.md)
-    - Students analyze physical methods applied to biological molecules, including FRET energy transfer, fluorescence spectroscopy, binding curves, diffusion, membrane potentials, and single-molecule techniques.

@@ -7,40 +7,40 @@ Questions ask students to calculate dilution volumes, prepare solutions at speci
 ## Topics
 
 1. [Measurement Basics](topic01/index.md)
-    - Orders of magnitude, pipet sizing, pipetting techniques, and measurement scale.
+    - Students convert between SI-prefixed units, choose values with the correct order of magnitude, select appropriate pipet sizes, and apply metric prefixes to compare concentrations or volumes.
 
 2. [Solutions](topic02/index.md)
-    - Solution preparation using mass concentration, molarity, and volume ratios.
+    - Students prepare solutions from solids or stock reagents by calculating grams needed for a target molarity, using formula weight, and converting between mass concentration, percent w/v, percent v/v, and molarity.
 
 3. [Dilutions](topic03/index.md)
-    - Single-step dilution factors and percent dilution calculations.
+    - Students perform single-step dilution calculations using c1V1 = c2V2, determine aliquot and diluent volumes from stock and desired concentrations, and calculate dilution factors and concentration factors.
 
 4. [Serial Dilutions](topic04/index.md)
-    - Serial dilution factor calculations.
+    - Students design multi-step dilution series to reach high overall dilution factors, calculate effective dilution factors across linked steps, and explain why serial dilutions improve accuracy and save materials compared to one large dilution.
 
 5. [Thin Layer Chromatography](topic05/index.md)
-    - TLC separation techniques and analysis of results.
+    - Students perform TLC separations, calculate Rf values, and interpret chromatography results to identify unknown compounds.
 
 6. [Buffers](topic06/index.md)
-    - Phosphate buffer preparation and pH measurement.
+    - Students prepare phosphate buffers at target pH values, measure pH with indicators or meters, and explain buffering capacity.
 
 7. [Spectrophotometry and Protein Assays](topic07/index.md)
-    - Spectrophotometry principles, standard curves, and protein quantification.
+    - Students measure absorbance with a spectrophotometer, construct standard curves from serial dilutions, apply Beer-Lambert law, and quantify protein concentration using Bradford or BCA assays.
 
 8. [Detection of Bio-Organic Molecules](topic08/index.md)
-    - Chemical tests for identifying biological macromolecules.
+    - Students perform chemical indicator tests (Benedict's, Biuret, iodine, Sudan IV) to identify sugars, proteins, starch, and lipids in unknown samples.
 
 9. [Enzyme Kinetics](topic09/index.md)
-    - Lactase enzyme kinetics, data analysis, and reaction rate measurements.
+    - Students measure lactase reaction rates at different substrate concentrations, plot velocity data, and analyze how temperature, pH, or inhibitors affect enzyme activity in a laboratory setting.
 
 10. [Macromolecule Presentations](topic10/index.md)
-    - Macromolecule research presentations and data analysis review.
+    - Students research and present on a macromolecule, integrating data analysis and visual communication of biochemical properties.
 
 11. [PCR and Electrophoresis](topic11/index.md)
-    - GAPDH gene: DNA extraction, initial and nested PCR, gel electrophoresis, and PCR purification.
+    - Students extract DNA, perform initial and nested PCR amplification of the GAPDH gene, run gel electrophoresis to separate DNA fragments, and interpret band patterns.
 
 12. [Environmental Microbial Culturing](topic12/index.md)
-    - Microbial sampling, culturing techniques, and colony analysis.
+    - Students collect environmental samples, plate and culture microorganisms, count colonies, and analyze microbial diversity.
 
 13. [Bioinformatics](topic13/index.md)
-    - GAPDH sequence analysis, BLAST searches, and bioinformatics tools.
+    - Students analyze GAPDH DNA and protein sequences using BLAST, interpret alignment scores, and use bioinformatics databases to compare sequences across species.

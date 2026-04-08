@@ -17,6 +17,8 @@ import random
 import shlex
 import argparse
 import subprocess
+import urllib.error
+import urllib.request
 
 # PIP3 modules
 import rich.console
@@ -59,9 +61,14 @@ def parse_args() -> argparse.Namespace:
 		help="Compare generated results against existing bbq_control CSVs",
 	)
 	parser.add_argument(
-		'-m', '--model', dest='model', type=str,
-		default=None,
-		help="Override Ollama model (default: auto-select based on RAM)",
+		'-O', '--ollama', dest='use_ollama', action='store_true',
+		help="Use Ollama instead of Apple Intelligence (auto-selects model by RAM)",
+	)
+	parser.add_argument(
+		'-m', '--model', dest='model', type=str, default=None,
+		help=("Use Ollama with this exact local model (implies --ollama). "
+			"Examples: gpt-oss:20b, phi4:14b-q4_K_M, "
+			"llama3.2:3b-instruct-q5_K_M, llama3.2:1b-instruct-q4_K_M"),
 	)
 	parser.add_argument(
 		'-n', '--dry-run', dest='dry_run', action='store_true',
@@ -125,24 +132,49 @@ def setup_output_dirs(repo_root: str, output_dir: str) -> tuple:
 	return results_dir, debug_dir
 
 #============================================
-def create_llm_client(model: str = None) -> llm.LLMClient:
-	"""Create an LLM client with Apple + Ollama fallback.
+def validate_ollama_model(model: str, base_url: str = "http://localhost:11434") -> None:
+	"""Verify that model is installed locally in Ollama.
 
 	Args:
-		model: optional Ollama model override
+		model: exact Ollama model name to check
+		base_url: Ollama server URL
+
+	Raises:
+		RuntimeError: if model is not available locally
+	"""
+	url = f"{base_url}/api/tags"
+	request = urllib.request.Request(url)
+	response = urllib.request.urlopen(request, timeout=5)
+	data = json.loads(response.read().decode("utf-8"))
+	# Extract model names from Ollama API response
+	local_models = [m["name"] for m in data.get("models", [])]
+	if model not in local_models:
+		installed_str = ", ".join(local_models) if local_models else "none"
+		msg = (f"Requested Ollama model not available locally: {model}\n"
+			f"Installed models: {installed_str}\n"
+			f"Install with: ollama pull {model}\n"
+			"Or run with --ollama to use the default RAM-selected model.")
+		raise RuntimeError(msg)
+
+#============================================
+def create_llm_client(model: str | None = None, use_ollama: bool = False) -> llm.LLMClient:
+	"""Create an LLM client with strict transport selection.
+
+	Args:
+		model: exact Ollama model name (requires use_ollama=True)
+		use_ollama: if True, use Ollama only; if False, use Apple only
 
 	Returns:
 		configured LLMClient
 	"""
-	transports = []
-	# Try Apple first (fastest, on-device)
-	if llm.apple_models_available():
-		transports.append(llm.AppleTransport())
-	# Ollama as fallback
-	ollama_model = llm.choose_model(model)
-	transports.append(llm.OllamaTransport(model=ollama_model))
-
-	client = llm.LLMClient(transports=transports, quiet=True)
+	if use_ollama:
+		# Use exact model if specified, otherwise auto-select by RAM
+		ollama_model = model if model else llm.choose_model(None)
+		transport = llm.OllamaTransport(model=ollama_model)
+	else:
+		# Apple Intelligence only, no fallback
+		transport = llm.AppleTransport()
+	client = llm.LLMClient(transports=[transport], quiet=True)
 	return client
 
 MAX_RESPONSE_LENGTH = 2000
@@ -827,9 +859,19 @@ def main():
 		console.print(f"Existing assignments: [bold]{len(assignments)}[/bold]")
 		return
 
-	# Create LLM client
-	console.print("Initializing LLM client...", style="dim italic")
-	client = create_llm_client(args.model)
+	# Create LLM client with strict transport selection
+	# --model implies --ollama
+	use_ollama = args.use_ollama or (args.model is not None)
+	# Validate Ollama model exists locally before starting
+	if args.model:
+		validate_ollama_model(args.model)
+	# Report which transport and model will be used
+	if use_ollama:
+		ollama_model = args.model if args.model else llm.choose_model(None)
+		console.print(f"Using Ollama model: [cyan]{ollama_model}[/cyan]")
+	else:
+		console.print("Using Apple Intelligence")
+	client = create_llm_client(args.model, use_ollama=use_ollama)
 
 	num_repeats = max(1, args.repeat)
 
