@@ -2,6 +2,7 @@
 
 # Standard Library
 import os
+import re
 import glob
 import shutil
 import subprocess
@@ -307,6 +308,12 @@ def read_bbq_output(bbq_file: str) -> str:
 			break
 		statement_lines.append(line)
 	content = "\n".join(statement_lines).strip()
+
+	# Remove __QTI_TABLE_N__ placeholders inserted for nested tables
+	content = re.sub(r'__QTI_TABLE_\d+__', '', content)
+	# Collapse any resulting blank-only lines
+	content = re.sub(r'\n[ \t]*\n', '\n\n', content).strip()
+
 	return content
 
 #============================================
