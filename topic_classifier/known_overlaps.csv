@@ -1,0 +1,9 @@
+script,chapter,topic
+problems/inheritance-problems/chi_square/chi_square_calculated.py,genetics,topic07
+problems/inheritance-problems/chi_square/chi_square_calculated.py,biostatistics,topic05
+problems/inheritance-problems/chi_square/chi_square_choices.py,genetics,topic07
+problems/inheritance-problems/chi_square/chi_square_choices.py,biostatistics,topic05
+problems/biochemistry-problems/electrophoresis/kaleidoscope_ladder/kaleidoscope_ladder_mapping.py,biochemistry,topic05
+problems/biochemistry-problems/electrophoresis/kaleidoscope_ladder/kaleidoscope_ladder_mapping.py,laboratory,topic11
+problems/molecular_biology-problems/dna_gel-estimate_size-MC_or_NUM.py,molecular_biology,topic04
+problems/molecular_biology-problems/dna_gel-estimate_size-MC_or_NUM.py,laboratory,topic11

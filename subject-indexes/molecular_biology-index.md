@@ -32,3 +32,6 @@ Questions ask students to transcribe DNA to mRNA, translate codons to amino acid
 
 9. [Translation](topic09/index.md)
     - Translation of mRNA into protein, codons, anticodons, genetic code, ribosomes, tRNA, and peptide synthesis.
+
+10. [Historical Experiments](topic10/index.md)
+    - Landmark experiments that established core principles of molecular biology: Griffith's transformation experiment, Avery-MacLeod-McCarty's identification of DNA as the transforming principle, Hershey-Chase's confirmation that DNA carries genetic information, and Beadle-Tatum's one gene-one enzyme hypothesis linking genes to proteins.

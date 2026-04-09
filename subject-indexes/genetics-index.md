@@ -13,7 +13,7 @@ Questions ask students to predict offspring ratios with Punnett squares, trace i
     - Students answer questions about DNA composition, base pairing rules, nucleotide components, and double-helix complementarity.
 
 3. [DNA Profiling](topic03/index.md) &mdash; <a href="https://bio.libretexts.org/Courses/Roosevelt_University/Advanced_Genetics:_Mechanisms_of_Inheritance_and_Analysis/03:_DNA_Profiling_and_Techniques" target="_blank" rel="noopener" title="Open LibreTexts chapter"><span style="font-size: 0.8em;">(LibreTexts Chapter 3 <i class="fa fa-external-link-alt"></i>)</span></a>
-    - Students use restriction enzymes to cut DNA, interpret gel electrophoresis band patterns, and apply RFLP, STR, and fingerprinting techniques to identify individuals.
+    - Students use blood typing agglutination tests, HLA genotyping, gel electrophoresis band patterns, and DNA fingerprinting techniques to solve paternity disputes and forensic identification problems.
 
 4. [Mendelian Genetics](topic04/index.md) &mdash; <a href="https://bio.libretexts.org/Courses/Roosevelt_University/Advanced_Genetics:_Mechanisms_of_Inheritance_and_Analysis/04:_Mendelian_Genetics" target="_blank" rel="noopener" title="Open LibreTexts chapter"><span style="font-size: 0.8em;">(LibreTexts Chapter 4 <i class="fa fa-external-link-alt"></i>)</span></a>
     - Students predict offspring ratios using Punnett squares, apply Mendel's principles of segregation and independent assortment, and trace traits through pedigrees.
