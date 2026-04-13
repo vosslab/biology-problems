@@ -37,11 +37,12 @@ def _read_single_csv(csv_path: str) -> dict:
 	with open(csv_path, "r") as f:
 		reader = csv.reader(f)
 		header = next(reader)
-		# Validate expected columns
-		expected = ["chapter", "topic", "script", "flags", "input", "notes"]
 		# Strip whitespace from header
 		header = [col.strip() for col in header]
-		if header != expected:
+		# Accept both the new 'subject' header and the legacy 'chapter' header
+		expected_subject = ["subject", "topic", "script", "flags", "input", "notes"]
+		expected_chapter = ["chapter", "topic", "script", "flags", "input", "notes"]
+		if header != expected_subject and header != expected_chapter:
 			print(f"WARNING: unexpected header in {csv_path}: {header}")
 			return assignments
 
@@ -52,7 +53,7 @@ def _read_single_csv(csv_path: str) -> dict:
 			# Pad short rows
 			while len(row) < 6:
 				row.append("")
-			chapter = row[0].strip()
+			subject = row[0].strip()
 			topic = row[1].strip()
 			script = row[2].strip()
 			flags = row[3].strip()
@@ -63,8 +64,11 @@ def _read_single_csv(csv_path: str) -> dict:
 			if not script.startswith("{bp_root}"):
 				continue
 
+			# Store under both keys so legacy callers reading 'chapter' keep
+			# working alongside new callers reading 'subject'.
 			entry = {
-				"chapter": chapter,
+				"subject": subject,
+				"chapter": subject,
 				"topic": topic,
 				"flags": flags,
 				"input": input_file,
@@ -102,7 +106,9 @@ def get_examples_for_subject(assignments: dict, subject: str, limit: int = 5) ->
 	"""
 	examples = []
 	for key, entry in assignments.items():
-		if entry["chapter"] != subject:
+		# 'subject' is the new canonical key; 'chapter' is kept as a fallback
+		# for any legacy callers that still write it
+		if (entry.get("subject") or entry.get("chapter")) != subject:
 			continue
 		script_path = get_script_path_from_key(key)
 		example = {
@@ -132,7 +138,7 @@ def get_cross_subject_examples(assignments: dict, limit: int = 5) -> list:
 	seen_subjects = set()
 	examples = []
 	for key, entry in assignments.items():
-		subject = entry["chapter"]
+		subject = entry.get("subject") or entry.get("chapter")
 		if subject in seen_subjects:
 			continue
 		seen_subjects.add(subject)
@@ -168,7 +174,8 @@ def write_result_csvs(results: list, output_dir: str) -> list:
 		# Only write classified results, not review-flagged
 		if result.get("status") != "classified":
 			continue
-		subject = result["chapter"]
+		# Accept either new 'subject' key or legacy 'chapter' key
+		subject = result.get("subject") or result.get("chapter")
 		if subject not in by_subject:
 			by_subject[subject] = []
 		by_subject[subject].append(result)
@@ -194,10 +201,11 @@ def _write_single_csv(filepath: str, entries: list) -> None:
 	"""
 	with open(filepath, "w", newline="") as f:
 		writer = csv.writer(f)
-		writer.writerow(["chapter", "topic", "script", "flags", "input", "notes"])
+		writer.writerow(["subject", "topic", "script", "flags", "input", "notes"])
 		for entry in entries:
+			subject = entry.get("subject") or entry.get("chapter", "")
 			writer.writerow([
-				entry["chapter"],
+				subject,
 				entry["topic"],
 				entry.get("script", ""),
 				entry.get("flags", ""),
@@ -215,7 +223,7 @@ if __name__ == '__main__':
 	# Show subject distribution
 	subjects = {}
 	for key, entry in assignments.items():
-		subject = entry["chapter"]
+		subject = entry.get("subject") or entry.get("chapter")
 		subjects[subject] = subjects.get(subject, 0) + 1
 	for subject, count in sorted(subjects.items()):
 		print(f"  {subject}: {count} scripts")

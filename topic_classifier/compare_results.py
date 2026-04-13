@@ -41,6 +41,11 @@ def parse_args() -> argparse.Namespace:
 		default=None,
 		help="Output XLSX path (default: output/comparison_results.xlsx)",
 	)
+	parser.add_argument(
+		'-c', '--csv-output-dir', dest='csv_output_dir', type=str,
+		default=None,
+		help="Override output dir for agreed_tasks CSVs (default: ./agreed_tasks/ in CWD)",
+	)
 	args = parser.parse_args()
 	return args
 
@@ -707,6 +712,129 @@ def _write_disagreement_sheet(
 	auto_size_columns(ws)
 
 #============================================
+def _to_bp_root(script: str) -> str:
+	"""Normalize a script path for run_bbq_tasks.py consumption.
+
+	Args:
+		script: path from a results-*/ CSV, typically 'problems/<chapter>-problems/foo.py'
+
+	Returns:
+		path with leading 'problems/' replaced by '{bp_root}/'
+	"""
+	# Strip leading './' for paths like './problems/foo.py'
+	clean = script.strip()
+	if clean.startswith("./"):
+		clean = clean[2:]
+	# Already normalized — return unchanged
+	if clean.startswith("{bp_root}/"):
+		return clean
+	# Rewrite exact 'problems/' prefix
+	if clean.startswith("problems/"):
+		return "{bp_root}/" + clean[len("problems/"):]
+	# Anything else is unexpected — fail loudly
+	raise ValueError(f"unexpected script path: {script!r}")
+
+#============================================
+def _subject_filename(subject: str) -> str:
+	"""Build a deterministic per-subject CSV filename.
+
+	Args:
+		subject: subject key like 'biochemistry'
+
+	Returns:
+		filename like 'biochemistry_tasks.csv'
+	"""
+	key = subject.strip().lower().replace(" ", "_").replace("-", "_")
+	if not key:
+		raise ValueError("empty subject name")
+	return f"{key}_tasks.csv"
+
+#============================================
+def _collect_agreed_rows(disagreements: dict) -> list:
+	"""Build a deduplicated, sorted list of agreed task rows.
+
+	Args:
+		disagreements: output of find_disagreements()
+
+	Returns:
+		list of dict rows with keys subject, topic, script, flags, input, notes.
+		Rows are unique on (subject, topic, script) and sorted by that same key.
+	"""
+	# Track unique (subject, topic, normalized_script) triples.
+	# Note: upstream find_disagreements() still uses the legacy key name
+	# 'chapter' for the biochemistry/genetics/etc. level; we translate to
+	# 'subject' only in this output pathway.
+	triples = set()
+
+	# Full agreements — one row each
+	for item in disagreements["topic_agree"]:
+		if "chapter" not in item or "topic" not in item or "script" not in item:
+			raise KeyError(f"topic_agree item missing required keys: {item!r}")
+		triples.add((
+			item["chapter"],
+			item["topic"],
+			_to_bp_root(item["script"]),
+		))
+
+	# Known overlaps — one row per valid (subject, topic) pair
+	for item in disagreements["known_overlap"]:
+		if "script" not in item or "valid_assignments" not in item:
+			raise KeyError(f"known_overlap item missing required keys: {item!r}")
+		normalized = _to_bp_root(item["script"])
+		# Coerce to sorted list of tuples for deterministic ordering
+		pairs = sorted(list(item["valid_assignments"]))
+		for subject, topic in pairs:
+			triples.add((subject, topic, normalized))
+
+	# Convert to dict rows and sort deterministically
+	rows = []
+	for subject, topic, script in sorted(triples):
+		rows.append({
+			"subject": subject,
+			"topic": topic,
+			"script": script,
+			"flags": "",
+			"input": "",
+			"notes": "",
+		})
+	return rows
+
+#============================================
+def write_agreed_task_csvs(disagreements: dict, output_dir: str) -> None:
+	"""Write per-subject agreed_tasks CSVs for run_bbq_tasks.py.
+
+	Args:
+		disagreements: output of find_disagreements()
+		output_dir: directory to write <subject>_tasks.csv files into
+	"""
+	os.makedirs(output_dir, exist_ok=True)
+	rows = _collect_agreed_rows(disagreements)
+
+	# Group by subject, preserving the global sort within each group
+	grouped = {}
+	for row in rows:
+		grouped.setdefault(row["subject"], []).append(row)
+
+	fieldnames = ["subject", "topic", "script", "flags", "input", "notes"]
+	total = 0
+	file_count = 0
+	# Iterate subjects in sorted order for deterministic file-write order
+	for subject in sorted(grouped.keys()):
+		filename = _subject_filename(subject)
+		out_path = os.path.join(output_dir, filename)
+		subject_rows = grouped[subject]
+		with open(out_path, "w", newline="") as f:
+			writer = csv.DictWriter(f, fieldnames=fieldnames)
+			writer.writeheader()
+			for row in subject_rows:
+				writer.writerow(row)
+		n = len(subject_rows)
+		total += n
+		file_count += 1
+		console.print(f"wrote {filename}: {n} rows")
+	console.print(f"wrote {file_count} subject CSVs, {total} rows total -> {output_dir}")
+
+#============================================
 def main():
 	"""Main entry point."""
 	args = parse_args()
@@ -754,6 +882,12 @@ def main():
 
 	# Write XLSX
 	write_xlsx(all_results, disagreements, output_xlsx, topic_lookup)
+
+	# Write per-subject agreed_tasks CSVs for run_bbq_tasks.py.
+	# Default to CWD so outputs land next to wherever the user invoked the
+	# tool, rather than inside the topic_classifier package directory.
+	csv_dir = args.csv_output_dir or os.path.join(os.getcwd(), "agreed_tasks")
+	write_agreed_task_csvs(disagreements, csv_dir)
 
 #============================================
 if __name__ == '__main__':

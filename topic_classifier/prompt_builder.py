@@ -189,6 +189,136 @@ def build_stage2_prompt(
 	return messages
 
 #============================================
+def build_stage1_yaml_prompt(
+	yaml_path: str,
+	content: str,
+	all_indexes: dict,
+	cross_examples: list,
+) -> list:
+	"""Build chat messages for stage 1 (subject classification) on a YAML file.
+
+	Args:
+		yaml_path: relative path to the yaml file
+		content: rendered text extracted from the yaml (statements, pairs, ...)
+		all_indexes: output of index_parser.load_all_indexes()
+		cross_examples: output of csv_handler.get_cross_subject_examples()
+
+	Returns:
+		list of message dicts for LLMClient.generate(messages=...)
+	"""
+	subject_list = index_parser.format_subject_list(all_indexes)
+	examples_text = _format_cross_examples(cross_examples)
+
+	user_parts = []
+	user_parts.append("## Available subjects\n")
+	user_parts.append(subject_list)
+	user_parts.append("\n\n## Examples of assigned items\n")
+	user_parts.append(examples_text)
+	user_parts.append(f"\n\n## YAML file to classify: {yaml_path}\n")
+
+	# Folder hint: multiple_choice_statements/<folder>/file.yml or
+	# matching_sets/<folder>/file.yml
+	folder_hint = _yaml_folder_hint(yaml_path)
+	if folder_hint:
+		user_parts.append(f"Current folder: {folder_hint}\n")
+
+	user_parts.append(f"### YAML content\n```\n{content}\n```\n")
+	user_parts.append("\n")
+	user_parts.append(_STAGE1_PROMPT["instructions"])
+
+	micro_examples = _STAGE1_PROMPT.get("micro_examples", "")
+	if micro_examples:
+		user_parts.append("\n")
+		user_parts.append(micro_examples)
+
+	user_content = "".join(user_parts)
+
+	messages = [
+		{"role": "system", "content": _STAGE1_PROMPT["system"].strip()},
+		{"role": "user", "content": user_content},
+	]
+	return messages
+
+#============================================
+def build_stage2_yaml_prompt(
+	yaml_path: str,
+	content: str,
+	subject: str,
+	topics: list,
+	subject_examples: list,
+) -> list:
+	"""Build chat messages for stage 2 (topic classification) on a YAML file.
+
+	Args:
+		yaml_path: relative path to the yaml file
+		content: rendered text extracted from the yaml
+		subject: predicted subject from stage 1
+		topics: topic list for this subject from index_parser
+		subject_examples: few-shot examples from this subject
+
+	Returns:
+		list of message dicts for LLMClient.generate(messages=...)
+	"""
+	topic_list = index_parser.format_topic_list(topics)
+	examples_text = _format_subject_examples(subject_examples)
+
+	user_parts = []
+	user_parts.append(f"## Available topics for {subject}\n")
+	user_parts.append(topic_list)
+	user_parts.append("\n\n## Examples of items assigned to this subject\n")
+	user_parts.append(examples_text)
+	user_parts.append(f"\n\n## YAML file to classify: {yaml_path}\n")
+
+	folder_hint = _yaml_folder_hint(yaml_path)
+	if folder_hint:
+		user_parts.append(f"Current folder: {folder_hint}\n")
+
+	user_parts.append(f"### YAML content\n```\n{content}\n```\n")
+
+	user_parts.append("\n## Instructions\n")
+	user_parts.append(f"This content belongs to the subject '{subject}'. ")
+	user_parts.append("Classify it into exactly one topic from the list above.\n\n")
+	user_parts.append("## Decision rules\n")
+	user_parts.append(_STAGE2_PROMPT["decision_rules"])
+
+	examples = _STAGE2_PROMPT.get("examples", "")
+	if examples:
+		user_parts.append("\n")
+		user_parts.append(examples)
+
+	user_parts.append("\n## Response format\n")
+	user_parts.append(_STAGE2_PROMPT["response_format"])
+
+	user_content = "".join(user_parts)
+
+	messages = [
+		{"role": "system", "content": _STAGE2_PROMPT["system"].strip()},
+		{"role": "user", "content": user_content},
+	]
+	return messages
+
+#============================================
+def _yaml_folder_hint(yaml_path: str) -> str:
+	"""Extract the subject-hint folder name from a yaml path.
+
+	For paths like 'problems/multiple_choice_statements/biochemistry/x.yml' or
+	'problems/matching_sets/inheritance/y.yml' return the middle folder name.
+
+	Args:
+		yaml_path: relative path to yaml file
+
+	Returns:
+		folder name string, or empty string if path shape is unexpected
+	"""
+	parts = yaml_path.split("/")
+	# Expect: problems / (multiple_choice_statements|matching_sets) / <subject> / file.yml
+	for idx, part in enumerate(parts):
+		if part in ("multiple_choice_statements", "matching_sets"):
+			if idx + 1 < len(parts) - 1:
+				return parts[idx + 1]
+	return ""
+
+#============================================
 def _format_cross_examples(examples: list) -> str:
 	"""Format cross-subject few-shot examples for stage 1.
 

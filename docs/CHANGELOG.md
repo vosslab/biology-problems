@@ -1,5 +1,19 @@
 # Changelog
 
+## 2026-04-13
+
+### Additions and New Features
+- Added [classify_yaml.py](../topic_classifier/classify_yaml.py), a sibling to [classify_scripts.py](../topic_classifier/classify_scripts.py) that classifies the 99 yaml content files under `problems/multiple_choice_statements/*/*.yml` and `problems/matching_sets/*/*.yml` into subject/topic using the same two-stage local-LLM pipeline. Extracts meaningful text directly from each yaml (topic line + true/false statements for MCS, key/value descriptions + matching pairs for matching sets, HTML tags stripped), emits per-subject CSVs with `YMCS`/`YMATCH` marker rows that `run_bbq_tasks.py` can consume directly. Default output is `./results-yaml/` in CWD.
+- Added `build_stage1_yaml_prompt()` and `build_stage2_yaml_prompt()` to [prompt_builder.py](../topic_classifier/prompt_builder.py), thin wrappers that feed a rendered yaml content blob through the existing stage1/stage2 prompt YAML files with a parent-folder hint for the LLM.
+- Added [classifier_common.py](../topic_classifier/classifier_common.py) containing shared helpers lifted from `classify_scripts.py` (`generate_with_retry`, `parse_confidence`, `compute_confidence_score`, `make_failed_result`, `write_debug_log`, `print_diff_report`, `print_consistency_report`, `format_duration`, `validate_ollama_model`, `create_llm_client`) so both `classify_scripts.py` and `classify_yaml.py` share a single implementation. No behavior change to `classify_scripts.py`.
+- Added `write_agreed_task_csvs()` to [compare_results.py](../topic_classifier/compare_results.py) that emits per-subject `<subject>_tasks.csv` files under `topic_classifier/output/agreed_tasks/` for consumption by `run_bbq_tasks.py` in the biology-problems-website repo. Includes `topic_agree` scripts (full subject+topic agreement) and `known_overlap` scripts (one row per valid subject/topic pair). Script paths are normalized to the `{bp_root}/` prefix. Rows are deduplicated on `(subject, topic, script)` and sorted deterministically. New `-c`/`--csv-output-dir` flag overrides the default output directory for debugging and CI use.
+
+### Behavior or Interface Changes
+- Updated [csv_handler.py](../topic_classifier/csv_handler.py) to write the new `subject` column header in result CSVs and to accept either `subject` or `chapter` headers when reading legacy CSVs. Entries now expose both `subject` and `chapter` keys so existing `classify_scripts.py` callers keep working alongside the new `classify_yaml.py` writer.
+
+### Behavior or Interface Changes
+- Renamed the `chapter` column to `subject` in bbq task CSVs consumed by `run_bbq_tasks.py` (biology-problems-website repo). The semantic fix: the column holds subject names like `biochemistry`, `genetics`, while the chapter concept is actually the `topic` column. `run_bbq_tasks.py` reads `subject` with a `chapter` fallback for any stragglers; all in-repo task CSVs (`bbq_tasks.csv`, `biochem_tasks1/2/3.csv`, `lab_tasks.csv`, `sub_bbq_tasks.csv`) and the new `agreed_tasks/*_tasks.csv` outputs now use `subject`.
+
 ## 2026-04-08
 
 ### Additions and New Features
