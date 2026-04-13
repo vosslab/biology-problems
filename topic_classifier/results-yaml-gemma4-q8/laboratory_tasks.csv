@@ -1,0 +1,9 @@
+subject,topic,script,flags,input,notes
+laboratory,topic05,YMATCH,,{bp_root}/matching_sets/laboratory/column_chromatography.yml,
+laboratory,topic11,YMCS,,{bp_root}/multiple_choice_statements/laboratory/long_run_pcr.yml,
+laboratory,topic11,YMCS,,{bp_root}/multiple_choice_statements/laboratory/pcr_components.yml,
+laboratory,topic11,YMATCH,,{bp_root}/matching_sets/laboratory/cell_disruption.yml,
+laboratory,topic11,YMATCH,,{bp_root}/matching_sets/laboratory/protein_v_dna_gels.yml,
+laboratory,topic11,YMCS,,{bp_root}/multiple_choice_statements/laboratory/pcr_primers.yml,
+laboratory,topic11,YMCS,,{bp_root}/multiple_choice_statements/laboratory/pcr_step_order.yml,
+laboratory,topic12,YMATCH,,{bp_root}/matching_sets/laboratory/culture_enrichment.yml,

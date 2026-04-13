@@ -2,6 +2,7 @@
 
 topic_classifier/output/
 topic_classifier/results/
+topic_classifier/results-yaml/
 temp.html
 tools/bptools_scripts_audit.md
 tools/bptools_scripts_*.txt
