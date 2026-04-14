@@ -1,0 +1,7 @@
+subject,topic,script,flags,input,notes
+biostatistics,topic03,YMATCH,,{bp_root}/matching_sets/biostatistics/measures_of_center.yml,
+biostatistics,topic05,YMATCH,,{bp_root}/matching_sets/biostatistics/chi-square_terms.yml,
+biostatistics,topic05,YMATCH,,{bp_root}/matching_sets/biostatistics/hypothesis_testing.yml,
+biostatistics,topic05,YMCS,,{bp_root}/multiple_choice_statements/biostatistics/chi-square.yml,
+biostatistics,topic05,YMATCH,,{bp_root}/matching_sets/biostatistics/statistical_test_terms.yml,
+biostatistics,topic05,YMCS,,{bp_root}/multiple_choice_statements/biostatistics/statistical_tests.yml,
