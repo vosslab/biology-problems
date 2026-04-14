@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-04-14
+
+### Additions and New Features
+- Added [find_unassigned.py](../topic_classifier/find_unassigned.py), a sibling to [compare_results.py](../topic_classifier/compare_results.py) that finds generator scripts not yet assigned to any bbq_control task CSV and suggests where each one should go. Builds the script universe via [script_runner.py](../topic_classifier/script_runner.py) `discover_generator_scripts()`, loads assigned scripts from `biology-problems-website/bbq_control/task_files/*.csv` (skipping `YMATCH`/`YMCS` marker rows), aggregates subject/topic votes across all local `results-*/` directories (reusing `compare_results._to_bp_root()` and `compare_results.load_results_dir()`), and reports the unassigned set with HIGH/MEDIUM/LOW/NONE confidence tiers computed from vote agreement. Writes `unassigned_report.csv` and prints a `tabulate`-formatted console table grouped by confidence. Flags: `-t/--task-dir`, `-b/--base-dir`, `-o/--output`, `-m/--min-votes`, `-l/--limit`. Against the current repo state: 172 total scripts, 121 already assigned, 51 unassigned (30 HIGH-confidence, 3 MEDIUM, 1 LOW, 17 never seen by any model).
+
 ## 2026-04-13
 
 ### Additions and New Features
