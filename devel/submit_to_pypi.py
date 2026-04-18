@@ -4,7 +4,9 @@
 import os
 import re
 import sys
+import base64
 import shutil
+import difflib
 import pathlib
 import tomllib
 import argparse
@@ -12,6 +14,7 @@ import tempfile
 import subprocess
 import datetime
 import time
+import configparser
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -51,7 +54,7 @@ def print_info(message: str) -> None:
 	Args:
 		message: The info message to print.
 	"""
-	console.print(message)
+	console.print(message, highlight=False, markup=False)
 
 #============================================
 
@@ -61,7 +64,7 @@ def print_warning(message: str) -> None:
 	Args:
 		message: The warning message to print.
 	"""
-	console.print(message, style="yellow")
+	console.print(message, style="yellow", highlight=False, markup=False)
 
 #============================================
 
@@ -165,14 +168,20 @@ def parse_args() -> argparse.Namespace:
 	)
 
 	repo_group = parser.add_argument_group("repository")
-	repo_group.add_argument(
-		"-r",
-		"--repo",
-		dest="repo",
-		default="testpypi",
-		choices=["testpypi", "pypi"],
-		help="Repository target (default: testpypi).",
+	mode_group = repo_group.add_mutually_exclusive_group()
+	mode_group.add_argument(
+		'-t', '--test', dest='use_main', action='store_false',
+		help='Upload to TestPyPI (default).',
 	)
+	mode_group.add_argument(
+		'-m', '--main', dest='use_main', action='store_true',
+		help='Upload to production PyPI.',
+	)
+	repo_group.add_argument(
+		'-r', '--repo', dest='repo_override', default='',
+		help='Override: use a specific ~/.pypirc section name.',
+	)
+	parser.set_defaults(use_main=False)
 
 	behavior_group = parser.add_argument_group("behavior")
 	behavior_group.add_argument(
@@ -327,9 +336,16 @@ def verify_version_sync(pyproject_version: str, file_version: str) -> None:
 
 #============================================
 
+def is_pypi_repo(repo: str) -> bool:
+	"""Return True if the repo section targets production PyPI."""
+	# "pypi" or "pypi-projectname" target production; everything else is testpypi
+	return repo == "pypi" or repo.startswith("pypi-")
+
+#============================================
+
 def resolve_index_url(repo: str) -> str:
-	"""Resolve the index URL based on repo."""
-	if repo == "pypi":
+	"""Resolve the index URL based on repo section name."""
+	if is_pypi_repo(repo):
 		return DEFAULT_PYPI_INDEX
 	return DEFAULT_TESTPYPI_INDEX
 
@@ -429,6 +445,172 @@ def require_twine_available(python_exe: str, project_dir: str) -> None:
 		fail("twine is not available. Install it with: python -m pip install twine")
 
 
+def extract_token_project_names(token: str) -> list:
+	"""Extract project names from a PyPI token using heuristic decoding.
+
+	PyPI tokens are macaroons with project scope encoded as readable ASCII
+	in the binary payload. This decodes the base64 suffix and searches for
+	JSON-like project name arrays.
+
+	Args:
+		token: The full token string starting with 'pypi-'.
+
+	Returns:
+		List of project name strings found, or empty list if none detected.
+	"""
+	# Strip the "pypi-" prefix and decode the base64 macaroon
+	token_suffix = token[5:]
+	# Add padding if needed
+	padding = 4 - (len(token_suffix) % 4)
+	if padding < 4:
+		token_suffix += "=" * padding
+	decoded = base64.urlsafe_b64decode(token_suffix)
+	# Search for JSON-style project name arrays like ["project-name"]
+	text = decoded.decode("ascii", errors="replace")
+	# Look for patterns like ["project-name"] embedded in the macaroon
+	matches = re.findall(r'\["([a-zA-Z0-9_.-]+)"\]', text)
+	# Filter out UUIDs (project ID caveats) - keep only human-readable names
+	uuid_pattern = re.compile(
+		r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+	)
+	filtered = [m for m in matches if not uuid_pattern.match(m)]
+	return filtered
+
+def resolve_pypirc_section(config: configparser.ConfigParser, requested: str) -> str:
+	"""Resolve a missing .pypirc section by finding prefix or fuzzy matches.
+
+	If exactly one candidate is found, auto-selects it. If multiple candidates
+	exist, prompts the user to choose. If none, fails with guidance.
+
+	Args:
+		config: Parsed .pypirc config.
+		requested: The requested section name that was not found.
+
+	Returns:
+		The resolved section name.
+	"""
+	sections = [s for s in config.sections() if s != "distutils"]
+	# Try prefix matches first (e.g. "testpypi" matches "testpypi-llm")
+	candidates = [s for s in sections if s.startswith(f"{requested}-")]
+	# Fall back to fuzzy matching if no prefix matches
+	if not candidates:
+		candidates = difflib.get_close_matches(requested, sections, n=5, cutoff=0.5)
+	if not candidates:
+		fail(
+			f"Section [{requested}] not found in ~/.pypirc.\n\n"
+			f"Add a section for this repository:\n\n"
+			f"[{requested}]\n"
+			"repository = https://test.pypi.org/legacy/\n"
+			"username = __token__\n"
+			"password = pypi-YOUR_TOKEN_HERE\n\n"
+			"Then add it to [distutils] index-servers."
+		)
+	# Auto-select if exactly one match
+	if len(candidates) == 1:
+		print_info(
+			f"Section [{requested}] not found. "
+			f"Using [{candidates[0]}] instead."
+		)
+		return candidates[0]
+	# Prompt user to choose from multiple matches
+	print_warning(f"Section [{requested}] not found in ~/.pypirc.")
+	print_info("Available matching sections:")
+	for i, name in enumerate(candidates, 1):
+		print_info(f"  {i}) {name}")
+	while True:
+		choice = input("Choose repository number: ").strip()
+		if choice.isdigit():
+			idx = int(choice)
+			if 1 <= idx <= len(candidates):
+				selected = candidates[idx - 1]
+				print_info(f"Using [{selected}]")
+				return selected
+		print_info("Invalid choice. Enter a number from the list.")
+
+#============================================
+
+def require_pypirc_token(repo: str, package_name: str) -> tuple:
+	"""Validate that ~/.pypirc has a usable token for the target repository.
+
+	Parses ~/.pypirc directly and resolves the section, credentials, and
+	repository URL. If the exact section is missing but similar sections
+	exist, prompts the user to select one.
+
+	Args:
+		repo: The repository section name (e.g., 'testpypi', 'testpypi-llm').
+		package_name: The package being uploaded.
+
+	Returns:
+		Tuple of (resolved_repo, username, password, repository_url).
+	"""
+	pypirc_path = os.path.expanduser("~/.pypirc")
+
+	# Check file exists
+	if not os.path.isfile(pypirc_path):
+		fail(
+			"~/.pypirc not found. Create it with your API token:\n\n"
+			f"[{repo}]\n"
+			"username = __token__\n"
+			"password = pypi-YOUR_TOKEN_HERE\n\n"
+			"Create tokens at https://test.pypi.org/manage/account/token/ (TestPyPI)\n"
+			"or https://pypi.org/manage/account/token/ (PyPI)."
+		)
+
+	# Parse the file
+	config = configparser.ConfigParser()
+	config.read(pypirc_path)
+
+	# Resolve section: exact match, prefix match, or fuzzy match
+	if not config.has_section(repo):
+		repo = resolve_pypirc_section(config, repo)
+
+	# Read credentials and optional repository URL from the resolved section
+	username = config.get(repo, "username", fallback="")
+	if not username:
+		fail(f"~/.pypirc [{repo}] has no username set.")
+	if username != "__token__":
+		print_warning(
+			f"~/.pypirc [{repo}] username is '{username}', expected '__token__'.\n"
+			"Token-based auth requires username = __token__"
+		)
+
+	password = config.get(repo, "password", fallback="")
+	if not password:
+		fail(f"~/.pypirc [{repo}] has no password set. Add your API token.")
+
+	# Optional repository URL override from .pypirc
+	repo_url = config.get(repo, "repository", fallback="")
+
+	if not password.startswith("pypi-"):
+		print_warning(
+			f"~/.pypirc [{repo}] password does not start with 'pypi-'.\n"
+			"PyPI API tokens always start with 'pypi-'."
+		)
+		result = (repo, username, password, repo_url)
+		return result
+
+	# Heuristic: check if token is scoped to a different project
+	project_names = extract_token_project_names(password)
+	if project_names:
+		canonical_name = canonicalize_name(package_name)
+		canonical_scopes = [canonicalize_name(name) for name in project_names]
+		if canonical_name not in canonical_scopes:
+			scoped_text = ", ".join(project_names)
+			if is_pypi_repo(repo):
+				token_url = "https://pypi.org/manage/account/token/"
+			else:
+				token_url = "https://test.pypi.org/manage/account/token/"
+			fail(
+				f"~/.pypirc [{repo}] token is scoped to: {scoped_text}\n"
+				f"Package '{package_name}' is not in that list.\n"
+				f"Upload would fail with 403 Forbidden.\n"
+				f"Create a token for '{package_name}' at {token_url}"
+			)
+
+	result = (repo, username, password, repo_url)
+	return result
+
+
 def require_index_reachable(index_url: str) -> None:
 	"""Ensure the package index URL is reachable."""
 	# Validate URL scheme to prevent file:// or other dangerous schemes
@@ -455,6 +637,48 @@ def require_dist_empty(project_dir: str) -> None:
 		joined = ", ".join(sorted(entries))
 		fail(f"dist/ is not empty after cleaning: {joined}")
 
+
+def require_editable_install_in_sync(
+	python_exe: str, project_dir: str, package_name: str, version: str
+) -> None:
+	"""Ensure the editable install version matches the repo version.
+
+	An editable install (pip install -e .) caches metadata at install time.
+	When the version is bumped in pyproject.toml without re-running pip install,
+	the installed metadata goes stale and version checks in tools will fail.
+
+	Args:
+		python_exe: Python executable.
+		project_dir: Project directory.
+		package_name: Package name to check.
+		version: Expected version from pyproject.toml.
+	"""
+	import_name = re.sub(r"[-.]", "_", package_name)
+	# Check if the package is importable at all
+	check_cmd = [python_exe, "-c", f"import {import_name}"]
+	result = run_command_allow_fail(check_cmd, project_dir, True)
+	if result.returncode != 0:
+		# Not installed, nothing to check
+		return
+	# Get the installed version via importlib.metadata
+	version_cmd = [
+		python_exe, "-c",
+		f"import importlib.metadata; print(importlib.metadata.version('{package_name}'))",
+	]
+	result = run_command_allow_fail(version_cmd, project_dir, True)
+	if result.returncode != 0:
+		return
+	installed_version = result.stdout.strip()
+	repo_normalized = str(Version(version))
+	installed_normalized = str(Version(installed_version))
+	if repo_normalized != installed_normalized:
+		fail(
+			f"Editable install is stale: installed {package_name} is {installed_version}, "
+			f"but pyproject.toml says {version}.\n"
+			f"Run 'pip install -e .' from {project_dir} to sync."
+		)
+
+#============================================
 
 def require_pytest_passes_if_available(python_exe: str, project_dir: str) -> None:
 	"""Run pytest if it is installed."""
@@ -646,33 +870,6 @@ def clean_build_artifacts(project_dir: str) -> None:
 
 #============================================
 
-def upgrade_build_tools(python_exe: str, project_dir: str) -> None:
-	"""Upgrade build and upload tools.
-
-	Args:
-		python_exe: Python executable.
-		project_dir: Project directory.
-	"""
-	run_command([python_exe, "-m", "pip", "install", "--upgrade", "pip"], project_dir, False)
-	run_command(
-		[
-			python_exe,
-			"-m",
-			"pip",
-			"install",
-			"--upgrade",
-			"setuptools",
-			"wheel",
-			"build",
-			"twine",
-			"packaging",
-		],
-		project_dir,
-		False,
-	)
-
-#============================================
-
 def parse_pip_versions_output(output: str) -> tuple[list[str], str | None]:
 	"""Parse pip index versions output.
 
@@ -825,18 +1022,61 @@ def check_metadata(python_exe: str, project_dir: str) -> None:
 
 #============================================
 
+DEFAULT_PYPI_UPLOAD = "https://upload.pypi.org/legacy/"
+DEFAULT_TESTPYPI_UPLOAD = "https://test.pypi.org/legacy/"
+
+#============================================
+
+def resolve_upload_url(repo: str, pypirc_url: str) -> str:
+	"""Resolve the upload URL for twine.
+
+	Uses the repository URL from ~/.pypirc if present, otherwise
+	falls back to the default based on the repo section name.
+
+	Args:
+		repo: The repository section name.
+		pypirc_url: The repository URL from ~/.pypirc (may be empty).
+
+	Returns:
+		The upload endpoint URL.
+	"""
+	if pypirc_url:
+		return pypirc_url
+	if is_pypi_repo(repo):
+		return DEFAULT_PYPI_UPLOAD
+	return DEFAULT_TESTPYPI_UPLOAD
+
+#============================================
+
 def upload_package(
 	python_exe: str,
 	project_dir: str,
-	repo: str,
+	upload_url: str,
+	username: str,
+	password: str,
 ) -> None:
-	"""Upload the package with twine."""
+	"""Upload the package with twine, injecting credentials via environment.
+
+	Args:
+		python_exe: Python executable.
+		project_dir: Project directory.
+		upload_url: The upload endpoint URL.
+		username: PyPI username (usually '__token__').
+		password: PyPI API token.
+	"""
 	print_step("Uploading the package...")
 	dist_dir = os.path.join(project_dir, "dist")
 	dist_args = get_dist_args(dist_dir)
-	cmd = [python_exe, "-m", "twine", "upload", "--repository", repo]
+	cmd = [python_exe, "-m", "twine", "upload", "--repository-url", upload_url]
 	cmd.extend(dist_args)
-	run_command(cmd, project_dir, False)
+	# Inject credentials via environment so twine does not need [distutils]
+	env = os.environ.copy()
+	env["TWINE_USERNAME"] = username
+	env["TWINE_PASSWORD"] = password
+	result = subprocess.run(cmd, cwd=project_dir, text=True, env=env)
+	if result.returncode != 0:
+		command_text = " ".join(cmd)
+		fail(f"Command failed: {command_text}")
 
 #============================================
 
@@ -920,7 +1160,7 @@ def test_install(
 def resolve_project_url(repo: str, package_name: str, version: str) -> str:
 	"""Resolve the project page URL."""
 	normalized_version = normalize_version_string(version)
-	if repo == "pypi":
+	if is_pypi_repo(repo):
 		return f"{PYPI_PROJECT_BASE}{canonicalize_name(package_name)}/{normalized_version}/"
 	return f"{TESTPYPI_PROJECT_BASE}{canonicalize_name(package_name)}/{normalized_version}/"
 
@@ -958,6 +1198,14 @@ def open_project_url(url: str) -> None:
 
 def main() -> None:
 	args = parse_args()
+	# Resolve repo: --repo overrides, otherwise derive from --main/--test
+	if args.repo_override:
+		args.repo = args.repo_override
+	elif args.use_main:
+		args.repo = "pypi"
+	else:
+		args.repo = "testpypi"
+
 	project_dir = resolve_repo_root()
 	pyproject_path = resolve_pyproject_path(project_dir)
 
@@ -1006,7 +1254,13 @@ def main() -> None:
 	require_up_to_date_with_origin_main(project_dir)
 	require_version_tag(project_dir, version)
 	require_twine_available(sys.executable, project_dir)
+	# Validate token and possibly prompt user to select a different section
+	args.repo, twine_username, twine_password, pypirc_url = require_pypirc_token(
+		args.repo, package_name
+	)
+	index_url = resolve_index_url(args.repo)
 	require_index_reachable(index_url)
+	require_editable_install_in_sync(sys.executable, project_dir, package_name, version)
 	require_pytest_passes_if_available(sys.executable, project_dir)
 
 	check_version_exists(sys.executable, project_dir, package_name, version, index_url)
@@ -1041,7 +1295,21 @@ def main() -> None:
 		print_step("Build-only mode: skipping upload and test install.")
 		return
 
-	upload_package(sys.executable, project_dir, args.repo)
+	# Show resolved upload target
+	upload_url = resolve_upload_url(args.repo, pypirc_url)
+	print_step("Upload target")
+	print_info(f"Repository: {args.repo}")
+	print_info(f"Upload URL: {upload_url}")
+	print_info(f"Package: {package_name}")
+	print_info(f"Version: {normalize_version_string(version)}")
+
+	# Require confirmation for production PyPI uploads
+	if is_pypi_repo(args.repo):
+		answer = input("Upload to production PyPI? Type 'yes' to confirm: ").strip()
+		if answer.lower() != "yes":
+			fail("Aborted. Did not confirm production upload.")
+
+	upload_package(sys.executable, project_dir, upload_url, twine_username, twine_password)
 
 	test_install(sys.executable, project_dir, package_name, import_name, index_url, version)
 
@@ -1050,10 +1318,10 @@ def main() -> None:
 		print_info(f"Project URL: {project_url}")
 	open_project_url(project_url)
 
-	if args.repo == "testpypi":
+	if not is_pypi_repo(args.repo):
 		print_step("Next step")
 		print_info("If everything looks good, upload to PyPI with:")
-		print_info("python3 -m twine upload --repository pypi dist/*")
+		print_info("python3 devel/submit_to_pypi.py --repo pypi")
 
 #============================================
 
