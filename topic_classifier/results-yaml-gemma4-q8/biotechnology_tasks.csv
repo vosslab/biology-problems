@@ -1,7 +1,0 @@
-subject,topic,script,flags,input,notes
-biotechnology,topic02,YMATCH,,{bp_root}/matching_sets/biotechnology/dna_sequencing.yml,
-biotechnology,topic04,YMATCH,,{bp_root}/matching_sets/biotechnology/biotech_vs_improved.yml,
-biotechnology,topic04,YMATCH,,{bp_root}/matching_sets/biotechnology/plant_transgenes.yml,
-biotechnology,topic05,YMATCH,,{bp_root}/matching_sets/biotechnology/biotech_vs.yml,
-biotechnology,topic05,YMATCH,,{bp_root}/matching_sets/biotechnology/gene_therapy_v_edit.yml,
-biotechnology,topic07,YMATCH,,{bp_root}/matching_sets/biotechnology/theranos_people.yml,
