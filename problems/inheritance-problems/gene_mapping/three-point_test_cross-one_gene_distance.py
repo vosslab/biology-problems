@@ -52,7 +52,7 @@ def parse_arguments():
 	parser = bptools.make_arg_parser(
 		description="Generate three-point test cross (one gene-pair distance) questions."
 	)
-	parser = bptools.add_question_format_args(parser, types_list=['mc', 'num'], required=True)
+	parser = bptools.add_question_format_args(parser, types_list=['mc', 'num'], required=False, default='mc')
 	args = parser.parse_args()
 	return args
 

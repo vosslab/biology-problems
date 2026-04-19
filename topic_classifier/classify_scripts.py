@@ -31,7 +31,7 @@ console = common.console
 #============================================
 BBQ_CONTROL_DIR = os.path.join(
 	os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-	"..", "biology-problems-website", "bbq_control",
+	"..", "biology-problems-website", "bbq_control", "task_files",
 )
 
 #============================================
@@ -237,6 +237,8 @@ def classify_one_script(
 	all_indexes: dict,
 	cross_examples: list,
 	assignments: dict,
+	flags: str = "",
+	input_file: str = "",
 	source_only: bool = False,
 	verbose: bool = False,
 ) -> dict:
@@ -267,8 +269,8 @@ def classify_one_script(
 	bbq_output = None
 	execution_status = "skipped"
 	if not source_only:
-		# Build extra args from existing CSV assignment (flags, input)
-		extra_args = _get_run_args(script_path, assignments)
+		# Build extra args from explicit flags + input for this variant
+		extra_args = _build_run_args(flags, input_file, repo_root)
 		if extra_args:
 			console.print(f"  Running [cyan]{script_path}[/cyan] {' '.join(extra_args)}", style="dim")
 		else:
@@ -303,7 +305,7 @@ def classify_one_script(
 
 	if stage1["subject"] is None:
 		console.print("  FAILED: could not determine subject", style="bold red")
-		result = _make_failed_result(script_path, execution_status, stage1)
+		result = _make_failed_result(script_path, execution_status, stage1, flags=flags, input_file=input_file)
 		return result
 
 	subject = stage1["subject"]
@@ -330,7 +332,7 @@ def classify_one_script(
 
 	if stage2["topic"] is None:
 		console.print("  FAILED: could not determine topic", style="bold red")
-		result = _make_failed_result(script_path, execution_status, stage1, stage2)
+		result = _make_failed_result(script_path, execution_status, stage1, stage2, flags=flags, input_file=input_file)
 		return result
 
 	# Look up topic name for display
@@ -348,14 +350,9 @@ def classify_one_script(
 	confidence_score = compute_confidence_score(stage1, stage2, has_bbq, all_indexes)
 	status = "classified" if confidence_score >= 3 else "review"
 
-	# Check against existing assignments
+	# Check against existing assignments for this exact (script, flags) variant
 	bp_root_path = "{bp_root}/" + script_path.replace("problems/", "", 1)
-	existing_entry = None
-	for key, entry in assignments.items():
-		entry_script = csv_handler.get_script_path_from_key(key)
-		if entry_script == bp_root_path:
-			existing_entry = entry
-			break
+	existing_entry = assignments.get(f"{bp_root_path}|{flags}")
 
 	existing_assignment = None
 	match = None
@@ -372,8 +369,8 @@ def classify_one_script(
 		"script": script_path,
 		"chapter": subject,
 		"topic": stage2["topic"],
-		"flags": "",
-		"input": "",
+		"flags": flags,
+		"input": input_file,
 		"notes": "",
 		"confidence_score": confidence_score,
 		"status": status,
@@ -391,40 +388,28 @@ def classify_one_script(
 	return result
 
 #============================================
-def _get_run_args(script_path: str, assignments: dict) -> list:
-	"""Look up flags and input file from existing CSV assignments for a script.
+def _build_run_args(flags: str, input_file: str, repo_root: str) -> list:
+	"""Build CLI args from an explicit (flags, input) variant.
 
 	Args:
-		script_path: relative path to the script
-		assignments: existing CSV assignments dict
+		flags: flags string from a CSV row (may be empty)
+		input_file: input file token from a CSV row, possibly using
+			'{bp_root}/' prefix (may be empty)
+		repo_root: repository root for resolving {bp_root}
 
 	Returns:
-		list of CLI args, e.g. ['-y', '/path/to/input.yml', '--mc']
+		list of CLI args, e.g. ['--mc', '-y', '/abs/path/input.yml']
 	"""
-	# Convert relative path to {bp_root} format used in CSVs
-	bp_root_path = "{bp_root}/" + script_path.replace("problems/", "", 1)
-
-	# Find first matching assignment
-	for key, entry in assignments.items():
-		entry_script = csv_handler.get_script_path_from_key(key)
-		if entry_script != bp_root_path:
-			continue
-		args = []
-		# Add flags from CSV
-		flags = entry.get("flags", "").strip()
-		if flags:
-			args.extend(shlex.split(flags))
-		# Add input file from CSV
-		input_file = entry.get("input", "").strip()
-		if input_file:
-			# Resolve {bp_root} placeholder
-			repo_root = script_runner.get_repo_root()
-			resolved = input_file.replace("{bp_root}/", "problems/")
-			abs_input = os.path.join(repo_root, resolved)
-			if os.path.isfile(abs_input):
-				args.extend(["-y", abs_input])
-		return args
-	return []
+	args = []
+	if flags:
+		args.extend(shlex.split(flags))
+	if input_file:
+		# Resolve the {bp_root}/ placeholder used in the control CSVs
+		resolved = input_file.replace("{bp_root}/", "problems/")
+		abs_input = os.path.join(repo_root, resolved)
+		if os.path.isfile(abs_input):
+			args.extend(["-y", abs_input])
+	return args
 
 #============================================
 # Shared with classify_yaml.py via classifier_common. print_diff_report and
@@ -443,24 +428,32 @@ def _make_failed_result(
 	execution_status: str,
 	stage1: dict,
 	stage2: dict = None,
+	flags: str = "",
+	input_file: str = "",
 ) -> dict:
 	"""Create a failed-classification result dict keyed with 'chapter'.
 
 	A thin wrapper over common.make_failed_result that renames the
 	'subject' key back to 'chapter' so the existing classify_scripts.py
-	result schema stays unchanged.
+	result schema stays unchanged, and overwrites the placeholder
+	flags/input fields with the actual variant so failed results from
+	different variants of the same script do not collide in dedup.
 
 	Args:
 		script_path: relative path to script
 		execution_status: success/failed/cached/skipped
 		stage1: stage 1 result dict
 		stage2: stage 2 result dict or None
+		flags: CLI flags string for this variant
+		input_file: input file path for this variant
 
 	Returns:
 		result dict with status='review' and 'chapter' key
 	"""
 	result = common.make_failed_result(script_path, execution_status, stage1, stage2)
 	result["chapter"] = result.pop("subject")
+	result["flags"] = flags
+	result["input"] = input_file
 	return result
 
 #============================================
@@ -505,12 +498,17 @@ def main():
 		scripts = scripts[:args.limit]
 		console.print(f"  Limited to [bold]{args.limit}[/bold] scripts")
 
-	# Dry run: just show what would be classified
+	# Dry run: show expanded (script, flags) work list
 	if args.dry_run:
-		console.print("\n--- Dry run: scripts to classify ---", style="bold")
-		for s in scripts:
-			console.print(f"  [cyan]{s}[/cyan]")
-		console.print(f"\nTotal: [bold]{len(scripts)}[/bold] scripts")
+		console.print("\n--- Dry run: variants to classify ---", style="bold")
+		dry_total = 0
+		for script_path in scripts:
+			variants = csv_handler.get_variants_for_script(assignments, script_path)
+			for v in variants:
+				flags_label = f" [yellow]{v['flags']}[/yellow]" if v["flags"] else ""
+				console.print(f"  [cyan]{script_path}[/cyan]{flags_label}")
+				dry_total += 1
+		console.print(f"\nTotal: [bold]{dry_total}[/bold] variants across [bold]{len(scripts)}[/bold] scripts")
 		console.print(f"Subjects available: [cyan]{', '.join(sorted(all_indexes.keys()))}[/cyan]")
 		console.print(f"Existing assignments: [bold]{len(assignments)}[/bold]")
 		return
@@ -531,25 +529,37 @@ def main():
 
 	num_repeats = max(1, args.repeat)
 
-	# Classify all scripts
+	# Expand each discovered script into one work item per CSV variant
+	# (script, flags, input). Scripts not in any CSV get a single empty
+	# variant so classification still runs once with no flags.
+	work_items = []
+	for script_path in scripts:
+		variants = csv_handler.get_variants_for_script(assignments, script_path)
+		for variant in variants:
+			work_items.append((script_path, variant["flags"], variant["input"]))
+
+	# Classify all (script, flags, input) work items
 	results = []
 	no_bbq_scripts = []
 	llm_error_scripts = []
-	# For repeat mode: collect all runs per script
+	# For repeat mode: collect all runs per (script, flags) variant
 	repeat_results = {}
 	total_start = time.monotonic()
-	for i, script_path in enumerate(scripts):
-		# Build ETA string from average of completed scripts
+	for i, (script_path, flags, input_file) in enumerate(work_items):
+		# Variant key distinguishes same script with different flags
+		variant_key = f"{script_path}|{flags}"
+		# Build ETA string from average of completed items
 		if i > 0:
 			elapsed_so_far = time.monotonic() - total_start
-			avg_per_script = elapsed_so_far / i
-			remaining = avg_per_script * (len(scripts) - i)
+			avg_per_item = elapsed_so_far / i
+			remaining = avg_per_item * (len(work_items) - i)
 			eta_str = _format_duration(remaining)
 			elapsed_str = _format_duration(elapsed_so_far)
 			timing_info = f" | elapsed {elapsed_str} | ETA {eta_str}"
 		else:
 			timing_info = ""
-		console.print(f"\n[bold][{i+1}/{len(scripts)}][/bold] Classifying [cyan]{script_path}[/cyan]{timing_info}")
+		flags_label = f" [yellow]{flags}[/yellow]" if flags else ""
+		console.print(f"\n[bold][{i+1}/{len(work_items)}][/bold] Classifying [cyan]{script_path}[/cyan]{flags_label}{timing_info}")
 		script_start = time.monotonic()
 		for run_num in range(num_repeats):
 			if num_repeats > 1:
@@ -558,27 +568,28 @@ def main():
 				result = classify_one_script(
 					client, script_path, repo_root,
 					all_indexes, cross_examples, assignments,
+					flags=flags, input_file=input_file,
 					source_only=args.source_only,
 					verbose=args.verbose,
 				)
 			except (RuntimeError, llm.LLMError, subprocess.TimeoutExpired) as exc:
 				console.print(f"  ERROR: {exc}", style="bold red")
 				if run_num == 0:
-					llm_error_scripts.append(script_path)
+					llm_error_scripts.append(variant_key)
 				continue
 
 			if result is None:
 				if run_num == 0:
-					no_bbq_scripts.append(script_path)
+					no_bbq_scripts.append(variant_key)
 				# No point repeating if no bbq file
 				break
 
 			results.append(result)
 
-			# Collect for consistency report
-			if script_path not in repeat_results:
-				repeat_results[script_path] = []
-			repeat_results[script_path].append(result)
+			# Collect for consistency report keyed by variant
+			if variant_key not in repeat_results:
+				repeat_results[variant_key] = []
+			repeat_results[variant_key].append(result)
 
 			# Write debug log incrementally for crash recovery
 			write_debug_log(result, debug_dir)
@@ -600,9 +611,9 @@ def main():
 						f"  [bold yellow][??][/bold yellow] {result['chapter']}/{result['topic']} "
 						f"[cyan]{topic_label}[/cyan] (score: {result['confidence_score']})")
 
-		# Per-script mini-rollup after all repeats
-		if num_repeats > 1 and script_path in repeat_results:
-			runs = repeat_results[script_path]
+		# Per-variant mini-rollup after all repeats
+		if num_repeats > 1 and variant_key in repeat_results:
+			runs = repeat_results[variant_key]
 			# Count votes
 			subj_votes = {}
 			topic_votes = {}
@@ -667,13 +678,15 @@ def main():
 	total_elapsed = time.monotonic() - total_start
 	console.print(f"\nTotal classification time: [bold]{_format_duration(total_elapsed)}[/bold]")
 
-	# Write result CSVs using first run results only (avoid duplicates)
+	# Write result CSVs using first run results only (avoid duplicates).
+	# Dedup by (script, flags) so each variant is emitted exactly once.
 	first_run_results = []
-	seen_scripts = set()
+	seen_variants = set()
 	for r in results:
-		if r["script"] not in seen_scripts:
+		variant_key = (r["script"], r["flags"])
+		if variant_key not in seen_variants:
 			first_run_results.append(r)
-			seen_scripts.add(r["script"])
+			seen_variants.add(variant_key)
 
 	console.print(f"\nWriting result CSVs to [cyan]{results_dir}[/cyan]...", style="dim italic")
 	written = csv_handler.write_result_csvs(first_run_results, results_dir)

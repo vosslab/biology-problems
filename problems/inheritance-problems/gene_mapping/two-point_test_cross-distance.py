@@ -51,7 +51,8 @@ def parse_arguments():
 	parser = bptools.add_question_format_args(
 		parser,
 		types_list=['mc', 'num'],
-		required=True
+		required=False,
+		default='mc',
 	)
 	return parser.parse_args()
 

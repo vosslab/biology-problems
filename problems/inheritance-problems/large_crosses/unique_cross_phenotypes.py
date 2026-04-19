@@ -1,8 +1,14 @@
 #!/usr/bin/env python3
 
 # Import required libraries
+import os
 import sys
 import random
+
+# Extend sys.path so the sibling `genotypelib` module under inheritance-problems is importable
+inheritance_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if inheritance_root not in sys.path:
+	sys.path.insert(0, inheritance_root)
 
 # Import custom modules
 import bptools

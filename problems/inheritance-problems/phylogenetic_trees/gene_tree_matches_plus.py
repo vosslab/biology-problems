@@ -351,7 +351,7 @@ def parse_arguments():
 		help='number of leaves in the gene tree', default=5)
 
 	# MODE: same vs different (required, mutually exclusive shortcuts allowed)
-	mode_group = parser.add_mutually_exclusive_group(required=True)
+	mode_group = parser.add_mutually_exclusive_group(required=False)
 	mode_group.add_argument("--mode", dest="mode", type=str,
 		choices=("same", "different"),
 		help="Question mode: same or different")
@@ -359,6 +359,7 @@ def parse_arguments():
 		help="Question mode: find same")
 	mode_group.add_argument("-D", "--different", dest="mode", action="store_const", const="different",
 		help="Question mode: find different")
+	parser.set_defaults(mode="same")
 
 	# DIFFICULTY: easy < medium < rigorous
 	# Use one argument with choices, plus optional shortcuts if you want

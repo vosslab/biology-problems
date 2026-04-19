@@ -11,9 +11,7 @@ import yaml
 # local repo modules
 import bptools
 
-DATA_FILE = os.path.abspath(
-	os.path.join(os.path.dirname(__file__), "..", "data", "cytogenetic_disorders.yml")
-)
+DATA_FILE = bptools.get_repo_data_path("cytogenetic_disorders.yml")
 
 #======================================
 #======================================

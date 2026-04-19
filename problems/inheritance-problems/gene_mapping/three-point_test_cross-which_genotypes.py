@@ -40,7 +40,7 @@ def parse_arguments():
 	parser = bptools.make_arg_parser(
 		description="Generate three-point test cross genotype identification (MA) questions."
 	)
-	question_group = parser.add_mutually_exclusive_group(required=True)
+	question_group = parser.add_mutually_exclusive_group(required=False)
 	question_group.add_argument(
 		'-t', '--type', dest='mode', type=str,
 		choices=('parental', 'double', 'genes'),
@@ -58,6 +58,7 @@ def parse_arguments():
 		'-g', '--genes', dest='mode', action='store_const', const='genes',
 		help='Identify all recombinant genotypes for a gene pair.'
 	)
+	parser.set_defaults(mode='parental')
 	args = parser.parse_args()
 	return args
 

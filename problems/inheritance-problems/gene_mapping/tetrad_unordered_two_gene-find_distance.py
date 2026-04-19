@@ -343,7 +343,7 @@ def parse_arguments():
 		description="Generate unordered tetrad two-gene mapping (find distance) questions."
 	)
 	parser = bptools.add_choice_args(parser, default=6)
-	parser = bptools.add_question_format_args(parser, types_list=['mc', 'num'], required=True)
+	parser = bptools.add_question_format_args(parser, types_list=['mc', 'num'], required=False, default='mc')
 	args = parser.parse_args()
 	return args
 

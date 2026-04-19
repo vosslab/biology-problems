@@ -93,6 +93,37 @@ def get_script_path_from_key(key: str) -> str:
 	return script_path
 
 #============================================
+def get_variants_for_script(assignments: dict, script_path: str) -> list:
+	"""Enumerate (flags, input) variants assigned to a script in the CSVs.
+
+	Args:
+		assignments: output of read_existing_assignments()
+		script_path: relative path under problems/ (e.g.
+			'problems/biochemistry-problems/carbs/classify_Haworth.py')
+
+	Returns:
+		list of dicts with 'flags' and 'input' keys. If the script has no
+		matching CSV rows, returns a single empty variant so callers always
+		have at least one work unit.
+	"""
+	# Convert the relative path into the {bp_root}/... form used as the
+	# script portion of assignment keys
+	bp_root_path = "{bp_root}/" + script_path.replace("problems/", "", 1)
+	variants = []
+	for key, entry in assignments.items():
+		entry_script = get_script_path_from_key(key)
+		if entry_script != bp_root_path:
+			continue
+		variant = {
+			"flags": entry["flags"],
+			"input": entry["input"],
+		}
+		variants.append(variant)
+	if not variants:
+		variants = [{"flags": "", "input": ""}]
+	return variants
+
+#============================================
 def get_examples_for_subject(assignments: dict, subject: str, limit: int = 5) -> list:
 	"""Get few-shot examples for a given subject from existing assignments.
 

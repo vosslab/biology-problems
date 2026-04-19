@@ -53,7 +53,7 @@ def parse_arguments():
 	parser = bptools.add_hint_args(parser)
 
 	# Create a mutually exclusive group for question types
-	question_group = parser.add_mutually_exclusive_group(required=True)
+	question_group = parser.add_mutually_exclusive_group(required=False)
 	# Add question type argument with choices
 	question_group.add_argument(
 		'-t', '--type', dest='genotype_type', type=str,
@@ -68,6 +68,7 @@ def parse_arguments():
 		'-r', '--recombinant', dest='genotype_type', action='store_const',
 		const='recombinant',
 	)
+	parser.set_defaults(genotype_type='parental')
 	args = parser.parse_args()
 	return args
 

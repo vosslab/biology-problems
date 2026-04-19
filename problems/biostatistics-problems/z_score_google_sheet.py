@@ -17,10 +17,8 @@ import statistics
 import bptools
 
 
-# fixed names file
-NAMES_FILE = os.path.abspath(
-	os.path.join(os.path.dirname(__file__), "..", "data", "student_names.txt")
-)
+# fixed names file (resolved via the shared repo-root data directory helper)
+NAMES_FILE = bptools.get_repo_data_path("student_names.txt")
 
 #============================================
 def load_unique_initial_names(k: int = 8) -> list[str]:
