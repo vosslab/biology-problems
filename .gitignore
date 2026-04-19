@@ -1,5 +1,6 @@
 # output files
 
+topic_classifier/task_files
 topic_classifier/output/
 topic_classifier/results/
 topic_classifier/results-yaml/
