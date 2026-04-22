@@ -3,6 +3,87 @@
 ## 2026-04-22
 
 ### Additions and New Features
+- Added five new bptools Python generators in
+  [problems/biochemistry-problems/lipids/](../problems/biochemistry-problems/lipids/)
+  that mirror the four PGML lipid items, plus a shared library:
+  [fatty_acid_lib.py](../problems/biochemistry-problems/lipids/fatty_acid_lib.py)
+  (ASCII-art renderer, pool-elimination position picker, omega/Delta
+  notation HTML helpers); and the four scripts
+  [fatty_acid_naming_omega.py](../problems/biochemistry-problems/lipids/fatty_acid_naming_omega.py),
+  [fatty_acid_naming_delta.py](../problems/biochemistry-problems/lipids/fatty_acid_naming_delta.py),
+  [fatty_acid_match_omega.py](../problems/biochemistry-problems/lipids/fatty_acid_match_omega.py),
+  [fatty_acid_match_delta.py](../problems/biochemistry-problems/lipids/fatty_acid_match_delta.py).
+  ASCII art reuses the courier-span + `&#8215;` (low double bond) and
+  `<sup>&#9552;</sup>` (high double bond) glyphs from the original
+  `fatty_acid_naming.py`, but with a clean cis-aware walker: at each
+  bond, single bonds alternate y; cis double bonds emit a flat glyph at
+  the current y and do NOT flip direction, producing the visible kink.
+  All five files are ASCII-only (verified with `tests/test_ascii_compliance.py`)
+  and pyflakes-clean. Note: `&lt;table&gt;` is allowed in Blackboard but
+  was deemed to offer no advantage over ASCII art for these zigzag
+  skeletons.
+- Added two reverse-direction WeBWorK PGML lipid problems in
+  [problems/biochemistry-problems/lipids/](../problems/biochemistry-problems/lipids/):
+  [fatty_acid_match_omega.pgml](../problems/biochemistry-problems/lipids/fatty_acid_match_omega.pgml)
+  and [fatty_acid_match_delta.pgml](../problems/biochemistry-problems/lipids/fatty_acid_match_delta.pgml).
+  Inverse of the existing fatty_acid_naming_*.pgml pair: prompt shows
+  the notation (e.g., omega-3,12,17), four choices are SVG skeletal
+  structures. Distractor strategy (priority order, dedup keeps first 4):
+  correct, wrong-end-misread (the most pedagogical -- catches students who
+  confuse omega with Delta), off-by-one shift toward COOH, off-by-one
+  shift toward methyl, two random-scatter backups. Backup pool is needed
+  because palindromic omega positions like 7,10,13 in a 20-carbon chain
+  produce identical "correct" and "misread" SVGs (mirror collision).
+  Reuses svg_primitives_lipids (v3), fatty_acid_layout (v3), plus new
+  blocks fatty_acid_svg_builder (v1) and pool_eliminate_positions (v1).
+- Added four WeBWorK PGML lipid problems paralleling the existing Blackboard generators in
+  [problems/biochemistry-problems/lipids/](../problems/biochemistry-problems/lipids/):
+  [quick_fatty_acid_colon_system.pgml](../problems/biochemistry-problems/lipids/quick_fatty_acid_colon_system.pgml)
+  (text-only MC, interpret the chain:bonds colon shorthand),
+  [which_lipid-chemical_formula.pgml](../problems/biochemistry-problems/lipids/which_lipid-chemical_formula.pgml)
+  (HTML subscript molecular formulas, lipid vs hydrophilic distractors),
+  [fatty_acid_naming_omega.pgml](../problems/biochemistry-problems/lipids/fatty_acid_naming_omega.pgml),
+  and [fatty_acid_naming_delta.pgml](../problems/biochemistry-problems/lipids/fatty_acid_naming_delta.pgml)
+  (inline-SVG zigzag of an unsaturated fatty acid with chosen double-bond
+  positions; ask for omega or Delta notation respectively). The fatty-acid
+  pair carries identical `# ==== BEGIN BLOCK: svg_primitives_lipids (v3) ====`
+  and `# ==== BEGIN BLOCK: fatty_acid_layout (v3) ====` chunks; bump the
+  version when either block changes. The fatty-acid SVG uses standard
+  skeletal-formula geometry: bonds at +/- 30 degrees from horizontal
+  (internal angle 120 degrees) and cis double bonds drawn as flat
+  horizontal segments between two carbons at the same y, after which the
+  zigzag direction does not flip -- producing the characteristic cis kink.
+  Tightened the question to a Level 3 applied-nomenclature item: chain
+  length 16-22, 2-3 cis double bonds placed by pool-elimination across
+  the full valid range [3..chain_length-2] with minimum spacing of 3
+  enforced by removing +/- 2 around each pick. Bonds can land scattered
+  across the whole chain (e.g., omega-3,12,17) instead of always
+  clustering together, which forces students to read the diagram instead
+  of pattern-matching on memorized PUFA shapes like omega-3,6,9. Spacing
+  2 is excluded because it would be a conjugated diene (CLA-style),
+  a different topic from standard PUFA nomenclature. terminal H<sub>3</sub>C and COOH
+  labels only, no internal carbon labels, plus a one-sentence cue in the
+  prompt that vertices and line ends represent carbon atoms. The
+  double-bond cluster slides freely along the chain (methyl end, middle,
+  or near COOH) by varying the first omega from 3 up to
+  (chain_length - 2 - total_span). Earlier drafts allowed spacing 2,
+  which would create conjugated dienes (CLA-style chemistry) and is not
+  what's being assessed. Distractor set always includes the delta-swap
+  as the pedagogically meaningful wrong answer.
+
+### Decisions and Failures
+- First lipid PGML drafts failed renderer compile with "Problem failed
+  during render - no PGcore received." Root causes were Safe-compartment
+  restrictions documented in
+  [PG_COMMON_PITFALLS.md](../../.claude/skills/webwork-writer/references/docs/webwork/PG_COMMON_PITFALLS.md):
+  (1) `sort` and `sort { $a <=> $b }` are trapped, replaced with pre-sorted
+  hardcoded key lists in `which_lipid-chemical_formula.pgml` and a
+  reverse-iteration ascending-walk in the fatty-acid files; (2) `\@array`
+  references are broken in PG, so the helper `build_fatty_acid_svg(\@omegas)`
+  and `list2html('&omega;', \@list)` patterns were inlined / refactored to
+  pass pre-joined scalars (block versions bumped from v1 to v2 to mark the
+  drift). All four files now lint clean via the renderer API at
+  http://localhost:3000.
 - Added four WeBWorK PGML carbohydrate problems paralleling the existing Blackboard generators:
   [convert_Fischer_to_Haworth.pgml](../problems/biochemistry-problems/carbs/convert_Fischer_to_Haworth.pgml),
   [convert_Haworth_to_Fischer.pgml](../problems/biochemistry-problems/carbs/convert_Haworth_to_Fischer.pgml),

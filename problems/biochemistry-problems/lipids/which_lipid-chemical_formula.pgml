@@ -1,0 +1,187 @@
+## TITLE('Biochemistry: Identify a lipid by molecular formula')
+## DESCRIPTION
+## Students see five molecular formulas (one lipid, four hydrophilic
+## distractors drawn from sugars, nucleobases, nucleotides, and amino acids)
+## and pick the one most likely to be a lipid based on C:H:O composition.
+## ENDDESCRIPTION
+## KEYWORDS('lipid','molecular formula','hydrophobic','identification')
+## DBsubject('Biochemistry')
+## DBchapter('Lipids')
+## DBsection('Identification')
+## Level(2)
+## Date('2026-04-22')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	'PGstandard.pl',
+	'PGML.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl'
+);
+$showPartialCorrectAnswers = 0;
+
+# ----------------------------
+# 2) Setup
+# ----------------------------
+
+# Local RNG for deterministic output
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+
+# ----------------------------
+# 2a) Pre-built HTML formulas (no hashref deref; PG Safe compartment safe)
+# ----------------------------
+# Each entry: name => HTML formula string with <sub> for atom counts.
+
+%lipid_formulas = (
+	'DHA'                  => 'C<sub>22</sub>H<sub>32</sub>O<sub>2</sub>',
+	'cholesterol'          => 'C<sub>27</sub>H<sub>46</sub>O',
+	'EPA'                  => 'C<sub>20</sub>H<sub>30</sub>O<sub>2</sub>',
+	'palmitate'            => 'C<sub>16</sub>H<sub>31</sub>O<sub>2</sub>',
+	'oleate'               => 'C<sub>18</sub>H<sub>33</sub>O<sub>2</sub>',
+	'stearate'             => 'C<sub>18</sub>H<sub>35</sub>O<sub>2</sub>',
+	'testosterone'         => 'C<sub>19</sub>H<sub>28</sub>O<sub>2</sub>',
+	'phosphatidate'        => 'C<sub>35</sub>H<sub>67</sub>O<sub>8</sub>P',
+	'cephalin'             => 'C<sub>28</sub>H<sub>38</sub>N<sub>2</sub>O<sub>4</sub>',
+	'phosphatidylinositol' => 'C<sub>47</sub>H<sub>83</sub>O<sub>13</sub>P<sub>2</sub>',
+	'phosphatidylcholine'  => 'C<sub>44</sub>H<sub>84</sub>NO<sub>8</sub>P',
+);
+
+%hydrophilic_formulas = (
+	# sugars
+	'ribose'      => 'C<sub>5</sub>H<sub>10</sub>O<sub>5</sub>',
+	'deoxyribose' => 'C<sub>5</sub>H<sub>10</sub>O<sub>4</sub>',
+	'glucose'     => 'C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>',
+	'sucrose'     => 'C<sub>12</sub>H<sub>22</sub>O<sub>11</sub>',
+	'maltotriose' => 'C<sub>18</sub>H<sub>32</sub>O<sub>16</sub>',
+	# nucleobases
+	'adenine'  => 'C<sub>5</sub>H<sub>5</sub>N<sub>5</sub>',
+	'cytosine' => 'C<sub>4</sub>H<sub>5</sub>N<sub>3</sub>O',
+	'guanine'  => 'C<sub>5</sub>H<sub>5</sub>N<sub>5</sub>O',
+	'thymine'  => 'C<sub>5</sub>H<sub>6</sub>N<sub>2</sub>O<sub>2</sub>',
+	'uracil'   => 'C<sub>4</sub>H<sub>4</sub>N<sub>2</sub>O<sub>2</sub>',
+	# nucleotides
+	'adenosine' => 'C<sub>10</sub>H<sub>14</sub>N<sub>5</sub>O<sub>7</sub>P',
+	'cytidine'  => 'C<sub>9</sub>H<sub>14</sub>N<sub>3</sub>O<sub>8</sub>P',
+	'guanosine' => 'C<sub>10</sub>H<sub>14</sub>N<sub>5</sub>O<sub>8</sub>P',
+	'thymidine' => 'C<sub>10</sub>H<sub>13</sub>N<sub>2</sub>O<sub>8</sub>P',
+	'uridine'   => 'C<sub>9</sub>H<sub>13</sub>N<sub>2</sub>O<sub>9</sub>P',
+	# amino acids
+	'alanine'    => 'C<sub>3</sub>H<sub>7</sub>NO<sub>2</sub>',
+	'arginine'   => 'C<sub>6</sub>H<sub>14</sub>N<sub>4</sub>O<sub>2</sub>',
+	'asparagine' => 'C<sub>4</sub>H<sub>8</sub>N<sub>2</sub>O<sub>3</sub>',
+	'aspartate'  => 'C<sub>4</sub>H<sub>7</sub>NO<sub>4</sub>',
+	'cysteine'   => 'C<sub>3</sub>H<sub>7</sub>NO<sub>2</sub>S',
+	'glutamine'  => 'C<sub>5</sub>H<sub>10</sub>N<sub>2</sub>O<sub>3</sub>',
+	'glutamate'  => 'C<sub>5</sub>H<sub>9</sub>NO<sub>4</sub>',
+	'histidine'  => 'C<sub>6</sub>H<sub>9</sub>N<sub>3</sub>O<sub>2</sub>',
+	'lysine'     => 'C<sub>6</sub>H<sub>14</sub>N<sub>2</sub>O<sub>2</sub>',
+	'methionine' => 'C<sub>5</sub>H<sub>11</sub>NO<sub>2</sub>S',
+	'proline'    => 'C<sub>5</sub>H<sub>9</sub>NO<sub>2</sub>',
+	'serine'     => 'C<sub>3</sub>H<sub>7</sub>NO<sub>3</sub>',
+	'threonine'  => 'C<sub>4</sub>H<sub>9</sub>NO<sub>3</sub>',
+);
+
+# ----------------------------
+# 2b) Pre-sorted key lists (sort() is blocked in PG Safe compartment)
+# ----------------------------
+
+@lipid_keys = (
+	'DHA', 'EPA', 'cephalin', 'cholesterol', 'oleate', 'palmitate',
+	'phosphatidate', 'phosphatidylcholine', 'phosphatidylinositol',
+	'stearate', 'testosterone',
+);
+
+@hydro_keys = (
+	'adenine', 'adenosine', 'alanine', 'arginine', 'asparagine',
+	'aspartate', 'cysteine', 'cytidine', 'cytosine', 'deoxyribose',
+	'glucose', 'glutamate', 'glutamine', 'guanine', 'guanosine',
+	'histidine', 'lysine', 'maltotriose', 'methionine', 'proline',
+	'ribose', 'serine', 'sucrose', 'thymidine', 'thymine', 'threonine',
+	'uracil', 'uridine',
+);
+
+$correct_index = $local_random->random(0, $#lipid_keys, 1);
+$correct_name = $lipid_keys[$correct_index];
+$correct_html = $lipid_formulas{$correct_name};
+
+%picked = ();
+@distractor_html = ();
+$num_distractors = 4;
+while (scalar(@distractor_html) < $num_distractors) {
+	my $idx = $local_random->random(0, $#hydro_keys, 1);
+	my $name = $hydro_keys[$idx];
+	next if $picked{$name};
+	$picked{$name} = 1;
+	push @distractor_html, $hydrophilic_formulas{$name};
+}
+
+# ----------------------------
+# 2c) Assemble choice list (insert correct at random position)
+# ----------------------------
+
+$insert_at = $local_random->random(0, scalar(@distractor_html), 1);
+@choices = @distractor_html;
+splice(@choices, $insert_at, 0, $correct_html);
+
+# ----------------------------
+# 2d) Build radio buttons
+# ----------------------------
+
+$rb = RadioButtons(
+	[@choices],
+	$correct_html,
+	labels        => 'ABC',
+	displayLabels => 1,
+	separator     => '<div style="margin-bottom: 0.7em;"></div>',
+	uncheckable   => 0,
+);
+
+# ----------------------------
+# 3) Statement
+# ----------------------------
+
+$lipid_emph = "<span style='color:#997300;font-size:1.10em;font-weight:700;'>lipid</span>";
+
+BEGIN_PGML
+
+Based only on its molecular formula, which one of the following compounds is most likely a [$lipid_emph]*?
+
+[_]{$rb}
+
+END_PGML
+
+# ----------------------------
+# 4) Hint
+# ----------------------------
+
+BEGIN_PGML_HINT
+
+Lipids are mostly carbon and hydrogen with very little oxygen relative to
+carbon. A high carbon-to-oxygen ratio is the strongest clue. Sugars carry
+roughly one oxygen per carbon, and nucleotides and phosphorylated compounds
+carry phosphorus and nitrogen as well.
+
+END_PGML_HINT
+
+# ----------------------------
+# 5) Solution
+# ----------------------------
+
+BEGIN_PGML_SOLUTION
+The correct answer is the formula for [$correct_name]: [$correct_html]*.
+END_PGML_SOLUTION
+
+ENDDOCUMENT();

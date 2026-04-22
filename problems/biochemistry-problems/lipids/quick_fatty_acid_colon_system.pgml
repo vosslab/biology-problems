@@ -1,0 +1,137 @@
+## TITLE('Biochemistry: Fatty acid colon notation meaning')
+## DESCRIPTION
+## Students interpret the chain-length:double-bond colon shorthand for a
+## randomly selected fatty acid (e.g., 18:2) and pick the statement that
+## correctly describes what the notation means.
+## ENDDESCRIPTION
+## KEYWORDS('lipid','fatty acid','colon notation','nomenclature')
+## DBsubject('Biochemistry')
+## DBchapter('Lipids')
+## DBsection('Fatty Acid Nomenclature')
+## Level(2)
+## Date('2026-04-22')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	'PGstandard.pl',
+	'PGML.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl'
+);
+$showPartialCorrectAnswers = 0;
+
+# ----------------------------
+# 2) Setup
+# ----------------------------
+
+# Local RNG for deterministic, seed-stable output.
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+
+# ----------------------------
+# 2a) Number-word lookups
+# ----------------------------
+
+%num2cardinal = (
+	1  => 'one',     2  => 'two',     3  => 'three',  4  => 'four',
+	12 => 'twelve',  14 => 'fourteen', 16 => 'sixteen',
+	18 => 'eighteen', 20 => 'twenty',  22 => 'twenty-two', 24 => 'twenty-four',
+);
+
+%num2ordinal = (
+	1  => '1st',  2  => '2nd',  3  => '3rd',  4  => '4th',
+	12 => '12th', 14 => '14th', 16 => '16th', 18 => '18th',
+	20 => '20th', 22 => '22nd', 24 => '24th',
+);
+
+# ----------------------------
+# 2b) Pick chain length and bond count (sorted before sampling)
+# ----------------------------
+
+@chain_lengths = (12, 14, 16, 18, 20, 22, 24);
+@bond_counts   = (1, 2, 3, 4);
+
+my $cl_index  = $local_random->random(0, $#chain_lengths, 1);
+my $ndb_index = $local_random->random(0, $#bond_counts,   1);
+$cl  = $chain_lengths[$cl_index];
+$ndb = $bond_counts[$ndb_index];
+
+# Cardinal/ordinal expansions for the chosen integers
+$cl_card  = $num2cardinal{$cl};
+$cl_ord   = $num2ordinal{$cl};
+$ndb_card = $num2cardinal{$ndb};
+$ndb_ord  = $num2ordinal{$ndb};
+
+# ----------------------------
+# 2c) Build choices (text only, no HTML)
+# ----------------------------
+
+$correct      = "There are $cl carbons in the chain with $ndb double bond(s).";
+$wrong_chains = "There are $ndb_card $cl-carbon chains in this lipid molecule.";
+$wrong_pos1   = "There are $cl carbons in the chain and the $ndb_ord carbon has a double bond.";
+$wrong_swap   = "The $cl_ord carbon in the fatty acid has $ndb double bond(s).";
+$wrong_two    = "The $ndb_ord and $cl_ord carbons in the fatty acid chain have double bonds.";
+
+@choices = ($correct, $wrong_chains, $wrong_pos1, $wrong_swap, $wrong_two);
+
+# ----------------------------
+# 2d) Build radio buttons (let RadioButtons shuffle deterministically per seed)
+# ----------------------------
+
+$rb = RadioButtons(
+	[@choices],
+	$correct,
+	labels        => 'ABC',
+	displayLabels => 1,
+	separator     => '<div style="margin-bottom: 0.7em;"></div>',
+	uncheckable   => 0,
+);
+
+# ----------------------------
+# 3) Statement
+# ----------------------------
+
+$notation_emph = "<span style='font-family:monospace;font-size:1.25em;font-weight:700;'>$cl:$ndb</span>";
+
+BEGIN_PGML
+
+The notation [$notation_emph]* indicates which of the following about a fatty acid?
+
+[_]{$rb}
+
+END_PGML
+
+# ----------------------------
+# 4) Hint
+# ----------------------------
+
+BEGIN_PGML_HINT
+
+In the fatty acid colon shorthand, the number before the colon counts the
+total carbons in the chain, and the number after the colon counts how many
+carbon-carbon double bonds are present. The notation does not say where the
+double bonds are.
+
+END_PGML_HINT
+
+# ----------------------------
+# 5) Solution
+# ----------------------------
+
+BEGIN_PGML_SOLUTION
+The correct answer is: [$correct].
+END_PGML_SOLUTION
+
+ENDDOCUMENT();

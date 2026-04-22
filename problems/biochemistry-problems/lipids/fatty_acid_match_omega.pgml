@@ -1,0 +1,387 @@
+## TITLE('Biochemistry: Match omega notation to structure')
+## DESCRIPTION
+## Given an omega notation (e.g., omega-3,12,17) for an unsaturated
+## fatty acid, students choose the correct skeletal-formula SVG from four
+## options. Distractors include the wrong-end misread (counted from COOH
+## instead of methyl), an off-by-one shift, and a different valid scatter.
+## ENDDESCRIPTION
+## KEYWORDS('lipid','fatty acid','omega notation','structure matching')
+## DBsubject('Biochemistry')
+## DBchapter('Lipids')
+## DBsection('Fatty Acid Nomenclature')
+## Level(3)
+## Date('2026-04-22')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	'PGstandard.pl',
+	'PGML.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl'
+);
+$showPartialCorrectAnswers = 0;
+
+# ==== BEGIN BLOCK: svg_primitives_lipids (v3) ====
+# Low-level inline-SVG primitives for fatty-acid skeletal drawings.
+
+sub svg_line {
+	my ($x1, $y1, $x2, $y2) = @_;
+	return '<line x1="' . $x1 . '" y1="' . $y1
+		. '" x2="' . $x2 . '" y2="' . $y2
+		. '" stroke="#000" stroke-width="2" stroke-linecap="round"/>';
+}
+
+sub svg_text {
+	my ($x, $y, $anchor, $size, $fill, $content) = @_;
+	return '<text x="' . $x . '" y="' . $y
+		. '" font-family="sans-serif" font-size="' . $size
+		. '" text-anchor="' . $anchor
+		. '" fill="' . $fill . '">' . $content . '</text>';
+}
+
+# ==== END BLOCK: svg_primitives_lipids ====
+
+# ==== BEGIN BLOCK: fatty_acid_layout (v3) ====
+# 60-deg-bond zigzag, cis double bonds drawn flat between two carbons at
+# the same y. After a cis bond, direction does NOT flip -- gives the kink.
+
+$BDX   = 22;
+$BDY   = 13;
+$X_PAD = 40;
+$Y_REF = 50;
+
+sub compute_xy {
+	my ($n_carbons, $is_double_bond_str) = @_;
+	my %is_double = ();
+	for my $b (split(/,/, $is_double_bond_str)) {
+		next if $b eq '';
+		$is_double{$b} = 1;
+	}
+	my @xs = ();
+	my @ys = ();
+	my $cur_x = $X_PAD;
+	my $cur_y = $Y_REF + $BDY;
+	push @xs, $cur_x;
+	push @ys, $cur_y;
+	my $dir_up = 1;
+	for (my $i = 1; $i < $n_carbons; $i++) {
+		$cur_x += $BDX;
+		if ($is_double{$i - 1}) {
+			# Flat cis bond: same y, do NOT flip direction.
+		} else {
+			$cur_y += ($dir_up ? -$BDY : $BDY);
+			$dir_up = !$dir_up;
+		}
+		push @xs, $cur_x;
+		push @ys, $cur_y;
+	}
+	return (join(',', @xs), join(',', @ys));
+}
+
+# ==== END BLOCK: fatty_acid_layout ====
+
+# ==== BEGIN BLOCK: fatty_acid_svg_builder (v1) ====
+# Build a complete fatty-acid SVG from a chain length and a comma-joined
+# list of bond indices (0-based) that should be drawn as cis double bonds.
+# Returns the full SVG string. PG-Safe: no array refs, only scalar args.
+
+sub build_fa_svg {
+	my ($n_carbons, $bond_indices_csv) = @_;
+	my ($vx_csv, $vy_csv) = compute_xy($n_carbons, $bond_indices_csv);
+	my @vx_list = split(/,/, $vx_csv);
+	my @vy_list = split(/,/, $vy_csv);
+
+	# y-range for tight viewBox
+	my $y_min = $vy_list[0];
+	my $y_max = $vy_list[0];
+	for (my $i = 1; $i < scalar(@vy_list); $i++) {
+		if ($vy_list[$i] < $y_min) { $y_min = $vy_list[$i]; }
+		if ($vy_list[$i] > $y_max) { $y_max = $vy_list[$i]; }
+	}
+	my $vb_w = $X_PAD * 2 + ($n_carbons - 1) * $BDX + 30;
+	my $vb_h = ($y_max - $y_min) + 30;
+	my $y_shift = 15 - $y_min;
+
+	# Mark double-bond indices for quick lookup
+	my %is_double = ();
+	for my $b (split(/,/, $bond_indices_csv)) {
+		next if $b eq '';
+		$is_double{$b} = 1;
+	}
+
+	my $double_gap   = 4;
+	my $double_inset = 4;
+
+	my $out = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1"'
+		. ' width="' . $vb_w . '" height="' . $vb_h
+		. '" viewBox="0 0 ' . $vb_w . ' ' . $vb_h . '">';
+
+	for (my $i = 0; $i < $n_carbons - 1; $i++) {
+		my $x1 = $vx_list[$i];
+		my $y1 = $vy_list[$i] + $y_shift;
+		my $x2 = $vx_list[$i + 1];
+		my $y2 = $vy_list[$i + 1] + $y_shift;
+		$out .= svg_line($x1, $y1, $x2, $y2);
+		if ($is_double{$i}) {
+			my $px1 = $x1 + $double_inset;
+			my $py1 = $y1 - $double_gap;
+			my $px2 = $x2 - $double_inset;
+			my $py2 = $y2 - $double_gap;
+			$out .= svg_line($px1, $py1, $px2, $py2);
+		}
+	}
+	# Terminal labels
+	my $x_left  = $vx_list[0];
+	my $y_left  = $vy_list[0] + $y_shift;
+	my $x_right = $vx_list[$n_carbons - 1];
+	my $y_right = $vy_list[$n_carbons - 1] + $y_shift;
+	$out .= svg_text($x_left - 6, $y_left + 5, 'end', 16, '#000',
+		'H<tspan baseline-shift="sub" font-size="10">3</tspan>C');
+	$out .= svg_text($x_right + 6, $y_right + 5, 'start', 16, '#8b0000', 'COOH');
+	$out .= '</svg>';
+	return $out;
+}
+
+# ==== END BLOCK: fatty_acid_svg_builder ====
+
+# ==== BEGIN BLOCK: pool_eliminate_positions (v1) ====
+# Pick num_picks scattered positions in [3..n-2] with minimum spacing 3.
+# Pool-elimination algorithm: pick a random available position, remove
+# +/- 2 around it, repeat. Returns ascending comma-joined string.
+
+sub pool_eliminate_positions {
+	my ($n_carbons, $num_picks, $rng) = @_;
+	my %pool = ();
+	for (my $p = 3; $p <= $n_carbons - 2; $p++) {
+		$pool{$p} = 1;
+	}
+	my @picks = ();
+	for (my $j = 0; $j < $num_picks; $j++) {
+		my @available = ();
+		for (my $p = 3; $p <= $n_carbons - 2; $p++) {
+			push @available, $p if $pool{$p};
+		}
+		last if scalar(@available) == 0;
+		my $idx = $rng->random(0, $#available, 1);
+		push @picks, $available[$idx];
+		for (my $d = -2; $d <= 2; $d++) {
+			delete $pool{$available[$idx] + $d};
+		}
+	}
+	# Sort ascending without sort()
+	my @sorted = ();
+	for (my $p = 3; $p <= $n_carbons - 2; $p++) {
+		for my $pick (@picks) {
+			if ($pick == $p) {
+				push @sorted, $p;
+				last;
+			}
+		}
+	}
+	return join(',', @sorted);
+}
+
+# ==== END BLOCK: pool_eliminate_positions ====
+
+# ----------------------------
+# 2) Setup
+# ----------------------------
+
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+
+# Chain length 16-22 (long-chain unsaturated, biologically plausible)
+$chain_length = $local_random->random(16, 22, 1);
+
+# Pick 2 or 3 scattered omega positions
+$num_double_bonds = $local_random->random(2, 3, 1);
+$omegas_csv = pool_eliminate_positions($chain_length, $num_double_bonds, $local_random);
+@omegas = split(/,/, $omegas_csv);
+
+# ----------------------------
+# 2a) Compute the four candidate bond-index lists
+# ----------------------------
+
+# Correct: omega-k means bond between Ck and C(k+1) from the methyl end =
+# bond_index k-1 in 0-indexed bond array (bond i = between vertex i and i+1).
+@correct_bonds = ();
+for my $k (@omegas) {
+	push @correct_bonds, $k - 1;
+}
+
+# Wrong-end misread: student counted from COOH instead of methyl. They draw
+# bonds at bond_index = chain_length - k - 1 (which is what delta-k would
+# mean rendered methyl-on-left). Most pedagogically meaningful distractor.
+@misread_bonds = ();
+for my $k (@omegas) {
+	push @misread_bonds, $chain_length - $k - 1;
+}
+# Sort ascending without sort()
+@misread_sorted = ();
+for (my $v = 0; $v <= $chain_length - 2; $v++) {
+	for my $b (@misread_bonds) {
+		if ($b == $v) {
+			push @misread_sorted, $v;
+			last;
+		}
+	}
+}
+
+# Off-by-one shift +1: classic bond-vs-carbon counting confusion.
+# If +1 would put a bond past the COOH end, fall back to -1.
+sub shift_bonds_by {
+	my ($amount, $n_carbons, @omega_list) = @_;
+	my @out = ();
+	for my $k (@omega_list) {
+		my $b = ($k - 1) + $amount;
+		return () if $b < 0 || $b > $n_carbons - 2;
+		push @out, $b;
+	}
+	return @out;
+}
+
+@shift_p1_bonds = shift_bonds_by(1, $chain_length, @omegas);
+@shift_m1_bonds = shift_bonds_by(-1, $chain_length, @omegas);
+
+# Two random scatters as backups in case other distractors collide
+$scatter_csv_a = pool_eliminate_positions($chain_length, $num_double_bonds, $local_random);
+$scatter_csv_b = pool_eliminate_positions($chain_length, $num_double_bonds, $local_random);
+@scatter_a_omegas = split(/,/, $scatter_csv_a);
+@scatter_b_omegas = split(/,/, $scatter_csv_b);
+@scatter_a_bonds = ();
+@scatter_b_bonds = ();
+for my $k (@scatter_a_omegas) { push @scatter_a_bonds, $k - 1; }
+for my $k (@scatter_b_omegas) { push @scatter_b_bonds, $k - 1; }
+
+# ----------------------------
+# 2b) Build SVGs (one per choice)
+# ----------------------------
+
+# Build CSV strings for each candidate; empty array gives empty string,
+# which we'll treat as "not available" in the dedup loop below.
+$correct_csv    = join(',', @correct_bonds);
+$misread_csv    = join(',', @misread_sorted);
+$shift_p1_csv   = join(',', @shift_p1_bonds);
+$shift_m1_csv   = join(',', @shift_m1_bonds);
+$scatter_a_csv  = join(',', @scatter_a_bonds);
+$scatter_b_csv  = join(',', @scatter_b_bonds);
+
+# Wrap each SVG in a bordered inline-block "card" so the structure stays
+# visually attached to its radio-button letter even when the SVG wraps to
+# the next line. inline-block lets the card sit beside the letter when
+# there is room, and keeps a single visual unit when it does not.
+sub wrap_choice {
+	my ($svg) = @_;
+	return '<span style="display:inline-block; vertical-align:middle;'
+		. ' padding:6px 10px; margin-left:0.5em; border:1px solid #c8c8c8;'
+		. ' border-radius:4px; background:#fafafa;">'
+		. $svg . '</span>';
+}
+
+# Dedup loop: walk candidates in priority order, keep first 4 unique CSVs.
+# Always keeps "correct" first. Misread is the highest-value distractor;
+# off-by-one shifts and scatters are backups.
+@candidate_csvs = (
+	$correct_csv,    # always position 1
+	$misread_csv,    # delta-misread (most pedagogical)
+	$shift_p1_csv,   # off-by-one toward COOH
+	$shift_m1_csv,   # off-by-one toward methyl
+	$scatter_a_csv,  # alternative valid scatter
+	$scatter_b_csv,  # second alt scatter
+);
+%seen_csv = ();
+@chosen_csvs = ();
+for my $csv (@candidate_csvs) {
+	next if $csv eq '';
+	next if $seen_csv{$csv};
+	$seen_csv{$csv} = 1;
+	push @chosen_csvs, $csv;
+	last if scalar(@chosen_csvs) >= 4;
+}
+
+# Build SVG choice HTML for each surviving CSV.
+@choices = ();
+$choice_correct = '';
+for my $csv (@chosen_csvs) {
+	my $svg = build_fa_svg($chain_length, $csv);
+	my $html = wrap_choice($svg);
+	push @choices, $html;
+	if ($csv eq $correct_csv) {
+		$choice_correct = $html;
+	}
+}
+
+# ----------------------------
+# 2c) Build the prompt notation string
+# ----------------------------
+
+$omega_label = '<span style="font-family:serif;font-weight:700;">&omega;&ndash;'
+	. join(',', @omegas) . '</span>';
+$h3c_label = 'H<sub>3</sub>C';
+
+# ----------------------------
+# 2d) Radio buttons
+# ----------------------------
+
+$rb = RadioButtons(
+	[@choices],
+	$choice_correct,
+	labels        => 'ABC',
+	displayLabels => 1,
+	separator     => '<div style="margin-bottom: 0.7em;"></div>',
+	uncheckable   => 0,
+);
+
+# ----------------------------
+# 3) Statement
+# ----------------------------
+
+BEGIN_PGML
+
+A polyunsaturated fatty acid with [$chain_length] carbons is described by the
+notation [$omega_label]*. Each candidate structure below shows a skeletal
+zigzag with the methyl end on the left ([$h3c_label]*) and the carboxyl end on
+the right (COOH); each vertex and line end represents one carbon atom.
+
+Which structure correctly matches the [$omega_label]* notation?
+
+[_]{$rb}
+
+END_PGML
+
+# ----------------------------
+# 4) Hint
+# ----------------------------
+
+BEGIN_PGML_HINT
+
+In omega notation, count carbons starting from the methyl end (the
+[$h3c_label]* end on the left). Each number names the lower-numbered carbon of a
+double bond. The cis double bonds appear as flat horizontal segments that
+break the zigzag pattern.
+
+END_PGML_HINT
+
+# ----------------------------
+# 5) Solution
+# ----------------------------
+
+BEGIN_PGML_SOLUTION
+The correct structure has cis double bonds at carbons [$omegas_csv] counted
+from the methyl end. A common mistake is to count from the COOH end
+instead, which is Delta notation, not omega.
+END_PGML_SOLUTION
+
+ENDDOCUMENT();

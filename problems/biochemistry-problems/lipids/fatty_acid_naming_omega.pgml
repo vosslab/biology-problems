@@ -1,0 +1,342 @@
+## TITLE('Biochemistry: Fatty acid omega notation')
+## DESCRIPTION
+## Students see an SVG zigzag of an unsaturated fatty acid (chain length
+## 14-22 carbons, 1-4 cis double bonds) with COOH labeled at one end, and
+## select the correct omega-position notation from five distractors.
+## ENDDESCRIPTION
+## KEYWORDS('lipid','fatty acid','omega notation','unsaturated')
+## DBsubject('Biochemistry')
+## DBchapter('Lipids')
+## DBsection('Fatty Acid Nomenclature')
+## Level(3)
+## Date('2026-04-22')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	'PGstandard.pl',
+	'PGML.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl'
+);
+$showPartialCorrectAnswers = 0;
+
+# ==== BEGIN BLOCK: svg_primitives_lipids (v3) ====
+# Low-level inline-SVG primitives for fatty-acid skeletal drawings.
+# (v3: 60-deg bond angles + flat cis double bonds.)
+
+sub svg_line {
+	my ($x1, $y1, $x2, $y2) = @_;
+	return '<line x1="' . $x1 . '" y1="' . $y1
+		. '" x2="' . $x2 . '" y2="' . $y2
+		. '" stroke="#000" stroke-width="2" stroke-linecap="round"/>';
+}
+
+sub svg_text {
+	my ($x, $y, $anchor, $size, $fill, $content) = @_;
+	return '<text x="' . $x . '" y="' . $y
+		. '" font-family="sans-serif" font-size="' . $size
+		. '" text-anchor="' . $anchor
+		. '" fill="' . $fill . '">' . $content . '</text>';
+}
+
+# ==== END BLOCK: svg_primitives_lipids ====
+
+# ==== BEGIN BLOCK: fatty_acid_layout (v3) ====
+# Layout helpers for a horizontal fatty-acid zigzag at 60-degree angles.
+# Single bonds are drawn at +/- 30 degrees from horizontal (internal angle
+# 120 degrees at each vertex), matching standard skeletal formula style.
+# Cis double bonds are drawn as a flat horizontal segment between two
+# carbons at the same y; after a cis bond, the zigzag direction does NOT
+# flip, which produces the characteristic cis kink (the chain offsets to
+# one side and continues alternating from the new baseline).
+# Vertex indexing: 0 = methyl-end carbon (left), n-1 = COOH carbon (right).
+
+# Bond geometry
+$BDX   = 22;   # horizontal projection of a single bond (cos(30) * L)
+$BDY   = 13;   # vertical projection of a single bond (sin(30) * L)
+$X_PAD = 40;   # left padding (room for CH3 label)
+$Y_REF = 50;   # baseline reference y for the chain
+
+# Walk vertex y positions. is_double_bond_str is a comma-joined string of
+# bond indices (0-based) that are cis double bonds, or empty for none.
+# Returns two parallel newline-joined strings of x and y coordinates.
+sub compute_xy {
+	my ($n_carbons, $is_double_bond_str) = @_;
+	my %is_double = ();
+	for my $b (split(/,/, $is_double_bond_str)) {
+		next if $b eq '';
+		$is_double{$b} = 1;
+	}
+	my @xs = ();
+	my @ys = ();
+	# Start vertex 0 at the lower position. direction = +1 means next single
+	# bond goes UP visually (y decreases since SVG y grows downward).
+	my $cur_x = $X_PAD;
+	my $cur_y = $Y_REF + $BDY;
+	push @xs, $cur_x;
+	push @ys, $cur_y;
+	my $dir_up = 1;   # 1 means next single bond climbs (y decreases)
+	for (my $i = 1; $i < $n_carbons; $i++) {
+		$cur_x += $BDX;
+		if ($is_double{$i - 1}) {
+			# Cis flat double bond: same y, do NOT flip direction.
+			# Result is a kink because the next single bond continues in
+			# the same direction the chain was previously moving.
+		} else {
+			$cur_y += ($dir_up ? -$BDY : $BDY);
+			$dir_up = !$dir_up;
+		}
+		push @xs, $cur_x;
+		push @ys, $cur_y;
+	}
+	return (join(',', @xs), join(',', @ys));
+}
+
+# ==== END BLOCK: fatty_acid_layout ====
+
+# ----------------------------
+# 2) Setup
+# ----------------------------
+
+# Local RNG: deterministic, seed-stable
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+
+# Pick chain length 16..22 (long-chain unsaturated, biologically plausible).
+$chain_length = $local_random->random(16, 22, 1);
+
+# Pick 2 or 3 cis double bonds anywhere along the chain (no clustering)
+# with minimum spacing of 3 between any pair (no conjugated dienes).
+# Algorithm: build a pool of valid omega positions [3..chain_length-2],
+# pick one at random, eliminate it and +/- 2 neighbors (enforces minimum
+# spacing of 3 to the next pick), repeat. Bonds may end up adjacent in
+# the methyl-interrupted pattern (omega-3,6,...) or scattered widely.
+$num_double_bonds = $local_random->random(2, 3, 1);
+%pool = ();
+for (my $p = 3; $p <= $chain_length - 2; $p++) {
+	$pool{$p} = 1;
+}
+@picks = ();
+for (my $j = 0; $j < $num_double_bonds; $j++) {
+	# Walk the integer range to find still-available positions
+	# (sidesteps PG Safe compartment's banned sort() and unordered hash keys).
+	my @available = ();
+	for (my $p = 3; $p <= $chain_length - 2; $p++) {
+		push @available, $p if $pool{$p};
+	}
+	last if scalar(@available) == 0;
+	my $idx = $local_random->random(0, $#available, 1);
+	my $picked = $available[$idx];
+	push @picks, $picked;
+	# Eliminate +/- 2 around picked so next pick is at least 3 away
+	for (my $d = -2; $d <= 2; $d++) {
+		delete $pool{$picked + $d};
+	}
+}
+# Sort picks ascending without sort() by walking the integer range
+@omegas = ();
+for (my $p = 3; $p <= $chain_length - 2; $p++) {
+	for my $pick (@picks) {
+		if ($pick == $p) {
+			push @omegas, $p;
+			last;
+		}
+	}
+}
+
+# Deltas in ascending order without sort() (Safe compartment blocks sort()).
+@deltas = ();
+for (my $i = $#omegas; $i >= 0; $i--) {
+	push @deltas, $chain_length - $omegas[$i];
+}
+
+# Pre-joined comma lists for solution text.
+$omegas_csv = join(', ', @omegas);
+$deltas_csv = join(', ', @deltas);
+
+# ----------------------------
+# 2a) Build SVG inline
+# ----------------------------
+
+# Build a comma-joined string of double-bond indices (bond i = bond between
+# vertices i and i+1). omega-k double bond sits on bond index k-1.
+@bond_indices = ();
+for (my $j = 0; $j < scalar(@omegas); $j++) {
+	push @bond_indices, $omegas[$j] - 1;
+}
+$double_bond_indices_csv = join(',', @bond_indices);
+
+# Compute vertex coordinates using the cis-aware walker.
+($vx_csv, $vy_csv) = compute_xy($chain_length, $double_bond_indices_csv);
+@vx_list = split(/,/, $vx_csv);
+@vy_list = split(/,/, $vy_csv);
+
+# viewBox sized to enclose all vertices plus terminal label padding.
+# Compute min/max y manually (no sort() in PG Safe compartment).
+$y_min = $vy_list[0];
+$y_max = $vy_list[0];
+for (my $i = 1; $i < scalar(@vy_list); $i++) {
+	if ($vy_list[$i] < $y_min) { $y_min = $vy_list[$i]; }
+	if ($vy_list[$i] > $y_max) { $y_max = $vy_list[$i]; }
+}
+$svg_vb_w = $X_PAD * 2 + ($chain_length - 1) * $BDX + 30;
+$svg_vb_h = ($y_max - $y_min) + 30;
+# Shift all coordinates down by (15 - y_min) so the lowest y is 15.
+$y_shift = 15 - $y_min;
+
+# Mark double-bond positions for quick lookup
+%is_double_lookup = ();
+for my $b (@bond_indices) {
+	$is_double_lookup{$b} = 1;
+}
+
+# DOUBLE_GAP is the perpendicular distance between the two parallel lines
+# of a double bond. DOUBLE_INSET shortens the inner line at each end so
+# the double bond visually reads as a single C=C between two atoms.
+$DOUBLE_GAP   = 4;
+$DOUBLE_INSET = 4;
+
+$fatty_acid_svg = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1"'
+	. ' width="' . $svg_vb_w . '" height="' . $svg_vb_h
+	. '" viewBox="0 0 ' . $svg_vb_w . ' ' . $svg_vb_h . '">';
+
+for (my $i = 0; $i < $chain_length - 1; $i++) {
+	my $x1 = $vx_list[$i];
+	my $y1 = $vy_list[$i] + $y_shift;
+	my $x2 = $vx_list[$i + 1];
+	my $y2 = $vy_list[$i + 1] + $y_shift;
+	# Always draw the main bond line.
+	$fatty_acid_svg .= svg_line($x1, $y1, $x2, $y2);
+	# For double bonds (which are flat horizontal here), add a parallel
+	# line offset upward (so it sits above the main line, conventional).
+	if ($is_double_lookup{$i}) {
+		my $px1 = $x1 + $DOUBLE_INSET;
+		my $py1 = $y1 - $DOUBLE_GAP;
+		my $px2 = $x2 - $DOUBLE_INSET;
+		my $py2 = $y2 - $DOUBLE_GAP;
+		$fatty_acid_svg .= svg_line($px1, $py1, $px2, $py2);
+	}
+}
+
+# Terminal labels: CH3 on the methyl end, COOH on the acid end.
+$x_left  = $vx_list[0];
+$y_left  = $vy_list[0] + $y_shift;
+$x_right = $vx_list[$chain_length - 1];
+$y_right = $vy_list[$chain_length - 1] + $y_shift;
+$fatty_acid_svg .= svg_text($x_left - 6, $y_left + 5, 'end', 16, '#000',
+	'H<tspan baseline-shift="sub" font-size="10">3</tspan>C');
+$fatty_acid_svg .= svg_text($x_right + 6, $y_right + 5, 'start', 16, '#8b0000', 'COOH');
+$fatty_acid_svg .= '</svg>';
+
+# ----------------------------
+# 2b) Build notation HTML strings (sub takes a pre-joined scalar, no arrayref)
+# ----------------------------
+
+sub list2html_omega {
+	my ($joined) = @_;
+	return '<span style="font-family:serif;font-weight:700;">'
+		. '&omega;&ndash;' . $joined . '</span>';
+}
+
+# Comma-joined integer lists (no spaces) for compact display in choices.
+$omegas_compact = join(',', @omegas);
+$deltas_compact = join(',', @deltas);
+
+# Shifted distractors mirror the original Python construction.
+$n_items = scalar(@omegas);
+@bad_omegas = ();
+@bad_deltas = ();
+@just_count = ();
+for (my $i = 0; $i < $n_items; $i++) {
+	push @bad_omegas, $omegas[$i] + ($n_items - 1 - $i);
+	push @bad_deltas, $deltas[$i] + ($n_items - 1 - $i);
+	push @just_count, $i + 1;
+}
+$bad_omegas_compact = join(',', @bad_omegas);
+$bad_deltas_compact = join(',', @bad_deltas);
+$just_count_compact = join(',', @just_count);
+
+$correct_html    = list2html_omega($omegas_compact);
+$wrong_swap_html = list2html_omega($deltas_compact);
+$bad_omegas_html = list2html_omega($bad_omegas_compact);
+$bad_deltas_html = list2html_omega($bad_deltas_compact);
+$just_count_html = list2html_omega($just_count_compact);
+
+# Deduplicate so we never present the same choice twice.
+%seen = ();
+@choices = ();
+for my $h ($correct_html, $wrong_swap_html, $bad_omegas_html, $bad_deltas_html, $just_count_html) {
+	next if $seen{$h};
+	$seen{$h} = 1;
+	push @choices, $h;
+}
+
+# ----------------------------
+# 2c) Build radio buttons
+# ----------------------------
+
+$rb = RadioButtons(
+	[@choices],
+	$correct_html,
+	labels        => 'ABC',
+	displayLabels => 1,
+	separator     => '<div style="margin-bottom: 0.7em;"></div>',
+	uncheckable   => 0,
+);
+
+# ----------------------------
+# 3) Statement
+# ----------------------------
+
+$omega_emph = "<span style='color:#a04000;font-weight:700;'>&omega; (omega)</span>";
+
+BEGIN_PGML
+
+The skeletal structure below shows an unsaturated fatty acid with [$chain_length]
+carbons. The methyl end is on the left; the carboxyl end (COOH) is on the right.
+Each vertex and line end in the zigzag chain represents a carbon atom.
+
+[$fatty_acid_svg]*
+
+What is the correct [$omega_emph]* notation describing the positions of the
+double bonds in this [$chain_length]-carbon fatty acid?
+
+[_]{$rb}
+
+END_PGML
+
+# ----------------------------
+# 4) Hint
+# ----------------------------
+
+BEGIN_PGML_HINT
+
+In omega notation, count carbons starting from the methyl end (the
+hydrocarbon tail, on the left). Each double bond is named for the lower of
+the two carbon numbers it connects. So a double bond between the third and
+fourth carbons from the methyl end is omega-3.
+
+END_PGML_HINT
+
+# ----------------------------
+# 5) Solution
+# ----------------------------
+
+BEGIN_PGML_SOLUTION
+The correct answer is [$correct_html]*. Counting carbons from the methyl
+(left) end, the double bonds begin at carbons [$omegas_csv].
+END_PGML_SOLUTION
+
+ENDDOCUMENT();

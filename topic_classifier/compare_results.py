@@ -220,7 +220,7 @@ def find_disagreements(all_results: dict, known_overlaps: dict = None) -> dict:
 					"assignments": present_in,
 				})
 		else:
-			# Full agreement — store script and the common assignment
+			# Full agreement - store script and the common assignment
 			chapter, topic = list(present_in.values())[0]
 			topic_agree.append({
 				"script": script,
@@ -725,13 +725,13 @@ def _to_bp_root(script: str) -> str:
 	clean = script.strip()
 	if clean.startswith("./"):
 		clean = clean[2:]
-	# Already normalized — return unchanged
+	# Already normalized - return unchanged
 	if clean.startswith("{bp_root}/"):
 		return clean
 	# Rewrite exact 'problems/' prefix
 	if clean.startswith("problems/"):
 		return "{bp_root}/" + clean[len("problems/"):]
-	# Anything else is unexpected — fail loudly
+	# Anything else is unexpected - fail loudly
 	raise ValueError(f"unexpected script path: {script!r}")
 
 #============================================
@@ -766,7 +766,7 @@ def _collect_agreed_rows(disagreements: dict) -> list:
 	# 'subject' only in this output pathway.
 	triples = set()
 
-	# Full agreements — one row each
+	# Full agreements - one row each
 	for item in disagreements["topic_agree"]:
 		if "chapter" not in item or "topic" not in item or "script" not in item:
 			raise KeyError(f"topic_agree item missing required keys: {item!r}")
@@ -776,7 +776,7 @@ def _collect_agreed_rows(disagreements: dict) -> list:
 			_to_bp_root(item["script"]),
 		))
 
-	# Known overlaps — one row per valid (subject, topic) pair
+	# Known overlaps - one row per valid (subject, topic) pair
 	for item in disagreements["known_overlap"]:
 		if "script" not in item or "valid_assignments" not in item:
 			raise KeyError(f"known_overlap item missing required keys: {item!r}")

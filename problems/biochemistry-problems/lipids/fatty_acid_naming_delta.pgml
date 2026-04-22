@@ -1,0 +1,305 @@
+## TITLE('Biochemistry: Fatty acid Delta notation')
+## DESCRIPTION
+## Students see an SVG zigzag of an unsaturated fatty acid (chain length
+## 14-22 carbons, 1-4 cis double bonds) with COOH labeled at one end, and
+## select the correct Delta-position notation from five distractors.
+## ENDDESCRIPTION
+## KEYWORDS('lipid','fatty acid','delta notation','unsaturated')
+## DBsubject('Biochemistry')
+## DBchapter('Lipids')
+## DBsection('Fatty Acid Nomenclature')
+## Level(3)
+## Date('2026-04-22')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	'PGstandard.pl',
+	'PGML.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl'
+);
+$showPartialCorrectAnswers = 0;
+
+# ==== BEGIN BLOCK: svg_primitives_lipids (v3) ====
+# Low-level inline-SVG primitives for fatty-acid skeletal drawings.
+# (v3: 60-deg bond angles + flat cis double bonds.)
+
+sub svg_line {
+	my ($x1, $y1, $x2, $y2) = @_;
+	return '<line x1="' . $x1 . '" y1="' . $y1
+		. '" x2="' . $x2 . '" y2="' . $y2
+		. '" stroke="#000" stroke-width="2" stroke-linecap="round"/>';
+}
+
+sub svg_text {
+	my ($x, $y, $anchor, $size, $fill, $content) = @_;
+	return '<text x="' . $x . '" y="' . $y
+		. '" font-family="sans-serif" font-size="' . $size
+		. '" text-anchor="' . $anchor
+		. '" fill="' . $fill . '">' . $content . '</text>';
+}
+
+# ==== END BLOCK: svg_primitives_lipids ====
+
+# ==== BEGIN BLOCK: fatty_acid_layout (v3) ====
+# Layout helpers for a horizontal fatty-acid zigzag at 60-degree angles
+# (bonds at +/- 30 degrees from horizontal, internal angle 120 degrees).
+# Cis double bonds are drawn as flat horizontal segments; after a cis bond
+# the zigzag direction does NOT flip, producing the cis kink.
+# Vertex indexing: 0 = methyl-end carbon (left), n-1 = COOH carbon (right).
+
+$BDX   = 22;
+$BDY   = 13;
+$X_PAD = 40;
+$Y_REF = 50;
+
+sub compute_xy {
+	my ($n_carbons, $is_double_bond_str) = @_;
+	my %is_double = ();
+	for my $b (split(/,/, $is_double_bond_str)) {
+		next if $b eq '';
+		$is_double{$b} = 1;
+	}
+	my @xs = ();
+	my @ys = ();
+	my $cur_x = $X_PAD;
+	my $cur_y = $Y_REF + $BDY;
+	push @xs, $cur_x;
+	push @ys, $cur_y;
+	my $dir_up = 1;
+	for (my $i = 1; $i < $n_carbons; $i++) {
+		$cur_x += $BDX;
+		if ($is_double{$i - 1}) {
+			# Flat cis bond: same y, do NOT flip direction.
+		} else {
+			$cur_y += ($dir_up ? -$BDY : $BDY);
+			$dir_up = !$dir_up;
+		}
+		push @xs, $cur_x;
+		push @ys, $cur_y;
+	}
+	return (join(',', @xs), join(',', @ys));
+}
+
+# ==== END BLOCK: fatty_acid_layout ====
+
+# ----------------------------
+# 2) Setup
+# ----------------------------
+
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+
+# Same RNG sequence as the omega variant -> same seed yields same fatty acid.
+$chain_length = $local_random->random(16, 22, 1);
+
+# 2 or 3 cis double bonds anywhere along the chain (not clustered) with
+# minimum spacing of 3. Pool-elimination: start with [3..chain_length-2],
+# pick one, remove +/- 2 around it, repeat.
+$num_double_bonds = $local_random->random(2, 3, 1);
+%pool = ();
+for (my $p = 3; $p <= $chain_length - 2; $p++) {
+	$pool{$p} = 1;
+}
+@picks = ();
+for (my $j = 0; $j < $num_double_bonds; $j++) {
+	my @available = ();
+	for (my $p = 3; $p <= $chain_length - 2; $p++) {
+		push @available, $p if $pool{$p};
+	}
+	last if scalar(@available) == 0;
+	my $idx = $local_random->random(0, $#available, 1);
+	my $picked = $available[$idx];
+	push @picks, $picked;
+	for (my $d = -2; $d <= 2; $d++) {
+		delete $pool{$picked + $d};
+	}
+}
+@omegas = ();
+for (my $p = 3; $p <= $chain_length - 2; $p++) {
+	for my $pick (@picks) {
+		if ($pick == $p) {
+			push @omegas, $p;
+			last;
+		}
+	}
+}
+
+@deltas = ();
+for (my $i = $#omegas; $i >= 0; $i--) {
+	push @deltas, $chain_length - $omegas[$i];
+}
+
+$omegas_csv = join(', ', @omegas);
+$deltas_csv = join(', ', @deltas);
+
+# ----------------------------
+# 2a) Build SVG inline
+# ----------------------------
+
+@bond_indices = ();
+for (my $j = 0; $j < scalar(@omegas); $j++) {
+	push @bond_indices, $omegas[$j] - 1;
+}
+$double_bond_indices_csv = join(',', @bond_indices);
+
+($vx_csv, $vy_csv) = compute_xy($chain_length, $double_bond_indices_csv);
+@vx_list = split(/,/, $vx_csv);
+@vy_list = split(/,/, $vy_csv);
+
+$y_min = $vy_list[0];
+$y_max = $vy_list[0];
+for (my $i = 1; $i < scalar(@vy_list); $i++) {
+	if ($vy_list[$i] < $y_min) { $y_min = $vy_list[$i]; }
+	if ($vy_list[$i] > $y_max) { $y_max = $vy_list[$i]; }
+}
+$svg_vb_w = $X_PAD * 2 + ($chain_length - 1) * $BDX + 30;
+$svg_vb_h = ($y_max - $y_min) + 30;
+$y_shift = 15 - $y_min;
+
+%is_double_lookup = ();
+for my $b (@bond_indices) {
+	$is_double_lookup{$b} = 1;
+}
+
+$DOUBLE_GAP   = 4;
+$DOUBLE_INSET = 4;
+
+$fatty_acid_svg = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1"'
+	. ' width="' . $svg_vb_w . '" height="' . $svg_vb_h
+	. '" viewBox="0 0 ' . $svg_vb_w . ' ' . $svg_vb_h . '">';
+
+for (my $i = 0; $i < $chain_length - 1; $i++) {
+	my $x1 = $vx_list[$i];
+	my $y1 = $vy_list[$i] + $y_shift;
+	my $x2 = $vx_list[$i + 1];
+	my $y2 = $vy_list[$i + 1] + $y_shift;
+	$fatty_acid_svg .= svg_line($x1, $y1, $x2, $y2);
+	if ($is_double_lookup{$i}) {
+		my $px1 = $x1 + $DOUBLE_INSET;
+		my $py1 = $y1 - $DOUBLE_GAP;
+		my $px2 = $x2 - $DOUBLE_INSET;
+		my $py2 = $y2 - $DOUBLE_GAP;
+		$fatty_acid_svg .= svg_line($px1, $py1, $px2, $py2);
+	}
+}
+
+$x_left  = $vx_list[0];
+$y_left  = $vy_list[0] + $y_shift;
+$x_right = $vx_list[$chain_length - 1];
+$y_right = $vy_list[$chain_length - 1] + $y_shift;
+$fatty_acid_svg .= svg_text($x_left - 6, $y_left + 5, 'end', 16, '#000',
+	'H<tspan baseline-shift="sub" font-size="10">3</tspan>C');
+$fatty_acid_svg .= svg_text($x_right + 6, $y_right + 5, 'start', 16, '#8b0000', 'COOH');
+$fatty_acid_svg .= '</svg>';
+
+# ----------------------------
+# 2b) Notation HTML strings (Delta is the correct one for this file)
+# ----------------------------
+
+sub list2html_delta {
+	my ($joined) = @_;
+	return '<span style="font-family:serif;font-weight:700;">'
+		. '&Delta;&ndash;' . $joined . '</span>';
+}
+
+$omegas_compact = join(',', @omegas);
+$deltas_compact = join(',', @deltas);
+
+$n_items = scalar(@omegas);
+@bad_omegas = ();
+@bad_deltas = ();
+@just_count = ();
+for (my $i = 0; $i < $n_items; $i++) {
+	push @bad_omegas, $omegas[$i] + ($n_items - 1 - $i);
+	push @bad_deltas, $deltas[$i] + ($n_items - 1 - $i);
+	push @just_count, $i + 1;
+}
+$bad_omegas_compact = join(',', @bad_omegas);
+$bad_deltas_compact = join(',', @bad_deltas);
+$just_count_compact = join(',', @just_count);
+
+$correct_html    = list2html_delta($deltas_compact);
+$wrong_swap_html = list2html_delta($omegas_compact);
+$bad_omegas_html = list2html_delta($bad_omegas_compact);
+$bad_deltas_html = list2html_delta($bad_deltas_compact);
+$just_count_html = list2html_delta($just_count_compact);
+
+%seen = ();
+@choices = ();
+for my $h ($correct_html, $wrong_swap_html, $bad_omegas_html, $bad_deltas_html, $just_count_html) {
+	next if $seen{$h};
+	$seen{$h} = 1;
+	push @choices, $h;
+}
+
+# ----------------------------
+# 2c) Build radio buttons
+# ----------------------------
+
+$rb = RadioButtons(
+	[@choices],
+	$correct_html,
+	labels        => 'ABC',
+	displayLabels => 1,
+	separator     => '<div style="margin-bottom: 0.7em;"></div>',
+	uncheckable   => 0,
+);
+
+# ----------------------------
+# 3) Statement
+# ----------------------------
+
+$delta_emph = "<span style='color:#005f87;font-weight:700;'>&Delta; (Delta)</span>";
+
+BEGIN_PGML
+
+The skeletal structure below shows an unsaturated fatty acid with [$chain_length]
+carbons. The methyl end is on the left; the carboxyl end (COOH) is on the right.
+Each vertex and line end in the zigzag chain represents a carbon atom.
+[$delta_emph]* notation counts carbons from the COOH end (carbon 1).
+
+[$fatty_acid_svg]*
+
+What is the correct [$delta_emph]* notation describing the positions of the
+double bonds in this [$chain_length]-carbon fatty acid?
+
+[_]{$rb}
+
+END_PGML
+
+# ----------------------------
+# 4) Hint
+# ----------------------------
+
+BEGIN_PGML_HINT
+
+In Delta notation, count carbons starting from the carboxyl carbon (COOH = 1)
+and going toward the methyl end. Each double bond is named for the lower of
+the two carbon numbers it connects. So a double bond between carbon 9 and
+carbon 10 is Delta-9.
+
+END_PGML_HINT
+
+# ----------------------------
+# 5) Solution
+# ----------------------------
+
+BEGIN_PGML_SOLUTION
+The correct answer is [$correct_html]*. Counting carbons from the COOH
+(right) end, the double bonds begin at carbons [$deltas_csv].
+END_PGML_SOLUTION
+
+ENDDOCUMENT();
