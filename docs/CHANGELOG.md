@@ -25,6 +25,28 @@
   their value.
 
 ### Behavior or Interface Changes
+- Relabeled the non-canonical distractor in
+  [problems/biochemistry-problems/PUBCHEM/NUCLEOBASES/match_purine_structures.pgml](../problems/biochemistry-problems/PUBCHEM/NUCLEOBASES/match_purine_structures.pgml)
+  and
+  [problems/biochemistry-problems/PUBCHEM/NUCLEOBASES/match_pyrimidine_structures.pgml](../problems/biochemistry-problems/PUBCHEM/NUCLEOBASES/match_pyrimidine_structures.pgml)
+  so students no longer need to know specific non-canonical nucleobase names
+  (e.g. `5-methylcytosine`, `7-methylguanine`). The correct dropdown choice
+  for the distractor structure is now the generic label `uncommon purine` /
+  `uncommon pyrimidine`. The actual chemical name is revealed in the PGML
+  solution block instead.
+- Shrank the RDKit canvas size for the two nucleobase matching problems
+  from 480x320 to 360x240 pixels for a more compact layout.
+- Added a dummy `[Rb]` (Rb = ribose) heavy atom at the glycosidic nitrogen
+  (N9 for purines, N1 for pyrimidines) in every SMILES in the two
+  nucleobase matching problems, giving students a visual cue for the
+  ribose attachment point. `7-methylguanine` is drawn in its N7-methylated
+  cation form (as it appears in the mRNA 5' cap), which is the form where
+  N9 is free to bear a glycosidic substituent.
+- Added a sentence to both nucleobase matching question statements
+  explaining that the `Rb` atom marks where the ribose sugar would attach.
+- Expanded both nucleobase matching statements with a one-sentence
+  background on purine vs pyrimidine ring structure, and bolded the key
+  terms (`purine` / `pyrimidine`, `Rb`) for readability.
 - Colored the four DNA nucleotide full names in
   [problems/multiple_choice_statements/molecular_biology/melting_Tm_type_1.yml](../problems/multiple_choice_statements/molecular_biology/melting_Tm_type_1.yml),
   [melting_Tm_type_2a.yml](../problems/multiple_choice_statements/molecular_biology/melting_Tm_type_2a.yml),

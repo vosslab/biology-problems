@@ -47,9 +47,9 @@ $showPartialCorrectAnswers = 0;
 	'uracil',
 );
 @canonical_pyrimidine_smiles = (
-	'C1=C(NC(=O)N=C1)N',
-	'CC1=CNC(=O)NC1=O',
-	'C1=CNC(=O)NC1=O',
+	'C1=C(N([Rb])C(=O)N=C1)N',
+	'CC1=CN([Rb])C(=O)NC1=O',
+	'C1=CN([Rb])C(=O)NC1=O',
 );
 
 # Non-canonical pyrimidines (one chosen per problem instance as a distractor).
@@ -59,9 +59,9 @@ $showPartialCorrectAnswers = 0;
 	'dihydrouracil',
 );
 @noncanonical_pyrimidine_smiles = (
-	'CC1=C(NC(=O)N=C1)N',
-	'C1=NC(=O)NC(=C1CO)N',
-	'C1CNC(=O)NC1=O',
+	'CC1=C(N([Rb])C(=O)N=C1)N',
+	'C1=NC(=O)N([Rb])C(=C1CO)N',
+	'C1CN([Rb])C(=O)NC1=O',
 );
 
 # ----------------------------
@@ -92,17 +92,25 @@ my $distractor_idx = $local_random->random(0, $#noncanonical_pyrimidine_names, 1
 @selected_names = (@canonical_pyrimidine_names, $noncanonical_pyrimidine_names[$distractor_idx]);
 @selected_smiles = (@canonical_pyrimidine_smiles, $noncanonical_pyrimidine_smiles[$distractor_idx]);
 
-$num_choices = scalar(@selected_names);
+# Genericize the distractor name so students do not need to know specific
+# non-canonical chemistry vocabulary (e.g. 5-methylcytosine). The real
+# chemical name is still captured for the solution block.
+$distractor_label = 'uncommon pyrimidine';
+$distractor_real = $selected_names[-1];
+@selected_display_names = @selected_names;
+$selected_display_names[-1] = $distractor_label;
+
+$num_choices = scalar(@selected_display_names);
 
 # Shuffle the dropdown option order (Fisher-Yates with seeded RNG).
-@dropdown_options = @selected_names;
+@dropdown_options = @selected_display_names;
 for (my $i = $#dropdown_options; $i > 0; $i--) {
 	my $j = $local_random->random(0, $i, 1);
 	@dropdown_options[$i, $j] = @dropdown_options[$j, $i];
 }
 
 # Shuffle the right-column name list independently of the left-column prompts.
-@name_order = (0 .. $#selected_names);
+@name_order = (0 .. $#selected_display_names);
 for (my $i = $#name_order; $i > 0; $i--) {
 	my $j = $local_random->random(0, $i, 1);
 	@name_order[$i, $j] = @name_order[$j, $i];
@@ -110,21 +118,21 @@ for (my $i = $#name_order; $i > 0; $i--) {
 
 # Build one PopUp per displayed structure with the correct answer bound.
 @answer_dropdowns = ();
-for my $i (0 .. $#selected_names) {
-	$answer_dropdowns[$i] = PopUp(['', @dropdown_options], $selected_names[$i]);
+for my $i (0 .. $#selected_display_names) {
+	$answer_dropdowns[$i] = PopUp(['', @dropdown_options], $selected_display_names[$i]);
 }
 
 # Build the RDKit canvas HTML snippets for each displayed structure.
 @prompt_html = ();
-for my $i (0 .. $#selected_names) {
+for my $i (0 .. $#selected_display_names) {
 	my $smiles_attr = escape_attr($selected_smiles[$i]);
 	my $canvas_id = 'nb_canvas_' . ($i + 1);
-	my $canvas_html = '<canvas id="' . $canvas_id . '" width="480" height="320" data-smiles="' . $smiles_attr . '"></canvas>';
+	my $canvas_html = '<canvas id="' . $canvas_id . '" width="360" height="240" data-smiles="' . $smiles_attr . '"></canvas>';
 	push @prompt_html, '<div class="nb-structure">' . $canvas_html . '</div>';
 }
 
-@right_names = map { $selected_names[$_] } @name_order;
-$answer_list = join(', ', map { ($_ + 1) . ' - ' . $selected_names[$_] } 0 .. $#selected_names);
+@right_names = map { $selected_display_names[$_] } @name_order;
+$answer_list = join(', ', map { ($_ + 1) . ' - ' . $selected_display_names[$_] } 0 .. $#selected_display_names);
 
 # ----------------------------
 # 2d) Header (RDKit + layout)
@@ -183,9 +191,11 @@ END_HEADER
 # ----------------------------
 
 BEGIN_PGML
-Match the pyrimidine structures to their names.
+**Pyrimidines** are the nucleobases built on a single six-membered ring containing two nitrogen atoms.
 
-Note: Each choice will be used exactly once.
+Match the **pyrimidine** structures to their names.
+
+Note: Each choice will be used exactly once. The **Rb** atom marks where the ribose sugar would attach in a nucleoside.
 
 [@ MODES(HTML => '<div class="two-column"><div>') @]*
 [@ join(
@@ -212,6 +222,8 @@ END_PGML
 
 BEGIN_PGML_SOLUTION
 The correct matches are: [$answer_list].
+
+The [$distractor_label] shown is [$distractor_real].
 END_PGML_SOLUTION
 
 ENDDOCUMENT();

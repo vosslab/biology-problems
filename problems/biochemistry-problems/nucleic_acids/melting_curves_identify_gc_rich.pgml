@@ -1,0 +1,201 @@
+## TITLE('Melting Temperature (Tm) of DNA - Two Curve Identification')
+## DESCRIPTION
+## Students examine a graph of two denaturation curves for two DNA samples
+## with different melting temperatures and identify which strand is mostly
+## G-C (higher Tm) or mostly A-T (lower Tm).
+## ENDDESCRIPTION
+## KEYWORDS('melting temperature (Tm) of DNA','denaturation curve','GC content','graph','multiple choice')
+## DBsubject('Biochemistry')
+## DBchapter('Nucleic Acids')
+## DBsection('DNA Structure')
+## Level(2)
+## Date('2026-04-23')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	'PGstandard.pl',
+	'MathObjects.pl',
+	'PGML.pl',
+	'PGgraphmacros.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl',
+);
+
+$showPartialCorrectAnswers = 0;
+
+# ----------------------------
+# 2a) Randomization
+# ----------------------------
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+
+# lower-Tm curve (A-T rich) and higher-Tm curve (G-C rich)
+# separation between the two Tm values must be large enough that the
+# visual distinction is unambiguous
+$Tm_low  = $local_random->random(78, 82, 1);
+$Tm_high = $Tm_low + $local_random->random(3, 5, 1);
+
+# steepness k (per degree C). Higher k = steeper sigmoid.
+# The G-C rich curve is more cooperative (steeper); A-T rich is more gradual.
+my $k_low  = 0.55;
+my $k_high = 1.1;
+
+# ----------------------------
+# 2b) Create the graph
+# ----------------------------
+# x: temperature 72-90, y: denaturation 0-100 (with margins)
+$gr = init_graph(69, -14, 91, 108,
+	axes => [0, 0],
+	size => [560, 350],
+);
+
+# accessible colors: blue and red (colorblind-safe, WCAG >= 5.5:1 contrast)
+$gr->new_color('curve_blue', 0, 63, 255);
+$gr->new_color('curve_red', 183, 67, 0);
+$gr->new_color('grid_gray', 200, 200, 200);
+
+# manual grid lines
+$gr->v_grid('grid_gray', 75, 80, 85, 90);
+$gr->h_grid('grid_gray', 25, 50, 75, 100);
+
+# x-axis tick labels every 5 degrees
+for (my $x = 75; $x <= 90; $x += 5) {
+	$gr->lb(new Label($x, -4, "$x", 'black', 'center', 'middle'));
+}
+
+# y-axis tick labels
+for (my $y = 0; $y <= 100; $y += 25) {
+	$gr->lb(new Label(70.9, $y, "$y", 'black', 'right', 'middle'));
+}
+
+# axis labels (chr(176) renders the degree symbol reliably in GD)
+my $deg_c = chr(176) . "C";
+$gr->lb(new Label(81, -12, "Temperature ($deg_c)",
+	'black', 'center', 'middle'));
+$gr->lb(new Label(69.5, 104, "Denaturation (%)",
+	'black', 'left', 'middle'));
+
+# ----------------------------
+# 2c) Draw each sigmoid curve point-by-point
+# ----------------------------
+# sigmoid:  100 / (1 + exp(-k * (T - Tm)))
+# lower-Tm curve (blue): A-T rich, gentler slope
+my $first_pt = 1;
+for (my $i = 0; $i <= 400; $i++) {
+	my $T = 72 + (90 - 72) * $i / 400.0;
+	my $y = 100.0 / (1.0 + exp(-$k_low * ($T - $Tm_low)));
+	if ($first_pt) {
+		$gr->moveTo($T, $y);
+		$first_pt = 0;
+	} else {
+		$gr->lineTo($T, $y, 'curve_blue', 2);
+	}
+}
+
+# higher-Tm curve (red): G-C rich, steeper slope
+$first_pt = 1;
+for (my $i = 0; $i <= 400; $i++) {
+	my $T = 72 + (90 - 72) * $i / 400.0;
+	my $y = 100.0 / (1.0 + exp(-$k_high * ($T - $Tm_high)));
+	if ($first_pt) {
+		$gr->moveTo($T, $y);
+		$first_pt = 0;
+	} else {
+		$gr->lineTo($T, $y, 'curve_red', 2);
+	}
+}
+
+# draw dashed vertical markers at each Tm (50% denaturation)
+# short line segments with gaps
+for (my $d = 0; $d < 12; $d++) {
+	my $y1 = $d * 4.3;
+	my $y2 = $y1 + 2.2;
+	if ($y2 > 50) { $y2 = 50; }
+	if ($y1 < 50) {
+		$gr->moveTo($Tm_low, $y1);
+		$gr->lineTo($Tm_low, $y2, 'curve_blue', 1);
+		$gr->moveTo($Tm_high, $y1);
+		$gr->lineTo($Tm_high, $y2, 'curve_red', 1);
+	}
+}
+
+# label "tm" at each dashed line
+$gr->lb(new Label($Tm_low - 0.3, 55, "tm",
+	'curve_blue', 'right', 'middle', 'giant'));
+$gr->lb(new Label($Tm_high + 0.3, 55, "tm",
+	'curve_red', 'left', 'middle', 'giant'));
+
+# tick marks on axes (drawn after functions so they're visible)
+$gr->h_ticks(0, 'black', 75, 80, 85, 90);
+$gr->v_ticks(72, 'black', 25, 50, 75, 100);
+
+# ----------------------------
+# 2d) HTML color labels for choices
+# ----------------------------
+my $blue_label = "<span style='color:#003fff;font-weight:700;'>"
+	. "blue curve</span> with T<sub>m</sub> ~ ${Tm_low}&deg;C";
+my $red_label  = "<span style='color:#b74300;font-weight:700;'>"
+	. "red curve</span> with T<sub>m</sub> ~ ${Tm_high}&deg;C";
+
+# ----------------------------
+# 2e) Randomize: ask about G-C (red correct) or A-T (blue correct)
+# ----------------------------
+my $ask_gc = $local_random->random(0, 1, 1);
+if ($ask_gc) {
+	$prompt_topic = "<span style='color:#b74300;font-weight:700;'>"
+		. "highest G-C content</span>";
+	$correct = $red_label;
+} else {
+	$prompt_topic = "<span style='color:#003fff;font-weight:700;'>"
+		. "highest A-T content</span>";
+	$correct = $blue_label;
+}
+
+# two-option radio: blue curve vs red curve
+@choices = ($blue_label, $red_label);
+
+$Tm_low_str  = "${Tm_low}&deg;C";
+$Tm_high_str = "${Tm_high}&deg;C";
+
+$rb = RadioButtons(
+	[@choices],
+	$correct,
+	labels        => 'AB',
+	displayLabels => 1,
+	separator     => '<div style="margin-bottom: 0.5em;"></div>',
+);
+
+# ----------------------------
+# 3) Statement (PGML)
+# ----------------------------
+BEGIN_PGML
+
+The following graph shows the denaturation (% single-stranded) as a function of temperature for two different double-stranded DNA samples.
+
+[@ image(insertGraph($gr), width => 560, height => 350, tex_size => 700) @]*
+
+Which curve corresponds to the DNA strand with the [$prompt_topic]*?
+
+[_]{$rb}
+
+END_PGML
+
+# ----------------------------
+# 4) Solution
+# ----------------------------
+BEGIN_PGML_SOLUTION
+
+G-C base pairs are held together by three hydrogen bonds, while A-T base pairs have only two. A DNA strand with a higher G-C content therefore requires more thermal energy to fully separate its strands, giving it a higher melting temperature (T[`_m`]).
+
+In this graph, the red curve has T[`_m`] ~ [$Tm_high_str]* and the blue curve has T[`_m`] ~ [$Tm_low_str]*. The higher-T[`_m`] (red) curve corresponds to the G-C rich DNA; the lower-T[`_m`] (blue) curve corresponds to the A-T rich DNA.
+
+END_PGML_SOLUTION
+
+ENDDOCUMENT();

@@ -1,0 +1,158 @@
+## TITLE('Melting Temperature (Tm) of DNA - Predict Tm from G+C Content')
+## DESCRIPTION
+## Students use a scatter plot of G+C content vs. melting temperature to
+## predict the melting temperature of a DNA sample given its G+C percentage.
+## ENDDESCRIPTION
+## KEYWORDS('melting temperature (Tm) of DNA','GC content','scatter plot','graph','multiple choice')
+## DBsubject('Biochemistry')
+## DBchapter('Nucleic Acids')
+## DBsection('DNA Structure')
+## Level(2)
+## Date('2026-04-23')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	'PGstandard.pl',
+	'MathObjects.pl',
+	'PGML.pl',
+	'PGgraphmacros.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl',
+);
+
+$showPartialCorrectAnswers = 0;
+
+# ----------------------------
+# 2a) Randomization
+# ----------------------------
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+
+# Marmur-Doty formula:  Tm = 69.3 + 0.41 * %GC
+# valid for long double-stranded DNA in ~0.2 M Na+
+# %GC capped at ~75 % because Tm > 100 C is unreachable at atm pressure
+# pick %GC in {10..70 by 10}, compute and display Tm to 1 decimal
+my @GC_pool = (10, 20, 30, 40, 50, 60, 70);
+my $gc_idx = $local_random->random(0, $#GC_pool, 1);
+$GC_query = $GC_pool[$gc_idx];
+my $Tm_exact = 69.3 + 0.41 * $GC_query;
+$Tm_correct = sprintf("%.1f", $Tm_exact);
+
+# ----------------------------
+# 2b) Create the graph
+# ----------------------------
+$gr = init_graph(66, -14, 104, 108,
+	axes => [0, 0],
+	size => [560, 350],
+);
+
+$gr->new_color('trend_blue', 0, 63, 255);
+$gr->new_color('point_black', 0, 0, 0);
+$gr->new_color('grid_gray', 200, 200, 200);
+
+$gr->v_grid('grid_gray', 70, 80, 90, 100);
+$gr->h_grid('grid_gray', 20, 40, 60, 80, 100);
+
+for (my $x = 70; $x <= 100; $x += 10) {
+	$gr->lb(new Label($x, -3.3, "$x", 'black', 'center', 'middle'));
+}
+for (my $y = 0; $y <= 100; $y += 20) {
+	$gr->lb(new Label(68.2, $y, "$y", 'black', 'right', 'middle'));
+}
+
+my $deg_c = chr(176) . "C";
+$gr->lb(new Label(85, -11.3, "t_m ($deg_c)",
+	'black', 'center', 'middle'));
+$gr->lb(new Label(66.5, 104, "G + C (% of total nucleotides)",
+	'black', 'left', 'middle'));
+
+# trend line (same model as 4a)
+add_functions($gr,
+	"(x - 69.3) / 0.41 for x in <69.3,100> using color:trend_blue and weight:2");
+
+$gr->h_ticks(0, 'black', 70, 80, 90, 100);
+$gr->v_ticks(60, 'black', 20, 40, 60, 80, 100);
+
+# ----------------------------
+# 2e) Build distractors and RadioButtons
+# ----------------------------
+# distractors: correct +/- 8 and +/- 16 (Celsius), clipped to graph range
+my @offsets = (-16, -8, 8, 16);
+my @distractor_vals = ();
+for my $off (@offsets) {
+	my $v = $Tm_correct + $off;
+	next if $v < 60 || $v > 100;
+	push @distractor_vals, $v;
+}
+
+# shuffle and keep two
+for (my $i = $#distractor_vals; $i > 0; $i--) {
+	my $j = $local_random->random(0, $i, 1);
+	@distractor_vals[$i, $j] = @distractor_vals[$j, $i];
+}
+@distractor_vals = @distractor_vals[0 .. 1];
+
+my @all_vals = ($Tm_correct, @distractor_vals);
+for (my $i = 0; $i < scalar(@all_vals); $i++) {
+	for (my $j = $i + 1; $j < scalar(@all_vals); $j++) {
+		if ($all_vals[$j] < $all_vals[$i]) {
+			my $tmp = $all_vals[$i];
+			$all_vals[$i] = $all_vals[$j];
+			$all_vals[$j] = $tmp;
+		}
+	}
+}
+
+@choices = ();
+for my $v (@all_vals) {
+	push @choices, "${v}&deg;C";
+}
+$correct = "${Tm_correct}&deg;C";
+
+$rb = RadioButtons(
+	[@choices],
+	$correct,
+	labels        => 'ABC',
+	displayLabels => 1,
+	separator     => '<div style="margin-bottom: 0.5em;"></div>',
+);
+
+$GC_query_str = "${GC_query}%";
+$Tm_correct_str = "${Tm_correct}&deg;C";
+
+# ----------------------------
+# 3) Statement (PGML)
+# ----------------------------
+BEGIN_PGML
+
+The following scatter plot shows the relationship between G+C content and melting temperature (t[`_m`]) for a variety of DNA samples.
+
+[@ image(insertGraph($gr), width => 560, height => 350, tex_size => 700) @]*
+
+A DNA sample has [$GC_query_str]* G+C content. Based on the plot, which value is closest to its melting temperature?
+
+[_]{$rb}
+
+END_PGML
+
+# ----------------------------
+# 4) Solution
+# ----------------------------
+BEGIN_PGML_SOLUTION
+
+The trend line on the plot follows the Marmur-Doty formula: t[`_m`] = 69.3[`^{\circ}`]C + 0.41 [`\cdot`] (%GC). For %GC = [$GC_query]:
+
+t[`_m`] = 69.3 + 0.41 [`\cdot`] [$GC_query] [`\approx`] [$Tm_correct_str]*
+
+More G-C base pairs (three hydrogen bonds each) require more thermal energy to break than A-T base pairs (two hydrogen bonds each), so a higher G+C content produces a higher melting temperature.
+
+END_PGML_SOLUTION
+
+ENDDOCUMENT();

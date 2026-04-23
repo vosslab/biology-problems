@@ -45,8 +45,8 @@ $showPartialCorrectAnswers = 0;
 	'guanine',
 );
 @canonical_purine_smiles = (
-	'C1=NC2=NC=NC(=C2N1)N',
-	'C1=NC2=C(N1)C(=O)NC(=N2)N',
+	'C1=NC2=NC=NC(=C2N1[Rb])N',
+	'C1=NC2=C(N1[Rb])C(=O)NC(=N2)N',
 );
 
 # Non-canonical purines (one chosen per problem instance as a distractor).
@@ -55,8 +55,8 @@ $showPartialCorrectAnswers = 0;
 	'7-methylguanine',
 );
 @noncanonical_purine_smiles = (
-	'C1=NC2=NC(=O)NC(=C2N1)N',
-	'CN1C=NC2=C1C(=O)NC(=N2)N',
+	'C1=NC2=NC(=O)NC(=C2N1[Rb])N',
+	'C[N+]1=CN([Rb])C2=C1C(=O)NC(=N2)N',
 );
 
 # ----------------------------
@@ -87,17 +87,25 @@ my $distractor_idx = $local_random->random(0, $#noncanonical_purine_names, 1);
 @selected_names = (@canonical_purine_names, $noncanonical_purine_names[$distractor_idx]);
 @selected_smiles = (@canonical_purine_smiles, $noncanonical_purine_smiles[$distractor_idx]);
 
-$num_choices = scalar(@selected_names);
+# Genericize the distractor name so students do not need to know specific
+# non-canonical chemistry vocabulary (e.g. 7-methylguanine). The real
+# chemical name is still captured for the solution block.
+$distractor_label = 'uncommon purine';
+$distractor_real = $selected_names[-1];
+@selected_display_names = @selected_names;
+$selected_display_names[-1] = $distractor_label;
+
+$num_choices = scalar(@selected_display_names);
 
 # Shuffle the dropdown option order (Fisher-Yates with seeded RNG).
-@dropdown_options = @selected_names;
+@dropdown_options = @selected_display_names;
 for (my $i = $#dropdown_options; $i > 0; $i--) {
 	my $j = $local_random->random(0, $i, 1);
 	@dropdown_options[$i, $j] = @dropdown_options[$j, $i];
 }
 
 # Shuffle the right-column name list independently of the left-column prompts.
-@name_order = (0 .. $#selected_names);
+@name_order = (0 .. $#selected_display_names);
 for (my $i = $#name_order; $i > 0; $i--) {
 	my $j = $local_random->random(0, $i, 1);
 	@name_order[$i, $j] = @name_order[$j, $i];
@@ -105,21 +113,21 @@ for (my $i = $#name_order; $i > 0; $i--) {
 
 # Build one PopUp per displayed structure with the correct answer bound.
 @answer_dropdowns = ();
-for my $i (0 .. $#selected_names) {
-	$answer_dropdowns[$i] = PopUp(['', @dropdown_options], $selected_names[$i]);
+for my $i (0 .. $#selected_display_names) {
+	$answer_dropdowns[$i] = PopUp(['', @dropdown_options], $selected_display_names[$i]);
 }
 
 # Build the RDKit canvas HTML snippets for each displayed structure.
 @prompt_html = ();
-for my $i (0 .. $#selected_names) {
+for my $i (0 .. $#selected_display_names) {
 	my $smiles_attr = escape_attr($selected_smiles[$i]);
 	my $canvas_id = 'nb_canvas_' . ($i + 1);
-	my $canvas_html = '<canvas id="' . $canvas_id . '" width="480" height="320" data-smiles="' . $smiles_attr . '"></canvas>';
+	my $canvas_html = '<canvas id="' . $canvas_id . '" width="360" height="240" data-smiles="' . $smiles_attr . '"></canvas>';
 	push @prompt_html, '<div class="nb-structure">' . $canvas_html . '</div>';
 }
 
-@right_names = map { $selected_names[$_] } @name_order;
-$answer_list = join(', ', map { ($_ + 1) . ' - ' . $selected_names[$_] } 0 .. $#selected_names);
+@right_names = map { $selected_display_names[$_] } @name_order;
+$answer_list = join(', ', map { ($_ + 1) . ' - ' . $selected_display_names[$_] } 0 .. $#selected_display_names);
 
 # ----------------------------
 # 2d) Header (RDKit + layout)
@@ -178,9 +186,11 @@ END_HEADER
 # ----------------------------
 
 BEGIN_PGML
-Match the purine structures to their names.
+**Purines** are the nucleobases built on a fused double-ring system (a six-membered pyrimidine ring joined to a five-membered imidazole ring).
 
-Note: Each choice will be used exactly once.
+Match the **purine** structures to their names.
+
+Note: Each choice will be used exactly once. The **Rb** atom marks where the ribose sugar would attach in a nucleoside.
 
 [@ MODES(HTML => '<div class="two-column"><div>') @]*
 [@ join(
@@ -207,6 +217,8 @@ END_PGML
 
 BEGIN_PGML_SOLUTION
 The correct matches are: [$answer_list].
+
+The [$distractor_label] shown is [$distractor_real].
 END_PGML_SOLUTION
 
 ENDDOCUMENT();
