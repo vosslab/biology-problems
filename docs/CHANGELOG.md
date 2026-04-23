@@ -3,13 +3,70 @@
 ## 2026-04-23
 
 ### Additions and New Features
+- Extended [tests/test_webwork_lib.py](../tests/test_webwork_lib.py)
+  with eight `smart_title_case` tests covering acronym preservation (tRNA, DNA, pH), leading lowercase
+  acronyms, apostrophes (Franklin's), HTML subscripts
+  (T<sub>m</sub>), HTML entities (&middot;), leading minor words
+  (a, the), and the compound case `structure of tRNA synthetases`.
+- Added `smart_title_case(text)` to [webwork_lib.py](../webwork_lib.py)
+  so title-casing is available to every generator that writes an OPL
+  header (multiple-choice statements today, matching generators next).
+  Rule: only lowercase -> uppercase, never the reverse. Words that
+  already carry any uppercase letter are left alone (DNA, tRNA, pH,
+  Franklin's, T<sub>m</sub>, G&middot;U). Minor connector words
+  (a, an, and, of, the, to, in, on, at, by, for, with, ...) stay
+  lowercase unless they lead the title. HTML tags and entities are
+  skipped over so their internal characters keep their case.
 - `problems/multiple_choice_statements/yaml_mc_statements_to_pgml.py` now
   assigns the YAML `topic` to the OPL `TITLE` header line when no explicit
-  `title` / `TITLE` key is set, so generated PGMLs get a short problem
-  title in problem lists without any YAML change. Existing YAMLs with
-  a `title` key retain their value.
+  `title` / `TITLE` key is set, running it through
+  `webwork_lib.smart_title_case` first since topics are usually a
+  lowercase sentence fragment. Existing YAMLs with a `title` key retain
+  their value.
+
+### Behavior or Interface Changes
+- Colored the four DNA nucleotide full names in
+  [problems/multiple_choice_statements/molecular_biology/melting_Tm_type_1.yml](../problems/multiple_choice_statements/molecular_biology/melting_Tm_type_1.yml),
+  [melting_Tm_type_2a.yml](../problems/multiple_choice_statements/molecular_biology/melting_Tm_type_2a.yml),
+  and [melting_Tm_type_2b.yml](../problems/multiple_choice_statements/molecular_biology/melting_Tm_type_2b.yml)
+  using Sanger/ABI chromatogram conventions sourced from the
+  pre-approved palette in
+  [problems/multiple_choice_statements/TEMPLATE.yml](../problems/multiple_choice_statements/TEMPLATE.yml):
+  cytosine blue (`#003fff`), thymine red (`#d40000`), adenine green
+  (`#007a00`), guanine black (`#000000`, bold only). Swapped the
+  `decrease` / `DECREASE` / `decreases` highlight from `MediumBlue`
+  to PURPLE (`#a719db`) to avoid colliding with cytosine-blue;
+  `increase` / `INCREASE` / `increases` moved from `OrangeRed` to
+  DARK ORANGE (`#b74300`) to match the pre-approved palette entry.
+  All three regenerated PGMLs pass renderer-API lint.
 
 ### Fixes and Maintenance
+- Fixed `<br/>` tags in multiple-choice statement YAMLs rendering as
+  literal `\n` in the browser. Root cause: `strip_html_tags` converts
+  `<br/>` into a real newline character, which then becomes the
+  literal two-character sequence `\n` when emitted inside a Perl
+  single-quoted string (`$x = 'a\nb'` -- `\n` is two chars in single
+  quotes). Sheltered `<br>`, `<br/>`, and `<br />` variants in
+  [webwork_lib.py](../webwork_lib.py)'s `sanitize_text_for_html` so
+  line-break tags survive through the HTML pipeline, normalized to
+  the canonical `<br/>` form on restore. Regenerated
+  `melting_Tm_type_1.pgml` (which newly uses `<br/>` to split each
+  answer stem from its condition clause); rendered HTML now carries
+  intact `<br/>` with no literal `\n` text.
+- Fixed `franklin_diffraction.pgml` failing to render with
+  `Unknown regexp modifier "/h"` / `syntax error`. Root cause: the
+  generator emitted Perl single-quoted strings with `\'` to escape
+  apostrophes ("Franklin's"), but PG's Safe-compartment parser does
+  not honor that escape and ended the string at the apostrophe, so
+  the rest of the sentence was consumed as a `s///` regex. Added
+  `webwork_lib.perl_string_literal(text)` that returns `'...'` when
+  no apostrophe is present and `q{...}` (escaping `\\`, `{`, `}`)
+  when one is, and routed `$topic` and `$question_true` /
+  `$question_false` emissions in
+  [yaml_mc_statements_to_pgml.py](../problems/multiple_choice_statements/yaml_mc_statements_to_pgml.py)
+  through it. Regenerated PGML now passes renderer-API lint.
+  Documented by the "Apostrophes in Perl ... strings" pitfall in
+  `PG_COMMON_PITFALLS.md`.
 - Replaced `&cdot;` with `&middot;` throughout
   `problems/multiple_choice_statements/molecular_biology/g-u_wobble.yml`
   and regenerated the PGML. `&cdot;` is an HTML5-only entity (U+22C5)

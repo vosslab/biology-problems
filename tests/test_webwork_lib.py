@@ -237,3 +237,89 @@ def test_format_label_html_strict_span():
 	)
 	assert result == "ion"
 	assert is_bold is False
+
+
+def test_smart_title_case_lowercase_sentence():
+	result = webwork_lib.smart_title_case("the cell cycle and mitosis")
+	assert result == "The Cell Cycle and Mitosis"
+
+
+def test_smart_title_case_preserves_mixed_case_acronyms():
+	# tRNA, DNA, mRNA, pH and similar must not be mangled to all-caps
+	result = webwork_lib.smart_title_case("role of tRNA in translation")
+	assert result == "Role of tRNA in Translation"
+
+
+def test_smart_title_case_preserves_leading_lowercase_acronym():
+	# pH leads the topic; its lowercase 'p' must not be promoted
+	result = webwork_lib.smart_title_case("pH and enzyme activity")
+	assert result == "pH and Enzyme Activity"
+
+
+def test_smart_title_case_preserves_apostrophes_inside_words():
+	# Franklin's must not become Franklin'S
+	result = webwork_lib.smart_title_case("Franklin's Photograph 51")
+	assert result == "Franklin's Photograph 51"
+
+
+def test_smart_title_case_preserves_html_subscript_tag():
+	# <sub>m</sub> must keep its original case, T stays capital
+	input_text = "melting temperature (T<sub>m</sub>) of DNA"
+	expected = "Melting Temperature (T<sub>m</sub>) of DNA"
+	assert webwork_lib.smart_title_case(input_text) == expected
+
+
+def test_smart_title_case_preserves_html_entity():
+	# &middot; must keep its lowercase entity name
+	result = webwork_lib.smart_title_case("the G&middot;U wobble base pair")
+	assert result == "The G&middot;U Wobble Base Pair"
+
+
+def test_smart_title_case_leading_minor_word_is_capitalized():
+	# "a" is minor, but leads the title -> capitalized
+	result = webwork_lib.smart_title_case(
+		"a history of cytoskeleton filaments"
+	)
+	assert result == "A History of Cytoskeleton Filaments"
+
+
+def test_smart_title_case_structure_of_trna_synthetases():
+	# compound case: minor word "of" stays lowercase, tRNA keeps casing
+	result = webwork_lib.smart_title_case("structure of tRNA synthetases")
+	assert result == "Structure of tRNA Synthetases"
+
+
+def test_perl_string_literal_plain_uses_single_quotes():
+	# no apostrophe: standard single-quoted form
+	assert webwork_lib.perl_string_literal("hello world") == "'hello world'"
+
+
+def test_perl_string_literal_apostrophe_uses_q_braces():
+	# PG Safe-compartment parser mishandles \\' inside single quotes;
+	# switch to q{...} form to avoid the escape entirely
+	result = webwork_lib.perl_string_literal("Franklin's Photograph 51")
+	assert result == "q{Franklin's Photograph 51}"
+
+
+def test_perl_string_literal_apostrophe_escapes_braces():
+	# inside q{...}, literal { and } need backslash escape
+	result = webwork_lib.perl_string_literal("Franklin's {edge} case")
+	assert result == "q{Franklin's \\{edge\\} case}"
+
+
+def test_perl_string_literal_none_returns_empty_literal():
+	assert webwork_lib.perl_string_literal(None) == "''"
+
+
+def test_sanitize_text_for_html_preserves_br_tag():
+	# <br/> must survive; stripping it to a real \n produces literal
+	# backslash-n inside Perl single-quoted strings
+	result = webwork_lib.sanitize_text_for_html("line1<br/>line2")
+	assert result == "line1<br/>line2"
+
+
+def test_sanitize_text_for_html_normalizes_br_variants():
+	# <br>, <br/>, <br /> all normalize to <br/>
+	assert webwork_lib.sanitize_text_for_html("a<br>b") == "a<br/>b"
+	assert webwork_lib.sanitize_text_for_html("a<br />b") == "a<br/>b"
+	assert webwork_lib.sanitize_text_for_html("a<BR/>b") == "a<br/>b"

@@ -1,5 +1,19 @@
 topic: the G&middot;U wobble base pair
 connection_words: null
+replacement_rules:
+    AAAAAAAA: '<span style="color: #d40000;">AAAAAAAA</span>' #RED
+    BBBBBBBB: '<span style="color: #b74300;">BBBBBBBB</span>' #DARK ORANGE
+    'G&middot;U wobble base pair': '<span style="color: #935d00;">G&middot;U wobble base pair</span>' #LIGHT ORANGE
+    DDDDDDDD: '<span style="color: #6c6c00;">DDDDDDDD</span>' #DARK YELLOW
+    EEEEEEEE: '<span style="color: #3b7600;">EEEEEEEE</span>' #LIME GREEN
+    FFFFFFFF: '<span style="color: #007a00;">FFFFFFFF</span>' #GREEN
+    HHHHHHHH: '<span style="color: #007576;">HHHHHHHH</span>' #CYAN
+    IIIIIIII: '<span style="color: #076dad;">IIIIIIII</span>' #SKY BLUE
+    JJJJJJJJ: '<span style="color: #003fff;">JJJJJJJJ</span>' #BLUE
+    KKKKKKKK: '<span style="color: #0067cc;">KKKKKKKK</span>' #NAVY
+    LLLLLLLL: '<span style="color: #a719db;">LLLLLLLL</span>' #PURPLE
+    MMMMMMMM: '<span style="color: #c80085;">MMMMMMMM</span>' #MAGENTA
+    NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
 true_statements:
   truth11: the G&middot;U wobble base pair ribose sugar glycosidic bond angles are shifted
     from normal

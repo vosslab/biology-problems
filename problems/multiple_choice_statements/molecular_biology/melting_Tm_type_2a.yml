@@ -1,30 +1,30 @@
 topic: melting temperature (T<sub>m</sub>) of DNA
 replacement_rules:
-  increase: '<span style="color: OrangeRed;">increase</span>'
-  decrease: '<span style="color: MediumBlue;">decrease</span>'
-  INCREASE: '<span style="color: OrangeRed;">INCREASE</span>'
-  DECREASE: '<span style="color: MediumBlue;">DECREASE</span>'
+  increase: '<span style="color: #b74300;">increase</span>'    #DARK ORANGE
+  decrease: '<span style="color: #a719db;">decrease</span>'    #PURPLE
+  INCREASE: '<span style="color: #b74300;">INCREASE</span>'    #DARK ORANGE
+  DECREASE: '<span style="color: #a719db;">DECREASE</span>'    #PURPLE
+  'adenine': '<span style="color: #007a00;">adenine (A)</span>'      #GREEN
+  'cytosine': '<span style="color: #003fff;">cytosine (C)</span>'    #BLUE
+  'guanine': '<span style="color: #000000;">guanine (G)</span>'      #BLACK
+  'thymine': '<span style="color: #d40000;">thymine (T)</span>'      #RED
 override_question_true: Which one of the following will <strong>INCREASE</strong>
   the melting temperature (T<sub>m</sub>) of a DNA strand?
 override_question_false: null
 connection_words: null
 true_statements:
-  truth11: increase the amount of cytosine (C) + guanine (G) base pairing.
-  truth12: decrease the amount of adenine (A) + thymine (T) base pairing.
+  truth11: increase the amount of cytosine + guanine base pairing
+  truth12: decrease the amount of adenine + thymine base pairing
 false_statements:
-  false11: decrease the amount of cytosine (C) + guanine (G) base pairing.
-  false12: increase the amount of adenine (A) + thymine (T) base pairing.
-  false2a: decrease the amount of purine nucleobases, adenine (A) + guanine (G).
-  false2b: increase the amount of purine nucleobases, adenine (A) + guanine (G).
-  false3a: decrease the amount of pyrimidine nucleobases, cytosine (C) + thymine (T).
-  false3b: increase the amount of pyrimidine nucleobases, cytosine (C) + thymine (T).
-  false4a: decrease the amount of nucleobases with ketone groups, guanine (G) + thymine
-    (T).
-  false4b: increase the amount of nucleobases with ketone groups, guanine (G) + thymine
-    (T).
-  false5a: decrease the amount of nucleobases with amino groups adenine (A) + cytosine
-    (C).
-  false5b: increase the amount of nucleobases with amino groups adenine (A) + cytosine
-    (C).
+  false11: decrease the amount of cytosine + guanine base pairing
+  false12: increase the amount of adenine + thymine base pairing
+  false2a: decrease the amount of purine nucleobases, adenine + guanine
+  false2b: increase the amount of purine nucleobases, adenine + guanine
+  false3a: decrease the amount of pyrimidine nucleobases, cytosine + thymine
+  false3b: increase the amount of pyrimidine nucleobases, cytosine + thymine
+  false4a: decrease the amount of nucleobases with ketone groups, guanine + thymine
+  false4b: increase the amount of nucleobases with ketone groups, guanine + thymine
+  false5a: decrease the amount of nucleobases with amino groups adenine + cytosine
+  false5b: increase the amount of nucleobases with amino groups adenine + cytosine
 conflict_rules: null
 dbsubject: Molecular Biology

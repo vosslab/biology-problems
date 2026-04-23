@@ -154,13 +154,13 @@ def build_question_text(override_true, override_false):
 	question_setup_lines = []
 	if has_true_override:
 		question_setup_lines.append("# Question text with TRUE override")
-		escaped_true = webwork_lib.escape_perl_string(override_true)
-		question_setup_lines.append(f"$question_true = '{escaped_true}';")
+		true_literal = webwork_lib.perl_string_literal(override_true)
+		question_setup_lines.append(f"$question_true = {true_literal};")
 
 	if has_false_override:
 		question_setup_lines.append("# Question text with FALSE override")
-		escaped_false = webwork_lib.escape_perl_string(override_false)
-		question_setup_lines.append(f"$question_false = '{escaped_false}';")
+		false_literal = webwork_lib.perl_string_literal(override_false)
+		question_setup_lines.append(f"$question_false = {false_literal};")
 
 	true_expr = "$question_true" if has_true_override else f'"{default_true}"'
 	false_expr = "$question_false" if has_false_override else f'"{default_false}"'
@@ -208,7 +208,7 @@ def build_setup_text(perl_true, perl_false, topic, question_setup):
 	text += "# GLOBAL SETTINGS\n"
 	text += "#==========================================================\n"
 	text += "\n"
-	text += f"$topic = '{webwork_lib.escape_perl_string(topic)}';\n"
+	text += f"$topic = {webwork_lib.perl_string_literal(topic)};\n"
 	text += "my $local_random = PGrandom->new();\n"
 	text += "$local_random->srand($problemSeed);\n"
 	text += "my @mode_choices = (\"TRUE\", \"FALSE\");\n"
@@ -366,9 +366,11 @@ def build_pgml_text(yaml_data, color_mode=_DEFAULT_COLOR_MODE):
 	)
 	fallback_keywords = [topic_raw, "true/false", "multiple choice"]
 	# use topic as the OPL TITLE when no explicit title is set;
-	# build_opl_header reads yaml_data['title'] / 'TITLE' directly
+	# build_opl_header reads yaml_data['title'] / 'TITLE' directly.
+	# topics are usually a lowercase sentence fragment, so title-case
+	# them for the problem-list heading
 	if not yaml_data.get("title") and not yaml_data.get("TITLE"):
-		yaml_data["title"] = topic_raw
+		yaml_data["title"] = webwork_lib.smart_title_case(topic_raw)
 	header_text = webwork_lib.build_opl_header(
 		yaml_data,
 		default_description=default_description,

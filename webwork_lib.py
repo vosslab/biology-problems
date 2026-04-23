@@ -6,6 +6,78 @@ import datetime
 import html
 import re
 
+# English connector words kept lowercase in title case, except when
+# they are the first word of the title. Used by smart_title_case.
+_MINOR_TITLE_WORDS = frozenset({
+	"a", "an", "and", "as", "at", "but", "by", "for", "in", "nor",
+	"of", "on", "or", "the", "to", "vs", "via", "with",
+})
+
+# Matches either an HTML tag (<sub>, </sub>, ...) or an HTML entity
+# (&middot;, &alpha;, ...). Used to skip over these when title-casing
+# so their internal characters keep their original case.
+_HTML_TOKEN_RE = re.compile(r"<[^>]*>|&[^;\s]+;")
+
+#============================================
+def _capitalize_first_alpha(word):
+	"""
+	Uppercase the first alphabetic char, skipping HTML tags/entities.
+
+	Never-demote rule: if the word already contains any uppercase
+	letter, it is assumed to carry intentional case (DNA, tRNA, pH,
+	Franklin's, T<sub>m</sub>, G&middot;U) and is returned unchanged.
+	Only fully-lowercase words get their first alphabetic character
+	promoted to uppercase.
+	"""
+	# never-demote guard: any existing uppercase means hands off
+	if any(character.isupper() for character in word):
+		return word
+	pos = 0
+	while pos < len(word):
+		# skip over an HTML tag or entity starting at pos
+		match = _HTML_TOKEN_RE.match(word, pos)
+		if match:
+			pos = match.end()
+			continue
+		if word[pos].isalpha():
+			return word[:pos] + word[pos].upper() + word[pos + 1:]
+		pos += 1
+	# no alphabetic char found; return unchanged
+	return word
+
+#============================================
+def smart_title_case(text):
+	"""
+	Title-case a string intended for an OPL TITLE header or similar.
+
+	Transformation rule: only lowercase -> uppercase, never the
+	reverse. A word is changed only when it is fully lowercase and
+	eligible for capitalization; anything already carrying uppercase
+	letters (acronyms, mixed-case tokens, HTML tags) is left alone.
+
+	Rules:
+	- The first word is always eligible for capitalization.
+	- Minor connector words (see _MINOR_TITLE_WORDS) are skipped when
+	  not in the first position; they are never lowercased either,
+	  so "DNA" stays "DNA" even if it happens to be minor.
+	- All other words get their first alphabetic character uppercased
+	  if they are fully lowercase.
+	- HTML tags (<sub>m</sub>) and entities (&middot;) keep their
+	  original case; internal casing of acronyms like DNA or tRNA is
+	  preserved.
+	- Apostrophes inside a word are preserved (Franklin's, not
+	  Franklin'S).
+	"""
+	words = text.split()
+	result = []
+	for index, word in enumerate(words):
+		# minor words are left untouched when not in the first position
+		if index > 0 and word.lower() in _MINOR_TITLE_WORDS:
+			result.append(word)
+		else:
+			result.append(_capitalize_first_alpha(word))
+	return " ".join(result)
+
 #============================================
 def get_yaml_value(yaml_data, *keys):
 	"""
@@ -43,6 +115,37 @@ def escape_perl_string(text_string):
 	text_string = text_string.replace("\n", "\\n")
 	return text_string
 
+def perl_string_literal(text_string):
+	"""
+	Return a complete Perl string literal for the given text.
+
+	Picks between two quoting forms:
+	- `'...'` single-quoted when the string contains no apostrophe.
+	- `q{...}` when the string contains one or more apostrophes; PG's
+	  Safe compartment parser mishandles `\\'` inside single-quoted
+	  strings (it treats the backslash as literal and ends the string
+	  at the apostrophe), so we avoid that escape by switching quote
+	  styles. See PG_COMMON_PITFALLS.md, "Apostrophes in Perl
+	  double-quoted strings".
+
+	Inside the `q{...}` form, only `\\`, `{`, and `}` need escaping.
+	"""
+	if text_string is None:
+		return "''"
+	if not isinstance(text_string, str):
+		raise TypeError(f"value is not string: {text_string}")
+	# apostrophe-free strings use the standard single-quoted form
+	if "'" not in text_string:
+		return "'" + escape_perl_string(text_string) + "'"
+	# apostrophe present: use q{...} form and escape only the chars
+	# that matter inside it (\\, {, })
+	escaped = text_string.replace("\r\n", "\n").replace("\r", "\n")
+	escaped = escaped.replace("\\", "\\\\")
+	escaped = escaped.replace("{", "\\{")
+	escaped = escaped.replace("}", "\\}")
+	escaped = escaped.replace("\n", "\\n")
+	return "q{" + escaped + "}"
+
 def perl_literal(value, indent=""):
 	"""
 	Convert a Python value to a Perl literal string.
@@ -58,7 +161,7 @@ def perl_literal(value, indent=""):
 	if isinstance(value, (int, float)):
 		return str(value)
 	if isinstance(value, str):
-		return "'" + escape_perl_string(value) + "'"
+		return perl_string_literal(value)
 	raise TypeError(f"unsupported perl literal type: {type(value)}")
 
 #============================================
@@ -351,7 +454,10 @@ def sanitize_text_for_html(text_string):
 	"""
 	Sanitize text for raw HTML output (tags stripped, entities escaped).
 
-	Preserves <sub> and <sup> tags for HTML rendering.
+	Preserves <sub>, <sup>, and <br/> tags for HTML rendering. Without
+	sheltering, strip_html_tags would convert <br/> to a real newline,
+	which later becomes the literal two-char sequence \\n inside Perl
+	single-quoted strings and renders as "\\n" text in the browser.
 	"""
 	if text_string is None:
 		return ""
@@ -364,12 +470,21 @@ def sanitize_text_for_html(text_string):
 	}
 	for tag, placeholder in _sub_sup_placeholders.items():
 		text_string = text_string.replace(tag, placeholder)
+	# shelter <br>, <br/>, <br />, <BR> ... so line-break tags survive
+	text_string = re.sub(
+		r'<\s*br\s*/?\s*>',
+		'\x00BR\x00',
+		text_string,
+		flags=re.IGNORECASE,
+	)
 	text_string = strip_html_tags(text_string, preserve_pgml_wrappers=True)
 	text_string = normalize_nbsp(text_string)
 	text_string = escape_html_preserving_entities(text_string)
 	# restore sub/sup tags from placeholders
 	for tag, placeholder in _sub_sup_placeholders.items():
 		text_string = text_string.replace(placeholder, tag)
+	# restore sheltered line-break tags as the canonical <br/> form
+	text_string = text_string.replace('\x00BR\x00', '<br/>')
 	return text_string
 
 #============================================
