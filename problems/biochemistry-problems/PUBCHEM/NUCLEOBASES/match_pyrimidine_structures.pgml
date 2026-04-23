@@ -1,0 +1,217 @@
+## TITLE('Biochemistry: Match pyrimidine structures to names')
+## DESCRIPTION
+## Match pyrimidine structures to their names using dropdown selections.
+## Shows all three canonical pyrimidines (cytosine, thymine, uracil) plus
+## one non-canonical pyrimidine (5-methylcytosine, 5-hydroxymethylcytosine,
+## or dihydrouracil) drawn as a distractor.
+## ENDDESCRIPTION
+## KEYWORDS('pyrimidines','nucleobases','matching','pubchem','rdkit')
+## DBsubject('Biochemistry')
+## DBchapter('Nucleic Acids')
+## DBsection('Nucleobases')
+## Level(2)
+## Date('2026-04-22')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	'PGstandard.pl',
+	'PGML.pl',
+	'parserPopUp.pl',
+	'PGcourse.pl'
+);
+$showPartialCorrectAnswers = 0;
+
+# ----------------------------
+# 2) Setup
+# ----------------------------
+
+# ----------------------------
+# 2a) Data
+# ----------------------------
+# Canonical pyrimidines (always shown).
+@canonical_pyrimidine_names = (
+	'cytosine',
+	'thymine',
+	'uracil',
+);
+@canonical_pyrimidine_smiles = (
+	'C1=C(NC(=O)N=C1)N',
+	'CC1=CNC(=O)NC1=O',
+	'C1=CNC(=O)NC1=O',
+);
+
+# Non-canonical pyrimidines (one chosen per problem instance as a distractor).
+@noncanonical_pyrimidine_names = (
+	'5-methylcytosine',
+	'5-hydroxymethylcytosine',
+	'dihydrouracil',
+);
+@noncanonical_pyrimidine_smiles = (
+	'CC1=C(NC(=O)N=C1)N',
+	'C1=NC(=O)NC(=C1CO)N',
+	'C1CNC(=O)NC1=O',
+);
+
+# ----------------------------
+# 2b) Helpers
+# ----------------------------
+
+sub escape_attr {
+	my ($text) = @_;
+	$text =~ s/&/&amp;/g;
+	$text =~ s/"/&quot;/g;
+	$text =~ s/</&lt;/g;
+	$text =~ s/>/&gt;/g;
+	return $text;
+}
+
+# ----------------------------
+# 2c) Randomization
+# ----------------------------
+
+# Instance-seeded RNG so this problem's shuffle is isolated.
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+
+# Pick exactly one non-canonical pyrimidine as the distractor.
+my $distractor_idx = $local_random->random(0, $#noncanonical_pyrimidine_names, 1);
+
+# Build the full displayed set: canonical pyrimidines + chosen distractor.
+@selected_names = (@canonical_pyrimidine_names, $noncanonical_pyrimidine_names[$distractor_idx]);
+@selected_smiles = (@canonical_pyrimidine_smiles, $noncanonical_pyrimidine_smiles[$distractor_idx]);
+
+$num_choices = scalar(@selected_names);
+
+# Shuffle the dropdown option order (Fisher-Yates with seeded RNG).
+@dropdown_options = @selected_names;
+for (my $i = $#dropdown_options; $i > 0; $i--) {
+	my $j = $local_random->random(0, $i, 1);
+	@dropdown_options[$i, $j] = @dropdown_options[$j, $i];
+}
+
+# Shuffle the right-column name list independently of the left-column prompts.
+@name_order = (0 .. $#selected_names);
+for (my $i = $#name_order; $i > 0; $i--) {
+	my $j = $local_random->random(0, $i, 1);
+	@name_order[$i, $j] = @name_order[$j, $i];
+}
+
+# Build one PopUp per displayed structure with the correct answer bound.
+@answer_dropdowns = ();
+for my $i (0 .. $#selected_names) {
+	$answer_dropdowns[$i] = PopUp(['', @dropdown_options], $selected_names[$i]);
+}
+
+# Build the RDKit canvas HTML snippets for each displayed structure.
+@prompt_html = ();
+for my $i (0 .. $#selected_names) {
+	my $smiles_attr = escape_attr($selected_smiles[$i]);
+	my $canvas_id = 'nb_canvas_' . ($i + 1);
+	my $canvas_html = '<canvas id="' . $canvas_id . '" width="480" height="320" data-smiles="' . $smiles_attr . '"></canvas>';
+	push @prompt_html, '<div class="nb-structure">' . $canvas_html . '</div>';
+}
+
+@right_names = map { $selected_names[$_] } @name_order;
+$answer_list = join(', ', map { ($_ + 1) . ' - ' . $selected_names[$_] } 0 .. $#selected_names);
+
+# ----------------------------
+# 2d) Header (RDKit + layout)
+# ----------------------------
+
+HEADER_TEXT(<<'END_HEADER');
+<style>
+.two-column {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 2rem;
+	align-items: flex-start;
+	justify-content: space-evenly;
+}
+.nb-structure {
+	margin: 0.4em 0 1.1em 0;
+}
+</style>
+<script src="https://unpkg.com/@rdkit/rdkit/dist/RDKit_minimal.js"></script>
+<script>
+let RDKitReady = null;
+function getRDKit() {
+	if (!RDKitReady) {
+		RDKitReady = initRDKitModule();
+	}
+	return RDKitReady;
+}
+function initMoleculeCanvases() {
+	getRDKit().then(function(RDKit) {
+		const canvases = document.querySelectorAll('canvas[data-smiles]');
+		canvases.forEach((canvas) => {
+			const smiles = canvas.dataset.smiles;
+			if (!smiles) {
+				return;
+			}
+			const mol = RDKit.get_mol(smiles);
+			const mdetails = {"explicitMethyl": true};
+			if (canvas && mol) {
+				mol.draw_to_canvas_with_highlights(canvas, JSON.stringify(mdetails));
+			}
+		});
+	}).catch(error => {
+		console.error('Error initializing RDKit:', error);
+	});
+}
+if (document.readyState === 'loading') {
+	document.addEventListener('DOMContentLoaded', initMoleculeCanvases);
+} else {
+	initMoleculeCanvases();
+}
+</script>
+END_HEADER
+
+# ----------------------------
+# 3) Statement (PGML)
+# ----------------------------
+
+BEGIN_PGML
+Match the pyrimidine structures to their names.
+
+Note: Each choice will be used exactly once.
+
+[@ MODES(HTML => '<div class="two-column"><div>') @]*
+[@ join(
+	"\n\n",
+	map {
+		'[_]{$answer_dropdowns[' . $_ . ']} '
+			. '*' . ($_ + 1) . '.* '
+			. '[$prompt_html[' . $_ . ']]*'
+	} 0 .. $#prompt_html
+) @]**
+[@ MODES(HTML => '</div><div>') @]*
+[@ join(
+	"\n\n",
+	map {
+		chr(65 + $_) . '\\.' . ' ' . '[$right_names[' . $_ . ']]'
+	} 0 .. $#right_names
+) @]**
+[@ MODES(HTML => '</div></div>') @]*
+END_PGML
+
+# ----------------------------
+# 4) Solution
+# ----------------------------
+
+BEGIN_PGML_SOLUTION
+The correct matches are: [$answer_list].
+END_PGML_SOLUTION
+
+ENDDOCUMENT();

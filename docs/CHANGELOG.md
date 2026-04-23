@@ -3,6 +3,24 @@
 ## 2026-04-22
 
 ### Additions and New Features
+- Added two nucleobase structure-matching problems under
+  [problems/biochemistry-problems/PUBCHEM/NUCLEOBASES/](../problems/biochemistry-problems/PUBCHEM/NUCLEOBASES/):
+  `match_purine_structures.{py,pgml}` and
+  `match_pyrimidine_structures.{py,pgml}`. Each question displays the
+  canonical bases for its class (adenine/guanine for purines;
+  cytosine/thymine/uracil for pyrimidines) plus exactly one
+  non-canonical base as a distractor drawn from a same-class pool
+  (purines: isoguanine, 7-methylguanine; pyrimidines: 5-methylcytosine,
+  5-hydroxymethylcytosine, dihydrouracil). Both BBQ generators use
+  `moleculelib.generate_html_for_molecule` for Blackboard-sanitizer-safe
+  RDKit loading (matches the working amino-acid matcher). PGML files
+  mirror `PUBCHEM/AMINO_ACIDS/match_amino_acid_structures.pgml`: seeded
+  `PGrandom`, `parserPopUp.pl` widgets, flexbox two-column layout (no
+  `<table>`), and RDKit `HEADER_TEXT` block. Helper
+  [nucleobaselib.py](../problems/biochemistry-problems/PUBCHEM/NUCLEOBASES/nucleobaselib.py)
+  is co-located in `NUCLEOBASES/` (only used by the two matchers) and
+  centralizes canonical/non-canonical name lists, SMILES strings, and a
+  deterministic `pick_distractor(class, rng)` helper.
 - Added five new bptools Python generators in
   [problems/biochemistry-problems/lipids/](../problems/biochemistry-problems/lipids/)
   that mirror the four PGML lipid items, plus a shared library:

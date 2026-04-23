@@ -3410,6 +3410,7 @@ name_to_cid:
   deoxyuridine-5'-diphosphate: 145729
   deoxyuridine-triphosphate: 25244408
   dextrose: 5793
+  dihydrouracil: 649
   dihydrouridine: 94312
   dihydroxyacetone phosphate: 668
   dilauroyl phosphatidylcholine: 512874
@@ -3726,4 +3727,4 @@ name_to_cid:
   xylulose-5-phosphate: 850
   zidovudine triphosphate: 72187
   zidovudine-triphosphate: 72187
-time_stamp: 1770126222
+time_stamp: 1776902884
