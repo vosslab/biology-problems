@@ -1,0 +1,543 @@
+## TITLE('Test bed: membrane_transporter_svg v3 variants (A/B/C)')
+## DESCRIPTION
+## Renderer-only testbed. Displays three v3 design variants (V3a, V3b, V3c)
+## side by side for the same six deterministic transport-logic cases used by
+## the v2 testbed. Transport logic is identical across variants; only the
+## visual treatment differs, so the author can A/B compare.
+## ENDDESCRIPTION
+## KEYWORDS('membrane','transport','svg','testbed','v3')
+## DBsubject('Biochemistry')
+## DBchapter('Membranes and Transport')
+## DBsection('Membrane Transport Proteins')
+## Level(0)
+## Date('2026-04-23')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+loadMacros(
+	'PGstandard.pl',
+	'PGML.pl',
+	'PGcourse.pl'
+);
+$showPartialCorrectAnswers = 1;
+
+# ==== BEGIN BLOCK: membrane_transporter_svg_v3 (unified dispatcher) ====
+# Three variants share most subs but dispatch by a $variant string arg
+# ('v3a' | 'v3b' | 'v3c').
+#
+# Variant axis summary:
+#   V3a  A0 + B1 + C1 + D1 + E1 + F1 + G1  ("minimal tweak")
+#   V3b  A1 + B2 + C1 + D1 + E2 + F1 + G1  ("carrier shape")
+#   V3c  A2 + B1 + C2 + D1 + E2 + F1 + G1  ("asymmetric cavity")
+#
+# Canvas 420 x 240. Wider lanes (G1): LEFT=185, RIGHT=235, CENTER=210.
+# Bilayer: extra y<70, outer leaflet 70..95, core gap 95..125,
+# inner leaflet 125..150, cyto y>150. Head-group y rows at 73 and 147.
+
+$CANVAS_W    = 420;
+$CANVAS_H    = 240;
+$EXTRA_FILL  = '#eaf2f8';
+$CYTO_FILL   = '#fdfcf5';
+$LEAFLET_FILL = '#d9b88a';
+$COREGAP_FILL = '#e8d4ad';
+$HEAD_FILL    = '#b5926b';
+$PROTEIN_FILL = '#5f6c7b';
+
+# Compartment rectangles and bilayer sandwich. Shared across variants.
+sub svg_bilayer {
+	my $s = '';
+	$s .= '<rect x="0" y="0" width="420" height="70" fill="' . $EXTRA_FILL . '"/>';
+	$s .= '<rect x="0" y="150" width="420" height="90" fill="' . $CYTO_FILL . '"/>';
+	$s .= '<rect x="0" y="70" width="420" height="25" fill="' . $LEAFLET_FILL . '"/>';
+	$s .= '<rect x="0" y="95" width="420" height="30" fill="' . $COREGAP_FILL . '"/>';
+	$s .= '<rect x="0" y="125" width="420" height="25" fill="' . $LEAFLET_FILL . '"/>';
+	# Reduced head-group weight (F1): r=2.6, opacity 0.75. Skip protein span.
+	for (my $cx = 10; $cx <= 410; $cx += 14) {
+		next if ($cx >= 171 && $cx <= 249);
+		$s .= '<circle cx="' . $cx . '" cy="73" r="2.6" fill="' . $HEAD_FILL
+			. '" opacity="0.75"/>';
+		$s .= '<circle cx="' . $cx . '" cy="147" r="2.6" fill="' . $HEAD_FILL
+			. '" opacity="0.75"/>';
+	}
+	return $s;
+}
+
+# Protein silhouette. Variant selects A0/A1/A2.
+sub svg_protein {
+	my ($variant) = @_;
+	my $s = '';
+	my $fill = $PROTEIN_FILL;
+	my $stroke = '#2f3743';
+	if ($variant eq 'v3a') {
+		# A0: rounded rectangle, v2 baseline
+		$s .= '<rect x="175" y="55" width="70" height="130" rx="18" ry="18"'
+			. ' fill="' . $fill . '" stroke="' . $stroke . '" stroke-width="1.5"/>';
+	} elsif ($variant eq 'v3b') {
+		# A1: subtly waisted path. Top corners at (175,55)-(245,55), curves
+		# inward to (180,120)-(240,120) at the waist, then back out to
+		# (175,185)-(245,185). Use cubic beziers along each side.
+		my $d = 'M 193 55 '
+			. 'L 227 55 '
+			. 'Q 245 55 245 75 '
+			. 'C 245 95 239 110 239 120 '
+			. 'C 239 130 245 145 245 165 '
+			. 'Q 245 185 227 185 '
+			. 'L 193 185 '
+			. 'Q 175 185 175 165 '
+			. 'C 175 145 181 130 181 120 '
+			. 'C 181 110 175 95 175 75 '
+			. 'Q 175 55 193 55 Z';
+		$s .= '<path d="' . $d . '" fill="' . $fill . '" stroke="' . $stroke
+			. '" stroke-width="1.5"/>';
+	} else {
+		# A2: asymmetric carrier with an inward-facing cavity on the cytosol
+		# side. Base rounded rect plus a semicircular notch cut from the
+		# bottom face opening downward. Implement as a single path.
+		# Outline: top rounded rect, then on the bottom edge we dip in.
+		my $d = 'M 193 55 '
+			. 'L 227 55 '
+			. 'Q 245 55 245 75 '
+			. 'L 245 165 '
+			. 'Q 245 185 227 185 '
+			. 'L 221 185 '
+			# cavity: arc inward and back out (notch on bottom/cyto face)
+			. 'A 11 11 0 0 1 199 185 '
+			. 'L 193 185 '
+			. 'Q 175 185 175 165 '
+			. 'L 175 75 '
+			. 'Q 175 55 193 55 Z';
+		$s .= '<path d="' . $d . '" fill="' . $fill . '" stroke="' . $stroke
+			. '" stroke-width="1.5"/>';
+	}
+	# Waist gate dashed line at y=120. For v3b path the body is pinched there
+	# so the dash still fits inside.
+	my $wx1 = 182;
+	my $wx2 = 238;
+	$s .= '<line x1="' . $wx1 . '" y1="120" x2="' . $wx2 . '" y2="120"'
+		. ' stroke="' . $stroke . '" stroke-width="1.5" stroke-dasharray="4,3"/>';
+	return $s;
+}
+
+# Compartment italic labels. Same across variants.
+sub svg_compartment_labels {
+	my $s = '';
+	$s .= '<text x="412" y="22" font-family="sans-serif" font-size="13"'
+		. ' font-style="italic" fill="#2c3e50" text-anchor="end">extracellular</text>';
+	$s .= '<text x="412" y="232" font-family="sans-serif" font-size="13"'
+		. ' font-style="italic" fill="#2c3e50" text-anchor="end">cytosol</text>';
+	return $s;
+}
+
+# "In" arrow at lane x. $variant controls B0/B1/B2 segmentation.
+sub svg_arrow_in {
+	my ($x, $color, $variant) = @_;
+	my $s = '';
+	my ($x_up, $x_dn, $y_up_end, $y_dn_start);
+	if ($variant eq 'v3b') {
+		# B2: bigger gap at waist, collinear
+		$x_up = $x; $x_dn = $x;
+		$y_up_end = 108; $y_dn_start = 132;
+	} else {
+		# B1: small lateral jog across the waist. Upper lane at x, lower at x+2.
+		$x_up = $x; $x_dn = $x + 2;
+		$y_up_end = 115; $y_dn_start = 125;
+	}
+	$s .= '<line x1="' . $x_up . '" y1="55" x2="' . $x_up . '" y2="' . $y_up_end
+		. '" stroke="' . $color . '" stroke-width="3" stroke-linecap="round"/>';
+	$s .= '<line x1="' . $x_dn . '" y1="' . $y_dn_start . '" x2="' . $x_dn
+		. '" y2="185" stroke="' . $color . '" stroke-width="3" stroke-linecap="round"/>';
+	$s .= '<polygon points="'
+		. ($x_dn - 5) . ',185 '
+		. ($x_dn + 5) . ',185 '
+		. $x_dn . ',193'
+		. '" fill="' . $color . '"/>';
+	return $s;
+}
+
+# "Out" arrow at lane x. $variant controls B0/B1/B2.
+sub svg_arrow_out {
+	my ($x, $color, $variant) = @_;
+	my $s = '';
+	my ($x_up, $x_dn, $y_up_start, $y_dn_end);
+	if ($variant eq 'v3b') {
+		$x_up = $x; $x_dn = $x;
+		$y_up_start = 108; $y_dn_end = 132;
+	} else {
+		# B1 jog: lower segment at x, upper at x+2. Arrowhead tip at top on upper.
+		$x_up = $x + 2; $x_dn = $x;
+		$y_up_start = 115; $y_dn_end = 125;
+	}
+	$s .= '<line x1="' . $x_dn . '" y1="185" x2="' . $x_dn . '" y2="' . $y_dn_end
+		. '" stroke="' . $color . '" stroke-width="3" stroke-linecap="round"/>';
+	$s .= '<line x1="' . $x_up . '" y1="' . $y_up_start . '" x2="' . $x_up
+		. '" y2="55" stroke="' . $color . '" stroke-width="3" stroke-linecap="round"/>';
+	$s .= '<polygon points="'
+		. ($x_up - 5) . ',55 '
+		. ($x_up + 5) . ',55 '
+		. $x_up . ',47'
+		. '" fill="' . $color . '"/>';
+	return $s;
+}
+
+# Solute blob (r=10).
+sub svg_solute_blob {
+	my ($cx, $cy, $color) = @_;
+	return '<circle cx="' . $cx . '" cy="' . $cy . '" r="10"'
+		. ' fill="' . $color . '" stroke="#1f2937" stroke-width="1"/>';
+}
+
+# Solute label. $side is 'left' | 'right' | 'center'. $variant picks C1/C2.
+# $top_stagger is 0 or 1 (only used when both solutes sit at top and we want
+# vertical stagger under C2).
+sub svg_solute_label {
+	my ($cx, $cy, $label_html, $side, $variant, $top_stagger) = @_;
+	my $tx;
+	my $anchor;
+	my $dy = 5;
+	if ($side eq 'left') {
+		$tx = $cx - 16;
+		$anchor = 'end';
+	} elsif ($side eq 'right') {
+		$tx = $cx + 16;
+		$anchor = 'start';
+	} else {
+		# center: uniporter only, keep at right of blob
+		$tx = $cx + 16;
+		$anchor = 'start';
+	}
+	# C2 stagger for top-row stacked labels (symporter both-in cases).
+	if ($variant eq 'v3c' && $top_stagger) {
+		# Left lane top baseline cy+3, right lane cy+8.
+		if ($side eq 'left') {
+			$dy = 3;
+		} elsif ($side eq 'right') {
+			$dy = 8;
+		}
+	}
+	my $s = '<text x="' . $tx . '" y="' . ($cy + $dy) . '"'
+		. ' font-family="sans-serif" font-size="14" font-weight="600"'
+		. ' text-anchor="' . $anchor . '" fill="#1f2937">' . $label_html . '</text>';
+	return $s;
+}
+
+# Stoichiometry label. D1: above top blob (y=cy-16) or below bottom blob
+# (y=cy+22), centered on the lane.
+sub svg_arrow_stoich_label {
+	my ($x, $dir, $color, $stoich) = @_;
+	my $cy = ($dir eq 'in') ? 40 : 200;
+	my $y  = ($dir eq 'in') ? ($cy - 16) : ($cy + 22);
+	my $s = '<text x="' . $x . '" y="' . $y . '"'
+		. ' font-family="sans-serif" font-size="12" font-weight="700"'
+		. ' fill="' . $color . '" text-anchor="middle">'
+		. $stoich . '&#215;</text>';
+	return $s;
+}
+
+# Gradient dots. $variant picks E1 (density-asymmetric) or E2 (substrate
+# territories via $territory = 'left'|'right'|'full'). $side is 'extra'|'cyto'.
+sub svg_gradient_dots {
+	my ($side, $count, $color_light, $variant, $territory) = @_;
+	return '' if $count <= 0;
+	$count = 6 if $count > 6;
+	my $s = '';
+	if ($variant eq 'v3a') {
+		# E1: density-asymmetric cluster. For high counts (>=4) pack densely
+		# on the left half of the compartment; for low counts, sparse on the
+		# right half. "High" vs "low" is judged by count alone.
+		my @xs_dense = (22, 42, 62, 82, 102, 32, 52, 72, 92);
+		my @xs_sparse = (300, 330, 360, 390);
+		my @ys_extra_dense = (14, 30, 46, 58);
+		my @ys_cyto_dense  = (172, 188, 206, 224);
+		my @ys_extra_sparse = (24, 44);
+		my @ys_cyto_sparse  = (184, 214);
+		my @xs;
+		my @ys;
+		my $alpha;
+		if ($count >= 4) {
+			@xs = @xs_dense;
+			@ys = ($side eq 'extra') ? @ys_extra_dense : @ys_cyto_dense;
+			$alpha = 0.9;
+		} else {
+			@xs = @xs_sparse;
+			@ys = ($side eq 'extra') ? @ys_extra_sparse : @ys_cyto_sparse;
+			$alpha = 0.7;
+		}
+		my $placed = 0;
+		for (my $i = 0; $i < scalar(@xs) && $placed < $count; $i++) {
+			my $cx = $xs[$i];
+			my $cy = $ys[$i % scalar(@ys)];
+			$s .= '<circle cx="' . $cx . '" cy="' . $cy . '" r="3.5"'
+				. ' fill="' . $color_light . '" opacity="' . $alpha . '"/>';
+			$placed++;
+		}
+		return $s;
+	}
+	# E2: substrate territories. $territory selects left vs right half.
+	my @xs_left  = (22, 42, 62, 82, 102, 32, 52, 72);
+	my @xs_right = (300, 320, 340, 360, 380, 310, 330, 350);
+	my @ys_extra = (18, 36, 54, 28, 46);
+	my @ys_cyto  = (178, 196, 216, 188, 208);
+	my @xs;
+	if ($territory eq 'right') {
+		@xs = @xs_right;
+	} else {
+		@xs = @xs_left;
+	}
+	my @ys = ($side eq 'extra') ? @ys_extra : @ys_cyto;
+	my $alpha = ($count >= 4) ? 0.9 : 0.7;
+	my $placed = 0;
+	for (my $i = 0; $i < scalar(@xs) && $placed < $count; $i++) {
+		my $cx = $xs[$i];
+		my $cy = $ys[$i % scalar(@ys)];
+		$s .= '<circle cx="' . $cx . '" cy="' . $cy . '" r="3.5"'
+			. ' fill="' . $color_light . '" opacity="' . $alpha . '"/>';
+		$placed++;
+	}
+	return $s;
+}
+
+sub svg_open {
+	return '<svg xmlns="http://www.w3.org/2000/svg" version="1.1"'
+		. ' width="420" height="240" viewBox="0 0 420 240"'
+		. ' style="max-width: 480px; border: 1px solid #cbd5e0; margin: 0.5em 0;">';
+}
+sub svg_close { return '</svg>'; }
+
+# ==== END BLOCK: membrane_transporter_svg_v3 ====
+
+# Shared label and color constants.
+$LBL_GLUCOSE = 'glucose';
+$LBL_NA  = 'Na<tspan baseline-shift="super" font-size="10">+</tspan>';
+$LBL_H   = 'H<tspan baseline-shift="super" font-size="10">+</tspan>';
+$LBL_CA  = 'Ca<tspan baseline-shift="super" font-size="10">2+</tspan>';
+$COL_GLU = '#d97706';
+$COL_NA  = '#2563eb';
+$COL_H   = '#ea580c';
+$COL_CA  = '#15803d';
+$COL_NA_LT  = '#93c5fd';
+$COL_H_LT   = '#fdba74';
+$COL_GLU_LT = '#fcd34d';
+
+$Y_IN  = 40;
+$Y_OUT = 200;
+
+# Wider lanes (G1)
+$LANE_CENTER = 210;
+$LANE_LEFT   = 185;
+$LANE_RIGHT  = 235;
+
+# ----------------------------
+# Helper: build a single SVG for one (case, variant) pair.
+# $case is 1..6, $variant is 'v3a'|'v3b'|'v3c'.
+# ----------------------------
+sub build_svg {
+	my ($case, $variant) = @_;
+	my $s = svg_open();
+	$s .= svg_bilayer();
+	# Gradient dots, when present, are emitted before the protein/arrows so
+	# arrows overlay them but after bilayer rectangles.
+	if ($case == 5) {
+		# Antiporter gradient: Na+ in (6/1), H+ out (1/4)
+		if ($variant eq 'v3a') {
+			$s .= svg_gradient_dots('extra', 6, $COL_NA_LT, $variant, '');
+			$s .= svg_gradient_dots('cyto',  1, $COL_NA_LT, $variant, '');
+			$s .= svg_gradient_dots('extra', 1, $COL_H_LT,  $variant, '');
+			$s .= svg_gradient_dots('cyto',  4, $COL_H_LT,  $variant, '');
+		} else {
+			# E2 territories: Na+ (left lane) -> left half; H+ (right lane) -> right half
+			$s .= svg_gradient_dots('extra', 6, $COL_NA_LT, $variant, 'left');
+			$s .= svg_gradient_dots('cyto',  1, $COL_NA_LT, $variant, 'left');
+			$s .= svg_gradient_dots('extra', 1, $COL_H_LT,  $variant, 'right');
+			$s .= svg_gradient_dots('cyto',  4, $COL_H_LT,  $variant, 'right');
+		}
+	} elsif ($case == 6) {
+		# Symporter gradient: Na+ (6/1), glucose (2/4)
+		if ($variant eq 'v3a') {
+			$s .= svg_gradient_dots('extra', 6, $COL_NA_LT,  $variant, '');
+			$s .= svg_gradient_dots('cyto',  1, $COL_NA_LT,  $variant, '');
+			$s .= svg_gradient_dots('extra', 2, $COL_GLU_LT, $variant, '');
+			$s .= svg_gradient_dots('cyto',  4, $COL_GLU_LT, $variant, '');
+		} else {
+			$s .= svg_gradient_dots('extra', 6, $COL_NA_LT,  $variant, 'left');
+			$s .= svg_gradient_dots('cyto',  1, $COL_NA_LT,  $variant, 'left');
+			$s .= svg_gradient_dots('extra', 2, $COL_GLU_LT, $variant, 'right');
+			$s .= svg_gradient_dots('cyto',  4, $COL_GLU_LT, $variant, 'right');
+		}
+	}
+	# Protein on top of gradient dots but under arrows/blobs so the gate is
+	# unambiguous.
+	$s .= svg_protein($variant);
+	# Arrows, blobs, labels by case.
+	if ($case == 1) {
+		# Uniporter glucose inward
+		$s .= svg_arrow_in($LANE_CENTER, $COL_GLU, $variant);
+		$s .= svg_solute_blob($LANE_CENTER, $Y_IN, $COL_GLU);
+		$s .= svg_compartment_labels();
+		$s .= svg_solute_label($LANE_CENTER, $Y_IN, $LBL_GLUCOSE, 'center', $variant, 0);
+	} elsif ($case == 2) {
+		# Uniporter Na+ outward
+		$s .= svg_arrow_out($LANE_CENTER, $COL_NA, $variant);
+		$s .= svg_solute_blob($LANE_CENTER, $Y_OUT, $COL_NA);
+		$s .= svg_compartment_labels();
+		$s .= svg_solute_label($LANE_CENTER, $Y_OUT, $LBL_NA, 'center', $variant, 0);
+	} elsif ($case == 3) {
+		# Symporter Na+ + glucose both inward (top stack; stagger under v3c)
+		$s .= svg_arrow_in($LANE_LEFT,  $COL_NA, $variant);
+		$s .= svg_arrow_in($LANE_RIGHT, $COL_GLU, $variant);
+		$s .= svg_solute_blob($LANE_LEFT,  $Y_IN, $COL_NA);
+		$s .= svg_solute_blob($LANE_RIGHT, $Y_IN, $COL_GLU);
+		$s .= svg_compartment_labels();
+		$s .= svg_solute_label($LANE_LEFT,  $Y_IN, $LBL_NA, 'left',  $variant, 1);
+		$s .= svg_solute_label($LANE_RIGHT, $Y_IN, $LBL_GLUCOSE, 'right', $variant, 1);
+	} elsif ($case == 4) {
+		# Antiporter 3 Na+ in / 1 Ca2+ out
+		$s .= svg_arrow_in($LANE_LEFT,   $COL_NA, $variant);
+		$s .= svg_arrow_out($LANE_RIGHT, $COL_CA, $variant);
+		$s .= svg_solute_blob($LANE_LEFT,  $Y_IN,  $COL_NA);
+		$s .= svg_solute_blob($LANE_RIGHT, $Y_OUT, $COL_CA);
+		$s .= svg_compartment_labels();
+		$s .= svg_arrow_stoich_label($LANE_LEFT, 'in', $COL_NA, 3);
+		$s .= svg_solute_label($LANE_LEFT,  $Y_IN,  $LBL_NA, 'left',  $variant, 0);
+		$s .= svg_solute_label($LANE_RIGHT, $Y_OUT, $LBL_CA, 'right', $variant, 0);
+	} elsif ($case == 5) {
+		# Antiporter with gradient. Na+ in, H+ out (stoich 1,1).
+		$s .= svg_arrow_in($LANE_LEFT,   $COL_NA, $variant);
+		$s .= svg_arrow_out($LANE_RIGHT, $COL_H,  $variant);
+		$s .= svg_solute_blob($LANE_LEFT,  $Y_IN,  $COL_NA);
+		$s .= svg_solute_blob($LANE_RIGHT, $Y_OUT, $COL_H);
+		$s .= svg_compartment_labels();
+		$s .= svg_solute_label($LANE_LEFT,  $Y_IN,  $LBL_NA, 'left',  $variant, 0);
+		$s .= svg_solute_label($LANE_RIGHT, $Y_OUT, $LBL_H,  'right', $variant, 0);
+	} else {
+		# Case 6: symporter with gradient. Both inward (top stack; stagger under v3c)
+		$s .= svg_arrow_in($LANE_LEFT,  $COL_NA,  $variant);
+		$s .= svg_arrow_in($LANE_RIGHT, $COL_GLU, $variant);
+		$s .= svg_solute_blob($LANE_LEFT,  $Y_IN, $COL_NA);
+		$s .= svg_solute_blob($LANE_RIGHT, $Y_IN, $COL_GLU);
+		$s .= svg_compartment_labels();
+		$s .= svg_solute_label($LANE_LEFT,  $Y_IN, $LBL_NA, 'left',  $variant, 1);
+		$s .= svg_solute_label($LANE_RIGHT, $Y_IN, $LBL_GLUCOSE, 'right', $variant, 1);
+	}
+	$s .= svg_close();
+	return $s;
+}
+
+# Build all 18 SVGs (6 cases x 3 variants) as bare vars for PGML.
+$svg_1a = build_svg(1, 'v3a'); $svg_1b = build_svg(1, 'v3b'); $svg_1c = build_svg(1, 'v3c');
+$svg_2a = build_svg(2, 'v3a'); $svg_2b = build_svg(2, 'v3b'); $svg_2c = build_svg(2, 'v3c');
+$svg_3a = build_svg(3, 'v3a'); $svg_3b = build_svg(3, 'v3b'); $svg_3c = build_svg(3, 'v3c');
+$svg_4a = build_svg(4, 'v3a'); $svg_4b = build_svg(4, 'v3b'); $svg_4c = build_svg(4, 'v3c');
+$svg_5a = build_svg(5, 'v3a'); $svg_5b = build_svg(5, 'v3b'); $svg_5c = build_svg(5, 'v3c');
+$svg_6a = build_svg(6, 'v3a'); $svg_6b = build_svg(6, 'v3b'); $svg_6c = build_svg(6, 'v3c');
+
+BEGIN_PGML
+
+Renderer-only testbed for [`membrane_transporter_svg v3`]* variants. Each of
+the six transport-logic cases below is shown three times: V3a (minimal tweak),
+V3b (carrier shape), V3c (asymmetric cavity). Transport logic is identical
+across variants.
+
+**Case 1: uniporter, glucose, inward (stoich 1)**
+
+V3a:
+
+[$svg_1a]*
+
+V3b:
+
+[$svg_1b]*
+
+V3c:
+
+[$svg_1c]*
+
+**Case 2: uniporter, Na+, outward (stoich 1)**
+
+V3a:
+
+[$svg_2a]*
+
+V3b:
+
+[$svg_2b]*
+
+V3c:
+
+[$svg_2c]*
+
+**Case 3: symporter, Na+ + glucose, both inward (stoich 1,1)**
+
+V3a:
+
+[$svg_3a]*
+
+V3b:
+
+[$svg_3b]*
+
+V3c:
+
+[$svg_3c]*
+
+**Case 4: antiporter, 3 Na+ in / 1 Ca2+ out**
+
+V3a:
+
+[$svg_4a]*
+
+V3b:
+
+[$svg_4b]*
+
+V3c:
+
+[$svg_4c]*
+
+**Case 5: antiporter with gradient dots, Na+ in (6/1) / H+ out (1/4)**
+
+V3a:
+
+[$svg_5a]*
+
+V3b:
+
+[$svg_5b]*
+
+V3c:
+
+[$svg_5c]*
+
+**Case 6: symporter with gradient dots, Na+ (6/1) + glucose (2/4) inward**
+
+V3a:
+
+[$svg_6a]*
+
+V3b:
+
+[$svg_6b]*
+
+V3c:
+
+[$svg_6c]*
+
+END_PGML
+
+BEGIN_PGML_SOLUTION
+
+Visual A/B: compare protein silhouette (A0 rect vs A1 waist vs A2 cavity),
+arrow break (B1 lateral jog vs B2 bigger gap), label anchors (C1 lane-
+anchored vs C2 staggered), stoichiometry (D1 centered above/below blob),
+gradient density (E1 asymmetric cluster vs E2 left/right territories).
+
+END_PGML_SOLUTION
+
+ENDDOCUMENT();

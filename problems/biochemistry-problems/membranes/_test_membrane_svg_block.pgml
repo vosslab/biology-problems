@@ -1,0 +1,367 @@
+## TITLE('Test bed: membrane_transporter_svg v2 block')
+## DESCRIPTION
+## Renderer-only testbed for the shared membrane_transporter_svg (v2) block.
+## Displays six deterministic SVGs in a grid so the author can visually
+## verify layout (carrier-style waist gate, stacked labels, stoichiometry
+## labels, gradient dots). Not a graded question.
+## ENDDESCRIPTION
+## KEYWORDS('membrane','transport','svg','testbed')
+## DBsubject('Biochemistry')
+## DBchapter('Membranes and Transport')
+## DBsection('Membrane Transport Proteins')
+## Level(0)
+## Date('2026-04-23')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	'PGstandard.pl',
+	'PGML.pl',
+	'PGcourse.pl'
+);
+$showPartialCorrectAnswers = 1;
+
+# ==== BEGIN BLOCK: membrane_transporter_svg (v2) ====
+# Schematic transporter renderer. Canvas 420 x 240, three-zone phospholipid
+# bilayer with head-group circles, darker rounded-rectangle transporter with
+# a dashed waist line suggesting a conformational gate (carrier, not channel),
+# and fixed arrow lanes split into two segments by the waist.
+#
+# Coordinate budget (y grows downward):
+#   0..70   extracellular compartment (pale blue)
+#   70..95  outer leaflet (muted tan) with head-group row at y=73
+#   95..125 hydrophobic core gap (lighter tan)
+#   125..150 inner leaflet (muted tan) with head-group row at y=147
+#   150..240 cytosol compartment (pale cream)
+# Transporter: rounded rect x=175..245, y=55..185, rx=18.
+# Waist gate: dashed line at y=120, x=180..240.
+# Arrow lanes: center x=210 (uniporter), left x=192, right x=228.
+# Substrate blobs: "in" at y=40, "out" at y=200.
+# Arrow segments: "in"  y=55..115 and y=125..185 (tip at y=193);
+#                 "out" y=185..125 and y=115..55 (tip at y=47).
+#
+# Layer order in Setup (bottom to top):
+#   svg_open, svg_backdrop, svg_gradient_dots, svg_arrow_*, svg_solute_blob,
+#   svg_compartment_labels, svg_arrow_stoich_label, svg_solute_label, svg_close.
+
+$CANVAS_W    = 420;
+$CANVAS_H    = 240;
+$EXTRA_FILL  = '#eaf2f8';
+$CYTO_FILL   = '#fdfcf5';
+$LEAFLET_FILL = '#d9b88a';
+$COREGAP_FILL = '#e8d4ad';
+$HEAD_FILL    = '#b5926b';
+$PROTEIN_FILL = '#5f6c7b';
+
+# Emit the constant backdrop: bilayer, head-group rows, the transporter body,
+# and the dashed waist line. No text.
+sub svg_backdrop {
+	my $s = '';
+	# Compartment rectangles
+	$s .= '<rect x="0" y="0" width="420" height="70" fill="' . $EXTRA_FILL . '"/>';
+	$s .= '<rect x="0" y="150" width="420" height="90" fill="' . $CYTO_FILL . '"/>';
+	# Bilayer three-zone sandwich
+	$s .= '<rect x="0" y="70" width="420" height="25" fill="' . $LEAFLET_FILL . '"/>';
+	$s .= '<rect x="0" y="95" width="420" height="30" fill="' . $COREGAP_FILL . '"/>';
+	$s .= '<rect x="0" y="125" width="420" height="25" fill="' . $LEAFLET_FILL . '"/>';
+	# Head-group circles along the outer edges of each leaflet. Skip the
+	# protein footprint x=175..245. Spacing 14 px gives ~30 heads per row.
+	for (my $cx = 10; $cx <= 410; $cx += 14) {
+		next if ($cx >= 171 && $cx <= 249);
+		$s .= '<circle cx="' . $cx . '" cy="73" r="3.2" fill="' . $HEAD_FILL . '"/>';
+		$s .= '<circle cx="' . $cx . '" cy="147" r="3.2" fill="' . $HEAD_FILL . '"/>';
+	}
+	# Transporter body: rounded rectangle spanning the full bilayer.
+	$s .= '<rect x="175" y="55" width="70" height="130" rx="18" ry="18"'
+		. ' fill="' . $PROTEIN_FILL . '" stroke="#2f3743" stroke-width="1.5"/>';
+	# Dashed waist line at y=120 suggesting a conformational gate between
+	# inward-facing and outward-facing states (carrier, not channel).
+	$s .= '<line x1="180" y1="120" x2="240" y2="120"'
+		. ' stroke="#2f3743" stroke-width="1.5" stroke-dasharray="4,3"/>';
+	return $s;
+}
+
+# Emit italic compartment labels. Drawn last so they overlay everything.
+sub svg_compartment_labels {
+	my $s = '';
+	$s .= '<text x="412" y="22" font-family="sans-serif" font-size="13"'
+		. ' font-style="italic" fill="#2c3e50" text-anchor="end">extracellular</text>';
+	$s .= '<text x="412" y="232" font-family="sans-serif" font-size="13"'
+		. ' font-style="italic" fill="#2c3e50" text-anchor="end">cytosol</text>';
+	return $s;
+}
+
+# Draw an "in" arrow (extracellular -> cytosol) at lane x, color $color.
+# Two segments interrupted by the dashed waist at y=120. Arrowhead tip y=193.
+sub svg_arrow_in {
+	my ($x, $color) = @_;
+	my $s = '';
+	# Upper segment: substrate side (y=55) to just above waist (y=115)
+	$s .= '<line x1="' . $x . '" y1="55" x2="' . $x . '" y2="115"'
+		. ' stroke="' . $color . '" stroke-width="3" stroke-linecap="round"/>';
+	# Lower segment: just below waist (y=125) to arrow base (y=185)
+	$s .= '<line x1="' . $x . '" y1="125" x2="' . $x . '" y2="185"'
+		. ' stroke="' . $color . '" stroke-width="3" stroke-linecap="round"/>';
+	# Arrowhead triangle; tip at y=193.
+	$s .= '<polygon points="'
+		. ($x - 5) . ',185 '
+		. ($x + 5) . ',185 '
+		. $x . ',193'
+		. '" fill="' . $color . '"/>';
+	return $s;
+}
+
+# Draw an "out" arrow (cytosol -> extracellular) at lane x, color $color.
+# Two segments interrupted by the dashed waist at y=120. Arrowhead tip y=47.
+sub svg_arrow_out {
+	my ($x, $color) = @_;
+	my $s = '';
+	# Lower segment: substrate side (y=185) up to just below waist (y=125)
+	$s .= '<line x1="' . $x . '" y1="185" x2="' . $x . '" y2="125"'
+		. ' stroke="' . $color . '" stroke-width="3" stroke-linecap="round"/>';
+	# Upper segment: just above waist (y=115) to arrow base (y=55)
+	$s .= '<line x1="' . $x . '" y1="115" x2="' . $x . '" y2="55"'
+		. ' stroke="' . $color . '" stroke-width="3" stroke-linecap="round"/>';
+	# Arrowhead triangle; tip at y=47.
+	$s .= '<polygon points="'
+		. ($x - 5) . ',55 '
+		. ($x + 5) . ',55 '
+		. $x . ',47'
+		. '" fill="' . $color . '"/>';
+	return $s;
+}
+
+# Emit a stoichiometry "n&#215;" label near the arrow base. $dir is "in" or
+# "out". Caller should only call when stoich > 1.
+sub svg_arrow_stoich_label {
+	my ($x, $dir, $color, $stoich) = @_;
+	my $y = ($dir eq 'in') ? 44 : 216;
+	my $s = '';
+	$s .= '<text x="' . ($x - 9) . '" y="' . $y . '"'
+		. ' font-family="sans-serif" font-size="12" font-weight="700"'
+		. ' fill="' . $color . '" text-anchor="end">'
+		. $stoich . '&#215;</text>';
+	return $s;
+}
+
+# Draw a substrate blob (r=10). No text.
+sub svg_solute_blob {
+	my ($cx, $cy, $color) = @_;
+	my $s = '';
+	$s .= '<circle cx="' . $cx . '" cy="' . $cy . '" r="10"'
+		. ' fill="' . $color . '" stroke="#1f2937" stroke-width="1"/>';
+	return $s;
+}
+
+# Draw the solute label to the right of the blob. $label_html is raw SVG
+# text content (may include <tspan> for sub/superscripts).
+sub svg_solute_label {
+	my ($cx, $cy, $label_html, $color) = @_;
+	my $s = '';
+	$s .= '<text x="' . ($cx + 16) . '" y="' . ($cy + 5) . '"'
+		. ' font-family="sans-serif" font-size="14" font-weight="600"'
+		. ' fill="#1f2937">' . $label_html . '</text>';
+	return $s;
+}
+
+# Draw a scatter of small gradient-cue circles (r=3.5) on one compartment
+# side. $side is "extra" or "cyto"; $count caps at 6.
+sub svg_gradient_dots {
+	my ($side, $count, $color_light) = @_;
+	return '' if $count <= 0;
+	$count = 6 if $count > 6;
+	my @x_grid = (30, 55, 80, 105, 290, 315, 340, 365, 390);
+	my @y_extra = (18, 38, 55);
+	my @y_cyto  = (178, 198, 218);
+	my @ys = ($side eq 'extra') ? @y_extra : @y_cyto;
+	my $s = '';
+	my $placed = 0;
+	for (my $i = 0; $i < scalar(@x_grid) && $placed < $count; $i++) {
+		my $cx = $x_grid[$i];
+		my $cy = $ys[$i % scalar(@ys)];
+		$s .= '<circle cx="' . $cx . '" cy="' . $cy . '" r="3.5"'
+			. ' fill="' . $color_light . '" opacity="0.85"/>';
+		$placed++;
+	}
+	return $s;
+}
+
+# Open/close an SVG envelope with the standard canvas.
+sub svg_open {
+	return '<svg xmlns="http://www.w3.org/2000/svg" version="1.1"'
+		. ' width="420" height="240" viewBox="0 0 420 240"'
+		. ' style="max-width: 480px; border: 1px solid #cbd5e0; margin: 0.5em 0;">';
+}
+sub svg_close { return '</svg>'; }
+
+# ==== END BLOCK: membrane_transporter_svg ====
+
+# ----------------------------
+# 2) Setup: build six test SVGs
+# ----------------------------
+
+# Shared label HTML fragments (SVG tspan for super/subscripts).
+$LBL_GLUCOSE = 'glucose';
+$LBL_NA  = 'Na<tspan baseline-shift="super" font-size="10">+</tspan>';
+$LBL_H   = 'H<tspan baseline-shift="super" font-size="10">+</tspan>';
+$LBL_CA  = 'Ca<tspan baseline-shift="super" font-size="10">2+</tspan>';
+
+# Colors
+$COL_GLU = '#d97706';
+$COL_NA  = '#2563eb';
+$COL_H   = '#ea580c';
+$COL_CA  = '#15803d';
+# Lighter variants for gradient dots
+$COL_NA_LT = '#93c5fd';
+$COL_H_LT  = '#fdba74';
+$COL_GLU_LT = '#fcd34d';
+
+# Y positions for blobs
+$Y_IN  = 40;
+$Y_OUT = 200;
+
+# Lanes
+$LANE_CENTER = 210;
+$LANE_LEFT   = 192;
+$LANE_RIGHT  = 228;
+
+# -------- Test 1: Uniporter, glucose, inward, stoich 1 --------
+$svg_1 = svg_open();
+$svg_1 .= svg_backdrop();
+$svg_1 .= svg_arrow_in($LANE_CENTER, $COL_GLU);
+$svg_1 .= svg_solute_blob($LANE_CENTER, $Y_IN, $COL_GLU);
+$svg_1 .= svg_compartment_labels();
+$svg_1 .= svg_solute_label($LANE_CENTER, $Y_IN, $LBL_GLUCOSE, $COL_GLU);
+$svg_1 .= svg_close();
+
+# -------- Test 2: Uniporter, Na+, outward, stoich 1 --------
+$svg_2 = svg_open();
+$svg_2 .= svg_backdrop();
+$svg_2 .= svg_arrow_out($LANE_CENTER, $COL_NA);
+$svg_2 .= svg_solute_blob($LANE_CENTER, $Y_OUT, $COL_NA);
+$svg_2 .= svg_compartment_labels();
+$svg_2 .= svg_solute_label($LANE_CENTER, $Y_OUT, $LBL_NA, $COL_NA);
+$svg_2 .= svg_close();
+
+# -------- Test 3: Symporter, Na+ + glucose, both inward, stoich 1,1 --------
+$svg_3 = svg_open();
+$svg_3 .= svg_backdrop();
+$svg_3 .= svg_arrow_in($LANE_LEFT,  $COL_NA);
+$svg_3 .= svg_arrow_in($LANE_RIGHT, $COL_GLU);
+$svg_3 .= svg_solute_blob($LANE_LEFT,  $Y_IN, $COL_NA);
+$svg_3 .= svg_solute_blob($LANE_RIGHT, $Y_IN, $COL_GLU);
+$svg_3 .= svg_compartment_labels();
+$svg_3 .= svg_solute_label($LANE_LEFT,  $Y_IN, $LBL_NA, $COL_NA);
+$svg_3 .= svg_solute_label($LANE_RIGHT, $Y_IN, $LBL_GLUCOSE, $COL_GLU);
+$svg_3 .= svg_close();
+
+# -------- Test 4: Antiporter, 3 Na+ in / 1 Ca2+ out --------
+$svg_4 = svg_open();
+$svg_4 .= svg_backdrop();
+$svg_4 .= svg_arrow_in($LANE_LEFT,   $COL_NA);
+$svg_4 .= svg_arrow_out($LANE_RIGHT, $COL_CA);
+$svg_4 .= svg_solute_blob($LANE_LEFT,  $Y_IN,  $COL_NA);
+$svg_4 .= svg_solute_blob($LANE_RIGHT, $Y_OUT, $COL_CA);
+$svg_4 .= svg_compartment_labels();
+# Stoichiometry label only for Na+ (stoich 3). Ca2+ stoich is 1 - omitted.
+$svg_4 .= svg_arrow_stoich_label($LANE_LEFT, 'in', $COL_NA, 3);
+$svg_4 .= svg_solute_label($LANE_LEFT,  $Y_IN,  $LBL_NA, $COL_NA);
+$svg_4 .= svg_solute_label($LANE_RIGHT, $Y_OUT, $LBL_CA, $COL_CA);
+$svg_4 .= svg_close();
+
+# -------- Test 5: Antiporter with gradient dots. Na+ in, H+ out.
+#                  Na+ extra=6 cyto=1; H+ extra=1 cyto=4. Stoich 1,1. --------
+$svg_5 = svg_open();
+$svg_5 .= svg_backdrop();
+# Gradient dots (behind arrows, in front of backdrop).
+$svg_5 .= svg_gradient_dots('extra', 6, $COL_NA_LT);
+$svg_5 .= svg_gradient_dots('cyto',  1, $COL_NA_LT);
+$svg_5 .= svg_gradient_dots('extra', 1, $COL_H_LT);
+$svg_5 .= svg_gradient_dots('cyto',  4, $COL_H_LT);
+$svg_5 .= svg_arrow_in($LANE_LEFT,   $COL_NA);
+$svg_5 .= svg_arrow_out($LANE_RIGHT, $COL_H);
+$svg_5 .= svg_solute_blob($LANE_LEFT,  $Y_IN,  $COL_NA);
+$svg_5 .= svg_solute_blob($LANE_RIGHT, $Y_OUT, $COL_H);
+$svg_5 .= svg_compartment_labels();
+$svg_5 .= svg_solute_label($LANE_LEFT,  $Y_IN,  $LBL_NA, $COL_NA);
+$svg_5 .= svg_solute_label($LANE_RIGHT, $Y_OUT, $LBL_H,  $COL_H);
+$svg_5 .= svg_close();
+
+# -------- Test 6: Symporter with gradient dots. Na+ + glucose both in.
+#                  Na+ 6/1; glucose 2/4. Stoich 1,1. --------
+$svg_6 = svg_open();
+$svg_6 .= svg_backdrop();
+$svg_6 .= svg_gradient_dots('extra', 6, $COL_NA_LT);
+$svg_6 .= svg_gradient_dots('cyto',  1, $COL_NA_LT);
+$svg_6 .= svg_gradient_dots('extra', 2, $COL_GLU_LT);
+$svg_6 .= svg_gradient_dots('cyto',  4, $COL_GLU_LT);
+$svg_6 .= svg_arrow_in($LANE_LEFT,  $COL_NA);
+$svg_6 .= svg_arrow_in($LANE_RIGHT, $COL_GLU);
+$svg_6 .= svg_solute_blob($LANE_LEFT,  $Y_IN, $COL_NA);
+$svg_6 .= svg_solute_blob($LANE_RIGHT, $Y_IN, $COL_GLU);
+$svg_6 .= svg_compartment_labels();
+$svg_6 .= svg_solute_label($LANE_LEFT,  $Y_IN, $LBL_NA, $COL_NA);
+$svg_6 .= svg_solute_label($LANE_RIGHT, $Y_IN, $LBL_GLUCOSE, $COL_GLU);
+$svg_6 .= svg_close();
+
+# ----------------------------
+# 3) Statement (display only)
+# ----------------------------
+
+BEGIN_PGML
+
+This page is a renderer-only testbed for the shared
+[`membrane_transporter_svg (v2)`]* block. Six deterministic configurations
+below let the author visually confirm the layout.
+
+**Test 1: uniporter, glucose, inward (stoich 1)**
+
+[$svg_1]*
+
+**Test 2: uniporter, Na+, outward (stoich 1)**
+
+[$svg_2]*
+
+**Test 3: symporter, Na+ + glucose, both inward (stoich 1,1)**
+
+[$svg_3]*
+
+**Test 4: antiporter, 3 Na+ in / 1 Ca2+ out (stoichiometry label)**
+
+[$svg_4]*
+
+**Test 5: antiporter with gradient dots, Na+ in (6/1) / H+ out (1/4)**
+
+[$svg_5]*
+
+**Test 6: symporter with gradient dots, Na+ (6/1) + glucose (2/4) inward**
+
+[$svg_6]*
+
+END_PGML
+
+# ----------------------------
+# 4) Solution text
+# ----------------------------
+
+BEGIN_PGML_SOLUTION
+
+Visual checks: (1) the protein reads as a carrier (dashed waist gate, no
+continuous pore slot), (2) all text labels sit on top of arrows and blobs,
+(3) the 3&#215; stoichiometry label is visible in Test 4, and (4) gradient
+dots render behind the arrows in Tests 5 and 6.
+
+END_PGML_SOLUTION
+
+ENDDOCUMENT();

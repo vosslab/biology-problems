@@ -1,0 +1,492 @@
+## TITLE('Biochemistry: Identify membrane transporter type')
+## DESCRIPTION
+## Students see a schematic of a membrane transporter (uniporter, symporter,
+## or antiporter) drawn as inline SVG and classify it by transport logic
+## (arrow directions and substrate count), then identify the diagnostic
+## feature of the diagram that justifies that classification.
+## ENDDESCRIPTION
+## KEYWORDS('membrane','transport','uniporter','symporter','antiporter')
+## DBsubject('Biochemistry')
+## DBchapter('Membranes and Transport')
+## DBsection('Membrane Transport Proteins')
+## Level(1)
+## Date('2026-04-23')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	'PGstandard.pl',
+	'PGML.pl',
+	'parserPopUp.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl'
+);
+$showPartialCorrectAnswers = 1;
+
+# ==== BEGIN BLOCK: membrane_transporter_svg (v3) ====
+# Schematic transporter renderer, v3. Canvas 420 x 240. Three-zone
+# phospholipid bilayer; darker waisted-`<path>` carrier body (pinched at
+# y=120 to x=183/237, ~9 px inward from x=175/245) with a dashed waist line
+# suggesting a conformational gate (carrier, not channel). Arrow lanes are
+# split into two segments around a bigger gap at the waist.
+#
+# Changes vs v2 (V3b after A/B/C comparison):
+#   A1: rounded rect replaced with a waisted `<path>` (carrier read).
+#   B2: arrow segments shortened (y=55..108 and y=132..185) with a bigger
+#       gap at the gate; arrowhead tips unchanged (y=193 in, y=47 out).
+#   C1: solute labels anchored by lane side -- left lane at x=cx-16
+#       text-anchor=end; right (and center) at x=cx+16 text-anchor=start.
+#   D1: stoichiometry centered above (y=24) or below (y=222) the blob,
+#       text-anchor=middle, instead of tucked to the left of the lane.
+#   E2: gradient dots parameterized by (compartment, lane_side). Lane
+#       territories: left-lane dots in x=22..102; right-lane dots in
+#       x=300..380. Density asymmetry within call: low counts cluster near
+#       the lane, high counts fill the territory.
+#   F1: reduced head-group weight: r=2.6, opacity=0.75.
+#   G1: wider lanes, LEFT=185, RIGHT=235 (50 px apart; was 36).
+#
+# Coordinate budget (y grows downward):
+#   0..70   extracellular compartment (pale blue)
+#   70..95  outer leaflet (muted tan) with head-group row at y=73
+#   95..125 hydrophobic core gap (lighter tan)
+#   125..150 inner leaflet (muted tan) with head-group row at y=147
+#   150..240 cytosol compartment (pale cream)
+# Transporter path: corners at (175,55)-(245,55) & (175,185)-(245,185);
+#   waist pinch to x=183/237 at y=120; curves back out by y=80/y=160.
+# Waist gate: dashed line at y=120, x=183..237.
+# Arrow lanes: center x=210 (uniporter), left x=185, right x=235.
+# Substrate blobs: "in" at y=40, "out" at y=200.
+# Arrow segments: "in"  y=55..108 and y=132..185 (tip at y=193);
+#                 "out" y=185..132 and y=108..55 (tip at y=47).
+#
+# Layer order in Setup (bottom to top):
+#   svg_open, svg_backdrop, svg_gradient_dots, svg_arrow_*, svg_solute_blob,
+#   svg_compartment_labels, svg_arrow_stoich_label, svg_solute_label, svg_close.
+
+$CANVAS_W    = 420;
+$CANVAS_H    = 240;
+$EXTRA_FILL  = '#eaf2f8';
+$CYTO_FILL   = '#fdfcf5';
+$LEAFLET_FILL = '#d9b88a';
+$COREGAP_FILL = '#e8d4ad';
+$HEAD_FILL    = '#b5926b';
+$PROTEIN_FILL = '#5f6c7b';
+
+sub svg_backdrop {
+	my $s = '';
+	$s .= '<rect x="0" y="0" width="420" height="70" fill="' . $EXTRA_FILL . '"/>';
+	$s .= '<rect x="0" y="150" width="420" height="90" fill="' . $CYTO_FILL . '"/>';
+	$s .= '<rect x="0" y="70" width="420" height="25" fill="' . $LEAFLET_FILL . '"/>';
+	$s .= '<rect x="0" y="95" width="420" height="30" fill="' . $COREGAP_FILL . '"/>';
+	$s .= '<rect x="0" y="125" width="420" height="25" fill="' . $LEAFLET_FILL . '"/>';
+	# F1: reduced head-group weight: r=2.6, opacity=0.75. Skip the protein span.
+	for (my $cx = 10; $cx <= 410; $cx += 14) {
+		next if ($cx >= 171 && $cx <= 249);
+		$s .= '<circle cx="' . $cx . '" cy="73" r="2.6" fill="' . $HEAD_FILL
+			. '" opacity="0.75"/>';
+		$s .= '<circle cx="' . $cx . '" cy="147" r="2.6" fill="' . $HEAD_FILL
+			. '" opacity="0.75"/>';
+	}
+	# A1: waisted protein path. Pinched at y=120 to x=183/237.
+	my $d = 'M 193 55 '
+		. 'Q 175 55 175 73 '
+		. 'L 175 100 '
+		. 'Q 175 110 183 120 '
+		. 'Q 175 130 175 140 '
+		. 'L 175 167 '
+		. 'Q 175 185 193 185 '
+		. 'L 227 185 '
+		. 'Q 245 185 245 167 '
+		. 'L 245 140 '
+		. 'Q 245 130 237 120 '
+		. 'Q 245 110 245 100 '
+		. 'L 245 73 '
+		. 'Q 245 55 227 55 Z';
+	$s .= '<path d="' . $d . '" fill="' . $PROTEIN_FILL
+		. '" stroke="#2f3743" stroke-width="1.5"/>';
+	# Dashed waist line spanning the pinch interior.
+	$s .= '<line x1="183" y1="120" x2="237" y2="120"'
+		. ' stroke="#2f3743" stroke-width="1.5" stroke-dasharray="4,3"/>';
+	return $s;
+}
+
+sub svg_compartment_labels {
+	my $s = '';
+	$s .= '<text x="412" y="22" font-family="sans-serif" font-size="13"'
+		. ' font-style="italic" fill="#2c3e50" text-anchor="end">extracellular</text>';
+	$s .= '<text x="412" y="232" font-family="sans-serif" font-size="13"'
+		. ' font-style="italic" fill="#2c3e50" text-anchor="end">cytosol</text>';
+	return $s;
+}
+
+# B2: upper y=55..108, lower y=132..185, tip y=193.
+sub svg_arrow_in {
+	my ($x, $color) = @_;
+	my $s = '';
+	$s .= '<line x1="' . $x . '" y1="55" x2="' . $x . '" y2="108"'
+		. ' stroke="' . $color . '" stroke-width="3" stroke-linecap="round"/>';
+	$s .= '<line x1="' . $x . '" y1="132" x2="' . $x . '" y2="185"'
+		. ' stroke="' . $color . '" stroke-width="3" stroke-linecap="round"/>';
+	$s .= '<polygon points="'
+		. ($x - 5) . ',185 '
+		. ($x + 5) . ',185 '
+		. $x . ',193'
+		. '" fill="' . $color . '"/>';
+	return $s;
+}
+
+# B2 reversed: lower y=185..132, upper y=108..55, tip y=47.
+sub svg_arrow_out {
+	my ($x, $color) = @_;
+	my $s = '';
+	$s .= '<line x1="' . $x . '" y1="185" x2="' . $x . '" y2="132"'
+		. ' stroke="' . $color . '" stroke-width="3" stroke-linecap="round"/>';
+	$s .= '<line x1="' . $x . '" y1="108" x2="' . $x . '" y2="55"'
+		. ' stroke="' . $color . '" stroke-width="3" stroke-linecap="round"/>';
+	$s .= '<polygon points="'
+		. ($x - 5) . ',55 '
+		. ($x + 5) . ',55 '
+		. $x . ',47'
+		. '" fill="' . $color . '"/>';
+	return $s;
+}
+
+# D1: stoichiometry centered above top blob (y=24) or below bottom blob
+# (y=222), text-anchor=middle, on the lane x.
+sub svg_arrow_stoich_label {
+	my ($x, $dir, $color, $stoich) = @_;
+	my $y = ($dir eq 'in') ? 24 : 222;
+	my $s = '';
+	$s .= '<text x="' . $x . '" y="' . $y . '"'
+		. ' font-family="sans-serif" font-size="12" font-weight="700"'
+		. ' fill="' . $color . '" text-anchor="middle">'
+		. $stoich . '&#215;</text>';
+	return $s;
+}
+
+sub svg_solute_blob {
+	my ($cx, $cy, $color) = @_;
+	my $s = '';
+	$s .= '<circle cx="' . $cx . '" cy="' . $cy . '" r="10"'
+		. ' fill="' . $color . '" stroke="#1f2937" stroke-width="1"/>';
+	return $s;
+}
+
+# C1: lane-anchored labels. $side is 'left', 'right', or 'center'.
+# left  -> x=cx-16, text-anchor=end
+# right -> x=cx+16, text-anchor=start
+# center (uniporter) -> same as right.
+sub svg_solute_label {
+	my ($cx, $cy, $label_html, $color, $side) = @_;
+	my $tx;
+	my $anchor;
+	if ($side eq 'left') {
+		$tx = $cx - 16;
+		$anchor = 'end';
+	} else {
+		$tx = $cx + 16;
+		$anchor = 'start';
+	}
+	my $s = '';
+	$s .= '<text x="' . $tx . '" y="' . ($cy + 5) . '"'
+		. ' font-family="sans-serif" font-size="14" font-weight="600"'
+		. ' text-anchor="' . $anchor . '" fill="#1f2937">'
+		. $label_html . '</text>';
+	return $s;
+}
+
+# E2: territory parameterized by $lane_side ('left' | 'right'); row
+# parameterized by $compartment ('extra' | 'cyto'). Density asymmetry:
+# x-list is ordered lane-proximal first, so low counts cluster near the
+# lane and high counts spill away into the territory.
+sub svg_gradient_dots {
+	my ($compartment, $lane_side, $count, $color_light) = @_;
+	return '' if $count <= 0;
+	$count = 6 if $count > 6;
+	# Ordered lane-proximal first. Left lane at x=185: closest territory
+	# column is x=102; right lane at x=235: closest column is x=300.
+	my @xs_left  = (102, 82, 62, 92, 42, 72, 22, 52);
+	my @xs_right = (300, 320, 340, 310, 360, 330, 380, 350);
+	my @ys_extra = (18, 36, 54, 28, 46);
+	my @ys_cyto  = (178, 196, 216, 188, 208);
+	my @xs = ($lane_side eq 'right') ? @xs_right : @xs_left;
+	my @ys = ($compartment eq 'extra') ? @ys_extra : @ys_cyto;
+	my $alpha = ($count >= 4) ? 0.9 : 0.75;
+	my $s = '';
+	my $placed = 0;
+	for (my $i = 0; $i < scalar(@xs) && $placed < $count; $i++) {
+		my $cx = $xs[$i];
+		my $cy = $ys[$i % scalar(@ys)];
+		$s .= '<circle cx="' . $cx . '" cy="' . $cy . '" r="3.5"'
+			. ' fill="' . $color_light . '" opacity="' . $alpha . '"/>';
+		$placed++;
+	}
+	return $s;
+}
+
+sub svg_open {
+	return '<svg xmlns="http://www.w3.org/2000/svg" version="1.1"'
+		. ' width="420" height="240" viewBox="0 0 420 240"'
+		. ' style="max-width: 480px; border: 1px solid #cbd5e0; margin: 0.5em 0;">';
+}
+sub svg_close { return '</svg>'; }
+
+# ==== END BLOCK: membrane_transporter_svg ====
+
+# ----------------------------
+# 2) Setup
+# ----------------------------
+
+# Shared label HTML and color constants (same across all membrane PGMLs).
+$LBL_GLUCOSE = 'glucose';
+$LBL_LACTOSE = 'lactose';
+$LBL_NA  = 'Na<tspan baseline-shift="super" font-size="10">+</tspan>';
+$LBL_H   = 'H<tspan baseline-shift="super" font-size="10">+</tspan>';
+$LBL_CA  = 'Ca<tspan baseline-shift="super" font-size="10">2+</tspan>';
+$LBL_ADP = 'ADP';
+$LBL_ATP = 'ATP';
+$COL_GLU = '#d97706';
+$COL_LAC = '#ca8a04';
+$COL_NA  = '#2563eb';
+$COL_H   = '#ea580c';
+$COL_CA  = '#15803d';
+$COL_ADP = '#b91c1c';
+$COL_ATP = '#991b1b';
+
+# Lanes
+$LANE_CENTER = 210;
+$LANE_LEFT   = 185;
+$LANE_RIGHT  = 235;
+$Y_IN  = 40;
+$Y_OUT = 200;
+
+# Local RNG, seed-stable.
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+
+# Pick class uniformly.
+@class_order = ('uniporter', 'symporter', 'antiporter');
+$class_idx = $local_random->random(0, 2, 1);
+$class_name = $class_order[$class_idx];
+
+# Populate per-class variables directly. Everything bare-package-scope so
+# PGML can see it; no multi-field packed strings and no mid-file subs.
+$sub0_plain = '';
+$sub0_label = '';
+$sub0_color = '';
+$sub0_dir   = '';
+$sub1_plain = '';
+$sub1_label = '';
+$sub1_color = '';
+$sub1_dir   = '';
+$n_sub = 1;
+$sig = '';
+
+if ($class_name eq 'uniporter') {
+	$n_sub = 1;
+	# Three substrate options; direction is randomized so "in" and "out"
+	# examples both appear.
+	my $u_pick = $local_random->random(0, 2, 1);
+	my $flip   = $local_random->random(0, 1, 1);
+	if ($u_pick == 0) {
+		$sub0_plain = 'glucose';
+		$sub0_label = $LBL_GLUCOSE;
+		$sub0_color = $COL_GLU;
+		$sig = 'uniporter|glucose';
+	} elsif ($u_pick == 1) {
+		$sub0_plain = 'Ca2+';
+		$sub0_label = $LBL_CA;
+		$sub0_color = $COL_CA;
+		$sig = 'uniporter|Ca2+';
+	} else {
+		$sub0_plain = 'H2O';
+		$sub0_label = 'H<tspan baseline-shift="sub" font-size="10">2</tspan>O';
+		$sub0_color = '#0891b2';
+		$sig = 'uniporter|H2O';
+	}
+	$sub0_dir = ($flip == 1) ? 'out' : 'in';
+} elsif ($class_name eq 'symporter') {
+	$n_sub = 2;
+	my $s_pick = $local_random->random(0, 1, 1);
+	if ($s_pick == 0) {
+		$sub0_plain = 'Na+'; $sub0_label = $LBL_NA;      $sub0_color = $COL_NA;  $sub0_dir = 'in';
+		$sub1_plain = 'glucose'; $sub1_label = $LBL_GLUCOSE; $sub1_color = $COL_GLU; $sub1_dir = 'in';
+		$sig = 'symporter|Na+/glucose';
+	} else {
+		$sub0_plain = 'H+'; $sub0_label = $LBL_H;       $sub0_color = $COL_H;   $sub0_dir = 'in';
+		$sub1_plain = 'lactose'; $sub1_label = $LBL_LACTOSE; $sub1_color = $COL_LAC; $sub1_dir = 'in';
+		$sig = 'symporter|H+/lactose';
+	}
+} else {
+	$n_sub = 2;
+	my $a_pick = $local_random->random(0, 2, 1);
+	if ($a_pick == 0) {
+		$sub0_plain = 'Na+'; $sub0_label = $LBL_NA; $sub0_color = $COL_NA; $sub0_dir = 'in';
+		$sub1_plain = 'Ca2+'; $sub1_label = $LBL_CA; $sub1_color = $COL_CA; $sub1_dir = 'out';
+		$sig = 'antiporter|Na+/Ca2+';
+	} elsif ($a_pick == 1) {
+		$sub0_plain = 'Na+'; $sub0_label = $LBL_NA; $sub0_color = $COL_NA; $sub0_dir = 'in';
+		$sub1_plain = 'H+';  $sub1_label = $LBL_H;  $sub1_color = $COL_H;  $sub1_dir = 'out';
+		$sig = 'antiporter|Na+/H+';
+	} else {
+		$sub0_plain = 'ADP'; $sub0_label = $LBL_ADP; $sub0_color = $COL_ADP; $sub0_dir = 'in';
+		$sub1_plain = 'ATP'; $sub1_label = $LBL_ATP; $sub1_color = $COL_ATP; $sub1_dir = 'out';
+		$sig = 'antiporter|ADP/ATP';
+	}
+}
+
+# ----------------------------
+# 2a) Build the SVG
+# ----------------------------
+
+# Lane assignment: uniporter uses center, coupled pairs use left/right.
+$lane0 = ($n_sub == 1) ? $LANE_CENTER : $LANE_LEFT;
+$lane1 = $LANE_RIGHT;
+$y0 = ($sub0_dir eq 'in') ? $Y_IN : $Y_OUT;
+$y1 = ($sub1_dir eq 'in') ? $Y_IN : $Y_OUT;
+
+$svg = svg_open();
+$svg .= svg_backdrop();
+# Arrows (no text).
+if ($sub0_dir eq 'in') {
+	$svg .= svg_arrow_in($lane0, $sub0_color);
+} else {
+	$svg .= svg_arrow_out($lane0, $sub0_color);
+}
+if ($n_sub == 2) {
+	if ($sub1_dir eq 'in') {
+		$svg .= svg_arrow_in($lane1, $sub1_color);
+	} else {
+		$svg .= svg_arrow_out($lane1, $sub1_color);
+	}
+}
+# Solute blobs (circles, no text).
+$svg .= svg_solute_blob($lane0, $y0, $sub0_color);
+if ($n_sub == 2) {
+	$svg .= svg_solute_blob($lane1, $y1, $sub1_color);
+}
+# All text LAST so labels overlay arrows and blobs.
+$svg .= svg_compartment_labels();
+$side0 = ($n_sub == 1) ? 'center' : 'left';
+$svg .= svg_solute_label($lane0, $y0, $sub0_label, $sub0_color, $side0);
+if ($n_sub == 2) {
+	$svg .= svg_solute_label($lane1, $y1, $sub1_label, $sub1_color, 'right');
+}
+$svg .= svg_close();
+
+# ----------------------------
+# 2b) Part A: PopUp classification
+# ----------------------------
+
+$class_popup = PopUp(
+	['?', 'uniporter', 'symporter', 'antiporter'],
+	$class_name,
+);
+
+# ----------------------------
+# 2c) Part B: diagnostic-feature RadioButtons
+# ----------------------------
+
+%feature_of = (
+	'uniporter'  => 'only one solute is shown moving across the membrane',
+	'symporter'  => 'two different solutes move across together in the same direction',
+	'antiporter' => 'two different solutes move across in opposite directions',
+);
+$correct_feature = $feature_of{$class_name};
+
+@feature_choices = (
+	$feature_of{'uniporter'},
+	$feature_of{'symporter'},
+	$feature_of{'antiporter'},
+	'the protein requires ATP hydrolysis to move the solute',
+);
+
+$feature_radio = RadioButtons(
+	[@feature_choices],
+	$correct_feature,
+	labels        => 'ABC',
+	displayLabels => 1,
+	separator     => '<div style="margin-bottom: 0.5em;"></div>',
+	uncheckable   => 0,
+);
+
+# ----------------------------
+# 2d) Solution fragments
+# ----------------------------
+
+%named_example = (
+	'uniporter|glucose' => 'GLUT1 (the erythrocyte glucose uniporter)',
+	'uniporter|Ca2+'    => 'a plasma-membrane Ca<sup>2+</sup> leak channel',
+	'uniporter|H2O'     => 'AQP1, an aquaporin',
+	'symporter|Na+/glucose' => 'SGLT1 (intestinal Na<sup>+</sup>/glucose symporter)',
+	'symporter|H+/lactose'  => 'LacY (the <i>E. coli</i> lactose permease)',
+	'antiporter|Na+/Ca2+'   => 'NCX (cardiomyocyte Na<sup>+</sup>/Ca<sup>2+</sup> antiporter)',
+	'antiporter|Na+/H+'     => 'NHE1 (the Na<sup>+</sup>/H<sup>+</sup> exchanger)',
+	'antiporter|ADP/ATP'    => 'ANT (the mitochondrial ADP/ATP antiporter)',
+);
+$example_text = $named_example{$sig};
+$example_text = 'this class of transporter' unless defined $example_text;
+
+%energetic = (
+	'uniporter'  => 'passive facilitated diffusion down an electrochemical gradient',
+	'symporter'  => 'secondary active transport: the driving gradient of one substrate can pull the second substrate against its own gradient',
+	'antiporter' => 'secondary active transport in exchange mode: an ingoing gradient is coupled to an outgoing substrate',
+);
+$energetic_text = $energetic{$class_name};
+
+# ----------------------------
+# 3) Statement
+# ----------------------------
+
+$class_emph = "<span style='color:#1f4d8f;font-weight:700;'>classify</span>";
+$evidence_emph = "<span style='color:#9a4d00;font-weight:700;'>diagnostic feature</span>";
+
+BEGIN_PGML
+
+The schematic below shows a membrane transport protein embedded in a
+phospholipid bilayer. The dashed line inside the protein marks a gate
+between its two conformational states. Arrows indicate the direction each
+substrate moves across the membrane. The protein shape is the same in
+every version of this problem; [$class_emph]* the transporter from the
+transport logic alone (substrate count and arrow direction).
+
+[$svg]*
+
+**Part A.** This membrane transport protein is best classified as a
+[_]{$class_popup}.
+
+**Part B.** What feature of the diagram is the [$evidence_emph]* that
+justifies your classification in Part A?
+
+[_]{$feature_radio}
+
+END_PGML
+
+# ----------------------------
+# 4) Solution
+# ----------------------------
+
+BEGIN_PGML_SOLUTION
+
+**Classify.** This is a [$class_name].
+
+**Evidence.** [$correct_feature].
+
+**Energetic implication.** [$energetic_text]*.
+
+**Real example.** A canonical example is [$example_text]*.
+
+END_PGML_SOLUTION
+
+ENDDOCUMENT();
