@@ -2,6 +2,38 @@
 
 ## 2026-04-23
 
+### Additions and New Features
+- `problems/multiple_choice_statements/yaml_mc_statements_to_pgml.py` now
+  assigns the YAML `topic` to the OPL `TITLE` header line when no explicit
+  `title` / `TITLE` key is set, so generated PGMLs get a short problem
+  title in problem lists without any YAML change. Existing YAMLs with
+  a `title` key retain their value.
+
+### Fixes and Maintenance
+- Replaced `&cdot;` with `&middot;` throughout
+  `problems/multiple_choice_statements/molecular_biology/g-u_wobble.yml`
+  and regenerated the PGML. `&cdot;` is an HTML5-only entity (U+22C5)
+  that does not render in some WeBWorK display paths; `&middot;`
+  (U+00B7) is the HTML4 middle-dot entity, universally rendered, and
+  already on the repo's entity-survival list. Verified via renderer
+  API lint (clean) and by grepping the rendered HTML for intact
+  `&middot;` (no double-escape to `&amp;middot;`).
+- Hardened `problems/multiple_choice_statements/yaml_mc_statements_to_pgml.py`
+  against null/missing required YAML fields. Added `validate_yaml_data()`
+  that runs right after `yaml.safe_load` and raises `ValueError` naming
+  the file and offending field (`topic` must be a non-empty string; at
+  least one of `true_statements` / `false_statements` must be a
+  non-empty mapping). Replaced the silent `.get("topic", "this topic")`
+  default with a direct `yaml_data["topic"]` lookup so a null `topic:`
+  fails fast with a clear message instead of surfacing four frames deep
+  as `TypeError: value is not string: None` inside
+  `webwork_lib.apply_replacement_pairs_to_text`. The script now also
+  prints `Topic: <value>`, `Folder: <folder>  |  dbsubject: <value>`,
+  `Statement counts: True: N statements, False: M statements`, and (when
+  set) `Override (TRUE stem): ...` / `Override (FALSE stem): ...` before
+  generation so the user can eyeball
+  the inputs that drove the output.
+
 ### Behavior or Interface Changes
 - Updated the four fatty-acid skeletal-structure PGMLs in
   [problems/biochemistry-problems/lipids/](../problems/biochemistry-problems/lipids/)

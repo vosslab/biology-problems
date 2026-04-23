@@ -1,4 +1,4 @@
-topic: null
+topic: Franklin's Photograph 51
 override_question_true: null
 override_question_false: What information was NOT obtained from Rosalind Franklin's
   diffraction pattern in Photograph 51?
@@ -32,4 +32,4 @@ false_statements:
   false5b: G-C base pairs are stronger than A-T base pairs
   false5c: A-T base pairs are weaker than G-C base pairs
 conflict_rules: null
-dbsubject: Biotechnology
+dbsubject: Molecular Biology

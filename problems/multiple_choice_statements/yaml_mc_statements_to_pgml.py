@@ -18,6 +18,41 @@ import webwork_lib
 _DEFAULT_COLOR_MODE = object()
 
 #============================================
+def validate_yaml_data(yaml_data, yml_path):
+	"""
+	Validate required fields in the loaded YAML data.
+
+	Raises ValueError with the offending field and file path when a
+	required field is missing or null. This surfaces clear errors at
+	the top of the script instead of deep inside string-processing
+	helpers.
+	"""
+	# yaml_data itself must be a mapping
+	if not isinstance(yaml_data, dict):
+		raise ValueError(
+			f"YAML root must be a mapping in {yml_path}; "
+			f"got {type(yaml_data).__name__}"
+		)
+	# topic is required and must be a non-empty string
+	topic_value = yaml_data.get("topic")
+	if not isinstance(topic_value, str) or not topic_value.strip():
+		raise ValueError(
+			f"YAML field 'topic' is null, missing, or empty in {yml_path}; "
+			f"expected a non-empty string"
+		)
+	# at least one of true_statements / false_statements must be a
+	# non-empty mapping so the generator has content to emit
+	true_block = yaml_data.get("true_statements")
+	false_block = yaml_data.get("false_statements")
+	has_true = isinstance(true_block, dict) and len(true_block) > 0
+	has_false = isinstance(false_block, dict) and len(false_block) > 0
+	if not (has_true or has_false):
+		raise ValueError(
+			f"YAML must define at least one non-empty 'true_statements' "
+			f"or 'false_statements' mapping in {yml_path}"
+		)
+
+#============================================
 def parse_args():
 	"""
 	Parse command-line arguments.
@@ -312,7 +347,7 @@ def build_pgml_text(yaml_data, color_mode=_DEFAULT_COLOR_MODE):
 	needs_bold_class = False
 	warnings = []
 
-	topic_raw = yaml_data.get("topic", "this topic")
+	topic_raw = yaml_data["topic"]
 	topic_replaced = webwork_lib.apply_replacements_to_text(
 		topic_raw,
 		replacement_rules,
@@ -330,6 +365,10 @@ def build_pgml_text(yaml_data, color_mode=_DEFAULT_COLOR_MODE):
 		f"Select the statement that is TRUE or FALSE about {topic_raw}."
 	)
 	fallback_keywords = [topic_raw, "true/false", "multiple choice"]
+	# use topic as the OPL TITLE when no explicit title is set;
+	# build_opl_header reads yaml_data['title'] / 'TITLE' directly
+	if not yaml_data.get("title") and not yaml_data.get("TITLE"):
+		yaml_data["title"] = topic_raw
 	header_text = webwork_lib.build_opl_header(
 		yaml_data,
 		default_description=default_description,
@@ -429,6 +468,29 @@ def main():
 	if not yml_path.exists():
 		raise FileNotFoundError(f"File not found: {yml_path}")
 	yaml_data = yaml.safe_load(yml_path.read_text())
+	validate_yaml_data(yaml_data, yml_path)
+	# echo topic so the user can double-check which topic drove generation
+	print(f"Topic: {yaml_data['topic']}")
+	# echo folder + dbsubject so folder/category mismatches are visible
+	# (dbsubject is an OPL taxonomy string, often assigned by sorting folder)
+	folder_name = yml_path.resolve().parent.name
+	dbsubject = yaml_data.get("dbsubject")
+	if isinstance(dbsubject, str) and dbsubject.strip():
+		print(f"Folder: {folder_name}  |  dbsubject: {dbsubject}")
+	else:
+		print(f"Folder: {folder_name}  |  dbsubject: (unset)")
+	# echo statement counts so an empty or lopsided block is visible
+	true_count = len(yaml_data.get("true_statements") or {})
+	false_count = len(yaml_data.get("false_statements") or {})
+	print(f"Statement counts: True: {true_count} statements, "
+		f"False: {false_count} statements")
+	# echo override stems when present so a replaced default is visible
+	override_true = yaml_data.get("override_question_true")
+	if isinstance(override_true, str) and override_true.strip():
+		print(f"Override (TRUE stem): {override_true}")
+	override_false = yaml_data.get("override_question_false")
+	if isinstance(override_false, str) and override_false.strip():
+		print(f"Override (FALSE stem): {override_false}")
 	color_mode = "none" if args.no_color else "inline"
 	pgml_text, warnings = build_pgml_text(yaml_data, color_mode)
 
