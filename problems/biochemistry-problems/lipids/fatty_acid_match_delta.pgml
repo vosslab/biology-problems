@@ -33,12 +33,20 @@ loadMacros(
 );
 $showPartialCorrectAnswers = 0;
 
-# ==== BEGIN BLOCK: svg_primitives_lipids (v3) ====
+# ==== BEGIN BLOCK: svg_primitives_lipids (v4) ====
+# v4: svg_line takes optional stroke color and width. Defaults keep the
+# old pure-black, width-2 behavior so existing callers do not need to
+# change. Chain-bond callers pass explicit colors to distinguish C-C
+# (dark gray #222) from C=C (dark green #1b5e20 at width 2.4).
 sub svg_line {
-	my ($x1, $y1, $x2, $y2) = @_;
+	my ($x1, $y1, $x2, $y2, $stroke, $stroke_width) = @_;
+	$stroke = '#000' unless defined $stroke;
+	$stroke_width = 2 unless defined $stroke_width;
 	return '<line x1="' . $x1 . '" y1="' . $y1
 		. '" x2="' . $x2 . '" y2="' . $y2
-		. '" stroke="#000" stroke-width="2" stroke-linecap="round"/>';
+		. '" stroke="' . $stroke
+		. '" stroke-width="' . $stroke_width
+		. '" stroke-linecap="round"/>';
 }
 
 sub svg_text {
@@ -48,7 +56,7 @@ sub svg_text {
 		. '" text-anchor="' . $anchor
 		. '" fill="' . $fill . '">' . $content . '</text>';
 }
-# ==== END BLOCK: svg_primitives_lipids ====
+# ==== END BLOCK: svg_primitives_lipids (v4) ====
 
 # ==== BEGIN BLOCK: fatty_acid_layout (v3) ====
 $BDX   = 22;
@@ -85,7 +93,7 @@ sub compute_xy {
 }
 # ==== END BLOCK: fatty_acid_layout ====
 
-# ==== BEGIN BLOCK: fatty_acid_svg_builder (v1) ====
+# ==== BEGIN BLOCK: fatty_acid_svg_builder (v2) ====
 sub build_fa_svg {
 	my ($n_carbons, $bond_indices_csv) = @_;
 	my ($vx_csv, $vy_csv) = compute_xy($n_carbons, $bond_indices_csv);
@@ -115,18 +123,48 @@ sub build_fa_svg {
 		. ' width="' . $vb_w . '" height="' . $vb_h
 		. '" viewBox="0 0 ' . $vb_w . ' ' . $vb_h . '">';
 
+	# Styling: single bonds are dark gray and thin; C=C is dark green and
+	# slightly thicker so double bonds visually pop without looking
+	# cartoonish, and remain legible in grayscale print.
+	my $single_color = '#222';
+	my $double_color = '#1b5e20';
+	my $double_width = 2.4;
+
 	for (my $i = 0; $i < $n_carbons - 1; $i++) {
 		my $x1 = $vx_list[$i];
 		my $y1 = $vy_list[$i] + $y_shift;
 		my $x2 = $vx_list[$i + 1];
 		my $y2 = $vy_list[$i + 1] + $y_shift;
-		$out .= svg_line($x1, $y1, $x2, $y2);
 		if ($is_double{$i}) {
+			# Cis bond is flat (y1 == y2). Pick a neighbor vertex to decide
+			# which side of the bond faces the rest of the chain -- the
+			# parallel inner line must land on that (concave) side.
+			# Prefer vertex i-1; if the cis bond starts at index 0, the
+			# next non-bond neighbor on the far side is vertex i+2 (i+1 is
+			# the second atom of the same flat bond and shares y with i).
+			my $y_neighbor;
+			if ($i > 0) {
+				$y_neighbor = $vy_list[$i - 1] + $y_shift;
+			} else {
+				$y_neighbor = $vy_list[$i + 2] + $y_shift;
+			}
+			# SVG y grows downward, so "visually above" = smaller y.
+			# neighbor visually above bond (y_neighbor < y1) means the chain
+			# sits above a bottom-kink cis bond; interior (concave side)
+			# is therefore ABOVE -> negative offset (smaller y).
+			# neighbor visually below bond (y_neighbor > y1) means top-kink;
+			# interior is BELOW -> positive offset.
+			my $parallel_offset = ($y_neighbor < $y1) ? -$double_gap : $double_gap;
+			# Main C=C stroke, green + thicker.
+			$out .= svg_line($x1, $y1, $x2, $y2, $double_color, $double_width);
+			# Parallel inner line, same color and width, on the concave side.
 			my $px1 = $x1 + $double_inset;
-			my $py1 = $y1 - $double_gap;
+			my $py1 = $y1 + $parallel_offset;
 			my $px2 = $x2 - $double_inset;
-			my $py2 = $y2 - $double_gap;
-			$out .= svg_line($px1, $py1, $px2, $py2);
+			my $py2 = $y2 + $parallel_offset;
+			$out .= svg_line($px1, $py1, $px2, $py2, $double_color, $double_width);
+		} else {
+			$out .= svg_line($x1, $y1, $x2, $y2, $single_color);
 		}
 	}
 	my $x_left  = $vx_list[0];
@@ -139,7 +177,7 @@ sub build_fa_svg {
 	$out .= '</svg>';
 	return $out;
 }
-# ==== END BLOCK: fatty_acid_svg_builder ====
+# ==== END BLOCK: fatty_acid_svg_builder (v2) ====
 
 # ==== BEGIN BLOCK: pool_eliminate_positions (v1) ====
 sub pool_eliminate_positions {
@@ -303,7 +341,7 @@ for my $csv (@chosen_csvs) {
 # 2c) Build the prompt notation string
 # ----------------------------
 
-$delta_label = '<span style="font-family:serif;font-weight:700;">&Delta;&ndash;'
+$delta_label = '<span style="font-family:monospace;font-size:1.25em;font-weight:700;">&Delta;&ndash;'
 	. join(',', @deltas) . '</span>';
 $h3c_label = 'H<sub>3</sub>C';
 

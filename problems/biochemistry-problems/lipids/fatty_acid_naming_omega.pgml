@@ -32,15 +32,23 @@ loadMacros(
 );
 $showPartialCorrectAnswers = 0;
 
-# ==== BEGIN BLOCK: svg_primitives_lipids (v3) ====
+# ==== BEGIN BLOCK: svg_primitives_lipids (v4) ====
 # Low-level inline-SVG primitives for fatty-acid skeletal drawings.
 # (v3: 60-deg bond angles + flat cis double bonds.)
+# v4: svg_line takes optional stroke color and width. Defaults keep the
+# old pure-black, width-2 behavior so existing callers do not need to
+# change. Chain-bond callers pass explicit colors to distinguish C-C
+# (dark gray #222) from C=C (dark green #1b5e20 at width 2.4).
 
 sub svg_line {
-	my ($x1, $y1, $x2, $y2) = @_;
+	my ($x1, $y1, $x2, $y2, $stroke, $stroke_width) = @_;
+	$stroke = '#000' unless defined $stroke;
+	$stroke_width = 2 unless defined $stroke_width;
 	return '<line x1="' . $x1 . '" y1="' . $y1
 		. '" x2="' . $x2 . '" y2="' . $y2
-		. '" stroke="#000" stroke-width="2" stroke-linecap="round"/>';
+		. '" stroke="' . $stroke
+		. '" stroke-width="' . $stroke_width
+		. '" stroke-linecap="round"/>';
 }
 
 sub svg_text {
@@ -51,7 +59,7 @@ sub svg_text {
 		. '" fill="' . $fill . '">' . $content . '</text>';
 }
 
-# ==== END BLOCK: svg_primitives_lipids ====
+# ==== END BLOCK: svg_primitives_lipids (v4) ====
 
 # ==== BEGIN BLOCK: fatty_acid_layout (v3) ====
 # Layout helpers for a horizontal fatty-acid zigzag at 60-degree angles.
@@ -212,21 +220,48 @@ $fatty_acid_svg = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1"'
 	. ' width="' . $svg_vb_w . '" height="' . $svg_vb_h
 	. '" viewBox="0 0 ' . $svg_vb_w . ' ' . $svg_vb_h . '">';
 
+# Styling: single bonds are dark gray and thin; C=C is dark green and
+# slightly thicker so double bonds visually pop without looking cartoonish,
+# and remain legible in grayscale print.
+$SINGLE_COLOR = '#222';
+$DOUBLE_COLOR = '#1b5e20';
+$DOUBLE_WIDTH = 2.4;
+
 for (my $i = 0; $i < $chain_length - 1; $i++) {
 	my $x1 = $vx_list[$i];
 	my $y1 = $vy_list[$i] + $y_shift;
 	my $x2 = $vx_list[$i + 1];
 	my $y2 = $vy_list[$i + 1] + $y_shift;
-	# Always draw the main bond line.
-	$fatty_acid_svg .= svg_line($x1, $y1, $x2, $y2);
-	# For double bonds (which are flat horizontal here), add a parallel
-	# line offset upward (so it sits above the main line, conventional).
 	if ($is_double_lookup{$i}) {
+		# Cis bond is flat (y1 == y2). Pick a neighbor vertex to decide
+		# which side of the bond faces the rest of the chain -- the
+		# parallel inner line must land on that (concave) side. Prefer
+		# vertex i-1; if the cis bond starts at index 0, the next non-bond
+		# neighbor on the far side is vertex i+2 (i+1 is the second atom
+		# of the same flat bond and shares y with i).
+		my $y_neighbor;
+		if ($i > 0) {
+			$y_neighbor = $vy_list[$i - 1] + $y_shift;
+		} else {
+			$y_neighbor = $vy_list[$i + 2] + $y_shift;
+		}
+		# SVG y grows downward, so "visually above" = smaller y.
+		# neighbor visually above bond (y_neighbor < y1) means the chain
+		# sits above a bottom-kink cis bond; interior (concave side) is
+		# therefore ABOVE -> negative offset (smaller y).
+		# neighbor visually below bond (y_neighbor > y1) means top-kink;
+		# interior is BELOW -> positive offset.
+		my $parallel_offset = ($y_neighbor < $y1) ? -$DOUBLE_GAP : $DOUBLE_GAP;
+		# Main C=C stroke, green + thicker.
+		$fatty_acid_svg .= svg_line($x1, $y1, $x2, $y2, $DOUBLE_COLOR, $DOUBLE_WIDTH);
+		# Parallel inner line, same color and width, on the concave side.
 		my $px1 = $x1 + $DOUBLE_INSET;
-		my $py1 = $y1 - $DOUBLE_GAP;
+		my $py1 = $y1 + $parallel_offset;
 		my $px2 = $x2 - $DOUBLE_INSET;
-		my $py2 = $y2 - $DOUBLE_GAP;
-		$fatty_acid_svg .= svg_line($px1, $py1, $px2, $py2);
+		my $py2 = $y2 + $parallel_offset;
+		$fatty_acid_svg .= svg_line($px1, $py1, $px2, $py2, $DOUBLE_COLOR, $DOUBLE_WIDTH);
+	} else {
+		$fatty_acid_svg .= svg_line($x1, $y1, $x2, $y2, $SINGLE_COLOR);
 	}
 }
 
@@ -246,7 +281,7 @@ $fatty_acid_svg .= '</svg>';
 
 sub list2html_omega {
 	my ($joined) = @_;
-	return '<span style="font-family:serif;font-weight:700;">'
+	return '<span style="font-family:monospace;font-size:1.25em;font-weight:700;">'
 		. '&omega;&ndash;' . $joined . '</span>';
 }
 

@@ -1,6 +1,30 @@
 # Changelog
 
-## 2026-04-22
+## 2026-04-23
+
+### Behavior or Interface Changes
+- Updated the four fatty-acid skeletal-structure PGMLs in
+  [problems/biochemistry-problems/lipids/](../problems/biochemistry-problems/lipids/)
+  (`fatty_acid_match_delta.pgml`, `fatty_acid_match_omega.pgml`,
+  `fatty_acid_naming_delta.pgml`, `fatty_acid_naming_omega.pgml`) so that
+  each cis `C=C` parallel inner line is drawn on the concave (interior)
+  side of the kink instead of always above the main bond line. Top-kink
+  cis bonds now render with the inner line below the main line; bottom-kink
+  cis bonds keep the inner line above. The side is chosen by comparing the
+  flat cis bond y to the nearest non-bond neighbor vertex (preferring the
+  vertex before the cis bond; falling back to index `i+2` when the cis
+  bond starts at vertex 0).
+- Restyled chain bonds in the same four PGMLs for visual emphasis: both
+  strokes of every `C=C` are now drawn in dark green (`#1b5e20`) at
+  `stroke-width="2.4"`; single bonds are drawn in dark gray (`#222`) at
+  width 2. `svg_line` gained optional stroke-color and stroke-width
+  parameters (default still `#000` / `2`), and each PGML's embedded block
+  headers were bumped: `svg_primitives_lipids (v3) -> (v4)` and
+  `fatty_acid_svg_builder (v1) -> (v2)` where that block is present.
+- Restyled the Delta/omega notation labels in the same four lipid PGMLs to
+  match the `18:3` colon-shorthand styling used in
+  `quick_fatty_acid_colon_system.pgml`: monospace font, `1.25em` size,
+  bold. Previously rendered in a bold serif at the default size.
 
 ### Additions and New Features
 - Added two nucleobase structure-matching problems under
