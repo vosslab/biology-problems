@@ -1,0 +1,824 @@
+## TITLE('Test bed: membrane_transporter_svg v3 Round 2 (A/B/C/D variants)')
+## DESCRIPTION
+## Renderer-only testbed for Round 2 of v3 design iteration. V3b (waisted
+## carrier body) is held constant as the silhouette baseline. Four variants
+## each change ONE focused dimension on top of V3b:
+##   Variant A: arrow system (lateral jog, smaller heads, bigger waist gap)
+##   Variant B: label system (vertical stagger, ion vs word offsets, stoich
+##              as compact badge)
+##   Variant C: gradient dots (tight clusters, size/opacity gradient, pool
+##              rect background)
+##   Variant D: mechanism cues (external-only arrows, central binding circle
+##              at the gate, alternating-access double-arrow)
+## Three representative cases: Case 1 (uniporter inward glucose), Case 4
+## (antiporter 3 Na+ in / 1 Ca2+ out), Case 6 (symporter with gradients).
+## ENDDESCRIPTION
+## KEYWORDS('membrane','transport','svg','testbed','v3','round2')
+## DBsubject('Biochemistry')
+## DBchapter('Membranes and Transport')
+## DBsection('Membrane Transport Proteins')
+## Level(0)
+## Date('2026-04-23')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+loadMacros(
+	'PGstandard.pl',
+	'PGML.pl',
+	'PGcourse.pl'
+);
+$showPartialCorrectAnswers = 1;
+
+# ==== BEGIN BLOCK: r2_shared_v3b ====
+# Shared V3b baseline. Canvas 420 x 240. Waisted `<path>` carrier, dashed
+# waist line at y=120, wider lanes LEFT=185, CENTER=210, RIGHT=235, reduced
+# head-group weight.
+
+$CANVAS_W     = 420;
+$CANVAS_H     = 240;
+$EXTRA_FILL   = '#eaf2f8';
+$CYTO_FILL    = '#fdfcf5';
+$LEAFLET_FILL = '#d9b88a';
+$COREGAP_FILL = '#e8d4ad';
+$HEAD_FILL    = '#b5926b';
+$PROTEIN_FILL = '#5f6c7b';
+
+sub svg_open {
+	return '<svg xmlns="http://www.w3.org/2000/svg" version="1.1"'
+		. ' width="420" height="240" viewBox="0 0 420 240"'
+		. ' style="max-width: 480px; border: 1px solid #cbd5e0; margin: 0.5em 0;">';
+}
+sub svg_close { return '</svg>'; }
+
+# Shared bilayer backdrop (same across all variants).
+sub svg_backdrop_r2 {
+	my $s = '';
+	$s .= '<rect x="0" y="0" width="420" height="70" fill="' . $EXTRA_FILL . '"/>';
+	$s .= '<rect x="0" y="150" width="420" height="90" fill="' . $CYTO_FILL . '"/>';
+	$s .= '<rect x="0" y="70" width="420" height="25" fill="' . $LEAFLET_FILL . '"/>';
+	$s .= '<rect x="0" y="95" width="420" height="30" fill="' . $COREGAP_FILL . '"/>';
+	$s .= '<rect x="0" y="125" width="420" height="25" fill="' . $LEAFLET_FILL . '"/>';
+	for (my $cx = 10; $cx <= 410; $cx += 14) {
+		next if ($cx >= 171 && $cx <= 249);
+		$s .= '<circle cx="' . $cx . '" cy="73" r="2.6" fill="' . $HEAD_FILL
+			. '" opacity="0.75"/>';
+		$s .= '<circle cx="' . $cx . '" cy="147" r="2.6" fill="' . $HEAD_FILL
+			. '" opacity="0.75"/>';
+	}
+	return $s;
+}
+
+# Shared V3b waisted protein with dashed waist line at y=120.
+sub svg_protein_r2 {
+	my $fill = $PROTEIN_FILL;
+	my $stroke = '#2f3743';
+	my $d = 'M 193 55 '
+		. 'L 227 55 '
+		. 'Q 245 55 245 75 '
+		. 'C 245 95 239 110 239 120 '
+		. 'C 239 130 245 145 245 165 '
+		. 'Q 245 185 227 185 '
+		. 'L 193 185 '
+		. 'Q 175 185 175 165 '
+		. 'C 175 145 181 130 181 120 '
+		. 'C 181 110 175 95 175 75 '
+		. 'Q 175 55 193 55 Z';
+	my $s = '<path d="' . $d . '" fill="' . $fill . '" stroke="' . $stroke
+		. '" stroke-width="1.5"/>';
+	$s .= '<line x1="182" y1="120" x2="238" y2="120"'
+		. ' stroke="' . $stroke . '" stroke-width="1.5" stroke-dasharray="4,3"/>';
+	return $s;
+}
+
+sub svg_compartment_labels_r2 {
+	my $s = '';
+	$s .= '<text x="412" y="22" font-family="sans-serif" font-size="13"'
+		. ' font-style="italic" fill="#2c3e50" text-anchor="end">extracellular</text>';
+	$s .= '<text x="412" y="232" font-family="sans-serif" font-size="13"'
+		. ' font-style="italic" fill="#2c3e50" text-anchor="end">cytosol</text>';
+	return $s;
+}
+
+# Standard V3b solute blob.
+sub svg_solute_blob {
+	my ($cx, $cy, $color) = @_;
+	return '<circle cx="' . $cx . '" cy="' . $cy . '" r="10"'
+		. ' fill="' . $color . '" stroke="#1f2937" stroke-width="1"/>';
+}
+
+# V3b baseline arrow in (used by variants that do NOT override arrows).
+sub svg_arrow_in_base {
+	my ($x, $color) = @_;
+	my $s = '';
+	$s .= '<line x1="' . $x . '" y1="55" x2="' . $x . '" y2="108"'
+		. ' stroke="' . $color . '" stroke-width="3" stroke-linecap="round"/>';
+	$s .= '<line x1="' . $x . '" y1="132" x2="' . $x . '" y2="185"'
+		. ' stroke="' . $color . '" stroke-width="3" stroke-linecap="round"/>';
+	$s .= '<polygon points="'
+		. ($x - 5) . ',185 '
+		. ($x + 5) . ',185 '
+		. $x . ',193'
+		. '" fill="' . $color . '"/>';
+	return $s;
+}
+
+sub svg_arrow_out_base {
+	my ($x, $color) = @_;
+	my $s = '';
+	$s .= '<line x1="' . $x . '" y1="185" x2="' . $x . '" y2="132"'
+		. ' stroke="' . $color . '" stroke-width="3" stroke-linecap="round"/>';
+	$s .= '<line x1="' . $x . '" y1="108" x2="' . $x . '" y2="55"'
+		. ' stroke="' . $color . '" stroke-width="3" stroke-linecap="round"/>';
+	$s .= '<polygon points="'
+		. ($x - 5) . ',55 '
+		. ($x + 5) . ',55 '
+		. $x . ',47'
+		. '" fill="' . $color . '"/>';
+	return $s;
+}
+
+# V3b baseline solute label.
+sub svg_solute_label_base {
+	my ($cx, $cy, $label_html, $side) = @_;
+	my $tx;
+	my $anchor;
+	if ($side eq 'left') {
+		$tx = $cx - 16;
+		$anchor = 'end';
+	} elsif ($side eq 'right') {
+		$tx = $cx + 16;
+		$anchor = 'start';
+	} else {
+		$tx = $cx + 16;
+		$anchor = 'start';
+	}
+	my $s = '<text x="' . $tx . '" y="' . ($cy + 5) . '"'
+		. ' font-family="sans-serif" font-size="14" font-weight="600"'
+		. ' text-anchor="' . $anchor . '" fill="#1f2937">' . $label_html . '</text>';
+	return $s;
+}
+
+# V3b baseline stoich label: centered above/below blob.
+sub svg_stoich_base {
+	my ($x, $dir, $color, $stoich) = @_;
+	my $y = ($dir eq 'in') ? 24 : 222;
+	my $s = '<text x="' . $x . '" y="' . $y . '"'
+		. ' font-family="sans-serif" font-size="12" font-weight="700"'
+		. ' fill="' . $color . '" text-anchor="middle">'
+		. $stoich . '&#215;</text>';
+	return $s;
+}
+
+# V3b baseline gradient dots: territory-based, uniform r=3.5.
+sub svg_gradient_dots_base {
+	my ($side, $count, $color_light, $territory) = @_;
+	return '' if $count <= 0;
+	$count = 6 if $count > 6;
+	my @xs_left  = (22, 42, 62, 82, 102, 32, 52, 72);
+	my @xs_right = (300, 320, 340, 360, 380, 310, 330, 350);
+	my @ys_extra = (18, 36, 54, 28, 46);
+	my @ys_cyto  = (178, 196, 216, 188, 208);
+	my @xs;
+	if ($territory eq 'right') {
+		@xs = @xs_right;
+	} else {
+		@xs = @xs_left;
+	}
+	my @ys = ($side eq 'extra') ? @ys_extra : @ys_cyto;
+	my $alpha = ($count >= 4) ? 0.9 : 0.7;
+	my $s = '';
+	my $placed = 0;
+	for (my $i = 0; $i < scalar(@xs) && $placed < $count; $i++) {
+		my $cx = $xs[$i];
+		my $cy = $ys[$i % scalar(@ys)];
+		$s .= '<circle cx="' . $cx . '" cy="' . $cy . '" r="3.5"'
+			. ' fill="' . $color_light . '" opacity="' . $alpha . '"/>';
+		$placed++;
+	}
+	return $s;
+}
+
+# Label/color constants.
+$LBL_GLUCOSE = 'glucose';
+$LBL_NA  = 'Na<tspan baseline-shift="super" font-size="10">+</tspan>';
+$LBL_H   = 'H<tspan baseline-shift="super" font-size="10">+</tspan>';
+$LBL_CA  = 'Ca<tspan baseline-shift="super" font-size="10">2+</tspan>';
+$COL_GLU = '#d97706';
+$COL_NA  = '#2563eb';
+$COL_H   = '#ea580c';
+$COL_CA  = '#15803d';
+$COL_NA_LT  = '#93c5fd';
+$COL_H_LT   = '#fdba74';
+$COL_GLU_LT = '#fcd34d';
+
+$Y_IN  = 40;
+$Y_OUT = 200;
+$LANE_CENTER = 210;
+$LANE_LEFT   = 185;
+$LANE_RIGHT  = 235;
+
+# Plain label for length-based decisions (Variant B).
+$PLAIN_GLU = 'glucose';
+$PLAIN_NA  = 'Na+';
+$PLAIN_H   = 'H+';
+$PLAIN_CA  = 'Ca2+';
+
+# ==== END BLOCK: r2_shared_v3b ====
+
+# ==== BEGIN BLOCK: r2_variant_A ====
+# Arrow-focused variant. Lateral jog across the waist depending on lane,
+# smaller arrowheads (base 3.5, tip 6), bigger waist gap (y 55..104 and
+# 136..185). Jog direction per lane: LEFT => upper at x, lower at x+2;
+# RIGHT => upper at x, lower at x-2; CENTER => upper at x, lower at x+2.
+
+sub svg_lane_jog_A {
+	my ($lane) = @_;
+	my $dx = 2;
+	if ($lane eq 'right') {
+		return -$dx;
+	}
+	return $dx;
+}
+
+sub svg_arrow_in_A {
+	my ($x, $color, $lane) = @_;
+	my $jog = svg_lane_jog_A($lane);
+	my $x_up = $x;
+	my $x_dn = $x + $jog;
+	my $s = '';
+	# Upper segment shortened (y 55..104)
+	$s .= '<line x1="' . $x_up . '" y1="55" x2="' . $x_up . '" y2="104"'
+		. ' stroke="' . $color . '" stroke-width="3" stroke-linecap="round"/>';
+	# Lower segment shortened (y 136..185)
+	$s .= '<line x1="' . $x_dn . '" y1="136" x2="' . $x_dn . '" y2="185"'
+		. ' stroke="' . $color . '" stroke-width="3" stroke-linecap="round"/>';
+	# Smaller arrowhead: base 3.5 on each side, tip 6 below y=185.
+	$s .= '<polygon points="'
+		. ($x_dn - 3.5) . ',185 '
+		. ($x_dn + 3.5) . ',185 '
+		. $x_dn . ',191'
+		. '" fill="' . $color . '"/>';
+	return $s;
+}
+
+sub svg_arrow_out_A {
+	my ($x, $color, $lane) = @_;
+	my $jog = svg_lane_jog_A($lane);
+	my $x_up = $x;
+	my $x_dn = $x + $jog;
+	my $s = '';
+	# Lower segment (cyto side)
+	$s .= '<line x1="' . $x_dn . '" y1="185" x2="' . $x_dn . '" y2="136"'
+		. ' stroke="' . $color . '" stroke-width="3" stroke-linecap="round"/>';
+	# Upper segment (extra side)
+	$s .= '<line x1="' . $x_up . '" y1="104" x2="' . $x_up . '" y2="55"'
+		. ' stroke="' . $color . '" stroke-width="3" stroke-linecap="round"/>';
+	# Smaller arrowhead: base 3.5, tip 6 above y=55.
+	$s .= '<polygon points="'
+		. ($x_up - 3.5) . ',55 '
+		. ($x_up + 3.5) . ',55 '
+		. $x_up . ',49'
+		. '" fill="' . $color . '"/>';
+	return $s;
+}
+
+# ==== END BLOCK: r2_variant_A ====
+
+# ==== BEGIN BLOCK: r2_variant_B ====
+# Label-focused variant. Vertical stagger for dual-top labels: left label
+# baseline cy+3, right label baseline cy+8 (5 px offset). Spacing by type:
+# short ion labels (length <= 3) use 14 px offset; word labels (>=4 chars)
+# use 18 px. Stoich text positioned as compact superscript-style badge at
+# (cx-4, top-18) or (cx-4, bottom+24), text-anchor=end, font-size=11.
+
+sub svg_solute_label_B {
+	my ($cx, $cy, $label_html, $plain_label, $side, $top_stagger) = @_;
+	my $len = length($plain_label);
+	my $offset = 14;
+	if ($len >= 4) {
+		$offset = 18;
+	}
+	my $tx;
+	my $anchor;
+	if ($side eq 'left') {
+		$tx = $cx - $offset;
+		$anchor = 'end';
+	} elsif ($side eq 'right') {
+		$tx = $cx + $offset;
+		$anchor = 'start';
+	} else {
+		$tx = $cx + $offset;
+		$anchor = 'start';
+	}
+	my $dy = 5;
+	if ($top_stagger) {
+		if ($side eq 'left') {
+			$dy = 3;
+		} elsif ($side eq 'right') {
+			$dy = 8;
+		}
+	}
+	my $s = '<text x="' . $tx . '" y="' . ($cy + $dy) . '"'
+		. ' font-family="sans-serif" font-size="14" font-weight="600"'
+		. ' text-anchor="' . $anchor . '" fill="#1f2937">' . $label_html . '</text>';
+	return $s;
+}
+
+sub svg_stoich_B {
+	my ($x, $dir, $color, $stoich) = @_;
+	# Superscript-style badge: anchor=end, offset by -4 in x, font-size=11.
+	my $y;
+	if ($dir eq 'in') {
+		# Above top blob: top_y (=40) - 18 = 22
+		$y = $Y_IN - 18;
+	} else {
+		# Below bottom blob: bottom_y (=200) + 24 = 224
+		$y = $Y_OUT + 24;
+	}
+	my $tx = $x - 4;
+	my $s = '<text x="' . $tx . '" y="' . $y . '"'
+		. ' font-family="sans-serif" font-size="11" font-weight="700"'
+		. ' fill="' . $color . '" text-anchor="end">'
+		. $stoich . '&#215;</text>';
+	return $s;
+}
+
+# ==== END BLOCK: r2_variant_B ====
+
+# ==== BEGIN BLOCK: r2_variant_C ====
+# Gradient-focused variant. Tight clustered dots near arrow lane, size and
+# opacity variation, tighter x territories (left 18..92, right 310..384),
+# with faint pool rect behind clusters of >= 3 dots.
+#
+# Layout by count:
+#   count==1: single isolated dot far from arrow lane (pool-far position)
+#   count==2: two dots, moderate cluster
+#   count>=3: dense 3x2 cluster near upper (or lower) corner; pool rect added
+
+sub svg_gradient_dots_C {
+	my ($side, $count, $color_light, $territory) = @_;
+	return '' if $count <= 0;
+	$count = 6 if $count > 6;
+	my $s = '';
+	# Territory X ranges (tighter): left 18..92, right 310..384.
+	# Anchor cluster near arrow lane (lane_x is at 185 left or 235 right, but
+	# cluster stays within territory). Use tight 3x2 grid.
+	my $cluster_x_left  = 50;
+	my $cluster_x_right = 352;
+	my $cluster_x = ($territory eq 'right') ? $cluster_x_right : $cluster_x_left;
+	my $cluster_y_extra = 32;
+	my $cluster_y_cyto  = 198;
+	my $cluster_y = ($side eq 'extra') ? $cluster_y_extra : $cluster_y_cyto;
+	# "Far isolated" position: opposite corner within territory.
+	my $far_x_left  = 82;
+	my $far_x_right = 320;
+	my $far_x = ($territory eq 'right') ? $far_x_right : $far_x_left;
+	my $far_y_extra = 20;
+	my $far_y_cyto  = 218;
+	my $far_y = ($side eq 'extra') ? $far_y_extra : $far_y_cyto;
+
+	if ($count == 1) {
+		# Single isolated dot, no pool rect.
+		$s .= '<circle cx="' . $far_x . '" cy="' . $far_y . '" r="3"'
+			. ' fill="' . $color_light . '" opacity="0.75"/>';
+		return $s;
+	}
+	if ($count == 2) {
+		# Two-dot moderate cluster, no pool rect.
+		my $x1 = $cluster_x;
+		my $x2 = $cluster_x + 14;
+		my $y1 = $cluster_y;
+		my $y2 = $cluster_y + 10;
+		$s .= '<circle cx="' . $x1 . '" cy="' . $y1 . '" r="4"'
+			. ' fill="' . $color_light . '" opacity="0.95"/>';
+		$s .= '<circle cx="' . $x2 . '" cy="' . $y2 . '" r="3"'
+			. ' fill="' . $color_light . '" opacity="0.75"/>';
+		return $s;
+	}
+	# count >= 3: dense cluster with pool rect background.
+	# Pool rect: 40 x 24, centered on cluster region, fill-opacity 0.08.
+	my $pool_cx = $cluster_x + 14;
+	my $pool_cy = $cluster_y + 8;
+	my $pool_x = $pool_cx - 20;
+	my $pool_y = $pool_cy - 12;
+	$s .= '<rect x="' . $pool_x . '" y="' . $pool_y . '" width="40" height="24"'
+		. ' rx="8" ry="8" fill="' . $color_light . '" fill-opacity="0.08"'
+		. ' stroke="' . $color_light . '" stroke-opacity="0.15"/>';
+	# Dot grid: 3 cols x 2 rows. Cols near arrow lane get larger r, higher opacity.
+	# Near-to-far ordering (cluster_x is the "near-to-lane" anchor).
+	# For left territory, arrow lane is to the RIGHT (at x=185), so dots with
+	# higher x are "closer" to lane. For right territory, arrow lane is to the
+	# LEFT (at x=235), so dots with lower x are "closer".
+	my @dx = (0, 14, 28);
+	my @dy = (0, 10);
+	# "Closeness" rank per column:
+	# left territory: rank = col idx (0=far, 2=near)
+	# right territory: rank = 2 - col idx
+	my @ranks;
+	if ($territory eq 'right') {
+		@ranks = (2, 1, 0);
+	} else {
+		@ranks = (0, 1, 2);
+	}
+	my $placed = 0;
+	for (my $row = 0; $row < 2 && $placed < $count; $row++) {
+		for (my $col = 0; $col < 3 && $placed < $count; $col++) {
+			my $x = $cluster_x + $dx[$col];
+			my $y = $cluster_y + $dy[$row];
+			my $r;
+			my $op;
+			if ($ranks[$col] >= 2) {
+				# Near lane
+				$r = 4;
+				$op = 0.95;
+			} elsif ($ranks[$col] == 1) {
+				$r = 3.5;
+				$op = 0.85;
+			} else {
+				$r = 3;
+				$op = 0.75;
+			}
+			$s .= '<circle cx="' . $x . '" cy="' . $y . '" r="' . $r . '"'
+				. ' fill="' . $color_light . '" opacity="' . $op . '"/>';
+			$placed++;
+		}
+	}
+	return $s;
+}
+
+# ==== END BLOCK: r2_variant_C ====
+
+# ==== BEGIN BLOCK: r2_variant_D ====
+# Mechanism-focused variant. External-only arrows (no internal segment
+# between y=108..132). Central binding-zone circle at (lane_x, 120): r=6,
+# stroke=substrate color, fill=white, stroke-width=1.5. Alternating-access
+# cue: top external arrow pointing DOWN ending at protein face y=55, and
+# bottom external arrow emerging from cyto face pointing DOWN further
+# (y=185..200). Arrowhead size normal (base 5, tip 8).
+
+sub svg_arrow_in_D {
+	my ($x, $color) = @_;
+	my $s = '';
+	# External top arrow: y=40..55, pointing DOWN, arrowhead tip at y=55.
+	# (Substrate approaching the extracellular face from above.)
+	$s .= '<line x1="' . $x . '" y1="30" x2="' . $x . '" y2="55"'
+		. ' stroke="' . $color . '" stroke-width="3" stroke-linecap="round"/>';
+	$s .= '<polygon points="'
+		. ($x - 5) . ',55 '
+		. ($x + 5) . ',55 '
+		. $x . ',63'
+		. '" fill="' . $color . '"/>';
+	# External bottom arrow: emerging from cyto face at y=185, pointing DOWN,
+	# tip at y=210 (alternating-access release cue).
+	$s .= '<line x1="' . $x . '" y1="185" x2="' . $x . '" y2="210"'
+		. ' stroke="' . $color . '" stroke-width="3" stroke-linecap="round"/>';
+	$s .= '<polygon points="'
+		. ($x - 5) . ',210 '
+		. ($x + 5) . ',210 '
+		. $x . ',218'
+		. '" fill="' . $color . '"/>';
+	return $s;
+}
+
+sub svg_arrow_out_D {
+	my ($x, $color) = @_;
+	my $s = '';
+	# External bottom arrow: y=215..185, pointing UP, tip at y=185 (approaches
+	# cyto face from below).
+	$s .= '<line x1="' . $x . '" y1="215" x2="' . $x . '" y2="185"'
+		. ' stroke="' . $color . '" stroke-width="3" stroke-linecap="round"/>';
+	$s .= '<polygon points="'
+		. ($x - 5) . ',185 '
+		. ($x + 5) . ',185 '
+		. $x . ',177'
+		. '" fill="' . $color . '"/>';
+	# External top arrow: y=55..30, pointing UP, tip at y=30 (release to extra).
+	$s .= '<line x1="' . $x . '" y1="55" x2="' . $x . '" y2="30"'
+		. ' stroke="' . $color . '" stroke-width="3" stroke-linecap="round"/>';
+	$s .= '<polygon points="'
+		. ($x - 5) . ',30 '
+		. ($x + 5) . ',30 '
+		. $x . ',22'
+		. '" fill="' . $color . '"/>';
+	return $s;
+}
+
+sub svg_binding_dot_D {
+	my ($x, $color) = @_;
+	return '<circle cx="' . $x . '" cy="120" r="6"'
+		. ' fill="#ffffff" stroke="' . $color . '" stroke-width="1.5"/>';
+}
+
+# ==== END BLOCK: r2_variant_D ====
+
+# ----------------------------
+# Case builders. For each (variant, case) concatenate the shared backdrop
+# and the variant-specific pieces in z-order:
+# backdrop -> gradient dots -> protein -> arrows -> blobs -> labels (last).
+# ----------------------------
+
+# Variant A builders
+sub build_A_case1 {
+	my $s = svg_open();
+	$s .= svg_backdrop_r2();
+	$s .= svg_protein_r2();
+	$s .= svg_arrow_in_A($LANE_CENTER, $COL_GLU, 'center');
+	$s .= svg_solute_blob($LANE_CENTER, $Y_IN, $COL_GLU);
+	$s .= svg_compartment_labels_r2();
+	$s .= svg_solute_label_base($LANE_CENTER, $Y_IN, $LBL_GLUCOSE, 'center');
+	$s .= svg_close();
+	return $s;
+}
+
+sub build_A_case4 {
+	my $s = svg_open();
+	$s .= svg_backdrop_r2();
+	$s .= svg_protein_r2();
+	$s .= svg_arrow_in_A($LANE_LEFT,   $COL_NA, 'left');
+	$s .= svg_arrow_out_A($LANE_RIGHT, $COL_CA, 'right');
+	$s .= svg_solute_blob($LANE_LEFT,  $Y_IN,  $COL_NA);
+	$s .= svg_solute_blob($LANE_RIGHT, $Y_OUT, $COL_CA);
+	$s .= svg_compartment_labels_r2();
+	$s .= svg_stoich_base($LANE_LEFT, 'in', $COL_NA, 3);
+	$s .= svg_solute_label_base($LANE_LEFT,  $Y_IN,  $LBL_NA, 'left');
+	$s .= svg_solute_label_base($LANE_RIGHT, $Y_OUT, $LBL_CA, 'right');
+	$s .= svg_close();
+	return $s;
+}
+
+sub build_A_case6 {
+	my $s = svg_open();
+	$s .= svg_backdrop_r2();
+	$s .= svg_gradient_dots_base('extra', 6, $COL_NA_LT,  'left');
+	$s .= svg_gradient_dots_base('cyto',  1, $COL_NA_LT,  'left');
+	$s .= svg_gradient_dots_base('extra', 2, $COL_GLU_LT, 'right');
+	$s .= svg_gradient_dots_base('cyto',  4, $COL_GLU_LT, 'right');
+	$s .= svg_protein_r2();
+	$s .= svg_arrow_in_A($LANE_LEFT,  $COL_NA,  'left');
+	$s .= svg_arrow_in_A($LANE_RIGHT, $COL_GLU, 'right');
+	$s .= svg_solute_blob($LANE_LEFT,  $Y_IN, $COL_NA);
+	$s .= svg_solute_blob($LANE_RIGHT, $Y_IN, $COL_GLU);
+	$s .= svg_compartment_labels_r2();
+	$s .= svg_solute_label_base($LANE_LEFT,  $Y_IN, $LBL_NA,      'left');
+	$s .= svg_solute_label_base($LANE_RIGHT, $Y_IN, $LBL_GLUCOSE, 'right');
+	$s .= svg_close();
+	return $s;
+}
+
+# Variant B builders
+sub build_B_case1 {
+	my $s = svg_open();
+	$s .= svg_backdrop_r2();
+	$s .= svg_protein_r2();
+	$s .= svg_arrow_in_base($LANE_CENTER, $COL_GLU);
+	$s .= svg_solute_blob($LANE_CENTER, $Y_IN, $COL_GLU);
+	$s .= svg_compartment_labels_r2();
+	$s .= svg_solute_label_B($LANE_CENTER, $Y_IN, $LBL_GLUCOSE, $PLAIN_GLU, 'center', 0);
+	$s .= svg_close();
+	return $s;
+}
+
+sub build_B_case4 {
+	my $s = svg_open();
+	$s .= svg_backdrop_r2();
+	$s .= svg_protein_r2();
+	$s .= svg_arrow_in_base($LANE_LEFT,   $COL_NA);
+	$s .= svg_arrow_out_base($LANE_RIGHT, $COL_CA);
+	$s .= svg_solute_blob($LANE_LEFT,  $Y_IN,  $COL_NA);
+	$s .= svg_solute_blob($LANE_RIGHT, $Y_OUT, $COL_CA);
+	$s .= svg_compartment_labels_r2();
+	$s .= svg_stoich_B($LANE_LEFT, 'in', $COL_NA, 3);
+	$s .= svg_solute_label_B($LANE_LEFT,  $Y_IN,  $LBL_NA, $PLAIN_NA, 'left',  0);
+	$s .= svg_solute_label_B($LANE_RIGHT, $Y_OUT, $LBL_CA, $PLAIN_CA, 'right', 0);
+	$s .= svg_close();
+	return $s;
+}
+
+sub build_B_case6 {
+	my $s = svg_open();
+	$s .= svg_backdrop_r2();
+	$s .= svg_gradient_dots_base('extra', 6, $COL_NA_LT,  'left');
+	$s .= svg_gradient_dots_base('cyto',  1, $COL_NA_LT,  'left');
+	$s .= svg_gradient_dots_base('extra', 2, $COL_GLU_LT, 'right');
+	$s .= svg_gradient_dots_base('cyto',  4, $COL_GLU_LT, 'right');
+	$s .= svg_protein_r2();
+	$s .= svg_arrow_in_base($LANE_LEFT,  $COL_NA);
+	$s .= svg_arrow_in_base($LANE_RIGHT, $COL_GLU);
+	$s .= svg_solute_blob($LANE_LEFT,  $Y_IN, $COL_NA);
+	$s .= svg_solute_blob($LANE_RIGHT, $Y_IN, $COL_GLU);
+	$s .= svg_compartment_labels_r2();
+	# Both-top stack: stagger on.
+	$s .= svg_solute_label_B($LANE_LEFT,  $Y_IN, $LBL_NA,      $PLAIN_NA,  'left',  1);
+	$s .= svg_solute_label_B($LANE_RIGHT, $Y_IN, $LBL_GLUCOSE, $PLAIN_GLU, 'right', 1);
+	$s .= svg_close();
+	return $s;
+}
+
+# Variant C builders
+sub build_C_case1 {
+	my $s = svg_open();
+	$s .= svg_backdrop_r2();
+	$s .= svg_protein_r2();
+	$s .= svg_arrow_in_base($LANE_CENTER, $COL_GLU);
+	$s .= svg_solute_blob($LANE_CENTER, $Y_IN, $COL_GLU);
+	$s .= svg_compartment_labels_r2();
+	$s .= svg_solute_label_base($LANE_CENTER, $Y_IN, $LBL_GLUCOSE, 'center');
+	$s .= svg_close();
+	return $s;
+}
+
+sub build_C_case4 {
+	my $s = svg_open();
+	$s .= svg_backdrop_r2();
+	$s .= svg_protein_r2();
+	$s .= svg_arrow_in_base($LANE_LEFT,   $COL_NA);
+	$s .= svg_arrow_out_base($LANE_RIGHT, $COL_CA);
+	$s .= svg_solute_blob($LANE_LEFT,  $Y_IN,  $COL_NA);
+	$s .= svg_solute_blob($LANE_RIGHT, $Y_OUT, $COL_CA);
+	$s .= svg_compartment_labels_r2();
+	$s .= svg_stoich_base($LANE_LEFT, 'in', $COL_NA, 3);
+	$s .= svg_solute_label_base($LANE_LEFT,  $Y_IN,  $LBL_NA, 'left');
+	$s .= svg_solute_label_base($LANE_RIGHT, $Y_OUT, $LBL_CA, 'right');
+	$s .= svg_close();
+	return $s;
+}
+
+sub build_C_case6 {
+	my $s = svg_open();
+	$s .= svg_backdrop_r2();
+	$s .= svg_gradient_dots_C('extra', 6, $COL_NA_LT,  'left');
+	$s .= svg_gradient_dots_C('cyto',  1, $COL_NA_LT,  'left');
+	$s .= svg_gradient_dots_C('extra', 2, $COL_GLU_LT, 'right');
+	$s .= svg_gradient_dots_C('cyto',  4, $COL_GLU_LT, 'right');
+	$s .= svg_protein_r2();
+	$s .= svg_arrow_in_base($LANE_LEFT,  $COL_NA);
+	$s .= svg_arrow_in_base($LANE_RIGHT, $COL_GLU);
+	$s .= svg_solute_blob($LANE_LEFT,  $Y_IN, $COL_NA);
+	$s .= svg_solute_blob($LANE_RIGHT, $Y_IN, $COL_GLU);
+	$s .= svg_compartment_labels_r2();
+	$s .= svg_solute_label_base($LANE_LEFT,  $Y_IN, $LBL_NA,      'left');
+	$s .= svg_solute_label_base($LANE_RIGHT, $Y_IN, $LBL_GLUCOSE, 'right');
+	$s .= svg_close();
+	return $s;
+}
+
+# Variant D builders
+sub build_D_case1 {
+	my $s = svg_open();
+	$s .= svg_backdrop_r2();
+	$s .= svg_protein_r2();
+	$s .= svg_arrow_in_D($LANE_CENTER, $COL_GLU);
+	$s .= svg_binding_dot_D($LANE_CENTER, $COL_GLU);
+	$s .= svg_solute_blob($LANE_CENTER, $Y_IN, $COL_GLU);
+	$s .= svg_compartment_labels_r2();
+	$s .= svg_solute_label_base($LANE_CENTER, $Y_IN, $LBL_GLUCOSE, 'center');
+	$s .= svg_close();
+	return $s;
+}
+
+sub build_D_case4 {
+	my $s = svg_open();
+	$s .= svg_backdrop_r2();
+	$s .= svg_protein_r2();
+	$s .= svg_arrow_in_D($LANE_LEFT,   $COL_NA);
+	$s .= svg_arrow_out_D($LANE_RIGHT, $COL_CA);
+	$s .= svg_binding_dot_D($LANE_LEFT,  $COL_NA);
+	$s .= svg_binding_dot_D($LANE_RIGHT, $COL_CA);
+	$s .= svg_solute_blob($LANE_LEFT,  $Y_IN,  $COL_NA);
+	$s .= svg_solute_blob($LANE_RIGHT, $Y_OUT, $COL_CA);
+	$s .= svg_compartment_labels_r2();
+	$s .= svg_stoich_base($LANE_LEFT, 'in', $COL_NA, 3);
+	$s .= svg_solute_label_base($LANE_LEFT,  $Y_IN,  $LBL_NA, 'left');
+	$s .= svg_solute_label_base($LANE_RIGHT, $Y_OUT, $LBL_CA, 'right');
+	$s .= svg_close();
+	return $s;
+}
+
+sub build_D_case6 {
+	my $s = svg_open();
+	$s .= svg_backdrop_r2();
+	$s .= svg_gradient_dots_base('extra', 6, $COL_NA_LT,  'left');
+	$s .= svg_gradient_dots_base('cyto',  1, $COL_NA_LT,  'left');
+	$s .= svg_gradient_dots_base('extra', 2, $COL_GLU_LT, 'right');
+	$s .= svg_gradient_dots_base('cyto',  4, $COL_GLU_LT, 'right');
+	$s .= svg_protein_r2();
+	$s .= svg_arrow_in_D($LANE_LEFT,  $COL_NA);
+	$s .= svg_arrow_in_D($LANE_RIGHT, $COL_GLU);
+	$s .= svg_binding_dot_D($LANE_LEFT,  $COL_NA);
+	$s .= svg_binding_dot_D($LANE_RIGHT, $COL_GLU);
+	$s .= svg_solute_blob($LANE_LEFT,  $Y_IN, $COL_NA);
+	$s .= svg_solute_blob($LANE_RIGHT, $Y_IN, $COL_GLU);
+	$s .= svg_compartment_labels_r2();
+	$s .= svg_solute_label_base($LANE_LEFT,  $Y_IN, $LBL_NA,      'left');
+	$s .= svg_solute_label_base($LANE_RIGHT, $Y_IN, $LBL_GLUCOSE, 'right');
+	$s .= svg_close();
+	return $s;
+}
+
+# Build all 12 SVGs.
+$svg_A_1 = build_A_case1();
+$svg_A_4 = build_A_case4();
+$svg_A_6 = build_A_case6();
+$svg_B_1 = build_B_case1();
+$svg_B_4 = build_B_case4();
+$svg_B_6 = build_B_case6();
+$svg_C_1 = build_C_case1();
+$svg_C_4 = build_C_case4();
+$svg_C_6 = build_C_case6();
+$svg_D_1 = build_D_case1();
+$svg_D_4 = build_D_case4();
+$svg_D_6 = build_D_case6();
+
+BEGIN_PGML
+
+Round 2 testbed for [`membrane_transporter_svg`]* design iteration. V3b
+(waisted carrier silhouette) is held fixed; each variant below changes one
+focused design dimension on top of V3b.
+
+## Case 1: uniporter, glucose, inward (stoich 1)
+
+**Variant A (arrow-focused):**
+
+[$svg_A_1]*
+
+**Variant B (label-focused):**
+
+[$svg_B_1]*
+
+**Variant C (gradient-focused):**
+
+[$svg_C_1]*
+
+**Variant D (mechanism-focused):**
+
+[$svg_D_1]*
+
+## Case 4: antiporter, 3 Na+ in / 1 Ca2+ out
+
+**Variant A (arrow-focused):**
+
+[$svg_A_4]*
+
+**Variant B (label-focused):**
+
+[$svg_B_4]*
+
+**Variant C (gradient-focused):**
+
+[$svg_C_4]*
+
+**Variant D (mechanism-focused):**
+
+[$svg_D_4]*
+
+## Case 6: symporter with gradients (Na+ 6/1, glucose 2/4)
+
+**Variant A (arrow-focused):**
+
+[$svg_A_6]*
+
+**Variant B (label-focused):**
+
+[$svg_B_6]*
+
+**Variant C (gradient-focused):**
+
+[$svg_C_6]*
+
+**Variant D (mechanism-focused):**
+
+[$svg_D_6]*
+
+END_PGML
+
+BEGIN_PGML_SOLUTION
+
+Variant isolates:
+
+- Variant A: arrow system only. Lateral jog across waist (+/-2 px depending
+  on lane), smaller arrowheads (base 3.5 / tip 6 vs V3b base 5 / tip 8),
+  larger waist gap (y 55..104 and 136..185).
+- Variant B: label system only. Vertical stagger for dual-top labels
+  (left dy=3, right dy=8), ion vs word offsets (14 px vs 18 px),
+  stoichiometry as compact superscript-style badge (anchor=end, font-size 11,
+  at cx-4).
+- Variant C: gradient dots only. Tight cluster near arrow lane with size/
+  opacity gradient, tighter x territories (18..92 left, 310..384 right),
+  pool rounded-rect background for clusters of three or more.
+- Variant D: mechanism cues only. External-only arrows (no segment inside
+  protein between y=108..132), central binding circle at (lane_x, 120),
+  alternating-access double-arrow (approach + release).
+
+Non-targeted dimensions fall back to the shared V3b sub.
+
+END_PGML_SOLUTION
+
+ENDDOCUMENT();

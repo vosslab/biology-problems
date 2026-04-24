@@ -32,45 +32,11 @@ loadMacros(
 );
 $showPartialCorrectAnswers = 0;
 
-# ==== BEGIN BLOCK: membrane_transporter_svg (v3) ====
-# Schematic transporter renderer, v3. Canvas 420 x 240. Three-zone
-# phospholipid bilayer; darker waisted-`<path>` carrier body (pinched at
-# y=120 to x=183/237, ~9 px inward from x=175/245) with a dashed waist line
-# suggesting a conformational gate (carrier, not channel). Arrow lanes are
-# split into two segments around a bigger gap at the waist.
-#
-# Changes vs v2 (V3b after A/B/C comparison):
-#   A1: rounded rect replaced with a waisted `<path>` (carrier read).
-#   B2: arrow segments shortened (y=55..108 and y=132..185) with a bigger
-#       gap at the gate; arrowhead tips unchanged (y=193 in, y=47 out).
-#   C1: solute labels anchored by lane side -- left lane at x=cx-16
-#       text-anchor=end; right (and center) at x=cx+16 text-anchor=start.
-#   D1: stoichiometry centered above (y=24) or below (y=222) the blob,
-#       text-anchor=middle, instead of tucked to the left of the lane.
-#   E2: gradient dots parameterized by (compartment, lane_side). Lane
-#       territories: left-lane dots in x=22..102; right-lane dots in
-#       x=300..380. Density asymmetry within call: low counts cluster near
-#       the lane, high counts fill the territory.
-#   F1: reduced head-group weight: r=2.6, opacity=0.75.
-#   G1: wider lanes, LEFT=185, RIGHT=235 (50 px apart; was 36).
-#
-# Coordinate budget (y grows downward):
-#   0..70   extracellular compartment (pale blue)
-#   70..95  outer leaflet (muted tan) with head-group row at y=73
-#   95..125 hydrophobic core gap (lighter tan)
-#   125..150 inner leaflet (muted tan) with head-group row at y=147
-#   150..240 cytosol compartment (pale cream)
-# Transporter path: corners at (175,55)-(245,55) & (175,185)-(245,185);
-#   waist pinch to x=183/237 at y=120; curves back out by y=80/y=160.
-# Waist gate: dashed line at y=120, x=183..237.
-# Arrow lanes: center x=210 (uniporter), left x=185, right x=235.
-# Substrate blobs: "in" at y=40, "out" at y=200.
-# Arrow segments: "in"  y=55..108 and y=132..185 (tip at y=193);
-#                 "out" y=185..132 and y=108..55 (tip at y=47).
-#
-# Layer order in Setup (bottom to top):
-#   svg_open, svg_backdrop, svg_gradient_dots, svg_arrow_*, svg_solute_blob,
-#   svg_compartment_labels, svg_arrow_stoich_label, svg_solute_label, svg_close.
+# ==== BEGIN BLOCK: membrane_transporter_svg (v4) ====
+# See identify_transporter_type.pgml for the v3->v4 changelog. Summary:
+# approach arrow -> binding circle at the waist -> release blob; clustered
+# gradient dots with optional rounded-rect pool background; optional
+# $stagger on svg_solute_label for both-inward layouts.
 
 $CANVAS_W    = 420;
 $CANVAS_H    = 240;
@@ -88,7 +54,6 @@ sub svg_backdrop {
 	$s .= '<rect x="0" y="70" width="420" height="25" fill="' . $LEAFLET_FILL . '"/>';
 	$s .= '<rect x="0" y="95" width="420" height="30" fill="' . $COREGAP_FILL . '"/>';
 	$s .= '<rect x="0" y="125" width="420" height="25" fill="' . $LEAFLET_FILL . '"/>';
-	# F1: reduced head-group weight: r=2.6, opacity=0.75. Skip the protein span.
 	for (my $cx = 10; $cx <= 410; $cx += 14) {
 		next if ($cx >= 171 && $cx <= 249);
 		$s .= '<circle cx="' . $cx . '" cy="73" r="2.6" fill="' . $HEAD_FILL
@@ -96,7 +61,6 @@ sub svg_backdrop {
 		$s .= '<circle cx="' . $cx . '" cy="147" r="2.6" fill="' . $HEAD_FILL
 			. '" opacity="0.75"/>';
 	}
-	# A1: waisted protein path. Pinched at y=120 to x=183/237.
 	my $d = 'M 193 55 '
 		. 'Q 175 55 175 73 '
 		. 'L 175 100 '
@@ -113,7 +77,6 @@ sub svg_backdrop {
 		. 'Q 245 55 227 55 Z';
 	$s .= '<path d="' . $d . '" fill="' . $PROTEIN_FILL
 		. '" stroke="#2f3743" stroke-width="1.5"/>';
-	# Dashed waist line spanning the pinch interior.
 	$s .= '<line x1="183" y1="120" x2="237" y2="120"'
 		. ' stroke="#2f3743" stroke-width="1.5" stroke-dasharray="4,3"/>';
 	return $s;
@@ -128,65 +91,68 @@ sub svg_compartment_labels {
 	return $s;
 }
 
-# B2: upper y=55..108, lower y=132..185, tip y=193.
-sub svg_arrow_in {
+sub svg_approach_arrow_in {
 	my ($x, $color) = @_;
 	my $s = '';
-	$s .= '<line x1="' . $x . '" y1="55" x2="' . $x . '" y2="108"'
-		. ' stroke="' . $color . '" stroke-width="3" stroke-linecap="round"/>';
-	$s .= '<line x1="' . $x . '" y1="132" x2="' . $x . '" y2="185"'
+	$s .= '<line x1="' . $x . '" y1="50" x2="' . $x . '" y2="55"'
 		. ' stroke="' . $color . '" stroke-width="3" stroke-linecap="round"/>';
 	$s .= '<polygon points="'
-		. ($x - 5) . ',185 '
-		. ($x + 5) . ',185 '
-		. $x . ',193'
+		. ($x - 3.5) . ',55 '
+		. ($x + 3.5) . ',55 '
+		. $x . ',61'
 		. '" fill="' . $color . '"/>';
 	return $s;
 }
 
-# B2 reversed: lower y=185..132, upper y=108..55, tip y=47.
-sub svg_arrow_out {
+sub svg_approach_arrow_out {
 	my ($x, $color) = @_;
 	my $s = '';
-	$s .= '<line x1="' . $x . '" y1="185" x2="' . $x . '" y2="132"'
-		. ' stroke="' . $color . '" stroke-width="3" stroke-linecap="round"/>';
-	$s .= '<line x1="' . $x . '" y1="108" x2="' . $x . '" y2="55"'
+	$s .= '<line x1="' . $x . '" y1="190" x2="' . $x . '" y2="185"'
 		. ' stroke="' . $color . '" stroke-width="3" stroke-linecap="round"/>';
 	$s .= '<polygon points="'
-		. ($x - 5) . ',55 '
-		. ($x + 5) . ',55 '
-		. $x . ',47'
+		. ($x - 3.5) . ',185 '
+		. ($x + 3.5) . ',185 '
+		. $x . ',179'
 		. '" fill="' . $color . '"/>';
 	return $s;
 }
 
-# D1: stoichiometry centered above top blob (y=24) or below bottom blob
-# (y=222), text-anchor=middle, on the lane x.
+sub svg_binding_dot {
+	my ($x, $color) = @_;
+	return '<circle cx="' . $x . '" cy="120" r="6"'
+		. ' fill="#ffffff" stroke="' . $color . '" stroke-width="1.5"/>';
+}
+
+sub svg_release_blob_in {
+	my ($x, $color) = @_;
+	return '<circle cx="' . $x . '" cy="195" r="7"'
+		. ' fill="' . $color . '" stroke="#1f2937" stroke-width="1"/>';
+}
+
+sub svg_release_blob_out {
+	my ($x, $color) = @_;
+	return '<circle cx="' . $x . '" cy="45" r="7"'
+		. ' fill="' . $color . '" stroke="#1f2937" stroke-width="1"/>';
+}
+
 sub svg_arrow_stoich_label {
 	my ($x, $dir, $color, $stoich) = @_;
 	my $y = ($dir eq 'in') ? 24 : 222;
-	my $s = '';
-	$s .= '<text x="' . $x . '" y="' . $y . '"'
+	return '<text x="' . $x . '" y="' . $y . '"'
 		. ' font-family="sans-serif" font-size="12" font-weight="700"'
 		. ' fill="' . $color . '" text-anchor="middle">'
 		. $stoich . '&#215;</text>';
-	return $s;
 }
 
 sub svg_solute_blob {
 	my ($cx, $cy, $color) = @_;
-	my $s = '';
-	$s .= '<circle cx="' . $cx . '" cy="' . $cy . '" r="10"'
+	return '<circle cx="' . $cx . '" cy="' . $cy . '" r="10"'
 		. ' fill="' . $color . '" stroke="#1f2937" stroke-width="1"/>';
-	return $s;
 }
 
-# C1: lane-anchored labels. $side is 'left', 'right', or 'center'.
-# left  -> x=cx-16, text-anchor=end
-# right -> x=cx+16, text-anchor=start
-# center (uniporter) -> same as right.
 sub svg_solute_label {
-	my ($cx, $cy, $label_html, $color, $side) = @_;
+	my ($cx, $cy, $label_html, $color, $side, $stagger) = @_;
+	$stagger = 0 unless defined $stagger;
 	my $tx;
 	my $anchor;
 	if ($side eq 'left') {
@@ -196,39 +162,80 @@ sub svg_solute_label {
 		$tx = $cx + 16;
 		$anchor = 'start';
 	}
-	my $s = '';
-	$s .= '<text x="' . $tx . '" y="' . ($cy + 5) . '"'
+	return '<text x="' . $tx . '" y="' . ($cy + 5 + $stagger) . '"'
 		. ' font-family="sans-serif" font-size="14" font-weight="600"'
 		. ' text-anchor="' . $anchor . '" fill="#1f2937">'
 		. $label_html . '</text>';
-	return $s;
 }
 
-# E2: territory parameterized by $lane_side ('left' | 'right'); row
-# parameterized by $compartment ('extra' | 'cyto'). Density asymmetry:
-# x-list is ordered lane-proximal first, so low counts cluster near the
-# lane and high counts spill away into the territory.
 sub svg_gradient_dots {
 	my ($compartment, $lane_side, $count, $color_light) = @_;
 	return '' if $count <= 0;
 	$count = 6 if $count > 6;
-	# Ordered lane-proximal first. Left lane at x=185: closest territory
-	# column is x=102; right lane at x=235: closest column is x=300.
-	my @xs_left  = (102, 82, 62, 92, 42, 72, 22, 52);
-	my @xs_right = (300, 320, 340, 310, 360, 330, 380, 350);
-	my @ys_extra = (18, 36, 54, 28, 46);
-	my @ys_cyto  = (178, 196, 216, 188, 208);
-	my @xs = ($lane_side eq 'right') ? @xs_right : @xs_left;
-	my @ys = ($compartment eq 'extra') ? @ys_extra : @ys_cyto;
-	my $alpha = ($count >= 4) ? 0.9 : 0.75;
+	my $base_x;
+	my @col_dx;
+	if ($lane_side eq 'right') {
+		$base_x = 312;
+		@col_dx = (0, 18, 36);
+	} else {
+		$base_x = 90;
+		@col_dx = (0, -18, -36);
+	}
+	my $base_y;
+	my @row_dy;
+	if ($compartment eq 'extra') {
+		$base_y = 28;
+		@row_dy = (0, 16);
+	} else {
+		$base_y = 190;
+		@row_dy = (0, 16);
+	}
+	my @plan = ();
+	if ($count == 1) {
+		@plan = ([0, 0, 3, 0.80]);
+	} elsif ($count == 2) {
+		@plan = ([0, 0, 4, 0.95], [0, 1, 3, 0.80]);
+	} elsif ($count == 3) {
+		@plan = ([0, 0, 4, 0.95], [0, 1, 3.5, 0.85], [1, 0, 3, 0.75]);
+	} elsif ($count == 4) {
+		@plan = ([0, 0, 4, 0.95], [0, 1, 3.5, 0.85],
+			[1, 0, 3.5, 0.85], [1, 1, 3, 0.75]);
+	} elsif ($count == 5) {
+		@plan = ([0, 0, 4, 0.95], [0, 1, 4, 0.95],
+			[1, 0, 3.5, 0.85], [1, 1, 3.5, 0.85],
+			[2, 0, 3, 0.75]);
+	} else {
+		@plan = ([0, 0, 4, 0.95], [0, 1, 4, 0.95],
+			[1, 0, 3.5, 0.85], [1, 1, 3.5, 0.85],
+			[2, 0, 3, 0.75],   [2, 1, 3, 0.75]);
+	}
 	my $s = '';
-	my $placed = 0;
-	for (my $i = 0; $i < scalar(@xs) && $placed < $count; $i++) {
-		my $cx = $xs[$i];
-		my $cy = $ys[$i % scalar(@ys)];
-		$s .= '<circle cx="' . $cx . '" cy="' . $cy . '" r="3.5"'
-			. ' fill="' . $color_light . '" opacity="' . $alpha . '"/>';
-		$placed++;
+	if ($count >= 3) {
+		my $min_dx = 0; my $max_dx = 0;
+		my $min_dy = 0; my $max_dy = 0;
+		for my $p (@plan) {
+			my $dx = $col_dx[$p->[0]];
+			my $dy = $row_dy[$p->[1]];
+			$min_dx = $dx if $dx < $min_dx;
+			$max_dx = $dx if $dx > $max_dx;
+			$min_dy = $dy if $dy < $min_dy;
+			$max_dy = $dy if $dy > $max_dy;
+		}
+		my $rect_x = $base_x + $min_dx - 8;
+		my $rect_y = $base_y + $min_dy - 8;
+		my $rect_w = ($max_dx - $min_dx) + 16;
+		my $rect_h = ($max_dy - $min_dy) + 16;
+		$s .= '<rect x="' . $rect_x . '" y="' . $rect_y . '"'
+			. ' width="' . $rect_w . '" height="' . $rect_h . '"'
+			. ' rx="6" ry="6" fill="' . $color_light
+			. '" fill-opacity="0.10"/>';
+	}
+	for my $p (@plan) {
+		my ($col, $row, $r, $op) = @$p;
+		my $cx = $base_x + $col_dx[$col];
+		my $cy = $base_y + $row_dy[$row];
+		$s .= '<circle cx="' . $cx . '" cy="' . $cy . '" r="' . $r . '"'
+			. ' fill="' . $color_light . '" opacity="' . $op . '"/>';
 	}
 	return $s;
 }
@@ -239,6 +246,52 @@ sub svg_open {
 		. ' style="max-width: 480px; border: 1px solid #cbd5e0; margin: 0.5em 0;">';
 }
 sub svg_close { return '</svg>'; }
+
+# SVG builders for the two named transporters. These live in the block so
+# they stay BEFORE setup code (no mid-file subs after setup).
+sub build_ncx_svg {
+	my $s = svg_open();
+	$s .= svg_backdrop();
+	# Na+ in on LEFT, Ca2+ out on RIGHT. Approach arrows first.
+	$s .= svg_approach_arrow_in($LANE_LEFT,   $COL_NA);
+	$s .= svg_approach_arrow_out($LANE_RIGHT, $COL_CA);
+	# Approach blobs.
+	$s .= svg_solute_blob($LANE_LEFT,  $Y_IN,  $COL_NA);
+	$s .= svg_solute_blob($LANE_RIGHT, $Y_OUT, $COL_CA);
+	# Release blobs on far compartments.
+	$s .= svg_release_blob_in($LANE_LEFT,   $COL_NA);
+	$s .= svg_release_blob_out($LANE_RIGHT, $COL_CA);
+	# Binding dots.
+	$s .= svg_binding_dot($LANE_LEFT,   $COL_NA);
+	$s .= svg_binding_dot($LANE_RIGHT,  $COL_CA);
+	# Labels LAST.
+	$s .= svg_compartment_labels();
+	$s .= svg_arrow_stoich_label($LANE_LEFT, 'in', $COL_NA, 3);
+	$s .= svg_solute_label($LANE_LEFT,  $Y_IN,  $LBL_NA, $COL_NA, 'left',  0);
+	$s .= svg_solute_label($LANE_RIGHT, $Y_OUT, $LBL_CA, $COL_CA, 'right', 0);
+	$s .= svg_close();
+	return $s;
+}
+
+sub build_sglt1_svg {
+	my $s = svg_open();
+	$s .= svg_backdrop();
+	# Both substrates inward. Approach arrows + blobs + release blobs + binding.
+	$s .= svg_approach_arrow_in($LANE_LEFT,  $COL_NA);
+	$s .= svg_approach_arrow_in($LANE_RIGHT, $COL_GLU);
+	$s .= svg_solute_blob($LANE_LEFT,  $Y_IN, $COL_NA);
+	$s .= svg_solute_blob($LANE_RIGHT, $Y_IN, $COL_GLU);
+	$s .= svg_release_blob_in($LANE_LEFT,  $COL_NA);
+	$s .= svg_release_blob_in($LANE_RIGHT, $COL_GLU);
+	$s .= svg_binding_dot($LANE_LEFT,  $COL_NA);
+	$s .= svg_binding_dot($LANE_RIGHT, $COL_GLU);
+	$s .= svg_compartment_labels();
+	# Both top => stagger.
+	$s .= svg_solute_label($LANE_LEFT,  $Y_IN, $LBL_NA,      $COL_NA,  'left',  -2);
+	$s .= svg_solute_label($LANE_RIGHT, $Y_IN, $LBL_GLUCOSE, $COL_GLU, 'right',  3);
+	$s .= svg_close();
+	return $s;
+}
 
 # ==== END BLOCK: membrane_transporter_svg ====
 
@@ -263,58 +316,18 @@ $Y_OUT = 200;
 my $local_random = PGrandom->new();
 $local_random->srand($problemSeed);
 
-# Four scenarios:
-#   A: Ouabain + NCX (inhibitor of primary pump that sustains Na+ gradient)
-#   B: NCX stoichiometry + net charge
-#   C: NCX reversal under ischemia
-#   D: Model-based "what would need to change" on SGLT1
-
 $scenario_idx = $local_random->random(0, 3, 1);
 
-# Variables populated per scenario.
-$svg_scenario = '';         # the transporter schematic
-$prompt_text = '';          # body of the question
+$svg_scenario = '';
+$prompt_text = '';
 @choice_list = ();
 $correct_answer = '';
-$classify_line = '';        # "Classify" line in solution
+$classify_line = '';
 $evidence_line = '';
 $mechanism_line = '';
 $example_line = '';
 
-# Build the NCX SVG once (used by scenarios A, B, C) with 3 Na+ in, 1 Ca2+ out.
-sub build_ncx_svg {
-	my $s = svg_open();
-	$s .= svg_backdrop();
-	# Optional gradient dots on the cytosolic side for Ca2+ under normal
-	# conditions we skip; NCX in ischemia will be described in prompt.
-	$s .= svg_arrow_in($LANE_LEFT,   $COL_NA);
-	$s .= svg_arrow_out($LANE_RIGHT, $COL_CA);
-	$s .= svg_solute_blob($LANE_LEFT,  $Y_IN,  $COL_NA);
-	$s .= svg_solute_blob($LANE_RIGHT, $Y_OUT, $COL_CA);
-	$s .= svg_compartment_labels();
-	$s .= svg_arrow_stoich_label($LANE_LEFT, 'in', $COL_NA, 3);
-	$s .= svg_solute_label($LANE_LEFT,  $Y_IN,  $LBL_NA, $COL_NA, 'left');
-	$s .= svg_solute_label($LANE_RIGHT, $Y_OUT, $LBL_CA, $COL_CA, 'right');
-	$s .= svg_close();
-	return $s;
-}
-
-sub build_sglt1_svg {
-	my $s = svg_open();
-	$s .= svg_backdrop();
-	$s .= svg_arrow_in($LANE_LEFT,  $COL_NA);
-	$s .= svg_arrow_in($LANE_RIGHT, $COL_GLU);
-	$s .= svg_solute_blob($LANE_LEFT,  $Y_IN, $COL_NA);
-	$s .= svg_solute_blob($LANE_RIGHT, $Y_IN, $COL_GLU);
-	$s .= svg_compartment_labels();
-	$s .= svg_solute_label($LANE_LEFT,  $Y_IN, $LBL_NA, $COL_NA, 'left');
-	$s .= svg_solute_label($LANE_RIGHT, $Y_IN, $LBL_GLUCOSE, $COL_GLU, 'right');
-	$s .= svg_close();
-	return $s;
-}
-
 if ($scenario_idx == 0) {
-	# A: Ouabain + NCX
 	$svg_scenario = build_ncx_svg();
 	$prompt_text = 'The schematic above is the Na<sup>+</sup>/Ca<sup>2+</sup> '
 		. 'antiporter (NCX) of a cardiomyocyte. A researcher applies <b>ouabain</b>, '
@@ -332,7 +345,6 @@ if ($scenario_idx == 0) {
 	$mechanism_line = 'When ouabain blocks the Na<sup>+</sup>/K<sup>+</sup> ATPase, cytosolic [Na<sup>+</sup>] rises and the inward Na<sup>+</sup> gradient collapses. With less energy stored in the Na<sup>+</sup> gradient, NCX slows; if the gradient reverses, NCX can run backwards (Ca<sup>2+</sup> inward).';
 	$example_line = 'This is the mechanism of <b>cardiac glycosides</b> (ouabain, digoxin): slowing NCX raises cytosolic Ca<sup>2+</sup>, strengthening cardiac contraction. It is also how digitalis toxicity kills at high doses.';
 } elsif ($scenario_idx == 1) {
-	# B: NCX stoichiometry and net charge
 	$svg_scenario = build_ncx_svg();
 	$prompt_text = 'For the antiporter shown (3 Na<sup>+</sup> in : 1 Ca<sup>2+</sup> out), '
 		. 'what is the <b>net electrical charge</b> moved per complete transport '
@@ -349,7 +361,6 @@ if ($scenario_idx == 0) {
 	$mechanism_line = 'Because NCX is electrogenic, membrane voltage directly influences its rate and direction. A depolarized cell (less negative V<sub>m</sub>) favors reversal (Ca<sup>2+</sup> entering, Na<sup>+</sup> leaving); a hyperpolarized cell drives it harder in the forward direction (Ca<sup>2+</sup> out).';
 	$example_line = 'This is exactly why NCX reverses briefly during the cardiac action potential plateau, contributing a small inward Ca<sup>2+</sup> flux that helps trigger contraction.';
 } elsif ($scenario_idx == 2) {
-	# C: NCX reversal under ischemia
 	$svg_scenario = build_ncx_svg();
 	$prompt_text = 'Under which condition would the NCX antiporter shown above '
 		. 'most likely run in <b>reverse</b> (Ca<sup>2+</sup> <i>inward</i>, '
@@ -366,7 +377,6 @@ if ($scenario_idx == 0) {
 	$mechanism_line = 'Ischemia collapses ATP supply. Without ATP, the Na<sup>+</sup>/K<sup>+</sup> ATPase stops, cytosolic [Na<sup>+</sup>] climbs, and the Na<sup>+</sup> driving force vanishes. The Ca<sup>2+</sup> gradient (still high outside) now wins, and NCX reverses, importing Ca<sup>2+</sup>.';
 	$example_line = 'This <b>reverse-mode NCX</b> is a major source of cytosolic Ca<sup>2+</sup> overload in ischemia-reperfusion injury, a driver of cardiomyocyte death in myocardial infarction.';
 } else {
-	# D: Model-based "what would need to change"
 	$svg_scenario = build_sglt1_svg();
 	$prompt_text = 'The schematic above is an SGLT1-like symporter carrying '
 		. 'Na<sup>+</sup> and glucose inward. What single change to the diagram '

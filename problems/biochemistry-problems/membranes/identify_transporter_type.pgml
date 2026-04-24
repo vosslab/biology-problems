@@ -34,45 +34,46 @@ loadMacros(
 );
 $showPartialCorrectAnswers = 1;
 
-# ==== BEGIN BLOCK: membrane_transporter_svg (v3) ====
-# Schematic transporter renderer, v3. Canvas 420 x 240. Three-zone
-# phospholipid bilayer; darker waisted-`<path>` carrier body (pinched at
-# y=120 to x=183/237, ~9 px inward from x=175/245) with a dashed waist line
-# suggesting a conformational gate (carrier, not channel). Arrow lanes are
-# split into two segments around a bigger gap at the waist.
+# ==== BEGIN BLOCK: membrane_transporter_svg (v4) ====
+# Schematic transporter renderer, v4. Canvas 420 x 240. Three-zone
+# phospholipid bilayer; waisted `<path>` carrier body (pinched at y=120 to
+# x=183/237) with a dashed waist line suggesting a conformational gate.
 #
-# Changes vs v2 (V3b after A/B/C comparison):
-#   A1: rounded rect replaced with a waisted `<path>` (carrier read).
-#   B2: arrow segments shortened (y=55..108 and y=132..185) with a bigger
-#       gap at the gate; arrowhead tips unchanged (y=193 in, y=47 out).
-#   C1: solute labels anchored by lane side -- left lane at x=cx-16
-#       text-anchor=end; right (and center) at x=cx+16 text-anchor=start.
-#   D1: stoichiometry centered above (y=24) or below (y=222) the blob,
-#       text-anchor=middle, instead of tucked to the left of the lane.
-#   E2: gradient dots parameterized by (compartment, lane_side). Lane
-#       territories: left-lane dots in x=22..102; right-lane dots in
-#       x=300..380. Density asymmetry within call: low counts cluster near
-#       the lane, high counts fill the territory.
-#   F1: reduced head-group weight: r=2.6, opacity=0.75.
-#   G1: wider lanes, LEFT=185, RIGHT=235 (50 px apart; was 36).
+# Changes vs v3:
+#   Arrow treatment is now approach -> bind -> release:
+#     - svg_approach_arrow_{in,out}: external arrow OUTSIDE the protein
+#       (y=50..55 for in, y=190..185 for out) with small arrowhead (base
+#       3.5 / tip 6).
+#     - svg_binding_dot: white-filled circle (r=6) stroked in the substrate
+#       color, centered on the waist line at (lane_x, 120).
+#     - svg_release_blob_{in,out}: small colored blob on the far
+#       compartment (y=195 for in, y=45 for out) to visualize where the
+#       substrate went after conformational cycling.
+#   Gradient dots (svg_gradient_dots) use clustered placement with graded
+#   radii and a rounded-rect pool background for clusters >= 3.
+#   svg_solute_label now takes an optional 6th $stagger arg (y-offset,
+#   default 0) used by callers when BOTH substrates sit in the top
+#   compartment (both-inward symporter) so the two top labels do not align
+#   horizontally.
 #
 # Coordinate budget (y grows downward):
 #   0..70   extracellular compartment (pale blue)
-#   70..95  outer leaflet (muted tan) with head-group row at y=73
-#   95..125 hydrophobic core gap (lighter tan)
-#   125..150 inner leaflet (muted tan) with head-group row at y=147
+#   70..95  outer leaflet with head-group row at y=73
+#   95..125 hydrophobic core gap
+#   125..150 inner leaflet with head-group row at y=147
 #   150..240 cytosol compartment (pale cream)
 # Transporter path: corners at (175,55)-(245,55) & (175,185)-(245,185);
-#   waist pinch to x=183/237 at y=120; curves back out by y=80/y=160.
+#   waist pinch to x=183/237 at y=120.
 # Waist gate: dashed line at y=120, x=183..237.
 # Arrow lanes: center x=210 (uniporter), left x=185, right x=235.
-# Substrate blobs: "in" at y=40, "out" at y=200.
-# Arrow segments: "in"  y=55..108 and y=132..185 (tip at y=193);
-#                 "out" y=185..132 and y=108..55 (tip at y=47).
+# Substrate blobs: approach blob "in" at y=40, "out" at y=200.
+# Release blobs: "in" at y=195 (cyto); "out" at y=45 (extra).
 #
 # Layer order in Setup (bottom to top):
-#   svg_open, svg_backdrop, svg_gradient_dots, svg_arrow_*, svg_solute_blob,
-#   svg_compartment_labels, svg_arrow_stoich_label, svg_solute_label, svg_close.
+#   svg_open, svg_backdrop, svg_gradient_dots (per substrate),
+#   svg_approach_arrow_{in,out} (per substrate), svg_solute_blob (approach),
+#   svg_release_blob_{in,out}, svg_binding_dot, svg_compartment_labels,
+#   svg_arrow_stoich_label, svg_solute_label (with stagger), svg_close.
 
 $CANVAS_W    = 420;
 $CANVAS_H    = 240;
@@ -90,7 +91,6 @@ sub svg_backdrop {
 	$s .= '<rect x="0" y="70" width="420" height="25" fill="' . $LEAFLET_FILL . '"/>';
 	$s .= '<rect x="0" y="95" width="420" height="30" fill="' . $COREGAP_FILL . '"/>';
 	$s .= '<rect x="0" y="125" width="420" height="25" fill="' . $LEAFLET_FILL . '"/>';
-	# F1: reduced head-group weight: r=2.6, opacity=0.75. Skip the protein span.
 	for (my $cx = 10; $cx <= 410; $cx += 14) {
 		next if ($cx >= 171 && $cx <= 249);
 		$s .= '<circle cx="' . $cx . '" cy="73" r="2.6" fill="' . $HEAD_FILL
@@ -98,7 +98,6 @@ sub svg_backdrop {
 		$s .= '<circle cx="' . $cx . '" cy="147" r="2.6" fill="' . $HEAD_FILL
 			. '" opacity="0.75"/>';
 	}
-	# A1: waisted protein path. Pinched at y=120 to x=183/237.
 	my $d = 'M 193 55 '
 		. 'Q 175 55 175 73 '
 		. 'L 175 100 '
@@ -115,7 +114,6 @@ sub svg_backdrop {
 		. 'Q 245 55 227 55 Z';
 	$s .= '<path d="' . $d . '" fill="' . $PROTEIN_FILL
 		. '" stroke="#2f3743" stroke-width="1.5"/>';
-	# Dashed waist line spanning the pinch interior.
 	$s .= '<line x1="183" y1="120" x2="237" y2="120"'
 		. ' stroke="#2f3743" stroke-width="1.5" stroke-dasharray="4,3"/>';
 	return $s;
@@ -130,65 +128,78 @@ sub svg_compartment_labels {
 	return $s;
 }
 
-# B2: upper y=55..108, lower y=132..185, tip y=193.
-sub svg_arrow_in {
+# External approach arrow for "in" substrate: y=50..55, tip at y=55
+# pointing DOWN toward protein face. Small arrowhead (base 3.5, tip 6).
+sub svg_approach_arrow_in {
 	my ($x, $color) = @_;
 	my $s = '';
-	$s .= '<line x1="' . $x . '" y1="55" x2="' . $x . '" y2="108"'
-		. ' stroke="' . $color . '" stroke-width="3" stroke-linecap="round"/>';
-	$s .= '<line x1="' . $x . '" y1="132" x2="' . $x . '" y2="185"'
+	$s .= '<line x1="' . $x . '" y1="50" x2="' . $x . '" y2="55"'
 		. ' stroke="' . $color . '" stroke-width="3" stroke-linecap="round"/>';
 	$s .= '<polygon points="'
-		. ($x - 5) . ',185 '
-		. ($x + 5) . ',185 '
-		. $x . ',193'
+		. ($x - 3.5) . ',55 '
+		. ($x + 3.5) . ',55 '
+		. $x . ',61'
 		. '" fill="' . $color . '"/>';
 	return $s;
 }
 
-# B2 reversed: lower y=185..132, upper y=108..55, tip y=47.
-sub svg_arrow_out {
+# External approach arrow for "out" substrate: y=190..185, tip at y=185
+# pointing UP toward protein face.
+sub svg_approach_arrow_out {
 	my ($x, $color) = @_;
 	my $s = '';
-	$s .= '<line x1="' . $x . '" y1="185" x2="' . $x . '" y2="132"'
-		. ' stroke="' . $color . '" stroke-width="3" stroke-linecap="round"/>';
-	$s .= '<line x1="' . $x . '" y1="108" x2="' . $x . '" y2="55"'
+	$s .= '<line x1="' . $x . '" y1="190" x2="' . $x . '" y2="185"'
 		. ' stroke="' . $color . '" stroke-width="3" stroke-linecap="round"/>';
 	$s .= '<polygon points="'
-		. ($x - 5) . ',55 '
-		. ($x + 5) . ',55 '
-		. $x . ',47'
+		. ($x - 3.5) . ',185 '
+		. ($x + 3.5) . ',185 '
+		. $x . ',179'
 		. '" fill="' . $color . '"/>';
 	return $s;
 }
 
-# D1: stoichiometry centered above top blob (y=24) or below bottom blob
-# (y=222), text-anchor=middle, on the lane x.
+# Central binding-zone circle at the waist.
+sub svg_binding_dot {
+	my ($x, $color) = @_;
+	return '<circle cx="' . $x . '" cy="120" r="6"'
+		. ' fill="#ffffff" stroke="' . $color . '" stroke-width="1.5"/>';
+}
+
+# Release blob on far (cyto) side for "in" substrate.
+sub svg_release_blob_in {
+	my ($x, $color) = @_;
+	return '<circle cx="' . $x . '" cy="195" r="7"'
+		. ' fill="' . $color . '" stroke="#1f2937" stroke-width="1"/>';
+}
+
+# Release blob on far (extra) side for "out" substrate.
+sub svg_release_blob_out {
+	my ($x, $color) = @_;
+	return '<circle cx="' . $x . '" cy="45" r="7"'
+		. ' fill="' . $color . '" stroke="#1f2937" stroke-width="1"/>';
+}
+
 sub svg_arrow_stoich_label {
 	my ($x, $dir, $color, $stoich) = @_;
 	my $y = ($dir eq 'in') ? 24 : 222;
-	my $s = '';
-	$s .= '<text x="' . $x . '" y="' . $y . '"'
+	return '<text x="' . $x . '" y="' . $y . '"'
 		. ' font-family="sans-serif" font-size="12" font-weight="700"'
 		. ' fill="' . $color . '" text-anchor="middle">'
 		. $stoich . '&#215;</text>';
-	return $s;
 }
 
 sub svg_solute_blob {
 	my ($cx, $cy, $color) = @_;
-	my $s = '';
-	$s .= '<circle cx="' . $cx . '" cy="' . $cy . '" r="10"'
+	return '<circle cx="' . $cx . '" cy="' . $cy . '" r="10"'
 		. ' fill="' . $color . '" stroke="#1f2937" stroke-width="1"/>';
-	return $s;
 }
 
-# C1: lane-anchored labels. $side is 'left', 'right', or 'center'.
-# left  -> x=cx-16, text-anchor=end
-# right -> x=cx+16, text-anchor=start
-# center (uniporter) -> same as right.
+# Lane-anchored labels. $side is 'left', 'right', or 'center'. The optional
+# 6th arg $stagger adds a y-offset to the text baseline; used when both
+# substrates sit in the top compartment so labels don't line up.
 sub svg_solute_label {
-	my ($cx, $cy, $label_html, $color, $side) = @_;
+	my ($cx, $cy, $label_html, $color, $side, $stagger) = @_;
+	$stagger = 0 unless defined $stagger;
 	my $tx;
 	my $anchor;
 	if ($side eq 'left') {
@@ -198,39 +209,84 @@ sub svg_solute_label {
 		$tx = $cx + 16;
 		$anchor = 'start';
 	}
-	my $s = '';
-	$s .= '<text x="' . $tx . '" y="' . ($cy + 5) . '"'
+	return '<text x="' . $tx . '" y="' . ($cy + 5 + $stagger) . '"'
 		. ' font-family="sans-serif" font-size="14" font-weight="600"'
 		. ' text-anchor="' . $anchor . '" fill="#1f2937">'
 		. $label_html . '</text>';
-	return $s;
 }
 
-# E2: territory parameterized by $lane_side ('left' | 'right'); row
-# parameterized by $compartment ('extra' | 'cyto'). Density asymmetry:
-# x-list is ordered lane-proximal first, so low counts cluster near the
-# lane and high counts spill away into the territory.
+# Clustered gradient dots. Territories: left x=18..92 ; right x=310..384.
+# Compartment y-range: extra y=18..55 ; cyto y=178..215.
+# count<=2: tight placement, no pool rect.
+# count>=3: cluster + rounded-rect pool background at fill-opacity 0.10.
 sub svg_gradient_dots {
 	my ($compartment, $lane_side, $count, $color_light) = @_;
 	return '' if $count <= 0;
 	$count = 6 if $count > 6;
-	# Ordered lane-proximal first. Left lane at x=185: closest territory
-	# column is x=102; right lane at x=235: closest column is x=300.
-	my @xs_left  = (102, 82, 62, 92, 42, 72, 22, 52);
-	my @xs_right = (300, 320, 340, 310, 360, 330, 380, 350);
-	my @ys_extra = (18, 36, 54, 28, 46);
-	my @ys_cyto  = (178, 196, 216, 188, 208);
-	my @xs = ($lane_side eq 'right') ? @xs_right : @xs_left;
-	my @ys = ($compartment eq 'extra') ? @ys_extra : @ys_cyto;
-	my $alpha = ($count >= 4) ? 0.9 : 0.75;
+	my $base_x;
+	my @col_dx;
+	if ($lane_side eq 'right') {
+		$base_x = 312;
+		@col_dx = (0, 18, 36);
+	} else {
+		$base_x = 90;
+		@col_dx = (0, -18, -36);
+	}
+	my $base_y;
+	my @row_dy;
+	if ($compartment eq 'extra') {
+		$base_y = 28;
+		@row_dy = (0, 16);
+	} else {
+		$base_y = 190;
+		@row_dy = (0, 16);
+	}
+	my @plan = ();
+	if ($count == 1) {
+		@plan = ([0, 0, 3, 0.80]);
+	} elsif ($count == 2) {
+		@plan = ([0, 0, 4, 0.95], [0, 1, 3, 0.80]);
+	} elsif ($count == 3) {
+		@plan = ([0, 0, 4, 0.95], [0, 1, 3.5, 0.85], [1, 0, 3, 0.75]);
+	} elsif ($count == 4) {
+		@plan = ([0, 0, 4, 0.95], [0, 1, 3.5, 0.85],
+			[1, 0, 3.5, 0.85], [1, 1, 3, 0.75]);
+	} elsif ($count == 5) {
+		@plan = ([0, 0, 4, 0.95], [0, 1, 4, 0.95],
+			[1, 0, 3.5, 0.85], [1, 1, 3.5, 0.85],
+			[2, 0, 3, 0.75]);
+	} else {
+		@plan = ([0, 0, 4, 0.95], [0, 1, 4, 0.95],
+			[1, 0, 3.5, 0.85], [1, 1, 3.5, 0.85],
+			[2, 0, 3, 0.75],   [2, 1, 3, 0.75]);
+	}
 	my $s = '';
-	my $placed = 0;
-	for (my $i = 0; $i < scalar(@xs) && $placed < $count; $i++) {
-		my $cx = $xs[$i];
-		my $cy = $ys[$i % scalar(@ys)];
-		$s .= '<circle cx="' . $cx . '" cy="' . $cy . '" r="3.5"'
-			. ' fill="' . $color_light . '" opacity="' . $alpha . '"/>';
-		$placed++;
+	if ($count >= 3) {
+		my $min_dx = 0; my $max_dx = 0;
+		my $min_dy = 0; my $max_dy = 0;
+		for my $p (@plan) {
+			my $dx = $col_dx[$p->[0]];
+			my $dy = $row_dy[$p->[1]];
+			$min_dx = $dx if $dx < $min_dx;
+			$max_dx = $dx if $dx > $max_dx;
+			$min_dy = $dy if $dy < $min_dy;
+			$max_dy = $dy if $dy > $max_dy;
+		}
+		my $rect_x = $base_x + $min_dx - 8;
+		my $rect_y = $base_y + $min_dy - 8;
+		my $rect_w = ($max_dx - $min_dx) + 16;
+		my $rect_h = ($max_dy - $min_dy) + 16;
+		$s .= '<rect x="' . $rect_x . '" y="' . $rect_y . '"'
+			. ' width="' . $rect_w . '" height="' . $rect_h . '"'
+			. ' rx="6" ry="6" fill="' . $color_light
+			. '" fill-opacity="0.10"/>';
+	}
+	for my $p (@plan) {
+		my ($col, $row, $r, $op) = @$p;
+		my $cx = $base_x + $col_dx[$col];
+		my $cy = $base_y + $row_dy[$row];
+		$s .= '<circle cx="' . $cx . '" cy="' . $cy . '" r="' . $r . '"'
+			. ' fill="' . $color_light . '" opacity="' . $op . '"/>';
 	}
 	return $s;
 }
@@ -295,8 +351,6 @@ $sig = '';
 
 if ($class_name eq 'uniporter') {
 	$n_sub = 1;
-	# Three substrate options; direction is randomized so "in" and "out"
-	# examples both appear.
 	my $u_pick = $local_random->random(0, 2, 1);
 	my $flip   = $local_random->random(0, 1, 1);
 	if ($u_pick == 0) {
@@ -356,32 +410,55 @@ $lane1 = $LANE_RIGHT;
 $y0 = ($sub0_dir eq 'in') ? $Y_IN : $Y_OUT;
 $y1 = ($sub1_dir eq 'in') ? $Y_IN : $Y_OUT;
 
+# Stagger for both-inward symporter case only.
+$both_inward = ($n_sub == 2 && $sub0_dir eq 'in' && $sub1_dir eq 'in') ? 1 : 0;
+$stagger0 = $both_inward ? -2 : 0;
+$stagger1 = $both_inward ?  3 : 0;
+
 $svg = svg_open();
 $svg .= svg_backdrop();
-# Arrows (no text).
+# Approach arrows.
 if ($sub0_dir eq 'in') {
-	$svg .= svg_arrow_in($lane0, $sub0_color);
+	$svg .= svg_approach_arrow_in($lane0, $sub0_color);
 } else {
-	$svg .= svg_arrow_out($lane0, $sub0_color);
+	$svg .= svg_approach_arrow_out($lane0, $sub0_color);
 }
 if ($n_sub == 2) {
 	if ($sub1_dir eq 'in') {
-		$svg .= svg_arrow_in($lane1, $sub1_color);
+		$svg .= svg_approach_arrow_in($lane1, $sub1_color);
 	} else {
-		$svg .= svg_arrow_out($lane1, $sub1_color);
+		$svg .= svg_approach_arrow_out($lane1, $sub1_color);
 	}
 }
-# Solute blobs (circles, no text).
+# Approach blobs.
 $svg .= svg_solute_blob($lane0, $y0, $sub0_color);
 if ($n_sub == 2) {
 	$svg .= svg_solute_blob($lane1, $y1, $sub1_color);
 }
+# Release blobs on far compartment.
+if ($sub0_dir eq 'in') {
+	$svg .= svg_release_blob_in($lane0, $sub0_color);
+} else {
+	$svg .= svg_release_blob_out($lane0, $sub0_color);
+}
+if ($n_sub == 2) {
+	if ($sub1_dir eq 'in') {
+		$svg .= svg_release_blob_in($lane1, $sub1_color);
+	} else {
+		$svg .= svg_release_blob_out($lane1, $sub1_color);
+	}
+}
+# Binding dots at the waist.
+$svg .= svg_binding_dot($lane0, $sub0_color);
+if ($n_sub == 2) {
+	$svg .= svg_binding_dot($lane1, $sub1_color);
+}
 # All text LAST so labels overlay arrows and blobs.
 $svg .= svg_compartment_labels();
 $side0 = ($n_sub == 1) ? 'center' : 'left';
-$svg .= svg_solute_label($lane0, $y0, $sub0_label, $sub0_color, $side0);
+$svg .= svg_solute_label($lane0, $y0, $sub0_label, $sub0_color, $side0, $stagger0);
 if ($n_sub == 2) {
-	$svg .= svg_solute_label($lane1, $y1, $sub1_label, $sub1_color, 'right');
+	$svg .= svg_solute_label($lane1, $y1, $sub1_label, $sub1_color, 'right', $stagger1);
 }
 $svg .= svg_close();
 
@@ -456,10 +533,12 @@ BEGIN_PGML
 
 The schematic below shows a membrane transport protein embedded in a
 phospholipid bilayer. The dashed line inside the protein marks a gate
-between its two conformational states. Arrows indicate the direction each
-substrate moves across the membrane. The protein shape is the same in
-every version of this problem; [$class_emph]* the transporter from the
-transport logic alone (substrate count and arrow direction).
+between its two conformational states. The colored circles show each
+substrate approaching, binding at the gate, and released on the far side;
+arrows indicate the direction each substrate moves across the membrane.
+The protein shape is the same in every version of this problem;
+[$class_emph]* the transporter from the transport logic alone (substrate
+count and arrow direction).
 
 [$svg]*
 

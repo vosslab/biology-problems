@@ -1,0 +1,545 @@
+## TITLE('Test bed: membrane_transporter_svg v3 vs v4 side-by-side')
+## DESCRIPTION
+## v3 (left) vs v4 (right) on three stress cases. The v4 block replaces the
+## through-arrow with approach -> binding -> release, and replaces scattered
+## gradient dots with clustered pools (with optional rounded-rect pool
+## background for clusters >= 3). V4 also adds a 5 px label stagger for
+## both-inward symporter cases.
+## ENDDESCRIPTION
+## KEYWORDS('membrane','transport','svg','testbed','v4')
+## DBsubject('Biochemistry')
+## DBchapter('Membranes and Transport')
+## DBsection('Membrane Transport Proteins')
+## Level(0)
+## Date('2026-04-23')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+loadMacros(
+	'PGstandard.pl',
+	'PGML.pl',
+	'PGcourse.pl'
+);
+$showPartialCorrectAnswers = 1;
+
+# ==== BEGIN BLOCK: shared constants (v3 + v4) ====
+
+$CANVAS_W     = 420;
+$CANVAS_H     = 240;
+$EXTRA_FILL   = '#eaf2f8';
+$CYTO_FILL    = '#fdfcf5';
+$LEAFLET_FILL = '#d9b88a';
+$COREGAP_FILL = '#e8d4ad';
+$HEAD_FILL    = '#b5926b';
+$PROTEIN_FILL = '#5f6c7b';
+
+$LBL_GLUCOSE = 'glucose';
+$LBL_NA  = 'Na<tspan baseline-shift="super" font-size="10">+</tspan>';
+$LBL_H   = 'H<tspan baseline-shift="super" font-size="10">+</tspan>';
+$LBL_CA  = 'Ca<tspan baseline-shift="super" font-size="10">2+</tspan>';
+$COL_GLU = '#d97706';
+$COL_NA  = '#2563eb';
+$COL_H   = '#ea580c';
+$COL_CA  = '#15803d';
+$COL_NA_LT  = '#93c5fd';
+$COL_H_LT   = '#fdba74';
+$COL_GLU_LT = '#fcd34d';
+
+$Y_IN  = 40;
+$Y_OUT = 200;
+$LANE_CENTER = 210;
+$LANE_LEFT   = 185;
+$LANE_RIGHT  = 235;
+
+sub svg_open {
+	return '<svg xmlns="http://www.w3.org/2000/svg" version="1.1"'
+		. ' width="420" height="240" viewBox="0 0 420 240"'
+		. ' style="max-width: 480px; border: 1px solid #cbd5e0; margin: 0.5em 0;">';
+}
+sub svg_close { return '</svg>'; }
+
+# Shared waisted protein backdrop (used by BOTH v3 and v4 for testbed).
+sub svg_backdrop_shared {
+	my $s = '';
+	$s .= '<rect x="0" y="0" width="420" height="70" fill="' . $EXTRA_FILL . '"/>';
+	$s .= '<rect x="0" y="150" width="420" height="90" fill="' . $CYTO_FILL . '"/>';
+	$s .= '<rect x="0" y="70" width="420" height="25" fill="' . $LEAFLET_FILL . '"/>';
+	$s .= '<rect x="0" y="95" width="420" height="30" fill="' . $COREGAP_FILL . '"/>';
+	$s .= '<rect x="0" y="125" width="420" height="25" fill="' . $LEAFLET_FILL . '"/>';
+	for (my $cx = 10; $cx <= 410; $cx += 14) {
+		next if ($cx >= 171 && $cx <= 249);
+		$s .= '<circle cx="' . $cx . '" cy="73" r="2.6" fill="' . $HEAD_FILL
+			. '" opacity="0.75"/>';
+		$s .= '<circle cx="' . $cx . '" cy="147" r="2.6" fill="' . $HEAD_FILL
+			. '" opacity="0.75"/>';
+	}
+	my $d = 'M 193 55 '
+		. 'Q 175 55 175 73 '
+		. 'L 175 100 '
+		. 'Q 175 110 183 120 '
+		. 'Q 175 130 175 140 '
+		. 'L 175 167 '
+		. 'Q 175 185 193 185 '
+		. 'L 227 185 '
+		. 'Q 245 185 245 167 '
+		. 'L 245 140 '
+		. 'Q 245 130 237 120 '
+		. 'Q 245 110 245 100 '
+		. 'L 245 73 '
+		. 'Q 245 55 227 55 Z';
+	$s .= '<path d="' . $d . '" fill="' . $PROTEIN_FILL
+		. '" stroke="#2f3743" stroke-width="1.5"/>';
+	$s .= '<line x1="183" y1="120" x2="237" y2="120"'
+		. ' stroke="#2f3743" stroke-width="1.5" stroke-dasharray="4,3"/>';
+	return $s;
+}
+
+sub svg_compartment_labels_shared {
+	my $s = '';
+	$s .= '<text x="412" y="22" font-family="sans-serif" font-size="13"'
+		. ' font-style="italic" fill="#2c3e50" text-anchor="end">extracellular</text>';
+	$s .= '<text x="412" y="232" font-family="sans-serif" font-size="13"'
+		. ' font-style="italic" fill="#2c3e50" text-anchor="end">cytosol</text>';
+	return $s;
+}
+
+sub svg_solute_blob_shared {
+	my ($cx, $cy, $color) = @_;
+	return '<circle cx="' . $cx . '" cy="' . $cy . '" r="10"'
+		. ' fill="' . $color . '" stroke="#1f2937" stroke-width="1"/>';
+}
+
+sub svg_stoich_shared {
+	my ($x, $dir, $color, $stoich) = @_;
+	my $y = ($dir eq 'in') ? 24 : 222;
+	return '<text x="' . $x . '" y="' . $y . '"'
+		. ' font-family="sans-serif" font-size="12" font-weight="700"'
+		. ' fill="' . $color . '" text-anchor="middle">'
+		. $stoich . '&#215;</text>';
+}
+
+# ==== END BLOCK: shared constants ====
+
+# ==== BEGIN BLOCK: v3 subs (for left-hand column) ====
+
+sub svg_arrow_in_v3 {
+	my ($x, $color) = @_;
+	my $s = '';
+	$s .= '<line x1="' . $x . '" y1="55" x2="' . $x . '" y2="108"'
+		. ' stroke="' . $color . '" stroke-width="3" stroke-linecap="round"/>';
+	$s .= '<line x1="' . $x . '" y1="132" x2="' . $x . '" y2="185"'
+		. ' stroke="' . $color . '" stroke-width="3" stroke-linecap="round"/>';
+	$s .= '<polygon points="'
+		. ($x - 5) . ',185 '
+		. ($x + 5) . ',185 '
+		. $x . ',193'
+		. '" fill="' . $color . '"/>';
+	return $s;
+}
+
+sub svg_arrow_out_v3 {
+	my ($x, $color) = @_;
+	my $s = '';
+	$s .= '<line x1="' . $x . '" y1="185" x2="' . $x . '" y2="132"'
+		. ' stroke="' . $color . '" stroke-width="3" stroke-linecap="round"/>';
+	$s .= '<line x1="' . $x . '" y1="108" x2="' . $x . '" y2="55"'
+		. ' stroke="' . $color . '" stroke-width="3" stroke-linecap="round"/>';
+	$s .= '<polygon points="'
+		. ($x - 5) . ',55 '
+		. ($x + 5) . ',55 '
+		. $x . ',47'
+		. '" fill="' . $color . '"/>';
+	return $s;
+}
+
+sub svg_solute_label_v3 {
+	my ($cx, $cy, $label_html, $color, $side) = @_;
+	my $tx;
+	my $anchor;
+	if ($side eq 'left') {
+		$tx = $cx - 16;
+		$anchor = 'end';
+	} else {
+		$tx = $cx + 16;
+		$anchor = 'start';
+	}
+	return '<text x="' . $tx . '" y="' . ($cy + 5) . '"'
+		. ' font-family="sans-serif" font-size="14" font-weight="600"'
+		. ' text-anchor="' . $anchor . '" fill="#1f2937">'
+		. $label_html . '</text>';
+}
+
+sub svg_gradient_dots_v3 {
+	my ($compartment, $lane_side, $count, $color_light) = @_;
+	return '' if $count <= 0;
+	$count = 6 if $count > 6;
+	my @xs_left  = (102, 82, 62, 92, 42, 72, 22, 52);
+	my @xs_right = (300, 320, 340, 310, 360, 330, 380, 350);
+	my @ys_extra = (18, 36, 54, 28, 46);
+	my @ys_cyto  = (178, 196, 216, 188, 208);
+	my @xs = ($lane_side eq 'right') ? @xs_right : @xs_left;
+	my @ys = ($compartment eq 'extra') ? @ys_extra : @ys_cyto;
+	my $alpha = ($count >= 4) ? 0.9 : 0.75;
+	my $s = '';
+	my $placed = 0;
+	for (my $i = 0; $i < scalar(@xs) && $placed < $count; $i++) {
+		my $cx = $xs[$i];
+		my $cy = $ys[$i % scalar(@ys)];
+		$s .= '<circle cx="' . $cx . '" cy="' . $cy . '" r="3.5"'
+			. ' fill="' . $color_light . '" opacity="' . $alpha . '"/>';
+		$placed++;
+	}
+	return $s;
+}
+
+# ==== END BLOCK: v3 subs ====
+
+# ==== BEGIN BLOCK: membrane_transporter_svg (v4) ====
+# v4 changes vs v3:
+#   - Approach-arrow outside the protein + binding circle at the waist +
+#     release blob on the far side (replaces through-pipe arrow).
+#   - Smaller arrowheads (base 3.5 / tip 6) per Variant A.
+#   - Clustered gradient dots with graded radii and optional rounded-rect
+#     pool background for clusters >= 3 (per Variant C).
+#   - New $stagger 6th arg on svg_solute_label to offset top-label baselines
+#     (-2 for left-top, +3 for right-top) when BOTH substrates are inward.
+
+# External approach arrow for "in" substrate. Arrow from y=50 to y=55 with
+# tip at y=55 pointing DOWN. Arrowhead base 3.5 / tip 6.
+sub svg_approach_arrow_in {
+	my ($x, $color) = @_;
+	my $s = '';
+	$s .= '<line x1="' . $x . '" y1="50" x2="' . $x . '" y2="55"'
+		. ' stroke="' . $color . '" stroke-width="3" stroke-linecap="round"/>';
+	$s .= '<polygon points="'
+		. ($x - 3.5) . ',55 '
+		. ($x + 3.5) . ',55 '
+		. $x . ',61'
+		. '" fill="' . $color . '"/>';
+	return $s;
+}
+
+# External approach arrow for "out" substrate. Arrow from y=190 up to y=185
+# with tip at y=185 pointing UP.
+sub svg_approach_arrow_out {
+	my ($x, $color) = @_;
+	my $s = '';
+	$s .= '<line x1="' . $x . '" y1="190" x2="' . $x . '" y2="185"'
+		. ' stroke="' . $color . '" stroke-width="3" stroke-linecap="round"/>';
+	$s .= '<polygon points="'
+		. ($x - 3.5) . ',185 '
+		. ($x + 3.5) . ',185 '
+		. $x . ',179'
+		. '" fill="' . $color . '"/>';
+	return $s;
+}
+
+# Central binding-zone circle at the waist.
+sub svg_binding_dot {
+	my ($x, $color) = @_;
+	return '<circle cx="' . $x . '" cy="120" r="6"'
+		. ' fill="#ffffff" stroke="' . $color . '" stroke-width="1.5"/>';
+}
+
+# Release blob on the cytosolic side (far side for "in" substrate).
+sub svg_release_blob_in {
+	my ($x, $color) = @_;
+	return '<circle cx="' . $x . '" cy="195" r="7"'
+		. ' fill="' . $color . '" stroke="#1f2937" stroke-width="1"/>';
+}
+
+# Release blob on the extracellular side (far side for "out" substrate).
+sub svg_release_blob_out {
+	my ($x, $color) = @_;
+	return '<circle cx="' . $x . '" cy="45" r="7"'
+		. ' fill="' . $color . '" stroke="#1f2937" stroke-width="1"/>';
+}
+
+# Solute label with optional stagger offset.
+sub svg_solute_label_v4 {
+	my ($cx, $cy, $label_html, $color, $side, $stagger) = @_;
+	$stagger = 0 unless defined $stagger;
+	my $tx;
+	my $anchor;
+	if ($side eq 'left') {
+		$tx = $cx - 16;
+		$anchor = 'end';
+	} else {
+		$tx = $cx + 16;
+		$anchor = 'start';
+	}
+	return '<text x="' . $tx . '" y="' . ($cy + 5 + $stagger) . '"'
+		. ' font-family="sans-serif" font-size="14" font-weight="600"'
+		. ' text-anchor="' . $anchor . '" fill="#1f2937">'
+		. $label_html . '</text>';
+}
+
+# Clustered gradient dots per Variant C.
+# territories: left  -> x=18..92 ; right -> x=310..384
+# compartment: extra -> y=18..55 ; cyto  -> y=178..215
+# count==1   : single dot near the lane; no pool rect
+# count==2   : two dots (tight pair) near the lane; no pool rect
+# count==3..4: 2x2-ish cluster, graded radii 3/3.5/4, pool rect
+# count==5..6: 3x2 cluster, graded radii 3->4, pool rect
+sub svg_gradient_dots_v4 {
+	my ($compartment, $lane_side, $count, $color_light) = @_;
+	return '' if $count <= 0;
+	$count = 6 if $count > 6;
+	# cluster anchor x near the lane: left territory closer to x=92, right
+	# territory closer to x=310. We lay out columns moving away from lane.
+	my $base_x;
+	my @col_dx;
+	if ($lane_side eq 'right') {
+		# right territory, lane at x=235, nearest is ~x=312; go rightward away.
+		$base_x = 312;
+		@col_dx = (0, 18, 36);
+	} else {
+		# left territory, lane at x=185, nearest is ~x=90; go leftward away.
+		$base_x = 90;
+		@col_dx = (0, -18, -36);
+	}
+	my $base_y;
+	my @row_dy;
+	if ($compartment eq 'extra') {
+		$base_y = 28;
+		@row_dy = (0, 16);
+	} else {
+		$base_y = 190;
+		@row_dy = (0, 16);
+	}
+	my $s = '';
+	# Decide placements and radii based on count.
+	# Ranking: col index 0 is "near the lane" (biggest, most opaque).
+	my @plan = ();  # list of [col, row, r, op]
+	if ($count == 1) {
+		@plan = ([0, 0, 3, 0.80]);
+	} elsif ($count == 2) {
+		@plan = ([0, 0, 4, 0.95], [0, 1, 3, 0.80]);
+	} elsif ($count == 3) {
+		@plan = ([0, 0, 4, 0.95], [0, 1, 3.5, 0.85], [1, 0, 3, 0.75]);
+	} elsif ($count == 4) {
+		@plan = ([0, 0, 4, 0.95], [0, 1, 3.5, 0.85],
+			[1, 0, 3.5, 0.85], [1, 1, 3, 0.75]);
+	} elsif ($count == 5) {
+		@plan = ([0, 0, 4, 0.95], [0, 1, 4, 0.95],
+			[1, 0, 3.5, 0.85], [1, 1, 3.5, 0.85],
+			[2, 0, 3, 0.75]);
+	} else {
+		@plan = ([0, 0, 4, 0.95], [0, 1, 4, 0.95],
+			[1, 0, 3.5, 0.85], [1, 1, 3.5, 0.85],
+			[2, 0, 3, 0.75],   [2, 1, 3, 0.75]);
+	}
+	# Pool rect for count >= 3.
+	if ($count >= 3) {
+		# Bound the cluster by the min/max column/row used.
+		my $min_dx = 0; my $max_dx = 0;
+		my $min_dy = 0; my $max_dy = 0;
+		for my $p (@plan) {
+			my $dx = $col_dx[$p->[0]];
+			my $dy = $row_dy[$p->[1]];
+			$min_dx = $dx if $dx < $min_dx;
+			$max_dx = $dx if $dx > $max_dx;
+			$min_dy = $dy if $dy < $min_dy;
+			$max_dy = $dy if $dy > $max_dy;
+		}
+		my $rect_x = $base_x + $min_dx - 8;
+		my $rect_y = $base_y + $min_dy - 8;
+		my $rect_w = ($max_dx - $min_dx) + 16;
+		my $rect_h = ($max_dy - $min_dy) + 16;
+		$s .= '<rect x="' . $rect_x . '" y="' . $rect_y . '"'
+			. ' width="' . $rect_w . '" height="' . $rect_h . '"'
+			. ' rx="6" ry="6" fill="' . $color_light
+			. '" fill-opacity="0.10"/>';
+	}
+	# Dots.
+	for my $p (@plan) {
+		my ($col, $row, $r, $op) = @$p;
+		my $cx = $base_x + $col_dx[$col];
+		my $cy = $base_y + $row_dy[$row];
+		$s .= '<circle cx="' . $cx . '" cy="' . $cy . '" r="' . $r . '"'
+			. ' fill="' . $color_light . '" opacity="' . $op . '"/>';
+	}
+	return $s;
+}
+
+# ==== END BLOCK: membrane_transporter_svg (v4) ====
+
+# ----------------------------
+# Case builders for v3 (left) and v4 (right)
+# z-order for v4: open, backdrop, gradients, approach arrows, approach
+# blobs, release blobs, binding dots, compartment labels, stoich, labels,
+# close.
+# ----------------------------
+
+# === Case 1: uniporter glucose inward ===
+sub build_v3_case1 {
+	my $s = svg_open();
+	$s .= svg_backdrop_shared();
+	$s .= svg_arrow_in_v3($LANE_CENTER, $COL_GLU);
+	$s .= svg_solute_blob_shared($LANE_CENTER, $Y_IN, $COL_GLU);
+	$s .= svg_compartment_labels_shared();
+	$s .= svg_solute_label_v3($LANE_CENTER, $Y_IN, $LBL_GLUCOSE, $COL_GLU, 'right');
+	$s .= svg_close();
+	return $s;
+}
+
+sub build_v4_case1 {
+	my $s = svg_open();
+	$s .= svg_backdrop_shared();
+	$s .= svg_approach_arrow_in($LANE_CENTER, $COL_GLU);
+	$s .= svg_solute_blob_shared($LANE_CENTER, $Y_IN, $COL_GLU);
+	$s .= svg_release_blob_in($LANE_CENTER, $COL_GLU);
+	$s .= svg_binding_dot($LANE_CENTER, $COL_GLU);
+	$s .= svg_compartment_labels_shared();
+	$s .= svg_solute_label_v4($LANE_CENTER, $Y_IN, $LBL_GLUCOSE, $COL_GLU, 'right', 0);
+	$s .= svg_close();
+	return $s;
+}
+
+# === Case 2: antiporter 3 Na+ in / 1 Ca2+ out ===
+sub build_v3_case2 {
+	my $s = svg_open();
+	$s .= svg_backdrop_shared();
+	$s .= svg_arrow_in_v3($LANE_LEFT,   $COL_NA);
+	$s .= svg_arrow_out_v3($LANE_RIGHT, $COL_CA);
+	$s .= svg_solute_blob_shared($LANE_LEFT,  $Y_IN,  $COL_NA);
+	$s .= svg_solute_blob_shared($LANE_RIGHT, $Y_OUT, $COL_CA);
+	$s .= svg_compartment_labels_shared();
+	$s .= svg_stoich_shared($LANE_LEFT, 'in', $COL_NA, 3);
+	$s .= svg_solute_label_v3($LANE_LEFT,  $Y_IN,  $LBL_NA, $COL_NA, 'left');
+	$s .= svg_solute_label_v3($LANE_RIGHT, $Y_OUT, $LBL_CA, $COL_CA, 'right');
+	$s .= svg_close();
+	return $s;
+}
+
+sub build_v4_case2 {
+	my $s = svg_open();
+	$s .= svg_backdrop_shared();
+	$s .= svg_approach_arrow_in($LANE_LEFT,   $COL_NA);
+	$s .= svg_approach_arrow_out($LANE_RIGHT, $COL_CA);
+	$s .= svg_solute_blob_shared($LANE_LEFT,  $Y_IN,  $COL_NA);
+	$s .= svg_solute_blob_shared($LANE_RIGHT, $Y_OUT, $COL_CA);
+	$s .= svg_release_blob_in($LANE_LEFT,   $COL_NA);
+	$s .= svg_release_blob_out($LANE_RIGHT, $COL_CA);
+	$s .= svg_binding_dot($LANE_LEFT,   $COL_NA);
+	$s .= svg_binding_dot($LANE_RIGHT,  $COL_CA);
+	$s .= svg_compartment_labels_shared();
+	$s .= svg_stoich_shared($LANE_LEFT, 'in', $COL_NA, 3);
+	$s .= svg_solute_label_v4($LANE_LEFT,  $Y_IN,  $LBL_NA, $COL_NA, 'left',  0);
+	$s .= svg_solute_label_v4($LANE_RIGHT, $Y_OUT, $LBL_CA, $COL_CA, 'right', 0);
+	$s .= svg_close();
+	return $s;
+}
+
+# === Case 3: symporter with gradients (Na+ 6/1 + glucose 2/4, both in) ===
+sub build_v3_case3 {
+	my $s = svg_open();
+	$s .= svg_backdrop_shared();
+	$s .= svg_gradient_dots_v3('extra', 'left',  6, $COL_NA_LT);
+	$s .= svg_gradient_dots_v3('cyto',  'left',  1, $COL_NA_LT);
+	$s .= svg_gradient_dots_v3('extra', 'right', 2, $COL_GLU_LT);
+	$s .= svg_gradient_dots_v3('cyto',  'right', 4, $COL_GLU_LT);
+	$s .= svg_arrow_in_v3($LANE_LEFT,  $COL_NA);
+	$s .= svg_arrow_in_v3($LANE_RIGHT, $COL_GLU);
+	$s .= svg_solute_blob_shared($LANE_LEFT,  $Y_IN, $COL_NA);
+	$s .= svg_solute_blob_shared($LANE_RIGHT, $Y_IN, $COL_GLU);
+	$s .= svg_compartment_labels_shared();
+	$s .= svg_solute_label_v3($LANE_LEFT,  $Y_IN, $LBL_NA,      $COL_NA,  'left');
+	$s .= svg_solute_label_v3($LANE_RIGHT, $Y_IN, $LBL_GLUCOSE, $COL_GLU, 'right');
+	$s .= svg_close();
+	return $s;
+}
+
+sub build_v4_case3 {
+	my $s = svg_open();
+	$s .= svg_backdrop_shared();
+	$s .= svg_gradient_dots_v4('extra', 'left',  6, $COL_NA_LT);
+	$s .= svg_gradient_dots_v4('cyto',  'left',  1, $COL_NA_LT);
+	$s .= svg_gradient_dots_v4('extra', 'right', 2, $COL_GLU_LT);
+	$s .= svg_gradient_dots_v4('cyto',  'right', 4, $COL_GLU_LT);
+	$s .= svg_approach_arrow_in($LANE_LEFT,  $COL_NA);
+	$s .= svg_approach_arrow_in($LANE_RIGHT, $COL_GLU);
+	$s .= svg_solute_blob_shared($LANE_LEFT,  $Y_IN, $COL_NA);
+	$s .= svg_solute_blob_shared($LANE_RIGHT, $Y_IN, $COL_GLU);
+	$s .= svg_release_blob_in($LANE_LEFT,  $COL_NA);
+	$s .= svg_release_blob_in($LANE_RIGHT, $COL_GLU);
+	$s .= svg_binding_dot($LANE_LEFT,  $COL_NA);
+	$s .= svg_binding_dot($LANE_RIGHT, $COL_GLU);
+	$s .= svg_compartment_labels_shared();
+	# both-inward => stagger: left dy=-2, right dy=+3
+	$s .= svg_solute_label_v4($LANE_LEFT,  $Y_IN, $LBL_NA,      $COL_NA,  'left',  -2);
+	$s .= svg_solute_label_v4($LANE_RIGHT, $Y_IN, $LBL_GLUCOSE, $COL_GLU, 'right',  3);
+	$s .= svg_close();
+	return $s;
+}
+
+$svg_v3_1 = build_v3_case1();
+$svg_v4_1 = build_v4_case1();
+$svg_v3_2 = build_v3_case2();
+$svg_v4_2 = build_v4_case2();
+$svg_v3_3 = build_v3_case3();
+$svg_v4_3 = build_v4_case3();
+
+BEGIN_PGML
+
+Side-by-side v3 (left) vs v4 (right) on three stress cases. v4 replaces the
+through-pipe arrow with approach-arrow + binding-circle + release-blob, and
+replaces scattered gradient dots with clustered pools (rounded-rect pool
+background for clusters >= 3). For the both-inward symporter, v4 adds a
+5 px label stagger.
+
+## Case 1: uniporter glucose inward
+
+v3:
+
+[$svg_v3_1]*
+
+v4:
+
+[$svg_v4_1]*
+
+## Case 2: antiporter 3 Na+ in / 1 Ca2+ out
+
+v3:
+
+[$svg_v3_2]*
+
+v4:
+
+[$svg_v4_2]*
+
+## Case 3: symporter with gradients (Na+ 6/1, glucose 2/4, both inward)
+
+v3:
+
+[$svg_v3_3]*
+
+v4:
+
+[$svg_v4_3]*
+
+END_PGML
+
+BEGIN_PGML_SOLUTION
+
+v4 changes vs v3:
+
+- Replaces the two collinear through-pipe arrow segments with an external
+  approach arrow + a central binding circle at the waist + a small release
+  blob on the far compartment. Visually: approach -> bind -> release.
+- Smaller arrowheads (base 3.5 / tip 6 vs v3 base 5 / tip 8).
+- Gradient dots become clustered pools; clusters of three or more get a
+  rounded-rect pool background.
+- Both-inward symporter labels get a 5 px vertical stagger.
+
+END_PGML_SOLUTION
+
+ENDDOCUMENT();
