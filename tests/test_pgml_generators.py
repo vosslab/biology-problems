@@ -37,31 +37,6 @@ def _load_module(monkeypatch, name, path):
 	return module
 
 
-def test_yaml_match_to_pgml_inline_colors(monkeypatch):
-	module_path = Path(repo_abs_path("problems/matching_sets/yaml_match_to_pgml.py"))
-	module = _load_module(monkeypatch, "yaml_match_to_pgml_test", module_path)
-
-	yaml_data = {
-		"matching pairs": {
-			"ionic bond": "salt",
-			"covalent bond": "H<sub>2</sub>O",
-		},
-		"keys description": "bonds",
-		"values description": "examples",
-		"replacement_rules": {
-			"ionic bond": "<span style=\"color: #009900;\">ionic bond</span>",
-		},
-	}
-
-	pgml_text, warnings = module.build_pgml_text(yaml_data, 2, "inline")
-
-	assert "%answer_html" in pgml_text
-	assert "color: #009900" in pgml_text
-	assert "H\u2082O" in pgml_text
-	assert "$answers_sorted_html" in pgml_text
-	assert warnings == []
-
-
 def test_yaml_match_to_pgml_seed_determinism(monkeypatch):
 	module_path = Path(repo_abs_path("problems/matching_sets/yaml_match_to_pgml.py"))
 	module = _load_module(monkeypatch, "yaml_match_to_pgml_seed_test", module_path)

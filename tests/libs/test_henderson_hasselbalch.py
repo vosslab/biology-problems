@@ -5,7 +5,7 @@ from lib_test_utils import import_from_repo_path
 
 
 def test_henderson_hasselbalch_ph_examples_and_inverses():
-	hh = import_from_repo_path("problems/biochemistry-problems/Henderson-Hasselbalch.py")
+	hh = import_from_repo_path("problems/biochemistry-problems/buffers/Henderson-Hasselbalch.py")
 
 	# Acid buffer example: acetic acid / sodium acetate
 	pH1 = hh.compute_pH_from_pKa_conc(4.76, 0.520, 0.305)

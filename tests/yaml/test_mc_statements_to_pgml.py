@@ -20,7 +20,8 @@ def test_yaml_mc_statements_to_pgml_header():
 		},
 	}
 	pgml_text = module.build_pgml_text(yaml_data)
-	assert pgml_text.startswith("## DESCRIPTION")
+	assert "## TITLE(" in pgml_text
+	assert "## DESCRIPTION" in pgml_text
 	assert "## KEYWORDS(" in pgml_text
 	assert "## DBsubject(" in pgml_text
 	assert "DOCUMENT();" in pgml_text

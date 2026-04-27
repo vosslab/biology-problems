@@ -5,7 +5,7 @@ from lib_test_utils import import_from_repo_path
 
 
 def _import_sugarlib():
-	return import_from_repo_path("problems/biochemistry-problems/carbohydrates_classification/sugarlib.py")
+	return import_from_repo_path("problems/biochemistry-problems/carbs/sugarlib.py")
 
 
 def test_sugarlib_validation_and_coloring():
