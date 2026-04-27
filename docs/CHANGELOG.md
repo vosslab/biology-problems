@@ -1,8 +1,124 @@
 # Changelog
 
+## 2026-04-27
+
+### Behavior or Interface Changes
+- Tightened HTML-tag rejection in
+  [webwork_lib.py](../webwork_lib.py) `extract_strict_color_span` and
+  `extract_strict_color_spans` so only `<sub>` and `<sup>` are tolerated
+  inside a strict color span; `<i>` and `<em>` now correctly cause `None`
+  to be returned, matching the intent stated in commit `4e15773`.
+
+### Fixes and Maintenance
+- Updated stale `import_from_repo_path` paths in three library tests after
+  the folder reorganization that moved sources into `enzymes/`, `carbs/`,
+  and `buffers/` subfolders:
+  [tests/libs/test_biochemistry_enzymelib.py](../tests/libs/test_biochemistry_enzymelib.py)
+  -> `enzymes/enzymelib.py`,
+  [tests/libs/test_biochemistry_sugarlib.py](../tests/libs/test_biochemistry_sugarlib.py)
+  -> `carbs/sugarlib.py`,
+  [tests/libs/test_henderson_hasselbalch.py](../tests/libs/test_henderson_hasselbalch.py)
+  -> `buffers/Henderson-Hasselbalch.py`.
+- Simplified `test_enzymelib_tree_and_html_table` by dropping the
+  `len(enzyme_tree) == 4` and exact key-set assertions, per
+  [docs/PYTHON_STYLE.md](PYTHON_STYLE.md) "avoid tests that assert on
+  collection sizes [or] required key lists".
+- Updated
+  [tests/yaml/test_mc_statements_to_pgml.py](../tests/yaml/test_mc_statements_to_pgml.py)
+  to assert `## TITLE(` and `## DESCRIPTION` membership rather than
+  `startswith("## DESCRIPTION")`, since the generator now emits `## TITLE`
+  first per commit `c6d43ba`. The remaining OPL header markers
+  (`## KEYWORDS(`, `## DBsubject(`, `DOCUMENT();`, `PGcourse.pl`) are kept
+  because they are external WeBWorK/OPL spec markers (boundary
+  enforcement, not tunable internals).
+- Added `description`, `keywords`, `title`, and `TITLE` to `ALLOWED_KEYS`
+  in
+  [problems/multiple_choice_statements/check_mc_statements_yaml.py](../problems/multiple_choice_statements/check_mc_statements_yaml.py)
+  so the validator accepts the same keys the generator already reads in
+  [yaml_mc_statements_to_pgml.py](../problems/multiple_choice_statements/yaml_mc_statements_to_pgml.py).
+  Five biochemistry MC statements YAMLs (enzyme_cofactors,
+  enzyme_equilibrium, enzyme_inhibitors, gibbs_free_energy_equation,
+  m-m_kinetics) now validate cleanly.
+- Resolved pyflakes warnings by removing unused `import os` from
+  [problems/biostatistics-problems/z_score_google_sheet.py](../problems/biostatistics-problems/z_score_google_sheet.py)
+  and
+  [problems/inheritance-problems/cytogenetic_notation/cytogenetic_notation-disorders.py](../problems/inheritance-problems/cytogenetic_notation/cytogenetic_notation-disorders.py),
+  dropping the leading `f` from f-strings without placeholders in
+  [problems/biochemistry-problems/enzymes/mm_lib.py](../problems/biochemistry-problems/enzymes/mm_lib.py)
+  (3 lines),
+  [problems/biochemistry-problems/membranes/_qc_membrane_pgmls.py](../problems/biochemistry-problems/membranes/_qc_membrane_pgmls.py)
+  (1 line), and
+  [problems/biochemistry-problems/membranes/_visual_qc_v4.py](../problems/biochemistry-problems/membranes/_visual_qc_v4.py)
+  (1 line), and removing an unused `lower = html.lower()` in
+  `_qc_membrane_pgmls.py`.
+- Fixed mixed-indentation in
+  [problems/biochemistry-problems/membranes/_qc_membrane_pgmls.py](../problems/biochemistry-problems/membranes/_qc_membrane_pgmls.py)
+  by extracting a multi-line tuple of double-escape regex patterns into
+  a tab-indented `double_escape_patterns` constant before the `for` loop,
+  replacing the space-aligned continuation that was tripping
+  `tests/test_indentation.py`.
+- Added `# nosec B310` annotation to the hardcoded-localhost
+  `urllib.request.urlopen` call in
+  [topic_classifier/classifier_common.py](../topic_classifier/classifier_common.py)
+  so Bandit no longer flags the Ollama probe; the URL is constructed from
+  a fixed `http://localhost:11434` default and is not user-supplied.
+
+### Removals and Deprecations
+- Removed `test_yaml_match_to_pgml_inline_colors` from
+  [tests/test_pgml_generators.py](../tests/test_pgml_generators.py). Per
+  [docs/PYTHON_STYLE.md](PYTHON_STYLE.md), tests should not assert on
+  internal Perl variable names (`%answer_html`, `$answers_sorted_html`),
+  exact color hex literals, or tunable Unicode-vs-HTML representations of
+  H<sub>2</sub>O - all of which this single test asserted. Its purpose
+  (verifying replacement_rules and HTML pass-through) is already covered
+  by the inline-color tests for sibling generators and by the
+  per-function `webwork_lib` tests.
+
+## 2026-04-26
+
+### Behavior or Interface Changes
+- Bumped the `membrane_transporter_svg` block from v4 to v5 in all three
+  production PGMLs
+  ([identify_transporter_type.pgml](../problems/biochemistry-problems/membranes/identify_transporter_type.pgml),
+  [coupled_transport_perturbation.pgml](../problems/biochemistry-problems/membranes/coupled_transport_perturbation.pgml),
+  [driving_force_from_gradient.pgml](../problems/biochemistry-problems/membranes/driving_force_from_gradient.pgml)).
+  The v4 head-row dot loop in `svg_backdrop` is replaced by a doublet-based
+  phospholipid bilayer: each doublet is one head-down phospholipid plus its
+  rotate-180 mirror about the membrane midline (y=110). The phospholipid
+  shape is copied verbatim from
+  [problems/biochemistry-problems/membranes/phospholipid-unit.svg](../problems/biochemistry-problems/membranes/phospholipid-unit.svg)
+  and inlined as `$PHOSPHO_UNIT_SVG` in each PGML so files stay
+  self-contained for upload. Protein body, arrows, blobs, gradient dots,
+  labels, and randomization logic are unchanged.
+
+### Decisions and Failures
+- Did not port the broader v5 plan (P5 channel + ion/sugar shape tokens)
+  yet; user scoped the change to the bilayer rendering only. The protein
+  remains the v4 waisted slab with the dashed gate.
+
 ## 2026-04-23
 
 ### Additions and New Features
+- Added `v5_prototypes` render mode to
+  [problems/biochemistry-problems/membranes/_svg_lineup.py](../problems/biochemistry-problems/membranes/_svg_lineup.py)
+  and wrote three static antiporter prototypes
+  (`_proto_v5_a.html`, `_proto_v5_b.html`, `_proto_v5_c.html`) as
+  Phase 3 of the membrane transporter v5 rework. All three use
+  protein P4 (rounded channel body with an explicit pore, derived
+  from the source file `Scheme_facilitated_diffusion_in_cell_membrane-en.svg`)
+  and the same biology (3 Na<sup>+</sup> in / 1 Ca<sup>2+</sup> out).
+  A uses M_FLAT_SLAB, B uses M_TWO_LINE, C reuses A and adds a
+  side legend showing the ion / sugar / water / nucleotide token
+  primitives. Phase 4 (human review gate) is pending; no PGML
+  files have been touched yet.
+- Added substrate-shape dispatcher (`svg_substrate_token`) and
+  primitives (`svg_token_ion`, `svg_token_sugar`, `svg_token_water`,
+  `svg_token_nucleotide`) plus a `SUB_META` lookup table to
+  [_svg_lineup.py](../problems/biochemistry-problems/membranes/_svg_lineup.py).
+  Callers look up a substrate by key (`'Na'`, `'glucose'`, ...) and
+  get label, color, and chemical-class kind; kind drives the token
+  shape so ions render as circles, sugars as hexagons, water as a
+  small circle, and nucleotides as rounded rectangles.
 - Extended [tests/test_webwork_lib.py](../tests/test_webwork_lib.py)
   with eight `smart_title_case` tests covering acronym preservation (tRNA, DNA, pH), leading lowercase
   acronyms, apostrophes (Franklin's), HTML subscripts

@@ -108,17 +108,17 @@ def make_data_table(
 
 		# substrate concentration column
 		s_str = f"{s_val:.3f}"
-		table += f" <td style='border: 1px solid black;' align='right'>"
+		table += " <td style='border: 1px solid black;' align='right'>"
 		table += f"{mono}{s_str}&nbsp;</span></td>"
 
 		# velocity column
-		table += f" <td style='border: 1px solid black;' align='right'>"
+		table += " <td style='border: 1px solid black;' align='right'>"
 		table += f"{mono}{v0:.1f}&nbsp;</span></td>"
 
 		# inhibited velocity column (if present)
 		if has_inhibitor:
 			inhib_v0 = inhibited_velocities[i]
-			table += f" <td style='border: 1px solid black;' align='right'>"
+			table += " <td style='border: 1px solid black;' align='right'>"
 			table += f"{mono}{inhib_v0:.1f}&nbsp;</span></td>"
 
 		table += "</tr>"

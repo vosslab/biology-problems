@@ -1,5 +1,8 @@
 # output files
-
+_[a-z]*.[a-z]*
+_*.py
+local-llm-wrapper
+sugar_svgs/
 topic_classifier/task_files
 topic_classifier/output/
 topic_classifier/results/

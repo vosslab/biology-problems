@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 # built-in python modules
-import os
 import random
 import re
 

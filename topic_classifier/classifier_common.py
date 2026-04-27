@@ -384,7 +384,7 @@ def validate_ollama_model(model: str, base_url: str = "http://localhost:11434") 
 	url = f"{base_url}/api/tags"
 	request = urllib.request.Request(url)
 	try:
-		response = urllib.request.urlopen(request, timeout=15)
+		response = urllib.request.urlopen(request, timeout=15)  # nosec B310
 	except (urllib.error.URLError, TimeoutError):
 		raise RuntimeError(
 			f"Cannot connect to Ollama at {base_url}\n"

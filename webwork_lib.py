@@ -690,8 +690,8 @@ def extract_strict_color_span(text_string):
 		inner = inner_strong.group(1)
 
 	inner = normalize_nbsp(inner)
-	# reject inner text with HTML tags other than sub/sup/i/em
-	cleaned = re.sub(r'</?(?:su[bp]|i|em)>', '', inner)
+	# reject inner text with HTML tags other than sub/sup
+	cleaned = re.sub(r'</?(?:su[bp])>', '', inner)
 	if re.search(r'<[^>]+>', cleaned):
 		return None
 
@@ -788,8 +788,8 @@ def extract_strict_color_spans(text_string):
 			inner = inner_strong.group(1)
 
 		inner = normalize_nbsp(inner)
-		# reject inner text with HTML tags other than sub/sup/i/em
-		cleaned = re.sub(r'</?(?:su[bp]|i|em)>', '', inner)
+		# reject inner text with HTML tags other than sub/sup
+		cleaned = re.sub(r'</?(?:su[bp])>', '', inner)
 		if re.search(r'<[^>]+>', cleaned):
 			return None
 

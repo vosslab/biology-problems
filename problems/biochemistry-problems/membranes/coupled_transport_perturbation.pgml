@@ -32,11 +32,12 @@ loadMacros(
 );
 $showPartialCorrectAnswers = 0;
 
-# ==== BEGIN BLOCK: membrane_transporter_svg (v4) ====
-# See identify_transporter_type.pgml for the v3->v4 changelog. Summary:
-# approach arrow -> binding circle at the waist -> release blob; clustered
-# gradient dots with optional rounded-rect pool background; optional
-# $stagger on svg_solute_label for both-inward layouts.
+# ==== BEGIN BLOCK: membrane_transporter_svg (v5) ====
+# v5 swaps the v4 head-row dot loop for a doublet-based phospholipid
+# bilayer (one head-down phospholipid + rotate-180 mirror across the
+# membrane midline, copied verbatim from phospholipid-unit.svg). All
+# other v4 behavior unchanged. See identify_transporter_type.pgml for
+# the full block changelog.
 
 $CANVAS_W    = 420;
 $CANVAS_H    = 240;
@@ -47,6 +48,82 @@ $COREGAP_FILL = '#e8d4ad';
 $HEAD_FILL    = '#b5926b';
 $PROTEIN_FILL = '#5f6c7b';
 
+# Phospholipid unit copied verbatim from phospholipid-unit.svg.
+# Head-down orientation; head-circle center at (48.683674, 168.95152)
+# in the unit-native frame. svg_phospho_doublet() places this unit at
+# (cx, BOTTOM_HEAD_Y) and mirrors it across MEM_MIDLINE_Y for the top
+# leaflet. Edit phospholipid-unit.svg in Inkscape to redesign the
+# shape, then paste the new <path d="..."/>+<circle .../> here.
+$PHOSPHO_HEAD_FILL = '#acf1fc';
+$PHOSPHO_UNIT_SVG = '<path fill="' . $PHOSPHO_HEAD_FILL
+	. '" stroke="#000000" stroke-width="1.15484"'
+	. ' style="stroke-width:0.64062;stroke-linecap:round;stroke-linejoin:round"'
+	. ' d="m 49.286376,170.79185 c 0.284201,-0.13548 0.497903,-0.69673 0.544903,-1.42571'
+	. ' 0.10286,-1.61065 0.407901,-3.04497 0.730675,-4.56528'
+	. ' 0.309694,-1.45797 0.63003,-2.96486 0.775009,-4.68679'
+	. ' 0.289523,-3.44332 0.113948,-7.378 -0.05631,-11.18419'
+	. ' -0.09909,-2.21437 -0.192646,-4.30617 -0.192646,-6.20981'
+	. ' 0,-0.81393 -0.271783,-1.47302 -0.607193,-1.47302'
+	. ' -0.33541,0 -0.607416,0.65909 -0.607416,1.47302'
+	. ' 0,2.06223 0.101531,4.33305 0.199738,6.52806'
+	. ' 0.100644,2.24985 0.203283,4.547 0.203283,6.68719'
+	. ' 0,1.26658 -0.03591,2.47617 -0.129684,3.58953'
+	. ' -0.111064,1.32304 -0.379966,2.58854 -0.664612,3.9277'
+	. ' -0.219914,1.03649 -0.43827,2.10632 -0.608524,3.26'
+	. ' -0.12503,-0.37202 -0.246514,-0.7548 -0.338069,-1.0666'
+	. ' -0.39859,-1.64936 -0.455563,-4.96257 -0.489037,-6.94738'
+	. ' -0.01662,-0.98864 -0.02375,-1.98912 -0.02375,-2.99175'
+	. ' 0,-2.34339 0.03768,-4.70613 0.07449,-7.01512'
+	. ' 0.03723,-2.34446 0.07582,-4.76849 0.07582,-7.15005'
+	. ' 0,-0.81339 -0.271784,-1.47249 -0.607194,-1.47249'
+	. ' -0.335632,0 -0.607193,0.6591 -0.607193,1.47249'
+	. ' 0,2.32511 -0.03836,4.72012 -0.07515,7.03716'
+	. ' -0.05365,3.35354 -0.108626,6.82266 -0.05121,10.19931'
+	. ' 0.04168,2.46435 0.103969,6.12809 0.66705,8.41181'
+	. ' 0.01022,0.0408 0.994696,3.97824 1.786999,3.60192 z"/>'
+	. '<circle fill="' . $PHOSPHO_HEAD_FILL
+	. '" stroke="#000000" stroke-width="0.568938"'
+	. ' cx="48.683674" cy="168.95152" r="2.5333178"'
+	. ' style="stroke-width:0.64062"/>';
+
+# Doublet bilayer geometry. The membrane spans y=70..150 with midline 110.
+# Bottom-leaflet head sits at y=147; top leaflet is its rotate-180 mirror
+# (head lands at y=73). Doublets tile along x at $DOUBLET_DX spacing and
+# skip the protein band.
+$PHOSPHO_HEAD_CX_NATIVE = 48.683674;
+$PHOSPHO_HEAD_CY_NATIVE = 168.95152;
+$PHOSPHO_SCALE      = 1.28;
+$MEM_MIDLINE_Y      = 110;
+$BOTTOM_HEAD_Y      = 147;
+$DOUBLET_DX         = 11;
+$PROTEIN_X_LO       = 165;
+$PROTEIN_X_HI       = 255;
+
+sub svg_phospho_doublet {
+	my $cx = shift;
+	my $k = $PHOSPHO_SCALE;
+	# Place the unit so its native head center maps to (cx, BOTTOM_HEAD_Y).
+	my $dx = $cx - $k * $PHOSPHO_HEAD_CX_NATIVE;
+	my $dy = $BOTTOM_HEAD_Y - $k * $PHOSPHO_HEAD_CY_NATIVE;
+	my $bottom = '<g transform="matrix(' . $k . ' 0 0 ' . $k . ' '
+		. sprintf('%.3f', $dx) . ' ' . sprintf('%.3f', $dy) . ')">'
+		. $PHOSPHO_UNIT_SVG . '</g>';
+	# Top leaflet: rotate the bottom leaflet 180 deg about the midline.
+	my $top = '<g transform="rotate(180 ' . $cx . ' '
+		. $MEM_MIDLINE_Y . ')">' . $bottom . '</g>';
+	return $bottom . $top;
+}
+
+sub svg_doublet_bilayer {
+	my $s = '';
+	# Tile doublets across the canvas, skipping the protein footprint.
+	for (my $cx = 14; $cx <= 410; $cx += $DOUBLET_DX) {
+		next if ($cx >= $PROTEIN_X_LO && $cx <= $PROTEIN_X_HI);
+		$s .= svg_phospho_doublet($cx);
+	}
+	return $s;
+}
+
 sub svg_backdrop {
 	my $s = '';
 	$s .= '<rect x="0" y="0" width="420" height="70" fill="' . $EXTRA_FILL . '"/>';
@@ -54,13 +131,8 @@ sub svg_backdrop {
 	$s .= '<rect x="0" y="70" width="420" height="25" fill="' . $LEAFLET_FILL . '"/>';
 	$s .= '<rect x="0" y="95" width="420" height="30" fill="' . $COREGAP_FILL . '"/>';
 	$s .= '<rect x="0" y="125" width="420" height="25" fill="' . $LEAFLET_FILL . '"/>';
-	for (my $cx = 10; $cx <= 410; $cx += 14) {
-		next if ($cx >= 171 && $cx <= 249);
-		$s .= '<circle cx="' . $cx . '" cy="73" r="2.6" fill="' . $HEAD_FILL
-			. '" opacity="0.75"/>';
-		$s .= '<circle cx="' . $cx . '" cy="147" r="2.6" fill="' . $HEAD_FILL
-			. '" opacity="0.75"/>';
-	}
+	# v5: doublet-based bilayer in place of the v4 head-row dot loop.
+	$s .= svg_doublet_bilayer();
 	my $d = 'M 193 55 '
 		. 'Q 175 55 175 73 '
 		. 'L 175 100 '
