@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 74 134">
+  <g id="transporter-protein">
+    <path fill="#5f6c7b" stroke="#2f3743" stroke-width="1.5" d="M 20 2 Q 2 2 2 20 L 2 47 Q 2 57 10 67 Q 2 77 2 87 L 2 114 Q 2 132 20 132 L 54 132 Q 72 132 72 114 L 72 87 Q 72 77 64 67 Q 72 57 72 47 L 72 20 Q 72 2 54 2 Z"/>
+    <line x1="10" y1="67" x2="64" y2="67" stroke="#2f3743" stroke-width="1.5" stroke-dasharray="4,3"/>
+  </g>
+</svg>

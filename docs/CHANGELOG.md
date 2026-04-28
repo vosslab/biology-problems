@@ -1,5 +1,60 @@
 # Changelog
 
+## 2026-04-28
+
+### Additions and New Features
+- Extracted the membrane transporter protein body into
+  [problems/biochemistry-problems/membranes/transporter-protein.svg](../problems/biochemistry-problems/membranes/transporter-protein.svg)
+  (waisted carrier silhouette plus dashed waist line, normalized to
+  origin via `tools/normalize_svg.py`). The SVG is the new source of
+  truth for the protein art -- editing it in Inkscape and re-running
+  the sync script propagates the change to all three production
+  membrane PGMLs in lockstep, matching how
+  [problems/biochemistry-problems/membranes/phospholipid-unit.svg](../problems/biochemistry-problems/membranes/phospholipid-unit.svg)
+  was already used as the source of truth for the phospholipid unit.
+- Added [tools/sync_membrane_svgs.py](../tools/sync_membrane_svgs.py),
+  a small utility that reads each component SVG, extracts the inner
+  content of its `<g id="...">` group, and rewrites the matching
+  `# ---- BEGIN SYNC: <basename>.svg ----` block in every membrane
+  PGML. Edit the SVGs, run `tools/sync_membrane_svgs.py`, lint --
+  no manual paste-and-pray.
+
+### Behavior or Interface Changes
+- Restructured the v5 `membrane_transporter_svg` block in all three
+  production PGMLs to delegate art to the component SVGs:
+  - `$PHOSPHO_UNIT_SVG` and `$PROTEIN_INNER_SVG` are now populated
+    inside `# ---- BEGIN/END SYNC: <basename>.svg ----` markers and
+    are managed by the sync script (DO NOT EDIT BY HAND inside the
+    markers).
+  - `svg_backdrop()` no longer builds the protein path inline; it
+    wraps the inlined `$PROTEIN_INNER_SVG` content in
+    `<g transform="translate(173 53)">...</g>` so the SVG file can
+    stay origin-anchored at (0,0) for clean Inkscape editing.
+  - The unused `$PROTEIN_FILL` and `$PHOSPHO_HEAD_FILL` Perl
+    constants were removed; color now lives in the SVG files
+    alongside geometry.
+- All three production PGMLs (Level 1
+  [identify_transporter_type.pgml](../problems/biochemistry-problems/membranes/identify_transporter_type.pgml),
+  Level 2
+  [driving_force_from_gradient.pgml](../problems/biochemistry-problems/membranes/driving_force_from_gradient.pgml),
+  Level 3
+  [coupled_transport_perturbation.pgml](../problems/biochemistry-problems/membranes/coupled_transport_perturbation.pgml))
+  pass renderer-API lint at seeds 1, 42, 100, 9999 with no errors
+  after the sync refactor.
+
+### Decisions and Failures
+- The phospholipid SVG keeps its native (40, 140, 30, 40) viewBox
+  because `tools/normalize_svg.py` cannot shift relative path
+  commands (`m`, `c`, `z`); the existing matrix-transform placement
+  in `svg_phospho_doublet` already handles its origin offset, so no
+  rework was needed. The protein silhouette uses absolute path
+  commands and was normalized to (0, 0, 74, 134) cleanly.
+- The sync script enforces self-closing-only inner XML and rejects
+  single-quote characters in the extracted content (would break
+  Perl single-quoted string embedding). Both component SVGs comply
+  today; revisit if a future SVG edit introduces nested groups or
+  apostrophes in attribute values.
+
 ## 2026-04-27
 
 ### Behavior or Interface Changes

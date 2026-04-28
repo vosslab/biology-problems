@@ -46,45 +46,27 @@ $CYTO_FILL   = '#fdfcf5';
 $LEAFLET_FILL = '#d9b88a';
 $COREGAP_FILL = '#e8d4ad';
 $HEAD_FILL    = '#b5926b';
-$PROTEIN_FILL = '#5f6c7b';
 
-# Phospholipid unit copied verbatim from phospholipid-unit.svg.
-# Head-down orientation; head-circle center at (48.683674, 168.95152)
-# in the unit-native frame. svg_phospho_doublet() places this unit at
-# (cx, BOTTOM_HEAD_Y) and mirrors it across MEM_MIDLINE_Y for the top
-# leaflet. Edit phospholipid-unit.svg in Inkscape to redesign the
-# shape, then paste the new <path d="..."/>+<circle .../> here.
-$PHOSPHO_HEAD_FILL = '#acf1fc';
-$PHOSPHO_UNIT_SVG = '<path fill="' . $PHOSPHO_HEAD_FILL
-	. '" stroke="#000000" stroke-width="1.15484"'
-	. ' style="stroke-width:0.64062;stroke-linecap:round;stroke-linejoin:round"'
-	. ' d="m 49.286376,170.79185 c 0.284201,-0.13548 0.497903,-0.69673 0.544903,-1.42571'
-	. ' 0.10286,-1.61065 0.407901,-3.04497 0.730675,-4.56528'
-	. ' 0.309694,-1.45797 0.63003,-2.96486 0.775009,-4.68679'
-	. ' 0.289523,-3.44332 0.113948,-7.378 -0.05631,-11.18419'
-	. ' -0.09909,-2.21437 -0.192646,-4.30617 -0.192646,-6.20981'
-	. ' 0,-0.81393 -0.271783,-1.47302 -0.607193,-1.47302'
-	. ' -0.33541,0 -0.607416,0.65909 -0.607416,1.47302'
-	. ' 0,2.06223 0.101531,4.33305 0.199738,6.52806'
-	. ' 0.100644,2.24985 0.203283,4.547 0.203283,6.68719'
-	. ' 0,1.26658 -0.03591,2.47617 -0.129684,3.58953'
-	. ' -0.111064,1.32304 -0.379966,2.58854 -0.664612,3.9277'
-	. ' -0.219914,1.03649 -0.43827,2.10632 -0.608524,3.26'
-	. ' -0.12503,-0.37202 -0.246514,-0.7548 -0.338069,-1.0666'
-	. ' -0.39859,-1.64936 -0.455563,-4.96257 -0.489037,-6.94738'
-	. ' -0.01662,-0.98864 -0.02375,-1.98912 -0.02375,-2.99175'
-	. ' 0,-2.34339 0.03768,-4.70613 0.07449,-7.01512'
-	. ' 0.03723,-2.34446 0.07582,-4.76849 0.07582,-7.15005'
-	. ' 0,-0.81339 -0.271784,-1.47249 -0.607194,-1.47249'
-	. ' -0.335632,0 -0.607193,0.6591 -0.607193,1.47249'
-	. ' 0,2.32511 -0.03836,4.72012 -0.07515,7.03716'
-	. ' -0.05365,3.35354 -0.108626,6.82266 -0.05121,10.19931'
-	. ' 0.04168,2.46435 0.103969,6.12809 0.66705,8.41181'
-	. ' 0.01022,0.0408 0.994696,3.97824 1.786999,3.60192 z"/>'
-	. '<circle fill="' . $PHOSPHO_HEAD_FILL
-	. '" stroke="#000000" stroke-width="0.568938"'
-	. ' cx="48.683674" cy="168.95152" r="2.5333178"'
-	. ' style="stroke-width:0.64062"/>';
+# Source SVGs live next to the PGMLs; tools/sync_membrane_svgs.py
+# extracts the inner <g> content of each and rewrites the matching
+# SYNC block below. Edit the SVG files in Inkscape, then re-run the
+# sync script to refresh all three production PGMLs in lockstep.
+
+# ---- BEGIN SYNC: phospholipid-unit.svg ----
+# Source of truth: phospholipid-unit.svg in this folder.
+# Refresh by running tools/sync_membrane_svgs.py.
+# DO NOT EDIT BY HAND inside the SYNC markers.
+$PHOSPHO_UNIT_SVG = '<path fill="#acf1fc" stroke="#000000" stroke-width="1.15484" style="stroke-width:0.64062;stroke-linecap:round;stroke-linejoin:round" d="m 49.286376,170.79185 c 0.284201,-0.13548 0.497903,-0.69673 0.544903,-1.42571 0.10286,-1.61065 0.407901,-3.04497 0.730675,-4.56528 0.309694,-1.45797 0.63003,-2.96486 0.775009,-4.68679 0.289523,-3.44332 0.113948,-7.378 -0.05631,-11.18419 -0.09909,-2.21437 -0.192646,-4.30617 -0.192646,-6.20981 0,-0.81393 -0.271783,-1.47302 -0.607193,-1.47302 -0.33541,0 -0.607416,0.65909 -0.607416,1.47302 0,2.06223 0.101531,4.33305 0.199738,6.52806 0.100644,2.24985 0.203283,4.547 0.203283,6.68719 0,1.26658 -0.03591,2.47617 -0.129684,3.58953 -0.111064,1.32304 -0.379966,2.58854 -0.664612,3.9277 -0.219914,1.03649 -0.43827,2.10632 -0.608524,3.26 -0.12503,-0.37202 -0.246514,-0.7548 -0.338069,-1.0666 -0.39859,-1.64936 -0.455563,-4.96257 -0.489037,-6.94738 -0.01662,-0.98864 -0.02375,-1.98912 -0.02375,-2.99175 0,-2.34339 0.03768,-4.70613 0.07449,-7.01512 0.03723,-2.34446 0.07582,-4.76849 0.07582,-7.15005 0,-0.81339 -0.271784,-1.47249 -0.607194,-1.47249 -0.335632,0 -0.607193,0.6591 -0.607193,1.47249 0,2.32511 -0.03836,4.72012 -0.07515,7.03716 -0.05365,3.35354 -0.108626,6.82266 -0.05121,10.19931 0.04168,2.46435 0.103969,6.12809 0.66705,8.41181 0.01022,0.0408 0.994696,3.97824 1.786999,3.60192 z" />'
+	. '<circle fill="#acf1fc" stroke="#000000" stroke-width="0.568938" cx="48.683674" cy="168.95152" r="2.5333178" style="stroke-width:0.64062" />';
+# ---- END SYNC: phospholipid-unit.svg ----
+
+# ---- BEGIN SYNC: transporter-protein.svg ----
+# Source of truth: transporter-protein.svg in this folder.
+# Refresh by running tools/sync_membrane_svgs.py.
+# DO NOT EDIT BY HAND inside the SYNC markers.
+$PROTEIN_INNER_SVG = '<path fill="#5f6c7b" stroke="#2f3743" stroke-width="1.5" d="M 20 2 Q 2 2 2 20 L 2 47 Q 2 57 10 67 Q 2 77 2 87 L 2 114 Q 2 132 20 132 L 54 132 Q 72 132 72 114 L 72 87 Q 72 77 64 67 Q 72 57 72 47 L 72 20 Q 72 2 54 2 Z"/>'
+	. '<line x1="10" y1="67" x2="64" y2="67" stroke="#2f3743" stroke-width="1.5" stroke-dasharray="4,3"/>';
+# ---- END SYNC: transporter-protein.svg ----
 
 # Doublet bilayer geometry. The membrane spans y=70..150 with midline 110.
 # Bottom-leaflet head sits at y=147; top leaflet is its rotate-180 mirror
@@ -133,24 +115,10 @@ sub svg_backdrop {
 	$s .= '<rect x="0" y="125" width="420" height="25" fill="' . $LEAFLET_FILL . '"/>';
 	# v5: doublet-based bilayer in place of the v4 head-row dot loop.
 	$s .= svg_doublet_bilayer();
-	my $d = 'M 193 55 '
-		. 'Q 175 55 175 73 '
-		. 'L 175 100 '
-		. 'Q 175 110 183 120 '
-		. 'Q 175 130 175 140 '
-		. 'L 175 167 '
-		. 'Q 175 185 193 185 '
-		. 'L 227 185 '
-		. 'Q 245 185 245 167 '
-		. 'L 245 140 '
-		. 'Q 245 130 237 120 '
-		. 'Q 245 110 245 100 '
-		. 'L 245 73 '
-		. 'Q 245 55 227 55 Z';
-	$s .= '<path d="' . $d . '" fill="' . $PROTEIN_FILL
-		. '" stroke="#2f3743" stroke-width="1.5"/>';
-	$s .= '<line x1="183" y1="120" x2="237" y2="120"'
-		. ' stroke="#2f3743" stroke-width="1.5" stroke-dasharray="4,3"/>';
+	# Protein body lives in transporter-protein.svg, origin-anchored.
+	# Translate places its (0,0) corner at canvas (173, 53) so the
+	# silhouette spans x=175..245, y=55..185.
+	$s .= '<g transform="translate(173 53)">' . $PROTEIN_INNER_SVG . '</g>';
 	return $s;
 }
 
