@@ -119,6 +119,28 @@
   get label, color, and chemical-class kind; kind drives the token
   shape so ions render as circles, sugars as hexagons, water as a
   small circle, and nucleotides as rounded rectangles.
+- Added three WeBWorK PGML membrane-transporter problems under a new
+  folder [problems/biochemistry-problems/membranes/](../problems/biochemistry-problems/membranes/):
+  [identify_transporter_type.pgml](../problems/biochemistry-problems/membranes/identify_transporter_type.pgml)
+  (Level 1: two-part classify + diagnostic feature),
+  [driving_force_from_gradient.pgml](../problems/biochemistry-problems/membranes/driving_force_from_gradient.pgml)
+  (Level 2: gradient-dot cues, which substrate moves down its gradient /
+  provides the driving force), and
+  [coupled_transport_perturbation.pgml](../problems/biochemistry-problems/membranes/coupled_transport_perturbation.pgml)
+  (Level 3: NCX inhibitor scenarios, stoichiometry and net charge,
+  reverse-mode NCX under ischemia, and a model-based symporter &rarr;
+  antiporter "what would need to change" item). All three PGMLs share an
+  inlined `# ==== BEGIN BLOCK: membrane_transporter_svg (v2) ====` block
+  (same pattern as the fatty-acid lipid files). Named transporters appear
+  in solutions for transfer: GLUT1, AQP1, SGLT1, LacY, NCX, NHE1, ANT.
+  Structured 4-step solution skeleton (Classify / Evidence / Energetic /
+  Real example) used uniformly across all three levels.
+- Added a scratch SVG-renderer testbed at
+  [_test_membrane_svg_block.pgml](../problems/biochemistry-problems/membranes/_test_membrane_svg_block.pgml)
+  (underscore-prefix = dev-only) that renders six deterministic SVGs
+  (uniporter inward/outward, symporter, 3&times;Na / Ca antiporter,
+  antiporter + gradient dots, symporter + gradient dots) so the shared
+  block can be visually verified without a full graded problem attached.
 - Extended [tests/test_webwork_lib.py](../tests/test_webwork_lib.py)
   with eight `smart_title_case` tests covering acronym preservation (tRNA, DNA, pH), leading lowercase
   acronyms, apostrophes (Franklin's), HTML subscripts
@@ -139,6 +161,107 @@
   `webwork_lib.smart_title_case` first since topics are usually a
   lowercase sentence fragment. Existing YAMLs with a `title` key retain
   their value.
+
+### Decisions and Failures
+- Bumped the shared `membrane_transporter_svg` block from v3 to v4 after
+  Round-2 A/B/C/D testing recommended Variant D (mechanism-focused) as the
+  arrow treatment, Variant A's smaller arrowheads (base 3.5 / tip 6) to
+  keep D's multi-element cue from overwhelming, and Variant C's
+  pool-rect + graded-dot clustering for gradient cues. V3's single arrow
+  through the protein still read as a colored pipe; v4's approach -> bind
+  -> release sequence is the first iteration that actually visualizes
+  alternating-access. Concrete v4 changes, propagated verbatim into all
+  three production PGMLs
+  ([identify_transporter_type.pgml](../problems/biochemistry-problems/membranes/identify_transporter_type.pgml),
+  [driving_force_from_gradient.pgml](../problems/biochemistry-problems/membranes/driving_force_from_gradient.pgml),
+  [coupled_transport_perturbation.pgml](../problems/biochemistry-problems/membranes/coupled_transport_perturbation.pgml)):
+  (1) replaced the two-segment through-pipe arrow with an external
+  approach arrow (`svg_approach_arrow_{in,out}`, y=50..55 for in and
+  y=190..185 for out) + a central white-filled binding circle stroked in
+  the substrate color at the waist (`svg_binding_dot`, cy=120, r=6) + a
+  small release blob on the far compartment
+  (`svg_release_blob_{in,out}`, r=7 at cy=195 or cy=45); (2) smaller
+  arrowheads (base 3.5 / tip 6 vs v3's base 5 / tip 8) via Variant A;
+  (3) clustered gradient dots with graded radii (3 -> 4) and opacity
+  (0.75 -> 0.95), and a rounded-rect pool background
+  (`fill-opacity="0.10"`) for clusters of >= 3 dots, tightened
+  territories (left x=18..92, right x=310..384) via Variant C; (4) an
+  optional 6th arg `$stagger` on `svg_solute_label` so callers can add a
+  y-offset (left -2, right +3) when both substrates sit in the top
+  compartment (both-inward symporter), breaking the horizontal lineup of
+  two top labels. Retained V3b's waisted carrier silhouette, dashed
+  waist line, lane constants (LEFT=185, RIGHT=235, CENTER=210),
+  compartment labels, and lane-anchored solute labels (cx-16 for left,
+  cx+16 for right/center). Dropped Variant B's compact-badge
+  stoichiometry placement - the centered v3 placement (anchor=middle,
+  y=24/y=222) tested cleaner than B's anchor=end. Block markers bumped
+  to `# ==== BEGIN BLOCK: membrane_transporter_svg (v4)`. Added
+  side-by-side v3-vs-v4 testbed at
+  [_test_membrane_svg_v4.pgml](../problems/biochemistry-problems/membranes/_test_membrane_svg_v4.pgml)
+  (Level 0, dev-only) that renders uniporter / 3 Na+ + 1 Ca2+
+  antiporter / Na+ + glucose symporter-with-gradients cases in both
+  versions for visual comparison. QC results: renderer-API lint clean
+  at seeds 1, 42, 100, 9999 on all four files; full
+  `_qc_membrane_pgmls.py` sweep (30 seeds per file) reports files with
+  issues = 0; a new regex-based visual QC at
+  [_visual_qc_v4.py](../problems/biochemistry-problems/membranes/_visual_qc_v4.py)
+  confirms zero internal-body arrow segments across all 9 seed/file
+  combinations, binding-circle count == n_substrates, release blobs
+  matching approach directions, stoich text at y=24 (no collision with
+  "extracellular" at y=22), two anchor styles present for multi-solute
+  cases, stagger firing iff both substrates are inward, and pool-rect
+  background firing on count >= 3 gradient clusters.
+- Bumped the shared `membrane_transporter_svg` block from v2 to v3 after
+  reviewer feedback that the carrier silhouette read as a generic box and
+  that multi-solute labels crowded each other at the lane. Built an A/B/C
+  testbed at
+  [_test_membrane_svg_v3_variants.pgml](../problems/biochemistry-problems/membranes/_test_membrane_svg_v3_variants.pgml)
+  comparing three variants (V3a "minimal tweak", V3b "carrier shape",
+  V3c "asymmetric cavity"); V3b won. V3c was rejected because its
+  bottom-face cavity collided with the arrow base. Concrete v3 changes
+  propagated verbatim into all three production PGMLs (Level 1/2/3):
+  (1) waisted `<path>` carrier body pinched to x=183/237 at y=120
+  (~9 px inward from the v2 rect edges) replaces the rounded `<rect>`,
+  so the carrier vs. channel distinction survives at thumbnail size;
+  (2) lane-anchored solute labels (left lane -> text-anchor=end at
+  x=cx-16; right / center lane -> text-anchor=start at x=cx+16) eliminate
+  overlap in symporter and antiporter scenes; (3) stoichiometry label
+  centered above (y=24) or below (y=222) the blob with
+  text-anchor=middle, instead of tucked to the left of the lane;
+  (4) gradient dots parameterized by `(compartment, lane_side)` with
+  lane-proximal ordering so density asymmetry tracks the substrate lane
+  automatically (authors no longer need to hand-swap territories);
+  (5) lane separation widened to 50 px (LEFT=185, RIGHT=235; was 36 px);
+  (6) head-group visual weight reduced (r=2.6, opacity=0.75) so the
+  bilayer texture no longer competes with the carrier body. Block
+  markers bumped to `# ==== BEGIN BLOCK: membrane_transporter_svg (v3)`
+  so a `grep` surfaces any future drift. QC sweep across 30 seeds on
+  all three files reports zero errors / svg_mismatch / double_escape /
+  waist_missing / pore_slot_present / correct_not_in_choices.
+- The `membrane_transporter_svg` block went through two revisions. v1
+  drew a continuous pale pore slot down the protein body; a reviewer
+  flagged that this read as a channel, not a carrier, and undercut the
+  whole classify-by-transport-logic pedagogy. v2 replaces the pore slot
+  with a dashed horizontal waist line at y=120 (a conformational-gate
+  cue), shortens each arrow into two segments interrupted by the waist,
+  pulls substrate blobs closer to the membrane (y=40 / y=200), and
+  renders all `<text>` elements as the last layer so labels sit on top
+  of arrows, blobs, and gradient dots. A dev-only scratch PGML
+  (`_test_membrane_svg_block.pgml`) with six hardcoded configurations
+  was built first and lint-verified via the renderer API; the approved
+  block was then pasted verbatim into all three production PGMLs with
+  matching `BEGIN BLOCK / END BLOCK` markers so drift is greppable.
+- Level 2 (`driving_force_from_gradient.pgml`) initially failed to
+  compile with `syntax error near "draw on "` -- a misleading error
+  message pointing at an innocuous comment. Bisecting suggested the
+  combination of a mid-file `sub plain_label` defined after other setup
+  code plus multi-delimiter packed scenario strings (`@@`, `##`, `~~`,
+  `::` all in one literal) triggered some PG Safe-compartment parser
+  edge case. Resolution: rewrote the scenario selection as a plain
+  if/elsif chain populating bare package variables directly, with no
+  packed strings and no mid-file subs. The specific root cause was not
+  pinned down; if a similar error surfaces again, start by flattening
+  any packed-string scenario encodings before deep-diving the syntax.
 
 ### Behavior or Interface Changes
 - Relabeled the non-canonical distractor in
