@@ -1,5 +1,44 @@
 # Changelog
 
+## 2026-04-30
+
+### Behavior or Interface Changes
+- Renamed files in `topic_classifier/` so library modules vs runnable
+  scripts are obvious from the filename. Library modules now carry the
+  repo's standard `_lib.py` suffix and the script-targeting unassigned
+  finder mirrors its YAML sibling:
+  [topic_classifier/classifier_common.py](../topic_classifier/classifier_common_lib.py) ->
+  `classifier_common_lib.py`,
+  [topic_classifier/csv_handler.py](../topic_classifier/csv_handler_lib.py) ->
+  `csv_handler_lib.py`,
+  [topic_classifier/index_parser.py](../topic_classifier/index_parser_lib.py) ->
+  `index_parser_lib.py`,
+  [topic_classifier/prompt_builder.py](../topic_classifier/prompt_builder_lib.py) ->
+  `prompt_builder_lib.py`,
+  [topic_classifier/script_runner.py](../topic_classifier/script_runner_lib.py) ->
+  `script_runner_lib.py`,
+  [topic_classifier/find_unassigned.py](../topic_classifier/find_unassigned_scripts.py) ->
+  `find_unassigned_scripts.py`. All renames performed via `git mv` to
+  preserve history. Importers updated to use `import X_lib as X` so
+  call sites keep their short aliases unchanged.
+
+### Additions and New Features
+- Added [topic_classifier/find_unassigned_yaml.py](../topic_classifier/find_unassigned_yaml.py),
+  a YAML companion to
+  [topic_classifier/find_unassigned_scripts.py](../topic_classifier/find_unassigned_scripts.py).
+  It enumerates YAML content banks under
+  `problems/multiple_choice_statements/*/*.yml` and
+  `problems/matching_sets/*/*.yml`, marks any whose path appears in
+  the `input` column of a `bbq_control` task CSV as assigned, and
+  reports the unassigned remainder. Subject/topic suggestions are
+  aggregated from `results-*/` classifier dirs whose entries point at
+  `.yml` paths (i.e., `results-yaml*/` runs from
+  [topic_classifier/classify_yaml.py](../topic_classifier/classify_yaml.py)).
+  Reuses `compute_suggestion`, `sort_rows`, `write_report`, and
+  `print_console_table` from `find_unassigned_scripts.py` so the report
+  schema and confidence buckets stay identical between the script
+  and YAML reports.
+
 ## 2026-04-28
 
 ### Additions and New Features

@@ -11,7 +11,7 @@ import os
 import yaml
 
 # local repo modules
-import topic_classifier.index_parser as index_parser
+import topic_classifier.index_parser_lib as index_parser
 
 #============================================
 # Load prompt YAML files at module init

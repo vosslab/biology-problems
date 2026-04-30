@@ -18,11 +18,11 @@ import argparse
 import subprocess
 
 # local repo modules
-import topic_classifier.index_parser as index_parser
-import topic_classifier.csv_handler as csv_handler
-import topic_classifier.script_runner as script_runner
-import topic_classifier.prompt_builder as prompt_builder
-import topic_classifier.classifier_common as common
+import topic_classifier.index_parser_lib as index_parser
+import topic_classifier.csv_handler_lib as csv_handler
+import topic_classifier.script_runner_lib as script_runner
+import topic_classifier.prompt_builder_lib as prompt_builder
+import topic_classifier.classifier_common_lib as common
 
 # Re-exports from common so local references stay readable
 llm = common.llm

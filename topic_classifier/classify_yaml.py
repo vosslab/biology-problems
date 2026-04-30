@@ -22,10 +22,10 @@ import subprocess
 import yaml
 
 # local repo modules
-import topic_classifier.index_parser as index_parser
-import topic_classifier.csv_handler as csv_handler
-import topic_classifier.prompt_builder as prompt_builder
-import topic_classifier.classifier_common as common
+import topic_classifier.index_parser_lib as index_parser
+import topic_classifier.csv_handler_lib as csv_handler
+import topic_classifier.prompt_builder_lib as prompt_builder
+import topic_classifier.classifier_common_lib as common
 
 llm = common.llm
 console = common.console

@@ -18,7 +18,7 @@ import argparse
 import tabulate
 
 # local repo modules
-import script_runner
+import script_runner_lib as script_runner
 import compare_results
 
 

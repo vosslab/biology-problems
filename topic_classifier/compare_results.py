@@ -21,7 +21,7 @@ import rich.console
 import rich.table
 
 # local repo modules
-import topic_classifier.index_parser as index_parser
+import topic_classifier.index_parser_lib as index_parser
 
 console = rich.console.Console(highlight=False)
 
