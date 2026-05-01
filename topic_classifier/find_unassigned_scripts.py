@@ -28,7 +28,7 @@ DEFAULT_TASK_DIR = (
 )
 
 # Script-column sentinels in task CSVs that are not real script paths
-NON_SCRIPT_MARKERS = {"YMATCH", "YMCS"}
+NON_SCRIPT_MARKERS = {"YMATCH", "YMCS", "YMMS"}
 
 # Confidence labels
 CONF_HIGH = "HIGH"

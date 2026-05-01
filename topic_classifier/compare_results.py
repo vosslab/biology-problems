@@ -716,15 +716,31 @@ def _to_bp_root(script: str) -> str:
 	"""Normalize a script path for run_bbq_tasks.py consumption.
 
 	Args:
-		script: path from a results-*/ CSV, typically 'problems/<chapter>-problems/foo.py'
+		script: path from a results-*/ CSV or a bbq_control task CSV.
+			Accepted forms:
+			- 'problems/<chapter>-problems/foo.py' (or with leading './')
+			- '{bp_root}/<chapter>-problems/foo.py'
+			- '{bp_mcs}/<dir>/foo.yml' (alias for multiple_choice_statements)
+			- '{bp_match}/<dir>/foo.yml' (alias for matching_sets)
 
 	Returns:
-		path with leading 'problems/' replaced by '{bp_root}/'
+		path with the leading prefix expanded to '{bp_root}/...'.
+		The two folder aliases bp_mcs and bp_match expand to the
+		canonical 'multiple_choice_statements' and 'matching_sets'
+		subdirectories under '{bp_root}'.
 	"""
 	# Strip leading './' for paths like './problems/foo.py'
 	clean = script.strip()
 	if clean.startswith("./"):
 		clean = clean[2:]
+	# Expand bp_mcs alias to canonical {bp_root}/multiple_choice_statements/
+	if clean.startswith("{bp_mcs}/"):
+		tail = clean[len("{bp_mcs}/"):]
+		return "{bp_root}/multiple_choice_statements/" + tail
+	# Expand bp_match alias to canonical {bp_root}/matching_sets/
+	if clean.startswith("{bp_match}/"):
+		tail = clean[len("{bp_match}/"):]
+		return "{bp_root}/matching_sets/" + tail
 	# Already normalized - return unchanged
 	if clean.startswith("{bp_root}/"):
 		return clean
@@ -733,6 +749,13 @@ def _to_bp_root(script: str) -> str:
 		return "{bp_root}/" + clean[len("problems/"):]
 	# Anything else is unexpected - fail loudly
 	raise ValueError(f"unexpected script path: {script!r}")
+
+
+# Simple asserts for _to_bp_root alias handling
+assert _to_bp_root("problems/foo-problems/x.py") == "{bp_root}/foo-problems/x.py"
+assert _to_bp_root("{bp_root}/foo-problems/x.py") == "{bp_root}/foo-problems/x.py"
+assert _to_bp_root("{bp_mcs}/dir/x.yml") == "{bp_root}/multiple_choice_statements/dir/x.yml"
+assert _to_bp_root("{bp_match}/dir/x.yml") == "{bp_root}/matching_sets/dir/x.yml"
 
 #============================================
 def _subject_filename(subject: str) -> str:

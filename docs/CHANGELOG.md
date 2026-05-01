@@ -39,6 +39,25 @@
   schema and confidence buckets stay identical between the script
   and YAML reports.
 
+### Fixes and Maintenance
+- Taught the topic_classifier unassigned-report tools about the new
+  `bbq_control/bbq_settings.yml` path aliases. Extended
+  `_to_bp_root()` in
+  [topic_classifier/compare_results.py](../topic_classifier/compare_results.py)
+  to expand `{bp_mcs}/...` and `{bp_match}/...` into their canonical
+  `{bp_root}/multiple_choice_statements/...` and
+  `{bp_root}/matching_sets/...` forms, and added `YMMS` to
+  `NON_SCRIPT_MARKERS` in
+  [topic_classifier/find_unassigned_scripts.py](../topic_classifier/find_unassigned_scripts.py).
+  Without this,
+  [topic_classifier/find_unassigned_yaml.py](../topic_classifier/find_unassigned_yaml.py)
+  raised `ValueError` on every new `{bp_mcs}` / `{bp_match}` row in
+  the task CSVs, and assigned YAMLs all looked unassigned because
+  the universe and the assigned set normalized to different prefixes.
+  After the fix the report shows 19 assigned YAMLs (matching the 13
+  `{bp_match}` and 6 `{bp_mcs}` rows in
+  `bbq_control/task_files/*.csv`).
+
 ## 2026-04-28
 
 ### Additions and New Features
