@@ -757,6 +757,36 @@ assert _to_bp_root("{bp_root}/foo-problems/x.py") == "{bp_root}/foo-problems/x.p
 assert _to_bp_root("{bp_mcs}/dir/x.yml") == "{bp_root}/multiple_choice_statements/dir/x.yml"
 assert _to_bp_root("{bp_match}/dir/x.yml") == "{bp_root}/matching_sets/dir/x.yml"
 
+
+#============================================
+def _to_alias(script: str) -> str:
+	"""Inverse of _to_bp_root: prefer {bp_mcs}/{bp_match} aliases.
+
+	Args:
+		script: a path already normalized to {bp_root}/... form (the
+			form produced by _to_bp_root).
+
+	Returns:
+		The same path, but with {bp_root}/multiple_choice_statements/
+		collapsed to {bp_mcs}/ and {bp_root}/matching_sets/ collapsed
+		to {bp_match}/. Any other {bp_root}/... path is returned
+		unchanged. This produces the form expected by bbq_control
+		task CSVs so values can be copy-pasted directly.
+	"""
+	mcs_prefix = "{bp_root}/multiple_choice_statements/"
+	match_prefix = "{bp_root}/matching_sets/"
+	if script.startswith(mcs_prefix):
+		return "{bp_mcs}/" + script[len(mcs_prefix):]
+	if script.startswith(match_prefix):
+		return "{bp_match}/" + script[len(match_prefix):]
+	return script
+
+
+# Simple asserts for _to_alias
+assert _to_alias("{bp_root}/multiple_choice_statements/x/y.yml") == "{bp_mcs}/x/y.yml"
+assert _to_alias("{bp_root}/matching_sets/x/y.yml") == "{bp_match}/x/y.yml"
+assert _to_alias("{bp_root}/genetics-problems/foo.py") == "{bp_root}/genetics-problems/foo.py"
+
 #============================================
 def _subject_filename(subject: str) -> str:
 	"""Build a deterministic per-subject CSV filename.

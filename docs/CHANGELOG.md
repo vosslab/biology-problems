@@ -58,6 +58,18 @@
   `{bp_match}` and 6 `{bp_mcs}` rows in
   `bbq_control/task_files/*.csv`).
 
+### Behavior or Interface Changes
+- `find_unassigned_*` now emit alias-form paths (`{bp_mcs}/...`,
+  `{bp_match}/...`) in both the console table and the report CSV's
+  `script` column, so the values can be pasted directly into
+  `bbq_control` task CSVs. Added `_to_alias()` in
+  [topic_classifier/compare_results.py](../topic_classifier/compare_results.py)
+  as the inverse of `_to_bp_root()`; `write_report` and
+  `short_script` in
+  [topic_classifier/find_unassigned_scripts.py](../topic_classifier/find_unassigned_scripts.py)
+  use it before display/serialization. `{bp_root}/<chapter>-problems/`
+  paths are unchanged because there is no shorter alias for them.
+
 ## 2026-04-28
 
 ### Additions and New Features

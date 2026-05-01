@@ -292,7 +292,12 @@ def sort_rows(rows: list) -> list:
 
 #============================================
 def write_report(rows: list, output_path: str) -> None:
-	"""Write the unassigned report CSV."""
+	"""Write the unassigned report CSV.
+
+	The 'script' column is rewritten to the {bp_mcs}/{bp_match}/{bp_root}
+	alias form expected by bbq_control task CSVs so values are
+	copy-paste ready.
+	"""
 	columns = [
 		"script",
 		"top_subject",
@@ -309,16 +314,27 @@ def write_report(rows: list, output_path: str) -> None:
 		writer = csv.DictWriter(handle, fieldnames=columns)
 		writer.writeheader()
 		for row in rows:
-			writer.writerow(row)
+			out_row = dict(row)
+			# Collapse {bp_root}/multiple_choice_statements/ and
+			# {bp_root}/matching_sets/ into their short aliases.
+			out_row["script"] = compare_results._to_alias(row["script"])
+			writer.writerow(out_row)
 
 
 #============================================
 def short_script(script: str) -> str:
-	"""Drop '{bp_root}/' and '-problems/' noise for display."""
-	clean = script
+	"""Format a normalized script path for compact console display.
+
+	Collapses {bp_root}/multiple_choice_statements/ to {bp_mcs}/ and
+	{bp_root}/matching_sets/ to {bp_match}/ so the console table
+	matches the alias form used in bbq_control task CSVs. For other
+	{bp_root}/ paths, drops the '{bp_root}/' prefix and the
+	'-problems/' subdirectory marker for readability.
+	"""
+	clean = compare_results._to_alias(script)
 	if clean.startswith("{bp_root}/"):
 		clean = clean[len("{bp_root}/"):]
-	clean = clean.replace("-problems/", "/")
+		clean = clean.replace("-problems/", "/")
 	return clean
 
 
