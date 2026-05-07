@@ -13,6 +13,7 @@ Use this for scripts like:
 - `match_amino_acid_structures.py`
 - `polypeptide_mc_sequence.py`
 - `polypeptide_fib_sequence.py`
+- `tetrapeptide_net_charge.py`
 
 These are **Blackboard** generators, not WeBWorK PGML.
 
@@ -26,6 +27,7 @@ Primary bptools generators:
 - `match_amino_acid_structures.py`: structure-to-name matching (MAT).
 - `polypeptide_mc_sequence.py`: peptide sequence MC with RDKit rendering.
 - `polypeptide_fib_sequence.py`: peptide sequence FIB with RDKit rendering.
+- `tetrapeptide_net_charge.py`: net-charge MC at random pH; structure rendered in fully neutral form so the drawing does not reveal the answer.
 
 Utility and one-off scripts (not bptools outputs):
 

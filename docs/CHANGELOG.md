@@ -1,5 +1,47 @@
 # Changelog
 
+## 2026-05-07
+
+### Additions and New Features
+- Added [problems/biochemistry-problems/PUBCHEM/PEPTIDES/tetrapeptide_net_charge.pgml](../problems/biochemistry-problems/PUBCHEM/PEPTIDES/tetrapeptide_net_charge.pgml),
+  a PGML/WeBWorK question that asks for the approximate net charge of a
+  random tetrapeptide at a random pH (1.0-13.0, by 0.1). Adapts the
+  `polypeptide_mc_sequence-easy.pgml` SMILES builder and RDKit canvas
+  pattern, but draws the peptide in fully neutral form
+  (-COOH / -NH2 / -SH / -OH / neutral imidazole / neutral guanidine) so
+  the structure does not give away the answer; students must compute the
+  charge from the printed pKa table. The random sequence is constrained
+  to contain at least 2 ionizable side chains
+  (`K, R, H, D, E, C, Y`) via `pick_tetrapeptide_with_two_ionizable`,
+  with a deterministic injection fallback if the random loop expires.
+  Five radio choices (A-E, scantron friendly): correct + 4 distractors
+  built procedurally from a uniformly chosen target sorted index
+  (0..4). Distractors fill in `target_idx` consecutive offsets below
+  correct and `4 - target_idx` above, so the correct answer's sorted
+  position is uniform across all five buttons; display order is then
+  Fisher-Yates shuffled. The pKa list rendered to the student is
+  filtered to only the groups present in the drawn peptide
+  (alpha-amino and alpha-carboxyl always shown; side chains only when
+  their single-letter code appears in the sequence) so the list does
+  not cue residues that are not there. Solution prints a per-group
+  pKa-vs-pH contribution list.
+- Added [problems/biochemistry-problems/PUBCHEM/PEPTIDES/tetrapeptide_net_charge.py](../problems/biochemistry-problems/PUBCHEM/PEPTIDES/tetrapeptide_net_charge.py),
+  a bptools/Blackboard companion to the PGML version. Same neutral
+  SMILES backbone (`N[C@@H]...(C(=O)O)`), same neutral side chains,
+  same `>=2 ionizable residues` constraint, same target-sorted-index
+  distractor design, the same five-choice scantron format, and the same
+  per-peptide-filtered pKa list. Renders through
+  `aminoacidlib.generate_html_for_molecule`, which embeds an RDKit
+  canvas plus the split-comment JS pattern
+  (`function/* */getPeptideBonds`) so Blackboard's HTML/JS sanitizer
+  cannot rewrite the rendering script. Disables bptools' anti-cheat
+  HTML wrappers (`allow_insert_hidden_terms`, `allow_no_click_div`,
+  `use_nocopy_script`) so the canvas survives. Verified against 30
+  generated questions: zero charged-atom tokens
+  (`[NH3+]`, `[O-]`, ...) in any SMILES, all sequences contain
+  >=2 ionizable side chains, and the labeled correct answer matches
+  the independently computed net charge for every question.
+
 ## 2026-04-30
 
 ### Behavior or Interface Changes

@@ -1,0 +1,539 @@
+## TITLE('Biochemistry: Net charge of a tetrapeptide at a given pH')
+## DESCRIPTION
+## Compute the approximate net charge of a random tetrapeptide at a random pH
+## using a provided pKa table. The structure is shown in fully neutral form
+## (-COOH, -NH2, -SH, -OH, neutral imidazole, neutral guanidine) so the
+## drawing does not give the answer away.
+## ENDDESCRIPTION
+## KEYWORDS('tetrapeptide','net charge','pKa','isoelectric','amino acids','ionization')
+## DBsubject('Biochemistry')
+## DBchapter('Macromolecules')
+## DBsection('Amino Acids')
+## Level(3)
+## Date('2026-05-07')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+# ----------------------------
+# 1) Preamble
+# ----------------------------
+loadMacros(
+	'PGstandard.pl',
+	'PGML.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl'
+);
+$showPartialCorrectAnswers = 0;
+
+# ----------------------------
+# 2) Setup
+# ----------------------------
+
+# ----------------------------
+# 2a) Data
+# ----------------------------
+
+# 19 standard amino acids; proline excluded because the imino N breaks the
+# generic peptide-bond template used below.
+@amino_acid_letters = split('', 'ACDEFGHIKLMNQRSTVWY');
+
+# Letters whose side chains have a pKa within the 1-13 range we sweep over.
+@ionizable_letters = ('K', 'R', 'H', 'D', 'E', 'C', 'Y');
+
+%amino_acid_mapping = (
+	'A' => 'Ala',
+	'C' => 'Cys',
+	'D' => 'Asp',
+	'E' => 'Glu',
+	'F' => 'Phe',
+	'G' => 'Gly',
+	'H' => 'His',
+	'I' => 'Ile',
+	'K' => 'Lys',
+	'L' => 'Leu',
+	'M' => 'Met',
+	'N' => 'Asn',
+	'Q' => 'Gln',
+	'R' => 'Arg',
+	'S' => 'Ser',
+	'T' => 'Thr',
+	'V' => 'Val',
+	'W' => 'Trp',
+	'Y' => 'Tyr'
+);
+
+# Side chains in fully NEUTRAL form so the rendered structure does not reveal
+# the charge state. Acidic groups carry COOH/SH/OH (no negative charge), and
+# basic groups carry NH/NH2/neutral guanidine (no positive charge).
+%neutral_side_chains = (
+	'Gly' => '([H])',
+	'Ala' => '(C)',
+	'Ser' => '(CO)',
+	'Thr' => '([C@H](O)C)',
+	'Asn' => '(CC(=O)N)',
+	'Gln' => '(CCC(=O)N)',
+	'Asp' => '(CC(=O)O)',
+	'Glu' => '(CCC(=O)O)',
+	'Lys' => '(CCCCN)',
+	'Arg' => '(CCCNC(=N)N)',
+	'His' => '(CC1=C[NH]C=N1)',
+	'Val' => '(C(C)C)',
+	'Leu' => '(CC(C)C)',
+	'Ile' => '([C@H](CC)C)',
+	'Met' => '(CCSC)',
+	'Phe' => '(Cc1ccccc1)',
+	'Tyr' => '(Cc1ccc(O)cc1)',
+	'Trp' => '(CC1=CC=C2C(=C1)C(=CN2))',
+	'Cys' => '(CS)'
+);
+
+# pKa table: alpha-amino, alpha-carboxyl, and the seven ionizable side chains.
+%pKa_table = (
+	'Nterm' => 9.0,
+	'Cterm' => 2.0,
+	'K'     => 10.5,
+	'R'     => 12.5,
+	'H'     => 6.0,
+	'D'     => 3.7,
+	'E'     => 4.1,
+	'C'     => 8.3,
+	'Y'     => 10.1
+);
+
+# Charge sign each group adopts when in its charged state.
+# Basic groups (+1 when protonated, i.e. when pH < pKa).
+# Acidic groups (-1 when deprotonated, i.e. when pH > pKa).
+%group_kind = (
+	'Nterm' => 'basic',
+	'Cterm' => 'acidic',
+	'K'     => 'basic',
+	'R'     => 'basic',
+	'H'     => 'basic',
+	'D'     => 'acidic',
+	'E'     => 'acidic',
+	'C'     => 'acidic',
+	'Y'     => 'acidic'
+);
+
+%group_label = (
+	'Nterm' => 'alpha-amino group (N-terminus)',
+	'Cterm' => 'alpha-carboxyl group (C-terminus)',
+	'K'     => 'Lys side chain',
+	'R'     => 'Arg side chain',
+	'H'     => 'His side chain',
+	'D'     => 'Asp side chain',
+	'E'     => 'Glu side chain',
+	'C'     => 'Cys side chain',
+	'Y'     => 'Tyr side chain'
+);
+
+# ----------------------------
+# 2b) Helpers
+# ----------------------------
+
+sub escape_attr {
+	my ($text) = @_;
+	$text =~ s/&/&amp;/g;
+	$text =~ s/"/&quot;/g;
+	$text =~ s/</&lt;/g;
+	$text =~ s/>/&gt;/g;
+	return $text;
+}
+
+# Fisher-Yates shuffle of a copy of @letters, returns the first $length
+# letters joined as a single string. Does NOT guarantee any ionizable
+# residues; pick_tetrapeptide_with_two_ionizable wraps this with a
+# constraint check.
+sub random_sequence {
+	my ($rng, $length, @letters) = @_;
+	for (my $i = $#letters; $i > 0; $i--) {
+		my $j = $rng->random(0, $i, 1);
+		@letters[$i, $j] = @letters[$j, $i];
+	}
+	my @seq = @letters[0 .. $length - 1];
+	return join('', @seq);
+}
+
+# Count residues whose single-letter code appears in @ionizable_letters.
+sub count_ionizable {
+	my ($seq) = @_;
+	my %ion = map { $_ => 1 } @ionizable_letters;
+	my @letters = split('', uc($seq));
+	my $count = 0;
+	for my $L (@letters) {
+		$count++ if $ion{$L};
+	}
+	return $count;
+}
+
+# Force "at least 2 ionizable residues" guarantee. Try random draws first,
+# then deterministically inject ionizable letters at fresh positions if the
+# random loop expires. Avoids duplicating an already-present ionizable
+# letter so the structure does not collapse.
+sub pick_tetrapeptide_with_two_ionizable {
+	my ($rng) = @_;
+	my $seq;
+	for (my $attempt = 0; $attempt < 50; $attempt++) {
+		$seq = random_sequence($rng, 4, @amino_acid_letters);
+		return $seq if count_ionizable($seq) >= 2;
+	}
+	# Fallback: inject ionizable letters until count >= 2.
+	my @letters = split('', $seq);
+	my %present = map { $_ => 1 } @letters;
+	while (count_ionizable(join('', @letters)) < 2) {
+		# Pick a random position in the current sequence.
+		my $pos = $rng->random(0, 3, 1);
+		# Pick a random ionizable letter not already in the sequence.
+		my @candidates = grep { !$present{$_} } @ionizable_letters;
+		# If everything we want is already present (very rare), allow dups.
+		@candidates = @ionizable_letters if scalar(@candidates) == 0;
+		my $idx = $rng->random(0, $#candidates, 1);
+		my $new_letter = $candidates[$idx];
+		# Remove old letter from "present" if it was unique; add new letter.
+		delete $present{$letters[$pos]};
+		$letters[$pos] = $new_letter;
+		$present{$new_letter} = 1;
+	}
+	return join('', @letters);
+}
+
+# Neutral peptide backbone: free amine N-terminus, free COOH C-terminus.
+sub make_neutral_generic_polypeptide {
+	my ($length) = @_;
+	my $amino_terminal_end = 'N[C@@H]';
+	my $carboxyl_terminal_end = '(C(=O)O)';
+	my $peptide_bond = '(C(=O)N[C@@H]';
+	my $peptide_chain = $amino_terminal_end;
+	for (my $i = 1; $i <= $length; $i++) {
+		$peptide_chain .= 'R' . $i;
+		if ($i < $length) {
+			$peptide_chain .= $peptide_bond;
+		}
+	}
+	$peptide_chain .= $carboxyl_terminal_end;
+	for (my $i = 1; $i <= $length - 1; $i++) {
+		$peptide_chain .= ')';
+	}
+	return $peptide_chain;
+}
+
+# Substitute Ri tokens with the neutral side-chain SMILES for each residue.
+# Reverse position order so R10 is replaced before R1 (still correct here
+# at length 4, but the pattern guards against future extensions).
+sub make_neutral_polypeptide_smiles_from_sequence {
+	my ($seq) = @_;
+	my $polypeptide_smiles = make_neutral_generic_polypeptide(length($seq));
+	my @letters = split('', uc($seq));
+	for (my $i = $#letters; $i >= 0; $i--) {
+		my $letter = $letters[$i];
+		my $three_letter = $amino_acid_mapping{$letter};
+		my $side_chain = $neutral_side_chains{$three_letter};
+		my $idx = $i + 1;
+		$polypeptide_smiles =~ s/R$idx/$side_chain/g;
+	}
+	return $polypeptide_smiles;
+}
+
+# Convert single-letter sequence to "Lys-Glu-His-Ala".
+sub sequence_to_three_letter {
+	my ($seq) = @_;
+	my @letters = split('', uc($seq));
+	my @three = map { $amino_acid_mapping{$_} } @letters;
+	return join('-', @three);
+}
+
+# Net charge using simple "fully protonated/deprotonated above/below pKa"
+# rule. Returns an integer.
+sub compute_net_charge {
+	my ($seq, $pH) = @_;
+	my $charge = 0;
+	# Termini are always present.
+	$charge += 1 if $pH < $pKa_table{'Nterm'};
+	$charge -= 1 if $pH > $pKa_table{'Cterm'};
+	my @letters = split('', uc($seq));
+	for my $L (@letters) {
+		next unless defined $pKa_table{$L};
+		my $kind = $group_kind{$L};
+		my $pKa = $pKa_table{$L};
+		if ($kind eq 'basic') {
+			$charge += 1 if $pH < $pKa;
+		} else {
+			$charge -= 1 if $pH > $pKa;
+		}
+	}
+	return $charge;
+}
+
+# Build a per-group contribution list (HTML <ul>) for the solution.
+sub build_contributions_html {
+	my ($seq, $pH) = @_;
+	my @lines;
+	my @groups = ('Nterm');
+	my @letters = split('', uc($seq));
+	for my $L (@letters) {
+		push @groups, $L if defined $pKa_table{$L};
+	}
+	push @groups, 'Cterm';
+	for my $G (@groups) {
+		my $pKa = $pKa_table{$G};
+		my $kind = $group_kind{$G};
+		my $contribution = 0;
+		my $reason;
+		if ($kind eq 'basic') {
+			if ($pH < $pKa) {
+				$contribution = 1;
+				$reason = 'pH ' . sprintf('%.1f', $pH) . ' &lt; pKa ' . $pKa . ', protonated';
+			} else {
+				$reason = 'pH ' . sprintf('%.1f', $pH) . ' &gt; pKa ' . $pKa . ', deprotonated';
+			}
+		} else {
+			if ($pH > $pKa) {
+				$contribution = -1;
+				$reason = 'pH ' . sprintf('%.1f', $pH) . ' &gt; pKa ' . $pKa . ', deprotonated';
+			} else {
+				$reason = 'pH ' . sprintf('%.1f', $pH) . ' &lt; pKa ' . $pKa . ', protonated';
+			}
+		}
+		my $sign;
+		if ($contribution > 0) {
+			$sign = '+1';
+		} elsif ($contribution < 0) {
+			$sign = '-1';
+		} else {
+			$sign = '0';
+		}
+		my $line = '<li><b>' . $group_label{$G} . '</b> (pKa ' . $pKa . '): '
+			. $reason . ' &rarr; <code>' . $sign . '</code></li>';
+		push @lines, $line;
+	}
+	my $html = '<ul>' . join('', @lines) . '</ul>';
+	return $html;
+}
+
+sub format_signed_charge {
+	my ($n) = @_;
+	return '0' if $n == 0;
+	return sprintf('%+d', $n);
+}
+
+# ----------------------------
+# 2c) Randomization
+# ----------------------------
+
+my $local_random = PGrandom->new();
+$local_random->srand($problemSeed);
+
+$correct_sequence = pick_tetrapeptide_with_two_ionizable($local_random);
+$three_letter_seq = sequence_to_three_letter($correct_sequence);
+
+# pH sweep from 1.0 to 13.0 in 0.1 steps. Use integer draw plus divide so
+# the value is exact to one decimal.
+my $pH_int = $local_random->random(10, 130, 1);
+$pH_value = $pH_int / 10.0;
+$pH_str = sprintf('%.1f', $pH_value);
+
+$correct_charge = compute_net_charge($correct_sequence, $pH_value);
+$correct_charge_str = format_signed_charge($correct_charge);
+
+# ----------------------------
+# 2d) Choices: correct + 4 distractors = 5 buttons (A-E, scantron friendly).
+# Pick a target sorted index uniformly in 0..4 and build distractors as
+# consecutive integer offsets from correct: $target_idx values BELOW correct
+# and (4 - $target_idx) values ABOVE. The correct answer's sorted position
+# is then uniform across all 5 buttons, so no "always pick X" rule beats
+# random. Display order is shuffled below.
+# ----------------------------
+
+my $target_idx = $local_random->random(0, 4, 1);
+my @kept_offsets;
+# Distractors strictly below correct: offsets -target_idx .. -1.
+for (my $i = $target_idx; $i >= 1; $i--) {
+	push @kept_offsets, -$i;
+}
+# Distractors strictly above correct: offsets +1 .. +(4 - target_idx).
+for (my $i = 1; $i <= 4 - $target_idx; $i++) {
+	push @kept_offsets, $i;
+}
+
+# Build full charge pool: correct + 4 distractors = 5 choices total.
+my @charge_pool = ($correct_charge);
+for my $off (@kept_offsets) {
+	push @charge_pool, ($correct_charge + $off);
+}
+# Shuffle (manual; sort is trapped in PG safe compartment).
+for (my $i = $#charge_pool; $i > 0; $i--) {
+	my $j = $local_random->random(0, $i, 1);
+	@charge_pool[$i, $j] = @charge_pool[$j, $i];
+}
+@choice_strings = map { format_signed_charge($_) } @charge_pool;
+
+$rb = RadioButtons(
+	[@choice_strings],
+	$correct_charge_str,
+	labels        => 'ABC',
+	displayLabels => 1,
+	separator     => '<div style="margin-bottom: 0.5em;"></div>',
+	randomize     => 0,
+	uncheckable   => 0,
+);
+
+# ----------------------------
+# 2e) SMILES + canvas
+# ----------------------------
+
+$smiles = make_neutral_polypeptide_smiles_from_sequence($correct_sequence);
+$smiles_attr = escape_attr($smiles);
+$canvas_id = 'tetrapeptide_canvas_' . $local_random->random(10000, 99999, 1);
+$canvas_html = '<canvas id="' . $canvas_id . '" width="540" height="280" data-smiles="' . $smiles_attr . '"></canvas>';
+
+# Solution detail block.
+$contributions_html = build_contributions_html($correct_sequence, $pH_value);
+
+# Sequence shown in monospace bold so students can read it cleanly.
+$three_letter_html = '<span style="font-family: monospace; font-weight: bold;">' . $three_letter_seq . '</span>';
+$pH_emph = '<span style="font-weight: bold;">' . $pH_str . '</span>';
+$correct_charge_html = '<b>' . $correct_charge_str . '</b>';
+$net_charge_emph = '<b>net charge</b>';
+
+# Only list pKa values for the groups actually present in this peptide.
+# Termini are always included; side chains only if their letter appears in
+# the drawn sequence.
+@pKa_html_lines = (
+	'<li>alpha-amino group (N-terminus): 9.0</li>',
+	'<li>alpha-carboxyl group (C-terminus): 2.0</li>',
+);
+%seen_letters = map { $_ => 1 } split('', uc($correct_sequence));
+@side_chain_order = ('K', 'R', 'H', 'D', 'E', 'C', 'Y');
+for my $L (@side_chain_order) {
+	next unless $seen_letters{$L};
+	next unless defined $pKa_table{$L};
+	my $three = $amino_acid_mapping{$L};
+	my $pKa = $pKa_table{$L};
+	push @pKa_html_lines, '<li>' . $three . ' side chain: ' . $pKa . '</li>';
+}
+$pKa_html = '<ul>' . join('', @pKa_html_lines) . '</ul>';
+
+# ----------------------------
+# 2f) Header (RDKit)
+# ----------------------------
+
+HEADER_TEXT(<<'END_HEADER');
+<script src="https://unpkg.com/@rdkit/rdkit/dist/RDKit_minimal.js"></script>
+<script>
+let RDKitReady = null;
+let RDKitModule = null;
+function getRDKit() {
+	if (!RDKitReady) {
+		RDKitReady = initRDKitModule();
+	}
+	return RDKitReady;
+}
+function getPeptideBonds(RDKit, mol) {
+	let peptideBond = "CC(=O)NC";
+	if (!RDKit || !RDKit.get_qmol || !mol) {
+		return [];
+	}
+	let qmol = null;
+	try {
+		qmol = RDKit.get_qmol(peptideBond);
+	} catch (error) {
+		return [];
+	}
+	if (!qmol) {
+		return [];
+	}
+	let matches = [];
+	try {
+		matches = JSON.parse(mol.get_substruct_matches(qmol));
+	} catch (error) {
+		if (qmol && qmol.delete) {
+			qmol.delete();
+		}
+		return [];
+	}
+	let aggregatedBonds = [];
+	for (let i = 0; i < matches.length; i++) {
+		let match = matches[i];
+		if (Array.isArray(match["bonds"])) {
+			aggregatedBonds.push(match["bonds"].slice(-2)[0]);
+		}
+	}
+	if (qmol && qmol.delete) {
+		qmol.delete();
+	}
+	return aggregatedBonds;
+}
+function initMoleculeCanvases() {
+	getRDKit().then(function(RDKit) {
+		RDKitModule = RDKit;
+		const canvases = document.querySelectorAll('canvas[data-smiles]');
+		canvases.forEach((canvas) => {
+			const smiles = canvas.dataset.smiles;
+			if (!smiles) {
+				return;
+			}
+			const mol = RDKit.get_mol(smiles);
+			const mdetails = {"explicitMethyl": true};
+			mdetails["bonds"] = getPeptideBonds(RDKit, mol);
+			mdetails["atoms"] = [0];
+			mdetails["highlightColour"] = [0, 1, 0];
+			if (canvas && mol) {
+				mol.draw_to_canvas_with_highlights(canvas, JSON.stringify(mdetails));
+			}
+		});
+	}).catch(error => {
+		console.error('Error initializing RDKit:', error);
+	});
+}
+if (document.readyState === 'loading') {
+	document.addEventListener('DOMContentLoaded', initMoleculeCanvases);
+} else {
+	initMoleculeCanvases();
+}
+</script>
+END_HEADER
+
+# ----------------------------
+# 3) Statement (PGML)
+# ----------------------------
+
+BEGIN_PGML
+A tetrapeptide is shown below in its fully neutral (uncharged) drawing form.
+Using the approximate pKa values listed, estimate the [$net_charge_emph]* of
+this peptide at pH [$pH_emph]*.
+
+[$canvas_html]*
+
+Sequence (N to C): [$three_letter_html]*
+
+Approximate pKa values for the groups in this peptide:
+
+[$pKa_html]*
+
+Net charge at pH [$pH_str]:
+
+[_]{$rb}
+END_PGML
+
+# ----------------------------
+# 4) Solution
+# ----------------------------
+
+BEGIN_PGML_SOLUTION
+At pH [$pH_str], evaluate each ionizable group. A basic group carries +1 when
+pH is below its pKa; an acidic group carries -1 when pH is above its pKa.
+
+[$contributions_html]*
+
+Summing the contributions gives a net charge of [$correct_charge_html]*.
+END_PGML_SOLUTION
+
+ENDDOCUMENT();

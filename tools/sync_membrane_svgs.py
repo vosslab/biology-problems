@@ -24,7 +24,6 @@ files; the PGMLs only position the inlined content.
 
 import os
 import re
-import sys
 import argparse
 import subprocess
 
