@@ -20,6 +20,34 @@ npx playwright install
 `npm init -y` and just run `npm install` (to pick up existing deps) followed
 by `npx playwright install`.
 
+### Quick install script
+
+Repos propagated from the starter template ship `devel/setup_playwright.sh`,
+which automates the install end-to-end (chromium only, idempotent):
+
+```bash
+bash devel/setup_playwright.sh
+```
+
+The script installs `@playwright/test` (the test runner) rather than the bare
+`playwright` library. Use it when the repo's tests rely on the test-runner
+fixtures and assertions; use the manual `npm install --save-dev playwright`
+above when the scripts use the library directly (see [Packages](#packages)).
+
+### Shared helper: `repo_root.mjs`
+
+`tests/playwright/repo_root.mjs` is centrally propagated by
+`propagate_style_guides.py`. Do not edit it per-repo. It exports `REPO_ROOT`
+resolved via `git rev-parse --show-toplevel`, so test scripts can compute
+absolute paths without brittle relative-path math:
+
+```javascript
+import { REPO_ROOT } from "./repo_root.mjs";
+import path from "node:path";
+
+const pagePath = path.join(REPO_ROOT, "index.html");
+```
+
 ## Key rule: scripts must run from the project root
 
 Node resolves `import 'playwright'` by searching `node_modules/` starting from the
@@ -37,10 +65,24 @@ node /tmp/_test_game_ui.mjs
 
 ```bash
 cd /Users/vosslab/nsh/cell-culture-game-claude
-node tests/test_game_ui.mjs
+node tests/playwright/test_game_ui.mjs
 ```
 
-Put test scripts in `tests/` at the repo root, not in `/tmp/`.
+Put Playwright scripts in `tests/playwright/`.
+
+## Script location
+
+Store Playwright scripts in `tests/playwright/` with an `.mjs` extension, for example
+`tests/playwright/test_game_ui.mjs`. Helpers (`tests/playwright/helpers.mjs`) and fixtures
+(`tests/playwright/fixtures/`) live alongside.
+
+Pytest only collects `test_*.py` files and actively excludes `tests/playwright/`
+via `collect_ignore = ["e2e", "playwright"]` in `tests/conftest.py`, so the extension
+and subfolder together ensure Playwright scripts stay outside the fast pytest lane.
+
+## Optional: full-path Playwright walkthroughs
+
+Some repos group complete Playwright walkthroughs (multi-step user journeys, recovery scenarios, full protocol runs) in `tests/playwright/e2e/`. This is an **optional sub-grouping**: use it only when you have multiple full-path walkthroughs worth grouping together. If you have just one or two, keep them flat in `tests/playwright/`. The same E2E exclusion applies: both `tests/playwright/` and its children are excluded from pytest collection.
 
 ## Packages
 
@@ -83,7 +125,7 @@ await browser.close();
 Run with:
 
 ```bash
-node tests/my_test.mjs
+node tests/playwright/my_test.mjs
 ```
 
 ## Common patterns
@@ -145,8 +187,9 @@ Should show `playwright@x.x.x` under the project.
 
 ## File conventions
 
-- Put Playwright scripts in `tests/` at the repo root. Mixing with pytest files
-  (`test_*.py`) is fine; see [docs/REPO_STYLE.md](docs/REPO_STYLE.md).
-- Use `.mjs` extension for ES module scripts (e.g., `tests/test_game_ui.mjs`).
+- Put Playwright scripts in `tests/playwright/` at the repo root.
+- `tests/playwright/` is tool-named: it groups all browser-driven tests regardless of scope (smoke, layout, regression, walkthroughs). Future browser tools (Cypress, Puppeteer) would each get their own tool-named folder; do NOT lump them under `tests/playwright/`.
+- Filenames inside `tests/playwright/` are unconstrained: `test_*.mjs` for tests, `helpers.mjs` for shared utilities, `build_*.mjs` for bootstrap scripts, `*_walkthrough.mjs` for walkthroughs all coexist legitimately. The only restriction enforced by `tests/test_test_naming_conventions.py` is that any file with a Playwright import must live under `tests/playwright/`.
+- Use `.mjs` extension for ES module scripts (e.g., `tests/playwright/test_game_ui.mjs`).
 - Put screenshots in `test-results/` (gitignored).
-- `devel/` is reserved for one-off developer tools, not bulk test files.
+- Note: `tests/conftest.py` declares `collect_ignore = ["e2e", "playwright"]` so pytest never collects anything in this tree, regardless of name.

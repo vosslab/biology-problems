@@ -26,6 +26,7 @@ Language Model guide to Neil TypeScript programming
 * Avoid broad `try/catch` blocks when possible. I find they often hide bugs.
 * Use `try/catch` rarely, and keep the scope small.
 * Throw `Error` objects rather than returning silent failure values.
+* Apply "fix the design, not the symptom" here too: do not paper over a misbehaving caller with a swallowed error or a silent default. See [Design philosophy](REPO_STYLE.md#core-philosophies).
 * Return statements should be simple and should not build large objects or long strings inline. Store computed values first, then return the variable.
 * Add comments within the code to describe what different lines are doing, especially for complex lines.
 * Please only use ASCII characters in the script. If special characters are needed in output, escape them when appropriate.

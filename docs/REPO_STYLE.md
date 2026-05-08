@@ -2,12 +2,32 @@
 
 Repo-wide conventions for this project and related repos.
 
+## Core philosophies
+
+Five principles guide work in this repo. Cite them by name when making judgment calls. This file is the canonical home for all five; sibling docs and `AGENTS.md` should cross-reference, not restate.
+
+- **Long-term over short-term.** Accept a small cost now to avoid larger costs later. Prefer the durable fix over the quick patch, even when the durable fix takes more effort today. Concrete examples: deleting a fragile pytest instead of rewriting it ([PYTEST_STYLE.md](PYTEST_STYLE.md)); accepting a loud failure on a missing dict key instead of `dict.get(key, default)` ([PYTHON_STYLE.md](PYTHON_STYLE.md)).
+- **Fix the design, not the symptom.** When something behaves wrong, fix the design that allowed the problem. Do not add fallbacks, special cases, or broad try/except blocks just to hide the symptom. Concrete examples: the no-try/except rule, the no-defensive-defaults rule, and the minimal `__init__.py` rule, all in [PYTHON_STYLE.md](PYTHON_STYLE.md).
+- **Fresh subagent per task.** Give each independent task to a new subagent with a self-contained prompt. Reusing a subagent across tasks carries stale context, encourages drift, and weakens independent judgment. The cost of a new dispatch is small; the cost of a confused reused agent is large.
+- **Atomic task decomposition.** Break hard problems into the smallest independently completable tasks. Each task should have one owner, one clear outcome, and one verification step. Atomic tasks pair cleanly with the fresh-subagent rule (one atomic task = one fresh dispatch).
+- **Finish the obvious.** Continue while the next safe step is defined by the plan, implied by the current task, or required to verify the work. Do not stop or ask just because a substep, milestone, patch, or atomic-task boundary ended. Obvious follow-on work is part of the task, not a bonus: fixing the import, updating `docs/CHANGELOG.md`, rerunning the failed check, applying the same verified edit to the next listed file, or starting the next defined atomic task. Stop only at a real blocker: missing information that cannot be inferred from the repo or plan, a risky or irreversible action, or work that changes the user's requested outcome. When one option is clearly best, take it, document the assumption, and continue.
+
 ## Repository structure
 - Prefer small, single-purpose scripts at the repo root.
 - Create topic folders only when a collection needs grouping.
 - Avoid deep nesting; keep paths short.
 - Keep `README.md` and `AGENTS.md` at the repo root.
 - Determine REPO_ROOT with `git rev-parse --show-toplevel`, not by deriving paths from the current working directory.
+
+## AGENTS.md files
+
+Keep `AGENTS.md` files concise and operational. They should usually be around
+100-150 lines and focus on specific tasks, workflows, and constraints.
+Do not use `AGENTS.md` for long philosophical discussions or duplicated style
+guidance. Put canonical explanations in the appropriate `docs/*.md` file, then
+link to that file from `AGENTS.md`.
+Concise `AGENTS.md` files help coding agents perform better because the
+instructions are easier to scan, prioritize, and follow.
 
 ## Naming
 - Use SCREAMING_SNAKE_CASE for Markdown docs filenames, with the .md extension
@@ -32,10 +52,7 @@ Repo-wide conventions for this project and related repos.
 - Error report must include: the command run and full stderr, plus a short next step: close other Git processes, remove a stale lock only if no process holds it, or fix `.git` permissions.
 
 ## Pytest failure triage
-- If you are unsure whether a failing pytest result is pre-existing or introduced by your current work, assume it is new first.
-- Reason: we try not to commit code with known failing tests, so a fresh failure is usually related to current uncommitted changes.
-- If uncertainty remains, inspect `git diff` and check whether the suspicious lines are part of current uncommitted edits.
-- Never use `git stash` as a diagnostic step for this.
+- For pytest test-writing rules, commands, and failure triage, see [docs/PYTEST_STYLE.md](PYTEST_STYLE.md).
 
 ## Changelog rotation
 - Rotate `docs/CHANGELOG.md` when it reaches about 1000 lines (`wc -l docs/CHANGELOG.md`).
@@ -74,6 +91,8 @@ Repo-wide conventions for this project and related repos.
 - Add a shebang for executable scripts and keep them runnable directly.
 - For repo-local Python commands, use:
   - `source source_me.sh && python ...`
+- For pytest commands, use:
+  - `pytest tests/`
 - Avoid hard-coded interpreter paths in routine command examples.
 - Document shared helpers and modules in `docs/USAGE.md` when used across scripts.
 - Use `tests/test_pyflakes_code_lint.py` and `tests/test_ascii_compliance.py` for repo-wide lint checks, with `tests/check_ascii_compliance.py` for single-file ASCII/ISO-8859-1 checks and `tests/fix_ascii_compliance.py` for single-file fixes.
@@ -130,7 +149,9 @@ Repo-wide conventions for this project and related repos.
 
 ### Centrally maintained docs, do not edit locally
 - `docs/AUTHORS.md`: primary maintainers and notable contributors
+- `docs/CLAUDE_HOOK_USAGE_GUIDE.md`: generated hook behavior reference, not a repo style source of truth. If repo style differs from hook examples, update repo style docs and recommend a hook rule update upstream.
 - `docs/MARKDOWN_STYLE.md`: Markdown writing rules and formatting conventions for this repo.
+- `docs/PYTEST_STYLE.md`: pytest test-writing rules, commands, fixtures, and failure triage.
 - `docs/PYTHON_STYLE.md`: Python formatting, linting, and project-specific conventions.
 - `docs/REPO_STYLE.md`: repo-level organization, conventions, and file placement rules.
 

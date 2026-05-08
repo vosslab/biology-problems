@@ -36,7 +36,10 @@ Keep documentation concise, scannable, and consistent.
 - Use relative links inside the repo.
 - Prefer descriptive link text, not raw URLs.
 - When referencing another doc, always link it (avoid bare filenames).
-- Example: [docs/FORMAT.md](docs/FORMAT.md), [docs/CLI.md](docs/CLI.md)
+- Links must work when committed and browsed on github.com. GitHub resolves relative URLs against the file containing the link, so the URL must be the path to the target relative to that file, not relative to the repo root.
+- Linking from repo root (e.g. `README.md`) into `docs/`: include `docs/` in both link text and URL. Example: `[docs/FORMAT.md](docs/FORMAT.md)`.
+- Linking between two files in the same folder (e.g. `docs/PYTHON_STYLE.md` to `docs/PYTEST_STYLE.md`): use the bare filename in both link text and URL. Example: `[PYTEST_STYLE.md](PYTEST_STYLE.md)`. Do not prefix the URL with `docs/` here; GitHub would look for `docs/docs/PYTEST_STYLE.md` and 404.
+- Link text should match the URL filename so readers see the exact file being referenced.
 
 ## Examples
 - Show a minimal example before a complex one.
