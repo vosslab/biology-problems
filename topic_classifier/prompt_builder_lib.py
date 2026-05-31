@@ -11,7 +11,7 @@ import os
 import yaml
 
 # local repo modules
-import topic_classifier.index_parser_lib as index_parser
+import topic_classifier.metadata_loader_lib as metadata_loader
 
 #============================================
 # Load prompt YAML files at module init
@@ -48,7 +48,7 @@ def build_stage1_prompt(
 	Args:
 		script_path: relative path to the script
 		source_code: full or summarized source code
-		all_indexes: output of index_parser.load_all_indexes()
+		all_indexes: output of metadata_loader.load_all_indexes()
 		cross_examples: output of csv_handler.get_cross_subject_examples()
 		bbq_output: cleaned question text from the script, or None
 
@@ -56,7 +56,7 @@ def build_stage1_prompt(
 		list of message dicts for LLMClient.generate(messages=...)
 	"""
 	# Build the subject list
-	subject_list = index_parser.format_subject_list(all_indexes)
+	subject_list = metadata_loader.format_subject_list(all_indexes)
 
 	# Build few-shot examples section
 	examples_text = _format_cross_examples(cross_examples)
@@ -119,7 +119,7 @@ def build_stage2_prompt(
 		script_path: relative path to the script
 		source_code: full or summarized source code
 		subject: predicted subject from stage 1
-		topics: topic list for this subject from index_parser
+		topics: topic list for this subject from metadata_loader
 		subject_examples: few-shot examples from this subject
 		bbq_output: cleaned question text from the script, or None
 
@@ -127,7 +127,7 @@ def build_stage2_prompt(
 		list of message dicts for LLMClient.generate(messages=...)
 	"""
 	# Build the topic list
-	topic_list = index_parser.format_topic_list(topics)
+	topic_list = metadata_loader.format_topic_list(topics)
 
 	# Build few-shot examples
 	examples_text = _format_subject_examples(subject_examples)
@@ -200,13 +200,13 @@ def build_stage1_yaml_prompt(
 	Args:
 		yaml_path: relative path to the yaml file
 		content: rendered text extracted from the yaml (statements, pairs, ...)
-		all_indexes: output of index_parser.load_all_indexes()
+		all_indexes: output of metadata_loader.load_all_indexes()
 		cross_examples: output of csv_handler.get_cross_subject_examples()
 
 	Returns:
 		list of message dicts for LLMClient.generate(messages=...)
 	"""
-	subject_list = index_parser.format_subject_list(all_indexes)
+	subject_list = metadata_loader.format_subject_list(all_indexes)
 	examples_text = _format_cross_examples(cross_examples)
 
 	user_parts = []
@@ -253,13 +253,13 @@ def build_stage2_yaml_prompt(
 		yaml_path: relative path to the yaml file
 		content: rendered text extracted from the yaml
 		subject: predicted subject from stage 1
-		topics: topic list for this subject from index_parser
+		topics: topic list for this subject from metadata_loader
 		subject_examples: few-shot examples from this subject
 
 	Returns:
 		list of message dicts for LLMClient.generate(messages=...)
 	"""
-	topic_list = index_parser.format_topic_list(topics)
+	topic_list = metadata_loader.format_topic_list(topics)
 	examples_text = _format_subject_examples(subject_examples)
 
 	user_parts = []

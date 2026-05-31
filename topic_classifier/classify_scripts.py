@@ -18,7 +18,7 @@ import argparse
 import subprocess
 
 # local repo modules
-import topic_classifier.index_parser_lib as index_parser
+import topic_classifier.metadata_loader_lib as metadata_loader
 import topic_classifier.csv_handler_lib as csv_handler
 import topic_classifier.script_runner_lib as script_runner
 import topic_classifier.prompt_builder_lib as prompt_builder
@@ -49,13 +49,27 @@ def parse_args() -> argparse.Namespace:
 		'-d', '--diff', dest='diff_mode', action='store_true',
 		help="Compare generated results against existing bbq_control CSVs",
 	)
-	parser.add_argument(
-		'-O', '--ollama', dest='use_ollama', action='store_true',
-		help="Use Ollama instead of Apple Intelligence (auto-selects model by RAM)",
+	backend_group = parser.add_mutually_exclusive_group()
+	backend_group.add_argument(
+		'--backend', dest='backend', choices=('apple', 'ollama', 'claude'), default=None,
+		help="LLM backend to use: apple, ollama, or claude.",
+	)
+	backend_group.add_argument(
+		'--apple', dest='backend_apple', action='store_true',
+		help="Use Apple Intelligence (local).",
+	)
+	backend_group.add_argument(
+		'-O', '--ollama', dest='backend_ollama', action='store_true',
+		help="Use Ollama (local).",
+	)
+	backend_group.add_argument(
+		'--claude', dest='backend_claude', action='store_true',
+		help="Use Claude via the claude CLI OAuth account. Prompts are sent to the Anthropic cloud.",
 	)
 	parser.add_argument(
 		'-m', '--model', dest='model', type=str, default=None,
-		help=("Use Ollama with this exact local model (implies --ollama). "
+		help=("Model name/alias for the selected backend "
+			"(Ollama model name, or Claude alias such as sonnet/opus). "
 			"Examples: gpt-oss:20b, phi4:14b-q4_K_M, "
 			"llama3.2:3b-instruct-q5_K_M, llama3.2:1b-instruct-q4_K_M"),
 	)
@@ -119,6 +133,26 @@ def setup_output_dirs(repo_root: str, output_dir: str) -> tuple:
 	os.makedirs(debug_dir, exist_ok=True)
 
 	return results_dir, debug_dir
+
+#============================================
+def resolve_backend(args: argparse.Namespace) -> str:
+	"""Collapse the mutually exclusive backend flags into one backend string.
+
+	Precedence: explicit --backend, then --claude/--ollama/--apple shortcuts,
+	then legacy `-m/--model` (which implies ollama), else apple default.
+	"""
+	if args.backend is not None:
+		return args.backend
+	if args.backend_claude:
+		return 'claude'
+	if args.backend_ollama:
+		return 'ollama'
+	if args.backend_apple:
+		return 'apple'
+	if args.model is not None:
+		# legacy behavior: -m alone implies Ollama
+		return 'ollama'
+	return 'apple'
 
 #============================================
 # Thin delegators keep call sites unchanged while the implementations
@@ -469,7 +503,7 @@ def main():
 
 	# Load subject indexes
 	console.print("Loading subject indexes...", style="dim italic")
-	all_indexes = index_parser.load_all_indexes()
+	all_indexes = metadata_loader.load_all_indexes()
 
 	# Load existing CSV assignments
 	console.print("Loading existing CSV assignments...", style="dim italic")
@@ -513,19 +547,21 @@ def main():
 		console.print(f"Existing assignments: [bold]{len(assignments)}[/bold]")
 		return
 
-	# Create LLM client with strict transport selection
-	# --model implies --ollama
-	use_ollama = args.use_ollama or (args.model is not None)
-	# Validate Ollama model exists locally before starting
-	if args.model:
+	# Resolve which transport/model to use from the mutually exclusive backend flags
+	backend = resolve_backend(args)
+	# Preserve the existing Ollama validation: only validate when a model was given
+	if backend == 'ollama' and args.model:
 		validate_ollama_model(args.model)
 	# Report which transport and model will be used
-	if use_ollama:
+	if backend == 'ollama':
 		ollama_model = args.model if args.model else llm.choose_model(None)
 		console.print(f"Using Ollama model: [cyan]{ollama_model}[/cyan]")
+	elif backend == 'claude':
+		claude_model = args.model if args.model else "sonnet"
+		console.print(f"Using Claude (claude CLI, cloud): [cyan]{claude_model}[/cyan]")
 	else:
 		console.print("Using Apple Intelligence")
-	client = create_llm_client(args.model, use_ollama=use_ollama)
+	client = create_llm_client(args.model, backend=backend)
 
 	num_repeats = max(1, args.repeat)
 

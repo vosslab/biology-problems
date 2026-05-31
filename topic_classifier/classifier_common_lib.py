@@ -170,7 +170,7 @@ def get_topic_name(topics: list, topic_id: str) -> str:
 	"""Look up the human-readable topic name from a topic_id.
 
 	Args:
-		topics: list of topic dicts from index_parser
+		topics: list of topic dicts from metadata_loader.load_all_indexes()
 		topic_id: e.g. 'topic04'
 
 	Returns:
@@ -400,20 +400,32 @@ def validate_ollama_model(model: str, base_url: str = "http://localhost:11434") 
 		raise RuntimeError(msg)
 
 #============================================
-def create_llm_client(model: str = None, use_ollama: bool = False) -> llm.LLMClient:
+def create_llm_client(model: str = None, backend: str = "apple") -> llm.LLMClient:
 	"""Create an LLM client with strict transport selection.
 
 	Args:
-		model: exact Ollama model name (requires use_ollama=True)
-		use_ollama: if True, use Ollama only; if False, use Apple only
+		model: reused across backends with different meanings:
+			- "ollama": exact Ollama model name; if None, auto-selected via llm.choose_model
+			- "claude": Claude model alias (e.g. "sonnet", "opus"); if None, defaults to "sonnet"
+			- "apple": ignored
+		backend: transport backend to use; one of "apple", "ollama", or "claude".
+			Raises ValueError for any other value.
 
 	Returns:
 		configured LLMClient
+
+	Raises:
+		ValueError: if backend is not one of the supported values
 	"""
-	if use_ollama:
+	if backend == "claude":
+		# ClaudeCodeTransport uses OAuth/account auth via `claude --print` subprocess; no API key needed
+		transport = llm.ClaudeCodeTransport(model=model or "sonnet")
+	elif backend == "ollama":
 		ollama_model = model if model else llm.choose_model(None)
 		transport = llm.OllamaTransport(model=ollama_model)
-	else:
+	elif backend == "apple":
 		transport = llm.AppleTransport()
+	else:
+		raise ValueError(f"Unsupported backend: {backend}")
 	client = llm.LLMClient(transports=[transport], quiet=True)
 	return client

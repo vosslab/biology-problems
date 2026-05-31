@@ -21,7 +21,7 @@ import rich.console
 import rich.table
 
 # local repo modules
-import topic_classifier.index_parser_lib as index_parser
+import topic_classifier.metadata_loader_lib as metadata_loader
 
 console = rich.console.Console(highlight=False)
 
@@ -411,7 +411,7 @@ def build_topic_lookup() -> dict:
 		dict mapping (chapter, topic_id) tuples to topic name strings,
 		e.g. {("biochemistry", "topic01"): "Life Molecules", ...}
 	"""
-	all_indexes = index_parser.load_all_indexes()
+	all_indexes = metadata_loader.load_all_indexes()
 	lookup = {}
 	for subject, data in all_indexes.items():
 		for topic in data["topics"]:

@@ -1,5 +1,76 @@
 # Changelog
 
+## 2026-05-31
+
+### Additions and New Features
+- Added `--backend {apple,ollama,claude}` mutually exclusive argparse group to
+  [topic_classifier/classify_yaml.py](../topic_classifier/classify_yaml.py) and
+  [topic_classifier/classify_scripts.py](../topic_classifier/classify_scripts.py),
+  with shortcut flags `--apple`, `-O`/`--ollama`, and `--claude`. A `resolve_backend(args)`
+  helper translates the selected flag into the `backend` string passed to `create_llm_client()`.
+  The `-m`/`--model` flag supplies the model name or alias for the selected backend (Ollama model
+  name for `--ollama`; Claude alias such as `"sonnet"` or `"opus"` for `--claude`). Help text
+  discloses that `--claude` routes prompts to the Anthropic cloud via the local `claude` CLI
+  (OAuth/account login; no API key required; no new pip dependency).
+- Added [topic_classifier/metadata_loader_lib.py](../topic_classifier/metadata_loader_lib.py),
+  which reads the canonical `topics_metadata.yml` from the sibling
+  `biology-problems-website` repo (raises `FileNotFoundError` if absent) and returns the
+  subject/topic structure the classifier needs. Each topic's identifier (`topic_id`) is the
+  author-facing alias (e.g. `chi_square`) when present, else the `topicNN` key. Provides
+  `load_all_indexes()`, `format_subject_list()`, and `format_topic_list()` used by classifier
+  scripts and prompt builders.
+
+### Behavior or Interface Changes
+- Replaced the `use_ollama: bool` parameter of `create_llm_client()` in
+  [topic_classifier/classifier_common_lib.py](../topic_classifier/classifier_common_lib.py)
+  with `backend: str` (values: `"apple"`, `"ollama"`, `"claude"`; default `"apple"`).
+  The `model` argument is reused: Ollama model name for `"ollama"`, Claude alias
+  (e.g. `"sonnet"`, `"opus"`; default `"sonnet"`) for `"claude"`, ignored for `"apple"`.
+  Unknown backends raise `ValueError`. Uses `local_llm_wrapper.ClaudeCodeTransport` for
+  the `"claude"` path; no new pip dependency.
+- Reorganized `-O`/`--ollama` and bare `-m`/`--model` flags in
+  [topic_classifier/classify_yaml.py](../topic_classifier/classify_yaml.py) and
+  [topic_classifier/classify_scripts.py](../topic_classifier/classify_scripts.py)
+  into the new mutually exclusive `--backend` group; legacy `-O` still selects ollama
+  and `-m` still sets the model name/alias for the active backend.
+- Classifiers now read subject and topic data from `topics_metadata.yml` via
+  [topic_classifier/metadata_loader_lib.py](../topic_classifier/metadata_loader_lib.py)
+  instead of parsing subject-index Markdown files. All import sites in
+  [topic_classifier/classify_yaml.py](../topic_classifier/classify_yaml.py),
+  [topic_classifier/classify_scripts.py](../topic_classifier/classify_scripts.py),
+  [topic_classifier/prompt_builder_lib.py](../topic_classifier/prompt_builder_lib.py), and
+  [topic_classifier/compare_results.py](../topic_classifier/compare_results.py)
+  now alias the module as `metadata_loader`.
+- Updated [topic_classifier/prompts/stage2_topic.yaml](../topic_classifier/prompts/stage2_topic.yaml)
+  response-format block: placeholder changed from `topicNN` to `chi_square`; added explicit
+  instruction "Return the exact alias shown before the colon in the topic list (e.g. chi_square),
+  not a topicNN code." All 14 few-shot examples converted from `-> topicNN` targets to real
+  aliases (biomolecules, protein_structure, thermodynamics, water_ph, enzyme_kinetics,
+  enzyme_inhibition, allostery, protein_purification, lipids, nucleic_acids, membranes,
+  carbohydrates, translation). The mRNA-codon example formerly mapped to topic09 (allostery)
+  is now correctly mapped to translation (molecular biology alias).
+  stage1_subject.yaml has no topicNN references and required no changes.
+
+### Removals and Deprecations
+- Removed `topic_classifier/index_parser_lib.py` - superseded by
+  [topic_classifier/metadata_loader_lib.py](../topic_classifier/metadata_loader_lib.py),
+  which reads `topics_metadata.yml` directly. All call sites were repointed before removal.
+- Removed `subject-indexes/` directory and all 7 markdown index files
+  (`biochemistry-index.md`, `biostatistics-index.md`, `biotechnology-index.md`,
+  `genetics-index.md`, `laboratory-index.md`, `molecular_biology-index.md`,
+  `other-index.md`). Topic data now lives in
+  [topic_classifier/topics_metadata.yml](../topic_classifier/topics_metadata.yml)
+  as a single structured YAML source.
+
+### Fixes and Maintenance
+- Added `~/nsh/local-llm-wrapper` to `PYTHONPATH` in [source_me.sh](../source_me.sh)
+  so `topic_classifier` scripts can import `local_llm_wrapper` (including
+  `ClaudeCodeTransport`) without a pip install. A warning is printed to stderr if the
+  sibling repo directory is absent.
+- Classifier output CSVs and diff comparison now use topic aliases (matching the
+  `bbq_control` task CSV `topic` column) instead of `topicNN` codes; this eliminates
+  false DISAGREE results where a predicted `topicNN` never matched a CSV alias.
+
 ## 2026-05-07
 
 ### Additions and New Features
