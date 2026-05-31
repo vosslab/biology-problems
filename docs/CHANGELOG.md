@@ -19,6 +19,14 @@
   author-facing alias (e.g. `chi_square`) when present, else the `topicNN` key. Provides
   `load_all_indexes()`, `format_subject_list()`, and `format_topic_list()` used by classifier
   scripts and prompt builders.
+- The `topic_classifier` pipeline can now assign a script or YAML question to two subjects
+  (a primary plus an optional, conservatively gated secondary), one topic per subject,
+  emitting one CSV row per `(script, subject)` into the existing per-subject CSV files.
+  The 6-column CSV schema (`subject,topic,script,flags,input,notes`) is unchanged.
+  A secondary is kept only when it is a real subject in `all_indexes`, differs from the primary
+  (case-sensitive), and its stage-2 `confidence_score` >= 3.
+  See [topic_classifier/classify_scripts.py](../topic_classifier/classify_scripts.py) and
+  [topic_classifier/classify_yaml.py](../topic_classifier/classify_yaml.py).
 
 ### Behavior or Interface Changes
 - Replaced the `use_ollama: bool` parameter of `create_llm_client()` in
@@ -50,6 +58,16 @@
   carbohydrates, translation). The mRNA-codon example formerly mapped to topic09 (allostery)
   is now correctly mapped to translation (molecular biology alias).
   stage1_subject.yaml has no topicNN references and required no changes.
+- `classify_one_script` and `classify_one_yaml` in
+  [topic_classifier/classify_scripts.py](../topic_classifier/classify_scripts.py) and
+  [topic_classifier/classify_yaml.py](../topic_classifier/classify_yaml.py)
+  now return a list of result dicts (primary always element 0, optional secondary) instead of
+  a single dict; callers iterate the list. First-run dedup keys now include the subject field
+  (scripts: `(script, flags, chapter)`; yaml: `((yaml_path or input), subject)`) and
+  repeat-mode voting keys include subject so primary and secondary tally separately.
+  [topic_classifier/compare_results.py](../topic_classifier/compare_results.py) now stores a
+  set of `(subject, topic)` pairs per script (a dual-subject script no longer overwrites) and
+  renders multi-pair values as sorted `subject:topic` tokens joined by `;`.
 
 ### Removals and Deprecations
 - Removed `topic_classifier/index_parser_lib.py` - superseded by
@@ -70,6 +88,57 @@
 - Classifier output CSVs and diff comparison now use topic aliases (matching the
   `bbq_control` task CSV `topic` column) instead of `topicNN` codes; this eliminates
   false DISAGREE results where a predicted `topicNN` never matched a CSV alias.
+
+### Decisions and Failures
+- Dual-subject classification (primary + optional secondary) is scoped exclusively to
+  the `topic_classifier` pipeline. Question YAML `topic` fields remain a single scalar
+  and downstream `bbq`/`pgml` generators are unchanged; this does NOT introduce
+  multi-topic YAML behavior.
+- No secondary-confidence field is stored; a low-confidence secondary (stage-2
+  `confidence_score` < 3, or subject key absent from `all_indexes`, or identical to
+  primary) is silently dropped rather than emitted as a review row. Comparisons in
+  [topic_classifier/compare_results.py](../topic_classifier/compare_results.py) use
+  exact set equality of `(subject, topic)` pairs, so a script assigned to two subjects
+  must match both in every compared run to register as AGREE.
+
+### Developer Tests and Notes
+- Dual-subject classification feature added across six files in `topic_classifier/`:
+  [topic_classifier/prompts/stage1_subject.yaml](../topic_classifier/prompts/stage1_subject.yaml)
+  gained an optional `<secondary_subject>` response tag with anti-drift guidance
+  ("leave empty unless the question clearly belongs to two subjects equally") and
+  empty-secondary micro-examples.
+  [topic_classifier/classifier_common_lib.py](../topic_classifier/classifier_common_lib.py)
+  gained `normalize_secondary_subject(raw) -> str | None` (maps absent/empty/whitespace
+  to None, else stripped string).
+  [topic_classifier/classify_scripts.py](../topic_classifier/classify_scripts.py) and
+  [topic_classifier/classify_yaml.py](../topic_classifier/classify_yaml.py): `classify_stage1`
+  now parses `secondary_subject`; `classify_one_script`/`classify_one_yaml` return a list
+  of result dicts (primary always element 0, optional secondary). Secondary is accepted only
+  when it is a real subject key, differs from the primary (case-sensitive), and its stage-2
+  `confidence_score` >= 3; otherwise dropped. `assignment_rank` ("primary"/"secondary") is
+  added to result dicts for debug logging only and is NEVER written to CSV. Dedup keys and
+  repeat-mode voting keys include the subject field so primary/secondary tally separately.
+  [topic_classifier/compare_results.py](../topic_classifier/compare_results.py):
+  `load_results_dir` now stores a set of `(subject, topic)` pairs per script; multi-pair
+  values render as sorted `subject:topic` tokens joined by `;`.
+  [topic_classifier/find_unassigned_scripts.py](../topic_classifier/find_unassigned_scripts.py)
+  and [topic_classifier/find_unassigned_yaml.py](../topic_classifier/find_unassigned_yaml.py):
+  outer vote-loop unpacks a set of pairs per script; vote aggregation keys `(subject, topic)`
+  unchanged.
+  New test: `tests/test_secondary_subject_parse.py` (pure parser test for the
+  None-vs-stripped normalization logic in `normalize_secondary_subject`).
+- The 6-column CSV schema (`subject,topic,script,flags,input,notes`) is UNCHANGED;
+  a dual-subject script emits one row per `(script, subject)` into the existing
+  per-subject CSV files.
+- pyflakes clean on all six changed `topic_classifier` files.
+  `pytest tests/test_pyflakes_code_lint.py tests/test_ascii_compliance.py
+  tests/test_secondary_subject_parse.py` -> 367 passed.
+  Full `pytest tests/` -> 1 failed, 2391 passed. The single failure is the pre-existing
+  `tests/test_shebangs.py::test_shebang_executable_alignment` (classifier_common_lib.py
+  carries a shebang with mode 100644 at HEAD; not introduced by this work).
+  Multi-subject CSV-split plumbing verified via a deterministic stubbed run (two rows ->
+  two per-subject CSVs, one topic each). Live `--claude` dry run on a single script ran
+  without crashing (observed `secondary: absent`, single-subject case).
 
 ## 2026-05-07
 

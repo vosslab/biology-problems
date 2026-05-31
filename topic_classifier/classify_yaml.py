@@ -323,11 +323,15 @@ def classify_stage1(
 	subject = llm.extract_xml_tag_content(response, "subject")
 	confidence_raw = llm.extract_xml_tag_content(response, "confidence")
 	reasoning = llm.extract_xml_tag_content(response, "reasoning")
+	# Extract optional secondary subject; normalize empty/whitespace to None
+	secondary_raw = llm.extract_xml_tag_content(response, "secondary_subject")
+	secondary_subject = common.normalize_secondary_subject(secondary_raw)
 	result = {
 		"subject": subject.strip() if subject else None,
 		"confidence": common.parse_confidence(confidence_raw),
 		"reasoning": reasoning.strip() if reasoning else None,
 		"raw_response": response,
+		"secondary_subject": secondary_subject,
 	}
 	return result
 
@@ -411,8 +415,12 @@ def classify_one_yaml(
 	cross_examples: list,
 	assignments: dict,
 	verbose: bool = False,
-) -> dict:
+) -> list:
 	"""Classify a single yaml file through subject + topic stages.
+
+	Stage 1 names a primary subject and optionally a secondary subject. Stage 2
+	runs once per accepted subject, so a dual-subject file yields two result
+	dicts (one topic each). The primary is always element 0 of the returned list.
 
 	Args:
 		client: LLM client
@@ -424,7 +432,8 @@ def classify_one_yaml(
 		verbose: show extra debug
 
 	Returns:
-		result dict, or None if content extraction failed
+		list of result dicts (1 normally, 2 when a gated secondary survives),
+		or None if content extraction failed (callers treat None as skip)
 	"""
 	abs_path = os.path.join(repo_root, rel_path)
 	try:
@@ -449,7 +458,7 @@ def classify_one_yaml(
 		result = common.make_failed_result(rel_path, "success", stage1)
 		result["script"] = marker
 		result["input"] = _yaml_input_path(rel_path)
-		return result
+		return [result]
 
 	subject = stage1["subject"]
 	conf = stage1["confidence"]
@@ -458,6 +467,113 @@ def classify_one_yaml(
 	if verbose and stage1.get("reasoning"):
 		console.print(f"    reasoning: {stage1['reasoning']}", style="dim")
 
+	# Build the ordered subject list: primary first, then an optional secondary
+	# only when it passes drift gate part A (non-empty, a real subject, and
+	# different from primary). Gate part B (score >= 3) is applied after stage 2.
+	subject_list = _build_subject_list(stage1, subject, all_indexes)
+
+	# Run stage 2 once per accepted subject and assemble one result dict each.
+	results = []
+	for subject_rank, subject_for_pass in enumerate(subject_list):
+		assignment_rank = "primary" if subject_rank == 0 else "secondary"
+		result = _classify_subject_stage2(
+			client, rel_path, content, marker,
+			subject_for_pass, stage1, all_indexes, assignments, verbose=verbose,
+		)
+		if result is None:
+			# Stage 2 could not name a topic for this subject.
+			if assignment_rank == "primary":
+				# Primary failure preserves the existing failed-result behavior.
+				failed = common.make_failed_result(rel_path, "success", stage1)
+				failed["script"] = marker
+				failed["input"] = _yaml_input_path(rel_path)
+				results.append(failed)
+			else:
+				console.print("  secondary: dropped (stage 2 found no topic)", style="dim")
+			continue
+		result["assignment_rank"] = assignment_rank
+		# Drift gate part B: keep a secondary only when it scores classified-level.
+		if assignment_rank == "secondary" and result["confidence_score"] < 3:
+			console.print(
+				f"  secondary: dropped (score {result['confidence_score']} < 3)", style="dim")
+			continue
+		if assignment_rank == "secondary":
+			console.print(
+				f"  secondary: accepted {result['subject']}/{result['topic']} "
+				f"(score {result['confidence_score']})", style="dim")
+		results.append(result)
+
+	return results
+
+#============================================
+def _build_subject_list(
+	stage1: dict,
+	primary: str,
+	all_indexes: dict,
+) -> list:
+	"""Build the ordered subject list for stage 2 (drift gate part A).
+
+	The primary subject is always first. A secondary subject is appended only
+	when it is non-empty, exists as a key in all_indexes, and differs from the
+	primary. Subjects are compared case-sensitively; only whitespace is stripped
+	(stripping already done by the stage-1 parser). The secondary outcome is
+	logged as one of absent, invalid, same-as-primary, or candidate-accepted.
+
+	Args:
+		stage1: stage 1 result dict (carries secondary_subject)
+		primary: the stripped primary subject string
+		all_indexes: subject index data (keys are valid subjects)
+
+	Returns:
+		list of subject strings, [primary] or [primary, secondary]
+	"""
+	subject_list = [primary]
+	secondary = stage1["secondary_subject"]
+	if secondary is None:
+		console.print("  secondary: absent", style="dim")
+		return subject_list
+	if secondary == primary:
+		console.print("  secondary: same-as-primary", style="dim")
+		return subject_list
+	if secondary not in all_indexes:
+		console.print(f"  secondary: invalid (not a subject: {secondary})", style="dim")
+		return subject_list
+	console.print(f"  secondary: candidate [cyan]{secondary}[/cyan] (running stage 2)", style="dim")
+	subject_list.append(secondary)
+	return subject_list
+
+#============================================
+def _classify_subject_stage2(
+	client: llm.LLMClient,
+	rel_path: str,
+	content: str,
+	marker: str,
+	subject: str,
+	stage1: dict,
+	all_indexes: dict,
+	assignments: dict,
+	verbose: bool = False,
+) -> dict:
+	"""Run stage 2 + scoring + existing check for one subject; assemble the dict.
+
+	Shared by the primary and secondary passes so both reuse identical logic.
+	The confidence score, status, and existing-assignment check all run against
+	the subject passed in, not the primary.
+
+	Args:
+		client: LLM client
+		rel_path: repo-relative yaml path
+		content: rendered yaml text
+		marker: 'YMCS' or 'YMATCH'
+		subject: the subject being classified in this pass
+		stage1: stage 1 result dict (for scoring and reasoning fields)
+		all_indexes: subject index data
+		assignments: existing CSV assignments
+		verbose: show extra debug
+
+	Returns:
+		result dict keyed with 'subject', or None when stage 2 finds no topic
+	"""
 	subject_data = all_indexes.get(subject, {"topics": []})
 	topics = subject_data["topics"]
 	subject_examples = csv_handler.get_examples_for_subject(assignments, subject)
@@ -468,10 +584,7 @@ def classify_one_yaml(
 	)
 	if stage2["topic"] is None:
 		console.print("  FAILED: could not determine topic", style="bold red")
-		result = common.make_failed_result(rel_path, "success", stage1, stage2)
-		result["script"] = marker
-		result["input"] = _yaml_input_path(rel_path)
-		return result
+		return None
 
 	topic_name = common.get_topic_name(topics, stage2["topic"])
 	conf2 = stage2["confidence"]
@@ -484,6 +597,8 @@ def classify_one_yaml(
 	confidence_score = common.compute_confidence_score(stage1, stage2, True, all_indexes)
 	status = "classified" if confidence_score >= 3 else "review"
 
+	# Each subject is judged independently: the existing-assignment match is
+	# evaluated against the subject currently being classified.
 	existing_entry = _find_existing(rel_path, marker, assignments)
 	existing_assignment = None
 	match = None
@@ -598,7 +713,7 @@ def main():
 			if num_repeats > 1:
 				console.print(f"  run {run_num+1}/{num_repeats}", style="dim")
 			try:
-				result = classify_one_yaml(
+				result_list = classify_one_yaml(
 					client, rel_path, repo_root,
 					all_indexes, cross_examples, assignments,
 					verbose=args.verbose,
@@ -609,30 +724,37 @@ def main():
 					llm_error_files.append(rel_path)
 				continue
 
-			if result is None:
+			if result_list is None:
 				if run_num == 0:
 					extraction_failures.append(rel_path)
 				break
 
-			results.append(result)
-			repeat_results.setdefault(rel_path, []).append(result)
-			common.write_debug_log(result, debug_dir, log_name="yaml_classification_log.jsonl")
+			# classify_one_yaml returns one result per subject (primary first,
+			# optional gated secondary). Each subject is recorded and voted on
+			# independently.
+			for result in result_list:
+				results.append(result)
+				# Voting key includes subject so primary and secondary tally as
+				# separate per-subject outcomes.
+				vote_key = f"{rel_path}|{result['subject']}"
+				repeat_results.setdefault(vote_key, []).append(result)
+				common.write_debug_log(result, debug_dir, log_name="yaml_classification_log.jsonl")
 
-			topic_label = result.get("topic_name", result["topic"])
-			if num_repeats > 1:
-				status_tag = "[green]OK[/green]" if result["status"] == "classified" else "[yellow]??[/yellow]"
-				console.print(
-					f"    {status_tag} {result['subject']}/{result['topic']} "
-					f"[cyan]{topic_label}[/cyan] ({result['confidence_score']})")
-			else:
-				if result["status"] == "classified":
+				topic_label = result.get("topic_name", result["topic"])
+				if num_repeats > 1:
+					status_tag = "[green]OK[/green]" if result["status"] == "classified" else "[yellow]??[/yellow]"
 					console.print(
-						f"  [bold green][OK][/bold green] {result['subject']}/{result['topic']} "
-						f"[cyan]{topic_label}[/cyan] (score: {result['confidence_score']})")
+						f"    {status_tag} {result['subject']}/{result['topic']} "
+						f"[cyan]{topic_label}[/cyan] ({result['confidence_score']})")
 				else:
-					console.print(
-						f"  [bold yellow][??][/bold yellow] {result['subject']}/{result['topic']} "
-						f"[cyan]{topic_label}[/cyan] (score: {result['confidence_score']})")
+					if result["status"] == "classified":
+						console.print(
+							f"  [bold green][OK][/bold green] {result['subject']}/{result['topic']} "
+							f"[cyan]{topic_label}[/cyan] (score: {result['confidence_score']})")
+					else:
+						console.print(
+							f"  [bold yellow][??][/bold yellow] {result['subject']}/{result['topic']} "
+							f"[cyan]{topic_label}[/cyan] (score: {result['confidence_score']})")
 
 		item_elapsed = time.monotonic() - item_start
 		console.print(f"  completed in {common.format_duration(item_elapsed)}", style="dim")
@@ -640,11 +762,17 @@ def main():
 	total_elapsed = time.monotonic() - total_start
 	console.print(f"\nTotal classification time: [bold]{common.format_duration(total_elapsed)}[/bold]")
 
-	# Deduplicate to first run per yaml for CSV writing
+	# Deduplicate to first run per (yaml, subject) for CSV writing. The subject
+	# field is part of the identity here because a dual-subject yaml emits two
+	# rows that share the yaml path but differ by subject. The YAML twin keys on
+	# 'subject' while the scripts path keys on 'chapter'; flags are intentionally
+	# absent from the YAML dedup identity because classify_one_yaml hardcodes
+	# result["flags"] = "" (no meaningful per-row flags). If that ever changes,
+	# flags must be added back to this key.
 	first_run_results = []
 	seen = set()
 	for r in results:
-		key = r.get("yaml_path") or r["input"]
+		key = ((r.get("yaml_path") or r["input"]), r["subject"])
 		if key in seen:
 			continue
 		seen.add(key)

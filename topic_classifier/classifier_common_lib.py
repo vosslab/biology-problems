@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """Shared helpers for classify_scripts.py and classify_yaml.py.
 
 Lifted from classify_scripts.py without behavior changes so both the script
@@ -122,6 +120,26 @@ def parse_confidence(raw: str) -> int:
 	# Fallback for legacy categorical values
 	mapping = {"high": 4, "medium": 3, "low": 2}
 	return mapping.get(cleaned.lower(), 1)
+
+#============================================
+def normalize_secondary_subject(raw: str) -> str | None:
+	"""Normalize a raw secondary_subject tag value to None or a stripped string.
+
+	Absent tag, empty string, and whitespace-only values all return None.
+	A non-empty value returns the stripped string unchanged.
+
+	Args:
+		raw: raw string from extract_xml_tag_content (empty string when absent)
+
+	Returns:
+		None when empty/absent/whitespace-only, else stripped string
+	"""
+	if not raw:
+		return None
+	stripped = raw.strip()
+	if not stripped:
+		return None
+	return stripped
 
 #============================================
 def compute_confidence_score(

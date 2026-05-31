@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """Reusable HTML table raster chart library.
 
 Renders data as a grid of colored HTML table cells, producing

@@ -155,22 +155,24 @@ def load_yaml_classifier_votes(base_dir: str) -> tuple:
 			continue
 		# Did this directory contribute any yaml votes?
 		contributed = False
-		for raw_script, (chapter, topic) in assignments.items():
+		for raw_script, pairs in assignments.items():
 			# Filter: only yaml entries
 			if not _is_yaml_path(raw_script):
 				continue
 			# Normalize so it matches universe + assigned keys
 			norm_path = compare_results._to_bp_root(raw_script)
-			chapter = chapter.strip()
-			topic = topic.strip()
-			if not chapter:
-				continue
-			subj_bucket = subject_votes.setdefault(norm_path, {})
-			subj_bucket[chapter] = subj_bucket.get(chapter, 0) + 1
-			topic_bucket = topic_votes.setdefault(norm_path, {})
-			key = (chapter, topic)
-			topic_bucket[key] = topic_bucket.get(key, 0) + 1
-			contributed = True
+			# pairs is a set of (chapter, topic) tuples (dual-subject aware)
+			for chapter, topic in pairs:
+				chapter = chapter.strip()
+				topic = topic.strip()
+				if not chapter:
+					continue
+				subj_bucket = subject_votes.setdefault(norm_path, {})
+				subj_bucket[chapter] = subj_bucket.get(chapter, 0) + 1
+				topic_bucket = topic_votes.setdefault(norm_path, {})
+				key = (chapter, topic)
+				topic_bucket[key] = topic_bucket.get(key, 0) + 1
+				contributed = True
 		if contributed:
 			models_seen.append(model_name)
 	return subject_votes, topic_votes, sorted(models_seen)

@@ -13,6 +13,7 @@ instructions: |
   <subject>subject_name</subject>
   <confidence>3</confidence>
   <reasoning>Brief explanation of why this subject fits.</reasoning>
+  <secondary_subject></secondary_subject>
 
   Confidence is a single integer from 1 to 5:
     1 = wild guess, no clear signal
@@ -21,16 +22,22 @@ instructions: |
     4 = strong match, key terms clearly point to this subject
     5 = unambiguous, no other subject is plausible
 
+  secondary_subject: Leave secondary_subject empty unless the question clearly belongs
+  to two subjects equally. When in doubt, leave it empty.
+
 micro_examples: |
   ## Classification examples
   Script: problems/molecular_biology-problems/consensus_sequence.py
   Summary: determine consensus sequence from DNA sequences (sequence analysis)
   Subject: molecular_biology
+  Secondary: (empty -- single subject, most questions are like this)
 
   Script: problems/biochemistry-problems/dna_nucleotide_chemistry.py
   Summary: identify chemical bonds and base pairing in DNA (chemical structure)
   Subject: biochemistry
+  Secondary: (empty)
 
   Script: problems/genetics-problems/monohybrid_cross.py
   Summary: predict offspring ratios from a single-gene cross (inheritance pattern)
   Subject: genetics
+  Secondary: (empty)

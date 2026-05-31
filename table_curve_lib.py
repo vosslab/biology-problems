@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # CSS border-radius sigmoid curve renderer.
 # Renders N sigmoid transitions as quarter-ellipse arcs in an HTML table.
 # Each sigmoid is a BR arc (bottom half) + TL arc (top half) arranged
