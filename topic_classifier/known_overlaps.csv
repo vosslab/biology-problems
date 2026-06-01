@@ -1,4 +1,4 @@
-script,chapter,topic
+script,subject,topic
 problems/inheritance-problems/chi_square/chi_square_calculated.py,genetics,topic07
 problems/inheritance-problems/chi_square/chi_square_calculated.py,biostatistics,topic05
 problems/inheritance-problems/chi_square/chi_square_choices.py,genetics,topic07

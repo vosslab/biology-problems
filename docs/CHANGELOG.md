@@ -63,11 +63,16 @@
   [topic_classifier/classify_yaml.py](../topic_classifier/classify_yaml.py)
   now return a list of result dicts (primary always element 0, optional secondary) instead of
   a single dict; callers iterate the list. First-run dedup keys now include the subject field
-  (scripts: `(script, flags, chapter)`; yaml: `((yaml_path or input), subject)`) and
+  (scripts: `(script, flags, subject)`; yaml: `((yaml_path or input), subject)`) and
   repeat-mode voting keys include subject so primary and secondary tally separately.
   [topic_classifier/compare_results.py](../topic_classifier/compare_results.py) now stores a
   set of `(subject, topic)` pairs per script (a dual-subject script no longer overwrites) and
   renders multi-pair values as sorted `subject:topic` tokens joined by `;`.
+- Removed the retired internal `chapter` terminology from `topic_classifier/*.py`.
+  Script and YAML classifier result dicts now both use the `subject` key; comparison output,
+  XLSX sheet names, known-overlap CSV headers, unassigned-report vote plumbing, and
+  few-shot prompt examples now use `subject/topic` consistently, matching the
+  `topics_metadata.yml` and BBQ task CSV format docs.
 
 ### Removals and Deprecations
 - Removed `topic_classifier/index_parser_lib.py` - superseded by
@@ -88,6 +93,8 @@
 - Classifier output CSVs and diff comparison now use topic aliases (matching the
   `bbq_control` task CSV `topic` column) instead of `topicNN` codes; this eliminates
   false DISAGREE results where a predicted `topicNN` never matched a CSV alias.
+- Verified the subject/topic terminology cleanup with targeted syntax compilation and
+  pyflakes on the touched `topic_classifier` Python files.
 
 ### Decisions and Failures
 - Dual-subject classification (primary + optional secondary) is scoped exclusively to
@@ -873,4 +880,3 @@
 
 ### Decisions and Failures
 - `bptools.add_question_format_args(...)` (bptools.py:364) already supported `required=False, default=...`. No change to `bptools.py` was necessary - the Category A fix is purely site-local updates to the script parse_arguments calls, matching the pattern endorsed in [docs/PYTHON_STYLE.md](PYTHON_STYLE.md) (ARGPARSE section).
-

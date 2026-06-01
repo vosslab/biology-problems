@@ -3,7 +3,7 @@
 """Compare topic classifier results across multiple LLM model runs.
 
 Auto-discovers results-*/ directories and reports where models agree or
-disagree on chapter and topic assignments. Outputs a rich terminal summary
+disagree on subject and topic assignments. Outputs a rich terminal summary
 and an XLSX workbook with colored disagreement tables.
 """
 
@@ -54,14 +54,14 @@ def load_results_dir(dir_path: str) -> dict:
 	"""Read all *_tasks.csv files from one results directory.
 
 	A script may appear in two subject CSVs (dual-subject classification).
-	The returned value is a set of (chapter, topic) pairs per script so that
+	The returned value is a set of (subject, topic) pairs per script so that
 	a second subject row does not silently overwrite the first.
 
 	Args:
 		dir_path: path to a results-*/ directory
 
 	Returns:
-		dict mapping script path to a set of (chapter, topic) tuples
+		dict mapping script path to a set of (subject, topic) tuples
 	"""
 	assignments = {}
 	# Skip non-classification files
@@ -81,7 +81,7 @@ def load_results_dir(dir_path: str) -> dict:
 				# Pad short rows
 				while len(row) < 3:
 					row.append("")
-				chapter = row[0].strip()
+				subject = row[0].strip()
 				topic = row[1].strip()
 				script = row[2].strip()
 				if not script:
@@ -89,7 +89,7 @@ def load_results_dir(dir_path: str) -> dict:
 				# Use a set so dual-subject scripts accumulate both pairs
 				if script not in assignments:
 					assignments[script] = set()
-				assignments[script].add((chapter, topic))
+				assignments[script].add((subject, topic))
 	return assignments
 
 #============================================
@@ -139,7 +139,7 @@ def load_known_overlaps(csv_path: str) -> dict:
 		csv_path: path to known_overlaps.csv
 
 	Returns:
-		dict mapping script path to set of (chapter, topic) tuples
+		dict mapping script path to set of (subject, topic) tuples
 	"""
 	overlaps = {}
 	if not os.path.isfile(csv_path):
@@ -148,11 +148,11 @@ def load_known_overlaps(csv_path: str) -> dict:
 		reader = csv.DictReader(f)
 		for row in reader:
 			script = row["script"].strip()
-			chapter = row["chapter"].strip()
+			subject = row["subject"].strip()
 			topic = row["topic"].strip()
 			if script not in overlaps:
 				overlaps[script] = set()
-			overlaps[script].add((chapter, topic))
+			overlaps[script].add((subject, topic))
 	return overlaps
 
 #============================================
@@ -177,7 +177,7 @@ def pairs_to_label(pairs: set) -> str:
 def find_disagreements(all_results: dict, known_overlaps: dict = None) -> dict:
 	"""Compare classifications across models.
 
-	Each model's assignment for a script is now a set of (chapter, topic)
+	Each model's assignment for a script is now a set of (subject, topic)
 	pairs (supporting dual-subject classification). Agreement requires exact
 	set equality across all models that have the script.
 
@@ -186,7 +186,7 @@ def find_disagreements(all_results: dict, known_overlaps: dict = None) -> dict:
 		known_overlaps: output of load_known_overlaps(), or None
 
 	Returns:
-		dict with keys: chapter_agree, topic_agree, chapter_disagree,
+		dict with keys: subject_agree, topic_agree, subject_disagree,
 		topic_disagree, unique_scripts, known_overlap. Each is a list.
 	"""
 	if known_overlaps is None:
@@ -194,9 +194,9 @@ def find_disagreements(all_results: dict, known_overlaps: dict = None) -> dict:
 	models = sorted(all_results.keys())
 	all_scripts = sorted(get_all_scripts(all_results))
 
-	chapter_agree = []
+	subject_agree = []
 	topic_agree = []
-	chapter_disagree = []
+	subject_disagree = []
 	topic_disagree = []
 	unique_scripts = []
 	known_overlap = []
@@ -206,7 +206,7 @@ def find_disagreements(all_results: dict, known_overlaps: dict = None) -> dict:
 		present_in = {}
 		for model in models:
 			if script in all_results[model]:
-				# all_results[model][script] is a set of (chapter, topic) pairs
+				# all_results[model][script] is a set of (subject, topic) pairs
 				present_in[model] = all_results[model][script]
 
 		# Script not in all models
@@ -229,30 +229,30 @@ def find_disagreements(all_results: dict, known_overlaps: dict = None) -> dict:
 			agreed_pairs = pair_sets[0]
 			pair_label = pairs_to_label(agreed_pairs)
 			if len(agreed_pairs) == 1:
-				# Single-pair agreement: populate legacy chapter/topic fields
-				(chapter, topic) = next(iter(agreed_pairs))
+				# Single-pair agreement: populate legacy subject/topic fields
+				(subject, topic) = next(iter(agreed_pairs))
 			else:
-				# Multi-pair agreement: use label as chapter, empty topic
-				chapter = pair_label
+				# Multi-pair agreement: use label as subject, empty topic
+				subject = pair_label
 				topic = ""
 			topic_agree.append({
 				"script": script,
-				"chapter": chapter,
+				"subject": subject,
 				"topic": topic,
 				"pairs": agreed_pairs,
 			})
-			chapter_agree.append(script)
+			subject_agree.append(script)
 		else:
 			# Disagreement: determine whether the difference crosses subjects
-			# Flatten all pairs across models to check chapter-level spread
-			all_chapters = set(ch for ps in pair_sets for ch, _tp in ps)
+			# Flatten all pairs across models to check subject-level spread
+			all_subjects = set(subject for ps in pair_sets for subject, _topic in ps)
 
 			# Check if all pairs across all models are in known overlaps
 			valid_set = known_overlaps.get(script, set())
 			all_known = bool(valid_set) and all(
-				(ch, tp) in valid_set
-				for ps in pair_sets
-				for ch, tp in ps
+					(subject, topic) in valid_set
+					for ps in pair_sets
+					for subject, topic in ps
 			)
 			if all_known:
 				known_overlap.append({
@@ -260,9 +260,9 @@ def find_disagreements(all_results: dict, known_overlaps: dict = None) -> dict:
 					"assignments": present_in,
 					"valid_assignments": valid_set,
 				})
-			elif len(all_chapters) > 1:
+			elif len(all_subjects) > 1:
 				# Disagreement spans subjects
-				chapter_disagree.append({
+				subject_disagree.append({
 					"script": script,
 					"assignments": present_in,
 				})
@@ -274,9 +274,9 @@ def find_disagreements(all_results: dict, known_overlaps: dict = None) -> dict:
 				})
 
 	results = {
-		"chapter_agree": chapter_agree,
+		"subject_agree": subject_agree,
 		"topic_agree": topic_agree,
-		"chapter_disagree": chapter_disagree,
+		"subject_disagree": subject_disagree,
 		"topic_disagree": topic_disagree,
 		"unique_scripts": unique_scripts,
 		"known_overlap": known_overlap,
@@ -285,32 +285,32 @@ def find_disagreements(all_results: dict, known_overlaps: dict = None) -> dict:
 
 #============================================
 def print_overview_table(all_results: dict) -> None:
-	"""Print per-model chapter distribution table.
+	"""Print per-model subject distribution table.
 
 	Args:
 		all_results: output of load_all_results()
 	"""
 	models = sorted(all_results.keys())
 
-	# Collect all chapters; each value in assignments is a set of (chapter, topic) pairs
-	all_chapters = set()
+	# Collect all subjects; each value in assignments is a set of (subject, topic) pairs
+	all_subjects = set()
 	for assignments in all_results.values():
 		for pairs in assignments.values():
-			for chapter, _topic in pairs:
-				all_chapters.add(chapter)
+			for subject, _topic in pairs:
+				all_subjects.add(subject)
 
-	table = rich.table.Table(title="Scripts per Chapter by Model")
-	table.add_column("Chapter", style="bold")
+	table = rich.table.Table(title="Scripts per Subject by Model")
+	table.add_column("Subject", style="bold")
 	for model in models:
 		table.add_column(model, justify="right")
 
-	for chapter in sorted(all_chapters):
-		row = [chapter]
+	for subject in sorted(all_subjects):
+		row = [subject]
 		for model in models:
-			# Count scripts (not pairs) that have at least one pair with this chapter
+			# Count scripts (not pairs) that have at least one pair with this subject
 			count = sum(
 				1 for pairs in all_results[model].values()
-				if any(ch == chapter for ch, _tp in pairs)
+				if any(pair_subject == subject for pair_subject, _topic in pairs)
 			)
 			row.append(str(count))
 		table.add_row(*row)
@@ -333,7 +333,7 @@ def print_agreement_summary(disagreements: dict, total_scripts: int) -> None:
 		total_scripts: total unique scripts across all models
 	"""
 	n_topic_agree = len(disagreements["topic_agree"])
-	n_chapter_disagree = len(disagreements["chapter_disagree"])
+	n_subject_disagree = len(disagreements["subject_disagree"])
 	n_topic_disagree = len(disagreements["topic_disagree"])
 	n_unique = len(disagreements["unique_scripts"])
 	n_known = len(disagreements["known_overlap"])
@@ -341,27 +341,27 @@ def print_agreement_summary(disagreements: dict, total_scripts: int) -> None:
 	console.print()
 	console.print("[bold]Agreement Summary[/bold]")
 	console.print(f"  Total unique scripts: {total_scripts}")
-	console.print(f"  Full agreement (chapter + topic): [green]{n_topic_agree}[/green]")
+	console.print(f"  Full agreement (subject + topic): [green]{n_topic_agree}[/green]")
 	console.print(f"  Known overlaps (all valid): [blue]{n_known}[/blue]")
-	console.print(f"  Chapter disagreements: [red]{n_chapter_disagree}[/red]")
-	console.print(f"  Topic disagreements (same chapter): [yellow]{n_topic_disagree}[/yellow]")
+	console.print(f"  Subject disagreements: [red]{n_subject_disagree}[/red]")
+	console.print(f"  Topic disagreements (same subject): [yellow]{n_topic_disagree}[/yellow]")
 	console.print(f"  Not in all models: [cyan]{n_unique}[/cyan]")
 
 #============================================
-def print_chapter_disagreements(disagreements: dict, models: list, topic_lookup: dict) -> None:
-	"""Print table of scripts with chapter-level disagreements.
+def print_subject_disagreements(disagreements: dict, models: list, topic_lookup: dict) -> None:
+	"""Print table of scripts with subject-level disagreements.
 
 	Args:
 		disagreements: output of find_disagreements()
 		models: sorted list of model names
 		topic_lookup: output of build_topic_lookup()
 	"""
-	items = disagreements["chapter_disagree"]
+	items = disagreements["subject_disagree"]
 	if not items:
-		console.print("\n[green]No chapter-level disagreements.[/green]")
+		console.print("\n[green]No subject-level disagreements.[/green]")
 		return
 
-	table = rich.table.Table(title=f"Chapter Disagreements ({len(items)} scripts)", show_lines=True)
+	table = rich.table.Table(title=f"Subject Disagreements ({len(items)} scripts)", show_lines=True)
 	table.add_column("Script", style="bold")
 	for model in models:
 		table.add_column(model, min_width=22)
@@ -372,9 +372,12 @@ def print_chapter_disagreements(disagreements: dict, models: list, topic_lookup:
 		row = [script_short]
 		for model in models:
 			if model in item["assignments"]:
-				# assignments[model] is a set of (chapter, topic) pairs
+				# assignments[model] is a set of (subject, topic) pairs
 				pairs = item["assignments"][model]
-				labels = [format_assignment(ch, tp, topic_lookup) for ch, tp in sorted(pairs)]
+				labels = [
+					format_assignment(subject, topic, topic_lookup)
+					for subject, topic in sorted(pairs)
+				]
 				cell_text = "; ".join(labels)
 				row.append(f"[red]{cell_text}[/red]")
 			else:
@@ -408,12 +411,12 @@ def print_topic_disagreements(disagreements: dict, models: list, topic_lookup: d
 		row = [script_short]
 		for model in models:
 			if model in item["assignments"]:
-				# assignments[model] is a set of (chapter, topic) pairs
+				# assignments[model] is a set of (subject, topic) pairs
 				pairs = item["assignments"][model]
 				parts = []
-				for chapter, topic in sorted(pairs):
-					topic_name = topic_lookup.get((chapter, topic), "")
-					parts.append(f"{chapter}/[yellow]{topic} {topic_name}[/yellow]")
+				for subject, topic in sorted(pairs):
+					topic_name = topic_lookup.get((subject, topic), "")
+					parts.append(f"{subject}/[yellow]{topic} {topic_name}[/yellow]")
 				row.append("; ".join(parts))
 			else:
 				row.append("[dim]---[/dim]")
@@ -446,9 +449,12 @@ def print_unique_scripts(disagreements: dict, models: list, topic_lookup: dict) 
 		row = [script_short]
 		for model in models:
 			if model in item["assignments"]:
-				# assignments[model] is a set of (chapter, topic) pairs
+				# assignments[model] is a set of (subject, topic) pairs
 				pairs = item["assignments"][model]
-				labels = [format_assignment(ch, tp, topic_lookup) for ch, tp in sorted(pairs)]
+				labels = [
+					format_assignment(subject, topic, topic_lookup)
+					for subject, topic in sorted(pairs)
+				]
 				row.append("; ".join(labels))
 			else:
 				row.append("[dim]missing[/dim]")
@@ -459,10 +465,10 @@ def print_unique_scripts(disagreements: dict, models: list, topic_lookup: dict) 
 
 #============================================
 def build_topic_lookup() -> dict:
-	"""Build a lookup dict mapping (chapter, topic_id) to topic name.
+	"""Build a lookup dict mapping (subject, topic_id) to topic name.
 
 	Returns:
-		dict mapping (chapter, topic_id) tuples to topic name strings,
+		dict mapping (subject, topic_id) tuples to topic name strings,
 		e.g. {("biochemistry", "topic01"): "Life Molecules", ...}
 	"""
 	all_indexes = metadata_loader.load_all_indexes()
@@ -474,22 +480,22 @@ def build_topic_lookup() -> dict:
 	return lookup
 
 #============================================
-def format_assignment(chapter: str, topic: str, topic_lookup: dict) -> str:
-	"""Format a chapter/topic assignment with the topic title.
+def format_assignment(subject: str, topic: str, topic_lookup: dict) -> str:
+	"""Format a subject/topic assignment with the topic title.
 
 	Args:
-		chapter: subject name like 'biochemistry'
+		subject: subject name like 'biochemistry'
 		topic: topic id like 'topic07'
 		topic_lookup: output of build_topic_lookup()
 
 	Returns:
 		formatted string like 'biochemistry/topic07 Enzymes'
 	"""
-	topic_name = topic_lookup.get((chapter, topic), "")
+	topic_name = topic_lookup.get((subject, topic), "")
 	if topic_name:
-		result = f"{chapter}/{topic} {topic_name}"
+		result = f"{subject}/{topic} {topic_name}"
 	else:
-		result = f"{chapter}/{topic}"
+		result = f"{subject}/{topic}"
 	return result
 
 #============================================
@@ -574,27 +580,27 @@ def write_xlsx(all_results: dict, disagreements: dict, output_path: str, topic_l
 	# --- Sheet 1: Overview ---
 	ws_overview = wb.active
 	ws_overview.title = "Overview"
-	# Collect all chapters; each assignments value is a set of (chapter, topic) pairs
-	all_chapters = set()
+	# Collect all subjects; each assignments value is a set of (subject, topic) pairs
+	all_subjects = set()
 	for assignments in all_results.values():
 		for pairs in assignments.values():
-			for chapter, _topic in pairs:
-				all_chapters.add(chapter)
+			for subject, _topic in pairs:
+				all_subjects.add(subject)
 	# Write headers
-	overview_headers = ["Chapter"] + models
+	overview_headers = ["Subject"] + models
 	for col_idx, header in enumerate(overview_headers, 1):
 		cell = ws_overview.cell(row=1, column=col_idx, value=header)
 		cell.fill = header_fill
 		cell.font = header_font
-	# Write chapter rows
+	# Write subject rows
 	row_num = 2
-	for chapter in sorted(all_chapters):
-		ws_overview.cell(row=row_num, column=1, value=chapter)
+	for subject in sorted(all_subjects):
+		ws_overview.cell(row=row_num, column=1, value=subject)
 		for col_idx, model in enumerate(models, 2):
-			# Count scripts with at least one pair in this chapter
+			# Count scripts with at least one pair in this subject
 			count = sum(
 				1 for pairs in all_results[model].values()
-				if any(ch == chapter for ch, _tp in pairs)
+				if any(pair_subject == subject for pair_subject, _topic in pairs)
 			)
 			ws_overview.cell(row=row_num, column=col_idx, value=count)
 		row_num += 1
@@ -612,10 +618,10 @@ def write_xlsx(all_results: dict, disagreements: dict, output_path: str, topic_l
 	blue_fill = openpyxl.styles.PatternFill(start_color="6699FF", fill_type="solid")
 	summary_rows = [
 		("Total unique scripts", total_scripts, None),
-		("Full agreement (chapter + topic)", len(disagreements["topic_agree"]), green_fill),
+		("Full agreement (subject + topic)", len(disagreements["topic_agree"]), green_fill),
 		("Known overlaps (all valid)", len(disagreements["known_overlap"]), blue_fill),
-		("Chapter disagreements", len(disagreements["chapter_disagree"]), red_fill),
-		("Topic disagreements (same chapter)", len(disagreements["topic_disagree"]), yellow_fill),
+		("Subject disagreements", len(disagreements["subject_disagree"]), red_fill),
+		("Topic disagreements (same subject)", len(disagreements["topic_disagree"]), yellow_fill),
 		("Not in all models", len(disagreements["unique_scripts"]), cyan_fill),
 	]
 	# Headers
@@ -632,7 +638,7 @@ def write_xlsx(all_results: dict, disagreements: dict, output_path: str, topic_l
 
 	# --- Sheet 3: Agreements ---
 	ws_agree = wb.create_sheet("Agreements")
-	agree_headers = ["Folder", "Script", "Chapter/Topic"]
+	agree_headers = ["Folder", "Script", "Subject/Topic"]
 	for col_idx, header in enumerate(agree_headers, 1):
 		cell = ws_agree.cell(row=1, column=col_idx, value=header)
 		cell.fill = header_fill
@@ -641,8 +647,11 @@ def write_xlsx(all_results: dict, disagreements: dict, output_path: str, topic_l
 		folder, basename = split_script_path(item["script"])
 		ws_agree.cell(row=row_idx, column=1, value=folder)
 		ws_agree.cell(row=row_idx, column=2, value=basename)
-		# item["pairs"] is a set of (chapter, topic); render as sorted labels
-		labels = [format_assignment(ch, tp, topic_lookup) for ch, tp in sorted(item["pairs"])]
+		# item["pairs"] is a set of (subject, topic); render as sorted labels
+		labels = [
+			format_assignment(subject, topic, topic_lookup)
+			for subject, topic in sorted(item["pairs"])
+		]
 		cell_value = "; ".join(labels)
 		cell = ws_agree.cell(row=row_idx, column=3, value=cell_value)
 		cell.fill = green_fill
@@ -661,16 +670,16 @@ def write_xlsx(all_results: dict, disagreements: dict, output_path: str, topic_l
 		ws_overlaps.cell(row=row_idx, column=2, value=basename)
 		# List all valid assignments
 		valid_labels = []
-		for chapter, topic in sorted(item["valid_assignments"]):
-			valid_labels.append(format_assignment(chapter, topic, topic_lookup))
+		for subject, topic in sorted(item["valid_assignments"]):
+			valid_labels.append(format_assignment(subject, topic, topic_lookup))
 		cell = ws_overlaps.cell(row=row_idx, column=3, value=" | ".join(valid_labels))
 		cell.fill = blue_fill
 	auto_size_columns(ws_overlaps)
 
-	# --- Sheet 5: Chapter Disagreements ---
-	ws_chapter = wb.create_sheet("Chapter Disagreements")
+	# --- Sheet 5: Subject Disagreements ---
+	ws_subject = wb.create_sheet("Subject Disagreements")
 	_write_disagreement_sheet(
-		ws_chapter, disagreements["chapter_disagree"], models,
+		ws_subject, disagreements["subject_disagree"], models,
 		header_fill, header_font, red_fill, gray_fill, topic_lookup,
 	)
 
@@ -693,10 +702,10 @@ def write_xlsx(all_results: dict, disagreements: dict, output_path: str, topic_l
 
 #============================================
 def _find_majority_value(assignments: dict) -> str:
-	"""Find the most common chapter/topic value among model assignments.
+	"""Find the most common subject/topic value among model assignments.
 
 	Args:
-		assignments: dict mapping model to a set of (chapter, topic) pairs
+		assignments: dict mapping model to a set of (subject, topic) pairs
 
 	Returns:
 		most common sorted pair-label string (pairs_to_label output)
@@ -755,11 +764,14 @@ def _write_disagreement_sheet(
 
 		for col_idx, model in enumerate(models, 3):
 			if model in item["assignments"]:
-				# assignments[model] is a set of (chapter, topic) pairs
+				# assignments[model] is a set of (subject, topic) pairs
 				pairs = item["assignments"][model]
 				# Build sorted label for majority comparison
 				compare_key = pairs_to_label(pairs)
-				labels = [format_assignment(ch, tp, topic_lookup) for ch, tp in sorted(pairs)]
+				labels = [
+					format_assignment(subject, topic, topic_lookup)
+					for subject, topic in sorted(pairs)
+				]
 				cell_value = "; ".join(labels)
 				cell = ws.cell(row=row_idx, column=col_idx, value=cell_value)
 				# Highlight cells that differ from majority
@@ -778,8 +790,8 @@ def _to_bp_root(script: str) -> str:
 	Args:
 		script: path from a results-*/ CSV or a bbq_control task CSV.
 			Accepted forms:
-			- 'problems/<chapter>-problems/foo.py' (or with leading './')
-			- '{bp_root}/<chapter>-problems/foo.py'
+			- 'problems/<subject>-problems/foo.py' (or with leading './')
+			- '{bp_root}/<subject>-problems/foo.py'
 			- '{bp_mcs}/<dir>/foo.yml' (alias for multiple_choice_statements)
 			- '{bp_match}/<dir>/foo.yml' (alias for matching_sets)
 
@@ -874,9 +886,6 @@ def _collect_agreed_rows(disagreements: dict) -> list:
 		Rows are unique on (subject, topic, script) and sorted by that same key.
 	"""
 	# Track unique (subject, topic, normalized_script) triples.
-	# Note: upstream find_disagreements() still uses the legacy key name
-	# 'chapter' for the biochemistry/genetics/etc. level; we translate to
-	# 'subject' only in this output pathway.
 	triples = set()
 
 	# Full agreements - one row per agreed (subject, topic) pair
@@ -987,7 +996,7 @@ def main():
 	# Find and report disagreements
 	disagreements = find_disagreements(all_results, known_overlaps)
 	print_agreement_summary(disagreements, len(all_scripts))
-	print_chapter_disagreements(disagreements, models, topic_lookup)
+	print_subject_disagreements(disagreements, models, topic_lookup)
 	print_topic_disagreements(disagreements, models, topic_lookup)
 	print_unique_scripts(disagreements, models, topic_lookup)
 

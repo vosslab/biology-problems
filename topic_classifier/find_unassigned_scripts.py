@@ -146,16 +146,16 @@ def load_classifier_votes(base_dir: str) -> tuple:
 		for raw_script, pairs in assignments.items():
 			# Normalize to {bp_root}/... form for comparison with task CSVs
 			norm_script = compare_results._to_bp_root(raw_script)
-			# pairs is a set of (chapter, topic) tuples (dual-subject aware)
-			for chapter, topic in pairs:
-				chapter = chapter.strip()
+			# pairs is a set of (subject, topic) tuples (dual-subject aware)
+			for subject, topic in pairs:
+				subject = subject.strip()
 				topic = topic.strip()
-				if not chapter:
+				if not subject:
 					continue
 				subj_bucket = subject_votes.setdefault(norm_script, {})
-				subj_bucket[chapter] = subj_bucket.get(chapter, 0) + 1
+				subj_bucket[subject] = subj_bucket.get(subject, 0) + 1
 				topic_bucket = topic_votes.setdefault(norm_script, {})
-				key = (chapter, topic)
+				key = (subject, topic)
 				topic_bucket[key] = topic_bucket.get(key, 0) + 1
 	return subject_votes, topic_votes, sorted(models_seen)
 

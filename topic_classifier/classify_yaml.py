@@ -603,7 +603,7 @@ def _classify_subject_stage2(
 	existing_assignment = None
 	match = None
 	if existing_entry is not None:
-		existing_subject = existing_entry.get("subject") or existing_entry.get("chapter")
+		existing_subject = existing_entry["subject"]
 		existing_assignment = f"{existing_subject}/{existing_entry['topic']}"
 		match = (existing_subject == subject and existing_entry["topic"] == stage2["topic"])
 		if verbose:
@@ -764,8 +764,7 @@ def main():
 
 	# Deduplicate to first run per (yaml, subject) for CSV writing. The subject
 	# field is part of the identity here because a dual-subject yaml emits two
-	# rows that share the yaml path but differ by subject. The YAML twin keys on
-	# 'subject' while the scripts path keys on 'chapter'; flags are intentionally
+	# rows that share the yaml path but differ by subject. Flags are intentionally
 	# absent from the YAML dedup identity because classify_one_yaml hardcodes
 	# result["flags"] = "" (no meaningful per-row flags). If that ever changes,
 	# flags must be added back to this key.

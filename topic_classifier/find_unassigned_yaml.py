@@ -161,16 +161,16 @@ def load_yaml_classifier_votes(base_dir: str) -> tuple:
 				continue
 			# Normalize so it matches universe + assigned keys
 			norm_path = compare_results._to_bp_root(raw_script)
-			# pairs is a set of (chapter, topic) tuples (dual-subject aware)
-			for chapter, topic in pairs:
-				chapter = chapter.strip()
+			# pairs is a set of (subject, topic) tuples (dual-subject aware)
+			for subject, topic in pairs:
+				subject = subject.strip()
 				topic = topic.strip()
-				if not chapter:
+				if not subject:
 					continue
 				subj_bucket = subject_votes.setdefault(norm_path, {})
-				subj_bucket[chapter] = subj_bucket.get(chapter, 0) + 1
+				subj_bucket[subject] = subj_bucket.get(subject, 0) + 1
 				topic_bucket = topic_votes.setdefault(norm_path, {})
-				key = (chapter, topic)
+				key = (subject, topic)
 				topic_bucket[key] = topic_bucket.get(key, 0) + 1
 				contributed = True
 		if contributed:

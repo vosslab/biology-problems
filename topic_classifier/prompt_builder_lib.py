@@ -330,7 +330,7 @@ def _format_cross_examples(examples: list) -> str:
 	"""
 	lines = []
 	for ex in examples:
-		line = f"- {ex['script']} -> {ex['chapter']}/{ex['topic']}"
+		line = f"- {ex['script']} -> {ex['subject']}/{ex['topic']}"
 		lines.append(line)
 	result = "\n".join(lines)
 	return result

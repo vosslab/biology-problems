@@ -14,7 +14,7 @@ def read_existing_assignments(csv_dir: str) -> dict:
 
 	Returns:
 		dict mapping script path (with {bp_root} prefix) to dict with keys:
-		chapter, topic, flags, input, notes
+		subject, topic, flags, input, notes
 	"""
 	assignments = {}
 	csv_pattern = os.path.join(csv_dir, "*.csv")
@@ -39,10 +39,8 @@ def _read_single_csv(csv_path: str) -> dict:
 		header = next(reader)
 		# Strip whitespace from header
 		header = [col.strip() for col in header]
-		# Accept both the new 'subject' header and the legacy 'chapter' header
 		expected_subject = ["subject", "topic", "script", "flags", "input", "notes"]
-		expected_chapter = ["chapter", "topic", "script", "flags", "input", "notes"]
-		if header != expected_subject and header != expected_chapter:
+		if header != expected_subject:
 			print(f"WARNING: unexpected header in {csv_path}: {header}")
 			return assignments
 
@@ -64,11 +62,8 @@ def _read_single_csv(csv_path: str) -> dict:
 			if not script.startswith("{bp_root}"):
 				continue
 
-			# Store under both keys so legacy callers reading 'chapter' keep
-			# working alongside new callers reading 'subject'.
 			entry = {
 				"subject": subject,
-				"chapter": subject,
 				"topic": topic,
 				"flags": flags,
 				"input": input_file,
@@ -137,9 +132,7 @@ def get_examples_for_subject(assignments: dict, subject: str, limit: int = 5) ->
 	"""
 	examples = []
 	for key, entry in assignments.items():
-		# 'subject' is the new canonical key; 'chapter' is kept as a fallback
-		# for any legacy callers that still write it
-		if (entry.get("subject") or entry.get("chapter")) != subject:
+		if entry["subject"] != subject:
 			continue
 		script_path = get_script_path_from_key(key)
 		example = {
@@ -163,20 +156,20 @@ def get_cross_subject_examples(assignments: dict, limit: int = 5) -> list:
 		limit: max total examples
 
 	Returns:
-		list of dicts with script, chapter, topic keys
+		list of dicts with script, subject, topic keys
 	"""
 	# Collect one example per subject
 	seen_subjects = set()
 	examples = []
 	for key, entry in assignments.items():
-		subject = entry.get("subject") or entry.get("chapter")
+		subject = entry["subject"]
 		if subject in seen_subjects:
 			continue
 		seen_subjects.add(subject)
 		script_path = get_script_path_from_key(key)
 		example = {
 			"script": script_path,
-			"chapter": subject,
+			"subject": subject,
 			"topic": entry["topic"],
 		}
 		examples.append(example)
@@ -191,7 +184,7 @@ def write_result_csvs(results: list, output_dir: str) -> list:
 	All results are collected first, then written in one pass per subject.
 
 	Args:
-		results: list of dicts with keys: script, chapter, topic, flags, input, notes, status
+		results: list of dicts with keys: script, subject, topic, flags, input, notes, status
 		output_dir: directory to write CSV files into
 
 	Returns:
@@ -205,8 +198,7 @@ def write_result_csvs(results: list, output_dir: str) -> list:
 		# Only write classified results, not review-flagged
 		if result.get("status") != "classified":
 			continue
-		# Accept either new 'subject' key or legacy 'chapter' key
-		subject = result.get("subject") or result.get("chapter")
+		subject = result["subject"]
 		if subject not in by_subject:
 			by_subject[subject] = []
 		by_subject[subject].append(result)
@@ -234,7 +226,7 @@ def _write_single_csv(filepath: str, entries: list) -> None:
 		writer = csv.writer(f)
 		writer.writerow(["subject", "topic", "script", "flags", "input", "notes"])
 		for entry in entries:
-			subject = entry.get("subject") or entry.get("chapter", "")
+			subject = entry.get("subject", "")
 			writer.writerow([
 				subject,
 				entry["topic"],
@@ -254,7 +246,7 @@ if __name__ == '__main__':
 	# Show subject distribution
 	subjects = {}
 	for key, entry in assignments.items():
-		subject = entry.get("subject") or entry.get("chapter")
+		subject = entry["subject"]
 		subjects[subject] = subjects.get(subject, 0) + 1
 	for subject, count in sorted(subjects.items()):
 		print(f"  {subject}: {count} scripts")
@@ -263,4 +255,4 @@ if __name__ == '__main__':
 	print("\nCross-subject examples:")
 	examples = get_cross_subject_examples(assignments)
 	for ex in examples:
-		print(f"  {ex['chapter']}/{ex['topic']}: {ex['script']}")
+		print(f"  {ex['subject']}/{ex['topic']}: {ex['script']}")

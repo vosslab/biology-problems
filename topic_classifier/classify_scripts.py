@@ -394,7 +394,7 @@ def classify_one_script(
 			continue
 		if assignment_rank == "secondary":
 			console.print(
-				f"  secondary: accepted {result['chapter']}/{result['topic']} "
+				f"  secondary: accepted {result['subject']}/{result['topic']} "
 				f"(score {result['confidence_score']})", style="dim")
 		results.append(result)
 
@@ -473,7 +473,7 @@ def _classify_subject_stage2(
 		verbose: show extra debug output
 
 	Returns:
-		result dict keyed with 'chapter', or None when stage 2 finds no topic
+		result dict keyed with 'subject', or None when stage 2 finds no topic
 	"""
 	subject_data = all_indexes.get(subject, {"topics": []})
 	topics = subject_data["topics"]
@@ -514,8 +514,8 @@ def _classify_subject_stage2(
 	existing_assignment = None
 	match = None
 	if existing_entry is not None:
-		existing_assignment = f"{existing_entry['chapter']}/{existing_entry['topic']}"
-		match = (existing_entry["chapter"] == subject and existing_entry["topic"] == stage2["topic"])
+		existing_assignment = f"{existing_entry['subject']}/{existing_entry['topic']}"
+		match = (existing_entry["subject"] == subject and existing_entry["topic"] == stage2["topic"])
 		if verbose:
 			if match:
 				console.print(f"    existing: [green]{existing_assignment} (match)[/green]")
@@ -524,7 +524,7 @@ def _classify_subject_stage2(
 
 	result = {
 		"script": script_path,
-		"chapter": subject,
+		"subject": subject,
 		"topic": stage2["topic"],
 		"flags": flags,
 		"input": input_file,
@@ -569,10 +569,7 @@ def _build_run_args(flags: str, input_file: str, repo_root: str) -> list:
 	return args
 
 #============================================
-# Shared with classify_yaml.py via classifier_common. print_diff_report and
-# print_consistency_report in common transparently accept either 'subject'
-# or 'chapter' keys on result dicts, so classify_scripts.py can keep writing
-# 'chapter' without changes here.
+# Shared with classify_yaml.py via classifier_common.
 _get_topic_name = common.get_topic_name
 write_debug_log = common.write_debug_log
 print_diff_report = common.print_diff_report
@@ -588,13 +585,12 @@ def _make_failed_result(
 	flags: str = "",
 	input_file: str = "",
 ) -> dict:
-	"""Create a failed-classification result dict keyed with 'chapter'.
+	"""Create a failed-classification result dict.
 
-	A thin wrapper over common.make_failed_result that renames the
-	'subject' key back to 'chapter' so the existing classify_scripts.py
-	result schema stays unchanged, and overwrites the placeholder
-	flags/input fields with the actual variant so failed results from
-	different variants of the same script do not collide in dedup.
+	A thin wrapper over common.make_failed_result that overwrites the
+	placeholder flags/input fields with the actual variant so failed
+	results from different variants of the same script do not collide in
+	dedup.
 
 	Args:
 		script_path: relative path to script
@@ -605,10 +601,9 @@ def _make_failed_result(
 		input_file: input file path for this variant
 
 	Returns:
-		result dict with status='review' and 'chapter' key
+		result dict with status='review' and 'subject' key
 	"""
 	result = common.make_failed_result(script_path, execution_status, stage1, stage2)
-	result["chapter"] = result.pop("subject")
 	result["flags"] = flags
 	result["input"] = input_file
 	return result
@@ -751,9 +746,7 @@ def main():
 
 				# Collect for consistency report keyed by (variant, subject) so
 				# primary and secondary tally as separate per-subject outcomes.
-				# 'chapter' holds the subject label in script result dicts
-				# (the YAML twin uses 'subject' for the same value).
-				vote_key = f"{variant_key}|{result['chapter']}"
+				vote_key = f"{variant_key}|{result['subject']}"
 				if vote_key not in repeat_results:
 					repeat_results[vote_key] = []
 				repeat_results[vote_key].append(result)
@@ -763,19 +756,19 @@ def main():
 
 				topic_label = result.get("topic_name", result["topic"])
 				if num_repeats > 1:
-					# Condensed one-liner per run in repeat mode
+				# Condensed one-liner per run in repeat mode
 					status_tag = "[green]OK[/green]" if result["status"] == "classified" else "[yellow]??[/yellow]"
 					console.print(
-						f"    {status_tag} {result['chapter']}/{result['topic']} "
+						f"    {status_tag} {result['subject']}/{result['topic']} "
 						f"[cyan]{topic_label}[/cyan] ({result['confidence_score']})")
 				else:
 					if result["status"] == "classified":
 						console.print(
-							f"  [bold green][OK][/bold green] {result['chapter']}/{result['topic']} "
+							f"  [bold green][OK][/bold green] {result['subject']}/{result['topic']} "
 							f"[cyan]{topic_label}[/cyan] (score: {result['confidence_score']})")
 					else:
 						console.print(
-							f"  [bold yellow][??][/bold yellow] {result['chapter']}/{result['topic']} "
+							f"  [bold yellow][??][/bold yellow] {result['subject']}/{result['topic']} "
 							f"[cyan]{topic_label}[/cyan] (score: {result['confidence_score']})")
 
 		# Per-variant mini-rollup after all repeats. Vote keys are
@@ -791,7 +784,7 @@ def main():
 			subj_votes = {}
 			topic_votes = {}
 			for r in runs:
-				subj_votes[r["chapter"]] = subj_votes.get(r["chapter"], 0) + 1
+				subj_votes[r["subject"]] = subj_votes.get(r["subject"], 0) + 1
 				topic_votes[r["topic"]] = topic_votes.get(r["topic"], 0) + 1
 			top_subj = max(subj_votes, key=subj_votes.get)
 			top_topic = max(topic_votes, key=topic_votes.get)
@@ -825,10 +818,10 @@ def main():
 			else:
 				# Include subject prefix when subjects differ
 				if len(subj_votes) > 1:
-					# Build subject/topic pairs from runs
+				# Build subject/topic pairs from runs
 					pair_votes = {}
 					for r in runs:
-						pair = f"{r['chapter']}/{r['topic']}"
+						pair = f"{r['subject']}/{r['topic']}"
 						pair_votes[pair] = pair_votes.get(pair, 0) + 1
 					topic_str = "topic " + ", ".join(
 						f"{p} {c}" for p, c in sorted(pair_votes.items(), key=lambda x: -x[1]))
@@ -852,14 +845,14 @@ def main():
 	console.print(f"\nTotal classification time: [bold]{_format_duration(total_elapsed)}[/bold]")
 
 	# Write result CSVs using first run results only (avoid duplicates).
-	# Dedup by (script, flags, chapter) so each (variant, subject) is emitted
-	# once. The chapter (subject) field is part of the identity here because a
+	# Dedup by (script, flags, subject) so each (variant, subject) is emitted
+	# once. The subject field is part of the identity here because a
 	# dual-subject script emits two rows that share script+flags but differ by
-	# subject; scripts key on 'chapter' while the YAML twin keys on 'subject'.
+	# subject.
 	first_run_results = []
 	seen_variants = set()
 	for r in results:
-		variant_key = (r["script"], r["flags"], r["chapter"])
+		variant_key = (r["script"], r["flags"], r["subject"])
 		if variant_key not in seen_variants:
 			first_run_results.append(r)
 			seen_variants.add(variant_key)

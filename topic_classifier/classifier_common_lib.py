@@ -251,8 +251,8 @@ def write_debug_log(result: dict, debug_dir: str, log_name: str = "classificatio
 
 #============================================
 def _result_subject(r: dict) -> str:
-	"""Read subject from a result dict with chapter fallback."""
-	value = r.get("subject") or r.get("chapter") or ""
+	"""Read subject from a result dict."""
+	value = r.get("subject", "")
 	return value
 
 #============================================
