@@ -1,1 +1,1 @@
-../../qti-package-maker/tools/bbq_converter.py
+/Users/vosslab/nsh/PROBLEMS/qti-package-maker/tools/bbq_converter.py
