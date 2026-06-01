@@ -1,19 +1,19 @@
 # Changelog
 
 ## 2026-01-22
-- Resolved merge conflicts in [docs/CODE_ARCHITECTURE.md](docs/CODE_ARCHITECTURE.md) and [docs/FILE_STRUCTURE.md](docs/FILE_STRUCTURE.md) to align test/tool references with the current repo layout.
+- Resolved merge conflicts in [CODE_ARCHITECTURE.md](CODE_ARCHITECTURE.md) and [FILE_STRUCTURE.md](FILE_STRUCTURE.md) to align test/tool references with the current repo layout.
 - Standardized lxml etree imports in gene mapping and treelib HTML validation helpers after merge resolution.
-- Removed legacy [problems/multiple_choice_statements/yaml_to_pg.py](../problems/multiple_choice_statements/yaml_to_pg.py) during conflict cleanup to match the current PGML workflow.
+- Removed legacy `yaml_to_pg.py` during conflict cleanup to match the current PGML workflow.
 
 ## 2026-01-21
-- Removed emoji from [docs/webwork/MATCHING_PROBLEMS.md](webwork/MATCHING_PROBLEMS.md) to satisfy ASCII compliance tests.
-- Fixed the molecular biology test import path in [tests/test_check_complementary_sequences_prime.py](../tests/test_check_complementary_sequences_prime.py) to point at the `problems/` module location.
+- Removed emoji from `MATCHING_PROBLEMS.md` to satisfy ASCII compliance tests.
+- Fixed the molecular biology test import path in [test_check_complementary_sequences_prime.py](../tests/test_check_complementary_sequences_prime.py) to point at the `problems/` module location.
 - Modernized `problems/matching_sets/yaml_match_to_pgml.py` to use pure PGML style with `parserPopUp.pl` and inline answer specifications.
 - Discovered modern PGML approach in official WeBWorK PG tutorial sample `MatchingAlt.pg` (dated 2023-05-23) after examining latest PG library code.
 - Replaced legacy `PGchoicemacros.pl` with `DropDown` objects from `parserPopUp.pl`, eliminating `ANS()` calls and achieving pure PGML compliance.
 - Updated matching generator to put short terms in dropdowns (A, B, C) and longer descriptions as numbered prompts for better UX.
 - Verified modernized generator passes PGML linter with no errors or warnings.
-- Updated and renamed documentation from `MATCHING_PROBLEMS_LEGACY_STYLE.md` to [docs/webwork/MATCHING_PROBLEMS.md](webwork/MATCHING_PROBLEMS.md) to document both legacy and modern approaches with comparison table.
+- Updated and renamed documentation from `MATCHING_PROBLEMS_LEGACY_STYLE.md` to `MATCHING_PROBLEMS.md` to document both legacy and modern approaches with comparison table.
 
 ## 2026-01-20
 - Removed shebang lines from pytest test modules so they are run via pytest instead of as standalone scripts.
@@ -47,17 +47,17 @@
 - Added `webwork_lib.py` to generate OPL-style PG headers and wired it into matching and multiple-choice PG/PGML generators.
 - Added a full OPL-style header block to `yaml_make_match_pgml.py` output, sourcing optional YAML metadata and generating defaults.
 - Added `problems/matching_sets/yaml_make_match_pgml.py` to generate PGML matching problems from matching-set YAML files.
-- Added `docs/webwork/` as a dedicated place to store WebWork style guides (starting with [docs/webwork/INDEX.md](webwork/INDEX.md)).
-- Added a WeBWorK PG header/tagging style guide: [docs/webwork/WEBWORK_HEADER_STYLE.md](webwork/WEBWORK_HEADER_STYLE.md).
-- Added a PGML-first WeBWorK problem authoring guide: [docs/webwork/WEBWORK_PROBLEM_AUTHOR_GUIDE.md](webwork/WEBWORK_PROBLEM_AUTHOR_GUIDE.md).
-- Improved [tools/check_yaml.py](../tools/check_yaml.py) to validate one or more YAML files (or directories with `--recursive`) with quality checks (duplicate-key detection, basic schema checks for YAML banks, and tab-indentation checks).
-- Added a repo-wide pytest that parses all YAML files under `data/` and `problems/`: [tests/yaml/test_repo_yaml_files_parse.py](../tests/yaml/test_repo_yaml_files_parse.py).
-- Fixed invalid YAML in [problems/matching_sets/biotechnology/plant_transgenes.yml](../problems/matching_sets/biotechnology/plant_transgenes.yml) and [problems/matching_sets/inheritance/degrees_of_dominance.yml](../problems/matching_sets/inheritance/degrees_of_dominance.yml) so repo-wide YAML parsing passes.
+- Added `docs/webwork/` as a dedicated place to store WebWork style guides (starting with `INDEX.md`).
+- Added a WeBWorK PG header/tagging style guide: `WEBWORK_HEADER_STYLE.md`.
+- Added a PGML-first WeBWorK problem authoring guide: `WEBWORK_PROBLEM_AUTHOR_GUIDE.md`.
+- Improved [check_yaml.py](../tools/check_yaml.py) to validate one or more YAML files (or directories with `--recursive`) with quality checks (duplicate-key detection, basic schema checks for YAML banks, and tab-indentation checks).
+- Added a repo-wide pytest that parses all YAML files under `data/` and `problems/`: [test_repo_yaml_files_parse.py](../tests/yaml/test_repo_yaml_files_parse.py).
+- Fixed invalid YAML in [plant_transgenes.yml](../problems/matching_sets/biotechnology/plant_transgenes.yml) and [degrees_of_dominance.yml](../problems/matching_sets/inheritance/degrees_of_dominance.yml) so repo-wide YAML parsing passes.
 - Fixed mixed indentation in several generators/libraries so `pytest tests/test_indentation.py` passes (tabs only).
 
 ## 2026-01-16
 - Trimmed README documentation links to keep the standards list concise while retaining core pointers.
-- Refreshed [docs/CODE_ARCHITECTURE.md](docs/CODE_ARCHITECTURE.md) and [docs/FILE_STRUCTURE.md](docs/FILE_STRUCTURE.md) to match the current repo layout and content bank locations.
+- Refreshed [CODE_ARCHITECTURE.md](CODE_ARCHITECTURE.md) and [FILE_STRUCTURE.md](FILE_STRUCTURE.md) to match the current repo layout and content bank locations.
 - Grouped README documentation links into four sections to align with medium docset guidance.
 - Removed typing-module imports and parameterized type hints from pedigree genetics utilities and yaml_to_pg to match PYTHON_STYLE guidance.
 - Added `lxml` to `pip_requirements.txt` after switching HTML validation helpers to lxml etree.
@@ -91,93 +91,93 @@
 
 ## 2026-01-11
 - Fixed `mirror_pedigree()` in
-  [pedigree_lib/code_definitions.py](../problems/inheritance-problems/pedigrees/pedigree_lib/code_definitions.py)
+  [code_definitions.py](../problems/inheritance-problems/pedigrees/pedigree_lib/code_definitions.py)
   to pad rows to equal length before reversing, preserving vertical connector alignment.
 - Fixed `_compute_col_shift()` in
-  [pedigree_lib/graph_parse.py](../problems/inheritance-problems/pedigrees/pedigree_lib/graph_parse.py)
+  [graph_parse.py](../problems/inheritance-problems/pedigrees/pedigree_lib/graph_parse.py)
   to properly center the founding couple rather than pushing them to the left edge.
 - Added `strip_empty_columns()` in
-  [pedigree_lib/code_definitions.py](../problems/inheritance-problems/pedigrees/pedigree_lib/code_definitions.py)
+  [code_definitions.py](../problems/inheritance-problems/pedigrees/pedigree_lib/code_definitions.py)
   to remove columns that are entirely empty (dots) across all rows, compacting pedigree output.
 - Integrated empty column stripping into `render_graph_to_code()` in
-  [pedigree_lib/graph_parse.py](../problems/inheritance-problems/pedigrees/pedigree_lib/graph_parse.py).
+  [graph_parse.py](../problems/inheritance-problems/pedigrees/pedigree_lib/graph_parse.py).
 - Added balanced complexity support to `generate_pedigree_set()` in
   [write_pedigree_match_random.py](../problems/inheritance-problems/pedigrees/write_pedigree_match_random.py)
   with `min_individuals`, `max_individuals`, and `max_size_spread` parameters.
 - Added pytest coverage for pedigree layout centering validation in
-  [tests/libs/pedigrees/test_pedigrees_layout_centering.py](../tests/libs/pedigrees/test_pedigrees_layout_centering.py).
+  [test_pedigrees_layout_centering.py](../tests/libs/pedigrees/test_pedigrees_layout_centering.py).
 - Added pytest coverage for mirror and strip functions in
-  [tests/libs/pedigrees/test_pedigrees_pedigree_code_lib.py](../tests/libs/pedigrees/test_pedigrees_pedigree_code_lib.py).
+  [test_pedigrees_pedigree_code_lib.py](../tests/libs/pedigrees/test_pedigrees_pedigree_code_lib.py).
 - Added a random pedigree generation matching question generator in
-  [problems/inheritance-problems/pedigrees/write_pedigree_match_random.py](../problems/inheritance-problems/pedigrees/write_pedigree_match_random.py)
+  [write_pedigree_match_random.py](../problems/inheritance-problems/pedigrees/write_pedigree_match_random.py)
   that uses the skeleton and inheritance assignment engines instead of static templates.
 - Added X-linked dominant inheritance assignment to
-  [problems/inheritance-problems/pedigrees/pedigree_lib/inheritance_assign.py](../problems/inheritance-problems/pedigrees/pedigree_lib/inheritance_assign.py)
+  [inheritance_assign.py](../problems/inheritance-problems/pedigrees/pedigree_lib/inheritance_assign.py)
   (affected males pass to all daughters, affected mothers pass to ~50% of children).
 - Improved autosomal recessive and X-linked recessive inheritance assignment in
-  [problems/inheritance-problems/pedigrees/pedigree_lib/inheritance_assign.py](../problems/inheritance-problems/pedigrees/pedigree_lib/inheritance_assign.py)
+  [inheritance_assign.py](../problems/inheritance-problems/pedigrees/pedigree_lib/inheritance_assign.py)
   to track carrier status internally, ensuring affected offspring are produced reliably
   even when `show_carriers=False`.
 - Fixed skeleton generation in
-  [problems/inheritance-problems/pedigrees/pedigree_lib/skeleton.py](../problems/inheritance-problems/pedigrees/pedigree_lib/skeleton.py)
+  [skeleton.py](../problems/inheritance-problems/pedigrees/pedigree_lib/skeleton.py)
   to avoid creating couples in the last generation (which would have no children).
 - Added debug HTML comments with `pedigree_code_string` in
-  [problems/inheritance-problems/pedigrees/pedigree_lib/html_output.py](../problems/inheritance-problems/pedigrees/pedigree_lib/html_output.py)
+  [html_output.py](../problems/inheritance-problems/pedigrees/pedigree_lib/html_output.py)
   for easier debugging of rendered pedigrees; dashes are escaped to avoid invalid XML.
 - Added validation in `write_pedigree_match_random.py` to reject pedigrees with childless couples.
 - Added pytest coverage for skeleton childless-couple prevention and HTML comment escaping in
-  [tests/libs/pedigrees/](../tests/libs/pedigrees/).
-- Expanded [problems/biochemistry-problems/Henderson-Hasselbalch.py](problems/biochemistry-problems/Henderson-Hasselbalch.py) to support `-t` question types `pH`, `pKa`, and `ratio` (numeric or MC formats) in addition to `equation`, using the shared biochemistry buffers library for acid/base scenarios.
+  `pedigrees`.
+- Expanded [Henderson-Hasselbalch.py](../problems/biochemistry-problems/buffers/Henderson-Hasselbalch.py) to support `-t` question types `pH`, `pKa`, and `ratio` (numeric or MC formats) in addition to `equation`, using the shared biochemistry buffers library for acid/base scenarios.
 - Updated Henderson-Hasselbalch concentration units to M/mM/&mu;M for intro-biochemistry readability and aligned repo-root resolution with the shared bptools git-root helper.
-- Removed the optional `bptools` import fallback in [problems/biochemistry-problems/Henderson-Hasselbalch.py](problems/biochemistry-problems/Henderson-Hasselbalch.py); `bptools` is now required at import time.
-- Added pytest coverage for Henderson-Hasselbalch calculation helpers in [tests/libs/test_henderson_hasselbalch.py](tests/libs/test_henderson_hasselbalch.py).
-- Fixed PubChem SMILES fetching to handle current PubChem REST responses that provide `SMILES` instead of `IsomericSMILES` in [problems/biochemistry-problems/PUBCHEM/pubchemlib.py](problems/biochemistry-problems/PUBCHEM/pubchemlib.py).
-- Moved PubChem molecule persistence from a local cache file to [data/pubchem_molecules_data.yml](data/pubchem_molecules_data.yml) (with automatic migration from the legacy `cache_pubchem_molecules.yml`).
-- Expanded [problems/biochemistry-problems/PUBCHEM/which_amino_acid_mc.py](problems/biochemistry-problems/PUBCHEM/which_amino_acid_mc.py) to support a FIB mode (`--fib`) in addition to MC.
-- Added a small pytest for PubChem SMILES extraction in [tests/libs/pubchem/test_pubchem_smiles_extraction.py](tests/libs/pubchem/test_pubchem_smiles_extraction.py).
-- Fixed `--ma` default choice handling in [problems/biochemistry-problems/alpha_helix_h-bonds.py](problems/biochemistry-problems/alpha_helix_h-bonds.py) so MA no longer errors unless the user explicitly sets `-c/--num-choices` below the minimum.
-- Simplified the metabolic pathway HTML table layout in [problems/biochemistry-problems/metaboliclib.py](problems/biochemistry-problems/metaboliclib.py) to avoid extra empty columns in text previews.
-- Expanded the example pools for hydrophobic/hydrophilic compounds in [problems/biochemistry-problems/which_hydrophobic-simple.py](problems/biochemistry-problems/which_hydrophobic-simple.py) to be more obvious for intro students.
+- Removed the optional `bptools` import fallback in [Henderson-Hasselbalch.py](../problems/biochemistry-problems/buffers/Henderson-Hasselbalch.py); `bptools` is now required at import time.
+- Added pytest coverage for Henderson-Hasselbalch calculation helpers in [test_henderson_hasselbalch.py](../tests/libs/test_henderson_hasselbalch.py).
+- Fixed PubChem SMILES fetching to handle current PubChem REST responses that provide `SMILES` instead of `IsomericSMILES` in [pubchemlib.py](../problems/biochemistry-problems/PUBCHEM/pubchemlib.py).
+- Moved PubChem molecule persistence from a local cache file to [pubchem_molecules_data.yml](../data/pubchem_molecules_data.yml) (with automatic migration from the legacy `cache_pubchem_molecules.yml`).
+- Expanded `which_amino_acid_mc.py` to support a FIB mode (`--fib`) in addition to MC.
+- Added a small pytest for PubChem SMILES extraction in [test_pubchem_smiles_extraction.py](../tests/libs/pubchem/test_pubchem_smiles_extraction.py).
+- Fixed `--ma` default choice handling in [alpha_helix_h-bonds.py](../problems/biochemistry-problems/alpha_helix_h-bonds.py) so MA no longer errors unless the user explicitly sets `-c/--num-choices` below the minimum.
+- Simplified the metabolic pathway HTML table layout in [metaboliclib.py](../problems/biochemistry-problems/enzymes/metaboliclib.py) to avoid extra empty columns in text previews.
+- Expanded the example pools for hydrophobic/hydrophilic compounds in [which_hydrophobic-simple.py](../problems/biochemistry-problems/lipids/which_hydrophobic-simple.py) to be more obvious for intro students.
 - Refactored `bptools.make_outfile(...)` so the base filename prefers `sys.modules["__main__"].__file__` (then falls back to `sys.argv[0]`) while still treating positional args as suffix parts and ignoring legacy leading `None`/`__file__`, preventing cross-script output filename collisions like `bbq-MC-questions.txt`.
 - In `bptools.make_outfile(...)`, added a wrapper fallback to use `sys.argv[1]`/`sys.argv[2]` when `sys.argv[0]` is `-c`/`-m` (or otherwise not a `.py` path).
-- Converted [problems/biochemistry-problems/michaelis_menten_table-Km.py](problems/biochemistry-problems/michaelis_menten_table-Km.py) and [problems/biochemistry-problems/michaelis_menten_table-inhibition.py](problems/biochemistry-problems/michaelis_menten_table-inhibition.py) from batch generators to single-question writers using deterministic scenario selection via `idx = (N - 1) % len(scenarios)` (no change to `-d/--duplicates` or `-x/--max-questions` semantics).
-- Converted [problems/biochemistry-problems/carbohydrates_classification/D_to_L_Haworth_configuration.py](problems/biochemistry-problems/carbohydrates_classification/D_to_L_Haworth_configuration.py) and [problems/biochemistry-problems/carbohydrates_classification/D_to_L_Fischer_configuration.py](problems/biochemistry-problems/carbohydrates_classification/D_to_L_Fischer_configuration.py) from batch generators to single-question writers using deterministic scenario selection via `idx = (N - 1) % len(scenarios)` (no change to `-d/--duplicates` or `-x/--max-questions` semantics).
+- Converted [michaelis_menten_table-Km.py](../problems/biochemistry-problems/enzymes/michaelis_menten_table-Km.py) and [michaelis_menten_table-inhibition.py](../problems/biochemistry-problems/enzymes/michaelis_menten_table-inhibition.py) from batch generators to single-question writers using deterministic scenario selection via `idx = (N - 1) % len(scenarios)` (no change to `-d/--duplicates` or `-x/--max-questions` semantics).
+- Converted [D_to_L_Haworth_configuration.py](../problems/biochemistry-problems/carbs/D_to_L_Haworth_configuration.py) and [D_to_L_Fischer_configuration.py](../problems/biochemistry-problems/carbs/D_to_L_Fischer_configuration.py) from batch generators to single-question writers using deterministic scenario selection via `idx = (N - 1) % len(scenarios)` (no change to `-d/--duplicates` or `-x/--max-questions` semantics).
 - Stopped storing non-CLI state on `args` by moving precomputed sugar scenario state into module-level caches for the D/L Haworth and Fischer configuration scripts.
-- Documented the rule that `args` is reserved for CLI arguments in [docs/PYTHON_STYLE.md](docs/PYTHON_STYLE.md).
-- Updated [AGENTS.md](AGENTS.md) to prefer random scenario selection for student assessment use-cases (deterministic cycling mainly for debugging/tests).
-- Clarified in [docs/PYTHON_STYLE.md](docs/PYTHON_STYLE.md) that while global state is generally discouraged, module-level read-only caches initialized in `main()` are acceptable for expensive precomputed data in `write_question(N, args)` generators.
-- Added guidance to [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md) for converting cartesian-product batch generators to single-question scripts using a prebuilt `scenarios` list + modulo-`N` selection (and when *not* to shuffle scenarios).
-- Reorganized [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md) by consolidating batch-to-single conversion guidance (options, scenario ordering, and related refactors) into a dedicated section, adding a "Common Upgrade Gotchas" section, and clarifying that randomized ordering should be implemented as "shuffle once + modulo-N" (not `random.choice(...)`).
-- Documented in [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md) that fully random batch writers are discouraged (prefer shuffle-once + modulo-N individual selection).
+- Documented the rule that `args` is reserved for CLI arguments in [PYTHON_STYLE.md](PYTHON_STYLE.md).
+- Updated [AGENTS.md](../AGENTS.md) to prefer random scenario selection for student assessment use-cases (deterministic cycling mainly for debugging/tests).
+- Clarified in [PYTHON_STYLE.md](PYTHON_STYLE.md) that while global state is generally discouraged, module-level read-only caches initialized in `main()` are acceptable for expensive precomputed data in `write_question(N, args)` generators.
+- Added guidance to [UNIFICATION_PLAN.md](UNIFICATION_PLAN.md) for converting cartesian-product batch generators to single-question scripts using a prebuilt `scenarios` list + modulo-`N` selection (and when *not* to shuffle scenarios).
+- Reorganized [UNIFICATION_PLAN.md](UNIFICATION_PLAN.md) by consolidating batch-to-single conversion guidance (options, scenario ordering, and related refactors) into a dedicated section, adding a "Common Upgrade Gotchas" section, and clarifying that randomized ordering should be implemented as "shuffle once + modulo-N" (not `random.choice(...)`).
+- Documented in [UNIFICATION_PLAN.md](UNIFICATION_PLAN.md) that fully random batch writers are discouraged (prefer shuffle-once + modulo-N individual selection).
 - Added a one-time deprecation warning when `bptools.collect_question_batches(...)` is used to discourage new scripts from adopting the batch-writer pattern.
-- Converted [problems/biochemistry-problems/carbohydrates_classification/classify_Fischer.py](problems/biochemistry-problems/carbohydrates_classification/classify_Fischer.py) and [problems/biochemistry-problems/carbohydrates_classification/classify_Haworth.py](problems/biochemistry-problems/carbohydrates_classification/classify_Haworth.py) from batch generators to single-question writers using modulo-`N` scenario selection, removing non-CLI state stored on `args`.
+- Converted [classify_Fischer.py](../problems/biochemistry-problems/carbs/classify_Fischer.py) and [classify_Haworth.py](../problems/biochemistry-problems/carbs/classify_Haworth.py) from batch generators to single-question writers using modulo-`N` scenario selection, removing non-CLI state stored on `args`.
 	- Added `bptools.add_scenario_args(parser)` (`--random` default, `--sorted` optional) and wired it into the carbohydrates and Michaelis-Menten scenario-based scripts to control scenario ordering without changing `-d/-x` semantics.
-	- Applied the same precomputed-scenarios + modulo-`N` selection pattern (with `--random/--sorted`) to: [problems/biochemistry-problems/PUBCHEM/match_amino_acid_structures.py](problems/biochemistry-problems/PUBCHEM/match_amino_acid_structures.py), [problems/biochemistry-problems/PUBCHEM/which_amino_acid.py](problems/biochemistry-problems/PUBCHEM/which_amino_acid.py), [problems/inheritance-problems/monohybrid_genotype_statements.py](problems/inheritance-problems/monohybrid_genotype_statements.py), [problems/inheritance-problems/pedigrees/write_pedigree_choice.py](problems/inheritance-problems/pedigrees/write_pedigree_choice.py), [problems/inheritance-problems/pedigrees/write_pedigree_match.py](problems/inheritance-problems/pedigrees/write_pedigree_match.py), [problems/molecular_biology-problems/amplicon_copies.py](problems/molecular_biology-problems/amplicon_copies.py), [problems/molecular_biology-problems/dna_melting_temp.py](problems/molecular_biology-problems/dna_melting_temp.py), [problems/molecular_biology-problems/overhang_sequence.py](problems/molecular_biology-problems/overhang_sequence.py), and [problems/molecular_biology-problems/overhang_type.py](problems/molecular_biology-problems/overhang_type.py).
+	- Applied the same precomputed-scenarios + modulo-`N` selection pattern (with `--random/--sorted`) to: [match_amino_acid_structures.py](../problems/biochemistry-problems/PUBCHEM/AMINO_ACIDS/match_amino_acid_structures.py), [which_amino_acid.py](../problems/biochemistry-problems/PUBCHEM/AMINO_ACIDS/which_amino_acid.py), [monohybrid_genotype_statements.py](../problems/inheritance-problems/monohybrid_genotype_statements.py), [write_pedigree_choice.py](../problems/inheritance-problems/pedigrees/write_pedigree_choice.py), [write_pedigree_match.py](../problems/inheritance-problems/pedigrees/write_pedigree_match.py), [amplicon_copies.py](../problems/molecular_biology-problems/amplicon_copies.py), [dna_melting_temp.py](../problems/molecular_biology-problems/dna_melting_temp.py), [overhang_sequence.py](../problems/molecular_biology-problems/overhang_sequence.py), and [overhang_type.py](../problems/molecular_biology-problems/overhang_type.py).
 	- Fixed `pedigree_lib` local import resolution in the template-based pedigree scripts so they run from repo root without `ModuleNotFoundError`.
-	- Converted [problems/biochemistry-problems/carbohydrates_classification/convert_Fischer_to_Haworth.py](problems/biochemistry-problems/carbohydrates_classification/convert_Fischer_to_Haworth.py) and [problems/biochemistry-problems/carbohydrates_classification/convert_Haworth_to_Fischer.py](problems/biochemistry-problems/carbohydrates_classification/convert_Haworth_to_Fischer.py) from batch generators to single-question writers with prebuilt scenarios (optionally shuffled via `--random`) and modulo-`N` selection.
-- Refactored gene mapping generators to the unified bptools framework (standard `-d/-x` args, `bptools.make_outfile(...)`, and `bptools.collect_and_write_questions(...)`): [problems/inheritance-problems/gene_mapping/tetrad_ordered-centromere_distance.py](problems/inheritance-problems/gene_mapping/tetrad_ordered-centromere_distance.py), [problems/inheritance-problems/gene_mapping/tetrad_unordered_three_gene-distances_plus.py](problems/inheritance-problems/gene_mapping/tetrad_unordered_three_gene-distances_plus.py), [problems/inheritance-problems/gene_mapping/tetrad_unordered_three_gene-find_one_distance.py](problems/inheritance-problems/gene_mapping/tetrad_unordered_three_gene-find_one_distance.py), [problems/inheritance-problems/gene_mapping/tetrad_unordered_two_gene-find_distance.py](problems/inheritance-problems/gene_mapping/tetrad_unordered_two_gene-find_distance.py), [problems/inheritance-problems/gene_mapping/tetrad_unordered_two_gene-test_linkage.py](problems/inheritance-problems/gene_mapping/tetrad_unordered_two_gene-test_linkage.py), [problems/inheritance-problems/gene_mapping/three-point_test_cross-distances_plus.py](problems/inheritance-problems/gene_mapping/three-point_test_cross-distances_plus.py), [problems/inheritance-problems/gene_mapping/three-point_test_cross-find_interence.py](problems/inheritance-problems/gene_mapping/three-point_test_cross-find_interence.py), [problems/inheritance-problems/gene_mapping/three-point_test_cross-one_gene_distance.py](problems/inheritance-problems/gene_mapping/three-point_test_cross-one_gene_distance.py), and [problems/inheritance-problems/gene_mapping/three-point_test_cross-which_genotypes.py](problems/inheritance-problems/gene_mapping/three-point_test_cross-which_genotypes.py).
+	- Converted [convert_Fischer_to_Haworth.py](../problems/biochemistry-problems/carbs/convert_Fischer_to_Haworth.py) and [convert_Haworth_to_Fischer.py](../problems/biochemistry-problems/carbs/convert_Haworth_to_Fischer.py) from batch generators to single-question writers with prebuilt scenarios (optionally shuffled via `--random`) and modulo-`N` selection.
+- Refactored gene mapping generators to the unified bptools framework (standard `-d/-x` args, `bptools.make_outfile(...)`, and `bptools.collect_and_write_questions(...)`): [tetrad_ordered-centromere_distance.py](../problems/inheritance-problems/gene_mapping/tetrad_ordered-centromere_distance.py), [tetrad_unordered_three_gene-distances_plus.py](../problems/inheritance-problems/gene_mapping/tetrad_unordered_three_gene-distances_plus.py), [tetrad_unordered_three_gene-find_one_distance.py](../problems/inheritance-problems/gene_mapping/tetrad_unordered_three_gene-find_one_distance.py), [tetrad_unordered_two_gene-find_distance.py](../problems/inheritance-problems/gene_mapping/tetrad_unordered_two_gene-find_distance.py), [tetrad_unordered_two_gene-test_linkage.py](../problems/inheritance-problems/gene_mapping/tetrad_unordered_two_gene-test_linkage.py), [three-point_test_cross-distances_plus.py](../problems/inheritance-problems/gene_mapping/three-point_test_cross-distances_plus.py), [three-point_test_cross-find_interence.py](../problems/inheritance-problems/gene_mapping/three-point_test_cross-find_interence.py), [three-point_test_cross-one_gene_distance.py](../problems/inheritance-problems/gene_mapping/three-point_test_cross-one_gene_distance.py), and [three-point_test_cross-which_genotypes.py](../problems/inheritance-problems/gene_mapping/three-point_test_cross-which_genotypes.py).
 
 ## 2026-01-09
-- Updated [docs/CODE_ARCHITECTURE.md](CODE_ARCHITECTURE.md) with expanded component descriptions, clearer data flow, testing details, and known gaps.
-- Updated [docs/FILE_STRUCTURE.md](FILE_STRUCTURE.md) with current top-level layout, comprehensive library module listings, tools/tests directory details, and practical guidance for adding new work.
+- Updated [CODE_ARCHITECTURE.md](CODE_ARCHITECTURE.md) with expanded component descriptions, clearer data flow, testing details, and known gaps.
+- Updated [FILE_STRUCTURE.md](FILE_STRUCTURE.md) with current top-level layout, comprehensive library module listings, tools/tests directory details, and practical guidance for adding new work.
 
 ## 2026-01-06
 - Updated the phylogenetic tree gene tree choice/match generators to use the shared
   bptools question framework with standard args, hint handling, and outfile helpers:
-  [problems/inheritance-problems/phylogenetic_trees/gene_tree_choice_plus.py](problems/inheritance-problems/phylogenetic_trees/gene_tree_choice_plus.py),
-  [problems/inheritance-problems/phylogenetic_trees/gene_tree_matches_plus.py](problems/inheritance-problems/phylogenetic_trees/gene_tree_matches_plus.py).
+  [gene_tree_choice_plus.py](../problems/inheritance-problems/phylogenetic_trees/gene_tree_choice_plus.py),
+  [gene_tree_matches_plus.py](../problems/inheritance-problems/phylogenetic_trees/gene_tree_matches_plus.py).
 - Refactored PubChem biochemistry generators to use the shared bptools question framework
   (standard args, outfile helpers, and shared collection utilities):
-  [problems/biochemistry-problems/PUBCHEM/match_amino_acid_structures.py](problems/biochemistry-problems/PUBCHEM/match_amino_acid_structures.py),
-  [problems/biochemistry-problems/PUBCHEM/order_glycolysis_molecules.py](problems/biochemistry-problems/PUBCHEM/order_glycolysis_molecules.py),
-  [problems/biochemistry-problems/PUBCHEM/polypeptide_fib_sequence.py](problems/biochemistry-problems/PUBCHEM/polypeptide_fib_sequence.py),
-  [problems/biochemistry-problems/PUBCHEM/which_amino_acid_mc.py](problems/biochemistry-problems/PUBCHEM/which_amino_acid_mc.py),
-  [problems/biochemistry-problems/PUBCHEM/which_macromolecule.py](problems/biochemistry-problems/PUBCHEM/which_macromolecule.py),
-  [problems/biochemistry-problems/PUBCHEM/wordle_peptides.py](problems/biochemistry-problems/PUBCHEM/wordle_peptides.py).
+  [match_amino_acid_structures.py](../problems/biochemistry-problems/PUBCHEM/AMINO_ACIDS/match_amino_acid_structures.py),
+  [order_glycolysis_molecules.py](../problems/biochemistry-problems/PUBCHEM/GLYCOLYSIS/order_glycolysis_molecules.py),
+  [polypeptide_fib_sequence.py](../problems/biochemistry-problems/PUBCHEM/PEPTIDES/polypeptide_fib_sequence.py),
+  `which_amino_acid_mc.py`,
+  [which_macromolecule.py](../problems/biochemistry-problems/PUBCHEM/MACROMOLECULE_CATEGORIZE/which_macromolecule.py),
+  [wordle_peptides.py](../problems/biochemistry-problems/PUBCHEM/PEPTIDES/wordle_peptides.py).
 - Added lightweight pytest coverage for PubChem generator text builders and local data loaders in
-  [tests/libs/pubchem/test_pubchem_generators.py](tests/libs/pubchem/test_pubchem_generators.py).
+  [test_pubchem_generators.py](../tests/libs/pubchem/test_pubchem_generators.py).
 - Added lightweight pytest coverage for biostatistics box plot generators in
-  [tests/libs/biostatistics/test_biostatistics_boxplots.py](tests/libs/biostatistics/test_biostatistics_boxplots.py).
+  [test_biostatistics_boxplots.py](../tests/libs/biostatistics/test_biostatistics_boxplots.py).
 
 ## 2026-01-05
 - Fixed pyflakes issues across multiple generators (unused imports/variables, missing helper functions, and indentation errors).
@@ -209,29 +209,29 @@
 - Added `docs/QUESTION_FUNCTION_INDEX.md` and `tools/build_question_function_index.py` to track question-creator functions and their Git creation dates.
 - Improved `tools/build_question_function_index.py` to better trace function origins across renames/moves and to show daily headings (YYYY-MM-DD), skipping symlink shims and using file "first seen" fallback dates when true file-add commits aren't available.
 - Renamed the Kaleidoscope ladder helper module to
-  [problems/biochemistry-problems/kaleidoscope_ladder/protein_ladder_lib.py](problems/biochemistry-problems/kaleidoscope_ladder/protein_ladder_lib.py) and added a compatibility shim
-  [problems/biochemistry-problems/kaleidoscope_ladder/ladder.py](problems/biochemistry-problems/kaleidoscope_ladder/ladder.py).
+  [protein_ladder_lib.py](../problems/biochemistry-problems/electrophoresis/kaleidoscope_ladder/protein_ladder_lib.py) and added a compatibility shim
+  `ladder.py`.
 - Added a preliminary Kaleidoscope ladder mapping generator in
-  [problems/biochemistry-problems/kaleidoscope_ladder/kaleidoscope_ladder_mapping.py](problems/biochemistry-problems/kaleidoscope_ladder/kaleidoscope_ladder_mapping.py) with mapping + unknown-size estimate questions and pytest coverage.
+  [kaleidoscope_ladder_mapping.py](../problems/biochemistry-problems/electrophoresis/kaleidoscope_ladder/kaleidoscope_ladder_mapping.py) with mapping + unknown-size estimate questions and pytest coverage.
 - Added a lane-based Kaleidoscope gel question generator in
-  [problems/biochemistry-problems/kaleidoscope_ladder/kaleidoscope_ladder_unknown_band_mw.py](problems/biochemistry-problems/kaleidoscope_ladder/kaleidoscope_ladder_unknown_band_mw.py) (Lane 1 ladder, Lane 2 unknown band), including too-short/too-long run scenarios.
+  `kaleidoscope_ladder_unknown_band_mw.py` (Lane 1 ladder, Lane 2 unknown band), including too-short/too-long run scenarios.
 - Added an MC-only Kaleidoscope gel question generator that uses real protein MWs but anonymous lane labeling in the prompt:
-  [problems/biochemistry-problems/kaleidoscope_ladder/kaleidoscope_ladder_unknown_band_protein_mc.py](problems/biochemistry-problems/kaleidoscope_ladder/kaleidoscope_ladder_unknown_band_protein_mc.py).
+  `kaleidoscope_ladder_unknown_band_protein_mc.py`.
 - Updated the Kaleidoscope ladder scripts to use the standard `bptools.make_arg_parser` / `bptools.collect_and_write_questions` CLI framework (default `-d 2` questions).
 - Removed custom `-o/--outfile` CLI overrides so Kaleidoscope ladder scripts use the standard `bptools.make_outfile(None)` naming.
 - Refactored additional legacy generators to the standard `bptools.make_arg_parser` / `bptools.collect_and_write_questions` single-question framework:
-  [problems/biochemistry-problems/buffers/pKa_buffer_state.py](problems/biochemistry-problems/buffers/pKa_buffer_state.py),
-  [problems/biochemistry-problems/fret_permute_colors.py](problems/biochemistry-problems/fret_permute_colors.py),
-  [problems/biochemistry-problems/macromolecules_categorize_by_name.py](problems/biochemistry-problems/macromolecules_categorize_by_name.py),
-  [problems/biochemistry-problems/photosynthetic_light_pigments.py](problems/biochemistry-problems/photosynthetic_light_pigments.py),
-  [problems/biochemistry-problems/quick_fatty_acid_colon_system.py](problems/biochemistry-problems/quick_fatty_acid_colon_system.py),
-  [problems/biostatistics-problems/busse_woods_anova.py](problems/biostatistics-problems/busse_woods_anova.py),
-  [problems/biostatistics-problems/busse_woods_two_sample_f_test.py](problems/biostatistics-problems/busse_woods_two_sample_f_test.py),
-  [problems/inheritance-problems/blood_type_mother.py](problems/inheritance-problems/blood_type_mother.py),
-  [problems/inheritance-problems/blood_type_offspring.py](problems/inheritance-problems/blood_type_offspring.py),
-  [problems/inheritance-problems/polyploid/polyploid-gametes.py](problems/inheritance-problems/polyploid/polyploid-gametes.py),
-  [problems/inheritance-problems/punnett_choice.py](problems/inheritance-problems/punnett_choice.py),
-  [problems/inheritance-problems/translocation/robertsonian.py](problems/inheritance-problems/translocation/robertsonian.py).
+  [pKa_buffer_state.py](../problems/biochemistry-problems/buffers/pKa_buffer_state.py),
+  [fret_permute_colors.py](../problems/biophysics-problems/fret_permute_colors.py),
+  `macromolecules_categorize_by_name.py`,
+  [photosynthetic_light_pigments.py](../problems/biochemistry-problems/photosynthetic_light_pigments.py),
+  [quick_fatty_acid_colon_system.py](../problems/biochemistry-problems/lipids/quick_fatty_acid_colon_system.py),
+  [busse_woods_anova.py](../problems/biostatistics-problems/busse_woods_anova.py),
+  [busse_woods_two_sample_f_test.py](../problems/biostatistics-problems/busse_woods_two_sample_f_test.py),
+  [blood_type_mother.py](../problems/inheritance-problems/blood_type_mother.py),
+  [blood_type_offspring.py](../problems/inheritance-problems/blood_type_offspring.py),
+  [polyploid-gametes.py](../problems/inheritance-problems/polyploid/polyploid-gametes.py),
+  [punnett_choice.py](../problems/inheritance-problems/punnett_choice.py),
+  [robertsonian.py](../problems/inheritance-problems/translocation/robertsonian.py).
 - Added `tools/audit_problem_scripts_bptools_framework.sh` to bin `problems/` scripts into bptools-framework vs non-framework lists.
 - Extended the audit output to also list script-like files missing a python shebang and/or an `if __name__ == "__main__":` guard.
 - Extended the audit output to also list python-shebang files under `problems/` that are not marked executable (+x).
@@ -280,85 +280,85 @@
 
 ## 2026-01-04
 - Added a cytogenetic band-order question generator in
-  [problems/inheritance-problems/cytogenetic_notation/cytogenetic_notation-band_order.py](problems/inheritance-problems/cytogenetic_notation/cytogenetic_notation-band_order.py).
+  [cytogenetic_notation-band_order.py](../problems/inheritance-problems/cytogenetic_notation/cytogenetic_notation-band_order.py).
 - Added a chi-square null/alternative hypothesis question generator in
-  [problems/inheritance-problems/chi_square/chi_square_hypotheses.py](problems/inheritance-problems/chi_square/chi_square_hypotheses.py).
+  [chi_square_hypotheses.py](../problems/inheritance-problems/chi_square/chi_square_hypotheses.py).
 - Added a chi-square "dumb lab partner" hypothesis mistake-spotting generator in
-  [problems/inheritance-problems/chi_square/chi_square_hypotheses_lab_partner.py](problems/inheritance-problems/chi_square/chi_square_hypotheses_lab_partner.py).
+  [chi_square_hypotheses_lab_partner.py](../problems/inheritance-problems/chi_square/chi_square_hypotheses_lab_partner.py).
 - Updated both chi-square hypothesis generators to choose offspring totals that produce integer expected counts.
 - Updated the phylogenetic tree batch script
-  [problems/inheritance-problems/phylogenetic_trees/make_all_gene_trees.py](problems/inheritance-problems/phylogenetic_trees/make_all_gene_trees.py)
-  to use [problems/inheritance-problems/phylogenetic_trees/treelib/](problems/inheritance-problems/phylogenetic_trees/treelib/) instead of `phylolib2.py`.
+  [make_all_gene_trees.py](../problems/inheritance-problems/phylogenetic_trees/make_all_gene_trees.py)
+  to use `treelib` instead of `phylolib2.py`.
 - Added biostatistics hypothesis-identification generators in
-  [problems/biostatistics-problems/hypothesis_statements.py](problems/biostatistics-problems/hypothesis_statements.py) and
-  [problems/biostatistics-problems/hypothesis_lab_partner.py](problems/biostatistics-problems/hypothesis_lab_partner.py).
-- Updated [problems/biostatistics-problems/hypothesis_statements.py](problems/biostatistics-problems/hypothesis_statements.py)
+  [hypothesis_statements.py](../problems/biostatistics-problems/hypothesis_statements.py) and
+  [hypothesis_lab_partner.py](../problems/biostatistics-problems/hypothesis_lab_partner.py).
+- Updated [hypothesis_statements.py](../problems/biostatistics-problems/hypothesis_statements.py)
   to add plain-English "In words" sentences to each option and include an ASCII-friendly parameter label in
   parentheses for improved terminal readability.
-- Updated [problems/biostatistics-problems/hypothesis_lab_partner.py](problems/biostatistics-problems/hypothesis_lab_partner.py)
+- Updated [hypothesis_lab_partner.py](../problems/biostatistics-problems/hypothesis_lab_partner.py)
   to include the same ASCII-friendly parameter labels and "In words" sentences for the lab partner's hypotheses.
-- Added a pytest smoke-test suite for `*lib.py` modules in [tests/](tests/) and configured pytest discovery via
-  [pyproject.toml](pyproject.toml).
-- Added per-library unit tests in [tests/](tests/) (one `tests/test_*.py` per `*lib.py` file) with a shared import helper
-  in [tests/lib_test_utils.py](tests/lib_test_utils.py).
-- Fixed [problems/biochemistry-problems/aminoacidlib.py](problems/biochemistry-problems/aminoacidlib.py) to store `sugar_code` on
+- Added a pytest smoke-test suite for `*lib.py` modules in `tests` and configured pytest discovery via
+  [pyproject.toml](../pyproject.toml).
+- Added per-library unit tests in `tests` (one `tests/test_*.py` per `*lib.py` file) with a shared import helper
+  in [lib_test_utils.py](../tests/lib_test_utils.py).
+- Fixed `aminoacidlib.py` to store `sugar_code` on
   `AminoAcidStructure`, enabling structure/formula helpers to run.
 - Added a dominant/X-linked recessive variation generator in
-  [problems/inheritance-problems/dominant_and_X-linked_recessive_variations.py](problems/inheritance-problems/dominant_and_X-linked_recessive_variations.py)
+  [dominant_and_X-linked_recessive_variations.py](../problems/inheritance-problems/dominant_and_X-linked_recessive_variations.py)
   with varied event targets and family genotypes.
 - Added a compatibility shim for `qti_package_maker` AntiCheat hidden-term insertion in
-  [bptools.py](bptools.py).
+  [bptools.py](../bptools.py).
 - Added a monohybrid litter inference generator in
-  [problems/inheritance-problems/monohybrid_litter_inference.py](problems/inheritance-problems/monohybrid_litter_inference.py)
+  [monohybrid_litter_inference.py](../problems/inheritance-problems/monohybrid_litter_inference.py)
   inspired by single-gene dominance scenarios.
 - Added a lethal allele survival generator in
-  [problems/inheritance-problems/lethal_allele_survival.py](problems/inheritance-problems/lethal_allele_survival.py)
+  [lethal_allele_survival.py](../problems/inheritance-problems/lethal_allele_survival.py)
   for heterozygote crosses with lethal homozygotes.
 - Fixed local import resolution for Hardy-Weinberg and epistasis generators after
   directory moves, and updated Hardy-Weinberg data path resolution to use the
   repo data directory.
 - Added a shared translocation helper library in
-  [problems/inheritance-problems/translocation/translocationlib.py](problems/inheritance-problems/translocation/translocationlib.py)
+  [translocationlib.py](../problems/inheritance-problems/translocation/translocationlib.py)
   and refactored the Robertsonian and meiosis translocation generators to use it.
 - Added new X-linked inheritance generators inspired by the 2020 practice set:
-  [problems/inheritance-problems/x_linked_reciprocal_cross.py](problems/inheritance-problems/x_linked_reciprocal_cross.py)
-  and [problems/inheritance-problems/x_linked_tortoiseshell.py](problems/inheritance-problems/x_linked_tortoiseshell.py).
+  [x_linked_reciprocal_cross.py](../problems/inheritance-problems/x_linked_reciprocal_cross.py)
+  and [x_linked_tortoiseshell.py](../problems/inheritance-problems/x_linked_tortoiseshell.py).
 - Added a question authoring guide based on `TEMPLATE.py` in
-  [docs/QUESTION_AUTHORING_GUIDE.md](docs/QUESTION_AUTHORING_GUIDE.md).
+  [QUESTION_AUTHORING_GUIDE.md](QUESTION_AUTHORING_GUIDE.md).
 - Added cytogenetic disorder mappings in
-  [data/cytogenetic_disorders.yml](data/cytogenetic_disorders.yml).
+  [cytogenetic_disorders.yml](../data/cytogenetic_disorders.yml).
 - Added a cytogenetic disorder question generator in
-  [problems/inheritance-problems/cytogenetic_notation/cytogenetic_notation-disorders.py](problems/inheritance-problems/cytogenetic_notation/cytogenetic_notation-disorders.py).
-- Moved [problems/inheritance-problems/organism_data.yml](problems/inheritance-problems/organism_data.yml)
-  and [problems/biostatistics-problems/student_names.txt](problems/biostatistics-problems/student_names.txt)
-  into [data/](data/) and updated the generators to reference the new paths.
+  [cytogenetic_notation-disorders.py](../problems/inheritance-problems/cytogenetic_notation/cytogenetic_notation-disorders.py).
+- Moved [organism_data.yml](../data/organism_data.yml)
+  and [student_names.txt](../data/student_names.txt)
+  into `data` and updated the generators to reference the new paths.
 - Added `source_me.sh` for a repo-root `PYTHONPATH` setup and added packaging
-  metadata via [pyproject.toml](pyproject.toml), [MANIFEST.in](MANIFEST.in),
-  and [VERSION](VERSION) (version 26.01).
+  metadata via [pyproject.toml](../pyproject.toml), [MANIFEST.in](../MANIFEST.in),
+  and [VERSION](../VERSION) (version 26.01).
 - Documented editable install behavior in
-  [docs/QUESTION_AUTHORING_GUIDE.md](docs/QUESTION_AUTHORING_GUIDE.md).
+  [QUESTION_AUTHORING_GUIDE.md](QUESTION_AUTHORING_GUIDE.md).
 - Updated [refactor-Jan_2026/upgraded_phase_1_python_scripts.txt](refactor-Jan_2026/upgraded_phase_1_python_scripts.txt)
   to use the new directory names for chi_square, cytogenetic_notation, epistasis,
   deletion_mutants, polyploid, translocation, and large_crosses.
 
 ## 2025-12-27
-- Added [docs/FILE_STRUCTURE.md](docs/FILE_STRUCTURE.md) to document repo organization.
-- Added [docs/CODE_ARCHITECTURE.md](docs/CODE_ARCHITECTURE.md) to describe major components
+- Added [FILE_STRUCTURE.md](FILE_STRUCTURE.md) to document repo organization.
+- Added [CODE_ARCHITECTURE.md](CODE_ARCHITECTURE.md) to describe major components
   and generation flow.
-- Added [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md) to outline generator
+- Added [UNIFICATION_PLAN.md](UNIFICATION_PLAN.md) to outline generator
   refactoring and helper adoption steps.
 - Added a higher-level pedigree scenario helper in
-  [problems/inheritance-problems/pedigrees/pedigree_template_gen_lib.py](problems/inheritance-problems/pedigrees/pedigree_template_gen_lib.py)
+  `pedigree_template_gen_lib.py`
   to select inheritance-specific templates and return pedigree code strings.
 - Added pedigree PNG rendering alongside HTML output in
-  [problems/inheritance-problems/pedigrees/pedigree_png_lib.py](problems/inheritance-problems/pedigrees/pedigree_png_lib.py).
+  `pedigree_png_lib.py`.
 - Added pedigree SVG rendering alongside HTML/PNG output in
-  [problems/inheritance-problems/pedigrees/pedigree_svg_lib.py](problems/inheritance-problems/pedigrees/pedigree_svg_lib.py).
+  `pedigree_svg_lib.py`.
 - Added pedigree code validators in
-  [problems/inheritance-problems/pedigrees/pedigree_validate_lib.py](problems/inheritance-problems/pedigrees/pedigree_validate_lib.py).
+  `pedigree_validate_lib.py`.
 - Enforced minimal union partner tokens in pedigree graph specs (parents omit sex,
   inferred from known partners) and documented the rule in
-  [problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md](problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md).
+  [PEDIGREE_PIPELINE.md](../problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md).
 - Expanded pedigree graph specs to allow multiple generation-1 individuals in `F:`
   (first two define the main couple) and switched validation to treat `F:` as the
   generation-1 anchor list (outside spouses inherit generation from their partner).
@@ -385,10 +385,10 @@
 - Pedigree pipeline improvements now yield clean minimal examples (`#To`, `r^d`)
   with stable row parity and corrected descent validation.
 - Added label support for pedigrees via
-  [problems/inheritance-problems/pedigrees/pedigree_label_lib.py](problems/inheritance-problems/pedigrees/pedigree_label_lib.py)
+  `pedigree_label_lib.py`
   and optional `label_string` rendering in HTML/SVG and SVG-to-PNG outputs.
 - Preview generation now assigns labels by default for HTML/PNG outputs in
-  [problems/inheritance-problems/pedigrees/preview_pedigree.py](problems/inheritance-problems/pedigrees/preview_pedigree.py).
+  [preview_pedigree.py](../problems/inheritance-problems/pedigrees/pedigree_lib/preview_pedigree.py).
 - Increased SVG/PNG label font sizes for better readability in pedigree previews.
 - Centered SVG/PNG label rendering (anchor-based centering with small SVG baseline
   adjustment).
@@ -403,75 +403,75 @@
 - Refined vertical descent validation to use per-glyph edge masks (only connectors
   with down-edges must terminate on a person).
 - Added minimal valid CodeString examples to
-  [problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md](problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md).
+  [PEDIGREE_PIPELINE.md](../problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md).
 - Split pedigree tooling into focused libraries:
-  [problems/inheritance-problems/pedigrees/pedigree_code_lib.py](problems/inheritance-problems/pedigrees/pedigree_code_lib.py),
-  [problems/inheritance-problems/pedigrees/pedigree_html_lib.py](problems/inheritance-problems/pedigrees/pedigree_html_lib.py),
-  [problems/inheritance-problems/pedigrees/pedigree_png_lib.py](problems/inheritance-problems/pedigrees/pedigree_png_lib.py).
+  `pedigree_code_lib.py`,
+  `pedigree_html_lib.py`,
+  `pedigree_png_lib.py`.
 - Removed the unused compatibility shim `problems/inheritance-problems/pedigrees/pedigree_lib.py`.
 - Added inheritance mode validation in
-  [problems/inheritance-problems/pedigrees/pedigree_mode_validate_lib.py](problems/inheritance-problems/pedigrees/pedigree_mode_validate_lib.py).
+  `pedigree_mode_validate_lib.py`.
 - Added a preview helper for HTML/PNG pedigree output in
-  [problems/inheritance-problems/pedigrees/preview_pedigree.py](problems/inheritance-problems/pedigrees/preview_pedigree.py).
+  [preview_pedigree.py](../problems/inheritance-problems/pedigrees/pedigree_lib/preview_pedigree.py).
 - Renamed pedigree template helpers for clarity:
-  [problems/inheritance-problems/pedigrees/pedigree_template_gen_lib.py](problems/inheritance-problems/pedigrees/pedigree_template_gen_lib.py)
-  and [problems/inheritance-problems/pedigrees/pedigree_code_templates.py](problems/inheritance-problems/pedigrees/pedigree_code_templates.py).
+  `pedigree_template_gen_lib.py`
+  and `pedigree_code_templates.py`.
 - Added strict CodeString validation (syntax checks plus bounding-box limits) and
   preview gating in
-  [problems/inheritance-problems/pedigrees/pedigree_validate_lib.py](problems/inheritance-problems/pedigrees/pedigree_validate_lib.py)
-  and [problems/inheritance-problems/pedigrees/preview_pedigree.py](problems/inheritance-problems/pedigrees/preview_pedigree.py).
-- Simplified [problems/inheritance-problems/pedigrees/preview_pedigree.py](problems/inheritance-problems/pedigrees/preview_pedigree.py)
+  `pedigree_validate_lib.py`
+  and [preview_pedigree.py](../problems/inheritance-problems/pedigrees/pedigree_lib/preview_pedigree.py).
+- Simplified [preview_pedigree.py](../problems/inheritance-problems/pedigrees/pedigree_lib/preview_pedigree.py)
   CLI by baking in the strict validation defaults for width/height and attempts.
 - Renamed pedigree question generators for clarity:
-  [problems/inheritance-problems/pedigrees/write_pedigree_choice.py](problems/inheritance-problems/pedigrees/write_pedigree_choice.py) and
-  [problems/inheritance-problems/pedigrees/write_pedigree_match.py](problems/inheritance-problems/pedigrees/write_pedigree_match.py).
+  [write_pedigree_choice.py](../problems/inheritance-problems/pedigrees/write_pedigree_choice.py) and
+  [write_pedigree_match.py](../problems/inheritance-problems/pedigrees/write_pedigree_match.py).
 - Added a graph-based pedigree generator in
-  [problems/inheritance-problems/pedigrees/pedigree_graph_parse_lib.py](problems/inheritance-problems/pedigrees/pedigree_graph_parse_lib.py).
+  `pedigree_graph_parse_lib.py`.
 - Split graph generation concerns into
-  [problems/inheritance-problems/pedigrees/pedigree_skeleton_lib.py](problems/inheritance-problems/pedigrees/pedigree_skeleton_lib.py)
-  and [problems/inheritance-problems/pedigrees/pedigree_inheritance_lib.py](problems/inheritance-problems/pedigrees/pedigree_inheritance_lib.py),
+  `pedigree_skeleton_lib.py`
+  and `pedigree_inheritance_lib.py`,
   leaving `pedigree_graph_parse_lib.py` as the IR and layout helper.
 - Improved pedigree layout ordering to group siblings by parent index and reduce
   long connector spans in
-  [problems/inheritance-problems/pedigrees/pedigree_graph_parse_lib.py](problems/inheritance-problems/pedigrees/pedigree_graph_parse_lib.py).
+  `pedigree_graph_parse_lib.py`.
 - Added a basic three-generation layout smoke test helper in
-  [problems/inheritance-problems/pedigrees/pedigree_skeleton_lib.py](problems/inheritance-problems/pedigrees/pedigree_skeleton_lib.py)
+  `pedigree_skeleton_lib.py`
   and a small runner in
-  [problems/inheritance-problems/pedigrees/layout_smoke_test.py](problems/inheritance-problems/pedigrees/layout_smoke_test.py).
+  `layout_smoke_test.py`.
 - Added a simple CodeString renderer in
-  [problems/inheritance-problems/pedigrees/code_render.py](problems/inheritance-problems/pedigrees/code_render.py)
+  [code_render.py](../problems/inheritance-problems/pedigrees/pedigree_lib/code_render.py)
   for HTML/PNG output from a provided code string.
-- Extended [problems/inheritance-problems/pedigrees/code_render.py](problems/inheritance-problems/pedigrees/code_render.py)
+- Extended [code_render.py](../problems/inheritance-problems/pedigrees/pedigree_lib/code_render.py)
   to support SVG output.
 - Added semantic validation in
-  [problems/inheritance-problems/pedigrees/code_render.py](problems/inheritance-problems/pedigrees/code_render.py)
+  [code_render.py](../problems/inheritance-problems/pedigrees/pedigree_lib/code_render.py)
   so invalid CodeStrings fail fast before rendering.
 - Added a validation rule that vertical descent cannot terminate on a couple
   midpoint (`T`) in
-  [problems/inheritance-problems/pedigrees/pedigree_validate_lib.py](problems/inheritance-problems/pedigrees/pedigree_validate_lib.py).
+  `pedigree_validate_lib.py`.
 - Added progress logging and rejection summaries to
-  [problems/inheritance-problems/pedigrees/preview_pedigree.py](problems/inheritance-problems/pedigrees/preview_pedigree.py).
-- Updated [problems/inheritance-problems/pedigrees/preview_pedigree.py](problems/inheritance-problems/pedigrees/preview_pedigree.py)
+  [preview_pedigree.py](../problems/inheritance-problems/pedigrees/pedigree_lib/preview_pedigree.py).
+- Updated [preview_pedigree.py](../problems/inheritance-problems/pedigrees/pedigree_lib/preview_pedigree.py)
   to print the graph spec and CodeString for each accepted preview.
 - Documented pedigree CodeString symbols in
-  [problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md](problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md).
+  [PEDIGREE_PIPELINE.md](../problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md).
 - Documented CodeString semantics (row parity, couple/offspring encoding, and
   padding rules) in
-  [problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md](problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md).
+  [PEDIGREE_PIPELINE.md](../problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md).
 - Added row-parity semantics validation in
-  [problems/inheritance-problems/pedigrees/pedigree_validate_lib.py](problems/inheritance-problems/pedigrees/pedigree_validate_lib.py).
+  `pedigree_validate_lib.py`.
 - Tightened pedigree layout packing (component grouping and compact spacing) in
-  [problems/inheritance-problems/pedigrees/pedigree_graph_parse_lib.py](problems/inheritance-problems/pedigrees/pedigree_graph_parse_lib.py),
+  `pedigree_graph_parse_lib.py`,
   and refined row-parity semantics to allow spouse connectors on people rows.
 - Centered the top-generation couple in rendered layouts by applying a column
   shift during CodeString rendering in
-  [problems/inheritance-problems/pedigrees/pedigree_graph_parse_lib.py](problems/inheritance-problems/pedigrees/pedigree_graph_parse_lib.py).
+  `pedigree_graph_parse_lib.py`.
 - Implemented subtree-centered slot assignment for graph layouts in
-  [problems/inheritance-problems/pedigrees/pedigree_graph_parse_lib.py](problems/inheritance-problems/pedigrees/pedigree_graph_parse_lib.py)
+  `pedigree_graph_parse_lib.py`
   to keep siblings contiguous and reduce long connector runs.
 - Switched the graph generator to emit pedigree graph spec strings and added a
   compile step from graph spec to CodeString in
-  [problems/inheritance-problems/pedigrees/pedigree_graph_parse_lib.py](problems/inheritance-problems/pedigrees/pedigree_graph_parse_lib.py).
+  `pedigree_graph_parse_lib.py`.
 - Fixed graph spec generation to emit single-letter IDs so parsing works with
   the compact graph spec grammar.
 - Added a trim step in graph spec generation to cap graph size at 26 people for
@@ -488,37 +488,37 @@
 - Generator now omits childless unions when emitting graph specs to comply with
   the "couples must have children" rule.
 - Clarified the internal role of PedigreeGraph in
-  [problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md](problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md).
+  [PEDIGREE_PIPELINE.md](../problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md).
 - Added a compact pedigree graph spec parser/serializer in
-  [problems/inheritance-problems/pedigrees/pedigree_graph_spec_lib.py](problems/inheritance-problems/pedigrees/pedigree_graph_spec_lib.py)
+  `pedigree_graph_spec_lib.py`
   and documented the pedigree graph spec format in
-  [problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md](problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md).
-- Clarified in [problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md](problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md)
+  [PEDIGREE_PIPELINE.md](../problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md).
+- Clarified in [PEDIGREE_PIPELINE.md](../problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md)
   that graph parsing/compilation is an internal, non-persisted step.
 - Added a local pipeline note in
-  [problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md](problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md).
-- Expanded [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md) with decision points
+  [PEDIGREE_PIPELINE.md](../problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md).
+- Expanded [UNIFICATION_PLAN.md](UNIFICATION_PLAN.md) with decision points
   for return contracts, shortfalls, newline policy, and argparse composition.
-- Added question collection helpers and shared CLI args to [bptools.py](bptools.py).
-- Updated [TEMPLATE.py](TEMPLATE.py) and
-  [problems/inheritance-problems/unique_cross_phenotypes.py](problems/inheritance-problems/unique_cross_phenotypes.py)
+- Added question collection helpers and shared CLI args to [bptools.py](../bptools.py).
+- Updated [TEMPLATE.py](../problems/TEMPLATE.py) and
+  [unique_cross_phenotypes.py](../problems/inheritance-problems/large_crosses/unique_cross_phenotypes.py)
   to use the new helpers.
-- Clarified helper contracts in [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md)
+- Clarified helper contracts in [UNIFICATION_PLAN.md](UNIFICATION_PLAN.md)
   to standardize `write_question(N, args)` and `write_question_batch(N, args)`.
-- Added output helpers in [bptools.py](bptools.py) and updated
-  [TEMPLATE.py](TEMPLATE.py) and
-  [problems/inheritance-problems/unique_cross_phenotypes.py](problems/inheritance-problems/unique_cross_phenotypes.py)
+- Added output helpers in [bptools.py](../bptools.py) and updated
+  [TEMPLATE.py](../problems/TEMPLATE.py) and
+  [unique_cross_phenotypes.py](../problems/inheritance-problems/large_crosses/unique_cross_phenotypes.py)
   to use the combined collection+write flow.
 - Updated `make_outfile` to default to `sys.argv[0]` so scripts can omit `__file__`.
 - Added `--duplicate-runs` as the preferred long flag (with `--duplicates` as an alias)
-  in [bptools.py](bptools.py), and documented it in
-  [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md).
+  in [bptools.py](../bptools.py), and documented it in
+  [UNIFICATION_PLAN.md](UNIFICATION_PLAN.md).
 - Added standard argparse bundles `add_choice_args` and `add_hint_args` in
-  [bptools.py](bptools.py) and documented them in
-  [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md).
+  [bptools.py](../bptools.py) and documented them in
+  [UNIFICATION_PLAN.md](UNIFICATION_PLAN.md).
 - Added standard argparse bundles `add_question_format_args` and
-  `add_difficulty_args` in [bptools.py](bptools.py) and documented them in
-  [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md).
+  `add_difficulty_args` in [bptools.py](../bptools.py) and documented them in
+  [UNIFICATION_PLAN.md](UNIFICATION_PLAN.md).
 - Updated `add_question_format_args` to accept a list of formats and only add
   flags for the requested types.
 - Updated `problems/inheritance-problems/unique_cross_genotypes.py`,
@@ -539,149 +539,149 @@
 - Fixed `problems/biochemistry-problems/ionic_bond_amino_acids.py` to honor `--num-choices`.
 - Set a default `max_questions` cap for batch output in
   `problems/biochemistry-problems/macromolecules_categorize_by_name.py`.
-- Added `add_base_args_batch()` in [bptools.py](bptools.py) and switched
+- Added `add_base_args_batch()` in [bptools.py](../bptools.py) and switched
   `problems/biochemistry-problems/macromolecules_categorize_by_name.py` to use it.
-- Added `make_arg_parser()` in [bptools.py](bptools.py) and updated scripts to
+- Added `make_arg_parser()` in [bptools.py](../bptools.py) and updated scripts to
   use it for consistent parser defaults.
 - Switched `problems/inheritance-problems/unique_cross_genotypes.py` and
   `problems/inheritance-problems/unique_cross_phenotypes.py` to `make_arg_parser()`.
-- Added `tabulate` to [pip_requirements.txt](pip_requirements.txt).
-- Refactored [problems/dna_profiling-problems/hla_genotype.py](problems/dna_profiling-problems/hla_genotype.py)
+- Added `tabulate` to [pip_requirements.txt](../pip_requirements.txt).
+- Refactored [hla_genotype.py](../problems/dna_profiling-problems/hla_genotype.py)
   to use standard argparse helpers and `collect_and_write_questions`.
-- Refactored [problems/cell_biology-problems/cell_surf-to-vol_ratio.py](problems/cell_biology-problems/cell_surf-to-vol_ratio.py)
+- Refactored [cell_surf-to-vol_ratio.py](../problems/cell_biology-problems/cell_surf-to-vol_ratio.py)
   to use standard argparse helpers and `collect_and_write_questions`.
-- Refactored [problems/laboratory-problems/vol-vol_solution_numeric.py](problems/laboratory-problems/vol-vol_solution_numeric.py)
+- Refactored `vol-vol_solution_numeric.py`
   to use batch helpers and rely on `-d/--duplicate-runs` for per-liquid repeats.
 - Added a legacy-modernization checklist section to
-  [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md).
-- Refactored [problems/biostatistics-problems/descriptive_stats_google_sheet.py](problems/biostatistics-problems/descriptive_stats_google_sheet.py)
+  [UNIFICATION_PLAN.md](UNIFICATION_PLAN.md).
+- Refactored [descriptive_stats_google_sheet.py](../problems/biostatistics-problems/descriptive_stats_google_sheet.py)
   to use shared argparse and helper-driven question collection.
-- Refactored [problems/molecular_biology-problems/consensus_sequence_MC.py](problems/molecular_biology-problems/consensus_sequence_MC.py)
+- Refactored [consensus_sequence_MC.py](../problems/molecular_biology-problems/consensus_sequence_MC.py)
   to use shared helpers, standardized args, and Blackboard MC formatting.
-- Refactored [problems/inheritance-problems/dihybrid_cross_epistatic_gene_interactions.py](problems/inheritance-problems/dihybrid_cross_epistatic_gene_interactions.py)
+- Refactored [dihybrid_cross_epistatic_gene_interactions.py](../problems/inheritance-problems/epistasis/dihybrid_cross_epistatic_gene_interactions.py)
   to use shared helpers and standardized args.
 - Fixed prime-mode complementary sequence answers to use reverse complements and
   consistent 5'->3' display in
-  [problems/molecular_biology-problems/complementary_sequences.py](problems/molecular_biology-problems/complementary_sequences.py).
+  [complementary_sequences.py](../problems/molecular_biology-problems/complementary_sequences.py).
 - Added `reverse_complement()` to
-  [problems/molecular_biology-problems/seqlib.py](problems/molecular_biology-problems/seqlib.py).
+  [seqlib.py](../problems/molecular_biology-problems/seqlib.py).
 - Added an answer check script at
-  [tests/check_complementary_sequences_prime.py](tests/check_complementary_sequences_prime.py).
-- Refactored [problems/molecular_biology-problems/complementary_sequences.py](problems/molecular_biology-problems/complementary_sequences.py)
+  `check_complementary_sequences_prime.py`.
+- Refactored [complementary_sequences.py](../problems/molecular_biology-problems/complementary_sequences.py)
   to use the shared argparse and helper workflow.
 - Updated `complementary_sequences.py` to use `-d/--duplicate-runs` and
   `-x/--max-questions` instead of a custom `--num-sequences` argument.
 - Added inline HTML style presets in
-  [problems/molecular_biology-problems/seqlib.py](problems/molecular_biology-problems/seqlib.py)
+  [seqlib.py](../problems/molecular_biology-problems/seqlib.py)
   for consistent table borders and monospace cells.
 - Added simple assertion tests for core helpers in
-  [problems/molecular_biology-problems/seqlib.py](problems/molecular_biology-problems/seqlib.py).
+  [seqlib.py](../problems/molecular_biology-problems/seqlib.py).
 - Added short descriptions for all `*lib.py` modules in
-  [docs/FILE_STRUCTURE.md](docs/FILE_STRUCTURE.md).
-- Added [docs/TODO.md](docs/TODO.md) to track backlog items (including a possible
+  [FILE_STRUCTURE.md](FILE_STRUCTURE.md).
+- Added [TODO.md](TODO.md) to track backlog items (including a possible
   `make_outfile_from_args()` helper).
-- Refactored [problems/biochemistry-problems/quick_fatty_acid_colon_system.py](problems/biochemistry-problems/quick_fatty_acid_colon_system.py)
+- Refactored [quick_fatty_acid_colon_system.py](../problems/biochemistry-problems/lipids/quick_fatty_acid_colon_system.py)
   to use batch helpers and `bptools` formatting.
-- Refactored [problems/inheritance-problems/cytogenetic_notation-aneuploidy.py](problems/inheritance-problems/cytogenetic_notation-aneuploidy.py)
+- Refactored [cytogenetic_notation-aneuploidy.py](../problems/inheritance-problems/cytogenetic_notation/cytogenetic_notation-aneuploidy.py)
   to use shared argparse, question helpers, and unified output handling.
-- Refactored [problems/laboratory-problems/serial_dilution_factor_mc.py](problems/laboratory-problems/serial_dilution_factor_mc.py)
+- Refactored [serial_dilution_factor_mc.py](../problems/laboratory-problems/serial_dilution_factor_mc.py)
   to use batch helpers and a computed default duplicate count.
 - Added migration notes for batch upgrades in
-  [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md).
-- Refactored [problems/molecular_biology-problems/rna_transcribe_fill_blank.py](problems/molecular_biology-problems/rna_transcribe_fill_blank.py)
+  [UNIFICATION_PLAN.md](UNIFICATION_PLAN.md).
+- Refactored [rna_transcribe_fill_blank.py](../problems/molecular_biology-problems/rna_transcribe_fill_blank.py)
   to use shared argparse helpers and question collection.
-- Kept [problems/biostatistics-problems/make_html_box_plot.py](problems/biostatistics-problems/make_html_box_plot.py)
+- Kept [make_html_box_plot.py](../problems/biostatistics-problems/make_html_box_plot.py)
   as a helper-only HTML utility (not a question generator).
-- Refactored [problems/laboratory-problems/serial_dilution_factor_diluent_numeric.py](problems/laboratory-problems/serial_dilution_factor_diluent_numeric.py)
+- Refactored [serial_dilution_factor_diluent_numeric.py](../problems/laboratory-problems/serial_dilution_factor_diluent_numeric.py)
   to use batch helpers and a computed default duplicate count.
 - Added a migration note for raw HTML emitters in
-  [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md).
-- Refactored [problems/laboratory-problems/percent_dilution_aliquot_numeric.py](problems/laboratory-problems/percent_dilution_aliquot_numeric.py)
+  [UNIFICATION_PLAN.md](UNIFICATION_PLAN.md).
+- Refactored [percent_dilution_aliquot_numeric.py](../problems/laboratory-problems/percent_dilution_aliquot_numeric.py)
   to use batch helpers and a fixed default duplicate count.
 - Fixed an HTML paragraph nesting error in
-  [problems/laboratory-problems/percent_dilution_aliquot_numeric.py](problems/laboratory-problems/percent_dilution_aliquot_numeric.py).
-- Refactored [problems/inheritance-problems/blood_type_offspring.py](problems/inheritance-problems/blood_type_offspring.py)
+  [percent_dilution_aliquot_numeric.py](../problems/laboratory-problems/percent_dilution_aliquot_numeric.py).
+- Refactored [blood_type_offspring.py](../problems/inheritance-problems/blood_type_offspring.py)
   to use batch helpers with a shared parser and outfile builder.
-- Refactored [problems/inheritance-problems/probabiliy_of_progeny.py](problems/inheritance-problems/probabiliy_of_progeny.py)
+- Refactored [probabiliy_of_progeny.py](../problems/inheritance-problems/probabiliy_of_progeny.py)
   to use shared argparse defaults and helper-based question collection.
-- Refactored [problems/inheritance-problems/chisquare/chi_square_errors.py](problems/inheritance-problems/chisquare/chi_square_errors.py)
+- Refactored [chi_square_errors.py](../problems/inheritance-problems/chi_square/chi_square_errors.py)
   to use shared argparse defaults and helper-based question collection.
 - Added a migration note for fixed-grid batch scripts in
-  [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md).
+  [UNIFICATION_PLAN.md](UNIFICATION_PLAN.md).
 - Converted laboratory generators from batch to per-question writers (Option 2
   selection) in:
-  [problems/laboratory-problems/mass_solution_numeric.py](problems/laboratory-problems/mass_solution_numeric.py),
-  [problems/laboratory-problems/orders_of_magnitude_mc.py](problems/laboratory-problems/orders_of_magnitude_mc.py),
-  [problems/laboratory-problems/percent_dilution_aliquot_numeric.py](problems/laboratory-problems/percent_dilution_aliquot_numeric.py),
-  [problems/laboratory-problems/pipet_size_mc.py](problems/laboratory-problems/pipet_size_mc.py),
-  [problems/laboratory-problems/serial_dilution_factor_diluent_numeric.py](problems/laboratory-problems/serial_dilution_factor_diluent_numeric.py),
-  [problems/laboratory-problems/serial_dilution_factor_mc.py](problems/laboratory-problems/serial_dilution_factor_mc.py),
-  [problems/laboratory-problems/vol-vol_solution_numeric.py](problems/laboratory-problems/vol-vol_solution_numeric.py),
-  [problems/laboratory-problems/weight-vol_solution_numeric.py](problems/laboratory-problems/weight-vol_solution_numeric.py).
+  `mass_solution_numeric.py`,
+  [orders_of_magnitude_mc.py](../problems/laboratory-problems/orders_of_magnitude_mc.py),
+  [percent_dilution_aliquot_numeric.py](../problems/laboratory-problems/percent_dilution_aliquot_numeric.py),
+  [pipet_size_mc.py](../problems/laboratory-problems/pipet_size_mc.py),
+  [serial_dilution_factor_diluent_numeric.py](../problems/laboratory-problems/serial_dilution_factor_diluent_numeric.py),
+  [serial_dilution_factor_mc.py](../problems/laboratory-problems/serial_dilution_factor_mc.py),
+  `vol-vol_solution_numeric.py`,
+  `weight-vol_solution_numeric.py`.
 - Added monospace formatting for numeric volumes/units across laboratory question
   text and choices (including dilution factor, percent dilution, mass/volume,
   molar solution, pipet, and serial dilution scripts).
-- Removed unused [logger_config.py](logger_config.py).
-- Fixed HTML quoting in [problems/molecular_biology-problems/seqlib.py](problems/molecular_biology-problems/seqlib.py)
+- Removed unused `logger_config.py`.
+- Fixed HTML quoting in [seqlib.py](../problems/molecular_biology-problems/seqlib.py)
   to avoid invalid inline style attributes.
 - Added max-questions early-stop handling in
-  [problems/molecular_biology-problems/overhang_type.py](problems/molecular_biology-problems/overhang_type.py).
+  [overhang_type.py](../problems/molecular_biology-problems/overhang_type.py).
 - Fixed malformed HTML attributes in
-  [problems/molecular_biology-problems/enhancer_gene_expression.py](problems/molecular_biology-problems/enhancer_gene_expression.py).
+  [enhancer_gene_expression.py](../problems/molecular_biology-problems/enhancer_gene_expression.py).
 - Fixed paragraph nesting in
-  [problems/inheritance-problems/chisquare/chi_square_hardy_weinberg.py](problems/inheritance-problems/chisquare/chi_square_hardy_weinberg.py).
+  [chi_square_hardy_weinberg.py](../problems/inheritance-problems/chi_square/chi_square_hardy_weinberg.py).
 - Implemented missing choice generation in
-  [problems/inheritance-problems/cytogenetic_notation-sub-band_notation.py](problems/inheritance-problems/cytogenetic_notation-sub-band_notation.py).
+  [cytogenetic_notation-sub-band_notation.py](../problems/inheritance-problems/cytogenetic_notation/cytogenetic_notation-sub-band_notation.py).
 - Fixed HTML entity formatting in
-  [problems/biochemistry-problems/fatty_acid_naming.py](problems/biochemistry-problems/fatty_acid_naming.py).
+  `fatty_acid_naming.py`.
 - Fixed HTML paragraph closure in
-  [problems/molecular_biology-problems/rna_transcribe_prime_fill_blank.py](problems/molecular_biology-problems/rna_transcribe_prime_fill_blank.py).
+  [rna_transcribe_prime_fill_blank.py](../problems/molecular_biology-problems/rna_transcribe_prime_fill_blank.py).
 - Quoted HTML attribute values in
-  [problems/molecular_biology-problems/exon_splicing.py](problems/molecular_biology-problems/exon_splicing.py)
+  [exon_splicing.py](../problems/molecular_biology-problems/exon_splicing.py)
   to satisfy XML parsing.
 - Corrected outfile suffix selection in
-  [problems/inheritance-problems/hardy_weinberg_numeric.py](problems/inheritance-problems/hardy_weinberg_numeric.py).
+  [hardy_weinberg_numeric.py](../problems/inheritance-problems/hardy_weinberg/hardy_weinberg_numeric.py).
 - Added max-questions early-stop handling in
-  [problems/inheritance-problems/pedigrees/write_pedigree_match.py](problems/inheritance-problems/pedigrees/write_pedigree_match.py).
+  [write_pedigree_match.py](../problems/inheritance-problems/pedigrees/write_pedigree_match.py).
 - Improved dilution factor MC choices and formatting (clarified labels, background
   explanation, colored aliquot/diluent with monospace values, and standardized
   `--num-choices`) in
-  [problems/laboratory-problems/dilution_factor_mc.py](problems/laboratory-problems/dilution_factor_mc.py).
+  [dilution_factor_mc.py](../problems/laboratory-problems/dilution_factor_mc.py).
 - De-duplicated numeric pH choices to avoid repeated labels in
-  [problems/biochemistry-problems/buffers/optimal_buffering_range.py](problems/biochemistry-problems/buffers/optimal_buffering_range.py).
-- Cleaned unused imports and a redundant global in [bptools.py](bptools.py) to
+  [optimal_buffering_range.py](../problems/biochemistry-problems/buffers/optimal_buffering_range.py).
+- Cleaned unused imports and a redundant global in [bptools.py](../bptools.py) to
   satisfy pyflakes.
 - Fixed a pyflakes warning in
-  [problems/biochemistry-problems/buffers/bufferslib.py](problems/biochemistry-problems/buffers/bufferslib.py)
+  [bufferslib.py](../problems/biochemistry-problems/buffers/bufferslib.py)
   by validating pKa values without unused variables.
 - Fixed a bad error message variable in
-  [problems/biochemistry-problems/carbohydrates_classification/sugarlib.py](problems/biochemistry-problems/carbohydrates_classification/sugarlib.py).
+  [sugarlib.py](../problems/biochemistry-problems/carbs/sugarlib.py).
 - Removed an unused import and a bad escape sequence in
-  [problems/biochemistry-problems/aminoacidlib.py](problems/biochemistry-problems/aminoacidlib.py).
+  `aminoacidlib.py`.
 - Removed unused imports/vars in
-  [problems/biochemistry-problems/proteinlib.py](problems/biochemistry-problems/proteinlib.py) and
-  [problems/dna_profiling-problems/gellib.py](problems/dna_profiling-problems/gellib.py).
-- Refactored [problems/laboratory-problems/dilution_factor_calc_numeric.py](problems/laboratory-problems/dilution_factor_calc_numeric.py)
+  [proteinlib.py](../problems/biochemistry-problems/electrophoresis/proteinlib.py) and
+  [gellib.py](../problems/dna_profiling-problems/gellib.py).
+- Refactored [dilution_factor_calc_numeric.py](../problems/laboratory-problems/dilution_factor_calc_numeric.py)
   to use shared argparse defaults and helper-based question collection.
-- Refactored [problems/biochemistry-problems/which_lipid-chemical_formula.py](problems/biochemistry-problems/which_lipid-chemical_formula.py)
+- Refactored [which_lipid-chemical_formula.py](../problems/biochemistry-problems/lipids/which_lipid-chemical_formula.py)
   to use `bptools` MC formatting and shared helpers instead of manual text output.
-- Refactored [problems/inheritance-problems/dihybrid_cross_epistatic_gene_metabolics.py](problems/inheritance-problems/dihybrid_cross_epistatic_gene_metabolics.py)
+- Refactored [dihybrid_cross_epistatic_gene_metabolics.py](../problems/inheritance-problems/epistasis/dihybrid_cross_epistatic_gene_metabolics.py)
   to use shared argparse defaults, helper-based question collection, and remove
   debug prints.
 - Added a migration note about preserving cyclic scenario selection in
-  [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md).
-- Refactored [problems/biochemistry-problems/buffers/pKa_buffer_state.py](problems/biochemistry-problems/buffers/pKa_buffer_state.py)
+  [UNIFICATION_PLAN.md](UNIFICATION_PLAN.md).
+- Refactored [pKa_buffer_state.py](../problems/biochemistry-problems/buffers/pKa_buffer_state.py)
   to use batch helpers and a shared parser while preserving proton-count logic.
-- Refactored [problems/inheritance-problems/poisson_flies.py](problems/inheritance-problems/poisson_flies.py)
+- Refactored [poisson_flies.py](../problems/inheritance-problems/poisson_flies.py)
   to use shared argparse defaults and helper-based question collection.
-- Refactored [problems/biochemistry-problems/chymotrypsin_substrate.py](problems/biochemistry-problems/chymotrypsin_substrate.py)
+- Refactored [chymotrypsin_substrate.py](../problems/biochemistry-problems/enzymes/chymotrypsin_substrate.py)
   to use shared helpers, and moved the `--max-length` short flag from `-x` to `-M`
   to avoid conflict with `-x/--max-questions`.
-- Updated [problems/biochemistry-problems/chymotrypsin_substrate.py](problems/biochemistry-problems/chymotrypsin_substrate.py)
+- Updated [chymotrypsin_substrate.py](../problems/biochemistry-problems/enzymes/chymotrypsin_substrate.py)
   to map RasMol families to the custom palette, keep RasMol for the "weird"
   residues, and darken gray residues for white backgrounds.
 - Added a migration note about `-x` short-flag conflicts in
-  [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md).
+  [UNIFICATION_PLAN.md](UNIFICATION_PLAN.md).
 - Simplified `bptools.add_choice_args()` to a fixed API with a single `default=`
   parameter, and updated scripts to use that form.
 - Set `problems/biochemistry-problems/alpha_helix_h-bonds.py` to use
@@ -698,28 +698,28 @@
   `bptools.get_repo_data_path()` for data file resolution, and removed the
   local `get_git_root()` helper from
   `problems/biochemistry-problems/carbohydrates_classification/sugarlib.py`.
-- Refactored [problems/biochemistry-problems/isoelectric_two_proteins.py](problems/biochemistry-problems/isoelectric_two_proteins.py)
+- Refactored [isoelectric_two_proteins.py](../problems/biochemistry-problems/electrophoresis/isoelectric_two_proteins.py)
   to use shared argparse defaults, cached protein data, and helper-based output.
-- Refactored [problems/inheritance-problems/epistasis_test_cross.py](problems/inheritance-problems/epistasis_test_cross.py)
+- Refactored [epistasis_test_cross.py](../problems/inheritance-problems/epistasis/epistasis_test_cross.py)
   to use shared argparse defaults, helper-based question collection, and
   standardized outfile naming.
-- Refactored [problems/molecular_biology-problems/mutant_screen.py](problems/molecular_biology-problems/mutant_screen.py)
+- Refactored [mutant_screen.py](../problems/molecular_biology-problems/mutant_screen.py)
   to use shared argparse defaults, MC/FIB format flags, and helper-based output.
 - Fixed the mutant screen HTML table to quote the width attribute for valid XML
-  in [problems/molecular_biology-problems/mutant_screen.py](problems/molecular_biology-problems/mutant_screen.py).
-- Refactored [problems/molecular_biology-problems/pcr_design.py](problems/molecular_biology-problems/pcr_design.py)
+  in [mutant_screen.py](../problems/molecular_biology-problems/mutant_screen.py).
+- Refactored [pcr_design.py](../problems/molecular_biology-problems/pcr_design.py)
   to use shared argparse defaults and helper-based MC formatting.
-- Refactored [problems/inheritance-problems/polyploid-monoploid_v_haploid.py](problems/inheritance-problems/polyploid-monoploid_v_haploid.py)
+- Refactored [polyploid-monoploid_v_haploid.py](../problems/inheritance-problems/polyploid/polyploid-monoploid_v_haploid.py)
   to use batch helpers and shared argparse defaults.
-- Refactored [problems/laboratory-problems/serial_dilution_factor_aliquot_numeric.py](problems/laboratory-problems/serial_dilution_factor_aliquot_numeric.py)
+- Refactored [serial_dilution_factor_aliquot_numeric.py](../problems/laboratory-problems/serial_dilution_factor_aliquot_numeric.py)
   to use batch helpers and a computed default duplicate count.
 - Added a migration note about preserving computed duplicate defaults for batch
-  scripts in [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md).
-- Switched [problems/inheritance-problems/polyploid-monoploid_v_haploid.py](problems/inheritance-problems/polyploid-monoploid_v_haploid.py)
-  and [problems/laboratory-problems/serial_dilution_factor_aliquot_numeric.py](problems/laboratory-problems/serial_dilution_factor_aliquot_numeric.py)
+  scripts in [UNIFICATION_PLAN.md](UNIFICATION_PLAN.md).
+- Switched [polyploid-monoploid_v_haploid.py](../problems/inheritance-problems/polyploid/polyploid-monoploid_v_haploid.py)
+  and [serial_dilution_factor_aliquot_numeric.py](../problems/laboratory-problems/serial_dilution_factor_aliquot_numeric.py)
   to non-batch question generation with scenario selection modes.
 - Set the default duplicates for
-  [problems/laboratory-problems/serial_dilution_factor_aliquot_numeric.py](problems/laboratory-problems/serial_dilution_factor_aliquot_numeric.py)
+  [serial_dilution_factor_aliquot_numeric.py](../problems/laboratory-problems/serial_dilution_factor_aliquot_numeric.py)
   back to 2 for quick testing.
 - Removed per-script `duplicates_default` overrides so scripts consistently use
   the shared default of 2 (including buffers, percent dilution, and serial
@@ -729,24 +729,24 @@
 - Removed `max_questions_default` override support from `bptools` parser helpers,
   keeping a fixed default of None for single-question scripts and 99 for batch.
 - Documented how to switch batch scripts from fixed cycles to individual
-  scenario selection in [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md).
+  scenario selection in [UNIFICATION_PLAN.md](UNIFICATION_PLAN.md).
 - Added a migration note about converting stdout-based question scripts to
-  helper-based MC/FIB formatting in [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md).
-- Refactored [problems/molecular_biology-problems/overhang_sequence.py](problems/molecular_biology-problems/overhang_sequence.py)
+  helper-based MC/FIB formatting in [UNIFICATION_PLAN.md](UNIFICATION_PLAN.md).
+- Refactored [overhang_sequence.py](../problems/molecular_biology-problems/overhang_sequence.py)
   to use batch helpers, shared argparse defaults, and unified outfile naming.
-- Refactored [problems/inheritance-problems/pedigrees/write_pedigree_match.py](problems/inheritance-problems/pedigrees/write_pedigree_match.py)
+- Refactored [write_pedigree_match.py](../problems/inheritance-problems/pedigrees/write_pedigree_match.py)
   to use batch helpers and start-numbered matching sets.
-- Refactored [problems/biochemistry-problems/Henderson-Hasselbalch.py](problems/biochemistry-problems/Henderson-Hasselbalch.py)
+- Refactored [Henderson-Hasselbalch.py](../problems/biochemistry-problems/buffers/Henderson-Hasselbalch.py)
   to use shared argparse defaults and helper-based question collection.
 - Added a migration note about start-numbering for batch-generated lists in
-  [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md).
+  [UNIFICATION_PLAN.md](UNIFICATION_PLAN.md).
 - Set defaults for question format/direction in
-  [problems/molecular_biology-problems/complementary_sequences.py](problems/molecular_biology-problems/complementary_sequences.py)
-  and [problems/inheritance-problems/epistasis_test_cross.py](problems/inheritance-problems/epistasis_test_cross.py)
+  [complementary_sequences.py](../problems/molecular_biology-problems/complementary_sequences.py)
+  and [epistasis_test_cross.py](../problems/inheritance-problems/epistasis/epistasis_test_cross.py)
   so they run without required flags.
 - Set default question formats in
-  [problems/molecular_biology-problems/overhang_sequence.py](problems/molecular_biology-problems/overhang_sequence.py)
-  and [problems/biochemistry-problems/Henderson-Hasselbalch.py](problems/biochemistry-problems/Henderson-Hasselbalch.py)
+  [overhang_sequence.py](../problems/molecular_biology-problems/overhang_sequence.py)
+  and [Henderson-Hasselbalch.py](../problems/biochemistry-problems/buffers/Henderson-Hasselbalch.py)
   so they run without required flags.
 - Set defaults for `alpha_helix_h-bonds.py` question type and
   `pKa_buffer_state.py` proton count, and fixed the overhang script to use the
@@ -755,163 +755,163 @@
   callers (`complementary_sequences`, `overhang_sequence`, `alpha_helix_h-bonds`,
   `mutant_screen`, and `TEMPLATE.py`) to stop overriding dest.
 - Fixed an indentation error in
-  [problems/biochemistry-problems/alpha_helix_h-bonds.py](problems/biochemistry-problems/alpha_helix_h-bonds.py).
+  [alpha_helix_h-bonds.py](../problems/biochemistry-problems/alpha_helix_h-bonds.py).
 - Fixed duplicate argparse base-arg registration in
-  [problems/inheritance-problems/unique_gametes.py](problems/inheritance-problems/unique_gametes.py).
+  [unique_gametes.py](../problems/inheritance-problems/large_crosses/unique_gametes.py).
 - Added a max-questions early-exit check to
-  [problems/molecular_biology-problems/overhang_sequence.py](problems/molecular_biology-problems/overhang_sequence.py)
+  [overhang_sequence.py](../problems/molecular_biology-problems/overhang_sequence.py)
   to avoid long full-list runs when `-x` is set.
-- Refactored [problems/laboratory-problems/molar_solution_using_mw_numeric.py](problems/laboratory-problems/molar_solution_using_mw_numeric.py)
+- Refactored `molar_solution_using_mw_numeric.py`
   to use shared argparse defaults and helper-based question collection.
-- Refactored [problems/molecular_biology-problems/translate_genetic_code.py](problems/molecular_biology-problems/translate_genetic_code.py)
+- Refactored [translate_genetic_code.py](../problems/molecular_biology-problems/translate_genetic_code.py)
   to use shared argparse defaults, cached data reads, and helper-based question collection.
-- Refactored [problems/biochemistry-problems/fret_overlap_colors.py](problems/biochemistry-problems/fret_overlap_colors.py)
+- Refactored [fret_overlap_colors.py](../problems/biophysics-problems/fret_overlap_colors.py)
   to use shared argparse defaults, MC formatting helpers, and randomized question selection.
 - Added migration notes about replacing custom `-q/--num-questions` flags and
-  about using repo data helpers in [docs/UNIFICATION_PLAN.md](docs/UNIFICATION_PLAN.md).
+  about using repo data helpers in [UNIFICATION_PLAN.md](UNIFICATION_PLAN.md).
 - Refactored biochemistry scripts to use shared argparse defaults and helper-based
   question collection:
-  [problems/biochemistry-problems/buffers/optimal_buffering_range.py](problems/biochemistry-problems/buffers/optimal_buffering_range.py),
-  [problems/biochemistry-problems/fatty_acid_naming.py](problems/biochemistry-problems/fatty_acid_naming.py),
-  [problems/biochemistry-problems/fret_permute_colors.py](problems/biochemistry-problems/fret_permute_colors.py),
-  [problems/biochemistry-problems/isoelectric_one_protein.py](problems/biochemistry-problems/isoelectric_one_protein.py),
-  [problems/biochemistry-problems/metabolic_pathway_allosteric.py](problems/biochemistry-problems/metabolic_pathway_allosteric.py),
-  [problems/biochemistry-problems/metabolic_pathway_inhibitor.py](problems/biochemistry-problems/metabolic_pathway_inhibitor.py),
-  [problems/biochemistry-problems/michaelis_menten_table-inhibition.py](problems/biochemistry-problems/michaelis_menten_table-inhibition.py),
-  [problems/biochemistry-problems/michaelis_menten_table-Km.py](problems/biochemistry-problems/michaelis_menten_table-Km.py),
-  [problems/biochemistry-problems/optimal_enzyme-type_1.py](problems/biochemistry-problems/optimal_enzyme-type_1.py),
-  [problems/biochemistry-problems/optimal_enzyme-type_2.py](problems/biochemistry-problems/optimal_enzyme-type_2.py),
-  [problems/biochemistry-problems/optimal_enzyme-type_3.py](problems/biochemistry-problems/optimal_enzyme-type_3.py),
-  [problems/biochemistry-problems/photosynthetic_light_pigments.py](problems/biochemistry-problems/photosynthetic_light_pigments.py),
-  [problems/biochemistry-problems/protein_gel_migration.py](problems/biochemistry-problems/protein_gel_migration.py),
-  [problems/biochemistry-problems/which_hydrophobic-simple.py](problems/biochemistry-problems/which_hydrophobic-simple.py).
+  [optimal_buffering_range.py](../problems/biochemistry-problems/buffers/optimal_buffering_range.py),
+  `fatty_acid_naming.py`,
+  [fret_permute_colors.py](../problems/biophysics-problems/fret_permute_colors.py),
+  [isoelectric_one_protein.py](../problems/biochemistry-problems/electrophoresis/isoelectric_one_protein.py),
+  [metabolic_pathway_allosteric.py](../problems/biochemistry-problems/enzymes/metabolic_pathway_allosteric.py),
+  [metabolic_pathway_inhibitor.py](../problems/biochemistry-problems/enzymes/metabolic_pathway_inhibitor.py),
+  [michaelis_menten_table-inhibition.py](../problems/biochemistry-problems/enzymes/michaelis_menten_table-inhibition.py),
+  [michaelis_menten_table-Km.py](../problems/biochemistry-problems/enzymes/michaelis_menten_table-Km.py),
+  [optimal_enzyme-type_1.py](../problems/biochemistry-problems/enzymes/optimal_enzyme-type_1.py),
+  [optimal_enzyme-type_2.py](../problems/biochemistry-problems/enzymes/optimal_enzyme-type_2.py),
+  [optimal_enzyme-type_3.py](../problems/biochemistry-problems/enzymes/optimal_enzyme-type_3.py),
+  [photosynthetic_light_pigments.py](../problems/biochemistry-problems/photosynthetic_light_pigments.py),
+  [protein_gel_migration.py](../problems/biochemistry-problems/electrophoresis/protein_gel_migration.py),
+  [which_hydrophobic-simple.py](../problems/biochemistry-problems/lipids/which_hydrophobic-simple.py).
 - Refactored biostatistics scripts to use shared argparse defaults and helper-based
   question collection:
-  [problems/biostatistics-problems/babies_two_sample_t_test.py](problems/biostatistics-problems/babies_two_sample_t_test.py),
-  [problems/biostatistics-problems/busse_woods_one_sample_tests.py](problems/biostatistics-problems/busse_woods_one_sample_tests.py),
-  [problems/biostatistics-problems/busse_woods_two_sample_t_test.py](problems/biostatistics-problems/busse_woods_two_sample_t_test.py),
-  [problems/biostatistics-problems/population_test_google_sheet.py](problems/biostatistics-problems/population_test_google_sheet.py),
-  [problems/biostatistics-problems/z_score_google_sheet.py](problems/biostatistics-problems/z_score_google_sheet.py),
-  [problems/biostatistics-problems/z_score_table_interp.py](problems/biostatistics-problems/z_score_table_interp.py).
+  [babies_two_sample_t_test.py](../problems/biostatistics-problems/babies_two_sample_t_test.py),
+  [busse_woods_one_sample_tests.py](../problems/biostatistics-problems/busse_woods_one_sample_tests.py),
+  [busse_woods_two_sample_t_test.py](../problems/biostatistics-problems/busse_woods_two_sample_t_test.py),
+  [population_test_google_sheet.py](../problems/biostatistics-problems/population_test_google_sheet.py),
+  [z_score_google_sheet.py](../problems/biostatistics-problems/z_score_google_sheet.py),
+  [z_score_table_interp.py](../problems/biostatistics-problems/z_score_table_interp.py).
 - Refactored DNA profiling scripts to use shared argparse defaults, helper-based
   question collection, and parameter wrappers:
-  [problems/dna_profiling-problems/blood_type_agglutination_test.py](problems/dna_profiling-problems/blood_type_agglutination_test.py),
-  [problems/dna_profiling-problems/who_father_html.py](problems/dna_profiling-problems/who_father_html.py),
-  [problems/dna_profiling-problems/who_killer_html.py](problems/dna_profiling-problems/who_killer_html.py).
+  [blood_type_agglutination_test.py](../problems/dna_profiling-problems/blood_type_agglutination_test.py),
+  [who_father_html.py](../problems/dna_profiling-problems/who_father_html.py),
+  [who_killer_html.py](../problems/dna_profiling-problems/who_killer_html.py).
 - Refactored inheritance scripts to use shared argparse defaults and helper-based
   question collection or batch helpers:
-  [problems/inheritance-problems/blood_type_mother.py](problems/inheritance-problems/blood_type_mother.py),
-  [problems/inheritance-problems/chisquare/chi_square_calculated.py](problems/inheritance-problems/chisquare/chi_square_calculated.py),
-  [problems/inheritance-problems/chisquare/chi_square_choices.py](problems/inheritance-problems/chisquare/chi_square_choices.py),
-  [problems/inheritance-problems/chisquare/chi_square_hardy_weinberg.py](problems/inheritance-problems/chisquare/chi_square_hardy_weinberg.py),
-  [problems/inheritance-problems/cytogenetic_notation-rearrangements.py](problems/inheritance-problems/cytogenetic_notation-rearrangements.py),
-  [problems/inheritance-problems/cytogenetic_notation-sub-band_notation.py](problems/inheritance-problems/cytogenetic_notation-sub-band_notation.py),
-  [problems/inheritance-problems/deletion_mutant_random.py](problems/inheritance-problems/deletion_mutant_random.py),
-  [problems/inheritance-problems/deletion_mutant_words.py](problems/inheritance-problems/deletion_mutant_words.py),
-  [problems/inheritance-problems/dominant_and_X-linked_recessive.py](problems/inheritance-problems/dominant_and_X-linked_recessive.py),
-  [problems/inheritance-problems/hardy_weinberg_mc_type.py](problems/inheritance-problems/hardy_weinberg_mc_type.py),
-  [problems/inheritance-problems/hardy_weinberg_numeric.py](problems/inheritance-problems/hardy_weinberg_numeric.py),
-  [problems/inheritance-problems/horses.py](problems/inheritance-problems/horses.py),
-  [problems/inheritance-problems/letter_translocation_problem_color.py](problems/inheritance-problems/letter_translocation_problem_color.py),
-  [problems/inheritance-problems/monohybrid_degrees_of_dominance.py](problems/inheritance-problems/monohybrid_degrees_of_dominance.py),
-  [problems/inheritance-problems/monohybrid_genotype_statements.py](problems/inheritance-problems/monohybrid_genotype_statements.py),
-  [problems/inheritance-problems/old_deletion_mutants.py](problems/inheritance-problems/old_deletion_mutants.py),
-  [problems/inheritance-problems/pedigrees/write_pedigree_choice.py](problems/inheritance-problems/pedigrees/write_pedigree_choice.py),
-  [problems/inheritance-problems/polyploid-gametes.py](problems/inheritance-problems/polyploid-gametes.py),
-  [problems/inheritance-problems/punnett_choice.py](problems/inheritance-problems/punnett_choice.py),
-  [problems/inheritance-problems/robertsonian.py](problems/inheritance-problems/robertsonian.py),
-  [problems/inheritance-problems/translocation_meiosis_table.py](problems/inheritance-problems/translocation_meiosis_table.py).
+  [blood_type_mother.py](../problems/inheritance-problems/blood_type_mother.py),
+  [chi_square_calculated.py](../problems/inheritance-problems/chi_square/chi_square_calculated.py),
+  [chi_square_choices.py](../problems/inheritance-problems/chi_square/chi_square_choices.py),
+  [chi_square_hardy_weinberg.py](../problems/inheritance-problems/chi_square/chi_square_hardy_weinberg.py),
+  [cytogenetic_notation-rearrangements.py](../problems/inheritance-problems/cytogenetic_notation/cytogenetic_notation-rearrangements.py),
+  [cytogenetic_notation-sub-band_notation.py](../problems/inheritance-problems/cytogenetic_notation/cytogenetic_notation-sub-band_notation.py),
+  [deletion_mutant_random.py](../problems/inheritance-problems/deletion_mutants/deletion_mutant_random.py),
+  [deletion_mutant_words.py](../problems/inheritance-problems/deletion_mutants/deletion_mutant_words.py),
+  [dominant_and_X-linked_recessive.py](../problems/inheritance-problems/dominant_and_X-linked_recessive.py),
+  [hardy_weinberg_mc_type.py](../problems/inheritance-problems/hardy_weinberg/hardy_weinberg_mc_type.py),
+  [hardy_weinberg_numeric.py](../problems/inheritance-problems/hardy_weinberg/hardy_weinberg_numeric.py),
+  [horses.py](../problems/inheritance-problems/horses.py),
+  [letter_translocation_problem_color.py](../problems/inheritance-problems/translocation/letter_translocation_problem_color.py),
+  [monohybrid_degrees_of_dominance.py](../problems/inheritance-problems/monohybrid_degrees_of_dominance.py),
+  [monohybrid_genotype_statements.py](../problems/inheritance-problems/monohybrid_genotype_statements.py),
+  `old_deletion_mutants.py`,
+  [write_pedigree_choice.py](../problems/inheritance-problems/pedigrees/write_pedigree_choice.py),
+  [polyploid-gametes.py](../problems/inheritance-problems/polyploid/polyploid-gametes.py),
+  [punnett_choice.py](../problems/inheritance-problems/punnett_choice.py),
+  [robertsonian.py](../problems/inheritance-problems/translocation/robertsonian.py),
+  [translocation_meiosis_table.py](../problems/inheritance-problems/translocation/translocation_meiosis_table.py).
 - Refactored laboratory scripts to use shared argparse defaults and helper-based
   question collection:
-  [problems/laboratory-problems/dilution_factor_aliquot_numeric.py](problems/laboratory-problems/dilution_factor_aliquot_numeric.py),
-  [problems/laboratory-problems/dilution_factor_diluent_numeric.py](problems/laboratory-problems/dilution_factor_diluent_numeric.py),
-  [problems/laboratory-problems/dilution_factor_mc.py](problems/laboratory-problems/dilution_factor_mc.py),
-  [problems/laboratory-problems/mass_solution_numeric.py](problems/laboratory-problems/mass_solution_numeric.py),
-  [problems/laboratory-problems/orders_of_magnitude_mc.py](problems/laboratory-problems/orders_of_magnitude_mc.py),
-  [problems/laboratory-problems/pipet_size_mc.py](problems/laboratory-problems/pipet_size_mc.py),
-  [problems/laboratory-problems/weight-vol_solution_numeric.py](problems/laboratory-problems/weight-vol_solution_numeric.py).
+  [dilution_factor_aliquot_numeric.py](../problems/laboratory-problems/dilution_factor_aliquot_numeric.py),
+  [dilution_factor_diluent_numeric.py](../problems/laboratory-problems/dilution_factor_diluent_numeric.py),
+  [dilution_factor_mc.py](../problems/laboratory-problems/dilution_factor_mc.py),
+  `mass_solution_numeric.py`,
+  [orders_of_magnitude_mc.py](../problems/laboratory-problems/orders_of_magnitude_mc.py),
+  [pipet_size_mc.py](../problems/laboratory-problems/pipet_size_mc.py),
+  `weight-vol_solution_numeric.py`.
 - Refactored molecular biology scripts to use shared argparse defaults and helper-based
   question collection:
-  [problems/molecular_biology-problems/amplicon_copies.py](problems/molecular_biology-problems/amplicon_copies.py),
-  [problems/molecular_biology-problems/beadle_tatum-metabolic_pathway.py](problems/molecular_biology-problems/beadle_tatum-metabolic_pathway.py),
-  [problems/molecular_biology-problems/chargaff_dna_percent.py](problems/molecular_biology-problems/chargaff_dna_percent.py),
-  [problems/molecular_biology-problems/consensus_sequence_FIB-arbitrary_code.py](problems/molecular_biology-problems/consensus_sequence_FIB-arbitrary_code.py),
-  [problems/molecular_biology-problems/consensus_sequence_FIB-easy.py](problems/molecular_biology-problems/consensus_sequence_FIB-easy.py),
-  [problems/molecular_biology-problems/consensus_sequence_FIB-hard.py](problems/molecular_biology-problems/consensus_sequence_FIB-hard.py),
-  [problems/molecular_biology-problems/dna_gel-closest_farthest_MC.py](problems/molecular_biology-problems/dna_gel-closest_farthest_MC.py),
-  [problems/molecular_biology-problems/dna_gel-estimate_size-MC_or_NUM.py](problems/molecular_biology-problems/dna_gel-estimate_size-MC_or_NUM.py),
-  [problems/molecular_biology-problems/dna_melting_temp.py](problems/molecular_biology-problems/dna_melting_temp.py),
-  [problems/molecular_biology-problems/enhancer_gene_expression.py](problems/molecular_biology-problems/enhancer_gene_expression.py),
-  [problems/molecular_biology-problems/exon_splicing.py](problems/molecular_biology-problems/exon_splicing.py),
-  [problems/molecular_biology-problems/inverse_pcr_design.py](problems/molecular_biology-problems/inverse_pcr_design.py),
-  [problems/molecular_biology-problems/linear_digest.py](problems/molecular_biology-problems/linear_digest.py),
-  [problems/molecular_biology-problems/nested_pcr_design.py](problems/molecular_biology-problems/nested_pcr_design.py),
-  [problems/molecular_biology-problems/overhang_type.py](problems/molecular_biology-problems/overhang_type.py),
-  [problems/molecular_biology-problems/palindrome_sequence_match.py](problems/molecular_biology-problems/palindrome_sequence_match.py),
-  [problems/molecular_biology-problems/rna_transcribe_prime_fill_blank.py](problems/molecular_biology-problems/rna_transcribe_prime_fill_blank.py),
-  [problems/molecular_biology-problems/rna_transcribe_prime.py](problems/molecular_biology-problems/rna_transcribe_prime.py),
-  [problems/molecular_biology-problems/RT-qPCR.py](problems/molecular_biology-problems/RT-qPCR.py).
+  [amplicon_copies.py](../problems/molecular_biology-problems/amplicon_copies.py),
+  [beadle_tatum-metabolic_pathway.py](../problems/molecular_biology-problems/beadle_tatum-metabolic_pathway.py),
+  [chargaff_dna_percent.py](../problems/molecular_biology-problems/chargaff_dna_percent.py),
+  [consensus_sequence_FIB-arbitrary_code.py](../problems/molecular_biology-problems/consensus_sequence_FIB-arbitrary_code.py),
+  [consensus_sequence_FIB-easy.py](../problems/molecular_biology-problems/consensus_sequence_FIB-easy.py),
+  [consensus_sequence_FIB-hard.py](../problems/molecular_biology-problems/consensus_sequence_FIB-hard.py),
+  [dna_gel-closest_farthest_MC.py](../problems/molecular_biology-problems/dna_gel-closest_farthest_MC.py),
+  [dna_gel-estimate_size-MC_or_NUM.py](../problems/molecular_biology-problems/dna_gel-estimate_size-MC_or_NUM.py),
+  [dna_melting_temp.py](../problems/molecular_biology-problems/dna_melting_temp.py),
+  [enhancer_gene_expression.py](../problems/molecular_biology-problems/enhancer_gene_expression.py),
+  [exon_splicing.py](../problems/molecular_biology-problems/exon_splicing.py),
+  [inverse_pcr_design.py](../problems/molecular_biology-problems/inverse_pcr_design.py),
+  [linear_digest.py](../problems/molecular_biology-problems/linear_digest.py),
+  [nested_pcr_design.py](../problems/molecular_biology-problems/nested_pcr_design.py),
+  [overhang_type.py](../problems/molecular_biology-problems/overhang_type.py),
+  [palindrome_sequence_match.py](../problems/molecular_biology-problems/palindrome_sequence_match.py),
+  [rna_transcribe_prime_fill_blank.py](../problems/molecular_biology-problems/rna_transcribe_prime_fill_blank.py),
+  [rna_transcribe_prime.py](../problems/molecular_biology-problems/rna_transcribe_prime.py),
+  [RT-qPCR.py](../problems/molecular_biology-problems/RT-qPCR.py).
 - Implemented a working RT-qPCR numeric generator in
-  [problems/molecular_biology-problems/RT-qPCR.py](problems/molecular_biology-problems/RT-qPCR.py),
+  [RT-qPCR.py](../problems/molecular_biology-problems/RT-qPCR.py),
   including randomized Ct tables and fold-change calculations.
 - Added difficulty presets for parameter-heavy restriction digest generation in
-  [problems/molecular_biology-problems/linear_digest.py](problems/molecular_biology-problems/linear_digest.py).
+  [linear_digest.py](../problems/molecular_biology-problems/linear_digest.py).
 - Added difficulty presets for parameter-heavy generators:
-  [problems/molecular_biology-problems/nested_pcr_design.py](problems/molecular_biology-problems/nested_pcr_design.py),
-  [problems/inheritance-problems/deletion_mutant_words.py](problems/inheritance-problems/deletion_mutant_words.py),
-  [problems/inheritance-problems/deletion_mutant_random.py](problems/inheritance-problems/deletion_mutant_random.py),
-  [problems/dna_profiling-problems/hla_genotype.py](problems/dna_profiling-problems/hla_genotype.py),
-  [problems/biochemistry-problems/PUBCHEM/polypeptide_mc_sequence.py](problems/biochemistry-problems/PUBCHEM/polypeptide_mc_sequence.py).
+  [nested_pcr_design.py](../problems/molecular_biology-problems/nested_pcr_design.py),
+  [deletion_mutant_words.py](../problems/inheritance-problems/deletion_mutants/deletion_mutant_words.py),
+  [deletion_mutant_random.py](../problems/inheritance-problems/deletion_mutants/deletion_mutant_random.py),
+  [hla_genotype.py](../problems/dna_profiling-problems/hla_genotype.py),
+  [polypeptide_mc_sequence.py](../problems/biochemistry-problems/PUBCHEM/PEPTIDES/polypeptide_mc_sequence.py).
 - Removed non-generator utilities from the phase-1 upgrade list and tracked them
   as utilities instead:
-  [problems/inheritance-problems/pedigrees/pedigree_code_templates.py](problems/inheritance-problems/pedigrees/pedigree_code_templates.py),
-  [problems/inheritance-problems/population_logistic_map_chaos.py](problems/inheritance-problems/population_logistic_map_chaos.py).
+  `pedigree_code_templates.py`,
+  [population_logistic_map_chaos.py](../problems/inheritance-problems/population_logistic_map_chaos.py).
 - Updated biostatistics box plot generators to use Tukey hinges, allow ties, and
   replace numeric nudges with misconception-based distractors:
-  [problems/biostatistics-problems/boxplot_from_sorted_data.py](problems/biostatistics-problems/boxplot_from_sorted_data.py),
-  [problems/biostatistics-problems/boxplot_from_unsorted_even.py](problems/biostatistics-problems/boxplot_from_unsorted_even.py),
-  [problems/biostatistics-problems/boxplot_from_summary.py](problems/biostatistics-problems/boxplot_from_summary.py),
-  [problems/biostatistics-problems/boxplot_from_cdf.py](problems/biostatistics-problems/boxplot_from_cdf.py).
+  [boxplot_from_sorted_data.py](../problems/biostatistics-problems/boxplot_from_sorted_data.py),
+  [boxplot_from_unsorted_even.py](../problems/biostatistics-problems/boxplot_from_unsorted_even.py),
+  [boxplot_from_summary.py](../problems/biostatistics-problems/boxplot_from_summary.py),
+  [boxplot_from_cdf.py](../problems/biostatistics-problems/boxplot_from_cdf.py).
 - Allowed nondecreasing summaries and fractional quartiles in box plot rendering:
-  [problems/biostatistics-problems/make_html_box_plot.py](problems/biostatistics-problems/make_html_box_plot.py).
+  [make_html_box_plot.py](../problems/biostatistics-problems/make_html_box_plot.py).
 - Updated box plot tests for Tukey hinges, ties, and fractional quartiles:
-  [tests/libs/biostatistics/test_biostatistics_boxplots.py](tests/libs/biostatistics/test_biostatistics_boxplots.py).
+  [test_biostatistics_boxplots.py](../tests/libs/biostatistics/test_biostatistics_boxplots.py).
 - Added shared box plot helpers to reduce duplication in biostatistics generators:
-  [problems/biostatistics-problems/box_plot_lib.py](problems/biostatistics-problems/box_plot_lib.py).
+  [box_plot_lib.py](../problems/biostatistics-problems/box_plot_lib.py).
 - Added dedicated box plot library tests:
-  [tests/libs/biostatistics/test_box_plot_lib.py](tests/libs/biostatistics/test_box_plot_lib.py).
+  [test_box_plot_lib.py](../tests/libs/biostatistics/test_box_plot_lib.py).
 - Updated carbohydrate sugar code loading to use the repo data directory helper:
-  [problems/biochemistry-problems/carbohydrates_classification/sugarlib.py](problems/biochemistry-problems/carbohydrates_classification/sugarlib.py).
+  [sugarlib.py](../problems/biochemistry-problems/carbs/sugarlib.py).
 - Replaced sys.exit calls in Haworth projection generation with exceptions:
-  [problems/biochemistry-problems/carbohydrates_classification/sugarlib.py](problems/biochemistry-problems/carbohydrates_classification/sugarlib.py).
+  [sugarlib.py](../problems/biochemistry-problems/carbs/sugarlib.py).
 - Reused a single SugarCodes instance per generator run to avoid repeated YAML loads:
-  [problems/biochemistry-problems/carbohydrates_classification/classify_Fischer.py](problems/biochemistry-problems/carbohydrates_classification/classify_Fischer.py),
-  [problems/biochemistry-problems/carbohydrates_classification/classify_Haworth.py](problems/biochemistry-problems/carbohydrates_classification/classify_Haworth.py).
+  [classify_Fischer.py](../problems/biochemistry-problems/carbs/classify_Fischer.py),
+  [classify_Haworth.py](../problems/biochemistry-problems/carbs/classify_Haworth.py).
 - Guarded Haworth projection generators against None returns from invalid ring sizes:
-  [problems/biochemistry-problems/carbohydrates_classification/classify_Haworth.py](problems/biochemistry-problems/carbohydrates_classification/classify_Haworth.py),
-  [problems/biochemistry-problems/carbohydrates_classification/convert_Haworth_to_Fischer.py](problems/biochemistry-problems/carbohydrates_classification/convert_Haworth_to_Fischer.py),
-  [problems/biochemistry-problems/carbohydrates_classification/convert_Fischer_to_Haworth.py](problems/biochemistry-problems/carbohydrates_classification/convert_Fischer_to_Haworth.py),
-  [problems/biochemistry-problems/carbohydrates_classification/D_to_L_Haworth_configuration.py](problems/biochemistry-problems/carbohydrates_classification/D_to_L_Haworth_configuration.py).
+  [classify_Haworth.py](../problems/biochemistry-problems/carbs/classify_Haworth.py),
+  [convert_Haworth_to_Fischer.py](../problems/biochemistry-problems/carbs/convert_Haworth_to_Fischer.py),
+  [convert_Fischer_to_Haworth.py](../problems/biochemistry-problems/carbs/convert_Fischer_to_Haworth.py),
+  [D_to_L_Haworth_configuration.py](../problems/biochemistry-problems/carbs/D_to_L_Haworth_configuration.py).
 - Fixed arabinose spelling in sugar code data:
-  [data/sugar_codes.yml](data/sugar_codes.yml).
+  [sugar_codes.yml](../data/sugar_codes.yml).
 - Migrated carbohydrate classification generators to the standard question framework:
-  [problems/biochemistry-problems/carbohydrates_classification/D_to_L_Fischer_configuration.py](problems/biochemistry-problems/carbohydrates_classification/D_to_L_Fischer_configuration.py),
-  [problems/biochemistry-problems/carbohydrates_classification/D_to_L_Haworth_configuration.py](problems/biochemistry-problems/carbohydrates_classification/D_to_L_Haworth_configuration.py),
-  [problems/biochemistry-problems/carbohydrates_classification/classify_Fischer.py](problems/biochemistry-problems/carbohydrates_classification/classify_Fischer.py),
-  [problems/biochemistry-problems/carbohydrates_classification/classify_Haworth.py](problems/biochemistry-problems/carbohydrates_classification/classify_Haworth.py).
+  [D_to_L_Fischer_configuration.py](../problems/biochemistry-problems/carbs/D_to_L_Fischer_configuration.py),
+  [D_to_L_Haworth_configuration.py](../problems/biochemistry-problems/carbs/D_to_L_Haworth_configuration.py),
+  [classify_Fischer.py](../problems/biochemistry-problems/carbs/classify_Fischer.py),
+  [classify_Haworth.py](../problems/biochemistry-problems/carbs/classify_Haworth.py).
 - Dropped CLI choice-count overrides for fixed-choice carbohydrate classification items:
-  [problems/biochemistry-problems/carbohydrates_classification/classify_Fischer.py](problems/biochemistry-problems/carbohydrates_classification/classify_Fischer.py),
-  [problems/biochemistry-problems/carbohydrates_classification/classify_Haworth.py](problems/biochemistry-problems/carbohydrates_classification/classify_Haworth.py).
+  [classify_Fischer.py](../problems/biochemistry-problems/carbs/classify_Fischer.py),
+  [classify_Haworth.py](../problems/biochemistry-problems/carbs/classify_Haworth.py).
 - Added coverage for SugarCodes filters, enantiomer mapping, flip behavior, and formula output:
-  [tests/libs/test_biochemistry_sugarlib.py](tests/libs/test_biochemistry_sugarlib.py).
+  [test_biochemistry_sugarlib.py](../tests/libs/test_biochemistry_sugarlib.py).
 - Fixed ketoheptose comment in Haworth ring selection logic:
-  [problems/biochemistry-problems/carbohydrates_classification/D_to_L_Haworth_configuration.py](problems/biochemistry-problems/carbohydrates_classification/D_to_L_Haworth_configuration.py),
-  [problems/biochemistry-problems/carbohydrates_classification/convert_Haworth_to_Fischer.py](problems/biochemistry-problems/carbohydrates_classification/convert_Haworth_to_Fischer.py),
-  [problems/biochemistry-problems/carbohydrates_classification/convert_Fischer_to_Haworth.py](problems/biochemistry-problems/carbohydrates_classification/convert_Fischer_to_Haworth.py).
+  [D_to_L_Haworth_configuration.py](../problems/biochemistry-problems/carbs/D_to_L_Haworth_configuration.py),
+  [convert_Haworth_to_Fischer.py](../problems/biochemistry-problems/carbs/convert_Haworth_to_Fischer.py),
+  [convert_Fischer_to_Haworth.py](../problems/biochemistry-problems/carbs/convert_Fischer_to_Haworth.py).
 - Migrated Haworth/Fischer conversion generators to the standard question framework:
-  [problems/biochemistry-problems/carbohydrates_classification/convert_Haworth_to_Fischer.py](problems/biochemistry-problems/carbohydrates_classification/convert_Haworth_to_Fischer.py),
-  [problems/biochemistry-problems/carbohydrates_classification/convert_Fischer_to_Haworth.py](problems/biochemistry-problems/carbohydrates_classification/convert_Fischer_to_Haworth.py).
+  [convert_Haworth_to_Fischer.py](../problems/biochemistry-problems/carbs/convert_Haworth_to_Fischer.py),
+  [convert_Fischer_to_Haworth.py](../problems/biochemistry-problems/carbs/convert_Fischer_to_Haworth.py).
 - Migrated two-point test cross gene mapping generators to the standard question framework:
-  [problems/inheritance-problems/gene_mapping/two-point_test_cross-cis-trans.py](problems/inheritance-problems/gene_mapping/two-point_test_cross-cis-trans.py),
-  [problems/inheritance-problems/gene_mapping/two-point_test_cross-distance.py](problems/inheritance-problems/gene_mapping/two-point_test_cross-distance.py),
-  [problems/inheritance-problems/gene_mapping/two-point_test_cross-which_genotypes.py](problems/inheritance-problems/gene_mapping/two-point_test_cross-which_genotypes.py).
+  [two-point_test_cross-cis-trans.py](../problems/inheritance-problems/gene_mapping/two-point_test_cross-cis-trans.py),
+  [two-point_test_cross-distance.py](../problems/inheritance-problems/gene_mapping/two-point_test_cross-distance.py),
+  [two-point_test_cross-which_genotypes.py](../problems/inheritance-problems/gene_mapping/two-point_test_cross-which_genotypes.py).

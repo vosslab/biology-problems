@@ -4,14 +4,14 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "biology-problems"
-version = "26.01"
+version = "26.05"
 description = "Biology problem generators and helpers."
 readme = "README.md"
 requires-python = ">=3.12"
-license = { text = "GPL-3.0-or-later" }
+license = { text = "LGPL-3.0-or-later" }
 
 [tool.setuptools]
-py-modules = ["bptools", "logger_config", "table_image_raster_lib", "table_curve_lib"]
+py-modules = ["bptools", "table_image_raster_lib", "table_curve_lib"]
 include-package-data = true
 
 [tool.pytest.ini_options]

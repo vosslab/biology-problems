@@ -29,3 +29,14 @@ env.bak/
 venv.bak/
 
 report_*.txt
+
+# === UNIVERSAL ===
+_temp*.?*
+# === PYTHON ===
+build/
+dist/
+sdist/
+*.egg
+*.egg-info/
+site/
+

@@ -4,15 +4,15 @@
 
 ### Additions and New Features
 - Added `--backend {apple,ollama,claude}` mutually exclusive argparse group to
-  [topic_classifier/classify_yaml.py](../topic_classifier/classify_yaml.py) and
-  [topic_classifier/classify_scripts.py](../topic_classifier/classify_scripts.py),
+  [classify_yaml.py](../topic_classifier/classify_yaml.py) and
+  [classify_scripts.py](../topic_classifier/classify_scripts.py),
   with shortcut flags `--apple`, `-O`/`--ollama`, and `--claude`. A `resolve_backend(args)`
   helper translates the selected flag into the `backend` string passed to `create_llm_client()`.
   The `-m`/`--model` flag supplies the model name or alias for the selected backend (Ollama model
   name for `--ollama`; Claude alias such as `"sonnet"` or `"opus"` for `--claude`). Help text
   discloses that `--claude` routes prompts to the Anthropic cloud via the local `claude` CLI
   (OAuth/account login; no API key required; no new pip dependency).
-- Added [topic_classifier/metadata_loader_lib.py](../topic_classifier/metadata_loader_lib.py),
+- Added [metadata_loader_lib.py](../topic_classifier/metadata_loader_lib.py),
   which reads the canonical `topics_metadata.yml` from the sibling
   `biology-problems-website` repo (raises `FileNotFoundError` if absent) and returns the
   subject/topic structure the classifier needs. Each topic's identifier (`topic_id`) is the
@@ -25,31 +25,31 @@
   The 6-column CSV schema (`subject,topic,script,flags,input,notes`) is unchanged.
   A secondary is kept only when it is a real subject in `all_indexes`, differs from the primary
   (case-sensitive), and its stage-2 `confidence_score` >= 3.
-  See [topic_classifier/classify_scripts.py](../topic_classifier/classify_scripts.py) and
-  [topic_classifier/classify_yaml.py](../topic_classifier/classify_yaml.py).
+  See [classify_scripts.py](../topic_classifier/classify_scripts.py) and
+  [classify_yaml.py](../topic_classifier/classify_yaml.py).
 
 ### Behavior or Interface Changes
 - Replaced the `use_ollama: bool` parameter of `create_llm_client()` in
-  [topic_classifier/classifier_common_lib.py](../topic_classifier/classifier_common_lib.py)
+  [classifier_common_lib.py](../topic_classifier/classifier_common_lib.py)
   with `backend: str` (values: `"apple"`, `"ollama"`, `"claude"`; default `"apple"`).
   The `model` argument is reused: Ollama model name for `"ollama"`, Claude alias
   (e.g. `"sonnet"`, `"opus"`; default `"sonnet"`) for `"claude"`, ignored for `"apple"`.
   Unknown backends raise `ValueError`. Uses `local_llm_wrapper.ClaudeCodeTransport` for
   the `"claude"` path; no new pip dependency.
 - Reorganized `-O`/`--ollama` and bare `-m`/`--model` flags in
-  [topic_classifier/classify_yaml.py](../topic_classifier/classify_yaml.py) and
-  [topic_classifier/classify_scripts.py](../topic_classifier/classify_scripts.py)
+  [classify_yaml.py](../topic_classifier/classify_yaml.py) and
+  [classify_scripts.py](../topic_classifier/classify_scripts.py)
   into the new mutually exclusive `--backend` group; legacy `-O` still selects ollama
   and `-m` still sets the model name/alias for the active backend.
 - Classifiers now read subject and topic data from `topics_metadata.yml` via
-  [topic_classifier/metadata_loader_lib.py](../topic_classifier/metadata_loader_lib.py)
+  [metadata_loader_lib.py](../topic_classifier/metadata_loader_lib.py)
   instead of parsing subject-index Markdown files. All import sites in
-  [topic_classifier/classify_yaml.py](../topic_classifier/classify_yaml.py),
-  [topic_classifier/classify_scripts.py](../topic_classifier/classify_scripts.py),
-  [topic_classifier/prompt_builder_lib.py](../topic_classifier/prompt_builder_lib.py), and
-  [topic_classifier/compare_results.py](../topic_classifier/compare_results.py)
+  [classify_yaml.py](../topic_classifier/classify_yaml.py),
+  [classify_scripts.py](../topic_classifier/classify_scripts.py),
+  [prompt_builder_lib.py](../topic_classifier/prompt_builder_lib.py), and
+  [compare_results.py](../topic_classifier/compare_results.py)
   now alias the module as `metadata_loader`.
-- Updated [topic_classifier/prompts/stage2_topic.yaml](../topic_classifier/prompts/stage2_topic.yaml)
+- Updated [stage2_topic.yaml](../topic_classifier/prompts/stage2_topic.yaml)
   response-format block: placeholder changed from `topicNN` to `chi_square`; added explicit
   instruction "Return the exact alias shown before the colon in the topic list (e.g. chi_square),
   not a topicNN code." All 14 few-shot examples converted from `-> topicNN` targets to real
@@ -59,13 +59,13 @@
   is now correctly mapped to translation (molecular biology alias).
   stage1_subject.yaml has no topicNN references and required no changes.
 - `classify_one_script` and `classify_one_yaml` in
-  [topic_classifier/classify_scripts.py](../topic_classifier/classify_scripts.py) and
-  [topic_classifier/classify_yaml.py](../topic_classifier/classify_yaml.py)
+  [classify_scripts.py](../topic_classifier/classify_scripts.py) and
+  [classify_yaml.py](../topic_classifier/classify_yaml.py)
   now return a list of result dicts (primary always element 0, optional secondary) instead of
   a single dict; callers iterate the list. First-run dedup keys now include the subject field
   (scripts: `(script, flags, subject)`; yaml: `((yaml_path or input), subject)`) and
   repeat-mode voting keys include subject so primary and secondary tally separately.
-  [topic_classifier/compare_results.py](../topic_classifier/compare_results.py) now stores a
+  [compare_results.py](../topic_classifier/compare_results.py) now stores a
   set of `(subject, topic)` pairs per script (a dual-subject script no longer overwrites) and
   renders multi-pair values as sorted `subject:topic` tokens joined by `;`.
 - Removed the retired internal `chapter` terminology from `topic_classifier/*.py`.
@@ -74,15 +74,43 @@
   few-shot prompt examples now use `subject/topic` consistently, matching the
   `topics_metadata.yml` and BBQ task CSV format docs.
 
+### Fixes and Maintenance
+- Refreshed the doc set against the current repo. [README.md](../README.md) quick start
+  now uses a live script (`alpha_helix_h-bonds.py --mc -d 5`), and the first paragraph was
+  rewritten as plain prose under 250 characters (no links or code spans) to satisfy
+  [tests/test_readme_first_paragraph.py](../tests/test_readme_first_paragraph.py).
+- Fixed all 146 broken local Markdown links in
+  [docs/CODE_ARCHITECTURE.md](CODE_ARCHITECTURE.md) and
+  [docs/FILE_STRUCTURE.md](FILE_STRUCTURE.md): root-relative targets now use `../` so they
+  resolve from `docs/` on GitHub, and sibling `docs/*` links drop the redundant `docs/`
+  URL prefix. [tests/test_markdown_links.py](../tests/test_markdown_links.py) now passes.
+- Corrected stale paths and inventory in the architecture and file-structure docs:
+  added `problems/biophysics-problems/`, moved `sugarlib.py` to `carbs/` and the peptide
+  web assets to `PUBCHEM/PEPTIDES/PEPTIDYLE_WEB/`, replaced the removed `run_pyflakes.sh`
+  and `run_ascii_compliance.py` references with the current pytest lint gates, added a
+  `devel/` tooling section, dropped the deleted root `matching_sets/` and
+  `refactor-Jan_2026/` entries, and pointed the license entries at the dual
+  `LICENSE.LGPL_v3` and `LICENSE.CC_BY_4_0` files.
+- Rewrote [docs/INSTALL.md](INSTALL.md) and [docs/USAGE.md](USAGE.md) from current evidence:
+  documented the required sibling `qti-package-maker` checkout, a verifiable install check,
+  the shared `bptools` CLI flags, and corrected the dead quick-start command.
+- Trimmed [AGENTS.md](../AGENTS.md) from 52 lines to a tight pointer file that links into
+  `docs/*.md` instead of restating style/commit rules; dropped stale facts (`logger_config.py`,
+  `read_qti/`, root `matching_sets/`, "no repo-wide test runner") and preserved the standing
+  user directives verbatim.
+- Removed the deleted `logger_config` module from `py-modules` in
+  [pyproject.toml](../pyproject.toml) and corrected the project license to `LGPL-3.0-or-later`
+  to match the shipped `LICENSE.LGPL_v3` (code) and `LICENSE.CC_BY_4_0` (content) files.
+
 ### Removals and Deprecations
 - Removed `topic_classifier/index_parser_lib.py` - superseded by
-  [topic_classifier/metadata_loader_lib.py](../topic_classifier/metadata_loader_lib.py),
+  [metadata_loader_lib.py](../topic_classifier/metadata_loader_lib.py),
   which reads `topics_metadata.yml` directly. All call sites were repointed before removal.
 - Removed `subject-indexes/` directory and all 7 markdown index files
   (`biochemistry-index.md`, `biostatistics-index.md`, `biotechnology-index.md`,
   `genetics-index.md`, `laboratory-index.md`, `molecular_biology-index.md`,
   `other-index.md`). Topic data now lives in
-  [topic_classifier/topics_metadata.yml](../topic_classifier/topics_metadata.yml)
+  `topics_metadata.yml`
   as a single structured YAML source.
 
 ### Fixes and Maintenance
@@ -104,32 +132,32 @@
 - No secondary-confidence field is stored; a low-confidence secondary (stage-2
   `confidence_score` < 3, or subject key absent from `all_indexes`, or identical to
   primary) is silently dropped rather than emitted as a review row. Comparisons in
-  [topic_classifier/compare_results.py](../topic_classifier/compare_results.py) use
+  [compare_results.py](../topic_classifier/compare_results.py) use
   exact set equality of `(subject, topic)` pairs, so a script assigned to two subjects
   must match both in every compared run to register as AGREE.
 
 ### Developer Tests and Notes
 - Dual-subject classification feature added across six files in `topic_classifier/`:
-  [topic_classifier/prompts/stage1_subject.yaml](../topic_classifier/prompts/stage1_subject.yaml)
+  [stage1_subject.yaml](../topic_classifier/prompts/stage1_subject.yaml)
   gained an optional `<secondary_subject>` response tag with anti-drift guidance
   ("leave empty unless the question clearly belongs to two subjects equally") and
   empty-secondary micro-examples.
-  [topic_classifier/classifier_common_lib.py](../topic_classifier/classifier_common_lib.py)
+  [classifier_common_lib.py](../topic_classifier/classifier_common_lib.py)
   gained `normalize_secondary_subject(raw) -> str | None` (maps absent/empty/whitespace
   to None, else stripped string).
-  [topic_classifier/classify_scripts.py](../topic_classifier/classify_scripts.py) and
-  [topic_classifier/classify_yaml.py](../topic_classifier/classify_yaml.py): `classify_stage1`
+  [classify_scripts.py](../topic_classifier/classify_scripts.py) and
+  [classify_yaml.py](../topic_classifier/classify_yaml.py): `classify_stage1`
   now parses `secondary_subject`; `classify_one_script`/`classify_one_yaml` return a list
   of result dicts (primary always element 0, optional secondary). Secondary is accepted only
   when it is a real subject key, differs from the primary (case-sensitive), and its stage-2
   `confidence_score` >= 3; otherwise dropped. `assignment_rank` ("primary"/"secondary") is
   added to result dicts for debug logging only and is NEVER written to CSV. Dedup keys and
   repeat-mode voting keys include the subject field so primary/secondary tally separately.
-  [topic_classifier/compare_results.py](../topic_classifier/compare_results.py):
+  [compare_results.py](../topic_classifier/compare_results.py):
   `load_results_dir` now stores a set of `(subject, topic)` pairs per script; multi-pair
   values render as sorted `subject:topic` tokens joined by `;`.
-  [topic_classifier/find_unassigned_scripts.py](../topic_classifier/find_unassigned_scripts.py)
-  and [topic_classifier/find_unassigned_yaml.py](../topic_classifier/find_unassigned_yaml.py):
+  [find_unassigned_scripts.py](../topic_classifier/find_unassigned_scripts.py)
+  and [find_unassigned_yaml.py](../topic_classifier/find_unassigned_yaml.py):
   outer vote-loop unpacks a set of pairs per script; vote aggregation keys `(subject, topic)`
   unchanged.
   New test: `tests/test_secondary_subject_parse.py` (pure parser test for the
@@ -150,7 +178,7 @@
 ## 2026-05-07
 
 ### Additions and New Features
-- Added [problems/biochemistry-problems/PUBCHEM/PEPTIDES/tetrapeptide_net_charge.pgml](../problems/biochemistry-problems/PUBCHEM/PEPTIDES/tetrapeptide_net_charge.pgml),
+- Added [tetrapeptide_net_charge.pgml](../problems/biochemistry-problems/PUBCHEM/PEPTIDES/tetrapeptide_net_charge.pgml),
   a PGML/WeBWorK question that asks for the approximate net charge of a
   random tetrapeptide at a random pH (1.0-13.0, by 0.1). Adapts the
   `polypeptide_mc_sequence-easy.pgml` SMILES builder and RDKit canvas
@@ -172,7 +200,7 @@
   their single-letter code appears in the sequence) so the list does
   not cue residues that are not there. Solution prints a per-group
   pKa-vs-pH contribution list.
-- Added [problems/biochemistry-problems/PUBCHEM/PEPTIDES/tetrapeptide_net_charge.py](../problems/biochemistry-problems/PUBCHEM/PEPTIDES/tetrapeptide_net_charge.py),
+- Added [tetrapeptide_net_charge.py](../problems/biochemistry-problems/PUBCHEM/PEPTIDES/tetrapeptide_net_charge.py),
   a bptools/Blackboard companion to the PGML version. Same neutral
   SMILES backbone (`N[C@@H]...(C(=O)O)`), same neutral side chains,
   same `>=2 ionizable residues` constraint, same target-sorted-index
@@ -196,25 +224,25 @@
   scripts are obvious from the filename. Library modules now carry the
   repo's standard `_lib.py` suffix and the script-targeting unassigned
   finder mirrors its YAML sibling:
-  [topic_classifier/classifier_common.py](../topic_classifier/classifier_common_lib.py) ->
+  [classifier_common_lib.py](../topic_classifier/classifier_common_lib.py) ->
   `classifier_common_lib.py`,
-  [topic_classifier/csv_handler.py](../topic_classifier/csv_handler_lib.py) ->
+  [csv_handler_lib.py](../topic_classifier/csv_handler_lib.py) ->
   `csv_handler_lib.py`,
-  [topic_classifier/index_parser.py](../topic_classifier/index_parser_lib.py) ->
+  `index_parser_lib.py` ->
   `index_parser_lib.py`,
-  [topic_classifier/prompt_builder.py](../topic_classifier/prompt_builder_lib.py) ->
+  [prompt_builder_lib.py](../topic_classifier/prompt_builder_lib.py) ->
   `prompt_builder_lib.py`,
-  [topic_classifier/script_runner.py](../topic_classifier/script_runner_lib.py) ->
+  [script_runner_lib.py](../topic_classifier/script_runner_lib.py) ->
   `script_runner_lib.py`,
-  [topic_classifier/find_unassigned.py](../topic_classifier/find_unassigned_scripts.py) ->
+  [find_unassigned_scripts.py](../topic_classifier/find_unassigned_scripts.py) ->
   `find_unassigned_scripts.py`. All renames performed via `git mv` to
   preserve history. Importers updated to use `import X_lib as X` so
   call sites keep their short aliases unchanged.
 
 ### Additions and New Features
-- Added [topic_classifier/find_unassigned_yaml.py](../topic_classifier/find_unassigned_yaml.py),
+- Added [find_unassigned_yaml.py](../topic_classifier/find_unassigned_yaml.py),
   a YAML companion to
-  [topic_classifier/find_unassigned_scripts.py](../topic_classifier/find_unassigned_scripts.py).
+  [find_unassigned_scripts.py](../topic_classifier/find_unassigned_scripts.py).
   It enumerates YAML content banks under
   `problems/multiple_choice_statements/*/*.yml` and
   `problems/matching_sets/*/*.yml`, marks any whose path appears in
@@ -222,7 +250,7 @@
   reports the unassigned remainder. Subject/topic suggestions are
   aggregated from `results-*/` classifier dirs whose entries point at
   `.yml` paths (i.e., `results-yaml*/` runs from
-  [topic_classifier/classify_yaml.py](../topic_classifier/classify_yaml.py)).
+  [classify_yaml.py](../topic_classifier/classify_yaml.py)).
   Reuses `compute_suggestion`, `sort_rows`, `write_report`, and
   `print_console_table` from `find_unassigned_scripts.py` so the report
   schema and confidence buckets stay identical between the script
@@ -232,14 +260,14 @@
 - Taught the topic_classifier unassigned-report tools about the new
   `bbq_control/bbq_settings.yml` path aliases. Extended
   `_to_bp_root()` in
-  [topic_classifier/compare_results.py](../topic_classifier/compare_results.py)
+  [compare_results.py](../topic_classifier/compare_results.py)
   to expand `{bp_mcs}/...` and `{bp_match}/...` into their canonical
   `{bp_root}/multiple_choice_statements/...` and
   `{bp_root}/matching_sets/...` forms, and added `YMMS` to
   `NON_SCRIPT_MARKERS` in
-  [topic_classifier/find_unassigned_scripts.py](../topic_classifier/find_unassigned_scripts.py).
+  [find_unassigned_scripts.py](../topic_classifier/find_unassigned_scripts.py).
   Without this,
-  [topic_classifier/find_unassigned_yaml.py](../topic_classifier/find_unassigned_yaml.py)
+  [find_unassigned_yaml.py](../topic_classifier/find_unassigned_yaml.py)
   raised `ValueError` on every new `{bp_mcs}` / `{bp_match}` row in
   the task CSVs, and assigned YAMLs all looked unassigned because
   the universe and the assigned set normalized to different prefixes.
@@ -252,10 +280,10 @@
   `{bp_match}/...`) in both the console table and the report CSV's
   `script` column, so the values can be pasted directly into
   `bbq_control` task CSVs. Added `_to_alias()` in
-  [topic_classifier/compare_results.py](../topic_classifier/compare_results.py)
+  [compare_results.py](../topic_classifier/compare_results.py)
   as the inverse of `_to_bp_root()`; `write_report` and
   `short_script` in
-  [topic_classifier/find_unassigned_scripts.py](../topic_classifier/find_unassigned_scripts.py)
+  [find_unassigned_scripts.py](../topic_classifier/find_unassigned_scripts.py)
   use it before display/serialization. `{bp_root}/<chapter>-problems/`
   paths are unchanged because there is no shorter alias for them.
 
@@ -263,15 +291,15 @@
 
 ### Additions and New Features
 - Extracted the membrane transporter protein body into
-  [problems/biochemistry-problems/membranes/transporter-protein.svg](../problems/biochemistry-problems/membranes/transporter-protein.svg)
+  [transporter-protein.svg](../problems/biochemistry-problems/membranes/transporter-protein.svg)
   (waisted carrier silhouette plus dashed waist line, normalized to
   origin via `tools/normalize_svg.py`). The SVG is the new source of
   truth for the protein art -- editing it in Inkscape and re-running
   the sync script propagates the change to all three production
   membrane PGMLs in lockstep, matching how
-  [problems/biochemistry-problems/membranes/phospholipid-unit.svg](../problems/biochemistry-problems/membranes/phospholipid-unit.svg)
+  [phospholipid-unit.svg](../problems/biochemistry-problems/membranes/phospholipid-unit.svg)
   was already used as the source of truth for the phospholipid unit.
-- Added [tools/sync_membrane_svgs.py](../tools/sync_membrane_svgs.py),
+- Added [sync_membrane_svgs.py](../tools/sync_membrane_svgs.py),
   a small utility that reads each component SVG, extracts the inner
   content of its `<g id="...">` group, and rewrites the matching
   `# ---- BEGIN SYNC: <basename>.svg ----` block in every membrane
@@ -327,18 +355,18 @@
 - Updated stale `import_from_repo_path` paths in three library tests after
   the folder reorganization that moved sources into `enzymes/`, `carbs/`,
   and `buffers/` subfolders:
-  [tests/libs/test_biochemistry_enzymelib.py](../tests/libs/test_biochemistry_enzymelib.py)
+  [test_biochemistry_enzymelib.py](../tests/libs/test_biochemistry_enzymelib.py)
   -> `enzymes/enzymelib.py`,
-  [tests/libs/test_biochemistry_sugarlib.py](../tests/libs/test_biochemistry_sugarlib.py)
+  [test_biochemistry_sugarlib.py](../tests/libs/test_biochemistry_sugarlib.py)
   -> `carbs/sugarlib.py`,
-  [tests/libs/test_henderson_hasselbalch.py](../tests/libs/test_henderson_hasselbalch.py)
+  [test_henderson_hasselbalch.py](../tests/libs/test_henderson_hasselbalch.py)
   -> `buffers/Henderson-Hasselbalch.py`.
 - Simplified `test_enzymelib_tree_and_html_table` by dropping the
   `len(enzyme_tree) == 4` and exact key-set assertions, per
-  [docs/PYTHON_STYLE.md](PYTHON_STYLE.md) "avoid tests that assert on
+  [PYTHON_STYLE.md](PYTHON_STYLE.md) "avoid tests that assert on
   collection sizes [or] required key lists".
 - Updated
-  [tests/yaml/test_mc_statements_to_pgml.py](../tests/yaml/test_mc_statements_to_pgml.py)
+  [test_mc_statements_to_pgml.py](../tests/yaml/test_mc_statements_to_pgml.py)
   to assert `## TITLE(` and `## DESCRIPTION` membership rather than
   `startswith("## DESCRIPTION")`, since the generator now emits `## TITLE`
   first per commit `c6d43ba`. The remaining OPL header markers
@@ -347,40 +375,40 @@
   enforcement, not tunable internals).
 - Added `description`, `keywords`, `title`, and `TITLE` to `ALLOWED_KEYS`
   in
-  [problems/multiple_choice_statements/check_mc_statements_yaml.py](../problems/multiple_choice_statements/check_mc_statements_yaml.py)
+  [check_mc_statements_yaml.py](../problems/multiple_choice_statements/check_mc_statements_yaml.py)
   so the validator accepts the same keys the generator already reads in
   [yaml_mc_statements_to_pgml.py](../problems/multiple_choice_statements/yaml_mc_statements_to_pgml.py).
   Five biochemistry MC statements YAMLs (enzyme_cofactors,
   enzyme_equilibrium, enzyme_inhibitors, gibbs_free_energy_equation,
   m-m_kinetics) now validate cleanly.
 - Resolved pyflakes warnings by removing unused `import os` from
-  [problems/biostatistics-problems/z_score_google_sheet.py](../problems/biostatistics-problems/z_score_google_sheet.py)
+  [z_score_google_sheet.py](../problems/biostatistics-problems/z_score_google_sheet.py)
   and
-  [problems/inheritance-problems/cytogenetic_notation/cytogenetic_notation-disorders.py](../problems/inheritance-problems/cytogenetic_notation/cytogenetic_notation-disorders.py),
+  [cytogenetic_notation-disorders.py](../problems/inheritance-problems/cytogenetic_notation/cytogenetic_notation-disorders.py),
   dropping the leading `f` from f-strings without placeholders in
-  [problems/biochemistry-problems/enzymes/mm_lib.py](../problems/biochemistry-problems/enzymes/mm_lib.py)
+  [mm_lib.py](../problems/biochemistry-problems/enzymes/mm_lib.py)
   (3 lines),
-  [problems/biochemistry-problems/membranes/_qc_membrane_pgmls.py](../problems/biochemistry-problems/membranes/_qc_membrane_pgmls.py)
+  `_qc_membrane_pgmls.py`
   (1 line), and
-  [problems/biochemistry-problems/membranes/_visual_qc_v4.py](../problems/biochemistry-problems/membranes/_visual_qc_v4.py)
+  `_visual_qc_v4.py`
   (1 line), and removing an unused `lower = html.lower()` in
   `_qc_membrane_pgmls.py`.
 - Fixed mixed-indentation in
-  [problems/biochemistry-problems/membranes/_qc_membrane_pgmls.py](../problems/biochemistry-problems/membranes/_qc_membrane_pgmls.py)
+  `_qc_membrane_pgmls.py`
   by extracting a multi-line tuple of double-escape regex patterns into
   a tab-indented `double_escape_patterns` constant before the `for` loop,
   replacing the space-aligned continuation that was tripping
   `tests/test_indentation.py`.
 - Added `# nosec B310` annotation to the hardcoded-localhost
   `urllib.request.urlopen` call in
-  [topic_classifier/classifier_common.py](../topic_classifier/classifier_common.py)
+  `classifier_common.py`
   so Bandit no longer flags the Ollama probe; the URL is constructed from
   a fixed `http://localhost:11434` default and is not user-supplied.
 
 ### Removals and Deprecations
 - Removed `test_yaml_match_to_pgml_inline_colors` from
-  [tests/test_pgml_generators.py](../tests/test_pgml_generators.py). Per
-  [docs/PYTHON_STYLE.md](PYTHON_STYLE.md), tests should not assert on
+  [test_pgml_generators.py](../tests/test_pgml_generators.py). Per
+  [PYTHON_STYLE.md](PYTHON_STYLE.md), tests should not assert on
   internal Perl variable names (`%answer_html`, `$answers_sorted_html`),
   exact color hex literals, or tunable Unicode-vs-HTML representations of
   H<sub>2</sub>O - all of which this single test asserted. Its purpose
@@ -400,7 +428,7 @@
   phospholipid bilayer: each doublet is one head-down phospholipid plus its
   rotate-180 mirror about the membrane midline (y=110). The phospholipid
   shape is copied verbatim from
-  [problems/biochemistry-problems/membranes/phospholipid-unit.svg](../problems/biochemistry-problems/membranes/phospholipid-unit.svg)
+  [phospholipid-unit.svg](../problems/biochemistry-problems/membranes/phospholipid-unit.svg)
   and inlined as `$PHOSPHO_UNIT_SVG` in each PGML so files stay
   self-contained for upload. Protein body, arrows, blobs, gradient dots,
   labels, and randomization logic are unchanged.
@@ -414,7 +442,7 @@
 
 ### Additions and New Features
 - Added `v5_prototypes` render mode to
-  [problems/biochemistry-problems/membranes/_svg_lineup.py](../problems/biochemistry-problems/membranes/_svg_lineup.py)
+  `_svg_lineup.py`
   and wrote three static antiporter prototypes
   (`_proto_v5_a.html`, `_proto_v5_b.html`, `_proto_v5_c.html`) as
   Phase 3 of the membrane transporter v5 rework. All three use
@@ -428,13 +456,13 @@
 - Added substrate-shape dispatcher (`svg_substrate_token`) and
   primitives (`svg_token_ion`, `svg_token_sugar`, `svg_token_water`,
   `svg_token_nucleotide`) plus a `SUB_META` lookup table to
-  [_svg_lineup.py](../problems/biochemistry-problems/membranes/_svg_lineup.py).
+  `_svg_lineup.py`.
   Callers look up a substrate by key (`'Na'`, `'glucose'`, ...) and
   get label, color, and chemical-class kind; kind drives the token
   shape so ions render as circles, sugars as hexagons, water as a
   small circle, and nucleotides as rounded rectangles.
 - Added three WeBWorK PGML membrane-transporter problems under a new
-  folder [problems/biochemistry-problems/membranes/](../problems/biochemistry-problems/membranes/):
+  folder `membranes`:
   [identify_transporter_type.pgml](../problems/biochemistry-problems/membranes/identify_transporter_type.pgml)
   (Level 1: two-part classify + diagnostic feature),
   [driving_force_from_gradient.pgml](../problems/biochemistry-problems/membranes/driving_force_from_gradient.pgml)
@@ -455,7 +483,7 @@
   (uniporter inward/outward, symporter, 3&times;Na / Ca antiporter,
   antiporter + gradient dots, symporter + gradient dots) so the shared
   block can be visually verified without a full graded problem attached.
-- Extended [tests/test_webwork_lib.py](../tests/test_webwork_lib.py)
+- Extended [test_webwork_lib.py](../tests/test_webwork_lib.py)
   with eight `smart_title_case` tests covering acronym preservation (tRNA, DNA, pH), leading lowercase
   acronyms, apostrophes (Franklin's), HTML subscripts
   (T<sub>m</sub>), HTML entities (&middot;), leading minor words
@@ -518,7 +546,7 @@
   at seeds 1, 42, 100, 9999 on all four files; full
   `_qc_membrane_pgmls.py` sweep (30 seeds per file) reports files with
   issues = 0; a new regex-based visual QC at
-  [_visual_qc_v4.py](../problems/biochemistry-problems/membranes/_visual_qc_v4.py)
+  `_visual_qc_v4.py`
   confirms zero internal-body arrow segments across all 9 seed/file
   combinations, binding-circle count == n_substrates, release blobs
   matching approach directions, stoich text at y=24 (no collision with
@@ -579,9 +607,9 @@
 
 ### Behavior or Interface Changes
 - Relabeled the non-canonical distractor in
-  [problems/biochemistry-problems/PUBCHEM/NUCLEOBASES/match_purine_structures.pgml](../problems/biochemistry-problems/PUBCHEM/NUCLEOBASES/match_purine_structures.pgml)
+  [match_purine_structures.pgml](../problems/biochemistry-problems/PUBCHEM/NUCLEOBASES/match_purine_structures.pgml)
   and
-  [problems/biochemistry-problems/PUBCHEM/NUCLEOBASES/match_pyrimidine_structures.pgml](../problems/biochemistry-problems/PUBCHEM/NUCLEOBASES/match_pyrimidine_structures.pgml)
+  [match_pyrimidine_structures.pgml](../problems/biochemistry-problems/PUBCHEM/NUCLEOBASES/match_pyrimidine_structures.pgml)
   so students no longer need to know specific non-canonical nucleobase names
   (e.g. `5-methylcytosine`, `7-methylguanine`). The correct dropdown choice
   for the distractor structure is now the generic label `uncommon purine` /
@@ -601,12 +629,12 @@
   background on purine vs pyrimidine ring structure, and bolded the key
   terms (`purine` / `pyrimidine`, `Rb`) for readability.
 - Colored the four DNA nucleotide full names in
-  [problems/multiple_choice_statements/molecular_biology/melting_Tm_type_1.yml](../problems/multiple_choice_statements/molecular_biology/melting_Tm_type_1.yml),
-  [melting_Tm_type_2a.yml](../problems/multiple_choice_statements/molecular_biology/melting_Tm_type_2a.yml),
-  and [melting_Tm_type_2b.yml](../problems/multiple_choice_statements/molecular_biology/melting_Tm_type_2b.yml)
+  [melting_Tm_type_1.yml](../problems/multiple_choice_statements/biochemistry/melting_Tm_type_1.yml),
+  [melting_Tm_type_2a.yml](../problems/multiple_choice_statements/biochemistry/melting_Tm_type_2a.yml),
+  and [melting_Tm_type_2b.yml](../problems/multiple_choice_statements/biochemistry/melting_Tm_type_2b.yml)
   using Sanger/ABI chromatogram conventions sourced from the
   pre-approved palette in
-  [problems/multiple_choice_statements/TEMPLATE.yml](../problems/multiple_choice_statements/TEMPLATE.yml):
+  [TEMPLATE.yml](../problems/multiple_choice_statements/TEMPLATE.yml):
   cytosine blue (`#003fff`), thymine red (`#d40000`), adenine green
   (`#007a00`), guanine black (`#000000`, bold only). Swapped the
   `decrease` / `DECREASE` / `decreases` highlight from `MediumBlue`
@@ -668,7 +696,7 @@
 
 ### Behavior or Interface Changes
 - Updated the four fatty-acid skeletal-structure PGMLs in
-  [problems/biochemistry-problems/lipids/](../problems/biochemistry-problems/lipids/)
+  `lipids`
   (`fatty_acid_match_delta.pgml`, `fatty_acid_match_omega.pgml`,
   `fatty_acid_naming_delta.pgml`, `fatty_acid_naming_omega.pgml`) so that
   each cis `C=C` parallel inner line is drawn on the concave (interior)
@@ -692,7 +720,7 @@
 
 ### Additions and New Features
 - Added two nucleobase structure-matching problems under
-  [problems/biochemistry-problems/PUBCHEM/NUCLEOBASES/](../problems/biochemistry-problems/PUBCHEM/NUCLEOBASES/):
+  `NUCLEOBASES`:
   `match_purine_structures.{py,pgml}` and
   `match_pyrimidine_structures.{py,pgml}`. Each question displays the
   canonical bases for its class (adenine/guanine for purines;
@@ -710,7 +738,7 @@
   centralizes canonical/non-canonical name lists, SMILES strings, and a
   deterministic `pick_distractor(class, rng)` helper.
 - Added five new bptools Python generators in
-  [problems/biochemistry-problems/lipids/](../problems/biochemistry-problems/lipids/)
+  `lipids`
   that mirror the four PGML lipid items, plus a shared library:
   [fatty_acid_lib.py](../problems/biochemistry-problems/lipids/fatty_acid_lib.py)
   (ASCII-art renderer, pool-elimination position picker, omega/Delta
@@ -729,7 +757,7 @@
   was deemed to offer no advantage over ASCII art for these zigzag
   skeletons.
 - Added two reverse-direction WeBWorK PGML lipid problems in
-  [problems/biochemistry-problems/lipids/](../problems/biochemistry-problems/lipids/):
+  `lipids`:
   [fatty_acid_match_omega.pgml](../problems/biochemistry-problems/lipids/fatty_acid_match_omega.pgml)
   and [fatty_acid_match_delta.pgml](../problems/biochemistry-problems/lipids/fatty_acid_match_delta.pgml).
   Inverse of the existing fatty_acid_naming_*.pgml pair: prompt shows
@@ -743,7 +771,7 @@
   Reuses svg_primitives_lipids (v3), fatty_acid_layout (v3), plus new
   blocks fatty_acid_svg_builder (v1) and pool_eliminate_positions (v1).
 - Added four WeBWorK PGML lipid problems paralleling the existing Blackboard generators in
-  [problems/biochemistry-problems/lipids/](../problems/biochemistry-problems/lipids/):
+  `lipids`:
   [quick_fatty_acid_colon_system.pgml](../problems/biochemistry-problems/lipids/quick_fatty_acid_colon_system.pgml)
   (text-only MC, interpret the chain:bonds colon shorthand),
   [which_lipid-chemical_formula.pgml](../problems/biochemistry-problems/lipids/which_lipid-chemical_formula.pgml)
@@ -779,7 +807,7 @@
 
 ### Fixes and Maintenance
 - Rotated active changelog: moved 30 day blocks (2026-04-14 through
-  2026-01-23, 779 lines) into [docs/CHANGELOG-2026-04a.md](CHANGELOG-2026-04a.md),
+  2026-01-23, 779 lines) into [CHANGELOG-2026-04a.md](CHANGELOG-2026-04a.md),
   using the documented `docs/CHANGELOG-YYYY-MM[a-z].md` naming. Repaired
   a content-integrity bug: the 2026-01-22 day block was present
   identically in both the active changelog and the legacy archive,
@@ -787,12 +815,12 @@
   across files. The active duplicate was removed before rotation; the
   archived copy was kept as canonical.
 - Renamed the legacy `docs/CHANGELOG_ARCHIVE_01.md` to
-  [docs/CHANGELOG-2026-01a.md](CHANGELOG-2026-01a.md) via `git mv` so
+  [CHANGELOG-2026-01a.md](CHANGELOG-2026-01a.md) via `git mv` so
   history is preserved. The archive's date range is 2025-12-27 through
   2026-01-22; the most recent month included is 2026-01. The repo now
   uses a single archive naming style (`CHANGELOG-YYYY-MM[a-z].md`) end
   to end.
-- Updated [docs/REPO_STYLE.md](REPO_STYLE.md) (and the central copy in
+- Updated [REPO_STYLE.md](REPO_STYLE.md) (and the central copy in
   `~/nsh/starter-repo-template/docs/REPO_STYLE.md`) with two
   clarifications: (1) when an archived range spans multiple months the
   archive filename uses the **most recent** month included, not the
@@ -810,7 +838,7 @@
 - First lipid PGML drafts failed renderer compile with "Problem failed
   during render - no PGcore received." Root causes were Safe-compartment
   restrictions documented in
-  [PG_COMMON_PITFALLS.md](../../.claude/skills/webwork-writer/references/docs/webwork/PG_COMMON_PITFALLS.md):
+  `PG_COMMON_PITFALLS.md`:
   (1) `sort` and `sort { $a <=> $b }` are trapped, replaced with pre-sorted
   hardcoded key lists in `which_lipid-chemical_formula.pgml` and a
   reverse-iteration ascending-walk in the fatty-acid files; (2) `\@array`
@@ -830,7 +858,7 @@
   Fischer/Haworth renderers) to Perl. Fischer/Haworth conversion problems
   include `BEGIN_PGML_HINT` blocks explaining the Rosanoff OH-side rule
   (Fischer right = Haworth down).
-- Added [_spike_svg_choice.pgml](../problems/biochemistry-problems/carbs/_spike_svg_choice.pgml),
+- Added `_spike_svg_choice.pgml`,
   a two-choice spike confirming `parserRadioButtons.pl` accepts full SVG
   diagrams as choice labels (rendered verbatim inside `<label>`, not
   sanitised).
@@ -851,7 +879,7 @@
 - HTML entities (`&alpha;`, `&beta;`) in PGML body text double-escape to
   `&amp;alpha;`; entities must live in a Perl variable rendered with
   `[$var]*` passthrough. Applied to every Haworth-prompt PGML body.
-- Updated [~/.claude/skills/webwork-writer/SKILL.md](../../.claude/skills/webwork-writer/SKILL.md)
+- Updated `SKILL.md`
   with a new "Self-contained PGML files" section documenting the
   per-file inlining convention and the `BEGIN BLOCK` versioning scheme.
 
@@ -864,13 +892,13 @@
 ## 2026-04-19
 
 ### Behavior or Interface Changes
-- [topic_classifier/classify_scripts.py](../topic_classifier/classify_scripts.py) now runs one classification per `(script, flags, input)` variant defined in `biology-problems-website/bbq_control/task_files/*.csv`, instead of classifying each script path once with the first variant it found. Scripts with multi-variant CSV rows (e.g. `classify_Haworth.py --furan`/`--pyran`, `which_amino_acid.py --mc`/`--fib`, `protein_gel_migration.py --mc`/`--num`) now get a distinct classification and a CSV output row per variant. Output CSV rows populate the `flags` and `input` columns so the generated CSVs round-trip with the control files. Dry-run prints the expanded work list. Scripts not present in any CSV still classify once with no flags.
-- Added `csv_handler.get_variants_for_script(assignments, script_path)` in [topic_classifier/csv_handler.py](../topic_classifier/csv_handler.py) that enumerates `{flags, input}` variants for a script, returning a single empty variant when the script has no CSV rows so callers always have at least one work unit.
-- [topic_classifier/classify_scripts.py](../topic_classifier/classify_scripts.py) `classify_one_script(...)` now takes explicit `flags=""` and `input_file=""` parameters instead of looking them up from `assignments`, and populates those fields on the returned result dict. Replaced internal `_get_run_args(script, assignments)` with `_build_run_args(flags, input_file, repo_root)`. Existing-assignment match lookup keys directly on `f"{bp_root_path}|{flags}"` for per-variant diff accuracy. Repeat/consistency bookkeeping (`repeat_results`, `no_bbq_scripts`, `llm_error_scripts`) keys by `f"{script}|{flags}"` so variant runs do not collide.
+- [classify_scripts.py](../topic_classifier/classify_scripts.py) now runs one classification per `(script, flags, input)` variant defined in `biology-problems-website/bbq_control/task_files/*.csv`, instead of classifying each script path once with the first variant it found. Scripts with multi-variant CSV rows (e.g. `classify_Haworth.py --furan`/`--pyran`, `which_amino_acid.py --mc`/`--fib`, `protein_gel_migration.py --mc`/`--num`) now get a distinct classification and a CSV output row per variant. Output CSV rows populate the `flags` and `input` columns so the generated CSVs round-trip with the control files. Dry-run prints the expanded work list. Scripts not present in any CSV still classify once with no flags.
+- Added `csv_handler.get_variants_for_script(assignments, script_path)` in `csv_handler.py` that enumerates `{flags, input}` variants for a script, returning a single empty variant when the script has no CSV rows so callers always have at least one work unit.
+- [classify_scripts.py](../topic_classifier/classify_scripts.py) `classify_one_script(...)` now takes explicit `flags=""` and `input_file=""` parameters instead of looking them up from `assignments`, and populates those fields on the returned result dict. Replaced internal `_get_run_args(script, assignments)` with `_build_run_args(flags, input_file, repo_root)`. Existing-assignment match lookup keys directly on `f"{bp_root_path}|{flags}"` for per-variant diff accuracy. Repeat/consistency bookkeeping (`repeat_results`, `no_bbq_scripts`, `llm_error_scripts`) keys by `f"{script}|{flags}"` so variant runs do not collide.
 
 ### Fixes and Maintenance
-- Fixed `BBQ_CONTROL_DIR` in [topic_classifier/classify_scripts.py](../topic_classifier/classify_scripts.py) to point at `biology-problems-website/bbq_control/task_files/` (where the variant CSVs actually live) instead of `biology-problems-website/bbq_control/`. Previously `read_existing_assignments()` found zero CSVs and loaded 0 assignments, which silently disabled the existing-assignment match check and any variant-aware behavior.
-- Made 14 previously silent bptools generators produce questions by default (tracked in [topic_classifier/results-gemma4_q8/no_bbq_file.csv](../topic_classifier/results-gemma4_q8/no_bbq_file.csv)). Running any of these scripts with no arguments now writes a `bbq-*-questions.txt` file.
+- Fixed `BBQ_CONTROL_DIR` in [classify_scripts.py](../topic_classifier/classify_scripts.py) to point at `biology-problems-website/bbq_control/task_files/` (where the variant CSVs actually live) instead of `biology-problems-website/bbq_control/`. Previously `read_existing_assignments()` found zero CSVs and loaded 0 assignments, which silently disabled the existing-assignment match check and any variant-aware behavior.
+- Made 14 previously silent bptools generators produce questions by default (tracked in `no_bbq_file.csv`). Running any of these scripts with no arguments now writes a `bbq-*-questions.txt` file.
   - Category A - changed `required=True` to `required=False, default='mc'` on `bptools.add_question_format_args(...)` in 6 gene_mapping generators: [tetrad_ordered-centromere_distance.py](../problems/inheritance-problems/gene_mapping/tetrad_ordered-centromere_distance.py), [tetrad_unordered_three_gene-find_one_distance.py](../problems/inheritance-problems/gene_mapping/tetrad_unordered_three_gene-find_one_distance.py), [tetrad_unordered_two_gene-find_distance.py](../problems/inheritance-problems/gene_mapping/tetrad_unordered_two_gene-find_distance.py), [three-point_test_cross-find_interence.py](../problems/inheritance-problems/gene_mapping/three-point_test_cross-find_interence.py), [three-point_test_cross-one_gene_distance.py](../problems/inheritance-problems/gene_mapping/three-point_test_cross-one_gene_distance.py), [two-point_test_cross-distance.py](../problems/inheritance-problems/gene_mapping/two-point_test_cross-distance.py).
   - Category A (custom groups) - added `parser.set_defaults(...)` and dropped `required=True` on the parental/recombinant and parental/double/genes mutually exclusive groups in [two-point_test_cross-which_genotypes.py](../problems/inheritance-problems/gene_mapping/two-point_test_cross-which_genotypes.py) and [three-point_test_cross-which_genotypes.py](../problems/inheritance-problems/gene_mapping/three-point_test_cross-which_genotypes.py) (default `parental`).
   - Category B - added `parser.set_defaults(mode="same")` to the `--same`/`--different` group in [gene_tree_matches_plus.py](../problems/inheritance-problems/phylogenetic_trees/gene_tree_matches_plus.py).
@@ -879,4 +907,4 @@
   - Deferred: [wordle_peptides.py](../problems/biochemistry-problems/PUBCHEM/PEPTIDES/wordle_peptides.py) still fails with an lxml XML parse error on cached HTML (separate bug, not a defaults issue).
 
 ### Decisions and Failures
-- `bptools.add_question_format_args(...)` (bptools.py:364) already supported `required=False, default=...`. No change to `bptools.py` was necessary - the Category A fix is purely site-local updates to the script parse_arguments calls, matching the pattern endorsed in [docs/PYTHON_STYLE.md](PYTHON_STYLE.md) (ARGPARSE section).
+- `bptools.add_question_format_args(...)` (bptools.py:364) already supported `required=False, default=...`. No change to `bptools.py` was necessary - the Category A fix is purely site-local updates to the script parse_arguments calls, matching the pattern endorsed in [PYTHON_STYLE.md](PYTHON_STYLE.md) (ARGPARSE section).

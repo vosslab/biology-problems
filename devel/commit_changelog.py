@@ -1,44 +1,102 @@
 #!/usr/bin/env python3
+"""Draft and apply a git commit using docs/CHANGELOG.md as the source.
+
+Reads new entries from docs/CHANGELOG.md (parsed via changelog_lib),
+selects those dated at or after the last commit that touched the
+changelog file, and uses them to build a seed commit message. The
+seed is shown in the user's editor for review before the commit is
+applied via ``git commit -a -F``. Interactive: prompts on untracked
+files, message review, and final commit confirmation.
+"""
 
 # Standard Library
 import os
 import re
-import shlex
-import subprocess
 import sys
+import time
+import shlex
 import tempfile
+import subprocess
 
 # PIP3 modules
-import rich.console
+import rich.panel
+
+# local repo modules
+import changelog_lib
 
 CHANGELOG_PATHSPEC = "docs/CHANGELOG.md"
-VERSION_RE = re.compile(r"^##\s*\[?([^\]\s]+)[^\]]*\]?")
-console = rich.console.Console()
-err_console = rich.console.Console(stderr=True)
+VERSION_PATHSPEC = "VERSION"
+# upper bound on body lines emitted into the seed editor buffer (covers
+# date headings, title bullets, and indented continuations together)
+MAX_BODY_LINES = 25
+# git convention: subject lines wrap at 72 chars; clean_entry_text trims to fit
+SUBJECT_BUDGET = 72
+# body bullets wrap at ~100 chars for scannability; not a hard git rule
+BODY_LINE_BUDGET = 100
 
 #============================================
 
-def run_git(args: list[str]) -> subprocess.CompletedProcess:
-	"""Run a git command and return the completed process."""
-	result = subprocess.run(
-		["git"] + args,
-		stdout=subprocess.PIPE,
-		stderr=subprocess.PIPE,
-		text=True,
-	)
-	return result
+def read_version_file() -> str:
+	"""Read VERSION file relative to repo_root and return stripped contents.
+
+	Returns:
+		Stripped contents of the VERSION file.
+
+	Raises:
+		RuntimeError: When the VERSION file does not exist or cannot be read.
+	"""
+	repo_root = changelog_lib.get_git_root()
+	version_path = os.path.join(repo_root, VERSION_PATHSPEC)
+	try:
+		with open(version_path, "r", encoding="utf-8") as f:
+			version_contents = f.read().strip()
+	except FileNotFoundError:
+		raise RuntimeError(f"VERSION file not found at {version_path}.")
+	except IOError as e:
+		raise RuntimeError(f"Failed to read VERSION file: {e}")
+	if not version_contents:
+		raise RuntimeError(f"VERSION file is empty: {version_path}.")
+	return version_contents
 
 #============================================
 
-def get_git_root() -> str:
-	"""Return the git repository root path."""
-	result = run_git(["rev-parse", "--show-toplevel"])
-	if result.returncode != 0:
-		raise RuntimeError("Unable to determine git repository root.")
-	root = result.stdout.strip()
-	if not root:
-		raise RuntimeError("Git repository root is empty.")
-	return root
+def current_calver_month() -> str:
+	"""Return the current calendar month in CalVer format (YY.MM).
+
+	Returns:
+		Current month as a zero-padded string in the format YY.MM
+		(for example "26.05").
+	"""
+	return time.strftime("%y.%m")
+
+#============================================
+
+def check_version_freshness() -> bool:
+	"""Check if VERSION file matches the current calendar month.
+
+	Returns the result of a user confirmation prompt when the month
+	does not match. Returns True immediately when the month matches.
+
+	Returns:
+		True if VERSION month matches current month or user confirms to continue.
+		False if user declines to continue.
+	"""
+	version_value = read_version_file()
+	current_month = current_calver_month()
+
+	# Extract the first two dotted segments (YY.MM)
+	version_parts = version_value.split(".")
+	if len(version_parts) < 2:
+		raise RuntimeError(f"VERSION format unrecognized: {version_value}")
+	version_month = f"{version_parts[0]}.{version_parts[1]}"
+
+	# If months match, freshness is confirmed
+	if version_month == current_month:
+		return True
+
+	# Months don't match; prompt the user
+	prompt = f"VERSION is {version_value}, but current month is {current_month}. Continue?"
+	return changelog_lib.confirm(prompt)
 
 #============================================
 
@@ -48,7 +106,7 @@ def get_git_status_lines() -> list[str]:
 	Returns:
 		List of status lines.
 	"""
-	result = run_git(["status", "--porcelain=1"])
+	result = changelog_lib.run_git(["status", "--porcelain=1"])
 	if result.returncode != 0:
 		raise RuntimeError(result.stderr.strip() or "git status failed.")
 	lines = [line for line in result.stdout.splitlines() if line.strip()]
@@ -69,7 +127,7 @@ def get_untracked_files() -> list[str]:
 
 def get_unmerged_paths() -> list[str]:
 	"""Return a list of paths with merge conflicts."""
-	result = run_git(["diff", "--name-only", "--diff-filter=U"])
+	result = changelog_lib.run_git(["diff", "--name-only", "--diff-filter=U"])
 	if result.returncode != 0:
 		raise RuntimeError(result.stderr.strip() or "git diff failed.")
 	lines = [line for line in result.stdout.splitlines() if line.strip()]
@@ -95,7 +153,13 @@ def format_status_entry(status_code: str, path: str) -> str:
 		"C": "copied",
 		"U": "unmerged",
 	}
-	label = status_map.get(status_code, "modified")
+	# unknown status codes (T type-change, future git additions, etc.)
+	# fall back to showing the raw character so the user sees the
+	# actual signal instead of a mislabeled "modified"
+	if status_code in status_map:
+		label = status_map[status_code]
+	else:
+		label = f"({status_code})"
 	entry = f"{label}: {path}"
 	return entry
 
@@ -155,19 +219,19 @@ def build_git_status_block() -> str:
 
 #============================================
 
-def ensure_in_git_repo() -> None:
-	"""Raise if not inside a git work tree."""
-	result = run_git(["rev-parse", "--is-inside-work-tree"])
-	if result.returncode != 0:
-		raise RuntimeError("Not inside a git repository.")
-	if result.stdout.strip() != "true":
-		raise RuntimeError("Not inside a git work tree.")
-
-#============================================
-
 def get_editor_cmd() -> list[str]:
-	"""Return the editor command as argv."""
-	editor = os.environ.get("GIT_EDITOR") or os.environ.get("EDITOR") or "nano"
+	"""Return the editor command as argv.
+
+	Tries ``GIT_EDITOR``, then ``EDITOR``, then falls back to ``nano``.
+	Explicit lookup avoids the ``a or b or c`` chain (which would also
+	collapse empty strings, hiding a real misconfiguration in those
+	env vars).
+	"""
+	editor = os.environ.get("GIT_EDITOR")
+	if not editor:
+		editor = os.environ.get("EDITOR")
+	if not editor:
+		editor = "nano"
 	cmd = shlex.split(editor)
 	return cmd
 
@@ -178,58 +242,6 @@ def edit_file_in_editor(path: str) -> int:
 	cmd = get_editor_cmd() + [path]
 	result = subprocess.run(cmd).returncode
 	return result
-
-#============================================
-
-def build_choice_prompt(prompt: str) -> str:
-	"""Build a colored prompt string with y/N choices.
-
-	Args:
-		prompt: Base prompt text.
-
-	Returns:
-		The prompt with colored y/N choices appended.
-	"""
-	yes_text = "[bold green]y[/bold green]"
-	no_text = "[bold red]N[/bold red]"
-	choice_prompt = f"{prompt} [{yes_text}/{no_text}] "
-	return choice_prompt
-
-#============================================
-
-def print_error(message: str) -> None:
-	"""Print an error message in red to stderr.
-
-	Args:
-		message: The error message to print.
-	"""
-	err_console.print(message, style="bold red")
-
-#============================================
-
-def print_warning(message: str) -> None:
-	"""Print a warning message in yellow.
-
-	Args:
-		message: The warning message to print.
-	"""
-	console.print(message, style="yellow")
-
-#============================================
-
-def confirm(prompt: str) -> bool:
-	"""Ask the user to confirm.
-
-	Args:
-		prompt: The prompt to show before the choices.
-
-	Returns:
-		True if the user confirms.
-	"""
-	choice_prompt = build_choice_prompt(prompt)
-	ans = console.input(choice_prompt).strip().lower()
-	confirmed = ans in ("y", "yes")
-	return confirmed
 
 #============================================
 
@@ -261,7 +273,7 @@ def prompt_message_action(prompt: str) -> str:
 	"""
 	choice_prompt = build_action_prompt(prompt)
 	while True:
-		ans = console.input(choice_prompt).strip().lower()
+		ans = changelog_lib.CONSOLE.input(choice_prompt).strip().lower()
 		if ans == "":
 			return "yes"
 		if ans in ("y", "yes"):
@@ -270,7 +282,7 @@ def prompt_message_action(prompt: str) -> str:
 			return "no"
 		if ans in ("c", "commit"):
 			return "commit"
-		print_warning("Please enter yes, no, or commit.")
+		changelog_lib.print_warning("Please enter yes, no, or commit.")
 
 #============================================
 
@@ -286,34 +298,9 @@ def strip_git_style_comments(message: str) -> str:
 
 #============================================
 
-def print_diff_to_stderr(diff_text: str, path: str) -> None:
-	"""Print a diff to stderr with a header."""
-	if not diff_text:
-		return
-	err_console.print(f"Diff for {path}:", style="bold")
-	for line in diff_text.splitlines():
-		if line.startswith("+++"):
-			err_console.print(line, style="bold cyan", markup=False)
-			continue
-		if line.startswith("---"):
-			err_console.print(line, style="bold cyan", markup=False)
-			continue
-		if line.startswith("@@"):
-			err_console.print(line, style="bold yellow", markup=False)
-			continue
-		if line.startswith("+"):
-			err_console.print(line, style="green", markup=False)
-			continue
-		if line.startswith("-"):
-			err_console.print(line, style="red", markup=False)
-			continue
-		sys.stderr.write(line + "\n")
-
-#============================================
-
 def get_diff(path: str) -> str:
 	"""Get diff for a path with minimal context and no color."""
-	result = run_git(["diff", "--no-color", "--unified=0", "--", path])
+	result = changelog_lib.run_git(["diff", "--no-color", "--unified=0", "--", path])
 	if result.returncode != 0:
 		raise RuntimeError(result.stderr.strip() or f"git diff failed for {path}")
 	return result.stdout.strip()
@@ -322,97 +309,236 @@ def get_diff(path: str) -> str:
 
 def get_cached_diff(path: str) -> str:
 	"""Get cached (staged) diff for a path with minimal context and no color."""
-	result = run_git(["diff", "--cached", "--no-color", "--unified=0", "--", path])
+	result = changelog_lib.run_git(
+		["diff", "--cached", "--no-color", "--unified=0", "--", path]
+	)
 	if result.returncode != 0:
 		raise RuntimeError(result.stderr.strip() or f"git diff --cached failed for {path}")
 	return result.stdout.strip()
 
 #============================================
 
-def extract_added_lines(diff_text: str) -> list[str]:
-	"""Extract added lines from a git diff (no headers, no blanks)."""
-	added: list[str] = []
-	for line in diff_text.splitlines():
-		if not line.startswith("+"):
-			continue
-		if line.startswith("+++"):
-			continue
-		text = line[1:].rstrip()
-		if text.strip() == "":
-			continue
-		added.append(text)
-	return added
+def get_last_changelog_commit_sha() -> str | None:
+	"""Return the full SHA of the last commit touching docs/CHANGELOG.md.
+
+	Returns ``None`` when the changelog has no prior commit (first-time
+	use).
+	"""
+	result = changelog_lib.run_git(
+		["log", "-1", "--format=%H", "--", CHANGELOG_PATHSPEC]
+	)
+	if result.returncode != 0:
+		raise RuntimeError(result.stderr.strip() or "git log failed.")
+	stdout = result.stdout.strip()
+	if not stdout:
+		return None
+	return stdout
 
 #============================================
 
-def build_message(added_lines: list[str], max_body_lines: int) -> str:
-	"""Build a subject and body from added changelog lines."""
-	# Count bullet points (changes)
-	bullet_lines: list[str] = []
-	first_bullet_text: str | None = None
+def get_changelog_text_at(sha: str) -> str:
+	"""Return docs/CHANGELOG.md contents at ``sha`` via git show.
 
-	for line in added_lines:
-		s = line.strip()
-		if s.startswith("##"):
+	Raises:
+		RuntimeError: When git show fails (missing object, shallow
+			clone that does not contain the SHA, etc.). The caller
+			must not silently fall back to "all entries are new" --
+			that would resurrect the bug this helper exists to fix.
+	"""
+	result = changelog_lib.run_git(
+		["show", f"{sha}:{CHANGELOG_PATHSPEC}"]
+	)
+	if result.returncode != 0:
+		raise RuntimeError(
+			result.stderr.strip()
+			or f"git show failed for {sha}:{CHANGELOG_PATHSPEC}"
+		)
+	return result.stdout
+
+#============================================
+
+def select_new_entries(prior_sha: str | None) -> tuple[list, list[str]]:
+	"""Return entries present in current CHANGELOG but not at ``prior_sha``.
+
+	Replaces the prior date-window filter (which re-emitted bullets that
+	had already been committed earlier the same day when the user added
+	more bullets under the same ``## YYYY-MM-DD`` heading). Selection
+	now diffs the parsed entry set against the entry set in the file at
+	the last changelog-touching commit, keyed by ``(date, title)``.
+
+	Args:
+		prior_sha: Full SHA of the last commit touching
+			docs/CHANGELOG.md, or ``None`` for first-time use.
+
+	Returns:
+		A tuple ``(entries, warnings)``. ``entries`` is a list of
+		``changelog_lib.Entry`` records in current-file order.
+		``warnings`` is the deduplicated list of parser warnings on the
+		CURRENT file; prior-file warnings are intentionally suppressed
+		(they would re-print stale parse complaints on every commit).
+	"""
+	_blocks, current_entries, warnings = changelog_lib.parse_file(
+		CHANGELOG_PATHSPEC
+	)
+	# deduplicate warning messages on identical text
+	seen: set[str] = set()
+	unique_warnings: list[str] = []
+	for warning in warnings:
+		if warning in seen:
 			continue
-		if s.startswith("- "):
-			bullet_lines.append(s)
-			if first_bullet_text is None:
-				# Extract first ~50 chars after "- "
-				text = s[2:].strip()
-				# Remove markdown links to get clean text
-				text = re.sub(r'\[([^\]]+)\]\([^\)]+\)', r'\1', text)
-				if len(text) > 50:
-					text = text[:47] + "..."
-				first_bullet_text = text
+		seen.add(warning)
+		unique_warnings.append(warning)
+	if prior_sha is None:
+		return (current_entries, unique_warnings)
+	prior_text = get_changelog_text_at(prior_sha)
+	_p_blocks, prior_entries, _p_warnings = changelog_lib.parse_text(
+		prior_text, source=f"{prior_sha[:8]}:{CHANGELOG_PATHSPEC}"
+	)
+	new_entries = compute_new_entries(current_entries, prior_entries)
+	return (new_entries, unique_warnings)
 
-	num_changes = len(bullet_lines)
+#============================================
 
-	# Build subject line
-	if num_changes == 0:
-		subject = "update changelog"
-	elif num_changes == 1 and first_bullet_text:
-		# Single change: use the bullet text as subject
-		subject = first_bullet_text
+def compute_new_entries(current_entries: list, prior_entries: list) -> list:
+	"""Return current_entries whose (date, title) is not in prior_entries.
+
+	Preserves current-entry order. Identity key is ``(date, title)``;
+	bullets may be rephrased per repo norms, so a title edit looks "new"
+	here and the user prunes in the editor buffer.
+	"""
+	prior_keys: set[tuple[str, str]] = {
+		(entry.date, entry.title) for entry in prior_entries
+	}
+	new_entries = [
+		entry for entry in current_entries
+		if (entry.date, entry.title) not in prior_keys
+	]
+	return new_entries
+
+#============================================
+
+def strip_markdown_links(text: str) -> str:
+	"""Convert ``[label](url)`` to ``label``."""
+	return re.sub(r"\[([^\]]+)\]\([^\)]+\)", r"\1", text)
+
+#============================================
+
+def strip_markdown_bold(text: str) -> str:
+	"""Convert ``**bold**`` and ``__bold__`` to ``bold``."""
+	text = re.sub(r"\*\*([^*]+)\*\*", r"\1", text)
+	text = re.sub(r"__([^_]+)__", r"\1", text)
+	return text
+
+#============================================
+
+def collapse_whitespace(text: str) -> str:
+	"""Collapse runs of whitespace (including newlines) into single spaces."""
+	return re.sub(r"\s+", " ", text).strip()
+
+#============================================
+
+def truncate_text(text: str, max_length: int) -> str:
+	"""Truncate ``text`` to ``max_length`` chars, appending ``...`` when cut."""
+	if len(text) <= max_length:
+		return text
+	return text[: max_length - 3] + "..."
+
+#============================================
+
+def clean_entry_text(text: str, max_length: int = SUBJECT_BUDGET) -> str:
+	"""Strip markdown links, bold, collapse whitespace, then truncate.
+
+	Deterministic; no LLM. Used to format both subject and body lines
+	in commit messages built from parsed Entry records.
+	"""
+	text = strip_markdown_links(text)
+	text = strip_markdown_bold(text)
+	text = collapse_whitespace(text)
+	text = truncate_text(text, max_length)
+	return text
+
+#============================================
+
+def make_seed_message_from_entries(entries: list) -> str | None:
+	"""Build a seed commit message from parsed Entry records.
+
+	Args:
+		entries: List of ``changelog_lib.Entry`` records (already
+			date-filtered by ``select_new_entries``).
+
+	Returns:
+		The seed message text or ``None`` when entries is empty.
+	"""
+	if not entries:
+		return None
+
+	num_entries = len(entries)
+	first_title = entries[0].title
+
+	# subject line: single-entry vs multi-entry shape
+	if num_entries == 1:
+		subject = clean_entry_text(first_title, SUBJECT_BUDGET)
 	else:
-		# Multiple changes: use first bullet + count
-		if first_bullet_text:
-			subject = f"{first_bullet_text} (+{num_changes - 1} more)"
-		else:
-			subject = f"update changelog ({num_changes} changes)"
+		# build the "(+N more)" suffix and re-truncate to SUBJECT_BUDGET
+		# so the suffix never gets cut off mid-word
+		suffix = f" (+{num_entries - 1} more)"
+		head_budget = SUBJECT_BUDGET - len(suffix)
+		head = clean_entry_text(first_title, head_budget)
+		subject = head + suffix
+		subject = truncate_text(subject, SUBJECT_BUDGET)
 
-	# Limit subject line length
-	if len(subject) > 72:
-		subject = subject[:69] + "..."
-
-	# Build body from all added lines
-	body_lines: list[str] = []
-	for line in added_lines:
-		s = line.strip()
-		if s.startswith("##"):
+	# body: group by entry.date with ## YYYY-MM-DD headings when multiple
+	# distinct dates are present; cap total emitted body lines.
+	distinct_dates: list[str] = []
+	seen_dates: set[str] = set()
+	for entry in entries:
+		if entry.date in seen_dates:
 			continue
-		body_lines.append(s)
-		if len(body_lines) >= max_body_lines:
-			break
+		seen_dates.add(entry.date)
+		distinct_dates.append(entry.date)
+	emit_date_headings = len(distinct_dates) > 1
+
+	body_lines: list[str] = []
+	# single-entry special case: the subject already states the title, so
+	# repeating it as a `- title` bullet is pure noise. Emit only the
+	# entry body (when present) as a wrapped paragraph; otherwise no body
+	# block at all. Multi-entry seeds keep the bulleted list shape so each
+	# entry is individually scannable in the editor buffer.
+	if num_entries == 1:
+		only_entry = entries[0]
+		if only_entry.body:
+			body_lines.append(clean_entry_text(only_entry.body, BODY_LINE_BUDGET))
+	else:
+		for entry in entries:
+			if len(body_lines) >= MAX_BODY_LINES:
+				break
+			if emit_date_headings:
+				# entries may arrive interleaved by date; scan all prior body
+				# lines (not just the last) to ensure exactly one `## DATE`
+				# heading per distinct date across the whole body
+				heading = f"## {entry.date}"
+				prior_heading_present = any(
+					line.startswith(heading) for line in body_lines
+				)
+				if not prior_heading_present:
+					body_lines.append(heading)
+					if len(body_lines) >= MAX_BODY_LINES:
+						break
+			# title line
+			title_line = "- " + clean_entry_text(entry.title, BODY_LINE_BUDGET)
+			body_lines.append(title_line)
+			if len(body_lines) >= MAX_BODY_LINES:
+				break
+			# body continuation, if present
+			if entry.body:
+				body_line = "  " + clean_entry_text(entry.body, BODY_LINE_BUDGET)
+				body_lines.append(body_line)
 
 	body = "\n".join(body_lines).strip()
 	if body:
 		message = subject + "\n\n" + body + "\n"
 	else:
 		message = subject + "\n"
-	return message
-
-#============================================
-
-def make_seed_message(diff_text: str) -> str | None:
-	"""Create the initial commit message from the changelog diff."""
-	if not diff_text:
-		return None
-	added_lines = extract_added_lines(diff_text)
-	if not added_lines:
-		raise RuntimeError("Changelog diff had no added lines.")
-
-	message = build_message(added_lines, max_body_lines=25)
 	return message
 
 #============================================
@@ -445,7 +571,7 @@ def edit_message(seed_message: str) -> str | None:
 	msg_path = write_message_file(seed_message, include_comments=True)
 	rc = edit_file_in_editor(msg_path)
 	if rc != 0:
-		print_error("Editor exited non-zero. Aborting.")
+		changelog_lib.print_error("Editor exited non-zero. Aborting.")
 		os.unlink(msg_path)
 		return None
 
@@ -454,7 +580,7 @@ def edit_message(seed_message: str) -> str | None:
 
 	edited = strip_git_style_comments(edited_raw)
 	if not edited:
-		print_error("Empty commit message. Aborting.")
+		changelog_lib.print_error("Empty commit message. Aborting.")
 		os.unlink(msg_path)
 		return None
 
@@ -474,14 +600,14 @@ def commit_with_message_file(msg_path: str) -> int:
 #============================================
 
 def main() -> None:
-	ensure_in_git_repo()
-	repo_root = get_git_root()
+	changelog_lib.ensure_in_git_repo()
+	repo_root = changelog_lib.get_git_root()
 	os.chdir(repo_root)
 	changelog_path = CHANGELOG_PATHSPEC
 
 	unmerged = get_unmerged_paths()
 	if unmerged:
-		print_error("Merge conflicts detected. Resolve before committing.")
+		changelog_lib.print_error("Merge conflicts detected. Resolve before committing.")
 		for path in unmerged:
 			sys.stderr.write(f"  {path}\n")
 		return
@@ -491,35 +617,77 @@ def main() -> None:
 		sys.stderr.write("Untracked files:\n")
 		for path in untracked:
 			sys.stderr.write(f"  {path}\n")
-		if not confirm("Keep untracked files untracked?"):
-			print_warning("Aborted.")
+		if not changelog_lib.confirm("Keep untracked files untracked?"):
+			changelog_lib.print_warning("Aborted.")
 			return
 
+	if not check_version_freshness():
+		changelog_lib.print_warning("Aborted.")
+		return
+
+	# short-circuit on a clean tree before parsing the whole changelog:
+	# if there is nothing in the working tree or the index for
+	# docs/CHANGELOG.md, there is nothing to commit regardless of which
+	# entries the date filter would have picked up.
 	diff_text = get_diff(CHANGELOG_PATHSPEC)
 	if not diff_text:
-		# check for staged changes
 		diff_text = get_cached_diff(CHANGELOG_PATHSPEC)
 	if not diff_text:
 		message = f"No changes in {changelog_path}. Nothing to commit."
-		console.print(message, style="yellow")
+		changelog_lib.CONSOLE.print(message, style="yellow")
 		return
 
-	print_diff_to_stderr(diff_text, changelog_path)
-	seed_message = make_seed_message(diff_text)
+	# parse-based new-entry selection: build the seed from current entries
+	# whose (date, title) does not appear in the changelog at the last
+	# commit that touched it. This avoids re-emitting bullets that were
+	# already committed earlier the same day when more bullets land under
+	# the same ## YYYY-MM-DD heading.
+	prior_sha = get_last_changelog_commit_sha()
+	new_entries, warnings = select_new_entries(prior_sha)
+	# print parse warnings once (deduplicated upstream)
+	for warning in warnings:
+		changelog_lib.print_warning(warning)
+
+	if not new_entries:
+		if prior_sha is None:
+			message = f"No entries in {changelog_path}. Nothing to commit."
+		else:
+			message = (
+				f"No new entries since commit {prior_sha[:8]}. "
+				"Nothing to commit."
+			)
+		changelog_lib.CONSOLE.print(message, style="yellow")
+		return
+
+	# build the seed message from parsed entries before any preview output
+	seed_message = make_seed_message_from_entries(new_entries)
 	if seed_message is None:
 		return
 
+	# show the seed message in a bordered panel so the editor preview
+	# is visually distinct from surrounding console output (warnings,
+	# git status, prompts). title="Seed commit message"; rstrip on the
+	# panel body to prevent rich from rendering a trailing blank row.
+	panel = rich.panel.Panel(
+		seed_message.rstrip("\n"),
+		title="Seed commit message",
+		title_align="left",
+		border_style="cyan",
+		expand=False,
+	)
+	changelog_lib.CONSOLE.print(panel, markup=False)
+
 	action = prompt_message_action("Add to the commit message?")
 	if action == "no":
-		print_warning("Aborted.")
+		changelog_lib.print_warning("Aborted.")
 		return
 
 	if action == "yes":
 		msg_path = edit_message(seed_message)
 		if msg_path is None:
 			return
-		if not confirm("Commit now?"):
-			print_warning("Aborted.")
+		if not changelog_lib.confirm("Commit now?"):
+			changelog_lib.print_warning("Aborted.")
 			os.unlink(msg_path)
 			return
 		rc = commit_with_message_file(msg_path)
@@ -529,12 +697,12 @@ def main() -> None:
 		rc = commit_with_message_file(msg_path)
 		os.unlink(msg_path)
 	else:
-		print_error("Unknown action. Aborting.")
+		changelog_lib.print_error("Unknown action. Aborting.")
 		return
 
 	if rc != 0:
-		raise SystemExit(rc)
-	console.print("Reminder: run git pull and git push.", style="yellow")
+		raise RuntimeError(f"git commit failed (exit code {rc}).")
+	changelog_lib.CONSOLE.print("Reminder: run git pull and git push.", style="yellow")
 
 #============================================
 

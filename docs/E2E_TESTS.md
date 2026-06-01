@@ -6,7 +6,7 @@ End-to-end (E2E) testing conventions for this repo.
 
 This repo supports two distinct E2E execution models, each with its own folder:
 
-- `tests/playwright/` (and optional `tests/playwright/e2e/` sub-grouping) - **browser-based E2E**: full Playwright walkthroughs and browser-driven tests. The deep dive lives in [PLAYWRIGHT_USAGE.md](PLAYWRIGHT_USAGE.md).
+- `tests/playwright/` (and optional `tests/playwright/e2e/` sub-grouping) - **browser-based E2E**: full Playwright walkthroughs and browser-driven tests. TypeScript repos include `PLAYWRIGHT_USAGE.md` in their propagated `docs/` folder.
 - `tests/e2e/` - **non-browser E2E**: shell/Python orchestration for whole-system testing: CLIs, builds, services, multi-suite coordination. This doc focuses on the non-browser model.
 
 Both are excluded from `pytest tests/` via `collect_ignore = ["e2e", "playwright"]` in `tests/conftest.py`.
@@ -17,7 +17,7 @@ This repo organizes tests in four tiers, all under the `tests/` umbrella:
 
 - `tests/test_*.py` - fast pytest unit and integration tests. Run with `pytest tests/`.
 - `tests/test_*.mjs` - pure Node tests, if any (rare; not browser-driven).
-- `tests/playwright/` (with optional `tests/playwright/e2e/` subfolder) - browser-driven Playwright tests. See [PLAYWRIGHT_USAGE.md](PLAYWRIGHT_USAGE.md).
+- `tests/playwright/` (with optional `tests/playwright/e2e/` subfolder) - browser-driven Playwright tests. TypeScript repos include `PLAYWRIGHT_USAGE.md` in their propagated `docs/` folder.
 - `tests/e2e/` - non-browser whole-system E2E. Shell/Python orchestration (`e2e_*.sh`, `e2e_*.py`). Run directly, not via pytest.
 
 ## Why tests/e2e/ is excluded from pytest
@@ -53,7 +53,7 @@ the `e2e_*` prefix as a secondary, human-readable convention.
 - Run a single Python runner: `source source_me.sh && python3 tests/e2e/e2e_<name>.py`.
 - Run all E2E tests: provide a `tests/e2e/run_all.sh` that iterates over the
   `e2e_*` files and reports pass/fail for each.
-- For browser-driven Playwright runs, see [PLAYWRIGHT_USAGE.md](PLAYWRIGHT_USAGE.md).
+- For browser-driven Playwright runs, TypeScript repos include `PLAYWRIGHT_USAGE.md` in their propagated `docs/` folder.
 - Do not invoke E2E tests from `pytest tests/`. Keep the two suites separate.
 
 ## Naming conventions test
@@ -93,6 +93,6 @@ File naming conventions are enforced by `tests/test_test_naming_conventions.py` 
 ## Related docs
 
 - [PYTEST_STYLE.md](PYTEST_STYLE.md): fast pytest unit and integration tests under `tests/`.
-- [PLAYWRIGHT_USAGE.md](PLAYWRIGHT_USAGE.md): browser-tier deep dive for Playwright tests under `tests/playwright/`.
+- Browser-driven test conventions: TypeScript repos include `PLAYWRIGHT_USAGE.md` in their propagated `docs/` folder for tests under `tests/playwright/`.
 - [PYTHON_STYLE.md](PYTHON_STYLE.md): repo-wide Python rules, including
   the `assert`-only-in-tests boundary.

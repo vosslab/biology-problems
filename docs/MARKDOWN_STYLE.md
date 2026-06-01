@@ -40,6 +40,7 @@ Keep documentation concise, scannable, and consistent.
 - Linking from repo root (e.g. `README.md`) into `docs/`: include `docs/` in both link text and URL. Example: `[docs/FORMAT.md](docs/FORMAT.md)`.
 - Linking between two files in the same folder (e.g. `docs/PYTHON_STYLE.md` to `docs/PYTEST_STYLE.md`): use the bare filename in both link text and URL. Example: `[PYTEST_STYLE.md](PYTEST_STYLE.md)`. Do not prefix the URL with `docs/` here; GitHub would look for `docs/docs/PYTEST_STYLE.md` and 404.
 - Link text should match the URL filename so readers see the exact file being referenced.
+- These link rules are enforced by `tests/test_markdown_links.py`, which checks every local Markdown link for existence, repo containment, redundant `..` traversal, and path-like-text correctness.
 
 ## Examples
 - Show a minimal example before a complex one.

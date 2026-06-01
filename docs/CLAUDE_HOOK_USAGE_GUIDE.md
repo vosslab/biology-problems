@@ -1,23 +1,25 @@
 # Claude hook usage guide
 
-Best practices for AI agents working in repos that use the `claude-code-permissions-hook`.
-This guide covers what commands are allowed, denied, and passed through, along with
-preferred alternatives for denied patterns.
+_Last updated: 2026-05-29 02:20 UTC. Source of truth: `claude-code-permissions-hook`
+repo. Mirrors in sibling repos (e.g. `starter-repo-template`) are copies; do not
+edit mirrors directly._
 
-This doc is Claude-specific and does not apply to Codex.
+Timestamp format: `YYYY-MM-DD HH:MM UTC` (ISO 8601 date + 24-hour clock, UTC).
+Regenerate on every audit; derive from the latest `## YYYY-MM-DD` heading in
+`docs/CHANGELOG.md` plus current commit time.
 
-This guide documents current Claude hook behavior. Repo style conventions live in
+Best practices for AI agents in repos using the `claude-code-permissions-hook`:
+what is allowed, denied, and passed through, with preferred alternatives for denied
+patterns. Claude-specific (not Codex). Repo style conventions live in
 [docs/REPO_STYLE.md](REPO_STYLE.md) and [docs/PYTHON_STYLE.md](PYTHON_STYLE.md).
 
 ## Trust model
 
-The hook optimizes for high task completion with bounded blast radius: allow routine
-local work, deny/steer on machine-changing actions, prompt on high-impact operations.
+The hook optimizes for high task completion with bounded blast radius: allow routine local work, deny/steer on machine-changing actions, prompt on high-impact operations.
 
 ## Overview
 
-The permissions hook intercepts every Claude Code tool call and evaluates it against
-TOML config rules. Each call gets one of three outcomes:
+The permissions hook intercepts every Claude Code tool call and evaluates it against TOML config rules. Each call gets one of three outcomes:
 
 | Outcome | Meaning |
 | --- | --- |
@@ -27,46 +29,35 @@ TOML config rules. Each call gets one of three outcomes:
 
 ### Command decomposition
 
-The hook splits compound Bash commands (`&&`, `||`, `;`, pipes) into leaf sub-commands
-and checks each leaf independently:
+The hook decomposes compound commands (`&&`, `||`, `;`, pipes) into leaf sub-commands:
 
-- **Deny**: if ANY leaf matches a deny rule, the entire command is denied
-- **Allow**: ALL leaves must match an allow rule for the command to be allowed
-- **Passthrough**: if any leaf has no matching rule (and none are denied)
+- **Deny** if ANY leaf matches a deny rule
+- **Allow** if ALL leaves match allow rules
+- **Passthrough** if any leaf has no matching rule (and none denied)
 
-A compound command fails as a whole even if only one leaf is illegal. If
-`find ... ; ls ...` is denied, the `ls ...` half would have run on its own --
-drop the denied leaf and re-run rather than rewriting both.
+A compound command fails as a whole even if only one leaf is illegal. If `find ... ; ls ...` is denied, the `ls ...` half would have run on its own -- drop the denied leaf and re-run rather than rewriting both.
 
-The hook also unwraps `bash -c "..."` patterns and extracts commands inside `$(...)`.
-
-Environment-variable assignments (e.g., `NODE_PATH=/foo`) are stripped from leaf
-commands by the decomposer, so `NODE_PATH=/foo node script.js` is evaluated as
-just `node script.js`.
+Unwraps `bash -c "..."` and extracts `$(...)`. Strips environment-variable prefixes (`NODE_PATH=/foo node script.js` -> `node script.js`).
 
 ### Max chain length
 
-Commands with more than **5** chained sub-commands are denied automatically. Break
-long chains into smaller commands or write a script file.
+Commands with more than **5** chained sub-commands are denied automatically.
 
 ### Bash-side reference for redirected commands
 
-`Read`, `Grep`, `Glob`, `Edit`, and `Write` are Claude Code *tool calls*,
-invoked directly with named parameters. They replace the Bash forms below.
-The third column lists the Bash forms that remain allowed for cases the tool
-calls do not cover (typically slicing piped stdout or listing files for a
-shell pipeline).
+`Read`, `Edit`, and `Write` are first-class Claude Code tool calls. The Grep/Glob tools are not exposed in this agent context, so Bash `grep`/`rg` is the primary file-search path. `grep`/`rg` against a file path is **allowed in safe zones** (CWD-relative, workspace, `/tmp`, narrow `~/.claude` subtrees) and denied only when the path escapes them (out-of-zone absolute, bare `~`, `..`). `find` is likewise allowed read-only in those safe zones. The columns below show denied Bash forms, preferred recovery paths, and Bash forms that remain allowed.
 
-| Denied Bash form | Tool call | Allowed Bash forms |
+| Denied Bash form | Preferred recovery | Allowed Bash forms |
 | --- | --- | --- |
-| `cat /path/to/file`, `head -20 /path`, `tail -20 /path` | `Read(file_path=..., offset=..., limit=...)` | `... \| cat`, `... \| head -5`, `... \| tail -5` (pipeline, no file arg) |
-| `grep pat /path`, `/usr/bin/grep ...`, `rg pat dir/`, `egrep`, `fgrep` | `Grep(pattern=..., path=..., glob=..., output_mode=..., head_limit=...)` | `... \| grep pat` (pipeline, no file arg) for stdout filtering |
-| `find . -name "*.py"` (any path form) | `Glob(pattern='**/*.py', path=...)` | `ls <dir>`, `git ls-files <pathspec>` |
-| `sed -n '10,20p' file.txt` | `Read(file_path=..., offset=10, limit=11)` | `... \| sed -n '10,20p'` (pipeline) |
+| `cat /path/to/file`, `head -20 /path`, `tail -20 /path` | Read tool with `file_path`, `offset`, `limit` | `... \| cat`, `... \| head -5`, `... \| tail -5` (pipeline, no file arg) |
+| `grep root /etc/passwd`, `rg pat /usr/...` (out-of-zone), `/usr/bin/grep ...` (abs binary), `egrep`/`fgrep` | read a known file with the Read tool, or narrow to a relative/workspace path | `grep -n pat src/file`, `rg pat docs/`, `grep foo /tmp/x`, `grep -n foo ~/<workspace>/repo/x`, `... \| grep pat` |
+| `find /etc -name '*.conf'`, `find . -delete`, `find /Users` (unsafe shapes) | Use bounded read-only `find` in a safe path zone (`.`, `/tmp`, `~/<workspace>/...`, `/Users/<me>/<workspace>/...`). For repo content, `git ls-files <pathspec>` is still preferred. | `find . -name '*.py'`, `find /tmp -type f`, `find ~/<workspace>/repo -type f` |
+| `sed -n '10,20p' file.txt` | Read tool with `offset=10`, `limit=11` | `... \| sed -n '10,20p'` (pipeline) |
 
 The deny rules cover all binary variants (alternate names, absolute paths like
 `/usr/bin/grep` or `/opt/homebrew/.../grep`, `rg`). The fastest path through a
-deny is the tool call in column two.
+deny is the preferred recovery in column two; column three covers cases where
+Bash is still the right shape.
 
 ## Allowed commands
 
@@ -116,7 +107,6 @@ cargo fmt --check
 
 ```bash
 bash script.sh
-bash -n script.sh        # syntax check only
 ./script.sh
 ./script.py
 ./subdir/script.py
@@ -124,12 +114,15 @@ tools/runner.py          # bare relative-path scripts
 scripts/build.sh
 ```
 
+`bash -n script.sh` (syntax check) is denied -- inspect the script with the
+Read tool instead. See the denied commands section.
+
 ### Safe utilities
 
 These commands are allowed as single commands. Command substitution is blocked.
 
 **File and text processing:**
-`awk`, `cat`, `colordiff`, `comm`, `cut`, `diff`, `expand`, `file`, `fmt`, `fold`,
+`cat`, `colordiff`, `comm`, `cut`, `diff`, `expand`, `file`, `fmt`, `fold`,
 `grep`, `head`, `jq`, `mediainfo`, `nl`, `od`, `paste`, `pdftotext`, `rg`, `sed`,
 `seq`, `shuf`, `sort`, `tac`, `tail`, `tee`, `tr`, `unexpand`, `uniq`, `wc`, `xargs`
 
@@ -146,28 +139,36 @@ These commands are allowed as single commands. Command substitution is blocked.
 
 Note: Some of these (like `cat`, `grep`, `head`, `tail`) have deny rules that block
 them when used with file path arguments. See the denied commands section. Use the
-dedicated tools (Read, Grep, Glob) instead.
+Read tool for file inspection, and `git ls-files <pathspec>` plus targeted Read for
+file search; piped `grep`/`rg` on already-bounded stdout stays allowed. `awk` is not
+in this list at all -- it is denied entirely (see the `awk` denied section below).
 
 ### Local runtimes
 
 **Node.js:**
-`node` is allowed for running `.js`, `.mjs`, and `.cjs` files, syntax checking with
-`-c` or `--check`, inline evaluation with `-e` or `--eval`, and `--version` queries.
+Use `node <script>` or `node --test <test-file>` for local project files; write `_temp.mjs` and run `node _temp.mjs` instead of `node -e "..."`. Auto-allowed shape: `node <flags> <path>.{js,mjs,cjs,ts,tsx} [script args...]`. Whitelisted flags: `--test`, `--watch`, `--check`, `-c`, `--loader=<arg>` / `--loader <arg>`, `--import=<arg>` / `--import <arg>`, any short `-<letters>`. Bare diagnostic forms `--test`, `--version`, `--help` are allowed. Inline JS (`-e` / `--eval`) is **denied** (see the `node -e` section under denied commands). Unrecognized `--long-flags` passthrough. Command substitution is blocked.
 
 ```bash
-node script.js
-node -c script.js
-node -e "require('./data.json')"
-node --version
+node script.js                              # allowed
+node --test tests/test_foo.mjs              # allowed
+node --loader=tsx tests/walker.mjs          # allowed
+node --loader tsx/esm --test tests/x.ts    # allowed
+node --watch script.mjs                     # allowed
+node -c script.js                           # allowed
+node --test                                 # allowed (default test glob)
+node --version                              # allowed
+node -e "require('./data.json')"            # denied (inline JS)
+node --eval "console.log(1)"                # denied (inline JS)
+node --inspect tests/x.mjs                  # passthrough (unknown long-flag)
+node --experimental-vm-modules tests/x.mjs  # passthrough
 ```
 
 **npx (whitelisted packages):**
-`npx` is allowed for a whitelist of known-safe local dev tool packages: `tsc`,
-`eslint`, `prettier`, `playwright`, `esbuild`. Unknown packages still require
-user approval (passthrough).
+Allowed for: `tsc`, `tsx`, `eslint`, `prettier`, `playwright`, `esbuild`. Unknown packages require user approval.
 
 ```bash
 npx tsc --noEmit              # allowed
+npx tsx --test tests/x.ts     # allowed (TypeScript file runner)
 npx eslint src/               # allowed
 npx prettier --check .        # allowed
 npx playwright screenshot ... # allowed
@@ -175,11 +176,7 @@ npx esbuild src/x.ts          # allowed
 npx some-package              # requires approval
 ```
 
-If `npx tsc` fails because TypeScript is not installed, stop and tell the user
-to run `npm install --save-dev typescript` (or `npm install -g typescript` for
-a global install). Do not work around the failure by calling
-`./node_modules/.bin/tsc` or `node_modules/typescript/bin/tsc` directly --
-those paths are denied (see "Denied commands" below).
+If `npx tsc` fails because TypeScript is not installed, run `npm install --save-dev typescript` (whitelisted). Do not work around failure by calling `./node_modules/.bin/tsc` directly (denied).
 
 **eslint and prettier (direct):**
 `eslint` and `prettier` are allowed as direct commands for linting and formatting.
@@ -234,17 +231,9 @@ blocked. Destructive behavior inside a container is a container-level concern.
 
 ### Tools scoped to /tmp scratch dirs
 
-These tools may write output files anywhere by default, but are auto-allowed
-when every path argument lives under `/tmp/` or `/private/tmp/`:
+These tools are auto-allowed when every path argument lives under `/tmp/` or `/private/tmp/`, but denied for paths outside scratch directories (`/Users`, `/etc`, `/usr`, `/opt`, `/var`, `/Library`, `/System`, etc.):
 
-`ffmpeg`, `sox`, `convert`, `magick`, `mogrify`, `gm`, `optipng`, `pngcrush`,
-`jpegoptim`, `cwebp`, `tesseract`, `qpdf`, `pdftk`, `gs`, `lame`, `flac`
-
-The rule requires at least one literal `/tmp/` (or `/private/tmp/`) token in
-the leaf and blocks invocations that touch any non-scratch absolute root
-(`/Users`, `/etc`, `/usr`, `/opt`, `/var`, `/Library`, `/System`, etc.).
-Virtual sources (`-f lavfi -i sine=...`, stdin `-`, sox null sink `-n`)
-ride along as long as a real `/tmp/` path is also in the leaf.
+`ffmpeg`, `sox`, `convert`, `magick`, `mogrify`, `gm`, `optipng`, `pngcrush`, `jpegoptim`, `cwebp`, `tesseract`, `qpdf`, `pdftk`, `gs`, `lame`, `flac`
 
 ```bash
 ffmpeg -i /tmp/in.wav /tmp/out.m4a              # allowed
@@ -264,6 +253,9 @@ The `rm` command is denied by default, but these specific patterns are allowed:
 | `/tmp/` paths | `rm /tmp/test_output.json` |
 | Cache directories | `rm -rf __pycache__`, `rm -r ~/Library/Caches/foo` |
 | `git rm` with relative paths | `git rm old_file.py` |
+| `rmdir` (empty-dir only) | `rmdir /tmp/empty`, `rmdir src/content/old/` |
+
+`rmdir` (including `rmdir -p`) is allowed because it only removes empty directories and fails if non-empty. Use to clean up empty source directories after `git mv` chains.
 
 ### Package managers
 
@@ -288,13 +280,18 @@ brew info python
 
 ### File access zones
 
+The hook may contain rules for Claude Code tools that are not exposed in
+every agent context (`Grep` and `Glob` in particular -- see notes
+below). This guide recommends only recovery paths observed to be
+available in the target context.
+
 | Tool | Allowed paths |
 | --- | --- |
 | Read | `~/nsh/`, `~/.<dotdirs>`, site-packages, `/tmp/`, `/var/folders/` |
 | Write | `~/nsh/`, `~/.claude/`, `/tmp/` |
 | Edit | `~/nsh/`, `~/.claude/`, `/tmp/` |
-| Glob | `~/nsh/`, `~/.claude/`, `/tmp/` |
-| Grep | `~/nsh/`, `~/.claude/`, `/tmp/` |
+| Glob | Supported defensively when exposed by Claude Code; not a standard recovery path in this agent context |
+| Grep | Supported defensively when exposed by Claude Code; not a standard recovery path in this agent context |
 
 All file tools block path traversal (`..`). Reading `.env` and `.secret` files is denied.
 
@@ -321,167 +318,213 @@ are also allowed.
 
 ### `rm` (file deletion)
 
-**Blocked:** `rm file.txt`, `rm -rf dir/`
-
-**Why:** Prevents accidental deletion of important files.
-
 **Instead:** Use underscore-prefixed filenames for scratch files (`_temp.py`),
 write to `/tmp/`, or use `git rm` for tracked files.
 
+**Why:** Prevents accidental deletion of important files.
+
+**Blocked:** `rm file.txt`, `rm -rf dir/`.
+
 ### `git commit`, `git stash`, `git clean` (branch-aware)
 
-**Blocked on protected branches:** `git commit`, `git commit --amend` (all variations
-including flag insertion like `git -C /tmp commit`). `git stash` and `git clean` are
-denied everywhere.
+**Instead:** Work on an `agent/<task>` branch where commits are allowed. To
+prepare a merge into a protected branch, use `git merge --no-commit --no-ff
+agent/<task>` and let the human review and commit. See
+[Worktrees and protected branches](#worktrees-and-protected-branches) for the
+full workflow.
 
-**Why:** On protected branches (typically `main`, `master`), commits are made by the
-human after reviewing the staged merge via `git diff`. On agent branches, you have
-full commit access. `git stash` and `git clean` are destructive and remove tracked
-or untracked work.
+**Why:** On protected branches (typically `main`, `master`), commits are made by
+the human after reviewing the staged merge via `git diff`. On agent branches,
+you have full commit access. `git stash` and `git clean` are destructive and
+remove tracked or untracked work.
 
-**Instead:** Work on an `agent/<task>` branch where commits are allowed. To prepare
-a merge into a protected branch, use `git merge --no-commit --no-ff agent/<task>`
-and let the human review and commit. See
-[Worktrees and protected branches](#worktrees-and-protected-branches) for the full
-workflow.
+**Blocked on protected branches:** `git commit`, `git commit --amend` (all
+variations including flag insertion like `git -C /tmp commit`). `git stash` and
+`git clean` are denied everywhere.
 
 ### `cat`/`head`/`tail` with file paths
-
-**Blocked:** `cat /path/to/file`, `head -20 /abs/path/file.txt`
-
-**Why:** Read is a Claude Code tool call (like Edit/Write). It provides line
-numbers, offset, and limit, and is the canonical way to inspect a file from
-this harness.
 
 **Instead:** Invoke the Read tool directly with `file_path` and optional
 `offset` and `limit`. The pipeline form (`... | head -5`, `... | tail -5`,
 `... | cat`) stays allowed for slicing piped stdout, where Read does not
 apply.
 
+**Why:** Read is a Claude Code tool call (like Edit/Write). It provides line
+numbers, offset, and limit, and is the canonical way to inspect a file from
+this harness.
+
+**Blocked:** `cat /path/to/file`, `head -20 /abs/path/file.txt`.
+
+<a name="grep-recovery"></a>
 ### `grep`/`rg` with file paths
 
-**Blocked:** `grep pattern /path/to/file`, `rg pattern /abs/search/dir`,
-`/usr/bin/grep ...`, `/opt/homebrew/.../grep ...`, `egrep`, `fgrep`. The
-deny covers all binary names and absolute paths.
+`grep` and `rg` against a file path are **allowed** when the path is in a safe zone, denied only when it escapes that zone. The Grep/Glob tools are not exposed in this agent context, so Bash `grep`/`rg` is the primary file-search path -- search files directly, no `git ls-files` dance required.
 
-**Why:** Grep is a Claude Code tool call (like Read/Edit/Write). It supplies
-structured output modes, glob filters, and context lines, and is the
-canonical way to search files from this harness.
+**Allowed** (path in a safe zone):
 
-**Instead:** Invoke the Grep tool directly with `pattern`, `path`, `glob`,
-`-A`/`-B`/`-C`, `output_mode`, and `head_limit`. The pipeline form
-(`... | grep pat`) stays allowed for slicing piped stdout, where Grep does
-not apply.
+- CWD-relative paths: `grep -n foo src/main.rs`, `rg pattern docs/`
+- workspace absolute: `grep -n foo ~/<workspace>/repo/x`, `rg pat /Users/<me>/<workspace>/repo/src`
+- `/tmp`, `/private/tmp`: `grep foo /tmp/x.log`
+- narrow `~/.claude/{agents,commands,skills,plugins,plans,projects}` subtrees
+
+**Blocked** (escapes the safe zone -- can flood context with an unbounded scan):
+
+- out-of-zone absolute: `grep root /etc/passwd`, `rg pattern /usr/lib/x`, arbitrary `/Users/<me>/<non-workspace>/...`
+- bare `~` (whole home) and `..` traversal: `grep foo ../secrets`, `rg foo ~/Documents/x`
+- absolute **binary** path regardless of target: `/usr/bin/grep ...`, `/opt/homebrew/bin/rg ...` -- use the bare PATH form (`grep`, `rg`)
+- `egrep`/`fgrep` with any file path -- deprecated; use `grep -E` / `grep -F`
+- `pcregrep`/`ack`/`ag` with a file path; `less <file>` (route to the Read tool)
+
+To search an out-of-zone path: read a known file with the Read tool, or narrow to a relative/workspace path. Pipeline filters (`... | grep pat`, no file arg) stay allowed and are unaffected. For bulk content search a `git ls-files <pathspec> | xargs grep PAT` pipeline is still allowed end-to-end if you prefer it.
 
 ### `git grep`
 
-**Blocked:** `git grep <pattern>`, including all git invocation forms
-(`/usr/bin/git grep`, `command git grep`, `env X=y git grep`,
-`git -c core.pager=cat grep`, `git -C <path> grep`,
-`git --git-dir=<dir> grep`, `git --work-tree=<dir> grep`).
-
-**Why:** Grep is a Claude Code tool call (like Read/Edit/Write); `git grep`
-would keep every search shell-side and re-create the loop the file-`grep`
-deny is meant to break. The Grep tool is the canonical search path.
-
-**Instead:** Invoke the Grep tool directly with `pattern`, `path`, `glob`,
-`-A`/`-B`/`-C`, `output_mode`, and `head_limit`. There is no Bash escape
-hatch for repo searches. For Bash file listings, `ls <dir>` and
-`git ls-files <pathspec>` remain allowed.
+**Blocked:** `git grep <pattern>`, including all git invocation forms (`/usr/bin/git grep`, `command git grep`, `env X=y git grep`, `git -c core.pager=cat grep`, `git -C <path> grep`, `git --git-dir=<dir> grep`, `git --work-tree=<dir> grep`). Recovery: see [grep/rg with file paths](#grep-recovery).
 
 ### `find`
 
-**Blocked:** `find . -name "*.py"`, including absolute-path invocations.
+Recovery: bounded read-only `find` in safe path zones (`.`, `/tmp`, `~/<workspace>/...`); or `git ls-files <pathspec>` inside a git repo.
 
-**Why:** Glob is a Claude Code tool call (like Read/Edit/Write) and supports
-recursive patterns directly.
+Read-only forms in safe path zones are allowed. Destructive predicates, unsafe roots, and command substitution are denied.
 
-**Instead:** Invoke the Glob tool directly with `pattern='**/*.py'` and `path`.
-For a shell-side file listing, `ls <dir>` and `git ls-files <pathspec>` are
-both allowed.
+**Instead:** Use bounded read-only `find` in a safe path zone:
+
+- relative paths: `.`, `docs`, `src/sub`, `tests`
+- `/tmp`, `/tmp/...`, `/private/tmp/...`
+- workspace via tilde: `~/<workspace>/...` (e.g.
+  `~/nsh/<repo>/...`); bare `~` is denied
+- workspace via absolute path:
+  `/Users/<me>/<workspace>/<repo>/...` or
+  `$HOME/<workspace>/...`
+- narrow Claude agent-config subtrees:
+  `~/.claude/agents/...`, `~/.claude/commands/...`,
+  `~/.claude/skills/...` (and absolute / `$HOME` equivalents).
+  Bare `~/.claude` is denied; non-allowlist subpaths like
+  `~/.claude/projects` passthrough.
+
+Common read-only predicates ride along: `-name`, `-iname`,
+`-type f|d|l`, `-path`, `-maxdepth`, `-mindepth`, `-not`, `!`,
+`-o`, `-a`, grouping `(` `)`, `-print`, `-empty`. Output shaping
+pipes (`| head`, `| sort`, `| grep`, `| rg`) stay allowed.
+**Not in this pass:** `-size`, `-print0`, `-printf`, `-prune`,
+`-newer`, `-mtime`, `-atime`, `-user`, `-group`, `-perm`, `-links`,
+`-inum`, `-samefile`, `-fstype`, `-mount`, `-xdev`, `-regex`,
+`-iregex` (add a focused rule + fixtures if needed).
+
+Inside a git repo, prefer `git ls-files <pathspec>` when
+tracked-file discovery is enough -- it excludes ignored and
+build artifacts. Use `find` for `/tmp`, generated trees, untracked
+files, and mixed/non-git subtrees.
+
+**Why:** Read-only discovery in safe path zones is bounded by the
+path zone, not by `-maxdepth`. Destructive predicates and destructive
+`xargs` pipelines stay denied so mutation is a separate, reviewed
+step.
+
+**Blocked:**
+
+- Bare `find` with no args -- it is an unbounded recursive listing.
+- Destructive / output-file predicates (hard deny): `-delete`,
+  `-exec`, `-execdir`, `-ok`, `-okdir`, `-fprint`, `-fprintf`,
+  `-fls`.
+- Advanced filters not yet supported in this pass (conservative
+  deny -- ask for a focused rule + fixtures if needed): `-printf`,
+  `-print0`, `-prune`, `-newer`, `-mtime`, `-atime`, `-user`,
+  `-group`, `-perm`, `-size`, `-links`, `-inum`, `-samefile`,
+  `-fstype`, `-mount`, `-xdev`, `-regex`, `-iregex`.
+- Destructive xargs pipelines: `find ... | xargs rm`,
+  `find ... | xargs -0 rm`, `xargs chmod`, `xargs chown`,
+  `xargs mv`, `xargs sudo`.
+- Bare `/`, system roots (`/etc`, `/usr`, `/opt`, `/System`,
+  `/Library`, `/var`, `/bin`, `/sbin`, `/root`, `/sys`, `/proc`,
+  `/dev`, `/boot`).
+- Bare `/Users`, `/home`, or `/Users/<user>` without a workspace
+  subpath. Use `~/<workspace>/...` or
+  `/Users/<me>/<workspace>/...` instead.
+- Broad user-config / cache trees: bare `~/.claude`, `~/.config`,
+  `/var/folders`. The narrow Claude allowlist
+  (`~/.claude/agents`, `~/.claude/commands`, `~/.claude/skills`)
+  is allowed.
+- Command substitution: `find . -name "$(...)"`,
+  `VAR=$(find ...)`.
+- Path traversal: `find ../`, `find docs/../`.
+
+Residual passthrough: a non-standard home subdir like
+`/Users/<me>/scratch_random_dir/...` is neither in the explicit
+non-workspace denylist (`Downloads`, `Documents`, `Desktop`,
+`Library`, `Movies`, `Music`, `Pictures`, `Public`, `Applications`)
+nor in the safe-zone allow. It falls through to user approval.
+
+Quoted path roots (`find "docs" -name '*.md'`, `find './src' -type f`)
+are out of scope in this pass and passthrough. Drop the quotes
+to auto-allow.
+
+### `awk`
+
+Recovery: `git ls-files <pathspec>` then Read tool on targets; piped `grep`/`rg` on bounded stdout for filtering; `_temp.py` for broad searches.
+
+For line-matching, use `git ls-files <pathspec>` + Read or `_temp.py` helper. For field extraction use `cut`.
+
+`awk`'s `/regex/` syntax makes file-vs-stdin guard impractical, so deny is unconditional.
+
+**Blocked:** All `awk` invocations -- `awk '/pat/{print}' file`, `awk '{print $2}'`, `gawk`, `mawk`, absolute-path/`command`/`env` forms, pipeline leaves (`... | awk ...`). Unlike `cat`/`grep`/`sed`, there is no pipe exception: `awk` is denied even as a stdin filter.
 
 ### `sed -n` with file paths
 
-**Blocked:** `sed -n '10,20p' file.txt`
+Recovery: Read tool with `offset`/`limit` for file reads; piped `sed -n` remains allowed.
+
+Use Read for file reads; `sed` is the right tool for slicing piped stdout.
 
 **Allowed (pipe usage):** `git diff HEAD -- file.py | sed -n '250,400p'`
--- paginating subprocess stdout is fine; Read can't substitute for it.
 
-**Why:** The Read tool with offset and limit does file reads better, but sed
-is the right tool for slicing piped stdout.
-
-**Instead (file case):** Use `Read(file_path='file.txt', offset=10, limit=11)`.
-Other sed operations (substitution, etc.) are allowed.
+**Blocked:** `sed -n '10,20p' file.txt`.
 
 ### Claude Code tool names typed as Bash commands
 
-**Blocked:** `Grep -n "^## " docs/CHANGELOG.md`, `Read README.md`,
-`Glob "**/*.py"`, `Edit file.py`, `Write /tmp/x.py`. Also caught when
-chained or piped, since the decomposer splits leaves before matching:
-`echo hi && Read README.md`, `cat /tmp/x | Grep foo`.
-
-A grep pattern that *contains* a tool name is not affected:
-`grep "Grep\|Read" file` is allowed (the deny anchors at start-of-leaf,
-so only the lowercase `grep` token matters).
+**Instead:** Invoke the actual tool, not its name typed into Bash. `Read`
+reads a file; `Edit`/`Write` modify files; `Task`/`WebFetch`/`WebSearch`
+are first-class tool calls. For file search use `git ls-files <pathspec>`
+plus the Read tool.
 
 **Why:** `Grep`, `Read`, `Glob`, `Edit`, `Write`, `Task`, `WebFetch`, and
 `WebSearch` are Claude Code TOOLS, not shell commands. Pasting the tool
 name into Bash runs whatever (if anything) is on `PATH` by that name --
 not the actual tool.
 
-**Instead:** Invoke the tool directly as a tool call with its real
-parameters (e.g., the Grep tool with `pattern='^## '`,
-`path='docs/CHANGELOG.md'`).
+**Blocked:** `Grep -n "^## " docs/CHANGELOG.md`, `Read README.md`,
+`Glob "**/*.py"`, `Edit file.py`, `Write /tmp/x.py`. Also caught when
+chained or piped, since the decomposer splits leaves before matching:
+`echo hi && Read README.md`, `cat /tmp/x | Grep foo`.
+
+A grep pattern that *contains* a tool name does not hit *this* deny:
+`grep "Grep\|Read" file` is not flagged as a tool-name-in-Bash command
+(the deny anchors at start-of-leaf, so only the lowercase `grep` token
+matters). Note it is still denied by the file-`grep` rule above if a
+file path argument is present -- a file search is a file search
+regardless of what the pattern spells.
 
 ### Pipe-only commands (allowed in pipes, denied as the lead command)
 
-These tools have a "use the dedicated tool instead" deny when run against
-a file path, but remain allowed when consuming piped stdin:
+These have a "use dedicated tool" deny with file paths, but stay allowed as piped stdin:
 
 | Command | Denied (lead) | Allowed (in pipe) |
 | --- | --- | --- |
 | `cat`, `head`, `tail` | `cat /tmp/x.txt` | `... \| head -5` |
-| `grep`, `egrep`, `fgrep`, `rg` | `grep pat /tmp/x.txt` | `... \| grep pat` |
+| `egrep`, `fgrep` | `egrep pat /tmp/x.txt` (deprecated; use `grep -E`/`-F`) | `... \| grep pat` |
 | `sed -n` | `sed -n '10,20p' /tmp/x.txt` | `... \| sed -n '10,20p'` |
 
-The decomposer splits Bash commands on `|`/`&&`/`;` and evaluates each
-leaf independently. A pipeline leaf with no file path argument matches
-the "safe utility" allow list; the same command with a file argument
-hits a deny that steers to the Read or Grep tool.
+(`grep`/`rg` are no longer in this table -- file-path forms are allowed in safe zones; see [grep/rg with file paths](#grep-recovery).)
 
 ### `tsc` via `node_modules` paths
 
+Use `npx tsc` (whitelisted). If TypeScript is missing, run `npm install --save-dev typescript` (whitelisted). Direct `node_modules` paths are a workaround that masks missing installs. Do not work around the failure with absolute paths, `node node_modules/...`, or `source source_me.sh &&` chains.
+
 **Blocked:** `./node_modules/.bin/tsc`, `./node_modules/typescript/bin/tsc`,
-`/abs/path/node_modules/typescript/bin/tsc`,
-`node node_modules/typescript/bin/tsc`
-
-**Why:** Project-local `tsc` paths are a workaround for `npx tsc` failing.
-Retrying different invocation forms wastes turns and masks missing installs.
-
-**Instead:** Use `npx tsc` (whitelisted). If `npx tsc` fails because TypeScript
-is not installed, run exactly one of these two commands (both are whitelisted):
-
-```bash
-npm install --save-dev typescript   # allowed
-npm install -g typescript           # allowed
-```
-
-Any other `npm install` variation (different flags, version pins, extra
-packages, bare `npm install`) still passes through for user approval.
-
-Do not work around the failure with absolute paths, `node node_modules/...`,
-or `source source_me.sh &&` chains.
+`/abs/path/node_modules/typescript/bin/tsc`, `node node_modules/typescript/bin/tsc`.
 
 ### `ffprobe` (steered to `mediainfo`)
 
-**Blocked:** `ffprobe file.m4b`, `ffprobe -show_streams file.mp3`,
-`ffprobe -i file.wav`
-
-**Why:** `mediainfo` produces cleaner JSON for container, codec, and track
-metadata and is the preferred tool.
-
-**Instead:** Use `mediainfo --Output=JSON <file>`. `ffprobe` is allowed
-only with the flags `mediainfo` cannot replicate:
+Use `mediainfo --Output=JSON <file>` for cleaner output. `ffprobe` is allowed only for chapter/packet/frame/lavfi inspection:
 
 ```bash
 ffprobe -show_chapters file.m4b   # allowed (chapter atoms)
@@ -490,62 +533,75 @@ ffprobe -show_frames  file.mp4    # allowed (per-frame timing)
 ffprobe -f lavfi -i sine=440      # allowed (synthetic/lavfi probe)
 ```
 
+**Blocked:** `ffprobe file.m4b`, `ffprobe -show_streams file.mp3`, `ffprobe -i file.wav`.
+
 ### `perl` on `.pg`/`.pgml` files
 
-**Blocked:** `perl -c problem.pgml`, `perl problem.pg`
+Use the `/webwork-writer` skill lint guide instead. PGML is not standard Perl.
 
-**Why:** PGML is not standard Perl. Running perl on these files produces misleading
-results.
-
-**Instead:** Use the `/webwork-writer` skill lint guide to validate WeBWorK problems.
+**Blocked:** `perl -c problem.pgml`, `perl problem.pg`.
 
 ### Heredocs (`<<EOF`)
 
-**Blocked:** `python3 - <<EOF`, `bash <<'SCRIPT'`
+Write code to `_temp.py` or `_temp.sh`, run with `source source_me.sh && python3 _temp.py` or `bash _temp.sh`. Heredocs are hard to read, lint, and test.
 
-**Why:** Heredocs are hard to read, lint, and test.
-
-**Instead:** Write code to a `_temp.py` or `_temp.sh` file using the Write tool,
-then run it with `source source_me.sh && python3 _temp.py` or `bash _temp.sh`.
-Underscore-prefixed files can be removed freely.
+**Blocked:** `python3 - <<EOF`, `bash <<'SCRIPT'`.
 
 ### `for` and `while` loops
 
-**Blocked:** `for f in *.py; do ...`, `while read line; do ...`
+Write loop logic to `_temp.py` or `_temp.sh` files, not inline Bash.
 
-**Why:** Loop logic belongs in script files, not inline Bash.
-
-**Instead:** Write the logic in a `_temp.py` or `_temp.sh` file and execute it.
+**Blocked:** `for f in *.py; do ...`, `while read line; do ...`, pipeline forms like `ls *.md | while read f; do ...; done`, nested loops after `do `. The deny anchors the loop keyword at start-of-leaf, after a `|`, `;`, or `&` character, or after a `do ` (a loop nested inside a `do ... done` body).
 
 ### `bash -c` / `bash -lc`
 
-**Blocked:** `bash -c "command"`, `bash -lc "source && python3 ..."`
+Run commands directly. The Bash tool already runs bash; `bash -c` is redundant bash-in-bash.
 
-**Why:** The Bash tool already runs bash. `bash -c` is redundant bash-in-bash.
+**Blocked:** `bash -c "command"`, `bash -lc "source && python3 ..."`.
 
-**Instead:** Run the command directly: `source source_me.sh && python3 script.py`.
-Running script files (`bash script.sh`, `bash -n script.sh`) is still allowed.
+### `bash`/`sh`/`zsh -n` (syntax check)
+
+Inspect scripts with the Read tool. Shell syntax check is an anti-pattern for script analysis.
+
+**Blocked:** `bash -n script.sh`, `sh -n x.sh`, `zsh -n x.sh`, and absolute-path / `command`/`env` prefixes.
 
 ### `sudo`
 
-**Blocked:** `sudo command`
+Do not escalate to root. Ask the user if needed.
 
-**Why:** Do not escalate to root. Ask the user to run privileged commands manually.
-
-**Instead:** Ask the user to run the command as root if truly necessary.
+**Blocked:** `sudo command`.
 
 ### `git reset --hard`
 
-**Blocked on protected branches:** Destructive history rewrite. Denied on protected
-branches (`main`, `master`); allowed on agent/feature branches for local work.
+**Instead (on protected branches):** Use safer alternatives like
+`git checkout -- file` or `git restore file` to discard working changes.
 
-**Instead on protected:** Use safer alternatives like `git checkout -- file` or
-`git restore file` to discard working changes.
+**On agent branches:** `git reset --hard` is allowed for local cleanup and
+rebasing your own work.
 
-**On agent branches:** `git reset --hard` is allowed for local cleanup and rebasing
-your own work.
+**Why:** On `main`/`master`, `git reset --hard` is a destructive history
+rewrite that destroys uncommitted work and changes the branch tip.
+
+**Blocked on protected branches:** `git reset --hard`. Allowed on
+agent/feature branches.
 
 ### `git restore .` and `git checkout -- .` (wholesale discard)
+
+**Instead:** Discard a single file at a time:
+
+- `git restore path/to/file.py` (allowed)
+- `git restore --staged path/to/file.py` (allowed)
+- `git checkout -- one_file.py` (allowed)
+- `git checkout HEAD~1 -- file.py` (allowed)
+
+Branch switches (`git checkout main`, `git checkout -b feature/x`) remain
+allowed unchanged. If you really want to wipe everything, ask the user to
+run the command themselves.
+
+**Why:** These forms have the same blast radius as `git reset --hard` --
+they wipe every uncommitted change and unstage all renames in one shot.
+That destroys agent work in progress (edits, renames, staged content) with
+no recovery path other than `git reflog`.
 
 **Blocked:** Any `git restore` or `git checkout` invocation whose pathspec is
 `.` or `:/` (the "all tracked files" selector). Examples:
@@ -560,114 +616,142 @@ your own work.
 - `git checkout main -- .`
 - `git checkout :/`
 
-**Why:** These forms have the same blast radius as `git reset --hard` --
-they wipe every uncommitted change and unstage all renames in one shot.
-That destroys agent work in progress (edits, renames, staged content) with
-no recovery path other than `git reflog`.
-
-**Instead:** Discard a single file at a time:
-
-- `git restore path/to/file.py` (allowed)
-- `git restore --staged path/to/file.py` (allowed)
-- `git checkout -- one_file.py` (allowed)
-- `git checkout HEAD~1 -- file.py` (allowed)
-
-Branch switches (`git checkout main`, `git checkout -b feature/x`) remain
-allowed unchanged. If you really want to wipe everything, ask the user to
-run the command themselves.
-
 ### `git push --force` (including --force-with-lease)
-
-**Blocked:** `git push --force`, `git push origin main --force-with-lease`
-
-**Why:** Destructive remote history change.
 
 **Instead:** Ask the user to push manually if rebase is necessary.
 
+**Why:** Destructive remote history change.
+
+**Blocked:** `git push --force`, `git push origin main --force-with-lease`.
+
 ### `deno run` with URLs
 
-**Blocked:** `deno run https://example.com/script.ts`
+Download with `curl` to a file, review it, then run locally. Remote code execution requires prior review.
 
-**Why:** Remote code execution. Download and review first.
-
-**Instead:** Download with `curl` to a file, review it, then run locally.
+**Blocked:** `deno run https://example.com/script.ts`.
 
 ### `curl`/`wget` piped to runtime
 
-**Blocked:** `curl https://example.com/install.sh | bash`, `wget -O - url | python3`
+Download to a file first with `curl -o script.sh https://...`, review, then run. Never pipe remote code to shell/runtime.
 
-**Why:** Executes remote code without local review.
-
-**Instead:** Download to a file first with `curl -o script.sh https://...`, review,
-then run.
+**Blocked:** `curl https://example.com/install.sh | bash`, `wget -O - url | python3`.
 
 ### Write/Edit to system directories
 
-**Blocked:** Writing to `/etc/`, `/usr/`, `/opt/`, `/System/`, `/Library/`
+Write to `~/nsh/` or `/tmp/` instead. System files should only be modified by root or package managers.
 
-**Why:** System files should only be modified by root or package managers.
-
-**Instead:** Write to `~/nsh/` or `/tmp/` instead.
+**Blocked:** Writing to `/etc/`, `/usr/`, `/opt/`, `/System/`, `/Library/`.
 
 ### `mv`
 
-**Blocked:** `mv old.py new.py`
+Use `git mv` for tracked files to preserve history. For untracked files, use `cp` + `rm`.
 
-**Why:** Use `git mv` for tracked files to preserve history.
-
-**Instead:** `git mv old.py new.py`. For untracked files, use `cp` + `rm` or ask
-the user.
+**Blocked:** `mv old.py new.py`.
 
 ### `VAR=$(...)` assignments
 
-**Blocked:** `PROJECT=$(basename $PWD)`, `OUTPUT=$(python3 script.py)`
+Command substitution in assignments creates hidden side effects. Use direct commands or `source source_me.sh` instead.
 
-**Why:** Command substitution in assignments creates hidden side effects.
-
-**Instead:** Use `source source_me.sh` for environment setup or inline the command
-directly.
+**Blocked:** `PROJECT=$(basename $PWD)`, `OUTPUT=$(python3 script.py)`.
 
 ### `$PYTHON` variable
 
-**Blocked:** `$PYTHON script.py`, `${PYTHON} -m pytest`
+Use the actual interpreter name for clarity.
 
-**Why:** Use the actual interpreter name for clarity.
-
-**Instead:** `python3 script.py`
+**Blocked:** `$PYTHON script.py`, `${PYTHON} -m pytest`.
 
 ### `PYTHONDONTWRITEBYTECODE` / `PYTHONUNBUFFERED`
 
+`source_me.sh` already exports these.
+
 **Blocked:** Setting these environment variables manually.
-
-**Why:** `source_me.sh` already exports these.
-
-**Instead:** `source source_me.sh && python3 ...`
 
 ### Bare variable assignments
 
-**Blocked:** `REPO_ROOT=/path/to/repo` (with no command following)
+The decomposer splits `A=x && cmd` into leaves; a bare assignment leaf is useless. Use space-separated env prefixes: `REPO_ROOT=/path python3 script.py`.
 
-**Why:** The decomposer splits `A=x && cmd` into leaves; a bare `A=x` leaf is
-useless.
-
-**Instead:** Use space-separated env prefixes on one line: `REPO_ROOT=/path python3 script.py`
+**Blocked:** `REPO_ROOT=/path/to/repo` (with no command following).
 
 ### `gh` CLI
 
+`gh` is not installed. Ask the user to run GitHub operations manually.
+
 **Blocked:** All `gh` commands.
 
-**Why:** `gh` is not installed on this system.
+### python `-c` (inline code)
 
-**Instead:** N/A. GitHub operations are not available via CLI.
+Write `_temp.py` and run with `source source_me.sh && python3 _temp.py`. Inline code is hard to lint and debug.
 
-### Homebrew python `-c`
+**Blocked:** Every `python -c` form -- bare `python3 -c "print(1)"`, `python -c`,
+version-suffixed `python3.12 -c`, absolute-path binaries
+(`/opt/homebrew/bin/python3 -c`), `command`/`env` prefixes, and interpreter
+flags before `-c` (`python3 -B -c`). `python3 script.py` and `python3 -m pytest`
+are unaffected -- only the `-c` inline-code form is denied.
 
-**Blocked:** `/opt/homebrew/bin/python3 -c "print('hello')"`
+### `node -e` / `node --eval` (inline JS)
 
-**Why:** Inline code is hard to lint and debug.
+Write `_temp.mjs` and run with `node _temp.mjs`. Inline JS is hard to lint and debug, can hide command substitution (`node -e "$(curl ...)"`), and can spawn child processes (`require('child_process').execSync(...)`). Same rule shape as `python -c`.
 
-**Instead:** Write a `_temp.py` file and run it with
-`source source_me.sh && python3 _temp.py`.
+**Blocked:** Every `node -e` / `node --eval` form -- bare `node -e console.log(1)`,
+`node --eval "..."`, absolute-path binaries (`/usr/local/bin/node -e`),
+`command`/`env` prefixes, and interpreter flags before `-e`/`--eval`
+(`node -B -e "1+1"`). `node script.js`, `node --test`, and `node --version` are
+unaffected -- only the `-e` / `--eval` inline-code forms are denied.
+
+### `printf` with file redirect (Write-tool replacement)
+
+Use the Write tool for new files or the Edit tool for appends. Using `printf` to assemble file content bypasses the Write/Edit tools that provide diffs, line counts, and proper change tracking.
+
+**Blocked:** `printf '...' > FILE`, `printf '...' >> FILE`, `printf '...' | tee FILE`, `printf '...' | tee -a FILE`. Bare `printf '...'` for stdout formatting (no redirect, no `tee`) stays allowed.
+
+## Path existence pre-check
+
+Before evaluating allow or deny rules, the hook stats the target path of `Read`, `Edit`, `MultiEdit`, `Glob`, and `Grep` calls and denies if the path is missing or unusable, immediately catching the common "hallucinated path" failure mode.
+
+### Per-tool semantics
+
+| Tool | Requirement | Failure modes |
+| --- | --- | --- |
+| `Read` | `file_path` resolves to an existing, non-directory target | missing path; path is a directory; broken symlink |
+| `Edit` / `MultiEdit` | `file_path` exists, OR its parent directory exists | both file and parent missing |
+| `Glob` | resolved `path` is an existing directory | missing path; file passed where directory expected |
+| `Grep` | resolved `path` (when provided) exists as file or directory | missing path |
+| `Write` | exempt | n/a -- Write creates new files by design |
+
+Symlinks-to-existing-files are accepted for `Read`. Broken symlinks deny
+because `fs::metadata` follows the link and reports the missing target.
+Relative paths are resolved against the hook input's `cwd`. When `Glob` or
+`Grep` is called without a `path` field, the pre-check is skipped (the
+cwd fallback is trusted).
+
+### Reason strings the agent sees
+
+| Condition | Reason |
+| --- | --- |
+| Read target missing | `Verify the file path before retrying. Read target does not exist: <path>.` |
+| Read target is a directory | ``Read targets a file, not a directory. Use `ls <dir>` or `git ls-files <pathspec>` to list directory contents. Path is a directory: <path>.`` |
+| Edit / MultiEdit both missing | `Create the parent directory first or choose an existing path. Edit target and parent directory are both missing: <path>; parent: <parent>.` |
+| Glob path missing or not a directory | `Choose an existing search directory before retrying. Glob path does not exist as a directory: <path>.` |
+| Grep path missing | `Choose an existing file or directory before retrying. Grep path does not exist: <path>.` |
+| Stat failed for any reason other than NotFound (permissions, etc.) | `Verify the path before retrying. The hook could not confirm that this path exists: <path>.` |
+
+The pre-check distinguishes `Ok(false)` (path confirmed missing) from
+`Err(_)` (could not stat -- permission denied on a parent directory,
+malformed path, etc.). Only confirmed-missing emits "does not exist";
+errors emit "could not confirm" so the message stays accurate.
+
+### What to do when you see one of these reasons
+
+- Verify the path before retrying. The hook printed exactly which path it
+  could not find and, for Edit, which parent directory was also missing.
+- If the path was a typo, fix it. If the path belongs to a different
+  working directory, set `cwd` correctly or use an absolute path.
+- For Read of a directory, use `ls <dir>` or `git ls-files <pathspec>`
+  to list contents. For Glob with a file argument, switch to Read for a
+  single file or `git ls-files <pathspec>` to list candidates.
+- For a brand-new file you intend to create, prefer `Write`; the pre-check
+  is exempt for `Write`. `Edit` of a brand-new file is also accepted as long
+  as the parent directory already exists.
 
 ## Worktrees and protected branches
 
@@ -678,15 +762,7 @@ merges into protected branches (`main`, `master` by default) using:
 git merge --no-commit --no-ff agent/<task>
 ```
 
-This stages the merge result without creating the commit. The human reviews
-with `git diff HEAD` and runs the final `git commit` and `git push` themselves.
-Direct `git commit`, `git rebase`, `git reset --hard`, `git cherry-pick`,
-`git revert`, and pushes targeting protected refs are denied while on a
-protected branch; the same commands are allowed on a feature/agent branch.
-
-For shipped copies of this guide, treat this section as the complete worktree
-summary: agents prepare changes, humans create final commits and pushes, and
-protected-branch history-changing commands stay denied.
+This stages the merge result without creating the commit. The human reviews with `git diff HEAD` and runs the final `git commit` and `git push` themselves. Direct `git commit`, `git rebase`, `git reset --hard`, `git cherry-pick`, `git revert`, and pushes targeting protected refs are denied while on a protected branch; the same commands are allowed on feature/agent branches.
 
 ## Passthrough (requires user approval)
 
@@ -719,35 +795,33 @@ interactive UI dialogs, causing blank answers or skipped consent screens.
 ## Best practices
 
 - Always use `source source_me.sh && python3` for Python execution
-- Use dedicated tools (Read, Grep, Glob) instead of their Bash equivalents
+- Use the Read tool for file inspection (offset / limit available)
+- Search file contents with `grep`/`rg` directly on a relative or workspace path (`grep -rn pat src/`); the Grep tool is not available here
+- Use `ls <dir>` or `git ls-files <pathspec>` to list files
 - Write scratch code to `_temp.py` or `_temp.sh` (underscore prefix = safe to delete)
 - Keep compound commands under 5 chained sub-commands
-- No command substitution (`` ` `` or `$(...)`) in variable assignments
+- Destructive `xargs` pipelines (`xargs rm`, `xargs chmod`, `xargs chown`, `xargs mv`, `xargs sudo`) stay denied
 - Use relative paths for project files where possible
-- For loops or conditionals, write a script file instead of inline Bash
 - Stage changes and update `docs/CHANGELOG.md`; let the user commit
 
 ## Common patterns
 
-The Grep, Read, Glob, Edit, and Write entries below are Claude Code
-*tool calls*, not shell commands. Invoke them as tools, not via Bash.
-There is no Bash escape hatch for searching repo files -- use the Grep
-tool. For Bash file listings, `git ls-files <pathspec>` and `ls <dir>`
-are allowed; for slicing piped stdout, `... | grep pat`, `... | head -5`,
-and `... | sed -n '10,20p'` are allowed.
+Use `Read`, `Edit`, `Write` as tool calls; search file contents with `grep`/`rg` directly on a relative or workspace path; list files with `ls` or `git ls-files`.
 
 | Task | Wrong | Right |
 | --- | --- | --- |
 | Run Python | `python3 script.py` | `source source_me.sh && python3 script.py` |
 | Read a file | `cat /path/to/file.py` | Read tool: `file_path="/path/to/file.py"` |
-| Search files | `grep -r "pattern" src/` | Grep tool: `pattern="pattern"`, `path="src/"` |
-| Tool name as Bash | `Grep -n "^## " docs/CHANGELOG.md` | Invoke the Grep tool directly (not via Bash) |
-| Find files | `find . -name "*.py"` | Glob tool: `pattern="**/*.py"`. For Bash listings, `ls <dir>` or `git ls-files '*.py'` |
+| Search files | `grep -r pat /etc` (out-of-zone); `Grep` tool (not available) | `grep -rn pat src/`, `rg pat docs/` (CWD-relative or workspace path, allowed directly) |
+| Tool name as Bash | `Grep -n "^## " docs/CHANGELOG.md` | Bash `grep -n "^## " docs/CHANGELOG.md` (relative path, allowed) |
+| Find files | `find / -name "*.py"` (system root); `find . -delete` (destructive) | Bounded read-only: `find <safe-root> -type f -name PAT` (relative paths, `/tmp`, `~/<workspace>/...`); or `git ls-files <pathspec>` for tracked-only repo content |
 | Read lines 10-20 | `sed -n '10,20p' file.txt` | Read tool: `offset=10`, `limit=11` |
 | Delete temp file | `rm temp.py` | Name it `_temp.py`, then `rm _temp.py` |
 | Rename file | `mv old.py new.py` | `git mv old.py new.py` |
 | Loop over files | `for f in *.py; do ...` | Write `_temp.sh` with the loop, run `bash _temp.sh` |
 | Inline Python | `python3 -c "print(1)"` | Write `_temp.py`, run with source_me.sh |
+| Inline JS | `node -e "console.log(1)"` | Write `_temp.mjs`, run with `node _temp.mjs` |
+| Write file via printf | `printf '...' > FILE` | Use the Write tool (or Edit for appends) |
 | Set env + run | `REPO_ROOT=/x && python3 s.py` | `REPO_ROOT=/x python3 s.py` (one line) |
 | Run heredoc | `python3 - <<EOF ...` | Write `_temp.py`, run with source_me.sh |
 | GitHub CLI | `gh pr list` | Not available (`gh` not installed) |

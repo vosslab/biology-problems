@@ -1,6 +1,6 @@
 # Biology problem generators
 
-Python scripts that generate biochemistry, genetics, molecular biology, and related homework/quiz items for instructors and course staff. Inputs live in [data/](data/) and [images/](images/), and generators emit outputs such as `bbq-*.txt`, `qti*.zip`, and `selftest-*.html` (ignored by git).
+Python scripts that generate biochemistry, genetics, molecular biology, and related quiz and homework questions for instructors and course staff, exported as Blackboard and QTI files ready to import into a learning management system.
 
 ## Documentation
 
@@ -26,7 +26,7 @@ Python scripts that generate biochemistry, genetics, molecular biology, and rela
 
 ## Quick start
 - `source source_me.sh`
-- `python3 problems/biochemistry-problems/Henderson-Hasselbalch.py -m -d 5`
+- `python3 problems/biochemistry-problems/alpha_helix_h-bonds.py --mc -d 5`
 - Review the generated `bbq-*.txt` output in the repo root.
 
 ## Status

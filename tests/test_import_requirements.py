@@ -22,6 +22,9 @@ REQUIREMENT_FILES = (
 	os.path.join("config_files", "pip_extras.txt"),
 )
 LOCAL_IMPORT_WHITELIST = {
+	# Vendored at ~/nsh/local-llm-wrapper and made importable via PYTHONPATH.
+	# Imported by bioproblems_site/llm_helpers.py and problem_set_title.py.
+	"local_llm_wrapper",
 }
 IMPORT_REQUIREMENT_ALIASES = {
 	"applescript": "py-applescript",

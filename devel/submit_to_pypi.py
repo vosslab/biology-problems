@@ -33,8 +33,8 @@ BUILD_LOG_NAME = "build_output.log"
 TEST_INSTALL_RETRIES = 6
 TEST_INSTALL_RETRY_DELAY = 10
 
-console = rich.console.Console()
-error_console = rich.console.Console(stderr=True)
+CONSOLE = rich.console.Console(highlight=False)
+ERROR_CONSOLE = rich.console.Console(stderr=True, highlight=False)
 
 #============================================
 
@@ -44,7 +44,7 @@ def print_step(message: str) -> None:
 	Args:
 		message: The step message to print.
 	"""
-	console.print(message, style="bold cyan")
+	CONSOLE.print(message, style="bold cyan", highlight=False, markup=False)
 
 #============================================
 
@@ -54,7 +54,7 @@ def print_info(message: str) -> None:
 	Args:
 		message: The info message to print.
 	"""
-	console.print(message, highlight=False, markup=False)
+	CONSOLE.print(message, highlight=False, markup=False)
 
 #============================================
 
@@ -64,7 +64,7 @@ def print_warning(message: str) -> None:
 	Args:
 		message: The warning message to print.
 	"""
-	console.print(message, style="yellow", highlight=False, markup=False)
+	CONSOLE.print(message, style="yellow", highlight=False, markup=False)
 
 #============================================
 
@@ -74,7 +74,7 @@ def print_error(message: str) -> None:
 	Args:
 		message: The error message to print.
 	"""
-	error_console.print(message, style="bold red")
+	ERROR_CONSOLE.print(message, style="bold red", highlight=False, markup=False)
 
 #============================================
 
@@ -85,7 +85,7 @@ def fail(message: str) -> None:
 		message: The error message to print.
 	"""
 	print_error(message)
-	raise SystemExit(1)
+	raise RuntimeError(message)
 
 #============================================
 
