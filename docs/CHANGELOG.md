@@ -1,5 +1,29 @@
 # Changelog
 
+## 2026-06-10
+
+### Fixes and Maintenance
+- Corrected [problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md](../problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md):
+  corrected the stale module name `pedigree_graph_parse_lib` to
+  `pedigree_lib/graph_parse.py` and its compiler function to `compile_graph_spec_to_code()`;
+  clarified that `LayoutGraph` is not a Python class and not a persisted data structure --
+  it is only a conceptual label for an intermediate layout step computed inside graph_parse.py;
+  completed the library-roles table with five previously omitted modules
+  (`genetic_assignment.py`, `genetic_validation.py`, `label_strings.py`,
+  `graph_spec.py`, `code_render.py`); deduplicated the CodeString column layout examples;
+  removed a stale module-rename suggestion; added the entry-scripts and topology subsections;
+  added a robustness-findings subsection; ported the implemented labeling design from
+  [archive/pedigree_labeling_plan.txt](archive/pedigree_labeling_plan.txt)
+  into the "Optional label strings" section.
+- Corrected [problems/inheritance-problems/pedigrees/PEDIGREE_SPEC_v1.md](../problems/inheritance-problems/pedigrees/PEDIGREE_SPEC_v1.md):
+  updated marry-in wording and fixed the label-example connector-cell reference.
+
+### Removals and Deprecations
+- Archived the raw design sketch `problems/inheritance-problems/pedigrees/labeling_plan.txt`
+  to [archive/pedigree_labeling_plan.txt](archive/pedigree_labeling_plan.txt) via
+  `git mv`; all useful content had been ported to
+  [PEDIGREE_PIPELINE.md](../problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md).
+
 ## 2026-05-31
 
 ### Additions and New Features

@@ -86,9 +86,9 @@ A person that first appears as a union partner, has no parents listed, and is no
 
 Founder-descendant unions are allowed (incest pedigrees). A founder-undefined union is invalid. If both partners in a union are undefined, they must be listed in `F:` and treated as founders.
 
-#### Marry-in union: a union where:
-- Exactly one partner has no parents specified in the graph spec (the "undefined partner") and is not listed in `F:`, and
-- The other partner is a descendant of an `F:` founder and is defined by a previous union.
+A **marry-in union** is a union where:
+- Exactly one partner is not listed in `F:` and has no parents recorded in the spec (the "marry-in"), and
+- The other partner is already defined (either an `F:` founder or a child from an earlier union).
 
 ### Examples
 
@@ -214,12 +214,12 @@ Rules:
 One couple, two children
 
 Rows:
-- `ATB`
-- `r^d`
+- `A.B` (labels on person cells only; connector cells must be `.`)
+- `...`
 - `C.D`
 
 LabelString:
-- `ATB%r^d%C.D`
+- `A.B%...%C.D`
 
 ## 4) Reference implementation hooks
 

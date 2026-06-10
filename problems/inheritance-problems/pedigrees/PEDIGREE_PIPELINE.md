@@ -14,6 +14,16 @@ from rendering and makes both HTML and PNG outputs consistent.
 - CodeString is a compact layout serialization, not a family graph.
 - Renderers are pure transforms from CodeString.
 
+## Recent milestones (2026-06-10)
+- Corrected module and type references in this doc to match shipped code.
+- Added "Entry scripts and execution paths" section documenting the
+  static-template vs dynamic-graph split across the three entry scripts.
+- Moved min/max_individuals and max_size_spread scoping to the random entry script.
+- Completed library-roles list with five previously omitted modules.
+- Folded implemented labeling design from the now-archived sketch
+  (docs/archive/pedigree_labeling_plan.txt) into the "Optional label strings" section.
+- Added "Robustness findings" subsection for follow-up code work.
+
 ## Recent milestones (2026-01-11)
 - Fixed `mirror_pedigree()` to pad rows to equal length before reversing,
   preserving vertical connector alignment in mirrored pedigrees.
@@ -22,16 +32,9 @@ from rendering and makes both HTML and PNG outputs consistent.
 - Added `strip_empty_columns()` to remove columns that are entirely empty (dots)
   across all rows, producing more compact pedigree output.
 - Added balanced complexity support for matching questions with `min_individuals`,
-  `max_individuals`, and `max_size_spread` parameters.
+  `max_individuals`, and `max_size_spread` parameters (specific to
+  `write_pedigree_match_random.py`; see "Entry scripts and execution paths").
 - Added comprehensive pytest coverage for layout centering and code transformations.
-
-## Recent milestones (2025-12-27)
-- Stabilized pedigree graph spec rules: founder definition, sex inference, and
-  male-first union normalization.
-- Fixed CodeString row-parity handling (empty rows preserved as `.`).
-- Improved layout compilation to produce canonical `#To`, `r^d`, and compact
-  sibship connectors.
-- Hardened validation rules (vertical descent checks and connector endpoints).
 
 ## Canonical internal representation
 ### PedigreeGraph
@@ -81,17 +84,18 @@ PedigreeGraph should never encode layout or rendering details.
 - Approach: simulate inheritance. If constraints fail, resample founder
   genotypes or transmissions until constraints pass.
 
-### 3) Layout engine
+### 3) Layout (conceptual layer, not a Python class)
 - Input: PedigreeGraph.
-- Output: LayoutGraph with x,y positions and connector routing.
+- Output: grid positions and connector routing, computed internally inside
+  `pedigree_lib/graph_parse.py` and emitted directly to CodeString.
 
-#### LayoutGraph definition
-- LayoutGraph is a grid-based geometry layer (node placements plus routed
-  connector segments) with no genetics or pedigree semantics.
-- Layout is deterministic and cacheable for a given graph.
+NOTE: There is no `LayoutGraph` Python class in the codebase. Layout is computed
+inside `graph_parse.py` as an intermediate step and is never persisted as a
+named data structure. The term "layout" here names the conceptual transformation
+only.
 
 ### 4) CodeString encoding
-- Input: LayoutGraph and a CodeSpec (pedigree_code alphabet).
+- Input: layout computed inside `pedigree_lib/graph_parse.py` (see stage 3).
 - Output: CodeString grid with `%` row separators.
 
 ### 5) Renderers
@@ -100,8 +104,55 @@ PedigreeGraph should never encode layout or rendering details.
 - Renderers are pure transforms and never change genetics or structure.
 
 ### Implementation note
-- `pedigree_graph_parse_lib.compile_graph_spec_to_code()` performs the internal
+- `pedigree_lib/graph_parse.compile_graph_spec_to_code(spec_string,
+  show_carriers=True)` (defined at `graph_parse.py:594`) performs the internal
   graph-spec parse and layout compile to CodeString.
+- This function is the only public entry point for the dynamic-graph path.
+
+## Entry scripts and execution paths
+The three entry scripts use two distinct execution paths. They are intentionally
+different until a follow-up code plan decides whether to converge them.
+
+### Static-template path
+Used by: `write_pedigree_choice.py` and `write_pedigree_match.py`.
+
+These scripts pick pedigree code strings from pre-authored lists in
+`pedigree_lib/code_templates.py`, optionally call
+`pedigree_lib.code_definitions.mirror_pedigree()`, then render with
+`pedigree_lib.html_output.translateCode()`. They never call graph compile,
+skeleton generation, or genetics validation. The pipeline stages 1-3 above do
+not run for these scripts.
+
+### Dynamic-graph path
+Used by: `write_pedigree_match_random.py`.
+
+This script generates pedigrees from scratch by calling `pedigree_lib/graph_parse`
+(compile), `pedigree_lib/validation` (syntax), and `pedigree_lib/mode_validate`
+(genetics). The full five-stage pipeline runs for each pedigree generated.
+
+#### Complexity knobs (dynamic path only)
+The following parameters are specific to `write_pedigree_match_random.py`:
+
+- `min_individuals` (line 56): minimum individual count filter (optional).
+- `max_individuals` (line 57): maximum individual count filter (optional).
+- `max_size_spread` (line 139): maximum individual-count difference allowed
+  across pedigrees in a matched set.
+
+These parameters are defined in the function `generate_valid_pedigree()` (lines
+56-57) and `generate_pedigree_set()` (lines 137-139). They have no effect on the
+static-template scripts.
+
+### Quality knobs and scoring (design intent, not yet implemented)
+The items below describe aspirational behavior, not current code. They are
+recorded here to seed a follow-up implementation plan.
+
+- Mode-consistency score (must be perfect).
+- Diagnostic features score (presence of telltale edges).
+- Visual clutter score (node count, crossings, density).
+- Diversity score across a batch (avoid near-duplicates).
+
+### Acceptance loop (design intent, not yet implemented)
+Generate -> label -> validate -> score -> accept if above threshold.
 
 ## Validation
 Validation is intentionally layered.
@@ -128,8 +179,8 @@ only for legacy or template-only inputs.
 
 ## CodeString and CodeSpec
 ### CodeString as layout serialization
-The CodeString format is a compact grid encoding of the LayoutGraph. It is not a
-family graph. It should not be treated as the primary source of truth for
+The CodeString format is a compact grid encoding of the pedigree layout. It is not
+a family graph. It should not be treated as the primary source of truth for
 inheritance logic.
 
 ### CodeSpec
@@ -142,14 +193,47 @@ CodeSpec defines the CodeString alphabet and rules for parsing and encoding.
 ## Optional label strings
 Labels are stored as a parallel grid with the same row/column structure as the
 CodeString. A label grid uses `.` for empty cells and `A-Z` (and optionally
-`a-z`) for person labels. Labels must align with person cells only.
+`a-z`) for person labels. Labels must align with person cells only; a validator
+enforces this.
 
-Renderers (HTML/PNG/SVG) accept an optional `label_string` and draw labels inside
-person shapes.
+This labeling design is fully implemented in `pedigree_lib/label_strings.py` and
+the renderers. The design is:
+
+### Two-grid bundle
+- `code_string`: the current grid alphabet (`#`, `o`, `T`, `|`, `.`, `%`, etc.).
+- `label_string`: same rows and columns, but `.` means no label and `A-Z` (and
+  optionally `a-z`) are person labels. Same `%` row separator.
+
+Example:
+- `code_string` row: `..#-o..`
+- `label_string` row: `..A.B..` (labels placed on person cells only)
+
+### Labeling rules
+- Labels are only meaningful on person cells. Connector cells must have `.`.
+- The `label_string` must have the same row count and row lengths as `code_string`.
+- No duplicate labels within one pedigree.
+- Auto-label assignment is deterministic (generation order, left-to-right per row).
+
+### Renderer support
+Renderers accept an optional `label_string` parameter and draw labels inside
+person shapes:
+- `pedigree_lib/html_output.translateCode(code_string, label_string=None)`:
+  renders a person cell with a positioned label overlay.
+- `pedigree_lib/html_output.make_pedigree_html(code_string, label_string=None)`.
+- `pedigree_lib/svg_output.make_pedigree_svg(code_string, label_string=None)`:
+  adds a centered `<text>` element after the person shape; uses contrast rule
+  (white text on filled shapes).
+- `pedigree_lib/svg_output.save_pedigree_png(code_string, label_string=None)`.
+
+### Label API (implemented in label_strings.py)
+- `make_label_string(code_string, label_positions)` -> `str`: builds a label
+  string from a dict mapping `(row, col)` grid positions to label characters.
+- `assign_labels(label_count)` -> `list[str]`: generates a deterministic ordered
+  label list.
 
 ### Simple, valid CodeString examples
-These examples are intentionally small and are valid under the row-parity rules
-below. Rows are separated by `%`. A trailing `%` is not required.
+These examples are intentionally small and are valid under the row-parity rules.
+Rows are separated by `%`. A trailing `%` is not required.
 
 1) One couple, one child
 - Meaning: parents with a single male child in the next generation.
@@ -168,7 +252,8 @@ below. Rows are separated by `%`. A trailing `%` is not required.
 - CodeString (single string): `#To%r^d%#.o`
 
 3) Two-generation chain (child marries and has a child)
-- Meaning: gen1 couple has one child; that child forms a couple in gen2 and has one child in gen3.
+- Meaning: gen1 couple has one child; that child forms a couple in gen2 and
+  has one child in gen3.
 - CodeString (rows shown):
   - `#To..`
   - `.|...`
@@ -237,35 +322,6 @@ unaffected shapes.
 - All rows are padded to equal length with `.` before rendering to HTML or PNG.
 - Empty rows are encoded as a single `.` to preserve row parity.
 
-### Simple, valid CodeString examples
-These examples are intentionally small and valid under the row-parity rules.
-Rows are separated by `%`. A trailing `%` is not required.
-
-1) One couple, one child
-- Meaning: parents with a single male child in the next generation.
-- Rows:
-  - `#To`
-  - `.|.`
-  - `.#.`
-- CodeString: `#To%.|%.#.`
-
-2) One couple, two children
-- Meaning: parents with two children in the next generation.
-- Rows:
-  - `#To`
-  - `r^d.`
-  - `#.o`
-- CodeString: `#To%r^d.%#.o`
-
-3) Two-generation chain (child marries and has a child)
-- Meaning: gen1 couple has one child; that child forms a couple in gen2 and has one child in gen3.
-- Rows:
-  - `#To..`
-  - `.|...`
-  - `.#To.`
-  - `..|..`
-  - `..o..`
-- CodeString: `#To..%.|...%.#To.%..|..%..o..`
 ## Pedigree graph spec
 ### Pedigree graph spec string format
 This is a compact, self-delimiting, union-based pedigree graph spec string.
@@ -318,18 +374,6 @@ This is a compact, self-delimiting, union-based pedigree graph spec string.
 - Use `pedigree_code_string` for the grid and layout encoding.
 - Use `pedigree_graph_spec` for the union-based formalism.
 
-## Quality knobs and scoring
-Randomness is easy. Diagnostic clarity is hard. Use scoring and rejection.
-
-### Example scores
-- Mode-consistency score (must be perfect).
-- Diagnostic features score (presence of telltale edges).
-- Visual clutter score (node count, crossings, density).
-- Diversity score across a batch (avoid near-duplicates).
-
-### Acceptance loop
-Generate -> label -> validate -> score -> accept if above threshold.
-
 ## Compatibility
 - CodeString rendering and HTML/PNG outputs remain stable across generator changes.
 - PedigreeGraph and inheritance assignment can evolve independently of renderers.
@@ -366,27 +410,78 @@ For pedigrees where this is visually problematic, consider:
 
 ## Library roles (current files)
 Each library is intentionally narrow and maps to a pipeline layer or cross-cutting
-validation. These names are stable in code. Rename suggestions are listed after.
+validation. These names are stable in code.
 
-### Libraries
+### Core pipeline libraries
 - `pedigree_lib/graph_parse.py`: internal graph types plus compile step from
-  graph spec to code-string layout (intermediate only).
+  graph spec to code-string layout (intermediate only); entry point is
+  `compile_graph_spec_to_code(spec_string, show_carriers=True)` (line 594).
+- `pedigree_lib/graph_spec.py`: dataclasses and parser for the pedigree graph
+  spec string format (IndividualIR and related structures).
 - `pedigree_lib/skeleton.py`: procedural skeleton generation (structure only).
 - `pedigree_lib/inheritance_assign.py`: inheritance-mode phenotype assignment.
-- `pedigree_lib/code_definitions.py`: CodeSpec, code alphabet, mirroring, and encode/decode helpers.
+- `pedigree_lib/genetic_assignment.py`: per-mode genotype assignment logic keyed
+  on allele constants (autosomal dominant/recessive, X-linked, Y-linked).
+- `pedigree_lib/genetic_validation.py`: genetics consistency checks on the
+  PedigreeGraph structure (uses `validation.py` for code-level checks).
+- `pedigree_lib/code_definitions.py`: CodeSpec, code alphabet, mirroring, and
+  encode/decode helpers.
+- `pedigree_lib/code_render.py`: CLI-style render driver that delegates to
+  `html_output`, `svg_output`, and `validation`; not a library for generators.
 - `pedigree_lib/validation.py`: CodeString syntax validation.
 - `pedigree_lib/mode_validate.py`: inheritance-mode validation (PedigreeGraph-first).
-- `pedigree_lib/html_output.py`: HTML renderer (CodeString -> HTML).
-- `pedigree_lib/svg_output.py`: SVG renderer plus SVG-to-PNG conversion (CodeString -> SVG/PNG).
-- `pedigree_lib/template_generator.py`: template-based pedigree selection (CodeString output).
+- `pedigree_lib/label_strings.py`: builds and validates the parallel label grid;
+  `make_label_string()` and `assign_labels()`.
+- `pedigree_lib/html_output.py`: HTML renderer (CodeString -> HTML); accepts
+  optional `label_string` parameter.
+- `pedigree_lib/svg_output.py`: SVG renderer plus SVG-to-PNG conversion
+  (CodeString -> SVG/PNG); accepts optional `label_string` parameter.
+- `pedigree_lib/template_generator.py`: template-based pedigree selection
+  (CodeString output).
 - `pedigree_lib/code_templates.py`: template library (static CodeStrings).
 
-### CLI
-- `preview_pedigree.py`: CLI for batch preview (HTML/PNG/code strings).
+### Internal helpers
+- `pedigree_lib/__init__.py`: package marker only (empty).
+- `pedigree_lib/preview_pedigree.py`: internal library helper for batch preview,
+  uses `graph_parse` and `code_definitions`; not a top-level entry script.
 
-## Possible naming improvements
-These are suggestions only. They are not required by the pipeline.
+### Top-level entry scripts
+- `write_pedigree_choice.py`, `write_pedigree_match.py`,
+  `write_pedigree_match_random.py`: the three runnable generators (see "Entry
+  scripts and execution paths" above for their paths and behavior).
 
-- `pedigree_lib/graph_parse.py` -> `pedigree_lib/skeleton.py` (if it stays focused
-  on structure generation).
-- `preview_pedigree.py` -> `cli_preview_pedigree.py` (distinguish CLI entry points).
+## Robustness findings (for follow-up code work)
+These observations are descriptive only. No code changes are made in this pass.
+They are recorded here to seed the follow-up code work the user requested.
+
+### Entry-script divergence: static vs dynamic paths
+The two execution paths (see "Entry scripts and execution paths") have never been
+unified. `write_pedigree_choice.py` and `write_pedigree_match.py` bypass the
+graph-compile and genetics layers entirely. Whether this is intentional legacy
+simplicity or an unfinished migration is an open question. The divergence is
+documented as intentional until a follow-up code plan explicitly decides.
+
+### Unimplemented function: compile_graph_spec_to_code_and_labels()
+The archived design sketch (docs/archive/pedigree_labeling_plan.txt) proposed:
+
+```
+compile_graph_spec_to_code_and_labels(spec, ...) -> (code_string, label_string, label_map)
+```
+
+This function does not exist in the codebase. Only
+`compile_graph_spec_to_code(spec_string, show_carriers=True)` is implemented
+(graph_parse.py:594). Whether to add a combined compiler that also produces the
+label grid is an open design question. A combined API is justified only if multiple
+generators need coordinated CodeString-plus-labels together; otherwise manual
+coordination using `label_strings.make_label_string()` after the fact is the
+existing approach. This is not a planned interface; it is an open design question
+for a follow-up code plan.
+
+### Open question: should choice/match adopt the dynamic path?
+The static-template scripts (`write_pedigree_choice.py` and
+`write_pedigree_match.py`) pick from pre-authored lists, which limits variety and
+requires manual curation of `code_templates.py`. The dynamic-graph path in
+`write_pedigree_match_random.py` generates arbitrary valid pedigrees. Whether the
+static scripts should be migrated to the dynamic path is not resolved here.
+The two paths should be treated as intentionally divergent until a follow-up code
+plan defines the desired user-facing behavior.
