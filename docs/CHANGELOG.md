@@ -1,5 +1,50 @@
 # Changelog
 
+## 2026-06-23
+
+### Additions and New Features
+- Added [devel/ultra_classic_showcase.py](../devel/ultra_classic_showcase.py): a local
+  orchestrator that demonstrates the difference between Blackboard Classic and Blackboard
+  Ultra HTML sanitization. It runs five question generators that each rely on inline HTML
+  that Classic keeps but Ultra strips (inline `color:` text in
+  [monohybrid_degrees_of_dominance.py](../problems/inheritance-problems/monohybrid_degrees_of_dominance.py);
+  table-cell `border-*` ring drawing in
+  [classify_Haworth.py](../problems/biochemistry-problems/carbs/classify_Haworth.py);
+  Punnett `background-color` answer key in
+  [dihybrid_cross_epistatic_gene_metabolics.py](../problems/inheritance-problems/epistasis/dihybrid_cross_epistatic_gene_metabolics.py);
+  positional deletion-map bars in
+  [deletion_mutant_random.py](../problems/inheritance-problems/deletion_mutants/deletion_mutant_random.py);
+  and a simple genetics matching set via
+  [yaml_match_to_bbq.py](../problems/matching_sets/yaml_match_to_bbq.py) on
+  [inheritance/degrees_of_dominance.yml](../problems/matching_sets/inheritance/degrees_of_dominance.yml)).
+  It generates two questions from each generator, concatenates the ten into one BBQ upload
+  file under `output_showcase/`, and converts that file to QTI v2.1 via
+  qti-package-maker's `tools/bbq_converter.py` (using `--allow-mixed` because the set mixes
+  MC and MA item types). Anti-cheat features are disabled for every generator
+  (`--no-hidden-terms --allow-click`) so the hidden decoy terms and no-click div
+  wrapper do not pollute the HTML being compared between Classic and Ultra.
+
+### Decisions and Failures
+- Dropped `titration_pI.py` from the showcase set: its CSS-drawn titration curve breaks on
+  Blackboard Classic too, so it shows no Classic-vs-Ultra difference. Also rejected an
+  rdkit.js example because inline `<script>` is stripped by both Classic and Ultra, again
+  yielding no contrast. PNG-image fallbacks were rejected as showcase items because the
+  user's pipeline does not upload images to Blackboard.
+- Diagnosed why the first showcase build imported only 8 of 10 items into Blackboard Ultra:
+  the two pedigree matching (MAT) items were dropped. Root cause is the import route, not a
+  general Ultra limit. Blackboard's two import paths support different type sets: Question
+  Bank import supports Matching, but QTI v2.1 **package** import supports only Multiple
+  Choice, Fill-in-the-Blank, Essay, and True/False, so Matching is removed on QTI import
+  (and Multiple Answer is converted to multi-select Multiple Choice, which is why the two
+  Haworth MA items survived as MC). Sources: Blackboard help "Question banks"
+  (https://help.anthology.com/blackboard/instructor/en/assessments/questions/reuse-questions/question-banks.html)
+  and "QTI packages"
+  (https://help.anthology.com/blackboard/instructor/en/assessments/questions/reuse-questions/qti-packages.html).
+  Replaced the pedigree matching generator with a minimal genetics matching set
+  (`yaml_match_to_bbq.py` on `degrees_of_dominance.yml`) so the QTI matching-drop is
+  reproduced with a simple, non-HTML matching item, isolating the type limitation from any
+  pedigree-specific HTML.
+
 ## 2026-06-10
 
 ### Fixes and Maintenance
