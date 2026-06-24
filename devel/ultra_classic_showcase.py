@@ -3,24 +3,32 @@
 """
 Generate a Blackboard Classic vs Blackboard Ultra HTML-sanitization showcase.
 
-Runs five biology-problems question generators, each of which emits inline HTML
-that Blackboard Classic renders correctly but Blackboard Ultra's HTML sanitizer
-strips or flattens. Two questions are produced from each generator, the ten
-questions are concatenated into a single BBQ upload file, and that file is then
-converted to two packages with qti-package-maker's bbq_converter tool: a QTI v2.1
-package and a Blackboard pool export ZIP.
+Runs ten biology-problems question generators spanning six question types (MC,
+MA, MATCH, FIB, MULTI_FIB, NUM). Several emit inline HTML that Blackboard Classic
+renders correctly but Blackboard Ultra's HTML sanitizer strips or flattens. Two
+questions are produced from each generator, then grouped by question type and each
+type converted to its own pair of packages with qti-package-maker's bbq_converter
+tool: a QTI v2.1 package and a Blackboard pool export ZIP. Grouping by type gives
+one Ultra bank per question type. All questions are also gathered into one combined
+BBQ file (single Blackboard Classic upload) and one complete showcase package (one
+QTI v2.1 + one Blackboard pool export holding every type).
 
-The five generators and the CSS feature each one depends on:
-  1. monohybrid_degrees_of_dominance   color: text spans (inline style)
-  2. classify_Haworth                  table spacing / border-* (ring drawing)
-  3. dihybrid_cross_epistatic_metabolics background-color (Punnett answer key)
-  4. deletion_mutant_random            width/position bars (deletion map)
-  5. write_pedigree_match_random       background-color + border (symbol fill)
+The ten generators, their question type, and the feature each demonstrates:
+   1. monohybrid_degrees_of_dominance      MC    color: text spans (inline style)
+   2. classify_Haworth                     MC    table spacing / border-* (ring)
+   3. dihybrid_cross_epistatic_metabolics  MA/MC background-color (Punnett key)
+   4. deletion_mutant_random               MC    width/position bars (deletion map)
+   5. yaml_match_to_bbq (degrees_of_dominance) MATCH  QTI drops matching on import
+   6. overhang_sequence                    FIB   restriction overhang sequence
+   7. three-point_test_cross-distances_plus MULTI_FIB  gene order + map distances
+   8. protein_gel_migration                NUM   protein MW from migration
+   9. kaleidoscope_ladder_unknown_band     NUM   ladder MW (percent tolerance)
+  10. two-point_test_cross-distance        NUM   genetics map distance (cM)
 
-Upload the BBQ file to Blackboard Classic and the QTI v2.1 package to Blackboard
-Ultra, then compare the rendered questions to see the sanitization differences.
-The QTI v2.1 import drops the Matching question; the Blackboard pool export ZIP,
-imported through Ultra's Import Pool / Import from file door, carries Matching in.
+Upload the BBQ file to Blackboard Classic and the packages to Blackboard Ultra,
+then compare. HTML generators show the sanitization differences; the QTI v2.1
+import drops the Matching question, while the Blackboard pool export ZIP, imported
+through Ultra's Import Pool / Import from file door, carries every type in.
 """
 
 import os
@@ -64,6 +72,41 @@ GENERATORS = [
 		'input_file': 'problems/matching_sets/inheritance/degrees_of_dominance.yml',
 		'extra_args': [],
 	},
+	{
+		# Plain Fill-in-the-Blank: restriction-enzyme overhang sequence. Matches the
+		# real Blackboard sample Ch02.4 Overhang_Sequence_FiB.
+		'label': '6_fib_overhang_sequence',
+		'script': 'problems/molecular_biology-problems/overhang_sequence.py',
+		'extra_args': ['--fib'],
+	},
+	{
+		# Multi-blank Fill-in-the-Blank (Plus): three-point test cross gene order and
+		# distances. Matches the real Blackboard sample Ch05.3 Three-Point ... Plus.
+		'label': '7_multifib_three_point_cross',
+		'script': 'problems/inheritance-problems/gene_mapping/three-point_test_cross-distances_plus.py',
+		'extra_args': [],
+	},
+	{
+		# Numeric entry: protein molecular weight from gel migration. Matches the real
+		# Blackboard sample Ch05 Gel Migration Calc Numeric.
+		'label': '8_num_protein_gel_migration',
+		'script': 'problems/biochemistry-problems/electrophoresis/protein_gel_migration.py',
+		'extra_args': ['--num'],
+	},
+	{
+		# Numeric entry: unknown band molecular weight from a Kaleidoscope ladder
+		# (biochem electrophoresis). Percent-based tolerances exercise another shape.
+		'label': '9_num_kaleidoscope_ladder',
+		'script': 'problems/biochemistry-problems/electrophoresis/kaleidoscope_ladder/kaleidoscope_ladder_unknown_band.py',
+		'extra_args': ['--num'],
+	},
+	{
+		# Numeric entry: map distance (cM) from a two-point test cross (genetics).
+		# Genetics test crosses are a natural numeric-answer source.
+		'label': '10_num_two_point_test_cross',
+		'script': 'problems/inheritance-problems/gene_mapping/two-point_test_cross-distance.py',
+		'extra_args': ['--num'],
+	},
 ]
 
 # Two questions from every generator.
@@ -75,6 +118,18 @@ OUTPUT_DIRNAME = 'output_showcase'
 # Combined BBQ filename must match bbq_converter's expected
 # "bbq-(core_name)-questions.txt" pattern.
 COMBINED_CORE_NAME = 'ultra_classic_showcase'
+
+# Map each BBQ leading type token to a readable question-type name. The output is
+# grouped by question type, and each type name becomes the Ultra bank name. ORDER is
+# intentionally absent: it is out of scope and known to fail on Blackboard import.
+TYPE_NAMES = {
+	'MC': 'MC',
+	'MA': 'MA',
+	'MAT': 'MATCH',
+	'NUM': 'NUM',
+	'FIB': 'FIB',
+	'FIB_PLUS': 'MULTI_FIB',
+}
 
 #======================================
 def get_repo_root() -> str:
@@ -163,11 +218,24 @@ def read_bbq_text(bbq_file: str) -> str:
 	return text
 
 #======================================
-def convert_packages(combined_bbq_path: str, qti_maker_dir: str, output_dir: str, env: dict):
+def write_named_bbq(text: str, core_name: str, output_dir: str) -> str:
 	"""
-	Convert the combined BBQ file to two packages in one bbq_converter call:
-	QTI v2.1 (shows Matching dropped on import) and the Blackboard pool export
-	ZIP (carries Matching into Ultra via Import Pool / Import from file).
+	Write BBQ text to a uniquely-named file matching bbq_converter's expected
+	"bbq-(core_name)-questions.txt" pattern, and return its path. The core name
+	becomes the package/bank name inside Blackboard, so a unique core name per
+	upload keeps the Ultra banks from colliding.
+	"""
+	bbq_path = os.path.join(output_dir, f"bbq-{core_name}-questions.txt")
+	with open(bbq_path, 'w') as f:
+		f.write(text)
+	return bbq_path
+
+#======================================
+def convert_one(bbq_path: str, qti_maker_dir: str, output_dir: str, env: dict):
+	"""
+	Convert one BBQ file to both packages in a single bbq_converter call: QTI v2.1
+	(drops Matching on Ultra import) and the Blackboard pool export ZIP (carries
+	Matching into Ultra via Import Pool / Import from file).
 	"""
 	converter = os.path.join(qti_maker_dir, 'tools', 'bbq_converter.py')
 	if not os.path.isfile(converter):
@@ -175,13 +243,20 @@ def convert_packages(combined_bbq_path: str, qti_maker_dir: str, output_dir: str
 
 	# "-2" selects the Blackboard QTI v2.1 engine; "-B" selects the Blackboard
 	# pool export ZIP engine. The converter appends both into one output list, so a
-	# single call emits both packages. "--allow-mixed" is required because the
-	# showcase deliberately mixes MC, MA, and MAT question types.
-	command = [sys.executable, converter, '-i', combined_bbq_path, '-2', '-B', '--allow-mixed']
-	print("\n=== Converting combined BBQ to QTI v2.1 and Blackboard pool export ZIP ===")
+	# single call emits both packages. "--allow-mixed" is required because some
+	# per-generator sets mix question types (the epistasis set emits MA alongside MC).
+	command = [sys.executable, converter, '-i', bbq_path, '-2', '-B', '--allow-mixed']
 	print("    " + " ".join(command))
 	# Run in the output dir so both package zips are written alongside the BBQ.
 	subprocess.run(command, cwd=output_dir, env=env, check=True)
+
+#======================================
+def clean_prior_outputs(output_dir: str):
+	"""Remove this script's prior top-level outputs so each run leaves a clean set."""
+	patterns = ['bbq-*-questions.txt', 'qti21-*.zip', 'blackboard_export_zip-*.zip']
+	for pattern in patterns:
+		for path in glob.glob(os.path.join(output_dir, pattern)):
+			os.remove(path)
 
 #======================================
 def main():
@@ -193,34 +268,56 @@ def main():
 			f"qti-package-maker repo not found alongside this repo at: {qti_maker_dir}"
 		)
 
-	# Prepare output directory (stable name, overwritten each run).
+	# Prepare output directory (stable name) and clear prior outputs each run.
 	output_dir = os.path.join(repo_root, OUTPUT_DIRNAME)
 	parts_dir = os.path.join(output_dir, 'parts')
 	os.makedirs(parts_dir, exist_ok=True)
+	clean_prior_outputs(output_dir)
 
 	env = build_subprocess_env(repo_root, qti_maker_dir)
 
-	# Generate each set and gather the BBQ text in showcase order.
+	# Run every generator, collect all BBQ lines, and group them by question type.
+	# Each type (MC, MA, MATCH, ...) becomes its own uniquely-named pair of Ultra
+	# packages, so the Ultra banks are grouped by question type rather than by
+	# generator title. All lines are also gathered into one combined BBQ for a
+	# single Blackboard Classic upload.
 	combined_text = ''
+	lines_by_type = {}
 	for generator in GENERATORS:
 		bbq_file = run_generator(generator, repo_root, parts_dir, env)
-		combined_text += read_bbq_text(bbq_file)
+		text = read_bbq_text(bbq_file)
+		combined_text += text
+		for line in text.split('\n'):
+			if not line.strip():
+				continue
+			# The BBQ leading tab field is the question-type token.
+			type_token = line.split('\t', 1)[0]
+			type_name = TYPE_NAMES[type_token]
+			lines_by_type.setdefault(type_name, []).append(line)
 
-	# Write the single combined BBQ upload file.
-	combined_name = f"bbq-{COMBINED_CORE_NAME}-questions.txt"
-	combined_bbq_path = os.path.join(output_dir, combined_name)
-	with open(combined_bbq_path, 'w') as f:
-		f.write(combined_text)
+	# Convert each question type to its own QTI v2.1 + Blackboard pool export pair,
+	# in a stable type-name order. The type name is the Ultra bank name.
+	for type_name in sorted(lines_by_type):
+		type_text = '\n'.join(lines_by_type[type_name]) + '\n'
+		per_bbq_path = write_named_bbq(type_text, type_name, output_dir)
+		count = len(lines_by_type[type_name])
+		print(f"\n=== Converting {count} {type_name} question(s) to QTI v2.1 + Blackboard pool export ===")
+		convert_one(per_bbq_path, qti_maker_dir, output_dir, env)
+
+	# Write the combined BBQ and convert it to the complete showcase package: one
+	# QTI v2.1 package and one Blackboard pool export ZIP holding every question type
+	# (the original showcase goal, alongside the per-type breakdown above).
+	combined_bbq_path = write_named_bbq(combined_text, COMBINED_CORE_NAME, output_dir)
 	question_lines = [line for line in combined_text.split('\n') if line.strip()]
-	print(f"\nWrote {len(question_lines)} questions to {combined_bbq_path}")
-
-	# Convert the combined BBQ to both QTI v2.1 and the Blackboard pool export ZIP.
-	convert_packages(combined_bbq_path, qti_maker_dir, output_dir, env)
+	print(f"\nWrote {len(question_lines)} combined questions to {combined_bbq_path}")
+	print("\n=== Converting COMPLETE showcase to QTI v2.1 + Blackboard pool export ===")
+	convert_one(combined_bbq_path, qti_maker_dir, output_dir, env)
 
 	print("\nDONE.")
-	print(f"  BBQ (Blackboard Classic upload): {combined_bbq_path}")
-	print(f"  QTI v2.1 package (shows Matching dropped on Ultra import): see {output_dir}")
-	print(f"  Blackboard pool export ZIP (Matching survives into Ultra): see {output_dir}")
+	print(f"  Combined BBQ (single Blackboard Classic upload): {combined_bbq_path}")
+	print(f"  Complete showcase package (all types): {COMBINED_CORE_NAME} QTI v2.1 + bb-export")
+	print("  Per-type QTI v2.1 + Blackboard pool export ZIPs (one Ultra bank per")
+	print(f"    question type: {', '.join(sorted(lines_by_type))}): see {output_dir}")
 
 #======================================
 if __name__ == '__main__':

@@ -25,18 +25,49 @@
   wrapper do not pollute the HTML being compared between Classic and Ultra.
 
 ### Behavior or Interface Changes
-- [devel/ultra_classic_showcase.py](../devel/ultra_classic_showcase.py) now emits a third
-  artifact. The combined BBQ file is converted to two packages in one `bbq_converter.py`
-  call (`-2 -B --allow-mixed`): the QTI v2.1 package (which drops the Matching item on Ultra
-  import) and a Blackboard pool export ZIP via the new `blackboard_export_zip` engine (`-B` /
-  `bbexport`), which carries Matching into Ultra through the Import Pool / Import from file
-  door. Renamed the converter helper from `convert_to_qti` to `convert_packages` to reflect
-  the two outputs. Verified end to end: the bb-export ZIP mirrors the real pool layout
-  (`imsmanifest.xml`, `res00001`-`res00007`, `.bb-*` sidecars, `csfiles/`), the
-  `.bb-package-sig` is omitted (server-side, not reproducible), and the pool carries all ten
-  items including the two Matching items (item-level types 6 MC + 2 MA + 2 MAT, matching the
-  QTI side; the pool also repeats `bbmd_questiontype` at the pool/section level as genuine
-  Blackboard exports do).
+- [devel/ultra_classic_showcase.py](../devel/ultra_classic_showcase.py) now groups the generated
+  questions by question type and converts each type into its own pair of packages, instead of one
+  combined conversion. After running every generator it groups all BBQ lines by their leading type
+  token (via a `TYPE_NAMES` map: MC, MA, MAT->MATCH, NUM, FIB, FIB_PLUS->MULTI_FIB, ORD->ORDER),
+  writes `bbq-<TYPE>-questions.txt`, and runs `bbq_converter.py` with `-2 -B --allow-mixed` to emit
+  both a QTI v2.1 package and a Blackboard pool export ZIP via the `blackboard_export_zip` engine
+  (`-B` / `bbexport`). This yields one Ultra bank per question type (`MC`, `MA`, `MATCH`), with
+  short type-named files, so banks are grouped by type rather than by generator title. All
+  questions are also gathered into one combined `bbq-ultra_classic_showcase-questions.txt` for a
+  single Blackboard Classic upload. New helpers: `write_named_bbq`, `convert_one`, and
+  `clean_prior_outputs` (clears prior `bbq-*`, `qti21-*`, `blackboard_export_zip-*` files each run
+  so the output folder stays clean), replacing the prior `convert_packages`. The QTI v2.1 package
+  does contain the Matching items, but Blackboard Ultra's QTI-package import drops Matching (the
+  earlier 8-of-10 result); the Blackboard pool export carries Matching into Ultra through the
+  Import Pool / Import from file door.
+- Expand [devel/ultra_classic_showcase.py](../devel/ultra_classic_showcase.py) to eight generators
+  spanning all six supported question types (was five, covering MC/MA/MATCH only). Added FIB
+  ([overhang_sequence.py](../problems/molecular_biology-problems/overhang_sequence.py) `--fib`,
+  matching the real Ch02.4 Overhang sample), MULTI_FIB
+  ([three-point_test_cross-distances_plus.py](../problems/inheritance-problems/gene_mapping/three-point_test_cross-distances_plus.py),
+  matching the real Ch05.3 Three-Point sample), and NUM
+  ([protein_gel_migration.py](../problems/biochemistry-problems/electrophoresis/protein_gel_migration.py)
+  `--num`, matching the real Ch05 Gel Migration sample). The showcase now emits one Ultra bank per
+  type (MC, MA, MATCH, FIB, MULTI_FIB, NUM) plus a complete combined showcase package
+  (`ultra_classic_showcase` QTI v2.1 + Blackboard pool export) holding all six types in one
+  package (the original showcase goal). The complete bb-export verified to carry all sixteen items
+  (6 MC + 2 MA + 2 MATCH + 2 FIB + 2 MULTI_FIB + 2 NUM) with the corrected MATCH `RIGHT_MATCH_BLOCK`
+  placement. NUM, FIB, and MULTI_FIB confirmed rendering correctly on live Blackboard Ultra import.
+  ORDER is intentionally excluded from the showcase `TYPE_NAMES` map (out of scope and known to fail
+  on Blackboard import), so an ORDER question would raise loudly rather than emit a failing bank.
+- Expand the numeric (NUM) corpus in [devel/ultra_classic_showcase.py](../devel/ultra_classic_showcase.py)
+  from one to three NUM generators so the NUM bank carries six varied numeric examples for testing the
+  Blackboard numeric format: protein molecular weight from gel migration (decimal answers, fixed
+  tolerance), unknown-band molecular weight from a Kaleidoscope ladder
+  ([kaleidoscope_ladder_unknown_band.py](../problems/biochemistry-problems/electrophoresis/kaleidoscope_ladder/kaleidoscope_ladder_unknown_band.py),
+  percent-based tolerance), and genetics map distance from a two-point test cross
+  ([two-point_test_cross-distance.py](../problems/inheritance-problems/gene_mapping/two-point_test_cross-distance.py)
+  `--num`, integer answers with a tight tolerance). The spread (small/large decimals, percent vs fixed
+  tolerance, near-exact integers) stresses different numeric encodings. Evaluated and rejected
+  `dna_gel-estimate_size-MC_or_NUM.py` as a fourth NUM source: it intermittently raises
+  `ValueError: Distance less than zero.` on some random draws, and the showcase runs all generators
+  with `check=True`, so a flaky generator aborts the whole run. Confirmed the remaining set stable
+  across five consecutive runs.
 
 ### Decisions and Failures
 - Dropped `titration_pI.py` from the showcase set: its CSS-drawn titration curve breaks on
