@@ -7,7 +7,8 @@ Runs five biology-problems question generators, each of which emits inline HTML
 that Blackboard Classic renders correctly but Blackboard Ultra's HTML sanitizer
 strips or flattens. Two questions are produced from each generator, the ten
 questions are concatenated into a single BBQ upload file, and that file is then
-converted to QTI v2.1 with qti-package-maker's bbq_converter tool.
+converted to two packages with qti-package-maker's bbq_converter tool: a QTI v2.1
+package and a Blackboard pool export ZIP.
 
 The five generators and the CSS feature each one depends on:
   1. monohybrid_degrees_of_dominance   color: text spans (inline style)
@@ -18,6 +19,8 @@ The five generators and the CSS feature each one depends on:
 
 Upload the BBQ file to Blackboard Classic and the QTI v2.1 package to Blackboard
 Ultra, then compare the rendered questions to see the sanitization differences.
+The QTI v2.1 import drops the Matching question; the Blackboard pool export ZIP,
+imported through Ultra's Import Pool / Import from file door, carries Matching in.
 """
 
 import os
@@ -160,18 +163,24 @@ def read_bbq_text(bbq_file: str) -> str:
 	return text
 
 #======================================
-def convert_to_qti(combined_bbq_path: str, qti_maker_dir: str, output_dir: str, env: dict):
-	"""Convert the combined BBQ file to QTI v2.1 via bbq_converter."""
+def convert_packages(combined_bbq_path: str, qti_maker_dir: str, output_dir: str, env: dict):
+	"""
+	Convert the combined BBQ file to two packages in one bbq_converter call:
+	QTI v2.1 (shows Matching dropped on import) and the Blackboard pool export
+	ZIP (carries Matching into Ultra via Import Pool / Import from file).
+	"""
 	converter = os.path.join(qti_maker_dir, 'tools', 'bbq_converter.py')
 	if not os.path.isfile(converter):
 		raise FileNotFoundError(f"bbq_converter not found: {converter}")
 
-	# "-2" selects the Blackboard QTI v2.1 output engine. "--allow-mixed" is
-	# required because the showcase deliberately mixes MC and MA question types.
-	command = [sys.executable, converter, '-i', combined_bbq_path, '-2', '--allow-mixed']
-	print("\n=== Converting combined BBQ to QTI v2.1 ===")
+	# "-2" selects the Blackboard QTI v2.1 engine; "-B" selects the Blackboard
+	# pool export ZIP engine. The converter appends both into one output list, so a
+	# single call emits both packages. "--allow-mixed" is required because the
+	# showcase deliberately mixes MC, MA, and MAT question types.
+	command = [sys.executable, converter, '-i', combined_bbq_path, '-2', '-B', '--allow-mixed']
+	print("\n=== Converting combined BBQ to QTI v2.1 and Blackboard pool export ZIP ===")
 	print("    " + " ".join(command))
-	# Run in the output dir so the QTI package zip is written alongside the BBQ.
+	# Run in the output dir so both package zips are written alongside the BBQ.
 	subprocess.run(command, cwd=output_dir, env=env, check=True)
 
 #======================================
@@ -205,12 +214,13 @@ def main():
 	question_lines = [line for line in combined_text.split('\n') if line.strip()]
 	print(f"\nWrote {len(question_lines)} questions to {combined_bbq_path}")
 
-	# Convert the combined BBQ to QTI v2.1.
-	convert_to_qti(combined_bbq_path, qti_maker_dir, output_dir, env)
+	# Convert the combined BBQ to both QTI v2.1 and the Blackboard pool export ZIP.
+	convert_packages(combined_bbq_path, qti_maker_dir, output_dir, env)
 
 	print("\nDONE.")
 	print(f"  BBQ (Blackboard Classic upload): {combined_bbq_path}")
-	print(f"  QTI v2.1 package (Blackboard Ultra import): see {output_dir}")
+	print(f"  QTI v2.1 package (shows Matching dropped on Ultra import): see {output_dir}")
+	print(f"  Blackboard pool export ZIP (Matching survives into Ultra): see {output_dir}")
 
 #======================================
 if __name__ == '__main__':

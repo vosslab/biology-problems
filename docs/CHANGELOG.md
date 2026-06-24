@@ -24,6 +24,20 @@
   (`--no-hidden-terms --allow-click`) so the hidden decoy terms and no-click div
   wrapper do not pollute the HTML being compared between Classic and Ultra.
 
+### Behavior or Interface Changes
+- [devel/ultra_classic_showcase.py](../devel/ultra_classic_showcase.py) now emits a third
+  artifact. The combined BBQ file is converted to two packages in one `bbq_converter.py`
+  call (`-2 -B --allow-mixed`): the QTI v2.1 package (which drops the Matching item on Ultra
+  import) and a Blackboard pool export ZIP via the new `blackboard_export_zip` engine (`-B` /
+  `bbexport`), which carries Matching into Ultra through the Import Pool / Import from file
+  door. Renamed the converter helper from `convert_to_qti` to `convert_packages` to reflect
+  the two outputs. Verified end to end: the bb-export ZIP mirrors the real pool layout
+  (`imsmanifest.xml`, `res00001`-`res00007`, `.bb-*` sidecars, `csfiles/`), the
+  `.bb-package-sig` is omitted (server-side, not reproducible), and the pool carries all ten
+  items including the two Matching items (item-level types 6 MC + 2 MA + 2 MAT, matching the
+  QTI side; the pool also repeats `bbmd_questiontype` at the pool/section level as genuine
+  Blackboard exports do).
+
 ### Decisions and Failures
 - Dropped `titration_pI.py` from the showcase set: its CSS-drawn titration curve breaks on
   Blackboard Classic too, so it shows no Classic-vs-Ultra difference. Also rejected an
