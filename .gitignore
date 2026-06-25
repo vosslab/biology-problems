@@ -1,5 +1,6 @@
 # output files
 _[a-z]*.[a-z]*
+output_*
 _*.py
 local-llm-wrapper
 sugar_svgs/
