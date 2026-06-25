@@ -1,5 +1,49 @@
 # Changelog
 
+## 2026-06-25
+
+### Additions and New Features
+- Added [output_showcase/ultra_learn_question_justifications.md](../output_showcase/ultra_learn_question_justifications.md):
+  a question-by-question companion to the Learn-retention email. Walks all 12
+  showcase generators (24 questions) worst-first, with Q# (shared between the Learn
+  and Ultra PDFs), failure class, why each was included, and a Learn-shows /
+  Ultra-removes pair for each. Intended as a separate attachment so the email itself
+  stays short.
+
+### Behavior or Interface Changes
+- Rewrote [output_showcase/ultra_learn_email.md](../output_showcase/ultra_learn_email.md)
+  against the re-curated 24-question showcase and the Final_PDFs exports
+  (Learn-June_25, Cleaned_Learn-June_25-raw, Ultra-June_25). All three PDFs now share
+  one identical question order, so the email's old dual "Learn Qx / Ultra Qy"
+  numbering collapsed to a single Q# per item. Featured examples were rebuilt around
+  the actual 12 generators (the old SDS-PAGE ladder, gel-migration table, dihybrid
+  Punnett, and color-swatch items are no longer in the sample); the email body is a
+  streamlined plain-text version using two compact bullet lists (critical
+  color/layout-is-data, then convenience) so it renders as plain-text email, while the
+  detailed per-question tables and citations live in the separate justifications
+  attachment. Addressed to Susan Lamparter and Sarah Sproule.
+  Reframed the "Matching/Ordering dropped" claim as QTI-v2.1-import-specific, because
+  the attached Ultra PDF shows the column-chromatography Matching item (Q11-Q12)
+  importing directly into Ultra with its type intact (only term color stripped).
+  Reframed the closing from "not asking to halt the transition" into concrete asks:
+  what the Anthology contract requires, whether an exception is possible, and whether
+  the university can host a WeBWorK instance.
+
+### Decisions and Failures
+- Library-audit numbers in the email (263 generators, 38,720 variations, 17% render
+  OK, 54% structural break, 80% color-dependent) were kept unchanged after
+  cross-checking against a fresh
+  [output_showcase/Final_PDFs/ultra_transfer_audit.txt](../output_showcase/Final_PDFs/ultra_transfer_audit.txt)
+  run, which confirms each figure (Tier 1 = 46 gens 17.5%, Tier 3 = 142 gens 54.0%,
+  meaningful color = 209 gens 79.5%) and tags MAT/ORD as "[DROPPED by QTI]".
+- Each color and layout claim in the email was verified visually by rendering the
+  Learn and Ultra PDF pages to PNG and comparing, not from text extraction alone
+  (pdftotext cannot show color). Confirmed: digest ruler, Haworth ring, and metabolic
+  pathway explode into empty/flattened grids in Ultra; HLA, pipet, photosynthetic,
+  monohybrid, and Michaelis-Menten lose their color; the pipet dial no longer
+  resembles the physical pipette display; the Matching item keeps its type on direct
+  Ultra import.
+
 ## 2026-06-24
 
 ### Additions and New Features
