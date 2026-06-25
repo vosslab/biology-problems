@@ -3,9 +3,11 @@
 """
 Generate a Blackboard Classic vs Blackboard Ultra HTML-sanitization showcase.
 
-Runs ten biology-problems question generators spanning six question types (MC,
-MA, MATCH, FIB, MULTI_FIB, NUM). Several emit inline HTML that Blackboard Classic
-renders correctly but Blackboard Ultra's HTML sanitizer strips or flattens. Two
+Runs twelve biology-problems question generators spanning four question types (MC,
+MA, MATCH, FIB). Each is a SHORT item chosen to isolate one HTML-sanitization
+failure that Blackboard Classic renders correctly but Blackboard Ultra's sanitizer
+strips or flattens. Brevity is deliberate: the audience is IT staff reviewing
+failure modes, not students, so each item shows one issue with minimal reading. Two
 questions are produced from each generator, then grouped by question type and each
 type converted to its own pair of packages with qti-package-maker's bbq_converter
 tool: a QTI v2.1 package and a Blackboard pool export ZIP. Grouping by type gives
@@ -13,17 +15,22 @@ one Ultra bank per question type. All questions are also gathered into one combi
 BBQ file (single Blackboard Classic upload) and one complete showcase package (one
 QTI v2.1 + one Blackboard pool export holding every type).
 
-The ten generators, their question type, and the feature each demonstrates:
-   1. monohybrid_degrees_of_dominance      MC    color: text spans (inline style)
-   2. classify_Haworth                     MC    table spacing / border-* (ring)
-   3. dihybrid_cross_epistatic_metabolics  MA/MC background-color (Punnett key)
-   4. deletion_mutant_random               MC    width/position bars (deletion map)
-   5. yaml_match_to_bbq (degrees_of_dominance) MATCH  QTI drops matching on import
-   6. overhang_sequence                    FIB   restriction overhang sequence
-   7. three-point_test_cross-distances_plus MULTI_FIB  gene order + map distances
-   8. protein_gel_migration                NUM   protein MW from migration
-   9. kaleidoscope_ladder_unknown_band     NUM   ladder MW (percent tolerance)
-  10. two-point_test_cross-distance        NUM   genetics map distance (cM)
+The twelve generators are ordered by sanitization-failure mode (worst first), to
+match the companion email's structure for an IT reviewer: content destroyed (color,
+script, or layout carries the data), then color-as-convenience, then a clean
+control, then the structural type-drop. Type and failure class for each:
+   1. deletion_mutant_random               MC    CRITICAL color=data: deletion-map bars vanish
+   2. hla_genotype (3 markers)             MC    CRITICAL color=data: marker color marks parental chromosome
+   3. pipet_size_mc                         MC    CRITICAL color=data: red digits encode place value
+   4. metabolic_pathway_inhibitor          MC    CRITICAL color=identity: nodes recolored figure<->text
+   5. which_amino_acid                      MC    CRITICAL script render: RDKit.js <canvas> structure blank
+   6. linear_digest (length 8, 2 sites)     MA    CRITICAL spacing=data: ruler tick positions collapse
+   7. classify_Haworth                      MA    CRITICAL width=data: ring structure scrambles
+   8. monohybrid_genotype_statements        MC    SECONDARY color disambiguates similar AA/Aa/aa tokens
+   9. photosynthetic_light_pigments         MC    SECONDARY text color: colored wavelength terms
+  10. michaelis_menten_table-Km             MC    SECONDARY zebra readability: alternating row bgcolor
+  11. overhang_sequence                     FIB   CONTROL: minimal HTML + monospace probe, renders fine
+  12. yaml_match_to_bbq (column_chromatography) MATCH STRUCTURAL type-drop + reinforces colored-term identity
 
 Upload the BBQ file to Blackboard Classic and the packages to Blackboard Ultra,
 then compare. HTML generators show the sanitization differences; the QTI v2.1
@@ -41,71 +48,117 @@ import subprocess
 # Each generator: a label, the script path relative to the repo root, and the
 # extra CLI flags it needs beyond the shared "-x 2" question-count flag.
 GENERATORS = [
+	# ---- CRITICAL: content destroyed (color, script, or layout carries the data) ----
 	{
-		'label': '1_inline_color_monohybrid',
-		'script': 'problems/inheritance-problems/monohybrid_degrees_of_dominance.py',
-		'extra_args': [],
-	},
-	{
-		'label': '2_table_borders_haworth',
-		'script': 'problems/biochemistry-problems/carbs/classify_Haworth.py',
-		'extra_args': ['--pyran'],
-	},
-	{
-		'label': '3_bgcolor_epistasis_cross',
-		'script': 'problems/inheritance-problems/epistasis/dihybrid_cross_epistatic_gene_metabolics.py',
-		'extra_args': [],
-	},
-	{
-		'label': '4_position_bars_deletion',
+		# Color = data. Colored deletion bars across the gene grid are the map the
+		# student reads to deduce gene order; Ultra strips the cell color and the
+		# map vanishes into empty cells.
+		'label': '01_color_data_deletion_map',
 		'script': 'problems/inheritance-problems/deletion_mutants/deletion_mutant_random.py',
 		'extra_args': ['--num-genes', '6'],
 	},
 	{
-		# A simple text matching question. Blackboard's QTI v2.1 package import
-		# supports only Multiple Choice, Fill-in-the-Blank, Essay, and True/False,
-		# so Matching (MAT) is dropped on import. This slot demonstrates that drop
-		# directly with a minimal genetics matching set (no heavy HTML), proving the
-		# loss is the QTI matching limitation, not pedigree-specific HTML.
-		'label': '5_matching_dominance',
-		'script': 'problems/matching_sets/yaml_match_to_bbq.py',
-		'input_file': 'problems/matching_sets/inheritance/degrees_of_dominance.yml',
+		# Color = data (inline text color). Each parent chromosome's HLA markers are
+		# colored to mark which chromosome they came from; a valid offspring genotype
+		# is one full maternal chromosome plus one full paternal chromosome. Ultra
+		# strips the inline marker color, the markers become bare letters, and no
+		# option can be verified -- the answer collapses to a guess. Short pure-text MC.
+		'label': '02_color_data_hla_haplotype',
+		'script': 'problems/dna_profiling-problems/hla_genotype.py',
+		'extra_args': ['--num-markers', '3'],
+	},
+	{
+		# Color = data, plus a small stacked layout. The pipette dial shows red digits
+		# to mark decimal place value (the hint says so); Ultra strips the red and the
+		# place value is unreadable. Small item that packs several failures into a tiny
+		# footprint: inline color carries the number, and the dial spacing reads as a
+		# mini layout. Short MC.
+		'label': '03_color_data_pipette_digits',
+		'script': 'problems/laboratory-problems/pipet_size_mc.py',
 		'extra_args': [],
 	},
 	{
-		# Plain Fill-in-the-Blank: restriction-enzyme overhang sequence. Matches the
-		# real Blackboard sample Ch02.4 Overhang_Sequence_FiB.
-		'label': '6_fib_overhang_sequence',
+		# Color = identity. A metabolic-pathway figure colors each enzyme/metabolite
+		# node, and the same colors recur inline in the prose and options to track
+		# identity; Ultra strips the color and the figure<->text link breaks. Short MC.
+		'label': '04_color_identity_pathway',
+		'script': 'problems/biochemistry-problems/enzymes/metabolic_pathway_inhibitor.py',
+		'extra_args': [],
+	},
+	{
+		# Client-side JS render. moleculelib draws the amino-acid structure with
+		# RDKit.js into a <canvas> via inline <script>; Ultra strips <script>/<canvas>,
+		# so the structure the question asks about disappears entirely. Smaller RDKit
+		# item (just the structure + plain-text choices). Scripting probe (confirm by
+		# import).
+		'label': '05_script_render_amino_acid',
+		'script': 'problems/biochemistry-problems/PUBCHEM/AMINO_ACIDS/which_amino_acid.py',
+		'extra_args': [],
+	},
+	{
+		# Spacing = data. A short restriction-digest ruler positions cut sites by HTML
+		# table-cell spacing along a number line; Ultra reflows the spacing and the
+		# tick positions (hence fragment sizes) become unreadable. Short MA.
+		'label': '06_spacing_data_digest_ruler',
+		'script': 'problems/molecular_biology-problems/linear_digest.py',
+		'extra_args': ['--length', '8', '--num-sites', '2'],
+	},
+	{
+		# Width + whitespace = data. The Haworth ring is laid out with table
+		# borders/spacing; Ultra reflows it and the sugar structure scrambles. MA
+		# (select exactly five categorizations).
+		'label': '07_width_data_haworth_ring',
+		'script': 'problems/biochemistry-problems/carbs/classify_Haworth.py',
+		'extra_args': ['--pyran'],
+	},
+	# ---- SECONDARY: color is a convenience (item still solvable from the text) ----
+	{
+		# Color-convenience (disambiguation). Genotypes are colored by zygosity so
+		# similar-looking AA / Aa / aa tokens are quick to tell apart; Ultra flattens
+		# them to black, slowing reading but leaving the item answerable. Short MC.
+		'label': '08_color_disambiguate_genotypes',
+		'script': 'problems/inheritance-problems/monohybrid_genotype_statements.py',
+		'extra_args': [],
+	},
+	{
+		# Color-convenience (terms). Every option is built from colored wavelength
+		# terms (orange/green/blue/violet); Ultra strips the color, leaving the text
+		# names. Short MC, maximally color-dependent.
+		'label': '09_text_color_pigment_wavelengths',
+		'script': 'problems/biochemistry-problems/photosynthetic_light_pigments.py',
+		'extra_args': [],
+	},
+	{
+		# Color-convenience (readability). A Michaelis-Menten [S]/V0 table uses
+		# alternating-row background color (zebra striping) for scanning; Ultra strips
+		# the striping, leaving the data intact but harder to read. Short MC.
+		'label': '10_readability_zebra_michaelis',
+		'script': 'problems/biochemistry-problems/enzymes/michaelis_menten_table-Km.py',
+		'extra_args': [],
+	},
+	# ---- CONTROL: minimal HTML, expected to render correctly in both platforms ----
+	{
+		# Control. Plain Fill-in-the-Blank restriction-enzyme overhang sequence; uses
+		# font-family:monospace, so it doubles as the monospace-alignment probe
+		# (confirm by import). Matches the real sample Ch02.4 Overhang_Sequence_FiB.
+		'label': '11_control_clean_fib_overhang',
 		'script': 'problems/molecular_biology-problems/overhang_sequence.py',
 		'extra_args': ['--fib'],
 	},
+	# ---- STRUCTURAL: not an HTML failure -- Ultra's QTI import drops the type ----
 	{
-		# Multi-blank Fill-in-the-Blank (Plus): three-point test cross gene order and
-		# distances. Matches the real Blackboard sample Ch05.3 Three-Point ... Plus.
-		'label': '7_multifib_three_point_cross',
-		'script': 'problems/inheritance-problems/gene_mapping/three-point_test_cross-distances_plus.py',
+		# Structural type-drop AND a color reinforce, in one item. Blackboard's QTI
+		# v2.1 package import supports only Multiple Choice, Fill-in-the-Blank, Essay,
+		# and True/False, so Matching (MAT) is dropped on import -- the whole question
+		# vanishes. This set also colors each column-type name (IEX, AC, HIC, SEC) and
+		# the recurring key terms, and those colors link the colored prompt to its
+		# colored description (the same color=identity mechanism as item 03). Where the
+		# pool export does carry it into Ultra, the stripped inline color reinforces the
+		# color-identity failure. Double duty: type-drop plus colored-term identity.
+		'label': '12_typedrop_color_matching',
+		'script': 'problems/matching_sets/yaml_match_to_bbq.py',
+		'input_file': 'problems/matching_sets/laboratory/column_chromatography.yml',
 		'extra_args': [],
-	},
-	{
-		# Numeric entry: protein molecular weight from gel migration. Matches the real
-		# Blackboard sample Ch05 Gel Migration Calc Numeric.
-		'label': '8_num_protein_gel_migration',
-		'script': 'problems/biochemistry-problems/electrophoresis/protein_gel_migration.py',
-		'extra_args': ['--num'],
-	},
-	{
-		# Numeric entry: unknown band molecular weight from a Kaleidoscope ladder
-		# (biochem electrophoresis). Percent-based tolerances exercise another shape.
-		'label': '9_num_kaleidoscope_ladder',
-		'script': 'problems/biochemistry-problems/electrophoresis/kaleidoscope_ladder/kaleidoscope_ladder_unknown_band.py',
-		'extra_args': ['--num'],
-	},
-	{
-		# Numeric entry: map distance (cM) from a two-point test cross (genetics).
-		# Genetics test crosses are a natural numeric-answer source.
-		'label': '10_num_two_point_test_cross',
-		'script': 'problems/inheritance-problems/gene_mapping/two-point_test_cross-distance.py',
-		'extra_args': ['--num'],
 	},
 ]
 

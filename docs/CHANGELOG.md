@@ -1,5 +1,76 @@
 # Changelog
 
+## 2026-06-24
+
+### Additions and New Features
+- Added [active_plans/reports/ultra_classic_showcase_question_catalog.md](active_plans/reports/ultra_classic_showcase_question_catalog.md):
+  a catalog of every question generator evaluated for the Blackboard Classic vs Ultra
+  HTML-sanitization showcase, the seven sanitization-failure classes, the selected twelve,
+  and the reason each considered-but-unused generator was left out (mostly redundant failure
+  class or too long for an IT-facing demo). Documents both the MC/MA/NUM/FIB candidates and
+  the matching-set candidates evaluated for the double-duty matching slot.
+
+### Behavior or Interface Changes
+- Re-curate [devel/ultra_classic_showcase.py](../devel/ultra_classic_showcase.py) into a
+  pure-short, failure-mode-ordered set of twelve generators across four question types (MC, MA,
+  MATCH, FIB; was eight to twelve, several long). The audience is IT staff reviewing failure
+  modes, not students, so each item is a SHORT question that isolates one HTML-sanitization
+  failure, and generators are ordered worst-first to match the companion request-to-retain-Learn
+  email: content destroyed (color/script/layout carries the data), then color-as-convenience,
+  then a clean control, then the structural type-drop. Added generators:
+  [hla_genotype.py](../problems/dna_profiling-problems/hla_genotype.py) `--num-markers 3`
+  (inline marker color marks which parental chromosome each marker came from; required, short
+  pure-text MC), [pipet_size_mc.py](../problems/laboratory-problems/pipet_size_mc.py) (small MC
+  whose red digits encode decimal place value, stacking several failures in a tiny footprint),
+  [metabolic_pathway_inhibitor.py](../problems/biochemistry-problems/enzymes/metabolic_pathway_inhibitor.py)
+  (color = identity, figure to text),
+  [which_amino_acid.py](../problems/biochemistry-problems/PUBCHEM/AMINO_ACIDS/which_amino_acid.py)
+  (smaller RDKit.js `<canvas>` script-render probe),
+  [linear_digest.py](../problems/molecular_biology-problems/linear_digest.py) `--length 8
+  --num-sites 2` (table-spacing digest ruler),
+  [monohybrid_genotype_statements.py](../problems/inheritance-problems/monohybrid_genotype_statements.py)
+  (color disambiguates similar AA/Aa/aa tokens),
+  [photosynthetic_light_pigments.py](../problems/biochemistry-problems/photosynthetic_light_pigments.py)
+  (colored wavelength terms), and
+  [michaelis_menten_table-Km.py](../problems/biochemistry-problems/enzymes/michaelis_menten_table-Km.py)
+  (zebra-stripe row background for readability). The matching slot now uses
+  [column_chromatography.yml](../problems/matching_sets/laboratory/column_chromatography.yml)
+  (was degrees_of_dominance): it does double duty, proving the QTI Matching type-drop while
+  reinforcing color=identity (colored IEX/AC/HIC/SEC type names recur across the descriptions).
+  Dropped as long or redundant: kaleidoscope_ladder
+  (colored gel ladder is big and hard for a non-expert to parse; color=data covered by the
+  deletion map and HLA, removing the only NUM item), protein_gel_migration (duplicate gel),
+  which_macromolecule (replaced by the smaller amino-acid RDKit item), three-point and two-point
+  test crosses (long; type coverage is not a goal), dihybrid epistasis (long 4x4), and
+  monohybrid_degrees_of_dominance (replaced by the shorter genotype-statements item). The
+  combined showcase now emits 24 questions (12 generators x 2), with the leading items being
+  the critical color/script/layout failures.
+
+### Fixes and Maintenance
+- Correct the question-type label for
+  [classify_Haworth.py](../problems/biochemistry-problems/carbs/classify_Haworth.py) in the
+  showcase docstring from MC to MA: the "select exactly five categorizations" item is
+  Multiple-Answer, confirmed by the MA leading token in the generated BBQ.
+
+### Decisions and Failures
+- Curation rule for the showcase: one strong exemplar per failure class, shortest available, over
+  breadth of biology topics or question types. Many strong rejected items (Robertsonian
+  translocation, exon splicing, branched feedback pathways, phylogenetic trees) were left out only
+  because their failure class is already covered by a shorter exemplar.
+- HLA genotype was promoted from a color-identity alternate to the color=data slot (item 2): its
+  marker color is required (it marks which parental chromosome each marker came from), and it is a
+  short pure-text MC, the cleanest inline-text-color=data proof. pipet_size_mc was kept alongside
+  it (item 3) as a small MC that stacks several failures (red place-value digits plus a mini dial
+  layout) in a tiny footprint.
+- The matching item is chosen for double duty: it must prove the QTI type-drop AND reinforce a
+  color failure already shown elsewhere. column_chromatography reinforces color=identity; the
+  genetics monohybrid_cross set (convenience) and the 2-pair energy_terms set (too minimal) were
+  the runner-up matching candidates.
+- Two failure classes remain unconfirmed pending a live Ultra import: the RDKit.js `<canvas>`
+  script-render (item 5, near-certain to blank) and `font-family:monospace` alignment (probed by
+  the control FIB item 11). Both probes already ship in the current packages, so no extra
+  generator is needed to test them.
+
 ## 2026-06-23
 
 ### Additions and New Features
