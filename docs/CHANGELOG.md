@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-07-03
+
+### Additions and New Features
+
+- Added `docs/COLOR_CONTRAST_ACCESSIBILITY.md` (generic WCAG contrast method) and
+  `docs/PALETTE_CONTRAST_AUDIT.md` (14-color rainbow palette, other problem colors, non-palette
+  replacements, and a YAML custom-color note), with ratios measured via
+  `tools/contrast_calculator.py`.
+
 ## 2026-06-25
 
 ### Additions and New Features
