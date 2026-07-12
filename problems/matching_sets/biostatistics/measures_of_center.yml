@@ -4,20 +4,20 @@ keys description: measures of center
 value description: definition
 values description: definitions
 replacement_rules:
-  Mean: '<span style="color: #d40000;">Mean</span>'
-  BBBBBBBB: '<span style="color: #b74300;">BBBBBBBB</span>'
-  CCCCCCCC: '<span style="color: #935d00;">CCCCCCCC</span>'
-  DDDDDDDD: '<span style="color: #6c6c00;">DDDDDDDD</span>'
-  Mode: '<span style="color: #3b7600;">Mode</span>'
-  FFFFFFFF: '<span style="color: #007a00;">FFFFFFFF</span>'
-  GGGGGGGG: '<span style="color: #00775f;">GGGGGGGG</span>'
-  HHHHHHHH: '<span style="color: #007576;">HHHHHHHH</span>'
-  Median: '<span style="color: #076dad;">Median</span>'
-  JJJJJJJJ: '<span style="color: #003fff;">JJJJJJJJ</span>'
-  KKKKKKKK: '<span style="color: #0067cc;">KKKKKKKK</span>'
-  Midrange: '<span style="color: #a719db;">Midrange</span>'
-  MMMMMMMM: '<span style="color: #c80085;">MMMMMMMM</span>'
-  NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>'
+  Mean: '<span style="color: #d40000;">Mean</span>' #RED
+  BBBBBBBB: '<span style="color: #b74300;">BBBBBBBB</span>' #DARK ORANGE
+  CCCCCCCC: '<span style="color: #935d00;">CCCCCCCC</span>' #LIGHT ORANGE
+  DDDDDDDD: '<span style="color: #6c6c00;">DDDDDDDD</span>' #DARK YELLOW
+  Mode: '<span style="color: #3b7600;">Mode</span>' #LIME GREEN
+  FFFFFFFF: '<span style="color: #007a00;">FFFFFFFF</span>' #GREEN
+  GGGGGGGG: '<span style="color: #00775f;">GGGGGGGG</span>' #TEAL
+  HHHHHHHH: '<span style="color: #007576;">HHHHHHHH</span>' #CYAN
+  Median: '<span style="color: #076dad;">Median</span>' #SKY BLUE
+  JJJJJJJJ: '<span style="color: #003fff;">JJJJJJJJ</span>' #BLUE
+  KKKKKKKK: '<span style="color: #0067cc;">KKKKKKKK</span>' #NAVY
+  Midrange: '<span style="color: #a719db;">Midrange</span>' #PURPLE
+  MMMMMMMM: '<span style="color: #c80085;">MMMMMMMM</span>' #MAGENTA
+  NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
 matching pairs:
   Mean:
   - The central measure found by summing all values and dividing by the total number

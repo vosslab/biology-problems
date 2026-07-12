@@ -4,23 +4,23 @@ keys description: types of column chromatography
 value description: description
 values description: descriptions
 replacement_rules:
-  column: '<span style="color: #d40000;">column</span>'
-  separates: '<span style="color: #b74300;">separates</span>'
-  separation: '<span style="color: #b74300;">separation</span>'
-  (RPC): '<span style="color: #935d00;">reverse phase column (RPC)</span>'
-  (HIC): '<span style="color: #6c6c00;">hydrophobic interaction column (HIC)</span>'
-  (GFC): '<span style="color: #3b7600;">gel filtration column (GFC)</span>'
-  (SEC): '<span style="color: #007a00;">size-exclusion column (SEC)</span>'
-  particles: '<span style="color: #00775f;">particles</span>'
-  'particle ': '<span style="color: #00775f;">particle</span> '
-  proteins: '<span style="color: #007576;">proteins</span>'
-  'protein ': '<span style="color: #007576;">protein</span> '
-  surface: '<span style="color: #076dad;">surface</span>'
-  (IEX): '<span style="color: #003fff;">ion exchange column (IEX)</span>'
-  charged: '<span style="color: #0067cc;">charged</span>'
-  ligand: '<span style="color: #a719db;">ligand</span>'
-  chromatography: '<span style="color: #c80085;">chromatography</span>'
-  (AC): '<span style="color: #cc0066;">affinity column (AC)</span>'
+  column: '<span style="color: #d40000;">column</span>' #RED
+  separates: '<span style="color: #b74300;">separates</span>' #DARK ORANGE
+  separation: '<span style="color: #b74300;">separation</span>' #DARK ORANGE
+  (RPC): '<span style="color: #935d00;">reverse phase column (RPC)</span>' #LIGHT ORANGE
+  (HIC): '<span style="color: #6c6c00;">hydrophobic interaction column (HIC)</span>' #DARK YELLOW
+  (GFC): '<span style="color: #3b7600;">gel filtration column (GFC)</span>' #LIME GREEN
+  (SEC): '<span style="color: #007a00;">size-exclusion column (SEC)</span>' #GREEN
+  particles: '<span style="color: #00775f;">particles</span>' #TEAL
+  'particle ': '<span style="color: #00775f;">particle</span> ' #TEAL
+  proteins: '<span style="color: #007576;">proteins</span>' #CYAN
+  'protein ': '<span style="color: #007576;">protein</span> ' #CYAN
+  surface: '<span style="color: #076dad;">surface</span>' #SKY BLUE
+  (IEX): '<span style="color: #003fff;">ion exchange column (IEX)</span>' #BLUE
+  charged: '<span style="color: #0067cc;">charged</span>' #NAVY
+  ligand: '<span style="color: #a719db;">ligand</span>' #PURPLE
+  chromatography: '<span style="color: #c80085;">chromatography</span>' #MAGENTA
+  (AC): '<span style="color: #cc0066;">affinity column (AC)</span>' #PINK
 matching pairs:
   (SEC): &id001
   - size separation in a column filled with porous beads

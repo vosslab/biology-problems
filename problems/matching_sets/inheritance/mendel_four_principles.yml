@@ -2,23 +2,23 @@ items to match per question: 4
 key description: Mendel's Foundational Principle of Genetics
 keys description: Mendel's Foundational Principles of Genetics
 replacement_rules:
-  alleles: '<span style="color: #d40000;">alleles</span>'
-  allele: '<span style="color: #d40000;">allele</span>'
-  Principle_of_Dominance: '<span style="color: #b74300;">Principle of Dominance</span>'
-  genotype: '<span style="color: #935d00;">characters</span>'
-  dominant: '<span style="color: #6c6c00;">dominant</span>'
-  Law_of_Independent_Assortment: '<span style="color: #3b7600;">Law of Independent&nbsp;Assortment</span>'
-  gametes: '<span style="color: #007a00;">gametes</span>'
-  gamete: '<span style="color: #007a00;">gamete</span>'
-  characters: '<span style="color: #00775f;">characters</span>'
-  character<: '<span style="color: #00775f;">character</span><'
-  phenotype: '<span style="color: #007576;">phenotype</span>'
-  recessive: '<span style="color: #076dad;">recessive</span>'
-  Law_of_Segregation: '<span style="color: #003fff;">Law of Segregation</span>'
-  separate: '<span style="color: #0067cc;">separate</span>'
-  factors: '<span style="color: #a719db;">factors</span>'
-  different: '<span style="color: #c80085;">different</span>'
-  Principle_of_Paired_Factors: '<span style="color: #cc0066;">Principle of Paired&nbsp;Factors</span>'
+  alleles: '<span style="color: #d40000;">alleles</span>' #RED
+  allele: '<span style="color: #d40000;">allele</span>' #RED
+  Principle_of_Dominance: '<span style="color: #b74300;">Principle of Dominance</span>' #DARK ORANGE
+  genotype: '<span style="color: #935d00;">characters</span>' #LIGHT ORANGE
+  dominant: '<span style="color: #6c6c00;">dominant</span>' #DARK YELLOW
+  Law_of_Independent_Assortment: '<span style="color: #3b7600;">Law of Independent&nbsp;Assortment</span>' #LIME GREEN
+  gametes: '<span style="color: #007a00;">gametes</span>' #GREEN
+  gamete: '<span style="color: #007a00;">gamete</span>' #GREEN
+  characters: '<span style="color: #00775f;">characters</span>' #TEAL
+  character<: '<span style="color: #00775f;">character</span><' #TEAL
+  phenotype: '<span style="color: #007576;">phenotype</span>' #CYAN
+  recessive: '<span style="color: #076dad;">recessive</span>' #SKY BLUE
+  Law_of_Segregation: '<span style="color: #003fff;">Law of Segregation</span>' #BLUE
+  separate: '<span style="color: #0067cc;">separate</span>' #NAVY
+  factors: '<span style="color: #a719db;">factors</span>' #PURPLE
+  different: '<span style="color: #c80085;">different</span>' #MAGENTA
+  Principle_of_Paired_Factors: '<span style="color: #cc0066;">Principle of Paired&nbsp;Factors</span>' #PINK
 value description: description
 values description: descriptions
 matching pairs:

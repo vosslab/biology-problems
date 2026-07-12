@@ -411,7 +411,7 @@ def write_question(N, params, debug):
 
 	# Generate the HTML table
 	table, killer_index = rflp_class.make_suspects_HTML_table()
-	rflp_class.make_suspects_PNG_image(N)
+	#rflp_class.make_suspects_PNG_image(N)
 
 	# Define the sub-headings and questions as HTML
 	the_question = "<h6>The Question</h6><p>Based on the DNA gel profile, which suspect left blood at the crime scene?</p>"

@@ -18,6 +18,28 @@
   unclosed list item in the pentapeptide Wordle question HTML.
 - Removed a duplicated ANOVA hypothesis-pair distractor and added rendered-choice
   uniqueness checks across all hypothesis statement question variants.
+- Added non-empty topics to the potential-versus-kinetic-energy and membrane
+  diffusion statement banks so their PGML generators pass metadata validation.
+- Reworded lethal-allele ratio choices to avoid downstream colon-delimiter
+  collisions, and replaced the gene-therapy matching bank's malformed named
+  colors with quoted XML-safe colors from the WCAG-audited repository palette;
+  removed broad replacements that split `genetic` and `adenovirus`.
+- Expanded lethal-allele questions with heterozygote-by-normal crosses so
+  lethal fractions, survival fractions, counts, and living phenotype ratios
+  vary across genetically valid scenarios.
+- Reworked lethal-allele variation around explicit Punnett probabilities,
+  deriving twelve question forms for conception outcomes, conditional survivor
+  fractions, counts, and both phenotype-ratio directions.
+- Replaced malformed named colors in the population-genetics matching bank
+  with quoted XML-safe colors from the WCAG-audited repository palette, and
+  replaced an unrelated Theranos description with valid random-mating definitions.
+- Audited all matching-set YAML colors against white at WCAG AA, darkened 23
+  failing hex occurrences across seven banks, and replaced remaining named CSS
+  colors in six banks with documented values from the audited palette.
+- Stopped the DNA profiling father and killer generators from writing unused
+  per-question diagnostic PNG files into the current working directory.
+- Added explicit uppercase color-name comments to all 486 previously
+  uncommented color replacement rules across 39 matching-set YAML banks.
 - Curated 432 final task assignments, filled all 49 previously unassigned
   sources, corrected several existing chapter placements, and documented 189
   changes plus all resolved chapter ambiguities without running a new automated

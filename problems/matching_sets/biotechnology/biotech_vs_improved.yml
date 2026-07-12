@@ -4,23 +4,23 @@ keys description: biotechnology adjacent industries
 value description: project description
 values description: project descriptions
 replacement_rules:
-  Modern Biotechnology: '<span style="color: #d40000;">Modern Biotechnology</span>'
-  BBBBBBBB: '<span style="color: #b74300;">BBBBBBBB</span>'
+  Modern Biotechnology: '<span style="color: #d40000;">Modern Biotechnology</span>' #RED
+  BBBBBBBB: '<span style="color: #b74300;">BBBBBBBB</span>' #DARK ORANGE
   Pharmaceuticals/Drug Manufacturing: '<span style="color: #935d00;">Pharmaceuticals/Drug
-    Manufacturing</span>'
-  DDDDDDDD: '<span style="color: #6c6c00;">DDDDDDDD</span>'
+    Manufacturing</span>' #LIGHT ORANGE
+  DDDDDDDD: '<span style="color: #6c6c00;">DDDDDDDD</span>' #DARK YELLOW
   Supplemental Industry/Traditional Remedies: '<span style="color: #3b7600;">Supplemental
-    Industry/Traditional Remedies</span>'
-  FFFFFFFF: '<span style="color: #007a00;">FFFFFFFF</span>'
-  GGGGGGGG: '<span style="color: #00775f;">GGGGGGGG</span>'
-  HHHHHHHH: '<span style="color: #007576;">HHHHHHHH</span>'
-  IIIIIIII: '<span style="color: #076dad;">IIIIIIII</span>'
-  Traditional Biotechnology: '<span style="color: #003fff;">Traditional Biotechnology</span>'
-  KKKKKKKK: '<span style="color: #0067cc;">KKKKKKKK</span>'
+    Industry/Traditional Remedies</span>' #LIME GREEN
+  FFFFFFFF: '<span style="color: #007a00;">FFFFFFFF</span>' #GREEN
+  GGGGGGGG: '<span style="color: #00775f;">GGGGGGGG</span>' #TEAL
+  HHHHHHHH: '<span style="color: #007576;">HHHHHHHH</span>' #CYAN
+  IIIIIIII: '<span style="color: #076dad;">IIIIIIII</span>' #SKY BLUE
+  Traditional Biotechnology: '<span style="color: #003fff;">Traditional Biotechnology</span>' #BLUE
+  KKKKKKKK: '<span style="color: #0067cc;">KKKKKKKK</span>' #NAVY
   Bio-engineering/Medical Devices: '<span style="color: #a719db;">Bio-engineering/Medical
-    Devices</span>'
-  MMMMMMMM: '<span style="color: #c80085;">MMMMMMMM</span>'
-  NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>'
+    Devices</span>' #PURPLE
+  MMMMMMMM: '<span style="color: #c80085;">MMMMMMMM</span>' #MAGENTA
+  NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
 matching pairs:
   Traditional Biotechnology:
   - Utilizing yeast fermentation to produce ethanol from agricultural waste materials

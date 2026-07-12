@@ -4,16 +4,16 @@ keys description: chi2 terms
 value description: definition
 values description: definitions
 replacement_rules:
-  'f2supp ': '<span style="color: #FE2712;">faill to support</span> '
-  supported: '<span style="color: #66B032;">supported</span>'
-  'support ': '<span style="color: #66B032;">support</span> '
-  chi2: '<span style="color: #FB9902;">chi-square (&chi;&sup2;)</span>'
-  p-value: '<span style="color: #C21460;">p-value</span>'
-  losa: '<span style="color: #8601AF;">level of significance, &alpha;</span>'
-  critval: '<span style="color: #4424D6;">critical value</span>'
-  nullhyp: '<span style="color: #0247FE;">null hypothesis, H<sub>0</sub></span>'
-  althyp: '<span style="color: #FC600A;">alternative hypothesis, H<sub>a</sub></span>'
-  dof: '<span style="color: #B2D732;">degrees of freedom</span>'
+  'f2supp ': '<span style="color: #eb1601;">faill to support</span> ' #BRIGHT RED
+  supported: '<span style="color: #4d8426;">supported</span>' #LEAF GREEN
+  'support ': '<span style="color: #4d8426;">support</span> ' #LEAF GREEN
+  chi2: '<span style="color: #aa6701;">chi-square (&chi;&sup2;)</span>' #AMBER
+  p-value: '<span style="color: #C21460;">p-value</span>' #RASPBERRY
+  losa: '<span style="color: #8601AF;">level of significance, &alpha;</span>' #VIOLET
+  critval: '<span style="color: #4424D6;">critical value</span>' #VIOLET BLUE
+  nullhyp: '<span style="color: #0247FE;">null hypothesis, H<sub>0</sub></span>' #BRIGHT BLUE
+  althyp: '<span style="color: #cf4b03;">alternative hypothesis, H<sub>a</sub></span>' #ORANGE
+  dof: '<span style="color: #687f19;">degrees of freedom</span>' #OLIVE
 matching pairs:
   critval:
   - found in a table for a given degrees of freedom and losa

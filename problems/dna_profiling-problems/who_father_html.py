@@ -335,7 +335,7 @@ def write_question(N, params, debug):
 
 	# Generate the HTML table
 	table, answer_index = rflp_class.make_unknown_males_HTML_table()
-	rflp_class.make_unknown_males_PNG_image(N)
+	#rflp_class.make_unknown_males_PNG_image(N)
 
 	# Define the sub-headings and questions as HTML
 	the_question = "<h6>The Question</h6> <p>Who is the father of the child?</p>"

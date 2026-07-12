@@ -4,22 +4,22 @@ keys description: hypothesis tests
 value description: description
 values description: descriptions
 replacement_rules:
-  Benchmark Z-test: '<span style="color: #d40000;">Benchmark Z-test</span>'
-  sample size: '<span style="color: #b74300;">sample size</span>'
-  mean: '<span style="color: #935d00;">mean</span>'
-  average: '<span style="color: #935d00;">average</span>'
-  Benchmark T-test: '<span style="color: #6c6c00;">Benchmark T-test</span>'
-  population: '<span style="color: #3b7600;">population</span>'
-  samples: '<span style="color: #007a00;">samples</span>'
-  Two-Sample T-test: '<span style="color: #00775f;">Two-Sample T-test</span>'
-  standard deviation: '<span style="color: #007576;">standard deviation</span>'
-  variability: '<span style="color: #076dad;">variability</span>'
-  Two-Sample F-test: '<span style="color: #003fff;">Two-Sample F-test</span>'
-  significantly different: '<span style="color: #0067cc;">significantly different</span>'
-  unknown: '<span style="color: #a719db;">unknown</span>'
+  Benchmark Z-test: '<span style="color: #d40000;">Benchmark Z-test</span>' #RED
+  sample size: '<span style="color: #b74300;">sample size</span>' #DARK ORANGE
+  mean: '<span style="color: #935d00;">mean</span>' #LIGHT ORANGE
+  average: '<span style="color: #935d00;">average</span>' #LIGHT ORANGE
+  Benchmark T-test: '<span style="color: #6c6c00;">Benchmark T-test</span>' #DARK YELLOW
+  population: '<span style="color: #3b7600;">population</span>' #LIME GREEN
+  samples: '<span style="color: #007a00;">samples</span>' #GREEN
+  Two-Sample T-test: '<span style="color: #00775f;">Two-Sample T-test</span>' #TEAL
+  standard deviation: '<span style="color: #007576;">standard deviation</span>' #CYAN
+  variability: '<span style="color: #076dad;">variability</span>' #SKY BLUE
+  Two-Sample F-test: '<span style="color: #003fff;">Two-Sample F-test</span>' #BLUE
+  significantly different: '<span style="color: #0067cc;">significantly different</span>' #NAVY
+  unknown: '<span style="color: #a719db;">unknown</span>' #PURPLE
   Analysis of Variance (ANOVA): '<span style="color: #c80085;">Analysis of Variance
-    (ANOVA)</span>'
-  variances: '<span style="color: #cc0066;">variances</span>'
+    (ANOVA)</span>' #MAGENTA
+  variances: '<span style="color: #cc0066;">variances</span>' #PINK
 matching pairs:
   Benchmark Z-test:
   - Compares the mean of a sample to a known population mean when the population variance

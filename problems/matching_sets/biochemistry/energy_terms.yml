@@ -6,20 +6,20 @@ keys description: energy requirement categories
 value description: energy term
 values description: energy terms
 replacement_rules:
-  releases&nbsp;energy: '<span style="color: #d40000;">releases&nbsp;energy</span>'
-  BBBBBBBB: '<span style="color: #b74300;">BBBBBBBB</span>'
-  CCCCCCCC: '<span style="color: #935d00;">CCCCCCCC</span>'
-  DDDDDDDD: '<span style="color: #6c6c00;">DDDDDDDD</span>'
-  reactions: '<span style="color: #3b7600;">reactions</span>'
-  FFFFFFFF: '<span style="color: #007a00;">FFFFFFFF</span>'
-  GGGGGGGG: '<span style="color: #00775f;">GGGGGGGG</span>'
-  HHHHHHHH: '<span style="color: #007576;">HHHHHHHH</span>'
-  requires&nbsp;energy&nbsp;input: '<span style="color: #076dad;">requires&nbsp;energy&nbsp;input</span>'
-  JJJJJJJJ: '<span style="color: #003fff;">JJJJJJJJ</span>'
-  KKKKKKKK: '<span style="color: #0067cc;">KKKKKKKK</span>'
-  formation: '<span style="color: #a719db;">formation</span>'
-  breaking: '<span style="color: #c80085;">breaking</span>'
-  NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>'
+  releases&nbsp;energy: '<span style="color: #d40000;">releases&nbsp;energy</span>' #RED
+  BBBBBBBB: '<span style="color: #b74300;">BBBBBBBB</span>' #DARK ORANGE
+  CCCCCCCC: '<span style="color: #935d00;">CCCCCCCC</span>' #LIGHT ORANGE
+  DDDDDDDD: '<span style="color: #6c6c00;">DDDDDDDD</span>' #DARK YELLOW
+  reactions: '<span style="color: #3b7600;">reactions</span>' #LIME GREEN
+  FFFFFFFF: '<span style="color: #007a00;">FFFFFFFF</span>' #GREEN
+  GGGGGGGG: '<span style="color: #00775f;">GGGGGGGG</span>' #TEAL
+  HHHHHHHH: '<span style="color: #007576;">HHHHHHHH</span>' #CYAN
+  requires&nbsp;energy&nbsp;input: '<span style="color: #076dad;">requires&nbsp;energy&nbsp;input</span>' #SKY BLUE
+  JJJJJJJJ: '<span style="color: #003fff;">JJJJJJJJ</span>' #BLUE
+  KKKKKKKK: '<span style="color: #0067cc;">KKKKKKKK</span>' #NAVY
+  formation: '<span style="color: #a719db;">formation</span>' #PURPLE
+  breaking: '<span style="color: #c80085;">breaking</span>' #MAGENTA
+  NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
 matching pairs:
   requires&nbsp;energy&nbsp;input:
   - anabolic

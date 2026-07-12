@@ -4,24 +4,24 @@ keys description: levels of protein structure
 value description: description
 values description: descriptions
 replacement_rules:
-  primary: '<span style="color: #d40000;">primary</span>'
-  amino acids: '<span style="color: #b74300;">amino acids</span>'
-  'amino acid ': '<span style="color: #b74300;">amino acid</span> '
-  polypeptide chains: '<span style="color: #935d00;">polypeptide chains</span>'
-  ' polypeptide chain': ' <span style="color: #935d00;">polypeptide chain</span>'
-  peptide bonds: '<span style="color: #6c6c00;">peptide bonds</span>'
-  secondary: '<span style="color: #3b7600;">secondary</span>'
-  backbone: '<span style="color: #007a00;">backbone</span>'
-  hydrogen bonding: '<span style="color: #00775f;">hydrogen bonding</span>'
-  dihedral angles: '<span style="color: #007576;">dihedral angles</span>'
-  tertiary: '<span style="color: #076dad;">tertiary</span>'
-  side chains: '<span style="color: #003fff;">side chains</span>'
-  'side chain ': '<span style="color: #003fff;">side chain</span> '
-  interactions: '<span style="color: #0067cc;">interactions</span>'
-  quaternary: '<span style="color: #a719db;">quaternary</span>'
-  protein: '<span style="color: #c80085;">protein</span>'
-  subunits: '<span style="color: #cc0066;">subunits</span>'
-  'subunit ': '<span style="color: #cc0066;">subunits</span> '
+  primary: '<span style="color: #d40000;">primary</span>' #RED
+  amino acids: '<span style="color: #b74300;">amino acids</span>' #DARK ORANGE
+  'amino acid ': '<span style="color: #b74300;">amino acid</span> ' #DARK ORANGE
+  polypeptide chains: '<span style="color: #935d00;">polypeptide chains</span>' #LIGHT ORANGE
+  ' polypeptide chain': ' <span style="color: #935d00;">polypeptide chain</span>' #LIGHT ORANGE
+  peptide bonds: '<span style="color: #6c6c00;">peptide bonds</span>' #DARK YELLOW
+  secondary: '<span style="color: #3b7600;">secondary</span>' #LIME GREEN
+  backbone: '<span style="color: #007a00;">backbone</span>' #GREEN
+  hydrogen bonding: '<span style="color: #00775f;">hydrogen bonding</span>' #TEAL
+  dihedral angles: '<span style="color: #007576;">dihedral angles</span>' #CYAN
+  tertiary: '<span style="color: #076dad;">tertiary</span>' #SKY BLUE
+  side chains: '<span style="color: #003fff;">side chains</span>' #BLUE
+  'side chain ': '<span style="color: #003fff;">side chain</span> ' #BLUE
+  interactions: '<span style="color: #0067cc;">interactions</span>' #NAVY
+  quaternary: '<span style="color: #a719db;">quaternary</span>' #PURPLE
+  protein: '<span style="color: #c80085;">protein</span>' #MAGENTA
+  subunits: '<span style="color: #cc0066;">subunits</span>' #PINK
+  'subunit ': '<span style="color: #cc0066;">subunits</span> ' #PINK
 matching pairs:
   primary:
   - order of the amino acids in a polypeptide chain

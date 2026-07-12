@@ -4,10 +4,10 @@ keys description: types of macromolecules
 value description: macromolecule
 values description: macromolecules
 replacement_rules:
-  lipids: '<span style="color: #b74300;">lipids</span>'
-  proteins: '<span style="color: #007a00;">proteins</span>'
-  carbohydrates: '<span style="color: #003fff;">carbohydrates</span>'
-  nucleic acids: '<span style="color: #c80085;">nucleic acids</span>'
+  lipids: '<span style="color: #b74300;">lipids</span>' #DARK ORANGE
+  proteins: '<span style="color: #007a00;">proteins</span>' #GREEN
+  carbohydrates: '<span style="color: #003fff;">carbohydrates</span>' #BLUE
+  nucleic acids: '<span style="color: #c80085;">nucleic acids</span>' #MAGENTA
 matching pairs:
   proteins:
   - amino acids

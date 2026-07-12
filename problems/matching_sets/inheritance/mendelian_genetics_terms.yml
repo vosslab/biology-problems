@@ -4,23 +4,23 @@ keys description: Mendelian genetics terms
 value description: definition
 values description: definitions
 replacement_rules:
-  genes: '<span style="color: #d40000;">genes</span>'
-  traits: '<span style="color: #b74300;">traits</span>'
-  trait: '<span style="color: #b74300;">trait</span>'
-  genotype: '<span style="color: #935d00;">genotype</span>'
-  alleles: '<span style="color: #6c6c00;">alleles</span>'
-  allele: '<span style="color: #6c6c00;">allele</span>'
-  gamete: '<span style="color: #3b7600;">gamete</span>'
-  heterozygous: '<span style="color: #007a00;">heterozygous</span>'
-  dominant: '<span style="color: #00775f;">dominant</span>'
-  phenotype: '<span style="color: #007576;">phenotype</span>'
-  characters: '<span style="color: #076dad;">characters</span>'
-  character: '<span style="color: #076dad;">character</span>'
-  observable: '<span style="color: #003fff;">observable</span>'
-  identical: '<span style="color: #0067cc;">identical</span>'
-  recessive: '<span style="color: #a719db;">recessive</span>'
-  homozygous: '<span style="color: #c80085;">homozygous</span>'
-  NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>'
+  genes: '<span style="color: #d40000;">genes</span>' #RED
+  traits: '<span style="color: #b74300;">traits</span>' #DARK ORANGE
+  trait: '<span style="color: #b74300;">trait</span>' #DARK ORANGE
+  genotype: '<span style="color: #935d00;">genotype</span>' #LIGHT ORANGE
+  alleles: '<span style="color: #6c6c00;">alleles</span>' #DARK YELLOW
+  allele: '<span style="color: #6c6c00;">allele</span>' #DARK YELLOW
+  gamete: '<span style="color: #3b7600;">gamete</span>' #LIME GREEN
+  heterozygous: '<span style="color: #007a00;">heterozygous</span>' #GREEN
+  dominant: '<span style="color: #00775f;">dominant</span>' #TEAL
+  phenotype: '<span style="color: #007576;">phenotype</span>' #CYAN
+  characters: '<span style="color: #076dad;">characters</span>' #SKY BLUE
+  character: '<span style="color: #076dad;">character</span>' #SKY BLUE
+  observable: '<span style="color: #003fff;">observable</span>' #BLUE
+  identical: '<span style="color: #0067cc;">identical</span>' #NAVY
+  recessive: '<span style="color: #a719db;">recessive</span>' #PURPLE
+  homozygous: '<span style="color: #c80085;">homozygous</span>' #MAGENTA
+  NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
 matching pairs:
   character:
   - a single heritable feature that varies among individuals, such as seed shape

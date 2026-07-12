@@ -4,15 +4,13 @@ keys description: genetic disease treatment methods
 value description: description
 values description: descriptions
 replacement_rules:
-  gene therapy: '<span style=color: DarkGreen;>gene&nbsp;therapy</span>'
-  genome editing: '<span style=color: MediumVioletRed;>genome&nbsp;editing</span>'
-  enzyme: '<span style=color: Indigo;>enzyme</span>'
-  proteins: '<span style=color: Indigo;>proteins</span>'
-  protein: '<span style=color: Indigo;>protein</span>'
-  ' gene': ' <span style=color: Indigo;>gene</span>'
-  virus: '<span style=color: SteelBlue;>virus</span>'
-  viral: '<span style=color: SteelBlue;>viral</span>'
-  treatment: '<span style=color: SteelBlue;>treatment</span>'
+  gene therapy: '<span style="color: #d40000;">gene&nbsp;therapy</span>' #RED
+  genome editing: '<span style="color: #b74300;">genome&nbsp;editing</span>' #DARK ORANGE
+  enzyme: '<span style="color: #935d00;">enzyme</span>' #LIGHT ORANGE
+  proteins: '<span style="color: #6c6c00;">proteins</span>' #DARK YELLOW
+  protein: '<span style="color: #3b7600;">protein</span>' #LIME GREEN
+  viral: '<span style="color: #007576;">viral</span>' #CYAN
+  treatment: '<span style="color: #076dad;">treatment</span>' #SKY BLUE
 matching pairs:
   gene therapy:
   - treating cystic fibrosis using adenovirus to introduce a functioning protein channel

@@ -41,16 +41,16 @@ matching pairs:
   - carbohydrate polymer that used for structural purposes by plants
   - structural material in plant cell walls
 replacement_rules:
-  animals: '<span style="color: #843232;">animals</span>'
-  'animal ': '<span style="color: #843232;">animal</span> '
-  plants: '<span style="color: #5A8432;">plants</span>'
-  'plant ': '<span style="color: #5A8432;">plant</span> '
-  structural: '<span style="color: #AA693A;">structural</span>'
-  storage: '<span style="color: #693AAA;">storage</span>'
-  cell walls: '<span style="color: #b45918;">cell walls</span>'
-  glycogen: '<span style="color: DarkGreen;"><strong>glycogen</strong></span>'
-  chitin: '<span style="color: MediumVioletRed;"><strong>chitin</strong></span>'
-  cellulose: '<span style="color: Indigo;"><strong>cellulose</strong></span>'
-  amylose: '<span style="color: SteelBlue;"><strong>amylose</strong></span>'
-  amylopectin: '<span style="color: DarkRed;"><strong>amylopectin</strong></span>'
+  animals: '<span style="color: #843232;">animals</span>' #DARK RED
+  'animal ': '<span style="color: #843232;">animal</span> ' #DARK RED
+  plants: '<span style="color: #598231;">plants</span>' #OLIVE GREEN
+  'plant ': '<span style="color: #598231;">plant</span> ' #OLIVE GREEN
+  structural: '<span style="color: #a86739;">structural</span>' #BROWN ORANGE
+  storage: '<span style="color: #693AAA;">storage</span>' #PURPLE
+  cell walls: '<span style="color: #b45918;">cell walls</span>' #RUST
+  glycogen: '<span style="color: #d40000;"><strong>glycogen</strong></span>' #RED
+  chitin: '<span style="color: #b74300;"><strong>chitin</strong></span>' #DARK ORANGE
+  cellulose: '<span style="color: #935d00;"><strong>cellulose</strong></span>' #LIGHT ORANGE
+  amylose: '<span style="color: #6c6c00;"><strong>amylose</strong></span>' #DARK YELLOW
+  amylopectin: '<span style="color: #3b7600;"><strong>amylopectin</strong></span>' #LIME GREEN
 dbsubject: Biochemistry

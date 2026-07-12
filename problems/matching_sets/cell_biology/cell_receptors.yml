@@ -33,14 +33,14 @@ matching pairs:
   - when this receptor is activated, it can cause a rapid depolarization of membrane
     potential due to an influx of ions
 replacement_rules:
-  gpcrZZ: '<span style="color: #843232;">G protein-coupled receptor (GPCR)</span>'
-  rtkZZ: '<span style="color: #693AAA;">Receptor tyrosine kinase (RTK)</span>'
-  lgicZZ: '<span style="color: #5A8432;">Ligand-gated ion channel (LGIC)</span>'
-  GEF: '<span style="color: #AA693A;">guanine nucleotide exchange factor (GEF)</span>'
-  7TM: '<span style="color: #b45918;">7 transmembrane (7TM)</span>'
-  glycogen: '<span style="color: DarkGreen;"><strong>glycogen</strong></span>'
-  chitin: '<span style="color: MediumVioletRed;"><strong>chitin</strong></span>'
-  cellulose: '<span style="color: Indigo;"><strong>cellulose</strong></span>'
-  amylose: '<span style="color: SteelBlue;"><strong>amylose</strong></span>'
-  amylopectin: '<span style="color: DarkRed;"><strong>amylopectin</strong></span>'
+  gpcrZZ: '<span style="color: #843232;">G protein-coupled receptor (GPCR)</span>' #DARK RED
+  rtkZZ: '<span style="color: #693AAA;">Receptor tyrosine kinase (RTK)</span>' #PURPLE
+  lgicZZ: '<span style="color: #598231;">Ligand-gated ion channel (LGIC)</span>' #OLIVE GREEN
+  GEF: '<span style="color: #a86739;">guanine nucleotide exchange factor (GEF)</span>' #BROWN ORANGE
+  7TM: '<span style="color: #b45918;">7 transmembrane (7TM)</span>' #RUST
+  glycogen: '<span style="color: #d40000;"><strong>glycogen</strong></span>' #RED
+  chitin: '<span style="color: #b74300;"><strong>chitin</strong></span>' #DARK ORANGE
+  cellulose: '<span style="color: #935d00;"><strong>cellulose</strong></span>' #LIGHT ORANGE
+  amylose: '<span style="color: #6c6c00;"><strong>amylose</strong></span>' #DARK YELLOW
+  amylopectin: '<span style="color: #3b7600;"><strong>amylopectin</strong></span>' #LIME GREEN
 dbsubject: Cell Biology

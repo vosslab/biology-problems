@@ -4,23 +4,23 @@ keys description: stattest terms
 value description: definition
 values description: definitions
 replacement_rules:
-  'reject ': '<span style="color: #d40000;">reject</span> '
-  rejected: '<span style="color: #d40000;">rejected</span>'
-  althyp: '<span style="color: #b74300;">alternative hypothesis, H<sub>a</sub></span>'
-  'stattest ': '<span style="color: #935d00;">statistical test</span> '
-  stattests: '<span style="color: #935d00;">statistical tests</span>'
-  dof: '<span style="color: #6c6c00;">degrees of freedom</span>'
-  EEEEEEEE: '<span style="color: #3b7600;">EEEEEEEE</span>'
-  'accept ': '<span style="color: #007a00;">accept</span> '
-  accepted: '<span style="color: #007a00;">accepted</span>'
-  teststat: '<span style="color: #00775f;">test statistic</span>'
-  nullhyp: '<span style="color: #007576;">null hypothesis, H<sub>0</sub></span>'
-  IIIIIIII: '<span style="color: #076dad;">IIIIIIII</span>'
-  critval: '<span style="color: #003fff;">critical value</span>'
-  KKKKKKKK: '<span style="color: #0067cc;">KKKKKKKK</span>'
-  losa: '<span style="color: #a719db;">level of significance, &alpha;</span>'
-  p-value: '<span style="color: #c80085;">p-value</span>'
-  NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>'
+  'reject ': '<span style="color: #d40000;">reject</span> ' #RED
+  rejected: '<span style="color: #d40000;">rejected</span>' #RED
+  althyp: '<span style="color: #b74300;">alternative hypothesis, H<sub>a</sub></span>' #DARK ORANGE
+  'stattest ': '<span style="color: #935d00;">statistical test</span> ' #LIGHT ORANGE
+  stattests: '<span style="color: #935d00;">statistical tests</span>' #LIGHT ORANGE
+  dof: '<span style="color: #6c6c00;">degrees of freedom</span>' #DARK YELLOW
+  EEEEEEEE: '<span style="color: #3b7600;">EEEEEEEE</span>' #LIME GREEN
+  'accept ': '<span style="color: #007a00;">accept</span> ' #GREEN
+  accepted: '<span style="color: #007a00;">accepted</span>' #GREEN
+  teststat: '<span style="color: #00775f;">test statistic</span>' #TEAL
+  nullhyp: '<span style="color: #007576;">null hypothesis, H<sub>0</sub></span>' #CYAN
+  IIIIIIII: '<span style="color: #076dad;">IIIIIIII</span>' #SKY BLUE
+  critval: '<span style="color: #003fff;">critical value</span>' #BLUE
+  KKKKKKKK: '<span style="color: #0067cc;">KKKKKKKK</span>' #NAVY
+  losa: '<span style="color: #a719db;">level of significance, &alpha;</span>' #PURPLE
+  p-value: '<span style="color: #c80085;">p-value</span>' #MAGENTA
+  NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
 matching pairs:
   critval:
   - found in a table for given degrees of freedom and losa

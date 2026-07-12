@@ -4,21 +4,21 @@ keys description: terms related to enzyme catalysis
 value description: definition
 values description: definitions
 replacement_rules:
-  Substrate: '<span style="color: #d40000;">Substrate</span>'
-  Reagent: '<span style="color: #b74300;">Reagent</span>'
-  Reactant: '<span style="color: #935d00;">Reactant</span>'
-  Product: '<span style="color: #6c6c00;">Product</span>'
-  Transition state: '<span style="color: #3b7600;">Transition state</span>'
-  Enzyme: '<span style="color: #007a00;">Enzyme</span>'
-  Ribozyme: '<span style="color: #00775f;">Ribozyme</span>'
-  Active site: '<span style="color: #007576;">Active site</span>'
-  Ligand: '<span style="color: #076dad;">Ligand</span>'
-  Ligand-binding site: '<span style="color: #076dad;">Ligand-binding site</span>'
-  Prosthetic group: '<span style="color: #003fff;">Prosthetic group</span>'
-  Cofactor: '<span style="color: #0067cc;">Cofactor</span>'
-  Coenzyme: '<span style="color: #a719db;">Coenzyme</span>'
-  Holoenzyme: '<span style="color: #c80085;">Holoenzyme</span>'
-  Apoenzyme: '<span style="color: #cc0066;">Apoenzyme</span>'
+  Substrate: '<span style="color: #d40000;">Substrate</span>' #RED
+  Reagent: '<span style="color: #b74300;">Reagent</span>' #DARK ORANGE
+  Reactant: '<span style="color: #935d00;">Reactant</span>' #LIGHT ORANGE
+  Product: '<span style="color: #6c6c00;">Product</span>' #DARK YELLOW
+  Transition state: '<span style="color: #3b7600;">Transition state</span>' #LIME GREEN
+  Enzyme: '<span style="color: #007a00;">Enzyme</span>' #GREEN
+  Ribozyme: '<span style="color: #00775f;">Ribozyme</span>' #TEAL
+  Active site: '<span style="color: #007576;">Active site</span>' #CYAN
+  Ligand: '<span style="color: #076dad;">Ligand</span>' #SKY BLUE
+  Ligand-binding site: '<span style="color: #076dad;">Ligand-binding site</span>' #SKY BLUE
+  Prosthetic group: '<span style="color: #003fff;">Prosthetic group</span>' #BLUE
+  Cofactor: '<span style="color: #0067cc;">Cofactor</span>' #NAVY
+  Coenzyme: '<span style="color: #a719db;">Coenzyme</span>' #PURPLE
+  Holoenzyme: '<span style="color: #c80085;">Holoenzyme</span>' #MAGENTA
+  Apoenzyme: '<span style="color: #cc0066;">Apoenzyme</span>' #PINK
 matching pairs:
   Substrate:
   - a molecule (reactant) that is acted upon by an enzyme

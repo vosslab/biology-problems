@@ -5,17 +5,17 @@ value description: description
 values description: descriptions
 replacement_rules:
   negatively charged amino acid: '<span style="color: #d40000;">negatively charged
-    amino acid</span>'
-  aromatic amino acid: '<span style="color: #b74300;">aromatic amino acid</span>'
+    amino acid</span>' #RED
+  aromatic amino acid: '<span style="color: #b74300;">aromatic amino acid</span>' #DARK ORANGE
   non-polar branched chain amino acid: '<span style="color: #935d00;">non-polar branched
-    chain amino acid</span>'
-  non-polar amino acid: '<span style="color: #6c6c00;">non-polar amino acid</span>'
-  small amino acid: '<span style="color: #3b7600;">small amino acid</span>'
-  polar amino acid: '<span style="color: #007a00;">polar amino acid</span>'
+    chain amino acid</span>' #LIGHT ORANGE
+  non-polar amino acid: '<span style="color: #6c6c00;">non-polar amino acid</span>' #DARK YELLOW
+  small amino acid: '<span style="color: #3b7600;">small amino acid</span>' #LIME GREEN
+  polar amino acid: '<span style="color: #007a00;">polar amino acid</span>' #GREEN
   positively charged amino acid: '<span style="color: #076dad;">positively charged
-    amino acid</span>'
-  side chain: '<span style="color: #a719db;">side chain</span>'
-  IIIIIII: '<span style="color: #c80085;">IIIIIII</span>'
+    amino acid</span>' #SKY BLUE
+  side chain: '<span style="color: #a719db;">side chain</span>' #PURPLE
+  IIIIIII: '<span style="color: #c80085;">IIIIIII</span>' #MAGENTA
 matching pairs:
   alanine:
   - a non-polar amino acid, with a single methyl group (-CH<sub>3</sub>) as its side

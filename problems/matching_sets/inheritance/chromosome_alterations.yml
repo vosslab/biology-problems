@@ -4,14 +4,14 @@ keys description: alterations to chromosome structure
 value description: description
 values description: descriptions
 replacement_rules:
-  chromosome: '<span style="color: #008a75;">chromosome</span>'
+  chromosome: '<span style="color: #008672;">chromosome</span>' #DARK TEAL
   chromosome</span>s: chromosomes</span>
-  centromere: '<span style="color: #c1480a;">centromere</span>'
-  reversal: '<span style="color: #56225d;">reversal</span>'
-  reverse: '<span style="color: #56225d;">reverse</span>'
+  centromere: '<span style="color: #c1480a;">centromere</span>' #BURNT ORANGE
+  reversal: '<span style="color: #56225d;">reversal</span>' #DARK PURPLE
+  reverse: '<span style="color: #56225d;">reverse</span>' #DARK PURPLE
   reverse</span>d: reversed</span>
-  genes: '<span style="color: #478d1b;">genes</span>'
-  ectopic: '<span style="color: #b77b04;">genes</span>'
+  genes: '<span style="color: #43861a;">genes</span>' #OLIVE GREEN
+  ectopic: '<span style="color: #a16c04;">genes</span>' #OCHRE
 matching pairs:
   non-disjunction:
   - the failure of sister chromatids to separate properly during cell division

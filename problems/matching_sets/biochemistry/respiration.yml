@@ -4,21 +4,21 @@ keys description: five stages in cellular respiration
 value description: statement
 values description: statements
 replacement_rules:
-  cellular respiration: '<span style="color: #d40000;">cellular respiration</span>'
-  Pyruvate&nbsp;Oxidation: '<span style="color: #b74300;">Pyruvate&nbsp;Oxidation</span>'
-  ' Pyruvate': ' <span style="color: #935d00;">Pyruvate</span>'
-  ' pyruvate': ' <span style="color: #935d00;">pyruvate</span>'
-  DDDDDDDD: '<span style="color: #6c6c00;">DDDDDDDD</span>'
-  Chemiosmosis: '<span style="color: #3b7600;">Chemiosmosis</span>'
-  FFFFFFFF: '<span style="color: #007a00;">FFFFFFFF</span>'
-  electron carriers: '<span style="color: #00775f;">electron carriers</span>'
-  Electron Transport Chain: '<span style="color: #007576;">Electron Transport Chain</span>'
-  IIIIIIII: '<span style="color: #076dad;">IIIIIIII</span>'
-  JJJJJJJJ: '<span style="color: #003fff;">JJJJJJJJ</span>'
-  Glycolysis: '<span style="color: #0067cc;">Glycolysis</span>'
-  mitochondrial matrix: '<span style="color: #a719db;">mitochondrial matrix</span>'
-  Cirtic Acid Cycle: '<span style="color: #c80085;">Cirtic Acid Cycle</span>'
-  electrochemical gradient: '<span style="color: #cc0066;">electrochemical gradient</span>'
+  cellular respiration: '<span style="color: #d40000;">cellular respiration</span>' #RED
+  Pyruvate&nbsp;Oxidation: '<span style="color: #b74300;">Pyruvate&nbsp;Oxidation</span>' #DARK ORANGE
+  ' Pyruvate': ' <span style="color: #935d00;">Pyruvate</span>' #LIGHT ORANGE
+  ' pyruvate': ' <span style="color: #935d00;">pyruvate</span>' #LIGHT ORANGE
+  DDDDDDDD: '<span style="color: #6c6c00;">DDDDDDDD</span>' #DARK YELLOW
+  Chemiosmosis: '<span style="color: #3b7600;">Chemiosmosis</span>' #LIME GREEN
+  FFFFFFFF: '<span style="color: #007a00;">FFFFFFFF</span>' #GREEN
+  electron carriers: '<span style="color: #00775f;">electron carriers</span>' #TEAL
+  Electron Transport Chain: '<span style="color: #007576;">Electron Transport Chain</span>' #CYAN
+  IIIIIIII: '<span style="color: #076dad;">IIIIIIII</span>' #SKY BLUE
+  JJJJJJJJ: '<span style="color: #003fff;">JJJJJJJJ</span>' #BLUE
+  Glycolysis: '<span style="color: #0067cc;">Glycolysis</span>' #NAVY
+  mitochondrial matrix: '<span style="color: #a719db;">mitochondrial matrix</span>' #PURPLE
+  Cirtic Acid Cycle: '<span style="color: #c80085;">Cirtic Acid Cycle</span>' #MAGENTA
+  electrochemical gradient: '<span style="color: #cc0066;">electrochemical gradient</span>' #PINK
 matching pairs:
   Glycolysis:
   - First stage of cellular respiration

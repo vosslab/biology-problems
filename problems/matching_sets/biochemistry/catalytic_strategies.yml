@@ -4,21 +4,21 @@ keys description: mechanisms of enzyme catalysis
 value description: definition
 values description: definitions
 replacement_rules:
-  Acid-base Catalysis: '<span style="color: #d40000;">Acid-base catalysis</span>'
-  BBBBBBBB: '<span style="color: #b74300;">BBBBBBBB</span>'
-  ATP Hydrolysis: '<span style="color: #935d00;">ATP Hydrolysis</span>'
-  DDDDDDDD: '<span style="color: #6c6c00;">DDDDDDDD</span>'
-  Catalysis by Approximation: '<span style="color: #3b7600;">Catalysis by Approximation</span>'
-  FFFFFFFF: '<span style="color: #007a00;">FFFFFFFF</span>'
+  Acid-base Catalysis: '<span style="color: #d40000;">Acid-base catalysis</span>' #RED
+  BBBBBBBB: '<span style="color: #b74300;">BBBBBBBB</span>' #DARK ORANGE
+  ATP Hydrolysis: '<span style="color: #935d00;">ATP Hydrolysis</span>' #LIGHT ORANGE
+  DDDDDDDD: '<span style="color: #6c6c00;">DDDDDDDD</span>' #DARK YELLOW
+  Catalysis by Approximation: '<span style="color: #3b7600;">Catalysis by Approximation</span>' #LIME GREEN
+  FFFFFFFF: '<span style="color: #007a00;">FFFFFFFF</span>' #GREEN
   Metal Ion and Electrostatic Catalysis: '<span style="color: #00775f;">Metal Ion
-    and Electrostatic Catalysis</span>'
-  HHHHHHHH: '<span style="color: #007576;">HHHHHHHH</span>'
-  IIIIIIII: '<span style="color: #076dad;">IIIIIIII</span>'
-  Bond Strain or Distortion: '<span style="color: #003fff;">Bond Strain or Distortion</span>'
-  KKKKKKKK: '<span style="color: #0067cc;">KKKKKKKK</span>'
-  Covalent Catalysis: '<span style="color: #a719db;">Covalent Catalysis</span>'
-  Active Site Microenvironment: '<span style="color: #c80085;">Active Site Microenvironment</span>'
-  NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>'
+    and Electrostatic Catalysis</span>' #TEAL
+  HHHHHHHH: '<span style="color: #007576;">HHHHHHHH</span>' #CYAN
+  IIIIIIII: '<span style="color: #076dad;">IIIIIIII</span>' #SKY BLUE
+  Bond Strain or Distortion: '<span style="color: #003fff;">Bond Strain or Distortion</span>' #BLUE
+  KKKKKKKK: '<span style="color: #0067cc;">KKKKKKKK</span>' #NAVY
+  Covalent Catalysis: '<span style="color: #a719db;">Covalent Catalysis</span>' #PURPLE
+  Active Site Microenvironment: '<span style="color: #c80085;">Active Site Microenvironment</span>' #MAGENTA
+  NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
 matching pairs:
   Acid-base Catalysis:
   - A side chain removes a hydrogen to enhance electron density for attack.

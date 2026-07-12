@@ -4,23 +4,23 @@ keys description: genetic terms
 value description: definition
 values description: definitions
 replacement_rules:
-  haploid: '<span style="color: #d40000;">haploid</span>'
-  'gene ': '<span style="color: #b74300;">gene</span> '
-  locus: '<span style="color: #935d00;">locus</span>'
-  genomes: '<span style="color: #6c6c00;">genomes</span>'
-  'genome ': '<span style="color: #6c6c00;">genome</span> '
+  haploid: '<span style="color: #d40000;">haploid</span>' #RED
+  'gene ': '<span style="color: #b74300;">gene</span> ' #DARK ORANGE
+  locus: '<span style="color: #935d00;">locus</span>' #LIGHT ORANGE
+  genomes: '<span style="color: #6c6c00;">genomes</span>' #DARK YELLOW
+  'genome ': '<span style="color: #6c6c00;">genome</span> ' #DARK YELLOW
   single nucleotide polymorphism (SNP): '<span style="color: #3b7600;">single nucleotide
-    polymorphism (SNP)</span>'
-  genetics: '<span style="color: #007a00;">genetics</span>'
-  homologous chromosomes: '<span style="color: #00775f;">homologous chromosomes</span>'
-  diploid: '<span style="color: #007576;">diploid</span>'
-  IIIIIIII: '<span style="color: #076dad;">IIIIIIII</span>'
-  genetic code: '<span style="color: #003fff;">genetic code</span>'
-  KKKKKKKK: '<span style="color: #0067cc;">KKKKKKKK</span>'
-  'genetic term ': '<span style="color: #a719db;">genetic term</span> '
-  genetic terms: '<span style="color: #a719db;">genetic terms</span>'
-  genomics: '<span style="color: #c80085;">genomics</span>'
-  NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>'
+    polymorphism (SNP)</span>' #LIME GREEN
+  genetics: '<span style="color: #007a00;">genetics</span>' #GREEN
+  homologous chromosomes: '<span style="color: #00775f;">homologous chromosomes</span>' #TEAL
+  diploid: '<span style="color: #007576;">diploid</span>' #CYAN
+  IIIIIIII: '<span style="color: #076dad;">IIIIIIII</span>' #SKY BLUE
+  genetic code: '<span style="color: #003fff;">genetic code</span>' #BLUE
+  KKKKKKKK: '<span style="color: #0067cc;">KKKKKKKK</span>' #NAVY
+  'genetic term ': '<span style="color: #a719db;">genetic term</span> ' #PURPLE
+  genetic terms: '<span style="color: #a719db;">genetic terms</span>' #PURPLE
+  genomics: '<span style="color: #c80085;">genomics</span>' #MAGENTA
+  NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
 matching pairs:
   haploid:
   - a cell or organism that a single set of chromosomes

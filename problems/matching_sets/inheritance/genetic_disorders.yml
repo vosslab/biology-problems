@@ -4,10 +4,10 @@ keys description: genetic disorders
 value description: description
 values description: descriptions
 replacement_rules:
-  disorder: '<span style="color: DarkGreen;">disorder</span>'
-  genetic: '<span style="color: MediumVioletRed;">genetic</span>'
-  metabolic: '<span style="color: Indigo;">metabolic</span>'
-  chromosome: '<span style="color: SteelBlue;">chromosome</span>'
+  disorder: '<span style="color: #d40000;">disorder</span>' #RED
+  genetic: '<span style="color: #b74300;">genetic</span>' #DARK ORANGE
+  metabolic: '<span style="color: #935d00;">metabolic</span>' #LIGHT ORANGE
+  chromosome: '<span style="color: #6c6c00;">chromosome</span>' #DARK YELLOW
 matching pairs:
   Achondroplasia:
   - impairs the growth of bone in the limbs and causes abnormal growth in the spine

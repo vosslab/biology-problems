@@ -4,9 +4,9 @@ keys description: parental genotypes in monohybrid crosses
 value description: description of the progeny
 values description: descriptions of the progeny
 replacement_rules:
-  AA*: '<strong><span style="color: #ba372a;">AA</span></strong>'
-  Aa*: '<strong><span style="color: #843fa1;">Aa</span></strong>'
-  aa*: '<strong><span style="color: #236fa1;">aa</span></strong>'
+  AA*: '<strong><span style="color: #ba372a;">AA</span></strong>' #RED
+  Aa*: '<strong><span style="color: #843fa1;">Aa</span></strong>' #PURPLE
+  aa*: '<strong><span style="color: #236fa1;">aa</span></strong>' #STEEL BLUE
   ' xx ': '&nbsp;&times;&nbsp;'
 matching pairs:
   AA* xx AA*:

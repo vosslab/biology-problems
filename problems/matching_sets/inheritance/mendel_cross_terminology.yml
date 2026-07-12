@@ -4,22 +4,22 @@ keys description: Mendelian crosses and generational stages
 value description: description
 values description: descriptions
 replacement_rules:
-  test&nbsp;cross: '<span style="color: #d40000;">test cross</span>'
-  F<sub>1</sub>: '<span style="color: #b74300;">F<sub>1</sub> generation</span>'
-  inheritance: '<span style="color: #935d00;">inheritance</span>'
-  homozygous: '<span style="color: #6c6c00;">homozygous</span>'
-  backcross: '<span style="color: #3b7600;">backcross</span>'
-  F<sub>2</sub>: '<span style="color: #007a00;">F<sub>2</sub> generation</span>'
-  recessive: '<span style="color: #00775f;">recessive</span>'
-  hybrid&nbsp;cross: '<span style="color: #007576;">hybrid cross</span>'
-  genotypes: '<span style="color: #076dad;">genotype</span>'
-  genotype: '<span style="color: #076dad;">genotype</span>'
-  dominant: '<span style="color: #003fff;">dominant</span>'
-  parental: '<span style="color: #0067cc;">parental</span>'
-  reciprocal&nbsp;cross: '<span style="color: #a719db;">reciprocal cross</span>'
-  P&num;: '<span style="color: #c80085;">P generation</span>'
-  phenotypes: '<span style="color: #cc0066;">phenotype</span>'
-  phenotype: '<span style="color: #cc0066;">phenotype</span>'
+  test&nbsp;cross: '<span style="color: #d40000;">test cross</span>' #RED
+  F<sub>1</sub>: '<span style="color: #b74300;">F<sub>1</sub> generation</span>' #DARK ORANGE
+  inheritance: '<span style="color: #935d00;">inheritance</span>' #LIGHT ORANGE
+  homozygous: '<span style="color: #6c6c00;">homozygous</span>' #DARK YELLOW
+  backcross: '<span style="color: #3b7600;">backcross</span>' #LIME GREEN
+  F<sub>2</sub>: '<span style="color: #007a00;">F<sub>2</sub> generation</span>' #GREEN
+  recessive: '<span style="color: #00775f;">recessive</span>' #TEAL
+  hybrid&nbsp;cross: '<span style="color: #007576;">hybrid cross</span>' #CYAN
+  genotypes: '<span style="color: #076dad;">genotype</span>' #SKY BLUE
+  genotype: '<span style="color: #076dad;">genotype</span>' #SKY BLUE
+  dominant: '<span style="color: #003fff;">dominant</span>' #BLUE
+  parental: '<span style="color: #0067cc;">parental</span>' #NAVY
+  reciprocal&nbsp;cross: '<span style="color: #a719db;">reciprocal cross</span>' #PURPLE
+  P&num;: '<span style="color: #c80085;">P generation</span>' #MAGENTA
+  phenotypes: '<span style="color: #cc0066;">phenotype</span>' #PINK
+  phenotype: '<span style="color: #cc0066;">phenotype</span>' #PINK
 matching pairs:
   test&nbsp;cross:
   - a type of cross where the dominant phenotype is crossed with the homozygous recessive

@@ -4,26 +4,26 @@ keys description: types of macromolecules
 value description: gel component or process
 values description: gel components or processes
 replacement_rules:
-  gel red stain: '<span style="color: #d40000;">gel red stain</span>'
-  Only proteins: '<span style="color: #b74300;">Only proteins</span>'
+  gel red stain: '<span style="color: #d40000;">gel red stain</span>' #RED
+  Only proteins: '<span style="color: #b74300;">Only proteins</span>' #DARK ORANGE
   heating to almost boiling (95&deg;C): '<span style="color: #935d00;">heating to
-    almost boiling (95&deg;C)</span>'
-  dithiothreitol (DTT): '<span style="color: #6c6c00;">dithiothreitol (DTT)</span>'
+    almost boiling (95&deg;C)</span>' #LIGHT ORANGE
+  dithiothreitol (DTT): '<span style="color: #6c6c00;">dithiothreitol (DTT)</span>' #DARK YELLOW
   '&beta;-mercaptoethanol (&beta;ME)': '<span style="color: #3b7600;">&beta;-mercaptoethanol
-    (&beta;ME)</span>'
-  SYBR safe stain: '<span style="color: #007a00;">SYBR safe stain</span>'
-  isoelectric focusing: '<span style="color: #00775f;">isoelectric focusing</span>'
-  2D gels: '<span style="color: #00775f;">2D gels</span>'
-  two-dimensional gels: '<span style="color: #00775f;">two-dimensional gels</span>'
-  Only nucleotides: '<span style="color: #007576;">Only nucleotides</span>'
-  electrical fields: '<span style="color: #076dad;">electrical fields</span>'
-  Coomassie blue stain: '<span style="color: #003fff;">Coomassie blue stain</span>'
-  stain / destaining process: '<span style="color: #0067cc;">stain / destaining process</span>'
-  Both protein and nucleotide: '<span style="color: #a719db;">Both protein and nucleotide</span>'
+    (&beta;ME)</span>' #LIME GREEN
+  SYBR safe stain: '<span style="color: #007a00;">SYBR safe stain</span>' #GREEN
+  isoelectric focusing: '<span style="color: #00775f;">isoelectric focusing</span>' #TEAL
+  2D gels: '<span style="color: #00775f;">2D gels</span>' #TEAL
+  two-dimensional gels: '<span style="color: #00775f;">two-dimensional gels</span>' #TEAL
+  Only nucleotides: '<span style="color: #007576;">Only nucleotides</span>' #CYAN
+  electrical fields: '<span style="color: #076dad;">electrical fields</span>' #SKY BLUE
+  Coomassie blue stain: '<span style="color: #003fff;">Coomassie blue stain</span>' #BLUE
+  stain / destaining process: '<span style="color: #0067cc;">stain / destaining process</span>' #NAVY
+  Both protein and nucleotide: '<span style="color: #a719db;">Both protein and nucleotide</span>' #PURPLE
   ultraviolet light (UV) visualization: '<span style="color: #c80085;">ultraviolet
-    light (UV) visualization</span>'
+    light (UV) visualization</span>' #MAGENTA
   ethidium bromide (EtBr) stain: '<span style="color: #cc0066;">ethidium bromide (EtBr)
-    stain</span>'
+    stain</span>' #PINK
 matching pairs:
   Only proteins:
   - sodium dodecyl sulfate (SDS)

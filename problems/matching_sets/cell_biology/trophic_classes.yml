@@ -4,20 +4,20 @@ keys description: trophic classifications
 value description: definition
 values description: definitions
 replacement_rules:
-  heterotroph: '<span style="color: #d40000;">heterotroph</span>'
-  organisms: '<span style="color: #b74300;">organisms</span>'
-  organotroph: '<span style="color: #935d00;">organotroph</span>'
-  lithotroph: '<span style="color: #6c6c00;">lithotroph</span>'
-  XXXXXXX: '<span style="color: #3b7600;">XXXXXXX</span>'
-  phototroph: '<span style="color: #007a00;">phototroph</span>'
-  light: '<span style="color: #00775f;">light</span>'
-  energy: '<span style="color: #007576;">energy</span>'
-  chemotroph: '<span style="color: #076dad;">chemotroph</span>'
-  inorganic: '<span style="color: #003fff;">inorganic</span>'
-  YYYYYYYY: '<span style="color: #0067cc;">YYYYYYYY</span>'
-  ZZZZZZZZZ: '<span style="color: #a719db;">ZZZZZZZZZ</span>'
-  WWWWWWWW: '<span style="color: #c80085;">WWWWWWWW</span>'
-  autotroph: '<span style="color: #cc0066;">autotroph</span>'
+  heterotroph: '<span style="color: #d40000;">heterotroph</span>' #RED
+  organisms: '<span style="color: #b74300;">organisms</span>' #DARK ORANGE
+  organotroph: '<span style="color: #935d00;">organotroph</span>' #LIGHT ORANGE
+  lithotroph: '<span style="color: #6c6c00;">lithotroph</span>' #DARK YELLOW
+  XXXXXXX: '<span style="color: #3b7600;">XXXXXXX</span>' #LIME GREEN
+  phototroph: '<span style="color: #007a00;">phototroph</span>' #GREEN
+  light: '<span style="color: #00775f;">light</span>' #TEAL
+  energy: '<span style="color: #007576;">energy</span>' #CYAN
+  chemotroph: '<span style="color: #076dad;">chemotroph</span>' #SKY BLUE
+  inorganic: '<span style="color: #003fff;">inorganic</span>' #BLUE
+  YYYYYYYY: '<span style="color: #0067cc;">YYYYYYYY</span>' #NAVY
+  ZZZZZZZZZ: '<span style="color: #a719db;">ZZZZZZZZZ</span>' #PURPLE
+  WWWWWWWW: '<span style="color: #c80085;">WWWWWWWW</span>' #MAGENTA
+  autotroph: '<span style="color: #cc0066;">autotroph</span>' #PINK
 matching pairs:
   heterotroph:
   - consume other organisms for food

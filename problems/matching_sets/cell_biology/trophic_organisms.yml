@@ -4,20 +4,20 @@ keys description: trophic organisms
 value description: definition
 values description: definitions
 replacement_rules:
-  chemoorganoheterotroph: '<span style="color: #d40000;">chemoorganoheterotroph</span>'
-  inorganic: '<span style="color: #b74300;">inorganic</span>'
-  organisms: '<span style="color: #935d00;">organisms</span>'
-  photolithoautotroph: '<span style="color: #6c6c00;">photolithoautotroph</span>'
-  light: '<span style="color: #3b7600;">light</span>'
-  photoorganoheterotroph: '<span style="color: #007a00;">photoorganoheterotroph</span>'
-  ' organic': ' <span style="color: #00775f;">organic</span>'
-  carbon&nbsp;dioxide: '<span style="color: #007576;">carbon&nbsp;dioxide</span>'
-  chemolithoheterotroph: '<span style="color: #076dad;">chemolithoheterotroph</span>'
-  JJJJJJJJ: '<span style="color: #003fff;">JJJJJJJJ</span>'
-  carbon&nbsp;source: '<span style="color: #0067cc;">carbon&nbsp;source</span>'
-  chemolithoautotroph: '<span style="color: #a719db;">chemolithoautotroph</span>'
-  MMMMMMMM: '<span style="color: #c80085;">MMMMMMMM</span>'
-  energy: '<span style="color: #cc0066;">energy</span>'
+  chemoorganoheterotroph: '<span style="color: #d40000;">chemoorganoheterotroph</span>' #RED
+  inorganic: '<span style="color: #b74300;">inorganic</span>' #DARK ORANGE
+  organisms: '<span style="color: #935d00;">organisms</span>' #LIGHT ORANGE
+  photolithoautotroph: '<span style="color: #6c6c00;">photolithoautotroph</span>' #DARK YELLOW
+  light: '<span style="color: #3b7600;">light</span>' #LIME GREEN
+  photoorganoheterotroph: '<span style="color: #007a00;">photoorganoheterotroph</span>' #GREEN
+  ' organic': ' <span style="color: #00775f;">organic</span>' #TEAL
+  carbon&nbsp;dioxide: '<span style="color: #007576;">carbon&nbsp;dioxide</span>' #CYAN
+  chemolithoheterotroph: '<span style="color: #076dad;">chemolithoheterotroph</span>' #SKY BLUE
+  JJJJJJJJ: '<span style="color: #003fff;">JJJJJJJJ</span>' #BLUE
+  carbon&nbsp;source: '<span style="color: #0067cc;">carbon&nbsp;source</span>' #NAVY
+  chemolithoautotroph: '<span style="color: #a719db;">chemolithoautotroph</span>' #PURPLE
+  MMMMMMMM: '<span style="color: #c80085;">MMMMMMMM</span>' #MAGENTA
+  energy: '<span style="color: #cc0066;">energy</span>' #PINK
 matching pairs:
   photolithoautotroph:
   - uses light for energy and CO<sub>2</sub> as a carbon&nbsp;source
