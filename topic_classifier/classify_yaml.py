@@ -386,7 +386,7 @@ def _yaml_input_path(rel_path: str) -> str:
 	return rel_path
 
 #============================================
-def _find_existing(rel_path: str, marker: str, assignments: dict) -> dict:
+def _find_existing(rel_path: str, marker: str, subject: str, assignments: dict) -> dict:
 	"""Look up an existing bbq_control entry for this yaml file.
 
 	Args:
@@ -400,6 +400,8 @@ def _find_existing(rel_path: str, marker: str, assignments: dict) -> dict:
 	bp_root_path = _yaml_input_path(rel_path)
 	basename = os.path.basename(rel_path)
 	for _key, entry in assignments.items():
+		if entry["subject"] != subject:
+			continue
 		entry_input = entry.get("input", "").strip()
 		# Match full bp_root path or bare basename (legacy bbq_tasks.csv style)
 		if entry_input == bp_root_path or entry_input == basename:
@@ -599,7 +601,7 @@ def _classify_subject_stage2(
 
 	# Each subject is judged independently: the existing-assignment match is
 	# evaluated against the subject currently being classified.
-	existing_entry = _find_existing(rel_path, marker, assignments)
+	existing_entry = _find_existing(rel_path, marker, subject, assignments)
 	existing_assignment = None
 	match = None
 	if existing_entry is not None:

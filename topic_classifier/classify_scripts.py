@@ -509,7 +509,9 @@ def _classify_subject_stage2(
 	# Each subject is judged independently: the existing-assignment match is
 	# evaluated against the subject currently being classified.
 	bp_root_path = "{bp_root}/" + script_path.replace("problems/", "", 1)
-	existing_entry = assignments.get(f"{bp_root_path}|{flags}")
+	existing_entry = csv_handler.get_existing_assignment(
+		assignments, bp_root_path, flags, input_file, subject,
+	)
 
 	existing_assignment = None
 	match = None

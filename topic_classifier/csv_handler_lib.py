@@ -13,8 +13,9 @@ def read_existing_assignments(csv_dir: str) -> dict:
 		csv_dir: path to bbq_control/ directory containing task CSVs
 
 	Returns:
-		dict mapping script path (with {bp_root} prefix) to dict with keys:
-		subject, topic, flags, input, notes
+		dict mapping a normalized row identity to an assignment dict. Subject and
+		topic are part of the identity so valid multi-subject rows never overwrite
+		each other.
 	"""
 	assignments = {}
 	csv_pattern = os.path.join(csv_dir, "*.csv")
@@ -69,8 +70,8 @@ def _read_single_csv(csv_path: str) -> dict:
 				"input": input_file,
 				"notes": notes,
 			}
-			# Use script+flags as key to handle same script with different flags
-			key = f"{script}|{flags}"
+			# Preserve each subject/chapter assignment for this concrete variant.
+			key = f"{script}|{flags}|{input_file}|{subject}|{topic}"
 			assignments[key] = entry
 	return assignments
 
@@ -105,10 +106,15 @@ def get_variants_for_script(assignments: dict, script_path: str) -> list:
 	# script portion of assignment keys
 	bp_root_path = "{bp_root}/" + script_path.replace("problems/", "", 1)
 	variants = []
+	seen_variants = set()
 	for key, entry in assignments.items():
 		entry_script = get_script_path_from_key(key)
 		if entry_script != bp_root_path:
 			continue
+		variant_key = (entry["flags"], entry["input"])
+		if variant_key in seen_variants:
+			continue
+		seen_variants.add(variant_key)
 		variant = {
 			"flags": entry["flags"],
 			"input": entry["input"],
@@ -117,6 +123,24 @@ def get_variants_for_script(assignments: dict, script_path: str) -> list:
 	if not variants:
 		variants = [{"flags": "", "input": ""}]
 	return variants
+
+#============================================
+def get_existing_assignment(
+	assignments: dict,
+	script: str,
+	flags: str,
+	input_file: str,
+	subject: str,
+) -> dict | None:
+	"""Return an existing assignment for one concrete variant and subject."""
+	for key, entry in assignments.items():
+		if get_script_path_from_key(key) != script:
+			continue
+		if entry["flags"] != flags or entry["input"] != input_file:
+			continue
+		if entry["subject"] == subject:
+			return entry
+	return None
 
 #============================================
 def get_examples_for_subject(assignments: dict, subject: str, limit: int = 5) -> list:

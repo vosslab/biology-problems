@@ -1,0 +1,55 @@
+- name: four-subject DNA base pairing
+  script: "{bp_root}/molecular_biology-problems/complementary_sequences.py"
+  flags: ""
+  input: ""
+  expected:
+    - [biochemistry, nucleic_acids]
+    - [biotechnology, dna_genomics]
+    - [genetics, dna_structure]
+    - [molecular_biology, dna_structure]
+
+- name: PCR copy-count concept across biology subjects
+  script: "{bp_root}/molecular_biology-problems/amplicon_copies.py"
+  flags: ""
+  input: ""
+  expected:
+    - [biotechnology, dna_genomics]
+    - [molecular_biology, restriction_pcr]
+
+- name: genuinely single-subject peptide chemistry
+  script: "{bp_root}/biochemistry-problems/PUBCHEM/PEPTIDES/tetrapeptide_net_charge.py"
+  flags: ""
+  input: ""
+  expected:
+    - [biochemistry, amino_acids]
+
+- name: same generator equation variant
+  script: "{bp_root}/biochemistry-problems/buffers/Henderson-Hasselbalch.py"
+  flags: "--equation"
+  input: ""
+  expected:
+    - [biochemistry, water_ph]
+
+- name: same generator numeric pH variant
+  script: "{bp_root}/biochemistry-problems/buffers/Henderson-Hasselbalch.py"
+  flags: "--num --pH"
+  input: ""
+  expected:
+    - [biochemistry, water_ph]
+
+- name: YAML DNA structure bank
+  script: YMCS
+  flags: ""
+  input: "{bp_mcs}/biochemistry/dna_structure-biol_351.yml"
+  expected:
+    - [biochemistry, nucleic_acids]
+    - [biotechnology, dna_genomics]
+    - [genetics, dna_structure]
+    - [molecular_biology, dna_structure]
+
+- name: incidental phenotype counts do not create statistics assignment
+  script: "{bp_root}/inheritance-problems/horses.py"
+  flags: ""
+  input: ""
+  expected:
+    - [genetics, gene_interactions]

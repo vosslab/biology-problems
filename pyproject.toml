@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "biology-problems"
-version = "26.06"
+version = "26.07"
 description = "Biology problem generators and helpers."
 readme = "README.md"
 requires-python = ">=3.12"
