@@ -463,7 +463,7 @@ def split_day_block(block: DayBlock, strict: bool = False) -> tuple:
 
 	# the block's ## heading is raw_lines[0]; bullets and ### headings begin at
 	# raw_lines[1]; file lineno for raw_lines[offset] is block.lineno + offset
-	def flush_bullet(title, body_lines, lineno):
+	def flush_bullet(title: str | None, body_lines: list, lineno: int) -> None:
 		"""Build and append an Entry from the bullet state. Returns nothing."""
 		if title is None:
 			return
@@ -639,7 +639,7 @@ def parse_file(path: str, strict: bool = False,
 
 #============================================
 
-def newest_date(blocks: list):
+def newest_date(blocks: list) -> str | None:
 	"""Return the date of the first day block, or ``None`` if empty.
 
 	This is a pure inspector: it does not read any file. The caller

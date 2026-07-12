@@ -1,12 +1,21 @@
+# Standard Library
 import os
 import re
 import random
 
-import git_file_utils
+# PIP3 modules
+import pytest
 
-REPO_ROOT = git_file_utils.get_repo_root()
-REPORT_NAME = "report_markdown_links.txt"
+# local repo modules
+import file_utils
+
+REPO_ROOT = file_utils.get_repo_root()
+# Module-level file list built once at import time for the markdown link scan.
+FILES = file_utils.discover_files(extensions=(".md",), test_key="markdown_links")
+REPORT_NAME = file_utils.report_name(__file__)
 ERROR_SAMPLE_COUNT = 5
+
+HEADER = "Markdown link errors detected:"
 
 # Inline link and image: optional leading !, [text](url), url ends at ) or space.
 LINK_RE = re.compile(r"!?\[([^\]]*)\]\(\s*([^)\s]+)[^)]*\)")
@@ -22,6 +31,10 @@ SCHEME_RE = re.compile(r"^([a-z][a-z0-9+.\-]+):", re.IGNORECASE)
 # Leading-slash links whose first segment is one of these are filesystem
 # paths, not repo-root-relative GitHub links.
 SYSTEM_ROOTS = {"home", "Users", "root", "private", "tmp", "var"}
+
+# Module-level dict of repo-relative POSIX key -> list of violation lines.
+# Populated by the autouse collect_report fixture before any test runs.
+VIOLATIONS_BY_FILE: dict[str, list[str]] = {}
 
 
 #============================================
@@ -341,32 +354,17 @@ def scan_file(
 
 
 #============================================
-def gather_all(repo_root: str) -> list[str]:
+def print_issue_samples(all_issues: list[str]) -> None:
 	"""
-	List all tracked markdown files.
-	"""
-	return git_file_utils.list_tracked_files(repo_root, ["*.md"])
+	Print diagnostic samples of link issues to stdout.
 
+	Prints the first, a random selection, and the last few issues, plus a
+	per-file issue count summary. Used for human-readable console output when
+	violations are found; does not write any files.
 
-#============================================
-def gather_changed(repo_root: str) -> list[str]:
+	Args:
+		all_issues: List of "path:line: message" issue strings.
 	"""
-	List changed markdown files.
-	"""
-	changed = git_file_utils.list_changed_files(repo_root)
-	return [path for path in changed if path.endswith(".md")]
-
-
-#============================================
-def report_issues(all_issues: list[str]) -> None:
-	"""
-	Write the report file and print samples, then fail.
-	"""
-	report_path = os.path.join(REPO_ROOT, REPORT_NAME)
-	with open(report_path, "w", encoding="utf-8") as handle:
-		for line in all_issues:
-			handle.write(f"{line}\n")
-
 	print("")
 	print(f"First {ERROR_SAMPLE_COUNT} errors")
 	for line in all_issues[:ERROR_SAMPLE_COUNT]:
@@ -387,7 +385,7 @@ def report_issues(all_issues: list[str]) -> None:
 	print("-------------------------")
 
 	# Count issues per file for a quick overview.
-	file_counts = {}
+	file_counts: dict[str, int] = {}
 	for line in all_issues:
 		file_path = line.split(":", 1)[0]
 		file_counts[file_path] = file_counts.get(file_path, 0) + 1
@@ -400,35 +398,77 @@ def report_issues(all_issues: list[str]) -> None:
 		f"Found {len(all_issues)} markdown link errors written to "
 		f"REPO_ROOT/{REPORT_NAME}"
 	)
-	raise AssertionError("Markdown link errors detected.")
 
 
 #============================================
-def test_markdown_links() -> None:
+def collect_violations(files: list[str]) -> dict[str, list[str]]:
 	"""
-	Check every local markdown link is GitHub-browsable and well formed.
+	Scan every markdown file and distribute issues into a violations dict.
+
+	Builds tracked_set and tracked_dirs once from git, then scans each file.
+	Each markdown file's issues are keyed by its repo-relative POSIX path.
+	Files with no issues are omitted. Uses a closure approach: tracked_set
+	and tracked_dirs are whole-repo context computed once here, then passed
+	into scan_file for each file. all_issues is preserved flat for
+	print_issue_samples; per-file distribution is a dict comprehension.
+
+	Args:
+		files: Absolute paths to markdown files to scan.
+
+	Returns:
+		dict[str, list[str]]: Repo-relative POSIX key -> list of issue strings.
 	"""
-	files = git_file_utils.collect_files(REPO_ROOT, gather_all, gather_changed)
+	# Convert absolute paths to repo-relative POSIX strings for scan_file.
+	rel_files = sorted(to_posix(os.path.relpath(abs_path, REPO_ROOT)) for abs_path in files)
 
-	# Delete any stale report before running.
-	report_path = os.path.join(REPO_ROOT, REPORT_NAME)
-	if os.path.exists(report_path):
-		os.remove(report_path)
-
-	if not files:
-		print("No files matched the requested scope.")
-		print("No errors found!!!")
-		return
-
-	tracked_set = set(git_file_utils.list_tracked_files(REPO_ROOT))
+	# Build whole-repo context once -- never per file.
+	tracked_set = set(file_utils.list_tracked_files(REPO_ROOT))
 	tracked_dirs = build_tracked_dirs(tracked_set)
 
-	all_issues = []
-	for md_path in sorted(files):
-		all_issues.extend(scan_file(REPO_ROOT, tracked_set, tracked_dirs, md_path))
+	violations: dict[str, list[str]] = {}
+	all_issues: list[str] = []
+	for md_path in rel_files:
+		issues = scan_file(REPO_ROOT, tracked_set, tracked_dirs, md_path)
+		all_issues.extend(issues)
+		if issues:
+			violations[md_path] = issues
 
-	if not all_issues:
-		print("No errors found!!!")
-		return
+	if all_issues:
+		print_issue_samples(all_issues)
 
-	report_issues(all_issues)
+	return violations
+
+
+#============================================
+@pytest.fixture(scope="module", autouse=True)
+def collect_report() -> None:
+	"""
+	Autouse fixture: clear stale reports, populate VIOLATIONS_BY_FILE, write report.
+
+	Runs the guarded once-per-process cleanup first, rebuilds the module-level
+	violations dict by scanning all markdown files (tracked_set and tracked_dirs
+	are built once in collect_violations), then writes the report only when there
+	are violations. Cleanup owns removal of clean-run reports, so a clean module
+	writes nothing.
+	"""
+	# Once-per-process guarded cleanup of repo-root report_*.txt (no-op after first call).
+	file_utils.clear_stale_reports()
+	# Clear any state left from a previous collection in the same process.
+	VIOLATIONS_BY_FILE.clear()
+	VIOLATIONS_BY_FILE.update(collect_violations(FILES))
+	lines = file_utils.format_violation_report(HEADER, VIOLATIONS_BY_FILE)
+	# Write only when there are violations; cleanup already removed stale reports.
+	if lines:
+		file_utils.write_report_lines(REPORT_NAME, lines)
+
+
+#============================================
+@pytest.mark.parametrize("path", FILES, ids=file_utils.rel_id)
+def test_markdown_links(path: str) -> None:
+	"""Check every local markdown link is GitHub-browsable and well formed."""
+	rel = to_posix(os.path.relpath(path, REPO_ROOT))
+	# Python evaluates an assert's message expression ONLY when the assert fails,
+	# so format_violation_assert_message runs on the failing path only -- not per pass.
+	assert rel not in VIOLATIONS_BY_FILE, file_utils.format_violation_assert_message(
+		rel, VIOLATIONS_BY_FILE.get(rel, []), REPORT_NAME
+	)

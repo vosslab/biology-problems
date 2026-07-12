@@ -238,14 +238,29 @@ export PYTHONDONTWRITEBYTECODE=1
 * For pytest test structure and good/brittle assert patterns, see [PYTEST_STYLE.md](PYTEST_STYLE.md).
 
 ## TYPE HINTING
-* Use the python3-style explicit variable type hinting. I think it is good practice. Very little of my code uses it now, but I want to change that. For example,
+
+Type hints are enforced repo-wide by `tests/test_function_typing.py`. Every `def` must carry
+type annotations on every parameter (except `self`, `cls`, `*args`, and `**kwargs`) and a
+return annotation. For example:
+
 ```python
 def greater_than(a: int, b: int) -> bool:
 	return a > b
 ```
-* Avoid using the typing module, only do top level for typing:
-* GOOD: def func(arg: dict)-> tuple:
-* BAD: def func(arg: typing.Dict[str, typing.Any]) -> typing.Tuple[str, str, str]
+
+Use builtin generics (`list`, `dict`, `tuple`, `set`) and PEP 604 unions (`X | None`).
+Use `collections.abc` for callable and iterable params (for example `collections.abc.Callable`,
+`collections.abc.Iterable`). The `typing` module is not used in this repo.
+
+Good:
+```python
+def func(arg: dict) -> tuple:
+```
+
+Bad (uses `typing` module):
+```python
+def func(arg: typing.Dict[str, typing.Any]) -> typing.Tuple[str, str, str]:
+```
 
 ## IMPORTING
 * Never use import *

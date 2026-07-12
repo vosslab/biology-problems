@@ -14,14 +14,18 @@ Default scope is docs/archive/ only. Add --include-changelog,
 --include-active-plans, --include-experiments to widen.
 
 Dry-run by default; pass --apply to write.
+
+Single-file mode: pass -i/--input FILE to process one markdown file.
+In single-file mode --apply is the default; pass -n/--dry-run to preview.
 """
 
-import argparse
 import os
-import pathlib
 import re
-import subprocess
 import sys
+import glob
+import pathlib
+import argparse
+import subprocess
 
 # Standard Library imports above.
 
@@ -194,8 +198,14 @@ def parse_args() -> argparse.Namespace:
 	parser = argparse.ArgumentParser(
 		description='Rewrite broken md links in archive/active_plans/experiments.'
 	)
+	parser.add_argument('-i', '--input', dest='input_files', nargs='+',
+		help='Process one or more markdown files (globs expand via the shell). '
+			'In this mode --apply is the default; use --dry-run to preview.')
 	parser.add_argument('-a', '--apply', dest='apply_changes',
 		action='store_true', help='Write changes to disk (default: dry-run).')
+	parser.add_argument('-n', '--dry-run', dest='dry_run',
+		action='store_true',
+		help='Preview only. In single-file mode, overrides the apply default.')
 	parser.add_argument('-v', '--verbose', dest='verbose',
 		action='store_true', help='Print every rewrite.')
 	parser.add_argument('-c', '--include-changelog', dest='include_changelog',
@@ -211,19 +221,82 @@ def parse_args() -> argparse.Namespace:
 
 
 #============================================
+def run_files(source_files: list, apply_changes: bool, tracked: set,
+		canonical: dict, archive: dict, repo_root: pathlib.Path,
+		verbose: bool) -> None:
+	"""Process every source file, tally totals, print summary."""
+	totals = {'scanned': 0, 'broken': 0, 'rewritten': 0,
+		'text_normalized': 0, 'delinked': 0, 'unresolved': 0,
+		'files_changed': 0}
+
+	for source_file in sorted(source_files):
+		counts = process_file(source_file, apply_changes,
+			tracked, canonical, archive, repo_root)
+		totals['scanned'] += counts['scanned']
+		totals['broken'] += counts['broken']
+		totals['rewritten'] += counts['rewritten']
+		totals['text_normalized'] += counts['text_normalized']
+		totals['delinked'] += counts['delinked']
+		totals['unresolved'] += counts['unresolved']
+		changed_now = (counts['rewritten'] + counts['delinked'] +
+			counts['text_normalized'])
+		if changed_now > 0:
+			totals['files_changed'] += 1
+			if verbose:
+				rel = source_file.relative_to(repo_root)
+				print(str(rel) + ': ' + str(changed_now) + ' changes')
+				for old, new in counts['changes']:
+					print('  ' + old + ' -> ' + new)
+
+	mode = 'APPLY' if apply_changes else 'DRY-RUN'
+	print('')
+	print('=' * 60)
+	print('Mode: ' + mode)
+	print('Files scanned: ' + str(len(source_files)))
+	print('Local links scanned: ' + str(totals['scanned']))
+	print('Broken links found: ' + str(totals['broken']))
+	print('Rewritten (basename matched, path fixed): ' + str(totals['rewritten']))
+	print('Text normalized (text path != URL): ' + str(totals['text_normalized']))
+	print('Delinked (no basename match): ' + str(totals['delinked']))
+	print('Unresolved (no basename / ambiguous): ' + str(totals['unresolved']))
+	print('Files changed: ' + str(totals['files_changed']))
+
+
+#============================================
 def main() -> None:
 	"""Entry point: walk source files, rewrite broken md links."""
 	args = parse_args()
 	repo_root = get_repo_root()
 	docs_dir = repo_root / 'docs'
+
+	tracked = build_tracked_set(repo_root)
+	canonical, archive = build_basename_index(tracked, 'docs/archive/')
+
+	# Single-file/glob mode: apply by default, --dry-run to preview.
+	if args.input_files:
+		source_files = []
+		for pattern in args.input_files:
+			# Expand glob in Python so quoted patterns work even when the
+			# shell does not expand them.
+			matches = glob.glob(pattern)
+			if not matches:
+				print('ERROR: no files match input pattern: ' + pattern,
+					file=sys.stderr)
+				sys.exit(1)
+			for match in matches:
+				source_files.append(pathlib.Path(match).resolve())
+		apply_changes = not args.dry_run
+		run_files(source_files, apply_changes, tracked, canonical, archive,
+			repo_root, args.verbose)
+		return
+
+	# Directory mode: dry-run by default, --apply to write.
+	apply_changes = args.apply_changes and not args.dry_run
 	archive_dir = docs_dir / 'archive'
 	if not archive_dir.is_dir():
 		print('ERROR: docs/archive/ not found at ' + str(archive_dir),
 			file=sys.stderr)
 		sys.exit(1)
-
-	tracked = build_tracked_set(repo_root)
-	canonical, archive = build_basename_index(tracked, 'docs/archive/')
 
 	source_files = list(archive_dir.rglob('*.md'))
 	if args.include_changelog:
@@ -246,41 +319,8 @@ def main() -> None:
 		if specs_dir.is_dir():
 			source_files.extend(specs_dir.rglob('*.md'))
 
-	totals = {'scanned': 0, 'broken': 0, 'rewritten': 0,
-		'text_normalized': 0, 'delinked': 0, 'unresolved': 0,
-		'files_changed': 0}
-
-	for source_file in sorted(source_files):
-		counts = process_file(source_file, args.apply_changes,
-			tracked, canonical, archive, repo_root)
-		totals['scanned'] += counts['scanned']
-		totals['broken'] += counts['broken']
-		totals['rewritten'] += counts['rewritten']
-		totals['text_normalized'] += counts['text_normalized']
-		totals['delinked'] += counts['delinked']
-		totals['unresolved'] += counts['unresolved']
-		changed_now = (counts['rewritten'] + counts['delinked'] +
-			counts['text_normalized'])
-		if changed_now > 0:
-			totals['files_changed'] += 1
-			if args.verbose:
-				rel = source_file.relative_to(repo_root)
-				print(str(rel) + ': ' + str(changed_now) + ' changes')
-				for old, new in counts['changes']:
-					print('  ' + old + ' -> ' + new)
-
-	mode = 'APPLY' if args.apply_changes else 'DRY-RUN'
-	print('')
-	print('=' * 60)
-	print('Mode: ' + mode)
-	print('Files scanned: ' + str(len(source_files)))
-	print('Local links scanned: ' + str(totals['scanned']))
-	print('Broken links found: ' + str(totals['broken']))
-	print('Rewritten (basename matched, path fixed): ' + str(totals['rewritten']))
-	print('Text normalized (text path != URL): ' + str(totals['text_normalized']))
-	print('Delinked (no basename match): ' + str(totals['delinked']))
-	print('Unresolved (no basename / ambiguous): ' + str(totals['unresolved']))
-	print('Files changed: ' + str(totals['files_changed']))
+	run_files(source_files, apply_changes, tracked, canonical, archive,
+		repo_root, args.verbose)
 
 
 if __name__ == '__main__':

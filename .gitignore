@@ -32,7 +32,9 @@ venv.bak/
 report_*.txt
 
 # === UNIVERSAL ===
+output*/
 _temp*.?*
+OTHER_REPOS/
 # === PYTHON ===
 build/
 dist/

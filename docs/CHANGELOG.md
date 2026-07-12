@@ -13,6 +13,11 @@
 
 ### Fixes and Maintenance
 
+- Prevented the lipid chemical-formula generator from emitting duplicate rendered
+  answer choices when distinct molecule names share a formula, and repaired an
+  unclosed list item in the pentapeptide Wordle question HTML.
+- Removed a duplicated ANOVA hypothesis-pair distractor and added rendered-choice
+  uniqueness checks across all hypothesis statement question variants.
 - Curated 432 final task assignments, filled all 49 previously unassigned
   sources, corrected several existing chapter placements, and documented 189
   changes plus all resolved chapter ambiguities without running a new automated

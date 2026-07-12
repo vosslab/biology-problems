@@ -1,6 +1,6 @@
 # Multi-Subject Assignment Coverage Report
 
-Date: 2026-07-12  
+Date: 2026-07-12
 Runtime: `/opt/homebrew/opt/python@3.12/bin/python3.12` (Python 3.12.13)
 
 ## Frozen inventory

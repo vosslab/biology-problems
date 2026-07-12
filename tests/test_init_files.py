@@ -1,94 +1,38 @@
-import ast
-import os
-import tokenize
+"""Enforce minimal __init__.py files: no imports, defs, globals, or logic."""
 
+# Standard Library
+import ast
+
+# PIP3 modules
 import pytest
 
-import git_file_utils
+# local repo modules
+import file_utils
 
-REPO_ROOT = git_file_utils.get_repo_root()
-SKIP_DIRS = {".git", ".venv", "__pycache__", "old_shell_folder"}
-REPORT_NAME = "report_init.txt"
+FILES = file_utils.discover_files(extra_filter=lambda r: r.split("/")[-1] == "__init__.py", test_key="init_files")
+
+REPORT_NAME = file_utils.report_name(__file__)
+
+HEADER = "__init__.py style report"
+
+# Module-level dict of repo-relative POSIX key -> list of violation lines.
+# Populated by the autouse collect_report fixture before any test runs.
+VIOLATIONS_BY_FILE: dict[str, list[str]] = {}
+
 _MIN_SUBSTANTIVE_LINES = 20
 _MIN_CONTENT_CHARS = 100
 
 
 #============================================
-def path_has_skip_dir(path: str) -> bool:
-	"""
-	Check whether a relative path includes a skipped directory.
-	"""
-	parts = path.split(os.sep)
-	for part in parts:
-		if part in SKIP_DIRS:
-			return True
-	return False
-
-
-#============================================
-def filter_init_files(paths: list[str]) -> list[str]:
-	"""
-	Filter candidate paths to tracked __init__.py files that exist.
-	"""
-	matches = []
-	seen = set()
-	for path in paths:
-		if path in seen:
-			continue
-		seen.add(path)
-		if path_has_skip_dir(path):
-			continue
-		if "TEMPLATE" in path:
-			continue
-		if os.path.basename(path) != "__init__.py":
-			continue
-		if not os.path.isfile(path):
-			continue
-		matches.append(path)
-	matches.sort()
-	return matches
-
-
-#============================================
-def gather_files(repo_root: str) -> list[str]:
-	"""
-	Collect tracked __init__.py files.
-	"""
-	paths = []
-	for path in git_file_utils.list_tracked_files(
-		repo_root,
-		patterns=["**/__init__.py", "__init__.py"],
-		error_message="Failed to list tracked __init__.py files.",
-	):
-		paths.append(os.path.join(repo_root, path))
-	return filter_init_files(paths)
-
-
-#============================================
-def gather_changed_files(repo_root: str) -> list[str]:
-	"""
-	Collect changed __init__.py files.
-	"""
-	paths = []
-	for path in git_file_utils.list_changed_files(repo_root):
-		paths.append(os.path.join(repo_root, path))
-	return filter_init_files(paths)
-
-
-#============================================
-def read_source(path: str) -> str:
-	"""
-	Read Python source using tokenize.open for encoding correctness.
-	"""
-	with tokenize.open(path) as handle:
-		text = handle.read()
-	return text
-
-
-#============================================
 def count_substantive_lines(source: str) -> int:
 	"""
-	Count non-empty, non-comment lines.
+	Count non-empty, non-comment lines in a source string.
+
+	Args:
+		source: Python source text.
+
+	Returns:
+		int: Number of lines that are non-empty and not pure comments.
 	"""
 	count = 0
 	for line in source.splitlines():
@@ -104,7 +48,13 @@ def count_substantive_lines(source: str) -> int:
 #============================================
 def should_check_file(source: str) -> bool:
 	"""
-	Check whether file content is substantial enough for linting.
+	Return True when file content is substantial enough to warrant linting.
+
+	Args:
+		source: Python source text.
+
+	Returns:
+		bool: True when the file meets the substantive-content threshold.
 	"""
 	if count_substantive_lines(source) >= _MIN_SUBSTANTIVE_LINES:
 		return True
@@ -116,7 +66,13 @@ def should_check_file(source: str) -> bool:
 #============================================
 def is_module_docstring(node: ast.stmt) -> bool:
 	"""
-	Check whether a module-level node is a literal docstring expression.
+	Return True when a module-level node is a literal docstring expression.
+
+	Args:
+		node: A top-level AST statement node.
+
+	Returns:
+		bool: True when node is a string-literal Expr (module docstring).
 	"""
 	if not isinstance(node, ast.Expr):
 		return False
@@ -130,6 +86,12 @@ def is_module_docstring(node: ast.stmt) -> bool:
 def extract_target_names(node: ast.stmt) -> list[str]:
 	"""
 	Collect direct assignment target names for simple top-level checks.
+
+	Args:
+		node: A top-level AST statement node.
+
+	Returns:
+		list[str]: Simple Name target strings found in this assignment node.
 	"""
 	names = []
 	if isinstance(node, ast.Assign):
@@ -147,18 +109,20 @@ def extract_target_names(node: ast.stmt) -> list[str]:
 
 
 #============================================
-def find_init_issues(path: str) -> list[tuple[int, str]]:
+def find_init_issues(tree: ast.Module) -> list[tuple[int, str]]:
 	"""
-	Return line-numbered style violations in one __init__.py file.
+	Return line-numbered style violations for a parsed __init__.py AST.
+
+	Does not read files; the caller is responsible for parsing and passing
+	the tree. Returns an empty list when the tree body is empty or contains
+	only a module docstring.
+
+	Args:
+		tree: Parsed AST module from an __init__.py file.
+
+	Returns:
+		list[tuple[int, str]]: (line_no, message) pairs for each violation.
 	"""
-	source = read_source(path)
-	if not should_check_file(source):
-		return []
-	try:
-		tree = ast.parse(source, filename=path)
-	except SyntaxError as error:
-		line_no = getattr(error, "lineno", 1) or 1
-		return [(line_no, "syntax error in __init__.py")]
 	body = list(tree.body)
 	if not body:
 		return []
@@ -199,66 +163,74 @@ def find_init_issues(path: str) -> list[tuple[int, str]]:
 
 
 #============================================
-def format_issue(rel_path: str, line_no: int, message: str) -> str:
+def collect_violations(files: list[str]) -> dict[str, list[str]]:
 	"""
-	Format a report line for one __init__.py violation.
+	Run __init__.py style checks on each file and return only those with violations.
+
+	For each file, reads source and skips trivially small files. Parses via
+	file_utils.parse_source; on parse error records exactly one SyntaxError
+	entry. Otherwise runs find_init_issues and formats each (line_no, message)
+	pair. Files with no violations are omitted.
+
+	Args:
+		files: List of absolute file paths to __init__.py files to check.
+
+	Returns:
+		dict[str, list[str]]: Repo-relative POSIX key -> list of violation lines,
+			containing only files with at least one violation.
 	"""
-	return f"{rel_path}:{line_no}: {message}"
-
-
-_FILES = git_file_utils.collect_files(REPO_ROOT, gather_files, gather_changed_files)
-_PARAMS = []
-for path in _FILES:
-	_PARAMS.append(pytest.param(path, id=os.path.relpath(path, REPO_ROOT)))
-if not _PARAMS:
-	_PARAMS.append(pytest.param("", id="no-init-files"))
+	result = {}
+	for path in files:
+		rel = file_utils.rel_to_root(path)
+		source = file_utils.read_source(path)
+		# Skip trivially small files that are not worth linting.
+		if not should_check_file(source):
+			continue
+		tree, error = file_utils.parse_source(path)
+		# Parsing failed: record one SyntaxError entry and skip rule checks.
+		if tree is None:
+			result[rel] = [f"{rel}: SyntaxError: {error}"]
+			continue
+		issues = find_init_issues(tree)
+		if not issues:
+			continue
+		# Format each (line_no, message) pair into a violation line.
+		violations = sorted(set(f"{rel}:{line_no}: {message}" for line_no, message in issues))
+		result[rel] = violations
+	return result
 
 
 #============================================
 @pytest.fixture(scope="module", autouse=True)
-def reset_init_report() -> None:
+def collect_report() -> None:
 	"""
-	Remove stale report file before this module runs.
-	"""
-	report_path = os.path.join(REPO_ROOT, REPORT_NAME)
-	if os.path.exists(report_path):
-		os.remove(report_path)
+	Autouse fixture: clear stale reports, populate VIOLATIONS_BY_FILE, write report.
 
-
-#============================================
-def append_init_report(issues: list[str]) -> str:
+	Runs the guarded once-per-process cleanup first, rebuilds the module-level
+	violations dict, then writes the report only when there are violations.
+	Cleanup owns removal of stale reports, so a clean module writes nothing.
 	"""
-	Append __init__.py violations to the dedicated report file.
-	"""
-	report_path = os.path.join(REPO_ROOT, REPORT_NAME)
-	file_exists = os.path.exists(report_path)
-	with open(report_path, "a", encoding="utf-8") as handle:
-		if not file_exists:
-			handle.write("__init__.py style report\n")
-			handle.write("Violations:\n")
-		for issue in issues:
-			handle.write(issue + "\n")
-	return report_path
+	# Once-per-process guarded cleanup of repo-root report_*.txt (no-op after first call).
+	file_utils.clear_stale_reports()
+	# Clear any state left from a previous collection in the same process.
+	VIOLATIONS_BY_FILE.clear()
+	VIOLATIONS_BY_FILE.update(collect_violations(FILES))
+	lines = file_utils.format_violation_report(HEADER, VIOLATIONS_BY_FILE)
+	# Write only when there are violations; cleanup already removed stale reports.
+	if lines:
+		file_utils.write_report_lines(REPORT_NAME, lines)
 
 
 #============================================
 @pytest.mark.parametrize(
-	"file_path", _PARAMS,
+	"path", FILES,
+	ids=file_utils.rel_id,
 )
-def test_init_files(file_path: str) -> None:
+def test_init_files(path: str) -> None:
 	"""Report obvious __init__.py style violations in one file."""
-	if not file_path:
-		return
-	matches = find_init_issues(file_path)
-	if not matches:
-		return
-	rel_path = os.path.relpath(file_path, REPO_ROOT)
-	issues = [format_issue(rel_path, line_no, message) for line_no, message in matches]
-	issues = sorted(set(issues))
-	report_path = append_init_report(issues)
-	display_report = os.path.relpath(report_path, REPO_ROOT)
-	raise AssertionError(
-		"__init__.py style violations detected:\n"
-		+ "\n".join(issues)
-		+ f"\nFull report: {display_report}"
+	rel = file_utils.rel_to_root(path)
+	# Python evaluates an assert's message expression ONLY when the assert fails,
+	# so format_violation_assert_message runs on the failing path only -- not per pass.
+	assert rel not in VIOLATIONS_BY_FILE, file_utils.format_violation_assert_message(
+		rel, VIOLATIONS_BY_FILE.get(rel, []), REPORT_NAME
 	)

@@ -86,6 +86,23 @@ def create_new_entries(mol_dict):
 			mol_dict[k1+'-'+k2] = merge_dict
 	return mol_dict
 
+def build_unique_formula_choices(answer_key, answer_dict, distractor_dict, num_choices=5):
+	answer_text = dict2html(answer_dict[answer_key])
+	unique_distractors = {
+		dict2html(molecule_dict)
+		for molecule_dict in distractor_dict.values()
+	}
+	unique_distractors.discard(answer_text)
+
+	num_distractors = num_choices - 1
+	if len(unique_distractors) < num_distractors:
+		raise ValueError(f"could not generate {num_choices} unique molecular formulas")
+
+	choices_list = random.sample(sorted(unique_distractors), num_distractors)
+	choices_list.append(answer_text)
+	random.shuffle(choices_list)
+	return choices_list, answer_text
+
 def write_question(N: int, args) -> str:
 	#============================
 	question_text = "Based on only their molecular formula, "
@@ -103,21 +120,11 @@ def write_question(N: int, args) -> str:
 	hydrophillics.update(amino_acids)
 	create_new_entries(hydrophillics)
 
-	choices = [answer_key]
-	wrong_keys = random.sample(list(hydrophillics.keys()), 4)
-	choices.extend(wrong_keys)
-
-	complete_dict = {}
-	complete_dict.update(hydrophillics)
-	complete_dict.update(newlipids)
-
-	random.shuffle(choices)
-
-	choices_list = []
-	for choice_key in choices:
-		molecule_string = dict2html(complete_dict[choice_key])
-		choices_list.append(molecule_string)
-	answer_text = dict2html(complete_dict[answer_key])
+	choices_list, answer_text = build_unique_formula_choices(
+		answer_key,
+		newlipids,
+		hydrophillics,
+	)
 
 	complete_question = bptools.formatBB_MC_Question(N, question_text, choices_list, answer_text)
 	return complete_question

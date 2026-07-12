@@ -2,11 +2,11 @@
 """Draft and apply a git commit using docs/CHANGELOG.md as the source.
 
 Reads new entries from docs/CHANGELOG.md (parsed via changelog_lib),
-selects those dated at or after the last commit that touched the
-changelog file, and uses them to build a seed commit message. The
-seed is shown in the user's editor for review before the commit is
-applied via ``git commit -a -F``. Interactive: prompts on untracked
-files, message review, and final commit confirmation.
+selects ADDED changelog bullets (from the working-tree git diff vs HEAD),
+and uses them to build a seed commit message. The seed is shown in the
+user's editor for review before the commit is applied via
+``git commit -a -F``. Interactive: prompts on untracked files, message
+review, and final commit confirmation.
 """
 
 # Standard Library
@@ -318,68 +318,219 @@ def get_cached_diff(path: str) -> str:
 
 #============================================
 
-def get_last_changelog_commit_sha() -> str | None:
-	"""Return the full SHA of the last commit touching docs/CHANGELOG.md.
+def get_diff_vs_head(path: str) -> str:
+	"""Get working-tree diff vs HEAD for a path with minimal context and no color.
 
-	Returns ``None`` when the changelog has no prior commit (first-time
-	use).
-	"""
-	result = changelog_lib.run_git(
-		["log", "-1", "--format=%H", "--", CHANGELOG_PATHSPEC]
-	)
-	if result.returncode != 0:
-		raise RuntimeError(result.stderr.strip() or "git log failed.")
-	stdout = result.stdout.strip()
-	if not stdout:
-		return None
-	return stdout
-
-#============================================
-
-def get_changelog_text_at(sha: str) -> str:
-	"""Return docs/CHANGELOG.md contents at ``sha`` via git show.
-
-	Raises:
-		RuntimeError: When git show fails (missing object, shallow
-			clone that does not contain the SHA, etc.). The caller
-			must not silently fall back to "all entries are new" --
-			that would resurrect the bug this helper exists to fix.
-	"""
-	result = changelog_lib.run_git(
-		["show", f"{sha}:{CHANGELOG_PATHSPEC}"]
-	)
-	if result.returncode != 0:
-		raise RuntimeError(
-			result.stderr.strip()
-			or f"git show failed for {sha}:{CHANGELOG_PATHSPEC}"
-		)
-	return result.stdout
-
-#============================================
-
-def select_new_entries(prior_sha: str | None) -> tuple[list, list[str]]:
-	"""Return entries present in current CHANGELOG but not at ``prior_sha``.
-
-	Replaces the prior date-window filter (which re-emitted bullets that
-	had already been committed earlier the same day when the user added
-	more bullets under the same ``## YYYY-MM-DD`` heading). Selection
-	now diffs the parsed entry set against the entry set in the file at
-	the last changelog-touching commit, keyed by ``(date, title)``.
+	Runs ``git diff HEAD --no-color --unified=0 -- <path>`` so that the
+	new-side line numbers in the diff match the 1-based line numbers of
+	the current working-tree file (whether or not edits are staged).
 
 	Args:
-		prior_sha: Full SHA of the last commit touching
-			docs/CHANGELOG.md, or ``None`` for first-time use.
+		path: Repo-relative path to diff.
+
+	Returns:
+		The diff output string (empty when there is no difference).
+
+	Raises:
+		RuntimeError: When the git command fails.
+	"""
+	result = changelog_lib.run_git(["diff", "HEAD", "--no-color", "--unified=0", "--", path])
+	if result.returncode != 0:
+		raise RuntimeError(result.stderr.strip() or f"git diff HEAD failed for {path}")
+	return result.stdout.strip()
+
+#============================================
+
+def parse_added_bullet_lines(diff_text: str) -> set[int]:
+	"""Return new-side line numbers of ADDED top-level bullet lines in a unified=0 diff.
+
+	Walks each ``@@ -a,b +c,d @@`` hunk header and classifies lines as
+	"add" or "remove". Only TOP-LEVEL bullets are considered: a line
+	that starts with ``+ - `` (the literal ``- `` immediately after the
+	diff ``+`` marker, with no leading whitespace). Nested bullets
+	(``+   - ...``, ``+\t- ...``) and continuation lines are ignored.
+
+	Per-hunk ADD vs EDIT classification (handles mixed hunks without
+	over-skipping): let ``r`` = count of removed top-level bullet lines
+	in the hunk (``- - ...``). Collect added top-level bullet lines in
+	order. Treat the FIRST ``min(r, added_count)`` added bullets as edits
+	(replacements of the removed bullets) and skip them; record the
+	new-side line number of every REMAINING added bullet as a true
+	addition.
+
+	Examples::
+
+		Pure insertion (r=0, 2 added): both line numbers recorded.
+		Edit replacement (r=1, 1 added): 0 recorded (the 1 added is the edit).
+		Removal only (r=1, 0 added): empty set.
+		Mixed hunk (r=1, 2 added): only the SECOND added bullet recorded.
+			The first added bullet "absorbs" the single removed bullet,
+			leaving one surplus addition.
+
+	Args:
+		diff_text: Full text of a ``git diff --unified=0`` output.
+
+	Returns:
+		Set of 1-based working-tree line numbers for newly added bullets.
+	"""
+	# regex to match unified diff hunk headers: @@ -old_start[,old_count] +new_start[,new_count] @@
+	hunk_re = re.compile(r"^@@ -\d+(?:,\d+)? \+(\d+)(?:,\d+)? @@")
+
+	added_lines: set[int] = set()
+	# current new-side line counter (0 means outside a hunk)
+	new_line = 0
+
+	# collect removed and added top-level bullet lines per hunk before committing
+	hunk_removed_count = 0
+	hunk_added: list[int] = []
+
+	def flush_hunk() -> None:
+		"""Commit the current hunk: skip the first min(r, added) additions."""
+		skip = min(hunk_removed_count, len(hunk_added))
+		for lineno in hunk_added[skip:]:
+			added_lines.add(lineno)
+
+	in_hunk = False
+
+	for raw_line in diff_text.splitlines():
+		hunk_match = hunk_re.match(raw_line)
+		if hunk_match:
+			# flush previous hunk before starting a new one
+			if in_hunk:
+				flush_hunk()
+			in_hunk = True
+			new_line = int(hunk_match.group(1))
+			hunk_removed_count = 0
+			hunk_added = []
+			continue
+
+		if not in_hunk:
+			# diff header lines (--- a/ +++ b/ etc.) before the first hunk
+			continue
+
+		if raw_line.startswith("+"):
+			# added line: advance new_line counter
+			content = raw_line[1:]
+			# top-level bullet: must start with "- " (no leading whitespace)
+			if content.startswith("- "):
+				hunk_added.append(new_line)
+			new_line += 1
+		elif raw_line.startswith("-"):
+			# removed line: only count removed top-level bullets; do NOT advance new_line
+			content = raw_line[1:]
+			if content.startswith("- "):
+				hunk_removed_count += 1
+		# context lines (starting with ' ') and diff-header lines are ignored;
+		# unified=0 means there should be no context lines in practice
+
+	# flush the final hunk
+	if in_hunk:
+		flush_hunk()
+
+	return added_lines
+
+#============================================
+
+def added_changelog_bullet_lines() -> set[int]:
+	"""Return new-side line numbers of ADDED top-level bullets in CHANGELOG vs HEAD.
+
+	Thin wrapper: calls ``parse_added_bullet_lines(get_diff_vs_head(CHANGELOG_PATHSPEC))``.
+
+	Returns:
+		Set of 1-based line numbers for newly added bullet lines in the
+		working-tree changelog.
+	"""
+	diff_text = get_diff_vs_head(CHANGELOG_PATHSPEC)
+	return parse_added_bullet_lines(diff_text)
+
+#============================================
+
+def keep_recent_heading_run(blocks: list, entries: list) -> list:
+	"""Filter candidate entries to the most recent consecutive heading run.
+
+	Builds the set of dates that have at least one candidate entry. Finds
+	the ANCHOR: the newest (first in file order) block whose date appears
+	in that set. Walks downward (toward older blocks) keeping consecutive
+	blocks as long as each has a candidate; stops at the first block with
+	no candidate. Returns entries whose date is in the kept set, preserving
+	the original entry order.
+
+	This function filters ONLY among the passed candidate entries -- it
+	never touches the block's full bullet list.
+
+	Structural assumption: ``changelog_lib`` yields one ``DayBlock`` per
+	date in file order (newest date first). Duplicate ``## YYYY-MM-DD``
+	headings are out of scope; no fallback is added for them.
+
+	Example::
+
+		blocks:  [2026-06-11, 2026-06-10, 2026-05-14, 2026-05-01]
+		entries: added under 2026-06-11 and 2026-06-10 only
+		-> anchor = 2026-06-11 (newest with a candidate)
+		-> 2026-06-10 is consecutive and has a candidate: keep
+		-> 2026-05-14 has no candidate: stop
+		-> kept_dates = {2026-06-11, 2026-06-10}
+
+	Args:
+		blocks: List of ``changelog_lib.DayBlock`` records in newest-first
+			file order.
+		entries: Candidate ``changelog_lib.Entry`` records to filter.
+
+	Returns:
+		Subset of ``entries`` whose date is in the kept heading run,
+		preserving entry order.
+	"""
+	if not entries:
+		return []
+
+	# build the set of dates that have at least one candidate entry
+	candidate_dates: set[str] = {e.date for e in entries}
+
+	# find the anchor: newest block (first in file order) with a candidate
+	anchor_idx: int | None = None
+	for idx, block in enumerate(blocks):
+		if block.date in candidate_dates:
+			anchor_idx = idx
+			break
+
+	if anchor_idx is None:
+		# no block matches any candidate date (should not happen if entries is non-empty)
+		return []
+
+	# walk downward from anchor, keeping consecutive blocks with candidates
+	kept_dates: set[str] = set()
+	for block in blocks[anchor_idx:]:
+		if block.date in candidate_dates:
+			kept_dates.add(block.date)
+		else:
+			# first gap: stop the consecutive run
+			break
+
+	return [e for e in entries if e.date in kept_dates]
+
+#============================================
+
+def select_new_entries() -> tuple[list, list[str]]:
+	"""Return ADDED changelog bullet entries and parse warnings.
+
+	Derives candidate entries by joining the set of newly added bullet
+	line numbers (from ``git diff HEAD`` of the changelog) against the
+	1-based line numbers of parsed entries in the current working-tree
+	file. An "added" bullet is one whose line number appears as a pure
+	addition in the diff (not an edit replacement). Edited old bullets
+	are excluded silently.
+
+	After collecting candidates, applies ``keep_recent_heading_run`` as
+	a safety boundary to restrict entries to the most recent consecutive
+	run of day-block headings that have at least one candidate.
 
 	Returns:
 		A tuple ``(entries, warnings)``. ``entries`` is a list of
 		``changelog_lib.Entry`` records in current-file order.
 		``warnings`` is the deduplicated list of parser warnings on the
-		CURRENT file; prior-file warnings are intentionally suppressed
-		(they would re-print stale parse complaints on every commit).
+		current file.
 	"""
-	_blocks, current_entries, warnings = changelog_lib.parse_file(
-		CHANGELOG_PATHSPEC
-	)
+	blocks, current_entries, warnings = changelog_lib.parse_file(CHANGELOG_PATHSPEC)
 	# deduplicate warning messages on identical text
 	seen: set[str] = set()
 	unique_warnings: list[str] = []
@@ -388,32 +539,11 @@ def select_new_entries(prior_sha: str | None) -> tuple[list, list[str]]:
 			continue
 		seen.add(warning)
 		unique_warnings.append(warning)
-	if prior_sha is None:
-		return (current_entries, unique_warnings)
-	prior_text = get_changelog_text_at(prior_sha)
-	_p_blocks, prior_entries, _p_warnings = changelog_lib.parse_text(
-		prior_text, source=f"{prior_sha[:8]}:{CHANGELOG_PATHSPEC}"
-	)
-	new_entries = compute_new_entries(current_entries, prior_entries)
-	return (new_entries, unique_warnings)
-
-#============================================
-
-def compute_new_entries(current_entries: list, prior_entries: list) -> list:
-	"""Return current_entries whose (date, title) is not in prior_entries.
-
-	Preserves current-entry order. Identity key is ``(date, title)``;
-	bullets may be rephrased per repo norms, so a title edit looks "new"
-	here and the user prunes in the editor buffer.
-	"""
-	prior_keys: set[tuple[str, str]] = {
-		(entry.date, entry.title) for entry in prior_entries
-	}
-	new_entries = [
-		entry for entry in current_entries
-		if (entry.date, entry.title) not in prior_keys
-	]
-	return new_entries
+	# join parsed entries against the set of newly added diff line numbers
+	added = added_changelog_bullet_lines()
+	candidates = [e for e in current_entries if e.lineno in added]
+	kept = keep_recent_heading_run(blocks, candidates)
+	return (kept, unique_warnings)
 
 #============================================
 
@@ -627,8 +757,7 @@ def main() -> None:
 
 	# short-circuit on a clean tree before parsing the whole changelog:
 	# if there is nothing in the working tree or the index for
-	# docs/CHANGELOG.md, there is nothing to commit regardless of which
-	# entries the date filter would have picked up.
+	# docs/CHANGELOG.md, there are no added bullets to seed from.
 	diff_text = get_diff(CHANGELOG_PATHSPEC)
 	if not diff_text:
 		diff_text = get_cached_diff(CHANGELOG_PATHSPEC)
@@ -637,25 +766,19 @@ def main() -> None:
 		changelog_lib.CONSOLE.print(message, style="yellow")
 		return
 
-	# parse-based new-entry selection: build the seed from current entries
-	# whose (date, title) does not appear in the changelog at the last
-	# commit that touched it. This avoids re-emitting bullets that were
-	# already committed earlier the same day when more bullets land under
-	# the same ## YYYY-MM-DD heading.
-	prior_sha = get_last_changelog_commit_sha()
-	new_entries, warnings = select_new_entries(prior_sha)
+	# diff-driven new-entry selection: candidate entries are those whose
+	# 1-based line number appears as a pure addition in `git diff HEAD` of
+	# the changelog. Edited old bullets are excluded silently (edit looks
+	# like a removed + added line pair; the added line is counted as a
+	# replacement and skipped). A consecutive-heading-run filter is applied
+	# as a safety boundary. No prior-SHA fetch is needed.
+	new_entries, warnings = select_new_entries()
 	# print parse warnings once (deduplicated upstream)
 	for warning in warnings:
 		changelog_lib.print_warning(warning)
 
 	if not new_entries:
-		if prior_sha is None:
-			message = f"No entries in {changelog_path}. Nothing to commit."
-		else:
-			message = (
-				f"No new entries since commit {prior_sha[:8]}. "
-				"Nothing to commit."
-			)
+		message = "No added changelog bullets found. Nothing to seed."
 		changelog_lib.CONSOLE.print(message, style="yellow")
 		return
 

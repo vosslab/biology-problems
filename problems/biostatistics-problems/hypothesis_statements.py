@@ -238,7 +238,7 @@ def _wrong_pair_choices(scenario: dict, tail: str) -> list[str]:
 
 	# 2) null written with an inequality (very common student mistake)
 	if family == "anova":
-		choices.append(_mk_pair(scenario, "At least one group mean is different.", "All group means are equal."))
+		choices.append(_mk_pair(scenario, "All group means are equal.", "All group means are equal."))
 	else:
 		if tail == "greater":
 			choices.append(_mk_pair(scenario, _set_relation(h0, "&gt;"), ha))
@@ -260,7 +260,14 @@ def _wrong_pair_choices(scenario: dict, tail: str) -> list[str]:
 	else:
 		choices.append(_mk_pair(scenario, "The sample means are all equal.", "The sample means are not all equal."))
 
+	_validate_unique_choices(choices)
 	return choices, correct
+
+
+#===========================
+def _validate_unique_choices(choices: list[str]) -> None:
+	if len(choices) != len(set(choices)):
+		raise ValueError("hypothesis generator produced duplicate rendered choices")
 
 
 #===========================
@@ -283,6 +290,7 @@ def _wrong_single_choices(scenario: dict, tail: str, kind: str) -> tuple[list[st
 			p2 = _mk_param(scenario["param2_html"], scenario.get("param2_text"))
 			choices.append(_mk_statement(scenario, "H<sub>0</sub>", f"{p1} &ne; {p2}"))
 			choices.append(_mk_statement(scenario, "H<sub>0</sub>", "The sample means are equal."))
+		_validate_unique_choices(choices)
 		return choices, correct
 
 	if kind == "alt":
@@ -302,6 +310,7 @@ def _wrong_single_choices(scenario: dict, tail: str, kind: str) -> tuple[list[st
 			p2 = _mk_param(scenario["param2_html"], scenario.get("param2_text"))
 			choices.append(_mk_statement(scenario, "H<sub>A</sub>", f"{p1} = {p2}"))
 			choices.append(_mk_statement(scenario, "H<sub>A</sub>", "The sample means are not equal."))
+		_validate_unique_choices(choices)
 		return choices, correct
 
 	raise ValueError(f"Unknown kind: {kind}")

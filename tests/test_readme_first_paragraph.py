@@ -1,9 +1,9 @@
 import os
 import re
 
-import git_file_utils
+import file_utils
 
-REPO_ROOT = git_file_utils.get_repo_root()
+REPO_ROOT = file_utils.get_repo_root()
 README_PATH = os.path.join(REPO_ROOT, "README.md")
 MAX_ABOUT_CHARS = 250
 
@@ -153,7 +153,7 @@ def _read_readme_text() -> str:
 
 
 #============================================
-def test_readme_exists():
+def test_readme_exists() -> None:
 	# README.md must be present at the repo root
 	assert os.path.isfile(README_PATH), (
 		f"README.md is missing at the repo root: {README_PATH}"
@@ -161,7 +161,7 @@ def test_readme_exists():
 
 
 #============================================
-def test_readme_has_single_h1_title():
+def test_readme_has_single_h1_title() -> None:
 	# First Markdown heading must be a single '# Title' line, and there
 	# must be exactly one level-one heading in the file.
 	text = _read_readme_text()
@@ -194,7 +194,7 @@ def test_readme_has_single_h1_title():
 
 
 #============================================
-def test_first_paragraph_exists():
+def test_first_paragraph_exists() -> None:
 	# First paragraph must be present and non-empty
 	paragraph = _load_first_paragraph()
 	assert paragraph, (
@@ -204,7 +204,7 @@ def test_first_paragraph_exists():
 
 
 #============================================
-def test_first_paragraph_at_most_250_chars():
+def test_first_paragraph_at_most_250_chars() -> None:
 	# GitHub About field hard-caps at 250 Python characters (len()).
 	paragraph = _load_first_paragraph()
 	length = len(paragraph)
@@ -216,7 +216,7 @@ def test_first_paragraph_at_most_250_chars():
 
 
 #============================================
-def test_first_paragraph_no_repo_name():
+def test_first_paragraph_no_repo_name() -> None:
 	# Repo name should not appear verbatim in the About text.
 	# Strip Markdown link URLs first so a link to the repo or package URL
 	# does not trip a false positive; only visible link text is checked.
@@ -237,7 +237,7 @@ def test_first_paragraph_no_repo_name():
 
 
 #============================================
-def test_first_paragraph_is_plain_prose():
+def test_first_paragraph_is_plain_prose() -> None:
 	# Paragraph must be readable prose, not a bullet list, badge row, or
 	# pure link row. Checks two things: no line begins with a bullet
 	# marker, and the paragraph still has real text after Markdown links
