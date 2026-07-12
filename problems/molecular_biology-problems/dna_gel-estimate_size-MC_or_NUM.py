@@ -9,10 +9,11 @@ class GelMigration(object):
 	def __init__(self):
 		self.debug = False
 
-		self.slope = 0.8 * self.random_average(10)
 		self.min_mw = 100
 		self.max_mw = 10000
-		self.intercept = math.log(self.max_mw) * self.random_average(10)
+		self.slope = 0.4 + 0.4 * self.random_average(10)
+		minimum_distance = 0.5 + self.random_average(10)
+		self.intercept = math.log(self.max_mw) * self.slope + minimum_distance
 		#f(max) = 0.0
 		#f(min) = 5.0
 		#f(x) = b - m*log(x)
@@ -167,7 +168,8 @@ class GelMigration(object):
 		return bb_format
 
 def write_question(N, args):
-	return args.gelm.writeProblem(N, args.question_type, args.num_choices)
+	gelm = GelMigration()
+	return gelm.writeProblem(N, args.question_type, args.num_choices)
 
 
 #==================================================
@@ -187,7 +189,6 @@ def parse_arguments():
 #==================================================
 def main():
 	args = parse_arguments()
-	args.gelm = GelMigration()
 	outfile = bptools.make_outfile(args.question_type)
 	bptools.collect_and_write_questions(write_question, args, outfile)
 

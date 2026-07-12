@@ -40,6 +40,12 @@
   per-question diagnostic PNG files into the current working directory.
 - Added explicit uppercase color-name comments to all 486 previously
   uncommented color replacement rules across 39 matching-set YAML banks.
+- Prevented rare chi-square division-by-zero scenarios by redrawing zero-count
+  observed classes, and constrained DNA gel calibration curves so every marker
+  in the declared range has a positive migration distance; each gel question
+  now receives its own calibration curve so high-volume runs meet their target.
+- Bounded chi-square observed-count redraws at 1,000 attempts with an explicit
+  failure instead of relying on an unbounded retry loop.
 - Curated 432 final task assignments, filled all 49 previously unassigned
   sources, corrected several existing chapter placements, and documented 189
   changes plus all resolved chapter ambiguities without running a new automated

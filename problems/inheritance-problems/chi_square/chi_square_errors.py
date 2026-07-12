@@ -38,12 +38,27 @@ choices = [
 	'The degrees of freedom is wrong, it should be a different value.',
 ]
 
+MAX_OBSERVED_ATTEMPTS = 1000
+
+#===================
+#===================
+def observed_counts_for_observed_denominator():
+	for _ in range(MAX_OBSERVED_ATTEMPTS):
+		observed = chisquarelib.create_observed_progeny()
+		if 88 <= observed[0] <= 92 or 9 <= observed[3] <= 11:
+			continue
+		if any(count == 0 for count in observed):
+			continue
+		return observed
+	raise RuntimeError(
+		f"could not generate valid nonzero observed counts after {MAX_OBSERVED_ATTEMPTS} attempts"
+	)
+
+
 #===================
 #===================
 def divideByObservedError():
-	observed = [90]
-	while 88 <= observed[0] <= 92 or 9 <= observed[3] <= 11:
-		observed = chisquarelib.create_observed_progeny()
+	observed = observed_counts_for_observed_denominator()
 	expected = [90,30,30,10]
 	stats_list = []
 	chisq = 0.0
@@ -67,9 +82,7 @@ def divideByObservedError():
 #===================
 #===================
 def divideByObservedAndSquareError():
-	observed = [90]
-	while 88 <= observed[0] <= 92 or 9 <= observed[3] <= 11:
-		observed = chisquarelib.create_observed_progeny()
+	observed = observed_counts_for_observed_denominator()
 	expected = [90,30,30,10]
 	stats_list = []
 	chisq = 0.0
