@@ -62,7 +62,7 @@ Domain-specific helper libraries live near the generators that use them.
 ### Molecular biology and DNA profiling libraries
 
 - [problems/dna_profiling-problems/gellib.py](../problems/dna_profiling-problems/gellib.py): gel electrophoresis helpers.
-- [problems/molecular_biology-problems/restrictlib.py](../problems/molecular_biology-problems/restrictlib.py): restriction enzyme lookup and analysis.
+- [problems/molecular_biology-problems/restriction_enzymes/restrictlib.py](../problems/molecular_biology-problems/restriction_enzymes/restrictlib.py): restriction enzyme lookup and analysis.
 - [problems/molecular_biology-problems/seqlib.py](../problems/molecular_biology-problems/seqlib.py): sequence utilities.
 
 ### Phylogenetic tree libraries

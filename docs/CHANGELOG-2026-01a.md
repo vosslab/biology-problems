@@ -152,7 +152,7 @@
 - Added a one-time deprecation warning when `bptools.collect_question_batches(...)` is used to discourage new scripts from adopting the batch-writer pattern.
 - Converted [classify_Fischer.py](../problems/biochemistry-problems/carbs/classify_Fischer.py) and [classify_Haworth.py](../problems/biochemistry-problems/carbs/classify_Haworth.py) from batch generators to single-question writers using modulo-`N` scenario selection, removing non-CLI state stored on `args`.
 	- Added `bptools.add_scenario_args(parser)` (`--random` default, `--sorted` optional) and wired it into the carbohydrates and Michaelis-Menten scenario-based scripts to control scenario ordering without changing `-d/-x` semantics.
-	- Applied the same precomputed-scenarios + modulo-`N` selection pattern (with `--random/--sorted`) to: [match_amino_acid_structures.py](../problems/biochemistry-problems/PUBCHEM/AMINO_ACIDS/match_amino_acid_structures.py), [which_amino_acid.py](../problems/biochemistry-problems/PUBCHEM/AMINO_ACIDS/which_amino_acid.py), [monohybrid_genotype_statements.py](../problems/inheritance-problems/monohybrid_genotype_statements.py), [write_pedigree_choice.py](../problems/inheritance-problems/pedigrees/write_pedigree_choice.py), [write_pedigree_match.py](../problems/inheritance-problems/pedigrees/write_pedigree_match.py), [amplicon_copies.py](../problems/molecular_biology-problems/amplicon_copies.py), [dna_melting_temp.py](../problems/molecular_biology-problems/dna_melting_temp.py), [overhang_sequence.py](../problems/molecular_biology-problems/overhang_sequence.py), and [overhang_type.py](../problems/molecular_biology-problems/overhang_type.py).
+	- Applied the same precomputed-scenarios + modulo-`N` selection pattern (with `--random/--sorted`) to: [match_amino_acid_structures.py](../problems/biochemistry-problems/PUBCHEM/AMINO_ACIDS/match_amino_acid_structures.py), [which_amino_acid.py](../problems/biochemistry-problems/PUBCHEM/AMINO_ACIDS/which_amino_acid.py), [monohybrid_genotype_statements.py](../problems/inheritance-problems/monohybrid_genotype_statements.py), [write_pedigree_choice.py](../problems/inheritance-problems/pedigrees/write_pedigree_choice.py), [write_pedigree_match.py](../problems/inheritance-problems/pedigrees/write_pedigree_match.py), [amplicon_copies.py](../problems/molecular_biology-problems/amplicon_copies.py), [dna_melting_temp.py](../problems/molecular_biology-problems/dna_melting_temp.py), [overhang_sequence.py](../problems/molecular_biology-problems/restriction_enzymes/overhang_sequence.py), and [overhang_type.py](../problems/molecular_biology-problems/restriction_enzymes/overhang_type.py).
 	- Fixed `pedigree_lib` local import resolution in the template-based pedigree scripts so they run from repo root without `ModuleNotFoundError`.
 	- Converted [convert_Fischer_to_Haworth.py](../problems/biochemistry-problems/carbs/convert_Fischer_to_Haworth.py) and [convert_Haworth_to_Fischer.py](../problems/biochemistry-problems/carbs/convert_Haworth_to_Fischer.py) from batch generators to single-question writers with prebuilt scenarios (optionally shuffled via `--random`) and modulo-`N` selection.
 - Refactored gene mapping generators to the unified bptools framework (standard `-d/-x` args, `bptools.make_outfile(...)`, and `bptools.collect_and_write_questions(...)`): [tetrad_ordered-centromere_distance.py](../problems/inheritance-problems/gene_mapping/tetrad_ordered-centromere_distance.py), [tetrad_unordered_three_gene-distances_plus.py](../problems/inheritance-problems/gene_mapping/tetrad_unordered_three_gene-distances_plus.py), [tetrad_unordered_three_gene-find_one_distance.py](../problems/inheritance-problems/gene_mapping/tetrad_unordered_three_gene-find_one_distance.py), [tetrad_unordered_two_gene-find_distance.py](../problems/inheritance-problems/gene_mapping/tetrad_unordered_two_gene-find_distance.py), [tetrad_unordered_two_gene-test_linkage.py](../problems/inheritance-problems/gene_mapping/tetrad_unordered_two_gene-test_linkage.py), [three-point_test_cross-distances_plus.py](../problems/inheritance-problems/gene_mapping/three-point_test_cross-distances_plus.py), [three-point_test_cross-find_interence.py](../problems/inheritance-problems/gene_mapping/three-point_test_cross-find_interence.py), [three-point_test_cross-one_gene_distance.py](../problems/inheritance-problems/gene_mapping/three-point_test_cross-one_gene_distance.py), and [three-point_test_cross-which_genotypes.py](../problems/inheritance-problems/gene_mapping/three-point_test_cross-which_genotypes.py).
@@ -625,7 +625,7 @@
 - Fixed HTML quoting in [seqlib.py](../problems/molecular_biology-problems/seqlib.py)
   to avoid invalid inline style attributes.
 - Added max-questions early-stop handling in
-  [overhang_type.py](../problems/molecular_biology-problems/overhang_type.py).
+  [overhang_type.py](../problems/molecular_biology-problems/restriction_enzymes/overhang_type.py).
 - Fixed malformed HTML attributes in
   [enhancer_gene_expression.py](../problems/molecular_biology-problems/enhancer_gene_expression.py).
 - Fixed paragraph nesting in
@@ -732,7 +732,7 @@
   scenario selection in [UNIFICATION_PLAN.md](UNIFICATION_PLAN.md).
 - Added a migration note about converting stdout-based question scripts to
   helper-based MC/FIB formatting in [UNIFICATION_PLAN.md](UNIFICATION_PLAN.md).
-- Refactored [overhang_sequence.py](../problems/molecular_biology-problems/overhang_sequence.py)
+- Refactored [overhang_sequence.py](../problems/molecular_biology-problems/restriction_enzymes/overhang_sequence.py)
   to use batch helpers, shared argparse defaults, and unified outfile naming.
 - Refactored [write_pedigree_match.py](../problems/inheritance-problems/pedigrees/write_pedigree_match.py)
   to use batch helpers and start-numbered matching sets.
@@ -745,7 +745,7 @@
   and [epistasis_test_cross.py](../problems/inheritance-problems/epistasis/epistasis_test_cross.py)
   so they run without required flags.
 - Set default question formats in
-  [overhang_sequence.py](../problems/molecular_biology-problems/overhang_sequence.py)
+  [overhang_sequence.py](../problems/molecular_biology-problems/restriction_enzymes/overhang_sequence.py)
   and [Henderson-Hasselbalch.py](../problems/biochemistry-problems/buffers/Henderson-Hasselbalch.py)
   so they run without required flags.
 - Set defaults for `alpha_helix_h-bonds.py` question type and
@@ -759,7 +759,7 @@
 - Fixed duplicate argparse base-arg registration in
   [unique_gametes.py](../problems/inheritance-problems/large_crosses/unique_gametes.py).
 - Added a max-questions early-exit check to
-  [overhang_sequence.py](../problems/molecular_biology-problems/overhang_sequence.py)
+  [overhang_sequence.py](../problems/molecular_biology-problems/restriction_enzymes/overhang_sequence.py)
   to avoid long full-list runs when `-x` is set.
 - Refactored `molar_solution_using_mw_numeric.py`
   to use shared argparse defaults and helper-based question collection.
@@ -846,7 +846,7 @@
   [inverse_pcr_design.py](../problems/molecular_biology-problems/inverse_pcr_design.py),
   [linear_digest.py](../problems/molecular_biology-problems/linear_digest.py),
   [nested_pcr_design.py](../problems/molecular_biology-problems/nested_pcr_design.py),
-  [overhang_type.py](../problems/molecular_biology-problems/overhang_type.py),
+  [overhang_type.py](../problems/molecular_biology-problems/restriction_enzymes/overhang_type.py),
   [palindrome_sequence_match.py](../problems/molecular_biology-problems/palindrome_sequence_match.py),
   [rna_transcribe_prime_fill_blank.py](../problems/molecular_biology-problems/rna_transcribe_prime_fill_blank.py),
   [rna_transcribe_prime.py](../problems/molecular_biology-problems/rna_transcribe_prime.py),

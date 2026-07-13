@@ -63,6 +63,11 @@
 - Enumerated and shuffled hypothesis scenario, tail, and answer-order combinations
   before generation, and expanded Kaleidoscope mapping into six shuffled four- and
   five-band scenarios while allowing mixed-mode retries to advance past duplicates.
+- Added a shipped restriction-enzyme web-data cache with full labeled REBASE fields
+  and automatic per-enzyme six-month refreshes so overhang generators avoid hundreds
+  of repeated HTTP requests during normal generation.
+- Grouped the overhang generators and restriction-enzyme library under
+  `problems/molecular_biology-problems/restriction_enzymes/`.
 
 ## 2026-07-03
 

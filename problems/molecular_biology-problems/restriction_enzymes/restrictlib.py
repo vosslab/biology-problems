@@ -2,14 +2,25 @@
 
 import os
 import re
-import sys
 import time
+import datetime
+import subprocess
 import yaml
-import json
 import random
 import requests
 from Bio import Restriction
 from bs4 import BeautifulSoup
+
+
+REPO_ROOT = subprocess.check_output(
+	['git', 'rev-parse', '--show-toplevel'],
+	cwd=os.path.dirname(os.path.abspath(__file__)),
+	text=True,
+).strip()
+WEB_DATA_CACHE_PATH = os.path.join(REPO_ROOT, 'data', 'restriction_enzyme_web_data.yml')
+WEB_DATA_CACHE_MAX_AGE = datetime.timedelta(days=183)
+WEB_DATA_REQUEST_TIMEOUT = 20
+WEB_DATA_CACHE = None
 
 """
 'all_suppliers', 'buffers', 'catalyse', 'catalyze', 'charac', 'characteristic', 'compatible_end', 'compsite', 'cut_once', 'cut_twice', 'dna', 'elucidate', 'equischizomers', 'freq', 'frequency', 'fst3', 'fst5', 'inact_temp', 'is_3overhang', 'is_5overhang', 'is_ambiguous', 'is_blunt', 'is_comm', 'is_defined', 'is_equischizomer', 'is_isoschizomer', 'is_methylable', 'is_neoschizomer', 'is_palindromic', 'is_unknown', 'isoschizomers', 'mro', 'neoschizomers', 'opt_temp', 'overhang', 'ovhg', 'ovhgseq', 'results', 'scd3', 'scd5', 'search', 'site', 'size', 'substrat', 'suppl', 'supplier_list', 'suppliers'
@@ -36,85 +47,103 @@ Useful attributes:
 . site -> recognition site
 """
 #============================
-def save_cache(cache_data):
-	if len(cache_data) == 0:
-		return
-	print('==== SAVE CACHE ====')
-	t0 = time.time()
-	cache_name = 'enzyme_names_cache'
-	cache_format = 'yml'
-	file_name = cache_name+'.'+cache_format
-	if len(cache_data) > 0:
-		if cache_format == 'json':
-			json.dump( cache_data, open( file_name, 'w') )
-		elif cache_format == 'yml':
-			yaml.dump( cache_data, open( file_name, 'w') )
-		else:
-			print("UNKNOWN CACHE FORMAT: ", cache_data)
-			sys.exit(1)
-		print('.. wrote {0} entires to {1} in {2:,d} usec'.format(
-			len(cache_data), file_name, int((time.time()-t0)*1e6)))
-	print('==== END SAVE CACHE ====')
-
-#============================
-def load_cache():
-	cache_name = 'enzyme_names_cache'
-	cache_format = 'yml'
-	file_name = cache_name+'.'+cache_format
-	print('==== LOAD CACHE ====')
-	if os.path.isfile(file_name):
-		try:
-			t0 = time.time()
-			if cache_format == 'json':
-				cache_data = json.load( open(file_name, 'r') )
-			elif cache_format == 'yml':
-				cache_data =  yaml.safe_load( open(file_name, 'r') )
-			else:
-				print("UNKNOWN CACHE FORMAT: ", cache_data)
-				sys.exit(1)
-			print('.. loaded {0} entires from {1} in {2:,d} usec'.format(
-				len(cache_data), file_name, int((time.time()-t0)*1e6)))
-		except IOError:
-			cache_data = {}
-	else:
-		cache_data = {}
-	print('==== END LOAD CACHE ====')
+def _new_web_data_cache() -> dict:
+	cache_data = {
+		'schema_version': 1,
+		'max_age_days': WEB_DATA_CACHE_MAX_AGE.days,
+		'enzymes': {},
+	}
 	return cache_data
 
+
 #============================
-def get_web_data(enzyme_class):
-	uri = enzyme_class.uri
-	#print(f"URI: {uri}")
-	headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537'}
-	headers = {'User-Agent': 'Mozilla/5.0'}
-	response = requests.get(uri, headers=headers)
-	#print(f"HTTP Response: {response.status_code}")
-	if response.status_code != 200:
-		print("Failed to fetch data")
-		return {}
-	time.sleep(random.random())
+def load_web_data_cache() -> dict:
+	global WEB_DATA_CACHE
+	if WEB_DATA_CACHE is not None:
+		return WEB_DATA_CACHE
+	if os.path.isfile(WEB_DATA_CACHE_PATH):
+		with open(WEB_DATA_CACHE_PATH, 'r', encoding='utf-8') as cache_file:
+			WEB_DATA_CACHE = yaml.safe_load(cache_file)
+	else:
+		WEB_DATA_CACHE = _new_web_data_cache()
+	return WEB_DATA_CACHE
 
-	soup = BeautifulSoup(response.content, 'html.parser')
 
-	# Create a dictionary to store the data
-	enzyme_data = {'uri': uri,}
-	# Iterate through each <b> tag that has the field name
-	for field in soup.find_all('b'):
-		field_name = field.text.replace(":", "").strip()
-		next_tag = field.find_next()
-		if next_tag and next_tag.name == 'a':
-			field_value = next_tag.text
-		elif next_tag and next_tag.name == 'font':
-			continue  # Skip, as this doesn't seem to hold data of interest
+#============================
+def save_web_data_cache() -> None:
+	cache_data = load_web_data_cache()
+	with open(WEB_DATA_CACHE_PATH, 'w', encoding='utf-8') as cache_file:
+		yaml.safe_dump(cache_data, cache_file, sort_keys=True, allow_unicode=False)
+
+
+#============================
+def _utc_now() -> datetime.datetime:
+	now = datetime.datetime.now(datetime.timezone.utc)
+	return now
+
+
+#============================
+def _cache_entry_is_fresh(cache_entry: dict) -> bool:
+	fetched_at = datetime.datetime.fromisoformat(cache_entry['fetched_at'])
+	age = _utc_now() - fetched_at
+	is_fresh = age <= WEB_DATA_CACHE_MAX_AGE
+	return is_fresh
+
+
+#============================
+def _field_value(field) -> str:
+	value_parts = []
+	for sibling in field.next_siblings:
+		if getattr(sibling, 'name', None) == 'br':
+			break
+		if hasattr(sibling, 'get_text'):
+			value_parts.append(sibling.get_text(' ', strip=True))
 		else:
-			next_sibling = field.find_next_sibling(text=True)
-			field_value = next_sibling.strip() if next_sibling else ""
+			value_parts.append(str(sibling).strip())
+	value = ' '.join(part for part in value_parts if len(part) > 0)
+	return value.strip()
 
-		# Only add the field if it has a name and value
-		if field_name and field_value and field_name.startswith("Organism"):
-			enzyme_data[field_name] = field_value.strip()
 
-	#print(f"Enzyme data: {enzyme_data}")
+#============================
+def _parse_web_data(response_content: bytes, uri: str) -> dict:
+	soup = BeautifulSoup(response_content, 'html.parser')
+	enzyme_data = {'uri': uri}
+	for field in soup.find_all('b'):
+		field_name = field.get_text(' ', strip=True).rstrip(':').strip()
+		if not field.get_text(' ', strip=True).endswith(':'):
+			continue
+		field_value = _field_value(field)
+		if len(field_name) > 0 and len(field_value) > 0:
+			enzyme_data[field_name] = field_value
+	return enzyme_data
+
+
+#============================
+def fetch_web_data(enzyme_class) -> dict:
+	uri = enzyme_class.uri
+	headers = {'User-Agent': 'Mozilla/5.0'}
+	response = requests.get(uri, headers=headers, timeout=WEB_DATA_REQUEST_TIMEOUT)
+	response.raise_for_status()
+	time.sleep(random.random())
+	enzyme_data = _parse_web_data(response.content, uri)
+	return enzyme_data
+
+
+#============================
+def get_web_data(enzyme_class, force_refresh: bool=False, save: bool=True) -> dict:
+	cache_data = load_web_data_cache()
+	enzyme_name = enzyme_class.__name__
+	cache_entry = cache_data['enzymes'].get(enzyme_name)
+	if not force_refresh and cache_entry is not None and _cache_entry_is_fresh(cache_entry):
+		return cache_entry['data']
+
+	enzyme_data = fetch_web_data(enzyme_class)
+	cache_data['enzymes'][enzyme_name] = {
+		'fetched_at': _utc_now().isoformat(timespec='seconds'),
+		'data': enzyme_data,
+	}
+	if save:
+		save_web_data_cache()
 	return enzyme_data
 
 
@@ -273,4 +302,3 @@ if __name__ == '__main__':
 	print(enzyme_class.__name__)
 	print(enzyme_class.site)
 	print(format_enzyme(enzyme_class))
-
