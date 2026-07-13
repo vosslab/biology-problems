@@ -844,7 +844,7 @@
   [enhancer_gene_expression.py](../problems/molecular_biology-problems/enhancer_gene_expression.py),
   [exon_splicing.py](../problems/molecular_biology-problems/exon_splicing.py),
   [inverse_pcr_design.py](../problems/molecular_biology-problems/inverse_pcr_design.py),
-  [linear_digest.py](../problems/molecular_biology-problems/linear_digest.py),
+  [linear_digest.py](../problems/molecular_biology-problems/restriction_enzymes/linear_digest.py),
   [nested_pcr_design.py](../problems/molecular_biology-problems/nested_pcr_design.py),
   [overhang_type.py](../problems/molecular_biology-problems/restriction_enzymes/overhang_type.py),
   [palindrome_sequence_match.py](../problems/molecular_biology-problems/palindrome_sequence_match.py),
@@ -855,7 +855,7 @@
   [RT-qPCR.py](../problems/molecular_biology-problems/RT-qPCR.py),
   including randomized Ct tables and fold-change calculations.
 - Added difficulty presets for parameter-heavy restriction digest generation in
-  [linear_digest.py](../problems/molecular_biology-problems/linear_digest.py).
+  [linear_digest.py](../problems/molecular_biology-problems/restriction_enzymes/linear_digest.py).
 - Added difficulty presets for parameter-heavy generators:
   [nested_pcr_design.py](../problems/molecular_biology-problems/nested_pcr_design.py),
   [deletion_mutant_words.py](../problems/inheritance-problems/deletion_mutants/deletion_mutant_words.py),

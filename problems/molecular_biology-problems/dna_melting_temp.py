@@ -8,8 +8,6 @@ give the user four different primers and have them choose which one has the lowe
 """
 import bptools
 
-SCENARIOS: list[str] = []
-
 #=====================
 #=====================
 def makeSequence(sequence_len, num_at_bases):
@@ -66,41 +64,21 @@ def make_question(question_num, question_type, sequence_len, num_off_bases):
 
 
 #=====================
-def write_question_batch(start_num, args):
-	if len(SCENARIOS) == 0:
-		return []
-
-	questions = []
-
-	remaining = None
-	if args.max_questions is not None:
-		remaining = args.max_questions - (start_num - 1)
-		if remaining <= 0:
-			return questions
-	batch_size = len(SCENARIOS) if remaining is None else min(len(SCENARIOS), remaining)
-
-	for offset in range(batch_size):
-		question_num = start_num + offset
-		idx = (question_num - 1) % len(SCENARIOS)
-		question_type = SCENARIOS[idx]
-
-		question = make_question(
-			question_num,
-			question_type,
-			args.sequence_len,
-			args.num_off_bases
-		)
-		if question is None:
-			continue
-		questions.append(question)
-	return questions
+def write_question(question_num, args):
+	question_type = random.choice(('highest', 'lowest'))
+	question = make_question(
+		question_num,
+		question_type,
+		args.sequence_len,
+		args.num_off_bases
+	)
+	return question
 
 
 #=====================
 #=====================
 def parse_arguments():
-	parser = bptools.make_arg_parser(description="Generate DNA melting temperature questions.", batch=True)
-	parser = bptools.add_scenario_args(parser)
+	parser = bptools.make_arg_parser(description="Generate DNA melting temperature questions.")
 	parser.add_argument(
 		'-s', '--sequence-length', type=int, dest='sequence_len',
 		default=12, help='Length of each DNA sequence.'
@@ -115,21 +93,9 @@ def parse_arguments():
 
 #=====================
 def main():
-	global SCENARIOS
-
 	args = parse_arguments()
 	outfile = bptools.make_outfile(f"len_{args.sequence_len}")
-
-	SCENARIOS = ['highest', 'lowest']
-	if args.scenario_order == 'sorted':
-		SCENARIOS.sort()
-	else:
-		random.shuffle(SCENARIOS)
-	if args.max_questions is None or args.max_questions > len(SCENARIOS):
-		args.max_questions = len(SCENARIOS)
-
-	questions = bptools.collect_question_batches(write_question_batch, args)
-	bptools.write_questions_to_file(questions, outfile)
+	bptools.collect_and_write_questions(write_question, args, outfile)
 
 
 #=====================

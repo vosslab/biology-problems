@@ -77,6 +77,10 @@
   random taxa orders directly instead of enumerating all 40,320 permutations.
   This preserves the full topology and label space while removing the main
   per-question performance bottlenecks.
+- Removed the artificial two-question cap from the DNA melting-temperature
+  generator. Each question now randomly selects the highest- or lowest-melting
+  concept and generates fresh fixed-length sequences with clearly separated GC
+  contents.
 - Grouped the overhang generators and restriction-enzyme library under
   `problems/molecular_biology-problems/restriction_enzymes/`.
 

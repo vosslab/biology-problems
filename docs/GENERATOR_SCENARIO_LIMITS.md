@@ -8,7 +8,6 @@ distinguishes those limits from generators that merely need more duplicate attem
 
 | Generator | Maximum | Basis |
 | --- | ---: | --- |
-| `molecular_biology-problems/dna_melting_temp.py` | 2 | Highest- and lowest-melting scenarios |
 | `biochemistry-problems/PUBCHEM/NUCLEOBASES/match_purine_structures.py` | 2 | Two purine structures |
 | `biochemistry-problems/PUBCHEM/NUCLEOBASES/match_pyrimidine_structures.py` | 3 | Three pyrimidine structures |
 | `biochemistry-problems/electrophoresis/kaleidoscope_ladder/kaleidoscope_ladder_mapping.py` | 6 | Six visually distinct band sets in mapping mode |
