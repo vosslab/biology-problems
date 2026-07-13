@@ -198,10 +198,11 @@ def make_choices(progeny_type_count_dict, distance_int, num_choices):
 	total_progeny_count = parent_count + tetratype_count + npd_count
 
 	# Generate the correct answer based on given TT and NPD values
-	answer_text, correct_distance = tetradlib.tetrad_calculation_string(
+	answer_text, _ = tetradlib.tetrad_calculation_string(
 		[tetratype_count], [npd_count], total_progeny_count
 	)
-	if abs(correct_distance * 100 - distance_int) > 0.04:
+	correct_distance = (tetratype_count / 2 + 3 * npd_count) * 100 / total_progeny_count
+	if abs(correct_distance - distance_int) > 0.04:
 		raise ValueError("The correct answer calculation does not match the expected distance.")
 
 	choices_list = []

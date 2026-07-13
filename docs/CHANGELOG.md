@@ -69,6 +69,9 @@
 - Populated the cache with all 280 eligible enzymes, resolved it through
   `bptools.get_repo_data_path()`, and measured warm-cache generation at about
   2.7 seconds for 191 overhang-sequence or 280 overhang-type questions.
+- Made the unordered two-gene tetrad distance validations use identical arithmetic
+  ordering, preventing valid boundary cases from failing because of floating-point
+  representation differences around the existing 0.04 tolerance.
 - Grouped the overhang generators and restriction-enzyme library under
   `problems/molecular_biology-problems/restriction_enzymes/`.
 
