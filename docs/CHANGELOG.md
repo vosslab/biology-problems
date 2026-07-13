@@ -58,6 +58,8 @@
 - Added focused assignment-loader and task-validation tests and recorded the
   frozen inventory, chapter routing, curation changes, ambiguity decisions, and
   final coverage report under `topic_classifier/`.
+- Added `docs/GENERATOR_SCENARIO_LIMITS.md` to distinguish intentional finite
+  question banks from duplicate-attempt shortfalls and stale generated output.
 
 ## 2026-07-03
 
