@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import itertools
 import random
 
 import bptools
@@ -63,6 +64,8 @@ SCENARIOS = [
 		),
 	},
 ]
+
+QUESTION_SPECS = []
 
 
 #===========================
@@ -317,7 +320,12 @@ def _wrong_single_choices(scenario: dict, tail: str, kind: str) -> tuple[list[st
 
 
 #===========================
-def make_question(kind: str, scenario_id: str | None = None) -> tuple[str, list[str], str]:
+def make_question(
+	kind: str,
+	scenario_id: str | None = None,
+	tail: str | None = None,
+	choice_order: tuple[int, ...] | None = None,
+) -> tuple[str, list[str], str]:
 	if scenario_id is None:
 		scenario = random.choice(SCENARIOS)
 	else:
@@ -326,7 +334,8 @@ def make_question(kind: str, scenario_id: str | None = None) -> tuple[str, list[
 			raise ValueError(f"Unknown scenario_id: {scenario_id}")
 		scenario = matches[0]
 
-	tail = _pick_tail(scenario["family"])
+	if tail is None:
+		tail = _pick_tail(scenario["family"])
 
 	question = ""
 	question += f"<p><b>Hypotheses practice: {scenario['title']}</b></p>"
@@ -364,14 +373,43 @@ def make_question(kind: str, scenario_id: str | None = None) -> tuple[str, list[
 			question += "<p>Which statement is the <b>alternative hypothesis</b> (H<sub>A</sub>)?</p>"
 		choices_list, answer_text = _wrong_single_choices(scenario, tail, kind)
 
-	random.shuffle(choices_list)
+	if choice_order is None:
+		random.shuffle(choices_list)
+	else:
+		choices_list = [choices_list[index] for index in choice_order]
 	return question, choices_list, answer_text
 
 
 #===========================
 def write_question(N: int, args) -> str:
-	question_text, choices_list, answer_text = make_question(args.kind, args.scenario)
+	if QUESTION_SPECS:
+		scenario_id, tail, choice_order = QUESTION_SPECS[N - 1]
+		question_text, choices_list, answer_text = make_question(
+			args.kind, scenario_id, tail, choice_order
+		)
+	else:
+		question_text, choices_list, answer_text = make_question(args.kind, args.scenario)
 	return bptools.formatBB_MC_Question(N, question_text, choices_list, answer_text)
+
+
+#===========================
+def build_question_specs(scenario_id: str | None = None) -> list[tuple[str, str, tuple[int, ...]]]:
+	"""Enumerate the finite semantic and answer-order combinations."""
+	selected = SCENARIOS
+	if scenario_id is not None:
+		selected = [scenario for scenario in SCENARIOS if scenario["id"] == scenario_id]
+		if len(selected) != 1:
+			raise ValueError(f"Unknown scenario_id: {scenario_id}")
+
+	specs = []
+	choice_orders = list(itertools.permutations(range(4)))
+	for scenario in selected:
+		tails = ("two",) if scenario["family"] == "anova" else ("greater", "less", "two")
+		for tail in tails:
+			for choice_order in choice_orders:
+				specs.append((scenario["id"], tail, choice_order))
+	random.shuffle(specs)
+	return specs
 
 
 #===========================
@@ -394,7 +432,11 @@ def parse_arguments():
 
 #===========================
 def main():
+	global QUESTION_SPECS
 	args = parse_arguments()
+	QUESTION_SPECS = build_question_specs(args.scenario)
+	if args.max_questions is None or args.max_questions > len(QUESTION_SPECS):
+		args.max_questions = len(QUESTION_SPECS)
 	outfile = bptools.make_outfile(args.kind)
 	if args.scenario is not None:
 		outfile = bptools.make_outfile(args.kind, args.scenario)

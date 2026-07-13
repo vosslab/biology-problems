@@ -33,10 +33,20 @@ def test_kaleidoscope_ladder_mapping_prelim_question_builds_expected_parts(monke
 		return f"MAT\t{N}\t{question_text}\t{prompts_list}\t{choices_list}\n"
 
 	monkeypatch.setattr(bptools, "formatBB_MAT_Question", fake_format)
-	q = mod.write_prelim_mapping_question(1, table_height=200)
+	q = mod.write_prelim_mapping_question(
+		1, table_height=200, target_mw_values=(150, 75, 37, 25, 10)
+	)
 	assert q.startswith("MAT\t1\t")
 	assert "#ffee00" in q
 	assert "150 kDa" in q
+
+
+def test_kaleidoscope_ladder_mapping_enumerates_six_scenarios():
+	mod = import_from_repo_path("problems/biochemistry-problems/electrophoresis/kaleidoscope_ladder/kaleidoscope_ladder_mapping.py")
+	scenarios = mod.build_mapping_scenarios()
+	assert len(scenarios) == 6
+	assert len(set(scenarios)) == 6
+	assert {len(scenario) for scenario in scenarios} == {4, 5}
 
 
 def test_kaleidoscope_ladder_mapping_estimate_unknown_question_smoke(monkeypatch):
@@ -50,6 +60,14 @@ def test_kaleidoscope_ladder_mapping_estimate_unknown_question_smoke(monkeypatch
 	q = mod.write_prelim_estimate_unknown_question(1)
 	assert q.startswith("NUM\t1\t")
 	assert "<table" in q
+
+
+def test_kaleidoscope_ladder_mapping_both_mode_can_retry_estimate(monkeypatch):
+	mod = import_from_repo_path("problems/biochemistry-problems/electrophoresis/kaleidoscope_ladder/kaleidoscope_ladder_mapping.py")
+	args = type("Args", (), {"question_type": "both", "table_height": 200})()
+	monkeypatch.setattr(mod.random, "choice", lambda choices: False)
+	monkeypatch.setattr(mod, "write_prelim_estimate_unknown_question", lambda N: f"estimate {N}")
+	assert mod.write_question(3, args) == "estimate 3"
 
 
 def test_kaleidoscope_ladder_lane2_unknown_mw_question_smoke(monkeypatch):

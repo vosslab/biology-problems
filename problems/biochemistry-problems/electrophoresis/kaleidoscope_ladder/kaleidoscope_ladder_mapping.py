@@ -14,6 +14,9 @@ if _BIOCHEM_DIR not in sys.path:
 import protein_ladder_lib
 
 
+MAPPING_SCENARIOS = []
+
+
 #====================================================================
 def _color_swatch(hex_color: str, width_px: int=26, height_px: int=12) -> str:
 	return (
@@ -25,7 +28,26 @@ def _color_swatch(hex_color: str, width_px: int=26, height_px: int=12) -> str:
 
 
 #====================================================================
-def write_prelim_mapping_question(N: int, table_height: int=450) -> str:
+def build_mapping_scenarios() -> list[tuple[int, ...]]:
+	"""Return a small bank of visually distinct band-mapping scenarios."""
+	scenarios = [
+		(150, 75, 37, 10),
+		(250, 150, 37, 25),
+		(250, 75, 37, 10),
+		(150, 75, 25, 10),
+		(250, 150, 75, 37, 10),
+		(250, 150, 37, 25, 10),
+	]
+	random.shuffle(scenarios)
+	return scenarios
+
+
+#====================================================================
+def write_prelim_mapping_question(
+	N: int,
+	table_height: int=450,
+	target_mw_values: tuple[int, ...] | None=None,
+) -> str:
 	mw_values = protein_ladder_lib.get_kaleidoscope_mw_values()
 	ladder_html = protein_ladder_lib.gen_kaleidoscope_table(
 		mw_values,
@@ -34,8 +56,8 @@ def write_prelim_mapping_question(N: int, table_height: int=450) -> str:
 		show_labels=False,
 	)
 
-	# Pick bands with visually distinct colors (avoid the multiple blues).
-	target_mw_values = [150, 75, 37, 25, 10]
+	if target_mw_values is None:
+		target_mw_values = random.choice(build_mapping_scenarios())
 	prompts_list = []
 	choices_list = []
 	for mw_kda in target_mw_values:
@@ -107,11 +129,14 @@ def write_prelim_estimate_unknown_question(N: int) -> str:
 #====================================================================
 def write_question(N: int, args) -> str:
 	if args.question_type == "mapping":
-		return write_prelim_mapping_question(N, table_height=args.table_height)
+		target_mw_values = MAPPING_SCENARIOS[N - 1] if MAPPING_SCENARIOS else None
+		return write_prelim_mapping_question(
+			N, table_height=args.table_height, target_mw_values=target_mw_values
+		)
 	if args.question_type == "estimate":
 		return write_prelim_estimate_unknown_question(N)
 	if args.question_type == "both":
-		if N % 2 == 1:
+		if random.choice((True, False)):
 			return write_prelim_mapping_question(N, table_height=args.table_height)
 		return write_prelim_estimate_unknown_question(N)
 	raise ValueError(f"Unknown question type: {args.question_type}")
@@ -134,10 +159,15 @@ def parse_arguments():
 #====================================================================
 #====================================================================
 def main():
+	global MAPPING_SCENARIOS
 	args = parse_arguments()
 
 	if args.seed is not None:
 		random.seed(args.seed)
+	MAPPING_SCENARIOS = build_mapping_scenarios()
+	if args.question_type == "mapping":
+		if args.max_questions is None or args.max_questions > len(MAPPING_SCENARIOS):
+			args.max_questions = len(MAPPING_SCENARIOS)
 
 	outfile = bptools.make_outfile()
 	bptools.collect_and_write_questions(write_question, args, outfile)

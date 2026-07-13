@@ -60,6 +60,9 @@
   final coverage report under `topic_classifier/`.
 - Added `docs/GENERATOR_SCENARIO_LIMITS.md` to distinguish intentional finite
   question banks from duplicate-attempt shortfalls and stale generated output.
+- Enumerated and shuffled hypothesis scenario, tail, and answer-order combinations
+  before generation, and expanded Kaleidoscope mapping into six shuffled four- and
+  five-band scenarios while allowing mixed-mode retries to advance past duplicates.
 
 ## 2026-07-03
 

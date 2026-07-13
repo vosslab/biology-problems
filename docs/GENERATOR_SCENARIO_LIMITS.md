@@ -11,6 +11,7 @@ distinguishes those limits from generators that merely need more duplicate attem
 | `molecular_biology-problems/dna_melting_temp.py` | 2 | Highest- and lowest-melting scenarios |
 | `biochemistry-problems/PUBCHEM/NUCLEOBASES/match_purine_structures.py` | 2 | Two purine structures |
 | `biochemistry-problems/PUBCHEM/NUCLEOBASES/match_pyrimidine_structures.py` | 3 | Three pyrimidine structures |
+| `biochemistry-problems/electrophoresis/kaleidoscope_ladder/kaleidoscope_ladder_mapping.py` | 6 | Six visually distinct band sets in mapping mode |
 | `biochemistry-problems/PUBCHEM/AMINO_ACIDS/which_amino_acid.py` | 20 | Twenty standard amino acids |
 | `biochemistry-problems/PUBCHEM/AMINO_ACIDS/match_amino_acid_structures.py` | 20 | Twenty standard amino acids |
 | `molecular_biology-problems/amplicon_copies.py` | 30 | Thirty enumerated PCR scenarios |
@@ -20,13 +21,6 @@ distinguishes those limits from generators that merely need more duplicate attem
 
 The amino-acid generator is used for both MC and FIB task variants, so both task
 outputs stop at 20 even though they call the same source script differently.
-
-## Mode-specific limits
-
-`biochemistry-problems/electrophoresis/kaleidoscope_ladder/`
-`kaleidoscope_ladder_mapping.py` defaults to `--question-type mapping`. That mode
-renders one fixed matching question, so its effective maximum is 1. The `estimate`
-mode has randomized numeric scenarios and is not limited to one question.
 
 ## Finite rendered variants
 
