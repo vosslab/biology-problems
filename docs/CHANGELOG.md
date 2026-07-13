@@ -72,6 +72,11 @@
 - Made the unordered two-gene tetrad distance validations use identical arithmetic
   ordering, preventing valid boundary cases from failing because of floating-point
   representation differences around the existing 0.04 tolerance.
+- Replaced rigorous gene-tree matching's repeated ranking of roughly 1.3 million
+  trees with bounded random samples of 1,024 unique labeled trees, and selected
+  random taxa orders directly instead of enumerating all 40,320 permutations.
+  This preserves the full topology and label space while removing the main
+  per-question performance bottlenecks.
 - Grouped the overhang generators and restriction-enzyme library under
   `problems/molecular_biology-problems/restriction_enzymes/`.
 

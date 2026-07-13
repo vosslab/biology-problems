@@ -1,19 +1,15 @@
 #!/usr/bin/env python3
 
-import copy
-import time
 import random
 #local
 import bptools
 bptools.allow_no_click_div = False
 bptools.allow_insert_hidden_terms = False
 
-from treelib import tools
 from treelib import lookup
 
 debug = False
-
-cache_all_treecode_cls_list = []
+DISTRACTOR_SAMPLE_SIZE = 1024
 
 ### TODO
 # get most dissimilar in find SAME for quesiton and answer
@@ -21,6 +17,30 @@ cache_all_treecode_cls_list = []
 
 #===========================================================
 #===========================================================
+#===========================================================
+#===========================================================
+def get_random_taxa_order(taxa) -> tuple:
+	"""Return one random taxa ordering without enumerating all permutations."""
+	ordered_taxa = list(taxa)
+	random.shuffle(ordered_taxa)
+	return tuple(ordered_taxa)
+
+
+#===========================================================
+#===========================================================
+def get_sampled_labeled_treecodes(num_leaves, sample_size=DISTRACTOR_SAMPLE_SIZE) -> list:
+	"""Sample unique labeled trees from the full topology and taxa-order space."""
+	base_treecodes = lookup.get_all_base_tree_codes_for_leaf_count(num_leaves)
+	canonical_taxa = tuple('abcdefghijklm'[:num_leaves])
+	sampled_treecodes = set()
+	for _ in range(sample_size):
+		base_treecode = random.choice(base_treecodes)
+		taxa_order = get_random_taxa_order(canonical_taxa)
+		labeled_treecode = lookup.replace_taxa_letters(base_treecode, taxa_order)
+		sampled_treecodes.add(labeled_treecode)
+	return list(sampled_treecodes)
+
+
 #===========================================================
 #===========================================================
 def generate_treecodes_lists(ordered_taxa, num_choices):
@@ -57,41 +77,7 @@ def generate_treecodes_lists(ordered_taxa, num_choices):
 		replaced_treecode_cls = lookup.replace_taxa_letters(treecode_cls, ordered_taxa)
 		same_replaced_treecode_cls_list.append(replaced_treecode_cls)
 
-	#===========================================
-	# Generate all unique tree codes
-	#===========================================
-	global cache_all_treecode_cls_list
-	if len(cache_all_treecode_cls_list) == 0:
-		# If the cache is empty, generate all tree codes
-		if debug:
-			print("calculating all_permuted_tree_codes")
-
-		all_treecode_cls_list = lookup.get_all_taxa_permuted_tree_codes_for_leaf_count(num_leaves)
-
-		if debug:
-			print("shuffling all_permuted_tree_codes")
-
-		random.shuffle(all_treecode_cls_list)
-
-		# Remove duplicate tree codes
-		purge_start = time.time()
-		if debug:
-			print("purging duplicates")
-		unique_treecode_cls_list = list(set(all_treecode_cls_list))
-
-		# Debug: Measure the time taken to purge duplicates
-		if time.time() - purge_start > 10:
-			if debug:
-				print(f"done purging duplicates in {time.time() - purge_start:.1f} seconds")
-				print(f"unique {len(unique_treecode_cls_list)} treecodes, down from all {len(all_treecode_cls_list)}")
-
-		# Cache the unique tree codes for future use
-		cache_all_treecode_cls_list = copy.copy(unique_treecode_cls_list)
-	else:
-		# Load the cached unique tree codes
-		if debug:
-			print("loading unique_treecode_cls_list")
-		unique_treecode_cls_list = copy.copy(cache_all_treecode_cls_list)
+	unique_treecode_cls_list = get_sampled_labeled_treecodes(num_leaves)
 
 	#===========================================
 	# Generate the "different" tree codes list
@@ -285,14 +271,8 @@ def write_question(N, args):
 	# Generate a sorted list of gene letters based on the number of leaves
 	sorted_taxa = sorted(bptools.generate_gene_letters(args.num_leaves))
 
-	# Generate all permutations of the sorted taxa letters, ensuring combination safety
-	all_taxa_permutations = tools.get_comb_safe_taxa_permutations(sorted_taxa)
-
-	# Randomize the order of permutations
-	random.shuffle(all_taxa_permutations)
-
-	# Select one specific taxa order for constructing the distance matrix
-	ordered_taxa = all_taxa_permutations.pop()
+	# Select one taxa order directly without constructing every permutation.
+	ordered_taxa = get_random_taxa_order(sorted_taxa)
 	if debug:
 		print('ordered_taxa=', ordered_taxa)
 
