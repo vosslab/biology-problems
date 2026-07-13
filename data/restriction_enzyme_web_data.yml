@@ -23,6 +23,18 @@ enzymes:
       Prototype: AatII
       uri: https://identifiers.org/rebase:7
     fetched_at: '2026-07-13T00:26:57+00:00'
+  AbsI:
+    data:
+      Acronym: Abs
+      Experimental Evidence: biochemistry
+      Growth Temperature: "28 \xB0"
+      'Org #': '4672'
+      Organism: Arthrobacter species 7M06
+      Organism source: S.K. Degtyarev
+      Organism type: bacteria
+      Prototype: AbsI
+      uri: https://identifiers.org/rebase:14594
+    fetched_at: '2026-07-13T00:29:59+00:00'
   Acc16I:
     data:
       Acronym: Acc16
@@ -106,6 +118,60 @@ enzymes:
       Prototype: PmaCI
       uri: https://identifiers.org/rebase:5359
     fetched_at: '2026-07-13T00:28:10+00:00'
+  AfaI:
+    data:
+      Acronym: Afa
+      Experimental Evidence: biochemistry
+      Growth Temperature: "20 \xB0"
+      'Org #': '38'
+      Organism: Acidiphilium facilis 28H
+      Organism source: D. Dou
+      Prototype: RsaI
+      uri: https://identifiers.org/rebase:37
+    fetched_at: '2026-07-13T00:30:09+00:00'
+  AfeI:
+    data:
+      Acronym: Afe
+      DNA name: chromosome
+      Experimental Evidence: biochemistry
+      Growth Temperature: "30 \xB0"
+      'Org #': '122'
+      Organism: Alcaligenes faecalis T2774
+      Organism source: NEB 1775
+      Organism type: bacteria
+      Prototype: Eco47III
+      uri: https://identifiers.org/rebase:2669
+    fetched_at: '2026-07-13T00:30:38+00:00'
+  AflII:
+    data:
+      Acronym: Afl
+      DNA name: chromosome
+      Experimental Evidence: biochemistry
+      Growth Temperature: "26 \xB0"
+      Molecular Weight: '36774'
+      'Org #': '140'
+      Org Comment: NCBI renmaed this to Dolichospermum flos-aquae CCAP 1403/13F
+      Organism: Anabaena flos-aquae
+      Organism source: CCAP 1403/13f (CCAP LINK)
+      Organism type: bacteria
+      Prototype: AflII
+      uri: https://identifiers.org/rebase:39
+    fetched_at: '2026-07-13T00:31:02+00:00'
+  AgeI:
+    data:
+      Acronym: Age
+      DNA name: chromosome
+      Experimental Evidence: biochemistry
+      Growth Temperature: "26 \xB0"
+      Molecular Weight: '30536'
+      'Org #': '112'
+      Org Comment: NCBI renamed to Thalassobius gelatinovorus strain NEB572
+      Organism: Agrobacterium gelatinovorum
+      Organism source: IAM 12617 (IAM LINK)
+      Organism type: bacteria
+      Prototype: AgeI
+      uri: https://identifiers.org/rebase:42
+    fetched_at: '2026-07-13T00:30:52+00:00'
   AhaIII:
     data:
       Acronym: Aha
@@ -128,6 +194,19 @@ enzymes:
       Prototype: SpeI
       uri: https://identifiers.org/rebase:4838
     fetched_at: '2026-07-13T00:26:33+00:00'
+  AluBI:
+    data:
+      Acronym: AluB
+      Enz Comment: Able to cleave some methylated DNA substrates.
+      Growth Temperature: "30 \xB0"
+      'Org #': '4856'
+      Org Comment: renamed as Cellulosimicrobium cellulans
+      Organism: Arthrobacter luteus B
+      Organism source: S.K. Degtyarev
+      Organism type: bacteria
+      Prototype: AluI
+      uri: https://identifiers.org/rebase:16189
+    fetched_at: '2026-07-13T00:30:39+00:00'
   AluI:
     data:
       Acronym: Alu
@@ -143,6 +222,18 @@ enzymes:
       Prototype: AluI
       uri: https://identifiers.org/rebase:61
     fetched_at: '2026-07-13T00:27:13+00:00'
+  Alw44I:
+    data:
+      Acronym: Alw44
+      Experimental Evidence: biochemistry
+      Growth Temperature: "37 \xB0"
+      'Org #': '88'
+      Organism: Acinetobacter lwoffi RFL44
+      Organism source: A. Janulaitis
+      Organism type: bacteria
+      Prototype: ApaLI
+      uri: https://identifiers.org/rebase:64
+    fetched_at: '2026-07-13T00:30:53+00:00'
   Aor13HI:
     data:
       Acronym: Aor13H
@@ -167,6 +258,20 @@ enzymes:
       Prototype: Eco47III
       uri: https://identifiers.org/rebase:76
     fetched_at: '2026-07-13T00:29:35+00:00'
+  ApaI:
+    data:
+      Acronym: Apa
+      Enz Comment: recommended digestion temperature by NEB is 37
+      Experimental Evidence: biochemistry
+      Growth Temperature: "26 \xB0"
+      Molecular Weight: '39747'
+      'Org #': '14'
+      Organism: Acetobacter pasteurianus sub. pasteurianus
+      Organism source: NCIB 7215
+      Organism type: bacteria
+      Prototype: ApaI
+      uri: https://identifiers.org/rebase:84
+    fetched_at: '2026-07-13T00:31:30+00:00'
   ApaLI:
     data:
       Acronym: ApaL
@@ -207,6 +312,17 @@ enzymes:
       Prototype: VspI
       uri: https://identifiers.org/rebase:96
     fetched_at: '2026-07-13T00:28:38+00:00'
+  Asi256I:
+    data:
+      Acronym: Asi256
+      Growth Temperature: "6 \xB0"
+      'Org #': '5115'
+      Organism: Arthrobacter species strain Ck256
+      Organism source: V.E. Repin
+      Organism type: bacteria
+      Prototype: MboI (Neoschizomer)
+      uri: https://identifiers.org/rebase:18472
+    fetched_at: '2026-07-13T00:30:27+00:00'
   AsiGI:
     data:
       Acronym: AsiG
@@ -219,6 +335,43 @@ enzymes:
       Prototype: AgeI
       uri: https://identifiers.org/rebase:10828
     fetched_at: '2026-07-13T00:28:29+00:00'
+  AsiSI:
+    data:
+      Acronym: AsiS
+      DNA name: chromosome
+      Experimental Evidence: biochemistry
+      Growth Temperature: "28 \xB0"
+      'Org #': '183'
+      Organism: Arthrobacter species S
+      Organism source: S.K. Degtyarev
+      Organism type: bacteria
+      Prototype: SgfI
+      uri: https://identifiers.org/rebase:4628
+    fetched_at: '2026-07-13T00:31:22+00:00'
+  Asp718I:
+    data:
+      Acronym: Asp718
+      Experimental Evidence: biochemistry
+      Growth Temperature: "30 \xB0"
+      'Org #': '30'
+      Organism: Achromobacter species 718
+      Organism source: DSM 2969 (DSM LINK)
+      Organism type: bacteria
+      Prototype: KpnI (Neoschizomer)
+      uri: https://identifiers.org/rebase:132
+    fetched_at: '2026-07-13T00:30:29+00:00'
+  AspA2I:
+    data:
+      Acronym: AspA2
+      Experimental Evidence: biochemistry
+      Growth Temperature: "25 \xB0"
+      'Org #': '3680'
+      Organism: Arthrobacter species A2
+      Organism source: S.K. Degtyarev
+      Organism type: bacteria
+      Prototype: AvrII
+      uri: https://identifiers.org/rebase:6959
+    fetched_at: '2026-07-13T00:30:32+00:00'
   AspLEI:
     data:
       Acronym: AspLE
@@ -265,6 +418,19 @@ enzymes:
       Prototype: AvrII
       uri: https://identifiers.org/rebase:173
     fetched_at: '2026-07-13T00:27:41+00:00'
+  BalI:
+    data:
+      Acronym: Bal
+      Experimental Evidence: biochemistry
+      Growth Temperature: "30 \xB0"
+      Molecular Weight: '29075'
+      'Org #': '924'
+      Organism: Brevibacterium albidum
+      Organism source: ATCC 15831 (ATCC LINK)
+      Organism type: bacteria
+      Prototype: BalI
+      uri: https://identifiers.org/rebase:183
+    fetched_at: '2026-07-13T00:31:06+00:00'
   BamHI:
     data:
       Acronym: BamH
@@ -305,6 +471,57 @@ enzymes:
       Prototype: BclI
       uri: https://identifiers.org/rebase:242
     fetched_at: '2026-07-13T00:29:26+00:00'
+  BcuI:
+    data:
+      Acronym: Bcu
+      Experimental Evidence: biochemistry
+      Growth Temperature: "26 \xB0"
+      'Org #': '271'
+      Organism: Bacillus coagulans Vs 29-022
+      Organism source: A. Janulaitis
+      Organism type: bacteria
+      Prototype: SpeI
+      uri: https://identifiers.org/rebase:2990
+    fetched_at: '2026-07-13T00:31:00+00:00'
+  BfaI:
+    data:
+      Acronym: Bfa
+      Experimental Evidence: biochemistry
+      Growth Temperature: "37 \xB0"
+      Molecular Weight: 23734 (fragment) + 22434 (fragment)
+      'Org #': '788'
+      Organism: Bacteroides fragilis
+      Organism source: NEB 1140
+      Organism type: bacteria
+      Prototype: MaeI
+      uri: https://identifiers.org/rebase:256
+    fetched_at: '2026-07-13T00:31:44+00:00'
+  BfrI:
+    data:
+      Acronym: Bfr
+      Experimental Evidence: biochemistry
+      Growth Temperature: "37 \xB0"
+      'Org #': '897'
+      Organism: Bacteroides fragilis
+      Organism source: U. Mayr
+      Organism type: bacteria
+      Prototype: AflII
+      uri: https://identifiers.org/rebase:259
+    fetched_at: '2026-07-13T00:31:36+00:00'
+  BglII:
+    data:
+      Acronym: Bgl
+      DNA name: chromosome
+      Experimental Evidence: biochemistry
+      Growth Temperature: "30 \xB0"
+      Molecular Weight: '25743'
+      'Org #': '283'
+      Organism: Bacillus globigii
+      Organism source: ATCC 49760 (ATCC LINK)
+      Organism type: bacteria
+      Prototype: BglII
+      uri: https://identifiers.org/rebase:261
+    fetched_at: '2026-07-13T00:29:57+00:00'
   BlnI:
     data:
       Acronym: Bln
@@ -317,6 +534,57 @@ enzymes:
       Prototype: AvrII
       uri: https://identifiers.org/rebase:275
     fetched_at: '2026-07-13T00:28:44+00:00'
+  BmcAI:
+    data:
+      Acronym: BmcA
+      Enz Comment: Optimum temperature 37; Heat inactivate at 65 for 20 minutes
+      Experimental Evidence: biochemistry
+      Growth Temperature: "50 \xB0"
+      'Org #': '4018'
+      Organism: Bacillus macroides
+      Organism source: Vivantis 181
+      Organism type: bacteria
+      Prototype: ScaI
+      uri: https://identifiers.org/rebase:10484
+    fetched_at: '2026-07-13T00:31:10+00:00'
+  BmtI:
+    data:
+      Acronym: Bmt
+      DNA name: chromosome
+      Experimental Evidence: biochemistry
+      Growth Temperature: "30 \xB0"
+      Molecular Weight: '28349'
+      'Org #': '3477'
+      Organism: Bacillus megaterium S2
+      Organism source: NEB 1776
+      Organism type: bacteria
+      Prototype: NheI (Neoschizomer)
+      uri: https://identifiers.org/rebase:6222
+    fetched_at: '2026-07-13T00:30:06+00:00'
+  Bpu14I:
+    data:
+      Acronym: Bpu14
+      Experimental Evidence: biochemistry
+      Growth Temperature: "30 \xB0"
+      'Org #': '328'
+      Organism: Bacillus pumilus 14
+      Organism source: S.K. Degtyarev
+      Organism type: bacteria
+      Prototype: AsuII
+      uri: https://identifiers.org/rebase:301
+    fetched_at: '2026-07-13T00:29:49+00:00'
+  Bsa29I:
+    data:
+      Acronym: Bsa29
+      Experimental Evidence: biochemistry
+      Growth Temperature: "37 \xB0"
+      'Org #': '363'
+      Organism: Bacillus species 29
+      Organism source: S.K. Degtyarev
+      Organism type: bacteria
+      Prototype: ClaI
+      uri: https://identifiers.org/rebase:2671
+    fetched_at: '2026-07-13T00:31:07+00:00'
   BseAI:
     data:
       Acronym: BseA
@@ -341,6 +609,30 @@ enzymes:
       Prototype: ClaI
       uri: https://identifiers.org/rebase:2160
     fetched_at: '2026-07-13T00:27:54+00:00'
+  BsePI:
+    data:
+      Acronym: BseP
+      Experimental Evidence: biochemistry
+      Growth Temperature: "55 \xB0"
+      'Org #': '784'
+      Organism: Bacillus stearothermophilus P6
+      Organism source: N. Welker
+      Organism type: bacteria
+      Prototype: BsePI
+      uri: https://identifiers.org/rebase:344
+    fetched_at: '2026-07-13T00:30:24+00:00'
+  BseX3I:
+    data:
+      Acronym: BseX3
+      Experimental Evidence: biochemistry
+      Growth Temperature: "55 \xB0"
+      'Org #': '829'
+      Organism: Bacillus stearothermophilus X3
+      Organism source: S.K. Degtyarev
+      Organism type: bacteria
+      Prototype: XmaIII
+      uri: https://identifiers.org/rebase:2960
+    fetched_at: '2026-07-13T00:30:33+00:00'
   Bsh1236I:
     data:
       Acronym: Bsh1236
@@ -365,6 +657,55 @@ enzymes:
       Prototype: HaeIII
       uri: https://identifiers.org/rebase:352
     fetched_at: '2026-07-13T00:28:15+00:00'
+  BshTI:
+    data:
+      Acronym: BshT
+      Experimental Evidence: biochemistry
+      Growth Temperature: "37 \xB0"
+      'Org #': '592'
+      Organism: Bacillus sphaericus Jo22-024
+      Organism source: V. Butkus
+      Organism type: bacteria
+      Prototype: AgeI
+      uri: https://identifiers.org/rebase:3829
+    fetched_at: '2026-07-13T00:31:28+00:00'
+  BshVI:
+    data:
+      Acronym: BshV
+      Enz Comment: Optimum reaction at 37 degrees
+      Experimental Evidence: biochemistry
+      Growth Temperature: "30 \xB0"
+      'Org #': '3920'
+      Organism: Bacillus sphaericus CKJ18
+      Organism source: Vivantis 182
+      Organism type: bacteria
+      Prototype: ClaI
+      uri: https://identifiers.org/rebase:8568
+    fetched_at: '2026-07-13T00:30:42+00:00'
+  BsiSI:
+    data:
+      Acronym: BsiS
+      Experimental Evidence: biochemistry
+      Growth Temperature: "37 \xB0"
+      'Org #': '11388'
+      Organism: Bacillus species BsiS
+      Organism source: D. Clark
+      Organism type: bacteria
+      Prototype: HpaII
+      uri: https://identifiers.org/rebase:378
+    fetched_at: '2026-07-13T00:31:26+00:00'
+  BsiWI:
+    data:
+      Acronym: BsiW
+      Experimental Evidence: biochemistry
+      Growth Temperature: "37 \xB0"
+      'Org #': '11392'
+      Organism: Bacillus species BsiW
+      Organism source: D. Clark
+      Organism type: bacteria
+      Prototype: SplI
+      uri: https://identifiers.org/rebase:382
+    fetched_at: '2026-07-13T00:30:23+00:00'
   BsnI:
     data:
       Acronym: Bsn
@@ -439,6 +780,18 @@ enzymes:
       Prototype: NcoI
       uri: https://identifiers.org/rebase:446
     fetched_at: '2026-07-13T00:27:57+00:00'
+  Bsp68I:
+    data:
+      Acronym: Bsp68
+      Experimental Evidence: biochemistry
+      Growth Temperature: "37 \xB0"
+      'Org #': '488'
+      Organism: Bacillus species RFL68
+      Organism source: A. Janulaitis
+      Organism type: bacteria
+      Prototype: NruI
+      uri: https://identifiers.org/rebase:484
+    fetched_at: '2026-07-13T00:30:57+00:00'
   BspANI:
     data:
       Acronym: BspAN
@@ -505,6 +858,42 @@ enzymes:
       Prototype: BspHI
       uri: https://identifiers.org/rebase:517
     fetched_at: '2026-07-13T00:28:35+00:00'
+  BspLU11I:
+    data:
+      Acronym: BspLU11
+      Experimental Evidence: biochemistry
+      Growth Temperature: "37 \xB0"
+      'Org #': '408'
+      Organism: Bacillus species LU11
+      Organism source: N.I. Matvienko
+      Organism type: bacteria
+      Prototype: BspLU11I
+      uri: https://identifiers.org/rebase:2324
+    fetched_at: '2026-07-13T00:30:14+00:00'
+  BspMAI:
+    data:
+      Acronym: BspMA
+      Experimental Evidence: biochemistry
+      Growth Temperature: "65 \xB0"
+      'Org #': '3274'
+      Organism: Bacillus stearothermophilus MA
+      Organism source: P.M. Skowron
+      Organism type: bacteria
+      Prototype: PstI
+      uri: https://identifiers.org/rebase:5358
+    fetched_at: '2026-07-13T00:31:32+00:00'
+  BspMII:
+    data:
+      Acronym: BspM
+      Experimental Evidence: biochemistry
+      Growth Temperature: "37 \xB0"
+      'Org #': '411'
+      Organism: Bacillus species M
+      Organism source: NEB 356
+      Organism type: bacteria
+      Prototype: BspMII
+      uri: https://identifiers.org/rebase:528
+    fetched_at: '2026-07-13T00:30:03+00:00'
   BspOI:
     data:
       Acronym: BspO
@@ -552,6 +941,20 @@ enzymes:
       Prototype: Bsp1407I
       uri: https://identifiers.org/rebase:2196
     fetched_at: '2026-07-13T00:29:25+00:00'
+  BssHII:
+    data:
+      Acronym: BssH
+      DNA name: chromosome
+      Enz Comment: recommended digestion temperature by NEB is 37
+      Experimental Evidence: biochemistry
+      Growth Temperature: "55 \xB0"
+      'Org #': '738'
+      Organism: Bacillus stearothermophilus H3
+      Organism source: ATCC 49820 (ATCC LINK)
+      Organism type: bacteria
+      Prototype: BsePI
+      uri: https://identifiers.org/rebase:550
+    fetched_at: '2026-07-13T00:30:36+00:00'
   BssNAI:
     data:
       Acronym: BssNA
@@ -576,6 +979,17 @@ enzymes:
       Prototype: SnaI (Neoschizomer)
       uri: https://identifiers.org/rebase:556
     fetched_at: '2026-07-13T00:27:58+00:00'
+  BstAFI:
+    data:
+      Acronym: BstAF
+      Growth Temperature: "55 \xB0"
+      'Org #': '4982'
+      Organism: Bacillus stearothermophilus AF
+      Organism source: S.K. Degtyarev
+      Organism type: bacteria
+      Prototype: AflII
+      uri: https://identifiers.org/rebase:17119
+    fetched_at: '2026-07-13T00:30:18+00:00'
   BstAUI:
     data:
       Acronym: BstAU
@@ -601,6 +1015,30 @@ enzymes:
       Prototype: AsuII
       uri: https://identifiers.org/rebase:570
     fetched_at: '2026-07-13T00:29:40+00:00'
+  BstFNI:
+    data:
+      Acronym: BstFN
+      Experimental Evidence: biochemistry
+      Growth Temperature: "65 \xB0"
+      'Org #': '842'
+      Organism: Bacillus stearothermophilus
+      Organism source: S.K. Degtyarev
+      Organism type: bacteria
+      Prototype: FnuDII
+      uri: https://identifiers.org/rebase:4070
+    fetched_at: '2026-07-13T00:30:11+00:00'
+  BstHHI:
+    data:
+      Acronym: BstHH
+      Experimental Evidence: biochemistry
+      Growth Temperature: "55 \xB0"
+      'Org #': '3108'
+      Organism: Bacillus stearothermophilus HH
+      Organism source: S.K. Degtyarev
+      Organism type: bacteria
+      Prototype: HhaI
+      uri: https://identifiers.org/rebase:4914
+    fetched_at: '2026-07-13T00:31:39+00:00'
   BstKTI:
     data:
       Acronym: BstKT
@@ -613,6 +1051,18 @@ enzymes:
       Prototype: MboI (Neoschizomer)
       uri: https://identifiers.org/rebase:5533
     fetched_at: '2026-07-13T00:27:18+00:00'
+  BstSNI:
+    data:
+      Acronym: BstSN
+      Experimental Evidence: biochemistry
+      Growth Temperature: "55 \xB0"
+      'Org #': '805'
+      Organism: Bacillus stearothermophilus SN
+      Organism source: S.K. Degtyarev
+      Organism type: bacteria
+      Prototype: SnaBI
+      uri: https://identifiers.org/rebase:2734
+    fetched_at: '2026-07-13T00:31:19+00:00'
   BstUI:
     data:
       Acronym: BstU
@@ -639,6 +1089,30 @@ enzymes:
       Prototype: SnaI (Neoschizomer)
       uri: https://identifiers.org/rebase:2662
     fetched_at: '2026-07-13T00:29:14+00:00'
+  BstZI:
+    data:
+      Acronym: BstZ
+      Experimental Evidence: biochemistry
+      Growth Temperature: "55 \xB0"
+      'Org #': '832'
+      Organism: Bacillus stearothermophilus Z130
+      Organism source: Z. Chen
+      Organism type: bacteria
+      Prototype: XmaIII
+      uri: https://identifiers.org/rebase:599
+    fetched_at: '2026-07-13T00:30:56+00:00'
+  Bsu15I:
+    data:
+      Acronym: Bsu15
+      Experimental Evidence: biochemistry
+      Growth Temperature: "30 \xB0"
+      'Org #': '844'
+      Organism: Bacillus subtilis 15
+      Organism source: S.K. Degtyarev
+      Organism type: bacteria
+      Prototype: ClaI
+      uri: https://identifiers.org/rebase:608
+    fetched_at: '2026-07-13T00:30:37+00:00'
   BsuRI:
     data:
       Acronym: BsuR
@@ -652,6 +1126,18 @@ enzymes:
       Prototype: HaeIII
       uri: https://identifiers.org/rebase:620
     fetched_at: '2026-07-13T00:26:54+00:00'
+  BsuTUI:
+    data:
+      Acronym: BsuTU
+      Experimental Evidence: biochemistry
+      Growth Temperature: "60 \xB0"
+      'Org #': '3276'
+      Organism: Bacillus subtilis TU
+      Organism source: P.M. Skowron
+      Organism type: bacteria
+      Prototype: ClaI
+      uri: https://identifiers.org/rebase:5360
+    fetched_at: '2026-07-13T00:31:33+00:00'
   BtuMI:
     data:
       Acronym: BtuM
@@ -711,6 +1197,56 @@ enzymes:
       Prototype: SacII
       uri: https://identifiers.org/rebase:678
     fetched_at: '2026-07-13T00:26:58+00:00'
+  Cfr9I:
+    data:
+      Acronym: Cfr9
+      Experimental Evidence: biochemistry
+      Growth Temperature: "37 \xB0"
+      Molecular Weight: '36804'
+      'Org #': '1056'
+      Organism: Citrobacter freundii
+      Organism source: A. Janulaitis
+      Organism type: bacteria
+      Prototype: SmaI (Neoschizomer)
+      uri: https://identifiers.org/rebase:699
+    fetched_at: '2026-07-13T00:31:37+00:00'
+  ChaI:
+    data:
+      Acronym: Cha
+      Experimental Evidence: biochemistry
+      Growth Temperature: "37 \xB0"
+      'Org #': '1089'
+      Organism: Corynebacterium halofytica
+      Organism source: M.M. Wijdenbosch
+      Organism type: bacteria
+      Prototype: MboI (Neoschizomer)
+      uri: https://identifiers.org/rebase:2688
+    fetched_at: '2026-07-13T00:31:04+00:00'
+  ClaI:
+    data:
+      Acronym: Cla
+      Experimental Evidence: biochemistry
+      Growth Temperature: "30 \xB0"
+      Molecular Weight: '41587'
+      'Org #': '956'
+      Organism: Caryophanon latum L
+      Organism source: ATCC 49862 (ATCC LINK)
+      Organism type: bacteria
+      Prototype: ClaI
+      uri: https://identifiers.org/rebase:716
+    fetched_at: '2026-07-13T00:29:51+00:00'
+  Csp6I:
+    data:
+      Acronym: Csp6
+      Experimental Evidence: biochemistry
+      Growth Temperature: "37 \xB0"
+      'Org #': '1098'
+      Organism: Corynebacterium species RFL6
+      Organism source: A. Janulaitis
+      Organism type: bacteria
+      Prototype: RsaI (Neoschizomer)
+      uri: https://identifiers.org/rebase:738
+    fetched_at: '2026-07-13T00:30:12+00:00'
   CspAI:
     data:
       Acronym: CspA
@@ -800,6 +1336,33 @@ enzymes:
       Prototype: AhaIII
       uri: https://identifiers.org/rebase:778
     fetched_at: '2026-07-13T00:26:44+00:00'
+  EagI:
+    data:
+      Acronym: Eag
+      Enz Comment: Barry Stoddard working on structure. Enzyme is brown and may contain
+        an iron-sulfur cluster (Fe-S).
+      Experimental Evidence: biochemistry
+      Growth Temperature: "26 \xB0"
+      Molecular Weight: '34244'
+      'Org #': '1142'
+      Organism: Enterobacter agglomerans
+      Organism source: NEB 368
+      Organism type: bacteria
+      Prototype: XmaIII
+      uri: https://identifiers.org/rebase:802
+    fetched_at: '2026-07-13T00:30:03+00:00'
+  Ecl136II:
+    data:
+      Acronym: Ecl136
+      Experimental Evidence: biochemistry
+      Growth Temperature: "30 \xB0"
+      'Org #': '1156'
+      Organism: Enterobacter cloacae RFL136
+      Organism source: A. Janulaitis
+      Organism type: bacteria
+      Prototype: SacI (Neoschizomer)
+      uri: https://identifiers.org/rebase:820
+    fetched_at: '2026-07-13T00:30:13+00:00'
   EclXI:
     data:
       Acronym: EclX
@@ -812,6 +1375,17 @@ enzymes:
       Prototype: XmaIII
       uri: https://identifiers.org/rebase:834
     fetched_at: '2026-07-13T00:27:33+00:00'
+  Eco105I:
+    data:
+      Acronym: Eco105
+      Experimental Evidence: biochemistry
+      Growth Temperature: "37 \xB0"
+      'Org #': '1270'
+      Organism: Escherichia coli RFL105
+      Organism source: A. Janulaitis
+      Prototype: SnaBI
+      uri: https://identifiers.org/rebase:838
+    fetched_at: '2026-07-13T00:31:44+00:00'
   Eco147I:
     data:
       Acronym: Eco147
@@ -857,6 +1431,29 @@ enzymes:
       Prototype: XmaIII
       uri: https://identifiers.org/rebase:938
     fetched_at: '2026-07-13T00:28:45+00:00'
+  Eco53kI:
+    data:
+      Acronym: Eco53k
+      Experimental Evidence: biochemistry
+      Growth Temperature: "37 \xB0"
+      'Org #': '1224'
+      Organism: Escherichia coli 53k
+      Organism source: A.S. Solonin
+      Organism type: bacteria
+      Prototype: SacI (Neoschizomer)
+      uri: https://identifiers.org/rebase:3177
+    fetched_at: '2026-07-13T00:30:45+00:00'
+  Eco72I:
+    data:
+      Acronym: Eco72
+      Experimental Evidence: biochemistry
+      Growth Temperature: "37 \xB0"
+      'Org #': '1376'
+      Organism: Escherichia coli RFL72
+      Organism source: A. Janulaitis
+      Prototype: PmaCI
+      uri: https://identifiers.org/rebase:950
+    fetched_at: '2026-07-13T00:31:14+00:00'
   EcoICRI:
     data:
       Acronym: EcoICR
@@ -908,6 +1505,18 @@ enzymes:
       Prototype: AvaIII (Neoschizomer)
       uri: https://identifiers.org/rebase:998
     fetched_at: '2026-07-13T00:28:26+00:00'
+  EgeI:
+    data:
+      Acronym: Ege
+      Experimental Evidence: biochemistry
+      Growth Temperature: "30 \xB0"
+      'Org #': '1169'
+      Organism: Enterobacter gergoviae NA
+      Organism source: S.K. Degtyarev
+      Organism type: bacteria
+      Prototype: NarI (Neoschizomer)
+      uri: https://identifiers.org/rebase:2858
+    fetched_at: '2026-07-13T00:30:28+00:00'
   EheI:
     data:
       Acronym: Ehe
@@ -919,6 +1528,18 @@ enzymes:
       Prototype: NarI (Neoschizomer)
       uri: https://identifiers.org/rebase:1004
     fetched_at: '2026-07-13T00:27:04+00:00'
+  EsaBC3I:
+    data:
+      Acronym: EsaBC3
+      Experimental Evidence: biochemistry
+      Growth Temperature: "85 \xB0"
+      'Org #': '1185'
+      Organism: Environmental sample BC3
+      Organism source: R.D. Morgan
+      Organism type: unclassified
+      Prototype: TaqI (Neoschizomer)
+      uri: https://identifiers.org/rebase:4634
+    fetched_at: '2026-07-13T00:31:24+00:00'
   FaeI:
     data:
       Acronym: Fae
@@ -967,6 +1588,19 @@ enzymes:
       Prototype: FnuDII
       uri: https://identifiers.org/rebase:1053
     fetched_at: '2026-07-13T00:29:09+00:00'
+  FseI:
+    data:
+      Acronym: Fse
+      Experimental Evidence: biochemistry
+      Growth Temperature: "26 \xB0"
+      Molecular Weight: '25338'
+      'Org #': '1449'
+      Organism: Frankia species Eul1b
+      Organism source: NRRL 18528
+      Organism type: bacteria
+      Prototype: FseI
+      uri: https://identifiers.org/rebase:1059
+    fetched_at: '2026-07-13T00:31:25+00:00'
   FspBI:
     data:
       Acronym: FspB
@@ -979,6 +1613,19 @@ enzymes:
       Prototype: MaeI
       uri: https://identifiers.org/rebase:6971
     fetched_at: '2026-07-13T00:28:20+00:00'
+  FspI:
+    data:
+      Acronym: Fsp
+      Experimental Evidence: biochemistry
+      Growth Temperature: "26 \xB0"
+      Molecular Weight: '28087'
+      'Org #': '1427'
+      Organism: Fischerella species
+      Organism source: ATCC 29114 (ATCC LINK)
+      Organism type: bacteria
+      Prototype: MstI
+      uri: https://identifiers.org/rebase:1063
+    fetched_at: '2026-07-13T00:30:49+00:00'
   GlaI:
     data:
       Acronym: Gla
@@ -1006,6 +1653,34 @@ enzymes:
       Single-stranded cleavage: y
       uri: https://identifiers.org/rebase:1089
     fetched_at: '2026-07-13T00:27:24+00:00'
+  HapII:
+    data:
+      Acronym: Hap
+      Experimental Evidence: biochemistry
+      Growth Temperature: "37 \xB0"
+      'Org #': '1475'
+      Organism: Haemophilus aphrophilus
+      Organism source: ATCC 19415 (ATCC LINK)
+      Prototype: HpaII
+      Single-stranded cleavage: y
+      uri: https://identifiers.org/rebase:1094
+    fetched_at: '2026-07-13T00:30:46+00:00'
+  HhaI:
+    data:
+      Acronym: Hha
+      DNA name: chromosome
+      Enz Comment: Specific Activity is  > 1,700,000 per mg
+      Experimental Evidence: biochemistry
+      Growth Temperature: "37 \xB0"
+      Molecular Weight: '29934'
+      'Org #': '1478'
+      Organism: Haemophilus haemolyticus
+      Organism source: ATCC 10014 (ATCC LINK)
+      Organism type: bacteria
+      Prototype: HhaI
+      Single-stranded cleavage: y
+      uri: https://identifiers.org/rebase:1117
+    fetched_at: '2026-07-13T00:31:47+00:00'
   Hin1II:
     data:
       Acronym: Hin1
@@ -1017,6 +1692,17 @@ enzymes:
       Prototype: NlaIII
       uri: https://identifiers.org/rebase:1129
     fetched_at: '2026-07-13T00:27:21+00:00'
+  Hin6I:
+    data:
+      Acronym: Hin6
+      Experimental Evidence: biochemistry
+      Growth Temperature: "37 \xB0"
+      'Org #': '1491'
+      Organism: Haemophilus influenzae RFL6
+      Organism source: A. Janulaitis
+      Prototype: HhaI (Neoschizomer)
+      uri: https://identifiers.org/rebase:1135
+    fetched_at: '2026-07-13T00:31:13+00:00'
   HinP1I:
     data:
       Acronym: HinP1
@@ -1121,6 +1807,17 @@ enzymes:
       Prototype: NlaIII
       uri: https://identifiers.org/rebase:2581
     fetched_at: '2026-07-13T00:26:36+00:00'
+  HspAI:
+    data:
+      Acronym: HspA
+      Experimental Evidence: biochemistry
+      Growth Temperature: "37 \xB0"
+      'Org #': '1509'
+      Organism: Haemophilus species A
+      Organism source: S.K. Degtyarev
+      Prototype: HhaI (Neoschizomer)
+      uri: https://identifiers.org/rebase:2675
+    fetched_at: '2026-07-13T00:31:21+00:00'
   KasI:
     data:
       Acronym: Kas
@@ -1163,6 +1860,37 @@ enzymes:
       Prototype: KpnI
       uri: https://identifiers.org/rebase:1180
     fetched_at: '2026-07-13T00:29:23+00:00'
+  KroI:
+    data:
+      Acronym: Kro
+      Growth Temperature: "30 \xB0"
+      'Org #': '7417'
+      Organism: Kocurea rosea 307
+      Organism source: S.K. Degtyarev
+      Prototype: KroI
+      uri: https://identifiers.org/rebase:38425
+    fetched_at: '2026-07-13T00:30:26+00:00'
+  KroNI:
+    data:
+      Acronym: KroN
+      Growth Temperature: "30 \xB0"
+      'Org #': '50032'
+      Organism: Kocurea rosea 56
+      Organism source: S.K. Degtyarev
+      Prototype: NaeI
+      uri: https://identifiers.org/rebase:491208
+    fetched_at: '2026-07-13T00:31:45+00:00'
+  Ksp22I:
+    data:
+      Acronym: Ksp22
+      Experimental Evidence: biochemistry
+      Growth Temperature: "26 \xB0"
+      'Org #': '1651'
+      Organism: Kurthia species 22
+      Organism source: S.K. Degtyarev
+      Prototype: BclI
+      uri: https://identifiers.org/rebase:1182
+    fetched_at: '2026-07-13T00:30:00+00:00'
   KspAI:
     data:
       Acronym: KspA
@@ -1211,6 +1939,17 @@ enzymes:
       Prototype: MaeII
       uri: https://identifiers.org/rebase:1198
     fetched_at: '2026-07-13T00:28:34+00:00'
+  MalI:
+    data:
+      Acronym: Mal
+      Experimental Evidence: biochemistry
+      Growth Temperature: "30 \xB0"
+      'Org #': '4102'
+      Organism: Marinococus albus I
+      Organism source: S.K. Degtyarev
+      Prototype: DpnI
+      uri: https://identifiers.org/rebase:10872
+    fetched_at: '2026-07-13T00:31:31+00:00'
   MauBI:
     data:
       Acronym: MauB
@@ -1273,6 +2012,18 @@ enzymes:
       Prototype: MluI
       uri: https://identifiers.org/rebase:1236
     fetched_at: '2026-07-13T00:26:32+00:00'
+  MluNI:
+    data:
+      Acronym: MluN
+      Enz Comment: Originally Msp20I from Micrococcus species 20. Changed 5/21/93.
+      Experimental Evidence: biochemistry
+      Growth Temperature: "30 \xB0"
+      'Org #': '1742'
+      Organism: Micrococcus luteus N
+      Organism source: S.K. Degtyarev
+      Prototype: BalI
+      uri: https://identifiers.org/rebase:1266
+    fetched_at: '2026-07-13T00:30:50+00:00'
   Mly113I:
     data:
       Acronym: Mly113
@@ -1285,6 +2036,17 @@ enzymes:
       Prototype: NarI
       uri: https://identifiers.org/rebase:1237
     fetched_at: '2026-07-13T00:28:25+00:00'
+  Mox20I:
+    data:
+      Acronym: Mox20
+      Growth Temperature: "30 \xB0"
+      'Org #': '12838'
+      Organism: Microbacterium oxydans 20
+      Organism source: V.S. Dedkov
+      Organism type: bacteria
+      Prototype: BalI
+      uri: https://identifiers.org/rebase:85920
+    fetched_at: '2026-07-13T00:30:44+00:00'
   Mph1103I:
     data:
       Acronym: Mph1103
@@ -1318,6 +2080,30 @@ enzymes:
       Prototype: BspMII
       uri: https://identifiers.org/rebase:1258
     fetched_at: '2026-07-13T00:29:39+00:00'
+  MroNI:
+    data:
+      Acronym: MroN
+      Experimental Evidence: biochemistry
+      Growth Temperature: "26 \xB0"
+      'Org #': '1753'
+      Organism: Micrococcus roseus N
+      Organism source: S.K. Degtyarev
+      Prototype: NaeI (Neoschizomer)
+      uri: https://identifiers.org/rebase:2676
+    fetched_at: '2026-07-13T00:30:59+00:00'
+  MscI:
+    data:
+      Acronym: Msc
+      Experimental Evidence: biochemistry
+      Growth Temperature: "26 \xB0"
+      Molecular Weight: '29154'
+      'Org #': '1764'
+      Organism: Micrococcus species
+      Organism source: NEB 502
+      Organism type: bacteria
+      Prototype: BalI
+      uri: https://identifiers.org/rebase:1261
+    fetched_at: '2026-07-13T00:31:42+00:00'
   MseI:
     data:
       Acronym: Mse
@@ -1355,6 +2141,17 @@ enzymes:
       Prototype: AflII
       uri: https://identifiers.org/rebase:2161
     fetched_at: '2026-07-13T00:28:07+00:00'
+  MspGI:
+    data:
+      Acronym: MspG
+      Growth Temperature: "28 \xB0"
+      'Org #': '25950'
+      Organism: Microbacterium species Gd 4-13
+      Organism source: A.K. Yunusova
+      Organism type: bacteria
+      Prototype: NaeI (Neoschizomer)
+      uri: https://identifiers.org/rebase:218866
+    fetched_at: '2026-07-13T00:31:04+00:00'
   MspI:
     data:
       Acronym: Msp
@@ -1458,6 +2255,34 @@ enzymes:
       Prototype: NcoI
       uri: https://identifiers.org/rebase:1308
     fetched_at: '2026-07-13T00:29:01+00:00'
+  NdeI:
+    data:
+      Acronym: Nde
+      DNA name: chromosome
+      Experimental Evidence: biochemistry
+      Growth Temperature: "37 \xB0"
+      'Org #': '1842'
+      Organism: Neisseria denitrificans
+      Organism source: NRCC 31009
+      Organism type: bacteria
+      Prototype: NdeI
+      uri: https://identifiers.org/rebase:1312
+    fetched_at: '2026-07-13T00:31:12+00:00'
+  NgoMIV:
+    data:
+      Acronym: NgoM
+      DNA name: chromosome
+      Enz Comment: originally called NgoMI (changed Jan/98)
+      Experimental Evidence: biochemistry
+      Growth Temperature: "37 \xB0"
+      Molecular Weight: '31758'
+      'Org #': '1858'
+      Organism: Neisseria gonorrhoeae MS11
+      Organism source: M. So
+      Organism type: bacteria
+      Prototype: NaeI (Neoschizomer)
+      uri: https://identifiers.org/rebase:1330
+    fetched_at: '2026-07-13T00:30:07+00:00'
   NheI:
     data:
       Acronym: Nhe
@@ -1510,6 +2335,31 @@ enzymes:
       Prototype: NruI
       uri: https://identifiers.org/rebase:1371
     fetched_at: '2026-07-13T00:28:36+00:00'
+  NsbI:
+    data:
+      Acronym: Nsb
+      Experimental Evidence: biochemistry
+      Growth Temperature: "37 \xB0"
+      'Org #': '1895'
+      Organism: Neisseria subflava Va-1
+      Organism source: A. Janulaitis
+      Organism type: bacteria
+      Prototype: MstI
+      uri: https://identifiers.org/rebase:2986
+    fetched_at: '2026-07-13T00:29:53+00:00'
+  NsiI:
+    data:
+      Acronym: Nsi
+      DNA name: chromosome
+      Experimental Evidence: biochemistry
+      Growth Temperature: "37 \xB0"
+      'Org #': '1893'
+      Organism: Neisseria sicca
+      Organism source: ATCC 29256 (ATCC LINK)
+      Organism type: bacteria
+      Prototype: AvaIII (Neoschizomer)
+      uri: https://identifiers.org/rebase:1375
+    fetched_at: '2026-07-13T00:31:16+00:00'
   NspV:
     data:
       Acronym: Nsp
@@ -1538,6 +2388,22 @@ enzymes:
       Prototype: RsaI (Neoschizomer)
       uri: https://identifiers.org/rebase:11107
     fetched_at: '2026-07-13T00:26:49+00:00'
+  PacI:
+    data:
+      Acronym: Pac
+      DNA name: chromosome
+      Enz Comment: Betty Shen/Barry Stoddard has crystals and data, There are no PacI
+        sites in the genome.
+      Experimental Evidence: biochemistry
+      Growth Temperature: "26 \xB0"
+      Molecular Weight: '15764'
+      'Org #': '2043'
+      Organism: Pseudomonas alcaligenes
+      Organism source: NEB 585
+      Organism type: bacteria
+      Prototype: PacI
+      uri: https://identifiers.org/rebase:1424
+    fetched_at: '2026-07-13T00:30:25+00:00'
   PaeI:
     data:
       Acronym: Pae
@@ -1586,6 +2452,17 @@ enzymes:
       Prototype: AscI
       uri: https://identifiers.org/rebase:10829
     fetched_at: '2026-07-13T00:28:19+00:00'
+  PauI:
+    data:
+      Acronym: Pau
+      Experimental Evidence: biochemistry
+      Growth Temperature: "26 \xB0"
+      'Org #': '1953'
+      Organism: Paracoccus alcaliphilus ZVK3-3
+      Organism source: A. Janulaitis
+      Prototype: BsePI
+      uri: https://identifiers.org/rebase:2574
+    fetched_at: '2026-07-13T00:30:16+00:00'
   PceI:
     data:
       Acronym: Pce
@@ -1632,6 +2509,17 @@ enzymes:
       Prototype: SplI
       uri: https://identifiers.org/rebase:1468
     fetched_at: '2026-07-13T00:28:47+00:00'
+  PinAI:
+    data:
+      Acronym: PinA
+      Experimental Evidence: biochemistry
+      Growth Temperature: "30 \xB0"
+      'Org #': '2075'
+      Organism: Pseudomonas inequalis
+      Organism source: M.M. Wijdenbosch
+      Prototype: AgeI
+      uri: https://identifiers.org/rebase:1485
+    fetched_at: '2026-07-13T00:30:08+00:00'
   Ple19I:
     data:
       Acronym: Ple19
@@ -1643,6 +2531,30 @@ enzymes:
       Prototype: PvuI
       uri: https://identifiers.org/rebase:1489
     fetched_at: '2026-07-13T00:28:11+00:00'
+  PluTI:
+    data:
+      Acronym: PluT
+      DNA name: chromosome
+      Growth Temperature: "37 \xB0"
+      Molecular Weight: '36900'
+      'Org #': '3759'
+      Organism: Photorhabdus luminescens
+      Organism source: E. Duchaud
+      Organism type: bacteria
+      Prototype: NarI (Neoschizomer)
+      uri: https://identifiers.org/rebase:23545
+    fetched_at: '2026-07-13T00:31:34+00:00'
+  PmaCI:
+    data:
+      Acronym: PmaC
+      Experimental Evidence: biochemistry
+      Growth Temperature: "30 \xB0"
+      'Org #': '2079'
+      Organism: Pseudomonas maltophilia CB50P
+      Organism source: C.A. Hart
+      Prototype: PmaCI
+      uri: https://identifiers.org/rebase:1493
+    fetched_at: '2026-07-13T00:31:41+00:00'
   PmeI:
     data:
       Acronym: Pme
@@ -1657,6 +2569,43 @@ enzymes:
       Prototype: PmeI
       uri: https://identifiers.org/rebase:1497
     fetched_at: '2026-07-13T00:28:23+00:00'
+  PmlI:
+    data:
+      Acronym: Pml
+      DNA name: chromosome
+      Experimental Evidence: biochemistry
+      Growth Temperature: "30 \xB0"
+      Molecular Weight: '22334'
+      'Org #': '2081'
+      Org Comment: NCBI renamed to Stenotrophomonas maltophilia strain NEB515
+      Organism: Pseudomonas maltophilia
+      Organism source: NEB 515
+      Organism type: bacteria
+      Prototype: PmaCI
+      uri: https://identifiers.org/rebase:1499
+    fetched_at: '2026-07-13T00:30:47+00:00'
+  Ppu10I:
+    data:
+      Acronym: Ppu10
+      Experimental Evidence: biochemistry
+      Growth Temperature: "26 \xB0"
+      'Org #': '2097'
+      Organism: Pseudomonas putida RFL10
+      Organism source: A. Janulaitis
+      Prototype: AvaIII (Neoschizomer)
+      uri: https://identifiers.org/rebase:1504
+    fetched_at: '2026-07-13T00:30:31+00:00'
+  PscI:
+    data:
+      Acronym: Psc
+      Experimental Evidence: biochemistry
+      Growth Temperature: "26 \xB0"
+      'Org #': '4065'
+      Organism: Paracoccus species RFL1
+      Organism source: Fermentas G291
+      Prototype: BspLU11I
+      uri: https://identifiers.org/rebase:10690
+    fetched_at: '2026-07-13T00:30:34+00:00'
   PshBI:
     data:
       Acronym: PshB
@@ -1668,6 +2617,18 @@ enzymes:
       Prototype: VspI
       uri: https://identifiers.org/rebase:2487
     fetched_at: '2026-07-13T00:27:37+00:00'
+  PsiI:
+    data:
+      Acronym: Psi
+      Experimental Evidence: biochemistry
+      Growth Temperature: "37 \xB0"
+      'Org #': '2129'
+      Organism: Pseudomonas species SE-G49
+      Organism source: NEB 1784
+      Organism type: bacteria
+      Prototype: PsiI
+      uri: https://identifiers.org/rebase:3775
+    fetched_at: '2026-07-13T00:31:09+00:00'
   Psp124BI:
     data:
       Acronym: Psp124B
@@ -1701,6 +2662,54 @@ enzymes:
       Prototype: PmaCI
       uri: https://identifiers.org/rebase:7495
     fetched_at: '2026-07-13T00:29:21+00:00'
+  PspLI:
+    data:
+      Acronym: PspL
+      Experimental Evidence: biochemistry
+      Growth Temperature: "30 \xB0"
+      'Org #': '2110'
+      Organism: Pseudomonas species L
+      Organism source: S.K. Degtyarev
+      Prototype: SplI
+      uri: https://identifiers.org/rebase:2748
+    fetched_at: '2026-07-13T00:31:40+00:00'
+  PspOMI:
+    data:
+      Acronym: PspOM
+      DNA name: chromosome
+      Experimental Evidence: biochemistry
+      Growth Temperature: "30 \xB0"
+      Molecular Weight: '37849'
+      'Org #': '2113'
+      Org Comment: NCBI Paracoccus sanguinis strain OM2164
+      Organism: Pseudomonas species OM2164
+      Organism source: NEB 1783
+      Organism type: bacteria
+      Prototype: ApaI (Neoschizomer)
+      uri: https://identifiers.org/rebase:2683
+    fetched_at: '2026-07-13T00:31:11+00:00'
+  PstI:
+    data:
+      Acronym: Pst
+      Experimental Evidence: biochemistry
+      Growth Temperature: "37 \xB0"
+      'Org #': '2005'
+      Organism: Providencia stuartii 164
+      Organism source: ATCC 49762 (ATCC LINK)
+      Organism type: bacteria
+      Prototype: PstI
+      uri: https://identifiers.org/rebase:1536
+    fetched_at: '2026-07-13T00:29:52+00:00'
+  PteI:
+    data:
+      Acronym: Pte
+      Growth Temperature: "30 \xB0"
+      'Org #': '5068'
+      Organism: Paenibacillus terrae RFL2
+      Organism source: Fermentas G357
+      Prototype: BsePI
+      uri: https://identifiers.org/rebase:17982
+    fetched_at: '2026-07-13T00:30:42+00:00'
   PvuI:
     data:
       Acronym: Pvu
@@ -1739,6 +2748,17 @@ enzymes:
       Prototype: SgfI
       uri: https://identifiers.org/rebase:10873
     fetched_at: '2026-07-13T00:29:24+00:00'
+  RigI:
+    data:
+      Acronym: Rig
+      Experimental Evidence: biochemistry
+      Growth Temperature: "30 \xB0"
+      'Org #': '4674'
+      Organism: Rhizobium yangligense
+      Organism source: S.K. Degtyarev
+      Prototype: FseI
+      uri: https://identifiers.org/rebase:14596
+    fetched_at: '2026-07-13T00:30:00+00:00'
   RruI:
     data:
       Acronym: Rru
@@ -1787,6 +2807,19 @@ enzymes:
       Prototype: SacI
       uri: https://identifiers.org/rebase:1578
     fetched_at: '2026-07-13T00:27:01+00:00'
+  SacII:
+    data:
+      Acronym: Sac
+      DNA name: chromosome
+      Experimental Evidence: biochemistry
+      Growth Temperature: "26 \xB0"
+      'Org #': '2402'
+      Organism: Streptomyces achromogenes
+      Organism source: ATCC 12767 (ATCC LINK)
+      Organism type: bacteria
+      Prototype: SacII
+      uri: https://identifiers.org/rebase:1579
+    fetched_at: '2026-07-13T00:29:56+00:00'
   SalI:
     data:
       Acronym: Sal
@@ -1826,6 +2859,44 @@ enzymes:
       Prototype: Sse8387I
       uri: https://identifiers.org/rebase:2742
     fetched_at: '2026-07-13T00:28:16+00:00'
+  ScaI:
+    data:
+      Acronym: Sca
+      Enz Comment: 'The N-terminus protein sequence: XQLPXXVXXXXXGXXXG'
+      Experimental Evidence: biochemistry
+      Growth Temperature: "26 \xB0"
+      Molecular Weight: '25476'
+      'Org #': '2430'
+      Organism: Streptomyces caespitosus
+      Organism source: H. Takahashi
+      Organism type: bacteria
+      Prototype: ScaI
+      uri: https://identifiers.org/rebase:1628
+    fetched_at: '2026-07-13T00:31:17+00:00'
+  SciI:
+    data:
+      Acronym: Sci
+      Experimental Evidence: biochemistry
+      Growth Temperature: "26 \xB0"
+      'Org #': '2515'
+      Organism: Streptoverticillium cinnamoneum
+      Organism source: S.T. Williams
+      Prototype: XhoI (Neoschizomer)
+      uri: https://identifiers.org/rebase:1635
+    fetched_at: '2026-07-13T00:30:55+00:00'
+  SdaI:
+    data:
+      Acronym: Sda
+      Experimental Evidence: biochemistry
+      Growth Temperature: "26 \xB0"
+      Molecular Weight: '36561'
+      'Org #': '2438'
+      Organism: Streptomyces diastaticus Ng7-324
+      Organism source: V. Butkus
+      Organism type: bacteria
+      Prototype: Sse8387I
+      uri: https://identifiers.org/rebase:2946
+    fetched_at: '2026-07-13T00:29:48+00:00'
   SfaAI:
     data:
       Acronym: SfaA
@@ -1861,6 +2932,29 @@ enzymes:
       Prototype: XhoI
       uri: https://identifiers.org/rebase:1661
     fetched_at: '2026-07-13T00:29:11+00:00'
+  Sfr303I:
+    data:
+      Acronym: Sfr303
+      Experimental Evidence: biochemistry
+      Growth Temperature: "26 \xB0"
+      'Org #': '2447'
+      Organism: Streptomyces fradiae 303
+      Organism source: S.K. Degtyarev
+      Prototype: SacII
+      uri: https://identifiers.org/rebase:1662
+    fetched_at: '2026-07-13T00:31:38+00:00'
+  SfuI:
+    data:
+      Acronym: Sfu
+      Experimental Evidence: biochemistry
+      Growth Temperature: "26 \xB0"
+      'Org #': '2451'
+      Organism: Streptomyces fulvissimus
+      Organism source: U. Mayr
+      Organism type: bacteria
+      Prototype: AsuII
+      uri: https://identifiers.org/rebase:1666
+    fetched_at: '2026-07-13T00:30:21+00:00'
   SgfI:
     data:
       Acronym: Sgf
@@ -1872,6 +2966,18 @@ enzymes:
       Prototype: SgfI
       uri: https://identifiers.org/rebase:2426
     fetched_at: '2026-07-13T00:28:06+00:00'
+  SgrBI:
+    data:
+      Acronym: SgrB
+      Experimental Evidence: biochemistry
+      Growth Temperature: "26 \xB0"
+      'Org #': '2462'
+      Organism: Streptomyces griseus
+      Organism source: V. Bouriotis
+      Organism type: bacteria
+      Prototype: SacII
+      uri: https://identifiers.org/rebase:1674
+    fetched_at: '2026-07-13T00:30:02+00:00'
   SgrDI:
     data:
       Acronym: SgrD
@@ -1895,6 +3001,42 @@ enzymes:
       Prototype: AscI
       uri: https://identifiers.org/rebase:10689
     fetched_at: '2026-07-13T00:29:27+00:00'
+  SlaI:
+    data:
+      Acronym: Sla
+      Experimental Evidence: biochemistry
+      Growth Temperature: "26 \xB0"
+      'Org #': '2469'
+      Organism: Streptomyces lavendulae
+      Organism source: ATCC 8664 (ATCC LINK)
+      Prototype: XhoI
+      uri: https://identifiers.org/rebase:1694
+    fetched_at: '2026-07-13T00:31:01+00:00'
+  SmaI:
+    data:
+      Acronym: Sma
+      Enz Comment: recommended digestion temperature by NEB is 37
+      Experimental Evidence: biochemistry
+      Growth Temperature: "26 \xB0"
+      Molecular Weight: '28780'
+      'Org #': '2299'
+      Organism: Serratia marcescens Sb
+      Organism source: ATCC 49779 (ATCC LINK)
+      Organism type: bacteria
+      Prototype: SmaI
+      uri: https://identifiers.org/rebase:1704
+    fetched_at: '2026-07-13T00:31:23+00:00'
+  SmiI:
+    data:
+      Acronym: Smi
+      Experimental Evidence: biochemistry
+      Growth Temperature: "37 \xB0"
+      'Org #': '2383'
+      Organism: Streptococcus milleri S
+      Organism source: S.K. Degtyarev
+      Prototype: SwaI
+      uri: https://identifiers.org/rebase:2750
+    fetched_at: '2026-07-13T00:30:40+00:00'
   SnaBI:
     data:
       Acronym: SnaB
@@ -1921,6 +3063,32 @@ enzymes:
       Prototype: SpeI
       uri: https://identifiers.org/rebase:1717
     fetched_at: '2026-07-13T00:26:43+00:00'
+  SphI:
+    data:
+      Acronym: Sph
+      Enz Comment: Enzyme is brown and may contain an iron-sulfur cluster (Fe-S).
+      Experimental Evidence: biochemistry
+      Growth Temperature: "26 \xB0"
+      Molecular Weight: '25943'
+      'Org #': '2481'
+      Organism: Streptomyces phaeochromogenes
+      Organism source: NRRL B-3559
+      Organism type: bacteria
+      Prototype: SphI
+      uri: https://identifiers.org/rebase:1719
+    fetched_at: '2026-07-13T00:30:19+00:00'
+  SplI:
+    data:
+      Acronym: Spl
+      Experimental Evidence: biochemistry
+      Growth Temperature: "26 \xB0"
+      'Org #': '2332'
+      Organism: Spirulina platensis
+      Organism source: M. Kawamura
+      Organism type: bacteria
+      Prototype: SplI
+      uri: https://identifiers.org/rebase:1724
+    fetched_at: '2026-07-13T00:31:13+00:00'
   SrfI:
     data:
       Acronym: Srf
@@ -1934,6 +3102,28 @@ enzymes:
       Prototype: SrfI
       uri: https://identifiers.org/rebase:1728
     fetched_at: '2026-07-13T00:26:31+00:00'
+  Sse232I:
+    data:
+      Acronym: Sse232
+      Experimental Evidence: biochemistry
+      Growth Temperature: "35 \xB0"
+      'Org #': '2499'
+      Organism: Streptomyces species RH232
+      Organism source: I. Kato
+      Prototype: Sse232I
+      uri: https://identifiers.org/rebase:3831
+    fetched_at: '2026-07-13T00:31:43+00:00'
+  Sse8387I:
+    data:
+      Acronym: Sse8387
+      Experimental Evidence: biochemistry
+      Growth Temperature: "26 \xB0"
+      'Org #': '2493'
+      Organism: Streptomyces species 8387
+      Organism source: Takara 8387
+      Prototype: Sse8387I
+      uri: https://identifiers.org/rebase:1732
+    fetched_at: '2026-07-13T00:29:50+00:00'
   SseBI:
     data:
       Acronym: SseB
@@ -1945,6 +3135,16 @@ enzymes:
       Prototype: StuI
       uri: https://identifiers.org/rebase:2159
     fetched_at: '2026-07-13T00:26:50+00:00'
+  SspDI:
+    data:
+      Acronym: SspD
+      Growth Temperature: "30 \xB0"
+      'Org #': '5340'
+      Organism: Sphingomonas species RFL1
+      Organism source: Fermentas G308
+      Prototype: NarI (Neoschizomer)
+      uri: https://identifiers.org/rebase:20303
+    fetched_at: '2026-07-13T00:30:18+00:00'
   SspI:
     data:
       Acronym: Ssp
@@ -1968,6 +3168,17 @@ enzymes:
       Prototype: MaeI
       uri: https://identifiers.org/rebase:102129
     fetched_at: '2026-07-13T00:26:47+00:00'
+  SstI:
+    data:
+      Acronym: Sst
+      Experimental Evidence: biochemistry
+      Growth Temperature: "26 \xB0"
+      'Org #': '2506'
+      Organism: Streptomyces stanford
+      Organism source: S. Goff
+      Prototype: SacI
+      uri: https://identifiers.org/rebase:1759
+    fetched_at: '2026-07-13T00:30:15+00:00'
   Sth302II:
     data:
       Acronym: Sth302
@@ -2030,6 +3241,19 @@ enzymes:
       Prototype: MaeII (Neoschizomer)
       uri: https://identifiers.org/rebase:2823
     fetched_at: '2026-07-13T00:27:07+00:00'
+  TaqI:
+    data:
+      Acronym: Taq
+      DNA name: chromosome
+      Experimental Evidence: biochemistry
+      Growth Temperature: "70 \xB0"
+      'Org #': '2551'
+      Organism: Thermus aquaticus YTI
+      Organism source: J.I. Harris
+      Organism type: bacteria
+      Prototype: TaqI
+      uri: https://identifiers.org/rebase:1801
+    fetched_at: '2026-07-13T00:30:35+00:00'
   Tru1I:
     data:
       Acronym: Tru1
@@ -2041,6 +3265,32 @@ enzymes:
       Prototype: MseI
       uri: https://identifiers.org/rebase:2218
     fetched_at: '2026-07-13T00:29:43+00:00'
+  Tru9I:
+    data:
+      Acronym: Tru9
+      Experimental Evidence: biochemistry
+      Growth Temperature: "60 \xB0"
+      'Org #': '2562'
+      Organism: Thermus ruber 9
+      Organism source: S.K. Degtyarev
+      Prototype: MseI
+      uri: https://identifiers.org/rebase:1817
+    fetched_at: '2026-07-13T00:30:58+00:00'
+  TspMI:
+    data:
+      Acronym: TspM
+      DNA name: chromosome
+      Experimental Evidence: biochemistry
+      Growth Temperature: "70 \xB0"
+      Molecular Weight: '44053'
+      'Org #': '3750'
+      Organism: Thermophilic strain M
+      Organism source: P. Sharma
+      Organism type: bacteria
+      Other Names: UthSI
+      Prototype: SmaI (Neoschizomer)
+      uri: https://identifiers.org/rebase:7191
+    fetched_at: '2026-07-13T00:30:05+00:00'
   UpaP162I:
     data:
       Acronym: UpaP162
@@ -2056,6 +3306,17 @@ enzymes:
       Prototype: NlaIII (Neoschizomer)
       uri: https://identifiers.org/rebase:277875
     fetched_at: '2026-07-13T00:29:15+00:00'
+  Vha464I:
+    data:
+      Acronym: Vha464
+      Experimental Evidence: biochemistry
+      Growth Temperature: "26 \xB0"
+      'Org #': '3012'
+      Organism: Vibrio harveyi 464
+      Organism source: S.K. Degtyarev
+      Prototype: AflII
+      uri: https://identifiers.org/rebase:2113
+    fetched_at: '2026-07-13T00:31:18+00:00'
   VneI:
     data:
       Acronym: Vne
@@ -2067,6 +3328,18 @@ enzymes:
       Prototype: ApaLI
       uri: https://identifiers.org/rebase:2116
     fetched_at: '2026-07-13T00:29:05+00:00'
+  VspI:
+    data:
+      Acronym: Vsp
+      Experimental Evidence: biochemistry
+      Growth Temperature: "37 \xB0"
+      'Org #': '3055'
+      Organism: Vibrio species 343
+      Organism source: S.K. Degtyarev
+      Organism type: bacteria
+      Prototype: VspI
+      uri: https://identifiers.org/rebase:2124
+    fetched_at: '2026-07-13T00:31:20+00:00'
   XbaI:
     data:
       Acronym: Xba
@@ -2125,6 +3398,17 @@ enzymes:
       Prototype: XmaIII
       uri: https://identifiers.org/rebase:2140
     fetched_at: '2026-07-13T00:28:52+00:00'
+  XmaJI:
+    data:
+      Acronym: XmaJ
+      Experimental Evidence: biochemistry
+      Growth Temperature: "30 \xB0"
+      'Org #': '3071'
+      Organism: Xanthomonas maltophilia Jo 85-025
+      Organism source: V. Butkus
+      Prototype: AvrII
+      uri: https://identifiers.org/rebase:4112
+    fetched_at: '2026-07-13T00:29:54+00:00'
   XspI:
     data:
       Acronym: Xsp
@@ -2160,5 +3444,16 @@ enzymes:
       Prototype: ScaI
       uri: https://identifiers.org/rebase:7494
     fetched_at: '2026-07-13T00:28:22+00:00'
+  Zsp2I:
+    data:
+      Acronym: Zsp2
+      Experimental Evidence: biochemistry
+      Growth Temperature: "26 \xB0"
+      'Org #': '3094'
+      Organism: Zoogloea species 2
+      Organism source: S.K. Degtyarev
+      Prototype: AvaIII (Neoschizomer)
+      uri: https://identifiers.org/rebase:2156
+    fetched_at: '2026-07-13T00:31:29+00:00'
 max_age_days: 183
 schema_version: 1

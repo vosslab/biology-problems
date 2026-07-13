@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # ^^ Specifies the Python3 environment to use for script execution
 
-# Import built-in Python modules
-# Provides functions to generate random numbers and selections
 import random
 
 # Import external modules (pip-installed)
@@ -11,7 +9,6 @@ import random
 # Import local modules from the project
 # Provides custom functions, such as question formatting and other utilities
 import bptools
-import seqlib
 import restrictlib
 
 SCENARIOS: list[str] = []
@@ -93,7 +90,7 @@ def makeMultipleChoiceQuestion(N, enzyme_class, num_choices):
 
 	#==========================
 	# Distractor: flipped (reversed) overhang sequence
-	distractor_flipped_ovhg = f"5'-{seqlib.flip(enzyme_class.ovhgseq)}-3'"
+	distractor_flipped_ovhg = f"5'-{enzyme_class.ovhgseq[::-1]}-3'"
 	choices_list.append(distractor_flipped_ovhg)
 
 	# Distractor: site from center to end
@@ -105,11 +102,11 @@ def makeMultipleChoiceQuestion(N, enzyme_class, num_choices):
 	choices_list.append(distractor_expanded_left)
 
 	# Distractor: flipped (reversed) expanded_right
-	distractor_flipped_right = f"5'-{seqlib.flip(enzyme_class.site[shift:])}-3'"
+	distractor_flipped_right = f"5'-{enzyme_class.site[shift:][::-1]}-3'"
 	choices_list.append(distractor_flipped_right)
 
 	# Distractor: flipped (reversed) expanded_left
-	distractor_flipped_left = f"5'-{seqlib.flip(enzyme_class.site[:-shift])}-3'"
+	distractor_flipped_left = f"5'-{enzyme_class.site[:-shift][::-1]}-3'"
 	choices_list.append(distractor_flipped_left)
 
 	#==========================

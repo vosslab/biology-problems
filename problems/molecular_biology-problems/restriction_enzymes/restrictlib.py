@@ -4,20 +4,16 @@ import os
 import re
 import time
 import datetime
-import subprocess
 import yaml
 import random
 import requests
 from Bio import Restriction
 from bs4 import BeautifulSoup
 
+import bptools
 
-REPO_ROOT = subprocess.check_output(
-	['git', 'rev-parse', '--show-toplevel'],
-	cwd=os.path.dirname(os.path.abspath(__file__)),
-	text=True,
-).strip()
-WEB_DATA_CACHE_PATH = os.path.join(REPO_ROOT, 'data', 'restriction_enzyme_web_data.yml')
+
+WEB_DATA_CACHE_PATH = bptools.get_repo_data_path('restriction_enzyme_web_data.yml')
 WEB_DATA_CACHE_MAX_AGE = datetime.timedelta(days=183)
 WEB_DATA_REQUEST_TIMEOUT = 20
 WEB_DATA_CACHE = None

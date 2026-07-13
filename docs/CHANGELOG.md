@@ -66,6 +66,9 @@
 - Added a shipped restriction-enzyme web-data cache with full labeled REBASE fields
   and automatic per-enzyme six-month refreshes so overhang generators avoid hundreds
   of repeated HTTP requests during normal generation.
+- Populated the cache with all 280 eligible enzymes, resolved it through
+  `bptools.get_repo_data_path()`, and measured warm-cache generation at about
+  2.7 seconds for 191 overhang-sequence or 280 overhang-type questions.
 - Grouped the overhang generators and restriction-enzyme library under
   `problems/molecular_biology-problems/restriction_enzymes/`.
 
