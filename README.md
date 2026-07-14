@@ -46,29 +46,28 @@ HTML needed for LMS import.
 
 ## Quick start
 
+This repository is not distributed as a Python package. Clone the source and run its generators in
+place; only the separate `qti-package-maker` dependency is installed from PyPI.
+
 ### Prerequisites
 
 - Python 3.12.
-- The sibling
-  [`qti-package-maker`](https://github.com/vosslab/qti-package-maker) repository cloned beside this
-  repository.
+- The [`qti-package-maker`](https://github.com/vosslab/qti-package-maker) Python package, installed
+  from [PyPI](https://pypi.org/project/qti-package-maker/).
 - The packages listed in `pip_requirements.txt`.
 
-The environment helper currently attempts to load the legacy
-`qti-package-maker/source_me_for_testing.sh` helper, which is not present in the current sibling
-repository. It may print a warning before continuing. See [docs/INSTALL.md](docs/INSTALL.md) for the
-complete setup requirements.
+`qti-package-maker` is installed separately so its release can be managed independently from this
+repository's dependency list.
 
 ### Generate your first questions
 
-Clone both repositories into the same parent directory, then install the Python dependencies and
-run a generator:
+Clone this repository, install its dependencies and `qti-package-maker`, then run a generator:
 
 ```bash
-git clone https://github.com/vosslab/qti-package-maker.git
 git clone https://github.com/vosslab/biology-problems.git
 cd biology-problems
 python3 -m pip install -r pip_requirements.txt
+python3 -m pip install qti-package-maker
 source source_me.sh
 python3 problems/biochemistry-problems/alpha_helix_h-bonds.py --mc -d 5
 ```
@@ -93,7 +92,7 @@ python3 problems/biochemistry-problems/alpha_helix_h-bonds.py --help
 
 ## Documentation
 
-- [docs/INSTALL.md](docs/INSTALL.md): Prepare Python, dependencies, and sibling repositories.
+- [docs/INSTALL.md](docs/INSTALL.md): Prepare Python and install the required dependencies.
 - [docs/USAGE.md](docs/USAGE.md): Use common generator flags and understand generated artifacts.
 - [docs/QUESTION_AUTHORING_GUIDE.md](docs/QUESTION_AUTHORING_GUIDE.md): Write and review a new
   question generator.
@@ -108,8 +107,7 @@ The collection is actively maintained. The latest catalog audit recorded 178 Pyt
 98 YAML question banks across the supported biology subjects. Use the two indexes above for current
 coverage and [docs/CHANGELOG.md](docs/CHANGELOG.md) for recent changes.
 
-Platform support beyond macOS with Homebrew and exact minimum sibling-repository versions have not
-yet been confirmed.
+Platform support beyond macOS with Homebrew has not yet been confirmed.
 
 ## License
 

@@ -39,7 +39,8 @@ Outputs commonly include Blackboard text files (`bbq-*.txt`), QTI packages (`qti
 ### Tooling and tests
 
 - [tools/](../tools/): indexing, audit, YAML, and image utilities.
-- [devel/](../devel/): release and changelog tooling (versioning, changelog rotation/query, PyPI submission).
+- [devel/](../devel/): release and changelog tooling, including versioning and changelog
+  rotation/query helpers.
 - [tests/](../tests/): pytest coverage and lint gates.
 
 ## Data flow

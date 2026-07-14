@@ -298,7 +298,7 @@
 - Updated [hypothesis_lab_partner.py](../problems/biostatistics-problems/hypothesis_lab_partner.py)
   to include the same ASCII-friendly parameter labels and "In words" sentences for the lab partner's hypotheses.
 - Added a pytest smoke-test suite for `*lib.py` modules in `tests` and configured pytest discovery via
-  [pyproject.toml](../pyproject.toml).
+  `pyproject.toml`.
 - Added per-library unit tests in `tests` (one `tests/test_*.py` per `*lib.py` file) with a shared import helper
   in [lib_test_utils.py](../tests/lib_test_utils.py).
 - Fixed `aminoacidlib.py` to store `sugar_code` on
@@ -333,7 +333,7 @@
   and [student_names.txt](../data/student_names.txt)
   into `data` and updated the generators to reference the new paths.
 - Added `source_me.sh` for a repo-root `PYTHONPATH` setup and added packaging
-  metadata via [pyproject.toml](../pyproject.toml), [MANIFEST.in](../MANIFEST.in),
+  metadata via `pyproject.toml`, [MANIFEST.in](../MANIFEST.in),
   and [VERSION](../VERSION) (version 26.01).
 - Documented editable install behavior in
   [QUESTION_AUTHORING_GUIDE.md](QUESTION_AUTHORING_GUIDE.md).

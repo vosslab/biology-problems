@@ -13,12 +13,10 @@
 - [devel/](../devel/): release and changelog tooling.
 - [source_me.sh](../source_me.sh): environment setup for Python 3.12.
 - [pip_requirements.txt](../pip_requirements.txt): Python dependencies.
-- [pyproject.toml](../pyproject.toml): project metadata and build config.
 - [Brewfile](../Brewfile): optional Homebrew dependencies.
 - [LICENSE.LGPL_v3](../LICENSE.LGPL_v3): LGPLv3 license text for code.
 - [LICENSE.CC_BY_4_0](../LICENSE.CC_BY_4_0): CC BY 4.0 license text for non-code content.
 - [VERSION](../VERSION): repo version string.
-- [MANIFEST.in](../MANIFEST.in): package include list.
 
 ## Problem generator subdirectories
 
@@ -104,7 +102,6 @@ Release and changelog tooling (sharing [devel/changelog_lib.py](../devel/changel
 - [devel/query_changelog.py](../devel/query_changelog.py): changelog search by date/category/keyword.
 - [devel/commit_changelog.py](../devel/commit_changelog.py): seed commit message from changelog entries.
 - [devel/flatten_broken_md_links.py](../devel/flatten_broken_md_links.py): Markdown link repair helper.
-- [devel/submit_to_pypi.py](../devel/submit_to_pypi.py): PyPI submission helper.
 - [devel/dist_clean.sh](../devel/dist_clean.sh): build artifact cleanup.
 - [devel/setup_playwright.sh](../devel/setup_playwright.sh): Playwright setup.
 

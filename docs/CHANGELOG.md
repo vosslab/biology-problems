@@ -7,8 +7,15 @@
 - Rebuilt `README.md` as a newcomer-focused landing page with a representative generated question,
   outcome-oriented capabilities, a complete first-run path, curated documentation routes, setup
   limitations, current catalog status, and the repository's code and educational-content licenses.
-- Linked the public Biology Problems OER collection and `qti-package-maker` repository from the
-  landing page, and expanded Quick start with commands that clone both sibling repositories.
+- Linked the public Biology Problems OER collection, the published `qti-package-maker` package, and
+  its development repository from the landing page, and added a repository clone command to Quick
+  start.
+- Made the published `qti-package-maker` distribution the primary install path, removed its import
+  name from `pip_requirements.txt` so it can be released independently, retained sibling checkout
+  guidance for joint development, and kept the personal environment helper unchanged.
+- Clarified that `biology-problems` runs directly from a source checkout rather than as an installed
+  Python package, and removed stale `pyproject.toml` and PyPI-packaging references from the active
+  architecture and file-structure documentation.
 
 ## 2026-07-12
 

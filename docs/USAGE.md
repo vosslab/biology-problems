@@ -2,7 +2,8 @@
 
 Each script under [problems/](../problems/) is a standalone generator that emits
 quiz or homework items. Most use shared helpers from [bptools.py](../bptools.py)
-and a common `argparse` CLI. Run a script directly after sourcing the environment.
+and a common `argparse` CLI. Follow [INSTALL.md](INSTALL.md) to install
+`qti-package-maker`, then run a script after sourcing the environment.
 
 ## Quick start
 - `source source_me.sh`
