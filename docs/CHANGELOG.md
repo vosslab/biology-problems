@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-07-14
+
+### Behavior or Interface Changes
+
+- Rebuilt `README.md` as a newcomer-focused landing page with a representative generated question,
+  outcome-oriented capabilities, a complete first-run path, curated documentation routes, setup
+  limitations, current catalog status, and the repository's code and educational-content licenses.
+
 ## 2026-07-12
 
 ### Behavior or Interface Changes
