@@ -2,6 +2,9 @@
 
 Standalone Python generators help biology instructors create randomized, LMS-ready quiz and homework questions across biochemistry, genetics, molecular biology, and related subjects.
 
+Explore the generated question collection at
+[Biology Problems OER](https://biologyproblems.org/).
+
 ## From concept to LMS-ready question
 
 Choose a topic, run its generator, and receive questions ready for Blackboard or a QTI-compatible
@@ -46,19 +49,25 @@ HTML needed for LMS import.
 ### Prerequisites
 
 - Python 3.12.
-- The sibling `qti-package-maker` repository cloned beside this repository.
+- The sibling
+  [`qti-package-maker`](https://github.com/vosslab/qti-package-maker) repository cloned beside this
+  repository.
 - The packages listed in `pip_requirements.txt`.
 
-The environment helper currently expects
-`qti-package-maker/source_me_for_testing.sh`. Confirm that the sibling checkout provides this file
-when setting up a new environment; otherwise `source_me.sh` reports a warning. See
-[docs/INSTALL.md](docs/INSTALL.md) for the complete setup requirements.
+The environment helper currently attempts to load the legacy
+`qti-package-maker/source_me_for_testing.sh` helper, which is not present in the current sibling
+repository. It may print a warning before continuing. See [docs/INSTALL.md](docs/INSTALL.md) for the
+complete setup requirements.
 
 ### Generate your first questions
 
-From the repository root:
+Clone both repositories into the same parent directory, then install the Python dependencies and
+run a generator:
 
 ```bash
+git clone https://github.com/vosslab/qti-package-maker.git
+git clone https://github.com/vosslab/biology-problems.git
+cd biology-problems
 python3 -m pip install -r pip_requirements.txt
 source source_me.sh
 python3 problems/biochemistry-problems/alpha_helix_h-bonds.py --mc -d 5

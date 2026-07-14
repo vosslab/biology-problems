@@ -7,6 +7,8 @@
 - Rebuilt `README.md` as a newcomer-focused landing page with a representative generated question,
   outcome-oriented capabilities, a complete first-run path, curated documentation routes, setup
   limitations, current catalog status, and the repository's code and educational-content licenses.
+- Linked the public Biology Problems OER collection and `qti-package-maker` repository from the
+  landing page, and expanded Quick start with commands that clone both sibling repositories.
 
 ## 2026-07-12
 
