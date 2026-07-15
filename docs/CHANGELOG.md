@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-07-15
+
+### Additions and New Features
+
+- Added a minimal WeBWorK multiple-choice example asking for a favorite color.
+
 ## 2026-07-14
 
 ### Behavior or Interface Changes

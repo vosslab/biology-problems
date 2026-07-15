@@ -1,0 +1,49 @@
+## TITLE('Choose my favorite color')
+## DESCRIPTION
+## Select the correct favorite color from four choices.
+## ENDDESCRIPTION
+## KEYWORDS('color','multiple choice','radio buttons')
+## DBsubject('Organismic Biology')
+## DBchapter('General')
+## DBsection('Multiple Choice')
+## Level(1)
+## Date('2026-07-15')
+## Author('Dr. Neil R. Voss')
+## Institution('Roosevelt University')
+## Language(en)
+# https://github.com/vosslab
+# This work is licensed under CC BY 4.0 (Creative Commons Attribution 4.0
+# International License).
+# https://creativecommons.org/licenses/by/4.0/
+# Source code portions are licensed under LGPLv3.
+
+DOCUMENT();
+
+loadMacros(
+	'PGstandard.pl',
+	'PGML.pl',
+	'parserRadioButtons.pl',
+	'PGcourse.pl'
+);
+
+$showPartialCorrectAnswers = 0;
+
+$answer = RadioButtons(
+	['blue', 'red', 'green', 'orange'],
+	'blue',
+	labels        => 'ABC',
+	displayLabels => 1,
+	randomize     => 0,
+);
+
+BEGIN_PGML
+What is my favorite color?
+
+[_]{$answer}
+END_PGML
+
+BEGIN_PGML_SOLUTION
+My favorite color is blue.
+END_PGML_SOLUTION
+
+ENDDOCUMENT();
