@@ -113,7 +113,7 @@ class GeneTreeOutput(object):
 		pass
 
 	#====================================================================
-	def create_empty_char_tree_array(self, num_leaves: int) -> numpy.chararray:
+	def create_empty_char_tree_array(self, num_leaves: int) -> numpy.ndarray:
 		# rows: 3->5, 4->7, 5->9 => rows = 2*leaves - 1
 		rows = 2 * num_leaves - 1
 		cols = 3 * num_leaves + 3
@@ -396,7 +396,8 @@ class GeneTreeOutput(object):
 		"""
 		(rows, cols) = char_tree_array.shape
 		html_rows, html_cols = rows+1, cols//2+2+cols%2
-		html_tree_array = numpy.empty((html_rows, html_cols), dtype=numpy.chararray)
+		# Object dtype preserves the variable-length HTML strings in each table cell.
+		html_tree_array = numpy.empty((html_rows, html_cols), dtype=object)
 		# Decode array to str
 		ascii_tree_array = numpy.char.decode(char_tree_array, 'ascii')
 		for row_num in range(rows):

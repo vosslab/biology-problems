@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-08-19
+
+### Fixes and Maintenance
+
+- Replaced removed `numpy.chararray` uses in the shared phylogenetic-tree renderer with modern
+  NumPy arrays, restoring gene-tree question generation under NumPy 2.5.
+- Added required `topic` metadata to five multiple-choice statement banks, restoring their PGML
+  conversions.
+
 ## 2026-07-15
 
 ### Additions and New Features

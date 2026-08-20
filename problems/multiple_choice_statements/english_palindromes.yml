@@ -1,7 +1,7 @@
 ---
 
 #Which one of the following statements is FALSE/TRUE <connection word> <topic>
-topic: ~
+topic: English palindromes
 override_question_true: Which one of the following English words is a palindrome?
 override_question_false: Which one of the following English words is <strong>NOT</strong> a palindrome?
 
@@ -61,7 +61,6 @@ false_statements:
 
 # conflicts, means that the statements cannot appear together
 conflict_rules: ~
-
 
 
 
