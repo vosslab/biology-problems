@@ -52,7 +52,7 @@ def make_complete_problem(N: int, km: float, vmax: float) -> str:
 	choices.sort()
 
 	# format choices with monospace styling
-	mono = "<span style='font-family: courier, monospace;'>"
+	mono = "<span style='font-family: monospace;'>"
 	choices_list = []
 	answer_text = None
 	for choice in choices:

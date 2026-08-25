@@ -923,7 +923,7 @@ base_replacement_rule_dict = {
 
 #=======================
 def append_clear_font_space_to_text(string_text):
-	return f'<span style="font-family: sans-serif; letter-spacing: 1px;">{string_text}</span>'
+	return f'<span style="letter-spacing: 1px;">{string_text}</span>'
 
 #=======================
 def append_clear_font_space_to_list(list_of_text_strings):

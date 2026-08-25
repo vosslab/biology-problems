@@ -301,7 +301,7 @@ def format_html_table(villages: list, z_scores: dict, totals: dict) -> str:
 
 	# Start the HTML table with general styling
 	html = (
-		"<table border='1' style='border-collapse: collapse; font-family: Arial, sans-serif;'>"
+		"<table border='1' style='border-collapse: collapse;'>"
 		"<tr style='height: 50px;'>"
 		f"<th style='{header_style}'>Village</th>"
 		f"<th style='{header_style}'>Plant<br/>Z-Score</th>"

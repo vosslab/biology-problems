@@ -27,6 +27,7 @@ the appropriate repo root, package, or `templates/<type>/` path.
 | [query_changelog.py](query_changelog.py) | Search active and archived changelog entries. |
 | [rotate_changelog.py](rotate_changelog.py) | Move old changelog day blocks into archive files. |
 | [flatten_broken_md_links.py](flatten_broken_md_links.py) | Repair or flatten broken Markdown links. |
+| `check_bandit_security.py` | Run the repo-wide Bandit security audit outside pytest. |
 | [dist_clean.sh](dist_clean.sh) | Remove build artifacts, caches, and dependency installs. |
 
 ## Template devel scripts

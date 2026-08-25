@@ -219,7 +219,6 @@ HEADER_TEXT(MODES(
 .enzyme-sim-wrap {
 	max-width: 860px;
 	margin: 1em auto;
-	font-family: Arial, Helvetica, sans-serif;
 	font-size: 14px;
 }
 .enzyme-sim-canvases {
@@ -334,6 +333,13 @@ var lastFrameTime = 0;
 var zeroSinceTime = -1; /* simTime when starch+maltose first hit 0, -1 = not yet */
 
 /* ---- helpers ---- */
+function canvasFont(ctx, sizePx, weight) {
+	var fontFamily = window.getComputedStyle(ctx.canvas).fontFamily;
+	var fontText = sizePx + "px " + fontFamily;
+	if (weight) fontText = weight + " " + fontText;
+	return fontText;
+}
+
 function randDir() {
 	return (Math.random() - 0.5) * 2;
 }
@@ -483,7 +489,7 @@ function drawBeaker() {
 	ctx.strokeRect(1, 1, BEAKER_W - 2, BEAKER_H - 2);
 	/* label */
 	ctx.fillStyle = "#334455";
-	ctx.font = "12px Arial";
+	ctx.font = canvasFont(ctx, 12);
 	ctx.textAlign = "left";
 	ctx.fillText("Reaction Beaker", 8, 16);
 	/* time */
@@ -553,7 +559,7 @@ function drawGraph() {
 
 	/* title */
 	ctx.fillStyle = "#334455";
-	ctx.font = "13px Arial";
+	ctx.font = canvasFont(ctx, 13);
 	ctx.textAlign = "center";
 	ctx.fillText("Concentration Graph", GRAPH_W / 2, 16);
 
@@ -568,7 +574,7 @@ function drawGraph() {
 
 	/* axis labels */
 	ctx.fillStyle = "#445566";
-	ctx.font = "11px Arial";
+	ctx.font = canvasFont(ctx, 11);
 	ctx.textAlign = "center";
 	ctx.fillText("Time (seconds)", pad.l + gw / 2, GRAPH_H - 4);
 	ctx.save();
@@ -639,7 +645,7 @@ function drawGraph() {
 	}
 
 	/* legend inside graph */
-	ctx.font = "11px Arial";
+	ctx.font = canvasFont(ctx, 11);
 	var legX = pad.l + gw - 8;
 	var legY = pad.t + 12;
 	ctx.textAlign = "right";
@@ -742,7 +748,7 @@ function drawOverlay() {
 	ctx.fill();
 	/* text */
 	ctx.fillStyle = "#ffffff";
-	ctx.font = "bold 13px Arial";
+	ctx.font = canvasFont(ctx, 13, "bold");
 	ctx.textAlign = "center";
 	ctx.textBaseline = "middle";
 	ctx.fillText(overlayMsg, BEAKER_W / 2, BEAKER_H / 2);

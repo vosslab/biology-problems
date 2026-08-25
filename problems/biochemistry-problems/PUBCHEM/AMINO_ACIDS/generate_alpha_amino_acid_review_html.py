@@ -108,7 +108,7 @@ def build_html(sets: dict[str, dict], pcl: pubchemlib.PubChemLib) -> str:
 
 	style_block = (
 		"<style>"
-		"body { font-family: Arial, sans-serif; margin: 24px; color: #111; }"
+		"body { margin: 24px; color: #111; }"
 		"h1 { margin-bottom: 0.2em; }"
 		".note { color: #555; margin-bottom: 1.5em; }"
 		".set { border: 2px solid #e5e7eb; border-radius: 12px; padding: 16px; "

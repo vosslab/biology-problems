@@ -141,11 +141,11 @@ def report_path(name: str) -> str:
 	Build the absolute path to a repo-root report file.
 
 	Hygiene tests write dev-facing report files (for example
-	report_bandit_security.txt) at the repository root. This resolves the full
+	report_pyflakes_code_lint.txt) at the repository root. This resolves the full
 	filename to an absolute path under get_repo_root().
 
 	Args:
-		name: Full report filename, for example "report_bandit_security.txt".
+		name: Full report filename, for example "report_pyflakes_code_lint.txt".
 
 	Returns:
 		str: Absolute path to the report file at the repo root.
@@ -163,7 +163,7 @@ def write_report(name: str, text: str) -> str:
 	before calling, so this performs exactly one write.
 
 	Args:
-		name: Full report filename, for example "report_bandit_security.txt".
+		name: Full report filename, for example "report_pyflakes_code_lint.txt".
 		text: Full report body to write verbatim.
 
 	Returns:
@@ -231,8 +231,8 @@ def report_name(test_file: str) -> str:
 			"test_" and end with ".py".
 
 	Returns:
-		str: Report filename, for example "report_bandit_security.txt" when test_file
-			is ".../tests/test_bandit_security.py".
+		str: Report filename, for example "report_pyflakes_code_lint.txt" when
+			test_file is ".../tests/test_pyflakes_code_lint.py".
 	"""
 	# Extract the base filename without directory components.
 	base = os.path.basename(test_file)

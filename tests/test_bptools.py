@@ -216,16 +216,6 @@ def test_collect_question_batches_respects_max_questions(capsys):
 	_ = capsys.readouterr()
 
 
-def test_append_clear_font_space_helpers():
-	text = bptools.append_clear_font_space_to_text("ABC")
-	assert "ABC" in text
-	assert "font-family: sans-serif" in text
-
-	items = bptools.append_clear_font_space_to_list(["A", "B"])
-	assert len(items) == 2
-	assert all("font-family: sans-serif" in item for item in items)
-
-
 def test_get_repo_data_path_points_under_data_dir():
 	path = bptools.get_repo_data_path("real_wordles.txt")
 	assert os.path.isabs(path)

@@ -45,7 +45,7 @@ sub svg_line {
 sub svg_text {
 	my ($x, $y, $anchor, $size, $content) = @_;
 	return '<text x="' . $x . '" y="' . $y
-		. '" font-family="sans-serif" font-size="' . $size
+		. '" font-size="' . $size
 		. '" text-anchor="' . $anchor . '" fill="#000">'
 		. $content . '</text>';
 }
@@ -127,7 +127,7 @@ $haworth_svg .= '<polygon points="-6.059,-17.688 -5.612,-16.574 -17.227,-11.904 
 $haworth_svg .= '<polygon points="-17.675,-13.018 -17.227,-11.904 -28.842,-7.234 -29.29,-8.348" fill="#000" stroke="none"/>';
 $haworth_svg .= '<circle cx="-29.066" cy="-7.791" r="0.6" fill="#000" stroke="none"/>';
 $haworth_svg .= '<circle cx="29.066" cy="-7.791" r="0.6" fill="#000" stroke="none"/>';
-$haworth_svg .= '<text x="0" y="-15.277" font-family="sans-serif" font-size="12" text-anchor="middle" fill="#8b0000" font-weight="bold">O</text>';
+$haworth_svg .= '<text x="0" y="-15.277" font-size="12" text-anchor="middle" fill="#8b0000" font-weight="bold">O</text>';
 
 # right-side anomeric position
 if ($is_ketose) {

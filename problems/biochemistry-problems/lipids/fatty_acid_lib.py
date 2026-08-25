@@ -4,7 +4,7 @@ Shared helpers for the fatty acid question generators.
 Provides ASCII-art rendering of unsaturated fatty-acid skeletons suitable
 for Blackboard HTML (no SVG, no <table> -- both are blocked by the
 Blackboard sanitizer or stripped by bptools sanitization). Bonds are drawn
-inside a courier-font span using:
+inside a monospace span using:
 
   - '/'  for an upward single bond
   - '\\' for a downward single bond
@@ -22,9 +22,8 @@ the PGML versions) and HTML helpers for the omega and Delta notation.
 import random
 
 
-# Monospace span wrapper for the chain. Courier + x-large mirror the look
-# of the original fatty_acid_naming.py so the bonds line up cleanly.
-CHAIN_SPAN_OPEN = '<span style="font-family: courier; font-size: x-large;">'
+# Monospace span wrapper for the chain. The larger size keeps the bonds aligned.
+CHAIN_SPAN_OPEN = '<span style="font-family: monospace; font-size: x-large;">'
 CHAIN_SPAN_CLOSE = '</span>'
 
 # Terminal labels.
@@ -79,7 +78,7 @@ def render_fatty_acid_ascii(chain_length: int, double_bond_indices) -> str:
 			(methyl-side) and vertex i+1.
 
 	Returns:
-		HTML string starting with the courier span open tag and ending
+		HTML string starting with the monospace span open tag and ending
 		with the closing tag, suitable for embedding directly in a
 		Blackboard question stem or MC choice.
 	"""

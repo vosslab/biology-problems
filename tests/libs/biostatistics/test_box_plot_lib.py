@@ -33,10 +33,3 @@ def test_nondecreasing_and_ties():
 	summary = {"min": 1, "q1": 2, "median": 2, "q3": 4, "max": 4}
 	assert mod.is_nondecreasing(summary)
 	assert mod.has_tie(summary)
-
-
-def test_render_boxplot_html_handles_fractional_quartiles():
-	mod = import_from_repo_path("problems/biostatistics-problems/box_plot_lib.py")
-	summary = {"min": 1, "q1": 2.5, "median": 3, "q3": 3.5, "max": 5}
-	html = mod.render_boxplot_html(summary)
-	assert "<table" in html

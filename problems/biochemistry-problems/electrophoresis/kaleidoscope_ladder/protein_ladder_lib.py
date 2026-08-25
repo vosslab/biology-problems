@@ -137,7 +137,7 @@ def gen_gel_lanes_html(
 	for lane in lanes:
 		label = lane.get("label", "")
 		bands = lane.get("bands", [])
-		lanes_html += '<div style="text-align:center; font-family:Arial, sans-serif;">'
+		lanes_html += '<div style="text-align:center;">'
 		lanes_html += f'<div style="margin-bottom:6px;"><b>{label}</b></div>'
 		lanes_html += (
 			f'<div style="position:relative; width:{lane_width_px}px; height:{gel_height_px}px; '

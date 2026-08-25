@@ -61,7 +61,7 @@ def make_data_table(
 	num_cols = 3 if has_inhibitor else 2
 
 	# monospace span for numeric alignment
-	mono = "<span style='font-family: courier, monospace;'>"
+	mono = "<span style='font-family: monospace;'>"
 
 	# start the table
 	table = "<table cellpadding='2' cellspacing='2' "

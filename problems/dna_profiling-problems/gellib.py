@@ -40,7 +40,6 @@ class GelClassImage(GelClass):
 		possible_font_paths = [
 			os.path.expandvars('$HOME/Library/Fonts/LiberationSansNarrow-Regular.ttf'),  # User font
 			'/Applications/LibreOffice.app/Contents/Resources/fonts/truetype/LiberationSansNarrow-Regular.ttf',  # LibreOffice install
-			'/System/Library/Fonts/Supplemental/Arial Narrow.ttf',  # macOS default narrow fallback
 			'/System/Library/Fonts/Supplemental/PTSans.ttc',  # PT Sans Narrow in TTC
 		]
 		for fontpath in possible_font_paths:

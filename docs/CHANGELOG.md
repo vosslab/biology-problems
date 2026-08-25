@@ -1,5 +1,18 @@
 # Changelog
 
+## 2026-08-25
+
+### Fixes and Maintenance
+
+- Removed named Arial font overrides from generated questions, review pages, debug pages, and
+  canvas labels so normal text inherits the host site's typography; replaced the DNA gel image's
+  Arial Narrow candidate with the existing PT Sans fallback, removed generic sans-serif overrides
+  from ordinary HTML and inline SVG labels, and normalized intentional fixed-width content from
+  Courier-first stacks to generic monospace.
+- Removed clock-dependent, inventory, prompt-copy, and HTML-fragment smoke tests that did not meet
+  the permanent pytest checklist; moved the repo-wide Bandit scan to a direct maintainer script so
+  the fast pytest lane no longer launches an external security subprocess.
+
 ## 2026-08-19
 
 ### Fixes and Maintenance

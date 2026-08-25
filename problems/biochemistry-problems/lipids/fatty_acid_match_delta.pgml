@@ -52,7 +52,7 @@ sub svg_line {
 sub svg_text {
 	my ($x, $y, $anchor, $size, $fill, $content) = @_;
 	return '<text x="' . $x . '" y="' . $y
-		. '" font-family="sans-serif" font-size="' . $size
+		. '" font-size="' . $size
 		. '" text-anchor="' . $anchor
 		. '" fill="' . $fill . '">' . $content . '</text>';
 }

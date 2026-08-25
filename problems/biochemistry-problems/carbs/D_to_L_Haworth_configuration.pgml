@@ -38,7 +38,7 @@ $showPartialCorrectAnswers = 0;
 sub svg_text {
 	my ($x, $y, $anchor, $size, $fill, $content) = @_;
 	return '<text x="' . $x . '" y="' . $y
-		. '" font-family="sans-serif" font-size="' . $size
+		. '" font-size="' . $size
 		. '" text-anchor="' . $anchor
 		. '" fill="' . $fill . '">' . $content . '</text>';
 }
@@ -324,12 +324,12 @@ sub haworth_add_oh {
 	if ($goes_down) {
 		$out .= svg_line($ld1, $ld2, $ld3, $ld4);
 		$out .= '<text x="' . $td1 . '" y="' . $td2
-			. '" font-family="sans-serif" font-size="' . $td4
+			. '" font-size="' . $td4
 			. '" text-anchor="' . $td3 . '" fill="#000">' . $td5 . '</text>';
 	} else {
 		$out .= svg_line($lu1, $lu2, $lu3, $lu4);
 		$out .= '<text x="' . $tu1 . '" y="' . $tu2
-			. '" font-family="sans-serif" font-size="' . $tu4
+			. '" font-size="' . $tu4
 			. '" text-anchor="' . $tu3 . '" fill="#000">' . $tu5 . '</text>';
 	}
 	return $out;
@@ -366,27 +366,27 @@ sub _haworth_pyranose_svg {
 	$svg .= '<circle cx="-36.449" cy="0.0" r="0.6" fill="#000" stroke="none"/>';
 	$svg .= '<circle cx="-13.122" cy="-21.869" r="0.6" fill="#000" stroke="none"/>';
 	$svg .= '<circle cx="36.449" cy="0.0" r="0.6" fill="#000" stroke="none"/>';
-	$svg .= '<text x="13.122" y="-17.669" font-family="sans-serif" font-size="12" text-anchor="middle" fill="#8b0000" font-weight="bold">O</text>';
+	$svg .= '<text x="13.122" y="-17.669" font-size="12" text-anchor="middle" fill="#8b0000" font-weight="bold">O</text>';
 	# right-side anomeric carbon
 	if ($is_ketose) {
 		if ($anom_oh_down) {
 			$svg .= svg_line('36.449', '0', '36.449', '-17.154');
-			$svg .= '<text x="32.118" y="-18.75" font-family="sans-serif" font-size="12" text-anchor="start" fill="#000">CH&#8322;OH</text>';
+			$svg .= '<text x="32.118" y="-18.75" font-size="12" text-anchor="start" fill="#000">CH&#8322;OH</text>';
 			$svg .= svg_line('36.449', '0', '36.449', '17.934');
-			$svg .= '<text x="31.785" y="28.35" font-family="sans-serif" font-size="12" text-anchor="start" fill="#000">OH</text>';
+			$svg .= '<text x="31.785" y="28.35" font-size="12" text-anchor="start" fill="#000">OH</text>';
 		} else {
 			$svg .= svg_line('36.449', '0', '36.449', '-17.034');
-			$svg .= '<text x="31.785" y="-18.75" font-family="sans-serif" font-size="12" text-anchor="start" fill="#000">OH</text>';
+			$svg .= '<text x="31.785" y="-18.75" font-size="12" text-anchor="start" fill="#000">OH</text>';
 			$svg .= svg_line('36.449', '0', '36.449', '11.454');
-			$svg .= '<text x="32.118" y="21.75" font-family="sans-serif" font-size="12" text-anchor="start" fill="#000">CH&#8322;OH</text>';
+			$svg .= '<text x="32.118" y="21.75" font-size="12" text-anchor="start" fill="#000">CH&#8322;OH</text>';
 		}
 	} else {
 		if ($anom_oh_down) {
 			$svg .= svg_line('36.449', '0', '36.449', '13.884');
-			$svg .= '<text x="31.785" y="24.3" font-family="sans-serif" font-size="12" text-anchor="start" fill="#000">OH</text>';
+			$svg .= '<text x="31.785" y="24.3" font-size="12" text-anchor="start" fill="#000">OH</text>';
 		} else {
 			$svg .= svg_line('36.449', '0', '36.449', '-12.984');
-			$svg .= '<text x="31.785" y="-14.7" font-family="sans-serif" font-size="12" text-anchor="start" fill="#000">OH</text>';
+			$svg .= '<text x="31.785" y="-14.7" font-size="12" text-anchor="start" fill="#000">OH</text>';
 		}
 	}
 	# three middle chiral positions: R = down, L = up
@@ -402,10 +402,10 @@ sub _haworth_pyranose_svg {
 	# top position: CH2OH up/down
 	if ($ch2oh_up) {
 		$svg .= svg_line('-13.122', '-21.869', '-13.122', '-34.973');
-		$svg .= '<text x="2.383" y="-36.569" font-family="sans-serif" font-size="12" text-anchor="middle" fill="#000">CH&#8322;OH</text>';
+		$svg .= '<text x="2.383" y="-36.569" font-size="12" text-anchor="middle" fill="#000">CH&#8322;OH</text>';
 	} else {
 		$svg .= svg_line('-13.122', '-21.869', '-13.122', '-13.586');
-		$svg .= '<text x="0.833" y="-4.169" font-family="sans-serif" font-size="10.8" text-anchor="middle" fill="#000">CH&#8322;OH</text>';
+		$svg .= '<text x="0.833" y="-4.169" font-size="10.8" text-anchor="middle" fill="#000">CH&#8322;OH</text>';
 	}
 	$svg .= '</g></svg>';
 	return $svg;
@@ -426,26 +426,26 @@ sub _haworth_furanose_svg {
 	$svg .= '<polygon points="-17.675,-13.018 -17.227,-11.904 -28.842,-7.234 -29.29,-8.348" fill="#000" stroke="none"/>';
 	$svg .= '<circle cx="-29.066" cy="-7.791" r="0.6" fill="#000" stroke="none"/>';
 	$svg .= '<circle cx="29.066" cy="-7.791" r="0.6" fill="#000" stroke="none"/>';
-	$svg .= '<text x="0" y="-15.277" font-family="sans-serif" font-size="12" text-anchor="middle" fill="#8b0000" font-weight="bold">O</text>';
+	$svg .= '<text x="0" y="-15.277" font-size="12" text-anchor="middle" fill="#8b0000" font-weight="bold">O</text>';
 	if ($is_ketose) {
 		if ($anom_oh_down) {
 			$svg .= svg_line('29.066', '-7.791', '29.066', '-27.721');
-			$svg .= '<text x="24.402" y="-29.437" font-family="sans-serif" font-size="12" text-anchor="start" fill="#000">CH&#8322;OH</text>';
+			$svg .= '<text x="24.402" y="-29.437" font-size="12" text-anchor="start" fill="#000">CH&#8322;OH</text>';
 			$svg .= svg_line('29.066', '-7.791', '29.066', '3.663');
-			$svg .= '<text x="24.736" y="13.959" font-family="sans-serif" font-size="12" text-anchor="start" fill="#000">OH</text>';
+			$svg .= '<text x="24.736" y="13.959" font-size="12" text-anchor="start" fill="#000">OH</text>';
 		} else {
 			$svg .= svg_line('29.066', '-7.791', '29.066', '-27.721');
-			$svg .= '<text x="24.402" y="-29.437" font-family="sans-serif" font-size="12" text-anchor="start" fill="#000">OH</text>';
+			$svg .= '<text x="24.402" y="-29.437" font-size="12" text-anchor="start" fill="#000">OH</text>';
 			$svg .= svg_line('29.066', '-7.791', '29.066', '3.663');
-			$svg .= '<text x="24.736" y="13.959" font-family="sans-serif" font-size="12" text-anchor="start" fill="#000">CH&#8322;OH</text>';
+			$svg .= '<text x="24.736" y="13.959" font-size="12" text-anchor="start" fill="#000">CH&#8322;OH</text>';
 		}
 	} else {
 		if ($anom_oh_down) {
 			$svg .= svg_line('29.066', '-7.791', '29.066', '6.093');
-			$svg .= '<text x="24.402" y="16.509" font-family="sans-serif" font-size="12" text-anchor="start" fill="#000">OH</text>';
+			$svg .= '<text x="24.402" y="16.509" font-size="12" text-anchor="start" fill="#000">OH</text>';
 		} else {
 			$svg .= svg_line('29.066', '-7.791', '29.066', '-20.775');
-			$svg .= '<text x="24.402" y="-22.491" font-family="sans-serif" font-size="12" text-anchor="start" fill="#000">OH</text>';
+			$svg .= '<text x="24.402" y="-22.491" font-size="12" text-anchor="start" fill="#000">OH</text>';
 		}
 	}
 	# two middle chiral positions
@@ -457,10 +457,10 @@ sub _haworth_furanose_svg {
 		'-14.683','17.38','-14.683','6.0',    '-18.88','4.3','start','10.8','OH');
 	if ($ch2oh_up) {
 		$svg .= svg_line('-29.066', '-7.791', '-29.066', '-27.841');
-		$svg .= '<text x="-24.73" y="-29.437" font-family="sans-serif" font-size="12" text-anchor="end" fill="#000">HOH&#8322;C</text>';
+		$svg .= '<text x="-24.73" y="-29.437" font-size="12" text-anchor="end" fill="#000">HOH&#8322;C</text>';
 	} else {
 		$svg .= svg_line('-29.066', '-7.791', '-29.066', '6.093');
-		$svg .= '<text x="-24.73" y="16.509" font-family="sans-serif" font-size="12" text-anchor="end" fill="#000">CH&#8322;OH</text>';
+		$svg .= '<text x="-24.73" y="16.509" font-size="12" text-anchor="end" fill="#000">CH&#8322;OH</text>';
 	}
 	$svg .= '</g></svg>';
 	return $svg;

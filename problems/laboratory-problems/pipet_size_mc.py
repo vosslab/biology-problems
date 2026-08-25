@@ -71,7 +71,7 @@ def build_pipet_label_html(pipet, bg_color):
 		f"<span style='display: inline-block; width: 52px; height: 52px; "
 		f"line-height: 52px; border-radius: 50%; border: 1px solid #333; "
 		f"text-align: center; background-color: {bg_color}; "
-		f"font-family: Arial, sans-serif; font-weight: bold;'>"
+		f"font-weight: bold;'>"
 		f"{pipet.upper()}</span>"
 	)
 	return label_html
@@ -209,6 +209,5 @@ def main():
 
 if __name__ == '__main__':
 	main()
-
 
 

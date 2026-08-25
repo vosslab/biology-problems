@@ -59,7 +59,6 @@ def write_html_gallery(outfile: str, groups: dict[str, list[str]], max_per_group
 	html = "<html><head><meta charset='utf-8'/>"
 	html += "<title>All gene trees</title>"
 	html += "<style>"
-	html += "body{font-family:Arial, sans-serif;}"
 	html += "code{background:#eee; padding:2px 4px;}"
 	html += "table{margin:10px 0;}"
 	html += "</style>"

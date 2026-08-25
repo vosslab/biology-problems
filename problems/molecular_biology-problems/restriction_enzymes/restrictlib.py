@@ -287,7 +287,6 @@ def format_enzyme(enzyme_class):
 #========================================
 def html_monospace(txt):
 	return f"<code>{txt}</code>"
-	#return f"<span style='font-family: 'andale mono', 'courier new', courier, monospace;'>{txt}</span>"
 
 #========================================
 #========================================

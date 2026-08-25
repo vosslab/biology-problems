@@ -297,7 +297,7 @@ def sequenceSimilarityScore(seq1, seq2):
 
 #========================================
 def html_monospace(txt):
-	return "<span style=\"font-family: 'andale mono', 'courier new', courier, monospace;\">{0}</span>".format(txt)
+	return f'<span style="font-family: monospace;">{txt}</span>'
 
 #=========================
 def _makeSequence(seqlen=10):
