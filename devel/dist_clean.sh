@@ -45,6 +45,9 @@ delete_find_matches() {
 # Generic build outputs (any language).
 delete_path dist
 delete_path dist-single
+delete_path dist_browser_test
+delete_path dist_wasm
+delete_path generated
 delete_path _site
 delete_path build
 delete_path out
@@ -83,14 +86,40 @@ delete_path blob-report
 delete_path coverage
 delete_path cover_db
 
-# Python bytecode, virtualenvs, and tool caches (any depth).
-delete_path .venv
-delete_path venv
+# Node framework build caches.
+delete_path .turbo
+delete_path .next
+delete_path .svelte-kit
+delete_path .vite
+delete_path .parcel-cache
+
+# Python bytecode, virtualenvs, and tool caches (any depth). Bare `env` stays
+# root-only (delete_path below) because the name is too generic to sweep at
+# depth without risking an unrelated directory.
+delete_find_matches venvDot -type d -name '.venv'
+delete_find_matches venvBare -type d -name 'venv'
 delete_path env
 delete_find_matches pycache -type d -name '__pycache__'
 delete_find_matches pytest_cache -type d -name '.pytest_cache'
 delete_find_matches mypy_cache -type d -name '.mypy_cache'
 delete_find_matches ruff_cache -type d -name '.ruff_cache'
+delete_path .tox
+delete_path .nox
+delete_path .hypothesis
+delete_path .coverage
+delete_find_matches coverageDataFiles -type f -name '.coverage.*'
+delete_path htmlcov
+delete_path .dmypy.json
+delete_path .pytype
+
+# Python packaging artifacts (PyPI sdist/wheel builds).
+delete_find_matches eggInfo -type d -name '*.egg-info'
+delete_find_matches eggFiles -type f -name '*.egg'
+delete_path .eggs
+delete_path sdist
+delete_path wheelhouse
+delete_path pip-wheel-metadata
+delete_path .installed.cfg
 
 # Perl build/test artifacts. Do not remove Makefile because many repos commit
 # hand-written makefiles.
@@ -116,6 +145,18 @@ delete_find_matches objectFiles -type f \( -name '*.o' -o -name '*.obj' -o -name
 
 # Rust build outputs.
 delete_path target
+
+# Nested Rust workspace crate output dirs (cargo workspaces nest crates below
+# the root). A bare `find . -name target` is dangerous because asset
+# directories are commonly named target too, so only delete a nested `target`
+# dir that sits beside a Cargo.toml or that carries cargo's own marker file.
+while IFS= read -r -d '' match; do
+	parent="$(dirname "$match")"
+	if [ -f "$parent/Cargo.toml" ] || [ -f "$match/CACHEDIR.TAG" ] || [ -f "$match/.rustc_info.json" ]; then
+		rm -rf "$match"
+		DELETED+=("${match#./}")
+	fi
+done < <(find . -mindepth 2 -type d -name target -print0)
 
 if [ "${#DELETED[@]}" -eq 0 ]; then
 	echo "Nothing to clean."

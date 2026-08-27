@@ -2,8 +2,8 @@
 """Rotate docs/CHANGELOG.md per docs/REPO_STYLE.md changelog rotation rules.
 
 Reads the active changelog, keeps the two most recent day blocks in place, and
-moves older day blocks into docs/CHANGELOG-YYYY-MM[a-z].md. Never invokes git;
-the human stages and commits the resulting files.
+moves older day blocks into 800-900-line docs/CHANGELOG-YYYY-MM[a-z].md
+archives. Never invokes git; the human stages and commits the resulting files.
 """
 
 # Standard Library
@@ -15,7 +15,10 @@ import argparse
 # local repo modules
 import changelog_lib
 
-THRESHOLD_DEFAULT = 1000
+THRESHOLD_DEFAULT = 800
+ARCHIVE_TARGET_MIN = 800
+ARCHIVE_TARGET_MAX = 900
+ARCHIVE_LINE_LIMIT = 1000
 CHANGELOG_PATH = "docs/CHANGELOG.md"
 ARCHIVE_GLOB = "docs/CHANGELOG-*.md"
 ARCHIVE_NAME_RE = re.compile(r"^CHANGELOG-(\d{4}-\d{2})([a-z])\.md$")
@@ -32,9 +35,115 @@ def split_active_archive(
 
 #============================================
 
+def count_archive_lines(blocks: list[changelog_lib.DayBlock]) -> int:
+	"""Return the physical line count write_changelog would create for blocks.
+
+	Args:
+		blocks: Ordered day blocks that would form an archive file.
+
+	Returns:
+		Physical line count after changelog_lib.write_changelog normalizes the
+		final newline.
+	"""
+	if not blocks:
+		return 0
+	archive_text = "".join(block.raw_text for block in blocks)
+	normalized = archive_text.rstrip("\n") + "\n"
+	line_count = normalized.count("\n")
+	return line_count
+
+#============================================
+
+def archive_target_distance(line_count: int) -> int:
+	"""Return how far a line count falls outside the preferred archive range.
+
+	Args:
+		line_count: Physical line count for a proposed archive.
+
+	Returns:
+		Zero inside the 800-900 target range, otherwise the nearest distance.
+	"""
+	if line_count < ARCHIVE_TARGET_MIN:
+		return ARCHIVE_TARGET_MIN - line_count
+	if line_count > ARCHIVE_TARGET_MAX:
+		return line_count - ARCHIVE_TARGET_MAX
+	return 0
+
+#============================================
+
+def partition_archive_blocks(
+		archive_blocks: list[changelog_lib.DayBlock],
+		) -> list[list[changelog_lib.DayBlock]]:
+	"""Partition older blocks into target-sized archives below the strict limit.
+
+	A date block is never split. When no day boundary lands in the target
+	range, choose the closer safe grouping. Refuse an oversized individual
+	day block because writing it would violate the repository line-limit gate.
+
+	Args:
+		archive_blocks: Older day blocks in newest-to-oldest order.
+
+	Returns:
+		Ordered groups of day blocks, one group for each new archive file.
+
+	Raises:
+		RuntimeError: When an individual day block reaches the strict limit.
+	"""
+	if not archive_blocks:
+		raise RuntimeError("partition_archive_blocks called with no day blocks.")
+	archive_groups: list[list[changelog_lib.DayBlock]] = []
+	current_group: list[changelog_lib.DayBlock] = []
+	for block in archive_blocks:
+		block_lines = count_archive_lines([block])
+		if block_lines >= ARCHIVE_LINE_LIMIT:
+			raise RuntimeError(
+				f"Day block {block.date} is {block_lines} lines; it cannot be archived "
+				f"below the {ARCHIVE_LINE_LIMIT}-line limit without splitting the date block."
+			)
+		candidate_group = current_group + [block]
+		candidate_lines = count_archive_lines(candidate_group)
+		if candidate_lines >= ARCHIVE_LINE_LIMIT:
+			archive_groups.append(current_group)
+			current_group = []
+			candidate_group = [block]
+			candidate_lines = block_lines
+		elif current_group and candidate_lines > ARCHIVE_TARGET_MAX:
+			current_lines = count_archive_lines(current_group)
+			current_distance = archive_target_distance(current_lines)
+			candidate_distance = archive_target_distance(candidate_lines)
+			if current_distance < candidate_distance:
+				archive_groups.append(current_group)
+				current_group = []
+				candidate_group = [block]
+				candidate_lines = block_lines
+		current_group = candidate_group
+		if candidate_lines >= ARCHIVE_TARGET_MIN:
+			archive_groups.append(current_group)
+			current_group = []
+	if current_group:
+		archive_groups.append(current_group)
+	return archive_groups
+
+#============================================
+
+def rotation_needed(line_count: int, threshold: int) -> bool:
+	"""Return whether an active changelog has exceeded its rotation threshold.
+
+	Args:
+		line_count: Physical line count of the active changelog.
+		threshold: Rotation threshold in physical lines.
+
+	Returns:
+		True only when the active changelog is over the supplied threshold.
+	"""
+	return line_count > threshold
+
+#============================================
+
 def compute_archive_path(
 		archive_blocks: list[changelog_lib.DayBlock],
 		docs_dir: str,
+		reserved_paths: list[str] | None = None,
 		) -> str:
 	"""Compute the next-unused archive path for the archive set.
 
@@ -46,6 +155,7 @@ def compute_archive_path(
 	Args:
 		archive_blocks: Non-empty list of DayBlock records being archived.
 		docs_dir: Path to the docs directory to scan for existing archives.
+		reserved_paths: Archive paths selected earlier in the same rotation.
 
 	Returns:
 		Absolute or relative path to the chosen archive filename.
@@ -53,6 +163,8 @@ def compute_archive_path(
 	if not archive_blocks:
 		raise RuntimeError("compute_archive_path called with empty archive set.")
 	newest_archive_date = archive_blocks[0].date
+	if re.fullmatch(r"\d{4}-\d{2}-\d{2}", newest_archive_date) is None:
+		raise RuntimeError(f"Invalid archive block date: {newest_archive_date!r}")
 	yyyy_mm = newest_archive_date[:7]
 
 	# scan existing archives in docs_dir, find used letter suffixes for this YYYY-MM
@@ -66,6 +178,12 @@ def compute_archive_path(
 		if match.group(1) != yyyy_mm:
 			continue
 		used_letters.add(match.group(2))
+	if reserved_paths is not None:
+		for reserved_path in reserved_paths:
+			base = os.path.basename(reserved_path)
+			match = ARCHIVE_NAME_RE.match(base)
+			if match is not None and match.group(1) == yyyy_mm:
+				used_letters.add(match.group(2))
 
 	# pick the first unused letter starting at 'a'
 	for code in range(ord("a"), ord("z") + 1):
@@ -165,18 +283,22 @@ def print_duplicate_error(dups: list[str]) -> None:
 def print_plan(
 		line_count: int,
 		threshold: int,
-		archive_path: str,
+		archive_paths: list[str],
 		active_blocks: list[changelog_lib.DayBlock],
-		archive_blocks: list[changelog_lib.DayBlock],
+		archive_groups: list[list[changelog_lib.DayBlock]],
 		) -> None:
 	"""Print a plan summary describing what the rotation will do."""
 	changelog_lib.CONSOLE.print(f"Active file: {CHANGELOG_PATH} ({line_count} lines)", style="bold")
 	changelog_lib.CONSOLE.print(f"Threshold: {threshold} lines")
-	changelog_lib.CONSOLE.print(f"Archive path (new): {archive_path}", style="bold")
 	active_dates = ", ".join(b.date for b in active_blocks) if active_blocks else "(none)"
 	changelog_lib.CONSOLE.print(f"Active blocks kept: {active_dates}")
-	archive_dates = ", ".join(b.date for b in archive_blocks) if archive_blocks else "(none)"
-	changelog_lib.CONSOLE.print(f"Archive blocks moved: {archive_dates}")
+	for archive_path, archive_group in zip(archive_paths, archive_groups):
+		archive_dates = ", ".join(b.date for b in archive_group)
+		archive_lines = count_archive_lines(archive_group)
+		changelog_lib.CONSOLE.print(
+			f"Archive path (new): {archive_path} ({archive_lines} lines)", style="bold",
+		)
+		changelog_lib.CONSOLE.print(f"Archive blocks moved: {archive_dates}")
 
 #============================================
 
@@ -238,9 +360,9 @@ def main() -> None:
 		line_count += 1
 	threshold = args.threshold
 
-	if line_count < threshold and not args.force:
+	if not rotation_needed(line_count, threshold) and not args.force:
 		changelog_lib.CONSOLE.print(
-			f"Below threshold ({line_count} / {threshold} lines). Nothing to do.",
+			f"At or below threshold ({line_count} / {threshold} lines). Nothing to do.",
 			style="yellow",
 		)
 		return
@@ -274,7 +396,13 @@ def main() -> None:
 		return
 
 	docs_dir = os.path.dirname(CHANGELOG_PATH)
-	archive_path = compute_archive_path(archive_blocks, docs_dir)
+	archive_groups = partition_archive_blocks(archive_blocks)
+	archive_paths: list[str] = []
+	# ASVS 5.3.2: archive paths use the fixed docs directory and parser-validated
+	# date headings, never a caller-provided filename.
+	for archive_group in archive_groups:
+		archive_path = compute_archive_path(archive_group, docs_dir, archive_paths)
+		archive_paths.append(archive_path)
 
 	# Boundary-date guard: the oldest active-set heading must not already
 	# live in an existing archive. If it does, drop it from the active set.
@@ -299,7 +427,7 @@ def main() -> None:
 		# drop the boundary date from the active set
 		active_blocks = active_blocks[:-1]
 
-	print_plan(line_count, threshold, archive_path, active_blocks, archive_blocks)
+	print_plan(line_count, threshold, archive_paths, active_blocks, archive_groups)
 
 	if args.dry_run:
 		changelog_lib.CONSOLE.print("Dry run: no files written.", style="yellow")
@@ -310,15 +438,16 @@ def main() -> None:
 			changelog_lib.CONSOLE.print("Aborted.", style="yellow")
 			return
 
-	# write archive first, then rewrite the active file
-	changelog_lib.write_changelog(archive_path, "", archive_blocks)
+	# write archives first, then rewrite the active file
+	for archive_path, archive_group in zip(archive_paths, archive_groups):
+		changelog_lib.write_changelog(archive_path, "", archive_group)
 	changelog_lib.write_changelog(CHANGELOG_PATH, preamble, active_blocks)
 
 	changelog_lib.CONSOLE.print(
-		f"Rotated: wrote {archive_path} and rewrote {CHANGELOG_PATH}.",
+		f"Rotated: wrote {len(archive_paths)} archive file(s) and rewrote {CHANGELOG_PATH}.",
 		style="bold green",
 	)
-	moved_dates = ", ".join(b.date for b in archive_blocks)
+	moved_dates = ", ".join(b.date for archive_group in archive_groups for b in archive_group)
 	changelog_lib.CONSOLE.print(f"Dates moved: {moved_dates}")
 	if dropped_date is not None:
 		changelog_lib.CONSOLE.print(

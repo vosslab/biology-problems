@@ -1,5 +1,7 @@
 # Markdown Style
 
+> This file is vendored. Local changes can and will be overwritten by propagation.
+
 Keep documentation concise, scannable, and consistent.
 
 ## Content

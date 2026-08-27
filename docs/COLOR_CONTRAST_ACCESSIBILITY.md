@@ -1,5 +1,7 @@
 # Color contrast accessibility
 
+> This file is vendored. Local changes can and will be overwritten by propagation.
+
 Stable color-contrast policy for this repo. This summary propagates cleanly
 across repos; detailed tooling and workflows live in the
 color-accessibility-expert skill, the single source of truth for operational

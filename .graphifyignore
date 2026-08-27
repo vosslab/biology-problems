@@ -1,0 +1,10 @@
+# Universal paths outside production code maps
+tests/
+devel/
+tools/
+docs/
+site/
+generated/
+dist/
+OTHER_REPOS/
+LOCAL_ONLY/

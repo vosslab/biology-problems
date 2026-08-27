@@ -1,18 +1,27 @@
 # REPO_STYLE.md
 
+> This file is vendored. Local changes can and will be overwritten by propagation.
+
 Repo-wide conventions for this project and related repos.
 
 ## Core philosophies
 
 Core principles guide work in this repo. Cite them by name when making judgment calls. This file is the canonical home for all core principles; sibling docs and `AGENTS.md` should cross-reference, not restate.
 
-- **Long-term over short-term.** Accept a small cost now to avoid larger costs later. Prefer the durable fix over the quick patch, even when the durable fix takes more effort today.
-- **Fix the design, not the symptom.** When something behaves wrong, fix the design that allowed the problem. Do not add fallbacks, special cases, or broad try/except blocks just to hide the symptom.
 - **Focus on important issues.** Make sure we are worrying about the correct things, and not bikeshedding i.e. spending excessive time discussing trivial issues while neglecting more important ones.
-- **Prompt positively.** Tell the model what to do, not what to avoid. Small LMs can confuse negative prompting with positive instructions, which can lead to poor code and seriously flawed results.     Prefer direct instructions like "use explicit key access" over negative ones, like "do not use dict.get()"
+- **Use the scientific method.** Treat plans as hypotheses, not conclusions. Use small experiments, comparisons, and measurements to reduce uncertainty before locking in a design. Let evidence refine the plan as work proceeds.
+- **Fix the design, not the symptom.** When something behaves wrong, fix the design that allowed the problem. Do not add fallbacks, special cases, or broad try/except blocks just to hide the symptom.
+- **Long-term over short-term.** Accept a small cost now to avoid larger costs later. Prefer the durable fix over the quick patch, even when the durable fix takes more effort today.
+- **Design for adaptability.** Favor systems that can evolve as requirements and understanding change. Keep responsibilities clear and components replaceable so the software remains useful without repeated rewrites.
+- **Dream big.** Build on the ambition already present. Pursue the strongest, most durable, and most complete version of the work, then turn that ambition into practical next steps.
+- **Perfect is the enemy of good.** Prefer a good solution delivered promptly when further refinement would not materially improve the outcome. Spend additional effort where it changes correctness, durability, or user value.
 - **Atomic task decomposition.** Break hard problems into the smallest independently completable tasks. Each task should have one owner, one clear outcome, and one verification step.
-- **Be efficient with time.** Subagents and tokens are cheap, but wall time is not. Optimize for implementation time by spreading atomic tasks in parallel.
+- **Prompt positively.** Lead with the desired action or tool. Use direct instructions such as
+  "use explicit key access." Omit irrelevant alternatives and unwanted actions from the prompt so
+  small LMs have one clear behavior to follow. State an explicit prohibition only when a safety or
+  correctness boundary requires it.
 - **Fresh subagent per task.** Give each independent task to a new subagent with a self-contained prompt. Reusing a subagent across tasks carries stale context, encourages drift, and weakens independent judgment. When a subagent is performing suboptimal, kill and replace it rather than negotiating.
+- **Be efficient with time.** Subagents and tokens are cheap; wall time is not. Use parallel atomic tasks when the work is independent and doing so shortens implementation time.
 - **Finish the obvious.** Continue while the next safe step is defined by the plan, implied by the task, or required to verify the work. Obvious follow-on work is part of the task, not a bonus. Stop only at a real blocker, risky action, or change to the user's requested outcome.
 
 ## Repository structure
@@ -21,35 +30,6 @@ Core principles guide work in this repo. Cite them by name when making judgment 
 - Avoid deep nesting; keep paths short.
 - Keep `README.md` and `AGENTS.md` at the repo root.
 - Determine REPO_ROOT with `git rev-parse --show-toplevel`, not by deriving paths from the current working directory.
-
-## Project type marker
-
-Every repo carries `REPO_TYPE` at the repo root: one lowercase token plus newline. Tokens: `python`, `typescript`, `rust`, `swift`, `other`, `scripted`, `website`, `compiled`, `all`. Every token is a directly usable marker, including the three base types. `all` means the repo consumes every template family and should receive every typed overlay in addition to universal files. Missing marker triggers detection via `tools/detect_repo_type.py`; if detection is unavailable or ambiguous, falls back to `LANG_UNKNOWN`. An unrecognized token in an existing marker (a typo or a not-yet-added type) logs a warning and falls back to `other`, rather than aborting propagation. `LANG_UNKNOWN` repos receive only universal walker-routed files (`docs/`, `tests/`, `devel/`); no `ROUTING_OVERRIDES` `exclude_repos` rule applies. The propagator (`propagate_style_guides.py` entry script + `repolib/` package: `repolib.repo.read_repo_type` reads the marker, `repolib.files.compute_propagation_plan` dispatches overlays) routes files by repo type; `reset_repo.py` writes the marker during bootstrap by calling `repolib` directly (no longer shells out to `propagate_style_guides.py`). `REPO_TYPE` is maintained after bootstrap; it controls future propagation behavior, not just initial scaffolding. File location is the primary routing determinant: every file under `templates/<type>/` ships to that type, files under `docs/`, `tests/`, and `devel/` ship universally. `docs/PYTHON_STYLE.md` ships to all repo types. The only routing exception encoded in `ROUTING_OVERRIDES` is `exclude_repos` (blocks a file from shipping back to its source repo). Conditional overlays (`_folder` convention, see `meta/docs/PROPAGATION_RULES.md`) are selected by a `conditional_overlays` manifest rule. A shared overlay routes one or more files under `templates/shared/<path>` to a chosen SET of repo types via a `shared_overlays` manifest rule (named `paths`, `repo_types`, and an optional `lacks_file` presence condition that ships only when a marker file is absent at the consumer); every `templates/shared/` file must be named by a rule or the shared walk raises. All propagation manifests live in `meta/propagation/manifests.yaml`. `swift` currently ships universal files only (no `templates/swift/` overlay); future swift-specific files are added by folder location (`templates/swift/<path>`) with no code change required.
-
-### Repo type inheritance
-
-Concrete repo types inherit overlays from a base type, forming a single-token
-inheritance DAG (`repo_type_inherits` in `meta/propagation/manifests.yaml`):
-`python -> scripted`, `rust -> compiled`, `swift -> compiled`, `typescript ->
-website`. `scripted`, `website`, `compiled`, and `other` are roots with no
-parent. `repolib.model.effective_type_chain(repo_type)` returns
-`[repo_type, *ancestors]` nearest-first; every overlay- and shared-routing path
-consumes this one helper, so a repo receives its own overlay plus every
-ancestor's overlay, unioned. A child and its ancestors never ship the same
-file, so overlay walk order does not matter for correctness.
-
-Routing rules target a base type so every descendant inherits automatically.
-The `source_release` shared overlay targets `[scripted, compiled, other]`:
-any future scripted or compiled language picks up `devel/make_release.py`
-with no manifest edit, while the website family (`website`, `typescript`)
-stays out, because a docs or game site publishes builds rather than GitHub
-source releases. `PLAYWRIGHT_TEST_STYLE.md` ships from
-`templates/website/docs/` as a normal type overlay (the old
-`html_playwright_style` shared-overlay rule and its `[typescript, other]`
-hand list are retired); `typescript` receives it by inheriting `website`, so
-any repo that serves HTML gets browser-test-authoring style by declaring
-`REPO_TYPE=website` (or a type that inherits it) rather than by a per-file
-manifest rule.
 
 ## AGENTS.md files
 
@@ -61,15 +41,28 @@ link to that file from `AGENTS.md`.
 Concise `AGENTS.md` files help coding agents perform better because the
 instructions are easier to scan, prioritize, and follow.
 
-### Human guidance
+### Human guidance and design decisions
 
-- `docs/HUMAN_GUIDANCE.md`: durable human preferences, project-specific guidance, review expectations, and stable decisions that agents should preserve across planning and implementation work.
-- Use this file for long-term guidance that prevents drift across manager and subagent runs.
-- Keep entries focused on stable preferences and recurring project decisions, not transient task notes.
-- Link to `docs/HUMAN_GUIDANCE.md` from `AGENTS.md` when agents need the guidance during routine work.
-- Update this file when the human gives a stable correction, workflow preference, review rule, or project priority that should apply to future tasks.
+Agents write both files. The entry's authority decides which one. This section is authoritative; the
+vendored header in each file restates it, and `AGENTS.md` points here.
+
+- `docs/HUMAN_GUIDANCE.md`: guidance the human states, or approves for preservation there. First
+  person or close paraphrase, one to three lines per bullet. Corrections, workflow preferences,
+  review rules, project priorities.
+- `docs/DESIGN_DECISIONS.md`: settled decisions about how the code and repository are shaped. One
+  level-three heading each, with `Decision`, `Why`, `Consequence`, and `Owner` fields; `Owner` names
+  the authoritative code or contract document.
+- Material the human supplies as a source keeps its own authorship: forwarded reviewer output,
+  consultant notes, issue reports, and quoted documentation may inform `docs/DESIGN_DECISIONS.md`
+  once settled. The sentences he writes himself belong in `docs/HUMAN_GUIDANCE.md`.
+- Rearrange aggressively, and let `docs/DESIGN_DECISIONS.md` win the tie: when an entry's origin is
+  uncertain, move it there. A design decision filed as human guidance misrepresents who decided it;
+  the reverse only files it one document away.
+- Three states, three homes: open discussion in `docs/active_plans/decisions/`, settled direction in
+  `docs/DESIGN_DECISIONS.md`, set-aside or failed approaches in `docs/CHANGELOG.md` under
+  `### Decisions and Failures`.
 - Prefer positive phrasing. State the behavior agents should follow.
-- Keep detailed history in `docs/CHANGELOG.md`; keep current human guidance in `docs/HUMAN_GUIDANCE.md`.
+- Propagation seeds both files and refreshes their vendored header, so entries below it persist.
 
 ## README.md and GitHub About descriptions
 
@@ -113,10 +106,20 @@ Preferred structure:
 ## Pytest failure triage
 - For pytest test-writing rules, commands, and failure triage, see [PYTEST_STYLE.md](PYTEST_STYLE.md).
 
+## Source file size
+- Tracked authored source files stay under 1000 physical lines: 999 passes; 1000 fails.
+  `tests/test_source_file_line_limit.py` defines the scope.
+- Managers may exempt tracked external sources in `tests/source_file_line_limit_overrides.txt`,
+  one exact repo-relative path per line.
+
 ## Changelog rotation
-- Rotate `docs/CHANGELOG.md` when it reaches about 1000 lines (`wc -l docs/CHANGELOG.md`).
+- Rotate `docs/CHANGELOG.md` once it exceeds 800 physical lines (`wc -l docs/CHANGELOG.md`).
 - Keep complete day blocks together. Do not split entries from the same `## YYYY-MM-DD` heading across files.
 - Keep the last two date-heading day blocks in active `docs/CHANGELOG.md` and move older day blocks to archive files.
+- Target 800-900 physical lines for each new archive. Keep every day block whole; when no
+  day-block boundary fits the target, choose the closest grouping that remains strictly below
+  1000 lines. Refuse a single day block at or above 1000 lines rather than writing an archive
+  that fails `tests/test_source_file_line_limit.py`.
 - "Last two days" means the two most recent `## YYYY-MM-DD` headings present in the changelog, not a rolling 48-hour window; dates may be non-consecutive.
 - Use archive filenames in the form `docs/CHANGELOG-YYYY-MM[a-z].md` (for example `docs/CHANGELOG-2026-02a.md`), choosing the next letter for additional rotations in the same month.
 - When an archived range spans multiple months, name the archive after the **most recent month included** (the YYYY-MM closest to the active changelog), not the earliest. Example: a rotation moving 2026-01-23 through 2026-04-14 into one file becomes `docs/CHANGELOG-2026-04a.md`. This keeps the most recent archive sortable next to the still-active file.
@@ -133,7 +136,7 @@ Preferred structure:
 - Categories are not required when they would be empty, but every changelog entry must belong to one category.
 - Changelog entries are never removed, but they may be rephrased for accuracy and clarity.
 - Legacy archives that use the older `CHANGELOG_ARCHIVE_NN.md` form must be renamed to the documented `CHANGELOG-YYYY-MM[a-z].md` form. The new name follows the most-recent-month-in-range rule above (use the most recent `## YYYY-MM-DD` heading inside the archive). Use `git mv` so history is preserved. Only one archive naming style should exist in the repo at any time.
-- Automation: [devel/rotate_changelog.py](../devel/rotate_changelog.py) enforces this rotation policy (keeps the two newest day blocks, archives the rest into `docs/CHANGELOG-YYYY-MM[a-z].md`, refuses to clobber boundary dates). [devel/query_changelog.py](../devel/query_changelog.py) searches the active changelog and archives by date range, category, keyword, or source. [devel/commit_changelog.py](../devel/commit_changelog.py) drafts the seed commit message from the changelog bullets newly ADDED in the working tree (via `git diff HEAD` on `docs/CHANGELOG.md`), then restricts those to the most recent run of consecutive day-block headings so an edited older bullet does not leak into the seed. All three share [devel/changelog_lib.py](../devel/changelog_lib.py) (parser/serializer, git helpers, console + prompt helpers).
+- Automation: [devel/rotate_changelog.py](../devel/rotate_changelog.py) enforces this rotation policy (keeps the two newest day blocks, partitions older blocks into target-sized archives below 1000 lines, and refuses to clobber boundary dates). [devel/query_changelog.py](../devel/query_changelog.py) searches the active changelog and archives by date range, category, keyword, or source. [devel/commit_changelog.py](../devel/commit_changelog.py) drafts the seed commit message from the changelog bullets newly ADDED in the working tree (via `git diff HEAD` on `docs/CHANGELOG.md`), then restricts those to the most recent run of consecutive day-block headings so an edited older bullet does not leak into the seed. All three share [devel/changelog_lib.py](../devel/changelog_lib.py) (parser/serializer, git helpers, console + prompt helpers).
 
 ## Active plans folder organization
 - Working planning artifacts under `docs/active_plans/` are filed into a closed set of subdirectories by kind.
@@ -159,12 +162,12 @@ Preferred structure:
 - When PATCH == 0, use shorthand `25.02b1` instead of `25.02.0b1`
 - Prefer zero-padded 0Y.0M for readability and lexicographic sorting. Packaging tools may normalize 25.02.* to 25.2.*; this does not affect version ordering.
 - Reference: [PyPA version specifiers](https://packaging.python.org/en/latest/specifications/version-specifiers/).
-- When `devel/make_release.py` is present (propagated from `templates/shared/devel/`), use it to
+- When `devel/make_release.py` is present, use it to
   prepare GitHub source releases: it checks CalVer freshness, ensures the version tag is free,
-  verifies the committed LICENSE, builds and spot-checks zip and tgz archives, generates an
-  LLM-drafted release description, and optionally writes `docs/RELEASE_HISTORY.md` and
-  `docs/NEWS.md` before printing the tag and `gh release create` commands. Run with `--dry-run`
-  to preview all steps without mutating the repo, or `--write` to update the doc files.
+  verifies every committed `LICENSE.<SPDX>` in the built zip and tgz archives, prints an LLM
+  prompt for drafting the release description, and optionally writes `docs/RELEASE_HISTORY.md`
+  and `docs/NEWS.md` before printing the tag and `gh release create` commands. Run with
+  `--dry-run` to preview all steps without mutating the repo, or `--write` to update the doc files.
 
 ## Scripts and executables
 - Keep scripts self-contained and single-purpose.
@@ -176,7 +179,6 @@ Preferred structure:
 - Avoid hard-coded interpreter paths in routine command examples.
 - Document shared helpers and modules in `docs/USAGE.md` when used across scripts.
 - Use `tests/test_pyflakes_code_lint.py` and `tests/test_ascii_compliance.py` for repo-wide lint checks, with `tests/check_ascii_compliance.py` for single-file ASCII/ISO-8859-1 checks and `tests/fix_ascii_compliance.py` for single-file fixes. `tests/test_markdown_links.py` is the repo-wide check that every local Markdown link is GitHub-browsable and well formed.
-- For smoke tests, reuse stable output folder names (for example `output_smoke/`) instead of creating one-off output directory names; reusing/overwriting avoids repeated delete-approval prompts.
 - In test scripts that need the repository root, import and use the shared `tests/file_utils.py` module:
   ```python
   import file_utils
@@ -189,19 +191,18 @@ Preferred structure:
 - `source_me.sh` is a bash script sourced into your shell, not run directly. It
   enforces bash, sources `~/.bashrc`, and exports the Python runtime flags
   `PYTHONUNBUFFERED` and `PYTHONDONTWRITEBYTECODE`.
-- It ships as a NOEXIST starter seed: the consumer repo owns its copy after
-  bootstrap, so local edits do not propagate back and are never overwritten.
+- It arrives as a starter seed: each repo owns its copy after bootstrap, so
+  local edits stay put and are never overwritten.
 - Ordering invariant: `source ~/.bashrc` runs FIRST, before any repo-specific
   environment extension. `~/.bashrc` applies local shell setup and clears
   `PYTHONPATH`, so any `PYTHONPATH` line must come after it or be wiped.
-- The seed sets no `PYTHONPATH`. One generic seed is shipped to every repo type;
-  a universal `PYTHONPATH` is intentionally omitted. Most repos need none, and a
-  broad path would mask missing-dependency bugs. `PYTHONPATH` need is per-repo
-  (does the repo ship a repo-root package), which varies within a repo type, so
-  there are no repo_type-specific seeds either.
+- The seed sets no `PYTHONPATH`. That omission is deliberate: most repos need
+  none, and a broad path would mask missing-dependency bugs. Whether a repo
+  needs one depends on that repo alone (does it ship a repo-root package), so
+  each repo adds the line for itself.
 - When a repo needs its repo-root modules importable while commands run from a
   subdirectory without installing the repo -- most commonly a repo-root package
-  imported package-qualified (for example `import repolib.console`), or scripts
+  imported package-qualified (for example `import mypackage.module`), or scripts
   under `tools/` or `tests/` that import repo-root modules -- uncomment the
   canonical extension block in that repo's `source_me.sh`. Use exactly this
   idiom (it assumes the repo is inside a Git work tree):
@@ -221,8 +222,20 @@ Preferred structure:
 - In general, we want to require all dependencies, rather than provide work-arounds if they are mssing, because without all the dependencies the program is too crippled to run properly
 
 ## Data and outputs
-- Keep generated outputs out of git unless they are small and intentional.
-- Put large inputs or outputs under a clear folder (for example `data/` or `output/`).
+
+- Keep generated outputs out of Git unless they are small, intentional project artifacts.
+- Put generated output directories at the repository root. Name the general directory `output/`
+  and use a stable `output_<purpose>/` name when separate lifecycles help, such as
+  `output_smoke/` or `output_release/`.
+- Reuse or overwrite stable output directories instead of creating one-off names. This keeps
+  cleanup predictable and avoids repeated delete-approval prompts.
+- Use the universal root-scoped `/output*/` `.gitignore` rule. Do not use unanchored `output*/`,
+  `output/`, or `output_smoke/` rules: they can hide legitimate tracked paths such as
+  `tests/output/` inside the repository.
+- Keep tool-mandated names distinct when renaming them would break the tool. Root-anchor a local
+  exception such as `/out/`; keep named tool output such as `/graphify-out/` in its owning rule.
+  Filename patterns such as `*.out` and logs are separate policies, not output-directory aliases.
+- Put large inputs under a clear root folder such as `data/`.
 - Note input and output locations in `docs/USAGE.md`.
 - Keep sample inputs small and safe.
 
@@ -241,11 +254,14 @@ Preferred structure:
 ### Recommended common docs
 - `AGENTS.md`: agent instructions, tool constraints, and repo-specific workflow guardrails.
 - `README.md`: project purpose, quick start, and links to deeper documentation.
-- `LICENSE`: legal terms for using and redistributing the project; keep exact license text.
+- `LICENSE.<SPDX>`: legal terms for using and redistributing the project; keep the complete
+  plain-text license body and make the license identifier visible in the filename.
 - `docs/CHANGELOG.md`: chronological, user facing record of changes, grouped by date. Timeline of what changed and when.
 - `docs/CHANGELOG.md` entries should also note important failures and key implementation choices so the log remains a useful learning record for later debugging and decision review.
 - `docs/CODE_ARCHITECTURE.md`: high-level system design, major components, and data flow.
+- `docs/DESIGN_DECISIONS.md`: settled decisions about how the code and repository are shaped, with the reasoning behind each one.
 - `docs/FILE_STRUCTURE.md`: directory map with what belongs where, including generated assets.
+- `docs/HUMAN_GUIDANCE.md`: guidance the human states or approves, kept in his own words.
 - `docs/INSTALL.md`: setup steps, dependencies, and environment requirements.
 - `docs/NEWS.md`: curated release highlights and announcements, not a full changelog.
 - `docs/RELATED_PROJECTS.md`: sibling repos, shared libraries, and integration touchpoints.
@@ -259,7 +275,7 @@ Preferred structure:
 - `docs/AUTHORS.md`: primary maintainers and notable contributors
 - `docs/CLAUDE_HOOK_USAGE_GUIDE.md`: generated hook behavior reference, not a repo style source of truth. If repo style differs from hook examples, update repo style docs and recommend a hook rule update upstream.
 - `docs/MARKDOWN_STYLE.md`: Markdown writing rules and formatting conventions for this repo.
-- `docs/PLAYWRIGHT_TEST_STYLE.md`: browser test authoring style for the website family (`website` and its inheriting `typescript`); ships via the `templates/website/` overlay.
+- `docs/PLAYWRIGHT_TEST_STYLE.md`: browser test authoring style for repos that serve HTML.
 - `docs/PYTEST_STYLE.md`: pytest test-writing rules, commands, fixture policy, and failure triage.
 - `docs/PYTHON_STYLE.md`: Python formatting, linting, and project-specific conventions.
 - `docs/REPO_STYLE.md`: repo-level organization, conventions, and file placement rules.
@@ -293,6 +309,13 @@ Possible examples:
 
 ## Licensing
 Check the license file to match these criteria.
+
+- Store each license as a real root file named `LICENSE.<SPDX>`, such as `LICENSE.GPL-3.0` or
+  `LICENSE.CC-BY-SA-4.0`. Do not add a rendering extension, generic alias, wrapper, or symlink.
+- When code and non-code material use different licenses, keep one real file per license and map
+  each license to its covered material in `README.md`.
+- Keep complete legal text in each license file. Put project explanations in `README.md`, not in
+  the legal body.
 
 - Most source code is licensed under **GPLv3**, unless stated otherwise.
 - Libraries intended for use by proprietary or mixed-source software are licensed under **LGPLv3**.

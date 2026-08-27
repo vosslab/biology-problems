@@ -1,5 +1,7 @@
 # PYTHON_STYLE.md
 
+> This file is vendored. Local changes can and will be overwritten by propagation.
+
 Language Model guide to Neil python3 programming
 
 ## Common misconceptions

@@ -28,25 +28,34 @@ LOCAL_IMPORT_WHITELIST = {
 	"local_llm_wrapper",
 }
 IMPORT_REQUIREMENT_ALIASES = {
+	"applefoundationmodels": "apple-foundation-models",
 	"applescript": "py-applescript",
 	"bio": "biopython",
+	"bricklink": "python-bricklink-api",
 	"bs4": "beautifulsoup4",
 	"cairo": "pycairo",
 	"colour": "colour-science",
 	"crypto": "pycryptodome",
 	"cv2": "opencv-python",
 	"docx": "python-docx",
+	"exiftool": "pyexiftool",
 	"fitz": "pymupdf",
 	"google": "google-api-python-client",
 	"googleapiclient": "google-api-python-client",
+	"graphify": "graphifyy",
 	"imdb": "IMDbPY",
 	"image": "pillow",
 	"imagedraw": "pillow",
 	"imagetk": "pillow",
+	"markdown_it": "markdown-it-py",
+	"material": "mkdocs-material",
 	"pdfminer": "pdfminer.six",
 	"pil": "pillow",
 	"pptx": "python-pptx",
+	"pytestqt": "pytest-qt",
 	"rottentomatoes": "rottentomatoes-python",
+	"screencapturekit": "pyobjc-framework-ScreenCaptureKit",
+	"skimage": "scikit-image",
 	"yaml": "pyyaml",
 }
 REQ_NAME_RE = re.compile(r"^[A-Za-z0-9._-]+")
@@ -438,3 +447,4 @@ def test_import_requirements(path: str) -> None:
 	assert rel not in VIOLATIONS_BY_FILE, file_utils.format_violation_assert_message(
 		rel, VIOLATIONS_BY_FILE.get(rel, []), REPORT_NAME
 	)
+# Vendored pytest file. Local changes can and will be overwritten.

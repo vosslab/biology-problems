@@ -1,5 +1,7 @@
 # PYTEST_STYLE.md
 
+> This file is vendored. Local changes can and will be overwritten by propagation.
+
 Language Model guide to Neil pytest usage.
 
 ## Is this a good pytest?
@@ -90,7 +92,7 @@ Test files are organized by execution model and scope:
 
 * **`tests/test_*.py`** - Fast, deterministic unit and integration tests. Rules: no network, no file I/O beyond `tmp_path`, no sleeps, no subprocess CLI round-trips. Examples: lint checks (pyflakes, ASCII compliance, indentation), parser correctness, round-trip invariants.
 * **`tests/e2e/`** - Non-browser end-to-end (shell or Python orchestration); excluded from pytest (outside scope of `pytest tests/`); run via explicit shell or Python runner. Examples: full bootstrap flow, multi-repo propagation with real git operations, CLI round-trip chains.
-* **`tests/playwright/`** - Browser-driven E2E; excluded from pytest; run via Playwright runner or explicit shell. Examples: full-stack web app flows, UI interaction and assertion, rendered-output verification. The website family (`website` and its inheriting `typescript`) includes `PLAYWRIGHT_TEST_STYLE.md`, shipped via the `templates/website/` overlay, in their propagated `docs/` folder for browser test authoring rules.
+* **`tests/playwright/`** - Browser-driven E2E; excluded from pytest; run via Playwright runner or explicit shell. Examples: full-stack web app flows, UI interaction and assertion, rendered-output verification. The website family (`website` and its inheriting `typescript`) includes `PLAYWRIGHT_TEST_STYLE.md` in their propagated `docs/` folder for browser test authoring rules.
 
 ## Runtime budget
 
@@ -216,6 +218,12 @@ Discovery filters files through three layers, in order:
 - Layer 3, `extra_filter` (vendored call site): a universal per-test SELECTION mechanism only
   (for example keep only `__init__.py`). Keep all repo-specific exclusions in
   `tests/conftest.py REPO_HYGIENE_FILTERS`; vendored files hold only universal logic.
+
+The source-file line-limit gate has one narrower manager-approval mechanism rather than a glob
+filter: `tests/source_file_line_limit_overrides.txt` may list exact repo-relative paths for tracked
+sources outside the repo's control, such as downloaded normative specifications. The file is
+optional, repo-owned, and never propagated between repos. Other hygiene exclusions remain in
+`REPO_HYGIENE_FILTERS`.
 
 A normal hygiene test calls `discover_files` with its `test_key` so Layer 2 can target it:
 

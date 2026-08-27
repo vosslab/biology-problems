@@ -1,3 +1,6 @@
+# === LOCAL REPOSITORY RULES === [ADD CUSTOM IGNORES HERE]
+# Propagation preserves this section.
+
 # output files
 _[a-z]*.[a-z]*
 output_*
@@ -15,7 +18,6 @@ tools/problem_lib_modules.txt
 bbq-*.txt
 qti*.zip
 selftest-*.html
-.DS_Store
 
 # Byte-compiled / optimized / DLL files
 *.py[cod]
@@ -31,15 +33,23 @@ venv.bak/
 
 report_*.txt
 
-# === UNIVERSAL ===
-output*/
+# === UNIVERSAL === [PROPAGATED - LOCAL EDITS OVERWRITTEN]
+.DS_Store
+/node_modules/
+/.env
+/report_*.txt
+/output*/
+/generated/
+/graphify-out/
 _temp*.?*
-OTHER_REPOS/
-# === PYTHON ===
+/temp/
+/OTHER_REPOS/
+/LOCAL_ONLY/
+
+# === PYTHON === [PROPAGATED - LOCAL EDITS OVERWRITTEN]
 build/
 dist/
 sdist/
 *.egg
 *.egg-info/
 site/
-

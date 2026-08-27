@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Rewrite broken markdown links in archive + active_plans + experiments docs.
+Rewrite broken markdown links in a chosen set of markdown files.
 
 For each broken local link:
   1. If the URL's basename matches exactly one tracked file in the repo,
@@ -10,8 +10,30 @@ For each broken local link:
 
 Also: normalize path-like link text to URL basename when text != URL.
 
-Default scope is docs/archive/ only. Add --include-changelog,
---include-active-plans, --include-experiments to widen.
+Scope selection:
+  -g/--glob PATTERN [PATTERN ...]
+      Select markdown files by glob pattern or by directory. Arguments are
+      anchored at the repo root, so the tool behaves the same from any
+      subdirectory, and absolute arguments inside the repo also work. Quote
+      patterns so Python expands them even when the shell does not.
+
+        docs/specs/          bare directory: RECURSIVE, every *.md under it
+        docs/specs/*.md      that directory's top level only
+        docs/specs/**/*.md   recursive, spelled out
+
+      A trailing slash is optional: docs/specs and docs/specs/ behave alike.
+  (no -g/--glob)
+      Use the default pattern docs/archive/**/*.md. That folder is created
+      lazily by changelog rotation, so its absence simply matches nothing.
+
+Only *.md matches are processed, and the final file list is de-duplicated, so
+a file reachable through two overlapping patterns is processed exactly once.
+
+Replacements for the retired preset flags:
+  --include-changelog     ->  --glob 'docs/CHANGELOG*.md'
+  --include-active-plans  ->  --glob 'docs/active_plans/**/*.md'
+  --include-experiments   ->  --glob 'experiments/**/*.md'
+  --include-canonical     ->  --glob 'docs/*.md' 'docs/specs/**/*.md'
 
 Dry-run by default; pass --apply to write.
 
@@ -21,7 +43,6 @@ In single-file mode --apply is the default; pass -n/--dry-run to preview.
 
 import os
 import re
-import sys
 import glob
 import pathlib
 import argparse
@@ -31,6 +52,10 @@ import subprocess
 
 #============================================
 LINK_PATTERN = re.compile(r'\[([^\]]*)\]\(([^)]+)\)')
+
+# Scope used when no -g/--glob is given. docs/archive/ is created lazily by
+# changelog rotation, so a repo that has never rotated simply matches nothing.
+DEFAULT_GLOB = 'docs/archive/**/*.md'
 
 
 #============================================
@@ -42,6 +67,108 @@ def get_repo_root() -> pathlib.Path:
 	)
 	root = pathlib.Path(result.stdout.strip())
 	return root
+
+
+#============================================
+def anchor_pattern(repo_root: pathlib.Path, pattern: str) -> str:
+	"""Anchor one -g/--glob argument at the repo root and reject escapes.
+
+	A repo-relative argument is joined onto the repo root rather than the
+	current working directory, so the tool behaves identically no matter which
+	subdirectory it is run from. Absolute arguments are accepted as typed. The
+	join is normalized lexically (not via resolve()) because a pattern holds
+	wildcards and need not name an existing path. normpath also drops a
+	trailing slash, so 'docs/specs' and 'docs/specs/' anchor identically.
+
+	Args:
+		repo_root: Repository root, as returned by get_repo_root().
+		pattern: One glob pattern or directory as typed on the command line.
+
+	Returns:
+		str: Absolute, normalized glob pattern inside the repo root.
+
+	Raises:
+		ValueError: The pattern points outside the repo root.
+	"""
+	root = str(repo_root.resolve())
+	if os.path.isabs(pattern):
+		anchored = os.path.normpath(pattern)
+	else:
+		anchored = os.path.normpath(os.path.join(root, pattern))
+	# Containment: the root itself is allowed, anything else must sit under it.
+	# normpath has already collapsed any '..' segments, so a traversal pattern
+	# such as '../../etc/*.md' fails this check rather than sneaking through.
+	if anchored != root and not anchored.startswith(root + os.sep):
+		raise ValueError('glob pattern is outside the repo root: ' + pattern)
+	return anchored
+
+
+#============================================
+def expand_pattern(repo_root: pathlib.Path, pattern: str) -> str:
+	"""Anchor one -g/--glob argument, expanding a bare directory into a walk.
+
+	Naming a folder generally means everything in it, so a bare directory
+	becomes a RECURSIVE markdown walk. Handing the directory to glob.glob
+	unchanged would match only the directory itself, which the *.md filter then
+	drops, leaving a silently empty scope. An argument that already carries
+	wildcards is anchored and otherwise left alone, which keeps 'docs/*.md'
+	top-level only and 'docs/**/*.md' recursive.
+
+	Args:
+		repo_root: Repository root, as returned by get_repo_root().
+		pattern: One glob pattern or directory as typed on the command line.
+
+	Returns:
+		str: Absolute glob pattern ready for glob.glob(recursive=True).
+
+	Raises:
+		ValueError: The pattern points outside the repo root.
+	"""
+	anchored = anchor_pattern(repo_root, pattern)
+	if os.path.isdir(anchored):
+		anchored = os.path.join(anchored, '**', '*.md')
+	return anchored
+
+
+#============================================
+def collect_markdown_files(repo_root: pathlib.Path, patterns: list) -> list:
+	"""Expand glob patterns into a sorted, de-duplicated list of *.md files.
+
+	recursive=True is required so '**' spans directories; without it '**'
+	quietly degrades to a single '*' and silently narrows the scope. Non-md
+	matches are dropped because a pattern like 'docs/*' would otherwise hand
+	Python files to a markdown link rewriter. De-duplication matters because
+	the rewriting pass is not safe to run twice over the same text, so a file
+	reachable through two overlapping patterns must appear exactly once.
+
+	Raises:
+		ValueError: A pattern points outside the repo root.
+	"""
+	source_files = []
+	seen = set()
+	for pattern in patterns:
+		anchored = expand_pattern(repo_root, pattern)
+		for match in glob.glob(anchored, recursive=True):
+			candidate = pathlib.Path(match)
+			if candidate.suffix.lower() != '.md' or not candidate.is_file():
+				continue
+			resolved = candidate.resolve()
+			if resolved not in seen:
+				seen.add(resolved)
+				source_files.append(resolved)
+	source_files.sort()
+	return source_files
+
+
+#============================================
+def collect_markdown_files_or_exit(repo_root: pathlib.Path,
+		patterns: list) -> list:
+	"""CLI wrapper: report a bad --glob pattern without a traceback."""
+	try:
+		source_files = collect_markdown_files(repo_root, patterns)
+	except ValueError as error:
+		raise SystemExit('ERROR: ' + str(error))
+	return source_files
 
 
 #============================================
@@ -196,7 +323,7 @@ def process_file(source_file: pathlib.Path, apply_changes: bool,
 def parse_args() -> argparse.Namespace:
 	"""Parse command-line arguments."""
 	parser = argparse.ArgumentParser(
-		description='Rewrite broken md links in archive/active_plans/experiments.'
+		description='Rewrite broken md links in a chosen set of markdown files.'
 	)
 	parser.add_argument('-i', '--input', dest='input_files', nargs='+',
 		help='Process one or more markdown files (globs expand via the shell). '
@@ -208,14 +335,14 @@ def parse_args() -> argparse.Namespace:
 		help='Preview only. In single-file mode, overrides the apply default.')
 	parser.add_argument('-v', '--verbose', dest='verbose',
 		action='store_true', help='Print every rewrite.')
-	parser.add_argument('-c', '--include-changelog', dest='include_changelog',
-		action='store_true', help='Also walk docs/CHANGELOG*.md.')
-	parser.add_argument('-p', '--include-active-plans', dest='include_active_plans',
-		action='store_true', help='Also walk docs/active_plans/**/*.md.')
-	parser.add_argument('-e', '--include-experiments', dest='include_experiments',
-		action='store_true', help='Also walk experiments/**/*.md.')
-	parser.add_argument('-C', '--include-canonical', dest='include_canonical',
-		action='store_true', help='Also walk docs/*.md and docs/specs/**/*.md.')
+	parser.add_argument('-g', '--glob', dest='glob_patterns', nargs='+',
+		default=[], metavar='PATTERN',
+		help='Select *.md files by glob pattern or directory, anchored at the '
+			'repo root (globs expand in Python, so quote them). A bare '
+			'directory walks recursively; a wildcard pattern is used as typed, '
+			"so 'docs/*.md' is top level only and 'docs/**/*.md' recurses. "
+			"Default: '" + DEFAULT_GLOB + "'. "
+			"Example: --glob docs/specs/ 'tests/*.md'.")
 	args = parser.parse_args()
 	return args
 
@@ -267,7 +394,6 @@ def main() -> None:
 	"""Entry point: walk source files, rewrite broken md links."""
 	args = parse_args()
 	repo_root = get_repo_root()
-	docs_dir = repo_root / 'docs'
 
 	tracked = build_tracked_set(repo_root)
 	canonical, archive = build_basename_index(tracked, 'docs/archive/')
@@ -280,9 +406,7 @@ def main() -> None:
 			# shell does not expand them.
 			matches = glob.glob(pattern)
 			if not matches:
-				print('ERROR: no files match input pattern: ' + pattern,
-					file=sys.stderr)
-				sys.exit(1)
+				raise SystemExit('ERROR: no files match input pattern: ' + pattern)
 			for match in matches:
 				source_files.append(pathlib.Path(match).resolve())
 		apply_changes = not args.dry_run
@@ -290,34 +414,23 @@ def main() -> None:
 			repo_root, args.verbose)
 		return
 
-	# Directory mode: dry-run by default, --apply to write.
+	# Glob mode: dry-run by default, --apply to write. An explicit -g/--glob
+	# replaces the default scope entirely, so `--glob 'tests/*.md'` walks
+	# tests/ and nothing else.
 	apply_changes = args.apply_changes and not args.dry_run
-	archive_dir = docs_dir / 'archive'
-	if not archive_dir.is_dir():
-		print('ERROR: docs/archive/ not found at ' + str(archive_dir),
-			file=sys.stderr)
-		sys.exit(1)
+	patterns = args.glob_patterns
+	if not patterns:
+		patterns = [DEFAULT_GLOB]
 
-	source_files = list(archive_dir.rglob('*.md'))
-	if args.include_changelog:
-		for changelog in docs_dir.glob('CHANGELOG*.md'):
-			source_files.append(changelog)
-	if args.include_active_plans:
-		active_plans_dir = docs_dir / 'active_plans'
-		if active_plans_dir.is_dir():
-			source_files.extend(active_plans_dir.rglob('*.md'))
-	if args.include_experiments:
-		experiments_dir = repo_root / 'experiments'
-		if experiments_dir.is_dir():
-			source_files.extend(experiments_dir.rglob('*.md'))
-	if args.include_canonical:
-		# top-level docs/*.md (skip CHANGELOG handled by --include-changelog)
-		for md_file in docs_dir.glob('*.md'):
-			if not md_file.name.startswith('CHANGELOG'):
-				source_files.append(md_file)
-		specs_dir = docs_dir / 'specs'
-		if specs_dir.is_dir():
-			source_files.extend(specs_dir.rglob('*.md'))
+	source_files = collect_markdown_files_or_exit(repo_root, patterns)
+	# Zero matches is a note, not an error: the patterns describe a union, and
+	# the default pattern legitimately matches nothing in a repo that has never
+	# rotated its changelog. (-i/--input keeps its per-pattern hard error,
+	# because there the user named specific files to rewrite.)
+	if not source_files:
+		print('No markdown files matched: ' + ' '.join(patterns))
+		print("Pass -g/--glob PATTERN to choose a scope, "
+			"for example: --glob 'docs/**/*.md'")
 
 	run_files(source_files, apply_changes, tracked, canonical, archive,
 		repo_root, args.verbose)

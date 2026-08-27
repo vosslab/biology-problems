@@ -13,7 +13,6 @@ review, and final commit confirmation.
 import os
 import re
 import sys
-import time
 import shlex
 import tempfile
 import subprocess
@@ -23,6 +22,7 @@ import rich.panel
 
 # local repo modules
 import changelog_lib
+import version_lib
 
 CHANGELOG_PATHSPEC = "docs/CHANGELOG.md"
 VERSION_PATHSPEC = "VERSION"
@@ -60,17 +60,6 @@ def read_version_file() -> str:
 
 #============================================
 
-def current_calver_month() -> str:
-	"""Return the current calendar month in CalVer format (YY.MM).
-
-	Returns:
-		Current month as a zero-padded string in the format YY.MM
-		(for example "26.05").
-	"""
-	return time.strftime("%y.%m")
-
-#============================================
-
 def check_version_freshness() -> bool:
 	"""Check if VERSION file matches the current calendar month.
 
@@ -82,13 +71,8 @@ def check_version_freshness() -> bool:
 		False if user declines to continue.
 	"""
 	version_value = read_version_file()
-	current_month = current_calver_month()
-
-	# Extract the first two dotted segments (YY.MM)
-	version_parts = version_value.split(".")
-	if len(version_parts) < 2:
-		raise RuntimeError(f"VERSION format unrecognized: {version_value}")
-	version_month = f"{version_parts[0]}.{version_parts[1]}"
+	current_month = version_lib.current_calver_month()
+	version_month = version_lib.calver_month_prefix(version_value)
 
 	# If months match, freshness is confirmed
 	if version_month == current_month:

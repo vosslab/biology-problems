@@ -1,5 +1,7 @@
 # Claude hook usage guide
 
+> This file is vendored. Local changes can and will be overwritten by propagation.
+
 _Last updated: 2026-06-30 21:10 UTC. Source of truth: `claude-code-permissions-hook`
 repo. Mirrors in sibling repos (e.g. `starter-repo-template`) are copies; do not
 edit mirrors directly._

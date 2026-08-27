@@ -11,7 +11,7 @@ Sections, in order:
 
 - ``# Changelog parsing and serialization`` -- DayBlock / Entry
   dataclasses, regex constants, ``read_changelog`` / ``write_changelog``,
-  ``parse_day_blocks`` / ``split_day_block`` / ``parse_file``,
+  ``add_entry`` / ``parse_day_blocks`` / ``split_day_block`` / ``parse_file``,
   ``newest_date`` / ``find_duplicate_dates``.
 - ``# Git helpers`` -- ``run_git`` / ``get_git_root`` /
   ``ensure_in_git_repo``.
@@ -183,6 +183,116 @@ def write_changelog(path: str, preamble: str, blocks: list) -> None:
 
 	with open(path, "w", encoding="utf-8") as handle:
 		handle.write(normalized)
+
+#============================================
+
+def _insert_entry_in_day(raw_text: str, category: str, title: str) -> str:
+	"""Insert one bullet into a day block while retaining canonical category order."""
+	lines = raw_text.splitlines(keepends=True)
+	bullet = f"- {title}\n"
+	category_found = False
+	end_index = len(lines)
+	# Find an existing category and the next section boundary so only that
+	# category's raw slice is extended.
+	for index, line in enumerate(lines):
+		match = CATEGORY_RE.match(line)
+		if match is None or match.group(1).strip() != category:
+			continue
+		category_found = True
+		for later_index in range(index + 1, len(lines)):
+			if CATEGORY_RE.match(lines[later_index]):
+				end_index = later_index
+				break
+		break
+
+	if category_found:
+		# Rebuild exactly one canonical separator around the inserted bullet while
+		# preserving every adjacent section line.
+		prefix = "".join(lines[:end_index]).rstrip("\n")
+		last_line = prefix.splitlines()[-1]
+		separator = "\n\n" if CATEGORY_RE.match(last_line) else "\n"
+		suffix = "".join(lines[end_index:]).lstrip("\n")
+		result = prefix + separator + bullet
+		if suffix:
+			result += "\n" + suffix
+		return result
+
+	target_order = CANONICAL_CATEGORIES.index(category)
+	insert_index = len(lines)
+	# A missing category belongs before the first later canonical category; unknown
+	# legacy categories keep their original relative position.
+	for index, line in enumerate(lines):
+		match = CATEGORY_RE.match(line)
+		if match is None:
+			continue
+		existing_category = match.group(1).strip()
+		if existing_category not in CANONICAL_CATEGORIES:
+			continue
+		if CANONICAL_CATEGORIES.index(existing_category) > target_order:
+			insert_index = index
+			break
+	# Trim only boundary newlines, then restore canonical blank-line separation.
+	prefix = "".join(lines[:insert_index]).rstrip("\n")
+	suffix = "".join(lines[insert_index:]).lstrip("\n")
+	section = f"### {category}\n\n{bullet}"
+	result = prefix + "\n\n" + section
+	if suffix:
+		result += "\n" + suffix
+	return result
+
+#============================================
+
+def add_entry(path: str, date_str: str, category: str, title: str) -> None:
+	"""Add one canonical changelog bullet, preserving all existing day blocks.
+
+	Args:
+		path: Changelog file to update or create.
+		date_str: Valid ISO date used for the day heading.
+		category: One of CANONICAL_CATEGORIES.
+		title: Single-line bullet text without the leading dash.
+
+	Raises:
+		ValueError: The new entry is invalid or the changelog contains an invalid
+			or duplicated date heading that makes a lossless rewrite unsafe.
+	"""
+	if not _is_valid_iso_date(date_str):
+		raise ValueError(f"invalid changelog date: {date_str!r}")
+	if category not in CANONICAL_CATEGORIES:
+		raise ValueError(f"non-canonical changelog category: {category!r}")
+	normalized_title = title.strip()
+	if not normalized_title or "\n" in normalized_title or "\r" in normalized_title:
+		raise ValueError("changelog title must be one non-empty line")
+
+	text = read_changelog(path) if os.path.isfile(path) else ""
+	preamble, blocks, warnings = parse_day_blocks(
+		text, source=path, duplicate_policy="raise",
+	)
+	invalid_warnings = [warning for warning in warnings if "invalid date" in warning]
+	if invalid_warnings:
+		raise ValueError(invalid_warnings[0])
+
+	matched = False
+	for index, block in enumerate(blocks):
+		if block.date != date_str:
+			continue
+		new_raw_text = _insert_entry_in_day(
+			block.raw_text, category, normalized_title,
+		)
+		blocks[index] = dataclasses.replace(block, raw_text=new_raw_text)
+		matched = True
+		break
+	if not matched:
+		new_raw_text = (
+			f"## {date_str}\n\n"
+			f"### {category}\n\n"
+			f"- {normalized_title}\n\n"
+		)
+		blocks.insert(0, DayBlock(
+			date=date_str, raw_text=new_raw_text, source=path, lineno=1,
+		))
+	if preamble and not preamble.endswith("\n\n"):
+		preamble = preamble.rstrip("\n") + "\n\n"
+	write_changelog(path, preamble, blocks)
 
 #============================================
 # Parsing

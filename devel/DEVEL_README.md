@@ -10,42 +10,43 @@ Use this folder for scripts that help maintainers do repo-level work:
 - Changelog querying, commit-message drafting, and changelog rotation.
 - Documentation repair and repo hygiene cleanup.
 - Build-output cleanup that is useful across repo types.
-- Template-only developer helpers that should ship into consumer repos under
-  their own `devel/` folders.
+- Developer helpers shared across repos through propagation.
 
 Do not put reusable library code, runtime application code, or permanent tests
-here. Shared test helpers belong in `tests/`; shipped runtime files belong in
-the appropriate repo root, package, or `templates/<type>/` path.
+here. Shared test helpers belong in `tests/`; runtime files belong in the
+appropriate repo root or package.
 
 ## Current root scripts
 
 | File | Kind of work |
 | --- | --- |
-| [bump_version.py](bump_version.py) | Set or bump repo versions across version files. |
+| [bump_version.py](bump_version.py) | Preview and save repo version changes; enter `patch` for the next patch release. |
+| [version_lib.py](version_lib.py) | Shared version parsing and normalization behavior. |
+| [version_files.py](version_files.py) | Discover and update files that carry version metadata. |
 | [changelog_lib.py](changelog_lib.py) | Shared parser and helpers for changelog tools. |
 | [commit_changelog.py](commit_changelog.py) | Draft a commit message from new changelog entries. |
 | [query_changelog.py](query_changelog.py) | Search active and archived changelog entries. |
 | [rotate_changelog.py](rotate_changelog.py) | Move old changelog day blocks into archive files. |
 | [flatten_broken_md_links.py](flatten_broken_md_links.py) | Repair or flatten broken Markdown links. |
-| `check_bandit_security.py` | Run the repo-wide Bandit security audit outside pytest. |
 | [dist_clean.sh](dist_clean.sh) | Remove build artifacts, caches, and dependency installs. |
 
-## Template devel scripts
+## Propagated devel scripts
 
-Some developer tools ship into consumer repos via propagation and appear in `devel/` when present.
+Some developer tools arrive by propagation and appear in `devel/` when this repo's
+`REPO_TYPE` calls for them.
 
-`templates/shared/devel/` holds tools that propagate to non-PyPI python, rust, swift, and other
-consumer repo types (repos with `pyproject.toml` are excluded by the `lacks_file` condition).
-When present in a consumer repo, `devel/make_release.py` prepares a GitHub source
-release: CalVer freshness check, free-tag check, committed-LICENSE verification, zip and tgz
-archive build with byte-level LICENSE spot-check, LLM-prompt generation for the release
-description, optional `docs/RELEASE_HISTORY.md` and `docs/NEWS.md` updates, and printed
-`git tag` + `gh release create` commands. Use `--dry-run` to preview or `--write` to update
-doc files. See [docs/REPO_STYLE.md](../docs/REPO_STYLE.md) versioning section for the full flow.
+`devel/make_release.py` ships to the `scripted`, `compiled`, and `other` families, including
+their descendants (`python`, `pypi`, `rust`, and `swift`). It prepares a GitHub source release:
+CalVer freshness check, free-tag check, committed `LICENSE.<SPDX>` verification,
+zip and tgz archive build with byte-level checks of every license, LLM-prompt generation for
+the release description, optional `docs/RELEASE_HISTORY.md` and `docs/NEWS.md` updates,
+and printed `git tag` + `gh release create` commands. Use `--dry-run` to preview or
+`--write` to update doc files. See [docs/REPO_STYLE.md](../docs/REPO_STYLE.md) versioning
+section for the full flow.
 
-Some developer tools are type-specific and live under `templates/<type>/devel/`
-so they propagate only to matching consumer repos. Examples include Python
-release publishing helpers and TypeScript setup/rendering helpers.
+Other propagated devel tools are type-specific, so a repo receives only the ones
+matching its `REPO_TYPE`. Examples include Python release publishing helpers and
+TypeScript setup/rendering helpers.
 
 ## Running scripts
 

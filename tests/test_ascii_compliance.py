@@ -471,3 +471,4 @@ def test_ascii_compliance(path: str) -> None:
 	assert rel not in VIOLATIONS_BY_FILE, file_utils.format_violation_assert_message(
 		rel, VIOLATIONS_BY_FILE.get(rel, []), REPORT_NAME
 	)
+# Vendored pytest file. Local changes can and will be overwritten.
