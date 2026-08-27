@@ -112,6 +112,6 @@ Platform support beyond macOS with Homebrew has not yet been confirmed.
 ## License
 
 Repository code is available under the
-[GNU Lesser General Public License v3](LICENSE.LGPL_v3). Non-code educational content is available
+`LICENSE.LGPL_v3`. Non-code educational content is available
 under the
 [Creative Commons Attribution 4.0 International license](https://creativecommons.org/licenses/by/4.0/).
