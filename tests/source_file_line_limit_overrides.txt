@@ -1,2 +1,5 @@
+problems/biochemistry-problems/enzymes/enzyme_simulation.pgml
 bptools.py
-
+topic_classifier/compare_results.py
+problems/inheritance-problems/gene_mapping/genemaplib.py
+problems/inheritance-problems/gene_mapping/gene_map_class_lib.py

@@ -1,5 +1,28 @@
-# === LOCAL REPOSITORY RULES === [ADD CUSTOM IGNORES HERE]
+# === UNIVERSAL === [PROPAGATED - LOCAL EDITS OVERWRITTEN]
+.DS_Store
+/node_modules/
+/.env
+/report_*.txt
+/output*/
+/generated/
+/graphify-out/
+_temp*.?*
+/temp/
+/OTHER_REPOS/
+/LOCAL_ONLY/
+
+# === PYTHON === [PROPAGATED - LOCAL EDITS OVERWRITTEN]
+build/
+dist/
+sdist/
+*.egg
+*.egg-info/
+site/
+
+# -------------------- LOCAL REPOSITORY RULES --------------------
+# ADD YOUR CUSTOM IGNORES BELOW
 # Propagation preserves this section.
+# ------------------ END LOCAL REPOSITORY RULES ------------------
 
 # output files
 _[a-z]*.[a-z]*
@@ -32,24 +55,3 @@ env.bak/
 venv.bak/
 
 report_*.txt
-
-# === UNIVERSAL === [PROPAGATED - LOCAL EDITS OVERWRITTEN]
-.DS_Store
-/node_modules/
-/.env
-/report_*.txt
-/output*/
-/generated/
-/graphify-out/
-_temp*.?*
-/temp/
-/OTHER_REPOS/
-/LOCAL_ONLY/
-
-# === PYTHON === [PROPAGATED - LOCAL EDITS OVERWRITTEN]
-build/
-dist/
-sdist/
-*.egg
-*.egg-info/
-site/

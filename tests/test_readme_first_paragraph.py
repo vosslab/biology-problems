@@ -5,7 +5,7 @@ import file_utils
 
 REPO_ROOT = file_utils.get_repo_root()
 README_PATH = os.path.join(REPO_ROOT, "README.md")
-MAX_ABOUT_CHARS = 250
+MAX_ABOUT_CHARS = 350
 
 # Inline link or image: optional leading '!', [text](url). Markdown
 # images (leading '!') are the syntax used for status badges like
@@ -204,12 +204,12 @@ def test_first_paragraph_exists() -> None:
 
 
 #============================================
-def test_first_paragraph_at_most_250_chars() -> None:
-	# GitHub About field hard-caps at 250 Python characters (len()).
+def test_first_paragraph_at_most_350_chars() -> None:
+	# GitHub About field hard-caps at 350 Python characters (len()).
 	paragraph = _load_first_paragraph()
 	length = len(paragraph)
 	assert length <= MAX_ABOUT_CHARS, (
-		f"First paragraph must be 250 Python characters or fewer "
+		f"First paragraph must be 350 Python characters or fewer "
 		f"(len(paragraph)). Actual: {length} characters; limit: {MAX_ABOUT_CHARS}. "
 		f"Paragraph text:\n{paragraph}"
 	)

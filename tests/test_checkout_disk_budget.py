@@ -1,3 +1,12 @@
+"""Keep the checkout disk budget visible in pytest's base lane.
+
+Run this deliberate base-lane check with ``source source_me.sh && pytest tests/``.
+Its local ``du`` subprocess is the single accepted exception to the fast-lane
+no-subprocess rule: only ``du`` can measure the physical disk use of the actual
+developer checkout that this test protects. This file is vendored. Deleting it
+locally only removes it until the next propagation returns it.
+"""
+
 # Standard Library
 import subprocess
 

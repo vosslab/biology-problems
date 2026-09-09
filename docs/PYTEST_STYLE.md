@@ -52,6 +52,10 @@ See [Good tests](#good-tests) for examples of stable assertion shapes and [Britt
 * Do not write tests for `_temp.*` files, ad-hoc debugging scripts, or any code intended to be deleted shortly after use.
 * Tests in `tests/` are reserved for code that will remain in the repo.
 
+Treat implementation-proof checks as temporary by default. Promote one into the permanent pytest
+suite only when it satisfies every rule above; otherwise remove it after the rebuild is verified or
+place durable whole-system acceptance coverage in `tests/e2e/`.
+
 ## Fixture policy
 
 Write test inputs directly in the test by default. Put the setup near the assertion so the test is
@@ -101,6 +105,9 @@ Test files are organized by execution model and scope:
 * If a check needs sleeps, real subprocess calls, real network, large file trees beyond
   `tmp_path`, model loads, or a multi-step CLI run, it is not a pytest. Move it to
   `tests/playwright/` (browser-driven) or `tests/e2e/` (shell/Python) per [E2E_TESTS.md](E2E_TESTS.md).
+* `tests/test_checkout_disk_budget.py` is the sole exemption to the no-subprocess rule. Its
+  single local `du` call measures the physical size of the checkout that it protects, so it must
+  run in the base lane rather than an isolated synthetic directory.
 * Prefer deleting a slow or fragile pytest over rewriting it. Less is more.
 
 ## Good tests
@@ -156,15 +163,15 @@ if the data is genuinely large, treat the round trip as an end-to-end check unde
 Use this as the default test command:
 
 ```bash
-pytest tests/
+source source_me.sh && pytest tests/
 ```
 
 For targeted runs:
 
 ```bash
-pytest tests/test_example.py
-pytest tests/ -k name
-pytest tests/ -x
+source source_me.sh && pytest tests/test_example.py
+source source_me.sh && pytest tests/ -k name
+source source_me.sh && pytest tests/ -x
 ```
 
 `tests/conftest.py` handles the pytest environment setup. Do not duplicate that setup in the
@@ -219,11 +226,11 @@ Discovery filters files through three layers, in order:
   (for example keep only `__init__.py`). Keep all repo-specific exclusions in
   `tests/conftest.py REPO_HYGIENE_FILTERS`; vendored files hold only universal logic.
 
-The source-file line-limit gate has one narrower manager-approval mechanism rather than a glob
-filter: `tests/source_file_line_limit_overrides.txt` may list exact repo-relative paths for tracked
-sources outside the repo's control, such as downloaded normative specifications. The file is
-optional, repo-owned, and never propagated between repos. Other hygiene exclusions remain in
-`REPO_HYGIENE_FILTERS`.
+The source-file line-limit gate has one narrow manager-approval mechanism:
+`tests/source_file_line_limit_overrides.txt` lists exact repo-relative POSIX paths for tracked
+sources outside the repo's control, such as downloaded normative specifications. Propagation seeds
+the commented file when a consumer lacks it, then the consumer owns its contents. Other hygiene
+exclusions remain in `REPO_HYGIENE_FILTERS`.
 
 A normal hygiene test calls `discover_files` with its `test_key` so Layer 2 can target it:
 

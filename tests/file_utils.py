@@ -563,6 +563,29 @@ def list_tracked_files(
 
 
 #============================================
+def list_untracked_files(repo_root: str) -> list[str]:
+	"""
+	List nonignored untracked files using Git's standard exclusions.
+
+	This is intentionally separate from discover_files(), whose durable contract
+	remains tracked files only. The Markdown link checker uses this narrow list to
+	grant a time-limited working-tree exception without staging files or reading
+	ignored paths.
+
+	Args:
+		repo_root: Absolute path to the repository root directory.
+
+	Returns:
+		list[str]: Repo-relative POSIX paths of nonignored untracked files.
+	"""
+	# ASVS 1.2.5: fixed argv, no shell. --exclude-standard applies repository,
+	# info/exclude, and global ignore rules at the discovery boundary.
+	command = ["git", "ls-files", "--others", "--exclude-standard", "-z"]
+	output = _run_git(repo_root, command, "Failed to list nonignored untracked files.")
+	return _split_null(output)
+
+
+#============================================
 def path_has_skip_dir(path: str) -> bool:
 	"""
 	Check whether a path matches a built-in directory or scratch exclusion.

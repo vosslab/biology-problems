@@ -17,7 +17,8 @@ Both are excluded from `pytest tests/` via `collect_ignore = ["e2e", "playwright
 
 This repo organizes tests in four tiers, all under the `tests/` umbrella:
 
-- `tests/test_*.py` - fast pytest unit and integration tests. Run with `pytest tests/`.
+- `tests/test_*.py` - fast pytest unit and integration tests. Run with
+  `source source_me.sh && pytest tests/`.
 - `tests/test_*.mjs` - pure Node tests, if any (rare; not browser-driven).
 - `tests/playwright/` (with optional `tests/playwright/e2e/` subfolder) - browser-driven Playwright tests. TypeScript repos include `PLAYWRIGHT_USAGE.md` in their propagated `docs/` folder.
 - `tests/e2e/` - non-browser whole-system E2E. Shell/Python orchestration (`e2e_*.sh`, `e2e_*.py`). Run directly, not via pytest.

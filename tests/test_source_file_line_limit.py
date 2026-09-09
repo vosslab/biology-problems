@@ -58,6 +58,14 @@ SOURCE_FILENAMES = frozenset({
 	"vagrantfile",
 })
 
+# Planning and archived Markdown are working/history records rather than
+# maintained source modules. Match the directory pair anywhere in a tracked
+# path so this template's meta/docs tree follows the same shipped policy.
+EXCLUDED_MARKDOWN_TREES = frozenset({
+	("docs", "active_plans"),
+	("docs", "archive"),
+})
+
 REPORT_NAME = file_utils.report_name(__file__)
 HEADER = "Source file line-limit violations:"
 VIOLATIONS_BY_FILE: dict[str, list[str]] = {}
@@ -104,6 +112,20 @@ OVERRIDE_PATHS = load_override_paths()
 
 
 #============================================
+def is_excluded_markdown_tree(rel: str) -> bool:
+	"""Return whether Markdown lives below a planning or archive docs tree."""
+	path = pathlib.PurePosixPath(rel)
+	if path.suffix.lower() != ".md":
+		return False
+	parts = path.parts
+	for index in range(len(parts) - 1):
+		directory_pair = (parts[index], parts[index + 1])
+		if directory_pair in EXCLUDED_MARKDOWN_TREES:
+			return True
+	return False
+
+
+#============================================
 def is_source_file(
 	rel: str,
 	override_paths: frozenset[str] | None = None,
@@ -124,7 +146,7 @@ def is_source_file(
 	basename = os.path.basename(rel).lower()
 	extension = os.path.splitext(basename)[1]
 	is_source = basename in SOURCE_FILENAMES or extension in SOURCE_EXTENSIONS
-	if rel in override_paths:
+	if rel in override_paths or is_excluded_markdown_tree(rel):
 		return False
 	return is_source
 
@@ -222,6 +244,39 @@ def test_source_file_line_limit_override_list(tmp_path: pathlib.Path) -> None:
 	)
 	overrides = load_override_paths(str(tmp_path))
 	assert not is_source_file("docs/QTI_v3_SPEC.md", overrides)
+
+
+#============================================
+def test_source_file_line_limit_override_requires_exact_paths(
+	tmp_path: pathlib.Path,
+) -> None:
+	"""Require every repo-owned override to identify one exact path."""
+	tests_dir = tmp_path / "tests"
+	tests_dir.mkdir()
+	list_path = tests_dir / "source_file_line_limit_overrides.txt"
+	list_path.write_text("docs/archive/*.md\n", encoding="utf-8")
+	with pytest.raises(ValueError, match="expected an exact repo-relative POSIX path"):
+		load_override_paths(str(tmp_path))
+
+
+#============================================
+@pytest.mark.parametrize(
+	("path", "expected"),
+	(
+		("docs/active_plans/implementation.md", False),
+		("docs/active_plans/active/milestone.md", False),
+		("meta/docs/active_plans/audit/report.md", False),
+		("docs/archive/old_plan.md", False),
+		("meta/docs/archive/old_plan.md", False),
+		("docs/archive/example.py", True),
+		("docs/REFERENCE.md", True),
+	),
+)
+def test_source_file_line_limit_document_tree_selection(
+	path: str, expected: bool,
+) -> None:
+	"""Exclude planning/archive Markdown while retaining other authored source."""
+	assert is_source_file(path, frozenset()) is expected
 
 
 #============================================
