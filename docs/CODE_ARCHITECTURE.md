@@ -4,7 +4,9 @@
 
 The repository provides standalone Python scripts under [problems/](../problems/) that generate biology quiz and homework items. Generators combine local logic with shared helpers in [bptools.py](../bptools.py) and reference inputs from [data/](../data/) plus content banks under [problems/matching_sets/](../problems/matching_sets/) and [problems/multiple_choice_statements/](../problems/multiple_choice_statements/).
 
-Outputs commonly include Blackboard text files (`bbq-*.txt`), QTI packages (`qti*.zip`), and HTML previews (`selftest-*.html`) as listed in [.gitignore](../.gitignore).
+Outputs commonly include Blackboard text files (`bbq-*.txt`), validated Blackboard pool ZIPs
+(`blackboard_export_zip-*.zip`), QTI packages (`qti*.zip`), and HTML previews
+(`selftest-*.html`) as listed in [.gitignore](../.gitignore).
 
 ## Major components
 
@@ -49,7 +51,9 @@ Outputs commonly include Blackboard text files (`bbq-*.txt`), QTI packages (`qti
 2. The script loads reference data from [data/](../data/) or YAML banks under [problems/](../problems/).
 3. Domain libraries and [bptools.py](../bptools.py) build question text, choices, and answer keys.
 4. When used, `bptools` runs HTML validation via `qti_package_maker` and formats output.
-5. Results are written to BBQ text files, QTI zips, or HTML previews in the repo root.
+5. The shared writer stores BBQ text and, with `-B` / `--bbexport`, reads that retained file through
+   `qti_package_maker` to create an adjacent validated Blackboard pool ZIP. Other conversion flows
+   can write QTI ZIPs or HTML previews in the repo root.
 
 ## Testing and verification
 

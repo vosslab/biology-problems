@@ -2,9 +2,37 @@
 
 ## 2026-09-09
 
+### Additions and New Features
+
+- Added shared `-B` / `--bbexport` generation of validated Blackboard pool ZIPs through the
+  `qti_package_maker` library while retaining the source BBQ text, with explicit rejection of item
+  types the export engine cannot write.
+
+### Behavior or Interface Changes
+
+- Made hidden decoy terms and the no-click wrapper opt-in for Blackboard Learn Original so normal
+  generator output avoids those two Ultra-incompatible anti-cheat transformations by default.
+- Kept only the positive `--hidden-terms`, `--noclick-div`, and `--bbexport` opt-ins; their former
+  negative flags only restated the new defaults.
+- Routed seven batch generators, three YAML-to-BBQ converters, and the older four-point gene-map
+  generator through the shared export-aware writer.
+
 ### Fixes and Maintenance
 
 - Synchronized shared style guides, tests, and repository support files from the starter template.
+- Ignored generated `blackboard_export_zip-*.zip` artifacts alongside existing BBQ and QTI output.
+- Updated the README, architecture, and file-structure descriptions for Blackboard pool ZIP output,
+  and gave the known-incomplete four-point generator a typed `main()` entrypoint without changing
+  its question algorithm.
+
+### Developer Tests and Notes
+
+- Added behavioral coverage for shared parser opt-ins, generator-level anti-cheat locks,
+  Ultra-compatible default markup, the export handoff, and failure preservation for unsupported
+  ORDER questions; package-structure validation remains owned by `qti-package-maker`.
+- Verified standard single-question, batch, and YAML generators produce retained BBQ text plus
+  readable Blackboard exports containing their expected pool data; the full suite passes 4,526
+  tests under Python 3.12.
 
 ## 2026-08-27
 

@@ -199,6 +199,7 @@ def parse_arguments():
 		help='how many choices to have for each question', default=None)
 	parser.add_argument('--flip', action='store_true', dest='flip', help='Flip the keys and values from the YAML input')
 	parser = bptools.add_anticheat_args(parser)
+	parser = bptools.add_bbexport_args(parser)
 	args = parser.parse_args()
 	return args
 
@@ -288,11 +289,7 @@ def main():
 
 	# write deduped questions to file
 	outfile = 'bbq-WOMC-' + os.path.splitext(os.path.basename(args.input_yaml_file))[0] + '-questions.txt'
-	print('writing to file: ' + outfile)
-	with open(outfile, 'w') as f:
-		for bbformat_question in deduped_questions:
-			f.write(bbformat_question)
-	print(f"Wrote {len(deduped_questions)} questions to file.")
+	bptools.write_questions_to_file(deduped_questions, outfile, args.bbexport)
 	sync_bptools_histogram_to_item_bank(output_item_bank)
 	print('')
 	bptools.print_histogram()

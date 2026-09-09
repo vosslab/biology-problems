@@ -282,6 +282,7 @@ def parse_arguments():
 		default=1
 	)
 	parser = bptools.add_anticheat_args(parser)
+	parser = bptools.add_bbexport_args(parser)
 
 	# Parse the provided command-line arguments and return them
 	args = parser.parse_args()
@@ -359,15 +360,10 @@ def main():
 	)
 
 	# write deduped questions to file
-	print(f'Writing to file: {outfile}\n')
-	with open(outfile, 'w') as f:
-		for bbformat_question in deduped_questions:
-			f.write(bbformat_question)
+	bptools.write_questions_to_file(deduped_questions, outfile, args.bbexport)
 
 	# print a histogram of results
 	bptools.print_histogram()
-
-	print(f'Wrote {len(deduped_questions)} questions to {outfile}')
 
 #===========================================================
 #===========================================================

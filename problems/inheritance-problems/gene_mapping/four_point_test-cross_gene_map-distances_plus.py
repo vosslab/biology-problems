@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 
-import os
 import re
 import sys
 import copy
-import numpy
 import random
+import argparse
+
+import numpy
 
 import bptools
 import genemaplib as ptcl
@@ -201,16 +202,27 @@ def formatBB_FIB_PLUS_Question(N, question, variable_list, geneorder, distances)
 	return bb_question
 
 #=====================
+def parse_arguments() -> argparse.Namespace:
+	"""Parse command-line arguments."""
+	parser = bptools.make_arg_parser(
+		description="Generate four-point test-cross gene mapping questions."
+	)
+	parser.set_defaults(duplicates=1)
+	args = parser.parse_args()
+	return args
+
 #=====================
-if __name__ == "__main__":
+def main() -> None:
+	"""Generate and write four-point test-cross questions."""
+	# This unfinished generator's older helpers still read these values as globals.
+	global geneorder, distances, progeny_size
+	args = parse_arguments()
+	bptools.apply_anticheat_args(args)
 	lowercase = "abcdefghijklmnpqrsuvwxyz"
-	outfile = 'bbq-' + os.path.splitext(os.path.basename(__file__))[0] + '-questions.txt'
-	print('writing to file: '+outfile)
-	f = open(outfile, 'w')
-	duplicates = 1
+	questions = []
 	j = -1
 	N = 0
-	for i in range(duplicates):
+	for i in range(args.duplicates):
 		N += 1
 		j += 1
 		if j + 2 == len(lowercase):
@@ -230,6 +242,13 @@ if __name__ == "__main__":
 		complete_question = html_table + question_string
 		final_question = formatBB_FIB_PLUS_Question(N, complete_question, variable_list, geneorder, distances)
 		#print(final_question)
-		f.write(final_question)
-	f.close()
+		questions.append(final_question)
+		if args.max_questions is not None and len(questions) >= args.max_questions:
+			break
+	outfile = bptools.make_outfile()
+	bptools.write_questions_to_file(questions, outfile, args.bbexport)
+
+#=====================
+if __name__ == "__main__":
+	main()
 #THE END

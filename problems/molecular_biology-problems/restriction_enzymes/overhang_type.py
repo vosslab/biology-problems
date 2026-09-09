@@ -171,7 +171,7 @@ def main():
 		args.max_questions = len(SCENARIOS)
 
 	questions = bptools.collect_question_batches(write_question_batch, args)
-	bptools.write_questions_to_file(questions, outfile)
+	bptools.write_questions_to_file(questions, outfile, args.bbexport)
 
 #===========================================================
 #===========================================================

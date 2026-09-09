@@ -122,6 +122,7 @@ Release and changelog tooling (sharing [changelog_lib.py](../devel/changelog_lib
 Generated outputs are ignored by git (see [.gitignore](../.gitignore)).
 
 - `bbq-*.txt`: Blackboard text upload format question files.
+- `blackboard_export_zip-*.zip`: validated Blackboard pool packages created with `--bbexport`.
 - `qti*.zip`: QTI package exports.
 - `selftest-*.html`: HTML preview files for question self-testing.
 - `pyflakes.txt`: pyflakes static analysis output.

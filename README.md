@@ -40,7 +40,8 @@ HTML needed for LMS import.
 - Generate multiple-choice, multiple-answer, and numeric questions from focused topic scripts.
 - Cover biochemistry, biostatistics, cell biology, genetics, laboratory skills, and molecular
   biology from one repository.
-- Export Blackboard text files, QTI packages, and HTML self-test previews.
+- Export Blackboard text files, validated Blackboard pool ZIPs, QTI packages, and HTML self-test
+  previews.
 - Build from Python logic, YAML matching sets, or statement-based question banks.
 - Randomize scenarios and answer ordering so repeated assessments are less predictable.
 

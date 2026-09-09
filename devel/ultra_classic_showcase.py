@@ -226,15 +226,12 @@ def run_generator(generator: dict, repo_root: str, parts_dir: str, env: dict) ->
 	if not os.path.isfile(script_abspath):
 		raise FileNotFoundError(f"Generator script not found: {script_abspath}")
 
-	# Build the command: python3 <script> -x 2 <anti-cheat off> <extra args>.
-	# The showcase is about HTML sanitization, not security, so disable both shared
-	# bptools anti-cheat features: hidden decoy terms and the no-click div wrapper.
-	# Their injected markup would otherwise pollute the HTML being compared.
+	# Build the command: python3 <script> -x 2 <extra args>.
+	# The shared anti-cheat features default off, so their injected markup does not
+	# pollute the HTML being compared.
 	command = [
 		sys.executable, script_abspath,
 		'-x', str(QUESTIONS_PER_GENERATOR),
-		'--no-hidden-terms',
-		'--allow-click',
 	]
 	command += generator['extra_args']
 

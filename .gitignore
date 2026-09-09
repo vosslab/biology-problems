@@ -39,6 +39,7 @@ tools/bptools_scripts_*.txt
 tools/problem_lib_modules.txt
 *.od?
 bbq-*.txt
+blackboard_export_zip-*.zip
 qti*.zip
 selftest-*.html
 

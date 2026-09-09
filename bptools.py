@@ -8,10 +8,13 @@ import inspect
 import copy
 import argparse
 import subprocess
+import tempfile
+import zipfile
 from collections import defaultdict
 
 import tabulate
 
+from qti_package_maker import package_interface
 from qti_package_maker.common import anti_cheat
 from qti_package_maker.common import yaml_tools
 from qti_package_maker.common import color_wheel
@@ -28,10 +31,12 @@ crc16_dict = {}
 
 allow_insert_hidden_terms = True
 allow_no_click_div = True
+default_insert_hidden_terms = False
+default_no_click_div = False
 
 nocheater = anti_cheat.AntiCheat()
-nocheater.use_insert_hidden_terms = True
-nocheater.use_no_click_div = True
+nocheater.use_insert_hidden_terms = default_insert_hidden_terms
+nocheater.use_no_click_div = default_no_click_div
 
 #==========================
 def _patch_anticheat_insert_hidden_terms():
@@ -55,11 +60,11 @@ _patch_anticheat_insert_hidden_terms()
 
 #==========================
 def _get_hidden_terms_default() -> bool:
-	return bool(allow_insert_hidden_terms)
+	return bool(default_insert_hidden_terms and allow_insert_hidden_terms)
 
 #==========================
 def _get_no_click_default() -> bool:
-	return bool(allow_no_click_div)
+	return bool(default_no_click_div and allow_no_click_div)
 
 #==========================
 def _apply_anticheat_args(args):
@@ -88,27 +93,29 @@ def add_anticheat_args(parser):
 	"""
 	Add shared anti-cheat flags to an argparse parser.
 	"""
-	hidden_terms_group = parser.add_mutually_exclusive_group(required=False)
-	hidden_terms_group.add_argument(
+	parser.add_argument(
 		'--hidden-terms', dest='hidden_terms', action='store_true',
-		help='Enable hidden terms (default).'
-	)
-	hidden_terms_group.add_argument(
-		'--no-hidden-terms', dest='hidden_terms', action='store_false',
-		help='Disable hidden terms.'
+		help='Enable hidden terms for Blackboard Learn Original.'
 	)
 	parser.set_defaults(hidden_terms=_get_hidden_terms_default())
 
-	noclick_group = parser.add_mutually_exclusive_group(required=False)
-	noclick_group.add_argument(
+	parser.add_argument(
 		'--noclick-div', dest='noclick_div', action='store_true',
-		help='Enable the no-click div wrapper (default).'
-	)
-	noclick_group.add_argument(
-		'--allow-click', dest='noclick_div', action='store_false',
-		help='Disable the no-click div wrapper.'
+		help='Enable the no-click div wrapper for Blackboard Learn Original.'
 	)
 	parser.set_defaults(noclick_div=_get_no_click_default())
+	return parser
+
+#==========================
+def add_bbexport_args(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
+	"""
+	Add shared Blackboard pool export flags to an argparse parser.
+	"""
+	parser.add_argument(
+		'-B', '--bbexport', dest='bbexport', action='store_true',
+		help='Also create a Blackboard pool export ZIP.'
+	)
+	parser.set_defaults(bbexport=False)
 	return parser
 
 #==========================
@@ -255,6 +262,7 @@ def _add_base_args(parser):
 		default=None, help='Maximum number of questions to keep.'
 	)
 	parser = add_anticheat_args(parser)
+	parser = add_bbexport_args(parser)
 	return parser
 
 #==========================
@@ -851,13 +859,123 @@ def make_outfile(*parts) -> str:
 	return outfile
 
 #==========================
-def _write_questions_to_file(questions: list, outfile: str):
+def _get_blackboard_export_path(outfile: str | os.PathLike) -> tuple[str, str, str]:
+	"""
+	Validate a BBQ filename and derive its adjacent Blackboard export ZIP path.
+
+	ASVS 2.1.1, 2.2.1, and 5.3.2: the filename follows the documented
+	``bbq-<name>-questions.txt`` structure before its trusted basename controls
+	another path.
+	"""
+	outfile_path = os.fspath(outfile)
+	filename = os.path.basename(outfile_path)
+	match = re.fullmatch(r"bbq-(.+)-questions\.txt", filename)
+	if match is None:
+		raise ValueError(
+			f"BBQ filename '{filename}' does not match "
+			"'bbq-<name>-questions.txt'."
+		)
+	core_name = match.group(1)
+	output_dir = os.path.dirname(outfile_path)
+	export_name = f"blackboard_export_zip-{core_name}.zip"
+	if output_dir:
+		export_path = os.path.join(output_dir, export_name)
+	else:
+		export_path = export_name
+	return outfile_path, export_path, core_name
+
+#==========================
+def _validate_blackboard_export_zip(export_path: str) -> None:
+	"""Validate the minimum Blackboard pool files in an export ZIP."""
+	if zipfile.is_zipfile(export_path) is False:
+		raise RuntimeError(f"Blackboard export is not a valid ZIP: {export_path}")
+	with zipfile.ZipFile(export_path, "r") as export_zip:
+		bad_member = export_zip.testzip()
+		if bad_member is not None:
+			raise RuntimeError(
+				f"Blackboard export contains an unreadable file ({bad_member}): "
+				f"{export_path}"
+			)
+		archive_names = set(export_zip.namelist())
+	required_names = {"imsmanifest.xml", "res00002.dat"}
+	missing_names = sorted(required_names - archive_names)
+	if missing_names:
+		missing_text = ", ".join(missing_names)
+		raise RuntimeError(
+			f"Blackboard export is missing required files ({missing_text}): {export_path}"
+		)
+
+#==========================
+def export_bbq_to_blackboard(outfile: str | os.PathLike) -> str:
+	"""
+	Convert a BBQ text file into an adjacent Blackboard pool export ZIP.
+
+	The BBQ file remains available if conversion fails. The ZIP is built at a
+	temporary adjacent path and replaces the destination only after validation.
+	"""
+	outfile_path, export_path, package_name = _get_blackboard_export_path(outfile)
+	if os.path.isfile(outfile_path) is False:
+		raise FileNotFoundError(f"BBQ input file not found: {outfile_path}")
+
+	qti_packer = package_interface.QTIPackageInterface(
+		package_name=package_name,
+		verbose=False,
+		allow_mixed=True,
+	)
+	qti_packer.read_package(outfile_path, "bbq_text_upload")
+	if len(qti_packer.item_bank) == 0:
+		raise ValueError(f"No assessment items were found in BBQ file: {outfile_path}")
+
+	export_engine = qti_packer.init_engine("blackboard_export_zip")
+	unsupported_types = sorted({
+		item_cls.item_type
+		for item_cls in qti_packer.item_bank
+		if not callable(getattr(export_engine.write_item, item_cls.item_type, None))
+	})
+	if unsupported_types:
+		unsupported_text = ", ".join(unsupported_types)
+		raise ValueError(
+			"Blackboard export ZIP does not support question types: "
+			f"{unsupported_text}"
+		)
+
+	temporary_dir = os.path.dirname(export_path) or "."
+	temporary_fd, temporary_path = tempfile.mkstemp(
+		prefix=".blackboard_export_zip-",
+		suffix=".tmp",
+		dir=temporary_dir,
+	)
+	os.close(temporary_fd)
+	# ASVS 16.5.3: publish only after conversion and validation both succeed.
+	try:
+		saved_path = qti_packer.save_package("blackboard_export_zip", temporary_path)
+		if saved_path is None:
+			raise RuntimeError("Blackboard export did not create a ZIP file.")
+		if os.path.abspath(os.fspath(saved_path)) != os.path.abspath(temporary_path):
+			raise RuntimeError(
+				f"Blackboard export wrote an unexpected path: {saved_path}"
+			)
+		_validate_blackboard_export_zip(temporary_path)
+		os.replace(temporary_path, export_path)
+	finally:
+		if os.path.exists(temporary_path):
+			os.unlink(temporary_path)
+
+	print(f"... saved Blackboard export ZIP to {export_path}\n")
+	return export_path
+
+#==========================
+def _write_questions_to_file(
+		questions: list,
+		outfile: str | os.PathLike,
+		bbexport: bool = False) -> None:
 	"""
 	Write questions to a file and print status messages.
 
 	Args:
 		questions (list): List of question strings.
 		outfile (str): Output filename.
+		bbexport (bool): Also create a Blackboard pool export ZIP.
 	"""
 	question_count = len(questions)
 	word = "question" if question_count == 1 else "questions"
@@ -869,15 +987,20 @@ def _write_questions_to_file(questions: list, outfile: str):
 				continue
 			f.write(prepared_question)
 	print(f"... saved {question_count} {word} to {outfile}\n")
+	if bbexport:
+		export_bbq_to_blackboard(outfile)
 
 #==========================
-def write_questions_to_file(questions: list, outfile: str):
+def write_questions_to_file(
+		questions: list,
+		outfile: str | os.PathLike,
+		bbexport: bool = False) -> None:
 	"""
 	Public wrapper for writing questions to a file.
 
 	Prefer `collect_and_write_questions(...)` in scripts.
 	"""
-	return _write_questions_to_file(questions, outfile)
+	return _write_questions_to_file(questions, outfile, bbexport)
 
 #==========================
 def collect_and_write_questions(write_question, args, outfile, print_histogram_flag=True) -> list:
@@ -894,7 +1017,7 @@ def collect_and_write_questions(write_question, args, outfile, print_histogram_f
 		list: List of question strings.
 	"""
 	questions = _collect_questions(write_question, args, print_histogram_flag)
-	_write_questions_to_file(questions, outfile)
+	_write_questions_to_file(questions, outfile, args.bbexport)
 	return questions
 
 #===================================================================================

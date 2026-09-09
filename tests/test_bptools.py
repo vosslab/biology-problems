@@ -4,6 +4,7 @@ import os
 import sys
 import tempfile
 
+import pytest
 import bptools
 
 
@@ -153,6 +154,55 @@ def test_add_hint_args_default_and_flags():
 
 	args = parser.parse_args(["--hint"])
 	assert args.hint is True
+
+
+def test_shared_parser_retains_legacy_opt_ins():
+	parser = bptools.make_arg_parser()
+	legacy_args = parser.parse_args(["--hidden-terms", "--noclick-div", "-B"])
+	assert (legacy_args.hidden_terms, legacy_args.noclick_div, legacy_args.bbexport) == (
+		True, True, True)
+
+
+def test_generator_anticheat_locks_override_legacy_opt_ins(monkeypatch):
+	monkeypatch.setattr(bptools, "allow_insert_hidden_terms", False)
+	monkeypatch.setattr(bptools, "allow_no_click_div", False)
+	parser = bptools.make_arg_parser()
+	args = parser.parse_args(["--hidden-terms", "--noclick-div"])
+	bptools.apply_anticheat_args(args)
+	assert (
+		bptools.nocheater.use_insert_hidden_terms,
+		bptools.nocheater.use_no_click_div,
+	) == (False, False)
+
+
+def test_default_question_output_omits_legacy_anticheat_markup():
+	parser = bptools.make_arg_parser()
+	args = parser.parse_args([])
+	bptools.apply_anticheat_args(args)
+	item_cls = bptools.formatBB_MC_Question(1, "Question?", ["No", "Yes"], "Yes")
+	question_text = bptools.normalize_question_output(item_cls)
+	legacy_markers = ("font-size: 1px", "oncopy=", "onselectstart=")
+	assert not any(marker in question_text for marker in legacy_markers)
+
+
+def test_blackboard_export_keeps_bbq_and_writes_zip(tmp_path):
+	bbq_path = tmp_path / "bbq-minimal-questions.txt"
+	questions = ["MC\tWhat is 2+2?\t3\tincorrect\t4\tcorrect\n"]
+	bptools.write_questions_to_file(questions, bbq_path, bbexport=True)
+
+	export_path = tmp_path / "blackboard_export_zip-minimal.zip"
+	assert (bbq_path.is_file(), export_path.is_file()) == (True, True)
+
+
+def test_blackboard_export_rejects_order_and_preserves_bbq(tmp_path):
+	bbq_path = tmp_path / "bbq-order-questions.txt"
+	questions = ["ORD\tRank these items.\tfirst\tsecond\tthird\n"]
+
+	with pytest.raises(ValueError, match="ORDER"):
+		bptools.write_questions_to_file(questions, bbq_path, bbexport=True)
+
+	export_path = tmp_path / "blackboard_export_zip-order.zip"
+	assert (bbq_path.is_file(), export_path.exists()) == (True, False)
 
 
 def test_add_question_format_args_parses_expected_formats():

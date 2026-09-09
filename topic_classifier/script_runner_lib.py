@@ -139,8 +139,7 @@ def run_script(
 	# Build command and environment, matching run_bbq_tasks.py approach
 	abs_script = os.path.join(repo_root, script_path)
 	cmd = ["python3", abs_script]
-	# Disable anti-cheat that injects random words into question text
-	cmd.extend(["--no-hidden-terms", "--allow-click"])
+	# Shared anti-cheat markup defaults off, keeping classifier output stable.
 	if extra_args:
 		cmd.extend(extra_args)
 

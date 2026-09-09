@@ -106,6 +106,7 @@ def parse_arguments():
 	parser.add_argument('-c', '--num-choices', metavar='#', type=int, dest='num_choices',
 		help='how many choices to have for each question', default=None)
 	parser = bptools.add_anticheat_args(parser)
+	parser = bptools.add_bbexport_args(parser)
 	args = parser.parse_args()
 	return args
 
@@ -167,12 +168,7 @@ def main():
 
 	# write deduped questions to file
 	outfile = 'bbq-MATCH-' + os.path.splitext(os.path.basename(args.input_yaml_file))[0] + '-questions.txt'
-	print('writing to file: ' + outfile)
-	with open(outfile, 'w') as f:
-		for bbformat_question in deduped_questions:
-			f.write(bbformat_question)
-	print(f"Wrote {len(deduped_questions)} questions to file.")
-	print('')
+	bptools.write_questions_to_file(deduped_questions, outfile, args.bbexport)
 
 #=======================
 #=======================

@@ -107,7 +107,7 @@ def main():
 
 	outfile = bptools.make_outfile()
 	questions = bptools.collect_question_batches(write_question_batch, args)
-	bptools.write_questions_to_file(questions, outfile)
+	bptools.write_questions_to_file(questions, outfile, args.bbexport)
 
 #===========================================================
 def write_question_batch(start_num: int, args) -> list:
