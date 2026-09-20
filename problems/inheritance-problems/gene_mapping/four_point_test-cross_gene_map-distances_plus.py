@@ -246,7 +246,8 @@ def main() -> None:
 		if args.max_questions is not None and len(questions) >= args.max_questions:
 			break
 	outfile = bptools.make_outfile()
-	bptools.write_questions_to_file(questions, outfile, args.bbexport)
+	bptools.write_questions_to_file(
+		questions, outfile, args.bbexport, args.html_to_image)
 
 #=====================
 if __name__ == "__main__":

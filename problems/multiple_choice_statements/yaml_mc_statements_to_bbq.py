@@ -360,7 +360,8 @@ def main():
 	)
 
 	# write deduped questions to file
-	bptools.write_questions_to_file(deduped_questions, outfile, args.bbexport)
+	bptools.write_questions_to_file(
+		deduped_questions, outfile, args.bbexport, args.html_to_image)
 
 	# print a histogram of results
 	bptools.print_histogram()

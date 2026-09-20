@@ -3,6 +3,7 @@ import argparse
 import os
 import sys
 import tempfile
+import zipfile
 
 import pytest
 import bptools
@@ -158,9 +159,15 @@ def test_add_hint_args_default_and_flags():
 
 def test_shared_parser_retains_legacy_opt_ins():
 	parser = bptools.make_arg_parser()
-	legacy_args = parser.parse_args(["--hidden-terms", "--noclick-div", "-B"])
-	assert (legacy_args.hidden_terms, legacy_args.noclick_div, legacy_args.bbexport) == (
-		True, True, True)
+	default_args = parser.parse_args([])
+	legacy_args = parser.parse_args(["--hidden-terms", "--noclick-div", "-B", "-I"])
+	assert default_args.html_to_image is False
+	assert (
+		legacy_args.hidden_terms,
+		legacy_args.noclick_div,
+		legacy_args.bbexport,
+		legacy_args.html_to_image,
+	) == (True, True, True, True)
 
 
 def test_generator_anticheat_locks_override_legacy_opt_ins(monkeypatch):
@@ -203,6 +210,48 @@ def test_blackboard_export_rejects_order_and_preserves_bbq(tmp_path):
 
 	export_path = tmp_path / "blackboard_export_zip-order.zip"
 	assert (bbq_path.is_file(), export_path.exists()) == (True, False)
+
+
+def test_html_to_image_requires_blackboard_export_before_writing(tmp_path):
+	bbq_path = tmp_path / "bbq-image-questions.txt"
+	questions = ["MC\tQuestion?\tNo\tincorrect\tYes\tcorrect\n"]
+
+	with pytest.raises(ValueError, match="requires -B or --bbexport"):
+		bptools.write_questions_to_file(questions, bbq_path, html_to_image=True)
+
+	assert bbq_path.exists() is False
+
+
+def test_blackboard_export_passes_html_to_image_to_package_maker(tmp_path, monkeypatch):
+	class FakeExportEngine:
+		write_item = type("WriteItem", (), {"MC": staticmethod(lambda item: None)})
+
+	class FakePacker:
+		save_calls = []
+
+		def __init__(self, **_kwargs):
+			self.item_bank = [type("Item", (), {"item_type": "MC"})()]
+
+		def read_package(self, _outfile, _engine_name):
+			return None
+
+		def init_engine(self, _engine_name):
+			return FakeExportEngine()
+
+		def save_package(self, engine_name, outfile, engine_options=None):
+			FakePacker.save_calls.append((engine_name, engine_options))
+			with zipfile.ZipFile(outfile, "w") as export_zip:
+				export_zip.writestr("imsmanifest.xml", "manifest")
+				export_zip.writestr("res00002.dat", "pool")
+			return outfile
+
+	bbq_path = tmp_path / "bbq-image-questions.txt"
+	bbq_path.write_text("MC\tQuestion?\tNo\tincorrect\tYes\tcorrect\n")
+	monkeypatch.setattr(bptools.package_interface, "QTIPackageInterface", FakePacker)
+
+	bptools.export_bbq_to_blackboard(bbq_path, html_to_image=True)
+
+	assert FakePacker.save_calls == [("blackboard_export_zip", {"html_to_image": True})]
 
 
 def test_add_question_format_args_parses_expected_formats():

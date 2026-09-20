@@ -168,7 +168,8 @@ def main():
 
 	# write deduped questions to file
 	outfile = 'bbq-MATCH-' + os.path.splitext(os.path.basename(args.input_yaml_file))[0] + '-questions.txt'
-	bptools.write_questions_to_file(deduped_questions, outfile, args.bbexport)
+	bptools.write_questions_to_file(
+		deduped_questions, outfile, args.bbexport, args.html_to_image)
 
 #=======================
 #=======================

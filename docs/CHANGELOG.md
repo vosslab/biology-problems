@@ -1,5 +1,22 @@
 # Changelog
 
+## 2026-09-20
+
+### Additions and New Features
+
+- Added shared `-I` / `--html-to-image` for opt-in `-B` Blackboard exports, converting supported
+  HTML drawings into packaged PNGs while retaining normal BBQ output and export-failure safeguards.
+
+### Behavior or Interface Changes
+
+- Made `-I` reject use without `-B` / `--bbexport`, and routed every legacy direct writer and
+  YAML-to-BBQ converter through the shared image-export option.
+
+### Developer Tests and Notes
+
+- Added focused coverage for parsing, invalid export combinations, and the qti-package-maker
+  `html_to_image` option handoff.
+
 ## 2026-09-09
 
 ### Additions and New Features

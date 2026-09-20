@@ -163,7 +163,8 @@ def main():
 	args = parse_arguments()
 	outfile = bptools.make_outfile(args.question_type.upper())
 	questions = bptools.collect_question_batches(write_question_batch, args)
-	bptools.write_questions_to_file(questions, outfile, args.bbexport)
+	bptools.write_questions_to_file(
+		questions, outfile, args.bbexport, args.html_to_image)
 
 
 #===============================

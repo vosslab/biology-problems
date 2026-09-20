@@ -116,6 +116,11 @@ def add_bbexport_args(parser: argparse.ArgumentParser) -> argparse.ArgumentParse
 		help='Also create a Blackboard pool export ZIP.'
 	)
 	parser.set_defaults(bbexport=False)
+	parser.add_argument(
+		'-I', '--html-to-image', dest='html_to_image', action='store_true',
+		help='Convert Blackboard HTML drawings to packaged PNGs (requires -B).'
+	)
+	parser.set_defaults(html_to_image=False)
 	return parser
 
 #==========================
@@ -906,12 +911,15 @@ def _validate_blackboard_export_zip(export_path: str) -> None:
 		)
 
 #==========================
-def export_bbq_to_blackboard(outfile: str | os.PathLike) -> str:
+def export_bbq_to_blackboard(
+		outfile: str | os.PathLike,
+		html_to_image: bool = False) -> str:
 	"""
 	Convert a BBQ text file into an adjacent Blackboard pool export ZIP.
 
 	The BBQ file remains available if conversion fails. The ZIP is built at a
 	temporary adjacent path and replaces the destination only after validation.
+	When requested, table-cell drawings and RDKit canvases become packaged PNGs.
 	"""
 	outfile_path, export_path, package_name = _get_blackboard_export_path(outfile)
 	if os.path.isfile(outfile_path) is False:
@@ -948,7 +956,12 @@ def export_bbq_to_blackboard(outfile: str | os.PathLike) -> str:
 	os.close(temporary_fd)
 	# ASVS 16.5.3: publish only after conversion and validation both succeed.
 	try:
-		saved_path = qti_packer.save_package("blackboard_export_zip", temporary_path)
+		engine_options = {"html_to_image": True} if html_to_image else None
+		saved_path = qti_packer.save_package(
+			"blackboard_export_zip",
+			temporary_path,
+			engine_options=engine_options,
+		)
 		if saved_path is None:
 			raise RuntimeError("Blackboard export did not create a ZIP file.")
 		if os.path.abspath(os.fspath(saved_path)) != os.path.abspath(temporary_path):
@@ -968,7 +981,8 @@ def export_bbq_to_blackboard(outfile: str | os.PathLike) -> str:
 def _write_questions_to_file(
 		questions: list,
 		outfile: str | os.PathLike,
-		bbexport: bool = False) -> None:
+		bbexport: bool = False,
+		html_to_image: bool = False) -> None:
 	"""
 	Write questions to a file and print status messages.
 
@@ -976,7 +990,10 @@ def _write_questions_to_file(
 		questions (list): List of question strings.
 		outfile (str): Output filename.
 		bbexport (bool): Also create a Blackboard pool export ZIP.
+		html_to_image (bool): Convert Blackboard HTML drawings to packaged PNGs.
 	"""
+	if html_to_image and not bbexport:
+		raise ValueError("HTML-to-image export requires -B or --bbexport.")
 	question_count = len(questions)
 	word = "question" if question_count == 1 else "questions"
 	print(f"\nWriting {question_count} {word} to file: {outfile}")
@@ -988,19 +1005,20 @@ def _write_questions_to_file(
 			f.write(prepared_question)
 	print(f"... saved {question_count} {word} to {outfile}\n")
 	if bbexport:
-		export_bbq_to_blackboard(outfile)
+		export_bbq_to_blackboard(outfile, html_to_image=html_to_image)
 
 #==========================
 def write_questions_to_file(
 		questions: list,
 		outfile: str | os.PathLike,
-		bbexport: bool = False) -> None:
+		bbexport: bool = False,
+		html_to_image: bool = False) -> None:
 	"""
 	Public wrapper for writing questions to a file.
 
 	Prefer `collect_and_write_questions(...)` in scripts.
 	"""
-	return _write_questions_to_file(questions, outfile, bbexport)
+	return _write_questions_to_file(questions, outfile, bbexport, html_to_image)
 
 #==========================
 def collect_and_write_questions(write_question, args, outfile, print_histogram_flag=True) -> list:
@@ -1017,7 +1035,12 @@ def collect_and_write_questions(write_question, args, outfile, print_histogram_f
 		list: List of question strings.
 	"""
 	questions = _collect_questions(write_question, args, print_histogram_flag)
-	_write_questions_to_file(questions, outfile, args.bbexport)
+	_write_questions_to_file(
+		questions,
+		outfile,
+		args.bbexport,
+		getattr(args, 'html_to_image', False),
+	)
 	return questions
 
 #===================================================================================

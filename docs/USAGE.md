@@ -17,6 +17,12 @@ Add `--bbexport` when Blackboard needs an importable pool ZIP:
 python3 problems/biochemistry-problems/alpha_helix_h-bonds.py --mc -d 5 --bbexport
 ```
 
+Add `-I` when the Blackboard ZIP must convert supported HTML drawings into packaged PNGs:
+
+```bash
+python3 problems/dna_profiling-problems/blood_type_agglutination_test.py -d 5 -B -I
+```
+
 ## CLI
 
 Generators built on `bptools` share a common argument set (see any script's
@@ -27,6 +33,7 @@ Generators built on `bptools` share a common argument set (see any script's
 - `-c`: number of answer choices.
 - `--mc`, `--ma`, `--format {mc,ma,num}`: select the question format.
 - `-B`, `--bbexport`: also create a Blackboard pool export ZIP.
+- `-I`, `--html-to-image`: convert supported HTML drawings to packaged PNGs in a `-B` ZIP.
 - `--hidden-terms`: enable hidden decoy terms for Blackboard Learn Original.
 - `--noclick-div`: enable the no-click wrapper for Blackboard Learn Original.
 - `-h`, `--help`: show the full flag list for that script.
@@ -57,12 +64,20 @@ The ZIP replaces its destination only after it opens successfully and contains t
 manifest and pool data. A failed conversion retains the BBQ text for diagnosis and removes the new
 temporary ZIP.
 
+`-I` is opt-in and requires `-B`. It uses `qti-package-maker` to screenshot table-cell drawings
+and RDKit canvases, then embeds the resulting PNGs in the Blackboard ZIP. It requires the Python
+`playwright` package and its Chromium browser; after installing package dependencies, run
+`playwright install chromium`. Ordinary data tables remain HTML. Missing RDKit only affects banks
+that contain RDKit canvases.
+
 ## Examples
 
 - Generate 5 multiple-choice questions:
   - `python3 problems/biochemistry-problems/alpha_helix_h-bonds.py --mc -d 5`
 - Generate the same BBQ text plus a Blackboard pool export ZIP:
   - `python3 problems/biochemistry-problems/alpha_helix_h-bonds.py --mc -d 5 -B`
+- Generate a Blackboard pool ZIP with packaged PNG drawings:
+  - `python3 problems/dna_profiling-problems/blood_type_agglutination_test.py -d 5 -B -I`
 - Show a generator's full options:
   - `python3 problems/inheritance-problems/<script>.py --help`
 - Validate a YAML input file:
