@@ -239,6 +239,18 @@ def test_format_label_html_strict_span():
 	assert is_bold is False
 
 
+def test_format_label_html_preserves_outer_strong_wrapper_spacing():
+	text = '<strong><span style="color: #009900;">ion</span> </strong>channel'
+	result, is_bold = webwork_lib.format_label_html(
+		text,
+		"inline",
+		{},
+		[],
+	)
+	assert result == '<span style="color: #009900; font-weight:700;">ion</span> channel'
+	assert is_bold is True
+
+
 def test_smart_title_case_lowercase_sentence():
 	result = webwork_lib.smart_title_case("the cell cycle and mitosis")
 	assert result == "The Cell Cycle and Mitosis"

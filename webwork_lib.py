@@ -637,11 +637,11 @@ def extract_strict_color_span(text_string):
 	is_bold = False
 	# capture whitespace between <strong> and <span> to preserve spacing
 	strong_prefix = re.search(r'<strong>(\s*)$', prefix, flags=re.IGNORECASE)
-	strong_suffix = re.search(r'^\s*</strong>', suffix, flags=re.IGNORECASE)
+	strong_suffix = re.search(r'^(\s*)</strong>', suffix, flags=re.IGNORECASE)
 	if strong_prefix and strong_suffix:
 		is_bold = True
 		prefix = prefix[:strong_prefix.start()] + strong_prefix.group(1)
-		suffix = suffix[strong_suffix.end():]
+		suffix = strong_suffix.group(1) + suffix[strong_suffix.end():]
 
 	attr_match = re.search(r'<span\b([^>]*)>', span_block, flags=re.IGNORECASE)
 	if attr_match is None:
@@ -725,10 +725,12 @@ def extract_strict_color_spans(text_string):
 		is_bold = False
 		# capture whitespace between <strong> and <span> to preserve spacing
 		strong_prefix = re.search(r'<strong>(\s*)$', prefix, flags=re.IGNORECASE)
-		strong_suffix = re.search(r'^\s*</strong>', suffix, flags=re.IGNORECASE)
+		strong_suffix = re.search(r'^(\s*)</strong>', suffix, flags=re.IGNORECASE)
+		closing_whitespace = ""
 		if strong_prefix and strong_suffix:
 			is_bold = True
 			prefix = prefix[:strong_prefix.start()] + strong_prefix.group(1)
+			closing_whitespace = strong_suffix.group(1)
 			pos = span_match.end() + strong_suffix.end()
 		elif strong_prefix or strong_suffix:
 			return None
@@ -794,6 +796,8 @@ def extract_strict_color_spans(text_string):
 			return None
 
 		segments.append((True, inner, color_value, is_bold))
+		if closing_whitespace:
+			segments.append((False, closing_whitespace, None, False))
 
 	if pos < len(text_string):
 		segments.append((False, text_string[pos:], None, False))

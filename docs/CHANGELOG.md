@@ -17,6 +17,13 @@
 - Added focused coverage for parsing, invalid export combinations, and the qti-package-maker
   `html_to_image` option handoff.
 
+## 2026-09-17
+
+### Fixes and Maintenance
+
+- Preserved whitespace immediately before removed outer `</strong>` wrappers around strict color
+  spans so PGML replacement output does not join adjacent words.
+
 ## 2026-09-09
 
 ### Additions and New Features
