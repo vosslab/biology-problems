@@ -18,6 +18,9 @@
   rejected or duplicate attempts; batch generators retain their existing attempt-based behavior.
 - Made every linear-digest difficulty default valid for either the finite-fragment or longer-strand
   presentation, preserving the minimum two selectable gel-band lengths.
+- Shortened the generated linear-digest filename component from `length_` to `len_`.
+- Made randomized 16 kb rigorous linear-digest maps deliberately produce co-migrating equal-length
+  fragments, while retaining the single-enzyme, two-enzyme-label MA band-length model.
 
 ### Fixes and Maintenance
 

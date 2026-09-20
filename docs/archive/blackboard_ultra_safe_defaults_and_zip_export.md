@@ -68,7 +68,7 @@ No `pyproject.toml` will be created or changed.
   visually hidden spans whose text becomes visible when Ultra strips their CSS, and the no-click
   wrapper injects event-handler attributes that Ultra strips. Disabling both prevents those two
   known corruptions. It does not claim that each generator's authored color, script, or table layout
-  survives Ultra; [the showcase catalog](../reports/ultra_classic_showcase_question_catalog.md)
+  survives Ultra; [the showcase catalog](../active_plans/reports/ultra_classic_showcase_question_catalog.md)
   documents those separate limitations.
 - The `qti_package_maker` public interface reads BBQ into an item bank and saves through the
   `blackboard_export_zip` engine. The writer module itself is the authority for supported types.

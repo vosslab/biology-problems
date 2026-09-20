@@ -15,6 +15,7 @@ CUT_NAVY = "#0067cc"
 #============================================
 def tdBlock(vtype="top", htype="middle", fill_color="white", strand_color=DNA_ORANGE, tick_color=CUT_NAVY, dna_type='fragment'):
 	border_str = ""
+	tick_html = ""
 	if vtype == "top" and dna_type == 'strand':
 		border_str += 'border-bottom: 4px solid {0}; '.format(strand_color)
 	elif vtype == "top" and not (htype == "start" or htype == "end"):
@@ -29,17 +30,16 @@ def tdBlock(vtype="top", htype="middle", fill_color="white", strand_color=DNA_OR
 	else:
 		border_str += 'border-top: 0px solid {0}; '.format(fill_color)
 
-	if htype == "start" or htype == "right":
-		border_str += 'border-right: 3px solid {0}; '.format(tick_color)
-	else:
-		border_str += 'border-right: 0px solid {0}; '.format(fill_color)
+	if vtype == "top" and (htype == "start" or htype == "right"):
+		tick_html = (
+			'<span style="border-right: 3px solid {0}; bottom: -5px; height: 10px; '
+			'position: absolute; right: -2px; z-index: 1;"></span>'
+		).format(tick_color)
+	border_str += 'border-right: 0px solid {0}; '.format(fill_color)
+	border_str += 'border-left: 0px solid {0}; '.format(fill_color)
 
-	if htype == "end" or htype == "left":
-		border_str += 'border-left: 3px solid {0}; '.format(tick_color)
-	else:
-		border_str += 'border-left: 0px solid {0}; '.format(fill_color)
-
-	return '  <td style="{0}" bgcolor="{1}"> </td> '.format(border_str, fill_color)
+	border_str += 'position: relative; '
+	return '  <td style="{0}" bgcolor="{1}">{2}&nbsp;</td> '.format(border_str, fill_color, tick_html)
 
 #============================================
 #============================================
@@ -62,6 +62,17 @@ def longDNA(vtype="top", fill_color="white", strand_color=DNA_ORANGE, tick_color
 
 #============================================
 #============================================
+def tdCoordinateLabel(label_html, space_width=20):
+	label_width = space_width * 2
+	return (
+		'  <td style="border: 0px solid white; height: 24px; position: relative;">'
+		'<span style="left: 0px; position: absolute; text-align: center; top: 0px; '
+		'white-space: nowrap; width: {0:d}px;">{1}</span></td> '
+		'  <td style="border: 0px solid white; height: 24px;"></td> '
+	).format(label_width, label_html)
+
+#============================================
+#============================================
 def makeTable(length, label_dict=None, dna_type='fragment'):
 	if label_dict is None:
 		label_dict = { 1: "EcoRI", 4: "NheI", }
@@ -81,8 +92,7 @@ def makeTable(length, label_dict=None, dna_type='fragment'):
 	table += '<td style="border: 0px solid white; "></td>'
 	for i in range(length+1):
 		msg = label_dict.get(i, "")
-		table += '<td align="center" style="border: 0px solid white; "><i>{0}</i></td>'.format(msg)
-		table += '<td style="border: 0px solid white; "></td>'
+		table += tdCoordinateLabel('<i>{0}</i>'.format(msg), space_width)
 	table += '<td style="border: 0px solid white; "></td>'
 	table += "</tr>"
 
@@ -124,8 +134,7 @@ def makeTable(length, label_dict=None, dna_type='fragment'):
 	table += "<tr>"
 	table += '<td style="border: 0px solid white; "></td>'
 	for i in range(length+1):
-		table += '<td align="center" style="border: 0px solid white; ">{0}</td>'.format(i)
-		table += '<td style="border: 0px solid white; "></td>'
+		table += tdCoordinateLabel(str(i), space_width)
 	table += '<td style="border: 0px solid white; "></td>'
 	table += "</tr>"
 
@@ -148,6 +157,22 @@ def getRandList(size, total_length, include_ends=False):
 
 #============================================
 #============================================
+def get_rigorous_sites(length: int, dna_type: str, num_sites: int) -> list[int] | None:
+	"""Return a random 16 kb map with deliberate equal-sized active-enzyme fragments."""
+	complete_sites = num_sites + (num_sites - 1)
+	for _ in range(100):
+		sites = getRandList(complete_sites, length, include_ends=False)
+		strand_fragments = [sites[i + 2] - sites[i] for i in range(0, len(sites) - 2, 2)]
+		fragment_fragments = [sites[0], length - sites[-1]] + strand_fragments
+		if dna_type == 'fragment' and len(set(fragment_fragments)) == 3:
+			return sites
+		if dna_type == 'strand' and len(set(strand_fragments)) == 2:
+			if set(fragment_fragments) != set(strand_fragments):
+				return sites
+	return None
+
+#============================================
+#============================================
 def write_question(N, args):
 	length = args.length
 	num_sites = args.num_sites
@@ -167,7 +192,17 @@ def write_question(N, args):
 	if complete_sites * 2 > length:
 		print(complete_sites, "too many sites for length", length)
 		return None
-	sites = getRandList(complete_sites, length, include_ends=False)
+	rigorous_mode = (
+		args.difficulty == 'rigorous'
+		and length == 16
+		and ((dna_type == 'fragment' and num_sites == 3) or (dna_type == 'strand' and num_sites == 4))
+	)
+	if rigorous_mode:
+		sites = get_rigorous_sites(length, dna_type, num_sites)
+		if sites is None:
+			return None
+	else:
+		sites = getRandList(complete_sites, length, include_ends=False)
 	label_dict = {}
 	for i, site in enumerate(sites):
 		if i % 2 == 0:
@@ -257,6 +292,11 @@ def write_question(N, args):
 			"and outside the visible region. Because this segment is part of a much larger molecule, any uncut or very large fragments "
 			"will not travel into the gel and will appear to be stuck in the well.</p>"
 		)
+	if rigorous_mode:
+		details += (
+			"<p><strong>Gel interpretation:</strong> This is a complete digest. DNA fragments of the same length "
+			"co-migrate and appear as a single band. Select all distinct band lengths.</p>"
+		)
 
 	#==============================
 	# Final prompt to student
@@ -311,6 +351,8 @@ def apply_difficulty_defaults(args):
 		args.num_sites = preset['num_sites']
 		if args.dna_type == 'strand':
 			args.num_sites = max(args.num_sites, 3)
+			if args.difficulty == 'rigorous':
+				args.num_sites = 4
 	return args
 
 #===========================================================
@@ -386,7 +428,7 @@ def parse_arguments():
 #===========================================================
 def main():
 	args = parse_arguments()
-	outfile = bptools.make_outfile(f"length_{args.length}",
+	outfile = bptools.make_outfile(f"len_{args.length}",
 		f"sites_{args.num_sites}",
 		args.dna_type
 	)
