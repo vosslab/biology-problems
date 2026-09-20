@@ -455,15 +455,15 @@ def add_difficulty_args(parser, dest='difficulty', default='medium'):
 		help='Set difficulty level'
 	)
 	difficulty_group.add_argument(
-		'--easy', dest=dest, action='store_const', const='easy',
+		'-E', '--easy', dest=dest, action='store_const', const='easy',
 		help='Set difficulty to easy'
 	)
 	difficulty_group.add_argument(
-		'--medium', dest=dest, action='store_const', const='medium',
+		'-M', '--medium', dest=dest, action='store_const', const='medium',
 		help='Set difficulty to medium'
 	)
 	difficulty_group.add_argument(
-		'--rigorous', dest=dest, action='store_const', const='rigorous',
+		'-R', '--rigorous', dest=dest, action='store_const', const='rigorous',
 		help='Set difficulty to rigorous'
 	)
 	parser.set_defaults(**{dest: default})

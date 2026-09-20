@@ -7,8 +7,10 @@
 - Added shared `-I` / `--html-to-image` for opt-in `-B` Blackboard exports, converting supported
   HTML drawings into packaged PNGs while retaining normal BBQ output and export-failure safeguards.
 - Added `circular_digest.py`, a randomized circular-DNA restriction digest generator with an
-  orange rounded-rectangle inline-HTML plasmid map, wide navy cardinal-direction cut ticks, and
-  a neutral 0 kb coordinate distractor for image-exported Blackboard pools.
+  orange rounded-rectangle plasmid map, a 0 kb origin occupied by the non-selected enzyme, and
+  colored enzyme labels inside the DNA path for image-exported Blackboard pools.
+- Added `digest_lib.py` for common restriction-digest argument parsing and distinct enzyme-label
+  selection, plus `dna_render_lib.py` for shared inline-CSS DNA-map primitives.
 
 ### Behavior or Interface Changes
 
@@ -21,13 +23,53 @@
 - Shortened the generated linear-digest filename component from `length_` to `len_`.
 - Made randomized 16 kb rigorous linear-digest maps deliberately produce co-migrating equal-length
   fragments, while retaining the single-enzyme, two-enzyme-label MA band-length model.
+- Added `-E`, `-M`, and `-R` aliases for the standard easy, medium, and rigorous difficulty flags.
+- Moved the restriction-enzyme source paragraph to the opening of linear and circular
+  digest questions.
+- Spread restriction-enzyme map colors to navy `#0067cc` and teal `#00775f`.
+- Restored a dashed orange DNA continuation past both ends of linear strand maps,
+  and counted strand outside pieces only for the selected enzyme.
 
 ### Fixes and Maintenance
 
-- Made linear restriction-digest table rows use explicit cells instead of `colspan`, so terminal
-  renderers do not append blank columns while the DNA diagram remains structurally aligned.
-- Made linear restriction-digest DNA strokes orange and site ticks wider navy blue in the existing
-  inline cell styles, preserving compatibility with HTML-to-image Blackboard exports.
+- Rebuilt both restriction maps around the shared rendering primitives: linear maps now align
+  colored labels and 3 px by 16 px ticks to black coordinates, while circular maps use a thick
+  rounded rectangle with outside coordinates and inside enzyme labels.
+- Lengthened restriction-map ticks from 8 px to 16 px so they extend past the DNA stroke;
+  thickness stays 3 px.
+- Gave enzyme-labeled ticks 4 extra pixels toward the label, leaving unlabeled coordinate
+  ticks at the shared 16 px length.
+- Mapped circular-digest coordinates onto the complete rounded-rectangle centerline, with a
+  tick and outside kb label at every integer, continuous corner normals, and enzyme names
+  only at restriction sites whose true coordinates fall on straight edges.
+- Tightened top and bottom circular-map labels toward their ticks by offsetting along the
+  local normal by tick length plus the label's half-size, instead of one gap for every side.
+- Kept corner integer-kb marks as ordinary black coordinate ticks, and required enzyme sites
+  to sit on straight edges with label clearance from the rounded corners.
+- Restored the non-selected enzyme site at 0 kb so the origin is a real restriction mark
+  for the distractor enzyme, not a cut for the enzyme in the question.
+- Lowered the circular-digest medium and rigorous presets to 2 sites per enzyme so labeled
+  coordinate ticks still outnumber restriction annotations.
+- Sampled circular restriction sites like the linear digest, keeping corners enzyme-free and
+  0 kb as a distractor site, preferring spread maps whose two enzymes yield different bands.
+- Tightened the circular and linear map canvases around the labeled diagram so less empty
+  space sits between the figure and the following question text.
+- Colored restriction-enzyme names in the question stem with the same map colors used on
+  the DNA diagrams.
+- Added a short source paragraph for the two restriction enzymes on linear and circular
+  digest questions, matching the overhang-question context style.
+- Added [CUT_PLACEMENT.md](../problems/molecular_biology-problems/restriction_enzymes/CUT_PLACEMENT.md)
+  as the teaching contract for restriction-digest maps: place, evaluate, then
+  search, with easy, medium, and rigorous band-set targets for linear and
+  circular questions.
+- Made linear medium default to 3 selected sites on a 12 kb fragment, circular
+  medium and rigorous default to 3 selected sites with 2 distractor sites, and
+  required `shared_correct_fraction <= 0.5` plus selected-enzyme co-migration
+  only at rigorous.
+- Gave graphical DNA strokes and ticks non-empty `&nbsp;` content and a relative inner canvas
+  div so Blackboard HTML-to-image export does not serialize empty spans as self-closing XML
+  that Chromium then drops.
+- Recorded Blackboard HTML simplicity guidance in [HUMAN_GUIDANCE.md](HUMAN_GUIDANCE.md).
 - Added a separate restriction-enzyme idea note for future diagnostic-digest, inference, RFLP,
   co-migration, and map-validation question families without changing the linear MA generator.
 - Synchronized shared style guides, tests, and repository support files from the starter template.
@@ -36,6 +78,10 @@
 
 - Added focused coverage for parsing, invalid export combinations, and the qti-package-maker
   `html_to_image` option handoff.
+- Added parser coverage for the `-E`, `-M`, and `-R` difficulty aliases, and dropped the linear
+  table-cell-count test after that grid renderer was replaced.
+- Added circular-map checks that 0 kb is top-center, integer kb use the full centerline
+  perimeter, and enzyme-eligible coordinates are straight-edge integers.
 
 ## 2026-09-17
 

@@ -282,6 +282,15 @@ def test_add_question_format_args_default_when_not_required():
 	assert args.question_type == "num"
 
 
+def test_add_difficulty_args_parses_shortcuts():
+	parser = argparse.ArgumentParser()
+	parser = bptools.add_difficulty_args(parser)
+
+	assert parser.parse_args(["-E"]).difficulty == "easy"
+	assert parser.parse_args(["-M"]).difficulty == "medium"
+	assert parser.parse_args(["-R"]).difficulty == "rigorous"
+
+
 def test_collect_questions_skips_empty_and_internal_newlines(capsys):
 	args = argparse.Namespace(duplicates=3, max_questions=None)
 	call_count = 0

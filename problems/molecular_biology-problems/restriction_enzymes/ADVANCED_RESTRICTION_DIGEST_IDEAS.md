@@ -1,8 +1,9 @@
 # Advanced restriction digest problem ideas
 
 These are separate future problem families. They are not proposed changes to
-`linear_digest.py`, which remains a linear-DNA, multiple-answer question asking
-students to select observed band lengths.
+[linear_digest.py](linear_digest.py), which remains a linear-DNA, multiple-answer
+question asking students to select observed band lengths. Current cut-placement
+rules are in [CUT_PLACEMENT.md](CUT_PLACEMENT.md).
 
 ## Diagnostic digest design
 

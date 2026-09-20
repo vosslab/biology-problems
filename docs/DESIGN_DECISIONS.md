@@ -24,6 +24,29 @@ authoritative code or contract document, rather than a person.
 
 ## Software design
 
+### Restriction-digest cut placement
+
+**Decision.** Restriction-digest questions keep one map-and-gel format.
+Placement proposes mixed, readable maps. Evaluation checks validity, then
+the mode's required answer shape. At most half of the correct distinct
+bands may also appear in the distractor digest
+(`shared_correct_fraction <= 0.5`). Difficulty is the fragment list and
+distinct-band set. Full rules live in
+[CUT_PLACEMENT.md](../problems/molecular_biology-problems/restriction_enzymes/CUT_PLACEMENT.md).
+
+**Why.** Two circular cuts produce only complementary sizes `{d, L-d}`, so
+raising length with two sites per enzyme leaves the reasoning unchanged.
+The key comes from the named enzyme alone. Rigorous items use co-migrating
+equal fragments as one band.
+
+**Consequence.** Update
+[CUT_PLACEMENT.md](../problems/molecular_biology-problems/restriction_enzymes/CUT_PLACEMENT.md)
+first, then the generators.
+
+**Owner.** [CUT_PLACEMENT.md](../problems/molecular_biology-problems/restriction_enzymes/CUT_PLACEMENT.md)
+
+
+
 ## Dependencies
 
 ## Generated artifacts

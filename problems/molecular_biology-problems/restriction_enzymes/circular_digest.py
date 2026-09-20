@@ -1,25 +1,34 @@
 #!/usr/bin/env python3
 
-"""
-Authoring contract
-------------------
-Question family: multiple answer (MA), asking students to identify gel bands.
-Output: Blackboard BBQ text, with optional shared Blackboard pool export.
-Randomization: each run selects a fresh enzyme pair and nonzero sites.
-Sanitization: shared anti-cheat flags are enabled through bptools.make_arg_parser.
-Example: a 12 kb plasmid cut by one enzyme at 2 kb and 7 kb produces 5 kb and 7 kb bands.
+"""Generate circular-DNA restriction-digest gel-band questions.
+
+Cut-placement rules: CUT_PLACEMENT.md.
 """
 
+import math
 import random
 
 import bptools
-import restrictlib
-
-PLASMID_ORANGE = "#b74300"
-CUT_NAVY = "#0067cc"
+import digest_lib
+import dna_render_lib
 
 
-#============================================
+MAP_LEFT = 80
+MAP_TOP = 56
+MAP_WIDTH = 360
+MAP_HEIGHT = 240
+MAP_RADIUS = 40
+DNA_STROKE = 7
+CANVAS_WIDTH = 520
+CANVAS_HEIGHT = 336
+LABEL_PAD = 4
+COORD_LABEL_HALF_WIDTH = 24
+ENZYME_LABEL_HALF_WIDTH = 28
+LABEL_HALF_HEIGHT = 9
+ENZYME_CORNER_PAD = 20
+STRAIGHT_REGIONS = ('top', 'right', 'bottom', 'left')
+
+
 #============================================
 def get_circular_fragment_sizes(length: int, cut_sites: list[int]) -> list[int]:
 	"""Return distinct gel-band sizes from cuts in a circular DNA molecule."""
@@ -29,127 +38,266 @@ def get_circular_fragment_sizes(length: int, cut_sites: list[int]) -> list[int]:
 		raise ValueError("A circular digest needs at least two cut sites.")
 	if len(set(cut_sites)) != len(cut_sites):
 		raise ValueError("Cut sites must be unique.")
-	if any(site <= 0 or site >= length for site in cut_sites):
+	if any(site < 0 or site >= length for site in cut_sites):
 		raise ValueError("Cut sites must be between 0 kb and the plasmid length.")
 
-	sorted_sites = sorted(cut_sites)
-	fragment_sizes = [
-		sorted_sites[index + 1] - sorted_sites[index]
-		for index in range(len(sorted_sites) - 1)
-	]
-	fragment_sizes.append(length - sorted_sites[-1] + sorted_sites[0])
-	return sorted(set(fragment_sizes))
+	fragment_sizes = digest_lib.circular_fragment_list(length, cut_sites)
+	distinct_sizes = sorted(set(fragment_sizes))
+	return distinct_sizes
 
 
 #============================================
-#============================================
-def get_site_side(site: int, length: int) -> str:
-	"""Place a coordinate label around the rounded plasmid map."""
-	progress = site / length
-	if progress < 0.25:
-		return "top"
-	if progress < 0.50:
-		return "right"
-	if progress < 0.75:
-		return "bottom"
-	return "left"
+def _centerline_box() -> tuple[float, float, float, float, float]:
+	"""Return left, top, width, height, and corner radius of the stroke centerline."""
+	half_stroke = DNA_STROKE / 2
+	left = MAP_LEFT + half_stroke
+	top = MAP_TOP + half_stroke
+	width = MAP_WIDTH - DNA_STROKE
+	height = MAP_HEIGHT - DNA_STROKE
+	radius = MAP_RADIUS - half_stroke
+	return left, top, width, height, radius
 
 
 #============================================
+def perimeter_length() -> float:
+	"""Return the stroke-centerline length of the rounded rectangle."""
+	straight_h = MAP_WIDTH - 2 * MAP_RADIUS
+	straight_v = MAP_HEIGHT - 2 * MAP_RADIUS
+	radius = MAP_RADIUS - DNA_STROKE / 2
+	length = 2 * straight_h + 2 * straight_v + 2 * math.pi * radius
+	return length
+
+
 #============================================
-def make_tick_mark(side: str, color: str, width: int) -> str:
-	"""Return a cardinal-direction tick: vertical on long edges, horizontal on short edges."""
-	if side in ("top", "bottom"):
+def _arc_point(center_x: float, center_y: float, radius: float, start_deg: float,
+		span_deg: float, distance: float, region: str) -> tuple[float, float, float, str]:
+	"""Place a point on a clockwise quarter-circle; angles are screen degrees."""
+	theta = start_deg + span_deg * (distance / (math.pi / 2 * radius))
+	theta = theta % 360
+	rad = math.radians(theta)
+	x_position = center_x + radius * math.cos(rad)
+	y_position = center_y + radius * math.sin(rad)
+	return x_position, y_position, theta, region
+
+
+#============================================
+def point_at_distance(distance: float) -> tuple[float, float, float, str]:
+	"""Map a clockwise distance from top-center onto the stroke centerline."""
+	left, top, width, height, radius = _centerline_box()
+	right = left + width
+	bottom = top + height
+	center_x = left + width / 2
+	straight_h = MAP_WIDTH - 2 * MAP_RADIUS
+	straight_v = MAP_HEIGHT - 2 * MAP_RADIUS
+	half_top = straight_h / 2
+	arc = math.pi / 2 * radius
+	# 0 kb is the midpoint of the top straight; wrap finishes on the left half.
+	if distance <= half_top:
+		return center_x + distance, top, 270.0, 'top'
+	distance -= half_top
+	if distance <= arc:
+		return _arc_point(right - radius, top + radius, radius, 270.0, 90.0, distance, 'top-right')
+	distance -= arc
+	if distance <= straight_v:
+		return right, top + radius + distance, 0.0, 'right'
+	distance -= straight_v
+	if distance <= arc:
+		return _arc_point(right - radius, bottom - radius, radius, 0.0, 90.0, distance, 'bottom-right')
+	distance -= arc
+	if distance <= straight_h:
+		return right - radius - distance, bottom, 90.0, 'bottom'
+	distance -= straight_h
+	if distance <= arc:
+		return _arc_point(left + radius, bottom - radius, radius, 90.0, 90.0, distance, 'bottom-left')
+	distance -= arc
+	if distance <= straight_v:
+		return left, bottom - radius - distance, 180.0, 'left'
+	distance -= straight_v
+	if distance <= arc:
+		return _arc_point(left + radius, top + radius, radius, 180.0, 90.0, distance, 'top-left')
+	distance -= arc
+	return center_x - half_top + distance, top, 270.0, 'top'
+
+
+#============================================
+def get_perimeter_point(coordinate: int, length: int) -> tuple[float, float, float, str]:
+	"""Map an integer kb onto the complete rounded-rectangle perimeter."""
+	distance = coordinate / length * perimeter_length()
+	return point_at_distance(distance)
+
+
+#============================================
+def is_enzyme_eligible(coordinate: int, length: int) -> bool:
+	"""Return True when a site is on a straight with room for an inside enzyme label."""
+	x_position, y_position, _angle_deg, region = get_perimeter_point(coordinate, length)
+	if region not in STRAIGHT_REGIONS:
+		return False
+	left, top, width, height, radius = _centerline_box()
+	right = left + width
+	bottom = top + height
+	if region in ('top', 'bottom'):
 		return (
-			f'<span style="display: inline-block; height: 24px; border-left: {width}px solid '
-			f'{color}; vertical-align: middle;"></span>'
+			x_position >= left + radius + ENZYME_CORNER_PAD
+			and x_position <= right - radius - ENZYME_CORNER_PAD
 		)
 	return (
-		f'<span style="display: inline-block; width: 24px; border-top: {width}px solid '
-		f'{color}; vertical-align: middle;"></span>'
+		y_position >= top + radius + ENZYME_CORNER_PAD
+		and y_position <= bottom - radius - ENZYME_CORNER_PAD
 	)
 
 
 #============================================
+def _outward_unit(angle_deg: float) -> tuple[float, float]:
+	"""Return the screen-space outward unit vector (0 deg points right)."""
+	rad = math.radians(angle_deg)
+	return math.cos(rad), math.sin(rad)
+
+
 #============================================
-def make_coordinate_label(site: int, side: str, enzyme_name: str | None = None) -> str:
-	"""Return a cardinal tick with an actual site label or the neutral 0 kb marker."""
-	if enzyme_name is None:
-		tick_mark = make_tick_mark(side, "#666666", 3)
-		return (
-			'<span style="display: inline-block; padding: 3px 8px; white-space: nowrap; '
-			f'color: #444444;">{tick_mark} <strong>0 kb</strong></span>'
-		)
-	tick_mark = make_tick_mark(side, CUT_NAVY, 6)
-	return (
-		'<span style="display: inline-block; padding: 3px 8px; white-space: nowrap; '
-		f'color: #202020;">{tick_mark} <i>{enzyme_name}</i><br/>'
-		f'<span style="font-family: monospace;">{site} kb</span></span>'
+def _label_center(x_position: float, y_position: float, angle_deg: float, inward: bool,
+		tick_length: int, half_width: int) -> tuple[int, int]:
+	"""Place a horizontal label just beyond the tick along the local normal."""
+	out_x, out_y = _outward_unit(angle_deg)
+	half_along = abs(out_x) * half_width + abs(out_y) * LABEL_HALF_HEIGHT
+	distance = tick_length / 2 + LABEL_PAD + half_along
+	if inward:
+		distance = -distance
+	label_x = x_position + out_x * distance
+	label_y = y_position + out_y * distance
+	return round(label_x), round(label_y)
+
+
+#============================================
+def add_coordinate_marker(parts: list[str], coordinate: int, x_position: float,
+		y_position: float, angle_deg: float, color: str, tick_length: int) -> None:
+	"""Draw one perimeter tick and its outside horizontal kb label."""
+	css_angle = angle_deg - 270.0
+	out_x, out_y = _outward_unit(angle_deg)
+	tick_x = x_position
+	tick_y = y_position
+	# Extra enzyme length grows inward; keep the outward end on the ordinary tick.
+	if tick_length > dna_render_lib.TICK_LENGTH:
+		extra = tick_length - dna_render_lib.TICK_LENGTH
+		tick_x -= out_x * extra / 2
+		tick_y -= out_y * extra / 2
+	parts.append(dna_render_lib.make_positioned(
+		dna_render_lib.make_rotated_tick(color, css_angle, tick_length),
+		round(tick_x), round(tick_y), anchor='middle'
+	))
+	label_x, label_y = _label_center(
+		x_position, y_position, angle_deg, False, dna_render_lib.TICK_LENGTH,
+		COORD_LABEL_HALF_WIDTH
 	)
+	parts.append(dna_render_lib.make_positioned(
+		dna_render_lib.make_coordinate_label(coordinate), label_x, label_y, anchor='middle'
+	))
 
 
 #============================================
+def add_enzyme_label(parts: list[str], enzyme_name: str, color: str, x_position: float,
+		y_position: float, angle_deg: float) -> None:
+	"""Draw a horizontal enzyme name just inside the DNA at a straight-edge site."""
+	tick_length = dna_render_lib.TICK_LENGTH + dna_render_lib.TICK_LABEL_EXTRA
+	label_x, label_y = _label_center(
+		x_position, y_position, angle_deg, True, tick_length, ENZYME_LABEL_HALF_WIDTH
+	)
+	parts.append(dna_render_lib.make_positioned(
+		dna_render_lib.make_enzyme_label(enzyme_name, color), label_x, label_y, anchor='middle'
+	))
+
+
 #============================================
 def make_circular_map(length: int, site_to_enzyme: dict[int, str]) -> str:
-	"""Draw a rounded-rectangle plasmid map using inline table border styling."""
-	side_labels = {"top": [make_coordinate_label(0, "top")], "right": [], "bottom": [], "left": []}
-	for site in sorted(site_to_enzyme):
-		side = get_site_side(site, length)
-		side_labels[side].append(make_coordinate_label(site, side, site_to_enzyme[site]))
-
-	def join_labels(side: str) -> str:
-		return " ".join(side_labels[side]) or "&nbsp;"
-
-	plasmid = (
-		'<table cellpadding="0" cellspacing="0" border="0" align="center" '
-		f'style="width: 480px; height: 190px; border: 6px solid {PLASMID_ORANGE}; '
-		'border-radius: 72px; border-collapse: separate; border-spacing: 0; '
-		'background-color: #fffdf9;"><tbody><tr><td>&nbsp;</td></tr></tbody></table>'
+	"""Draw a rounded-rectangle plasmid map using shared inline-CSS primitives."""
+	color_map = dna_render_lib.enzyme_color_map(list(site_to_enzyme.values()))
+	parts = [
+		f'<span style="border: {DNA_STROKE}px solid {dna_render_lib.DNA_ORANGE}; '
+		f'border-radius: {MAP_RADIUS}px; box-sizing: border-box; height: {MAP_HEIGHT}px; '
+		f'left: {MAP_LEFT}px; position: absolute; top: {MAP_TOP}px; '
+		f'width: {MAP_WIDTH}px;">&nbsp;</span>'
+	]
+	for coordinate in range(length):
+		x_position, y_position, angle_deg, _region = get_perimeter_point(coordinate, length)
+		tick_color = dna_render_lib.COORDINATE_BLACK
+		tick_length = dna_render_lib.TICK_LENGTH
+		if coordinate in site_to_enzyme:
+			enzyme_name = site_to_enzyme[coordinate]
+			tick_color = color_map[enzyme_name]
+			tick_length += dna_render_lib.TICK_LABEL_EXTRA
+			add_enzyme_label(parts, enzyme_name, tick_color, x_position, y_position, angle_deg)
+		add_coordinate_marker(
+			parts, coordinate, x_position, y_position, angle_deg, tick_color, tick_length
+		)
+	map_html = dna_render_lib.make_canvas(
+		CANVAS_WIDTH, CANVAS_HEIGHT, ''.join(parts), 'Circular restriction-digest DNA map.'
 	)
-	return (
-		'<table cellpadding="0" cellspacing="0" border="0" align="center" '
-		'style="border-collapse: collapse; text-align: center;"><tbody>'
-		f'<tr><td colspan="3">{join_labels("top")}</td></tr>'
-		f'<tr><td style="width: 130px; text-align: right;">{join_labels("left")}</td>'
-		f'<td style="background-color: #fffdf9;">{plasmid}</td>'
-		f'<td style="width: 130px; text-align: left;">{join_labels("right")}</td></tr>'
-		f'<tr><td colspan="3">{join_labels("bottom")}</td></tr>'
-		'</tbody></table>'
-	)
+	return map_html
 
 
 #============================================
-#============================================
-def choose_enzyme_names() -> tuple[str, str]:
-	"""Select readily distinguishable restriction-enzyme labels for a map."""
-	enzymes = restrictlib.get_enzyme_list()
-	first_enzyme = restrictlib.random_enzyme_one_end(enzymes)
-	second_enzyme = restrictlib.random_enzyme_one_end(enzymes, badletter=first_enzyme.__name__[0])
-	return first_enzyme.__name__, second_enzyme.__name__
+def _sample_sites(possible_sites: list[int], count: int) -> list[int]:
+	"""Return a sorted random subset, matching linear get_rand_list()."""
+	sites = list(possible_sites)
+	random.shuffle(sites)
+	while len(sites) > count:
+		sites.pop()
+	sites.sort()
+	return sites
 
 
 #============================================
+def _assign_circular_enzymes(nonzero_sites: list[int], selected_count: int
+		) -> tuple[list[int], list[int]]:
+	"""Keep 0 kb as B and mix remaining sites; 2+2 is B A B A."""
+	# extra B sites besides the origin
+	extra_b_count = len(nonzero_sites) - selected_count
+	interior_indices = list(range(1, len(nonzero_sites) - 1))
+	if extra_b_count <= len(interior_indices):
+		extra_indices = set(random.sample(interior_indices, extra_b_count))
+	else:
+		extra_indices = set(random.sample(range(len(nonzero_sites)), extra_b_count))
+	selected_sites = []
+	distractor_sites = [0]
+	for index, site in enumerate(nonzero_sites):
+		if index in extra_indices:
+			distractor_sites.append(site)
+		else:
+			selected_sites.append(site)
+	return selected_sites, distractor_sites
+
+
 #============================================
-def choose_sites(length: int, sites_per_enzyme: int) -> tuple[list[int], list[int]]:
-	"""Choose nonzero sites so 0 kb remains only a coordinate distractor."""
-	if sites_per_enzyme < 2:
-		raise ValueError("Each enzyme needs at least two sites.")
-	possible_sites = list(range(1, length))
-	required_sites = sites_per_enzyme * 2
-	if required_sites > len(possible_sites):
+def choose_sites(length: int, selected_count: int, difficulty: str,
+		distractor_count: int = 2) -> tuple[list[int], list[int]]:
+	"""Choose mixed sites with the distractor at 0 kb until evaluation accepts."""
+	if selected_count < 2:
+		raise ValueError("The selected enzyme needs at least two sites.")
+	if distractor_count < 2:
+		raise ValueError("The distractor enzyme needs at least two sites.")
+	# Corners stay enzyme-free; 0 kb is always a distractor site on the top straight.
+	possible_sites = [
+		site for site in range(1, length) if is_enzyme_eligible(site, length)
+	]
+	required_nonzero = selected_count + (distractor_count - 1)
+	if required_nonzero > len(possible_sites):
 		raise ValueError("DNA length is too short for the requested number of sites.")
-	random.shuffle(possible_sites)
-	first_sites = sorted(possible_sites[:sites_per_enzyme])
-	second_sites = sorted(possible_sites[sites_per_enzyme:required_sites])
-	return first_sites, second_sites
+	for _ in range(100):
+		picked = _sample_sites(possible_sites, required_nonzero)
+		selected_sites, distractor_sites = _assign_circular_enzymes(picked, selected_count)
+		if digest_lib.map_is_acceptable(
+				'circular', length, selected_sites, distractor_sites, difficulty
+				) is True:
+			return selected_sites, distractor_sites
+	raise ValueError("Could not place restriction sites that meet the digest rules.")
 
 
-#============================================
 #============================================
 def write_question(N: int, args):
 	"""Create one circular restriction-digest gel-band question."""
-	enzyme_name, distractor_enzyme_name = choose_enzyme_names()
-	cut_sites, distractor_sites = choose_sites(args.length, args.sites_per_enzyme)
+	enzyme_name, distractor_enzyme_name = digest_lib.choose_distinct_enzyme_names()
+	cut_sites, distractor_sites = choose_sites(
+		args.length, args.sites_per_enzyme, args.difficulty
+	)
 	band_sizes = get_circular_fragment_sizes(args.length, cut_sites)
 	if len(band_sizes) < 2:
 		return None
@@ -161,12 +309,21 @@ def write_question(N: int, args):
 		site_to_enzyme[site] = distractor_enzyme_name
 
 	plasmid_map = make_circular_map(args.length, site_to_enzyme)
+	color_map = dna_render_lib.enzyme_color_map((enzyme_name, distractor_enzyme_name))
+	enzyme_html = dna_render_lib.colored_enzyme_name(enzyme_name, color_map[enzyme_name])
+	distractor_html = dna_render_lib.colored_enzyme_name(
+		distractor_enzyme_name, color_map[distractor_enzyme_name]
+	)
+	context_html = digest_lib.enzyme_context_paragraph(
+		enzyme_html, enzyme_name, distractor_html, distractor_enzyme_name
+	)
 	question_text = (
+		f'{context_html}'
 		f'<p>The map shows an intact <strong>{args.length} kb circular DNA molecule</strong>. '
-		'Each enzyme name marks a restriction site. The gray 0 kb marker establishes the '
-		'coordinate system.</p>'
+		'Each enzyme name marks a restriction site. The 0 kb coordinate is the map origin; '
+		'it is not necessarily cut by the enzyme in the question.</p>'
 		f'{plasmid_map}'
-		f'<p>After digesting the DNA with <i>{enzyme_name}</i> <strong>only</strong>, which '
+		f'<p>After digesting the DNA with {enzyme_html} <strong>only</strong>, which '
 		'<strong>distinct DNA band sizes</strong> will you see on an agarose gel? Select all '
 		'that apply.</p>'
 	)
@@ -177,24 +334,15 @@ def write_question(N: int, args):
 
 
 #============================================
-#============================================
 def parse_arguments():
-	parser = bptools.make_arg_parser(description="Generate circular restriction digest questions.")
-	parser = bptools.add_difficulty_args(parser)
-	parser.add_argument(
-		'-n', '--length', type=int, default=None,
-		help='Length of the circular DNA molecule in kb.'
-	)
+	parser = digest_lib.make_digest_parser("Generate circular restriction digest questions.")
 	parser.add_argument(
 		'-s', '--sites-per-enzyme', '--sites_per_enzyme', type=int, default=None,
-		dest='sites_per_enzyme', help='Number of sites for each enzyme.'
+		dest='sites_per_enzyme', help='Number of selected-enzyme restriction sites.'
 	)
 	args = parser.parse_args()
-	presets = {
-		'easy': (10, 2),
-		'medium': (12, 3),
-		'rigorous': (16, 3),
-	}
+	# Easy uses two selected sites; medium and rigorous use three.
+	presets = {'easy': (10, 2), 'medium': (12, 3), 'rigorous': (16, 3)}
 	default_length, default_sites = presets[args.difficulty]
 	if args.length is None:
 		args.length = default_length
@@ -210,18 +358,15 @@ def parse_arguments():
 
 
 #============================================
-#============================================
 def main():
 	args = parse_arguments()
 	bptools.apply_anticheat_args(args)
 	outfile = bptools.make_outfile(
-		f'length_{args.length}',
-		f'sites_{args.sites_per_enzyme}_per_enzyme',
+		f'length_{args.length}', f'sites_{args.sites_per_enzyme}_selected'
 	)
 	bptools.collect_and_write_questions(write_question, args, outfile)
 
 
-#============================================
 #============================================
 if __name__ == '__main__':
 	main()
