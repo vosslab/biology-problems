@@ -33,6 +33,7 @@ allow_insert_hidden_terms = True
 allow_no_click_div = True
 default_insert_hidden_terms = False
 default_no_click_div = False
+SINGLE_QUESTION_ATTEMPT_MULTIPLIER = 4
 
 nocheater = anti_cheat.AntiCheat()
 nocheater.use_insert_hidden_terms = default_insert_hidden_terms
@@ -259,7 +260,7 @@ def _add_base_args(parser):
 	"""
 	parser.add_argument(
 		'-d', '--duplicate-runs', '--duplicates', metavar='#', type=int, dest='duplicates',
-		help='Number of duplicate runs (attempts) to generate questions.',
+		help='Number of accepted questions to generate; rejected attempts are redrawn.',
 		default=2
 	)
 	parser.add_argument(
@@ -469,23 +470,32 @@ def add_difficulty_args(parser, dest='difficulty', default='medium'):
 	return parser
 
 #==========================
-def _warn_shortfall(question_count: int, args):
+def _warn_shortfall(question_count: int, requested_questions: int, attempts: int) -> None:
 	"""
-	Warn when fewer than max_questions were generated.
+	Warn when collection does not reach its requested accepted-question count.
 
 	Args:
 		question_count (int): Number of accepted questions.
-		args (argparse.Namespace): Parsed args with duplicates and max_questions.
+		requested_questions (int): Requested number of accepted questions.
+		attempts (int): Number of generation attempts made.
 	"""
-	if args.max_questions is None:
-		return
-	if question_count >= args.max_questions:
+	if question_count >= requested_questions:
 		return
 	sys.stderr.write(
 		"WARNING: generated {0} of {1} questions after {2} attempts\n".format(
-			question_count, args.max_questions, args.duplicates
+			question_count, requested_questions, attempts
 		)
 	)
+
+
+#==========================
+def _get_single_question_limits(args: argparse.Namespace) -> tuple[int, int]:
+	"""Return the accepted-question target and bounded redraw budget for one-item writers."""
+	target_questions = args.duplicates
+	if args.max_questions is not None:
+		target_questions = min(target_questions, args.max_questions)
+	max_attempts = target_questions * SINGLE_QUESTION_ATTEMPT_MULTIPLIER
+	return target_questions, max_attempts
 
 #==========================
 def _prepare_question_text(question_text: str, question_label: str):
@@ -694,8 +704,10 @@ def _collect_questions(write_question, args, print_histogram_flag=True) -> list:
 	seen_question_ids = set()
 	skipped_duplicates = 0
 	n = 0
-	max_questions = args.max_questions
-	for _ in range(args.duplicates):
+	target_questions, max_attempts = _get_single_question_limits(args)
+	attempts = 0
+	for _ in range(max_attempts):
+		attempts += 1
 		question_text = write_question(n + 1, args)
 		if isinstance(question_text, list):
 			sys.stderr.write(
@@ -716,7 +728,7 @@ def _collect_questions(write_question, args, print_histogram_flag=True) -> list:
 			seen_question_ids.add(question_identity)
 		questions.append(prepared_question)
 		n += 1
-		if max_questions is not None and n >= max_questions:
+		if n >= target_questions:
 			break
 	if skipped_duplicates > 0:
 		sys.stderr.write(
@@ -725,7 +737,7 @@ def _collect_questions(write_question, args, print_histogram_flag=True) -> list:
 	_sync_histogram_from_item_cls_questions(questions)
 	if print_histogram_flag and _should_print_histogram(questions):
 		print_histogram()
-	_warn_shortfall(n, args)
+	_warn_shortfall(n, target_questions, attempts)
 	return questions
 
 #==========================
@@ -800,7 +812,8 @@ def collect_question_batches(write_question_batch, args, print_histogram_flag=Tr
 	_sync_histogram_from_item_cls_questions(questions)
 	if print_histogram_flag and _should_print_histogram(questions):
 		print_histogram()
-	_warn_shortfall(n, args)
+	if max_questions is not None:
+		_warn_shortfall(n, max_questions, args.duplicates)
 	return questions
 
 #==========================

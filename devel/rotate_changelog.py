@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# This file is vendored. Local changes can and will be overwritten by propagation.
+
 """Rotate docs/CHANGELOG.md per docs/REPO_STYLE.md changelog rotation rules.
 
 Reads the active changelog, keeps the two most recent day blocks in place, and

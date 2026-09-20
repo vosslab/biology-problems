@@ -8,6 +8,7 @@
 /graphify-out/
 _temp*.?*
 /temp/
+/tests/_temp/
 /OTHER_REPOS/
 /LOCAL_ONLY/
 
@@ -22,7 +23,6 @@ site/
 # -------------------- LOCAL REPOSITORY RULES --------------------
 # ADD YOUR CUSTOM IGNORES BELOW
 # Propagation preserves this section.
-# ------------------ END LOCAL REPOSITORY RULES ------------------
 
 # output files
 _[a-z]*.[a-z]*

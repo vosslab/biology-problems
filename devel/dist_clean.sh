@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# This file is vendored. Local changes can and will be overwritten by propagation.
+
 # Deep clean: build/test output, caches, and dependency installs.
 # Run ./devel/clean_build.sh instead to retain dependencies between builds.
 set -euo pipefail

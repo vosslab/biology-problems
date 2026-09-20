@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# This file is vendored. Local changes can and will be overwritten by propagation.
+
 
 """Query the CHANGELOG corpus by date range, category, and keywords.
 

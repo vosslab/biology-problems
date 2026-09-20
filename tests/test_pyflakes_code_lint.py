@@ -1,3 +1,5 @@
+# This file is vendored. Local changes can and will be overwritten by propagation.
+
 # Standard Library
 import os
 import shutil
@@ -175,4 +177,3 @@ def test_pyflakes(path: str) -> None:
 	assert rel not in VIOLATIONS_BY_FILE, file_utils.format_violation_assert_message(
 		rel, VIOLATIONS_BY_FILE.get(rel, []), REPORT_NAME
 	)
-# Vendored pytest file. Local changes can and will be overwritten.

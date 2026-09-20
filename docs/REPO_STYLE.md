@@ -13,6 +13,11 @@ Core principles guide work in this repo. Cite them by name when making judgment 
 - **Fix the design, not the symptom.** When something behaves wrong, fix the design that allowed the problem. Do not add fallbacks, special cases, or broad try/except blocks just to hide the symptom.
 - **Long-term over short-term.** Accept a small cost now to avoid larger costs later. Prefer the durable fix over the quick patch, even when the durable fix takes more effort today.
 - **Design for adaptability.** Favor systems that can evolve as requirements and understanding change. Keep responsibilities clear and components replaceable so the software remains useful without repeated rewrites.
+- **Ground requirements in actual needs.** Base requirements, thresholds, and gates on product
+  behavior, correctness, security, repository policy, measured constraints, or demonstrated
+  failures. Add precision when the underlying need requires it.
+- **Plan for gate failures.** Before adding a new blocking CI, build, release, or repository-wide
+  behavior gate, define what failure means and the decision, correction, or recovery that follows.
 - **Dream big.** Build on the ambition already present. Pursue the strongest, most durable, and most complete version of the work, then turn that ambition into practical next steps.
 - **Perfect is the enemy of good.** Prefer a good solution delivered promptly when further refinement would not materially improve the outcome. Spend additional effort where it changes correctness, durability, or user value.
 - **Atomic task decomposition.** Break hard problems into the smallest independently completable tasks. Each task should have one owner, one clear outcome, and one verification step.
@@ -113,6 +118,10 @@ Preferred structure:
 ## Source file size
 - Tracked authored source files stay under 1000 physical lines: 999 passes; 1000 fails.
   `tests/test_source_file_line_limit.py` defines the scope.
+- Files from 900 through 999 lines emit a non-blocking advisory. Split them into cohesive modules
+  by responsibility instead of trimming them to defer the problem.
+- `docs/CHANGELOG.md` and `docs/CHANGELOG-*.md` are exempt from the advisory band because the
+  changelog rotation policy below owns their size.
 - Markdown beneath any `docs/active_plans/` or `docs/archive/` tree is planning or historical
   material and stays outside this source-code line budget. Other source types in those trees remain
   covered.
@@ -305,7 +314,9 @@ report.
 - `docs/CLAUDE_HOOK_USAGE_GUIDE.md`: generated hook behavior reference, not a repo style source of truth. If repo style differs from hook examples, update repo style docs and recommend a hook rule update upstream.
 - `docs/MARKDOWN_STYLE.md`: Markdown writing rules and formatting conventions for this repo.
 - `docs/PLAYWRIGHT_TEST_STYLE.md`: browser test authoring style for repos that serve HTML.
-- `docs/PYTEST_STYLE.md`: pytest test-writing rules, commands, fixture policy, and failure triage.
+- `docs/PYTEST_STYLE.md`: policy for deciding whether a permanent test should exist.
+- `docs/PYTEST_AUTHORING_GUIDE.md`: construction conventions for permanent pytest tests.
+- `docs/E2E_TESTS.md`: permanent whole-system test placement and execution.
 - `docs/PYTHON_STYLE.md`: Python formatting, linting, and project-specific conventions.
 - `docs/REPO_STYLE.md`: repo-level organization, conventions, and file placement rules.
 

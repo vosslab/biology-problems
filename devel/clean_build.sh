@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# This file is vendored. Local changes can and will be overwritten by propagation.
+
 # Light clean: build/test output and caches only. Dependencies stay installed.
 # For a distribution-clean checkout that re-fetches dependencies, use dist_clean.sh.
 set -euo pipefail

@@ -1,3 +1,5 @@
+# This file is vendored. Local changes can and will be overwritten by propagation.
+
 """Remove Rust `#[cfg(test)]` symbols from a Graphify graph before clustering.
 
 Graphify's Rust extractor indexes the contents of `#[cfg(test)] mod tests` as

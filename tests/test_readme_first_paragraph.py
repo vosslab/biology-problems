@@ -1,3 +1,5 @@
+# This file is vendored. Local changes can and will be overwritten by propagation.
+
 import os
 import re
 
@@ -266,4 +268,3 @@ def test_first_paragraph_is_plain_prose() -> None:
 		f"HTML tags: {html_tag_hits}. "
 		f"Paragraph text:\n{paragraph}"
 	)
-# Vendored pytest file. Local changes can and will be overwritten.

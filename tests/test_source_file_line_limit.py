@@ -1,8 +1,11 @@
+# This file is vendored. Local changes can and will be overwritten by propagation.
+
 """Enforce a maintainable line-count limit for tracked source files."""
 
 # Standard Library
 import os
 import pathlib
+import warnings
 
 # PIP3 modules
 import pytest
@@ -12,6 +15,7 @@ import file_utils
 
 
 LINE_LIMIT = 1000
+WARNING_MINIMUM = 900
 OVERRIDE_LIST = "tests/source_file_line_limit_overrides.txt"
 
 # Authored code, templates, queries, and documentation. Generic text/data,
@@ -67,8 +71,11 @@ EXCLUDED_MARKDOWN_TREES = frozenset({
 })
 
 REPORT_NAME = file_utils.report_name(__file__)
+WARNING_REPORT_NAME = REPORT_NAME.replace(".txt", "_warnings.txt")
 HEADER = "Source file line-limit violations:"
+WARNING_HEADER = "Source files approaching the line limit:"
 VIOLATIONS_BY_FILE: dict[str, list[str]] = {}
+WARNINGS_BY_FILE: dict[str, list[str]] = {}
 
 
 #============================================
@@ -187,7 +194,33 @@ def violations_for_line_count(rel: str, line_count: int) -> list[str]:
 	"""
 	if line_count < LINE_LIMIT:
 		return []
-	message = f"{rel}: {line_count} lines"
+	message = (
+		f"{rel}: {line_count} lines. Split this file into cohesive modules by responsibility; "
+		"trimming to 999 lines defers the problem to the next edit."
+	)
+	return [message]
+
+
+#============================================
+def is_rotation_managed(rel: str) -> bool:
+	"""Return whether the changelog rotation policy manages this Markdown file."""
+	path = pathlib.PurePosixPath(rel)
+	if not path.parts or path.parts[0] != "docs":
+		return False
+	name = path.name
+	return name == "CHANGELOG.md" or (name.startswith("CHANGELOG-") and name.endswith(".md"))
+
+
+#============================================
+def warnings_for_line_count(rel: str, line_count: int) -> list[str]:
+	"""Return one advisory for a source file in the 900-999 line band."""
+	if line_count < WARNING_MINIMUM or line_count >= LINE_LIMIT or is_rotation_managed(rel):
+		return []
+	remaining = LINE_LIMIT - line_count
+	message = (
+		f"{rel}: {line_count} lines, within {remaining} of the {LINE_LIMIT}-line limit. "
+		"Plan a cohesive split now."
+	)
 	return [message]
 
 
@@ -209,15 +242,29 @@ def check_file(rel: str) -> list[str]:
 
 
 #============================================
+def check_file_warning(rel: str) -> list[str]:
+	"""Check one source file for a non-blocking near-limit advisory."""
+	abs_path = os.path.join(file_utils.get_repo_root(), rel)
+	line_count = count_file_lines(abs_path)
+	advisories = warnings_for_line_count(rel, line_count)
+	return advisories
+
+
+#============================================
 @pytest.fixture(scope="module", autouse=True)
 def collect_report() -> None:
 	"""Collect all line-limit violations and write the complete report when dirty."""
 	file_utils.clear_stale_reports()
 	VIOLATIONS_BY_FILE.clear()
 	VIOLATIONS_BY_FILE.update(file_utils.collect_file_violations(FILES, check_file))
+	WARNINGS_BY_FILE.clear()
+	WARNINGS_BY_FILE.update(file_utils.collect_file_violations(FILES, check_file_warning))
 	lines = file_utils.format_violation_report(HEADER, VIOLATIONS_BY_FILE)
 	if lines:
 		file_utils.write_report_lines(REPORT_NAME, lines)
+	warning_lines = file_utils.format_violation_report(WARNING_HEADER, WARNINGS_BY_FILE)
+	if warning_lines:
+		file_utils.write_report_lines(WARNING_REPORT_NAME, warning_lines)
 
 
 #============================================
@@ -230,6 +277,26 @@ def test_source_file_line_limit_boundary(line_count: int, should_fail: bool) -> 
 	"""Pin the requested exclusive boundary: 999 passes and 1000 fails."""
 	violations = violations_for_line_count("sample.py", line_count)
 	assert bool(violations) is should_fail
+
+
+#============================================
+@pytest.mark.parametrize(
+	("line_count", "should_warn"),
+	((899, False), (900, True), (999, True)),
+	ids=("899-lines-silent", "900-lines-warns", "999-lines-warns"),
+)
+def test_source_file_line_limit_warning_boundary(
+	line_count: int, should_warn: bool,
+) -> None:
+	"""Warn only within the non-blocking 900-999 line band."""
+	advisories = warnings_for_line_count("sample.py", line_count)
+	assert bool(advisories) is should_warn
+
+
+#============================================
+def test_source_file_line_limit_warning_exempts_rotated_changelog() -> None:
+	"""Leave rotation-managed changelog files out of the advisory band."""
+	assert not warnings_for_line_count("docs/CHANGELOG-2026-08a.md", 950)
 
 
 #============================================
@@ -287,4 +354,5 @@ def test_source_file_line_limit(path: str) -> None:
 	assert rel not in VIOLATIONS_BY_FILE, file_utils.format_violation_assert_message(
 		rel, VIOLATIONS_BY_FILE.get(rel, []), REPORT_NAME
 	)
-# Vendored pytest file. Local changes can and will be overwritten.
+	if rel in WARNINGS_BY_FILE:
+		warnings.warn(WARNINGS_BY_FILE[rel][0], UserWarning)

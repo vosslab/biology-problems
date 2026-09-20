@@ -1,3 +1,5 @@
+# This file is vendored. Local changes can and will be overwritten by propagation.
+
 """Keep tracked root scripts below the repository-navigation budget."""
 
 # Standard Library
@@ -193,4 +195,3 @@ def test_other_extension_requires_executable_shebang(tmp_path: pathlib.Path) -> 
 			"source_me.sh",
 		]
 	) == ["launcher", "launcher.command", "program.py", "source_me.sh"]
-# Vendored pytest file. Local changes can and will be overwritten.

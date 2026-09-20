@@ -1,3 +1,5 @@
+# This file is vendored. Local changes can and will be overwritten by propagation.
+
 """Shared loaders and formatters for Graphify manager orientation.
 
 Backs devel/graphify_map_repo.py the way changelog_lib.py backs the changelog

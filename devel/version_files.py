@@ -1,3 +1,5 @@
+# This file is vendored. Local changes can and will be overwritten by propagation.
+
 """Discover and update repository files that carry version metadata."""
 
 # Standard Library

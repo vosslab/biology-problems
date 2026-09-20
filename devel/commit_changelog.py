@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# This file is vendored. Local changes can and will be overwritten by propagation.
+
 """Draft and apply a git commit using docs/CHANGELOG.md as the source.
 
 Reads new entries from docs/CHANGELOG.md (parsed via changelog_lib),

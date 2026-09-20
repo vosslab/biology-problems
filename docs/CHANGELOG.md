@@ -6,11 +6,28 @@
 
 - Added shared `-I` / `--html-to-image` for opt-in `-B` Blackboard exports, converting supported
   HTML drawings into packaged PNGs while retaining normal BBQ output and export-failure safeguards.
+- Added `circular_digest.py`, a randomized circular-DNA restriction digest generator with an
+  orange rounded-rectangle inline-HTML plasmid map, wide navy cardinal-direction cut ticks, and
+  a neutral 0 kb coordinate distractor for image-exported Blackboard pools.
 
 ### Behavior or Interface Changes
 
 - Made `-I` reject use without `-B` / `--bbexport`, and routed every legacy direct writer and
   YAML-to-BBQ converter through the shared image-export option.
+- Made `-d` request accepted questions from single-question generators, with bounded redraws for
+  rejected or duplicate attempts; batch generators retain their existing attempt-based behavior.
+- Made every linear-digest difficulty default valid for either the finite-fragment or longer-strand
+  presentation, preserving the minimum two selectable gel-band lengths.
+
+### Fixes and Maintenance
+
+- Made linear restriction-digest table rows use explicit cells instead of `colspan`, so terminal
+  renderers do not append blank columns while the DNA diagram remains structurally aligned.
+- Made linear restriction-digest DNA strokes orange and site ticks wider navy blue in the existing
+  inline cell styles, preserving compatibility with HTML-to-image Blackboard exports.
+- Added a separate restriction-enzyme idea note for future diagnostic-digest, inference, RFLP,
+  co-migration, and map-validation question families without changing the linear MA generator.
+- Synchronized shared style guides, tests, and repository support files from the starter template.
 
 ### Developer Tests and Notes
 

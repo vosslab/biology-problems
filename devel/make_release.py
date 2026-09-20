@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# This file is vendored. Local changes can and will be overwritten by propagation.
+
 """Prepare a manual GitHub source release from a stable HEAD snapshot.
 
 Releases are manual human decisions. This script never creates tags, never

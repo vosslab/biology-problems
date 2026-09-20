@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# This file is vendored. Local changes can and will be overwritten by propagation.
+
 """Build or update a Graphify repository map and print concise agent guidance.
 
 Orientation loading and formatting live in devel/graphify_context_lib.py; this

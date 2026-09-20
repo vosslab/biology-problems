@@ -6,8 +6,8 @@
 - Keep per-script question logic clear and local.
 
 ## Scope
-- Standardize how scripts collect questions with `-d/--duplicate-runs` (alias
-  `--duplicates`) and `-x/--max-questions`.
+- Standardize how single-question scripts collect accepted questions with `-d/--duplicate-runs`
+  (alias `--duplicates`) and `-x/--max-questions`.
 - Provide a shared way to add base CLI args while allowing custom flags.
 - Migrate incrementally; no mass refactor required.
 
@@ -20,10 +20,10 @@
 ## Decision points
 
 ### Shortfall behavior
-- If `-x/--max-questions` is not reached after `-d/--duplicate-runs` (alias
-  `--duplicates`) attempts, helpers return the smaller set and print a warning
-  (for example, "generated 87 of 99 after 110 attempts"). This avoids silent
-  shortfalls.
+- Single-question helpers treat `-d/--duplicate-runs` (alias `--duplicates`) as the requested
+  accepted-question count. They redraw rejected or duplicate attempts up to a fixed four-attempt
+  budget per requested question, then return a smaller set with an explicit warning if necessary.
+  `-x/--max-questions` remains a hard cap.
 
 ### Return contracts
 - Single-question writers: `write_question(N, args)` returns a non-empty string
@@ -44,7 +44,7 @@
   flags. This keeps `-d/--duplicate-runs` (alias `--duplicates`) and
   `-x/--max-questions` consistent across scripts.
 - Recommended default help text:
-  - `-d/--duplicate-runs`: "Number of duplicate runs (attempts) to generate questions."
+  - `-d/--duplicate-runs`: "Number of accepted questions to generate; rejected attempts are redrawn."
   - `-x/--max-questions`: "Maximum number of questions to keep."
 - Defaults remain `duplicates=2` and `max_questions=None` unless a script
   explicitly needs different values.
@@ -57,14 +57,15 @@
 
 ### Question collection helpers
 Two helpers cover the main cases without a separate normalize step.
-Both treat `-d/--duplicate-runs` (alias `--duplicates`) as attempts and
-`-x/--max-questions` as a hard cap.
+The single-question helper treats `-d/--duplicate-runs` (alias `--duplicates`) as an
+accepted-question target and `-x/--max-questions` as a hard cap. Batch helpers retain
+attempt-based `-d` semantics because one batch can legitimately emit many questions.
 Both preserve a stable `N` that only advances when a question is accepted.
 Writers should accept the full `args` namespace for consistency.
 
 - `collect_questions(write_question, args)`
   - Use when `write_question(N, args)` returns a single question string or `None`.
-  - Enforces `-d` attempts and caps at `-x` questions.
+  - Redraws toward the `-d` accepted-question target and caps at `-x` questions.
   - Passes `N` as the next successful question number (1-based).
 
 - `collect_question_batches(write_question_batch, args)`
@@ -248,10 +249,10 @@ Avoid `random.choice(SCENARIOS)` since it can repeat scenarios and skip others.
 
 ### Keeping Writer Semantics Intact
 - Do not change the meaning of `-d/--duplicates` and `-x/--max-questions`:
-  - `-d` is the number of attempts to generate acceptable questions.
+- `-d` is the number of accepted questions requested from a single-question generator.
   - `-x` is the maximum number of accepted questions to keep.
-- A single-question writer should return `None` to "skip" a failed attempt; the
-  helper will try again until attempts/cap are exhausted.
+- A single-question writer should return `None` to "skip" a failed attempt; the helper redraws
+  until it reaches the requested count, the cap, or its bounded retry budget.
 - For batch lists that return pre-numbered questions (for example, matching
   sets), add a `start_num` parameter to the helper that creates the list so the
   numbering can begin at the batch start `N`.

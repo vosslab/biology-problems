@@ -303,6 +303,18 @@ def test_collect_questions_skips_empty_and_internal_newlines(capsys):
 	assert "internal newline skipped" in err
 
 
+def test_collect_questions_redraws_rejected_attempts():
+	args = argparse.Namespace(duplicates=3, max_questions=None)
+	question_values = iter([None, "one", "two", "three"])
+
+	def writer(_n, _args):
+		question_text = next(question_values)
+		return question_text
+
+	questions = bptools._collect_questions(writer, args, print_histogram_flag=False)
+	assert questions == ["one\n", "two\n", "three\n"]
+
+
 def test_collect_question_batches_respects_max_questions(capsys):
 	args = argparse.Namespace(duplicates=1, max_questions=2)
 

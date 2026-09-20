@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# This file is vendored. Local changes can and will be overwritten by propagation.
+
 """
 Rewrite broken markdown links in a chosen set of markdown files.
 

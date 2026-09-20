@@ -1,3 +1,5 @@
+# This file is vendored. Local changes can and will be overwritten by propagation.
+
 """Render compact Graphify documentation from repository graph data.
 
 The generated SVG is intentionally a community-level illustration rather than

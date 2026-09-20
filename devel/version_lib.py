@@ -1,3 +1,5 @@
+# This file is vendored. Local changes can and will be overwritten by propagation.
+
 """Shared version parsing, normalization, and text-update behavior."""
 
 # Standard Library

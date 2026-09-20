@@ -2,102 +2,77 @@
 
 > This file is vendored. Local changes can and will be overwritten by propagation.
 
-End-to-end (E2E) testing conventions for this repo.
+End-to-end testing conventions for this repository family.
+
+`tests/e2e/` and `tests/playwright/` contain permanent E2E tests. Prefer fewer, stronger E2E tests
+that protect whole-system behavior worth preserving. Promote end-to-end verification to permanent
+coverage when the whole-system behavior deserves lasting protection. Use `tests/_temp/` for
+one-time whole-system checks, run them explicitly, then promote or remove them before plan
+completion. When in doubt, remove the test. See [PYTEST_STYLE.md](PYTEST_STYLE.md) for the permanent
+test policy.
 
 ## Two E2E homes
 
-This repo supports two distinct E2E execution models, each with its own folder:
+- `tests/e2e/` contains permanent non-browser whole-system tests: CLI workflows, builds, services,
+  and multi-suite orchestration.
+- `tests/playwright/` contains permanent browser-driven tests. Website and TypeScript repositories
+  also receive `PLAYWRIGHT_TEST_STYLE.md` and `PLAYWRIGHT_USAGE.md`.
 
-- `tests/playwright/` (and optional `tests/playwright/e2e/` sub-grouping) - **browser-based E2E**: full Playwright walkthroughs and browser-driven tests. TypeScript repos include `PLAYWRIGHT_USAGE.md` in their propagated `docs/` folder.
-- `tests/e2e/` - **non-browser E2E**: shell/Python orchestration for whole-system testing: CLIs, builds, services, multi-suite coordination. This doc focuses on the non-browser model.
+Both permanent E2E subtrees run outside pytest. `tests/conftest.py` excludes only `e2e` and
+`playwright`. Pytest-suitable `test_*.py` files in `tests/_temp/` remain available to normal pytest
+collection; heavier temporary checks run explicitly.
 
-Both are excluded from `pytest tests/` via `collect_ignore = ["e2e", "playwright"]` in `tests/conftest.py`.
+## Permanent E2E checklist
 
-## Test layout overview
+Use a permanent E2E test for intentionally stable, important whole-system behavior that is
+plausibly subject to regression and best protected at the whole-system boundary.
 
-This repo organizes tests in four tiers, all under the `tests/` umbrella:
+- [ ] The workflow is intentionally stable and worth preserving.
+- [ ] A whole-system run is necessary to test the contract.
+- [ ] Smaller tests leave meaningful whole-system behavior unprotected.
+- [ ] The assertions focus on meaningful outputs, boundaries, or user actions.
+- [ ] The runner produces diagnostics that support a concrete response.
+- [ ] A new blocking gate includes its failure plan.
 
-- `tests/test_*.py` - fast pytest unit and integration tests. Run with
-  `source source_me.sh && pytest tests/`.
-- `tests/test_*.mjs` - pure Node tests, if any (rare; not browser-driven).
-- `tests/playwright/` (with optional `tests/playwright/e2e/` subfolder) - browser-driven Playwright tests. TypeScript repos include `PLAYWRIGHT_USAGE.md` in their propagated `docs/` folder.
-- `tests/e2e/` - non-browser whole-system E2E. Shell/Python orchestration (`e2e_*.sh`, `e2e_*.py`). Run directly, not via pytest.
+Good candidates include:
 
-## Why tests/e2e/ is excluded from pytest
+- A complete CLI workflow with meaningful output and exit behavior.
+- A round trip across several real components.
+- An integration with an external tool where substitution would miss the contract.
+- A deliberate browser journey or accessibility boundary.
 
-Pytest is the fast lane. Tests under `tests/` should run in seconds so the
-suite stays useful during development. End-to-end tests are by nature slow:
-they invoke real scripts, read and write real files, and may hit the network
-or external tools. Mixing them into `pytest tests/` makes the fast lane slow
-and discourages running it.
+Keep pure function and narrow integration behavior in the fast pytest or Node lane. Use temporary
+verification when the check only proves the current implementation or rollout.
 
-Pytest's `collect_ignore = ["e2e", "playwright"]` in `tests/conftest.py` actively excludes
-both the `tests/e2e/` and `tests/playwright/` subtrees from pytest collection, regardless of filenames
-inside them. This is the primary safety mechanism. Additionally, `.mjs` and `.sh`
-files are invisible to pytest by extension, and Python orchestration scripts use
-the `e2e_*` prefix as a secondary, human-readable convention.
+## Non-browser layout
 
-## Where non-browser E2E tests live
+- Name shell runners `tests/e2e/e2e_<name>.sh`.
+- Name Python runners `tests/e2e/e2e_<name>.py`.
+- Make each runner self-contained with clear pass, failure, and diagnostic output.
+- Add `tests/e2e/run_all.sh` when a repository has several permanent runners worth executing
+  together.
 
-- Folder: `tests/e2e/` under `tests/` at the repo root.
-- Pytest is configured to ignore the subtree via `collect_ignore = ["e2e", "playwright"]` in
-  `tests/conftest.py`, so file naming inside `tests/e2e/` cannot accidentally pull slow tests into the fast lane.
-- Recommended naming for readability:
-  - `e2e_*.sh` for shell runners.
-  - `e2e_*.py` for Python orchestration.
-- Each E2E script is self-contained and exits non-zero on failure.
+TypeScript repositories enforce these names through `tests/test_test_naming_conventions.py`.
 
-`tests/` (excluding `tests/e2e/` and `tests/playwright/`) stays reserved for fast pytest tests (see
-[PYTEST_STYLE.md](PYTEST_STYLE.md)).
+## Run non-browser E2E
 
-## How to run non-browser E2E tests
+```bash
+bash tests/e2e/e2e_<name>.sh
+source source_me.sh && python3 tests/e2e/e2e_<name>.py
+bash tests/e2e/run_all.sh
+```
 
-- Run a single shell runner: `bash tests/e2e/e2e_<name>.sh`.
-- Run a single Python runner: `source source_me.sh && python3 tests/e2e/e2e_<name>.py`.
-- Run all E2E tests: provide a `tests/e2e/run_all.sh` that iterates over the
-  `e2e_*` files and reports pass/fail for each.
-- For browser-driven Playwright runs, TypeScript repos include `PLAYWRIGHT_USAGE.md` in their propagated `docs/` folder.
-- Do not invoke E2E tests from `pytest tests/`. Keep the two suites separate.
+Use the repository's Playwright runner for browser tests. Run temporary non-pytest checks from
+`tests/_temp/` explicitly with their native tool.
 
-## Naming conventions test
+## Design failures
 
-File naming conventions are enforced by `tests/test_test_naming_conventions.py`
-(present in `REPO_TYPE=typescript` repos) to prevent silent bugs:
-
-- No `test_*.py` files anywhere under `tests/e2e/` (since `collect_ignore` would skip them silently, mismatching the name).
-- No `test_*.py` files anywhere under `tests/playwright/` (same trap).
-- All Python files under `tests/e2e/` must use the `e2e_*.py` prefix.
-- All shell files under `tests/e2e/` must use the `e2e_*.sh` prefix.
-- Any file with a Playwright import must live under `tests/playwright/`.
-
-## What E2E tests should cover
-
-- Whole-script behavior: run the CLI end to end with realistic arguments and
-  check the produced files or exit code.
-- I/O round trips: encode a file with one script, decode with another,
-  compare to the original.
-- Integration with external tools where mocking would defeat the point.
-- Anything that needs user input or read/write to files (the `assert` rules
-  forbid asserts in plain scripts entirely; cover that behavior here instead;
-  see [PYTHON_STYLE.md](PYTHON_STYLE.md#assert)).
-
-## What E2E tests should not cover
-
-- Pure function correctness. That belongs in pytest under `tests/`.
-- Anything fast enough to live in pytest. If a check finishes in under a
-  second and does not touch the real filesystem in a meaningful way, it is a
-  unit test, not an E2E test.
-
-## Asserts and failures
-
-- E2E test scripts may use `assert` (they are test files, not plain scripts).
-- Prefer explicit exit codes and clear stderr messages so a failing E2E run
-  is easy to diagnose without reading the script.
+Assert externally meaningful results and make diagnostics identify the failed workflow. When a new
+E2E check becomes a blocking CI, build, release, or repository-wide gate, define what failure means
+and the decision, correction, or recovery that follows.
 
 ## Related docs
 
-- [PYTEST_STYLE.md](PYTEST_STYLE.md): fast pytest unit and integration tests under `tests/`.
-- Browser-driven test conventions: the website family (`website` and its inheriting `typescript`) includes `PLAYWRIGHT_USAGE.md` in their propagated `docs/` folder for tests under `tests/playwright/`.
-- Browser test authoring style: the website family (`website` and its inheriting `typescript`) includes `PLAYWRIGHT_TEST_STYLE.md` in their propagated `docs/` folder for how to write Playwright tests under `tests/playwright/`.
-- [PYTHON_STYLE.md](PYTHON_STYLE.md): repo-wide Python rules, including
-  the `assert`-only-in-tests boundary.
+- [PYTEST_STYLE.md](PYTEST_STYLE.md) decides which behavior earns permanent protection.
+- [PYTEST_AUTHORING_GUIDE.md](PYTEST_AUTHORING_GUIDE.md) explains permanent pytest construction.
+- [PYTHON_STYLE.md](PYTHON_STYLE.md) defines Python and `assert` conventions.

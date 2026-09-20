@@ -8,10 +8,12 @@ import bptools
 import restrictlib
 
 debug = False
+DNA_ORANGE = "#b74300"
+CUT_NAVY = "#0067cc"
 
 #============================================
 #============================================
-def tdBlock(vtype="top", htype="middle", fill_color="white", strand_color="black", tick_color="#999999", dna_type='fragment'):
+def tdBlock(vtype="top", htype="middle", fill_color="white", strand_color=DNA_ORANGE, tick_color=CUT_NAVY, dna_type='fragment'):
 	border_str = ""
 	if vtype == "top" and dna_type == 'strand':
 		border_str += 'border-bottom: 4px solid {0}; '.format(strand_color)
@@ -28,12 +30,12 @@ def tdBlock(vtype="top", htype="middle", fill_color="white", strand_color="black
 		border_str += 'border-top: 0px solid {0}; '.format(fill_color)
 
 	if htype == "start" or htype == "right":
-		border_str += 'border-right: 2px solid {0}; '.format(tick_color)
+		border_str += 'border-right: 3px solid {0}; '.format(tick_color)
 	else:
 		border_str += 'border-right: 0px solid {0}; '.format(fill_color)
 
 	if htype == "end" or htype == "left":
-		border_str += 'border-left: 2px solid {0}; '.format(tick_color)
+		border_str += 'border-left: 3px solid {0}; '.format(tick_color)
 	else:
 		border_str += 'border-left: 0px solid {0}; '.format(fill_color)
 
@@ -41,7 +43,7 @@ def tdBlock(vtype="top", htype="middle", fill_color="white", strand_color="black
 
 #============================================
 #============================================
-def longDNA(vtype="top", fill_color="white", strand_color="gray", tick_color="#999999"):
+def longDNA(vtype="top", fill_color="white", strand_color=DNA_ORANGE, tick_color=CUT_NAVY):
 	border_str = ""
 	if vtype == "top":
 		border_str += 'border-bottom: 4px dotted {0}; '.format(strand_color)
@@ -79,7 +81,8 @@ def makeTable(length, label_dict=None, dna_type='fragment'):
 	table += '<td style="border: 0px solid white; "></td>'
 	for i in range(length+1):
 		msg = label_dict.get(i, "")
-		table += '<td align="center" colspan="2" style="border: 0px solid white; "><i>{0}</i></td>'.format(msg)
+		table += '<td align="center" style="border: 0px solid white; "><i>{0}</i></td>'.format(msg)
+		table += '<td style="border: 0px solid white; "></td>'
 	table += '<td style="border: 0px solid white; "></td>'
 	table += "</tr>"
 
@@ -121,7 +124,8 @@ def makeTable(length, label_dict=None, dna_type='fragment'):
 	table += "<tr>"
 	table += '<td style="border: 0px solid white; "></td>'
 	for i in range(length+1):
-		table += '<td align="center" colspan="2" style="border: 0px solid white; ">{0}</td>'.format(i)
+		table += '<td align="center" style="border: 0px solid white; ">{0}</td>'.format(i)
+		table += '<td style="border: 0px solid white; "></td>'
 	table += '<td style="border: 0px solid white; "></td>'
 	table += "</tr>"
 
@@ -304,12 +308,9 @@ def apply_difficulty_defaults(args):
 	if args.dna_type is None:
 		args.dna_type = preset['dna_type']
 	if args.num_sites is None:
+		args.num_sites = preset['num_sites']
 		if args.dna_type == 'strand':
-			args.num_sites = 3
-		elif args.dna_type == 'fragment':
-			args.num_sites = 2
-		else:
-			args.num_sites = preset['num_sites']
+			args.num_sites = max(args.num_sites, 3)
 	return args
 
 #===========================================================
