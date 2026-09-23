@@ -1,6 +1,8 @@
 
 import random
 
+import pytest
+
 from lib_test_utils import import_from_repo_path
 
 
@@ -110,3 +112,47 @@ def test_yaml_multiple_choice_statements_makeQuestionsFromStatement_calls_format
 		assert q.startswith("MC\t")
 		assert "<strong>ALPHA</strong>" in q
 		assert "\t5\t" in q
+
+
+def test_yaml_multiple_choice_statements_makeQuestionsFromStatement_honors_choice_count(monkeypatch):
+	mod = import_from_repo_path("problems/multiple_choice_statements/yaml_mc_statements_to_bbq.py")
+
+	def fake_format(N, question_text, choices_list, answer_text):
+		return f"MC\t{N}\t{answer_text}\t{len(choices_list)}\t{question_text}\n"
+
+	monkeypatch.setattr(mod.bptools, "formatBB_MC_Question", fake_format)
+	main_statement = "correct"
+	question_text = "Which is TRUE?"
+	replacement_rules = None
+
+	questions = mod.makeQuestionsFromStatement(
+		main_statement, [["d1"], ["d2"], ["d3"], ["d4"], ["d5"]],
+		question_text, replacement_rules, num_choices=4)
+	assert questions
+	assert all("\t4\t" in question for question in questions)
+
+	questions = mod.makeQuestionsFromStatement(
+		main_statement, [["d1"], ["d2"], ["d3"], ["d4"], ["d5"]],
+		question_text, replacement_rules, num_choices=6)
+	assert questions
+	assert all("\t6\t" in question for question in questions)
+
+	questions = mod.makeQuestionsFromStatement(
+		main_statement, [["d1"], ["d2"], ["d3"]],
+		question_text, replacement_rules, num_choices=5)
+	assert questions == []
+
+
+def test_yaml_multiple_choice_statements_num_choices_cli_validation(monkeypatch):
+	mod = import_from_repo_path("problems/multiple_choice_statements/yaml_mc_statements_to_bbq.py")
+	monkeypatch.setattr("sys.argv", ["generator"])
+	assert mod.parse_arguments().num_choices == 5
+
+	monkeypatch.setattr("sys.argv", ["generator", "--num-choices", "4"])
+	assert mod.parse_arguments().num_choices == 4
+
+	monkeypatch.setattr("sys.argv", ["generator", "-c", "3"])
+
+	with pytest.raises(SystemExit) as error:
+		mod.parse_arguments()
+	assert error.value.code == 2

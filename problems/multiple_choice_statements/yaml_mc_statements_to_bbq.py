@@ -157,8 +157,17 @@ def filterOpposingStatements(main_statement_id, opposing_statement_tree, conflic
 	return opposing_statement_nested_list
 
 #=======================
-def makeQuestionsFromStatement(main_statement, opposing_statement_nested_list, question_text, replacement_rules_dict):
-	num_wrong_choices = min(4, len(opposing_statement_nested_list))
+def makeQuestionsFromStatement(main_statement, opposing_statement_nested_list, question_text,
+		replacement_rules_dict, num_choices=5):
+	num_wrong_choices = num_choices - 1
+	if len(opposing_statement_nested_list) < num_wrong_choices:
+		available_choices = len(opposing_statement_nested_list) + 1
+		print(
+			f"WARNING: requested {num_choices} choices, but only {available_choices} "
+			"are available; skipping..."
+		)
+		return []
+
 	possible_iterations = len(list(itertools.product(*opposing_statement_nested_list)))
 	possible_duplicate = possible_iterations * math.comb(len(opposing_statement_nested_list), num_wrong_choices)
 	num_duplicates = max(1, int(math.floor(math.log(possible_duplicate))))
@@ -217,7 +226,7 @@ def writeQuestion(yaml_data, question_type):
 
 
 #=======================
-def sortStatements(yaml_data, notrue=False, nofalse=False):
+def sortStatements(yaml_data, notrue=False, nofalse=False, num_choices=5):
 	true_statement_tree = yaml_data['true_statements']
 	false_statement_tree = yaml_data['false_statements']
 	conflict_rules = yaml_data['conflict_rules']
@@ -231,7 +240,9 @@ def sortStatements(yaml_data, notrue=False, nofalse=False):
 		for true_statement_id,true_statement in true_statement_tree.items():
 
 			filtered_false_statement_nested_list = filterOpposingStatements(true_statement_id, false_statement_tree, conflict_rules)
-			question_string_list = makeQuestionsFromStatement(true_statement, filtered_false_statement_nested_list, question_text, replacement_rules_dict)
+			question_string_list = makeQuestionsFromStatement(
+				true_statement, filtered_false_statement_nested_list, question_text,
+				replacement_rules_dict, num_choices=num_choices)
 			list_of_complete_questions.extend(question_string_list)
 	else:
 		print("Skipping all of the TRUE statement questions")
@@ -242,7 +253,9 @@ def sortStatements(yaml_data, notrue=False, nofalse=False):
 		for false_statement_id,false_statement in false_statement_tree.items():
 
 			filtered_true_statement_nested_list = filterOpposingStatements(false_statement_id, true_statement_tree, conflict_rules)
-			question_string_list = makeQuestionsFromStatement(false_statement, filtered_true_statement_nested_list, question_text, replacement_rules_dict)
+			question_string_list = makeQuestionsFromStatement(
+				false_statement, filtered_true_statement_nested_list, question_text,
+				replacement_rules_dict, num_choices=num_choices)
 			list_of_complete_questions.extend(question_string_list)
 	else:
 		print("Skipping all of the FALSE statement questions")
@@ -281,11 +294,19 @@ def parse_arguments():
 		help='Number of duplicate runs to do or number of questions to create',
 		default=1
 	)
+	parser.add_argument(
+		'-c', '--num-choices', metavar='#', type=int, dest='num_choices',
+		help=('Exact total choices including the correct answer (minimum 4); skip if too few '
+			'distractor groups. Defaults to 5.'),
+		default=5
+	)
 	parser = bptools.add_anticheat_args(parser)
 	parser = bptools.add_bbexport_args(parser)
 
 	# Parse the provided command-line arguments and return them
 	args = parser.parse_args()
+	if args.num_choices < 4:
+		parser.error('--num-choices must be at least 4 (one correct answer and three distractors)')
 	return args
 
 
@@ -307,7 +328,9 @@ def main():
 
 	list_of_complete_questions = []
 	for i in range(args.duplicates):
-		list_of_complete_questions += sortStatements(yaml_data, notrue=args.notrue, nofalse=args.nofalse)
+		list_of_complete_questions += sortStatements(
+			yaml_data, notrue=args.notrue, nofalse=args.nofalse,
+			num_choices=args.num_choices)
 		if len(list_of_complete_questions) > 2*args.max_questions:
 			break
 

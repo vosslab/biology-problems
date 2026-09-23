@@ -1,5 +1,21 @@
 # Changelog
 
+## 2026-09-22
+
+### Additions and New Features
+
+- Added `-c` / `--num-choices` to the multiple-choice statements BBQ generator for an explicit
+  total answer count, including the correct choice.
+
+### Behavior or Interface Changes
+
+- Explicit choice counts require enough distinct distractor groups; questions without enough groups
+  are skipped. The default is five total choices, including the correct choice.
+
+### Developer Tests and Notes
+
+- Added focused checks for requested choice counts, unavailable distractors, and CLI validation.
+
 ## 2026-09-20
 
 ### Additions and New Features
