@@ -135,7 +135,11 @@ def makeMultipleChoiceQuestion(N, enzyme_class, num_choices):
 	#random.shuffle(choices_list)
 	choices_list.sort()
 
-	bb_question = bptools.formatBB_MC_Question(N, question_text, choices_list, answer_text)
+	styled_choices_list = [restrictlib.html_monospace(choice) for choice in choices_list]
+	styled_answer_text = restrictlib.html_monospace(answer_text)
+	bb_question = bptools.formatBB_MC_Question(
+		N, question_text, styled_choices_list, styled_answer_text
+	)
 	return bb_question
 
 #=====================

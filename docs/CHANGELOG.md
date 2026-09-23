@@ -8,6 +8,9 @@
   total answer count, including the correct choice.
 - Added the shared five-choice default and `-c` / `--num-choices` handling to the complementary
   sequences multiple-choice generator.
+- Connected `chargaff_dna_percent.py` to its existing `--num-choices` option, supporting two to six
+  answer choices including the correct answer.
+- Rendered restriction-enzyme overhang sequence choices in a monospace font.
 
 ### Behavior or Interface Changes
 
@@ -18,6 +21,7 @@
 
 - Added focused checks for requested choice counts, unavailable distractors, and CLI validation.
 - Added coverage for complementary-sequence MC choice counts in both direction modes.
+- Added coverage for the Chargaff generator's requested and default choice counts.
 
 ## 2026-09-20
 

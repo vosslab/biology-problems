@@ -140,18 +140,23 @@ def write_question(N, args):
 	answer = getAnswer(nt1, percent)
 
 	#print(question)
-	choices = []
 	offperc = 50 - percent
-	choices.append([offperc, offperc, percent])
-	choices.append([offperc, percent, offperc])
-	choices.append([percent, offperc, offperc])
-	offchoices = []
-	offchoices.append([offperc, 25, 25])
-	offchoices.append([25, offperc, 25])
-	offchoices.append([25, 25, offperc])
+	base_choices = [
+		[offperc, offperc, percent],
+		[offperc, percent, offperc],
+		[percent, offperc, offperc],
+	]
+	wrong_choices = [choice for choice in base_choices if choice != answer]
+	random.shuffle(wrong_choices)
+	offchoices = [
+		[offperc, 25, 25],
+		[25, offperc, 25],
+		[25, 25, offperc],
+	]
 	random.shuffle(offchoices)
-	choices.append(offchoices[0])
-	choices.append(offchoices[1])
+	choices = [answer]
+	choices.extend(wrong_choices[:args.num_choices - 1])
+	choices.extend(offchoices[:args.num_choices - len(choices)])
 	random.shuffle(choices)
 
 	choices_list = []
@@ -197,6 +202,8 @@ def parse_arguments():
 
 	# Parse the provided command-line arguments and return them
 	args = parser.parse_args()
+	if args.num_choices < 2 or args.num_choices > 6:
+		parser.error('--num-choices must be between 2 and 6')
 	return args
 
 #===========================================================
