@@ -296,16 +296,16 @@ def parse_arguments():
 	)
 	parser.add_argument(
 		'-c', '--num-choices', metavar='#', type=int, dest='num_choices',
-		help=('Exact total choices including the correct answer (minimum 4); skip if too few '
-			'distractor groups. Defaults to 5.'),
-		default=5
+		help=('Exact total choices including the correct answer (minimum 4); overrides the YAML '
+			'num_choices setting, which defaults to 5.'),
+		default=None
 	)
 	parser = bptools.add_anticheat_args(parser)
 	parser = bptools.add_bbexport_args(parser)
 
 	# Parse the provided command-line arguments and return them
 	args = parser.parse_args()
-	if args.num_choices < 4:
+	if args.num_choices is not None and args.num_choices < 4:
 		parser.error('--num-choices must be at least 4 (one correct answer and three distractors)')
 	return args
 
@@ -322,6 +322,12 @@ def main():
 		sys.exit(0)
 
 	yaml_data = bptools.readYamlFile(args.input_yaml_file)
+	num_choices = args.num_choices
+	if num_choices is None:
+		num_choices = yaml_data.get('num_choices', 5)
+		if (not isinstance(num_choices, int) or isinstance(num_choices, bool)
+			or num_choices < 4):
+			raise ValueError('YAML num_choices must be an integer of at least 4')
 	checkUnique(yaml_data)
 	pprint.pprint(yaml_data)
 	autoAddConflictRules(yaml_data)
@@ -330,7 +336,7 @@ def main():
 	for i in range(args.duplicates):
 		list_of_complete_questions += sortStatements(
 			yaml_data, notrue=args.notrue, nofalse=args.nofalse,
-			num_choices=args.num_choices)
+			num_choices=num_choices)
 		if len(list_of_complete_questions) > 2*args.max_questions:
 			break
 

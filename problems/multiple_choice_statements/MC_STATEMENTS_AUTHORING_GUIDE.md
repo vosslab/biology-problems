@@ -74,6 +74,7 @@ Each YAML file defines:
 
 - `connection_words`: a YAML list of stem connectors (defaults to built-in words like `concerning`, `about`, `regarding`).
 - `replacement_rules`: a mapping of literal substring replacements (often used for coloring or consistent formatting).
+- `num_choices`: the bank's default total answer count; the generator's `-c` flag overrides it.
 - `override_question_true`: replace the TRUE stem with your own HTML/text, or set to `~` to disable TRUE questions.
 - `override_question_false`: replace the FALSE stem with your own HTML/text, or set to `~` to disable FALSE questions.
 
@@ -200,6 +201,9 @@ false_statements:
 - Colons: if a string contains `:` (or starts with `{`, `[`, `#`, `*`, `&`), put it in quotes.
 - Smart quotes: if you pasted from Word/Docs, replace curly quotes with plain ASCII quotes.
 - Lists: `connection_words` must be a YAML list (each item starts with `- `).
+- Choice capacity: the generator defaults to five choices unless `num_choices` is set in the YAML;
+  the generator's `-c` flag overrides that setting. Each enabled form needs one fewer independent
+  distractor group than the total choice count. The YAML checker warns when a form would be skipped.
 
 ## Quick Lint Checklist (bank hygiene)
 

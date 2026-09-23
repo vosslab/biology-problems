@@ -12,7 +12,7 @@ true_statements:
   truth15: the angle of the pitch in the DNA double helix
   truth16: the DNA bases face the inside of the helix
   truth17: the phosphate groups are on the outside of the DNA double helix
-  turth18: the DNA double helix had ten nucleotides between each turn
+  truth18: the DNA double helix had ten nucleotides between each turn
 false_statements:
   false1: A-T and G-C base pairing system
   false2a: amount of guanine is equal to that of thymine

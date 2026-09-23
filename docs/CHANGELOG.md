@@ -2,7 +2,18 @@
 
 ## 2026-09-23
 
+### Fixes and Maintenance
+
+- Expanded MC statement YAML validation to flag malformed statement IDs and warn when a
+  question form cannot supply the requested number of independent distractor groups.
+- Corrected malformed statement IDs found in the Gibbs free-energy and Franklin diffraction banks.
+
 ### Behavior or Interface Changes
+
+- Added an optional `num_choices` YAML setting for per-bank defaults; `-c` overrides it, and the
+  generator still defaults to five choices when the setting is absent.
+- Set four-choice defaults for the enzyme-inhibitor, G-U wobble, mRNA-processing, and
+  nucleotide-components banks, which have three usable distractor groups per item.
 
 - Labeled horse genotypes by coat pattern and made the illustration and offspring table render
   cleanly in ordinary HTML layouts.

@@ -3,6 +3,7 @@
 import argparse
 from dataclasses import dataclass
 from pathlib import Path
+import re
 import sys
 
 # PIP3 modules
@@ -56,6 +57,7 @@ ALLOWED_KEYS = {
 	"false_statements",
 	"keywords",
 	"learning_objective",
+	"num_choices",
 	"override_question_false",
 	"override_question_true",
 	"replacement_rules",
@@ -66,6 +68,9 @@ ALLOWED_KEYS = {
 	"topic_tag",
 	"true_statements",
 }
+
+DEFAULT_NUM_CHOICES = 5
+STATEMENT_ID_RE = re.compile(r"(?P<kind>truth|false)(?P<group>[0-9]+)[a-z]?\Z")
 
 
 def parse_args():
@@ -85,8 +90,14 @@ def parse_args():
 		"-q", "--quiet", dest="quiet", action="store_true",
 		help="Only print errors (suppress OK lines).",
 	)
+	parser.add_argument(
+		"-c", "--num-choices", type=int, default=None,
+		help="Override the YAML setting; otherwise use its value or the default of 5.",
+	)
 	parser.set_defaults(recursive=False, quiet=False)
 	args = parser.parse_args()
+	if args.num_choices is not None and args.num_choices < 4:
+		parser.error("--num-choices must be at least 4")
 	return args
 
 
@@ -131,8 +142,110 @@ def _parse_yaml_all_docs(yaml_path, raw_text):
 		raise ValueError(f"YAML parse error: {exc}") from exc
 
 
-def _validate_multiple_choice_statements_yaml(yaml_path, doc):
+def _statement_group_ids(yaml_path, doc, issues):
+	group_ids = {
+		"true_statements": {},
+		"false_statements": {},
+	}
+	for field, expected_kind in (
+		("true_statements", "truth"),
+		("false_statements", "false"),
+	):
+		statements = doc.get(field)
+		if not isinstance(statements, dict):
+			continue
+		for statement_id in statements:
+			if not isinstance(statement_id, str):
+				continue
+			match = STATEMENT_ID_RE.fullmatch(statement_id)
+			if match is None or match.group("kind") != expected_kind:
+				issues.append(
+					YamlIssue(
+						yaml_path=yaml_path,
+						severity="ERROR",
+						message=(
+							f"`{field}` ID {statement_id!r} must use the `{expected_kind}` "
+							"prefix and match <prefix><number>[a-z]"
+						),
+					)
+				)
+				continue
+			group_ids[field][statement_id] = match.group("group")
+	return group_ids
+
+
+def _check_choice_capacity(yaml_path, doc, group_ids, num_choices):
 	issues = []
+	required_distractors = num_choices - 1
+	forms = (
+		("override_question_true", "TRUE", "true_statements", "false_statements"),
+		("override_question_false", "FALSE", "false_statements", "true_statements"),
+	)
+	for override_key, form_name, correct_field, opposing_field in forms:
+		if doc.get(override_key, "default") is None:
+			continue
+		correct_statements = doc.get(correct_field)
+		opposing_statements = doc.get(opposing_field)
+		if not isinstance(correct_statements, dict) or not isinstance(opposing_statements, dict):
+			continue
+		if (len(group_ids[correct_field]) != len(correct_statements)
+			or len(group_ids[opposing_field]) != len(opposing_statements)):
+			continue
+
+		opposing_groups = set(group_ids[opposing_field].values())
+		available_by_statement = {}
+		for statement_id, group_id in group_ids[correct_field].items():
+			available_groups = opposing_groups.difference({group_id})
+			available_by_statement[statement_id] = len(available_groups)
+		blocked = [
+			group_count for group_count in available_by_statement.values()
+			if group_count < required_distractors
+		]
+		if not blocked:
+			continue
+
+		maximum_for_all = min(available_by_statement.values()) + 1
+		if len(blocked) == len(available_by_statement):
+			scope = f"all {len(blocked)} {form_name}-form questions"
+		else:
+			scope = f"{len(blocked)} of {len(available_by_statement)} {form_name}-form questions"
+		if maximum_for_all >= 4:
+			action = f"run the generator with `-c {maximum_for_all}`"
+		else:
+			action = "add enough independent distractor groups to support four choices"
+		issues.append(
+			YamlIssue(
+				yaml_path=yaml_path,
+				severity="WARN",
+				message=(
+					f"{scope} cannot reach {num_choices} total choices: the form "
+					f"needs {required_distractors} independent distractor groups per "
+					f"item, but has at most {maximum_for_all - 1} per item "
+					f"(supports {maximum_for_all} total choices); {action}"
+				),
+			)
+		)
+	return issues
+
+
+def _validate_multiple_choice_statements_yaml(yaml_path, doc, num_choices):
+	issues = []
+	configured_num_choices = doc.get("num_choices", DEFAULT_NUM_CHOICES)
+	if "num_choices" in doc and (
+		not isinstance(configured_num_choices, int)
+		or isinstance(configured_num_choices, bool)
+		or configured_num_choices < 4
+	):
+		issues.append(
+			YamlIssue(
+				yaml_path=yaml_path,
+				severity="ERROR",
+				message="`num_choices` must be an integer of at least 4",
+			)
+		)
+		configured_num_choices = DEFAULT_NUM_CHOICES
+	if num_choices is None:
+		num_choices = configured_num_choices
 
 	unknown_keys = sorted({k for k in doc.keys() if k not in ALLOWED_KEYS})
 	if unknown_keys:
@@ -213,6 +326,9 @@ def _validate_multiple_choice_statements_yaml(yaml_path, doc):
 				)
 				break
 
+	group_ids = _statement_group_ids(yaml_path, doc, issues)
+	issues.extend(_check_choice_capacity(yaml_path, doc, group_ids, num_choices))
+
 	replacement_rules = doc.get("replacement_rules", None)
 	if replacement_rules is not None and not isinstance(replacement_rules, dict):
 		issues.append(
@@ -236,7 +352,7 @@ def _validate_multiple_choice_statements_yaml(yaml_path, doc):
 	return issues
 
 
-def _quality_check_docs(yaml_path, docs, raw_text):
+def _quality_check_docs(yaml_path, docs, raw_text, num_choices):
 	issues = []
 	issues.extend(_check_for_leading_tabs(yaml_path, raw_text))
 	if len(docs) != 1:
@@ -258,14 +374,14 @@ def _quality_check_docs(yaml_path, docs, raw_text):
 			)
 		)
 		return issues
-	issues.extend(_validate_multiple_choice_statements_yaml(yaml_path, doc))
+	issues.extend(_validate_multiple_choice_statements_yaml(yaml_path, doc, num_choices))
 	return issues
 
 
-def validate_yaml_path(yaml_path):
+def validate_yaml_path(yaml_path, num_choices=None):
 	raw_text = yaml_path.read_text(encoding="utf-8")
 	docs = _parse_yaml_all_docs(yaml_path, raw_text)
-	return _quality_check_docs(yaml_path, docs, raw_text)
+	return _quality_check_docs(yaml_path, docs, raw_text, num_choices)
 
 
 def main():
@@ -274,7 +390,7 @@ def main():
 	errors = 0
 	warnings = 0
 	for yaml_path in yaml_files:
-		issues = validate_yaml_path(yaml_path)
+		issues = validate_yaml_path(yaml_path, num_choices=args.num_choices)
 		if not issues:
 			if not args.quiet:
 				print(f"OK: {yaml_path}")
