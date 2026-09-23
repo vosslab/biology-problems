@@ -28,6 +28,38 @@ def run_checks():
 	assert "<!-- {0} -->".format(seqlib.flip(expected)) in answer_table_three
 
 
+def test_mc_writers_use_choice_count(monkeypatch):
+	sequence = 'ACGTCAGTA'
+	monkeypatch.setattr(
+		complementary_sequences.seqlib, 'makeSequence', lambda seqlen: sequence
+	)
+
+	def fake_format(N, question_text, choices_list, answer_text):
+		assert answer_text in choices_list
+		return len(choices_list)
+
+	monkeypatch.setattr(
+		complementary_sequences.bptools, 'formatBB_MC_Question', fake_format
+	)
+
+	for writer in (
+		complementary_sequences.write_directionless_mc_question,
+		complementary_sequences.write_prime_mc_question,
+	):
+		assert writer(1, len(sequence), 3) == 3
+		assert writer(1, len(sequence)) == 5
+
+
+def test_num_choices_cli_default_and_option(monkeypatch):
+	monkeypatch.setattr(
+		sys, 'argv', ['complementary_sequences.py', '--mc', '--num-choices', '3']
+	)
+	assert complementary_sequences.parse_arguments().num_choices == 3
+
+	monkeypatch.setattr(sys, 'argv', ['complementary_sequences.py', '--mc'])
+	assert complementary_sequences.parse_arguments().num_choices == 5
+
+
 if __name__ == '__main__':
 	run_checks()
 	print('prime complement checks passed')

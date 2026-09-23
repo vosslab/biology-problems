@@ -6,6 +6,8 @@
 
 - Added `-c` / `--num-choices` to the multiple-choice statements BBQ generator for an explicit
   total answer count, including the correct choice.
+- Added the shared five-choice default and `-c` / `--num-choices` handling to the complementary
+  sequences multiple-choice generator.
 
 ### Behavior or Interface Changes
 
@@ -15,6 +17,7 @@
 ### Developer Tests and Notes
 
 - Added focused checks for requested choice counts, unavailable distractors, and CLI validation.
+- Added coverage for complementary-sequence MC choice counts in both direction modes.
 
 ## 2026-09-20
 

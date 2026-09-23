@@ -68,7 +68,7 @@ def write_directionless_fib_question(N, seqlen):
 #============================
 #============================
 #============================
-def write_directionless_mc_question(N, seqlen):
+def write_directionless_mc_question(N, seqlen, num_choices=5):
 	#============================
 	question_seq = seqlib.makeSequence(seqlen)
 	answer_seq = seqlib.complement(question_seq)
@@ -101,11 +101,13 @@ def write_directionless_mc_question(N, seqlen):
 	extra_choices = list(set(extra_choices))
 	random.shuffle(extra_choices)
 
-	while(len(choice_list) < 5 and len(extra_choices) > 0):
+	while len(choice_list) < num_choices and len(extra_choices) > 0:
 		random.shuffle(extra_choices)
 		test_seq = extra_choices.pop()
 		if not test_seq in choice_list:
 			choice_list.append(test_seq)
+	if len(choice_list) < num_choices:
+		return None
 
 	choice_table_list = []
 	for choice in choice_list:
@@ -162,7 +164,7 @@ def write_prime_fib_question(N, seqlen):
 #============================
 #============================
 #============================
-def write_prime_mc_question(N, seqlen):
+def write_prime_mc_question(N, seqlen, num_choices=5):
 	#============================
 	question_seq = seqlib.makeSequence(seqlen)
 	#sequence will be 5' -> 3'
@@ -192,20 +194,22 @@ def write_prime_mc_question(N, seqlen):
 	question_text += "<p>Hint: pay close attention to the 5&prime; and 3&prime; directions of the strand.</p>"
 
 	#============================
-	choice_list = []
 	half = int(seqlen//2)
-
-	#choice 1
-	choice_list.append(question_seq)
-	#choice 2
-	choice_list.append(seqlib.flip(question_seq))
-	#choice 3
-	choice_list.append(answer_seq)
-	#choice 4
-	choice_list.append(seqlib.flip(answer_seq))
-	#choice 5
 	nube = question_seq[:half] + answer_seq[half:]
-	choice_list.append(nube)
+	wrong_choice_candidates = [
+		question_seq,
+		seqlib.flip(question_seq),
+		seqlib.flip(answer_seq),
+		nube,
+	]
+	wrong_choice_list = list(dict.fromkeys(
+		choice for choice in wrong_choice_candidates if choice != answer_seq
+	))
+	if len(wrong_choice_list) < num_choices - 1:
+		return None
+	random.shuffle(wrong_choice_list)
+	choice_list = wrong_choice_list[:num_choices - 1]
+	choice_list.append(answer_seq)
 
 	choice_table_list = []
 	for choice in choice_list:
@@ -224,17 +228,17 @@ def write_prime_mc_question(N, seqlen):
 #============================
 #============================
 #============================
-def choose_question(N, seqlen, question_type, direction_mode):
+def choose_question(N, seqlen, question_type, direction_mode, num_choices=5):
 	if direction_mode == "directionless":
 		if question_type == 'fib':
 			return write_directionless_fib_question(N, seqlen)
 		elif question_type == 'mc':
-			return write_directionless_mc_question(N, seqlen)
+			return write_directionless_mc_question(N, seqlen, num_choices)
 	elif direction_mode == "prime":
 		if question_type == 'fib':
 			return write_prime_fib_question(N, seqlen)
 		elif question_type == 'mc':
-			return write_prime_mc_question(N, seqlen)
+			return write_prime_mc_question(N, seqlen, num_choices)
 	print(f"question_type={question_type}")
 	print(f"direction_mode={direction_mode}")
 	raise ValueError("Invalid direction_mode or question_type.")
@@ -243,7 +247,8 @@ def choose_question(N, seqlen, question_type, direction_mode):
 #============================
 #============================
 def write_question(N, args):
-	return choose_question(N, args.seqlen, args.question_type, args.direction_mode)
+	return choose_question(
+		N, args.seqlen, args.question_type, args.direction_mode, args.num_choices)
 
 #============================
 #============================
@@ -255,6 +260,7 @@ def parse_arguments():
 		required=False,
 		default='mc'
 	)
+	parser = bptools.add_choice_args(parser, default=5)
 
 	direction_group = parser.add_mutually_exclusive_group(required=False)
 	direction_group.add_argument('--direction', dest='direction_mode', type=str,
@@ -271,6 +277,8 @@ def parse_arguments():
 		help='Set the length of the sequence. Default is 9.')
 
 	args = parser.parse_args()
+	if args.question_type == 'mc' and args.num_choices < 2:
+		parser.error('--num-choices must be at least 2 for multiple-choice questions')
 	return args
 
 #============================
