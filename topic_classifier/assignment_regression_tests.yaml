@@ -48,7 +48,7 @@
     - [molecular_biology, dna_structure]
 
 - name: incidental phenotype counts do not create statistics assignment
-  script: "{bp_root}/inheritance-problems/horses.py"
+  script: "{bp_root}/inheritance-problems/horse_coat_pattern_inference.py"
   flags: ""
   input: ""
   expected:

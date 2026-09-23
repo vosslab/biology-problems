@@ -114,7 +114,7 @@ generator,problems/inheritance-problems/gene_mapping/two-point_test_cross-distan
 generator,problems/inheritance-problems/gene_mapping/two-point_test_cross-which_genotypes.py
 generator,problems/inheritance-problems/hardy_weinberg/hardy_weinberg_mc_type.py
 generator,problems/inheritance-problems/hardy_weinberg/hardy_weinberg_numeric.py
-generator,problems/inheritance-problems/horses.py
+generator,problems/inheritance-problems/horse_coat_pattern_inference.py
 generator,problems/inheritance-problems/large_crosses/unique_cross_genotypes.py
 generator,problems/inheritance-problems/large_crosses/unique_cross_phenotypes.py
 generator,problems/inheritance-problems/large_crosses/unique_gametes.py

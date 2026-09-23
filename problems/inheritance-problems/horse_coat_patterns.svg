@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 460" role="img" aria-labelledby="title description">
+  <title id="title">Three representative horse coat patterns</title>
+  <desc id="description">Original vector illustrations of a frame-overo horse, a leopard-complex horse, and one possible Pintaloosa coat combining large white patches and spots. Coat markings vary.</desc>
+  <defs>
+    <linearGradient id="field" x2="0" y2="1">
+      <stop offset="0" stop-color="#f5f7f4"/>
+      <stop offset="1" stop-color="#e7eee8"/>
+    </linearGradient>
+    <g id="horse">
+      <!-- Tail and legs sit behind the body. -->
+      <path d="M109 186 C80 174 65 155 52 139 C57 168 67 187 89 201 C63 207 51 220 47 241 C67 224 85 217 113 215 Z" fill="#503323"/>
+      <path d="M149 245 C146 281 151 312 137 350 L133 371 Q145 382 163 373 L172 350 L183 270 Z" fill="#69452d"/>
+      <path d="M206 248 C211 287 204 324 218 354 L213 374 Q227 383 245 374 L250 352 L245 262 Z" fill="#513928"/>
+      <path d="M277 242 C291 278 291 309 282 348 L278 371 Q292 380 310 372 L316 348 L321 266 Z" fill="#755034"/>
+      <path d="M322 225 C344 258 355 288 352 324 L361 349 Q374 353 388 342 L382 319 L375 262 L352 218 Z" fill="#543b2a"/>
+      <!-- Body, neck, head, and ears form a single readable silhouette. -->
+      <path d="M99 170 C121 148 154 137 203 137 C239 137 268 145 291 160
+        C305 141 318 116 327 91 L337 62 L350 48 L354 70 L369 45 L373 75
+        C390 79 405 91 409 106 L422 120 L411 128 L395 128 L390 150
+        C376 163 355 165 337 153 L326 197 C329 218 327 237 315 250
+        C293 269 240 271 190 267 C151 264 119 250 105 228
+        C97 211 94 188 99 170 Z" fill="#895b3b"/>
+      <path d="M289 160 C307 137 321 105 330 76 C334 64 342 59 348 58
+        L344 81 C360 72 373 76 382 84 C367 84 354 92 348 105
+        C334 132 326 164 316 190 Z" fill="#70482f"/>
+      <path d="M339 64 L337 43 Q346 51 350 62 M369 66 L380 47 Q383 61 378 77" fill="#503323"/>
+      <path d="M399 112 Q407 116 417 118 L408 124 L397 122 Z" fill="#d8bda7"/>
+      <path d="M357 91 Q361 88 365 91 Q362 95 358 94 Z" fill="#211d19"/>
+      <path d="M110 169 C142 146 170 141 202 142" fill="none" stroke="#d2ad80" stroke-width="5" stroke-linecap="round"/>
+      <path d="M133 371 L163 371 M214 373 L245 373 M279 371 L309 371 M359 347 L383 342" fill="none" stroke="#332a24" stroke-width="5" stroke-linecap="round"/>
+      <path d="M313 99 C304 116 292 133 279 145 C299 145 318 136 329 118 Z" fill="#4f3425"/>
+      <path d="M53 144 C61 171 79 188 103 194" fill="none" stroke="#3c2d22" stroke-width="5" stroke-linecap="round"/>
+    </g>
+    <clipPath id="coat-area">
+      <path d="M99 170 C121 148 154 137 203 137 C239 137 268 145 291 160 C305 141 318 116 327 91 L337 62 L350 48 L354 70 L369 45 L373 75 C390 79 405 91 409 106 L422 120 L411 128 L395 128 L390 150 C376 163 355 165 337 153 L326 197 C329 218 327 237 315 250 C293 269 240 271 190 267 C151 264 119 250 105 228 C97 211 94 188 99 170 Z"/>
+    </clipPath>
+  </defs>
+
+  <g font-family="system-ui, sans-serif" text-anchor="middle">
+    <g id="frame-overo-panel" transform="translate(10 10)">
+      <rect width="460" height="440" rx="16" fill="url(#field)" stroke="#d7e0da" stroke-width="2"/>
+      <path d="M34 383 H426" stroke="#b7c9bb" stroke-width="3" stroke-linecap="round"/>
+      <g transform="translate(16 -7) scale(1.02)">
+        <use href="#horse"/>
+        <g clip-path="url(#coat-area)" fill="#fffaf0">
+          <path d="M111 177 C126 163 149 160 167 169 C182 176 190 189 188 203 C186 220 171 233 155 232 C139 229 129 216 113 219 C105 210 104 190 111 177 Z"/>
+          <path d="M225 238 C241 224 266 223 284 230 C301 236 309 248 306 261 L235 271 C224 263 219 250 225 238 Z"/>
+          <path d="M326 100 C338 89 349 89 358 95 C349 110 344 124 338 141 C329 134 324 120 326 100 Z"/>
+        </g>
+      </g>
+      <text x="230" y="414" font-size="25" font-weight="700" fill="#293d32">Frame-overo</text>
+    </g>
+
+    <g id="leopard-complex-panel" transform="translate(490 10)">
+      <rect width="460" height="440" rx="16" fill="url(#field)" stroke="#d7e0da" stroke-width="2"/>
+      <path d="M34 383 H426" stroke="#b7c9bb" stroke-width="3" stroke-linecap="round"/>
+      <g transform="translate(16 -7) scale(1.02)">
+        <use href="#horse"/>
+        <path d="M101 174 C129 149 162 143 204 143 C242 142 269 150 292 166 C307 146 318 119 329 88 L342 61 L357 62 L369 57 L375 83 C393 88 404 99 409 112 L415 122 L398 131 L389 153 C374 164 354 165 337 153 L325 198 C327 219 324 238 312 250 C291 265 240 268 191 264 C151 260 119 247 105 227 C98 209 96 190 101 174 Z" fill="#f7f4ea"/>
+        <path d="M321 93 L342 62 L357 62 L369 57 L375 83 C392 88 404 100 409 112 L415 122 L398 131 L389 153 C372 161 355 161 337 151 L326 184 C320 151 319 120 321 93 Z" fill="#f7f4ea"/>
+        <g clip-path="url(#coat-area)" fill="#463b31">
+          <ellipse cx="128" cy="190" rx="7" ry="5"/><ellipse cx="151" cy="171" rx="6" ry="4"/>
+          <ellipse cx="177" cy="194" rx="8" ry="5"/><ellipse cx="202" cy="165" rx="6" ry="5"/>
+          <ellipse cx="223" cy="207" rx="7" ry="5"/><ellipse cx="249" cy="177" rx="8" ry="5"/>
+          <ellipse cx="272" cy="201" rx="6" ry="4"/><ellipse cx="292" cy="179" rx="7" ry="5"/>
+          <ellipse cx="143" cy="226" rx="6" ry="5"/><ellipse cx="169" cy="244" rx="8" ry="5"/>
+          <ellipse cx="194" cy="220" rx="6" ry="4"/><ellipse cx="216" cy="248" rx="7" ry="5"/>
+          <ellipse cx="244" cy="226" rx="8" ry="5"/><ellipse cx="269" cy="247" rx="6" ry="4"/>
+          <ellipse cx="291" cy="221" rx="7" ry="5"/><ellipse cx="308" cy="242" rx="5" ry="4"/>
+          <ellipse cx="347" cy="107" rx="4" ry="3"/><ellipse cx="367" cy="121" rx="4" ry="3"/>
+        </g>
+      </g>
+      <text x="230" y="414" font-size="25" font-weight="700" fill="#293d32">Leopard-complex</text>
+    </g>
+
+    <g id="pintaloosa-panel" transform="translate(970 10)">
+      <rect width="460" height="440" rx="16" fill="url(#field)" stroke="#d7e0da" stroke-width="2"/>
+      <path d="M34 383 H426" stroke="#b7c9bb" stroke-width="3" stroke-linecap="round"/>
+      <g transform="translate(16 -7) scale(1.02)">
+        <use href="#horse"/>
+        <g clip-path="url(#coat-area)">
+          <path d="M107 177 C121 162 143 160 160 169 C176 177 183 190 180 205 C177 221 162 232 147 229 C132 226 123 214 108 217 Z" fill="#fffaf0"/>
+          <path d="M223 239 C240 224 265 224 283 230 C300 236 308 249 305 261 L234 270 C222 262 217 250 223 239 Z" fill="#fffaf0"/>
+          <path d="M319 96 C330 84 344 83 354 91 C346 108 340 125 335 143 C324 134 317 117 319 96 Z" fill="#fffaf0"/>
+          <g fill="#453a30">
+            <ellipse cx="127" cy="190" rx="6" ry="4"/><ellipse cx="150" cy="174" rx="5" ry="4"/>
+            <ellipse cx="177" cy="194" rx="7" ry="4"/><ellipse cx="201" cy="169" rx="5" ry="4"/>
+            <ellipse cx="221" cy="207" rx="6" ry="4"/><ellipse cx="245" cy="179" rx="7" ry="4"/>
+            <ellipse cx="267" cy="204" rx="5" ry="4"/><ellipse cx="287" cy="183" rx="6" ry="4"/>
+            <ellipse cx="142" cy="224" rx="5" ry="4"/><ellipse cx="165" cy="241" rx="7" ry="4"/>
+            <ellipse cx="191" cy="222" rx="5" ry="4"/><ellipse cx="214" cy="245" rx="6" ry="4"/>
+            <ellipse cx="243" cy="227" rx="7" ry="4"/><ellipse cx="269" cy="246" rx="5" ry="4"/>
+            <ellipse cx="290" cy="223" rx="6" ry="4"/>
+          </g>
+        </g>
+      </g>
+      <text x="230" y="407" font-size="25" font-weight="700" fill="#293d32">Pintaloosa</text>
+      <text x="230" y="432" font-size="18" fill="#52655a">One possible coat; markings vary</text>
+    </g>
+  </g>
+</svg>

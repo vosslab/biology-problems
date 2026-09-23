@@ -50,17 +50,17 @@ def write_question(N, args):
 	color_amount = 240
 	color_wheel = bptools.make_color_wheel(color_amount, 0, 0, deg_step)
 
-	question_text = '<p>Look at the metabolic pathway in the table above.</p>'
-	question_text += '<p>Metabolite '
+	question_text = '<p>Look at the metabolic pathway in the table above. '
 	color = color_wheel[len(metabolite_letters_upper)]
-	question_text += f'<span style="color: {color};"><strong>{metabolite_letters_upper[-1]}</strong></span>'
-	question_text += ' is needed for the bacteria to grow.</p>'
+	question_text += f'<strong><span style="color: {color};">Metabolite {metabolite_letters_upper[-1]}</span></strong>'
+	question_text += ' is needed for the bacteria to grow. '
 
 	enzyme_num = random.choice(range(1, len(metabolite_letters_upper)-1))
 
-	question_text += f'<p>Consider a bacterial strain that is mutant for the gene coding for enzyme {enzyme_num:d}</p>'
-	question_text += '<p>Which nutrients, when added to minimal media, will help this bacteria grow?</p>'
-	question_text += '<p>Multiple answers may be correct.</p>'
+	question_text += 'Consider a bacterial strain that is mutant'
+	question_text += f'for the gene coding for <strong>enzyme {enzyme_num:d}</strong>. '
+	question_text += 'Which nutrients, when added to minimal media, will help this bacteria grow? '
+	question_text += '<i>Multiple answers may be correct.</i></p>'
 
 	question_text = enzyme_table(metabolite_letters_upper, color_wheel) + question_text
 

@@ -1,9 +1,21 @@
 # Changelog
 
+## 2026-09-23
+
+### Behavior or Interface Changes
+
+- Labeled horse genotypes by coat pattern and made the illustration and offspring table render
+  cleanly in ordinary HTML layouts.
+- Added a short hint that directs students to use lethal-white and fewspot counts in sequence.
+
 ## 2026-09-22
 
 ### Additions and New Features
 
+- Added a randomized horse coat-pattern genotype-inference question with six curated crosses,
+  offspring counts, and an editable three-coat SVG with a Blackboard-compatible PNG rendering.
+- Renamed the horse question generator to `horse_coat_pattern_inference.py`; kept `horses.py` as a
+  compatibility launcher.
 - Added `-c` / `--num-choices` to the multiple-choice statements BBQ generator for an explicit
   total answer count, including the correct choice.
 - Added the shared five-choice default and `-c` / `--num-choices` handling to the complementary
