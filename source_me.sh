@@ -1,7 +1,7 @@
 
 source $HOME/.bashrc
 
-source ~/nsh/PROBLEMS/qti-package-maker/source_me_for_testing.sh
+source ~/nsh/PROBLEMS/qti-package-maker/source_me.sh
 
 THIS_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
