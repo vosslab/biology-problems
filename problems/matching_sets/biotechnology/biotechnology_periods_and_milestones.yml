@@ -1,0 +1,32 @@
+# YAML file for Matching Questions
+topic: biotechnology_periods_and_milestones
+learning_objective: Match biotechnology history periods to representative milestones.
+source: Biotechnology LECT02 history slides and historical-period quiz examples
+dbsubject: Biotechnology
+
+items to match per question: 3
+
+key description: historical biotechnology period
+keys description: historical biotechnology periods
+value description: milestone from that period
+values description: milestones from those periods
+question override: Match each biotechnology period to a milestone first developed during that period.
+
+matching pairs:
+  Ancient times (before 1800):
+    - Selective cross-breeding of crops (about 10,000 BCE)
+    - Domestication of cattle (about 7000 BCE)
+    - Fermentation to make beer (about 6000 BCE)
+    - Baking leavened bread with yeast (about 4500 BCE)
+    - Smallpox vaccination introduced by Edward Jenner (1796)
+    - Producing vinegar through fermentation (ancient practice)
+  Classical times (1800-1945):
+    - Food canning developed to preserve food (1809)
+    - Milk pasteurization developed by Louis Pasteur (1860s)
+    - Penicillin discovered by Alexander Fleming (1928)
+  Modern times (1945-present):
+    - First successful birth through in vitro fertilization (1978)
+    - Recombinant human insulin approved for treatment (1982)
+    - Polymerase chain reaction developed (1983)
+    - First genetically engineered plants produced (1983)
+    - Dolly the sheep cloned from an adult cell (1996)

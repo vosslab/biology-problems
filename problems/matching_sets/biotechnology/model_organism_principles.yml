@@ -1,0 +1,30 @@
+# YAML file for Matching Questions
+topic: model_organism_principles
+learning_objective: Match model-organism research concepts to their descriptions.
+source: Fall 2026 Biotechnology Lecture 02, Overview of Model Organisms
+dbsubject: Biotechnology
+
+items to match per question: 5
+
+key description: model-organism research concept
+keys description: model-organism research concepts
+value description: description
+values description: descriptions
+question override: Match each model-organism research concept to the correct description.
+
+matching pairs:
+  Core purpose:
+    - Decode complex biological pathways through controlled, reproducible research.
+    - Support reproducible study of complex biological pathways under controlled conditions.
+  Selection criteria:
+    - Simple genetic structures, rapid life cycles, small size, and affordability.
+    - Traits such as simple genetics, fast life cycles, small size, and low cost.
+  Advantages:
+    - High tractability, ethical viability, and accelerated discovery cycles.
+    - Easier experimental manipulation, fewer ethical barriers, and faster research.
+  Limitations:
+    - Evolutionary divergence can limit the translation of results to human disease and therapy.
+    - Differences between a model species and humans can limit medical translation.
+  Industrial applications:
+    - Living factories that mass-produce medicines, biofuels, and materials.
+    - Engineered organisms that produce medicines, biofuels, and materials at scale.

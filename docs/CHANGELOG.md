@@ -1,5 +1,18 @@
 # Changelog
 
+## 2026-09-25
+
+### Additions and New Features
+
+- Added three biotechnology matching banks for model organisms: scientific names to common names
+  or groups, approximate generation times with exclusions for close-time pairs, and research
+  purposes, selection criteria, advantages, limitations, and industrial applications.
+- Expanded the model-organism ordering generator to sample a customizable 3 to 7 organisms from
+  a dictionary of seven ordered complexity categories, choosing a distinct category and then
+  one organism from that category; simplified the question stem.
+- Added a three-period biotechnology history matching bank with ancient, classical, and modern
+  milestones drawn from the LECT02 slides.
+
 ## 2026-09-23
 
 ### Fixes and Maintenance

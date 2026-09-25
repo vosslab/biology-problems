@@ -1,0 +1,34 @@
+# YAML file for Matching Questions
+topic: model_organism_generation_time
+learning_objective: Match selected model organisms to their approximate generation times.
+source: Existing Biotechnology model-organism generation-time question
+dbsubject: Biotechnology
+
+items to match per question: 3
+
+key description: model organism
+keys description: model organisms
+value description: approximate generation time
+values description: approximate generation times
+question override: Match each model organism to its approximate generation time.
+
+matching pairs:
+  Escherichia coli:
+    - 20 minutes
+    - About 20 minutes
+  Saccharomyces cerevisiae:
+    - 90 minutes
+    - About 1.5 hours
+  Caenorhabditis elegans:
+    - 3 days
+    - About 72 hours
+  Drosophila melanogaster:
+    - 14 days
+    - About 2 weeks
+  Mus musculus:
+    - 10 weeks
+    - About 70 days
+
+exclude pairs:
+  - [Escherichia coli, Saccharomyces cerevisiae]
+  - [Caenorhabditis elegans, Drosophila melanogaster]

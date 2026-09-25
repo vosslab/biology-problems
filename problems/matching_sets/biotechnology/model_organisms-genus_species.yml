@@ -1,0 +1,69 @@
+# YAML file for Matching Questions
+topic: model_organisms
+learning_objective: Match model-organism scientific names to familiar common names or groups.
+source: Fall 2026 Biotechnology Lecture 02 model-organism list
+dbsubject: Biotechnology
+
+items to match per question: 8
+
+key description: scientific name
+keys description: scientific names
+value description: common name or group
+values description: common names or groups
+question override: Match each model organism to its familiar common name or broad biological group.
+
+matching pairs:
+  Lambda phage:
+    - Bacteriophage
+    - Bacterial virus
+  Tobacco mosaic virus:
+    - Plant virus
+    - Virus that infects plants
+  Escherichia coli:
+    - Bacterium
+    - Common laboratory bacterium
+  Photosynthetic cyanobacteria:
+    - Cyanobacterium
+    - Photosynthetic bacterium
+  Saccharomyces cerevisiae:
+    - Yeast
+    - Baker's yeast
+  Tetrahymena thermophila:
+    - Ciliate
+    - Ciliated protist
+  Caenorhabditis elegans:
+    - Nematode
+    - Roundworm
+  Arabidopsis thaliana:
+    - Thale cress
+    - Mustard-family plant
+  Panicum virgatum:
+    - Switchgrass
+    - Perennial grass
+  Chlamydomonas reinhardtii:
+    - Green alga
+    - Unicellular green alga
+  Drosophila melanogaster:
+    - Fly
+    - Fruit fly
+  Danio rerio:
+    - Fish
+    - Zebrafish
+  Ambystoma mexicanum:
+    - Axolotl
+    - Mexican salamander
+  Xenopus laevis:
+    - Frog
+    - African clawed frog
+  Mus musculus:
+    - Mouse
+    - House mouse
+  Rattus norvegicus:
+    - Rat
+    - Norway rat
+  Oryctolagus cuniculus domesticus:
+    - Rabbit
+    - Domestic rabbit
+  Rhesus macaque:
+    - Monkey
+    - Rhesus monkey
