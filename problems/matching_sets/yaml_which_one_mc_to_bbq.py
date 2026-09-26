@@ -74,7 +74,12 @@ def makeQuestions(yaml_data, num_choices=None):
 #=======================
 def makeQuestions2(yaml_data, num_choices=None, flip=False):
 	matching_pairs_dict = yaml_data['matching pairs']
-	exclude_pairs_list = yaml_data.get('exclude pairs', [])
+	exclude_pairs_list = yaml_data.get('exclude pairs')
+	if exclude_pairs_list is None:
+		exclude_pairs_list = yaml_data.get('exclude_pairs') or []
+	distractor_only_list = []
+	if flip is False:
+		distractor_only_list = yaml_data.get('distractor only') or []
 
 	list_of_complete_questions = []
 
@@ -89,8 +94,9 @@ def makeQuestions2(yaml_data, num_choices=None, flip=False):
 			key_value_pairs.append(pair)
 	random.shuffle(key_value_pairs)
 	print('Preparing scenario pools from {0} items'.format(len(all_keys)))
-	if num_choices > len(all_keys):
-		print("No questions generated: num_choices exceeds available key count.")
+	choice_pool_size = len(all_keys) + len(distractor_only_list)
+	if num_choices > choice_pool_size:
+		print("No questions generated: num_choices exceeds available choice count.")
 		return list_of_complete_questions
 
 	exclude_pair_set = {tuple(sorted((a, b))) for a, b in exclude_pairs_list}
@@ -106,6 +112,7 @@ def makeQuestions2(yaml_data, num_choices=None, flip=False):
 
 	def _build_scenarios_for_key(key: str, target_count: int=24) -> list[tuple]:
 		other_keys = [k for k in all_keys if k != key]
+		other_keys.extend(distractor_only_list)
 		pick_count = num_choices - 1
 		if pick_count < 0 or pick_count > len(other_keys):
 			return []

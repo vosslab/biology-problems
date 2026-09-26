@@ -1,1 +1,0 @@
-../../tools/check_yaml.py

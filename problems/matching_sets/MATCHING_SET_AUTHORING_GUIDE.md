@@ -73,7 +73,9 @@ For MATCH questions, this repo will automatically color the `prompts_list` (left
 - `items to match per question`: how many key/value pairs appear in each matching question (default is `5` in the scripts)
 - `question override`: HTML/text that replaces the default question prompt
 - `replacement_rules`: a mapping of literal substring replacements (often used for coloring or consistent formatting)
-- `exclude pairs`: a list of 2-item lists like `[key_a, key_b]` to prevent those two keys from appearing in the same question
+- `exclude pairs`: a list of 2-item lists like `[key_a, key_b]` to prevent those two keys from appearing in the same question. `null` means no exclusions. `exclude_pairs` is accepted as the same field. The list must be shorter than the prompt list. Prompts stay short and reusable. Do not add an exclude pair for every wording of one choice.
+- `distractor only`: Latin-style wrong answers used only by the which-one multiple-choice generators. These strings are never matching keys and never correct answers. They are ignored when the question is flipped to ask for a meaning. `null` means none.
+- `unused choices`: extra right-hand answers for a matching question. They are shown, and none of them is a correct match. `null` means none. The note then says that one choice, or not every choice, will not be used.
 
 ### Optional (Recommended) Metadata Keys
 

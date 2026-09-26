@@ -27,7 +27,9 @@ QUESTIONS_PER_RUN = 2
 #=======================
 def permuteMatchingPairs(yaml_data, num_choices=None, max_questions=None):
 	matching_pairs_dict = yaml_data['matching pairs']
-	exclude_pairs_list = yaml_data.get('exclude pairs', [])
+	exclude_pairs_list = yaml_data.get('exclude pairs')
+	if exclude_pairs_list is None:
+		exclude_pairs_list = yaml_data.get('exclude_pairs') or []
 
 	list_of_complete_questions = []
 
@@ -38,7 +40,13 @@ def permuteMatchingPairs(yaml_data, num_choices=None, max_questions=None):
 			yaml_data['keys description'], yaml_data['values description']))
 	else:
 		question = yaml_data.get("question override")
-	question += '<p><i>Note:</i> Each choice will be used exactly once.</p>'
+	unused_choices = yaml_data.get('unused choices') or []
+	if len(unused_choices) == 0:
+		question += '<p><i>Note:</i> Each choice will be used exactly once.</p>'
+	elif len(unused_choices) == 1:
+		question += '<p><i>Note:</i> One choice remains unused.</p>'
+	else:
+		question += '<p><i>Note:</i> Some choices remain unused.</p>'
 	question = bptools.applyReplacementRulesToText(question, yaml_data.get('replacement_rules'))
 	print("")
 	#print("question", question)
@@ -80,6 +88,7 @@ def permuteMatchingPairs(yaml_data, num_choices=None, max_questions=None):
 			if isinstance(value, list):
 				value = random.choice(value)
 			matching_list.append(value)
+		matching_list.extend(unused_choices)
 		N += 1
 		answers_list = bptools.applyReplacementRulesToList(answers_list, yaml_data.get('replacement_rules'))
 		#answers_list = bptools.append_clear_font_space_to_list(answers_list)

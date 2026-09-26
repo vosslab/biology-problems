@@ -92,3 +92,38 @@ def test_yaml_make_which_one_multiple_choice_makeQuestions2_nonflip_and_flip(mon
 	for q in qs_flip:
 		if "Trait1" in q:
 			assert "<strong>TRAIT1</strong>" in q
+
+
+def test_womc_distractor_only_and_null_exclude_pairs(monkeypatch):
+	mod = import_from_repo_path("matching_sets/yaml_which_one_mc_to_bbq.py")
+
+	def fake_format(N, question_text, choices_list, answer_text):
+		return f"MC\t{N}\t{answer_text}\t{choices_list}\t{question_text}\n"
+
+	monkeypatch.setattr(bptools, "formatBB_MC_Question", fake_format)
+	random.seed(1)
+
+	yaml_data = {
+		"matching pairs": {
+			"in silico": ["performed via computer simulation"],
+			"in situ": ["in its original place"],
+		},
+		"keys description": "Latin phrases",
+		"key description": "Latin phrase",
+		"values description": "meanings",
+		"value description": "meaning",
+		"items to match per question": 3,
+		"exclude pairs": None,
+		"distractor only": ["in simulo"],
+	}
+
+	questions = mod.makeQuestions2(yaml_data, num_choices=3, flip=False)
+	assert len(questions) == 2
+	for question in questions:
+		assert "in simulo" in question
+		assert question.split("\t")[2] in ("in silico", "in situ")
+
+	flipped = mod.makeQuestions2(yaml_data, num_choices=2, flip=True)
+	assert len(flipped) == 2
+	for question in flipped:
+		assert "in simulo" not in question

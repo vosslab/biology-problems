@@ -50,7 +50,10 @@ UniqueKeyLoader.add_constructor(
 
 ALLOWED_KEYS = {
 	"dbsubject",
+	"distractor only",
+	"unused choices",
 	"exclude pairs",
+	"exclude_pairs",
 	"items to match per question",
 	"key description",
 	"keys description",
@@ -193,26 +196,129 @@ def _validate_matching_sets_yaml(yaml_path, doc):
 			)
 		)
 
-	exclude_pairs = doc.get("exclude pairs", None)
-	if exclude_pairs is not None:
+	for exclude_key in ("exclude pairs", "exclude_pairs"):
+		exclude_pairs = doc.get(exclude_key, None)
+		if exclude_pairs is None:
+			continue
 		if not isinstance(exclude_pairs, list):
 			issues.append(
 				YamlIssue(
 					yaml_path=yaml_path,
 					severity="ERROR",
-					message="`exclude pairs` must be a list when present",
+					message=f"`{exclude_key}` must be a list or null",
+				)
+			)
+			continue
+		for idx, pair in enumerate(exclude_pairs, start=1):
+			if not isinstance(pair, (list, tuple)) or len(pair) != 2:
+				issues.append(
+					YamlIssue(
+						yaml_path=yaml_path,
+						severity="ERROR",
+						message=f"`{exclude_key}` entry {idx} must be a 2-item list",
+					)
+				)
+		if len(exclude_pairs) >= len(matching_pairs):
+			issues.append(
+				YamlIssue(
+					yaml_path=yaml_path,
+					severity="ERROR",
+					message=(
+						f"`{exclude_key}` has {len(exclude_pairs)} pairs, which is not fewer than "
+						f"the {len(matching_pairs)} prompts. Keep prompts short and reusable, "
+						"and do not exclude a pair for every wording of a choice."
+					),
+				)
+			)
+
+	distractor_only = doc.get("distractor only", None)
+	if distractor_only is not None:
+		if not isinstance(distractor_only, list):
+			issues.append(
+				YamlIssue(
+					yaml_path=yaml_path,
+					severity="ERROR",
+					message="`distractor only` must be a list of strings or null",
 				)
 			)
 		else:
-			for idx, pair in enumerate(exclude_pairs, start=1):
-				if not isinstance(pair, (list, tuple)) or len(pair) != 2:
+			pair_keys = set(matching_pairs.keys())
+			seen_distractors = set()
+			for idx, item in enumerate(distractor_only, start=1):
+				if not isinstance(item, str) or item.strip() == "":
 					issues.append(
 						YamlIssue(
 							yaml_path=yaml_path,
 							severity="ERROR",
-							message=f"`exclude pairs` entry {idx} must be a 2-item list",
+							message=f"`distractor only` entry {idx} must be a non-empty string",
 						)
 					)
+					continue
+				if item in pair_keys:
+					issues.append(
+						YamlIssue(
+							yaml_path=yaml_path,
+							severity="ERROR",
+							message=f"`distractor only` entry duplicates a matching key: {item!r}",
+						)
+					)
+				if item in seen_distractors:
+					issues.append(
+						YamlIssue(
+							yaml_path=yaml_path,
+							severity="ERROR",
+							message=f"`distractor only` entry is repeated: {item!r}",
+						)
+					)
+				seen_distractors.add(item)
+
+	unused_choices = doc.get("unused choices", None)
+	if unused_choices is not None:
+		if not isinstance(unused_choices, list):
+			issues.append(
+				YamlIssue(
+					yaml_path=yaml_path,
+					severity="ERROR",
+					message="`unused choices` must be a list of strings or null",
+				)
+			)
+		else:
+			used_values = set()
+			for value in matching_pairs.values():
+				if isinstance(value, str):
+					used_values.add(value)
+				elif isinstance(value, list):
+					for item in value:
+						if isinstance(item, str):
+							used_values.add(item)
+			seen_unused = set()
+			for idx, item in enumerate(unused_choices, start=1):
+				if not isinstance(item, str) or item.strip() == "":
+					issues.append(
+						YamlIssue(
+							yaml_path=yaml_path,
+							severity="ERROR",
+							message=f"`unused choices` entry {idx} must be a non-empty string",
+						)
+					)
+					continue
+				if item in used_values:
+					issues.append(
+						YamlIssue(
+							yaml_path=yaml_path,
+							severity="ERROR",
+							message=f"`unused choices` entry duplicates a correct answer: {item!r}",
+						)
+					)
+				if item in seen_unused:
+					issues.append(
+						YamlIssue(
+							yaml_path=yaml_path,
+							severity="ERROR",
+							message=f"`unused choices` entry is repeated: {item!r}",
+						)
+					)
+				seen_unused.add(item)
 
 	for key, value in matching_pairs.items():
 		if isinstance(key, str):

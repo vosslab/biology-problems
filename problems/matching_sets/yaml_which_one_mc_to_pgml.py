@@ -105,14 +105,21 @@ def build_perl_question_data(yaml_data, num_choices, flip, replacement_rules, co
 	Build Perl code for question data arrays.
 	"""
 	matching_pairs_dict = yaml_data['matching pairs']
-	exclude_pairs_list = yaml_data.get('exclude pairs', [])
+	exclude_pairs_list = yaml_data.get('exclude pairs')
+	if exclude_pairs_list is None:
+		exclude_pairs_list = yaml_data.get('exclude_pairs') or []
 
 	if num_choices is None:
 		num_choices = yaml_data.get('items to match per question', 5)
 
 	all_keys = list(matching_pairs_dict.keys())
+	combination_pool = list(all_keys)
+	if not flip:
+		for distractor in yaml_data.get('distractor only') or []:
+			if distractor not in combination_pool:
+				combination_pool.append(distractor)
 	key_value_pairs = build_key_value_pairs(matching_pairs_dict)
-	all_combs = generate_combinations(all_keys, num_choices, exclude_pairs_list)
+	all_combs = generate_combinations(combination_pool, num_choices, exclude_pairs_list)
 
 	# Build questions data
 	questions_data = []
