@@ -126,15 +126,16 @@ def make_question_text(scenario: tuple) -> str:
 
 	question_text = (
 		"<p>A Pintaloosa is a horse from a Pinto (or Paint) x Appaloosa cross. It may show "
-		"either pattern system, both, or neither. These drawings show "
-		"representative coats; they do not diagnose a horse's genotype.</p>"
+		"either pattern system, both, or neither. These drawings show the five coats "
+		"used in the table: neither modeled pattern, frame-overo, leopard-complex, "
+		"fewspot, and Pintaloosa (both patterns). They do not diagnose a horse's genotype.</p>"
 	)
 	image_alt = (
-		"Three representative horse coats: frame-overo, leopard-complex spotting, "
-		"and one Pintaloosa example with both markings."
+		"Five representative horse coats: neither modeled pattern, frame-overo, "
+		"leopard-complex, fewspot, and Pintaloosa with both patterns."
 	)
 	question_text += (
-		f'<p><img src="{image_src}" width="760" '
+		f'<p><img src="{image_src}" width="1100" '
 		f'style="max-width: 100%; height: auto;" alt="{image_alt}" /></p>'
 	)
 	question_text += (

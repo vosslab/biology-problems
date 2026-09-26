@@ -4,6 +4,17 @@
 
 ### Additions and New Features
 
+- The horse coat figure has five teaching coats: neither modeled pattern, frame-overo,
+  leopard-complex, fewspot, and Pintaloosa. Fewspot is a mostly white horse with a few
+  dark spots. The plain chestnut is labeled neither modeled pattern.
+- Every coat is masked to one union of the horse paths, and that same contour is the
+  only outer stroke. Coat colors no longer use a separate clip per body piece.
+- The frame shoulder patch is slightly less even. Placement, amount of white,
+  and the blur finish are unchanged. Pintaloosa reuses that marking.
+- The shared silhouette rounds the sharp step where the belly meets the groin.
+- The horse coat question shows `horse_coat_patterns.png`, the five-coat figure, at a
+  width that keeps those coats readable.
+
 - Matching YAML may list `distractor only` phrases. Which-one questions use them as extra wrong
   answers. Matching questions ignore them. `exclude pairs: null` and `exclude_pairs: null` mean
   no excluded pairs.
