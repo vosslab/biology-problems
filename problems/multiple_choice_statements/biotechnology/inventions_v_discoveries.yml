@@ -1,0 +1,53 @@
+topic: inventions versus discoveries
+learning_objective: Distinguish patentable inventions from discoveries of nature, natural phenomena, and scientific facts.
+override_question_true: Which one of the following is patentable rather than a discovery?
+override_question_false: Which one of the following is a discovery rather than a patentable invention?
+connection_words: null
+true_statements:
+  truth1: invention
+  truth2: monoclonal antibodies
+  truth3: mercury thermometer
+  truth4: PCR amplification method
+  truth5: transgenic algae for biofuels
+  truth6: newly synthesized drug
+  truth7: atomic nuclear bomb
+  truth8: the refrigerator
+  truth9: the light bulb
+  truth10: a vaccine for rabies
+  truth20: the airplane
+  truth21: a compass
+  truth22: the telephone
+  truth23: the steam engine
+  truth24: the microscope
+  truth25: the printing press
+  truth26: the bicycle
+  truth27: a computer
+  truth28: the sewing machine
+  truth29: a mousetrap
+  truth30: a CRISPR gene-editing method
+false_statements:
+  false31: discovery
+  false32: breast cancer causing gene
+  false33: deep sea thermophilic bacteria
+  false34: new radioactive element
+  false35: bacteria can cause disease
+  false36: electricity
+  false37: sequence of the human genome
+  false38: atoms are made from electrons and protons
+  false39: X-ray light can see bones
+  false40: structure of DNA
+  false41: nitrogen fixation in bacteria
+  false42: mechanism that allows hummingbirds to fly
+  false43: fire
+  false44: gravity
+  false45: photosynthesis
+  false46: a new species of frog
+  false47: the planet Neptune
+  false48: mitochondria
+  false49: the speed of light
+  false50: water boils at a fixed temperature
+  false51: a wild soil fungus that makes penicillin
+  false52: the genetic code
+  false53: evolution by natural selection
+conflict_rules: null
+dbsubject: Biotechnology

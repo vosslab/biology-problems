@@ -1,0 +1,153 @@
+topic: fermentation
+override_question_true: Which one of the following is fermented?
+override_question_false: Which one of the following is NOT fermented?
+connection_words: null
+true_statements:
+  truth1a: beer
+  truth1b: ale
+  truth1c: lager
+  truth1d: Double India Pale Ale
+  truth2a: wine
+  truth2b: red wine
+  truth2c: white wine
+  truth3a: leavened bread
+  truth3b: baker's yeast bread
+  truth3c: sourdough bread
+  truth3d: bagels
+  truth4a: cheese
+  truth4b: cheddar cheese
+  truth4c: Swiss cheese
+  truth4d: blue cheese
+  truth5a: yogurt
+  truth5b: Greek yogurt
+  truth5c: skyr
+  truth6a: vinegar
+  truth6b: apple cider vinegar
+  truth6c: balsamic vinegar
+  truth6d: rice vinegar
+  truth7: sauerkraut
+  truth8: kimchi
+  truth9a: soy sauce
+  truth9b: tamari
+  truth10: miso
+  truth20: tempeh
+  truth21: kombucha
+  truth22: kefir
+  truth23: sake
+  truth24: hard cider
+  truth25: sour cream
+  truth26: cultured buttermilk
+  truth27a: salami
+  truth27b: pepperoni
+  truth27c: summer sausage
+  truth28: fish sauce
+  truth29: natto
+  truth30: mead
+  truth31a: Yakult
+  truth31b: probiotic yogurt drink
+  truth32: cultured cottage cheese
+  truth33: gochujang
+  truth34: Worcestershire sauce
+  truth35: creme fraiche
+  truth36a: feta cheese
+  truth36b: parmesan cheese
+  truth37: lassi
+  truth38: doenjang
+false_statements:
+  false11a: lemonade
+  false11b: limeade
+  false12a: coffee
+  false12b: brewed coffee
+  false12c: iced coffee
+  false12d: espresso
+  false13: orange juice
+  false14a: fresh milk
+  false14b: pasteurized milk
+  false15: olive oil
+  false16: maple syrup
+  false17: honey
+  false18a: unleavened bread
+  false18b: matzo
+  false19a: granulated sugar
+  false19b: table sugar
+  false41: apple juice
+  false42a: grape juice
+  false42b: sparkling grape juice
+  false43: cranberry juice
+  false44: skim milk
+  false45: whole milk
+  false46: vegetable oil
+  false47: canola oil
+  false48: coconut oil
+  false49: brown sugar
+  false50: powdered sugar
+  false51: corn tortilla
+  false52: flour tortilla
+  false101: fruit punch
+  false102: cola
+  false103: root beer
+  false104: ginger ale
+  false105: orange soda
+  false106: lemon-lime soda
+  false107a: club soda
+  false107b: sparkling water
+  false108: coconut water
+  false109: soy milk
+  false110: almond milk
+  false111: oat milk
+  false112: rice milk
+  false113: tofu
+  false114a: edamame
+  false114b: fresh soybeans
+  false115: ice cream
+  false116: milkshake
+  false117a: whipped cream
+  false117b: heavy cream
+  false117c: fresh cream
+  false118: half-and-half
+  false119: ketchup
+  false120: mayonnaise
+  false121: yellow mustard
+  false122a: grape jelly
+  false122b: strawberry jam
+  false123: peanut butter
+  false124a: dried pasta
+  false124b: spaghetti
+  false125: steamed white rice
+  false126: corn flakes
+  false127: instant oatmeal
+  false128: granola
+  false129: popcorn
+  false130a: potato chips
+  false130b: tortilla chips
+  false131a: mashed potatoes
+  false131b: boiled potatoes
+  false132: french fries
+  false133: pancakes
+  false134: sugar cookies
+  false135: layer cake
+  false136a: baking-powder biscuits
+  false136b: baking-soda bread
+  false137: saltine crackers
+  false138a: coleslaw
+  false138b: fresh cabbage
+  false138c: shredded cabbage
+  false139: molasses
+  false140: corn syrup
+  false141: agave nectar
+  false142: hot cocoa
+  false143: chocolate milk
+  false144: fruit smoothie
+  false145: margarine
+  false146: hummus
+  false147: paneer
+  false148: beef jerky
+  false150a: fresh cucumbers
+  false150b: cucumber salad
+  false151: fresh mozzarella
+  false152: ricotta cheese
+  false153: pita chips
+  false154: malt extract
+  false155: sweet tea
+conflict_rules: null
+dbsubject: Biotechnology

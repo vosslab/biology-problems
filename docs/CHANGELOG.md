@@ -4,6 +4,9 @@
 
 ### Additions and New Features
 
+- Matching YAML may list `distractor only` phrases. Which-one questions use them as extra wrong
+  answers. Matching questions ignore them. `exclude pairs: null` and `exclude_pairs: null` mean
+  no excluded pairs.
 - Added three biotechnology matching banks for model organisms: scientific names to common names
   or groups, approximate generation times with exclusions for close-time pairs, and research
   purposes, selection criteria, advantages, limitations, and industrial applications.
@@ -12,6 +15,41 @@
   one organism from that category; simplified the question stem.
 - Added a three-period biotechnology history matching bank with ancient, classical, and modern
   milestones drawn from the LECT02 slides.
+- Matching banks must have fewer exclude pairs than prompts, so prompts stay short and
+  reusable instead of excluding every wording of a choice.
+- Added an intellectual-property matching bank. Trademark, copyleft, copyright, and patent
+  are the prompts, and each description is a choice used only once.
+- Matching questions can list `unused choices`, extra answers that are shown but never
+  correct. The transgenic-crop bank uses the agencies as prompts and the regulatory jobs as choices.
+- Added one clinical-trial matching bank for phases 0 through 4. The phases are the prompts.
+  Each phase has two choices: who is enrolled, and what the phase is trying to learn.
+- Added an inventions-versus-discoveries statement bank. Patentable choices are manufactured
+  or engineered items such as PCR, a drug, and transgenic algae. Non-patentable choices are
+  discoveries such as a natural gene, electricity, and the structure of DNA. Later additions
+  include obvious inventions such as the telephone and the microscope, and obvious discoveries
+  such as gravity, photosynthesis, and a new species of frog. Geographic finds are not used
+  as discoveries.
+- Added an environmental 16S rDNA survey ordering question. The six steps run from
+  sample collection through DNA extraction, PCR, sequencing, sequence clustering,
+  and bacterial relative-abundance graphs.
+- Added a protein-stability statement bank. Stable features are cross-strand disulfide bonds,
+  a high melting temperature, large hydrophobic core residues, and proline in place of glycine.
+  Each false statement is the opposite claim and shares a statement number with its true pair.
+  Later additions from the protein talking points cover PEST sequences, the N-terminal amino acid,
+  opposite charge at an alpha-helix end, and asparagine or glutamine at high temperature.
+- Added a proteomics-versus-metabolomics matching bank. Metabolomics covers chemical
+  fingerprints, the cell's physiological snapshot, and metabolite abundance. Proteomics covers
+  gene-product synthesis, accumulation, and degradation, without using the word protein in the clue.
+- Added a biotechnology matching bank for Latin phrases used to say where work is done,
+  including in silico, in situ, in vivo, in vitro, in natura, in ovo, in utero, and ex vivo.
+- Added a fermentation statement bank of ordinary grocery foods. True choices include
+  beer, Double India Pale Ale, wine, sourdough bread, cultured cottage cheese, Yakult, kefir,
+  sauerkraut, kimchi, miso, doenjang, gochujang, and kombucha. False choices are close
+  non-fermented foods such as fresh cabbage, edamame, tofu, grape juice, fresh mozzarella,
+  ricotta, and baking-soda bread. Pickles, cultured butter, chorizo, and prosciutto are
+  omitted because supermarket versions are not reliably fermented. Plain cottage cheese
+  and sriracha are also omitted: cottage cheese is sometimes only acidified, and
+  sriracha mash is often fermented.
 
 ## 2026-09-23
 

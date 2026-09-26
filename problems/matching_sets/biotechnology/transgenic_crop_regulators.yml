@@ -1,0 +1,28 @@
+topic: US regulation of transgenic crops
+learning_objective: Match each federal agency to the job it does in regulating a transgenic crop.
+items to match per question: 4
+question override: Match each federal agency to its role in regulating transgenic crops.
+key description: federal agency
+keys description: federal agencies
+value description: regulatory job
+values description: regulatory jobs
+matching pairs:
+  Health Inspection Service of the U.S. Department of Agriculture (USDA):
+  - Approves plan for a transgenic crop to be tested in a farmer's field (i.e. outside a laboratory).
+  - Decides whether a transgenic crop may be planted or moved outside the laboratory.
+  - Grants the permit for an outdoor field trial of a transgenic crop.
+  Food and Drug Administration (FDA):
+  - Tests for possible allergies, toxicity, and nutrition when the transgenic crop is intended to be eaten.
+  - Reviews the safety of food made from a transgenic crop before people eat it.
+  - Checks whether eating a transgenic crop could cause an allergic or toxic reaction.
+  National Institute of Health (NIH):
+  - Provides guidelines that regulate the transgenes and where the transgenic crop can be grown.
+  - Sets the rules for which transgenes may be used and where the resulting crop is allowed.
+  - Writes the guidelines that limit how a transgenic crop is constructed and grown.
+  Environmental Protection Agency (EPA):
+  - Evaluates for potential effects on animals and insects that inhabit the farmers' fields.
+  - Checks whether a transgenic crop harms insects or other animals living in the field.
+  - Assesses the environmental effect of a transgenic crop on the animals around the farm.
+distractor only:
+  - Center for Disease Control (CDC)
+dbsubject: Biotechnology

@@ -1,0 +1,34 @@
+topic: protein stability
+connection_words: null
+true_statements:
+  truth1: Proteins that completely lack disulfide bonds are less stable than other proteins.
+  truth2: Proteins that have several cross-strand disulfide bonds are more stable than other proteins.
+  truth3: Proteins that have low melting temperatures are less stable than other proteins.
+  truth4: Proteins that have high melting temperatures are more stable than other proteins.
+  truth5: Proteins that have small charged residues in their core are less stable than other proteins.
+  truth6: Proteins that have large hydrophobic residues in their core are more stable than other proteins.
+  truth7: Proteins that have several glycine residues but only a few proline residues are less stable than other proteins.
+  truth8: Proteins that have several proline residues but only a few glycine residues are more stable than other proteins.
+  truth9: Proteins that contain PEST sequences are less stable than other proteins.
+  truth10: Proteins whose PEST sequences have been removed last longer than they did before.
+  truth11: The N-terminal amino acid of a mature protein affects how long that protein lasts.
+  truth12: An amino acid of opposite charge near the end of an alpha helix makes that helix more stable.
+  truth13: Asparagine and glutamine make proteins less stable at high temperature because they lose their amide groups.
+  truth14: Replacing asparagine or glutamine with threonine or serine protects a protein from heat-driven loss of stability.
+false_statements:
+  false1: Proteins that completely lack disulfide bonds are more stable than other proteins.
+  false2: Proteins that have several cross-strand disulfide bonds are less stable than other proteins.
+  false3: Proteins that have low melting temperatures are more stable than other proteins.
+  false4: Proteins that have high melting temperatures are less stable than other proteins.
+  false5: Proteins that have small charged residues in their core are more stable than other proteins.
+  false6: Proteins that have large hydrophobic residues in their core are less stable than other proteins.
+  false7: Proteins that have several glycine residues but only a few proline residues are more stable than other proteins.
+  false8: Proteins that have several proline residues but only a few glycine residues are less stable than other proteins.
+  false9: Proteins that contain PEST sequences are more stable than other proteins.
+  false10: Proteins whose PEST sequences have been removed break down faster than they did before.
+  false11: The N-terminal amino acid of a mature protein has no effect on how long that protein lasts.
+  false12: An amino acid of the same charge near the end of an alpha helix makes that helix more stable.
+  false13: Asparagine and glutamine make proteins more stable at high temperature.
+  false14: Replacing asparagine or glutamine with threonine or serine makes a protein less stable when heated.
+conflict_rules: null
+dbsubject: Biotechnology

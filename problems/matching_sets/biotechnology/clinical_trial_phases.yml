@@ -1,0 +1,25 @@
+topic: clinical trial phases
+learning_objective: Match phases 0 through 4 to who is enrolled and to what the phase is trying to learn.
+items to match per question: 5
+question override: Match each clinical-trial phase to the correct description.
+key description: clinical-trial phase
+keys description: clinical-trial phases
+value description: description
+values description: descriptions
+matching pairs:
+  Phase 0:
+  - Altruistic volunteers who accept an invasive study that offers no treatment benefit
+  - Give a dose too small to treat disease, only to see what the drug does in the body
+  Phase 1:
+  - Healthy volunteers, or terminally ill volunteers when healthy people should avoid the drug
+  - Find the safe dosage range and the earliest side effects
+  Phase 2:
+  - A few hundred randomized patients chosen with strict eligibility rules
+  - Test whether the drug is effective against the disease and record its side effects
+  Phase 3:
+  - Thousands of patients who have the condition the drug is meant to treat
+  - Compare the drug with other treatments while continuing to monitor side effects
+  Phase 4:
+  - Patients who are already taking the approved drug
+  - Monitor long-term effects after the drug is already being prescribed
+dbsubject: Biotechnology

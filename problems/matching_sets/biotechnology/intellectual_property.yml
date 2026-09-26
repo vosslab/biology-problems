@@ -1,0 +1,26 @@
+topic: types of intellectual property
+learning_objective: Match trademark, copyleft, copyright, and patent to what each one protects.
+items to match per question: 4
+question override: Match each type of intellectual property to the correct description.
+key description: type of intellectual property
+keys description: types of intellectual property
+value description: description
+values description: descriptions
+matching pairs:
+  Trademark:
+  - gives its owner the exclusive right to a recognizable insignia, phrase, word, or symbol
+  - protects a brand name or logo that identifies the source of a product
+  - stops another company from using a confusingly similar name or symbol
+  Copyleft:
+  - an arrangement where creative work may be distributed freely and modified such that any derivatives are also free
+  - lets people copy and change a work only if they share their changes under the same free terms
+  - requires that modified versions of a free work stay free for others to use
+  Copyright:
+  - gives its owner the exclusive right to make copies of a creative work, usually for a limited time
+  - protects a book, song, or software from being copied for a limited time
+  - covers the expression of a creative work rather than the underlying idea
+  Patent:
+  - gives its owner the exclusive right to exclude others from making an invention
+  - protects a new and useful invention for a limited time
+  - lets the inventor stop others from making, using, or selling the invention
+dbsubject: Biotechnology

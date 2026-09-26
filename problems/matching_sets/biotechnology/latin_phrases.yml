@@ -1,0 +1,49 @@
+topic: Latin phrases in biotechnology
+learning_objective: Match common biotechnology Latin phrases to where or how the work is done.
+items to match per question: 5
+key description: Latin phrase
+keys description: Latin phrases
+value description: meaning
+values description: meanings
+matching pairs:
+  in silico:
+  - performed via computer simulation
+  - performed on a computer
+  in situ:
+  - in its original place
+  - at the original location
+  in vivo:
+  - inside a living organism
+  - within a living cell or organism
+  in vitro:
+  - inside a test tube or Petri dish
+  - in laboratory glassware
+  in natura:
+  - field work outside the laboratory
+  - in the natural environment
+  in ovo:
+  - inside an egg
+  - within an egg
+  in utero:
+  - inside the uterus
+  - within the womb
+  ex vivo:
+  - using living tissue removed from the organism
+  - outside the body with tissue that is still alive
+exclude pairs: null
+distractor only:
+  - in simulo
+  - in simu
+  - in techno
+  - in origino
+  - in celio
+  - in tubio
+  - in petri
+  - in papyro
+  - in vacuo
+  - in unnatura
+  - in electro
+  - in ovum
+  - in seed
+  - in spawna
+dbsubject: Biotechnology

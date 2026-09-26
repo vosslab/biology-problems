@@ -1,0 +1,26 @@
+topic: proteomics versus metabolomics
+learning_objective: Distinguish proteomics from metabolomics by what each technique measures in a cell.
+items to match per question: 2
+key description: technique
+keys description: techniques
+value description: description
+values description: descriptions
+matching pairs:
+  Metabolomics:
+  - studies the unique chemical fingerprints that cellular processes leave behind
+  - gives an instantaneous snapshot of the physiology of a cell
+  - studies the relative abundance of chemical intermediates and products of a cell
+  - studies the small molecules a cell uses and releases
+  - measures the pool of small molecules, usually under 1 kDa
+  - shows whether enzymes have changed the levels of those small molecules
+  - shows whether catalysts have changed the levels of the cell's small molecules
+  Proteomics:
+  - studies the degradation rate of the gene products a cell has already made
+  - studies the set of gene products being produced in a cell
+  - studies the entire set of translated gene products made by an organism
+  - measures when and where translated gene products accumulate
+  - studies the rate at which a cell synthesizes its gene products
+  - studies which enzymes are present and active
+  - studies which biological catalysts are present and active
+exclude pairs: null
+dbsubject: Biotechnology
