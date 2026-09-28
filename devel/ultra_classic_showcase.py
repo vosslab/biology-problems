@@ -303,7 +303,7 @@ def convert_one(bbq_path: str, qti_maker_dir: str, output_dir: str, env: dict):
 #======================================
 def clean_prior_outputs(output_dir: str):
 	"""Remove this script's prior top-level outputs so each run leaves a clean set."""
-	patterns = ['bbq-*-questions.txt', 'qti21-*.zip', 'blackboard_export_zip-*.zip']
+	patterns = ['bbq-*-questions.txt', 'qti21-*.zip', 'bez-*.zip', 'blackboard_export_zip-*.zip']
 	for pattern in patterns:
 		for path in glob.glob(os.path.join(output_dir, pattern)):
 			os.remove(path)

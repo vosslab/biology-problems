@@ -5,7 +5,7 @@
 The repository provides standalone Python scripts under [problems/](../problems/) that generate biology quiz and homework items. Generators combine local logic with shared helpers in [bptools.py](../bptools.py) and reference inputs from [data/](../data/) plus content banks under [problems/matching_sets/](../problems/matching_sets/) and [problems/multiple_choice_statements/](../problems/multiple_choice_statements/).
 
 Outputs commonly include Blackboard text files (`bbq-*.txt`), validated Blackboard pool ZIPs
-(`blackboard_export_zip-*.zip`), QTI packages (`qti*.zip`), and HTML previews
+(`bez-*.zip`), QTI packages (`qti*.zip`), and HTML previews
 (`selftest-*.html`) as listed in [.gitignore](../.gitignore).
 
 ## Major components

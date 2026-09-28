@@ -1,5 +1,22 @@
 # Changelog
 
+## 2026-09-28
+
+### Behavior or Interface Changes
+
+- Blackboard export (`-B` / `--bbexport`) now writes `bez-<name>.zip` beside the BBQ
+  question file. Updated export tests, documentation, ignore rules, and cleanup
+  patterns; cleanup still recognizes older `blackboard_export_zip-*.zip` files.
+
+### Fixes
+
+- Image export (`-B -I`) now renders every HTML table as a packaged PNG through
+  `qti_package_maker`, including metabolic pathways and unstyled data tables.
+  Nested tables are captured inside the outer table's image.
+- Image export (`-I`) now exits with the Python Playwright headless-browser install
+  command when its browser executable is missing, preserving the saved BBQ file.
+  Other rendering errors retain their original traceback.
+
 ## 2026-09-25
 
 ### Additions and New Features

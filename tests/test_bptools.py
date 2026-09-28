@@ -197,7 +197,7 @@ def test_blackboard_export_keeps_bbq_and_writes_zip(tmp_path):
 	questions = ["MC\tWhat is 2+2?\t3\tincorrect\t4\tcorrect\n"]
 	bptools.write_questions_to_file(questions, bbq_path, bbexport=True)
 
-	export_path = tmp_path / "blackboard_export_zip-minimal.zip"
+	export_path = tmp_path / "bez-minimal.zip"
 	assert (bbq_path.is_file(), export_path.is_file()) == (True, True)
 
 
@@ -208,7 +208,7 @@ def test_blackboard_export_rejects_order_and_preserves_bbq(tmp_path):
 	with pytest.raises(ValueError, match="ORDER"):
 		bptools.write_questions_to_file(questions, bbq_path, bbexport=True)
 
-	export_path = tmp_path / "blackboard_export_zip-order.zip"
+	export_path = tmp_path / "bez-order.zip"
 	assert (bbq_path.is_file(), export_path.exists()) == (True, False)
 
 
@@ -252,6 +252,33 @@ def test_blackboard_export_passes_html_to_image_to_package_maker(tmp_path, monke
 	bptools.export_bbq_to_blackboard(bbq_path, html_to_image=True)
 
 	assert FakePacker.save_calls == [("blackboard_export_zip", {"html_to_image": True})]
+
+
+@pytest.mark.parametrize("missing_browser", [True, False])
+def test_image_export_browser_failure_preserves_questions(tmp_path, monkeypatch, missing_browser):
+	from playwright.sync_api import Error
+	message = "BrowserType.launch: Executable doesn't exist at /missing/browser"
+	if not missing_browser:
+		message = "BrowserType.launch: Target page, context or browser has been closed"
+	error = Error(message)
+
+	def fail_save(*args, **kwargs):
+		raise error
+
+	monkeypatch.setattr(bptools.package_interface.QTIPackageInterface, "save_package", fail_save)
+	bbq_path = tmp_path / "bbq-image-questions.txt"
+	questions = ["MC\tQuestion?\tNo\tincorrect\tYes\tcorrect\n"]
+	expected_error = SystemExit if missing_browser else Error
+	with pytest.raises(expected_error) as caught:
+		bptools.write_questions_to_file(questions, bbq_path, bbexport=True, html_to_image=True)
+	if missing_browser:
+		assert "python3 -m playwright install --only-shell chromium" in str(caught.value)
+		assert caught.value.code != 0
+	else:
+		assert caught.value is error
+	assert "Question?" in bbq_path.read_text()
+	assert not list(tmp_path.glob(".bez-*"))
+	assert not list(tmp_path.glob("*.zip"))
 
 
 def test_add_question_format_args_parses_expected_formats():

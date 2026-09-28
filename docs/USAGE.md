@@ -17,7 +17,7 @@ Add `--bbexport` when Blackboard needs an importable pool ZIP:
 python3 problems/biochemistry-problems/alpha_helix_h-bonds.py --mc -d 5 --bbexport
 ```
 
-Add `-I` when the Blackboard ZIP must convert supported HTML drawings into packaged PNGs:
+Add `-I` when the Blackboard ZIP must convert every HTML table into packaged PNGs:
 
 ```bash
 python3 problems/dna_profiling-problems/blood_type_agglutination_test.py -d 5 -B -I
@@ -33,7 +33,7 @@ Generators built on `bptools` share a common argument set (see any script's
 - `-c`: number of answer choices.
 - `--mc`, `--ma`, `--format {mc,ma,num}`: select the question format.
 - `-B`, `--bbexport`: also create a Blackboard pool export ZIP.
-- `-I`, `--html-to-image`: convert supported HTML drawings to packaged PNGs in a `-B` ZIP.
+- `-I`, `--html-to-image`: convert every HTML table and RDKit canvas to packaged PNGs in a `-B` ZIP.
 - `--hidden-terms`: enable hidden decoy terms for Blackboard Learn Original.
 - `--noclick-div`: enable the no-click wrapper for Blackboard Learn Original.
 - `-h`, `--help`: show the full flag list for that script.
@@ -56,7 +56,7 @@ can have separate Ultra limitations; see the
 ### Blackboard ZIP export
 
 With `--bbexport`, each generator first retains its normal `bbq-<name>-questions.txt` file, then
-creates `blackboard_export_zip-<name>.zip` beside it through the `qti_package_maker` library.
+creates `bez-<name>.zip` beside it through the `qti_package_maker` library.
 Supported export types are `MC`, `MA`, `MATCH`, `FIB`, `MULTI_FIB`, and `NUM`. Other types, including
 `ORDER`, raise a clear error because the Blackboard export engine has no writer for them.
 
@@ -64,10 +64,10 @@ The ZIP replaces its destination only after it opens successfully and contains t
 manifest and pool data. A failed conversion retains the BBQ text for diagnosis and removes the new
 temporary ZIP.
 
-`-I` is opt-in and requires `-B`. It uses `qti-package-maker` to screenshot table-cell drawings
+`-I` is opt-in and requires `-B`. It uses `qti-package-maker` to screenshot every HTML table
 and RDKit canvases, then embeds the resulting PNGs in the Blackboard ZIP. It requires the Python
 `playwright` package and its Chromium browser; after installing package dependencies, run
-`playwright install chromium`. Ordinary data tables remain HTML. Missing RDKit only affects banks
+`playwright install chromium`. Nested tables are included in the outer table's image. Missing RDKit only affects banks
 that contain RDKit canvases.
 
 ## Examples
@@ -90,7 +90,8 @@ that contain RDKit canvases.
   [problems/multiple_choice_statements/](../problems/multiple_choice_statements/),
   and images in [images/](../images/).
 - Outputs (written to the repo root, ignored by git): Blackboard `bbq-*.txt`
-  files, Blackboard `blackboard_export_zip-*.zip` packages, QTI `qti*.zip` packages, and
+  files, Blackboard `bez-*.zip` packages (and older `blackboard_export_zip-*.zip` files),
+  QTI `qti*.zip` packages, and
   `selftest-*.html` previews.
 
 ## Known gaps

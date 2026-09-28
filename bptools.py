@@ -119,7 +119,7 @@ def add_bbexport_args(parser: argparse.ArgumentParser) -> argparse.ArgumentParse
 	parser.set_defaults(bbexport=False)
 	parser.add_argument(
 		'-I', '--html-to-image', dest='html_to_image', action='store_true',
-		help='Convert Blackboard HTML drawings to packaged PNGs (requires -B).'
+		help='Convert all HTML tables and RDKit canvases to packaged PNGs (requires -B).'
 	)
 	parser.set_defaults(html_to_image=False)
 	return parser
@@ -895,7 +895,7 @@ def _get_blackboard_export_path(outfile: str | os.PathLike) -> tuple[str, str, s
 		)
 	core_name = match.group(1)
 	output_dir = os.path.dirname(outfile_path)
-	export_name = f"blackboard_export_zip-{core_name}.zip"
+	export_name = f"bez-{core_name}.zip"
 	if output_dir:
 		export_path = os.path.join(output_dir, export_name)
 	else:
@@ -932,7 +932,7 @@ def export_bbq_to_blackboard(
 
 	The BBQ file remains available if conversion fails. The ZIP is built at a
 	temporary adjacent path and replaces the destination only after validation.
-	When requested, table-cell drawings and RDKit canvases become packaged PNGs.
+	When requested, all HTML tables and RDKit canvases become packaged PNGs.
 	"""
 	outfile_path, export_path, package_name = _get_blackboard_export_path(outfile)
 	if os.path.isfile(outfile_path) is False:
@@ -962,7 +962,7 @@ def export_bbq_to_blackboard(
 
 	temporary_dir = os.path.dirname(export_path) or "."
 	temporary_fd, temporary_path = tempfile.mkstemp(
-		prefix=".blackboard_export_zip-",
+		prefix=".bez-",
 		suffix=".tmp",
 		dir=temporary_dir,
 	)
@@ -1003,7 +1003,7 @@ def _write_questions_to_file(
 		questions (list): List of question strings.
 		outfile (str): Output filename.
 		bbexport (bool): Also create a Blackboard pool export ZIP.
-		html_to_image (bool): Convert Blackboard HTML drawings to packaged PNGs.
+		html_to_image (bool): Convert all HTML tables and RDKit canvases to packaged PNGs.
 	"""
 	if html_to_image and not bbexport:
 		raise ValueError("HTML-to-image export requires -B or --bbexport.")
@@ -1017,8 +1017,24 @@ def _write_questions_to_file(
 				continue
 			f.write(prepared_question)
 	print(f"... saved {question_count} {word} to {outfile}\n")
-	if bbexport:
-		export_bbq_to_blackboard(outfile, html_to_image=html_to_image)
+	if not bbexport:
+		return
+	if not html_to_image:
+		export_bbq_to_blackboard(outfile)
+		return
+	from playwright.sync_api import Error
+	try:
+		export_bbq_to_blackboard(outfile, html_to_image=True)
+	except Error as error:
+		if "Executable doesn't exist" not in str(error):
+			raise
+		# ASVS 16.5.3: report failed export without discarding the saved BBQ file.
+		raise SystemExit(
+			"Image export (-I) requires the Playwright Chromium headless browser.\n"
+			"Install it with:\n"
+			"  python3 -m playwright install --only-shell chromium\n"
+			f"Then rerun your generator. Your question file is saved at: {outfile}"
+		) from None
 
 #==========================
 def write_questions_to_file(
