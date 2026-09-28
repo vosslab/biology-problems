@@ -4,6 +4,21 @@
 
 ### Fixes
 
+- Replaced the boxplot mean's letter X with the multiplication sign (`&times;`)
+  in plots and question legends, using normal font weight for the marker.
+
+- Made boxplot outlines gray and drew black whisker caps above coincident box
+  edges. Added X markers for the actual mean in all four generators; raw-data
+  and cumulative-frequency questions calculate it from the observations, while
+  summary questions supply a mean from a compatible eight-observation dataset.
+
+- Rebuilt the shared HTML renderer for all four boxplot question generators with
+  precisely positioned whiskers, box edges, and a distinct median line. Removed
+  the erroneous mean marker, preserved coincident and fractional values, and
+  gave answer choices a common axis and compact size with readable tick labels.
+  Plots remain HTML tables for Blackboard image export; nonempty drawing elements
+  prevent XML serialization from breaking the exported plot layout.
+
 - Softened DNA profiling bands in [gellib.py](../problems/dna_profiling-problems/gellib.py)
   for both HTML table questions and direct PNG gels. Rounded band cores retain
   their exact positions while a local blue glow softens only the edges, leaving

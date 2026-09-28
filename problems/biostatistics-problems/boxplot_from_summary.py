@@ -3,7 +3,7 @@
 import random
 
 import bptools
-from box_plot_lib import has_tie, is_nondecreasing, render_boxplot_html
+from box_plot_lib import has_tie, is_nondecreasing, render_boxplot_choices
 
 
 def generate_summary() -> dict:
@@ -16,6 +16,9 @@ def generate_summary() -> dict:
 	summary = {"min": min_v, "q1": q1_v, "median": median_v, "q3": q3_v, "max": max_v}
 	if not is_nondecreasing(summary) or not has_tie(summary):
 		return generate_summary()
+	# These eight observations have exactly the requested Tukey hinges.
+	data = [min_v, q1_v, q1_v, median_v, median_v, q3_v, q3_v, max_v]
+	summary["mean"] = sum(data) / len(data)
 	return summary
 
 
@@ -27,6 +30,9 @@ def get_question_text(s: dict) -> str:
 	html += f"Median = <span style='font-family: monospace;'>{s['median']}</span><br/>\n"
 	html += f"Q3 = <span style='font-family: monospace;'>{s['q3']}</span><br/>\n"
 	html += f"Maximum = <span style='font-family: monospace;'>{s['max']}</span><br/>\n"
+	if "mean" in s:
+		html += f"Mean = <span style='font-family: monospace;'>{s['mean']:g}</span><br/>"
+		html += "The &times; marks the mean; the vertical line marks the median.<br/>"
 	html += "Which box plot matches these summary statistics?<br/>\n"
 	html += "Quartiles use Tukey hinges (median of halves); ties are allowed and keep the summary nondecreasing."
 	return html
@@ -68,22 +74,10 @@ def make_distractors(correct: dict) -> list:
 
 
 def generate_choices(correct: dict, num_choices: int) -> (list, str):
-	correct_html = render_boxplot_html(correct)
-
 	distractors = make_distractors(correct)
-
-	choices = [correct_html]
-	for ds in distractors:
-		if ds != correct:
-			choices.append(render_boxplot_html(ds))
-
-	choices = list(dict.fromkeys(choices))
-	if len(choices) < num_choices:
-		raise ValueError("Not enough unique distractors for this summary.")
-
-	choices = choices[:num_choices]
-	random.shuffle(choices)
-	return choices, correct_html
+	mean = correct.get("mean")
+	choices, answer = render_boxplot_choices(correct, distractors, num_choices, mean=mean)
+	return choices, answer
 
 
 def write_question(N: int, args) -> str:

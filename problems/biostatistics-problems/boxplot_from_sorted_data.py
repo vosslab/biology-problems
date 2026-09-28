@@ -8,7 +8,7 @@ from box_plot_lib import (
 	has_tie,
 	is_nondecreasing,
 	median_of_sorted,
-	render_boxplot_html,
+	render_boxplot_choices,
 )
 
 
@@ -98,28 +98,17 @@ def get_question_text(data_sorted: list) -> str:
 	html += "A sample of 11 measurements (already sorted) is shown below.<br/>\n"
 	html += f"<span style='font-family: monospace;'>{data_text}</span><br/>\n"
 	html += "Which box plot correctly represents this data set?<br/>\n"
+	html += "The &times; marks the mean; the vertical line marks the median.<br/>"
 	html += "Quartiles use Tukey hinges (median of halves); ties are allowed and keep the summary nondecreasing."
 	return html
 
 
 def generate_choices(data_sorted: list, num_choices: int) -> (list, str):
 	correct = five_number_summary_tukey_hinges(data_sorted)
-	correct_html = render_boxplot_html(correct)
-
-	distractor_summaries = make_distractor_summaries(data_sorted, correct)
-
-	choices = [correct_html]
-	for ds in distractor_summaries:
-		if ds != correct:
-			choices.append(render_boxplot_html(ds))
-
-	choices = list(dict.fromkeys(choices))
-	if len(choices) < num_choices:
-		raise ValueError("Not enough unique distractors for this dataset.")
-
-	choices = choices[:num_choices]
-	random.shuffle(choices)
-	return choices, correct_html
+	distractors = make_distractor_summaries(data_sorted, correct)
+	mean = sum(data_sorted) / len(data_sorted)
+	choices, answer = render_boxplot_choices(correct, distractors, num_choices, mean=mean)
+	return choices, answer
 
 
 def write_question(N: int, args) -> str:

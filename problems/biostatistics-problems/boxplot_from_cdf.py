@@ -3,7 +3,7 @@
 import random
 
 import bptools
-from box_plot_lib import has_tie, is_nondecreasing, render_boxplot_html
+from box_plot_lib import has_tie, is_nondecreasing, render_boxplot_choices
 
 
 def make_cdf_table_from_breaks(breaks: list, counts: list) -> list:
@@ -116,6 +116,7 @@ def get_question_text(rows: list) -> str:
 	html += table_html
 	html += "Quartiles use Tukey hinges: for rank k, choose the smallest value whose cumulative count is at least k; for even N, average the two middle ranks in each half (Q1: k=10,11; median: k=20,21; Q3: k=30,31), and ties are allowed.<br/>\n"
 	html += "Which box plot matches this cumulative frequency table?"
+	html += "<br/>The &times; marks the mean; the vertical line marks the median."
 	return html
 
 
@@ -164,22 +165,15 @@ def make_distractors_from_summary(rows: list, correct: dict) -> list:
 
 
 def generate_choices(rows: list, correct: dict, num_choices: int) -> (list, str):
-	correct_html = render_boxplot_html(correct)
-
 	distractors = make_distractors_from_summary(rows, correct)
-
-	choices = [correct_html]
-	for ds in distractors:
-		if ds != correct:
-			choices.append(render_boxplot_html(ds))
-
-	choices = list(dict.fromkeys(choices))
-	if len(choices) < num_choices:
-		raise ValueError("Not enough unique distractors for this table.")
-
-	choices = choices[:num_choices]
-	random.shuffle(choices)
-	return choices, correct_html
+	previous_count = 0
+	total = 0
+	for value, cumulative_count in rows:
+		total += value * (cumulative_count - previous_count)
+		previous_count = cumulative_count
+	mean = total / rows[-1][1]
+	choices, answer = render_boxplot_choices(correct, distractors, num_choices, mean=mean)
+	return choices, answer
 
 
 def write_question(N: int, args) -> str:
