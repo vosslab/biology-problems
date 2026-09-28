@@ -13,6 +13,22 @@ if _BIOCHEM_DIR not in sys.path:
 import protein_ladder_lib
 import proteinlib
 
+REFERENCE_HEIGHT_PX = 340
+# Approximate band centers from the supplied product insert, scaled to 340 px.
+# These are reference-card coordinates, separate from simulated gel migration.
+REFERENCE_MARKER_Y_PX = {
+	250: 34,
+	150: 66,
+	100: 99,
+	75: 121,
+	50: 161,
+	37: 194,
+	25: 233,
+	20: 254,
+	15: 283,
+	10: 316,
+}
+
 
 #====================================================================
 def _choose_run_factor_and_text(
@@ -82,83 +98,66 @@ def _simulate_gel_setup(
 
 
 #====================================================================
-def _build_reference_table_html(gel_height_px: int) -> str:
-	"""Generate a classic Kaleidoscope ladder reference card with centered labels."""
+def _build_reference_table_html() -> str:
+	"""Generate the fixed reference card supplied with the ladder."""
 	mw_values = protein_ladder_lib.get_kaleidoscope_mw_values()
-	marker_positions = protein_ladder_lib.simulate_kaleidoscope_band_y_positions_px(
-		gel_height_px=gel_height_px,
-		run_factor=1.0,
-	)
 
-	band_height_px = 9
-	left_gutter_width = 15
-	lane_width = 50
-	center_gutter_width = 15
-	right_gutter_width = 15
-	label_width = 54
-
-	def _band_top(mw: int) -> int:
-		y_px = float(marker_positions[mw])
-		return round(y_px - band_height_px / 2.0)
-
-	band_tops = [_band_top(mw) for mw in mw_values]
-	inter_band_gaps: list[int] = []
-	for i in range(len(band_tops) - 1):
-		gap_px = band_tops[i + 1] - (band_tops[i] + band_height_px)
-		inter_band_gaps.append(max(0, gap_px))
-	top_gap = max(0, band_tops[0])
-	bottom_gap = max(0, gel_height_px - (band_tops[-1] + band_height_px))
-
+	# A labeled row is tall enough for the number; the colored stripe sits
+	# inside that row. Gaps follow the fixed product-card positions above.
+	band_row_height = 18
 	html = (
-		f'<div style="display:inline-block; height:{gel_height_px}px;">'
-		'<table cellspacing="0" cellpadding="0" style="'
-		'height:100%; '
-		'border-spacing: 0; border-collapse: collapse; border: 1px solid black; '
-		'display: inline-block; background-color: #fff;">'
+		'<table cellspacing="0" cellpadding="0" style="border-collapse:collapse; '
+		'border-spacing:0; border:1px solid #a8bac4; background-color:#fff;">'
+		'<tr><th colspan="4" style="padding:7px 5px; font-size:12px; '
+		'font-weight:600; text-align:center; color:#233846; '
+		'border-bottom:1px solid #ccdbe2;">Standard ladder (kDa)</th></tr>'
 	)
-
-	for idx, mw in enumerate(mw_values):
-		if idx == 0:
-			spacer_before = top_gap
-		else:
-			prev_gap = inter_band_gaps[idx - 1]
-			spacer_before = prev_gap // 2
-
-		if idx == len(mw_values) - 1:
-			spacer_after = bottom_gap
-		else:
-			next_gap = inter_band_gaps[idx]
-			spacer_after = next_gap - (next_gap // 2)
+	previous_bottom = 0
+	for mw in mw_values:
+		center = REFERENCE_MARKER_Y_PX[mw]
+		top = center - band_row_height // 2
+		gap = max(0, top - previous_bottom)
+		if gap:
+			html += (
+				f'<tr><td style="width:12px; height:{gap}px;"></td>'
+				'<td style="width:50px; background-color:#f2f9fc;"></td>'
+				'<td style="width:12px;"></td>'
+				'<td style="width:54px;"></td></tr>'
+			)
 		color = protein_ladder_lib.KALEIDOSCOPE_MW_COLOR_MAP[mw]
+		html += (
+			f'<tr><td style="width:12px; height:{band_row_height}px;"></td>'
+			f'<td style="width:50px; background-color:#f2f9fc;">'
+			f'<div style="height:7px; background-color:{color}; '
+			f'border-radius:4px; box-shadow:0 0 2px {color};"></div></td>'
+			'<td style="width:12px;"></td>'
+			f'<td style="width:54px; white-space:nowrap; color:#233846;">&ndash; {mw}</td></tr>'
+		)
+		previous_bottom = top + band_row_height
+	bottom_gap = max(0, REFERENCE_HEIGHT_PX - previous_bottom)
+	html += (
+		f'<tr><td style="height:{bottom_gap}px;"></td>'
+		'<td style="background-color:#f2f9fc;"></td><td></td><td></td></tr>'
+		'</table>'
+	)
+	return html
 
-		html += (
-			'<tr>'
-			f'<td style="width:{left_gutter_width}px; height:{spacer_before}px;"></td>'
-			f'<td style="width:{lane_width}px; height:{spacer_before}px;"></td>'
-			f'<td style="width:{center_gutter_width}px; height:{spacer_before}px;"></td>'
-			f'<td rowspan="3" style="width:{label_width}px; vertical-align:middle;" align="left">'
-			f'&ndash; {mw}</td>'
-			f'<td style="width:{right_gutter_width}px; height:{spacer_before}px;"></td>'
-			'</tr>'
-		)
-		html += (
-			'<tr>'
-			f'<td style="height:{band_height_px}px;"></td>'
-			f'<td style="height:{band_height_px}px; background-color:{color};"></td>'
-			f'<td style="height:{band_height_px}px;"></td>'
-			f'<td style="height:{band_height_px}px;"></td>'
-			'</tr>'
-		)
-		html += (
-			'<tr>'
-			f'<td style="height:{spacer_after}px;"></td>'
-			f'<td style="height:{spacer_after}px;"></td>'
-			f'<td style="height:{spacer_after}px;"></td>'
-			f'<td style="height:{spacer_after}px;"></td>'
-			'</tr>'
-		)
 
-	html += '</table></div>'
+#====================================================================
+def _build_comparison_html(reference_html: str, gel_html: str) -> str:
+	"""Keep the fixed reference and both gel lanes in one exportable panel."""
+	html = (
+		'<table cellspacing="0" cellpadding="0" style="border-collapse:collapse; '
+		'border-spacing:0; background-color:#fff;">'
+		'<tr><td style="vertical-align:top; padding-right:16px;">'
+		'<p style="margin:0 0 8px; font-weight:700; color:#233846;">'
+		'Fixed reference card</p>'
+		f'{reference_html}</td>'
+		'<td style="vertical-align:top;">'
+		'<p style="margin:0 0 8px; font-weight:700; color:#233846;">'
+		'Simulated gel results</p>'
+		f'{gel_html}</td></tr></table>'
+	)
 	return html
 
 
@@ -184,7 +183,6 @@ def _build_gel_html(
 	unknown_bands = [{
 		"y_px": unknown_y,
 		"color": "#111111",
-		"border": "1px solid #000",
 	}]
 
 	return protein_ladder_lib.gen_gel_lanes_html(
@@ -257,17 +255,16 @@ def write_lane2_unknown_band_mw_question(
 	unknown_y = protein_ladder_lib.mw_to_y_px(unknown_mw, gel_height_px, run_factor)
 
 	gel_html = _build_gel_html(mw_values, marker_positions, unknown_y, gel_height_px, band_height_px)
-	ref_html = _build_reference_table_html(gel_height_px)
+	ref_html = _build_reference_table_html()
+	comparison_html = _build_comparison_html(ref_html, gel_html)
 
 	tolerance = float(unknown_mw) * 0.10
 	question_text = (
-		"<p>Below is a simulated SDS&ndash;PAGE gel.</p>"
-		"<p>Lane 1 contains a Kaleidoscope-style pre-stained protein ladder. Lane 2 contains a single protein band.</p>"
+		"<p>Use the standard ladder card supplied with the markers to identify the colored bands "
+		"in Lane 1 of the simulated SDS&ndash;PAGE gel. The card does not show this gel's run time.</p>"
+		"<p>Lane 2 contains a single protein band.</p>"
 		f"{scenario_text}"
-		'<p><b>Standard ladder reference (kDa):</b></p>'
-		f"{ref_html}"
-		'<p><b>Gel results:</b></p>'
-		f"{gel_html}"
+		f"{comparison_html}"
 		"<p><b>What is the molecular weight (kDa) of the band in lane 2?</b></p>"
 		"<p><i>Assume ln(MW) is approximately linear with migration distance.</i></p>"
 	)
@@ -457,7 +454,8 @@ def write_lane2_unknown_band_protein_mc_question(
 	unknown_y = protein_ladder_lib.mw_to_y_px(unknown_mw, gel_height_px, run_factor)
 
 	gel_html = _build_gel_html(mw_values, marker_positions, unknown_y, gel_height_px)
-	ref_html = _build_reference_table_html(gel_height_px)
+	ref_html = _build_reference_table_html()
+	comparison_html = _build_comparison_html(ref_html, gel_html)
 
 	proteins_sorted = sorted(candidates, key=lambda p: float(p["MW"]))
 	correct_index = proteins_sorted.index(correct_protein)
@@ -476,14 +474,11 @@ def write_lane2_unknown_band_protein_mc_question(
 	answer_text = _choice_text(correct_protein)
 
 	question_text = (
-		"<p>Below is a simulated SDS&ndash;PAGE gel.</p>"
-		"<p>Lane 1 contains a Kaleidoscope-style pre-stained protein ladder.</p>"
+		"<p>Use the standard ladder card supplied with the markers to identify the colored bands "
+		"in Lane 1 of the simulated SDS&ndash;PAGE gel. The card does not show this gel's run time.</p>"
 		f"<p>Lane 2 contains a single band labeled <b>{unknown_label}</b>.</p>"
 		f"{scenario_text}"
-		'<p><b>Standard ladder reference (kDa):</b></p>'
-		f"{ref_html}"
-		'<p><b>Gel results:</b></p>'
-		f"{gel_html}"
+		f"{comparison_html}"
 		f"<p><b>Which protein (name and molecular weight) best matches {unknown_label}?</b></p>"
 		"<p><i>Use the ladder to estimate the band size. You do not need outside knowledge about the proteins.</i></p>"
 	)

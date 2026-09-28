@@ -2,6 +2,20 @@
 
 ## 2026-09-28
 
+### Fixes
+
+- Softened DNA profiling bands in [gellib.py](../problems/dna_profiling-problems/gellib.py)
+  for both HTML table questions and direct PNG gels. Rounded band cores retain
+  their exact positions while a local blue glow softens only the edges, leaving
+  labels and the gel background sharp.
+
+- Fixed Kaleidoscope unknown-band questions for Blackboard image export: the
+  fixed product-insert reference and simulated two-lane gel now render together
+  as one compact image with visible ladder and sample bands. The reference
+  positions stay independent of the gel run time, while all experimental gel
+  bands have softer edges than the insert bands. Distinct captions help
+  students compare the two sections.
+
 ### Additions and New Features
 
 - Added `--mc` and `-c` to genetic code translation questions, retaining FiB as the default.

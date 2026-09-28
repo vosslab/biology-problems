@@ -4,6 +4,7 @@ import os
 import random
 from PIL import Image
 from PIL import ImageDraw
+from PIL import ImageFilter
 from PIL import ImageFont
 
 
@@ -119,12 +120,31 @@ class GelClassImage(GelClass):
 		for band_dict in sub_band_tree:
 			start_x = self.xshift + band_dict['start'] * self.factor
 			end_x = start_x + band_dict['width'] * self.factor
-			# Draw outline
-			w = self.factor // 2
-			draw1.rectangle(((start_x - w, min_y - w), (end_x + w, max_y + w)), fill="white")
-			# Draw inner box
 			cornflower_blue = (80, 119, 190)
-			draw1.rectangle(((start_x, min_y), (end_x, max_y)), fill=cornflower_blue)
+			blur_radius = max(2, self.factor // 2)
+			padding = blur_radius * 3
+			band_width = end_x - start_x + 1
+			band_height = max_y - min_y + 1
+
+			# Blur a small transparent layer around each band, leaving labels sharp.
+			glow = Image.new(
+				"RGBA",
+				(band_width + 2 * padding, band_height + 2 * padding),
+				(0, 0, 0, 0),
+			)
+			glow_draw = ImageDraw.Draw(glow)
+			glow_draw.rounded_rectangle(
+				((padding, padding), (padding + band_width - 1, padding + band_height - 1)),
+				radius=self.factor,
+				fill=(*cornflower_blue, 170),
+			)
+			glow = glow.filter(ImageFilter.GaussianBlur(blur_radius))
+			self.img.paste(glow, (start_x - padding, min_y - padding), glow)
+			draw1.rounded_rectangle(
+				((start_x, min_y), (end_x, max_y)),
+				radius=self.factor,
+				fill=cornflower_blue,
+			)
 
 	def blankLane(self):
 		self.row += 0.3
@@ -157,12 +177,17 @@ class GelClassHtml(GelClass):
 		return colgroup
 
 	# Create a table cell block with given fill and border color
-	def tdBlock(self, fill_color="#E0E0E0", border_color="#E0E0E0"):
-		td_block =  f' <td style="border-top: 1px solid {border_color}; '
-		td_block += f'border-bottom: 1px solid {border_color}; '
-		td_block += f'border-left: 1px solid {border_color}; '
-		td_block += f'border-right: 1px solid {border_color}" '
-		td_block += f'bgcolor="{fill_color}"><br/></td> '
+	def tdBlock(self, fill_color="#E0E0E0", border_color="#E0E0E0", band_color=None):
+		td_block = f' <td style="border:1px solid {border_color}; '
+		td_block += f'background-color:{fill_color};" bgcolor="{fill_color}">'
+		if band_color is None:
+			td_block += '<br/>'
+		else:
+			td_block += (
+				f'<div style="height:14px; background-color:{band_color}; '
+				f'border-radius:4px; box-shadow:0 0 6px 1px {band_color};"></div>'
+			)
+		td_block += '</td> '
 		return td_block
 
 	# Create a blank lane for the gel with proper column span
@@ -189,7 +214,7 @@ class GelClassHtml(GelClass):
 		for i in range(total_bands):
 			if i in subindex:
 				lane += self.tdBlock()
-				lane += self.tdBlock("#6495ED")
+				lane += self.tdBlock(band_color="#6495ED")
 			else:
 				lane += self.tdBlock()
 				lane += self.tdBlock()

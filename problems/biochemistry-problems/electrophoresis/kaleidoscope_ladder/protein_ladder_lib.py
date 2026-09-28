@@ -126,36 +126,70 @@ def gen_gel_lanes_html(
 	band_height_px: int=8,
 	lane_gap_px: int=18,
 ) -> str:
-	"""
-	Render a simple 1D SDS-PAGE gel cartoon using positioned div bands.
+	"""Render a two-lane gel as a table that survives Blackboard image export.
 
-	Each lane dict supports:
-	- label: str
-	- bands: list of dicts with keys: y_px (float), color (str), optional border (str)
+	Each lane has a label and bands with y_px and color. Row boundaries are
+	shared across lanes so the marker and unknown positions stay aligned.
 	"""
-	lanes_html = f'<div style="display:flex; align-items:flex-start; gap:{lane_gap_px}px;">'
+	if len(lanes) != 2:
+		raise ValueError("The gel drawing requires two lanes")
+	boundaries = {0, gel_height_px}
 	for lane in lanes:
-		label = lane.get("label", "")
-		bands = lane.get("bands", [])
-		lanes_html += '<div style="text-align:center;">'
-		lanes_html += f'<div style="margin-bottom:6px;"><b>{label}</b></div>'
-		lanes_html += (
-			f'<div style="position:relative; width:{lane_width_px}px; height:{gel_height_px}px; '
-			'border:2px solid #000; background-color:#f7f7f7;">'
-		)
-		for band in bands:
-			y_px = float(band["y_px"])
-			color = band.get("color", "#000")
-			border = band.get("border", "1px solid #000")
-			top_px = y_px - band_height_px / 2.0
-			lanes_html += (
-				f'<div style="position:absolute; left:6px; right:6px; '
-				f'top:{top_px:.1f}px; height:{band_height_px}px; '
-				f'background-color:{color}; border:{border};"></div>'
+		for band in lane["bands"]:
+			center = round(float(band["y_px"]))
+			top = max(0, center - band_height_px // 2)
+			bottom = min(gel_height_px, top + band_height_px)
+			boundaries.update((top, bottom))
+	rows = sorted(boundaries)
+	inner_width = lane_width_px - 12
+	html = (
+		'<table cellspacing="0" cellpadding="0" style="border-collapse:collapse; '
+		'border-spacing:0; background-color:#fff;">'
+		f'<tr><th colspan="3" style="width:{lane_width_px}px; text-align:center; '
+		'padding-bottom:7px; font-size:13px; color:#263d4a;">'
+		f'{lanes[0]["label"]}</th><td style="width:{lane_gap_px}px;"></td>'
+		f'<th colspan="3" style="width:{lane_width_px}px; text-align:center; '
+		'padding-bottom:7px; font-size:13px; color:#263d4a;">'
+		f'{lanes[1]["label"]}</th></tr>'
+	)
+	for start, end in zip(rows[:-1], rows[1:]):
+		if end == start:
+			continue
+		html += '<tr>'
+		for lane_index, lane in enumerate(lanes):
+			band_color = None
+			for band in lane["bands"]:
+				center = round(float(band["y_px"]))
+				top = max(0, center - band_height_px // 2)
+				if top <= start < top + band_height_px:
+					band_color = band["color"]
+					break
+			band_html = ''
+			if band_color is not None:
+				band_html = (
+					f'<div style="height:{end-start}px; background-color:{band_color}; '
+					f'border-radius:4px; box-shadow:0 0 6px 1px {band_color};"></div>'
+				)
+			border_top = 'border-top:1px solid #8da8b6;' if start == 0 else ''
+			border_bottom = 'border-bottom:1px solid #8da8b6;' if end == gel_height_px else ''
+			border_left = 'border-left:1px solid #8da8b6;' if lane_index == 0 else ''
+			border_right = 'border-right:1px solid #8da8b6;' if lane_index == 1 else ''
+			html += (
+				f'<td style="width:6px; height:{end-start}px; background-color:#edf7fa; '
+				f'{border_left}{border_top}{border_bottom}"></td>'
+				f'<td style="width:{inner_width}px; height:{end-start}px; '
+				f'background-color:#edf7fa; {border_top}{border_bottom}">{band_html}</td>'
+				f'<td style="width:6px; height:{end-start}px; background-color:#edf7fa; '
+				f'{border_right}{border_top}{border_bottom}"></td>'
 			)
-		lanes_html += '</div></div>'
-	lanes_html += '</div>'
-	return lanes_html
+			if lane_index == 0:
+				html += (
+					f'<td style="width:{lane_gap_px}px; height:{end-start}px; '
+					f'background-color:#e4f1f6; {border_top}{border_bottom}"></td>'
+				)
+		html += '</tr>'
+	html += '</table>'
+	return html
 
 #====================================================================
 def gen_spacer_cell(height: int, width: int|None=None) -> str:
