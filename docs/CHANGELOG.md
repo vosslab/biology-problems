@@ -4,6 +4,22 @@
 
 ### Behavior or Interface Changes
 
+- Reduced codon nucleotide lettering by 20% in the genetic code table so amino-acid
+  answers stand out while preserving header and answer text sizes.
+
+- Changed the genetic code table's large axis labels to pastel yellow (left), orange (top),
+  and red (right), preserving the nucleotide colors.
+
+- Made the colored codon tiles part of
+  [genetic_code.html](../problems/molecular_biology-problems/genetic_code.html) itself so direct
+  browser previews and generated questions share the same table markup.
+
+- Restored bordered nucleotide tiles with more visible background color inside the compact
+  genetic code table, increasing codon cell padding for readability.
+
+- Colored the genetic code table's U, C, A, and G row and column headers to match
+  the corresponding nucleotide foreground and background colors in its codons.
+
 - Compacted the genetic code reference table in
   [translate_genetic_code.py](../problems/molecular_biology-problems/translate_genetic_code.py)
   with content-sized columns, tighter cell padding, and compact colored codons at the existing
@@ -22,6 +38,9 @@
   patterns; cleanup still recognizes older `blackboard_export_zip-*.zip` files.
 
 ### Fixes
+
+- Deduplicated accepted translation answers so five-letter and shorter peptides pass
+  fill-in-the-blank validation when comma grouping leaves the answer unchanged.
 
 - Load QTI color helpers and public palette dictionaries on first use in `bptools`, keeping
   generator help and ordinary question conversion free of color-wheel initialization.

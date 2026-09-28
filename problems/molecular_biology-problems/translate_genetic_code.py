@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import os
-import re
 import random
 import functools
 
@@ -80,18 +79,6 @@ def read_genetic_code():
 	with open(code_path, "r") as f:
 		for line in f:
 			sline = line.strip()
-			match = re.search(r">([AGCU]{3})<", sline)
-			if match:
-				nt_sequence = match.groups()[0]
-				# Compact codons retain nucleotide colors without sequence-table spacing.
-				nt_table = '<table style="border-collapse: collapse; margin: 0 auto;'
-				nt_table += ' font-family: monospace; font-size: 12pt;"><tr>'
-				for nt in nt_sequence:
-					nt_table += '<td style="padding: 0 1px; border: 0;"'
-					nt_table += seqlib.colorNucleotideBackground(nt) + '>'
-					nt_table += seqlib.colorNucleotideForeground(nt) + '</td>'
-				nt_table += '</tr></table>'
-				sline = re.sub(nt_sequence, nt_table, sline)
 			genetic_code_html_table += sline
 	return genetic_code_html_table
 
@@ -146,7 +133,8 @@ def make_complete_question(N, peptide_length, extra=False):
 
 	sep3 = seqlib.insertCommas(peptide_sequence, separate=3)
 	sep5 = seqlib.insertCommas(peptide_sequence, separate=5)
-	answers_list = [peptide_sequence, sep3, sep5]
+	# Short peptides can have identical plain and comma-grouped answers.
+	answers_list = list(set([peptide_sequence, sep3, sep5]))
 
 	return bptools.formatBB_FIB_Question(N, question, answers_list)
 
