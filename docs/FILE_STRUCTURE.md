@@ -65,6 +65,9 @@ Domain-specific helper libraries live near the generators that use them.
 - [dna_render_lib.py](../problems/molecular_biology-problems/restriction_enzymes/dna_render_lib.py): inline-CSS DNA-map primitives for Blackboard image export.
 - [restrictlib.py](../problems/molecular_biology-problems/restriction_enzymes/restrictlib.py): restriction enzyme lookup and analysis.
 - [seqlib.py](../problems/molecular_biology-problems/seqlib.py): sequence utilities.
+- [rna_transcribe_lib.py](../problems/molecular_biology-problems/rna_transcribe_lib.py): shared
+  transcription prompts, RNA answers, and distractors for
+  [rna_transcribe.py](../problems/molecular_biology-problems/rna_transcribe.py).
 
 ### Phylogenetic tree libraries
 

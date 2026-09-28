@@ -588,7 +588,7 @@
   to use batch helpers and a computed default duplicate count.
 - Added migration notes for batch upgrades in
   [UNIFICATION_PLAN.md](UNIFICATION_PLAN.md).
-- Refactored [rna_transcribe_fill_blank.py](../problems/molecular_biology-problems/rna_transcribe_fill_blank.py)
+- Refactored `rna_transcribe_fill_blank.py`
   to use shared argparse helpers and question collection.
 - Kept [make_html_box_plot.py](../problems/biostatistics-problems/make_html_box_plot.py)
   as a helper-only HTML utility (not a question generator).
@@ -635,7 +635,7 @@
 - Fixed HTML entity formatting in
   `fatty_acid_naming.py`.
 - Fixed HTML paragraph closure in
-  [rna_transcribe_prime_fill_blank.py](../problems/molecular_biology-problems/rna_transcribe_prime_fill_blank.py).
+  `rna_transcribe_prime_fill_blank.py`.
 - Quoted HTML attribute values in
   [exon_splicing.py](../problems/molecular_biology-problems/exon_splicing.py)
   to satisfy XML parsing.
@@ -848,8 +848,8 @@
   [nested_pcr_design.py](../problems/molecular_biology-problems/nested_pcr_design.py),
   [overhang_type.py](../problems/molecular_biology-problems/restriction_enzymes/overhang_type.py),
   [palindrome_sequence_match.py](../problems/molecular_biology-problems/palindrome_sequence_match.py),
-  [rna_transcribe_prime_fill_blank.py](../problems/molecular_biology-problems/rna_transcribe_prime_fill_blank.py),
-  [rna_transcribe_prime.py](../problems/molecular_biology-problems/rna_transcribe_prime.py),
+  `rna_transcribe_prime_fill_blank.py`,
+  `rna_transcribe_prime.py`,
   [RT-qPCR.py](../problems/molecular_biology-problems/RT-qPCR.py).
 - Implemented a working RT-qPCR numeric generator in
   [RT-qPCR.py](../problems/molecular_biology-problems/RT-qPCR.py),

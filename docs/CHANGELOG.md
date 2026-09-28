@@ -4,6 +4,14 @@
 
 ### Behavior or Interface Changes
 
+- Consolidated the three RNA transcription executables into
+  [rna_transcribe.py](../problems/molecular_biology-problems/rna_transcribe.py) and
+  [rna_transcribe_lib.py](../problems/molecular_biology-problems/rna_transcribe_lib.py).
+  Select `-m/--mc` or `-f/--fib` and `-D/--directionless` or `-p/--prime`.
+  Output names include format, direction, and sequence length. Directionless questions omit
+  prime labels and explicitly ask for RNA bases aligned with the template; prime FiB retains
+  randomized coding/template strands. MC choices remain unique with one correct answer.
+
 - Blackboard export (`-B` / `--bbexport`) now writes `bez-<name>.zip` beside the BBQ
   question file. Updated export tests, documentation, ignore rules, and cleanup
   patterns; cleanup still recognizes older `blackboard_export_zip-*.zip` files.
@@ -16,6 +24,23 @@
 - Image export (`-I`) now exits with the Python Playwright headless-browser install
   command when its browser executable is missing, preserving the saved BBQ file.
   Other rendering errors retain their original traceback.
+
+### Developer Tests and Notes
+
+- Independently audited RNA answer correctness using direct DNA/RNA base pairing:
+  all 5,440 strand/direction calculations for every DNA sequence of lengths 2 through 5
+  passed. Recomputed 788 exported MC/FiB answer keys from visible strand tables across
+  both prime orientations, coding/template strands, and directionless mode; every key
+  was correct and each MC had exactly one biologically correct choice. Expanded permanent
+  regression coverage for independently varied question/choice directions and generated
+  prime FiB keys. No generator answer-logic correction was needed.
+- RNA transcription: 10 focused tests passed; all four format/direction combinations
+  produced five valid questions with equivalent short/long flags and repeatable fixed-seed
+  output. Shared bptools anti-cheat defaults remain active; human-readable answer previews
+  stay in instructor console output. Full pytest: 4,623 passed and eight unrelated failures
+  in dependency declarations, horse-figure indentation, existing documentation links, and
+  the YAML MC choice-count expectation. Before/after samples and seed logs are in ignored
+  `output_smoke/rna_transcribe/`.
 
 ## 2026-09-25
 

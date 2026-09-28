@@ -83,6 +83,32 @@ that contain RDKit canvases.
 - Validate a YAML input file:
   - `python3 tools/check_yaml.py data/genetic_disorders.yml`
 
+### RNA transcription
+
+[rna_transcribe.py](../problems/molecular_biology-problems/rna_transcribe.py) replaces the three
+former `rna_transcribe*` executables. Select one format and one direction mode:
+
+| Options | Questions |
+| --- | --- |
+| `-m`, `--mc` | Multiple choice |
+| `-f`, `--fib` | Fill in the blank |
+| `-D`, `--directionless` | No prime labels; RNA bases align left-to-right with the template |
+| `-p`, `--prime` | Prime labels; transcription respects strand direction |
+
+```bash
+source source_me.sh && python3 problems/molecular_biology-problems/rna_transcribe.py -m -p -d 5
+source source_me.sh && python3 problems/molecular_biology-problems/rna_transcribe.py -f -D -s 12 -d 5
+```
+
+`-s/--sequence-length` (also `--seqlen`) sets DNA length; the default is 9 and the minimum is 2.
+MC supports `-c/--num-choices` from 2 to 5 (default: 5). Output filenames include format,
+direction mode, and length. Standard export and anti-cheat options remain available.
+Prime FiB questions randomly use coding or template DNA and accept RNA in the 5' to 3' direction.
+FiB accepts optional commas every three bases; prime mode also accepts direction labels.
+
+[rna_transcribe_lib.py](../problems/molecular_biology-problems/rna_transcribe_lib.py) provides
+`transcribe_sequence`, `fib_answers`, prompt/choice builders, and `generate_question` for reuse.
+
 ## Inputs and outputs
 
 - Inputs: YAML/CSV/text reference data in [data/](../data/), YAML banks under
