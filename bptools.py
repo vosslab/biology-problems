@@ -17,7 +17,6 @@ import tabulate
 from qti_package_maker import package_interface
 from qti_package_maker.common import anti_cheat
 from qti_package_maker.common import yaml_tools
-from qti_package_maker.common import color_wheel
 from qti_package_maker.common import string_functions
 from qti_package_maker.assessment_items import validator
 from qti_package_maker.assessment_items import item_types
@@ -193,28 +192,43 @@ def is_valid_html(html_str: str) -> bool:
 #===========================================================
 #===========================================================
 def min_difference(numbers: list) -> int:
+	from qti_package_maker.common import color_wheel
 	return color_wheel.min_difference(numbers)
 #==========================
-dark_color_wheel = color_wheel.dark_color_wheel
-light_color_wheel = color_wheel.light_color_wheel
-extra_light_color_wheel = color_wheel.extra_light_color_wheel
+def __getattr__(name: str) -> object:
+	"""Load the public palette attributes only when a caller requests them."""
+	if name not in ('color_wheel', 'dark_color_wheel', 'light_color_wheel',
+			'extra_light_color_wheel'):
+		raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+	from qti_package_maker.common import color_wheel
+	if name == 'color_wheel':
+		return color_wheel
+	return getattr(color_wheel, name)
 #==========================
 def get_indices_for_color_wheel(num_colors, color_wheel_length):
+	from qti_package_maker.common import color_wheel
 	return color_wheel.get_indices_for_color_wheel(num_colors, color_wheel_length)
 #==========================
-def default_color_wheel(num_colors, my_color_wheel=dark_color_wheel):
+def default_color_wheel(num_colors, my_color_wheel=None):
+	from qti_package_maker.common import color_wheel
+	if my_color_wheel is None:
+		my_color_wheel = color_wheel.dark_color_wheel
 	return color_wheel.default_color_wheel(num_colors, my_color_wheel)
 #==========================
-def light_and_dark_color_wheel(num_colors, dark_color_wheel=dark_color_wheel, light_color_wheel=light_color_wheel):
+def light_and_dark_color_wheel(num_colors, dark_color_wheel=None, light_color_wheel=None):
+	from qti_package_maker.common import color_wheel
 	return color_wheel.light_and_dark_color_wheel(num_colors, dark_color_wheel, light_color_wheel)
 #==========================
 def write_html_color_table(filename):
+	from qti_package_maker.common import color_wheel
 	color_wheel.write_html_color_table(filename)
 #==========================
 def _default_color_wheel_calc(num_colors=4):
+	from qti_package_maker.common import color_wheel
 	return color_wheel.default_color_wheel_calc(num_colors)
 #==========================
 def make_color_wheel(r, g, b, degree_step=40):
+	from qti_package_maker.common import color_wheel
 	return color_wheel.make_color_wheel(r, g, b, degree_step)
 
 #===================================================================================
@@ -1132,7 +1146,8 @@ def formatBB_MAT_Question(N: int, question_text: str, prompts_list, choices_list
 		if len(unique_sorted) == 0:
 			return prompts_text
 
-		palette = list(dark_color_wheel.values())
+		from qti_package_maker.common import color_wheel
+		palette = list(color_wheel.dark_color_wheel.values())
 
 		# Use qti_package_maker's color-wheel selection logic, but make it deterministic
 		# by seeding from the prompt set (so the same prompt set gets the same colors).

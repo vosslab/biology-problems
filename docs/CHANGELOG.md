@@ -18,6 +18,8 @@
 
 ### Fixes
 
+- Load QTI color helpers and public palette dictionaries on first use in `bptools`, keeping
+  generator help and ordinary question conversion free of color-wheel initialization.
 - Image export (`-B -I`) now renders every HTML table as a packaged PNG through
   `qti_package_maker`, including metabolic pathways and unstyled data tables.
   Nested tables are captured inside the outer table's image.
