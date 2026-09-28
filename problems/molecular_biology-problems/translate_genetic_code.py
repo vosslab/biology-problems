@@ -72,6 +72,46 @@ def make_wordle_peptide(peptide_length):
 	return peptide_sequence, nucleotide_sequence
 
 #==========================
+def hamming_distance(s1: str, s2: str) -> int:
+	"""Count differing positions in equal-length strings."""
+	if len(s1) != len(s2):
+		raise ValueError("Strings must be of the same length")
+	distance = sum(ch1 != ch2 for ch1, ch2 in zip(s1, s2))
+	return distance
+
+#==========================
+def make_peptide_choices(peptide: str, num_choices: int, wordle: bool) -> list[str]:
+	"""Choose nearby peptides while preserving length, initial M, and word hints."""
+	if num_choices < 2:
+		raise ValueError("Multiple choice requires at least two choices.")
+	candidates = set()
+	if wordle:
+		words = read_wordle_list()
+		# Change one word at a time instead of enumerating every word combination.
+		for offset in range(0, len(peptide), 5):
+			for word in words:
+				if offset == 0 and not word.startswith("M"):
+					continue
+				candidate = peptide[:offset] + word + peptide[offset + 5:]
+				candidates.add(candidate)
+	else:
+		amino_acids = sorted(set(seqlib.genetic_code.values()) - {"_"})
+		for position in range(1, len(peptide)):
+			for amino_acid in amino_acids:
+				candidate = peptide[:position] + amino_acid + peptide[position + 1:]
+				candidates.add(candidate)
+	candidates.discard(peptide)
+	if len(candidates) < num_choices - 1:
+		raise ValueError("Not enough distinct peptide distractors; reduce -c or increase -n.")
+	# Randomize equal-distance neighbors before the stable distance sort.
+	nearby = sorted(candidates)
+	random.shuffle(nearby)
+	nearby.sort(key=lambda candidate: hamming_distance(peptide, candidate))
+	choices = [peptide] + nearby[:num_choices - 1]
+	random.shuffle(choices)
+	return choices
+
+#==========================
 @functools.lru_cache
 def read_genetic_code():
 	genetic_code_html_table = ""
@@ -83,7 +123,8 @@ def read_genetic_code():
 	return genetic_code_html_table
 
 #==========================
-def make_complete_question(N, peptide_length, extra=False):
+def make_complete_question(N: int, peptide_length: int, extra: bool = False,
+		question_type: str = 'fib', num_choices: int = 4) -> object:
 	if peptide_length % 5 == 0:
 		wordle = True
 		peptide_sequence, nucleotide_sequence = make_wordle_peptide(peptide_length)
@@ -128,8 +169,15 @@ def make_complete_question(N, peptide_length, extra=False):
 			question += " (that are also valid Wordle&trade; answers).</li>"
 	else:
 		question += f"<li>Your answer will be a random string of {peptide_length} amino acid letters.</li>"
-	question += "<li>Enter your answer in the blank with no punctuation, only letters.</li>"
+	if question_type == 'mc':
+		question += "<li>Select the peptide that matches the mRNA sequence.</li>"
+	else:
+		question += "<li>Enter your answer in the blank with no punctuation, only letters.</li>"
 	question += "</ul></p>"
+
+	if question_type == 'mc':
+		choices = make_peptide_choices(peptide_sequence, num_choices, wordle)
+		return bptools.formatBB_MC_Question(N, question, choices, peptide_sequence)
 
 	sep3 = seqlib.insertCommas(peptide_sequence, separate=3)
 	sep5 = seqlib.insertCommas(peptide_sequence, separate=5)
@@ -140,11 +188,14 @@ def make_complete_question(N, peptide_length, extra=False):
 
 #==========================
 def write_question(N, args):
-	return make_complete_question(N, args.peptide_length, args.extra)
+	return make_complete_question(
+		N, args.peptide_length, args.extra, args.question_type, args.num_choices)
 
 #==========================
 def parse_arguments():
 	parser = bptools.make_arg_parser(description="Generate genetic code translation questions.")
+	bptools.add_question_format_args(parser, ['mc', 'fib'], required=False, default='fib')
+	bptools.add_choice_args(parser, default=4)
 	parser.add_argument(
 		"-n",
 		"--peptide-length",
@@ -162,12 +213,27 @@ def parse_arguments():
 		default=False,
 	)
 	args = parser.parse_args()
+	if args.peptide_length < 1:
+		parser.error("Peptide length must be positive.")
+	if args.question_type == 'mc':
+		if args.peptide_length < 2:
+			parser.error("Multiple choice requires at least two amino acids.")
+		if not 2 <= args.num_choices <= 26:
+			parser.error("Multiple choice requires between 2 and 26 choices.")
+		if args.peptide_length % 5 != 0:
+			capacity = 1 + 19 * (args.peptide_length - 1)
+			if args.num_choices > capacity:
+				parser.error(f"This peptide length supports at most {capacity} choices.")
 	return args
 
 #==========================
 def main():
 	args = parse_arguments()
 	outfile = bptools.make_outfile(f"{args.peptide_length}_aa", "extra" if args.extra else None)
+	if args.question_type == 'mc':
+		outfile = bptools.make_outfile(
+			"MC", f"{args.peptide_length}_aa", f"{args.num_choices}_choices",
+			"extra" if args.extra else None)
 	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #==========================

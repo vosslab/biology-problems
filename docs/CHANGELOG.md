@@ -2,6 +2,13 @@
 
 ## 2026-09-28
 
+### Additions and New Features
+
+- Added `--mc` and `-c` to genetic code translation questions, retaining FiB as the default.
+  Word-based peptides use nearest-word distractors ranked by Hamming distance with randomized
+  ties; other lengths use single amino-acid substitutions. Choices preserve the initial M and
+  peptide length, and MC output filenames include the format and choice count.
+
 ### Behavior or Interface Changes
 
 - Reduced codon nucleotide lettering by 20% in the genetic code table so amino-acid
@@ -52,6 +59,12 @@
   Other rendering errors retain their original traceback.
 
 ### Developer Tests and Notes
+
+- Genetic code MC: 11 focused translation/sequence tests passed, including RNA-to-answer
+  checks with flanking bases, word-only choices, nearest-neighbor selection, and short FiB
+  answer deduplication. MC Blackboard image export passed. Combined feature, lint, and
+  documentation-link checks reported 449 passed and three existing failures in untouched
+  documentation files with missing link targets.
 
 - Independently audited RNA answer correctness using direct DNA/RNA base pairing:
   all 5,440 strand/direction calculations for every DNA sequence of lengths 2 through 5

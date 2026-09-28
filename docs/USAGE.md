@@ -23,6 +23,24 @@ Add `-I` when the Blackboard ZIP must convert every HTML table into packaged PNG
 python3 problems/dna_profiling-problems/blood_type_agglutination_test.py -d 5 -B -I
 ```
 
+## Genetic code translation
+
+[translate_genetic_code.py](../problems/molecular_biology-problems/translate_genetic_code.py)
+defaults to fill-in-the-blank. Use `--mc` for multiple choice and `-c` for the number of
+choices (default four):
+
+```bash
+source source_me.sh
+python3 problems/molecular_biology-problems/translate_genetic_code.py --mc -n 5 -c 4 -d 2 -B -I
+```
+
+Lengths divisible by five use Wordle words for every option. Distractors replace one word
+with the nearest available alternatives by Hamming distance (differing letter positions),
+with randomized ties. Other lengths use single amino-acid substitutions. All choices retain
+the initial M and the requested length. `-X` adds untranslated flanking nucleotides in either
+format. MC requires at least two amino acids; `--fib` explicitly selects the original format.
+MC filenames include the format and choice count; existing FiB filenames are unchanged.
+
 ## CLI
 
 Generators built on `bptools` share a common argument set (see any script's
