@@ -83,7 +83,14 @@ def read_genetic_code():
 			match = re.search(r">([AGCU]{3})<", sline)
 			if match:
 				nt_sequence = match.groups()[0]
-				nt_table = seqlib.Single_Strand_Table_No_Primes(nt_sequence)
+				# Compact codons retain nucleotide colors without sequence-table spacing.
+				nt_table = '<table style="border-collapse: collapse; margin: 0 auto;'
+				nt_table += ' font-family: monospace; font-size: 12pt;"><tr>'
+				for nt in nt_sequence:
+					nt_table += '<td style="padding: 0 1px; border: 0;"'
+					nt_table += seqlib.colorNucleotideBackground(nt) + '>'
+					nt_table += seqlib.colorNucleotideForeground(nt) + '</td>'
+				nt_table += '</tr></table>'
 				sline = re.sub(nt_sequence, nt_table, sline)
 			genetic_code_html_table += sline
 	return genetic_code_html_table

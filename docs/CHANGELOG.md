@@ -4,6 +4,11 @@
 
 ### Behavior or Interface Changes
 
+- Compacted the genetic code reference table in
+  [translate_genetic_code.py](../problems/molecular_biology-problems/translate_genetic_code.py)
+  with content-sized columns, tighter cell padding, and compact colored codons at the existing
+  font size.
+
 - Consolidated the three RNA transcription executables into
   [rna_transcribe.py](../problems/molecular_biology-problems/rna_transcribe.py) and
   [rna_transcribe_lib.py](../problems/molecular_biology-problems/rna_transcribe_lib.py).
