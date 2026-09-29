@@ -75,9 +75,12 @@ def render_boxplot_html(
 	span = axis_end - axis_start
 	positions = {key: 100 * (value - axis_start) / span for key, value in summary.items()}
 	# A table wrapper lets Blackboard image export capture the entire figure.
-	html = '<table role="presentation" style="border-collapse: collapse; width: 480px; '
-	html += 'max-width: 100%; background-color: white; color: #172333; margin: 4px 0;">'
-	html += '<tr><td style="padding: 4px 24px;">'
+	# Block layout fills the available space without a fixed table width.
+	html = '<table class="boxplot" role="presentation" style="display: block; '
+	html += 'border-collapse: collapse; max-width: 480px; background-color: white; '
+	html += 'color: #172333; margin: 4px 0;">'
+	html += '<tbody style="display: block;"><tr style="display: block;">'
+	html += '<td style="display: block; padding: 4px 24px;">'
 	html += '<div style="position: relative; height: 76px; width: 100%;">'
 	# Draw caps over the gray box edges so zero-length whiskers remain visible.
 	html += _plot_mark(positions["q1"], positions["q3"] - positions["q1"], 6, 32,
@@ -108,7 +111,7 @@ def render_boxplot_html(
 		html += f'<span style="position: absolute; left: {position:.8f}%; top: 60px; '
 		html += 'width: 40px; margin-left: -20px; text-align: center; '
 		html += f'font: 13px Arial, sans-serif;">{value}</span>'
-	html += '</div></td></tr></table>'
+	html += '</div></td></tr></tbody></table>'
 	return html
 
 

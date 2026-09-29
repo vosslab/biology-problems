@@ -4,6 +4,10 @@
 
 ### Fixes
 
+- Removed the fixed boxplot table width. Block layout now fills the available
+  answer space up to 480px and shrinks in narrow containers, including plain
+  HTML intended for LMS rendering.
+
 - Replaced the boxplot mean's letter X with the multiplication sign (`&times;`)
   in plots and question legends, using normal font weight for the marker.
 
@@ -39,6 +43,14 @@
   peptide length, and MC output filenames include the format and choice count.
 
 ### Behavior or Interface Changes
+
+- Added blank per-gene working tables to the three large-cross generators, following
+  the classroom worksheet sequence: gametes, Punnett square size, offspring genotypes,
+  and offspring phenotypes. Gamete questions show only one individual and one counting
+  row; cross questions stop at the assessed outcome. Multiple-choice answers and
+  randomized parental genotypes remain in place, including Blackboard PNG export.
+  Names come from `data/student_names.txt` via `bptools.get_repo_data_path()`, sampled
+  randomly without replacement within each question and escaped for HTML text.
 
 - Reduced codon nucleotide lettering by 20% in the genetic code table so amino-acid
   answers stand out while preserving header and answer text sizes.

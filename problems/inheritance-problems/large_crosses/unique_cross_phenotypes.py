@@ -13,6 +13,7 @@ if inheritance_root not in sys.path:
 # Import custom modules
 import bptools
 import genotypelib
+import cross_table
 
 def generate_choices(total_phenotypes, num_genes, max_choices, hint_flag):
 	# Decompose total_phenotypes into its components based on 2 and 3 powers
@@ -84,25 +85,22 @@ def generate_choices(total_phenotypes, num_genes, max_choices, hint_flag):
 def write_question(N, args):
 	# Initialize the question string
 	question = ""
+	names = cross_table.choose_student_names(2)
 
 	# Add a title
 	question += '<h3>Phenotype Diversity in Hybrid Cross</h3>'
 
 	# Update the question to include details about dominant and recessive genes in a hybrid cross
-	question += '<p>In a hybrid cross, you can determine the variety of phenotypes in the offspring '
-	question += 'by examining the genetic makeup of the parents. Specifically, look at whether each gene can '
-	question += 'be dominant, recessive, or both.</p>'
-
-	# Clarify the role of dominant genes in determining phenotypes
-	question += '<p>A dominant gene can mask the effect of its recessive counterpart, '
-	question += 'thus influencing the number of unique phenotypes.</p>'
+	question += f'<p>{names[0]} and {names[1]} are crossed. Use their genotypes to determine '
+	question += 'the number of different phenotypes possible in their offspring. '
+	question += 'An uppercase letter represents a dominant allele; a lowercase letter '
+	question += 'represents a recessive allele.</p>'
 
 	# Add a hint if the flag is set
 	if args.hint:
-		question += '<p><i>Hint: To find the number of unique phenotypes, consider each gene pair. '
-		question += '<br/>For gene pairs with at least one heterozygous and one either heterozygous or '
-		question += 'homozygous recessive gene, 2 phenotypes are possible. '
-		question += '<br/>For all other combinations, only 1 phenotype is possible.</i></p>'
+		question += '<p><i>Hint: At each gene, Aa &times; Aa and Aa &times; aa '
+		question += 'can produce two phenotypes. All other crosses produce one phenotype. '
+		question += 'Multiply the counts across all genes.</i></p>'
 
 	# Mention assumptions about gene behavior
 	question += '<p>Assume complete dominance and the principle of independent assortment for all genes.</p>'
@@ -117,40 +115,21 @@ def write_question(N, args):
 		gamete_count1 = 1
 		while gamete_count1 < 2 or gamete_count1 > 16:
 			gene_list1 = genotypelib.createGenotypeList(args.num_genes)
-			geno1, gamete_count1 = genotypelib.createGenotypeStringFromList(gene_list1)
+			_, gamete_count1 = genotypelib.createGenotypeStringFromList(gene_list1)
 		gamete_count2 = 1
 		while gamete_count2 < 2 or gamete_count2 > 16:
 			gene_list2 = genotypelib.createGenotypeList(args.num_genes)
-			geno2, gamete_count2 = genotypelib.createGenotypeStringFromList(gene_list2)
+			_, gamete_count2 = genotypelib.createGenotypeStringFromList(gene_list2)
 		total_phenotypes = genotypelib.countPhenotypesForCross(gene_list1, gene_list2)
 		power2, power3 = genotypelib.deconstructPowerOfNumber(total_phenotypes)
 		if power3 != 0:
 			print("this makes no sense", power3)
 			sys.exit(1)
 
-	# Randomly order parent genotypes
-	monospace_geno1 = genotypelib.genotype_code_format_text(geno1)
-	monospace_geno2 = genotypelib.genotype_code_format_text(geno2)
-
-	# Randomly decide the order of genotypes for male and female
-	male_row = "<tr><td style='padding-left: 10px; padding-right: 10px;'>Male (&male;)</td>"
-	male_row += f"<td style='padding-left: 10px; padding-right: 10px;'>{monospace_geno1}</td></tr>"
-	female_row = "<tr><td style='padding-left: 10px; padding-right: 10px;'>Female (&female;)</td>"
-	female_row += f"<td style='padding-left: 10px; padding-right: 10px;'>{monospace_geno2}</td></tr>"
-
-	# Conditionally set the order of the rows
-	if random.random() < 0.5:
-		rows = male_row + female_row
-	else:
-		rows = female_row + male_row
-
-	# Construct the table as a single string
-	table = "<table style='border-collapse: collapse; border: 1px solid black;'>"
-	table += f"<tbody>{rows}</tbody></table>"
-	#print(table)
-
-	# Add the table to the question
-	question += table
+	question += cross_table.work_table_instructions(is_cross=True)
+	question += cross_table.make_work_table(
+		gene_list1, names, gene_list2, last_step='phenotypes'
+	)
 
 	# Create multiple choice options
 	choices_list, answer_string = generate_choices(

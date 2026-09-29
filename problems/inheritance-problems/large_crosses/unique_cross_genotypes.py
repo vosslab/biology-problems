@@ -13,6 +13,7 @@ if inheritance_root not in sys.path:
 # Import custom modules
 import bptools
 import genotypelib
+import cross_table
 
 def generate_choices(total_genotypes, num_genes, max_choices, hint_flag):
 	# Decompose total_genotypes into its components based on 2 and 3 powers
@@ -79,11 +80,12 @@ def generate_choices(total_genotypes, num_genes, max_choices, hint_flag):
 def write_question(N, args):
 	# Initialize the question string
 	question = ""
+	names = cross_table.choose_student_names(2)
 
 	# Add contextual information and the actual question text
 	question += '<h3>Genotype Diversity in Hybrid Cross</h3>'
-	question += '<p>In a hybrid cross, the range of possible genotypes in the offspring is determined '
-	question += 'by the genetic makeup of the parental organisms.</p>'
+	question += f'<p>{names[0]} and {names[1]} are crossed. Use their genotypes to determine '
+	question += 'the number of different genotypes possible in their offspring.</p>'
 
 	question += "<p>Assume that all genes sort independently and display complete dominance.</p>"
 
@@ -100,36 +102,17 @@ def write_question(N, args):
 	gamete_count1 = 1
 	while gamete_count1 < 2 or gamete_count1 > 16:
 		gene_list1 = genotypelib.createGenotypeList(args.num_genes)
-		geno1, gamete_count1 = genotypelib.createGenotypeStringFromList(gene_list1)
+		_, gamete_count1 = genotypelib.createGenotypeStringFromList(gene_list1)
 	gamete_count2 = 1
 	while gamete_count2 < 2 or gamete_count2 > 16:
 		gene_list2 = genotypelib.createGenotypeList(args.num_genes)
-		geno2, gamete_count2 = genotypelib.createGenotypeStringFromList(gene_list2)
+		_, gamete_count2 = genotypelib.createGenotypeStringFromList(gene_list2)
 	total_genotypes = genotypelib.countGenotypesForCross(gene_list1, gene_list2)
 
-	# Randomly order parent genotypes
-	monospace_geno1 = genotypelib.genotype_code_format_text(geno1)
-	monospace_geno2 = genotypelib.genotype_code_format_text(geno2)
-
-	# Randomly decide the order of genotypes for male and female
-	male_row = "<tr><td style='padding-left: 10px; padding-right: 10px;'>Male (&male;)</td>"
-	male_row += f"<td style='padding-left: 10px; padding-right: 10px;'>{monospace_geno1}</td></tr>"
-	female_row = "<tr><td style='padding-left: 10px; padding-right: 10px;'>Female (&female;)</td>"
-	female_row += f"<td style='padding-left: 10px; padding-right: 10px;'>{monospace_geno2}</td></tr>"
-
-	# Conditionally set the order of the rows
-	if random.random() < 0.5:
-		rows = male_row + female_row
-	else:
-		rows = female_row + male_row
-
-	# Construct the table as a single string
-	table = "<table style='border-collapse: collapse; border: 1px solid black;'>"
-	table += f"<tbody>{rows}</tbody></table>"
-	#print(table)
-
-	# Add the table to the question
-	question += table
+	question += cross_table.work_table_instructions(is_cross=True)
+	question += cross_table.make_work_table(
+		gene_list1, names, gene_list2, last_step='genotypes'
+	)
 
 	# Create multiple choice options
 	choices_list, answer_string = generate_choices(

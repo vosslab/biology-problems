@@ -17,39 +17,38 @@ if inheritance_root not in sys.path:
 # Provides custom functions, such as question formatting and other utilities
 import bptools
 import genotypelib
+import cross_table
 
 # Function to write a question based on the genotype
 def write_question(N, args):
 	# Initialize the question string
 	question = ""
+	names = cross_table.choose_student_names(1)
 
 	# Add contextual information and the actual question text
 	question += '<h3>Gamete Diversity in Sexual Reproduction</h3>'
-	question += '<p>In sexual reproduction, the potential diversity of gametes &ndash; such as '
-	question += 'sperm and eggs in animals, or pollen and ovules in plants &ndash; can be calculated '
-	question += 'based on the genotype of an individual.</p>'
+	question += '<p>Assume independent assortment for all genes.</p>'
 
 	# Add the main question
 	question += '<p>How many unique <span style="color: Green;"><strong>GAMETES</strong></span> could be produced'
 	question += ' through the process of independent assortment by '
-	question += ' an individual with the following genotype?</p> '
+	question += f' {names[0]}, who has the following genotype?</p> '
 
 	# If hint is True, add a hint
 	if args.hint:
-		question += '<p><i>Hint: Remember, each heterozygous gene pair (like `Aa` or `Bb`)'
-		question += ' can give rise to two (2) different gametes,'
-		question += ' while homozygous pairs (like `AA`, `BB`, and `aa`, `bb`)'
-		question += ' can only give rise to one gamete.</i></p>'
+		question += '<p><i>Hint: At each gene, a heterozygous pair (Aa) provides two '
+		question += 'possible alleles for a gamete; a homozygous pair (AA or aa) provides '
+		question += 'one. Multiply the counts across all genes.</i></p>'
 
 	# Calculate the gamete count; ensure it falls within specified range
 	gamete_count = 1
 	while gamete_count < 4 or gamete_count > 32:
-		genotype_code, gamete_count = genotypelib.createGenotype(args.num_genes)
+		gene_list = genotypelib.createGenotypeList(args.num_genes)
+		_, gamete_count = genotypelib.createGenotypeStringFromList(gene_list)
 
 	# Add genotype to the question
-	question += '<p><strong>Genotype:</strong>&nbsp;'
-	question += genotypelib.genotype_code_format_text(genotype_code)
-	question += '</p>'
+	question += cross_table.work_table_instructions()
+	question += cross_table.make_work_table(gene_list, names)
 
 	# Create a list of answer choices
 	choices_list = []

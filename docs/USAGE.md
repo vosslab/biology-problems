@@ -41,6 +41,25 @@ the initial M and the requested length. `-X` adds untranslated flanking nucleoti
 format. MC requires at least two amino acids; `--fib` explicitly selects the original format.
 MC filenames include the format and choice count; existing FiB filenames are unchanged.
 
+## Large-cross working tables
+
+The generators in [large_crosses/](../problems/inheritance-problems/large_crosses/)
+include blank per-gene tables for students to fill in before selecting a multiple-choice
+answer. Gamete questions show one genotype and one counting row. Genotype cross questions
+build through rows (a)-(d); phenotype cross questions include all rows (a)-(e).
+Names are randomly sampled from [student_names.txt](../data/student_names.txt) using
+`bptools.get_repo_data_path()`, with two distinct names for each cross. Tables provide space
+for Punnett square dimensions and the total number of cells, with no completed counts.
+
+```bash
+source source_me.sh
+python3 problems/inheritance-problems/large_crosses/unique_gametes.py -B -I --hint --num_genes 7
+python3 problems/inheritance-problems/large_crosses/unique_cross_genotypes.py -B -I --hint --num_genes 7
+python3 problems/inheritance-problems/large_crosses/unique_cross_phenotypes.py -B -I --hint --num_genes 7
+```
+
+Use `--no-hint` to omit the explanatory hints; the blank working table remains.
+
 ## CLI
 
 Generators built on `bptools` share a common argument set (see any script's
