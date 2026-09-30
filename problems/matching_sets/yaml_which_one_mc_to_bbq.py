@@ -297,7 +297,8 @@ def main():
 	# write deduped questions to file
 	outfile = 'bbq-WOMC-' + os.path.splitext(os.path.basename(args.input_yaml_file))[0] + '-questions.txt'
 	bptools.write_questions_to_file(
-		deduped_questions, outfile, args.bbexport, args.html_to_image)
+		deduped_questions, outfile, args.bbexport, args.html_to_image,
+		selftest=args.selftest, open_selftest=args.open_selftest)
 	sync_bptools_histogram_to_item_bank(output_item_bank)
 	print('')
 	bptools.print_histogram()

@@ -10,6 +10,9 @@ import argparse
 import subprocess
 import tempfile
 import zipfile
+import pathlib
+import html
+import webbrowser
 from collections import defaultdict
 
 import tabulate
@@ -109,7 +112,7 @@ def add_anticheat_args(parser):
 #==========================
 def add_bbexport_args(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
 	"""
-	Add shared Blackboard pool export flags to an argparse parser.
+	Add shared Blackboard export and self-test flags to an argparse parser.
 	"""
 	parser.add_argument(
 		'-B', '--bbexport', dest='bbexport', action='store_true',
@@ -121,6 +124,14 @@ def add_bbexport_args(parser: argparse.ArgumentParser) -> argparse.ArgumentParse
 		help='Convert all HTML tables and RDKit canvases to packaged PNGs (requires -B).'
 	)
 	parser.set_defaults(html_to_image=False)
+	parser.add_argument(
+		'--selftest', action='store_true',
+		help='Also save an HTML self-test of one randomly selected question.'
+	)
+	parser.add_argument(
+		'-O', '--open-selftest', action='store_true',
+		help='Save an HTML self-test and open it in the default browser.'
+	)
 	return parser
 
 #==========================
@@ -1005,11 +1016,45 @@ def export_bbq_to_blackboard(
 	return export_path
 
 #==========================
+def export_bbq_to_selftest(outfile: str | os.PathLike, open_browser: bool = False) -> str:
+	"""Save one random question with the QTI self-test engine and optionally open it."""
+	outfile_path, _, package_name = _get_blackboard_export_path(outfile)
+	export_path = os.path.join(os.path.dirname(outfile_path), f"selftest-{package_name}.html")
+	qti_packer = package_interface.QTIPackageInterface(
+		package_name=package_name, verbose=False, allow_mixed=True,
+	)
+	qti_packer.read_package(outfile_path, "bbq_text_upload")
+	if len(qti_packer.item_bank) == 0:
+		raise ValueError(f"No assessment items were found in BBQ file: {outfile_path}")
+	qti_packer.save_package("html_selftest", export_path)
+	# The engine emits an embeddable fragment; supply a standalone browser document.
+	preview_path = pathlib.Path(export_path)
+	fragment = preview_path.read_text()
+	# ASVS 1.2.1: escape the filename-derived title in its HTML text context.
+	title = html.escape(package_name)
+	document = '<!doctype html>\n<html lang="en"><head><meta charset="utf-8">'
+	document += '<meta name="viewport" content="width=device-width, initial-scale=1">'
+	document += f'<title>{title}</title>'
+	document += '<style>:root { color-scheme: light; } '
+	document += 'body { background: #fff; color: #111; font-family: sans-serif; '
+	document += 'line-height: 1.5; margin: 24px; }</style></head>'
+	document += f'<body data-md-color-scheme="default">\n{fragment}\n</body></html>\n'
+	preview_path.write_text(document, encoding="utf-8")
+	# ASVS 1.2.2: encode the local path as a file URI, including spaces and URL delimiters.
+	preview_url = pathlib.Path(export_path).resolve().as_uri()
+	print(f"... saved HTML self-test to {export_path}\n{preview_url}\n")
+	if open_browser and not webbrowser.open(preview_url, new=2):
+		print(f"Could not open a browser automatically. Open this URL: {preview_url}")
+	return export_path
+
+#==========================
 def _write_questions_to_file(
 		questions: list,
 		outfile: str | os.PathLike,
 		bbexport: bool = False,
-		html_to_image: bool = False) -> None:
+		html_to_image: bool = False,
+		selftest: bool = False,
+		open_selftest: bool = False) -> None:
 	"""
 	Write questions to a file and print status messages.
 
@@ -1018,6 +1063,8 @@ def _write_questions_to_file(
 		outfile (str): Output filename.
 		bbexport (bool): Also create a Blackboard pool export ZIP.
 		html_to_image (bool): Convert all HTML tables and RDKit canvases to packaged PNGs.
+		selftest (bool): Also save one random question as an HTML self-test.
+		open_selftest (bool): Save the self-test and open it in the default browser.
 	"""
 	if html_to_image and not bbexport:
 		raise ValueError("HTML-to-image export requires -B or --bbexport.")
@@ -1031,6 +1078,8 @@ def _write_questions_to_file(
 				continue
 			f.write(prepared_question)
 	print(f"... saved {question_count} {word} to {outfile}\n")
+	if selftest or open_selftest:
+		export_bbq_to_selftest(outfile, open_browser=open_selftest)
 	if not bbexport:
 		return
 	if not html_to_image:
@@ -1055,13 +1104,16 @@ def write_questions_to_file(
 		questions: list,
 		outfile: str | os.PathLike,
 		bbexport: bool = False,
-		html_to_image: bool = False) -> None:
+		html_to_image: bool = False,
+		selftest: bool = False,
+		open_selftest: bool = False) -> None:
 	"""
 	Public wrapper for writing questions to a file.
 
 	Prefer `collect_and_write_questions(...)` in scripts.
 	"""
-	return _write_questions_to_file(questions, outfile, bbexport, html_to_image)
+	return _write_questions_to_file(
+		questions, outfile, bbexport, html_to_image, selftest, open_selftest)
 
 #==========================
 def collect_and_write_questions(write_question, args, outfile, print_histogram_flag=True) -> list:
@@ -1083,6 +1135,8 @@ def collect_and_write_questions(write_question, args, outfile, print_histogram_f
 		outfile,
 		args.bbexport,
 		getattr(args, 'html_to_image', False),
+		getattr(args, 'selftest', False),
+		getattr(args, 'open_selftest', False),
 	)
 	return questions
 

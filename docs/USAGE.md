@@ -23,6 +23,18 @@ Add `-I` when the Blackboard ZIP must convert every HTML table into packaged PNG
 python3 problems/dna_profiling-problems/blood_type_agglutination_test.py -d 5 -B -I
 ```
 
+To test a question immediately in your default browser:
+
+```bash
+python3 problems/biochemistry-problems/alpha_helix_h-bonds.py --mc -d 1 -O
+```
+
+`-O` / `--open-selftest` saves `selftest-<name>.html` beside the BBQ file and opens its
+local file URL. The QTI self-test engine previews one randomly selected question from the
+saved bank. Use `--selftest` to save without opening; combine either option with `-B`
+to also export the Blackboard ZIP. No local web server is needed. If browser launch fails,
+open the printed URL manually.
+
 ## Genetic code translation
 
 [translate_genetic_code.py](../problems/molecular_biology-problems/translate_genetic_code.py)
@@ -69,6 +81,8 @@ Generators built on `bptools` share a common argument set (see any script's
 - `-x`, `--max-questions`: cap the total number of questions written.
 - `-c`: number of answer choices.
 - `--mc`, `--ma`, `--format {mc,ma,num}`: select the question format.
+- `--selftest`: save an HTML self-test of one randomly selected question.
+- `-O`, `--open-selftest`: save the HTML self-test and open it in your default browser.
 - `-B`, `--bbexport`: also create a Blackboard pool export ZIP.
 - `-I`, `--html-to-image`: convert every HTML table and RDKit canvas to packaged PNGs in a `-B` ZIP.
 - `--hidden-terms`: enable hidden decoy terms for Blackboard Learn Original.

@@ -2,7 +2,16 @@
 
 ## 2026-09-30
 
+### Added
+
+- Added shared `--selftest` and `-O` / `--open-selftest` options using the QTI HTML
+  self-test engine. Preview one random saved question in the default browser, including
+  generators that call the file writer directly; BBQ and optional Blackboard ZIP remain available.
+
 ### Fixes and Maintenance
+
+- Standalone self-tests explicitly select the light theme so system dark mode cannot
+  produce light-gray text over a white browser background.
 
 - Declared Playwright as a direct dependency for the existing bptools image-export
   error handler and its tests. The shared export behavior is unchanged.
@@ -17,6 +26,10 @@
   and question generator that consumes the PNG.
 
 ### Developer Tests and Notes
+
+- Self-test export validation: 4749 tests passed, with the two existing source-length
+  advisories. Verified default-browser launch, Chromium correct-answer feedback, and
+  HTML output from both shared collection and direct batch writers.
 
 - Full `pytest tests/` run passed: 4745 tests, with the two existing source-length
   advisories for `bptools_legacy.py` and `webwork_lib.py`. No permanent tests were added.

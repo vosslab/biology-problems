@@ -247,7 +247,8 @@ def main() -> None:
 			break
 	outfile = bptools.make_outfile()
 	bptools.write_questions_to_file(
-		questions, outfile, args.bbexport, args.html_to_image)
+		questions, outfile, args.bbexport, args.html_to_image,
+		selftest=args.selftest, open_selftest=args.open_selftest)
 
 #=====================
 if __name__ == "__main__":

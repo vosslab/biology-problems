@@ -390,7 +390,8 @@ def main():
 
 	# write deduped questions to file
 	bptools.write_questions_to_file(
-		deduped_questions, outfile, args.bbexport, args.html_to_image)
+		deduped_questions, outfile, args.bbexport, args.html_to_image,
+		selftest=args.selftest, open_selftest=args.open_selftest)
 
 	# print a histogram of results
 	bptools.print_histogram()

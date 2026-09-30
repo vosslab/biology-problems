@@ -405,3 +405,23 @@ def test_applyReplacementRulesToList_replaces_and_validates():
 	except TypeError:
 		return
 	assert False, "expected TypeError for non-string list element"
+
+
+@pytest.mark.parametrize("flags", [[], ["--selftest"], ["-O"], ["--open-selftest", "-B"]])
+def test_selftest_export_and_browser_opt_in(tmp_path, monkeypatch, flags):
+	"""Preview flags preserve BBQ output and only launch a browser when requested."""
+	opened = []
+	monkeypatch.setattr(bptools.webbrowser, "open", lambda url, new: opened.append(url) or True)
+	args = bptools.make_arg_parser().parse_args(flags)
+	args.duplicates = 1
+	bbq_path = tmp_path / "bbq-preview #1-questions.txt"
+	question = "MC\tWhat is 2+2?\t3\tincorrect\t4\tcorrect\n"
+	bptools.collect_and_write_questions(lambda number, args: question, args, bbq_path)
+	preview = tmp_path / "selftest-preview #1.html"
+	assert bbq_path.read_text() == question
+	assert preview.exists() == bool(flags)
+	assert (tmp_path / "bez-preview #1.zip").exists() == ("-B" in flags)
+	if flags:
+		assert "What is 2+2?" in preview.read_text()
+		assert preview.read_text().startswith("<!doctype html>")
+	assert opened == ([preview.as_uri()] if args.open_selftest else [])
