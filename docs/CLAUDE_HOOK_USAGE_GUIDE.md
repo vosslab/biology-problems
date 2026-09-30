@@ -13,7 +13,7 @@ Regenerate on every audit; derive from the latest `## YYYY-MM-DD` heading in
 Best practices for AI agents in repos using the `claude-code-permissions-hook`:
 what is allowed, denied, and passed through, with preferred alternatives for denied
 patterns. Claude-specific (not Codex). Repo style conventions live in
-[docs/REPO_STYLE.md](REPO_STYLE.md) and [docs/PYTHON_STYLE.md](PYTHON_STYLE.md).
+[REPO_STYLE.md](REPO_STYLE.md) and [PYTHON_STYLE.md](PYTHON_STYLE.md).
 
 ## Trust model
 

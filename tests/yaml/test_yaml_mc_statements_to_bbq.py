@@ -145,9 +145,6 @@ def test_yaml_multiple_choice_statements_makeQuestionsFromStatement_honors_choic
 
 def test_yaml_multiple_choice_statements_num_choices_cli_validation(monkeypatch):
 	mod = import_from_repo_path("problems/multiple_choice_statements/yaml_mc_statements_to_bbq.py")
-	monkeypatch.setattr("sys.argv", ["generator"])
-	assert mod.parse_arguments().num_choices == 5
-
 	monkeypatch.setattr("sys.argv", ["generator", "--num-choices", "4"])
 	assert mod.parse_arguments().num_choices == 4
 

@@ -1,5 +1,101 @@
 # Changelog
 
+## 2026-09-30
+
+### Fixes and Maintenance
+
+- Declared Playwright as a direct dependency for the existing bptools image-export
+  error handler and its tests. The shared export behavior is unchanged.
+- Removed the stale YAML MC parser-default assertion. An omitted CLI choice count
+  allows the YAML bank setting to apply before the generator falls back to five.
+  Explicit CLI choice-count validation remains covered.
+
+### Removals and Deprecations
+
+- Removed the completed horse artwork build script, which depended on Shapely and
+  a missing original chestnut SVG. Kept the editable coat-pattern SVG, finished PNG,
+  and question generator that consumes the PNG.
+
+### Developer Tests and Notes
+
+- Full `pytest tests/` run passed: 4745 tests, with the two existing source-length
+  advisories for `bptools_legacy.py` and `webwork_lib.py`. No permanent tests were added.
+
+## 2026-09-29
+
+### Added
+
+- Added `two_gene_dominance_probability.py` with 378 distinct one-cross scenarios in
+  fictional mosaic plants. Double incomplete dominance, double codominance, and mixed
+  pairs use phenotype tables and seven outcome prompts, including parent matches and
+  new combinations. Equivalent target events are not counted again under different wording.
+- Added `two_gene_selected_offspring_bonus.py` with 144 distinct two-generation bonus
+  scenarios in fictional lantern plants. Students select an offspring by brightness and
+  predict a second cross, accounting for the different probabilities of genotypes with
+  the same brightness. Equivalent gene swaps are removed from the scenario pool.
+- Both new generators use exact fractions, completed arithmetic in every choice, distinct
+  numerical answers, and shuffled scenario pools without repeats. Colored tables retain
+  written phenotype labels. Existing question generators remain in place.
+
+### Behavior or Interface Changes
+
+- Removed redundant "one-gene model" and "use a simple model" framing. Monohybrid
+  questions retain the direct statement that the counts match the expected ratio.
+- Lethal allele survival and monohybrid litter inference now build complete scenario
+  lists and shuffle once per run. Each setup appears at most once, independent of answer
+  choices or their order. Oversized requests report the available capacity and stop there:
+  currently 172 lethal-allele setups and 48 monohybrid setups. Explicit smaller `-x` limits
+  still apply; scenario lists never cycle.
+- Reworked lethal allele prompts into a paragraph explaining the genotype table followed by
+  a sentence describing the cross and offspring. Genotypes use matching text colors in the
+  table and prose; table color is limited to genotype cells and prose backgrounds are removed
+  in both generators. Removed the redundant calculation instruction. Cattle count questions
+  use 12 or 24 offspring across several matings; cat and mouse counts use smaller litters.
+- Simplified student-facing language in lethal allele survival and monohybrid litter
+  inference questions. Colored genotype keys, parent panels, and offspring symbols organize
+  the given information without displaying completed Punnett squares. Written labels,
+  counts, and different symbol shapes preserve meaning without color.
+- Lethal allele questions label the reference phenotype as "wildtype" alongside its
+  concrete description, such as "straight wings (wildtype)." Internal question-type and
+  probability names also use "wildtype".
+- Lethal allele count answers now supply the fraction, multiplication, and result. Added
+  count questions about surviving offspring, with the surviving total stated explicitly.
+  All offspring totals in both generators are multiples of 12, so halves, thirds, and
+  quarters give whole numbers. For example, a choice can read `1/3 x 96 = 32 offspring`.
+- Monohybrid questions identify the known parent's genotype directly, shuffle answer choices,
+  and state that the counts match the expected ratio in the simplified model. Removed
+  "large litter" wording from questions that also use plants and people.
+
+### Developer Tests and Notes
+
+- New plant-generator, existing scenario-pool, and shared bptools tests passed (37 checks).
+  An independent gamete enumeration verified all 522 new scenario answers; every displayed
+  calculation was checked, including distractors. Full-pool output repeated with seed 12345
+  and changed with seed 54321. Actual `-d 199` runs wrote 199 unique regular questions and
+  capped the bonus output at 144 unique questions with an explicit capacity message.
+  Desktop and 375-pixel browser previews passed; sample Blackboard image exports contained
+  valid XML and the expected table PNGs, which were visually inspected. Scoped pyflakes
+  and diff whitespace checks passed. No full repository suite or live LMS import was run.
+- Scenario-pool and shared bptools tests passed (33 checks). Actual `-d 199` runs wrote
+  172 and 48 questions with exactly that many distinct stems, reporting the capacity limit.
+  Full-pool outputs repeated exactly with seed 12345 and changed order with seed 54321.
+  Scoped pyflakes and diff whitespace checks passed. No full repository suite was run.
+- The revised table explanation and cross wording passed 113 temporary checks across all
+  lethal traits, crosses, and question types, including seed reproducibility. Together with
+  shared bptools tests, 140 checks passed. Refreshed previews fit a 375-pixel viewport and
+  the sample Blackboard package exported with genotype table colors preserved in PNGs.
+- Temporary verification covered every lethal trait, cross, and question type and every
+  monohybrid trait and parent pair: 137 checks passed. Each generator produced 100 identical
+  outputs on repeated runs with `random.seed(12345)` in the verification harness; the existing
+  CLI has no seed option. Shared collection retains anti-cheat defaults and choices shuffle.
+- Wording comparison: "If 80 conceptions occur" becomes "These parents produce 96 offspring
+  in total. Include those that do not survive." Local before/after HTML and BBQ samples are
+  saved in the ignored `output_inheritance_review/` directory for review.
+- Combined temporary checks and shared bptools tests passed (164 checks); scoped pyflakes
+  and diff whitespace checks passed. Browser previews fit a 375-pixel viewport. Both
+  generators exported local Blackboard ZIPs with their colored tables rendered as PNGs.
+  A live LMS import and the full repository test suite were not run.
+
 ## 2026-09-28
 
 ### Fixes

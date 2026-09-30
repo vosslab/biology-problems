@@ -1,6 +1,6 @@
 # Usage
 
-Each script under [problems/](../problems/) is a standalone generator that emits
+Each script under `problems` is a standalone generator that emits
 quiz or homework items. Most use shared helpers from [bptools.py](../bptools.py)
 and a common `argparse` CLI. Follow [INSTALL.md](INSTALL.md) to install
 `qti-package-maker`, then run a script after sourcing the environment.
@@ -43,7 +43,7 @@ MC filenames include the format and choice count; existing FiB filenames are unc
 
 ## Large-cross working tables
 
-The generators in [large_crosses/](../problems/inheritance-problems/large_crosses/)
+The generators in `large_crosses`
 include blank per-gene tables for students to fill in before selecting a multiple-choice
 answer. Gamete questions show one genotype and one counting row. Genotype cross questions
 build through rows (a)-(d); phenotype cross questions include all rows (a)-(e).
@@ -148,10 +148,10 @@ FiB accepts optional commas every three bases; prime mode also accepts direction
 
 ## Inputs and outputs
 
-- Inputs: YAML/CSV/text reference data in [data/](../data/), YAML banks under
-  [problems/matching_sets/](../problems/matching_sets/) and
-  [problems/multiple_choice_statements/](../problems/multiple_choice_statements/),
-  and images in [images/](../images/).
+- Inputs: YAML/CSV/text reference data in `data`, YAML banks under
+  `matching_sets` and
+  `multiple_choice_statements`,
+  and images in `images`.
 - Outputs (written to the repo root, ignored by git): Blackboard `bbq-*.txt`
   files, Blackboard `bez-*.zip` packages (and older `blackboard_export_zip-*.zip` files),
   QTI `qti*.zip` packages, and

@@ -65,7 +65,7 @@ Simple table:
 - Links must work when committed and browsed on github.com. GitHub resolves relative URLs against
   the file containing the link, so use a path relative to that file, not the repo root.
 - When linking from the repo root into `docs/`, include `docs/` in both the link text and URL. For
-  example, use `[docs/FORMAT.md](docs/FORMAT.md)`.
+  example, use ``FORMAT.md``.
 - When linking between files in the same folder, use the bare filename in both the link text and
   URL. For example, use `[PYTEST_STYLE.md](PYTEST_STYLE.md)`, not a redundant `docs/` prefix.
 - Link text should match the URL filename so readers see the exact file being referenced.

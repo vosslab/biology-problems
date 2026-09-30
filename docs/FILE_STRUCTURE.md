@@ -87,7 +87,7 @@ Domain-specific helper libraries live near the generators that use them.
 - [audit_problem_scripts_bptools_framework.py](../tools/audit_problem_scripts_bptools_framework.py): framework usage audit.
 - [build_question_function_index.py](../tools/build_question_function_index.py): question-function index generator.
 - [build_yaml_question_bank_index.py](../tools/build_yaml_question_bank_index.py): YAML bank index generator.
-- [check_yaml.py](../tools/check_yaml.py): YAML validation and pretty-print utility.
+- `check_yaml.py`: YAML validation and pretty-print utility.
 - [add_dbsubject_to_yaml.py](../tools/add_dbsubject_to_yaml.py): add subject tags to YAML banks.
 - [find_all_imports.py](../tools/find_all_imports.py): import scan utility.
 - [allow_partial_credit_for_pool.py](../tools/allow_partial_credit_for_pool.py): Blackboard pool helper.
@@ -109,7 +109,7 @@ Release and changelog tooling (sharing [changelog_lib.py](../devel/changelog_lib
 - [commit_changelog.py](../devel/commit_changelog.py): seed commit message from changelog entries.
 - [flatten_broken_md_links.py](../devel/flatten_broken_md_links.py): Markdown link repair helper.
 - [dist_clean.sh](../devel/dist_clean.sh): build artifact cleanup.
-- [setup_playwright.sh](../devel/setup_playwright.sh): Playwright setup.
+- `setup_playwright.sh`: Playwright setup.
 
 ### Tests directory
 

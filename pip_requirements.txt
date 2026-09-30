@@ -6,9 +6,9 @@ lxml
 matplotlib
 numpy
 pillow
+playwright
 pyyaml
 rdkit
 requests
 scipy
 tabulate
-

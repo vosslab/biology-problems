@@ -73,7 +73,7 @@ round-trip check in `tests/e2e/`.
 
 ## Use the hygiene harness
 
-Use [tests/file_utils.py](../tests/file_utils.py) for a repository-wide hygiene test. It owns file
+Use [file_utils.py](../tests/file_utils.py) for a repository-wide hygiene test. It owns file
 discovery, scratch exclusions, report naming, report lifecycle, parametrization IDs, and failure
 formatting. Its docstrings are the API reference.
 

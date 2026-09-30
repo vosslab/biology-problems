@@ -50,7 +50,7 @@
 - Added `docs/webwork/` as a dedicated place to store WebWork style guides (starting with `INDEX.md`).
 - Added a WeBWorK PG header/tagging style guide: `WEBWORK_HEADER_STYLE.md`.
 - Added a PGML-first WeBWorK problem authoring guide: `WEBWORK_PROBLEM_AUTHOR_GUIDE.md`.
-- Improved [check_yaml.py](../tools/check_yaml.py) to validate one or more YAML files (or directories with `--recursive`) with quality checks (duplicate-key detection, basic schema checks for YAML banks, and tab-indentation checks).
+- Improved `check_yaml.py` to validate one or more YAML files (or directories with `--recursive`) with quality checks (duplicate-key detection, basic schema checks for YAML banks, and tab-indentation checks).
 - Added a repo-wide pytest that parses all YAML files under `data/` and `problems/`: [test_repo_yaml_files_parse.py](../tests/yaml/test_repo_yaml_files_parse.py).
 - Fixed invalid YAML in [plant_transgenes.yml](../problems/matching_sets/biotechnology/plant_transgenes.yml) and [degrees_of_dominance.yml](../problems/matching_sets/inheritance/degrees_of_dominance.yml) so repo-wide YAML parsing passes.
 - Fixed mixed indentation in several generators/libraries so `pytest tests/test_indentation.py` passes (tabs only).
@@ -811,7 +811,7 @@
   [dominant_and_X-linked_recessive.py](../problems/inheritance-problems/dominant_and_X-linked_recessive.py),
   [hardy_weinberg_mc_type.py](../problems/inheritance-problems/hardy_weinberg/hardy_weinberg_mc_type.py),
   [hardy_weinberg_numeric.py](../problems/inheritance-problems/hardy_weinberg/hardy_weinberg_numeric.py),
-  [horses.py](../problems/inheritance-problems/horses.py),
+  `horses.py`,
   [letter_translocation_problem_color.py](../problems/inheritance-problems/translocation/letter_translocation_problem_color.py),
   [monohybrid_degrees_of_dominance.py](../problems/inheritance-problems/monohybrid_degrees_of_dominance.py),
   [monohybrid_genotype_statements.py](../problems/inheritance-problems/monohybrid_genotype_statements.py),

@@ -31,6 +31,14 @@ cid_to_data:
     Molecular weight: 117.15
     Partition coefficient: -2.6
     SMILES: C(CCN)CC(=O)O
+  180:
+    Abbreviation: acetone
+    CID: 180
+    Full name: acetone
+    Molecular formula: C3H6O
+    Molecular weight: 58.08
+    Partition coefficient: -0.1
+    SMILES: CC(=O)C
   190:
     Abbreviation: adenine
     CID: 190
@@ -3217,6 +3225,7 @@ name_to_cid:
   6-phosphogluconate: 91493
   7-methylguanine: 135398679
   7-methylguanosine: 135445750
+  acetone: 180
   adenine: 190
   adenosine: 60961
   adenosine 3'-monophosphate: 41211
@@ -3613,6 +3622,7 @@ name_to_cid:
   oxandrolone: 5878
   oxymetholone: 5281034
   palatinose: 83686
+  palmitate: 985
   palmitic acid: 985
   palmitoleic acid: 445638
   paullinic acid: 5312518
@@ -3727,4 +3737,4 @@ name_to_cid:
   xylulose-5-phosphate: 850
   zidovudine triphosphate: 72187
   zidovudine-triphosphate: 72187
-time_stamp: 1776902884
+time_stamp: 1790775090
