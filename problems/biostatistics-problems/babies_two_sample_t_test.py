@@ -149,8 +149,9 @@ def format_question_html(group1: list[float], group2: list[float], tails: int) -
 		"https://docs.google.com/document/d/1k5UzUlpu-5wCMyWpop0bFlXBgAWivwTwd020Jgo1EIk/edit"
 	)
 
-	q = ""
-	q += ("<p><b>Two-Sample T-Test Scenario</b><br/>"
+	q = "<p><b>Two-Sample t-Test: Joe's Hospital vs. Green Veggies</b></p>"
+	q += "<p><b>Setup</b></p>"
+	q += ("<p>"
 		"Previously, you compared newborn weights at Joe's Hospital of Fried "
 		"Foods to the national average (7.5 lbs) using a one-sample t-test. "
 		"Now, Joe faces a challenge from Alex, CEO of Green Veggies Health "
@@ -171,6 +172,7 @@ def format_question_html(group1: list[float], group2: list[float], tails: int) -
 		q += ("<p>Use a two tailed two sample t test for "
 			"H1: &mu;<sub>Joe</sub> &ne; &mu;<sub>Veggies</sub>.</p>")
 	q += "<p>Assume unequal variances (Welch's t test).</p>"
+	q += "<p><b>Sample data</b></p>"
 	q += "<table style='border-collapse:collapse;'><tr>"
 	q += "<td style='vertical-align:top; padding-right:20px;'>"
 	q += "<b>Joe's Hospital (lbs):</b><br/>"
@@ -181,8 +183,10 @@ def format_question_html(group1: list[float], group2: list[float], tails: int) -
 	q += f"<span style='font-family:monospace; background-color:#eee; white-space:pre;'>{rows2}</span>"
 	q += "</td>"
 	q += "</tr></table>"
+	q += "<p><b>Procedure</b></p>"
 	q += "<p>Compute the p value in Google Sheets using the tutorial:"
 	q += f" <a href='{tutorial_link}' target='_blank' rel='noopener'>link here</a>.</p>"
+	q += "<p><b>Result to report</b></p>"
 	q += "<p>Enter your result as a decimal between 0 and 1 "
 	q += "(for example, 0.084, not 8.4%).</p>"
 	return q

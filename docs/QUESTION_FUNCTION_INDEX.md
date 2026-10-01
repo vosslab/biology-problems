@@ -133,8 +133,8 @@ This file lists key functions that create quiz/homework questions (or question i
 - 2026-01-04 - `problems/inheritance-problems/cytogenetic_notation/cytogenetic_notation-band_order.py:150` - `write_question` (commit `a63736b8ef`) - "Generate a formatted multiple-choice question."
 - 2026-01-04 - `problems/inheritance-problems/chi_square/chi_square_hypotheses_lab_partner.py:240` - `write_question` (commit `566b69080e`)
 - 2026-01-04 - `problems/inheritance-problems/chi_square/chi_square_hypotheses.py:315` - `write_question` (commit `566b69080e`)
-- 2026-01-04 - `problems/biostatistics-problems/hypothesis_statements.py:384` - `write_question` (commit `566b69080e`)
-- 2026-01-04 - `problems/biostatistics-problems/hypothesis_lab_partner.py:331` - `write_question` (commit `566b69080e`)
+- 2026-01-04 - `problems/biostatistics-problems/null_and_alternative_hypotheses.py:384` - `write_question` (commit `566b69080e`)
+- 2026-01-04 - `problems/biostatistics-problems/hypothesis_statement_errors.py:331` - `write_question` (commit `566b69080e`)
 - 2026-01-04 - `problems/biochemistry-problems/electrophoresis/kaleidoscope_ladder/kaleidoscope_ladder_mapping.py:97` - `write_prelim_estimate_unknown_question` (commit `a36bce137d`)
 ## 2025-12-27
 - 2025-12-27 - `problems/molecular_biology-problems/translate_genetic_code.py:147` - `write_question` (commit `b43f71cb79`) - file 2022-04-18 (commit `2c70a31db4`)
@@ -187,7 +187,7 @@ This file lists key functions that create quiz/homework questions (or question i
 - 2025-12-27 - `problems/dna_profiling-problems/blood_type_agglutination_test.py:281` - `write_question` (commit `b43f71cb79`) - file 2020-10-01 (commit `32e9dbb9ca`) - "Creates a complete formatted question for output."
 - 2025-12-27 - `problems/biostatistics-problems/z_score_table_interp.py:377` - `write_question` (commit `b43f71cb79`) - file 2024-10-28 (commit `b8f12aee5c`) - "Creates a formatted multiple-choice question."
 - 2025-12-27 - `problems/biostatistics-problems/z_score_google_sheet.py:248` - `write_question` (commit `b43f71cb79`) - file 2025-09-15 (commit `d7cf1aea49`) - "Create one Blackboard MC question row with Z-score targeting."
-- 2025-12-27 - `problems/biostatistics-problems/population_test_google_sheet.py:193` - `write_question` (commit `b43f71cb79`) - file 2024-11-02 (commit `450cfb15cf`) - "Creates a complete formatted question for output."
+- 2025-12-27 - `problems/biostatistics-problems/babies_one_sample_z_test.py:193` - `write_question` (commit `b43f71cb79`) - file 2024-11-02 (commit `450cfb15cf`) - "Creates a complete formatted question for output."
 - 2025-12-27 - `problems/biostatistics-problems/busse_woods_two_sample_t_test.py:236` - `write_question` (commit `b43f71cb79`) - file 2025-10-20 (commit `654cc1465b`) - "Create one Blackboard numeric question row for a two-sample test."
 - 2025-12-27 - `problems/biostatistics-problems/busse_woods_one_sample_tests.py:269` - `write_question` (commit `b43f71cb79`) - file 2025-10-20 (commit `654cc1465b`) - "Create a complete formatted question for output."
 - 2025-12-27 - `problems/biostatistics-problems/babies_two_sample_t_test.py:192` - `write_question` (commit `b43f71cb79`) - file 2024-11-02 (commit `450cfb15cf`) - "Create one Blackboard numeric question row for a two-sample t-test."

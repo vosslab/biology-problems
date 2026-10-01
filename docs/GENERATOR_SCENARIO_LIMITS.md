@@ -35,7 +35,7 @@ was increased from 219 to 1,000:
 
 - `molecular_biology-problems/linear_digest.py`
 - `inheritance-problems/poisson_flies.py`
-- `biostatistics-problems/hypothesis_statements.py`
+- `biostatistics-problems/null_and_alternative_hypotheses.py`
 - `laboratory-problems/solution-molarity-mol_weight-numeric.py`
 
 Their lower website counts are sampling-budget shortfalls, not finite scenario

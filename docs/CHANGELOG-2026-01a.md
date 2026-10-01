@@ -290,12 +290,12 @@
   [make_all_gene_trees.py](../problems/inheritance-problems/phylogenetic_trees/make_all_gene_trees.py)
   to use `treelib` instead of `phylolib2.py`.
 - Added biostatistics hypothesis-identification generators in
-  [hypothesis_statements.py](../problems/biostatistics-problems/hypothesis_statements.py) and
-  [hypothesis_lab_partner.py](../problems/biostatistics-problems/hypothesis_lab_partner.py).
-- Updated [hypothesis_statements.py](../problems/biostatistics-problems/hypothesis_statements.py)
+  [hypothesis_statements.py](../problems/biostatistics-problems/null_and_alternative_hypotheses.py) and
+  [hypothesis_lab_partner.py](../problems/biostatistics-problems/hypothesis_statement_errors.py).
+- Updated [hypothesis_statements.py](../problems/biostatistics-problems/null_and_alternative_hypotheses.py)
   to add plain-English "In words" sentences to each option and include an ASCII-friendly parameter label in
   parentheses for improved terminal readability.
-- Updated [hypothesis_lab_partner.py](../problems/biostatistics-problems/hypothesis_lab_partner.py)
+- Updated [hypothesis_lab_partner.py](../problems/biostatistics-problems/hypothesis_statement_errors.py)
   to include the same ASCII-friendly parameter labels and "In words" sentences for the lab partner's hypotheses.
 - Added a pytest smoke-test suite for `*lib.py` modules in `tests` and configured pytest discovery via
   `pyproject.toml`.
@@ -790,7 +790,7 @@
   [babies_two_sample_t_test.py](../problems/biostatistics-problems/babies_two_sample_t_test.py),
   [busse_woods_one_sample_tests.py](../problems/biostatistics-problems/busse_woods_one_sample_tests.py),
   [busse_woods_two_sample_t_test.py](../problems/biostatistics-problems/busse_woods_two_sample_t_test.py),
-  [population_test_google_sheet.py](../problems/biostatistics-problems/population_test_google_sheet.py),
+  [population_test_google_sheet.py](../problems/biostatistics-problems/babies_one_sample_z_test.py),
   [z_score_google_sheet.py](../problems/biostatistics-problems/z_score_google_sheet.py),
   [z_score_table_interp.py](../problems/biostatistics-problems/z_score_table_interp.py).
 - Refactored DNA profiling scripts to use shared argparse defaults, helper-based

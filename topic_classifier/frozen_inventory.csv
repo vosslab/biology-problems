@@ -70,9 +70,9 @@ generator,problems/biostatistics-problems/busse_woods_one_sample_tests.py
 generator,problems/biostatistics-problems/busse_woods_two_sample_f_test.py
 generator,problems/biostatistics-problems/busse_woods_two_sample_t_test.py
 generator,problems/biostatistics-problems/descriptive_stats_google_sheet.py
-generator,problems/biostatistics-problems/hypothesis_lab_partner.py
-generator,problems/biostatistics-problems/hypothesis_statements.py
-generator,problems/biostatistics-problems/population_test_google_sheet.py
+generator,problems/biostatistics-problems/hypothesis_statement_errors.py
+generator,problems/biostatistics-problems/null_and_alternative_hypotheses.py
+generator,problems/biostatistics-problems/babies_one_sample_z_test.py
 generator,problems/biostatistics-problems/z_score_google_sheet.py
 generator,problems/biostatistics-problems/z_score_table_interp.py
 generator,problems/cell_biology-problems/cell_surf-to-vol_ratio.py
@@ -190,9 +190,9 @@ yaml,problems/matching_sets/biochemistry/macromolecules.yml
 yaml,problems/matching_sets/biochemistry/polysaccharides.yml
 yaml,problems/matching_sets/biochemistry/respiration.yml
 yaml,problems/matching_sets/biostatistics/chi-square_terms.yml
-yaml,problems/matching_sets/biostatistics/hypothesis_testing.yml
+yaml,problems/matching_sets/biostatistics/selecting_statistical_tests.yml
 yaml,problems/matching_sets/biostatistics/measures_of_center.yml
-yaml,problems/matching_sets/biostatistics/statistical_test_terms.yml
+yaml,problems/matching_sets/biostatistics/hypothesis_testing_terms.yml
 yaml,problems/matching_sets/biotechnology/biotech_vs.yml
 yaml,problems/matching_sets/biotechnology/biotech_vs_improved.yml
 yaml,problems/matching_sets/biotechnology/culture_enrichment.yml
@@ -251,7 +251,7 @@ yaml,problems/multiple_choice_statements/biochemistry/rna_v_dna.yml
 yaml,problems/multiple_choice_statements/biochemistry/thermodynamics.yml
 yaml,problems/multiple_choice_statements/biochemistry/which_enzyme.yml
 yaml,problems/multiple_choice_statements/biostatistics/chi-square.yml
-yaml,problems/multiple_choice_statements/biostatistics/statistical_tests.yml
+yaml,problems/multiple_choice_statements/biostatistics/hypothesis_testing_decisions.yml
 yaml,problems/multiple_choice_statements/biotechnology/nobel_prizes.yml
 yaml,problems/multiple_choice_statements/biotechnology/xna_and_xdna.yml
 yaml,problems/multiple_choice_statements/cell_biology/cell_theory.yml

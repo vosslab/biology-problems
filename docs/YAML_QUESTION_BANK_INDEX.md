@@ -13,7 +13,7 @@ This file lists YAML-driven question banks and their Git dates.
 - `problems/multiple_choice_statements/which_enzyme.yml` - updated 2026-01-04 (commit `601277c0c4`) - created 2022-03-21 (commit `f5fae70b9e`)
 - `problems/multiple_choice_statements/translation_accuracy.yml` - updated 2026-01-04 (commit `601277c0c4`) - created 2022-04-17 (commit `67fd107504`)
 - `problems/multiple_choice_statements/thermodynamics.yml` - updated 2026-01-04 (commit `601277c0c4`) - created 2022-12-13 (commit `c2e5c4ce59`)
-- `problems/multiple_choice_statements/statistical_tests.yml` - updated 2026-01-04 (commit `601277c0c4`) - created 2025-09-29 (commit `9101fa2269`)
+- `problems/multiple_choice_statements/biostatistics/hypothesis_testing_decisions.yml` - updated 2026-01-04 (commit `601277c0c4`) - created 2025-09-29 (commit `9101fa2269`)
 - `problems/multiple_choice_statements/secondary_messenger.yml` - updated 2026-01-04 (commit `601277c0c4`) - created 2022-03-21 (commit `f5fae70b9e`)
 - `problems/multiple_choice_statements/sample.yml` - updated 2026-01-04 (commit `601277c0c4`) - created 2023-09-05 (commit `f75eb459e4`)
 - `problems/multiple_choice_statements/rna_v_dna.yml` - updated 2026-01-04 (commit `601277c0c4`) - created 2021-11-04 (commit `fbeffe6d54`)
@@ -69,11 +69,11 @@ This file lists YAML-driven question banks and their Git dates.
 - `matching_sets/meiosis_terms.yml` - updated 2025-09-30 (commit `28ad530ba0`) - created 2022-10-05 (commit `619ecb0958`)
 - `matching_sets/meiosis_prophase_1.yml` - updated 2025-09-30 (commit `28ad530ba0`) - created 2022-10-05 (commit `619ecb0958`)
 ## 2025-09-29
-- `matching_sets/statistical_test_terms.yml` - updated 2025-09-29 (commit `9101fa2269`) - created 2025-09-29 (commit `a5aa048246`)
+- `problems/matching_sets/biostatistics/hypothesis_testing_terms.yml` - updated 2025-09-29 (commit `9101fa2269`) - created 2025-09-29 (commit `a5aa048246`)
 ## 2025-09-24
 - `matching_sets/mendelian_genetics_terms.yml` - updated 2025-09-24 (commit `defb4e52df`) - created 2023-09-18 (commit `5d4bd83e1d`)
 ## 2025-09-22
-- `matching_sets/hypothesis_testing.yml` - updated 2025-09-22 (commit `74c5be9ad7`) - created 2024-10-25 (commit `c916e9022c`)
+- `problems/matching_sets/biostatistics/selecting_statistical_tests.yml` - updated 2025-09-22 (commit `74c5be9ad7`) - created 2024-10-25 (commit `c916e9022c`)
 ## 2025-09-04
 - `matching_sets/genetic_disorders.yml` - updated 2025-09-04 (commit `0085928b59`) - created 2022-08-29 (commit `1a246e7232`)
 ## 2025-08-08

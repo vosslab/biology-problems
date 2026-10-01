@@ -26,7 +26,7 @@ problems/biostatistics-problems/babies_two_sample_t_test.py
 problems/biostatistics-problems/busse_woods_one_sample_tests.py
 problems/biostatistics-problems/busse_woods_two_sample_t_test.py
 problems/biostatistics-problems/descriptive_stats_google_sheet.py
-problems/biostatistics-problems/population_test_google_sheet.py
+problems/biostatistics-problems/babies_one_sample_z_test.py
 problems/biostatistics-problems/z_score_google_sheet.py
 problems/biostatistics-problems/z_score_table_interp.py
 problems/cell_biology-problems/cell_surf-to-vol_ratio.py

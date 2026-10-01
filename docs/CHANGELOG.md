@@ -4,6 +4,21 @@
 
 ### Changed
 
+- Renamed `hypothesis_statements.py` to `null_and_alternative_hypotheses.py`
+  and `hypothesis_lab_partner.py` to `hypothesis_statement_errors.py` to describe
+  their learning objectives. Updated documentation, classifier inventory, and
+  website task inputs; generator content and options are unchanged.
+
+- Renamed three biostatistics YAML banks to describe their learning objectives:
+  `selecting_statistical_tests.yml`, `hypothesis_testing_terms.yml`, and
+  `hypothesis_testing_decisions.yml`. Updated bank index, classifier references,
+  and website task inputs; question content is unchanged.
+
+- Matched the babies two-sample t-test and population-test question headings to
+  the one-sample t-test: Setup, Sample data, Procedure, and Result to report.
+  Renamed `population_test_google_sheet.py` to `babies_one_sample_z_test.py` to
+  match the babies test naming pattern and its default z-test; retained its optional
+  t-test mode and updated repository references.
 - Added a dedicated one-sample babies versus national average t-test generator,
   linked to the Part 2 Google Sheets tutorial. Its question is organized as setup,
   sample data, procedure, and result to report. It uses the sample standard deviation,

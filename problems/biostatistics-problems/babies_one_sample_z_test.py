@@ -170,8 +170,9 @@ def format_question_html(weights: list[float], mu: float, sigma: float | None, t
 	ztest_link = "https://docs.google.com/document/d/1ZOLIw-JlNA6Mry1w0t5I5Ffgi7RMiBCSr7VtyNgsdt0/edit"
 	ttest_link = "https://docs.google.com/document/d/1lh3EWl4gnyT0dq0rgYzjzC6J1No4zKP2gi5eY3N5uv0/edit"
 
-	q = ""
-	q += "<p><b>Joe's Hospital of Fried Foods vs National Average</b></p>"
+	test_label = "z-Test" if test_method.lower().startswith('z') else "t-Test"
+	q = f"<p><b>One-Sample {test_label}: Joe's Hospital vs. National Average</b></p>"
+	q += "<p><b>Setup</b></p>"
 	if test_method.lower().startswith('z'):
 		q += "<p>Use a one tailed Z test for H1: mu_hospital > mu.</p>"
 		q += f"<p>Fixed population values: &mu; = {mu} lbs, &sigma; = {sigma} lbs.</p>"
@@ -180,10 +181,14 @@ def format_question_html(weights: list[float], mu: float, sigma: float | None, t
 		q += "<p>Use a one tailed one sample t test for H1: mu_hospital > mu.</p>"
 		q += f"<p>Fixed population values: &mu; = {mu} lbs, Population sd is unknown.</p>"
 		tutorial_link = ttest_link
-	q += "<p>Sample weights (lbs), enter into a single column in Google Sheets:</p>"
+	q += "<p><b>Sample data</b></p>"
+	q += "<p>Sample weights (lbs):</p>"
 	q += f"<p><span style='font-family: monospace; background-color:#eee;'>{rows}</span></p>"
+	q += "<p><b>Procedure</b></p>"
+	q += "<p>Enter the sample weights into a single column in Google Sheets.</p>"
 	q += "<p>Compute the one-tailed p-value using the tutorial workflow from last week: "
 	q += f"<a href='{tutorial_link}' target='_blank' rel='noopener'>link here</a>.</p>"
+	q += "<p><b>Result to report</b></p>"
 	q += "<p>Enter your result as a decimal between 0 and 1 (for example, 0.084, not 8.4%).</p>"
 	return q
 
