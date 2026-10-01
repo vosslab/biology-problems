@@ -102,14 +102,14 @@
 - Integrated empty column stripping into `render_graph_to_code()` in
   `pedigree_lib/graph_parse.py`.
 - Added balanced complexity support to `generate_pedigree_set()` in
-  [write_pedigree_match_random.py](../problems/inheritance-problems/pedigrees/write_pedigree_match_random.py)
+  [write_pedigree_match_random.py](../problems/inheritance-problems/pedigrees/write_pedigree_pattern_matching.py)
   with `min_individuals`, `max_individuals`, and `max_size_spread` parameters.
 - Added pytest coverage for pedigree layout centering validation in
   `test_pedigrees_layout_centering.py` (since retired).
 - Added pytest coverage for mirror and strip functions in
   `test_pedigrees_pedigree_code_lib.py` (since retired).
 - Added a random pedigree generation matching question generator in
-  [write_pedigree_match_random.py](../problems/inheritance-problems/pedigrees/write_pedigree_match_random.py)
+  [write_pedigree_match_random.py](../problems/inheritance-problems/pedigrees/write_pedigree_pattern_matching.py)
   that uses the skeleton and inheritance assignment engines instead of static templates.
 - Added X-linked dominant inheritance assignment to
   `pedigree_lib/inheritance_assign.py`
@@ -152,7 +152,7 @@
 - Added a one-time deprecation warning when `bptools.collect_question_batches(...)` is used to discourage new scripts from adopting the batch-writer pattern.
 - Converted [classify_Fischer.py](../problems/biochemistry-problems/carbs/classify_Fischer.py) and [classify_Haworth.py](../problems/biochemistry-problems/carbs/classify_Haworth.py) from batch generators to single-question writers using modulo-`N` scenario selection, removing non-CLI state stored on `args`.
 	- Added `bptools.add_scenario_args(parser)` (`--random` default, `--sorted` optional) and wired it into the carbohydrates and Michaelis-Menten scenario-based scripts to control scenario ordering without changing `-d/-x` semantics.
-	- Applied the same precomputed-scenarios + modulo-`N` selection pattern (with `--random/--sorted`) to: [match_amino_acid_structures.py](../problems/biochemistry-problems/PUBCHEM/AMINO_ACIDS/match_amino_acid_structures.py), [which_amino_acid.py](../problems/biochemistry-problems/PUBCHEM/AMINO_ACIDS/which_amino_acid.py), [monohybrid_genotype_statements.py](../problems/inheritance-problems/monohybrid_genotype_statements.py), [write_pedigree_choice.py](../problems/inheritance-problems/pedigrees/write_pedigree_choice.py), [write_pedigree_match.py](../problems/inheritance-problems/pedigrees/write_pedigree_match.py), [amplicon_copies.py](../problems/molecular_biology-problems/amplicon_copies.py), [dna_melting_temp.py](../problems/molecular_biology-problems/dna_melting_temp.py), [overhang_sequence.py](../problems/molecular_biology-problems/restriction_enzymes/overhang_sequence.py), and [overhang_type.py](../problems/molecular_biology-problems/restriction_enzymes/overhang_type.py).
+	- Applied the same precomputed-scenarios + modulo-`N` selection pattern (with `--random/--sorted`) to: [match_amino_acid_structures.py](../problems/biochemistry-problems/PUBCHEM/AMINO_ACIDS/match_amino_acid_structures.py), [which_amino_acid.py](../problems/biochemistry-problems/PUBCHEM/AMINO_ACIDS/which_amino_acid.py), [monohybrid_genotype_statements.py](../problems/inheritance-problems/monohybrid_genotype_statements.py), [write_pedigree_choice.py](../problems/inheritance-problems/pedigrees/write_pedigree_to_pattern.py), [write_pedigree_match.py](../problems/inheritance-problems/pedigrees/write_pedigree_pattern_matching.py), [amplicon_copies.py](../problems/molecular_biology-problems/amplicon_copies.py), [dna_melting_temp.py](../problems/molecular_biology-problems/dna_melting_temp.py), [overhang_sequence.py](../problems/molecular_biology-problems/restriction_enzymes/overhang_sequence.py), and [overhang_type.py](../problems/molecular_biology-problems/restriction_enzymes/overhang_type.py).
 	- Fixed `pedigree_lib` local import resolution in the template-based pedigree scripts so they run from repo root without `ModuleNotFoundError`.
 	- Converted [convert_Fischer_to_Haworth.py](../problems/biochemistry-problems/carbs/convert_Fischer_to_Haworth.py) and [convert_Haworth_to_Fischer.py](../problems/biochemistry-problems/carbs/convert_Haworth_to_Fischer.py) from batch generators to single-question writers with prebuilt scenarios (optionally shuffled via `--random`) and modulo-`N` selection.
 - Refactored gene mapping generators to the unified bptools framework (standard `-d/-x` args, `bptools.make_outfile(...)`, and `bptools.collect_and_write_questions(...)`): [tetrad_ordered-centromere_distance.py](../problems/inheritance-problems/gene_mapping/tetrad_ordered-centromere_distance.py), [tetrad_unordered_three_gene-distances_plus.py](../problems/inheritance-problems/gene_mapping/tetrad_unordered_three_gene-distances_plus.py), [tetrad_unordered_three_gene-find_one_distance.py](../problems/inheritance-problems/gene_mapping/tetrad_unordered_three_gene-find_one_distance.py), [tetrad_unordered_two_gene-find_distance.py](../problems/inheritance-problems/gene_mapping/tetrad_unordered_two_gene-find_distance.py), [tetrad_unordered_two_gene-test_linkage.py](../problems/inheritance-problems/gene_mapping/tetrad_unordered_two_gene-test_linkage.py), [three-point_test_cross-distances_plus.py](../problems/inheritance-problems/gene_mapping/three-point_test_cross-distances_plus.py), [three-point_test_cross-find_interence.py](../problems/inheritance-problems/gene_mapping/three-point_test_cross-find_interence.py), [three-point_test_cross-one_gene_distance.py](../problems/inheritance-problems/gene_mapping/three-point_test_cross-one_gene_distance.py), and [three-point_test_cross-which_genotypes.py](../problems/inheritance-problems/gene_mapping/three-point_test_cross-which_genotypes.py).
@@ -423,8 +423,8 @@
 - Simplified `pedigree_lib/preview_pedigree.py`
   CLI by baking in the strict validation defaults for width/height and attempts.
 - Renamed pedigree question generators for clarity:
-  [write_pedigree_choice.py](../problems/inheritance-problems/pedigrees/write_pedigree_choice.py) and
-  [write_pedigree_match.py](../problems/inheritance-problems/pedigrees/write_pedigree_match.py).
+  [write_pedigree_choice.py](../problems/inheritance-problems/pedigrees/write_pedigree_to_pattern.py) and
+  [write_pedigree_match.py](../problems/inheritance-problems/pedigrees/write_pedigree_pattern_matching.py).
 - Added a graph-based pedigree generator in
   `pedigree_graph_parse_lib.py`.
 - Split graph generation concerns into
@@ -642,7 +642,7 @@
 - Corrected outfile suffix selection in
   [hardy_weinberg_numeric.py](../problems/inheritance-problems/hardy_weinberg/hardy_weinberg_numeric.py).
 - Added max-questions early-stop handling in
-  [write_pedigree_match.py](../problems/inheritance-problems/pedigrees/write_pedigree_match.py).
+  [write_pedigree_match.py](../problems/inheritance-problems/pedigrees/write_pedigree_pattern_matching.py).
 - Improved dilution factor MC choices and formatting (clarified labels, background
   explanation, colored aliquot/diluent with monospace values, and standardized
   `--num-choices`) in
@@ -734,7 +734,7 @@
   helper-based MC/FIB formatting in [UNIFICATION_PLAN.md](UNIFICATION_PLAN.md).
 - Refactored [overhang_sequence.py](../problems/molecular_biology-problems/restriction_enzymes/overhang_sequence.py)
   to use batch helpers, shared argparse defaults, and unified outfile naming.
-- Refactored [write_pedigree_match.py](../problems/inheritance-problems/pedigrees/write_pedigree_match.py)
+- Refactored [write_pedigree_match.py](../problems/inheritance-problems/pedigrees/write_pedigree_pattern_matching.py)
   to use batch helpers and start-numbered matching sets.
 - Refactored [Henderson-Hasselbalch.py](../problems/biochemistry-problems/buffers/Henderson-Hasselbalch.py)
   to use shared argparse defaults and helper-based question collection.
@@ -816,7 +816,7 @@
   [monohybrid_degrees_of_dominance.py](../problems/inheritance-problems/monohybrid_degrees_of_dominance.py),
   [monohybrid_genotype_statements.py](../problems/inheritance-problems/monohybrid_genotype_statements.py),
   `old_deletion_mutants.py`,
-  [write_pedigree_choice.py](../problems/inheritance-problems/pedigrees/write_pedigree_choice.py),
+  [write_pedigree_choice.py](../problems/inheritance-problems/pedigrees/write_pedigree_to_pattern.py),
   [polyploid-gametes.py](../problems/inheritance-problems/polyploid/polyploid-gametes.py),
   [punnett_choice.py](../problems/inheritance-problems/punnett_choice.py),
   [robertsonian.py](../problems/inheritance-problems/translocation/robertsonian.py),

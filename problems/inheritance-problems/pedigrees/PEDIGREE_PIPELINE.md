@@ -40,21 +40,42 @@ The drawing table has a class so Material does not wrap it in an article-table s
 No remote website publication is part of this workflow.
 
 Each nonempty run prepares 5,000 accepted candidates within the requested preset, applies
-the difficulty filter, and sorts by descending people per native drawing width (equivalently,
-ascending width per person). Identification consumes the highest-ranked entries. Selection
+bounded polishing and the difficulty filter, then sorts by descending interestingness.
+Identification consumes the highest-ranked entries. Selection
 and matching assemble the highest eligible entries for all five modes, sharing depth and
 founding-family count. Incomplete groups are unused. The selected questions and their choices
 are shuffled before normal bptools export; collector retries consume unused reserve scenarios.
 `-x` caps `-d`. Requests exceeding the available complete scenarios fail explicitly.
 
-This fixed compactness preference is deliberately simple, not a calibrated interestingness
-model. It adds pool preparation time even for a small question request. No prebuilt or saved
-experimental pool is loaded. Geometry is measured before responsive display scaling. Removing the
-single score sort in `scenarios.build` restores candidate generation order.
+The deterministic heuristic is `progression - mean_row_density`. Progression counts +1 for
+an expanding generation, 0 for an equal population, and -1 for contraction, starting with
+generation II to III. Mean row density is the mean of `people / occupied_width` for
+generations II onward; occupied width is the span of symbol centers plus 30 native units.
+Row density is below one, so progression is primary and lower row density breaks its ties.
+There are no fitted weights, learned parameters, or hard progression eligibility thresholds.
 
-A local seeded check producing two questions per command took 50 seconds for identification,
+The polisher tries at most two terminal-child additions to shrinking rows after generation II.
+It retains original people, observations, genotypes, and relationships. Each added child's
+genotype must be a possible parental transmission. Every edit must pass the existing biology,
+teaching, affected-sex balance, layout, and difficulty checks, preserve the answer, teaching
+evidence and compatible modes, reduce mean shrink, and never increase width or lower progression.
+If no edit qualifies, the original accepted case is returned. Unchanged cases remain eligible.
+
+These are deliberately small aesthetic heuristics, not calibrated quality probabilities.
+No prebuilt experimental pool, review artifact, or LLM is used in production. Geometry is
+measured before responsive display scaling. Removing the sort in `scenarios.build` restores
+the polished pool's generation order; removing the polishing call in `generate_pool` also
+restores unmodified accepted families. Normal random generation provides tie ordering.
+
+A historical compactness-only seeded check producing two questions per command took 50 seconds for identification,
 51 seconds for selection, and 43 seconds for matching, including pool preparation and exports.
 These concurrent-run timings are examples, not performance guarantees.
+
+With polishing and interestingness enabled, a rigorous seeded check producing two questions
+per command took 249 seconds for identification, 250 for selection, and 134 for matching.
+Each command prepared its full 5,000-candidate pool. Six exported questions and 22 diagrams
+passed one-time count, answer, depth, comparable-set, and rendered-score checks. A small
+seeded polished pool reproduced exactly, and all difficulty presets passed acceptance checks.
 
 ## Structural workload presets
 
@@ -213,7 +234,9 @@ search would take approximately 2.2 seconds; other modes and machines may differ
 | [similarity.py](pedigree_lib/similarity.py) | Graph similarity, exact duplicate checks, and structural complexity measures |
 | [features.py](pedigree_lib/features.py) | Independent topology measurements for aesthetic experiments |
 | [geometry_features.py](pedigree_lib/geometry_features.py) | Native horizontal density measurement |
-| [ranking.py](pedigree_lib/ranking.py) | Fixed people-per-width score |
+| [generation_features.py](pedigree_lib/generation_features.py) | Generation counts, progression, and shrink |
+| [polishing.py](pedigree_lib/polishing.py) | Bounded terminal-child edits with full acceptance checks |
+| [ranking.py](pedigree_lib/ranking.py) | Progression-first interestingness with row-density tie breaking |
 | [scenarios.py](pedigree_lib/scenarios.py) | Accepted pools, removable score sort, comparable scenario assembly |
 
 Import these submodules from a script in this directory. The command files are thin callers.
@@ -316,9 +339,13 @@ the same sibling directory for the protocol, corrected blind reviews, and limita
 
 The subsequent pool-enrichment experiment compared raw width and width per person with
 ordinary valid selection. Results varied between pools and workloads; they do not establish
-a general interestingness score. At the user's explicit decision, production now retains
-the simple width-per-person preference and the 5,000-case scenario pipeline, with no further
-score fitting or aesthetic validation. `POOL_ENRICHMENT.md` records that decision and results.
+a general interestingness score. The simple width-per-person preference was initially used
+with the 5,000-case scenario pipeline. Later, the fresh 200-case polished corpus found repeatable
+weak associations for progression and mean row density. At the user's explicit decision,
+production now uses those signals as the small deterministic heuristic above, together with
+the bounded polisher. `POLISHED_CORPUS.md` in the sibling experiment directory preserves the
+raw reviews, held-out checks, mixed results, and rationale. This is a pragmatic choice for
+later revisiting, not a claim that calibration established a superior universal score.
 Experimental scripts, raw measurements, rendered galleries, reviewer comparisons, and runtime
 results live in the sibling `pedigree-aesthetics` directory, with the record in `CALIBRATION.md`.
 No production module reads that directory or calls an LLM.

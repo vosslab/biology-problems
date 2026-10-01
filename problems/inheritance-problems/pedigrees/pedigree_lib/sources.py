@@ -126,6 +126,13 @@ def _union_plan(rng: random.Random, seeds: int, count: int, generations: int,
 
 
 #============================================
+def minimum_couples(generations: int, seed_couples: int) -> int:
+	"""Minimum unions needed to join founding families and reach the requested depth."""
+	result = generations - 1 if seed_couples == 1 else 2 * seed_couples + generations - 4
+	return result
+
+
+#============================================
 def procedural_family(rng: random.Random, min_people: int = 11,
 		max_people: int = 16, generations: int = 4, *, seed_couples: int = 1,
 		couples: tuple[int, int] | None = None, children: tuple[int, int] = (1, 4),
@@ -144,14 +151,14 @@ def procedural_family(rng: random.Random, min_people: int = 11,
 		raise ValueError('Seed couple count must be a positive integer')
 	if root_children is None:
 		root_children = (2, 6 if generations == 3 else 4)
-	minimum_couples = generations - 1 if seed_couples == 1 else 2 * seed_couples + generations - 4
+	minimum = minimum_couples(generations, seed_couples)
 	if couples is None:
-		couples = (minimum_couples, max(minimum_couples, 5,
+		couples = (minimum, max(minimum, 5,
 			1 + (max_people - 2 - root_children[1] + 4) // 5))
 	for bounds in ((min_people, max_people), couples, children, root_children):
 		if len(bounds) != 2 or any(type(n) is not int for n in bounds) or not 1 <= bounds[0] <= bounds[1]:
 			raise ValueError('Construction bounds must be ordered positive integer pairs')
-	counts = [n for n in range(max(couples[0], minimum_couples), couples[1] + 1)
+	counts = [n for n in range(max(couples[0], minimum), couples[1] + 1)
 		if n + 1 + seed_couples * root_children[0] + (n - seed_couples) * children[0] <= max_people
 		and n + 1 + seed_couples * root_children[1] + (n - seed_couples) * children[1] >= min_people]
 	rng.shuffle(counts)

@@ -38,7 +38,9 @@ open the printed URL manually.
 ## Pedigree homework
 
 All three pedigree commands use randomly generated families, retain biological, teaching,
-difficulty, and layout checks, and rank accepted candidates by horizontal density:
+difficulty, and layout checks. Each accepted candidate receives bounded polishing, then
+an interestingness score that favors generation progression and uses lower row density
+to break ties. The 5,000-candidate pool feeds the normal scenario selection:
 
 ```bash
 source source_me.sh

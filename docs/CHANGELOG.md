@@ -9,9 +9,27 @@
   sample data, procedure, and result to report. It uses the sample standard deviation,
   asks for the tutorial's p-value cell, supports greater-than and two-tailed p-values,
   and accepts a seed for repeatable banks.
+- Integrated bounded pedigree polishing and a deterministic interestingness sort into all
+  three generators: valid candidate, at most two checked terminal-child additions, difficulty
+  filtering, progression-first ranking with lower mean row density breaking ties, then normal
+  scenario assembly. Isolated measurements, polishing, and scoring for later revision; retained
+  experiment artifacts as rationale without production dependencies or further calibration.
+  Excluded impossible depth/founder choices from generation using the constructor's minimum
+  union count, fixing rigorous four-generation matching with the existing five-couple cap.
+  Retargeted archived changelog links to the renamed pedigree commands while retaining
+  their historical labels. Reviewed tests against the permanent-test checklist: removed
+  aesthetic-formula and arithmetic checks, retained family/evidence preservation contracts.
+  The full 4,743-test suite passes; all three full-pool generators emitted the requested counts.
+- Generated a fresh 200-case development corpus with polishing applied to every case
+  and blind Luna-6 ratings under the unchanged rubric. Preserved all raw measurements
+  and analyzed the new population separately from historical reviews. Progression and
+  row structure showed repeatable weak signals; no new production score was integrated.
+>>>>>>> b5b5cf7 (Integrated bounded pedigree polishing and a deterministic i... (+1 more))
 - Investigated terminal-child pedigree polishing in the sibling experiment directory.
   On 200 larger MC cases, bounded additions reduced shrinkage in 127 while preserving
   existing inheritance evidence, difficulty, and layout checks. Production is unchanged.
+  Two independent final-image-only reviews rated the ten-example gallery 3.8 and 4.4
+  overall out of five; this does not measure improvement over the original diagrams.
   The experiment also exposed an infeasible rigorous matching preset combination:
   four generations and three founding couples cannot fit the five-couple cap.
 - Allowed three or four generations for rigorous pedigree matching, retaining its smaller

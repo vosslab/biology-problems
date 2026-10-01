@@ -11,23 +11,7 @@ import pedigree_lib.difficulty as difficulty
 import pedigree_lib.inheritance as inheritance
 import pedigree_lib.policy as policy
 import pedigree_lib.questions as questions
-import pedigree_lib.ranking as ranking
 import pedigree_lib.scenarios as scenarios
-
-
-def test_density_ranking_uses_native_width_and_preserves_accepted_cases(monkeypatch) -> None:
-	case = questions.generate_case('autosomal recessive', random.Random(351))
-	wide = dataclasses.replace(case, diagram=dataclasses.replace(case.diagram, width=2 * case.diagram.width))
-	monkeypatch.setattr(scenarios, 'generate_pool', lambda *values: [wide, case])
-	prepared = scenarios.build(random.Random(1), 'medium', 'identify')
-	assert prepared == [(case,), (wide,)]
-	assert ranking.score(case) == pytest.approx(2 * ranking.score(wide))
-	assert prepared[0][0].case is case.case and prepared[1][0].assessment is case.assessment
-	# Equal drawing widths must still distinguish person counts, unlike raw-width ranking.
-	larger = questions.generate_case('autosomal recessive', random.Random(352),
-		min_people=20, max_people=20, generations=4)
-	larger = dataclasses.replace(larger, diagram=dataclasses.replace(larger.diagram, width=wide.diagram.width))
-	assert ranking.score(larger) > ranking.score(wide)
 
 
 @pytest.mark.parametrize('question_format', ('select', 'match'))
@@ -60,10 +44,11 @@ def test_writer_consumes_next_scenario_when_collector_retries_same_number(monkey
 	assert cli.write_question(2, options, rng, remaining, 'identify') is None
 
 
-def test_generated_pool_keeps_existing_acceptance_and_difficulty() -> None:
-	pool = scenarios.generate_pool(random.Random(19), 'medium', count=5)
+@pytest.mark.parametrize('level, matching', [('medium', False), ('rigorous', True)])
+def test_generated_pool_keeps_existing_acceptance_and_difficulty(level, matching) -> None:
+	pool = scenarios.generate_pool(random.Random(19), level, matching, count=5)
 	assert len(pool) == 5
 	for case in pool:
-		assert difficulty.fits_difficulty(case.case.family, 'medium')
+		assert difficulty.fits_difficulty(case.case.family, level, matching)
 		assert policy.assess(case.case.family, case.case.observations).answer == case.assessment.answer
 		assert not any(obs.carrier for obs in case.case.observations.values())

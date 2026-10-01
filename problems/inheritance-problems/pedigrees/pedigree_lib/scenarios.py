@@ -7,6 +7,7 @@ import random
 import pedigree_lib.difficulty as difficulty
 import pedigree_lib.inheritance as inheritance
 import pedigree_lib.questions as questions
+import pedigree_lib.polishing as polishing
 import pedigree_lib.ranking as ranking
 import pedigree_lib.sources as sources
 
@@ -16,12 +17,15 @@ def generate_candidate(mode: str, rng: random.Random, level: str,
 		matching: bool = False) -> questions.AcceptedCase:
 	"""Resample preset construction choices on rejection, retaining every acceptance gate."""
 	settings = difficulty.difficulty_settings(level, matching)
+	construction = [(depth, seeds) for depth in settings['generations']
+		for seeds in range(settings['seed_couples'][0], settings['seed_couples'][1] + 1)
+		if sources.minimum_couples(depth, seeds) <= settings['couples'][1]]
 	rejections = collections.Counter()
 	for attempt in range(1, 5001):
+		depth, seeds = rng.choice(construction)
 		case = sources.simulate_case(mode, rng,
 			min_people=settings['people'][0], max_people=settings['people'][1],
-			generations=rng.choice(settings['generations']),
-			seed_couples=rng.randint(*settings['seed_couples']), couples=settings['couples'],
+			generations=depth, seed_couples=seeds, couples=settings['couples'],
 			children=settings['children'], root_children=settings['root_children'])
 		accepted, reasons = questions.evaluate(case, mirror=rng.choice((False, True)))
 		if accepted is not None:
@@ -36,12 +40,12 @@ def generate_candidate(mode: str, rng: random.Random, level: str,
 #============================================
 def generate_pool(rng: random.Random, level: str, matching: bool = False,
 		count: int = 5000) -> list[questions.AcceptedCase]:
-	"""Generate accepted random candidates within the preset."""
+	"""Generate accepted candidates, polish within the preset, then recheck difficulty."""
 	pool = []
 	for _ in range(count):
 		case = generate_candidate(rng.choice(inheritance.MODES), rng, level, matching)
-		pool.append(case)
-	# Preset filtering stays independent of compactness and uses the existing authority.
+		pool.append(polishing.polish(case, rng, level, matching))
+	# Preset filtering stays independent of aesthetics and uses the existing authority.
 	result = [case for case in pool if difficulty.fits_difficulty(case.case.family, level, matching)]
 	return result
 
