@@ -6,38 +6,16 @@ import argparse
 from fractions import Fraction
 
 import bptools
+import gene_mapping.phenotypes_for_flies
+import gene_mapping.phenotypes_for_yeast
 
 
-TRAITS = [
-	{
-		"organism": "fruit flies",
-		"trait": "curly wings",
-		"wildtype": "straight wings (wildtype)",
-		"symbol": "C",
-		"totals": (48, 72, 96, 120),
-	},
-	{
-		"organism": "cattle",
-		"trait": "dwarf legs",
-		"wildtype": "typical leg length (wildtype)",
-		"symbol": "D",
-		"totals": (12, 24),
-	},
-	{
-		"organism": "cats",
-		"trait": "no tail",
-		"wildtype": "a tail (wildtype)",
-		"symbol": "T",
-		"totals": (12,),
-	},
-	{
-		"organism": "mice",
-		"trait": "a yellow coat",
-		"wildtype": "a non-yellow coat (wildtype)",
-		"symbol": "Y",
-		"totals": (12, 24),
-	},
-]
+OFFSPRING_TOTALS = (48, 72, 96, 120)
+
+ORGANISM_ICONS = {
+	"fruit fly": "&#129712;",
+	"budding yeast": "&#129440;",
+}
 
 QUESTION_TYPES = (
 	"lethal_fraction",
@@ -81,6 +59,8 @@ FRACTION_LABELS = {
 	Fraction(1, 1): "All, 100%",
 }
 
+THIRDS = (Fraction(1, 3), Fraction(2, 3))
+
 GENOTYPE_COLORS = {
 	"lethal": "#8a3b20",
 	"heterozygous": "#245b88",
@@ -93,19 +73,46 @@ SCENARIOS: list[tuple] = []
 
 #=====================
 def build_scenarios() -> list[tuple]:
+	templates = []
+	weights = []
+	for cross in CROSSES:
+		probabilities = probabilities_for_cross(cross)
+		for question_type in QUESTION_TYPES:
+			probability_key = question_type.replace("_survivor_fraction", "_survivors")
+			probability_key = probability_key.removesuffix("_fraction").removesuffix("_count")
+			# Favor survivor-denominator questions with thirds as the correct probability.
+			weight = 1
+			if probability_key in probabilities and probabilities[probability_key] in THIRDS:
+				weight = 8
+			totals = OFFSPRING_TOTALS if question_type.endswith("_count") else (None,)
+			for total in totals:
+				templates.append((cross, question_type, total))
+				weights.append(weight)
 	scenarios = []
-	for trait in TRAITS:
-		for cross in CROSSES:
-			for question_type in QUESTION_TYPES:
-				totals = trait["totals"] if question_type.endswith("_count") else (None,)
-				for total in totals:
-					scenarios.append((trait, cross, question_type, total))
+	for phenotype_dict in (
+			gene_mapping.phenotypes_for_flies.phenotype_dict,
+			gene_mapping.phenotypes_for_yeast.phenotype_dict):
+		# Single-letter aliases identify phenotype labels, excluding dictionary metadata.
+		phenotypes = [phenotype_dict[key] for key in sorted(phenotype_dict) if len(key) == 1]
+		for affected in phenotypes:
+			for wildtype in phenotypes:
+				if affected == wildtype:
+					continue
+				# Shuffling the combined pool chooses an organism and pair for each question.
+				cross, question_type, total = random.choices(templates, weights=weights, k=1)[0]
+				named_trait = {
+					"organism": phenotype_dict["common name"],
+					"symbol": "C", "trait": affected, "wildtype": wildtype,
+				}
+				scenarios.append((named_trait, cross, question_type, total))
 	return scenarios
 
 
 #=====================
 def genotype_text(genotype: str, kind: str) -> str:
-	text = f"<strong style='color: {GENOTYPE_COLORS[kind]};'>{genotype}</strong>"
+	text = f"<strong style='color: {GENOTYPE_COLORS[kind]}; "
+	text += "font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 1em;'>"
+	text += f"{genotype}</strong>"
 	return text
 
 
@@ -114,29 +121,36 @@ def cross_setup(trait: dict, cross: dict) -> str:
 	allele = trait["symbol"]
 	heterozygote = genotype_text(f"{allele}{allele.lower()}", "heterozygous")
 	if cross["parents"] == "heterozygote_x_heterozygote":
-		text = f"Two heterozygous individuals ({heterozygote}) are crossed"
+		second_parent = heterozygote
 	else:
-		wildtype = genotype_text(allele.lower() * 2, "wildtype")
-		text = f"A heterozygous parent ({heterozygote}) is crossed with a wildtype parent ({wildtype})"
+		second_parent = genotype_text(allele.lower() * 2, "wildtype")
+	text = f"<strong>Parent 1:</strong> {heterozygote} &times; "
+	text += f"<strong>Parent 2:</strong> {second_parent}"
 	return text
 
 
 #=====================
+def select_fractions(correct: Fraction) -> list[Fraction]:
+	# Include both thirds, then vary the remaining choices and sort by percentage.
+	selected = {correct, *THIRDS}
+	distractors = [frac for frac in FRACTION_LABELS if frac not in selected]
+	selected.update(random.sample(distractors, 5 - len(selected)))
+	choices = sorted(selected)
+	return choices
+
+
+#=====================
 def make_fraction_choices(correct: Fraction) -> tuple:
-	distractors = list(FRACTION_LABELS)
-	distractors = [frac for frac in distractors if frac != correct]
-	choices = [correct] + random.sample(distractors, 4)
-	random.shuffle(choices)
+	choices = select_fractions(correct)
 	return [FRACTION_LABELS[frac] for frac in choices], FRACTION_LABELS[correct]
 
 
 #=====================
 
 def make_ratio_choices(correct: str) -> tuple:
-	choices = ["1 to 1", "2 to 1", "3 to 1", "1 to 2", "3 to 2"]
+	choices = ["1 to 2", "1 to 1", "3 to 2", "2 to 1", "3 to 1"]
 	if correct not in choices:
 		raise ValueError(f"unsupported living phenotype ratio: {correct}")
-	random.shuffle(choices)
 	return choices, correct
 
 
@@ -173,9 +187,7 @@ def make_count_choices(correct: Fraction, total: int) -> tuple:
 	# Each choice supplies the arithmetic; students choose the inheritance fraction.
 	if total % 12 != 0:
 		raise ValueError("offspring totals must be divisible by both 3 and 4")
-	distractors = [frac for frac in FRACTION_LABELS if frac != correct]
-	choices = [correct] + random.sample(distractors, 4)
-	random.shuffle(choices)
+	choices = select_fractions(correct)
 	labels = {}
 	for frac in choices:
 		fraction_text = str(frac)
@@ -188,19 +200,23 @@ def make_count_choices(correct: Fraction, total: int) -> tuple:
 def cross_reference(trait: dict) -> str:
 	allele = trait["symbol"]
 	recessive = allele.lower()
-	cell_style = "border: 1px solid #737373; padding: 8px 12px; color: #202020;"
-	text = "<table style='border-collapse: collapse; margin: 12px 0;'>"
-	text += "<caption><strong>Genotype key</strong></caption>"
-	text += f"<tr><th scope='col' style='{cell_style}'>Genotype</th>"
-	text += f"<th scope='col' style='{cell_style}'>What happens</th></tr>"
+	cell_style = "padding: 4px 10px; text-align: left; color: #202020;"
+	text = "<table style='border-collapse: collapse; "
+	text += "margin: 0 0 12px; max-width: 100%;'>"
+	text += "<tr style='border-bottom: 1px solid #b8b8b8;'>"
+	text += f"<th scope='col' style='{cell_style}'>Genotype</th>"
+	text += f"<th scope='col' style='{cell_style}'>Outcome</th></tr>"
+	affected_outcome = trait['trait'].capitalize()
+	wildtype_outcome = trait['wildtype'].capitalize()
 	rows = (
-		(f"{allele}{allele}", "Does not survive (lethal)", "#fce4d6", "lethal"),
-		(f"{allele}{recessive}", f"Survives with {trait['trait']}", "#e2eef9", "heterozygous"),
-		(f"{recessive}{recessive}", f"Survives with {trait['wildtype']}", "#e4f1df", "wildtype"),
+		(f"{allele}{allele}", "<span aria-hidden='true'>&#10060;</span> Lethal, does not survive",
+			"lethal"),
+		(f"{allele}{recessive}", affected_outcome, "heterozygous"),
+		(f"{recessive}{recessive}", wildtype_outcome, "wildtype"),
 	)
-	for genotype, description, background, kind in rows:
-		style = f"{cell_style} background-color: {background};"
-		text += f"<tr><th scope='row' style='{style}'>{genotype_text(genotype, kind)}</th>"
+	for genotype, description, kind in rows:
+		text += "<tr style='border-bottom: 1px solid #b8b8b8;'>"
+		text += f"<th scope='row' style='{cell_style}'>{genotype_text(genotype, kind)}</th>"
 		text += f"<td style='{cell_style}'>{description}</td></tr>"
 	text += "</table>"
 	return text
@@ -214,68 +230,67 @@ def write_question(N: int, args: argparse.Namespace) -> object | None:
 	probabilities = probabilities_for_cross(cross)
 
 	allele = trait["symbol"]
-	heterozygote = genotype_text(f"{allele}{allele.lower()}", "heterozygous")
+	dominant_allele = genotype_text(allele, "heterozygous")
+	recessive_allele = genotype_text(allele.lower(), "wildtype")
+	dominant = genotype_text(f"{allele}_", "heterozygous")
+	wildtype = genotype_text(allele.lower() * 2, "wildtype")
 	lethal = genotype_text(allele * 2, "lethal")
-	question_text = f"<p>In {trait['organism']}, heterozygous offspring "
-	question_text += f"({heterozygote}) have {trait['trait']}. "
-	question_text += f"Offspring with two copies of {allele} ({lethal}) do not survive. "
-	question_text += "The table shows what happens with each genotype.</p>"
-	question_text += cross_reference(trait)
+	question_text = cross_reference(trait)
+	question_text += '<p style="margin: 0 0 1.5em;">'
+	question_text += f'<span aria-hidden="true">{ORGANISM_ICONS[trait["organism"]]}</span> '
+	question_text += f"For a hypothetical {trait['organism']} trait, "
+	question_text += f"{dominant_allele} is dominant to {recessive_allele}, "
+	question_text += f"so {dominant} produces the {trait['trait']} phenotype "
+	question_text += f"and {wildtype} produces the {trait['wildtype']} phenotype. "
+	question_text += f"However, {lethal} is lethal and those offspring do not survive.</p>"
 	setup = cross_setup(trait, cross)
+	question_text += f'<p style="margin: 0;">{setup}.<br/>'
 
 	fraction_prompts = {
-		"lethal_fraction": ("lethal", "What fraction of all offspring will not survive?"),
+		"lethal_fraction": (
+			"lethal", f"What fraction of all offspring would have the lethal {lethal} genotype?",
+		),
 		"survival_fraction": ("survival", "What fraction of all offspring will survive?"),
 		"affected_fraction": (
 			"affected",
-			f"What fraction of all offspring will survive with {trait['trait']}?",
+			f"What fraction of all offspring will survive with the {trait['trait']} phenotype?",
 		),
 		"wildtype_fraction": (
 			"wildtype",
-			f"What fraction of all offspring will survive with {trait['wildtype']}?",
+			f"What fraction of all offspring will survive with the {trait['wildtype']} phenotype?",
 		),
 		"affected_survivor_fraction": (
 			"affected_survivors",
-			f"Of the offspring that survive, what fraction will have {trait['trait']}?",
+			f"Of the offspring that survive, what fraction will have the {trait['trait']} phenotype?",
 		),
 		"wildtype_survivor_fraction": (
 			"wildtype_survivors",
-			f"Of the offspring that survive, what fraction will have {trait['wildtype']}?",
+			f"Of the offspring that survive, what fraction will have the {trait['wildtype']} phenotype?",
 		),
 	}
 	if question_type in fraction_prompts:
 		probability_key, prompt = fraction_prompts[question_type]
-		question_text += f"<p>{setup}. {prompt}</p>"
+		question_text += f"{prompt}</p>"
 		choices_list, answer_text = make_fraction_choices(probabilities[probability_key])
 	elif question_type.endswith("_count"):
 		outcome = question_type.removesuffix("_count")
 		outcome_text = {
-			"lethal": "not survive",
+			"lethal": f"have the lethal {lethal} genotype",
 			"survival": "survive",
-			"affected": f"survive with {trait['trait']}",
-			"wildtype": f"survive with {trait['wildtype']}",
-			"affected_survivors": f"have {trait['trait']}",
-			"wildtype_survivors": f"have {trait['wildtype']}",
+			"affected": f"survive with the {trait['trait']} phenotype",
+			"wildtype": f"survive with the {trait['wildtype']} phenotype",
+			"affected_survivors": f"have the {trait['trait']} phenotype",
+			"wildtype_survivors": f"have the {trait['wildtype']} phenotype",
 		}[outcome]
 		if outcome.endswith("_survivors"):
-			if trait["organism"] == "cattle":
-				question_text += f"<p>{setup}. Across several matings, {total} offspring survive. "
-			else:
-				question_text += f"<p>{setup} and produce {total} surviving offspring. "
+			question_text += f"The cross produces {total} surviving offspring.<br/>"
 			question_text += f"How many of the surviving offspring do you expect to {outcome_text}?</p>"
 		else:
-			if trait["organism"] == "cattle":
-				question_text += f"<p>{setup}. Across several matings, they produce {total} offspring. "
-			elif trait["organism"] in ("cats", "mice"):
-				question_text += f"<p>{setup} and produce a litter of {total} offspring. "
-			else:
-				question_text += f"<p>{setup} and produce {total} offspring. "
-			question_text += "This total includes offspring that do not survive. "
-			question_text += f"How many do you expect to {outcome_text}?</p>"
+			question_text += f"Before considering survival, assume the cross produces {total} offspring.<br/>"
+			question_text += f"How many would you expect to {outcome_text}?</p>"
 		correct = probabilities[outcome]
 		choices_list, answer_text = make_count_choices(correct, total)
 	else:
-		question_text += f"<p>{setup}. "
 		question_text += "What ratio do you expect among the offspring that survive?<br/>"
 		if question_type == "affected_to_wildtype_ratio":
 			question_text += f"<strong>{trait['trait']} : {trait['wildtype']}</strong></p>"
