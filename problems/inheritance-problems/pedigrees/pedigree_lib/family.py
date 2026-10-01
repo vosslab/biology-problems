@@ -138,6 +138,16 @@ class Family:
 
 
 #============================================
+def later_spouses(family: Family) -> frozenset[str]:
+	"""Identify parentless spouses in generation II or later, excluding all generation-I people."""
+	ranks = family.generations()
+	parents = family.parentage()
+	partners = {pid for union in family.unions for pid in (union.father, union.mother)}
+	result = frozenset(pid for pid in partners if pid not in parents and ranks[pid] > 0)
+	return result
+
+
+#============================================
 def validate_observations(family: Family, observations: dict[str, Observation]) -> None:
 	"""Validate one visible observation per person.
 

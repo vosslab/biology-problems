@@ -117,7 +117,7 @@ def sex_balance_acceptable(mode: str, males: int, females: int) -> bool:
 
 #============================================
 def assess(family: family_model.Family, observations: dict) -> Assessment:
-	"""Combine biological compatibility with unique visible teaching evidence.
+	"""Combine rare-trait compatibility with unique visible teaching evidence.
 
 	Args:
 		family: Family to assess.
@@ -129,7 +129,11 @@ def assess(family: family_model.Family, observations: dict) -> Assessment:
 	Raises:
 		ValueError: Invalid family or observation data.
 	"""
-	compatibility = {mode: inheritance.analyze(family, observations, mode)
+	family_model.validate_observations(family, observations)
+	noncarrier_ids = frozenset(pid for pid in family_model.later_spouses(family)
+		if observations[pid].affected is False)
+	compatibility = {mode: inheritance.analyze(family, observations, mode,
+		noncarrier_ids=noncarrier_ids)
 		for mode in inheritance.MODES}
 	evidence = teaching_evidence(family, observations)
 	qualified = [mode for mode in inheritance.MODES

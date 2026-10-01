@@ -372,11 +372,18 @@ Genotypes are separate from observations. Alleles are represented internally as 
 and `1` (trait). Autosomal and female X-linked genotypes have two alleles; male X/Y genotypes
 have one; females have no Y genotype. Carrier markings mean a known unaffected heterozygote.
 An unmarked unaffected person can still be a carrier. Hiding carriers never modifies genotypes.
+Homework applies an additional rare-trait rule: any generation-I individual may be a carrier,
+and descendants may inherit carrier status in any generation. Unrelated spouses entering in
+generation II or later must be unaffected noncarriers or affected. Parentage and computed
+generation identify these spouses; marrying descendants of another founding family are not
+outsiders.
 
 Simulation samples actual gametes, retaining their Mendelian multiplicities. Compatibility analysis
 uses the same transmissions with genotype-domain propagation and backtracking across **every**
-union and founding family. It assumes complete penetrance and no new mutations. It does not
-assume that every marrying-in unaffected spouse lacks recessive alleles.
+union and founding family. It assumes complete penetrance and no new mutations. By default,
+`inheritance.analyze` does not constrain unrelated spouses. Its optional `noncarrier_ids`
+argument restricts selected people to genotypes without trait alleles. Homework assessment
+uses this constraint for unaffected later spouses when considering each inheritance mode.
 
 An affected father and son do not by themselves exclude X-linked inheritance: the son can receive
 the allele from his mother. Two affected recessive parents cannot have unaffected children.
@@ -387,7 +394,8 @@ Affected-by-carrier crosses are simulated rather than replaced with phenotype he
 These profiles encode the lecture's multi-clue reasoning. They are deliberately selective teaching
 criteria, not inheritance laws or statistical likelihoods. Percentages and sex balance alone do
 not establish an answer. A case must have exactly one supported profile among biologically
-compatible modes. Other modes can remain biologically possible; the prompt says **most likely**.
+compatible modes under the rare-trait assumption. Other modes can remain biologically possible;
+the prompt says **most likely** and states the rare-trait assumption.
 
 | Mode | Required visible evidence |
 | --- | --- |
@@ -399,8 +407,10 @@ compatible modes. Other modes can remain biologically possible; the prompt says 
 
 Homework profiles require known affected/unaffected observations for everyone. The lower-level
 engine and renderers also support unknown phenotype (`null`, rendered as `?`). Instructor review
-JSON records the winning rationale and all compatible modes. Hidden genotypes and authored
-`expected_mode` metadata never enter the teaching decision; an expectation is checked afterward.
+JSON records the winning rationale and compatible modes under the homework assumptions.
+Hidden genotypes and authored `expected_mode` metadata never determine the teaching answer;
+an expectation is checked afterward. A separate acceptance check rejects simulated cases with
+hidden unaffected carrier spouses even when the visible diagram does not require those carriers.
 
 ## Generation and layout gates
 
@@ -409,15 +419,20 @@ families have three to five generations and one to four descendant unions. Each 
 can extend an existing branch or start another sibling's branch, with a marrying-in spouse
 and one to four children. Sibship sizes are chosen together within the requested people bounds
 before construction. Founder crosses can seed the trait in the top couple or a marrying-in
-relative with grandchildren; all descendants are simulated. No teaching cores or complete-tree
-templates are required, and the visible-evidence evaluator is unchanged.
+spouse with grandchildren; all descendants are simulated. Autosomal recessive generation seeds
+generation-I founders as carriers and samples later spouses as 90% homozygous unaffected and
+10% affected, never heterozygous. These are teaching-example sampling weights, not population
+frequencies or promised percentages in accepted output. X-linked recessive generation permits
+carrier seeding only in generation I, while descendants inherit normally and affected-spouse
+seeding remains available. No teaching cores or complete-tree templates are required.
 Arbitrary clinical family generation, half-sibships, and multiple partners are outside scope.
 Authored families can include more generations, separate founding families, and consanguinity.
 Student commands select only single connected families and always hide carrier status before
 evaluating the teaching answer. Cases that become unclear without carrier disclosure are excluded.
 Carrier symbols and disconnected families remain available through the library for demonstrations.
 
-Candidates pass biological, teaching, then layout acceptance. A different teaching answer, weak or
+Candidates pass rare-trait, biological, teaching, then layout acceptance; polishing reuses the
+same checks. A different teaching answer, weak or
 tied evidence, or an ambiguous drawing causes rejection. A bounded search raises `GenerationFailure`
 with rejection counts on exhaustion. Invalid inputs and programming errors propagate immediately.
 Correct the input or inspect the reasons; never silently emit a weak question or truncate a family.

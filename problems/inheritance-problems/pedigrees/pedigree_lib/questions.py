@@ -12,6 +12,7 @@ import pedigree_lib.policy as policy
 import pedigree_lib.sources as sources
 import pedigree_lib.inheritance as inheritance
 import pedigree_lib.graphs as graphs
+import pedigree_lib.family as family_model
 
 
 #============================================
@@ -44,6 +45,12 @@ def evaluate(case: sources.Case, mirror: bool = False) -> tuple[AcceptedCase | N
 		ValueError: Invalid family or observation data; programming errors propagate.
 	"""
 	assessment = policy.assess(case.family, case.observations)
+	# Hidden carrier genotypes must obey the same rule even when not forced by the drawing.
+	if case.genotypes:
+		carriers = sorted(pid for pid in family_model.later_spouses(case.family)
+			if case.observations[pid].affected is False and case.genotypes[pid] == (0, 1))
+		if carriers:
+			return None, ('Unaffected later spouses cannot be carriers: ' + ', '.join(carriers),)
 	if assessment.answer is None:
 		return None, assessment.reasons
 	diagram = layout.lay_out(case.family, mirror)

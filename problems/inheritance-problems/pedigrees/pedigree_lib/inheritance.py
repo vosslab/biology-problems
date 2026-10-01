@@ -146,13 +146,15 @@ def _solve(family: family_model.Family, mode: str, domains: dict) -> dict | None
 
 
 #============================================
-def analyze(family: family_model.Family, observations: dict, mode: str) -> Compatibility:
+def analyze(family: family_model.Family, observations: dict, mode: str, *,
+		noncarrier_ids: frozenset[str] = frozenset()) -> Compatibility:
 	"""Solve every family using only visible information.
 
 	Args:
 		family: People and unions to analyze.
 		observations: Person-ID mapping of visible phenotypes and carrier markings.
 		mode: One of MODES.
+		noncarrier_ids: Optional people constrained to have no trait alleles.
 
 	Returns:
 		Compatibility result with a genotype witness when a solution exists.
@@ -161,6 +163,8 @@ def analyze(family: family_model.Family, observations: dict, mode: str) -> Compa
 		ValueError: Invalid family, observations, or mode.
 	"""
 	family_model.validate_observations(family, observations)
+	if noncarrier_ids - set(family.members()):
+		raise ValueError('Noncarrier constraints must identify existing people')
 	domains = {}
 	for person in family.people:
 		observation = observations[person.id]
@@ -169,6 +173,7 @@ def analyze(family: family_model.Family, observations: dict, mode: str) -> Compa
 			g for g in values
 			if (observation.affected is None or phenotype(mode, g) == observation.affected)
 			and (not observation.carrier or (mode.endswith('recessive') and g == (0, 1)))
+			and (person.id not in noncarrier_ids or not any(g))
 		}
 	witness = _solve(family, mode, domains)
 	result = Compatibility(mode, witness is not None, {} if witness is None else witness)

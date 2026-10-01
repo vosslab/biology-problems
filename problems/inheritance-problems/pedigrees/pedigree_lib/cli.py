@@ -20,7 +20,7 @@ import pedigree_lib.similarity as similarity
 import pedigree_lib.ranking as ranking
 import pedigree_lib.scenarios as scenarios
 
-ASSUMPTIONS = '<p>Assume complete penetrance and no new mutations.</p>'
+ASSUMPTIONS = '<p>Assume a rare trait, complete penetrance, and no new mutations.</p>'
 AFFECTED_COLORS = {
 	'black': '#111', 'darkred': '#970000', 'darkorange': '#802f00',
 	'orange': '#674100', 'darkyellow': '#4b4c00', 'lime': '#295300',

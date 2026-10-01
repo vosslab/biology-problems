@@ -114,7 +114,7 @@ cases:
     affected: false
   - id: a1
     sex: male
-    affected: true
+    affected: false
   - id: a2
     sex: male
     affected: false
@@ -126,7 +126,7 @@ cases:
     affected: false
   - id: b2
     sex: female
-    affected: true
+    affected: false
   - id: b3
     sex: male
     affected: false

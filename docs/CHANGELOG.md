@@ -4,6 +4,17 @@
 
 ### Changed
 
+- Enforced the rare-trait rule across pedigree generation and homework assessment:
+  generation-I individuals and inherited descendants may be carriers, but unrelated spouses
+  entering in generation II or later cannot be unaffected carriers. Affected spouses remain
+  allowed. Autosomal recessive later spouses are sampled as 90% homozygous unaffected and
+  10% affected; these are teaching weights, not population frequencies. Polishing reuses the
+  acceptance gate. Kept unrestricted Mendelian analysis as the library default, with optional
+  noncarrier constraints for homework, and added the rare-trait assumption to question text.
+  Revised the bundled recessive example so later spouses no longer require carrier status.
+  Retained focused permanent tests of the carrier contract; generation/polishing sampling,
+  preset exports, timings, seeded byte comparison, and visual checks were one-time evidence.
+
 - Added `--affected-color` and `--random-color` to all pedigree generators. Random color
   selects one of 14 dark hues per question, consistently across all its diagrams and SVG
   review exports, with seed reproducibility. Black remains the default. Darkened the supplied

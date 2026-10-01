@@ -239,6 +239,7 @@ def simulate_case(mode: str, rng: random.Random, min_people: int = 11,
 	family = procedural_family(rng, min_people, max_people, generations, seed_couples=seed_couples,
 		couples=couples, children=children, root_children=root_children)
 	parents = family.parentage()
+	later_spouses = family_model.later_spouses(family)
 	founders = {}
 	for person in family.people:
 		if person.id not in parents:
@@ -256,12 +257,17 @@ def simulate_case(mode: str, rng: random.Random, min_people: int = 11,
 		candidates = [pid for pid in (cross.father, cross.mother) if pid in founders]
 		founders[rng.choice(candidates)] = (0, 1)
 	elif mode == 'autosomal recessive':
-		founders = {pid: (0, 1) for pid in founders}
+		for pid in founders:
+			if pid in later_spouses:
+				# Enrich teaching examples with affected spouses, never unaffected carriers.
+				founders[pid] = (1, 1) if rng.random() < 0.1 else (0, 0)
+			else:
+				founders[pid] = (0, 1)
 	elif mode == 'x-linked dominant':
 		founders[cross.father] = (1,)
 	elif mode == 'x-linked recessive':
 		founders[cross.father] = (1,)
-		if cross.mother in founders:
+		if cross.mother in founders and cross.mother not in later_spouses:
 			founders[cross.mother] = rng.choice(((0, 0), (0, 1)))
 	else:
 		founders[cross.father] = (1,)
