@@ -20,10 +20,14 @@ python3 problems/inheritance-problems/pedigrees/write_pattern_to_pedigree.py -d 
 - `write_pattern_to_pedigree.py`: a named pattern, select the corresponding pedigree.
 - `write_pedigree_pattern_matching.py`: match pedigrees to all five inheritance patterns.
 - All three use randomly generated families exclusively.
-- At the default medium level, the two MC formats use four or five generations and 16-22 people per diagram.
+- At the medium level, the two MC formats use four or five generations and 16-22 people per diagram.
   Matching uses exactly three generations and 12-15 people per diagram. Diagram choices
   within a selection question share a generation count.
 - All commands accept `-s SEED` for reproducibility. There are exactly three generator scripts.
+- `--affected-color darkred` (or `darkblue`, etc.) sets the affected-symbol fill; black is default.
+  `--random-color` instead selects one of 14 dark hues per question, shared by every diagram
+  in that question and its SVG review exports. It respects `--seed`. The two color options
+  are mutually exclusive; outlines remain black and unaffected symbols remain white.
 - `-d` counts questions. Prebuilt-bank selection and the `-f`/`-y` source flags are retired.
 - `-r output_pedigree/review` saves editable SVGs and instructor-only JSON evidence.
 - Shared `--selftest`, `-O`, `-B`, and `-I` flags retain browser and Blackboard workflows.
@@ -32,15 +36,21 @@ Normal runs use fresh randomness. Verification uses `-s`; it seeds one explicit 
 RNG and the existing export infrastructure's RNG. Family construction, mirroring, mode selection,
 and matching order are randomized rather than cycled by question number.
 
-BBQ files contain positioned HTML directly. The one borderless drawing table also works with
+BBQ files contain positioned HTML directly. The drawing table has a thin gray frame and works with
 the existing HTML-to-image converter for Blackboard and Canvas/QTI packaging. Wide diagrams
 fit the available width proportionally without scrolling or cropping. SVG exports contain real
 shapes and text at the original geometry size.
 The drawing table has a class so Material does not wrap it in an article-table scrolling container.
 No remote website publication is part of this workflow.
 
-Each nonempty run prepares 5,000 accepted candidates within the requested preset, applies
-bounded polishing and the difficulty filter, then sorts by descending interestingness.
+Each nonempty run initially prepares 20 candidates per required pedigree: 20 times the requested
+question count for identification, or 100 times for five-pedigree selection and matching.
+The question count is `-d`, capped by `-x`; default runs prepare 40 or 200 candidates respectively.
+Generation applies bounded polishing and the difficulty filter, then sorts by descending
+interestingness.
+The CLI reports elapsed preparation time, including generation, polishing, and assembly.
+If the pool lacks enough complete scenarios, generation adds batches of the same size,
+up to ten batches total, reporting each additional batch.
 Identification consumes the highest-ranked entries. Selection
 and matching assemble the highest eligible entries for all five modes, sharing depth and
 founding-family count. Incomplete groups are unused. The selected questions and their choices
@@ -79,7 +89,7 @@ seeded polished pool reproduced exactly, and all difficulty presets passed accep
 
 ## Structural workload presets
 
-Choose one of `--easy`, `--medium` (default), or `--rigorous` on any question command.
+Choose one of `--easy` (default), `--medium`, or `--rigorous` on any question command.
 `write_pedigree_to_pattern.py` also supports `--bonus` for one large pedigree. Bonus is rejected
 for selection and matching, where it would multiply the reading burden across five diagrams.
 

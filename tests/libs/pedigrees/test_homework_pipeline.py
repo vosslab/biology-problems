@@ -92,7 +92,7 @@ def test_three_generation_xd_can_meet_squared_bias_without_exhaustion() -> None:
 @pytest.mark.parametrize('level', ('easy', 'medium', 'rigorous'))
 def test_question_formats_use_correct_diagrams_and_depths(question_format, level, monkeypatch) -> None:
 	captured = []
-	monkeypatch.setattr(cli, '_save_review', lambda number, directory, cases: captured.extend(cases))
+	monkeypatch.setattr(cli, '_save_review', lambda number, directory, cases, color: captured.extend(cases))
 	monkeypatch.setattr(cli.bptools, 'formatBB_MC_Question', lambda *values: values)
 	monkeypatch.setattr(cli.bptools, 'formatBB_MAT_Question', lambda *values: values)
 	rng = random.Random(72)
@@ -104,7 +104,9 @@ def test_question_formats_use_correct_diagrams_and_depths(question_format, level
 		cases = questions.matching_set(rng, generations=rng.choice(settings['generations']),
 			min_people=settings['people'][0], max_people=settings['people'][1], seed_couples=founders,
 			couples=settings['couples'], children=settings['children'], root_children=settings['root_children'])
-	item = cli.write_question(1, argparse.Namespace(review_dir='unused', difficulty=level),
+	options = argparse.Namespace(review_dir='unused', difficulty=level,
+		affected_color='black', random_color=False)
+	item = cli.write_question(1, options,
 		rng, iter([tuple(cases)]), question_format)
 	_, prompt, choices, answer = item
 	assert 'carrier' not in prompt
@@ -126,9 +128,10 @@ def test_question_formats_use_correct_diagrams_and_depths(question_format, level
 
 def test_bonus_is_one_large_answerable_family(monkeypatch) -> None:
 	captured = []
-	monkeypatch.setattr(cli, '_save_review', lambda number, directory, cases: captured.extend(cases))
+	monkeypatch.setattr(cli, '_save_review', lambda number, directory, cases, color: captured.extend(cases))
 	monkeypatch.setattr(cli.bptools, 'formatBB_MC_Question', lambda *values: values)
-	options = argparse.Namespace(review_dir='unused', difficulty='bonus')
+	options = argparse.Namespace(review_dir='unused', difficulty='bonus',
+		affected_color='black', random_color=False)
 	rng = random.Random(72)
 	prepared = scenarios.generate_candidate('autosomal recessive', rng, 'bonus')
 	item = cli.write_question(1, options, rng, iter([(prepared,)]), 'identify')

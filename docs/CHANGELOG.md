@@ -4,6 +4,30 @@
 
 ### Changed
 
+- Added `--affected-color` and `--random-color` to all pedigree generators. Random color
+  selects one of 14 dark hues per question, consistently across all its diagrams and SVG
+  review exports, with seed reproducibility. Black remains the default. Darkened the supplied
+  palette to at least 9:1 contrast against white; unfilled symbols remain white.
+
+- Removed the symbol legend from all three pedigree question formats; students must
+  know or look up the conventions. Retained the complete-penetrance and no-new-mutations
+  assumptions in the question text.
+
+- Added a thin gray frame around each HTML pedigree, including the drawing table
+  used for image exports, to separate diagrams visually in answer choices.
+
+- Made easy difficulty the default for all three pedigree generators; explicit
+  `--medium`, `--rigorous`, and supported `--bonus` selections remain available.
+
+- Scaled the shared pedigree candidate pool to 20 times the required pedigree count
+  (respecting `-d` and `-x`) instead of always polishing 5,000 candidates. Selection and
+  matching multiply by five for their five pedigrees per question. The preparation message
+  reports the actual pool size; default runs use 40 candidates for identification or 200
+  for selection and matching.
+  The CLI reports elapsed preparation time, including generation, polishing, and assembly.
+  Small pools lacking complete comparable sets receive additional batches of the same size,
+  capped at ten batches, with progress reported for each addition.
+
 - Renamed `hypothesis_statements.py` to `null_and_alternative_hypotheses.py`
   and `hypothesis_lab_partner.py` to `hypothesis_statement_errors.py` to describe
   their learning objectives. Updated documentation, classifier inventory, and

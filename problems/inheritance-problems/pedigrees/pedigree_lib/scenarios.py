@@ -89,15 +89,22 @@ def assemble(pool: list[questions.AcceptedCase], question_format: str) -> list[t
 
 #============================================
 def build(rng: random.Random, level: str, question_format: str,
-		pool_size: int = 5000) -> list[tuple]:
-	"""Build once for bptools; removing the sort restores generation order."""
+		pool_size: int = 5000, minimum_scenarios: int = 1) -> list[tuple]:
+	"""Build ranked scenarios, extending incomplete random pools in bounded batches."""
 	if question_format not in ('identify', 'select', 'match'):
 		raise ValueError(f'Unknown question format: {question_format}')
 	if level == 'bonus' and question_format != 'identify':
 		raise ValueError('--bonus requires write_pedigree_to_pattern.py (one pedigree per question)')
-	pool = generate_pool(rng, level, question_format == 'match', pool_size)
-	pool.sort(key=ranking.score, reverse=True)
-	result = assemble(pool, question_format)
+	pool = []
+	for batch in range(10):
+		if batch:
+			print(f'Preparing {pool_size:,} additional pedigree candidates '
+				f'to complete {minimum_scenarios} {question_format} scenarios...')
+		pool.extend(generate_pool(rng, level, question_format == 'match', pool_size))
+		pool.sort(key=ranking.score, reverse=True)
+		result = assemble(pool, question_format)
+		if len(result) >= minimum_scenarios:
+			break
 	if not result:
 		raise questions.GenerationFailure(f'No complete {question_format} scenarios fit {level}')
 	return result

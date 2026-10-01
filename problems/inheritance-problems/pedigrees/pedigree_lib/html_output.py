@@ -1,4 +1,4 @@
-"""Positioned HTML from shared geometry; one borderless rasterization container."""
+"""Positioned HTML from shared geometry; one framed rasterization container."""
 
 # Standard Library
 import html
@@ -8,15 +8,16 @@ import pedigree_lib.layout as layout
 
 
 #============================================
-def render_html(diagram: layout.Diagram, observations: dict) -> str:
+def render_html(diagram: layout.Diagram, observations: dict, affected_color: str = '#111') -> str:
 	"""Render a proportional diagram that fits its available width without scrolling.
 
 	Args:
 		diagram: Shared layout geometry; this renderer does not arrange people.
 		observations: Visible observations keyed by person ID.
+		affected_color: Fill color for affected symbols and carrier half-fills.
 
 	Returns:
-		HTML with one borderless drawing table and escaped labels.
+		HTML with one thin gray drawing frame and escaped labels.
 
 	Raises:
 		ValueError: Geometry fails the readability gate.
@@ -29,7 +30,7 @@ def render_html(diagram: layout.Diagram, observations: dict) -> str:
 	# Material wraps unclassed tables in a scrolling container; this is a drawing.
 	result += '<table class="pedigree-diagram" role="presentation" cellpadding="0" cellspacing="0" style="'
 	result += 'display: table; table-layout: fixed; border-collapse: collapse; border-spacing: 0; '
-	result += 'border: 0; background: #fff; padding: 0; margin: 0; '
+	result += 'border: 1px solid #aaa; box-sizing: border-box; background: #fff; padding: 0; margin: 0; '
 	result += f'width: {width:g}px; max-width: 100%; min-width: 0;">'
 	result += '<tr><td style="border: 0; background: #fff; padding: 0; margin: 0; '
 	result += 'font-size: 0; line-height: 0; vertical-align: top;">'
@@ -47,9 +48,9 @@ def render_html(diagram: layout.Diagram, observations: dict) -> str:
 		result += 'background: #111; font-size: 0; line-height: 0;">&#160;</span>'
 	for person in diagram.symbols:
 		obs = observations[person.person]
-		fill = '#111' if obs.affected else '#fff'
+		fill = affected_color if obs.affected else '#fff'
 		if obs.carrier:
-			fill = 'linear-gradient(to right, #111 50%, #fff 50%)'
+			fill = f'linear-gradient(to right, {affected_color} 50%, #fff 50%)'
 		radius = '50%' if person.sex == 'female' else '0'
 		result += '<span style="display: block; position: absolute; box-sizing: border-box; '
 		result += f'left: {100 * (person.x - layout.RADIUS) / width:g}%; '

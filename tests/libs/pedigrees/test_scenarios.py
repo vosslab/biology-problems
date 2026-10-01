@@ -33,10 +33,10 @@ def test_sets_use_best_eligible_mode_entries_once_and_skip_incomplete_groups(que
 def test_writer_consumes_next_scenario_when_collector_retries_same_number(monkeypatch) -> None:
 	first, second = questions.matching_set(random.Random(351))[:2]
 	captured = []
-	monkeypatch.setattr(cli, '_save_review', lambda number, directory, cases: captured.extend(cases))
+	monkeypatch.setattr(cli, '_save_review', lambda number, directory, cases, color: captured.extend(cases))
 	monkeypatch.setattr(cli.bptools, 'formatBB_MC_Question', lambda *values: values)
 	remaining = iter([(first,), (second,)])
-	options = argparse.Namespace(review_dir='unused')
+	options = argparse.Namespace(review_dir='unused', affected_color='black', random_color=False)
 	rng = random.Random(351)
 	cli.write_question(1, options, rng, remaining, 'identify')
 	cli.write_question(1, options, rng, remaining, 'identify')

@@ -8,12 +8,13 @@ import pedigree_lib.layout as layout
 
 
 #============================================
-def render_svg(diagram: layout.Diagram, observations: dict) -> str:
+def render_svg(diagram: layout.Diagram, observations: dict, affected_color: str = '#111') -> str:
 	"""Render editable shapes and text from shared geometry.
 
 	Args:
 		diagram: Shared layout geometry; this renderer does not arrange people.
 		observations: Visible observations keyed by person ID.
+		affected_color: Fill color for affected symbols and carrier half-fills.
 
 	Returns:
 		SVG document with native shapes and escaped text.
@@ -34,16 +35,18 @@ def render_svg(diagram: layout.Diagram, observations: dict) -> str:
 	for person in diagram.symbols:
 		obs = observations[person.person]
 		x, y = person.x, person.y
-		fill = '#111' if obs.affected else '#fff'
+		fill = affected_color if obs.affected else '#fff'
 		if person.sex == 'female':
 			result += f'<circle cx="{x:g}" cy="{y:g}" r="15" fill="{fill}" stroke="#111" stroke-width="2"/>'
 			if obs.carrier:
-				result += f'<path d="M {x:g} {y-14:g} A 14 14 0 0 0 {x:g} {y+14:g} Z" fill="#111"/>'
+				result += f'<path d="M {x:g} {y-14:g} A 14 14 0 0 0 {x:g} {y+14:g} Z" '
+				result += f'fill="{affected_color}"/>'
 		else:
 			result += f'<rect x="{x-15:g}" y="{y-15:g}" width="30" height="30" '
 			result += f'fill="{fill}" stroke="#111" stroke-width="2"/>'
 			if obs.carrier:
-				result += f'<rect x="{x-14:g}" y="{y-14:g}" width="14" height="28" fill="#111"/>'
+				result += f'<rect x="{x-14:g}" y="{y-14:g}" width="14" height="28" '
+				result += f'fill="{affected_color}"/>'
 		if obs.affected is None:
 			result += _text(x, y + 6, '?', 20)
 		if person.label:

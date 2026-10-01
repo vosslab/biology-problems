@@ -2,6 +2,7 @@
 
 # Standard Library
 import json
+import time
 import random
 import pathlib
 import argparse
@@ -19,8 +20,14 @@ import pedigree_lib.similarity as similarity
 import pedigree_lib.ranking as ranking
 import pedigree_lib.scenarios as scenarios
 
-LEGEND = ('<p>Squares: males; circles: females; filled symbols: affected; '
-	'empty symbols: unaffected. Assume complete penetrance and no new mutations.</p>')
+ASSUMPTIONS = '<p>Assume complete penetrance and no new mutations.</p>'
+AFFECTED_COLORS = {
+	'black': '#111', 'darkred': '#970000', 'darkorange': '#802f00',
+	'orange': '#674100', 'darkyellow': '#4b4c00', 'lime': '#295300',
+	'darkgreen': '#005600', 'teal': '#005343', 'cyan': '#005253',
+	'skyblue': '#054c79', 'darkblue': '#0032cc', 'navy': '#004890',
+	'purple': '#76129b', 'magenta': '#8f005f', 'pink': '#920049',
+}
 
 
 #============================================
@@ -37,13 +44,18 @@ def parse_arguments() -> argparse.Namespace:
 		help='Reproduce a verification run; normal runs use fresh randomness.')
 	parser.add_argument('-r', '--review-dir', dest='review_dir', type=pathlib.Path, default=None,
 		help='Save editable SVGs and instructor evidence alongside the questions.')
+	colors = parser.add_mutually_exclusive_group()
+	colors.add_argument('--affected-color', choices=AFFECTED_COLORS, default='black',
+		help='Fill affected individuals with this dark color (default: black).')
+	colors.add_argument('--random-color', action='store_true',
+		help='Choose one random dark fill color per question, shared by all its pedigrees.')
 	difficulty = parser.add_mutually_exclusive_group()
 	for level in ('easy', 'medium', 'rigorous'):
 		difficulty.add_argument(f'--{level}', dest='difficulty', action='store_const', const=level,
-			help=f'Use {level} structural workload (default: medium).')
+			help=f'Use {level} structural workload (default: easy).')
 	difficulty.add_argument('--bonus', dest='difficulty', action='store_const', const='bonus',
 		help='Use a 30-40-person family; only supported by write_pedigree_to_pattern.py.')
-	parser.set_defaults(difficulty='medium')
+	parser.set_defaults(difficulty='easy')
 	args = parser.parse_args()
 	return args
 
@@ -68,34 +80,39 @@ def write_question(N: int, args: argparse.Namespace, rng: random.Random,
 		return None
 	cases = list(scenario)
 	rng.shuffle(cases)
-	drawings = [html_output.render_html(case.diagram, case.case.observations) for case in cases]
+	affected_color = AFFECTED_COLORS[args.affected_color]
+	if args.random_color:
+		affected_color = rng.choice([color for name, color in AFFECTED_COLORS.items() if name != 'black'])
+	drawings = [html_output.render_html(case.diagram, case.case.observations, affected_color)
+		for case in cases]
 	if args.review_dir is not None:
-		_save_review(N, args.review_dir, cases)
+		_save_review(N, args.review_dir, cases, affected_color)
 	if question_format == 'match':
 		prompt = '<p>Match each pedigree to its most likely inheritance pattern. Use each pattern once.</p>'
-		item = bptools.formatBB_MAT_Question(N, prompt + LEGEND, drawings,
+		item = bptools.formatBB_MAT_Question(N, prompt + ASSUMPTIONS, drawings,
 			[case.assessment.answer for case in cases])
 	elif question_format == 'select':
 		index = rng.randrange(len(cases))
 		mode = cases[index].assessment.answer
 		prompt = f'<p>Which pedigree most likely demonstrates <strong>{mode}</strong> inheritance?</p>'
-		item = bptools.formatBB_MC_Question(N, prompt + LEGEND, drawings, drawings[index])
+		item = bptools.formatBB_MC_Question(N, prompt + ASSUMPTIONS, drawings, drawings[index])
 	else:
 		prompt = '<p>Which inheritance pattern is most likely demonstrated by this pedigree?</p>'
 		choices = list(inheritance.MODES)
 		rng.shuffle(choices)
-		item = bptools.formatBB_MC_Question(N, drawings[0] + prompt + LEGEND,
+		item = bptools.formatBB_MC_Question(N, drawings[0] + prompt + ASSUMPTIONS,
 			choices, cases[0].assessment.answer)
 	return item
 
 
 #============================================
-def _save_review(number: int, directory: pathlib.Path, cases: list) -> None:
+def _save_review(number: int, directory: pathlib.Path, cases: list, affected_color: str) -> None:
 	directory.mkdir(parents=True, exist_ok=True)
 	report = []
 	for index, case in enumerate(cases, 1):
 		name = f'question_{number:03d}_case_{index:02d}.svg'
-		(directory / name).write_text(svg_output.render_svg(case.diagram, case.case.observations),
+		(directory / name).write_text(
+			svg_output.render_svg(case.diagram, case.case.observations, affected_color),
 			encoding='utf-8')
 		assessment = case.assessment
 		complexity = similarity.complexity(case.case.family)
@@ -132,9 +149,14 @@ def run(args: argparse.Namespace, question_format: str) -> None:
 		requested = min(requested, args.max_questions)
 	prepared = []
 	if requested > 0:
-		print('Preparing 5,000 valid pedigree candidates...')
-		prepared = scenarios.build(rng, args.difficulty, question_format)
-		print(f'Prepared {len(prepared)} complete {question_format} scenarios.')
+		pedigrees_per_question = len(inheritance.MODES) if question_format in ('select', 'match') else 1
+		pool_size = 20 * requested * pedigrees_per_question
+		print(f'Preparing {pool_size:,} valid pedigree candidates...')
+		started = time.perf_counter()
+		prepared = scenarios.build(rng, args.difficulty, question_format,
+			pool_size=pool_size, minimum_scenarios=requested)
+		elapsed = time.perf_counter() - started
+		print(f'Prepared {len(prepared)} complete {question_format} scenarios in {elapsed:.2f} seconds.')
 		if requested > len(prepared):
 			raise questions.GenerationFailure(f'Requested {requested} questions, but the pool has '
 				f'only {len(prepared)} complete {question_format} scenarios')
