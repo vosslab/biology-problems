@@ -77,7 +77,7 @@ def gene_id_to_choice_text(gene_id: str) -> str:
 	"""
 	name = crossinglib.gene_interaction_names[gene_id]
 	description = crossinglib.gene_type_description[gene_id]
-	choice_text = f"These two genes show <strong>{name}</strong> {description}."
+	choice_text = f"{description}, known as {name}."
 	return choice_text
 
 #===================

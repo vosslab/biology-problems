@@ -50,13 +50,16 @@ gene_interaction_names_plus = {
 
 # Mapping of gene interaction type IDs to their explanatory descriptions (used in choice text and feedback)
 gene_type_description = {
-	0: 'Interaction of two genes affect the phenotypic expression of a single trait',
-	1: 'When the first gene is homozygous recessive, it hides the phenotype of the second gene',
-	2: 'When one gene is dominant, it hides the phenotype of the other gene',
-	3: 'When either gene is homozygous recessive, it hides the effect of the other gene',
-	4: 'When either gene is dominant, it hides the effects of the other gene',
-	5: 'When either gene is dominant, it shows the same phenotype',
-	6: 'When one gene is dominant and another gene is homozygous recessive, it creates a new phenotype',
+	0: 'Two genes affect the phenotypic expression of a single trait',
+	1: ('A homozygous recessive genotype at the first gene hides the phenotypic effect '
+		'of the second gene'),
+	2: 'A dominant allele at one gene hides the phenotypic effect of the other gene',
+	3: 'A homozygous recessive genotype at either gene produces the same phenotype',
+	4: ('A dominant allele at either gene alone produces the same phenotype, while dominant '
+		'alleles at both genes together produce a different phenotype'),
+	5: 'A dominant allele at either gene produces the same phenotype',
+	6: ('A dominant allele at one gene or a homozygous recessive genotype at the other '
+		'produces the same phenotype'),
 	7: 'If the two genes are both dominant or both recessive they produce the same phenotype',
 	8: 'If the two genes have the same dominant/recessive, then they produce one phenotype, if they are opposite dominant/recessive, then they produce a second phenotype',
 	9: 'The phenotype is only determined by one of the two genes',
