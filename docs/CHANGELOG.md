@@ -4,6 +4,11 @@
 
 ### Changed
 
+- Added a dedicated one-sample babies versus national average t-test generator,
+  linked to the Part 2 Google Sheets tutorial. Its question is organized as setup,
+  sample data, procedure, and result to report. It uses the sample standard deviation,
+  asks for the tutorial's p-value cell, supports greater-than and two-tailed p-values,
+  and accepts a seed for repeatable banks.
 - Investigated terminal-child pedigree polishing in the sibling experiment directory.
   On 200 larger MC cases, bounded additions reduced shrinkage in 127 while preserving
   existing inheritance evidence, difficulty, and layout checks. Production is unchanged.
