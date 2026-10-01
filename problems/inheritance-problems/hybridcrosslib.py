@@ -401,46 +401,46 @@ def createDiHybridTable(letter1, letter2, assigned_colors, title=None):
 
 
 	table += "<tr>"
-	table += f" <td align='center' style='background-color: lightgray'>{letter1_upper}{letter2_upper}</td>"
-	table += f" <td align='center' style='background-color: lightgray'>{letter1_upper}{letter2_lower}</td>"
-	table += f" <td align='center' style='background-color: lightgray'>{letter1_lower}{letter2_upper}</td>"
-	table += f" <td align='center' style='background-color: lightgray'>{letter1_lower}{letter2_lower}</td>"
+	table += f" <td align='center' style='font-family: monospace; font-size: 1em; background-color: lightgray'>{letter1_upper}{letter2_upper}</td>"
+	table += f" <td align='center' style='font-family: monospace; font-size: 1em; background-color: lightgray'>{letter1_upper}{letter2_lower}</td>"
+	table += f" <td align='center' style='font-family: monospace; font-size: 1em; background-color: lightgray'>{letter1_lower}{letter2_upper}</td>"
+	table += f" <td align='center' style='font-family: monospace; font-size: 1em; background-color: lightgray'>{letter1_lower}{letter2_lower}</td>"
 	table += "</tr>"
 
 	table += "<tr>"
 	table += " <th align='center' rowspan='4' style='vertical-align: middle;'>Male<br/>&male;</th> "
-	table += f" <td align='center' style='background-color: lightgray'>{letter1_upper}{letter2_upper}</td>"
-	table += f" <td align='center' style='background-color: {assigned_colors[0][0]};'>{letter1_upper}{letter1_upper}{letter2_upper}{letter2_upper}</td>"
-	table += f" <td align='center' style='background-color: {assigned_colors[0][1]};'>{letter1_upper}{letter1_upper}{letter2_upper}{letter2_lower}</td>"
-	table += f" <td align='center' style='background-color: {assigned_colors[0][2]};'>{letter1_upper}{letter1_lower}{letter2_upper}{letter2_upper}</td>"
-	table += f" <td align='center' style='background-color: {assigned_colors[0][3]};'>{letter1_upper}{letter1_lower}{letter2_upper}{letter2_lower}</td>"
+	table += f" <td align='center' style='font-family: monospace; font-size: 1em; background-color: lightgray'>{letter1_upper}{letter2_upper}</td>"
+	table += f" <td align='center' style='font-family: monospace; font-size: 1em; background-color: {assigned_colors[0][0]};'>{letter1_upper}{letter1_upper}{letter2_upper}{letter2_upper}</td>"
+	table += f" <td align='center' style='font-family: monospace; font-size: 1em; background-color: {assigned_colors[0][1]};'>{letter1_upper}{letter1_upper}{letter2_upper}{letter2_lower}</td>"
+	table += f" <td align='center' style='font-family: monospace; font-size: 1em; background-color: {assigned_colors[0][2]};'>{letter1_upper}{letter1_lower}{letter2_upper}{letter2_upper}</td>"
+	table += f" <td align='center' style='font-family: monospace; font-size: 1em; background-color: {assigned_colors[0][3]};'>{letter1_upper}{letter1_lower}{letter2_upper}{letter2_lower}</td>"
 	table += "</tr>"
 
 
 	table += "<tr>"
-	table += f" <td align='center' style='background-color: lightgray'>{letter1_upper}{letter2_lower}</td>"
-	table += f" <td align='center' style='background-color: {assigned_colors[1][0]};'>{letter1_upper}{letter1_upper}{letter2_upper}{letter2_lower}</td>"
-	table += f" <td align='center' style='background-color: {assigned_colors[1][1]};'>{letter1_upper}{letter1_upper}{letter2_lower}{letter2_lower}</td>"
-	table += f" <td align='center' style='background-color: {assigned_colors[1][2]};'>{letter1_upper}{letter1_lower}{letter2_upper}{letter2_lower}</td>"
-	table += f" <td align='center' style='background-color: {assigned_colors[1][3]};'>{letter1_upper}{letter1_lower}{letter2_lower}{letter2_lower}</td>"
+	table += f" <td align='center' style='font-family: monospace; font-size: 1em; background-color: lightgray'>{letter1_upper}{letter2_lower}</td>"
+	table += f" <td align='center' style='font-family: monospace; font-size: 1em; background-color: {assigned_colors[1][0]};'>{letter1_upper}{letter1_upper}{letter2_upper}{letter2_lower}</td>"
+	table += f" <td align='center' style='font-family: monospace; font-size: 1em; background-color: {assigned_colors[1][1]};'>{letter1_upper}{letter1_upper}{letter2_lower}{letter2_lower}</td>"
+	table += f" <td align='center' style='font-family: monospace; font-size: 1em; background-color: {assigned_colors[1][2]};'>{letter1_upper}{letter1_lower}{letter2_upper}{letter2_lower}</td>"
+	table += f" <td align='center' style='font-family: monospace; font-size: 1em; background-color: {assigned_colors[1][3]};'>{letter1_upper}{letter1_lower}{letter2_lower}{letter2_lower}</td>"
 	table += "</tr>"
 
 
 	table += "<tr>"
-	table += f" <td align='center' style='background-color: lightgray'>{letter1_lower}{letter2_upper}</td>"
-	table += f" <td align='center' style='background-color: {assigned_colors[2][0]};'>{letter1_upper}{letter1_lower}{letter2_upper}{letter2_upper}</td>"
-	table += f" <td align='center' style='background-color: {assigned_colors[2][1]};'>{letter1_upper}{letter1_lower}{letter2_upper}{letter2_lower}</td>"
-	table += f" <td align='center' style='background-color: {assigned_colors[2][2]};'>{letter1_lower}{letter1_lower}{letter2_upper}{letter2_upper}</td>"
-	table += f" <td align='center' style='background-color: {assigned_colors[2][3]};'>{letter1_lower}{letter1_lower}{letter2_upper}{letter2_lower}</td>"
+	table += f" <td align='center' style='font-family: monospace; font-size: 1em; background-color: lightgray'>{letter1_lower}{letter2_upper}</td>"
+	table += f" <td align='center' style='font-family: monospace; font-size: 1em; background-color: {assigned_colors[2][0]};'>{letter1_upper}{letter1_lower}{letter2_upper}{letter2_upper}</td>"
+	table += f" <td align='center' style='font-family: monospace; font-size: 1em; background-color: {assigned_colors[2][1]};'>{letter1_upper}{letter1_lower}{letter2_upper}{letter2_lower}</td>"
+	table += f" <td align='center' style='font-family: monospace; font-size: 1em; background-color: {assigned_colors[2][2]};'>{letter1_lower}{letter1_lower}{letter2_upper}{letter2_upper}</td>"
+	table += f" <td align='center' style='font-family: monospace; font-size: 1em; background-color: {assigned_colors[2][3]};'>{letter1_lower}{letter1_lower}{letter2_upper}{letter2_lower}</td>"
 	table += "</tr>"
 
 
 	table += "<tr>"
-	table += f" <td align='center' style='background-color: lightgray'>{letter1_lower}{letter2_lower}</td>"
-	table += f" <td align='center' style='background-color: {assigned_colors[3][0]};'>{letter1_upper}{letter1_lower}{letter2_upper}{letter2_lower}</td>"
-	table += f" <td align='center' style='background-color: {assigned_colors[3][1]};'>{letter1_upper}{letter1_lower}{letter2_lower}{letter2_lower}</td>"
-	table += f" <td align='center' style='background-color: {assigned_colors[3][2]};'>{letter1_lower}{letter1_lower}{letter2_upper}{letter2_lower}</td>"
-	table += f" <td align='center' style='background-color: {assigned_colors[3][3]};'>{letter1_lower}{letter1_lower}{letter2_lower}{letter2_lower}</td>"
+	table += f" <td align='center' style='font-family: monospace; font-size: 1em; background-color: lightgray'>{letter1_lower}{letter2_lower}</td>"
+	table += f" <td align='center' style='font-family: monospace; font-size: 1em; background-color: {assigned_colors[3][0]};'>{letter1_upper}{letter1_lower}{letter2_upper}{letter2_lower}</td>"
+	table += f" <td align='center' style='font-family: monospace; font-size: 1em; background-color: {assigned_colors[3][1]};'>{letter1_upper}{letter1_lower}{letter2_lower}{letter2_lower}</td>"
+	table += f" <td align='center' style='font-family: monospace; font-size: 1em; background-color: {assigned_colors[3][2]};'>{letter1_lower}{letter1_lower}{letter2_upper}{letter2_lower}</td>"
+	table += f" <td align='center' style='font-family: monospace; font-size: 1em; background-color: {assigned_colors[3][3]};'>{letter1_lower}{letter1_lower}{letter2_lower}{letter2_lower}</td>"
 	table += "</tr>"
 
 
@@ -471,31 +471,31 @@ def createTestCrossTable(letter1, letter2, assigned_colors, title=None):
 
 
 	table += "<tr>"
-	table += f" <td align='center' style='background-color: lightgray'>{letter1_lower}{letter2_lower}</td>"
+	table += f" <td align='center' style='font-family: monospace; font-size: 1em; background-color: lightgray'>{letter1_lower}{letter2_lower}</td>"
 	table += "</tr>"
 
 	table += "<tr>"
 	table += " <th align='center' rowspan='4' style='vertical-align: middle;'>Male<br/>&male;</th> "
-	table += f" <td align='center' style='background-color: lightgray'>{letter1_upper}{letter2_upper}</td>"
-	table += f" <td align='center' style='background-color: {assigned_colors[0][3]};'>{letter1_upper}{letter1_lower}{letter2_upper}{letter2_lower}</td>"
+	table += f" <td align='center' style='font-family: monospace; font-size: 1em; background-color: lightgray'>{letter1_upper}{letter2_upper}</td>"
+	table += f" <td align='center' style='font-family: monospace; font-size: 1em; background-color: {assigned_colors[0][3]};'>{letter1_upper}{letter1_lower}{letter2_upper}{letter2_lower}</td>"
 	table += "</tr>"
 
 
 	table += "<tr>"
-	table += f" <td align='center' style='background-color: lightgray'>{letter1_upper}{letter2_lower}</td>"
-	table += f" <td align='center' style='background-color: {assigned_colors[1][3]};'>{letter1_upper}{letter1_lower}{letter2_lower}{letter2_lower}</td>"
+	table += f" <td align='center' style='font-family: monospace; font-size: 1em; background-color: lightgray'>{letter1_upper}{letter2_lower}</td>"
+	table += f" <td align='center' style='font-family: monospace; font-size: 1em; background-color: {assigned_colors[1][3]};'>{letter1_upper}{letter1_lower}{letter2_lower}{letter2_lower}</td>"
 	table += "</tr>"
 
 
 	table += "<tr>"
-	table += f" <td align='center' style='background-color: lightgray'>{letter1_lower}{letter2_upper}</td>"
-	table += f" <td align='center' style='background-color: {assigned_colors[2][3]};'>{letter1_lower}{letter1_lower}{letter2_upper}{letter2_lower}</td>"
+	table += f" <td align='center' style='font-family: monospace; font-size: 1em; background-color: lightgray'>{letter1_lower}{letter2_upper}</td>"
+	table += f" <td align='center' style='font-family: monospace; font-size: 1em; background-color: {assigned_colors[2][3]};'>{letter1_lower}{letter1_lower}{letter2_upper}{letter2_lower}</td>"
 	table += "</tr>"
 
 
 	table += "<tr>"
-	table += f" <td align='center' style='background-color: lightgray'>{letter1_lower}{letter2_lower}</td>"
-	table += f" <td align='center' style='background-color: {assigned_colors[3][3]};'>{letter1_lower}{letter1_lower}{letter2_lower}{letter2_lower}</td>"
+	table += f" <td align='center' style='font-family: monospace; font-size: 1em; background-color: lightgray'>{letter1_lower}{letter2_lower}</td>"
+	table += f" <td align='center' style='font-family: monospace; font-size: 1em; background-color: {assigned_colors[3][3]};'>{letter1_lower}{letter1_lower}{letter2_lower}{letter2_lower}</td>"
 	table += "</tr>"
 
 

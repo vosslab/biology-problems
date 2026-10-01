@@ -64,67 +64,52 @@ inverse_two_colon_choices = [
 #===========================================================
 #===========================================================
 def get_cross_reference(letter1: str, letter2: str, color_set: list) -> str:
-	"""Show the four baseline classes without revealing any epistatic grouping."""
-	heterozygote = f"{letter1}{letter1.lower()}{letter2}{letter2.lower()}"
-	recessive = f"{letter1.lower() * 2}{letter2.lower() * 2}"
+	"""Pair the standard ratios with two baseline Punnett squares."""
 	assigned_colors = hybridcrosslib.dihybridAssignColorsOriginal(0, color_set)
-	f2_table = hybridcrosslib.createDiHybridTable(letter1, letter2, assigned_colors)
+	f2_table = hybridcrosslib.createDiHybridTable(
+		letter1, letter2, assigned_colors, title='F<sub>2</sub><br/>Cross')
 	test_table = hybridcrosslib.createTestCrossTable(letter1, letter2, assigned_colors)
 	text = (
-		'<p><strong>Baseline: four distinct phenotypes</strong><br/>'
-		'The two genes assort independently and each shows complete dominance. '
-		'The colors below distinguish the four baseline classes.</p>'
+		'<p><strong>Standard crosses</strong></p>'
+		'<p>In a standard dihybrid cross, the F<sub>2</sub> phenotypic ratio is '
+		'<strong>9:3:3:1</strong>. A test cross normally produces '
+		'<strong>1:1:1:1</strong>.</p>'
 	)
-	panels = [
-		('F<sub>1</sub> &times; F<sub>1</sub>', heterozygote, '9:3:3:1', f2_table),
-		('Test cross', recessive, '1:1:1:1', test_table),
-	]
-	for title, partner, ratio, table in panels:
+	for table in (f2_table, test_table):
 		text += (
 			'<div style="display: inline-block; vertical-align: top; '
 			'max-width: 100%; overflow-x: auto; margin: 0 12px 12px 0;">'
-			f'<p><strong>{title}</strong><br/>{heterozygote} &times; {partner}</p>'
-			f'{table}<p>Baseline phenotype ratio: <strong>{ratio}</strong></p></div> '
+			f'{table}</div> '
 		)
-	classes = [
-		f'{letter1}_{letter2}_', f'{letter1}_{letter2.lower() * 2}',
-		f'{letter1.lower() * 2}{letter2}_', recessive,
-	]
-	text += '<p>Baseline genotype classes: '
-	for i, (label, color) in enumerate(zip(classes, color_set)):
-		if i > 0:
-			text += ' &nbsp; '
-		text += (
-			f'<span style="display: inline-block; background-color: {color}; '
-			f'color: black; padding: 2px 6px; border: 1px solid black;">{label}</span>'
-		)
-	text += '. An underscore means either allele.</p>'
 	return text
 
 
 #===========================================================
-def get_modified_cross_comparison(f2_ratio: str, test_ratio: str,
+def get_modified_cross_summary(f2_ratio: str, test_ratio: str,
 		letter1: str, letter2: str) -> str:
-	"""Display the observed and unknown ratios without phenotype colors."""
-	heterozygote = f"{letter1}{letter1.lower()}{letter2}{letter2.lower()}"
-	recessive = f"{letter1.lower() * 2}{letter2.lower() * 2}"
+	"""Pair each observed cross with its known or unknown ratio in a plain table."""
+	heterozygote = f'{letter1}{letter1.lower()}{letter2}{letter2.lower()}'
+	recessive = f'{letter1.lower() * 2}{letter2.lower() * 2}'
 	text = (
-		'<p><strong>With a gene interaction</strong><br/>'
-		'Some baseline classes now share a phenotype. '
-		'Apply the same phenotype grouping to both crosses.</p>'
-		'<table style="border-collapse: collapse; width: 100%; max-width: 640px;">'
-		'<tr><th scope="col" style="border: 1px solid black; padding: 8px;">'
-		'F<sub>2</sub> offspring</th>'
-		'<th scope="col" style="border: 1px solid black; padding: 8px;">'
-		'Test-cross offspring</th></tr><tr>'
+		'<div style="padding-top: 16px;"><p><strong>Observed cross</strong></p>'
+		'<div style="max-width: 100%; overflow-x: auto;">'
+		'<table style="border-collapse: collapse;">'
+		'<tr><th scope="col" style="border: 1px solid #666; text-align: left; '
+		'padding: 6px 10px;">'
+		'F<sub>2</sub> cross</th>'
+		'<th scope="col" style="border: 1px solid #666; text-align: left; '
+		'padding: 6px 10px;">Test cross</th></tr><tr>'
 	)
-	for partner, ratio in [(heterozygote, f2_ratio), (recessive, test_ratio)]:
+	for partner, ratio in ((heterozygote, f2_ratio), (recessive, test_ratio)):
+		parent_text = (
+			f'<span style="font-family: monospace; font-size: 1em;">{heterozygote}</span>')
+		partner_text = (
+			f'<span style="font-family: monospace; font-size: 1em;">{partner}</span>')
 		text += (
-			'<td style="border: 1px solid black; padding: 8px; text-align: center;">'
-			f'{heterozygote} &times; {partner}<br/>&darr;<br/>'
-			f'<strong style="font-size: 125%;">{ratio}</strong></td>'
+			'<td style="border: 1px solid #666; white-space: nowrap; padding: 6px 10px;">'
+			f'{parent_text} &times; {partner_text} &rarr; {ratio}</td>'
 		)
-	text += '</tr></table>'
+	text += '</tr></table></div></div>'
 	return text
 
 
@@ -133,10 +118,11 @@ def get_forward_question_text(f2_ratio: str, letter1: str,
 		letter2: str, color_set: list) -> str:
 	"""Ask for the test-cross ratio using an unmodified visual reference."""
 	text = get_cross_reference(letter1, letter2, color_set)
-	text += get_modified_cross_comparison(f2_ratio, '?', letter1, letter2)
+	text += get_modified_cross_summary(f2_ratio, '?', letter1, letter2)
 	text += (
-		'<p><strong>What phenotypic ratio would you expect among the '
-		'test-cross offspring?</strong></p>'
+		'<p>For the observed cross, the F<sub>2</sub> progeny exhibit a modified '
+		f'ratio of <strong>{f2_ratio}</strong>. '
+		'What phenotypic ratio would you expect from the test cross?</p>'
 	)
 	return text
 
@@ -146,10 +132,11 @@ def get_inverse_question_text(test_ratio: str, letter1: str,
 		letter2: str, color_set: list) -> str:
 	"""Ask for a possible F2 ratio using the same unmodified visual reference."""
 	text = get_cross_reference(letter1, letter2, color_set)
-	text += get_modified_cross_comparison('?', test_ratio, letter1, letter2)
+	text += get_modified_cross_summary('?', test_ratio, letter1, letter2)
 	text += (
-		'<p><strong>Which phenotypic ratio could occur among the '
-		'F<sub>2</sub> offspring?</strong></p>'
+		'<p>For the observed cross, the test-cross progeny exhibit a modified '
+		f'ratio of <strong>{test_ratio}</strong>. '
+		'Which phenotypic ratio could occur among the F<sub>2</sub> progeny?</p>'
 	)
 	return text
 
