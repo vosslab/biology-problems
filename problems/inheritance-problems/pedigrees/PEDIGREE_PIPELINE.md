@@ -1,487 +1,160 @@
-# PEDIGREE PIPELINE
+# Pedigree homework pipeline
 
-Pedigree generation is a multi-stage pipeline with a single canonical internal
-representation for family structure. This keeps inheritance logic independent
-from rendering and makes both HTML and PNG outputs consistent.
+The three homework commands share a family model, a Mendelian engine, visible-evidence
+teaching profiles, and one layout for HTML and editable SVG. Their teaching reference is
+Lecture 05C, *Pedigrees*, September 29, 2026. See [PEDIGREE_AUTHORING.md](PEDIGREE_AUTHORING.md)
+for the YAML format and [authored_cases.yml](authored_cases.yml) for editable examples.
 
-## Overview
-### Pipeline shorthand
-- generator -> pedigree_graph_spec -> pedigree_code_string -> HTML/PNG
-- The graph parse/compile step is internal and is not persisted as a pipeline artifact.
+## Generate homework
 
-### Design goals
-- PedigreeGraph is the source of truth for structure and genetics.
-- CodeString is a compact layout serialization, not a family graph.
-- Renderers are pure transforms from CodeString.
+From the repository root:
 
-## Recent milestones (2026-06-10)
-- Corrected module and type references in this doc to match shipped code.
-- Added "Entry scripts and execution paths" section documenting the
-  static-template vs dynamic-graph split across the three entry scripts.
-- Moved min/max_individuals and max_size_spread scoping to the random entry script.
-- Completed library-roles list with five previously omitted modules.
-- Folded implemented labeling design from the now-archived sketch
-  (docs/archive/pedigree_labeling_plan.txt) into the "Optional label strings" section.
-- Added "Robustness findings" subsection for follow-up code work.
-
-## Recent milestones (2026-01-11)
-- Fixed `mirror_pedigree()` to pad rows to equal length before reversing,
-  preserving vertical connector alignment in mirrored pedigrees.
-- Fixed `_compute_col_shift()` to properly center the founding couple above
-  their descendants rather than pushing them to the left edge.
-- Added `strip_empty_columns()` to remove columns that are entirely empty (dots)
-  across all rows, producing more compact pedigree output.
-- Added balanced complexity support for matching questions with `min_individuals`,
-  `max_individuals`, and `max_size_spread` parameters (specific to
-  `write_pedigree_match_random.py`; see "Entry scripts and execution paths").
-- Added comprehensive pytest coverage for layout centering and code transformations.
-
-## Canonical internal representation
-### PedigreeGraph
-PedigreeGraph is the source of truth for family structure and genetics.
-
-#### Individuals
-- id
-- sex (male, female)
-- generation_index (1-based)
-- phenotype_state (unaffected, affected, carrier, unknown)
-- optional genotype (per locus or per mode)
-
-#### Relationships
-- Couple: partner_a, partner_b, consanguinity_degree (optional)
-- Child: child_id with mother_id and father_id
-- Derived: sibships, founders, connected components
-
-#### Non-goals
-PedigreeGraph should never encode layout or rendering details.
-
-### Role in the pipeline
-- PedigreeGraph is an internal, non-persisted structure used to compile a
-  pedigree graph spec into a CodeString layout.
-- Generators should emit pedigree graph spec strings. PedigreeGraph is created
-  only during the compile step.
-
-## Pipeline stages
-### 1) Skeleton engine
-- Input: generations, starting couples, sibling range, marriage rate,
-  consanguinity policy.
-- Output: PedigreeGraph with all parents and mates set, no disease labels yet.
-- Goal: generate a graph that is legally structured and visually teachable.
-
-#### Skeleton invariants
-- No ancestry cycles.
-- Each child has exactly two parents.
-- Spouses share the same generation.
-- Connected components policy is explicit (keep 1-3 founder couples separate, or
-  force a merge via a later marriage).
-- At least one multi-child sibship and at least one marrying-in spouse.
-- Consanguinity placement is deliberate, not accidental.
-
-### 2) Inheritance engine
-- Input: PedigreeGraph, inheritance mode, carrier visibility policy,
-  optional target counts.
-- Output: PedigreeGraph with genotype assigned and phenotype derived.
-- Approach: simulate inheritance. If constraints fail, resample founder
-  genotypes or transmissions until constraints pass.
-
-### 3) Layout (conceptual layer, not a Python class)
-- Input: PedigreeGraph.
-- Output: grid positions and connector routing, computed internally inside
-  `pedigree_lib/graph_parse.py` and emitted directly to CodeString.
-
-NOTE: There is no `LayoutGraph` Python class in the codebase. Layout is computed
-inside `graph_parse.py` as an intermediate step and is never persisted as a
-named data structure. The term "layout" here names the conceptual transformation
-only.
-
-### 4) CodeString encoding
-- Input: layout computed inside `pedigree_lib/graph_parse.py` (see stage 3).
-- Output: CodeString grid with `%` row separators.
-
-### 5) Renderers
-- Input: CodeString.
-- Output: HTML or PNG.
-- Renderers are pure transforms and never change genetics or structure.
-
-### Implementation note
-- `pedigree_lib/graph_parse.compile_graph_spec_to_code(spec_string,
-  show_carriers=True)` (defined at `graph_parse.py:594`) performs the internal
-  graph-spec parse and layout compile to CodeString.
-- This function is the only public entry point for the dynamic-graph path.
-
-## Entry scripts and execution paths
-The three entry scripts use two distinct execution paths. They are intentionally
-different until a follow-up code plan decides whether to converge them.
-
-### Static-template path
-Used by: `write_pedigree_choice.py` and `write_pedigree_match.py`.
-
-These scripts pick pedigree code strings from pre-authored lists in
-`pedigree_lib/code_templates.py`, optionally call
-`pedigree_lib.code_definitions.mirror_pedigree()`, then render with
-`pedigree_lib.html_output.translateCode()`. They never call graph compile,
-skeleton generation, or genetics validation. The pipeline stages 1-3 above do
-not run for these scripts.
-
-### Dynamic-graph path
-Used by: `write_pedigree_match_random.py`.
-
-This script generates pedigrees from scratch by calling `pedigree_lib/graph_parse`
-(compile), `pedigree_lib/validation` (syntax), and `pedigree_lib/mode_validate`
-(genetics). The full five-stage pipeline runs for each pedigree generated.
-
-#### Complexity knobs (dynamic path only)
-The following parameters are specific to `write_pedigree_match_random.py`:
-
-- `min_individuals` (line 56): minimum individual count filter (optional).
-- `max_individuals` (line 57): maximum individual count filter (optional).
-- `max_size_spread` (line 139): maximum individual-count difference allowed
-  across pedigrees in a matched set.
-
-These parameters are defined in the function `generate_valid_pedigree()` (lines
-56-57) and `generate_pedigree_set()` (lines 137-139). They have no effect on the
-static-template scripts.
-
-### Quality knobs and scoring (design intent, not yet implemented)
-The items below describe aspirational behavior, not current code. They are
-recorded here to seed a follow-up implementation plan.
-
-- Mode-consistency score (must be perfect).
-- Diagnostic features score (presence of telltale edges).
-- Visual clutter score (node count, crossings, density).
-- Diversity score across a batch (avoid near-duplicates).
-
-### Acceptance loop (design intent, not yet implemented)
-Generate -> label -> validate -> score -> accept if above threshold.
-
-## Validation
-Validation is intentionally layered.
-
-### Syntax validation
-#### CodeString
-- Allowed symbols only.
-- Row structure is well-formed.
-- Optional strict mode: consistent row lengths.
-
-### Genetics validation
-#### PedigreeGraph
-- Autosomal dominant: affected must have an affected parent.
-- Autosomal recessive: affected implies both parents are carriers or affected.
-- X-linked recessive: no father-to-son. Affected females require affected father.
-- Y-linked: affected only in males. Affected fathers imply affected sons.
-- If carriers are hidden, autosomal-recessive validation may need to degrade to
-  weaker checks (for example, an affected child must have two parents who could
-  be carriers, not necessarily flagged as carriers).
-
-### Mode validation preference
-Mode validation should prefer PedigreeGraph. Parsing from CodeString is a fallback
-only for legacy or template-only inputs.
-
-## CodeString and CodeSpec
-### CodeString as layout serialization
-The CodeString format is a compact grid encoding of the pedigree layout. It is not
-a family graph. It should not be treated as the primary source of truth for
-inheritance logic.
-
-### CodeSpec
-CodeSpec defines the CodeString alphabet and rules for parsing and encoding.
-- Alphabet and symbol meanings (including carrier on or off policy).
-- Row separator conventions (`%`), row-length expectations, and grid width.
-- Version identifier to keep legacy strings decodable.
-- Allowed transforms at this layer (mirror only, unless explicitly expanded).
-
-## Optional label strings
-Labels are stored as a parallel grid with the same row/column structure as the
-CodeString. A label grid uses `.` for empty cells and `A-Z` (and optionally
-`a-z`) for person labels. Labels must align with person cells only; a validator
-enforces this.
-
-This labeling design is fully implemented in `pedigree_lib/label_strings.py` and
-the renderers. The design is:
-
-### Two-grid bundle
-- `code_string`: the current grid alphabet (`#`, `o`, `T`, `|`, `.`, `%`, etc.).
-- `label_string`: same rows and columns, but `.` means no label and `A-Z` (and
-  optionally `a-z`) are person labels. Same `%` row separator.
-
-Example:
-- `code_string` row: `..#-o..`
-- `label_string` row: `..A.B..` (labels placed on person cells only)
-
-### Labeling rules
-- Labels are only meaningful on person cells. Connector cells must have `.`.
-- The `label_string` must have the same row count and row lengths as `code_string`.
-- No duplicate labels within one pedigree.
-- Auto-label assignment is deterministic (generation order, left-to-right per row).
-
-### Renderer support
-Renderers accept an optional `label_string` parameter and draw labels inside
-person shapes:
-- `pedigree_lib/html_output.translateCode(code_string, label_string=None)`:
-  renders a person cell with a positioned label overlay.
-- `pedigree_lib/html_output.make_pedigree_html(code_string, label_string=None)`.
-- `pedigree_lib/svg_output.make_pedigree_svg(code_string, label_string=None)`:
-  adds a centered `<text>` element after the person shape; uses contrast rule
-  (white text on filled shapes).
-- `pedigree_lib/svg_output.save_pedigree_png(code_string, label_string=None)`.
-
-### Label API (implemented in label_strings.py)
-- `make_label_string(code_string, label_positions)` -> `str`: builds a label
-  string from a dict mapping `(row, col)` grid positions to label characters.
-- `assign_labels(label_count)` -> `list[str]`: generates a deterministic ordered
-  label list.
-
-### Simple, valid CodeString examples
-These examples are intentionally small and are valid under the row-parity rules.
-Rows are separated by `%`. A trailing `%` is not required.
-
-1) One couple, one child
-- Meaning: parents with a single male child in the next generation.
-- CodeString (rows shown):
-  - `#To`
-  - `.|.`
-  - `.#.`
-- CodeString (single string): `#To%.|%.#.`
-
-2) One couple, two children
-- Meaning: parents with two children in the next generation.
-- CodeString (rows shown):
-  - `#To`
-  - `r^d`
-  - `#.o`
-- CodeString (single string): `#To%r^d%#.o`
-
-3) Two-generation chain (child marries and has a child)
-- Meaning: gen1 couple has one child; that child forms a couple in gen2 and
-  has one child in gen3.
-- CodeString (rows shown):
-  - `#To..`
-  - `.|...`
-  - `.#To.`
-  - `..|..`
-  - `..o..`
-- CodeString (single string): `#To..%.|...%.#To.%..|..%..o..`
-
-Notes
-- Examples include trailing `.` padding for clarity. Renderers may pad rows
-  internally, but explicitly padding in examples makes row lengths obvious.
-- Children appear on people rows, never on connector rows.
-
-## Pedigree code symbols
-### CodeString alphabet
-Symbols are single-character cells in the grid. Carrier symbols are only
-meaningful when carriers are shown. When carriers are hidden they render as
-unaffected shapes.
-
-#### People
-- `#` = WHITE SQUARE (unaffected male)
-- `x` = BLACK SQUARE (affected male)
-- `[` = LEFT-HALF BLACK SQUARE (carrier male)
-- `]` = RIGHT-HALF BLACK SQUARE (carrier male)
-- `o` = WHITE CIRCLE (unaffected female)
-- `*` = BLACK CIRCLE (affected female)
-- `(` = LEFT-HALF BLACK CIRCLE (carrier female)
-- `)` = RIGHT-HALF BLACK CIRCLE (carrier female)
-
-#### Connectors
-- `-` = HORIZONTAL LINE SHAPE
-- `|` = VERTICAL LINE SHAPE
-- `+` = PLUS SHAPE
-- `T` = T SHAPE
-- `=` = INCEST T SHAPE
-- `^` = PERPENDICULAR TENT SHAPE
-- `L` = UP-RIGHT ELBOW SHAPE
-- `u` = UP-LEFT ELBOW SHAPE
-- `r` = DOWN-RIGHT ELBOW SHAPE
-- `d` = DOWN-LEFT ELBOW SHAPE
-
-#### Layout
-- `.` = SPACE (empty cell)
-- `%` = NEW LINE (row separator, not a cell)
-
-### CodeString semantics
-#### Row parity
-- Rows alternate meaning: even rows (0, 2, 4, ...) are people rows. Odd rows
-  (1, 3, 5, ...) are connector rows.
-- Person symbols appear only on people rows.
-- Connector symbols appear on connector rows, except for spouse connectors
-  (`-`, `T`, `=`) which may appear between two people on a people row.
-
-#### Couple and offspring encoding
-- A couple is two adjacent person cells with connector cells between them on the
-  same people row (for example, `#To`).
-- `T` always marks the couple midpoint (even if there are no children) and is the
-  attachment point for descent.
-- If a couple has children, `T` must have a down edge into the connector row.
-- Offspring are encoded by a vertical line from the couple midpoint down to a
-  sibship bar, then vertical drops to each child.
-- A vertical descent line may terminate on a single person cell, but never on
-  another `T` (no "couple gives birth to couple").
-
-#### Rendering rule
-- All rows are padded to equal length with `.` before rendering to HTML or PNG.
-- Empty rows are encoded as a single `.` to preserve row parity.
-
-## Pedigree graph spec
-### Pedigree graph spec string format
-This is a compact, self-delimiting, union-based pedigree graph spec string.
-
-#### Syntax
-- Segments are separated by `;`.
-- Segment 1 defines generation-1 founders: `F:` followed by 2+ person tokens.
-- The first two founder tokens define the main couple (used for centering).
-- Segment 2+ define unions: `ParentA-ParentB:Children`.
-- Union partner order is normalized to male then female. The parser accepts
-  either order.
-
-#### Person tokens
-- Format: `X` + `m|f` + optional `i|c`
-  - `m` or `f` = sex.
-  - `i` = infected, `c` = carrier.
-
-#### Rules
-- Founders in `F:` must include sex. Children must include sex. Status is optional.
-- Union partners may omit sex. If a partner omits sex, sex is inferred from the
-  other partner in the union.
-- A union is invalid if both partner sexes are omitted.
-- Children are listed as a concatenation of person tokens (no separators within
-  the child list).
-- Unions must list at least one child. An empty `:` is invalid.
-- People IDs are single uppercase letters.
-
-#### Founder definition
-- The `F:` segment lists only true generation-1 founders.
-- Outside spouses are not founders. If a person first appears as a union partner
-  and has no parents listed, the person is treated as a marry-in spouse whose
-  generation is inherited from the partner.
-
-#### Examples
-- `F:AmBf;A-B:CmDfEf;C-G:HmIf`
-- `F:AfBm;B-A:CmDfEfFm;C-G:JmKm;H-E:LmMmNfOf`
-
-### Naming bundle
-- Concept name (docs): pedigree graph spec
-- String form: `pedigree_graph_spec_str` or `pedigree_graph_spec_string`
-- Parsed object: `PedigreeGraphSpec` (class) or `pedigree_graph_spec` (dict)
-- Codec module: `pedigree_lib/graph_spec.py`
-
-#### Functions
-- `parse_pedigree_graph_spec(s) -> PedigreeGraph`
-- `format_pedigree_graph_spec(graph) -> str`
-- `hash_pedigree_graph_spec(s) -> str`
-
-### Terminology consistency
-- Use `pedigree_code_string` for the grid and layout encoding.
-- Use `pedigree_graph_spec` for the union-based formalism.
-
-## Compatibility
-- CodeString rendering and HTML/PNG outputs remain stable across generator changes.
-- PedigreeGraph and inheritance assignment can evolve independently of renderers.
-
-## Known limitations
-### Generation II spacing
-In some pedigrees, Generation II (the children of the founding couple) may appear
-more spaced out than strictly necessary. This is a deliberate trade-off in the
-layout algorithm.
-
-#### Why this happens
-The layout engine allocates horizontal space for each subtree based on the maximum
-width of all descendants. When one child's subtree is wider than another's, both
-children receive spacing based on their respective subtree widths. This ensures
-parents are always centered above their children and prevents connector alignment
-issues.
-
-#### Example
-If the founding couple has two children, and one child has 4 grandchildren while
-the other has 2, the child with 4 grandchildren needs more horizontal space. The
-layout allocates this space upward, which can make Generation II appear sparse.
-
-#### Why we don't fix this
-Compacting Generation II to remove the visual gaps would break the invariant that
-parents are centered above their children. Previous attempts to optimize this
-spacing caused connector alignment bugs (T-shapes misaligned with their descent
-lines). The current behavior prioritizes correctness over visual compactness.
-
-#### Workaround
-For pedigrees where this is visually problematic, consider:
-- Using fewer generations to reduce subtree width variation
-- Manually adjusting the `min_children`/`max_children` parameters to produce more
-  uniform subtrees
-
-## Library roles (current files)
-Each library is intentionally narrow and maps to a pipeline layer or cross-cutting
-validation. These names are stable in code.
-
-### Core pipeline libraries
-- `pedigree_lib/graph_parse.py`: internal graph types plus compile step from
-  graph spec to code-string layout (intermediate only); entry point is
-  `compile_graph_spec_to_code(spec_string, show_carriers=True)` (line 594).
-- `pedigree_lib/graph_spec.py`: dataclasses and parser for the pedigree graph
-  spec string format (IndividualIR and related structures).
-- `pedigree_lib/skeleton.py`: procedural skeleton generation (structure only).
-- `pedigree_lib/inheritance_assign.py`: inheritance-mode phenotype assignment.
-- `pedigree_lib/genetic_assignment.py`: per-mode genotype assignment logic keyed
-  on allele constants (autosomal dominant/recessive, X-linked, Y-linked).
-- `pedigree_lib/genetic_validation.py`: genetics consistency checks on the
-  PedigreeGraph structure (uses `validation.py` for code-level checks).
-- `pedigree_lib/code_definitions.py`: CodeSpec, code alphabet, mirroring, and
-  encode/decode helpers.
-- `pedigree_lib/code_render.py`: CLI-style render driver that delegates to
-  `html_output`, `svg_output`, and `validation`; not a library for generators.
-- `pedigree_lib/validation.py`: CodeString syntax validation.
-- `pedigree_lib/mode_validate.py`: inheritance-mode validation (PedigreeGraph-first).
-- `pedigree_lib/label_strings.py`: builds and validates the parallel label grid;
-  `make_label_string()` and `assign_labels()`.
-- `pedigree_lib/html_output.py`: HTML renderer (CodeString -> HTML); accepts
-  optional `label_string` parameter.
-- `pedigree_lib/svg_output.py`: SVG renderer plus SVG-to-PNG conversion
-  (CodeString -> SVG/PNG); accepts optional `label_string` parameter.
-- `pedigree_lib/template_generator.py`: template-based pedigree selection
-  (CodeString output).
-- `pedigree_lib/code_templates.py`: template library (static CodeStrings).
-
-### Internal helpers
-- `pedigree_lib/__init__.py`: package marker only (empty).
-- `pedigree_lib/preview_pedigree.py`: internal library helper for batch preview,
-  uses `graph_parse` and `code_definitions`; not a top-level entry script.
-
-### Top-level entry scripts
-- `write_pedigree_choice.py`, `write_pedigree_match.py`,
-  `write_pedigree_match_random.py`: the three runnable generators (see "Entry
-  scripts and execution paths" above for their paths and behavior).
-
-## Robustness findings (for follow-up code work)
-These observations are descriptive only. No code changes are made in this pass.
-They are recorded here to seed the follow-up code work the user requested.
-
-### Entry-script divergence: static vs dynamic paths
-The two execution paths (see "Entry scripts and execution paths") have never been
-unified. `write_pedigree_choice.py` and `write_pedigree_match.py` bypass the
-graph-compile and genetics layers entirely. Whether this is intentional legacy
-simplicity or an unfinished migration is an open question. The divergence is
-documented as intentional until a follow-up code plan explicitly decides.
-
-### Unimplemented function: compile_graph_spec_to_code_and_labels()
-The archived design sketch (docs/archive/pedigree_labeling_plan.txt) proposed:
-
-```
-compile_graph_spec_to_code_and_labels(spec, ...) -> (code_string, label_string, label_map)
+```bash
+source source_me.sh
+python3 problems/inheritance-problems/pedigrees/write_pedigree_choice.py -d 10 --selftest
+python3 problems/inheritance-problems/pedigrees/write_pedigree_match.py -d 3 -B -I
+python3 problems/inheritance-problems/pedigrees/write_pedigree_match_random.py -d 3 --selftest
 ```
 
-This function does not exist in the codebase. Only
-`compile_graph_spec_to_code(spec_string, show_carriers=True)` is implemented
-(graph_parse.py:594). Whether to add a combined compiler that also produces the
-label grid is an open design question. A combined API is justified only if multiple
-generators need coordinated CodeString-plus-labels together; otherwise manual
-coordination using `label_strings.make_label_string()` after the fact is the
-existing approach. This is not a planned interface; it is an open design question
-for a follow-up code plan.
+- `write_pedigree_choice.py`: MC, authored families by default.
+- `write_pedigree_match.py`: matching, authored families by default.
+- `write_pedigree_match_random.py`: matching, procedural families by default.
+- All commands accept `-f authored` or `-f procedural` and `-s SEED`.
+- `-y BANK.yml` selects a custom bank when the source is authored.
+- `-d` counts questions, including for authored commands. It no longer enumerates a bank product.
+- `-r output_pedigree/review` saves editable SVGs and instructor-only JSON evidence.
+- Shared `--selftest`, `-O`, `-B`, and `-I` flags retain browser and Blackboard workflows.
 
-### Open question: should choice/match adopt the dynamic path?
-The static-template scripts (`write_pedigree_choice.py` and
-`write_pedigree_match.py`) pick from pre-authored lists, which limits variety and
-requires manual curation of `code_templates.py`. The dynamic-graph path in
-`write_pedigree_match_random.py` generates arbitrary valid pedigrees. Whether the
-static scripts should be migrated to the dynamic path is not resolved here.
-The two paths should be treated as intentionally divergent until a follow-up code
-plan defines the desired user-facing behavior.
+Normal runs use fresh randomness. Verification uses `-s`; it seeds one explicit procedural
+RNG and the existing export infrastructure's RNG. Authored selection, sibling permutations,
+mirroring, mode selection, and matching order are randomized rather than cycled by question number.
+Explicit sibling-order hints prevent sibling shuffling; whole-diagram mirroring can reverse
+the displayed left-to-right order.
+
+BBQ files contain positioned HTML directly. The one borderless drawing table also works with
+the existing HTML-to-image converter for Blackboard and Canvas/QTI packaging. Wide diagrams
+fit the available width proportionally without scrolling or cropping. SVG exports contain real
+shapes and text at the original geometry size.
+The drawing table has a class so Material does not wrap it in an article-table scrolling container.
+No remote website publication is part of this workflow.
+
+## Responsibilities and interfaces
+
+| Module | Responsibility and entry points |
+| --- | --- |
+| [family.py](pedigree_lib/family.py) | `Person`, `Union`, `Family`, `Observation`; structural validation and derived ancestry/generations |
+| [inheritance.py](pedigree_lib/inheritance.py) | `MODES`, `simulate`, `observe`, `analyze`; shared transmission and phenotype rules |
+| [policy.py](pedigree_lib/policy.py) | `teaching_evidence`, `assess`; observations only, no intended answer or simulated state |
+| [sources.py](pedigree_lib/sources.py) | `Case`, `load_cases`, `procedural_family`, `simulate_case` |
+| [questions.py](pedigree_lib/questions.py) | `evaluate`, `generate_case`, `authored_cases`, `present`, `matching_set` |
+| [layout.py](pedigree_lib/layout.py) | `lay_out`, `layout_errors`; symbol positions, labeled bounds, connector segments |
+| [html_output.py](pedigree_lib/html_output.py) | `render_html(diagram, observations)` |
+| [svg_output.py](pedigree_lib/svg_output.py) | `render_svg(diagram, observations)` |
+| [cli.py](pedigree_lib/cli.py) | Common argument parsing, question formatting, and instructor exports |
+
+Import these submodules from a script in this directory. The command files are thin callers.
+The old character-grid format, grid labels, graph-string format, and internal APIs are removed.
+
+## Family and biology contracts
+
+`Union.children` is the only parentage authority. People have stable string identifiers, sex,
+and optional labels; neither generation numbers nor coordinates are authored. Structure validation
+rejects missing references, duplicate IDs or parentage, ancestry cycles, incompatible generations,
+and multiple unions per person. Founding families, marrying-in spouses, and cousin unions are
+ordinary relationships. The introductory model uses one male father and one female mother per union.
+
+Genotypes are separate from observations. Alleles are represented internally as `0` (ordinary)
+and `1` (trait). Autosomal and female X-linked genotypes have two alleles; male X/Y genotypes
+have one; females have no Y genotype. Carrier markings mean a known unaffected heterozygote.
+An unmarked unaffected person can still be a carrier. Hiding carriers never modifies genotypes.
+
+Simulation samples actual gametes, retaining their Mendelian multiplicities. Compatibility analysis
+uses the same transmissions with genotype-domain propagation and backtracking across **every**
+union and founding family. It assumes complete penetrance and no new mutations. It does not
+assume that every marrying-in unaffected spouse lacks recessive alleles.
+
+An affected father and son do not by themselves exclude X-linked inheritance: the son can receive
+the allele from his mother. Two affected recessive parents cannot have unaffected children.
+Affected-by-carrier crosses are simulated rather than replaced with phenotype heuristics.
+
+## Teaching acceptance
+
+These profiles encode the lecture's multi-clue reasoning. They are deliberately selective teaching
+criteria, not inheritance laws or statistical likelihoods. Percentages and sex balance alone do
+not establish an answer. A case must have exactly one supported profile among biologically
+compatible modes. Other modes can remain biologically possible; the prompt says **most likely**.
+
+| Mode | Required visible evidence |
+| --- | --- |
+| Autosomal dominant | Affected lineage spans three generations, both sexes affected, affected father has an unaffected daughter, no affected child of two unaffected parents |
+| Autosomal recessive | Unaffected parents have affected offspring, plus both sexes affected or related parents of an affected child |
+| X-linked dominant | Affected father with affected daughters and unaffected sons from an unaffected mother, plus an affected mother with affected sons and unaffected offspring |
+| X-linked recessive | Affected grandfather, unaffected connecting daughter, affected grandson; affected son of unaffected parents; only males observed affected |
+| Y-linked | Affected father-son lineage spans three generations, multiple affected sons in a sibship with daughters, all observed females unaffected; compatibility checks every father-son relationship |
+
+Homework profiles require known affected/unaffected observations for everyone. The lower-level
+engine and renderers also support unknown phenotype (`null`, rendered as `?`). Instructor review
+JSON records the winning rationale and all compatible modes. Hidden genotypes and authored
+`expected_mode` metadata never enter the teaching decision; an expectation is checked afterward.
+
+## Generation and layout gates
+
+The procedural source samples a feasible family size **before** construction. Current homework
+families have three or four generations and one to three descendant unions. Each new union
+can extend an existing branch or start another sibling's branch, with a marrying-in spouse
+and one to four children. Sibship sizes are chosen together within the requested people bounds
+before construction. Founder crosses can seed the trait in the top couple or a marrying-in
+relative with grandchildren; all descendants are simulated. No teaching cores or complete-tree
+templates are required, and the visible-evidence evaluator is unchanged.
+Arbitrary clinical family generation, half-sibships, and multiple partners are outside scope.
+Authored families can include more generations, separate founding families, and consanguinity.
+
+Candidates pass biological, teaching, then layout acceptance. A different teaching answer, weak or
+tied evidence, or an ambiguous drawing causes rejection. A bounded search raises `GenerationFailure`
+with rejection counts on exhaustion. Invalid inputs and programming errors propagate immediately.
+Correct the input or inspect the reasons; never silently emit a weak question or truncate a family.
+
+Matching sets contain each mode once. Every case qualifies independently before assembling the set.
+They share a 12-15-person size band and allow three or four generations, without requiring identical
+depth or branching. Authored matching fails explicitly
+if a bank lacks a qualifying comparable example for any mode.
+
+Layout first derives generations and ordered partner blocks from the fixed relationships.
+It then solves horizontal positions jointly across the connected family with SciPy linear
+programming: minimize total row spans plus marriage-line spans subject to symbol/label clearances and each couple's
+midpoint centered over its outermost children. A sole child sits directly below the marriage
+midpoint, with one straight vertical connector. Two children sit equally far on either side
+of that midpoint. Segment construction rejects one- or two-child misalignment greater than
+0.000001 pixels (solver noise only). Larger sibships can have unequal sibling gaps to accommodate
+spouses and descendant branches; the middle child need not sit below the marriage midpoint.
+Marrying-in spouses start outside their sibling group. Layout then tries reversing each such
+couple, retaining collision-free reversals that reduce the component width, or reduce row and
+marriage spans at the same width. It repeats until no reversal improves those dimensions.
+Sibling order and related-partner order stay fixed; this does not claim an optimum over every
+possible order. Positions are rounded
+to eight decimal places to remove solver noise before drawing. An infeasible order raises an
+explicit error for author revision. Siblings have smaller minimum gaps than separate sibships;
+disconnected components have additional separation. Labels participate in clearance calculations.
+Generation spacing keeps full-size symbols with short child drops and room for labels. The shared
+QTI self-test gives rich matching prompts the available column width; narrower diagrams scale
+all symbols, lines, and labels together instead of creating a scrolling region.
+Consanguineous unions get double marriage lines. A shared descendant is drawn only once.
+Mirroring transforms geometry, not relationships or labels. Some complex graphs cannot be laid out
+without crossings by this compact layered algorithm; those are rejected for author revision.
+Ordering hints can make complex authored families readable without storing pixel coordinates.
+
+The geometry gate rejects symbol/label collisions, lines through symbols or labels, and intersections
+between unrelated relationship connectors. Both renderers enforce it. Neither renderer calculates layout.
+
+## Verification
+
+```bash
+source source_me.sh
+python3 -m pytest tests/libs/pedigrees/ -q
+pytest tests/
+```
+
+Focused regressions protect Mendelian contradictions, disclosure, source parity, weak-case rejection,
+matching balance, cousin unions, shared descendants, labels, mirroring, and escaped editable output.
+Broader seed sweeps and browser/package inspection are temporary implementation checks. A failed
+biological, teaching, or layout gate blocks the question; a failed export blocks that workflow's migration.

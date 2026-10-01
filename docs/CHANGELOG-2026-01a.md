@@ -91,16 +91,16 @@
 
 ## 2026-01-11
 - Fixed `mirror_pedigree()` in
-  [code_definitions.py](../problems/inheritance-problems/pedigrees/pedigree_lib/code_definitions.py)
+  `pedigree_lib/code_definitions.py`
   to pad rows to equal length before reversing, preserving vertical connector alignment.
 - Fixed `_compute_col_shift()` in
-  [graph_parse.py](../problems/inheritance-problems/pedigrees/pedigree_lib/graph_parse.py)
+  `pedigree_lib/graph_parse.py`
   to properly center the founding couple rather than pushing them to the left edge.
 - Added `strip_empty_columns()` in
-  [code_definitions.py](../problems/inheritance-problems/pedigrees/pedigree_lib/code_definitions.py)
+  `pedigree_lib/code_definitions.py`
   to remove columns that are entirely empty (dots) across all rows, compacting pedigree output.
 - Integrated empty column stripping into `render_graph_to_code()` in
-  [graph_parse.py](../problems/inheritance-problems/pedigrees/pedigree_lib/graph_parse.py).
+  `pedigree_lib/graph_parse.py`.
 - Added balanced complexity support to `generate_pedigree_set()` in
   [write_pedigree_match_random.py](../problems/inheritance-problems/pedigrees/write_pedigree_match_random.py)
   with `min_individuals`, `max_individuals`, and `max_size_spread` parameters.
@@ -112,14 +112,14 @@
   [write_pedigree_match_random.py](../problems/inheritance-problems/pedigrees/write_pedigree_match_random.py)
   that uses the skeleton and inheritance assignment engines instead of static templates.
 - Added X-linked dominant inheritance assignment to
-  [inheritance_assign.py](../problems/inheritance-problems/pedigrees/pedigree_lib/inheritance_assign.py)
+  `pedigree_lib/inheritance_assign.py`
   (affected males pass to all daughters, affected mothers pass to ~50% of children).
 - Improved autosomal recessive and X-linked recessive inheritance assignment in
-  [inheritance_assign.py](../problems/inheritance-problems/pedigrees/pedigree_lib/inheritance_assign.py)
+  `pedigree_lib/inheritance_assign.py`
   to track carrier status internally, ensuring affected offspring are produced reliably
   even when `show_carriers=False`.
 - Fixed skeleton generation in
-  [skeleton.py](../problems/inheritance-problems/pedigrees/pedigree_lib/skeleton.py)
+  `pedigree_lib/skeleton.py`
   to avoid creating couples in the last generation (which would have no children).
 - Added debug HTML comments with `pedigree_code_string` in
   [html_output.py](../problems/inheritance-problems/pedigrees/pedigree_lib/html_output.py)
@@ -388,7 +388,7 @@
   `pedigree_label_lib.py`
   and optional `label_string` rendering in HTML/SVG and SVG-to-PNG outputs.
 - Preview generation now assigns labels by default for HTML/PNG outputs in
-  [preview_pedigree.py](../problems/inheritance-problems/pedigrees/pedigree_lib/preview_pedigree.py).
+  `pedigree_lib/preview_pedigree.py`.
 - Increased SVG/PNG label font sizes for better readability in pedigree previews.
 - Centered SVG/PNG label rendering (anchor-based centering with small SVG baseline
   adjustment).
@@ -412,15 +412,15 @@
 - Added inheritance mode validation in
   `pedigree_mode_validate_lib.py`.
 - Added a preview helper for HTML/PNG pedigree output in
-  [preview_pedigree.py](../problems/inheritance-problems/pedigrees/pedigree_lib/preview_pedigree.py).
+  `pedigree_lib/preview_pedigree.py`.
 - Renamed pedigree template helpers for clarity:
   `pedigree_template_gen_lib.py`
   and `pedigree_code_templates.py`.
 - Added strict CodeString validation (syntax checks plus bounding-box limits) and
   preview gating in
   `pedigree_validate_lib.py`
-  and [preview_pedigree.py](../problems/inheritance-problems/pedigrees/pedigree_lib/preview_pedigree.py).
-- Simplified [preview_pedigree.py](../problems/inheritance-problems/pedigrees/pedigree_lib/preview_pedigree.py)
+  and `pedigree_lib/preview_pedigree.py`.
+- Simplified `pedigree_lib/preview_pedigree.py`
   CLI by baking in the strict validation defaults for width/height and attempts.
 - Renamed pedigree question generators for clarity:
   [write_pedigree_choice.py](../problems/inheritance-problems/pedigrees/write_pedigree_choice.py) and
@@ -439,19 +439,19 @@
   and a small runner in
   `layout_smoke_test.py`.
 - Added a simple CodeString renderer in
-  [code_render.py](../problems/inheritance-problems/pedigrees/pedigree_lib/code_render.py)
+  `pedigree_lib/code_render.py`
   for HTML/PNG output from a provided code string.
-- Extended [code_render.py](../problems/inheritance-problems/pedigrees/pedigree_lib/code_render.py)
+- Extended `pedigree_lib/code_render.py`
   to support SVG output.
 - Added semantic validation in
-  [code_render.py](../problems/inheritance-problems/pedigrees/pedigree_lib/code_render.py)
+  `pedigree_lib/code_render.py`
   so invalid CodeStrings fail fast before rendering.
 - Added a validation rule that vertical descent cannot terminate on a couple
   midpoint (`T`) in
   `pedigree_validate_lib.py`.
 - Added progress logging and rejection summaries to
-  [preview_pedigree.py](../problems/inheritance-problems/pedigrees/pedigree_lib/preview_pedigree.py).
-- Updated [preview_pedigree.py](../problems/inheritance-problems/pedigrees/pedigree_lib/preview_pedigree.py)
+  `pedigree_lib/preview_pedigree.py`.
+- Updated `pedigree_lib/preview_pedigree.py`
   to print the graph spec and CodeString for each accepted preview.
 - Documented pedigree CodeString symbols in
   [PEDIGREE_PIPELINE.md](../problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md).

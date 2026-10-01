@@ -73,7 +73,7 @@ def build_scenarios() -> list[tuple]:
 def brightness_table() -> str:
 	style = plantprobabilitylib.CELL_STYLE
 	text = plantprobabilitylib.table_start("Flower brightness")
-	text += f"<tr><th scope='col' style='{style}'>Gene A / Gene B</th>"
+	text += f"<tr><th scope='col' style='{style}'>Gene <i>A</i> / Gene <i>B</i></th>"
 	for b in (2, 1, 0):
 		text += f"<th scope='col' style='{style} color: #245b88;'>"
 		text += plantprobabilitylib.locus_text(b, "B") + "</th>"

@@ -4,12 +4,99 @@
 
 ### Added
 
+- Rebuilt pedigree homework around people and unions, with one Mendelian engine for simulation
+  and compatibility, visible-evidence teaching profiles based on Lecture 05C, and shared layout
+  for positioned HTML and editable SVG. Added editable YAML examples, cousin unions, separate
+  founding families, person-bound labels, and carrier disclosure independent of simulated state.
+- Migrated all three pedigree commands to one acceptance/export pipeline with explicit seeded
+  verification, bounded generation failures, balanced matching sets, and instructor SVG/JSON review.
+  Replaced obsolete grid codecs, duplicate validators, and old internal-API tests with focused
+  biological, teaching, source, and geometry regressions. Authored `-d` now counts questions.
+- Fixed hygiene discovery to skip deleted tracked files before invoking content-reading filters;
+  otherwise removing the retired pedigree specification prevented full-suite collection.
+- Pedigree rebuild verification: 27 focused pedigree tests plus the discovery regression passed;
+  full suite passed 4,473 tests with two existing source-length warnings. Scoped pyflakes passed.
+  Seeds 0-99 produced 100 visibly distinct accepted cases per mode without exhaustion (largest
+  search: 18 candidates). All three commands reproduced seeded BBQ output byte-for-byte;
+  self-tests accepted correct MC and 5/5 matching answers. Desktop/narrow Chromium checks confirmed
+  local keyboard scrolling. Blackboard and Canvas packages each contained the expected 11 diagrams
+  across three sample questions, plus a separately inspected cousin/carrier/label export.
+
 - Added shared `--selftest` and `-O` / `--open-selftest` options using the QTI HTML
   self-test engine. Preview one random saved question in the default browser, including
   generators that call the file writer directly; BBQ and optional Blackboard ZIP remain available.
 
 ### Fixes and Maintenance
 
+- Pedigree layout now tries either side for marrying-in spouses, retaining narrower,
+  collision-free maps while preserving sibling order and centered descent. Compact placement
+  also penalizes stretched marriage lines. The reported four-generation family saves 29 pixels
+  by moving its third-generation spouse inward; a regression protects that behavior.
+  Browser comparison inspected; 31 focused tests and all 4,591 repository tests passed
+  with the two existing source-length warnings.
+- Replaced independent pedigree-row packing and one-way parent shifts with joint horizontal
+  placement of fixed family relationships. Couples now center over their children, single-child
+  descent stays vertical, and all generations participate in compact placement with label and
+  symbol clearance. HTML and SVG share the corrected map. Segment construction rejects displaced
+  one- or two-child groups: one child gets a straight vertical connection; two are symmetric about
+  the marriage midpoint. Larger sibships allow unequal gaps around descendant branches.
+  Focused regressions cover the reported alignment defects.
+  Verified identical-family before/after galleries, 30 focused tests, and the full suite
+  (4,590 passed; two existing source-length warnings). Matching scored 5/5 in standalone and
+  local website previews at desktop and phone widths; Blackboard and Canvas packaged the
+  corrected diagrams. No family relationships or inheritance rules changed.
+- Varied procedural pedigree construction with one to three descendant unions across three or
+  four generations, choosing feasible sibships before construction. Traits can enter through
+  marrying-in founders with grandchildren. Kept genotype transmission, teaching profiles, and
+  shared HTML/SVG geometry unchanged; matching now allows varied depth in both sources.
+  Classed the HTML drawing table to prevent Material's automatic scrolling wrapper from
+  defeating proportional sizing on narrow website previews.
+- Pedigree variety verification: reviewed branching and visible inheritance clues in temporary
+  galleries for all five modes and checked every displayed transmission. All 4,588 repository
+  tests passed (two existing source-length warnings). All three command previews fit at
+  1200, 768, and 390 pixels standalone and in local Material pages; MC and matching answers
+  scored correctly. Blackboard and Canvas exports contained the expected referenced diagrams,
+  and editable SVGs and packaged images were inspected. No remote publication was performed.
+  All six independent audit passes completed; corrected one stale size-error message. The final
+  focused suite passed 28 tests, and all three commands reproduced seeded BBQ output.
+- Removed the pedigree renderer's inline scrolling wrapper and fixed minimum width after
+  clarifying the no-scrollbar requirement. HTML now scales the shared geometry proportionally
+  to available space, including labels and strokes; desktop and SVG geometry stay unchanged.
+  The scrollbar originated in generated content, independently of website table-gutter CSS.
+  Verified no diagram scrolling or cropping from 320 to 1200 pixels, including all three
+  generators embedded in the locally built Material website. Full suite: 4,587 passed with
+  two existing warnings; Blackboard and Canvas carrier/label images were inspected.
+- Polished pedigree spacing: reduced generation spacing from 136 to 96 pixels, shortened
+  child connector drops, and sized bottom padding to visible labels while retaining 32-pixel
+  symbols. Shared QTI matching previews now give rich diagrams the available prompt width
+  instead of the prose-width cap, so complete families are visible on desktop. Verified all
+  three commands at 1200, 768, and 390 pixels, matching answers, 500 seeded cases, and
+  Blackboard/Canvas images including labels and carriers. Full suite: 4,587 passed with two
+  existing source-length warnings; shared QTI suite: 3,834 passed.
+- Fixed Bandit B314 in the pedigree SVG regression test by using the existing lxml
+  dependency with XML entity resolution and network access disabled.
+- Completed six independent pedigree audit passes: Plan, Test, Style, Docs, Legacy, and
+  Comment. Corrected authored-YAML and mirrored sibling-order documentation, added import
+  headings, function separators, and public API docstrings, and removed brittle validation
+  wording and union-index/segment-count assumptions from existing tests. Plan and Legacy
+  reported no findings; no additional permanent tests were proposed. After cleanup, all
+  4,473 tests passed with the two existing source-length warnings; scoped pyflakes and
+  whitespace checks passed. Browser and package evidence remains from the rebuild verification.
+- Isolated pedigree drawing tables from surrounding self-test and website cell
+  borders and backgrounds. Fixed person-cell line height and connector sizing,
+  removed the blue frame and trailing empty row, and replaced invalid paragraph
+  wrappers with a scrolling container for wide pedigrees.
+- Pedigree verification: 40 focused tests and scoped pyflakes passed. Chromium
+  confirmed uniform 65-pixel rows under Material and competing table styles;
+  desktop and narrow self-tests worked for all three generators. Blackboard
+  HTML-to-image exports contained all 11 expected diagram PNGs across the three
+  sample questions. Chromium required execution outside the macOS sandbox.
+
+- Standardized allele notation in both new plant-probability generators using the
+  numbered-subscript convention in *Introduction to Molecular Genetics and Genomics*,
+  chapters 2 and 3. Gene letters are italic, allele numbers are subscripts, and the
+  smaller number comes first in heterozygotes. The shared formatter applies this
+  convention to genotype tables and cross descriptions without implying dominance.
 - Standalone self-tests explicitly select the light theme so system dark mode cannot
   produce light-gray text over a white browser background.
 
@@ -27,6 +114,10 @@
 
 ### Developer Tests and Notes
 
+- Allele-notation verification: all 522 plant scenarios use italic gene letters and
+  numbered subscripts in the question HTML. The 35 focused plant and bptools checks,
+  scoped pyflakes, desktop and 375-pixel rendering, and both CLI self-test exports passed.
+  This notation update did not run the full repository suite.
 - Self-test export validation: 4749 tests passed, with the two existing source-length
   advisories. Verified default-browser launch, Chromium correct-answer feedback, and
   HTML output from both shared collection and direct batch writers.

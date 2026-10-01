@@ -34,8 +34,13 @@ def cross_distribution(first: tuple, second: tuple) -> dict:
 
 #=====================
 def locus_text(copies: int, gene: str) -> str:
+	"""Use italic gene symbols and numbered subscripts without implying dominance.
+
+	Follows Introduction to Molecular Genetics and Genomics, chapters 2 and 3:
+	alleles share a gene letter; heterozygotes list the smaller subscript first.
+	"""
 	alleles = ((2, 2), (1, 2), (1, 1))[copies]
-	text = "".join(f"{gene}<sup>{allele}</sup>" for allele in alleles)
+	text = "".join(f"<i>{gene}</i><sub>{allele}</sub>" for allele in alleles)
 	return text
 
 

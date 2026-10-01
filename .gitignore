@@ -25,6 +25,7 @@ site/
 # Propagation preserves this section.
 
 # output files
+/MARKDOWN_BOOKS
 _[a-z]*.[a-z]*
 output_*
 _*.py

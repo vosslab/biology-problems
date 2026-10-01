@@ -1,259 +1,78 @@
-#!/usr/bin/env python3
+"""Positioned HTML from shared geometry; one borderless rasterization container."""
 
-# Local repo modules
-import code_definitions
-import label_strings
+# Standard Library
+import html
 
-
-#===============================
-def makeCharacterTD_Cell(character_name):
-	character_unicode = code_definitions.character_unicodes[character_name]
-	fontsize = code_definitions.character_sizes[character_name]
-	html_text = makeTD_Cell(character_name, character_unicode, fontsize)
-	return html_text
+# local repo modules
+import pedigree_lib.layout as layout
 
 
-#===============================
-def makeTD_Cell(comment_text, character_unicode, fontsize, line_height="0px"):
-	html_text = ''
-	if comment_text is not None:
-		html_text += f'<!-- {comment_text} --> '
-	html_text += '<td align="center" style="'
-	if fontsize is not None:
-		html_text += f'font-size: {fontsize:d}pt; '
-	html_text += (
-		f'padding: 0; margin: 0; line-height: {line_height}; vertical-align: middle; '
-		f'width: {code_definitions.table_cell_dimension}px; '
-		f'height: {code_definitions.table_cell_dimension}px;">'
-	)
-	html_text += f'{character_unicode}</td>'
-	return html_text
-
-
-#===============================
-def _make_person_span(shape_name, label_text):
-	cell_size = code_definitions.table_cell_dimension
-	border_width = 2
-	font_size = max(8, int(cell_size * 0.6))
-	label = label_text if label_text else '&nbsp;'
-	is_circle = shape_name.endswith('CIRCLE')
-	is_black = shape_name.startswith('BLACK')
-	is_left_half = shape_name.startswith('LEFT-HALF')
-	is_right_half = shape_name.startswith('RIGHT-HALF')
-
-	outer_styles = [
-		'display: inline-block',
-		'position: relative',
-		f'width: {cell_size}px',
-		f'height: {cell_size}px',
-		f'line-height: {cell_size}px',
-		'text-align: center',
-		'font-weight: bold',
-		f'font-size: {font_size}px',
-		f'border: {border_width}px solid #000',
-		'box-sizing: border-box',
-		'overflow: hidden',
-	]
-	if is_circle:
-		outer_styles.append('border-radius: 50%')
-
-	text_color = '#000000'
-	background_color = '#ffffff'
-	if is_black:
-		background_color = '#000000'
-		text_color = '#ffffff'
-
-	if not (is_left_half or is_right_half):
-		outer_styles.append(f'background-color: {background_color}')
-		outer_styles.append(f'color: {text_color}')
-		return (
-			f"<span style=\"{' ; '.join(outer_styles)}\">"
-			f"<span style='position: relative; z-index: 1;'>{label}</span>"
-			"</span>"
-		)
-
-	outer_styles.append('color: #000000')
-	half_left_color = '#000000' if is_left_half else '#ffffff'
-	half_right_color = '#000000' if is_right_half else '#ffffff'
-	return (
-		f"<span style=\"{' ; '.join(outer_styles)}\">"
-		f"<span style='position: absolute; left: 0; top: 0; width: 50%; height: 100%; background: {half_left_color};'></span>"
-		f"<span style='position: absolute; right: 0; top: 0; width: 50%; height: 100%; background: {half_right_color};'></span>"
-		f"<span style='position: relative; z-index: 1;'>{label}</span>"
-		"</span>"
-	)
-
-
-#===============================
-def makePersonTD_Cell(shape_name, label_text):
-	html_text = ''
-	html_text += f'<!-- {shape_name} --> '
-	html_text += '<td align="center" style="'
-	html_text += (
-		'padding: 0; margin: 0; vertical-align: middle; '
-		f'width: {code_definitions.table_cell_dimension}px; '
-		f'height: {code_definitions.table_cell_dimension}px;">'
-	)
-	html_text += _make_person_span(shape_name, label_text)
-	html_text += '</td>'
-	return html_text
-
-
-#===============================
-def tabelEdgeTD_Cell(location_binary, edge_binary):
-	# location_binary: 00 top left, 01 top right, 10 bottom left, 11 bottom right
-	# edge_binary: up-down-left-right
-	td_cell_text = (
-		'<td style="padding: 0; margin: 0; line-height: 0px; font-size: 1px;'
-	)
-	if location_binary == '00': # top-left
-		if edge_binary[0] == '1': # up
-			td_cell_text += 'border-right: 3px solid #000000; '
-		if edge_binary[2] == '1': # left
-			td_cell_text += 'border-bottom: 3px solid #000000; '
-		elif edge_binary[2] == '2': # left
-			td_cell_text += 'border-bottom: 9px double #000000; '
-	elif location_binary == '01': # top-right
-		if edge_binary[0] == '1': # up
-			td_cell_text += 'border-left: 3px solid #000000; '
-		if edge_binary[3] == '1': # right
-			td_cell_text += 'border-bottom: 3px solid #000000; '
-		elif edge_binary[3] == '2': # right
-			td_cell_text += 'border-bottom: 9px double #000000; '
-	elif location_binary == '10': # bottom-left
-		if edge_binary[1] == '1': # down
-			td_cell_text += 'border-right: 3px solid #000000; '
-		if edge_binary[2] == '1': # left
-			td_cell_text += 'border-top: 3px solid #000000; '
-		elif edge_binary[2] == '2': # left
-			td_cell_text += 'border-top: 9px double #000000; '
-	elif location_binary == '11': # bottom-right
-		if edge_binary[1] == '1': # down
-			td_cell_text += 'border-left: 3px solid #000000; '
-		if edge_binary[3] == '1': # right
-			td_cell_text += 'border-top: 3px solid #000000; '
-		elif edge_binary[3] == '2': # right
-			td_cell_text += 'border-top: 9px double #000000; '
-	td_cell_text += '">&nbsp;</td> '
-	return td_cell_text
-
-
-#===============================
-def makeShapeNameTableTD_Cell(shape_name):
-	binary_edges = code_definitions.shape_binary_edges[shape_name]
-	shape_html_text = ''
-	shape_html_text += f'<!-- START {shape_name} -->'
-	shape_html_text += '<td align="center" style="vertical-align: middle; padding: 0; margin: 0; line-height: 0px; "> '
-	shape_html_text += '<table border="0" cellpadding="0" cellspacing="0" '
-	shape_html_text += (
-		' style="padding: 0; margin: 0; '
-		f'width: {code_definitions.table_cell_dimension}px; '
-		f'height: {code_definitions.table_cell_dimension}px; '
-		'border-collapse: collapse; border-style: hidden;"> '
-	)
-	shape_html_text += '<tbody><tr> '
-	shape_html_text += tabelEdgeTD_Cell('00', binary_edges)
-	shape_html_text += tabelEdgeTD_Cell('01', binary_edges)
-	shape_html_text += '</tr><tr> '
-	shape_html_text += tabelEdgeTD_Cell('10', binary_edges)
-	shape_html_text += tabelEdgeTD_Cell('11', binary_edges)
-	shape_html_text += '</tr></tbody></table></td> '
-	shape_html_text += f'<!-- END {shape_name} -->'
-	return shape_html_text
-
-
-#===============================
-def translateCode(code_string, label_string=None, debug_spec: str | None = None):
-	"""
-	Translate a pedigree code string into HTML table markup.
+#============================================
+def render_html(diagram: layout.Diagram, observations: dict) -> str:
+	"""Render a proportional diagram that fits its available width without scrolling.
 
 	Args:
-		code_string (str): Pedigree code string.
-		label_string (str | None): Optional label string aligned to code_string.
-		debug_spec (str | None): Optional graph spec to include as HTML comment for debugging.
+		diagram: Shared layout geometry; this renderer does not arrange people.
+		observations: Visible observations keyed by person ID.
 
 	Returns:
-		str: HTML table markup.
+		HTML with one borderless drawing table and escaped labels.
+
+	Raises:
+		ValueError: Geometry fails the readability gate.
 	"""
-	max_num_col = 0
-	num_row = 0
-	num_col = 0
-	html_code = ''
-
-	# Add debug comment with graph spec if provided
-	# Graph spec only has single dashes (A-B) so it's safe for HTML comments
-	if debug_spec is not None:
-		html_code += f'<!-- pedigree_graph_spec: {debug_spec} -->'
-
-	if not code_string.endswith('%'):
-		code_string += '%'
-	label_chars = None
-	if label_string is not None:
-		if not label_string.endswith('%'):
-			label_string += '%'
-		label_chars = list(label_string)
-
-	for idx, char in enumerate(list(code_string)):
-		if char != '%':
-			num_col += 1
-		char_name = code_definitions.short_hand_lookup[char]
-		if char_name.endswith('SHAPE'):
-			html_code += makeShapeNameTableTD_Cell(char_name)
-		elif char_name.endswith('CIRCLE') or char_name.endswith('SQUARE'):
-			label_text = ''
-			if label_chars is not None and idx < len(label_chars):
-				label_candidate = label_chars[idx]
-				if label_candidate != '.':
-					label_text = label_candidate
-			html_code += makePersonTD_Cell(char_name, label_text)
-		elif char_name == 'SPACE':
-			html_code += makeTD_Cell(None, '&nbsp;', 1)
-		elif char_name == 'NEW LINE':
-			num_row += 1
-			max_num_col = max(max_num_col, num_col)
-			num_col = 0
-			html_code += '</tr><tr>'
-	html_text = (
-		'<p><table cellpadding="0" cellspacing="0" style='
-		+ '"padding: 0; margin: 0; border-collapse: collapse; border: 6px solid #003366; '
-		+ f'width: {max_num_col * code_definitions.table_cell_dimension}px; '
-		+ f'height: {num_row * code_definitions.table_cell_dimension}px"'
-		+ '><tr>'
-		+ html_code
-		+ '</tr></table></p><p>&nbsp;</p>'
-	)
-	return html_text
+	errors = layout.layout_errors(diagram)
+	if errors:
+		raise ValueError('; '.join(errors))
+	width, height = diagram.width, diagram.height
+	result = f'<div style="width: {width:g}px; max-width: 100%; margin: 12px 0;">'
+	# Material wraps unclassed tables in a scrolling container; this is a drawing.
+	result += '<table class="pedigree-diagram" role="presentation" cellpadding="0" cellspacing="0" style="'
+	result += 'display: table; table-layout: fixed; border-collapse: collapse; border-spacing: 0; '
+	result += 'border: 0; background: #fff; padding: 0; margin: 0; '
+	result += f'width: {width:g}px; max-width: 100%; min-width: 0;">'
+	result += '<tr><td style="border: 0; background: #fff; padding: 0; margin: 0; '
+	result += 'font-size: 0; line-height: 0; vertical-align: top;">'
+	result += '<div role="img" aria-label="Family pedigree" style="position: relative; '
+	# Percent coordinates preserve the shared geometry as the container narrows.
+	result += f'width: 100%; aspect-ratio: {width:g} / {height:g}; '
+	result += 'container-type: inline-size; color: #111; background: #fff;">'
+	for line in diagram.segments:
+		left, top = min(line.x1, line.x2), min(line.y1, line.y2)
+		w, h = abs(line.x2 - line.x1), abs(line.y2 - line.y1)
+		result += '<span style="display: block; position: absolute; box-sizing: border-box; '
+		result += f'left: {100 * (left - (1 if w == 0 else 0)) / width:g}%; '
+		result += f'top: {100 * (top - (1 if h == 0 else 0)) / height:g}%; '
+		result += f'width: {100 * max(w, 2) / width:g}%; height: {100 * max(h, 2) / height:g}%; '
+		result += 'background: #111; font-size: 0; line-height: 0;">&#160;</span>'
+	for person in diagram.symbols:
+		obs = observations[person.person]
+		fill = '#111' if obs.affected else '#fff'
+		if obs.carrier:
+			fill = 'linear-gradient(to right, #111 50%, #fff 50%)'
+		radius = '50%' if person.sex == 'female' else '0'
+		result += '<span style="display: block; position: absolute; box-sizing: border-box; '
+		result += f'left: {100 * (person.x - layout.RADIUS) / width:g}%; '
+		result += f'top: {100 * (person.y - layout.RADIUS) / height:g}%; '
+		result += f'width: {3200 / width:g}%; height: {3200 / height:g}%; '
+		result += f'border: min(2px, calc(200cqi / {width:g})) solid #111; '
+		result += f'border-radius: {radius}; '
+		result += f'background: {fill}; font-size: 0; line-height: 0;">&#160;</span>'
+		if obs.affected is None:
+			result += _text(person.x, person.y - 10, '?', 20, width, height)
+		if person.label:
+			result += _text(person.x, person.y + 20, person.label, 14, width, height)
+	result += '</div></td></tr></table></div>'
+	return result
 
 
-#===============================
-def make_pedigree_html(
-	code_string: str,
-	label_string: str | None = None,
-	debug_spec: str | None = None,
-) -> str:
-	"""
-	Translate a pedigree code string into HTML markup.
-
-	Args:
-		code_string (str): Pedigree code string.
-		label_string (str | None): Optional label string aligned to code_string.
-		debug_spec (str | None): Optional graph spec to include as HTML comment.
-
-	Returns:
-		str: HTML table markup.
-	"""
-	if label_string is not None:
-		errors = label_strings.validate_label_string(label_string, code_string)
-		if errors:
-			raise ValueError("Invalid label string: " + "; ".join(errors))
-	html_text = translateCode(code_string, label_string, debug_spec=debug_spec)
-	return html_text
-
-
-#===============================
-#===============================
-if __name__ == '__main__':
-	sample_code = "#To..#To%r^d...|.%x.*-T-#.%....|...%....x..."
-	print(make_pedigree_html(sample_code))
-
-## THE END
+#============================================
+def _text(x: float, y: float, text: str, size: int, width: float, height: float) -> str:
+	# ASVS 1.2.1: escape authored text at the HTML output boundary.
+	escaped = html.escape(text).encode('ascii', 'xmlcharrefreplace').decode('ascii')
+	result = '<span style="display: block; position: absolute; '
+	result += f'left: {100 * x / width:g}%; top: {100 * y / height:g}%; '
+	result += 'transform: translateX(-50%); white-space: nowrap; '
+	result += f'color: #111; font: min({size}px, {100 * size / width:g}cqi)/1.4 monospace;">'
+	result += escaped + '</span>'
+	return result

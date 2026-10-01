@@ -9,6 +9,8 @@ This file lists key functions that create quiz/homework questions (or question i
 - Fallbacks: `git blame` on the `def ...` line; uncommitted/untracked files use file mtime (commit `WORKTREE`)
 - YAML-driven banks are tracked separately in `docs/YAML_QUESTION_BANK_INDEX.md`.
 
+## 2026-09-30
+- 2026-09-30 - `problems/inheritance-problems/pedigrees/pedigree_lib/cli.py:47` - `write_question` (commit `WORKTREE`) - Shared MC and matching pedigree writer; replaces the three command-local writers.
 ## 2026-09-23
 - 2026-09-23 - `problems/inheritance-problems/horse_coat_pattern_inference.py:175` - `write_question` (commit `WORKTREE`)
 ## 2026-09-22
@@ -62,8 +64,6 @@ This file lists key functions that create quiz/homework questions (or question i
 - 2026-01-28 - `problems/biochemistry-problems/PUBCHEM/AMINO_ACIDS/which_amino_acid.py:57` - `write_question` (commit `435f6dfaac`) - file 2024-01-26 (commit `2479070cbc`)
 - 2026-01-28 - `problems/biochemistry-problems/PUBCHEM/AMINO_ACIDS/match_amino_acid_structures.py:49` - `write_question` (commit `435f6dfaac`) - file 2024-01-26 (commit `2479070cbc`)
 ## 2026-01-11
-- 2026-01-11 - `problems/inheritance-problems/pedigrees/write_pedigree_match_random.py:194` - `write_question` (commit `d59c5f0910`) - file 2026-01-10 (commit `962b4f9e5e`) - "Generate a single pedigree matching question with fresh random pedigrees."
-- 2026-01-11 - `problems/inheritance-problems/pedigrees/write_pedigree_choice.py:29` - `write_question` (commit `d59c5f0910`) - file 2021-10-31 (commit `cf9a40554c`)
 - 2026-01-11 - `problems/inheritance-problems/gene_mapping/three-point_test_cross-which_genotypes.py:66` - `write_question` (commit `d59c5f0910`) - file 2020-11-24 (commit `b7e09b97ac`)
 - 2026-01-11 - `problems/inheritance-problems/gene_mapping/three-point_test_cross-one_gene_distance.py:60` - `write_question` (commit `d59c5f0910`) - file 2020-11-24 (commit `b7e09b97ac`)
 - 2026-01-11 - `problems/inheritance-problems/gene_mapping/three-point_test_cross-find_interence.py:286` - `write_question` (commit `d59c5f0910`) - file 2023-11-06 (commit `265718c413`)
@@ -172,8 +172,6 @@ This file lists key functions that create quiz/homework questions (or question i
 - 2025-12-27 - `problems/laboratory-problems/dilution_factor_diluent_numeric.py:35` - `write_question` (commit `b43f71cb79`) - file 2021-04-28 (commit `17d8ae2513`)
 - 2025-12-27 - `problems/laboratory-problems/dilution_factor_aliquot_numeric.py:35` - `write_question` (commit `b43f71cb79`) - file 2021-04-28 (commit `17d8ae2513`)
 - 2025-12-27 - `problems/inheritance-problems/translocation/translocation_meiosis_table.py:122` - `write_question` (commit `b43f71cb79`) - file 2020-12-04 (commit `f02ddfe4fa`)
-- 2025-12-27 - `problems/inheritance-problems/pedigrees/write_pedigree_match.py:51` - `matchingQuestionSet` (commit `273a936da2`) - file 2021-10-31 (commit `cf9a40554c`)
-- 2025-12-27 - `problems/inheritance-problems/pedigrees/write_pedigree_choice.py:114` - `write_question_batch` (commit `b43f71cb79`) - file 2021-10-31 (commit `cf9a40554c`)
 - 2025-12-27 - `problems/inheritance-problems/monohybrid_genotype_statements.py:180` - `write_question_batch` (commit `b43f71cb79`) - file 2024-11-02 (commit `450cfb15cf`) - "Generates and writes questions to file."
 - 2025-12-27 - `problems/inheritance-problems/monohybrid_degrees_of_dominance.py:99` - `write_question` (commit `b43f71cb79`) - file 2025-08-07 (commit `e981f49c30`) - "Creates a formatted MC question about gene type interpretation."
 - 2025-12-27 - `problems/inheritance-problems/hardy_weinberg/hardy_weinberg_numeric.py:431` - `write_question` (commit `b43f71cb79`) - file 2020-12-10 (commit `4e17403d3b`)
@@ -216,7 +214,6 @@ This file lists key functions that create quiz/homework questions (or question i
 - 2025-12-26 - `problems/inheritance-problems/polyploid/polyploid-monoploid_v_haploid.py:62` - `write_question` (commit `cce2b62dbd`) - file 2020-12-04 (commit `f02ddfe4fa`)
 - 2025-12-26 - `problems/inheritance-problems/poisson_flies.py:183` - `write_question` (commit `00a00437f0`) - file 2020-10-22 (commit `722c8c7614`)
 - 2025-12-26 - `problems/inheritance-problems/poisson_flies.py:125` - `build_question` (commit `00a00437f0`) - file 2020-10-22 (commit `722c8c7614`)
-- 2025-12-26 - `problems/inheritance-problems/pedigrees/write_pedigree_match.py:109` - `write_question_batch` (commit `40a72dd38f`) - file 2021-10-31 (commit `cf9a40554c`)
 - 2025-12-26 - `problems/inheritance-problems/large_crosses/unique_gametes.py:22` - `write_question` (commit `511cfc02ae`) - file 2023-09-26 (commit `0a883d1f93`)
 - 2025-12-26 - `problems/inheritance-problems/large_crosses/unique_cross_phenotypes.py:84` - `write_question` (commit `511cfc02ae`) - file 2021-10-04 (commit `4f08846330`)
 - 2025-12-26 - `problems/inheritance-problems/large_crosses/unique_cross_genotypes.py:79` - `write_question` (commit `511cfc02ae`) - file 2021-10-04 (commit `36c4a232a3`)

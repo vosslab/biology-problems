@@ -35,6 +35,21 @@ saved bank. Use `--selftest` to save without opening; combine either option with
 to also export the Blackboard ZIP. No local web server is needed. If browser launch fails,
 open the printed URL manually.
 
+## Pedigree homework
+
+All three pedigree commands share biological, teaching, and layout acceptance. Choose authored
+YAML families or procedural families with `-f authored` or `-f procedural`:
+
+```bash
+source source_me.sh
+python3 problems/inheritance-problems/pedigrees/write_pedigree_choice.py -f procedural -d 5 --selftest
+python3 problems/inheritance-problems/pedigrees/write_pedigree_match_random.py -d 2 -B -I -r output_pedigree/review
+```
+
+`-s SEED` reproduces a verification run. `-r` saves editable SVGs and instructor-only evidence JSON.
+See [PEDIGREE_PIPELINE.md](../problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md) and
+[PEDIGREE_AUTHORING.md](../problems/inheritance-problems/pedigrees/PEDIGREE_AUTHORING.md).
+
 ## Genetic code translation
 
 [translate_genetic_code.py](../problems/molecular_biology-problems/translate_genetic_code.py)

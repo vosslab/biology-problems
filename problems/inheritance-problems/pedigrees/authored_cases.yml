@@ -1,0 +1,353 @@
+cases:
+- metadata:
+    expected_mode: autosomal recessive
+    source: Lecture 05C - relatives, carriers, and multiple founding families
+  people:
+  - {id: A, sex: male, affected: false, label: A}
+  - {id: B, sex: female, affected: false, label: B}
+  - {id: C, sex: male, affected: false, label: C}
+  - {id: D, sex: female, affected: false, label: D}
+  - {id: E, sex: female, affected: false, label: E}
+  - {id: F, sex: male, affected: false, label: F}
+  - {id: G, sex: male, affected: false, carrier: true, label: G}
+  - {id: H, sex: female, affected: false, carrier: true, label: H}
+  - {id: I, sex: female, affected: true, label: I}
+  - {id: J, sex: male, affected: false, label: J}
+  - {id: K, sex: female, affected: false, label: K}
+  - {id: L, sex: male, affected: true, label: L}
+  unions:
+  - {father: A, mother: B, children: [C, D], sibling_order: [C, D]}
+  - {father: C, mother: E, children: [G]}
+  - {father: F, mother: D, children: [H]}
+  - {father: G, mother: H, children: [I]}
+  - {father: J, mother: K, children: [L]}
+- metadata:
+    expected_mode: autosomal dominant
+    source: Lecture 05C teaching profiles
+  people:
+  - id: f
+    sex: male
+    affected: false
+  - id: m
+    sex: female
+    affected: true
+  - id: s
+    sex: male
+    affected: true
+  - id: d
+    sex: female
+    affected: true
+  - id: o
+    sex: female
+    affected: false
+  - id: w
+    sex: female
+    affected: false
+  - id: h
+    sex: male
+    affected: false
+  - id: a1
+    sex: female
+    affected: false
+  - id: a2
+    sex: male
+    affected: true
+  - id: a3
+    sex: female
+    affected: true
+  - id: b1
+    sex: male
+    affected: false
+  - id: b2
+    sex: female
+    affected: true
+  - id: b3
+    sex: male
+    affected: true
+  - id: b4
+    sex: female
+    affected: false
+  unions:
+  - father: f
+    mother: m
+    children:
+    - s
+    - d
+    - o
+  - father: s
+    mother: w
+    children:
+    - a1
+    - a2
+    - a3
+  - father: h
+    mother: d
+    children:
+    - b1
+    - b2
+    - b3
+    - b4
+- metadata:
+    expected_mode: autosomal recessive
+    source: Lecture 05C teaching profiles
+  people:
+  - id: f
+    sex: male
+    affected: false
+  - id: m
+    sex: female
+    affected: false
+  - id: s
+    sex: male
+    affected: true
+  - id: d
+    sex: female
+    affected: false
+  - id: o
+    sex: female
+    affected: true
+  - id: w
+    sex: female
+    affected: false
+  - id: h
+    sex: male
+    affected: false
+  - id: a1
+    sex: male
+    affected: true
+  - id: a2
+    sex: male
+    affected: false
+  - id: a3
+    sex: female
+    affected: false
+  - id: b1
+    sex: male
+    affected: false
+  - id: b2
+    sex: female
+    affected: true
+  - id: b3
+    sex: male
+    affected: false
+  - id: b4
+    sex: female
+    affected: false
+  unions:
+  - father: f
+    mother: m
+    children:
+    - s
+    - d
+    - o
+  - father: s
+    mother: w
+    children:
+    - a1
+    - a2
+    - a3
+  - father: h
+    mother: d
+    children:
+    - b1
+    - b2
+    - b3
+    - b4
+- metadata:
+    expected_mode: x-linked dominant
+    source: Lecture 05C teaching profiles
+  people:
+  - id: f
+    sex: male
+    affected: true
+  - id: m
+    sex: female
+    affected: false
+  - id: s
+    sex: male
+    affected: false
+  - id: d
+    sex: female
+    affected: true
+  - id: o
+    sex: female
+    affected: true
+  - id: w
+    sex: female
+    affected: false
+  - id: h
+    sex: male
+    affected: false
+  - id: a1
+    sex: female
+    affected: false
+  - id: a2
+    sex: male
+    affected: false
+  - id: a3
+    sex: female
+    affected: false
+  - id: b1
+    sex: male
+    affected: true
+  - id: b2
+    sex: female
+    affected: false
+  - id: b3
+    sex: male
+    affected: false
+  - id: b4
+    sex: female
+    affected: true
+  unions:
+  - father: f
+    mother: m
+    children:
+    - s
+    - d
+    - o
+  - father: s
+    mother: w
+    children:
+    - a1
+    - a2
+    - a3
+  - father: h
+    mother: d
+    children:
+    - b1
+    - b2
+    - b3
+    - b4
+- metadata:
+    expected_mode: x-linked recessive
+    source: Lecture 05C teaching profiles
+  people:
+  - id: f
+    sex: male
+    affected: true
+  - id: m
+    sex: female
+    affected: false
+  - id: s
+    sex: male
+    affected: false
+  - id: d
+    sex: female
+    affected: false
+  - id: o
+    sex: female
+    affected: false
+  - id: w
+    sex: female
+    affected: false
+  - id: h
+    sex: male
+    affected: false
+  - id: a1
+    sex: female
+    affected: false
+  - id: a2
+    sex: male
+    affected: false
+  - id: a3
+    sex: female
+    affected: false
+  - id: b1
+    sex: male
+    affected: true
+  - id: b2
+    sex: female
+    affected: false
+  - id: b3
+    sex: male
+    affected: false
+  - id: b4
+    sex: female
+    affected: false
+  unions:
+  - father: f
+    mother: m
+    children:
+    - s
+    - d
+    - o
+  - father: s
+    mother: w
+    children:
+    - a1
+    - a2
+    - a3
+  - father: h
+    mother: d
+    children:
+    - b1
+    - b2
+    - b3
+    - b4
+- metadata:
+    expected_mode: y-linked
+    source: Lecture 05C teaching profiles
+  people:
+  - id: f
+    sex: male
+    affected: true
+  - id: m
+    sex: female
+    affected: false
+  - id: s
+    sex: male
+    affected: true
+  - id: d
+    sex: female
+    affected: false
+  - id: o
+    sex: male
+    affected: true
+  - id: w
+    sex: female
+    affected: false
+  - id: h
+    sex: male
+    affected: false
+  - id: a1
+    sex: male
+    affected: true
+  - id: a2
+    sex: male
+    affected: true
+  - id: a3
+    sex: female
+    affected: false
+  - id: b1
+    sex: male
+    affected: false
+  - id: b2
+    sex: female
+    affected: false
+  - id: b3
+    sex: male
+    affected: false
+  - id: b4
+    sex: female
+    affected: false
+  unions:
+  - father: f
+    mother: m
+    children:
+    - s
+    - d
+    - o
+  - father: s
+    mother: w
+    children:
+    - a1
+    - a2
+    - a3
+  - father: h
+    mother: d
+    children:
+    - b1
+    - b2
+    - b3
+    - b4

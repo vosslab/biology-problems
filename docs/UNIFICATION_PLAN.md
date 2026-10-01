@@ -223,7 +223,9 @@ Notes:
 - Prefer keeping derived state out of `args` (reserved for CLI args); store prebuilt
   scenarios in a module-level cache like `SCENARIOS` initialized in `main()`.
 - For huge cartesian products, avoid building a massive `SCENARIOS` list; instead
-  compute mixed-radix indices from `N` (see the pedigree matching pattern).
+  compute mixed-radix indices from `N` for deterministic enumeration only. Pedigree homework now
+  samples independently accepted cases; see
+  [PEDIGREE_PIPELINE.md](../problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md).
 - Avoid "fully random batch writers" where `write_question_batch(...)` returns a list
   of random scenarios each attempt. This often repeats scenarios, skips others, and
   makes output coverage hard to reason about. Prefer a single-question writer with a
@@ -304,7 +306,6 @@ Avoid `random.choice(SCENARIOS)` since it can repeat scenarios and skip others.
 ### What Not To Unify
 - Helper/plot utilities and explicitly broken scripts should be removed from
   phase-1 upgrade lists and tracked separately (for example
-  `problems/inheritance-problems/pedigrees/pedigree_lib/code_templates.py`,
   `problems/inheritance-problems/population_logistic_map_chaos.py`).
 
 ## Legacy patterns to modernize

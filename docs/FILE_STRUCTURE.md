@@ -54,7 +54,9 @@ Domain-specific helper libraries live near the generators that use them.
 
 ### Pedigree libraries
 
-- `pedigree_lib`: pedigree graph parsing, rendering, and validation.
+- `pedigree_lib`: family model, inheritance engine, teaching policy, sources, layout, and renderers.
+- [authored_cases.yml](../problems/inheritance-problems/pedigrees/authored_cases.yml): editable families.
+- [PEDIGREE_AUTHORING.md](../problems/inheritance-problems/pedigrees/PEDIGREE_AUTHORING.md): people-and-unions authoring format.
 - [PEDIGREE_PIPELINE.md](../problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md): pedigree pipeline overview.
 
 ### Molecular biology and DNA profiling libraries

@@ -23,7 +23,9 @@ Outputs commonly include Blackboard text files (`bbq-*.txt`), validated Blackboa
 ### Domain libraries
 
 - Libraries live alongside generators in their domain folders, for example:
-  - `pedigree_lib`: pedigree parsing, rendering, and validation.
+  - `pedigree_lib`: family dataclasses, shared Mendelian simulation/compatibility, visible-evidence
+    teaching policy, YAML/procedural sources, and geometry shared by HTML/SVG renderers. See
+    [PEDIGREE_PIPELINE.md](../problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md).
   - `treelib`: phylogenetic tree generation helpers.
   - `PUBCHEM`: PubChem-backed molecule helpers and data.
 

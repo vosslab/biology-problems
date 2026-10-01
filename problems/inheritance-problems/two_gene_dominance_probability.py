@@ -132,7 +132,7 @@ def write_question(N: int, args: argparse.Namespace) -> object | None:
 	if N > len(SCENARIOS):
 		return None
 	model, first, second, kind, targets = SCENARIOS[N - 1]
-	text = "<p>In fictional mosaic plants, gene A affects petal color and gene B affects "
+	text = "<p>In fictional mosaic plants, gene <i>A</i> affects petal color and gene <i>B</i> affects "
 	text += "flower markings. The genes assort independently. The tables show each genotype's "
 	text += "appearance.</p>"
 	text += phenotype_tables(model)
