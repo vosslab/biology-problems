@@ -25,7 +25,7 @@ python3 problems/inheritance-problems/pedigrees/write_pattern_to_pedigree.py -d 
   within a selection question share a generation count.
 - All commands accept `-s SEED` for reproducibility. There are exactly three generator scripts.
 - `--affected-color darkred` (or `darkblue`, etc.) sets the affected-symbol fill; black is default.
-  `--random-color` instead selects one of 14 dark hues per question, shared by every diagram
+  `-C` / `--random-color` instead selects one of 14 dark hues per question, shared by every diagram
   in that question and its SVG review exports. It respects `--seed`. The two color options
   are mutually exclusive; outlines remain black and unaffected symbols remain white.
 - `-d` counts questions. Prebuilt-bank selection and the `-f`/`-y` source flags are retired.
@@ -89,8 +89,9 @@ seeded polished pool reproduced exactly, and all difficulty presets passed accep
 
 ## Structural workload presets
 
-Choose one of `--easy` (default), `--medium`, or `--rigorous` on any question command.
-`write_pedigree_to_pattern.py` also supports `--bonus` for one large pedigree. Bonus is rejected
+Choose one of `-E` / `--easy` (default), `-M` / `--medium`, or `-R` / `--rigorous`
+on any question command.
+`write_pedigree_to_pattern.py` also supports `-b` / `--bonus` for one large pedigree. Bonus is rejected
 for selection and matching, where it would multiply the reading burden across five diagrams.
 
 | Preset | MC generations / people | Matching generations / people |

@@ -41,19 +41,20 @@ def parse_arguments() -> argparse.Namespace:
 		'Difficulty combines family size, branching, and tracing depth; '
 		'all levels use the same inheritance-evidence checks.')
 	parser.add_argument('-s', '--seed', dest='seed', type=int, default=None,
-		help='Reproduce a verification run; normal runs use fresh randomness.')
+		help=argparse.SUPPRESS)
 	parser.add_argument('-r', '--review-dir', dest='review_dir', type=pathlib.Path, default=None,
-		help='Save editable SVGs and instructor evidence alongside the questions.')
+		help=argparse.SUPPRESS)
 	colors = parser.add_mutually_exclusive_group()
 	colors.add_argument('--affected-color', choices=AFFECTED_COLORS, default='black',
 		help='Fill affected individuals with this dark color (default: black).')
-	colors.add_argument('--random-color', action='store_true',
+	colors.add_argument('-C', '--random-color', dest='random_color', action='store_true',
 		help='Choose one random dark fill color per question, shared by all its pedigrees.')
 	difficulty = parser.add_mutually_exclusive_group()
 	for level in ('easy', 'medium', 'rigorous'):
-		difficulty.add_argument(f'--{level}', dest='difficulty', action='store_const', const=level,
+		difficulty.add_argument(f'-{level[0].upper()}', f'--{level}',
+			dest='difficulty', action='store_const', const=level,
 			help=f'Use {level} structural workload (default: easy).')
-	difficulty.add_argument('--bonus', dest='difficulty', action='store_const', const='bonus',
+	difficulty.add_argument('-b', '--bonus', dest='difficulty', action='store_const', const='bonus',
 		help='Use a 30-40-person family; only supported by write_pedigree_to_pattern.py.')
 	parser.set_defaults(difficulty='easy')
 	args = parser.parse_args()

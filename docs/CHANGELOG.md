@@ -4,6 +4,16 @@
 
 ### Changed
 
+- Hid `--hidden-terms` and `--noclick-div` from shared bptools CLI help while keeping
+  both options available with their existing defaults and behavior.
+
+- Hid development-only pedigree `--seed` and `--review-dir` options from normal CLI help;
+  both options and their short aliases remain available for verification and review exports.
+
+- Added single-letter aliases to all three pedigree question commands: `-E` for `--easy`,
+  `-M` for `--medium`, `-R` for `--rigorous`, `-b` for `--bonus`, and `-C` for
+  `--random-color`. Bonus remains limited to pedigree identification.
+
 - Enforced the rare-trait rule across pedigree generation and homework assessment:
   generation-I individuals and inherited descendants may be carriers, but unrelated spouses
   entering in generation II or later cannot be unaffected carriers. Affected spouses remain

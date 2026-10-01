@@ -98,13 +98,13 @@ def add_anticheat_args(parser):
 	"""
 	parser.add_argument(
 		'--hidden-terms', dest='hidden_terms', action='store_true',
-		help='Enable hidden terms for Blackboard Learn Original.'
+		help=argparse.SUPPRESS
 	)
 	parser.set_defaults(hidden_terms=_get_hidden_terms_default())
 
 	parser.add_argument(
 		'--noclick-div', dest='noclick_div', action='store_true',
-		help='Enable the no-click div wrapper for Blackboard Learn Original.'
+		help=argparse.SUPPRESS
 	)
 	parser.set_defaults(noclick_div=_get_no_click_default())
 	return parser
