@@ -4,6 +4,7 @@ crcmod
 importlib_metadata
 lxml
 matplotlib
+networkx<4
 numpy
 pillow
 playwright
