@@ -1,0 +1,572 @@
+## 2026-09-29
+
+### Added
+
+- Added `two_gene_dominance_probability.py` with 378 distinct one-cross scenarios in
+  fictional mosaic plants. Double incomplete dominance, double codominance, and mixed
+  pairs use phenotype tables and seven outcome prompts, including parent matches and
+  new combinations. Equivalent target events are not counted again under different wording.
+- Added `two_gene_selected_offspring_bonus.py` with 144 distinct two-generation bonus
+  scenarios in fictional lantern plants. Students select an offspring by brightness and
+  predict a second cross, accounting for the different probabilities of genotypes with
+  the same brightness. Equivalent gene swaps are removed from the scenario pool.
+- Both new generators use exact fractions, completed arithmetic in every choice, distinct
+  numerical answers, and shuffled scenario pools without repeats. Colored tables retain
+  written phenotype labels. Existing question generators remain in place.
+
+### Behavior or Interface Changes
+
+- Removed redundant "one-gene model" and "use a simple model" framing. Monohybrid
+  questions retain the direct statement that the counts match the expected ratio.
+- Lethal allele survival and monohybrid litter inference now build complete scenario
+  lists and shuffle once per run. Each setup appears at most once, independent of answer
+  choices or their order. Oversized requests report the available capacity and stop there:
+  currently 172 lethal-allele setups and 48 monohybrid setups. Explicit smaller `-x` limits
+  still apply; scenario lists never cycle.
+- Reworked lethal allele prompts into a paragraph explaining the genotype table followed by
+  a sentence describing the cross and offspring. Genotypes use matching text colors in the
+  table and prose; table color is limited to genotype cells and prose backgrounds are removed
+  in both generators. Removed the redundant calculation instruction. Cattle count questions
+  use 12 or 24 offspring across several matings; cat and mouse counts use smaller litters.
+- Simplified student-facing language in lethal allele survival and monohybrid litter
+  inference questions. Colored genotype keys, parent panels, and offspring symbols organize
+  the given information without displaying completed Punnett squares. Written labels,
+  counts, and different symbol shapes preserve meaning without color.
+- Lethal allele questions label the reference phenotype as "wildtype" alongside its
+  concrete description, such as "straight wings (wildtype)." Internal question-type and
+  probability names also use "wildtype".
+- Lethal allele count answers now supply the fraction, multiplication, and result. Added
+  count questions about surviving offspring, with the surviving total stated explicitly.
+  All offspring totals in both generators are multiples of 12, so halves, thirds, and
+  quarters give whole numbers. For example, a choice can read `1/3 x 96 = 32 offspring`.
+- Monohybrid questions identify the known parent's genotype directly, shuffle answer choices,
+  and state that the counts match the expected ratio in the simplified model. Removed
+  "large litter" wording from questions that also use plants and people.
+
+### Developer Tests and Notes
+
+- New plant-generator, existing scenario-pool, and shared bptools tests passed (37 checks).
+  An independent gamete enumeration verified all 522 new scenario answers; every displayed
+  calculation was checked, including distractors. Full-pool output repeated with seed 12345
+  and changed with seed 54321. Actual `-d 199` runs wrote 199 unique regular questions and
+  capped the bonus output at 144 unique questions with an explicit capacity message.
+  Desktop and 375-pixel browser previews passed; sample Blackboard image exports contained
+  valid XML and the expected table PNGs, which were visually inspected. Scoped pyflakes
+  and diff whitespace checks passed. No full repository suite or live LMS import was run.
+- Scenario-pool and shared bptools tests passed (33 checks). Actual `-d 199` runs wrote
+  172 and 48 questions with exactly that many distinct stems, reporting the capacity limit.
+  Full-pool outputs repeated exactly with seed 12345 and changed order with seed 54321.
+  Scoped pyflakes and diff whitespace checks passed. No full repository suite was run.
+- The revised table explanation and cross wording passed 113 temporary checks across all
+  lethal traits, crosses, and question types, including seed reproducibility. Together with
+  shared bptools tests, 140 checks passed. Refreshed previews fit a 375-pixel viewport and
+  the sample Blackboard package exported with genotype table colors preserved in PNGs.
+- Temporary verification covered every lethal trait, cross, and question type and every
+  monohybrid trait and parent pair: 137 checks passed. Each generator produced 100 identical
+  outputs on repeated runs with `random.seed(12345)` in the verification harness; the existing
+  CLI has no seed option. Shared collection retains anti-cheat defaults and choices shuffle.
+- Wording comparison: "If 80 conceptions occur" becomes "These parents produce 96 offspring
+  in total. Include those that do not survive." Local before/after HTML and BBQ samples are
+  saved in the ignored `output_inheritance_review/` directory for review.
+- Combined temporary checks and shared bptools tests passed (164 checks); scoped pyflakes
+  and diff whitespace checks passed. Browser previews fit a 375-pixel viewport. Both
+  generators exported local Blackboard ZIPs with their colored tables rendered as PNGs.
+  A live LMS import and the full repository test suite were not run.
+
+## 2026-09-28
+
+### Fixes
+
+- Removed the fixed boxplot table width. Block layout now fills the available
+  answer space up to 480px and shrinks in narrow containers, including plain
+  HTML intended for LMS rendering.
+
+- Replaced the boxplot mean's letter X with the multiplication sign (`&times;`)
+  in plots and question legends, using normal font weight for the marker.
+
+- Made boxplot outlines gray and drew black whisker caps above coincident box
+  edges. Added X markers for the actual mean in all four generators; raw-data
+  and cumulative-frequency questions calculate it from the observations, while
+  summary questions supply a mean from a compatible eight-observation dataset.
+
+- Rebuilt the shared HTML renderer for all four boxplot question generators with
+  precisely positioned whiskers, box edges, and a distinct median line. Removed
+  the erroneous mean marker, preserved coincident and fractional values, and
+  gave answer choices a common axis and compact size with readable tick labels.
+  Plots remain HTML tables for Blackboard image export; nonempty drawing elements
+  prevent XML serialization from breaking the exported plot layout.
+
+- Softened DNA profiling bands in [gellib.py](../problems/dna_profiling-problems/gellib.py)
+  for both HTML table questions and direct PNG gels. Rounded band cores retain
+  their exact positions while a local blue glow softens only the edges, leaving
+  labels and the gel background sharp.
+
+- Fixed Kaleidoscope unknown-band questions for Blackboard image export: the
+  fixed product-insert reference and simulated two-lane gel now render together
+  as one compact image with visible ladder and sample bands. The reference
+  positions stay independent of the gel run time, while all experimental gel
+  bands have softer edges than the insert bands. Distinct captions help
+  students compare the two sections.
+
+### Additions and New Features
+
+- Added `--mc` and `-c` to genetic code translation questions, retaining FiB as the default.
+  Word-based peptides use nearest-word distractors ranked by Hamming distance with randomized
+  ties; other lengths use single amino-acid substitutions. Choices preserve the initial M and
+  peptide length, and MC output filenames include the format and choice count.
+
+### Behavior or Interface Changes
+
+- Added blank per-gene working tables to the three large-cross generators, following
+  the classroom worksheet sequence: gametes, Punnett square size, offspring genotypes,
+  and offspring phenotypes. Gamete questions show only one individual and one counting
+  row; cross questions stop at the assessed outcome. Multiple-choice answers and
+  randomized parental genotypes remain in place, including Blackboard PNG export.
+  Names come from `data/student_names.txt` via `bptools.get_repo_data_path()`, sampled
+  randomly without replacement within each question and escaped for HTML text.
+
+- Reduced codon nucleotide lettering by 20% in the genetic code table so amino-acid
+  answers stand out while preserving header and answer text sizes.
+
+- Changed the genetic code table's large axis labels to pastel yellow (left), orange (top),
+  and red (right), preserving the nucleotide colors.
+
+- Made the colored codon tiles part of
+  [genetic_code.html](../problems/molecular_biology-problems/genetic_code.html) itself so direct
+  browser previews and generated questions share the same table markup.
+
+- Restored bordered nucleotide tiles with more visible background color inside the compact
+  genetic code table, increasing codon cell padding for readability.
+
+- Colored the genetic code table's U, C, A, and G row and column headers to match
+  the corresponding nucleotide foreground and background colors in its codons.
+
+- Compacted the genetic code reference table in
+  [translate_genetic_code.py](../problems/molecular_biology-problems/translate_genetic_code.py)
+  with content-sized columns, tighter cell padding, and compact colored codons at the existing
+  font size.
+
+- Consolidated the three RNA transcription executables into
+  [rna_transcribe.py](../problems/molecular_biology-problems/rna_transcribe.py) and
+  [rna_transcribe_lib.py](../problems/molecular_biology-problems/rna_transcribe_lib.py).
+  Select `-m/--mc` or `-f/--fib` and `-D/--directionless` or `-p/--prime`.
+  Output names include format, direction, and sequence length. Directionless questions omit
+  prime labels and explicitly ask for RNA bases aligned with the template; prime FiB retains
+  randomized coding/template strands. MC choices remain unique with one correct answer.
+
+- Blackboard export (`-B` / `--bbexport`) now writes `bez-<name>.zip` beside the BBQ
+  question file. Updated export tests, documentation, ignore rules, and cleanup
+  patterns; cleanup still recognizes older `blackboard_export_zip-*.zip` files.
+
+### Fixes
+
+- Deduplicated accepted translation answers so five-letter and shorter peptides pass
+  fill-in-the-blank validation when comma grouping leaves the answer unchanged.
+
+- Load QTI color helpers and public palette dictionaries on first use in `bptools`, keeping
+  generator help and ordinary question conversion free of color-wheel initialization.
+- Image export (`-B -I`) now renders every HTML table as a packaged PNG through
+  `qti_package_maker`, including metabolic pathways and unstyled data tables.
+  Nested tables are captured inside the outer table's image.
+- Image export (`-I`) now exits with the Python Playwright headless-browser install
+  command when its browser executable is missing, preserving the saved BBQ file.
+  Other rendering errors retain their original traceback.
+
+### Developer Tests and Notes
+
+- Genetic code MC: 11 focused translation/sequence tests passed, including RNA-to-answer
+  checks with flanking bases, word-only choices, nearest-neighbor selection, and short FiB
+  answer deduplication. MC Blackboard image export passed. Combined feature, lint, and
+  documentation-link checks reported 449 passed and three existing failures in untouched
+  documentation files with missing link targets.
+
+- Independently audited RNA answer correctness using direct DNA/RNA base pairing:
+  all 5,440 strand/direction calculations for every DNA sequence of lengths 2 through 5
+  passed. Recomputed 788 exported MC/FiB answer keys from visible strand tables across
+  both prime orientations, coding/template strands, and directionless mode; every key
+  was correct and each MC had exactly one biologically correct choice. Expanded permanent
+  regression coverage for independently varied question/choice directions and generated
+  prime FiB keys. No generator answer-logic correction was needed.
+- RNA transcription: 10 focused tests passed; all four format/direction combinations
+  produced five valid questions with equivalent short/long flags and repeatable fixed-seed
+  output. Shared bptools anti-cheat defaults remain active; human-readable answer previews
+  stay in instructor console output. Full pytest: 4,623 passed and eight unrelated failures
+  in dependency declarations, horse-figure indentation, existing documentation links, and
+  the YAML MC choice-count expectation. Before/after samples and seed logs are in ignored
+  `output_smoke/rna_transcribe/`.
+
+## 2026-09-25
+
+### Additions and New Features
+
+- The horse coat figure has five teaching coats: neither modeled pattern, frame-overo,
+  leopard-complex, fewspot, and Pintaloosa. Fewspot is a mostly white horse with a few
+  dark spots. The plain chestnut is labeled neither modeled pattern.
+- Every coat is masked to one union of the horse paths, and that same contour is the
+  only outer stroke. Coat colors no longer use a separate clip per body piece.
+- The frame shoulder patch is slightly less even. Placement, amount of white,
+  and the blur finish are unchanged. Pintaloosa reuses that marking.
+- The shared silhouette rounds the sharp step where the belly meets the groin.
+- The horse coat question shows `horse_coat_patterns.png`, the five-coat figure, at a
+  width that keeps those coats readable.
+
+- Matching YAML may list `distractor only` phrases. Which-one questions use them as extra wrong
+  answers. Matching questions ignore them. `exclude pairs: null` and `exclude_pairs: null` mean
+  no excluded pairs.
+- Added three biotechnology matching banks for model organisms: scientific names to common names
+  or groups, approximate generation times with exclusions for close-time pairs, and research
+  purposes, selection criteria, advantages, limitations, and industrial applications.
+- Expanded the model-organism ordering generator to sample a customizable 3 to 7 organisms from
+  a dictionary of seven ordered complexity categories, choosing a distinct category and then
+  one organism from that category; simplified the question stem.
+- Added a three-period biotechnology history matching bank with ancient, classical, and modern
+  milestones drawn from the LECT02 slides.
+- Matching banks must have fewer exclude pairs than prompts, so prompts stay short and
+  reusable instead of excluding every wording of a choice.
+- Added an intellectual-property matching bank. Trademark, copyleft, copyright, and patent
+  are the prompts, and each description is a choice used only once.
+- Matching questions can list `unused choices`, extra answers that are shown but never
+  correct. The transgenic-crop bank uses the agencies as prompts and the regulatory jobs as choices.
+- Added one clinical-trial matching bank for phases 0 through 4. The phases are the prompts.
+  Each phase has two choices: who is enrolled, and what the phase is trying to learn.
+- Added an inventions-versus-discoveries statement bank. Patentable choices are manufactured
+  or engineered items such as PCR, a drug, and transgenic algae. Non-patentable choices are
+  discoveries such as a natural gene, electricity, and the structure of DNA. Later additions
+  include obvious inventions such as the telephone and the microscope, and obvious discoveries
+  such as gravity, photosynthesis, and a new species of frog. Geographic finds are not used
+  as discoveries.
+- Added an environmental 16S rDNA survey ordering question. The six steps run from
+  sample collection through DNA extraction, PCR, sequencing, sequence clustering,
+  and bacterial relative-abundance graphs.
+- Added a protein-stability statement bank. Stable features are cross-strand disulfide bonds,
+  a high melting temperature, large hydrophobic core residues, and proline in place of glycine.
+  Each false statement is the opposite claim and shares a statement number with its true pair.
+  Later additions from the protein talking points cover PEST sequences, the N-terminal amino acid,
+  opposite charge at an alpha-helix end, and asparagine or glutamine at high temperature.
+- Added a proteomics-versus-metabolomics matching bank. Metabolomics covers chemical
+  fingerprints, the cell's physiological snapshot, and metabolite abundance. Proteomics covers
+  gene-product synthesis, accumulation, and degradation, without using the word protein in the clue.
+- Added a biotechnology matching bank for Latin phrases used to say where work is done,
+  including in silico, in situ, in vivo, in vitro, in natura, in ovo, in utero, and ex vivo.
+- Added a fermentation statement bank of ordinary grocery foods. True choices include
+  beer, Double India Pale Ale, wine, sourdough bread, cultured cottage cheese, Yakult, kefir,
+  sauerkraut, kimchi, miso, doenjang, gochujang, and kombucha. False choices are close
+  non-fermented foods such as fresh cabbage, edamame, tofu, grape juice, fresh mozzarella,
+  ricotta, and baking-soda bread. Pickles, cultured butter, chorizo, and prosciutto are
+  omitted because supermarket versions are not reliably fermented. Plain cottage cheese
+  and sriracha are also omitted: cottage cheese is sometimes only acidified, and
+  sriracha mash is often fermented.
+
+## 2026-09-23
+
+### Fixes and Maintenance
+
+- Expanded MC statement YAML validation to flag malformed statement IDs and warn when a
+  question form cannot supply the requested number of independent distractor groups.
+- Corrected malformed statement IDs found in the Gibbs free-energy and Franklin diffraction banks.
+
+### Behavior or Interface Changes
+
+- Added an optional `num_choices` YAML setting for per-bank defaults; `-c` overrides it, and the
+  generator still defaults to five choices when the setting is absent.
+- Set four-choice defaults for the enzyme-inhibitor, G-U wobble, mRNA-processing, and
+  nucleotide-components banks, which have three usable distractor groups per item.
+
+- Labeled horse genotypes by coat pattern and made the illustration and offspring table render
+  cleanly in ordinary HTML layouts.
+- Added a short hint that directs students to use lethal-white and fewspot counts in sequence.
+
+## 2026-09-22
+
+### Additions and New Features
+
+- Added a randomized horse coat-pattern genotype-inference question with six curated crosses,
+  offspring counts, and an editable three-coat SVG with a Blackboard-compatible PNG rendering.
+- Renamed the horse question generator to `horse_coat_pattern_inference.py`; kept `horses.py` as a
+  compatibility launcher.
+- Added `-c` / `--num-choices` to the multiple-choice statements BBQ generator for an explicit
+  total answer count, including the correct choice.
+- Added the shared five-choice default and `-c` / `--num-choices` handling to the complementary
+  sequences multiple-choice generator.
+- Connected `chargaff_dna_percent.py` to its existing `--num-choices` option, supporting two to six
+  answer choices including the correct answer.
+- Rendered restriction-enzyme overhang sequence choices in a monospace font.
+
+### Behavior or Interface Changes
+
+- Explicit choice counts require enough distinct distractor groups; questions without enough groups
+  are skipped. The default is five total choices, including the correct choice.
+
+### Developer Tests and Notes
+
+- Added focused checks for requested choice counts, unavailable distractors, and CLI validation.
+- Added coverage for complementary-sequence MC choice counts in both direction modes.
+- Added coverage for the Chargaff generator's requested and default choice counts.
+
+## 2026-09-20
+
+### Additions and New Features
+
+- Added shared `-I` / `--html-to-image` for opt-in `-B` Blackboard exports, converting supported
+  HTML drawings into packaged PNGs while retaining normal BBQ output and export-failure safeguards.
+- Added `circular_digest.py`, a randomized circular-DNA restriction digest generator with an
+  orange rounded-rectangle plasmid map, a 0 kb origin occupied by the non-selected enzyme, and
+  colored enzyme labels inside the DNA path for image-exported Blackboard pools.
+- Added `digest_lib.py` for common restriction-digest argument parsing and distinct enzyme-label
+  selection, plus `dna_render_lib.py` for shared inline-CSS DNA-map primitives.
+
+### Behavior or Interface Changes
+
+- Made `-I` reject use without `-B` / `--bbexport`, and routed every legacy direct writer and
+  YAML-to-BBQ converter through the shared image-export option.
+- Made `-d` request accepted questions from single-question generators, with bounded redraws for
+  rejected or duplicate attempts; batch generators retain their existing attempt-based behavior.
+- Made every linear-digest difficulty default valid for either the finite-fragment or longer-strand
+  presentation, preserving the minimum two selectable gel-band lengths.
+- Shortened the generated linear-digest filename component from `length_` to `len_`.
+- Made randomized 16 kb rigorous linear-digest maps deliberately produce co-migrating equal-length
+  fragments, while retaining the single-enzyme, two-enzyme-label MA band-length model.
+- Added `-E`, `-M`, and `-R` aliases for the standard easy, medium, and rigorous difficulty flags.
+- Moved the restriction-enzyme source paragraph to the opening of linear and circular
+  digest questions.
+- Spread restriction-enzyme map colors to navy `#0067cc` and teal `#00775f`.
+- Restored a dashed orange DNA continuation past both ends of linear strand maps,
+  and counted strand outside pieces only for the selected enzyme.
+
+### Fixes and Maintenance
+
+- Rebuilt both restriction maps around the shared rendering primitives: linear maps now align
+  colored labels and 3 px by 16 px ticks to black coordinates, while circular maps use a thick
+  rounded rectangle with outside coordinates and inside enzyme labels.
+- Lengthened restriction-map ticks from 8 px to 16 px so they extend past the DNA stroke;
+  thickness stays 3 px.
+- Gave enzyme-labeled ticks 4 extra pixels toward the label, leaving unlabeled coordinate
+  ticks at the shared 16 px length.
+- Mapped circular-digest coordinates onto the complete rounded-rectangle centerline, with a
+  tick and outside kb label at every integer, continuous corner normals, and enzyme names
+  only at restriction sites whose true coordinates fall on straight edges.
+- Tightened top and bottom circular-map labels toward their ticks by offsetting along the
+  local normal by tick length plus the label's half-size, instead of one gap for every side.
+- Kept corner integer-kb marks as ordinary black coordinate ticks, and required enzyme sites
+  to sit on straight edges with label clearance from the rounded corners.
+- Restored the non-selected enzyme site at 0 kb so the origin is a real restriction mark
+  for the distractor enzyme, not a cut for the enzyme in the question.
+- Lowered the circular-digest medium and rigorous presets to 2 sites per enzyme so labeled
+  coordinate ticks still outnumber restriction annotations.
+- Sampled circular restriction sites like the linear digest, keeping corners enzyme-free and
+  0 kb as a distractor site, preferring spread maps whose two enzymes yield different bands.
+- Tightened the circular and linear map canvases around the labeled diagram so less empty
+  space sits between the figure and the following question text.
+- Colored restriction-enzyme names in the question stem with the same map colors used on
+  the DNA diagrams.
+- Added a short source paragraph for the two restriction enzymes on linear and circular
+  digest questions, matching the overhang-question context style.
+- Added [CUT_PLACEMENT.md](../problems/molecular_biology-problems/restriction_enzymes/CUT_PLACEMENT.md)
+  as the teaching contract for restriction-digest maps: place, evaluate, then
+  search, with easy, medium, and rigorous band-set targets for linear and
+  circular questions.
+- Made linear medium default to 3 selected sites on a 12 kb fragment, circular
+  medium and rigorous default to 3 selected sites with 2 distractor sites, and
+  required `shared_correct_fraction <= 0.5` plus selected-enzyme co-migration
+  only at rigorous.
+- Gave graphical DNA strokes and ticks non-empty `&nbsp;` content and a relative inner canvas
+  div so Blackboard HTML-to-image export does not serialize empty spans as self-closing XML
+  that Chromium then drops.
+- Recorded Blackboard HTML simplicity guidance in [HUMAN_GUIDANCE.md](HUMAN_GUIDANCE.md).
+- Added a separate restriction-enzyme idea note for future diagnostic-digest, inference, RFLP,
+  co-migration, and map-validation question families without changing the linear MA generator.
+- Synchronized shared style guides, tests, and repository support files from the starter template.
+
+### Developer Tests and Notes
+
+- Added focused coverage for parsing, invalid export combinations, and the qti-package-maker
+  `html_to_image` option handoff.
+- Added parser coverage for the `-E`, `-M`, and `-R` difficulty aliases, and dropped the linear
+  table-cell-count test after that grid renderer was replaced.
+- Added circular-map checks that 0 kb is top-center, integer kb use the full centerline
+  perimeter, and enzyme-eligible coordinates are straight-edge integers.
+
+## 2026-09-17
+
+### Fixes and Maintenance
+
+- Preserved whitespace immediately before removed outer `</strong>` wrappers around strict color
+  spans so PGML replacement output does not join adjacent words.
+
+## 2026-09-09
+
+### Additions and New Features
+
+- Added shared `-B` / `--bbexport` generation of validated Blackboard pool ZIPs through the
+  `qti_package_maker` library while retaining the source BBQ text, with explicit rejection of item
+  types the export engine cannot write.
+
+### Behavior or Interface Changes
+
+- Made hidden decoy terms and the no-click wrapper opt-in for Blackboard Learn Original so normal
+  generator output avoids those two Ultra-incompatible anti-cheat transformations by default.
+- Kept only the positive `--hidden-terms`, `--noclick-div`, and `--bbexport` opt-ins; their former
+  negative flags only restated the new defaults.
+- Routed seven batch generators, three YAML-to-BBQ converters, and the older four-point gene-map
+  generator through the shared export-aware writer.
+
+### Fixes and Maintenance
+
+- Synchronized shared style guides, tests, and repository support files from the starter template.
+- Ignored generated `blackboard_export_zip-*.zip` artifacts alongside existing BBQ and QTI output.
+- Updated the README, architecture, and file-structure descriptions for Blackboard pool ZIP output,
+  and gave the known-incomplete four-point generator a typed `main()` entrypoint without changing
+  its question algorithm.
+
+### Developer Tests and Notes
+
+- Added behavioral coverage for shared parser opt-ins, generator-level anti-cheat locks,
+  Ultra-compatible default markup, the export handoff, and failure preservation for unsupported
+  ORDER questions; package-structure validation remains owned by `qti-package-maker`.
+- Verified standard single-question, batch, and YAML generators produce retained BBQ text plus
+  readable Blackboard exports containing their expected pool data; the full suite passes 4,526
+  tests under Python 3.12.
+
+## 2026-08-27
+
+### Fixes and Maintenance
+
+- Synchronized shared style guides, tests, and repository support files from the starter template.
+
+## 2026-08-25
+
+### Fixes and Maintenance
+
+- Removed named Arial font overrides from generated questions, review pages, debug pages, and
+  canvas labels so normal text inherits the host site's typography; replaced the DNA gel image's
+  Arial Narrow candidate with the existing PT Sans fallback, removed generic sans-serif overrides
+  from ordinary HTML and inline SVG labels, and normalized intentional fixed-width content from
+  Courier-first stacks to generic monospace.
+- Removed clock-dependent, inventory, prompt-copy, and HTML-fragment smoke tests that did not meet
+  the permanent pytest checklist; moved the repo-wide Bandit scan to a direct maintainer script so
+  the fast pytest lane no longer launches an external security subprocess.
+
+## 2026-08-19
+
+### Fixes and Maintenance
+
+- Replaced removed `numpy.chararray` uses in the shared phylogenetic-tree renderer with modern
+  NumPy arrays, restoring gene-tree question generation under NumPy 2.5.
+- Added required `topic` metadata to five multiple-choice statement banks, restoring their PGML
+  conversions.
+
+## 2026-07-15
+
+### Additions and New Features
+
+- Added a minimal WeBWorK multiple-choice example asking for a favorite color.
+
+## 2026-07-14
+
+### Behavior or Interface Changes
+
+- Rebuilt `README.md` as a newcomer-focused landing page with a representative generated question,
+  outcome-oriented capabilities, a complete first-run path, curated documentation routes, setup
+  limitations, current catalog status, and the repository's code and educational-content licenses.
+- Linked the public Biology Problems OER collection, the published `qti-package-maker` package, and
+  its development repository from the landing page, and added a repository clone command to Quick
+  start.
+- Made the published `qti-package-maker` distribution the primary install path, removed its import
+  name from `pip_requirements.txt` so it can be released independently, retained sibling checkout
+  guidance for joint development, and kept the personal environment helper unchanged.
+- Clarified that `biology-problems` runs directly from a source checkout rather than as an installed
+  Python package, and removed stale `pyproject.toml` and PyPI-packaging references from the active
+  architecture and file-structure documentation.
+
+## 2026-07-12
+
+### Behavior or Interface Changes
+
+- Re-audited the full 178-generator and 98-YAML topic-classification inventory
+  under a broad multi-subject policy. Each concrete task variant may appear in
+  every applicable subject but is limited to one chapter per subject.
+- Added validation that preserves multi-subject assignment rows, verifies all
+  subject/chapter routes, rejects same-subject chapter duplication, detects
+  exact duplicate rows, and requires complete frozen-inventory coverage.
+
+### Fixes and Maintenance
+
+- Prevented the lipid chemical-formula generator from emitting duplicate rendered
+  answer choices when distinct molecule names share a formula, and repaired an
+  unclosed list item in the pentapeptide Wordle question HTML.
+- Removed a duplicated ANOVA hypothesis-pair distractor and added rendered-choice
+  uniqueness checks across all hypothesis statement question variants.
+- Added non-empty topics to the potential-versus-kinetic-energy and membrane
+  diffusion statement banks so their PGML generators pass metadata validation.
+- Reworded lethal-allele ratio choices to avoid downstream colon-delimiter
+  collisions, and replaced the gene-therapy matching bank's malformed named
+  colors with quoted XML-safe colors from the WCAG-audited repository palette;
+  removed broad replacements that split `genetic` and `adenovirus`.
+- Expanded lethal-allele questions with heterozygote-by-normal crosses so
+  lethal fractions, survival fractions, counts, and living phenotype ratios
+  vary across genetically valid scenarios.
+- Reworked lethal-allele variation around explicit Punnett probabilities,
+  deriving twelve question forms for conception outcomes, conditional survivor
+  fractions, counts, and both phenotype-ratio directions.
+- Replaced malformed named colors in the population-genetics matching bank
+  with quoted XML-safe colors from the WCAG-audited repository palette, and
+  replaced an unrelated Theranos description with valid random-mating definitions.
+- Audited all matching-set YAML colors against white at WCAG AA, darkened 23
+  failing hex occurrences across seven banks, and replaced remaining named CSS
+  colors in six banks with documented values from the audited palette.
+- Stopped the DNA profiling father and killer generators from writing unused
+  per-question diagnostic PNG files into the current working directory.
+- Added explicit uppercase color-name comments to all 486 previously
+  uncommented color replacement rules across 39 matching-set YAML banks.
+- Prevented rare chi-square division-by-zero scenarios by redrawing zero-count
+  observed classes, and constrained DNA gel calibration curves so every marker
+  in the declared range has a positive migration distance; each gel question
+  now receives its own calibration curve so high-volume runs meet their target.
+- Bounded chi-square observed-count redraws at 1,000 attempts with an explicit
+  failure instead of relying on an unbounded retry loop.
+- Curated 432 final task assignments, filled all 49 previously unassigned
+  sources, corrected several existing chapter placements, and documented 189
+  changes plus all resolved chapter ambiguities without running a new automated
+  classifier.
+- Rotated older changelog day blocks into `docs/CHANGELOG-2026-06a.md`, keeping
+  the two newest dated blocks active under the repository rotation policy.
+
+### Developer Tests and Notes
+
+- Added focused assignment-loader and task-validation tests and recorded the
+  frozen inventory, chapter routing, curation changes, ambiguity decisions, and
+  final coverage report under `topic_classifier/`.
+- Added `docs/GENERATOR_SCENARIO_LIMITS.md` to distinguish intentional finite
+  question banks from duplicate-attempt shortfalls and stale generated output.
+- Enumerated and shuffled hypothesis scenario, tail, and answer-order combinations
+  before generation, and expanded Kaleidoscope mapping into six shuffled four- and
+  five-band scenarios while allowing mixed-mode retries to advance past duplicates.
+- Added a shipped restriction-enzyme web-data cache with full labeled REBASE fields
+  and automatic per-enzyme six-month refreshes so overhang generators avoid hundreds
+  of repeated HTTP requests during normal generation.
+- Populated the cache with all 280 eligible enzymes, resolved it through
+  `bptools.get_repo_data_path()`, and measured warm-cache generation at about
+  2.7 seconds for 191 overhang-sequence or 280 overhang-type questions.
+- Made the unordered two-gene tetrad distance validations use identical arithmetic
+  ordering, preventing valid boundary cases from failing because of floating-point
+  representation differences around the existing 0.04 tolerance.
+- Replaced rigorous gene-tree matching's repeated ranking of roughly 1.3 million
+  trees with bounded random samples of 1,024 unique labeled trees, and selected
+  random taxa orders directly instead of enumerating all 40,320 permutations.
+  This preserves the full topology and label space while removing the main
+  per-question performance bottlenecks.
+- Removed the artificial two-question cap from the DNA melting-temperature
+  generator. Each question now randomly selects the highest- or lowest-melting
+  concept and generates fresh fixed-length sequences with clearly separated GC
+  contents.
+- Grouped the overhang generators and restriction-enzyme library under
+  `problems/molecular_biology-problems/restriction_enzymes/`.
+
+## 2026-07-03
+
+### Additions and New Features
+
+- Added `docs/COLOR_CONTRAST_ACCESSIBILITY.md` (generic WCAG contrast method) and
+  `docs/PALETTE_CONTRAST_AUDIT.md` (14-color rainbow palette, other problem colors, non-palette
+  replacements, and a YAML custom-color note), with ratios measured via
+  `tools/contrast_calculator.py`.

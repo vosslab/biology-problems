@@ -2,7 +2,8 @@
 
 Author relationships and visible observations in YAML. Both authored and procedural families pass
 the acceptance rules in [PEDIGREE_PIPELINE.md](PEDIGREE_PIPELINE.md). Edit
-[authored_cases.yml](authored_cases.yml) or supply your own bank with `-y`.
+[authored_cases.yml](authored_cases.yml) for library demonstrations and regression fixtures.
+Homework commands use randomly generated families exclusively.
 
 ## Small example
 
@@ -31,6 +32,8 @@ cases:
 
 - `people` is a list, with a unique string `id`, `sex` (`male` or `female`), and boolean `affected`.
 - Optional `carrier: true` means a known unaffected heterozygote. Absence does not mean noncarrier.
+  This is a library demonstration feature: student commands hide carrier status and re-evaluate
+  the answer. They exclude disconnected families and cases unclear without carrier disclosure.
 - Optional `label` is plain text, up to 12 characters, attached permanently to the person ID.
 - `unions` contains `father`, `mother`, and a list of child IDs. An empty child list is permitted
   for diagrams, but cannot supply transmission evidence.
@@ -49,12 +52,12 @@ The inheritance engine accepts `affected: null` for an unknown phenotype and ren
 The current homework profiles require complete phenotype observations and reject such cases.
 No genotype, generation, grid character, or drawing coordinate belongs in the YAML format.
 
-## Review a bank
+## Library fixtures only
 
-```bash
-source source_me.sh
-python3 problems/inheritance-problems/pedigrees/write_pedigree_choice.py -y my_bank.yml -d 5 -s 351 -r output_pedigree/review --selftest
-```
+Homework generators now use random families exclusively. Authored YAML remains available
+for library tests and demonstrations through `questions.authored_cases(path)`; there is no
+authored-bank command or source-selection flag. Render accepted library cases with
+`svg_output.render_svg(case.diagram, case.case.observations)` for editable review.
 
 Loading validates every authored case, including ones not randomly selected for that run. A malformed,
 weak, tied, biologically unsupported, or unreadable case fails explicitly with its metadata and reasons.

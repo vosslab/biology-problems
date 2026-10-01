@@ -3,7 +3,6 @@
 # Standard Library
 import random
 import pathlib
-import itertools
 import dataclasses
 
 # PIP3 modules
@@ -68,55 +67,136 @@ def load_cases(path: str | pathlib.Path) -> list[Case]:
 
 
 #============================================
+def _union_plan(rng: random.Random, seeds: int, count: int, generations: int,
+		children: tuple[int, int], roots: tuple[int, int], max_people: int) -> tuple | None:
+	"""Plan unions using child-slot references, reserving room before creating people."""
+	parents = [(None, None) for _ in range(seeds)]
+	ranks = [0] * seeds
+	used = [0] * seeds
+	# Adjacent founding families join through distinct children in generation two.
+	for index in range(seeds - 1):
+		pair = [(index, used[index]), (index + 1, used[index + 1])]
+		used[index] += 1
+		used[index + 1] += 1
+		rng.shuffle(pair)
+		parents.append(tuple(pair))
+		ranks.append(1)
+		used.append(0)
+
+	def minimum_sizes() -> list[int]:
+		result = [max(used[i], roots[0] if i < seeds else children[0])
+			for i in range(len(parents))]
+		return result
+
+	if any(used[i] > roots[1] for i in range(seeds)):
+		return None
+
+	def grow() -> bool:
+		remaining = count - len(parents)
+		minimum = count + 1 + sum(minimum_sizes()) + remaining * children[0]
+		if minimum > max_people:
+			return False
+		if remaining == 0:
+			complete = max(ranks) == generations - 2
+			return complete
+		needed = generations - 2 - max(ranks)
+		candidates = [i for i, rank in enumerate(ranks)
+			if rank < generations - 2 and used[i] < (roots[1] if i < seeds else children[1])
+			and (remaining > needed or rank == max(ranks))]
+		rng.shuffle(candidates)
+		for index in candidates:
+			pair = [(index, used[index]), None]
+			rng.shuffle(pair)
+			used[index] += 1
+			parents.append(tuple(pair))
+			ranks.append(ranks[index] + 1)
+			used.append(0)
+			if grow():
+				return True
+			used.pop()
+			ranks.pop()
+			parents.pop()
+			used[index] -= 1
+		return False
+
+	if not grow():
+		return None
+	result = (parents, minimum_sizes())
+	return result
+
+
+#============================================
 def procedural_family(rng: random.Random, min_people: int = 11,
-		max_people: int = 16) -> family_model.Family:
-	"""Choose feasible sibships, then grow branches from unmarried descendants.
+		max_people: int = 16, generations: int = 4, *, seed_couples: int = 1,
+		couples: tuple[int, int] | None = None, children: tuple[int, int] = (1, 4),
+		root_children: tuple[int, int] | None = None) -> family_model.Family:
+	"""Construct one connected family within inclusive structural bounds.
 
-	Args:
-		rng: Shared generator for topology and sex choices.
-		min_people: Inclusive minimum size.
-		max_people: Inclusive maximum size.
-
-	Returns:
-		Family with three or four generations; no people are truncated to meet bounds.
-
-	Raises:
-		ValueError: No supported topology fits the requested size bounds.
+	Seed couples start in generation one; their children join the founding families
+	without consanguinity. Total couples includes seed, joining, and marrying-in
+	unions. Child bounds apply per union, with separate bounds for seed unions.
+	Relationships and feasible sibship sizes are planned before people are created.
+	Infeasible combinations raise ValueError; no relatives are pruned afterward.
 	"""
-	# Each descendant union adds one spouse and its children. Choose all sizes
-	# before adding people, so even narrow bounds never require pruning relatives.
-	configurations = [sizes for branches in range(1, 4)
-		for sizes in itertools.product(range(1, 5), repeat=branches + 1)
-		if sizes[0] >= 2 and min_people <= 2 + branches + sum(sizes) <= max_people]
-	if not configurations:
-		raise ValueError('Size bounds cannot hold a supported teaching family')
-	sizes = rng.choice(configurations)
-	people = [family_model.Person('p1', 'male'), family_model.Person('p2', 'female')]
-	unions = []
+	if generations not in (3, 4, 5):
+		raise ValueError('Generation count must be three, four, or five')
+	if type(seed_couples) is not int or seed_couples < 1:
+		raise ValueError('Seed couple count must be a positive integer')
+	if root_children is None:
+		root_children = (2, 6 if generations == 3 else 4)
+	minimum_couples = generations - 1 if seed_couples == 1 else 2 * seed_couples + generations - 4
+	if couples is None:
+		couples = (minimum_couples, max(minimum_couples, 5,
+			1 + (max_people - 2 - root_children[1] + 4) // 5))
+	for bounds in ((min_people, max_people), couples, children, root_children):
+		if len(bounds) != 2 or any(type(n) is not int for n in bounds) or not 1 <= bounds[0] <= bounds[1]:
+			raise ValueError('Construction bounds must be ordered positive integer pairs')
+	counts = [n for n in range(max(couples[0], minimum_couples), couples[1] + 1)
+		if n + 1 + seed_couples * root_children[0] + (n - seed_couples) * children[0] <= max_people
+		and n + 1 + seed_couples * root_children[1] + (n - seed_couples) * children[1] >= min_people]
+	rng.shuffle(counts)
+	plan = None
+	for count in counts:
+		plan = _union_plan(rng, seed_couples, count, generations, children, root_children, max_people)
+		if plan is not None:
+			break
+	if plan is None:
+		raise ValueError('Size bounds and couple/child counts cannot hold a supported teaching family')
+	parents, sizes = plan
+	upper = [root_children[1] if i < seed_couples else children[1] for i in range(len(parents))]
+	# Joining seed families uses two existing children instead of a new spouse.
+	# With seeds-1 joining unions, total people = total couples + 1 + all children.
+	remaining = rng.randint(max(sum(sizes), min_people - len(parents) - 1),
+		min(sum(upper), max_people - len(parents) - 1)) - sum(sizes)
+	order = list(range(len(sizes)))
+	rng.shuffle(order)
+	for position, index in enumerate(order):
+		capacity_after = sum(upper[i] - sizes[i] for i in order[position + 1:])
+		added = rng.randint(max(0, remaining - capacity_after), min(remaining, upper[index] - sizes[index]))
+		sizes[index] += added
+		remaining -= added
 
-	def add_person(sex: str | None = None) -> str:
+	# Sex follows the planned parental role for marrying children; all others are random.
+	sex_by_slot = {slot: sex for pair in parents
+		for slot, sex in zip(pair, ('male', 'female')) if slot is not None}
+	people, unions, slots = [], [], {}
+
+	def add_person(sex: str) -> str:
 		pid = f'p{len(people) + 1}'
-		if sex is None:
-			sex = rng.choice(('male', 'female'))
 		people.append(family_model.Person(pid, sex))
 		return pid
 
-	children = tuple(add_person() for _ in range(sizes[0]))
-	unions.append(family_model.Union('p1', 'p2', children))
-	available = list(children)
-	ranks = {child: 1 for child in children}
-	for offspring_count in sizes[1:]:
-		child = rng.choice(available)
-		available.remove(child)
-		sex = next(person.sex for person in people if person.id == child)
-		spouse = add_person('female' if sex == 'male' else 'male')
-		father, mother = (child, spouse) if sex == 'male' else (spouse, child)
-		offspring = tuple(add_person() for _ in range(offspring_count))
-		unions.append(family_model.Union(father, mother, offspring))
-		for pid in offspring:
-			ranks[pid] = ranks[child] + 1
-			if ranks[pid] < 3:
-				available.append(pid)
+	for index, pair in enumerate(parents):
+		father, mother = [slots[slot] if slot is not None else add_person(sex)
+			for slot, sex in zip(pair, ('male', 'female'))]
+		offspring = []
+		for child in range(sizes[index]):
+			slot = (index, child)
+			sex = sex_by_slot[slot] if slot in sex_by_slot else rng.choice(('male', 'female'))
+			slots[slot] = add_person(sex)
+			offspring.append(slots[slot])
+		rng.shuffle(offspring)
+		unions.append(family_model.Union(father, mother, tuple(offspring)))
 	result = family_model.Family(tuple(people), tuple(unions))
 	result.generations()
 	return result
@@ -124,7 +204,9 @@ def procedural_family(rng: random.Random, min_people: int = 11,
 
 #============================================
 def simulate_case(mode: str, rng: random.Random, min_people: int = 11,
-		max_people: int = 16, show_carriers: bool = False) -> Case:
+		max_people: int = 16, show_carriers: bool = False, generations: int = 4, *,
+		seed_couples: int = 1, couples: tuple[int, int] | None = None,
+		children: tuple[int, int] = (1, 4), root_children: tuple[int, int] | None = None) -> Case:
 	"""Enrich informative founder crosses, then transmit genotypes normally.
 
 	Args:
@@ -132,7 +214,12 @@ def simulate_case(mode: str, rng: random.Random, min_people: int = 11,
 		rng: Shared generator for family and genotype choices.
 		min_people: Inclusive minimum size.
 		max_people: Inclusive maximum size.
+		generations: Required depth, from three to five.
 		show_carriers: Reveal unaffected heterozygotes when true.
+		seed_couples: Number of founding couples in generation one.
+		couples: Inclusive bounds on total unions, including joining unions.
+		children: Inclusive offspring bounds for non-seed unions.
+		root_children: Inclusive offspring bounds for seed unions; None uses depth defaults.
 
 	Returns:
 		Simulated case awaiting biological, teaching, and layout acceptance.
@@ -142,7 +229,8 @@ def simulate_case(mode: str, rng: random.Random, min_people: int = 11,
 	"""
 	if mode not in inheritance.MODES:
 		raise ValueError(f'Unknown mode: {mode}')
-	family = procedural_family(rng, min_people, max_people)
+	family = procedural_family(rng, min_people, max_people, generations, seed_couples=seed_couples,
+		couples=couples, children=children, root_children=root_children)
 	parents = family.parentage()
 	founders = {}
 	for person in family.people:
@@ -152,7 +240,8 @@ def simulate_case(mode: str, rng: random.Random, min_people: int = 11,
 	# reach grandchildren, without prescribing their sexes or transmitted alleles.
 	parent_ids = {pid for union in family.unions for pid in (union.father, union.mother)}
 	crosses = [union for union in family.unions
-		if any(pid in parent_ids for pid in union.children)]
+		if any(pid in parent_ids for pid in union.children)
+		and (union.father in founders or union.mother in founders)]
 	if mode in ('x-linked dominant', 'x-linked recessive', 'y-linked'):
 		crosses = [union for union in crosses if union.father in founders]
 	cross = rng.choice(crosses)

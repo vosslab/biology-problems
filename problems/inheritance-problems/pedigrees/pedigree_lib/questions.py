@@ -11,6 +11,7 @@ import pedigree_lib.layout as layout
 import pedigree_lib.policy as policy
 import pedigree_lib.sources as sources
 import pedigree_lib.inheritance as inheritance
+import pedigree_lib.graphs as graphs
 
 
 #============================================
@@ -54,9 +55,11 @@ def evaluate(case: sources.Case, mirror: bool = False) -> tuple[AcceptedCase | N
 
 
 #============================================
-def generate_case(mode: str, rng: random.Random, max_attempts: int = 500,
+def generate_case(mode: str, rng: random.Random, max_attempts: int = 5000,
 		min_people: int = 11, max_people: int = 16,
-		show_carriers: bool = False) -> AcceptedCase:
+		show_carriers: bool = False, generations: int = 4, *, seed_couples: int = 1,
+		couples: tuple[int, int] | None = None, children: tuple[int, int] = (1, 4),
+		root_children: tuple[int, int] | None = None) -> AcceptedCase:
 	"""Search a bounded number of candidates for the requested teaching answer.
 
 	Args:
@@ -66,6 +69,11 @@ def generate_case(mode: str, rng: random.Random, max_attempts: int = 500,
 		min_people: Inclusive minimum family size.
 		max_people: Inclusive maximum family size.
 		show_carriers: Reveal unaffected heterozygotes when true.
+		generations: Required family depth, from three to five.
+		seed_couples: Number of founding couples in generation one.
+		couples: Inclusive total-couple bounds; None uses constructor defaults.
+		children: Inclusive offspring bounds for non-seed unions.
+		root_children: Inclusive offspring bounds for seed unions; None uses depth defaults.
 
 	Returns:
 		Accepted case with attempt count and prior rejection counts.
@@ -76,7 +84,8 @@ def generate_case(mode: str, rng: random.Random, max_attempts: int = 500,
 	"""
 	rejections = collections.Counter()
 	for attempt in range(1, max_attempts + 1):
-		case = sources.simulate_case(mode, rng, min_people, max_people, show_carriers)
+		case = sources.simulate_case(mode, rng, min_people, max_people, show_carriers, generations,
+			seed_couples=seed_couples, couples=couples, children=children, root_children=root_children)
 		accepted, reasons = evaluate(case, mirror=rng.choice((True, False)))
 		if accepted is not None:
 			if accepted.assessment.answer == mode:
@@ -87,11 +96,13 @@ def generate_case(mode: str, rng: random.Random, max_attempts: int = 500,
 
 
 #============================================
-def authored_cases(path: str | pathlib.Path | None = None) -> list[AcceptedCase]:
+def authored_cases(path: str | pathlib.Path | None = None,
+		student: bool = False) -> list[AcceptedCase]:
 	"""Load and accept every example in an authored bank.
 
 	Args:
 		path: YAML bank path, or None for the bundled examples.
+		student: Keep connected, answerable cases with carrier status hidden.
 
 	Returns:
 		Accepted cases with expectations checked after visible-evidence assessment.
@@ -103,12 +114,22 @@ def authored_cases(path: str | pathlib.Path | None = None) -> list[AcceptedCase]
 		path = pathlib.Path(__file__).parent.parent / 'authored_cases.yml'
 	result = []
 	for case in sources.load_cases(path):
+		if student:
+			if len(graphs.components(case.family)) != 1:
+				continue
+			observations = {pid: dataclasses.replace(obs, carrier=False)
+				for pid, obs in case.observations.items()}
+			case = dataclasses.replace(case, observations=observations)
 		accepted, reasons = evaluate(case)
 		if accepted is None:
+			if student:
+				continue
 			raise ValueError(f'Unsuitable authored case {case.metadata}: {reasons}')
 		if 'expected_mode' in case.metadata and case.metadata['expected_mode'] != accepted.assessment.answer:
 			raise ValueError(f'Authored expectation disagrees with visible evidence: {case.metadata}')
 		result.append(accepted)
+	if student and not result:
+		raise ValueError('No connected authored cases are answerable with carrier status hidden')
 	return result
 
 
@@ -142,27 +163,45 @@ def present(case: AcceptedCase, rng: random.Random) -> AcceptedCase:
 
 
 #============================================
-def matching_set(rng: random.Random, authored: list[AcceptedCase] | None = None) -> list[AcceptedCase]:
+def matching_set(rng: random.Random, authored: list[AcceptedCase] | None = None,
+		generations: int = 3, min_people: int | None = None,
+		max_people: int | None = None, *, seed_couples: int = 1,
+		couples: tuple[int, int] | None = None, children: tuple[int, int] = (1, 4),
+		root_children: tuple[int, int] | None = None) -> list[AcceptedCase]:
 	"""Assemble independently accepted cases with comparable complexity.
 
 	Args:
 		rng: Generator for selection, simulation, and ordering.
 		authored: Accepted bank, or None to generate procedural cases.
+		generations: Shared depth for all diagrams in this set.
+		min_people: Inclusive size minimum; None uses the standard depth-specific bound.
+		max_people: Inclusive size maximum; None uses the standard depth-specific bound.
+		seed_couples: Procedural founding-couple count, shared across the set.
+		couples: Procedural total-couple bounds; None uses constructor defaults.
+		children: Procedural offspring bounds for non-seed unions.
+		root_children: Procedural offspring bounds for seed unions; None uses depth defaults.
 
 	Returns:
-		Shuffled cases using every mode once, with 12-15 people over three or four generations.
+		Shuffled cases using every mode once, with equal depth and comparable sizes.
 
 	Raises:
 		GenerationFailure: A suitable case is unavailable for any mode.
 	"""
+	default_min, default_max = (12, 15) if generations == 3 else (16, 22)
+	if min_people is None:
+		min_people = default_min
+	if max_people is None:
+		max_people = default_max
 	result = []
 	for mode in inheritance.MODES:
 		if authored is None:
-			case = generate_case(mode, rng, min_people=12, max_people=15)
+			case = generate_case(mode, rng, min_people=min_people, max_people=max_people,
+				generations=generations, seed_couples=seed_couples, couples=couples,
+				children=children, root_children=root_children)
 		else:
 			candidates = [item for item in authored if item.assessment.answer == mode
-				and 12 <= len(item.case.family.people) <= 15
-				and 2 <= max(item.case.family.generations().values()) <= 3]
+				and min_people <= len(item.case.family.people) <= max_people
+				and max(item.case.family.generations().values()) == generations - 1]
 			if not candidates:
 				raise GenerationFailure(f'No comparable authored case for {mode}')
 			case = present(rng.choice(candidates), rng)

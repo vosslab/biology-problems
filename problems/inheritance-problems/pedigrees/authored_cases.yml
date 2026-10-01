@@ -194,9 +194,12 @@ cases:
     sex: female
     affected: false
   - id: b3
-    sex: male
-    affected: false
+    sex: female
+    affected: true
   - id: b4
+    sex: female
+    affected: true
+  - id: d2
     sex: female
     affected: true
   unions:
@@ -206,6 +209,7 @@ cases:
     - s
     - d
     - o
+    - d2
   - father: s
     mother: w
     children:

@@ -9,6 +9,7 @@ import scipy.optimize
 
 # local repo modules
 import pedigree_lib.family as family_model
+import pedigree_lib.graphs as graphs
 
 RADIUS = 16
 SIBLING_GAP = 26
@@ -43,29 +44,6 @@ class Diagram:
 	segments: tuple[Segment, ...]
 	width: float
 	height: float
-
-
-#============================================
-def _components(family: family_model.Family) -> list[set[str]]:
-	links = {person.id: set() for person in family.people}
-	for union in family.unions:
-		members = {union.father, union.mother, *union.children}
-		for pid in members:
-			links[pid].update(members - {pid})
-	result = []
-	seen = set()
-	for person in family.people:
-		if person.id in seen:
-			continue
-		component = {person.id}
-		pending = [person.id]
-		while pending:
-			for neighbor in links[pending.pop()] - component:
-				component.add(neighbor)
-				pending.append(neighbor)
-		seen.update(component)
-		result.append(component)
-	return result
 
 
 #============================================
@@ -279,7 +257,7 @@ def lay_out(family: family_model.Family, mirror: bool = False) -> Diagram:
 	people = family.members()
 	symbols = {}
 	cursor = 28
-	for component in _components(family):
+	for component in graphs.components(family):
 		x = _positions(family, component, ranks)
 		left = min(x[pid] - _half_width(people[pid]) for pid in component)
 		for pid in component:

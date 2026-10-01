@@ -105,9 +105,9 @@
   [write_pedigree_match_random.py](../problems/inheritance-problems/pedigrees/write_pedigree_match_random.py)
   with `min_individuals`, `max_individuals`, and `max_size_spread` parameters.
 - Added pytest coverage for pedigree layout centering validation in
-  [test_pedigrees_layout_centering.py](../tests/libs/pedigrees/test_pedigrees_layout_centering.py).
+  `test_pedigrees_layout_centering.py` (since retired).
 - Added pytest coverage for mirror and strip functions in
-  [test_pedigrees_pedigree_code_lib.py](../tests/libs/pedigrees/test_pedigrees_pedigree_code_lib.py).
+  `test_pedigrees_pedigree_code_lib.py` (since retired).
 - Added a random pedigree generation matching question generator in
   [write_pedigree_match_random.py](../problems/inheritance-problems/pedigrees/write_pedigree_match_random.py)
   that uses the skeleton and inheritance assignment engines instead of static templates.

@@ -7,6 +7,9 @@ import dataclasses
 import pedigree_lib.family as family_model
 import pedigree_lib.inheritance as inheritance
 
+AUTOSOMAL_MAX_SQUARED_BIAS = 0.25
+SEX_LINKED_MIN_SQUARED_BIAS = 0.99
+
 
 #============================================
 @dataclasses.dataclass(frozen=True)
@@ -19,7 +22,7 @@ class Assessment:
 
 #============================================
 def teaching_evidence(family: family_model.Family, observations: dict) -> dict[str, tuple]:
-	"""Require informative relationships rather than sex ratios alone.
+	"""Require informative relationships independently of the sex-balance filter.
 
 	Args:
 		family: Family to inspect.
@@ -34,6 +37,10 @@ def teaching_evidence(family: family_model.Family, observations: dict) -> dict[s
 	people = family.members()
 	parents = family.parentage()
 	affected = {pid for pid, obs in observations.items() if obs.affected is True}
+	if not affected:
+		return {mode: () for mode in inheritance.MODES}
+	males = sum(people[pid].sex == 'male' for pid in affected)
+	females = len(affected) - males
 	unaffected = {pid for pid, obs in observations.items() if obs.affected is False}
 	sexes = {people[pid].sex for pid in affected}
 	both_sexes = sexes == {'male', 'female'}
@@ -85,7 +92,27 @@ def teaching_evidence(family: family_model.Family, observations: dict) -> dict[s
 		result['y-linked'] = ('Affected fathers and sons span three generations',
 			'Multiple sons affected in an informative sibship with daughters',
 			'Observed females unaffected')
+	for mode, evidence in result.items():
+		if evidence:
+			result[mode] += (f'Affected males: {males}; affected females: {females}',)
 	return result
+
+
+#============================================
+def sex_balance_acceptable(mode: str, males: int, females: int) -> bool:
+	"""Require at least two affected people before filtering their sex balance."""
+	if males + females < 2:
+		return False
+	bias = (males - females) ** 2 / (males + females)
+	if mode in ('autosomal dominant', 'autosomal recessive'):
+		return bias < AUTOSOMAL_MAX_SQUARED_BIAS
+	if mode == 'x-linked dominant':
+		return females > males and bias > SEX_LINKED_MIN_SQUARED_BIAS
+	if mode == 'x-linked recessive':
+		return males > females and bias > SEX_LINKED_MIN_SQUARED_BIAS
+	if mode == 'y-linked':
+		return females == 0
+	raise ValueError(f'Unknown mode: {mode}')
 
 
 #============================================
@@ -113,5 +140,11 @@ def assess(family: family_model.Family, observations: dict) -> Assessment:
 		reasons = ('No compatible mode meets a teaching profile',)
 	elif len(qualified) > 1:
 		reasons = ('Tied teaching profiles: ' + ', '.join(qualified),)
+	if answer is not None:
+		males = sum(p.sex == 'male' and observations[p.id].affected for p in family.people)
+		females = sum(p.sex == 'female' and observations[p.id].affected for p in family.people)
+		if not sex_balance_acceptable(answer, males, females):
+			reasons = (f'Affected-sex balance fails {answer}: {males} males, {females} females',)
+			answer = None
 	result = Assessment(compatibility, evidence, answer, reasons)
 	return result

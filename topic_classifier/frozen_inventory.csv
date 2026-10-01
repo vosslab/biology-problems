@@ -122,9 +122,9 @@ generator,problems/inheritance-problems/lethal_allele_survival.py
 generator,problems/inheritance-problems/monohybrid_degrees_of_dominance.py
 generator,problems/inheritance-problems/monohybrid_genotype_statements.py
 generator,problems/inheritance-problems/monohybrid_litter_inference.py
-generator,problems/inheritance-problems/pedigrees/write_pedigree_choice.py
-generator,problems/inheritance-problems/pedigrees/write_pedigree_match.py
-generator,problems/inheritance-problems/pedigrees/write_pedigree_match_random.py
+generator,problems/inheritance-problems/pedigrees/write_pedigree_to_pattern.py
+generator,problems/inheritance-problems/pedigrees/write_pedigree_pattern_matching.py
+generator,problems/inheritance-problems/pedigrees/write_pattern_to_pedigree.py
 generator,problems/inheritance-problems/phylogenetic_trees/gene_tree_choice_plus.py
 generator,problems/inheritance-problems/phylogenetic_trees/gene_tree_matches_plus.py
 generator,problems/inheritance-problems/poisson_flies.py

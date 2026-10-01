@@ -37,18 +37,20 @@ open the printed URL manually.
 
 ## Pedigree homework
 
-All three pedigree commands share biological, teaching, and layout acceptance. Choose authored
-YAML families or procedural families with `-f authored` or `-f procedural`:
+All three pedigree commands use randomly generated families, retain biological, teaching,
+difficulty, and layout checks, and rank accepted candidates by horizontal density:
 
 ```bash
 source source_me.sh
-python3 problems/inheritance-problems/pedigrees/write_pedigree_choice.py -f procedural -d 5 --selftest
-python3 problems/inheritance-problems/pedigrees/write_pedigree_match_random.py -d 2 -B -I -r output_pedigree/review
+python3 problems/inheritance-problems/pedigrees/write_pedigree_to_pattern.py -d 5 --selftest
+python3 problems/inheritance-problems/pedigrees/write_pattern_to_pedigree.py -d 2 --selftest
+python3 problems/inheritance-problems/pedigrees/write_pedigree_pattern_matching.py -d 2 -B -I -r output_pedigree/review
 ```
 
 `-s SEED` reproduces a verification run. `-r` saves editable SVGs and instructor-only evidence JSON.
-See [PEDIGREE_PIPELINE.md](../problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md) and
-[PEDIGREE_AUTHORING.md](../problems/inheritance-problems/pedigrees/PEDIGREE_AUTHORING.md).
+The filenames encode pedigree to pattern, pattern to pedigree, and matching in both directions.
+Prebuilt-bank generation and source-selection flags are retired.
+See [PEDIGREE_PIPELINE.md](../problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md).
 
 ## Genetic code translation
 
