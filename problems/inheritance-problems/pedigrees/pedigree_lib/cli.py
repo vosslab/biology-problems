@@ -19,6 +19,7 @@ import pedigree_lib.inheritance as inheritance
 import pedigree_lib.similarity as similarity
 import pedigree_lib.ranking as ranking
 import pedigree_lib.scenarios as scenarios
+import pedigree_lib.cache as cache
 
 ASSUMPTIONS = '<p>Assume a rare trait, complete penetrance, and no new mutations.</p>'
 AFFECTED_COLORS = {
@@ -44,6 +45,12 @@ def parse_arguments() -> argparse.Namespace:
 		help=argparse.SUPPRESS)
 	parser.add_argument('-r', '--review-dir', dest='review_dir', type=pathlib.Path, default=None,
 		help=argparse.SUPPRESS)
+	bank = parser.add_mutually_exclusive_group()
+	bank.add_argument('--use-cache', dest='cache_mode', action='store_const', const='cache',
+		help='Use eligible local pedigrees and generate any shortage (default when cache exists).')
+	bank.add_argument('--fresh', dest='cache_mode', action='store_const', const='fresh',
+		help='Generate new pedigrees and add them to the local bank.')
+	parser.set_defaults(cache_mode='auto')
 	colors = parser.add_mutually_exclusive_group()
 	colors.add_argument('--affected-color', choices=AFFECTED_COLORS, default='black',
 		help='Fill affected individuals with this dark color (default: black).')
@@ -55,7 +62,7 @@ def parse_arguments() -> argparse.Namespace:
 			dest='difficulty', action='store_const', const=level,
 			help=f'Use {level} structural workload (default: easy).')
 	difficulty.add_argument('-b', '--bonus', dest='difficulty', action='store_const', const='bonus',
-		help='Use a 30-40-person family; only supported by write_pedigree_to_pattern.py.')
+		help='Use a 60-100-person family spanning 6-7 generations; only supported by write_pedigree_to_pattern.py.')
 	parser.set_defaults(difficulty='easy')
 	args = parser.parse_args()
 	return args
@@ -150,12 +157,13 @@ def run(args: argparse.Namespace, question_format: str) -> None:
 		requested = min(requested, args.max_questions)
 	prepared = []
 	if requested > 0:
-		pedigrees_per_question = len(inheritance.MODES) if question_format in ('select', 'match') else 1
-		pool_size = 20 * requested * pedigrees_per_question
-		print(f'Preparing {pool_size:,} valid pedigree candidates...')
 		started = time.perf_counter()
+		pedigrees_per_question = len(inheritance.MODES) if question_format in ('select', 'match') else 1
+		pool_size = 20 * args.duplicates * pedigrees_per_question
+		print(f'Preparing {pool_size:,} valid pedigree candidates...')
 		prepared = scenarios.build(rng, args.difficulty, question_format,
-			pool_size=pool_size, minimum_scenarios=requested)
+			pool_size=pool_size, minimum_scenarios=requested, cache_path=cache.path_for_level(args.difficulty),
+			use_cache=args.cache_mode != 'fresh')
 		elapsed = time.perf_counter() - started
 		print(f'Prepared {len(prepared)} complete {question_format} scenarios in {elapsed:.2f} seconds.')
 		if requested > len(prepared):
@@ -168,4 +176,4 @@ def run(args: argparse.Namespace, question_format: str) -> None:
 	scenario_iter = iter(selected + prepared[requested:])
 	writer = functools.partial(write_question, rng=rng, scenario_iter=scenario_iter,
 		question_format=question_format)
-	bptools.collect_and_write_questions(writer, args, bptools.make_outfile())
+	bptools.collect_and_write_questions(writer, args, bptools.make_outfile(args.difficulty))

@@ -11,6 +11,8 @@ import scipy.optimize
 import pedigree_lib.family as family_model
 import pedigree_lib.graphs as graphs
 
+# Output size is independent of the coordinates used for layout and validation.
+DISPLAY_SCALE = 0.75
 RADIUS = 16
 SIBLING_GAP = 26
 FAMILY_GAP = 48

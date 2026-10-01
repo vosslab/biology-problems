@@ -18,8 +18,8 @@ DIFFICULTY_SETTINGS = {
 		couples=(4, 6), children=(1, 4), root_children=(2, 5)),
 	'rigorous': dict(generations=(5,), people=(23, 26), seed_couples=(2, 3),
 		couples=(6, 8), children=(1, 4), root_children=(2, 4)),
-	'bonus': dict(generations=(5,), people=(30, 40), seed_couples=(2, 3),
-		couples=(8, 11), children=(1, 4), root_children=(2, 4)),
+	'bonus': dict(generations=(6, 7), people=(60, 100), seed_couples=(3, 4),
+		couples=(18, 26), children=(1, 5), root_children=(2, 5)),
 }
 MATCHING_SETTINGS = {
 	'easy': dict(generations=(3,), people=(10, 11), seed_couples=(1, 1),

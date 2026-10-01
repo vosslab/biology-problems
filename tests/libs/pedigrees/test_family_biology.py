@@ -1,6 +1,7 @@
 """Mendelian contradictions and disclosure are stable assessment contracts."""
 
 import random
+import dataclasses
 
 import pytest
 
@@ -75,6 +76,22 @@ def test_structural_errors_are_explicit() -> None:
 		family.Family(pedigree.people, (family.Union('f', 'm', ('f',)),)).generations()
 	with pytest.raises(ValueError):
 		family.Family(pedigree.people, pedigree.unions * 2).generations()
+
+
+@pytest.mark.parametrize('method', ('members', 'parentage', 'generations'))
+def test_family_mappings_are_isolated_from_caller_edits(method: str) -> None:
+	pedigree = trio()
+	original = getattr(pedigree, method)()
+	getattr(pedigree, method)().clear()
+	assert getattr(pedigree, method)() == original
+
+
+def test_replaced_family_revalidates_changed_relationships() -> None:
+	pedigree = trio()
+	pedigree.generations()
+	changed = dataclasses.replace(pedigree, unions=(family.Union('f', 'm', ('missing',)),))
+	with pytest.raises(ValueError, match='Missing person reference'):
+		changed.generations()
 
 
 def test_male_carrier_and_affected_female_exclude_sex_linked_modes() -> None:

@@ -145,8 +145,8 @@ def procedural_family(rng: random.Random, min_people: int = 11,
 	Relationships and feasible sibship sizes are planned before people are created.
 	Infeasible combinations raise ValueError; no relatives are pruned afterward.
 	"""
-	if generations not in (3, 4, 5):
-		raise ValueError('Generation count must be three, four, or five')
+	if generations not in (3, 4, 5, 6, 7):
+		raise ValueError('Generation count must be between three and seven')
 	if type(seed_couples) is not int or seed_couples < 1:
 		raise ValueError('Seed couple count must be a positive integer')
 	if root_children is None:
@@ -221,7 +221,7 @@ def simulate_case(mode: str, rng: random.Random, min_people: int = 11,
 		rng: Shared generator for family and genotype choices.
 		min_people: Inclusive minimum size.
 		max_people: Inclusive maximum size.
-		generations: Required depth, from three to five.
+		generations: Required depth, from three to seven.
 		show_carriers: Reveal unaffected heterozygotes when true.
 		seed_couples: Number of founding couples in generation one.
 		couples: Inclusive bounds on total unions, including joining unions.

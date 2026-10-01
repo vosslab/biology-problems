@@ -26,7 +26,8 @@ def render_svg(diagram: layout.Diagram, observations: dict, affected_color: str 
 	if errors:
 		raise ValueError('; '.join(errors))
 	result = '<svg xmlns="http://www.w3.org/2000/svg" '
-	result += f'width="{diagram.width:g}" height="{diagram.height:g}" '
+	result += f'width="{diagram.width * layout.DISPLAY_SCALE:g}" '
+	result += f'height="{diagram.height * layout.DISPLAY_SCALE:g}" '
 	result += f'viewBox="0 0 {diagram.width:g} {diagram.height:g}">'
 	result += '<title>Family pedigree</title><rect width="100%" height="100%" fill="white"/>'
 	for line in diagram.segments:

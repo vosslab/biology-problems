@@ -4,6 +4,44 @@
 
 ### Changed
 
+- Reduced pedigree display width and height by 25% in HTML questions and SVG review
+  exports, preserving family sizes, layout geometry, and proportions.
+
+- Enlarged bonus pedigrees to 6-7 generations and 60-100 individuals, with 3-4 founding
+  couples and 18-26 total couples. Existing smaller bonus cache records are ineligible.
+
+- Split the pedigree bank into `pedigree_cache_easy.jsonl`, `pedigree_cache_medium.jsonl`,
+  `pedigree_cache_rigorous.jsonl`, and `pedigree_cache_bonus.jsonl`. Each file expires
+  independently after 24 hours without an append. Records omit the difficulty supplied by
+  the filename, and runs load only their requested difficulty.
+
+- Continue drawing eligible cached pedigrees when the first sample cannot form enough
+  comparable selection or matching sets, generating fresh candidates only after exhausting
+  the eligible bank. Centralized compact record identity for duplicate detection and storage.
+
+- Delete and recreate the pedigree JSONL bank on the next run after 24 hours without an actual
+  append. Fresh generation appends within the current window; stale banks are replaced even
+  with `--fresh`. A separate lock file coordinates expiry with readers and writers. Reads and
+  duplicate-only appends do not refresh the expiry clock.
+
+- Added an ignored compact JSONL pedigree bank shared by all three generators. Default runs
+  and `--use-cache` reuse eligible records and generate shortages up to the `-d` candidate target;
+  `--fresh` bypasses reads and appends new accepted pedigrees. Difficulty and matching limits
+  are checked separately; carriers stay hidden, biology and layouts are revalidated, records
+  remain reusable across runs, and file locks protect concurrent appenders. Storage uses only
+  level, mode, sex, affected/carrier indices, and parent/child connections.
+
+- Cached pedigree family member indexes, parentage, and validated generation ranks per
+  immutable family. Public methods still return independent dictionaries, and replaced families
+  validate their own structure. Three seeded 200-candidate easy identification runs retained
+  identical results; median preparation time fell from 3.21 to 2.59 seconds locally (19%).
+
+- Made pedigree candidate-pool sizing depend on `-d` alone; `-x` still caps exported
+  questions but no longer reduces the preparation pool.
+
+- Included the selected difficulty (`easy`, `medium`, `rigorous`, or `bonus`) in output
+  filenames for all three pedigree generators, including derived Blackboard and self-test exports.
+
 - Hid `--hidden-terms` and `--noclick-div` from shared bptools CLI help while keeping
   both options available with their existing defaults and behavior.
 

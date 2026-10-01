@@ -3,6 +3,8 @@
 import collections
 import dataclasses
 import random
+import pathlib
+import itertools
 
 import pedigree_lib.difficulty as difficulty
 import pedigree_lib.inheritance as inheritance
@@ -10,6 +12,7 @@ import pedigree_lib.questions as questions
 import pedigree_lib.polishing as polishing
 import pedigree_lib.ranking as ranking
 import pedigree_lib.sources as sources
+import pedigree_lib.cache as cache
 
 
 #============================================
@@ -89,22 +92,49 @@ def assemble(pool: list[questions.AcceptedCase], question_format: str) -> list[t
 
 #============================================
 def build(rng: random.Random, level: str, question_format: str,
-		pool_size: int = 5000, minimum_scenarios: int = 1) -> list[tuple]:
+		pool_size: int = 5000, minimum_scenarios: int = 1,
+		cache_path: pathlib.Path | None = None, use_cache: bool = False) -> list[tuple]:
 	"""Build ranked scenarios, extending incomplete random pools in bounded batches."""
 	if question_format not in ('identify', 'select', 'match'):
 		raise ValueError(f'Unknown question format: {question_format}')
 	if level == 'bonus' and question_format != 'identify':
 		raise ValueError('--bonus requires write_pedigree_to_pattern.py (one pedigree per question)')
 	pool = []
+	if use_cache and cache_path is not None and cache_path.is_file():
+		cached = cache.candidates(cache_path, rng, level, question_format == 'match')
+		# Keep drawing random cached batches until enough complete sets exist or the bank ends.
+		while cached_pool := list(itertools.islice(cached, pool_size)):
+			pool.extend(cached_pool)
+			print(f'Loaded {len(pool):,} eligible {level} pedigrees from {cache_path}')
+			pool.sort(key=ranking.score, reverse=True)
+			result = assemble(pool, question_format)
+			if len(pool) >= pool_size and len(result) >= minimum_scenarios:
+				return result
+	known = {cache.record_key(cache.encode(case)) for case in pool}
 	for batch in range(10):
 		if batch:
 			print(f'Preparing {pool_size:,} additional pedigree candidates '
 				f'to complete {minimum_scenarios} {question_format} scenarios...')
-		pool.extend(generate_pool(rng, level, question_format == 'match', pool_size))
+		needed = max(0, pool_size - len(pool))
+		if not needed:
+			needed = pool_size
+		if needed:
+			print(f'Generating {needed:,} fresh {level} pedigrees...')
+			batch_pool = []
+			for case in generate_pool(rng, level, question_format == 'match', needed):
+				key = cache.record_key(cache.encode(case))
+				if key not in known:
+					known.add(key)
+					batch_pool.append(case)
+			if cache_path is not None:
+				added = cache.append(cache_path, batch_pool)
+				print(f'Added {added:,} pedigrees to {cache_path}')
+			pool.extend(batch_pool)
 		pool.sort(key=ranking.score, reverse=True)
 		result = assemble(pool, question_format)
-		if len(result) >= minimum_scenarios:
+		if len(pool) >= pool_size and len(result) >= minimum_scenarios:
 			break
-	if not result:
-		raise questions.GenerationFailure(f'No complete {question_format} scenarios fit {level}')
+	if len(pool) < pool_size or len(result) < minimum_scenarios:
+		raise questions.GenerationFailure(f'Only {len(pool)} distinct pedigrees and {len(result)} '
+			f'complete {question_format} scenarios fit {level} after ten batches')
 	return result

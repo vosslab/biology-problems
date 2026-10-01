@@ -19,7 +19,7 @@ python3 problems/inheritance-problems/pedigrees/write_pattern_to_pedigree.py -d 
 - `write_pedigree_to_pattern.py`: one pedigree, select its inheritance pattern.
 - `write_pattern_to_pedigree.py`: a named pattern, select the corresponding pedigree.
 - `write_pedigree_pattern_matching.py`: match pedigrees to all five inheritance patterns.
-- All three use randomly generated families exclusively.
+- All three use randomly generated families, freshly constructed or reused from the local bank.
 - At the medium level, the two MC formats use four or five generations and 16-22 people per diagram.
   Matching uses exactly three generations and 12-15 people per diagram. Diagram choices
   within a selection question share a generation count.
@@ -28,13 +28,70 @@ python3 problems/inheritance-problems/pedigrees/write_pattern_to_pedigree.py -d 
   `-C` / `--random-color` instead selects one of 14 dark hues per question, shared by every diagram
   in that question and its SVG review exports. It respects `--seed`. The two color options
   are mutually exclusive; outlines remain black and unaffected symbols remain white.
-- `-d` counts questions. Prebuilt-bank selection and the `-f`/`-y` source flags are retired.
+- `-d` counts questions. The old authored-bank `-f`/`-y` source flags remain retired.
 - `-r output_pedigree/review` saves editable SVGs and instructor-only JSON evidence.
 - Shared `--selftest`, `-O`, `-B`, and `-I` flags retain browser and Blackboard workflows.
 
 Normal runs use fresh randomness. Verification uses `-s`; it seeds one explicit procedural
 RNG and the existing export infrastructure's RNG. Family construction, mirroring, mode selection,
 and matching order are randomized rather than cycled by question number.
+For reproducible fresh output, use `--fresh -s SEED`. Cached output also depends on the bank's
+contents; the same seed and unchanged bank reproduce the same selection.
+
+## Local pedigree bank
+
+All commands share per-difficulty files in the ignored repository-root directory
+`output_pedigree_cache/`, regardless of the working directory:
+
+- `pedigree_cache_easy.jsonl`
+- `pedigree_cache_medium.jsonl`
+- `pedigree_cache_rigorous.jsonl`
+- `pedigree_cache_bonus.jsonl`
+
+Generation remains single-threaded. The filename supplies the difficulty; records omit it.
+
+- Default or `--use-cache`: randomly choose eligible records, then generate any shortage.
+- `--fresh`: bypass cached records, generate the whole candidate pool, and append new entries.
+- A bank is stale 24 hours after its last actual append. On the next run, the stale JSONL file
+  is deleted and recreated from newly generated pedigrees, including with `--fresh`.
+  Within that window, new entries append to the current bank and renew its freshness.
+  Reads and duplicate-only appends do not renew it. Expiry uses the file modification time,
+  keeping JSONL records unchanged. A separate `.jsonl.lock` file coordinates deletion and writes.
+  Each difficulty expires independently; appending easy records does not renew the medium bank.
+- A missing bank is created automatically. Freshly generated, accepted and polished pedigrees
+  are saved even when they are not selected for the exported questions.
+- Records remain available across runs. Exact duplicate records are omitted on append and read;
+  this is not graph-isomorphism deduplication.
+- Eligibility requires the requested level and current format-specific structural limits.
+  Easy records cannot fill a medium request. Matching's smaller families share the same file
+  but are filtered separately from identification and selection.
+- The target is `20 * -d` eligible candidates for identification and `100 * -d` for selection
+  or matching. For example, `-d 10` with only 150 eligible identification records generates
+  50 more. `-x` limits exports, not this target. If the initial sample lacks comparable sets,
+  additional random batches come from the eligible bank before fresh generation is needed.
+
+Each line uses this compact schema (illustrative AR family, below the easy size minimum):
+
+```json
+{"mode":"AR","sex":"mfmf","affected":[2],"carriers":[0,1],"families":[[0,1,[2,3]]]}
+```
+
+Person IDs are zero-based positions in `sex`; `m`/`f` denote male/female. Each family stores
+father, mother, and ordered children. Modes are `AD`, `AR`, `XD`, `XR`, and `Y`.
+Carrier indices describe hidden recessive genotypes, not visible carrier markings.
+Full genotypes and geometry are omitted: loading reconstructs a compatible genotype witness
+and recomputes layout. Current rare-trait, inheritance, teaching, and geometry checks run again;
+incompatible entries do not count toward the target. Malformed records fail explicitly.
+File locks protect simultaneous readers, expiry, and appenders on macOS/Linux. Records are reusable,
+so concurrent question runs can select the same pedigree.
+
+```bash
+python3 problems/inheritance-problems/pedigrees/write_pedigree_to_pattern.py --easy --fresh -d 10
+python3 problems/inheritance-problems/pedigrees/write_pedigree_to_pattern.py --easy --use-cache -d 10
+python3 problems/inheritance-problems/pedigrees/write_pedigree_to_pattern.py --medium -d 10
+```
+
+## Preparation and export
 
 BBQ files contain positioned HTML directly. The drawing table has a thin gray frame and works with
 the existing HTML-to-image converter for Blackboard and Canvas/QTI packaging. Wide diagrams
@@ -45,12 +102,16 @@ No remote website publication is part of this workflow.
 
 Each nonempty run initially prepares 20 candidates per required pedigree: 20 times the requested
 question count for identification, or 100 times for five-pedigree selection and matching.
-The question count is `-d`, capped by `-x`; default runs prepare 40 or 200 candidates respectively.
+Pool sizing uses `-d` alone; `-x` caps exported questions without reducing the candidate pool.
+Default runs prepare 40 or 200 candidates respectively.
 Generation applies bounded polishing and the difficulty filter, then sorts by descending
 interestingness.
+Immutable families cache their member indexes, parentage, and validated generation ranks for
+reuse across those stages. Mapping methods return independent dictionaries; newly constructed
+or replaced families validate and cache their own structure.
 The CLI reports elapsed preparation time, including generation, polishing, and assembly.
-If the pool lacks enough complete scenarios, generation adds batches of the same size,
-up to ten batches total, reporting each additional batch.
+If the eligible bank is exhausted and the pool lacks enough complete scenarios, generation
+adds batches of the same size, up to ten fresh batches total, reporting each additional batch.
 Identification consumes the highest-ranked entries. Selection
 and matching assemble the highest eligible entries for all five modes, sharing depth and
 founding-family count. Incomplete groups are unused. The selected questions and their choices
@@ -72,7 +133,7 @@ evidence and compatible modes, reduce mean shrink, and never increase width or l
 If no edit qualifies, the original accepted case is returned. Unchanged cases remain eligible.
 
 These are deliberately small aesthetic heuristics, not calibrated quality probabilities.
-No prebuilt experimental pool, review artifact, or LLM is used in production. Geometry is
+The local bank stores accepted procedural families; no review artifact or LLM is used. Geometry is
 measured before responsive display scaling. Removing the sort in `scenarios.build` restores
 the polished pool's generation order; removing the polishing call in `generate_pool` also
 restores unmodified accepted families. Normal random generation provides tie ordering.
@@ -99,7 +160,7 @@ for selection and matching, where it would multiply the reading burden across fi
 | Easy | 3 / 12-15 | 3 / 10-11 |
 | Medium | 4-5 / 16-22 | 3 / 12-15 |
 | Rigorous | 5 / 23-26 | 3-4 / 16-18 |
-| Bonus | 5 / 30-40, identification only | Not supported |
+| Bonus | 6-7 / 60-100, identification only | Not supported |
 
 Difficulty presets primarily increase how much family structure students must inspect and trace.
 The presets increase structural workload across several dimensions, allow overlap between bands,
@@ -121,6 +182,8 @@ Easy and medium matching use three generations; rigorous matching allows three o
 retaining its smaller 16-18-person band. Rigorous MC requires five generations. Choices within
 each selection or matching question share a depth and size band. Larger bonus diagrams are
 best reviewed at desktop or print size; responsive scaling preserves geometry, not symbol size.
+HTML and SVG display dimensions use 75% of the layout's native size. HTML also caps diagrams
+at 75% of the available question width, preserving the reduction on narrower screens.
 
 The editable `DIFFICULTY_SETTINGS` and `MATCHING_SETTINGS` tables in
 [difficulty.py](pedigree_lib/difficulty.py) also control construction directly:

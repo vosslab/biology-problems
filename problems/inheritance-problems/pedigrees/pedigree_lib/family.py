@@ -2,6 +2,7 @@
 
 # Standard Library
 import dataclasses
+import functools
 
 
 #============================================
@@ -30,6 +31,12 @@ class Observation:
 #============================================
 @dataclasses.dataclass(frozen=True)
 class Family:
+	"""Immutable relationships with lazy, instance-owned structure indexes.
+
+	Public methods return copies so callers cannot change cached mappings.
+	Replaced families compute their own indexes; caches are not dataclass fields.
+	"""
+
 	people: tuple[Person, ...]
 	unions: tuple[Union, ...]
 
@@ -39,6 +46,11 @@ class Family:
 		Returns:
 			Person objects keyed by ID; call generations() first to validate uniqueness.
 		"""
+		result = self._members.copy()
+		return result
+
+	@functools.cached_property
+	def _members(self) -> dict[str, Person]:
 		result = {person.id: person for person in self.people}
 		return result
 
@@ -48,6 +60,11 @@ class Family:
 		Returns:
 			The parental union for each nonfounder; requires validated structure.
 		"""
+		result = self._parentage.copy()
+		return result
+
+	@functools.cached_property
+	def _parentage(self) -> dict[str, Union]:
 		result = {child: union for union in self.unions for child in union.children}
 		return result
 
@@ -60,6 +77,12 @@ class Family:
 		Raises:
 			ValueError: Invalid relationships, people, cycles, or generation constraints.
 		"""
+		result = self._generations.copy()
+		return result
+
+	@functools.cached_property
+	def _generations(self) -> dict[str, int]:
+		"""Cache ranks only after the complete structural validation succeeds."""
 		people = self.members()
 		if not people or len(people) != len(self.people):
 			raise ValueError('People must have unique identifiers and family must not be empty')

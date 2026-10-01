@@ -76,7 +76,7 @@ def generate_case(mode: str, rng: random.Random, max_attempts: int = 5000,
 		min_people: Inclusive minimum family size.
 		max_people: Inclusive maximum family size.
 		show_carriers: Reveal unaffected heterozygotes when true.
-		generations: Required family depth, from three to five.
+		generations: Required family depth, from three to seven.
 		seed_couples: Number of founding couples in generation one.
 		couples: Inclusive total-couple bounds; None uses constructor defaults.
 		children: Inclusive offspring bounds for non-seed unions.

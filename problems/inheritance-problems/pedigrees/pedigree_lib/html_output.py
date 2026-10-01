@@ -26,12 +26,14 @@ def render_html(diagram: layout.Diagram, observations: dict, affected_color: str
 	if errors:
 		raise ValueError('; '.join(errors))
 	width, height = diagram.width, diagram.height
-	result = f'<div style="width: {width:g}px; max-width: 100%; margin: 12px 0;">'
+	display_width = width * layout.DISPLAY_SCALE
+	result = f'<div style="width: {display_width:g}px; '
+	result += f'max-width: {100 * layout.DISPLAY_SCALE:g}%; margin: 12px 0;">'
 	# Material wraps unclassed tables in a scrolling container; this is a drawing.
 	result += '<table class="pedigree-diagram" role="presentation" cellpadding="0" cellspacing="0" style="'
 	result += 'display: table; table-layout: fixed; border-collapse: collapse; border-spacing: 0; '
 	result += 'border: 1px solid #aaa; box-sizing: border-box; background: #fff; padding: 0; margin: 0; '
-	result += f'width: {width:g}px; max-width: 100%; min-width: 0;">'
+	result += f'width: {display_width:g}px; max-width: 100%; min-width: 0;">'
 	result += '<tr><td style="border: 0; background: #fff; padding: 0; margin: 0; '
 	result += 'font-size: 0; line-height: 0; vertical-align: top;">'
 	result += '<div role="img" aria-label="Family pedigree" style="position: relative; '
