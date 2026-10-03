@@ -57,7 +57,16 @@ Domain-specific helper libraries live near the generators that use them.
 - `pedigree_lib`: family model, inheritance engine, teaching policy, sources, layout, and renderers.
 - [authored_cases.yml](../problems/inheritance-problems/pedigrees/authored_cases.yml): editable families.
 - [PEDIGREE_AUTHORING.md](../problems/inheritance-problems/pedigrees/PEDIGREE_AUTHORING.md): people-and-unions authoring format.
-- [PEDIGREE_PIPELINE.md](../problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md): pedigree pipeline overview.
+- [PEDIGREE_PIPELINE.md](../problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md): production workflow and cache.
+- [PEDIGREE_DIFFICULTY.md](../problems/inheritance-problems/pedigrees/PEDIGREE_DIFFICULTY.md): workload presets and construction.
+- [PEDIGREE_BIOLOGY.md](../problems/inheritance-problems/pedigrees/PEDIGREE_BIOLOGY.md): inheritance and teaching gates.
+- [PEDIGREE_LAYOUT.md](../problems/inheritance-problems/pedigrees/PEDIGREE_LAYOUT.md): geometry and renderers.
+- [PEDIGREE_POLISHING.md](../problems/inheritance-problems/pedigrees/PEDIGREE_POLISHING.md): bounded repair stages.
+- [PEDIGREE_RANKING.md](../problems/inheritance-problems/pedigrees/PEDIGREE_RANKING.md): current candidate sorter.
+- [PEDIGREE_PROBABILITY.md](../problems/inheritance-problems/pedigrees/PEDIGREE_PROBABILITY.md): offspring diagnostic.
+- [PEDIGREE_GRAPH_ANALYSIS.md](../problems/inheritance-problems/pedigrees/PEDIGREE_GRAPH_ANALYSIS.md): graph diagnostics.
+- [PEDIGREE_RUBRIC.md](../problems/inheritance-problems/pedigrees/PEDIGREE_RUBRIC.md): fixed visual-review rubric.
+- [PEDIGREE_EVIDENCE.md](../problems/inheritance-problems/pedigrees/PEDIGREE_EVIDENCE.md): accumulated review evidence and limits.
 
 ### Molecular biology and DNA profiling libraries
 

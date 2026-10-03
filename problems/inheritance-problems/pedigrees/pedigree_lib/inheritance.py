@@ -15,6 +15,7 @@ import pedigree_lib.family as family_model
 
 MODES = ('autosomal dominant', 'autosomal recessive', 'x-linked dominant',
 	'x-linked recessive', 'y-linked')
+AUTOSOMAL_MODES = tuple(mode for mode in MODES if mode.startswith('autosomal'))
 
 
 #============================================

@@ -1,7 +1,8 @@
 # Author pedigree families
 
 Author relationships and visible observations in YAML. Both authored and procedural families pass
-the acceptance rules in [PEDIGREE_PIPELINE.md](PEDIGREE_PIPELINE.md). Edit
+the production flow in [PEDIGREE_PIPELINE.md](PEDIGREE_PIPELINE.md) and the biology rules in
+[PEDIGREE_BIOLOGY.md](PEDIGREE_BIOLOGY.md). Edit
 [authored_cases.yml](authored_cases.yml) for library demonstrations and regression fixtures.
 Homework commands use randomly generated families exclusively.
 
@@ -48,7 +49,9 @@ cases:
 - `metadata` is optional instructor information. `expected_mode`, if supplied, must agree with
   the independently evaluated answer. Metadata is not embedded in student drawings.
 
-The inheritance engine accepts `affected: null` for an unknown phenotype and renderers show `?`.
+See [PEDIGREE_BIOLOGY.md](PEDIGREE_BIOLOGY.md) for genotype and visible-evidence rules and
+[PEDIGREE_LAYOUT.md](PEDIGREE_LAYOUT.md) for diagram readability requirements. The inheritance
+engine accepts `affected: null` for an unknown phenotype and renderers show `?`.
 The current homework profiles require complete phenotype observations and reject such cases.
 No genotype, generation, grid character, or drawing coordinate belongs in the YAML format.
 

@@ -6,6 +6,9 @@ import pytest
 
 import pedigree_lib.family as family
 import pedigree_lib.features as features
+import pedigree_lib.affected_features as affected_features
+import pedigree_lib.geometry_features as geometry_features
+import pedigree_lib.layout as layout
 
 
 def branching_family() -> family.Family:
@@ -48,3 +51,34 @@ def test_terminal_and_shared_descendant_branches_have_defined_measurements() -> 
 	measured = features.measure(f)
 	assert measured['branch_points'] == 1 and measured['branch_balance'] == 1
 	assert measured['continuing_children'] == 2
+
+
+def test_affected_reach_retains_unaffected_ancestors_and_only_immediate_partners() -> None:
+	people = tuple(family.Person(pid, sex) for pid, sex in zip('abcdefghijkl',
+		('male', 'female', 'male', 'male', 'female', 'female',
+		'male', 'female', 'female', 'male', 'male', 'female')))
+	pedigree = family.Family(people, (
+		family.Union('a', 'b', ('c',)), family.Union('d', 'e', ('f',)),
+		family.Union('c', 'f', ('g', 'h')), family.Union('g', 'i', ('j',)),
+		family.Union('k', 'l', ('i',))))
+	visible = {p.id: family.Observation(p.id == 'g') for p in people}
+	# Keep g, its six ancestors, and partner i. Exclude h, j, and i's parents.
+	assert affected_features.outside_reach_fraction(pedigree, visible) == pytest.approx(4 / 12)
+	# Showing an unaffected carrier does not turn them into affected evidence.
+	visible['h'] = family.Observation(False, carrier=True)
+	assert affected_features.outside_reach_fraction(pedigree, visible) == pytest.approx(4 / 12)
+
+
+def test_bottom_empty_space_uses_connectors_and_content_not_canvas_size() -> None:
+	symbols = (layout.Symbol('top', 0, 0, 'male', ''),
+		layout.Symbol('bottom', 200, 100, 'female', ''))
+	without_connector = layout.Diagram(symbols, (), 300, 200)
+	with_connector = layout.Diagram(symbols,
+		(layout.Segment(100, 0, 100, 100, 0),), 900, 800)
+	open_gap = geometry_features.bottom_empty_space(without_connector)
+	blocked_gap = geometry_features.bottom_empty_space(with_connector)
+	assert open_gap['score'] > blocked_gap['score']
+	assert open_gap['rect']['y'] + open_gap['rect']['height'] == pytest.approx(
+		open_gap['baseline'])
+	assert open_gap['score'] == geometry_features.bottom_empty_space(
+		layout.Diagram(symbols, (), 900, 800))['score']

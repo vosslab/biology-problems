@@ -150,5 +150,12 @@ def assess(family: family_model.Family, observations: dict) -> Assessment:
 		if not sex_balance_acceptable(answer, males, females):
 			reasons = (f'Affected-sex balance fails {answer}: {males} males, {females} females',)
 			answer = None
+	if answer is not None:
+		ranks = family.generations()
+		last_generation = max(ranks.values())
+		if not any(obs.affected and ranks[pid] >= last_generation - 1
+				for pid, obs in observations.items()):
+			reasons = ('An affected individual must appear in one of the last two generations',)
+			answer = None
 	result = Assessment(compatibility, evidence, answer, reasons)
 	return result

@@ -37,10 +37,13 @@ open the printed URL manually.
 
 ## Pedigree homework
 
-All three pedigree commands use randomly generated families, retain biological, teaching,
-difficulty, and layout checks. Each accepted candidate receives bounded polishing, then
-an interestingness score that favors generation progression and uses lower row density
-to break ties. The 5,000-candidate pool feeds the normal scenario selection:
+All three pedigree commands use randomly generated families and retain biological, teaching,
+difficulty, and layout checks. For rigorous families accepted by the shared difficulty policy,
+geometry-first repair addresses a large bottom gap before the existing bounded polisher runs.
+Candidates are then ordered by five equally weighted, pool-relative percentile ranks. The fresh
+pool target is 20 candidates per question, or 100 candidates per five-pedigree selection or
+matching question. A separate generation search may try up to 5,000 families to find each
+candidate. The pipeline guide covers cache reuse and additional-batch behavior.
 
 ```bash
 source source_me.sh
@@ -50,6 +53,9 @@ python3 problems/inheritance-problems/pedigrees/write_pedigree_pattern_matching.
 ```
 
 `-s SEED` reproduces a verification run. `-r` saves editable SVGs and instructor-only evidence JSON.
+Use `-A` / `--autosomal` on any writer for a warm-up limited to autosomal dominant and autosomal
+recessive: two choices or matching pairs, with 40 candidates per selection/matching question.
+Autosomal exports include an `autosomal` filename suffix.
 The filenames encode pedigree to pattern, pattern to pedigree, and matching in both directions.
 Prebuilt-bank generation and source-selection flags are retired.
 See [PEDIGREE_PIPELINE.md](../problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md).

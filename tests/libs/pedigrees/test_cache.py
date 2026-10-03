@@ -49,6 +49,17 @@ def test_cache_deduplicates_and_respects_matching_limits(tmp_path: pathlib.Path)
 	assert list(cache.candidates(path, random.Random(1), 'easy', matching=True)) == []
 
 
+def test_autosomal_pool_reuses_only_autosomal_cases_from_shared_bank(tmp_path: pathlib.Path) -> None:
+	path = cache.path_for_level('easy', tmp_path)
+	rng = random.Random(72)
+	bank = [scenarios.generate_candidate(mode, rng, 'easy') for mode in inheritance.MODES]
+	cache.append(path, bank)
+	result = scenarios.build(random.Random(42), 'easy', 'identify', pool_size=2,
+		cache_path=path, use_cache=True, modes=inheritance.AUTOSOMAL_MODES)
+	assert {row[0].assessment.answer for row in result} == set(inheritance.AUTOSOMAL_MODES)
+	assert len(cache.read_records(path)) == len(bank)
+
+
 def test_impossible_cached_carriers_are_rejected() -> None:
 	record = dict(mode='AR', sex='mfmf', affected=[2], carriers=[],
 		families=[[0, 1, [2, 3]]])

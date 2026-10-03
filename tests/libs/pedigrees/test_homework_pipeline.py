@@ -75,6 +75,29 @@ def test_matching_set_is_independently_supported(authored: bool) -> None:
 	assert all(max(c.case.family.generations().values()) == 2 for c in matching)
 
 
+@pytest.mark.parametrize('extra_generations', (0, 1, 2))
+def test_affected_evidence_must_reach_one_of_last_two_generations(extra_generations) -> None:
+	# A clear recessive sibship followed by an entirely unaffected side branch.
+	people = [family.Person(pid, sex) for pid, sex in (
+		('father', 'male'), ('mother', 'female'), ('son', 'male'),
+		('daughter', 'female'), ('branch0', 'male'))]
+	unions = [family.Union('father', 'mother', ('son', 'daughter', 'branch0'))]
+	for i in range(extra_generations):
+		people.extend((family.Person(f'mate{i}', 'female'), family.Person(f'branch{i+1}', 'male')))
+		unions.append(family.Union(f'branch{i}', f'mate{i}', (f'branch{i+1}',)))
+	pedigree = family.Family(tuple(people), tuple(unions))
+	visible = {p.id: family.Observation(p.id in ('son', 'daughter')) for p in people}
+	assessment = policy.assess(pedigree, visible)
+	assert assessment.compatibility['autosomal recessive'].compatible
+	assert assessment.evidence['autosomal recessive']
+	if extra_generations < 2:
+		assert assessment.answer == 'autosomal recessive'
+	else:
+		accepted, reasons = questions.evaluate(sources.Case(pedigree, visible))
+		assert accepted is None
+		assert 'last two generations' in reasons[0]
+
+
 def test_three_generation_xd_can_meet_squared_bias_without_exhaustion() -> None:
 	# This seed exhausted 500 attempts with the former four-child root limit.
 	case = questions.generate_case('x-linked dominant', random.Random(400074),
@@ -89,28 +112,33 @@ def test_three_generation_xd_can_meet_squared_bias_without_exhaustion() -> None:
 
 
 @pytest.mark.parametrize('question_format', ('identify', 'select', 'match'))
-@pytest.mark.parametrize('level', ('easy', 'medium', 'rigorous'))
-def test_question_formats_use_correct_diagrams_and_depths(question_format, level, monkeypatch) -> None:
+@pytest.mark.parametrize('level,autosomal', (
+	('easy', False), ('medium', False), ('rigorous', False), ('easy', True)))
+def test_question_formats_use_correct_diagrams_and_depths(question_format, level, autosomal, monkeypatch) -> None:
 	captured = []
 	monkeypatch.setattr(cli, '_save_review', lambda number, directory, cases, color: captured.extend(cases))
 	monkeypatch.setattr(cli.bptools, 'formatBB_MC_Question', lambda *values: values)
 	monkeypatch.setattr(cli.bptools, 'formatBB_MAT_Question', lambda *values: values)
 	rng = random.Random(72)
+	modes = inheritance.AUTOSOMAL_MODES if autosomal else inheritance.MODES
 	settings = difficulty.difficulty_settings(level, question_format == 'match')
 	if question_format == 'identify':
-		cases = [scenarios.generate_candidate(rng.choice(inheritance.MODES), rng, level)]
+		cases = [scenarios.generate_candidate(rng.choice(modes), rng, level)]
 	else:
 		founders = rng.randint(*settings['seed_couples'])
 		cases = questions.matching_set(rng, generations=rng.choice(settings['generations']),
 			min_people=settings['people'][0], max_people=settings['people'][1], seed_couples=founders,
 			couples=settings['couples'], children=settings['children'], root_children=settings['root_children'])
+		cases = list(scenarios.assemble(cases, question_format, modes)[0])
 	options = argparse.Namespace(review_dir='unused', difficulty=level,
 		affected_color='black', random_color=False)
 	item = cli.write_question(1, options,
-		rng, iter([tuple(cases)]), question_format)
+		rng, iter([tuple(cases)]), question_format, modes)
 	_, prompt, choices, answer = item
 	assert 'carrier' not in prompt
-	assert len(captured) == (1 if question_format == 'identify' else 5)
+	assert len(captured) == (1 if question_format == 'identify' else len(modes))
+	assert len(choices) == len(modes)
+	assert all(case.assessment.answer in modes for case in captured)
 	for case in captured:
 		depth = max(case.case.family.generations().values()) + 1
 		assert difficulty.fits_difficulty(case.case.family, level, matching=question_format == 'match')
@@ -118,6 +146,7 @@ def test_question_formats_use_correct_diagrams_and_depths(question_format, level
 			assert depth in (3, 4) if level == 'rigorous' else depth == 3
 	if question_format == 'identify':
 		assert answer == captured[0].assessment.answer and answer in choices
+		assert set(choices) == set(modes)
 	elif question_format == 'select':
 		index = choices.index(answer)
 		assert f'<strong>{captured[index].assessment.answer}</strong>' in prompt

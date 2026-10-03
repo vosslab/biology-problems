@@ -10,6 +10,7 @@ import pedigree_lib.difficulty as difficulty
 import pedigree_lib.inheritance as inheritance
 import pedigree_lib.questions as questions
 import pedigree_lib.polishing as polishing
+import pedigree_lib.downward_repair as downward_repair
 import pedigree_lib.ranking as ranking
 import pedigree_lib.sources as sources
 import pedigree_lib.cache as cache
@@ -42,11 +43,12 @@ def generate_candidate(mode: str, rng: random.Random, level: str,
 
 #============================================
 def generate_pool(rng: random.Random, level: str, matching: bool = False,
-		count: int = 5000) -> list[questions.AcceptedCase]:
+		count: int = 5000, modes: tuple[str, ...] = inheritance.MODES) -> list[questions.AcceptedCase]:
 	"""Generate accepted candidates, polish within the preset, then recheck difficulty."""
 	pool = []
 	for _ in range(count):
-		case = generate_candidate(rng.choice(inheritance.MODES), rng, level, matching)
+		case = generate_candidate(rng.choice(modes), rng, level, matching)
+		case = downward_repair.repair(case, rng)
 		pool.append(polishing.polish(case, rng, level, matching))
 	# Preset filtering stays independent of aesthetics and uses the existing authority.
 	result = [case for case in pool if difficulty.fits_difficulty(case.case.family, level, matching)]
@@ -63,12 +65,14 @@ def comparable_key(case: questions.AcceptedCase) -> tuple[int, int]:
 
 
 #============================================
-def assemble(pool: list[questions.AcceptedCase], question_format: str) -> list[tuple]:
+def assemble(pool: list[questions.AcceptedCase], question_format: str,
+		modes: tuple[str, ...] = inheritance.MODES) -> list[tuple]:
 	"""Consume eligible entries in supplied order, without reusing a pool entry.
 
-	Selection and matching each require all five modes with comparable depth/founders.
+	Selection and matching each require every offered mode with comparable depth/founders.
 	Incomplete groups remain unused rather than relaxing those requirements.
 	"""
+	pool = [case for case in pool if case.assessment.answer in modes]
 	if question_format == 'identify':
 		return [(case,) for case in pool]
 	if question_format not in ('select', 'match'):
@@ -82,9 +86,9 @@ def assemble(pool: list[questions.AcceptedCase], question_format: str) -> list[t
 		if index in used:
 			continue
 		group = groups[comparable_key(case)]
-		if not all(group[mode] for mode in inheritance.MODES):
+		if not all(group[mode] for mode in modes):
 			continue
-		indices = [group[mode].popleft() for mode in inheritance.MODES]
+		indices = [group[mode].popleft() for mode in modes]
 		used.update(indices)
 		result.append(tuple(pool[i] for i in indices))
 	return result
@@ -93,7 +97,8 @@ def assemble(pool: list[questions.AcceptedCase], question_format: str) -> list[t
 #============================================
 def build(rng: random.Random, level: str, question_format: str,
 		pool_size: int = 5000, minimum_scenarios: int = 1,
-		cache_path: pathlib.Path | None = None, use_cache: bool = False) -> list[tuple]:
+		cache_path: pathlib.Path | None = None, use_cache: bool = False,
+		modes: tuple[str, ...] = inheritance.MODES) -> list[tuple]:
 	"""Build ranked scenarios, extending incomplete random pools in bounded batches."""
 	if question_format not in ('identify', 'select', 'match'):
 		raise ValueError(f'Unknown question format: {question_format}')
@@ -101,13 +106,14 @@ def build(rng: random.Random, level: str, question_format: str,
 		raise ValueError('--bonus requires write_pedigree_to_pattern.py (one pedigree per question)')
 	pool = []
 	if use_cache and cache_path is not None and cache_path.is_file():
-		cached = cache.candidates(cache_path, rng, level, question_format == 'match')
+		cached = (case for case in cache.candidates(cache_path, rng, level, question_format == 'match')
+			if case.assessment.answer in modes)
 		# Keep drawing random cached batches until enough complete sets exist or the bank ends.
 		while cached_pool := list(itertools.islice(cached, pool_size)):
 			pool.extend(cached_pool)
 			print(f'Loaded {len(pool):,} eligible {level} pedigrees from {cache_path}')
-			pool.sort(key=ranking.score, reverse=True)
-			result = assemble(pool, question_format)
+			ranked_pool = ranking.rank(pool)
+			result = assemble(ranked_pool, question_format, modes)
 			if len(pool) >= pool_size and len(result) >= minimum_scenarios:
 				return result
 	known = {cache.record_key(cache.encode(case)) for case in pool}
@@ -121,7 +127,7 @@ def build(rng: random.Random, level: str, question_format: str,
 		if needed:
 			print(f'Generating {needed:,} fresh {level} pedigrees...')
 			batch_pool = []
-			for case in generate_pool(rng, level, question_format == 'match', needed):
+			for case in generate_pool(rng, level, question_format == 'match', needed, modes):
 				key = cache.record_key(cache.encode(case))
 				if key not in known:
 					known.add(key)
@@ -130,8 +136,8 @@ def build(rng: random.Random, level: str, question_format: str,
 				added = cache.append(cache_path, batch_pool)
 				print(f'Added {added:,} pedigrees to {cache_path}')
 			pool.extend(batch_pool)
-		pool.sort(key=ranking.score, reverse=True)
-		result = assemble(pool, question_format)
+		ranked_pool = ranking.rank(pool)
+		result = assemble(ranked_pool, question_format, modes)
 		if len(pool) >= pool_size and len(result) >= minimum_scenarios:
 			break
 	if len(pool) < pool_size or len(result) < minimum_scenarios:

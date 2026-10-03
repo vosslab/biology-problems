@@ -11,6 +11,7 @@ import pedigree_lib.difficulty as difficulty
 import pedigree_lib.inheritance as inheritance
 import pedigree_lib.policy as policy
 import pedigree_lib.questions as questions
+import pedigree_lib.ranking as ranking
 import pedigree_lib.scenarios as scenarios
 
 
@@ -52,3 +53,40 @@ def test_generated_pool_keeps_existing_acceptance_and_difficulty(level, matching
 		assert difficulty.fits_difficulty(case.case.family, level, matching)
 		assert policy.assess(case.case.family, case.case.observations).answer == case.assessment.answer
 		assert not any(obs.carrier for obs in case.case.observations.values())
+
+
+def test_ranking_preserves_pool_order_for_ties_and_does_not_mutate_inputs(monkeypatch) -> None:
+	case = scenarios.generate_candidate('autosomal dominant', random.Random(32), 'easy')
+	second = dataclasses.replace(case, attempts=case.attempts + 1)
+	pool = [case, second]
+	ranked = ranking.rank(pool)
+	assert [item.attempts for item in ranked] == [case.attempts, second.attempts]
+	assert ranked[0].ranking_score == ranked[1].ranking_score
+	assert all(item.ranking_score is None for item in pool)
+	assert all(item.case is case.case for item in ranked)
+
+	# Equal five-component totals stay tied despite different floating-point sums.
+	rank_vectors = (
+		(24, 60, 39, 76, 10),
+		(11, 84, 25, 17, 72))
+	component_names = (
+		'outside_affected_reach', 'affected_region_fill',
+		'generation_progression', 'mean_row_density', 'excess_bottom_empty')
+	directions = (-1, 1, 1, -1, -1)
+	component_ranks = []
+	for feature_index in range(len(component_names)):
+		selected_ranks = [vector[feature_index] for vector in rank_vectors]
+		remaining_ranks = [value for value in range(1, 98) if value not in selected_ranks]
+		component_ranks.append(selected_ranks + remaining_ranks)
+
+	large_pool = [dataclasses.replace(case, attempts=index) for index in range(97)]
+	measurements = {
+		index: {name: direction * component_ranks[feature_index][index]
+			for feature_index, (name, direction) in enumerate(zip(component_names, directions))}
+		for index in range(97)}
+	monkeypatch.setattr(ranking, 'measurements', lambda item: measurements[item.attempts])
+	large_ranked = ranking.rank(large_pool)
+	large_attempts = [item.attempts for item in large_ranked]
+	assert large_attempts.index(0) < large_attempts.index(1)
+	large_scores = {item.attempts: item.ranking_score for item in large_ranked}
+	assert large_scores[0] == large_scores[1]

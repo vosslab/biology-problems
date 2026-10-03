@@ -28,6 +28,7 @@ class AcceptedCase:
 	diagram: layout.Diagram
 	attempts: int = 1
 	rejections: dict[str, int] = dataclasses.field(default_factory=dict)
+	ranking_score: float | None = None
 
 
 #============================================

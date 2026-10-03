@@ -41,6 +41,8 @@ def parse_arguments() -> argparse.Namespace:
 	parser = bptools.make_arg_parser(description='Generate pedigree inheritance homework. '
 		'Difficulty combines family size, branching, and tracing depth; '
 		'all levels use the same inheritance-evidence checks.')
+	parser.add_argument('-A', '--autosomal', action='store_true',
+		help='Use only autosomal dominant and autosomal recessive patterns (two choices).')
 	parser.add_argument('-s', '--seed', dest='seed', type=int, default=None,
 		help=argparse.SUPPRESS)
 	parser.add_argument('-r', '--review-dir', dest='review_dir', type=pathlib.Path, default=None,
@@ -70,7 +72,8 @@ def parse_arguments() -> argparse.Namespace:
 
 #============================================
 def write_question(N: int, args: argparse.Namespace, rng: random.Random,
-		scenario_iter: collections.abc.Iterator[tuple], question_format: str) -> object:
+		scenario_iter: collections.abc.Iterator[tuple], question_format: str,
+		modes: tuple[str, ...] = inheritance.MODES) -> object:
 	"""Format an accepted MC or matching item for bptools.
 
 	Args:
@@ -79,6 +82,7 @@ def write_question(N: int, args: argparse.Namespace, rng: random.Random,
 		rng: Shared generator for case selection and presentation.
 		scenario_iter: Prepared scenarios; each call consumes one, including collector retries.
 		question_format: identify, select, or match.
+		modes: Inheritance patterns offered in this run.
 
 	Returns:
 		Formatted bptools question item, or None when the finite pool is exhausted.
@@ -106,7 +110,7 @@ def write_question(N: int, args: argparse.Namespace, rng: random.Random,
 		item = bptools.formatBB_MC_Question(N, prompt + ASSUMPTIONS, drawings, drawings[index])
 	else:
 		prompt = '<p>Which inheritance pattern is most likely demonstrated by this pedigree?</p>'
-		choices = list(inheritance.MODES)
+		choices = list(modes)
 		rng.shuffle(choices)
 		item = bptools.formatBB_MC_Question(N, drawings[0] + prompt + ASSUMPTIONS,
 			choices, cases[0].assessment.answer)
@@ -125,7 +129,8 @@ def _save_review(number: int, directory: pathlib.Path, cases: list, affected_col
 		assessment = case.assessment
 		complexity = similarity.complexity(case.case.family)
 		report.append(dict(svg=name, answer=assessment.answer,
-			ranking_score=ranking.score(case),
+			ranking_score=case.ranking_score, ranking_method=ranking.METHOD,
+			ranking_features=ranking.measurements(case),
 			complexity=dataclasses.asdict(complexity), complexity_sort_key=complexity.sort_key(),
 			evidence=assessment.evidence[assessment.answer],
 			compatible_modes=[mode for mode, result in assessment.compatibility.items() if result.compatible],
@@ -152,18 +157,19 @@ def run(args: argparse.Namespace, question_format: str) -> None:
 	rng = random.Random(args.seed)
 	# bptools/QTI own final choice obfuscation; seed their legacy RNG for byte reproducibility.
 	random.seed(args.seed)
+	modes = inheritance.AUTOSOMAL_MODES if args.autosomal else inheritance.MODES
 	requested = args.duplicates
 	if args.max_questions is not None:
 		requested = min(requested, args.max_questions)
 	prepared = []
 	if requested > 0:
 		started = time.perf_counter()
-		pedigrees_per_question = len(inheritance.MODES) if question_format in ('select', 'match') else 1
+		pedigrees_per_question = len(modes) if question_format in ('select', 'match') else 1
 		pool_size = 20 * args.duplicates * pedigrees_per_question
 		print(f'Preparing {pool_size:,} valid pedigree candidates...')
 		prepared = scenarios.build(rng, args.difficulty, question_format,
 			pool_size=pool_size, minimum_scenarios=requested, cache_path=cache.path_for_level(args.difficulty),
-			use_cache=args.cache_mode != 'fresh')
+			use_cache=args.cache_mode != 'fresh', modes=modes)
 		elapsed = time.perf_counter() - started
 		print(f'Prepared {len(prepared)} complete {question_format} scenarios in {elapsed:.2f} seconds.')
 		if requested > len(prepared):
@@ -175,5 +181,8 @@ def run(args: argparse.Namespace, question_format: str) -> None:
 	rng.shuffle(selected)
 	scenario_iter = iter(selected + prepared[requested:])
 	writer = functools.partial(write_question, rng=rng, scenario_iter=scenario_iter,
-		question_format=question_format)
-	bptools.collect_and_write_questions(writer, args, bptools.make_outfile(args.difficulty))
+		question_format=question_format, modes=modes)
+	outfile_parts = [args.difficulty]
+	if args.autosomal:
+		outfile_parts.append('autosomal')
+	bptools.collect_and_write_questions(writer, args, bptools.make_outfile(*outfile_parts))

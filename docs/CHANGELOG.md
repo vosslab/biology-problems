@@ -1,8 +1,156 @@
 # Changelog
 
-## 2026-10-01
+## 2026-10-02
 
 ### Changed
+
+- Integrate rigorous-workload bottom-gap repair before the existing bounded pedigree polisher,
+  followed by five-signal equal-mean percentile ranking and normal scenario assembly. The repair
+  uses 12% as both its geometric entry trigger and stopping target, preserves original people,
+  and respects the current five-generation and 26-person limits. Existing 24-hour cache expiry
+  remains unchanged; cached cases are revalidated and ranked against the current pool without
+  biological repolishing. Scores are pool-relative, not calibrated quality estimates.
+- Replace the pedigree pipeline guide's old ranking formula and removal instructions with the
+  current repair, polishing, sorting, cache, and module contracts.
+- Split the pedigree reference into focused workflow, difficulty, biology, layout, polishing,
+  ranking, probability, and graph-analysis authorities; correct the bonus and generation-specific
+  construction bounds against the current preset tables. Start at
+  [PEDIGREE_PIPELINE.md](../problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md) for the
+  full document map.
+
+### Investigated
+
+- Retrospective comparison of the equal-five sorter on 1,000 reviewed top-pool pedigrees found
+  top-quartile overall means of 3.888 vs 3.824 in development and 3.928 vs 3.888 in validation.
+  Mode-balanced gains were smaller (3.781 vs 3.728; 3.851 vs 3.845), and readability was slightly
+  lower in both pooled splits. The 22.58% blind pilot cutoff remains historical and differs from
+  the production 12% geometric target; the 12% target has no new blind review. No new calibration
+  is planned. Evidence and reproduction receipts remain in sibling `pedigree-aesthetics`.
+
+### Added
+
+- Add `-A` / `--autosomal` to all three pedigree writers for autosomal dominant/recessive warm-ups.
+  Restrict fresh and cached pools, answer choices, and comparable sets to those two modes; add an
+  `autosomal` export suffix so warm-up sets can coexist with the full five-pattern sets.
+
+- Preserve the fixed pedigree visual-review rubric and accumulated evidence in repository-owned
+  [PEDIGREE_RUBRIC.md](../problems/inheritance-problems/pedigrees/PEDIGREE_RUBRIC.md) and
+  [PEDIGREE_EVIDENCE.md](../problems/inheritance-problems/pedigrees/PEDIGREE_EVIDENCE.md). Record the
+  distinction between hard biology/teaching gates and aesthetic ratings, corrected local-search
+  pilot values, empirical limits, and rationale for the current 12% repair target and equal-five
+  sorter. Detailed case data remain in the sibling research checkout.
+
+- Add a diagnostic-only offspring probability tool using original parental genotypes,
+  all five inheritance modes, and equal offspring sex probability. Report sex-by-phenotype
+  Pearson statistics, Monte Carlo fixed-cross tail probabilities, the worst unadjusted
+  sibship p-value, and impossible transmissions. Keep ranking and acceptance unchanged.
+  CLI: `tools/pedigree_probability.py`; definitions and input format are in
+  `problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md`.
+- Preserve a one-time paired 1,000-pedigree rigorous comparison in sibling
+  `pedigree-aesthetics/offspring_probability/`. Before/after polishing, p < 0.05 occurred
+  in 31/33 cases and p < 0.01 in 9/9; no impossible transmissions. This is a fixed-cross
+  diagnostic, not proof of unbiased generation. Retain focused probability-contract tests;
+  repository suite: 4,850 passed.
+
+### Changed
+
+- Let bounded pedigree polishing choose the best structural terminal-child placement before
+  drawing a single weighted Mendelian genotype. Preserve the two-child budget and acceptance
+  gates; do not choose or reroll phenotypes to improve affected distribution. Compare teaching
+  profile presence rather than diagnostic affected-sex counts, fixing the old rule that rejected
+  every affected addition. Preserve the existing whole-pedigree ranking formula.
+- Compare old and revised polishing on the same 200 ordinary rigorous pedigrees in sibling
+  `pedigree-aesthetics/local_polisher/`. Mean ranking score improved by 0.071 over old polishing;
+  affected-region coverage rose by 0.010. These are heuristic measurements, not new Luna ratings.
+  Old polishing added 161 unaffected children and no affected children; the revised version
+  added 137 children including 34 affected, versus a cross-specific expectation of 33.5 among
+  those accepted additions. Acceptance still conditions the sample. Retain one regression for
+  keeping either sampled outcome at the same placement; keep corpus checks experimental.
+
+### Investigated
+
+- Evaluated bounded downward growth on 100 fresh accepted rigorous pedigrees in sibling
+  `pedigree-aesthetics/downward_repair/`. Geometry-first repair adds a valid child in the
+  largest bottom-anchored empty rectangle when E exceeds the frozen historical Q3 cutoff
+  (0.22578), stopping at or below the cutoff, when no improving legal placement exists, after
+  the first sampled candidate fails an acceptance gate, or at the 26-person ceiling. Thirteen
+  cases changed; mean empty-space fraction fell by 0.009 across
+  all cases and 0.068 among changed cases. Blind ratings improved overall usefulness by 0.09
+  and balance by 0.08 across all 100 cases; changed cases improved by 0.69 and 0.62,
+  respectively. Crop-claim sensitivity retained a +0.08 overall change. Five changed cases
+  remained above cutoff at the size ceiling. Fixed-cross p < 0.05 counts were 3/100 before and
+  after; retained outcomes remain conditioned on biological, teaching, difficulty, and layout
+  gates. This small feasibility study does not validate the cutoff or establish production
+  yield or unbiased outcomes; production behavior remains unchanged. Full suite: 4,883 passed.
+
+- Complete frozen confirmation and blinded ratings for the local pedigree-search experiment in
+  sibling `pedigree-aesthetics/local_search/`. Across 80 held-out cases and 536 ratings, Pareto
+  primary selection improved overall usefulness by +0.325 points (case-cluster 95% CI +0.20 to
+  +0.45); scalar selection improved it by +0.025 while readability changed by -0.25. Fixed-cross
+  probability diagnostics were below 0.05 for 18/80 Pareto-selected pedigrees and 2/80 originals,
+  consistent with selection enriching candidates with low fixed-cross p-values; every recorded
+  transmission was valid. The accepted report and independent analysis audit support experimental
+  findings only. A supplemental cohort-yield calculation estimates 32.1% fewer starts for the
+  same 56 benchmark-yield cases, with a 10.55-second baseline-cost break-even under equal-cost and
+  linear-yield assumptions; actual production savings remain unknown. Production ranking and
+  polisher behavior remain unchanged. Reproduction commands, input hashes, and measured artifact
+  storage are recorded in sibling
+  `pedigree-aesthetics/local_search/REPRODUCE.md` and `STORAGE.md`.
+- Explored lower-row empty space as an image measure in sibling
+  `pedigree-aesthetics/bottom_empty_space/`. Empty fraction correlated with balance in both
+  historical halves (rho -0.320/-0.286), and weakly with overall rating (-0.152/-0.141) and
+  interest (-0.067/-0.094). Across 80 paired Pareto outputs, mean empty fraction fell by 0.073;
+  its change correlated with changes in overall rating (-0.342) and balance (-0.400). These are
+  experimental associations; production ranking and acceptance remain unchanged.
+
+## 2026-10-01
+
+### Investigated
+
+- Reused the 1,000 rigorous Luna ratings for spatial measurements; preserved the follow-up
+  in sibling `pedigree-aesthetics/top1000/spatial/REPORT.md`. Affected quadrant coverage
+  correlated with interest at +0.322/+0.304 across the existing halves; affected generation
+  coverage at +0.363/+0.380. General area fill was weaker. Retired diameter/radius as ranking
+  candidates; neither was in production ranking. Production weights remain unchanged.
+  Also tested occupied-cell affected coverage at the user's two native cell sizes:
+  2 generations x 4 sibling pitches gave interest +0.343/+0.347; 3 x 5 gave +0.308/+0.283.
+  Preserved boundary sensitivity and confounding caveats; no difficulty-specific grid added.
+
+- Reviewed the highest-ranked 1,000 final images from 10,000 valid, polished,
+  five-generation rigorous pedigrees with the fixed blind Luna-6 rubric, split into 500
+  development and 500 validation cases. Preserve all scored candidates and the analysis in
+  sibling `pedigree-aesthetics/top1000/analysis/REPORT.md` and `scored_cases.json`.
+  Outside affected-reach fraction again correlated negatively with interest (rho -0.30
+  development, -0.29 validation). Top-100 overall ratings exceeded the next 900 (3.940 vs.
+  3.684), but selected-only reviews cannot establish improvement over a random valid pool.
+
+- Measured affected ancestry reach and trailing unaffected generations on the existing 200
+  polished pedigree reviews. Preserved the script, annotated gallery, raw measurements, and
+  limitations in sibling `pedigree-aesthetics/AFFECTED_REACH.md`. Unaffected relatives can
+  supply teaching evidence; production ranking and acceptance rules remain unchanged.
+
+### Changed
+
+- Make HTML pedigree widths follow the question font size instead of a pixel width capped
+  at 75% of the container. Wide drawings scroll in a keyboard-focusable region, so zoom
+  enlarges symbols and labels without shrinking them back to fit. Preserve the 2 px stroke
+  floor. Existing website questions must be regenerated to receive the new markup.
+
+- Add outside affected-reach fraction to pedigree ranking with a modest 0.1 penalty weight:
+  `progression - mean_row_density - 0.1 * outside_fraction`. Isolate the visible-ancestry
+  measurement from ranking and acceptance. Preserve unaffected ancestors and immediate
+  partners; do not prune or reject people outside reach. The existing affected-depth gate
+  remains separate. Retain one measurement-contract test without pinning the tunable weight.
+  Production measurements match all 200 archived cases; full suite: 4,843 passed.
+
+- Keep pedigree connectors, symbol outlines, and the HTML frame at fixed 2 px (1.5 pt),
+  above the requested 1 pt minimum during 75% and responsive scaling. SVG strokes no longer
+  scale; browser checks at 320, 600, and 1200 px confirmed the HTML stroke floor.
+- Require a visibly affected individual in either of the last two pedigree generations through
+  the shared teaching acceptance gate, including cached cases and polished candidates. All
+  five modes remain generatable across every supported difficulty/matching preset (70 fresh
+  polished cases checked). Retain one parametrized acceptance-boundary regression; browser
+  measurements and the preset sweep are one-time checks. Full suite: 4,833 passed.
 
 - Reduced pedigree display width and height by 25% in HTML questions and SVG review
   exports, preserving family sizes, layout geometry, and proportions.
