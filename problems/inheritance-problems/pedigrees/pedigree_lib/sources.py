@@ -11,6 +11,7 @@ import yaml
 # local repo modules
 import pedigree_lib.family as family_model
 import pedigree_lib.inheritance as inheritance
+import pedigree_lib.terminal_frontier as terminal_frontier
 
 
 #============================================
@@ -170,7 +171,17 @@ def procedural_family(rng: random.Random, min_people: int = 11,
 	if plan is None:
 		raise ValueError('Size bounds and couple/child counts cannot hold a supported teaching family')
 	parents, sizes = plan
-	upper = [root_children[1] if i < seed_couples else children[1] for i in range(len(parents))]
+	result, _ = _instantiate(rng, parents, sizes, seed_couples, root_children, children,
+		min_people, max_people)
+	return result
+
+
+#============================================
+def _instantiate(rng: random.Random, parents: list, sizes: list[int], seeds: int,
+		roots: tuple[int, int], children: tuple[int, int], min_people: int, max_people: int,
+		terminal_unions: tuple[int, ...] = ()) -> tuple[family_model.Family, tuple[str, ...]]:
+	"""Allocate complete sibships and instantiate either relationship plan once."""
+	upper = [roots[1] if i < seeds else children[1] for i in range(len(parents))]
 	# Joining seed families uses two existing children instead of a new spouse.
 	# With seeds-1 joining unions, total people = total couples + 1 + all children.
 	remaining = rng.randint(max(sum(sizes), min_people - len(parents) - 1),
@@ -182,6 +193,17 @@ def procedural_family(rng: random.Random, min_people: int = 11,
 		added = rng.randint(max(0, remaining - capacity_after), min(remaining, upper[index] - sizes[index]))
 		sizes[index] += added
 		remaining -= added
+
+	# Designation belongs to planning slots, before any Person is created.
+	designated_slots = {}
+	for position, index in enumerate(terminal_unions):
+		if position == 0:
+			child_index = 0
+		elif position == len(terminal_unions) - 1:
+			child_index = sizes[index] - 1
+		else:
+			child_index = rng.randrange(sizes[index])
+		designated_slots[index] = (index, child_index)
 
 	# Sex follows the planned parental role for marrying children; all others are random.
 	sex_by_slot = {slot: sex for pair in parents
@@ -202,11 +224,35 @@ def procedural_family(rng: random.Random, min_people: int = 11,
 			sex = sex_by_slot[slot] if slot in sex_by_slot else rng.choice(('male', 'female'))
 			slots[slot] = add_person(sex)
 			offspring.append(slots[slot])
-		rng.shuffle(offspring)
+		if not terminal_unions:
+			rng.shuffle(offspring)
 		unions.append(family_model.Union(father, mother, tuple(offspring)))
 	result = family_model.Family(tuple(people), tuple(unions))
 	result.generations()
-	return result
+	designated = tuple(slots[slot] for slot in designated_slots.values())
+	return result, designated
+
+
+#============================================
+def frontier_family(rng: random.Random, min_people: int, max_people: int,
+		generations: int, *, seed_couples: int, couples: tuple[int, int],
+		children: tuple[int, int], root_children: tuple[int, int],
+		frontier_count: int) -> tuple[family_model.Family, tuple[str, ...]]:
+	"""Construct a checked frontier, returning transient designated person IDs.
+
+	Raises:
+		ValueError: Invalid construction inputs.
+		terminal_frontier.Rejected: This sampled shape or layout cannot realize the frontier.
+	"""
+	plan = terminal_frontier.plan(rng, generations, seed_couples, couples,
+		children, root_children, (min_people, max_people), frontier_count)
+	if plan is None:
+		raise terminal_frontier.Rejected('Frontier capacity cannot fit the sampled shape')
+	parents, sizes, terminals = plan
+	family, designated = _instantiate(rng, parents, sizes, seed_couples,
+		root_children, children, min_people, max_people, terminals)
+	terminal_frontier.validate_layout(family, designated)
+	return family, designated
 
 
 #============================================
@@ -238,6 +284,19 @@ def simulate_case(mode: str, rng: random.Random, min_people: int = 11,
 		raise ValueError(f'Unknown mode: {mode}')
 	family = procedural_family(rng, min_people, max_people, generations, seed_couples=seed_couples,
 		couples=couples, children=children, root_children=root_children)
+	result = simulate_family(family, mode, rng, show_carriers)
+	return result
+
+
+#============================================
+def simulate_family(family: family_model.Family, mode: str, rng: random.Random,
+		show_carriers: bool = False) -> Case:
+	"""Apply existing founder policy and Mendelian simulation to a completed family.
+
+	Construction provenance is deliberately absent from this interface.
+	"""
+	if mode not in inheritance.MODES:
+		raise ValueError(f'Unknown mode: {mode}')
 	parents = family.parentage()
 	later_spouses = family_model.later_spouses(family)
 	founders = {}

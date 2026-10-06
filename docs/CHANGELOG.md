@@ -1,5 +1,180 @@
 # Changelog
 
+## 2026-10-06
+
+### Fixes and Maintenance
+
+- Reduced pedigree polish search work by skipping unions at their configured non-founder child
+  cap and generations whose added child cannot improve row progression. Existing shuffle and
+  random-draw order, difficulty checks, and acceptance gates remain; configured numeric limits
+  are unchanged. On the 50 saved inputs, whole-call replay counts fell from 820 to 533 `Family`
+  constructions and from 591 to 304 difficulty checks, including the unchanged final check.
+  Timings did not establish a speed benefit.
+
+### Behavior or Interface Changes
+
+- Added the matched terminal-frontier interest review to
+  [PEDIGREE_EVIDENCE.md](../problems/inheritance-problems/pedigrees/PEDIGREE_EVIDENCE.md).
+  Two reviewers found no higher interest; their balance, readability, and usefulness judgments
+  differed. The evidence preserves production policy and records the corrected-run limitation.
+
+### Developer Tests and Notes
+
+- Focused pedigree tests passed (148); scoped `pyflakes` passed. All 50 saved inputs retained
+  byte-identical results and ending RNG state. Whole-call replay work counts included the final
+  endpoint check; paired timings varied without establishing a speed benefit.
+
+## 2026-10-05
+
+### Behavior or Interface Changes
+
+- Added terminal-frontier family construction for bonus identification pools. The
+  constructor reserves terminal sibling slots before connecting middle generations; transient
+  designated IDs remain outside family biology, renderer inputs, and cache records. The pipeline
+  validates geometry before simulation and checks the rendered endpoints after acceptance and
+  topology-changing stages, rolling back a proposal that breaks the endpoint contract.
+- Recorded the 100-target and 10-pair moderate comparison. Bonus identification enables random
+  frontier sizes 9 or 10; easy and all other paths keep baseline construction. Polishing remains
+  unchanged and its small frequency difference is not treated as a benefit.
+
+### Developer Tests and Notes
+
+- Final validation passed 13 terminal-frontier tests, all 148 pedigree tests, and the full suite
+  (5,035 passed; two existing source-length warnings). Four fresh/cache identify CLI runs passed;
+  42 BBQ/HTML/ZIP artifacts and 34 SVGs were audited. All 80 Markdown-link checks passed. The
+  100-target comparison accepted every target; one reviewer preferred frontier in four of five
+  bonus pairs. See [PEDIGREE_EVIDENCE.md](../problems/inheritance-problems/pedigrees/PEDIGREE_EVIDENCE.md).
+
+## 2026-10-04
+
+### Behavior or Interface Changes
+
+- Refined both plant-question layouts: regular reference tables sit beside each other
+  when space allows and stack on narrow screens. Whole two-gene genotypes stay together,
+  allele text matches the surrounding font size, and bonus crosses occupy separate lines.
+  Shortened setup wording and brightness-table labels. Bonus questions now ask for the
+  probability of an offspring's phenotype after random selection of the first-cross plant.
+- Corrected doubled table-image display sizes in the companion `qti-package-maker`
+  exporter so the compact layout also survives Blackboard image conversion.
+- Revised the two plant probability generators against the new question voice and pedagogy
+  guides. Genotype tables come first, parents' colors and markings occupy separate columns,
+  and specific target combinations use labeled fields instead of nested phenotype phrases.
+  Removed repeated table explanations and shortened probability lead-ins. Numbered allele
+  subscripts and italic letters are retained with monospace formatting.
+- Replaced arbitrary fraction substitutions with named genetic errors: omitted genes,
+  complete-dominance assumptions, missed heterozygote routes, wrong genotype rows, memorized
+  parental crosses, and incorrect conditioning in the bonus questions. Worked choices sort
+  by probability and use distinct results. Some regular scenarios have three meaningful
+  choices instead of padding to four. Pools still contain 378 regular and 144 bonus scenarios.
+- The bonus brightness table now runs from dark for no glow to light for very high brightness,
+  with readable foreground colors and text labels. Cross wording avoids "a A1A2 plant".
+
+### Developer Tests and Notes
+
+- Layout follow-up: checked five items per generator at 900- and 375-pixel widths in both
+  native HTML and actual packaged Blackboard HTML with resolved images. Verified all 522
+  keys independently; the 35 focused biology tests and 23 companion image-export tests
+  passed. Current gallery, matching before/after examples, screenshots, and export checks
+  are under `output_plant_voice/layout/`. No live Blackboard import was performed.
+- All 522 keys matched an independent enumeration of physical gamete pairs, including
+  phenotype selection and the second cross. Every displayed calculation was verified;
+  wrong choices map to named errors and choices remain in numerical order. The focused plant
+  and bptools suite passed 35 checks. Scoped pyflakes and diff whitespace checks passed.
+- Reviewed five rendered items per generator and before/after samples in
+  `output_plant_voice/`. The advisory checker went from 144 article findings in the bonus
+  stems to no findings in either complete pool. Both layouts fit a 375-pixel viewport.
+  Five fresh CLI items per generator exported to self-test HTML and Blackboard ZIPs with
+  valid XML and 15 regular/5 bonus table PNGs. Exported tables were visually inspected;
+  brightness text contrast ranges from 4.93:1 to 14.27:1.
+  `output_plant_voice/REVIEW.md` records the authoring contract, rubric review, distractor
+  rationales, and key-verification evidence. No full repository suite or live LMS import ran.
+
+## 2026-10-03
+
+### Additions and New Features
+
+- Added canonical guidance for student-facing question text:
+  [QUESTION_PEDAGOGY_GUIDE.md](QUESTION_PEDAGOGY_GUIDE.md) (puzzle-first design workflow,
+  error-derived distractors, seriously absurd choices, item structure, statement and matching
+  banks, answer verification, a review rubric routed by item type, and verified references),
+  [QUESTION_VOICE_GUIDE.md](QUESTION_VOICE_GUIDE.md) (stem anatomy, emphasis, hints, choice layout
+  and ladders, per-type instructions, numbers, formatting, mechanics), and
+  [QUESTION_EXEMPLARS.md](QUESTION_EXEMPLARS.md) (verbatim model and fix examples from Neil's
+  exams, pre-agent generators, and banks, each citing its rule).
+- Added [QUESTION_EVIDENCE.md](QUESTION_EVIDENCE.md): the corpus audit behind the guides (exam,
+  generator, and bank quotes; Neil's 2026 correction log; defects found) plus verified published
+  research (Haladyna 2002, NBME guide, Rodriguez 2005, humor-in-testing studies, LLM item-quality
+  studies) and local book passages with search terms. Bundled into both writer skills.
+- Added `devel/check_question_text.py`, an advisory checker that reads BBQ files and reports
+  testwiseness cues and text slips: longest key (K1), hedge/absolute asymmetry (K2), key-word
+  echo (K3), article slips (K4), spacing (K5), stem/choice unit mismatch (K6), and generic
+  lead-ins (K7). It always exits 0 and strips hidden anti-cheat spans before checking.
+
+### Behavior or Interface Changes
+
+- Rewrote the example content of `problems/TEMPLATE.py` as a small dilution puzzle: data-first
+  stem, randomized scenarios, distractors each computed from a named student error (commented),
+  one optional deadpan absurd choice, and natural ascending choice order. Structure, argparse,
+  and `main()` are unchanged; the old example kept two correct-looking terms in its choice pool.
+- [QUESTION_AUTHORING_GUIDE.md](QUESTION_AUTHORING_GUIDE.md) gains a "Student-facing text"
+  section and an error-derived skeleton example; the assert advice now points to `tests/`.
+- The MC-statement and matching-set authoring guides now link to the canonical guides for
+  wording and pedagogy rules (larger false pools, one-term swaps, balanced hedges, absurd choices,
+  values without key-word echo) instead of restating or contradicting them.
+- `AGENTS.md` points student-facing text work to the three guides.
+
+### Fixes and Maintenance
+
+- Recorded the decision that question-writing guides are canonical here and bundled into the
+  `bptools-writer-expert` and `webwork-writer-expert` skills
+  ([DESIGN_DECISIONS.md](DESIGN_DECISIONS.md)), and five of Neil's statements on question writing
+  in [HUMAN_GUIDANCE.md](HUMAN_GUIDANCE.md).
+- The template now samples a richer pool of named-error dilution choices before natural sorting,
+  so a fixed error-choice prefix does not reveal the requested answer position.
+
+### Decisions and Failures
+
+- The writer skill had no guidance on student-facing text and demanded a `--seed`
+  byte-identical proof that `bptools.py` cannot produce; agent effort went to infrastructure
+  proof instead of reading the questions. The new guides and the skill's review step address this.
+- Neil loves seriously absurd choices; published guidelines count blatantly absurd options as a
+  giveaway. Resolution: absurd choices are welcome, and authors judge whether the remaining
+  alternatives assess the intended reasoning. The guides set no numeric quota for either kind.
+- Found during the audit and left for separate follow-up: `x_linked_tortoiseshell.py` keys every
+  "daughters" question "None, 0%" (it compares "daughters" to the sex label "female"), and
+  `serial_dilution_factor_mc.py` states a total in uL with choices in mL.
+- `QUESTION_EVIDENCE.md` is the durable audit and evidence record, replacing the plan's proposed
+  duplicate `docs/active_plans/audits/question_voice_audit.md`.
+- The initial literal blind replay tied both arms at 189/200 rubric-category points. The accepted
+  loop-one revision narrows general guide language on scenario variety, misconception pairs, and
+  ratio order without numerical quotas or forced no-replacement; affected treatment arms will be
+  rerun before any improvement claim.
+- The initial literal replay tie at 189/200 remains valid. A first loop-one set-level summary
+  (41/44) and provisional 95%/92.5% comparison were corrected before review. Independent final
+  review accepted the corrected loop-one sample: control 185/200 (92.5%) and treatment 192/200
+  (96.0%) across R1 60/60 versus 52/60, R2 60/70 versus 70/70, and R3 65/70 versus 70/70. No
+  second guide loop is required.
+
+### Developer Tests and Notes
+
+- Added `tests/test_check_question_text.py` (hidden-span stripping, longest-key margin, hedge
+  asymmetry, article slips including "an X-linked", missing spaces). The pre-integration full
+  suite passed 4,989 tests; the final full suite passed 4,993 tests with two pre-existing
+  source-size advisory warnings (`bptools_legacy.py` and `webwork_lib.py`).
+- A one-time exhaustive template verifier covered 32 dilution scenarios with 2, 3, 4, and 5
+  choices, confirming unique naturally ordered choices and varied answer positions. It was then
+  removed rather than promoted to a permanent test.
+- During the in-progress blind evaluation, all 60 independently checked replay answer keys are
+  correct. The WebWork incomplete-dominance item now passes lint, accepts `0.5`, rejects `0.25`,
+  and passed screenshot review; the initially bare description and answer-revealing entry example
+  remain recorded in the evaluation evidence. Final scoring and review remain pending.
+- Across both evaluation rounds, all 120 independently checked answer keys are correct; V4 runtime
+  and V5 dry-run checks are complete. The corrected final comparison passed independent review.
+- An independent review agent checked the guides for duplicated rules, citation and anchor
+  resolution, positive phrasing, example correctness, and coverage of Neil's 2026 corrections;
+  its findings (including a misattributed quote and a wrong explanation of a gene-map item) were
+  fixed. 85 "guide > heading" citations resolve.
+
 ## 2026-10-02
 
 ### Changed

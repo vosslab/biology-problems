@@ -25,7 +25,16 @@ def test_at_least_100_unique_scenarios_with_distinct_answers(
 	for item in items:
 		values = [fractions.Fraction(choice.rsplit(" = ", 1)[1]) for choice in item.choices_list]
 		assert len(set(values)) == len(values)
+		assert values == sorted(values)
 		assert item.choices_list.count(item.answer_text) == 1
+	for scenario, item in zip(module.SCENARIOS, items):
+		if filename.endswith("bonus.py"):
+			errors = module.distractor_terms(*scenario)
+		else:
+			errors = module.distractor_terms(scenario[1], scenario[2], scenario[4])
+		named_errors = {module.plantprobabilitylib.calculation_text(terms)
+			for error, terms in errors if error}
+		assert all(c == item.answer_text or c in named_errors for c in item.choices_list)
 
 
 def test_bonus_weights_genotypes_with_the_same_phenotype() -> None:

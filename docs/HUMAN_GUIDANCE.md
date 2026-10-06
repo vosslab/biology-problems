@@ -20,6 +20,18 @@ origin belongs there too. Rules: [REPO_STYLE.md](REPO_STYLE.md).
   students often think that this DNA is always cut on the 0 mark even though the
   enzyme in the question does not cut there.
 
+## Question writing
+
+- Student-facing voice, style, and pedagogy need as much care as the Python, which is already
+  fine.
+- My content is not perfect either; we are developing best practices, not copying my old
+  questions.
+- I love seriously absurd choices.
+- Do not assume everything is AI; ideas such as ordering model organisms by complexity (flies
+  have legs, eyes, and a brain; worms do not) are mine.
+- I am not a writer; I am a thinker and puzzle solver with a strong math mind. Questions
+  should be puzzles with few words.
+
 ## Blackboard HTML
 
 - Use as few HTML elements as possible; Blackboard may not render complex markup as expected.

@@ -27,8 +27,12 @@ def polish(original: questions.AcceptedCase, rng: random.Random, level: str,
 		case = current.case
 		rows = generation_features.counts(case.family)
 		before_shrink = generation_features.shrink(rows)
-		if before_shrink == 0 or len(case.family.people) >= difficulty.difficulty_settings(level, matching)['people'][1]:
+		if before_shrink == 0:
 			break
+		settings = difficulty.difficulty_settings(level, matching)
+		if len(case.family.people) >= settings['people'][1]:
+			break
+		before_progression = generation_features.progression(rows)
 		ranks = case.family.generations()
 		options = [index for index, union in enumerate(case.family.unions)
 			if ranks[union.father] + 1 >= 2
@@ -44,15 +48,24 @@ def polish(original: questions.AcceptedCase, rng: random.Random, level: str,
 			pid += '_'
 		best = None
 		best_score = ranking.structure_score(case.family, current.diagram)
+		generation_eligibility = {}
 		for index in options:
+			union = case.family.unions[index]
+			child_generation = ranks[union.father] + 1
+			if len(union.children) >= settings['children'][1]:
+				continue
+			if child_generation not in generation_eligibility:
+				proposed_rows = rows.copy()
+				proposed_rows[child_generation] += 1
+				generation_eligibility[child_generation] = (
+					generation_features.shrink(proposed_rows) < before_shrink
+					and generation_features.progression(proposed_rows) >= before_progression)
+			if not generation_eligibility[child_generation]:
+				continue
 			unions = list(case.family.unions)
-			unions[index] = dataclasses.replace(unions[index], children=unions[index].children + (pid,))
+			unions[index] = dataclasses.replace(union, children=union.children + (pid,))
 			family = family_model.Family(case.family.people + (family_model.Person(pid, sex),), tuple(unions))
 			if not difficulty.fits_difficulty(family, level, matching):
-				continue
-			after = generation_features.counts(family)
-			if (generation_features.shrink(after) >= before_shrink
-					or generation_features.progression(after) < generation_features.progression(rows)):
 				continue
 			diagram = layout.lay_out(family, mirror=mirror)
 			if layout.layout_errors(diagram) or diagram.width > current.diagram.width:

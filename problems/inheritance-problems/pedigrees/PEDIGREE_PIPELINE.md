@@ -92,8 +92,16 @@ macOS/Linux; separate runs may select the same reusable case.
 ## Preparation flow
 
 For each fresh candidate, the pipeline simulates a family and applies rare-trait, biological,
-teaching, then layout acceptance. Every fresh candidate enters the downward-repair stage; it changes
-only a qualifying rigorous workload and otherwise returns the case unchanged. The ordinary bounded
+teaching, and layout acceptance. Bonus identification pools use the terminal-frontier constructor;
+easy, other difficulties, and other formats use procedural construction. The public
+`generate_candidate` helper retains baseline construction, while `generate_pool` routes by the
+actual question format. Construction first validates the planned layout before biology is
+simulated. Frontier IDs stay local to the candidate call. After ordinary acceptance, the pipeline
+checks the actual `Diagram` endpoints. Downward repair and ordinary polishing each run as usual; if
+either changes the terminal endpoints, the pipeline discards that stage's proposal and retains its
+accepted input. This preserves the endpoint contract without changing either stage's internal
+acceptance rules. Every fresh candidate enters the downward-repair stage; it changes only a
+qualifying rigorous workload and otherwise returns the case unchanged. The ordinary bounded
 polisher then runs for every workload, including easy, bonus, selection, and matching. See
 [PEDIGREE_POLISHING.md](PEDIGREE_POLISHING.md) for exact scopes and stops. Cached cases are
 revalidated and ranked in the current pool without biological repolishing. Accepted candidates are

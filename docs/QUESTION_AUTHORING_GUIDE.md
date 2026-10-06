@@ -6,6 +6,16 @@ Use this guide to create a new question generator from scratch using
 `TEMPLATE.py` as the starting point. It covers the required structure,
 argparse setup, and output conventions used across this repo.
 
+## Student-facing text
+
+Design the puzzle first, then write the thinnest wrapper around it.
+
+- Read [QUESTION_PEDAGOGY_GUIDE.md](QUESTION_PEDAGOGY_GUIDE.md) before writing code: it covers the
+  data, the key, and the error-derived wrong choices.
+- Read [QUESTION_VOICE_GUIDE.md](QUESTION_VOICE_GUIDE.md) before writing the stem and choices.
+- Run [check_question_text.py](../devel/check_question_text.py) on the generated BBQ output. Its
+  findings are advisory and point the item to a closer read.
+
 ## Start from `TEMPLATE.py`
 
 - Copy `TEMPLATE.py` into the appropriate `problems/*-problems/` folder.
@@ -31,8 +41,9 @@ cp TEMPLATE.py problems/inheritance-problems/my_new_question.py
 
 Your script should follow this shape, which matches the shared helpers:
 
-- `get_question_text()` returns the prompt string.
-- `generate_choices(num_choices)` returns `(choices_list, answer_text)`.
+- `get_question_text(...)` returns the prompt string; pass in any scenario values it needs.
+- `generate_choices(num_choices, ...)` returns `(choices_list, answer_text)`, built from the same
+  scenario values as the prompt.
 - `write_question(N, args)` returns the formatted question string.
 - `parse_arguments()` builds an argparse parser with shared helpers.
 - `main()` creates the output name and calls
@@ -43,17 +54,23 @@ Minimal skeleton (tabs for indentation):
 ```python
 #!/usr/bin/env python3
 
-import random
 import bptools
 
 def get_question_text() -> str:
-	question_text = "Replace with your prompt."
+	question_text = "You add 10 &micro;L of stock solution to 90 &micro;L of distilled water. "
+	question_text += "What fraction of the new solution is stock solution?"
 	return question_text
 
 def generate_choices(num_choices: int) -> (list, str):
-	choices_list = ["correct", "wrong 1", "wrong 2"]
-	answer_text = "correct"
-	random.shuffle(choices_list)
+	answer_text = "1/10"
+	# choices stay in natural order (numbers ascending), so there is no shuffle
+	choices_list = [
+		answer_text,
+		# error: divides the stock volume by the water volume, not the total (10/90)
+		"1/9",
+		# error: reports the water fraction instead of the stock fraction (90/100)
+		"9/10",
+	]
 	return choices_list, answer_text
 
 def write_question(N: int, args) -> str:
@@ -67,6 +84,10 @@ def write_question(N: int, args) -> str:
 	)
 	return complete_question
 ```
+
+Derive each wrong choice from one named student error and keep the error comment; `TEMPLATE.py`
+computes its wrong choices in code. Shuffle only choices that have no natural order (see Layout
+and order in [QUESTION_VOICE_GUIDE.md](QUESTION_VOICE_GUIDE.md)).
 
 ## Argparse setup
 
@@ -127,10 +148,12 @@ renders the script correctly after the change.
 Run the script with a small duplicate count and choices count:
 
 ```bash
-python3 problems/inheritance-problems/my_new_question.py -d 1 -c 4
+source source_me.sh && python3 problems/inheritance-problems/my_new_question.py --mc -d 1 -c 4
 ```
 
-If you add helper functions that are pure and small, include a simple `assert`.
+Cover pure helper functions that deserve protection with a pytest file in `tests/`. Asserts live
+only in `tests/`, never in generator scripts (see [PYTHON_STYLE.md](PYTHON_STYLE.md) and
+[PYTEST_STYLE.md](PYTEST_STYLE.md)).
 
 ## Changelog
 

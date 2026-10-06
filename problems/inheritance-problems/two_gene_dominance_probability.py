@@ -13,8 +13,8 @@ import plantprobabilitylib
 
 # Each row lists second-allele homozygote, heterozygote, first-allele homozygote.
 PETALS = {
-	"incomplete": ("white petals", "pink petals", "red petals"),
-	"codominant": ("white petals", "red and white patches on petals", "red petals"),
+	"incomplete": ("white", "pink", "red"),
+	"codominant": ("white", "red and white patches", "red"),
 }
 MARKINGS = {
 	"incomplete": ("thin stripes", "medium-width stripes", "wide stripes"),
@@ -26,12 +26,6 @@ MODELS = (
 	("codominant", "incomplete"),
 )
 SCENARIOS: list[tuple] = []
-
-
-#=====================
-def phenotype_text(model: tuple, genotype: tuple) -> str:
-	text = f"{PETALS[model[0]][genotype[0]]} with {MARKINGS[model[1]][genotype[1]]}"
-	return text
 
 
 #=====================
@@ -77,12 +71,14 @@ def build_scenarios() -> list[tuple]:
 
 #=====================
 def phenotype_tables(model: tuple) -> str:
-	text = ""
+	text = "<div>"
 	for index, (gene, title, descriptions) in enumerate((
 		("A", "Petal color", PETALS[model[0]]),
 		("B", "Flower markings", MARKINGS[model[1]]),
 	)):
-		text += plantprobabilitylib.table_start(title)
+		# Keep each key intact when tables become images in Blackboard exports.
+		text += "<div style='display: inline-block; vertical-align: top; margin-right: 16px;'>"
+		text += plantprobabilitylib.table_start(f"{title} (gene <i>{gene}</i>)")
 		style = plantprobabilitylib.CELL_STYLE
 		text += f"<tr><th scope='col' style='{style}'>Genotype</th>"
 		text += f"<th scope='col' style='{style}'>Appearance</th></tr>"
@@ -92,7 +88,23 @@ def phenotype_tables(model: tuple) -> str:
 			text += f"<span style='color: {plantprobabilitylib.GENE_COLORS[index]};'>"
 			text += plantprobabilitylib.locus_text(copies, gene) + "</span></th>"
 			text += f"<td style='{style}'>{descriptions[copies]}</td></tr>"
-		text += "</table>"
+		text += "</table></div> "
+	text += "</div>"
+	return text
+
+
+#=====================
+def parent_table(model: tuple, first: tuple, second: tuple) -> str:
+	style = plantprobabilitylib.CELL_STYLE
+	text = plantprobabilitylib.table_start("Parent cross")
+	text += f"<tr><th scope='col' style='{style}'>Plant</th>"
+	text += f"<th scope='col' style='{style}'>Petal color</th>"
+	text += f"<th scope='col' style='{style}'>Markings</th></tr>"
+	for number, genotype in enumerate((first, second), 1):
+		text += f"<tr><th scope='row' style='{style}'>Parent {number}</th>"
+		text += f"<td style='{style}'>{PETALS[model[0]][genotype[0]]}</td>"
+		text += f"<td style='{style}'>{MARKINGS[model[1]][genotype[1]]}</td></tr>"
+	text += "</table>"
 	return text
 
 
@@ -109,12 +121,18 @@ def request_text(model: tuple, kind: str, targets: tuple) -> str:
 	elif kind == "different":
 		outcome = "a combination of petal color and markings that neither parent has"
 	elif kind == "either_color":
-		colors = " or ".join(PETALS[model[0]][genotype[0]] for genotype in targets)
-		markings = MARKINGS[model[1]][targets[0][1]]
-		outcome = f"{colors}, together with {markings}"
+		colors = " <strong>OR</strong> ".join(
+			PETALS[model[0]][genotype[0]] for genotype in targets)
+		text = f"<p>Petal color: {colors}<br/>"
+		text += f"Markings: {MARKINGS[model[1]][targets[0][1]]}</p>"
+		text += "<p>What fraction of the offspring will have this combination?</p>"
+		return text
 	else:
-		outcome = phenotype_text(model, targets[0])
-	text = f"<p>What is the probability that an offspring will have <strong>{outcome}</strong>?</p>"
+		text = f"<p>Petal color: {PETALS[model[0]][targets[0][0]]}<br/>"
+		text += f"Markings: {MARKINGS[model[1]][targets[0][1]]}</p>"
+		text += "<p>What fraction of the offspring will have this combination?</p>"
+		return text
+	text = f"<p>What fraction of the offspring will have {outcome}?</p>"
 	return text
 
 
@@ -128,19 +146,73 @@ def answer_terms(first: tuple, second: tuple, targets: tuple) -> tuple:
 
 
 #=====================
+def distractor_terms(first: tuple, second: tuple, targets: tuple) -> list:
+	"""Recompute the requested event under named mistakes, not arbitrary fractions."""
+	counts = [plantprobabilitylib.locus_counts(a, b) for a, b in zip(first, second)]
+	correct = answer_terms(first, second, targets)
+	errors = []
+	for locus, gene in enumerate(("A", "B")):
+		for mistake in ("ignore_gene", "miss_heterozygote_route", "equal_genotypes",
+				"complete_dominance", "assume_heterozygous_parents", "wrong_genotype_row",
+				"other_homozygote_row"):
+			terms = []
+			for genotype, pair in zip(targets, correct):
+				copies = genotype[locus]
+				count = counts[locus][copies]
+				if mistake == "ignore_gene":
+					# Error: assume every offspring has the requested trait at this gene.
+					factor = fractions.Fraction(1)
+				elif mistake == "miss_heterozygote_route":
+					# Error: count only one parental route to a heterozygote.
+					misses_route = copies == 1 and first[locus] == second[locus] == 1
+					factor = fractions.Fraction(count, 8 if misses_route else 4)
+				elif mistake == "equal_genotypes":
+					# Error: count distinct genotypes rather than equally likely gamete pairs.
+					factor = fractions.Fraction(1, len(counts[locus]))
+				elif mistake == "complete_dominance":
+					# Error: merge the heterozygote and allele-1 homozygote phenotypes.
+					count = sum(n for g, n in counts[locus].items() if (g > 0) == (copies > 0))
+					factor = fractions.Fraction(count, 4)
+				elif mistake == "assume_heterozygous_parents":
+					# Error: use a memorized heterozygote x heterozygote cross at this gene.
+					factor = fractions.Fraction(2 if copies == 1 else 1, 4)
+				elif mistake == "wrong_genotype_row":
+					# Error: use a heterozygote row for a homozygote, or the reverse.
+					wrong_row = 2 if copies == 1 else 1
+					count = sum(n for g, n in counts[locus].items() if g == wrong_row)
+					factor = fractions.Fraction(count, 4)
+				else:
+					# Error: choose the other homozygote row, including the other side of a blend.
+					wrong_row = 0 if copies == 1 else 2 - copies
+					count = sum(n for g, n in counts[locus].items() if g == wrong_row)
+					factor = fractions.Fraction(count, 4)
+				changed = list(pair)
+				changed[locus] = factor
+				terms.append(tuple(changed))
+			errors.append((f"{mistake}_{gene}", tuple(terms)))
+	# Error: count just one gamete route to each two-gene genotype.
+	missed_routes = tuple((a / 2 if g[0] == first[0] == second[0] == 1 else a,
+		b / 2 if g[1] == first[1] == second[1] == 1 else b)
+		for g, (a, b) in zip(targets, correct))
+	errors.append(("miss_heterozygote_routes_both_genes", missed_routes))
+	# Error: replace the actual cross with a memorized double-heterozygote cross.
+	terms = answer_terms((1, 1), (1, 1), targets)
+	errors.append(("assume_double_heterozygous_parents", terms))
+	return errors
+
+
+#=====================
 def write_question(N: int, args: argparse.Namespace) -> object | None:
 	if N > len(SCENARIOS):
 		return None
 	model, first, second, kind, targets = SCENARIOS[N - 1]
-	text = "<p>In fictional mosaic plants, gene <i>A</i> affects petal color and gene <i>B</i> affects "
-	text += "flower markings. The genes assort independently. The tables show each genotype's "
-	text += "appearance.</p>"
-	text += phenotype_tables(model)
-	text += "<p>Two plants are crossed:<br/>"
-	text += f"<strong>Parent 1:</strong> {phenotype_text(model, first)}<br/>"
-	text += f"<strong>Parent 2:</strong> {phenotype_text(model, second)}</p>"
+	text = phenotype_tables(model)
+	text += "<p>In mosaic plants, genes <i>A</i> and <i>B</i> assort "
+	text += "independently. The parents below are crossed.</p>"
+	text += parent_table(model, first, second)
 	text += request_text(model, kind, targets)
-	choices, answer = plantprobabilitylib.make_choices(answer_terms(first, second, targets))
+	choices, answer = plantprobabilitylib.make_choices(answer_terms(first, second, targets),
+		distractor_terms(first, second, targets))
 	item = bptools.formatBB_MC_Question(N, text, choices, answer)
 	return item
 

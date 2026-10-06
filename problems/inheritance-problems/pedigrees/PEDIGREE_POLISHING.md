@@ -38,11 +38,18 @@ rerolling; if no proposal qualifies, the original accepted case is returned. Cas
 remain eligible. Diagnostic affected-sex counts may change while teaching profiles stay intact, so
 requiring identical diagnostic text would reject valid additions.
 
+For terminal-frontier candidates, the pool pipeline checks the actual diagram endpoints after each
+topology-changing stage. If downward repair or polishing moves a non-designated person to either
+deepest-row extreme, that stage's proposal is rolled back to its accepted input. The stage remains
+otherwise unchanged; this trial does not alter its objectives or require it to reduce its edit count.
+
 ## Interpretation
 
 Acceptance filters condition the displayed sample; generated families are not an unbiased population
 simulation. The local bank stores accepted procedural families, not review artifacts. Ranking keeps
 the outside-affected-reach preference separate from the child outcome. Neither stage uses LLM review.
-One-time replay results and their limits are summarized in
+The terminal-frontier constructor is being tested as a design hypothesis. Its moderate comparison
+focuses on correctness, pre-polish construction changes, retry behavior, and blinded readability;
+polishing additions are supporting context. One-time replay results and their limits are summarized in
 [PEDIGREE_EVIDENCE.md](PEDIGREE_EVIDENCE.md) and recorded with dated decisions in the changelog;
 they are not guarantees about future samples.

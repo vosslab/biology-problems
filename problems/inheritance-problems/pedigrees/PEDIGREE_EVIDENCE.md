@@ -161,6 +161,89 @@ Evidence and frozen split details are in repository archive
 [pedigree_consolidation_progress.md](../../../docs/archive/pedigree_consolidation_progress.md)
 and sibling `pedigree-aesthetics/consolidation/`.
 
+## Terminal-frontier comparison
+
+The terminal-frontier constructor tests a design hypothesis: reserving terminal families before
+building the middle generations may make the final generation span a more useful horizontal
+frontier. The first comparison used 100 accepted targets: five seeds per inheritance mode, for
+baseline and frontier construction at easy and bonus identification. It also prepared 10 blinded
+pairs for visual review. This is a moderate construction test, not a student-outcome study or a
+general quality calibration. Detailed provisional output is in
+`output_pedigree_frontier/comparison/report.md` and `results.json`; the blinded judgment is in
+`output_pedigree_frontier/comparison/visual_review.md`.
+
+All 100 targets were accepted. The 50 frontier candidates passed their designated-endpoint check,
+and no repair or polishing proposal was rolled back for breaking that contract. No downward-repair
+additions occurred in these easy and bonus cases. For easy, median pre-polish bottom-empty fraction
+`E` was 0.0861 for baseline and 0.0923 for frontier; both methods had zero polishing additions in
+all 25 cases. The initial construction measure therefore showed no easy-workload gain. Median
+attempts were 6 versus 7, with maxima of 188 versus 187. Median constructor-only times were 0.0032
+seconds for baseline and 0.0136 seconds for frontier; median total measured target times, including
+instrumented stages, were 0.0063 and 0.0190 seconds. Median people counts were 14 versus 13.
+
+For bonus, median pre-polish `E` was 0.1373 for baseline and 0.0138 for frontier, about 90% lower
+in this sample. Median terminal sibship count was 2 versus 10. Polishing added children in 8/25
+baseline cases (13 additions) and 7/25 frontier cases (10 additions), a small difference that does
+not establish reduced dependence on polishing. Median attempts were 16 versus 4, with maxima of 69
+versus 76. Median constructor-only times were 0.089 seconds for baseline and 0.322 seconds for
+frontier; median total measured target times, including instrumented stages, were 0.327 and 0.839
+seconds. Median people counts were 78 versus 86. Both methods remain inside the same preset limits,
+but the different person and terminal-family distributions constrain direct interpretation of `E`
+and runtime.
+
+The blinded review of the 10 pairs preferred frontier construction in four of five bonus pairs; the
+baseline was preferred for X-linked dominant. Across the five modes, ordinal readability ratings
+were 3, 3, 3, 3, 4 for frontier and 2, 3, 4, 3, 3 for baseline. These are one reviewer's judgments
+on 900-pixel PNGs, not calibrated scores or student outcomes. The combined evidence supports
+enabling frontier construction for bonus identification only, with random terminal counts 9 or 10.
+Easy remains on baseline construction because its numerical comparison showed no construction
+advantage. Polishing frequency is supporting context; the 8/25 versus 7/25 bonus result is not a
+demonstrated meaningful reduction. Keep polishing and all existing acceptance gates. Do not infer
+student benefit or universal visual improvement from this sample.
+
+## Terminal-frontier interest review
+
+A second, matched blind review did not find higher structural interest for terminal-frontier
+construction. At the accepted pre-repair checkpoint, reviewer A rated baseline/frontier interest
+3.12/3.04 on average (frontier minus baseline -0.08; 3 wins, 17 ties, 5 losses across 25 matched
+blocks). Reviewer B rated them 4.00/3.96 (-0.04; 6 wins, 13 ties, 6 losses). These small ordinal
+differences do not support an interest advantage. The earlier five-pair bonus review above is a
+separate, unmatched trial and should not be pooled with these ratings.
+
+| Reviewer | Accepted interest: baseline / frontier | Frontier minus baseline | Wins / ties / losses | Final interest: baseline / frontier | Final difference |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| A | 3.12 / 3.04 | -0.08 | 3 / 17 / 5 | 3.12 / 3.12 | 0.00 |
+| B | 4.00 / 3.96 | -0.04 | 6 / 13 / 6 | 4.00 / 3.96 | -0.04 |
+
+The review covered 25 matched blocks, one per combination of five inheritance modes and five exact
+target sizes (70, 76, 82, 88, and 94 people). Each pair also matched generation depth (6 or 7) and
+founding-couple count (3 or 4); the remaining bonus bounds were held fixed. Two fresh, independent
+GPT-6 Luna instances using the same model rated the 68 unique accepted and final images at 1800
+pixels using the unchanged four-dimension rubric. The 25 blocks, not the 50 reviewer-by-block
+ratings, are the matched sample units. Accepted checkpoints are the primary comparison; final images are secondary because
+polishing can add people. In final interest ratings, A's means were 3.12/3.12 and B's were
+4.00/3.96 for baseline/frontier.
+
+Other dimensions show a reviewer difference worth retaining: at acceptance, A's balance,
+readability, and usefulness changes were +0.04, +0.04, and +0.04 points, while B's were +0.60,
++0.36, and +0.56. This suggests little overall change to A and clearer, more useful layouts to B;
+it does not change the flat interest result. Polishing added people in 11/25 baseline cases
+(18 total) and 7/25 frontier cases (7 total). All seven changed frontier cases gained one person;
+four changed baseline cases gained one, and seven changed baseline cases gained two. The small,
+coarse ordinal sample does not establish that frontier construction can replace polishing.
+
+The corrected logging run used the frozen seeds and configuration, but the first provisional
+run's per-attempt records were missing and its data and packets were removed before replay. Exact
+record-for-record equivalence cannot be verified; the corrected run is the study dataset, not a
+second sample. The 25 fixed-size blocks are a narrow, unranked workload, not the natural production
+size distribution. Ratings are judgments by two reviewers, not student or instructor outcomes,
+and do not calibrate general visual quality. No p-values or production-policy change are warranted.
+The final analysis report and complete paired gallery are in sibling
+`pedigree-aesthetics/terminal_frontier_interest/REPORT.md` and
+`pedigree-aesthetics/terminal_frontier_interest/gallery.html`. The report and `summary.json` were
+reconciled against these reviewer-level results; the report also includes mode and agreement
+summaries, final-stage dimensions, and within-arm changes.
+
 ## Evidence sources
 
 The numerical summaries above are self-contained for future maintainers. Detailed case-level data,

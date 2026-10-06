@@ -41,6 +41,8 @@ def locus_text(copies: int, gene: str) -> str:
 	"""
 	alleles = ((2, 2), (1, 2), (1, 1))[copies]
 	text = "".join(f"<i>{gene}</i><sub>{allele}</sub>" for allele in alleles)
+	text = "<span style='font-family: monospace; font-size: 1em; white-space: nowrap;'>" + text
+	text += "</span>"
 	return text
 
 
@@ -50,7 +52,7 @@ def genotype_text(genotype: tuple) -> str:
 	for index, gene in enumerate(("A", "B")):
 		parts.append(f"<strong style='color: {GENE_COLORS[index]};'>"
 			f"{locus_text(genotype[index], gene)}</strong>")
-	text = " ".join(parts)
+	text = "<span style='white-space: nowrap;'>" + " ".join(parts) + "</span>"
 	return text
 
 
@@ -75,30 +77,22 @@ def calculation_text(terms: tuple) -> str:
 
 
 #=====================
-def make_choices(terms: tuple) -> tuple:
-	"""Use distinct numerical answers; every displayed calculation is arithmetically true."""
+def make_choices(terms: tuple, errors: list) -> tuple:
+	"""Sample named genetic errors, then sort the worked answers numerically."""
 	correct = calculation_value(terms)
 	wrong = {}
-	# Changing a probability represents a genetic error, never an arithmetic error.
-	factors = tuple(fractions.Fraction(n, d)
-		for n, d in ((1, 4), (1, 3), (1, 2), (2, 3), (3, 4), (1, 1)))
-	for index, term in enumerate(terms):
-		for side in (0, 1):
-			for factor in factors:
-				replacement = list(term)
-				replacement[side] = factor
-				candidate = list(terms)
-				candidate[index] = tuple(replacement)
-				candidate = tuple(candidate)
-				value = calculation_value(candidate)
-				if 0 < value < 1 and value != correct:
-					wrong[value] = candidate
-	if len(wrong) < 3:
-		raise ValueError("Not enough distinct probability distractors")
+	for error, candidate in errors:
+		value = calculation_value(candidate)
+		# Equal-length setups avoid making a multi-route key the only long choice.
+		if len(candidate) == len(terms) and 0 <= value <= 1 and value != correct:
+			wrong.setdefault(value, []).append(candidate)
+	if len(wrong) < 2:
+		raise ValueError("Not enough distinct named-error distractors")
 	answer = calculation_text(terms)
-	choices = [answer] + [calculation_text(wrong[value])
-		for value in random.sample(sorted(wrong), 3)]
-	random.shuffle(choices)
+	values = random.sample(sorted(wrong), min(3, len(wrong)))
+	selected = {value: calculation_text(random.choice(wrong[value])) for value in values}
+	selected[correct] = answer
+	choices = [selected[value] for value in sorted(selected)]
 	return choices, answer
 
 

@@ -8,7 +8,7 @@ This folder contains YAML "matching set" banks and small helper scripts that tur
    - Suggested naming convention: use a clear topic prefix so sets map to chapters, like `enzymes_*`, `macromolecules_*`, `membranes_*`, `genetics_*`, `cell_biology_*`, `metabolism_*`.
 2. Edit the four description lines: `key description`, `keys description`, `value description`, `values description`.
 3. Add 8 to 20 keys under `matching pairs:` (your left column concepts).
-4. For each key, add 2 to 4 phrasing variants (your right column definitions/functions).
+4. For each key, add phrasing variants only where real alternative phrasings exist (see Values without cues in [QUESTION_PEDAGOGY_GUIDE.md](../../docs/QUESTION_PEDAGOGY_GUIDE.md)).
 5. Test-generate a small sample (see `Quick Test Commands` below).
 
 ## File Naming Convention (descriptive, jargon-free)
@@ -21,8 +21,8 @@ Use filenames that are readable to instructors and students, and that map natura
 
 ## What You Can Generate
 
-- Matching questions (Blackboard `MAT`): use `problems/matching_sets/yaml_make_match_sets.py`
-- Multiple-choice questions (Blackboard `MC`): use `problems/matching_sets/yaml_make_which_one_multiple_choice.py`
+- Matching questions (Blackboard `MAT`): use `problems/matching_sets/yaml_match_to_bbq.py`
+- Multiple-choice questions (Blackboard `MC`): use `problems/matching_sets/yaml_which_one_mc_to_bbq.py`
 
 Both scripts read the same YAML structure (see `problems/matching_sets/TEMPLATE.yml`).
 
@@ -35,6 +35,7 @@ Good fits for matching sets:
 - Vocabulary: term -> definition
 - Parts to function: pathway component -> role (enzyme/channel/protein -> function)
 - Category mapping: receptor type -> modality, macromolecule -> monomer/bond type
+- Applied pairings that need reasoning: see Applied pairings in [QUESTION_PEDAGOGY_GUIDE.md](../../docs/QUESTION_PEDAGOGY_GUIDE.md)
 
 If your goal is to test conceptual claims, misconception discrimination, or "which statement is TRUE/FALSE?" logic, consider the MC-statements format instead: `problems/multiple_choice_statements/MC_STATEMENTS_AUTHORING_GUIDE.md`.
 
@@ -164,6 +165,7 @@ Tip: `problems/matching_sets/recommended_colors.csv` contains a suggested palett
 
 - Keys: stable concepts (enzyme class, receptor type, molecule, organelle, process).
 - Values: one function or definition (one main idea), written so there is only one reasonable matching key.
+- Value form and cues: see Values without cues in [QUESTION_PEDAGOGY_GUIDE.md](../../docs/QUESTION_PEDAGOGY_GUIDE.md) and Matching in [QUESTION_VOICE_GUIDE.md](../../docs/QUESTION_VOICE_GUIDE.md).
 
 ## Authoring Tips
 
@@ -175,12 +177,11 @@ Tip: `problems/matching_sets/recommended_colors.csv` contains a suggested palett
   - If you have `n` keys and `k = items to match per question`, you can get up to `n choose k` question "skeletons" before values are chosen.
   - Use `-x/--max-questions` when testing large banks.
 - Write for intro readability:
-  - Use the simplest correct term (then optionally add a parenthetical clarifier).
+  - Use the simplest correct term.
   - Keep each value to one main idea; avoid "and also..." definitions that introduce extra concepts.
 - House style (ESL-friendly, exam-friendly):
   - Prefer concrete verbs: binds, phosphorylates, opens, inhibits.
   - Avoid double negatives.
-  - Define abbreviations on first use inside the value (for example `Protein kinase A (PKA)`).
   - Keep each value under ~15 to 20 words when possible.
 - YAML does not allow tab indentation; use spaces.
 - Quote strings that contain `:` or start with special characters.
@@ -193,7 +194,7 @@ Three quick checks that prevent "test-taking" answers:
 
 - Keep value length similar across keys (do not let one answer be twice as long).
 - Keep grammar parallel (all noun phrases, or all full sentences).
-- Avoid unique keywords that appear only in one value (they give away the match).
+- Keep key words, category words, and giveaway dates out of values: see Values without cues in [QUESTION_PEDAGOGY_GUIDE.md](../../docs/QUESTION_PEDAGOGY_GUIDE.md).
 
 ### Normalize Formatting So Values Do Not "Telegraph" The Match
 
@@ -208,7 +209,7 @@ Quick check:
 ## Difficulty Control (quick slider)
 
 - Easier:
-  - Use direct definitions and unique vocabulary.
+  - Use direct definitions (still without key words; see Values without cues in [QUESTION_PEDAGOGY_GUIDE.md](../../docs/QUESTION_PEDAGOGY_GUIDE.md)).
   - Use fewer items per question (`items to match per question: 3` or `4`).
 - Harder:
   - Use mechanism/consequence phrasing instead of definitions.
@@ -223,6 +224,7 @@ Before you ship a new matching set, do a quick pass for:
 - Parallel grammar: keep values in similar grammatical form (all noun phrases, or all full sentences) to reduce "test-taking cues".
 - Appropriate specificity: if one value is much more detailed than the others, students can use length as a hint.
 - Accessibility: avoid relying on color alone to convey meaning; use color as an accent, not the only signal.
+- Rubric pass: apply items T1 to T3 from [QUESTION_PEDAGOGY_GUIDE.md](../../docs/QUESTION_PEDAGOGY_GUIDE.md), then run [check_question_text.py](../../devel/check_question_text.py) on the BBQ output (advisory).
 
 ## Copy/Paste Example (biology)
 
@@ -238,26 +240,25 @@ items to match per question: 5
 key description: enzyme class
 keys description: enzyme classes
 
-value description: reaction type
-values description: reaction types
+value description: description
+values description: descriptions
 
 matching pairs:
   Kinase:
-    - Adds a phosphate group to a substrate (phosphorylation)
-    - Transfers a phosphate group to a molecule
+    - this enzyme adds a phosphate group to a substrate
   Phosphatase:
-    - Removes a phosphate group from a substrate (dephosphorylation)
-    - Catalyzes phosphate removal from a molecule
+    - this enzyme removes a phosphate group from a substrate
   Protease:
-    - Breaks peptide bonds in proteins
-    - Hydrolyzes peptide bonds
+    - this enzyme breaks peptide bonds
+    - this enzyme cuts a polypeptide chain between two amino acids
   Ligase:
-    - Joins two molecules by forming a new bond (often using ATP)
-    - Catalyzes bond formation to link molecules
+    - this enzyme joins two molecules by forming a new bond
   Isomerase:
-    - Rearranges atoms within a molecule to form an isomer
-    - Converts a molecule into its isomer
+    - this enzyme rearranges the atoms within a molecule
 ```
+
+Each key keeps one value unless a real alternative phrasing exists (Protease has two). The Kinase and
+Phosphatase values mirror each other so students must tell add from remove.
 
 Mini-example (optional) for `exclude pairs` when two keys are too confusable to appear together:
 
@@ -280,14 +281,14 @@ From repo root:
 
 ```bash
 source source_me.sh
-python3 problems/matching_sets/yaml_make_match_sets.py -y problems/matching_sets/your_set.yml -x 20
+python3 problems/matching_sets/yaml_match_to_bbq.py -y problems/matching_sets/your_set.yml -x 20
 ```
 
 For MC questions derived from the same set:
 
 ```bash
 source source_me.sh
-python3 problems/matching_sets/yaml_make_which_one_multiple_choice.py -y problems/matching_sets/your_set.yml -x 20
+python3 problems/matching_sets/yaml_which_one_mc_to_bbq.py -y problems/matching_sets/your_set.yml -x 20
 ```
 
 The scripts write `bbq-*.txt` outputs in the current working directory.

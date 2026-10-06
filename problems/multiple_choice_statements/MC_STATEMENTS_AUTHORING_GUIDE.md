@@ -6,13 +6,13 @@ This folder contains YAML "statement banks" and a generator that turns them into
 
 1. Copy `problems/multiple_choice_statements/TEMPLATE.yml` to a new file (pick a clear name like `membrane_diffusion.yml`).
 2. Set `topic:` to the concept you want in the question stem.
-3. Add 8 to 20 items under `true_statements:` and `false_statements:`.
+3. Add items under `true_statements:` and `false_statements:`, with a larger false pool than true pool (see Pool sizes in [QUESTION_PEDAGOGY_GUIDE.md](../../docs/QUESTION_PEDAGOGY_GUIDE.md)).
 4. For key concepts that have multiple equivalent phrasings, make 2 to 4 variants (see the ID naming rule below).
 5. Test-generate a small sample:
 
 ```bash
 source source_me.sh
-python3 problems/multiple_choice_statements/yaml_multiple_choice_statements.py -y problems/multiple_choice_statements/your_set.yml -x 20
+python3 problems/multiple_choice_statements/yaml_mc_statements_to_bbq.py -y problems/multiple_choice_statements/your_set.yml -x 20
 ```
 
 ## File Naming Recommendation
@@ -115,8 +115,8 @@ Mini-example (visual):
 
 ```yml
 true_statements:
-  truth3a: Enzymes lower activation energy.
-  truth3b: Enzymes speed reactions by lowering activation energy.
+  truth3a: enzymes lower activation energy
+  truth3b: enzymes speed reactions by lowering activation energy
 ```
 
 These are the same concept with different phrasing, so they share the `3` and will not appear together as separate choices in the same question.
@@ -137,8 +137,7 @@ Tip: `problems/multiple_choice_statements/recommended_colors.csv` contains a sug
 - Enforcement rule: if you can underline two separate facts, split the statement.
 - Biology-first wording: concrete verbs (binds, phosphorylates, opens, inhibits).
 - Avoid double negatives.
-- Define abbreviations on first use inside the statement (for example `Protein kinase A (PKA)`).
-- Keep statements similar in length and grammar to avoid test-taking cues.
+- Statement form and length: see Statement bank form and Parallel form in [QUESTION_VOICE_GUIDE.md](../../docs/QUESTION_VOICE_GUIDE.md).
 
 ## What Makes A Good False Statement (biology patterns)
 
@@ -150,21 +149,17 @@ Aim for "plausible but wrong" in a way that diagnoses a misconception. Good patt
 - Swapped cofactors or ions (Mg2+ vs Ca2+).
 - Wrong sign/relationship for thermodynamics (use `&Delta;G` / equilibrium logic).
 
-Practical trick: write the true statement first, then create the false statement by changing exactly one detail.
+Practical trick: write the true statement first, then create the false statement by changing exactly one detail. For swap construction, out-of-scope facts, and absurd variants, see One-term swaps, Out-of-scope facts and bracketed numbers, and Seriously absurd choices in [QUESTION_PEDAGOGY_GUIDE.md](../../docs/QUESTION_PEDAGOGY_GUIDE.md).
 
 ## How To Avoid Accidental Cues
 
-Three quick checks that prevent "test-taking" answers:
-
-- Keep statement length similar across choices (do not let one be twice as long).
-- Keep grammar parallel (all noun phrases, or all full sentences).
-- Avoid unique keywords that appear only in one choice (they give away the answer).
+See Balanced hedges and absolutes in [QUESTION_PEDAGOGY_GUIDE.md](../../docs/QUESTION_PEDAGOGY_GUIDE.md) and Parallel form in [QUESTION_VOICE_GUIDE.md](../../docs/QUESTION_VOICE_GUIDE.md). Review rubric items S1 to S4 and M4 in the pedagogy guide list the checks.
 
 ## Difficulty Control (quick slider)
 
 - Easier:
-  - Use direct definitions and unique vocabulary.
-  - Keep false statements clearly wrong (one obvious error).
+  - Use direct definitions.
+  - For how false statements are built at every level, see One-term swaps and Difficulty from data in [QUESTION_PEDAGOGY_GUIDE.md](../../docs/QUESTION_PEDAGOGY_GUIDE.md).
 - Harder:
   - Make false statements "plausible but wrong" (common misconceptions).
   - Use more similar terms (then rely on the conflict grouping rule to avoid near-duplicates in the same question).
@@ -176,24 +171,35 @@ Example: second messenger signaling.
 ```yml
 ---
 topic: second messenger signaling
-learning_objective: Distinguish cAMP vs cGMP roles and enzymes that regulate them.
+learning_objective: Distinguish cAMP vs cGMP roles and the enzymes that make and break them.
+
+# four concepts, so four choices per question
+num_choices: 4
 
 replacement_rules:
   cAMP: "<strong>cAMP</strong>"
   cGMP: "<strong>cGMP</strong>"
 
 true_statements:
-  truth1a: cAMP is a second messenger made from ATP
-  truth1b: cyclic AMP (cAMP) is produced from ATP by adenylyl cyclase
-  truth2: phosphodiesterase breaks down cyclic nucleotides to terminate a signal
-  truth3: Protein kinase A (PKA) is activated by cAMP
+  truth1a: cAMP is made from ATP
+  truth1b: adenylyl cyclase makes cAMP from ATP
+  truth2: phosphodiesterase breaks down cAMP
+  truth3: protein kinase A is activated by cAMP
+  truth4: guanylyl cyclase makes cGMP from GTP
 
 false_statements:
-  false1a: cAMP is a second messenger made from glucose
-  false1b: cyclic AMP (cAMP) is produced from ADP by phosphodiesterase
-  false2: phosphodiesterase makes cAMP from ATP
-  false3: Protein kinase A (PKA) is activated by cGMP
+  false1a: cAMP is made from GTP
+  false1b: cAMP is made from glucose
+  false2a: phosphodiesterase makes cAMP
+  false2b: adenylyl cyclase breaks down cAMP
+  false3a: protein kinase A is activated by cGMP
+  false3b: protein kinase G is activated by cAMP
+  false4a: guanylyl cyclase makes cGMP from ATP
+  false4b: adenylyl cyclase makes cGMP from GTP
 ```
+
+Statements that share a number (`truth1a`, `false1a`) count as one concept and never appear in the
+same question, so a bank of four numbered concepts supports four choices per question.
 
 ## Troubleshooting Common YAML Mistakes
 
@@ -214,3 +220,4 @@ Before using a bank in an assessment, do a quick pass for:
 - Duplicate statement text: the generator fails if the exact same sentence appears twice (even across true/false).
 - Replacement rule overlap: prefer specific, non-overlapping phrases to avoid nested spans or partial matches (for example avoid having `cells`, `Cells`, and `' cell'` all at once unless you really need it).
 - One-pass grammar scan: fix obvious typos and subject/verb agreement; it improves student trust even when the biology is correct.
+- Rubric pass: apply items S1 to S4 and M4 from [QUESTION_PEDAGOGY_GUIDE.md](../../docs/QUESTION_PEDAGOGY_GUIDE.md), then run [check_question_text.py](../../devel/check_question_text.py) on the BBQ output (advisory).

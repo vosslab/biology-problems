@@ -49,6 +49,11 @@ class Diagram:
 
 
 #============================================
+class AlignmentFailure(ValueError):
+	"""The layout constraints have no feasible horizontal alignment."""
+
+
+#============================================
 def _half_width(person: family_model.Person) -> float:
 	result = max(RADIUS, len(person.label) * 4.5)
 	return result
@@ -199,7 +204,9 @@ def _align_family(family: family_model.Family, rows: list, people: dict,
 		A_eq=equalities or None, b_eq=[0.0] * len(equalities) or None,
 		method='highs')
 	if not solution.success:
-		raise ValueError(f'Cannot align this family order: {solution.message}')
+		if solution.status == 2:
+			raise AlignmentFailure(f'Cannot align this family order: {solution.message}')
+		raise RuntimeError(f'Layout solver failed unexpectedly: {solution.message}')
 	result = {pid: round(float(solution.x[index]), 8) for pid, index in indices.items()}
 	return result
 
@@ -253,7 +260,8 @@ def lay_out(family: family_model.Family, mirror: bool = False) -> Diagram:
 		Geometry for both renderers; layout_errors must still check readability.
 
 	Raises:
-		ValueError: Invalid family structure or an order that cannot be aligned.
+		ValueError: Invalid family structure.
+		AlignmentFailure: The family order cannot be aligned.
 	"""
 	ranks = family.generations()
 	people = family.members()

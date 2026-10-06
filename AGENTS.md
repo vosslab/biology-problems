@@ -9,6 +9,10 @@ items via shared helpers in [bptools.py](bptools.py). For layout and design see
 - Python: [docs/PYTHON_STYLE.md](docs/PYTHON_STYLE.md).
 - Pytest: [docs/PYTEST_STYLE.md](docs/PYTEST_STYLE.md).
 - Markdown: [docs/MARKDOWN_STYLE.md](docs/MARKDOWN_STYLE.md).
+- Student-facing question text (stems, choices, hints, YAML statements and matching values):
+  design with [docs/QUESTION_PEDAGOGY_GUIDE.md](docs/QUESTION_PEDAGOGY_GUIDE.md), word with
+  [docs/QUESTION_VOICE_GUIDE.md](docs/QUESTION_VOICE_GUIDE.md), imitate
+  [docs/QUESTION_EXEMPLARS.md](docs/QUESTION_EXEMPLARS.md).
 - Repo organization, git, commit, and changelog rules: [docs/REPO_STYLE.md](docs/REPO_STYLE.md).
 - Document every change in [docs/CHANGELOG.md](docs/CHANGELOG.md).
 

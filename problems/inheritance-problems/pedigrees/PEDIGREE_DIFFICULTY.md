@@ -47,6 +47,17 @@ allows two to five, and medium matching two to six. Bonus uses its separate two-
 Selection and matching share seed-couple count across their assembled diagrams. Counts are
 resampled after rejection within the same preset.
 
+## Terminal-frontier trial
+
+The approved policy enables terminal-frontier construction only for bonus identification, sampling
+terminal-frontier sizes 9 or 10. Easy and all other formats and difficulty levels keep procedural
+construction. The trial reserves terminal families and sibling slots before connecting the middle
+generations; it does not change the people, generation, couple, or child limits above. Planned person
+IDs are transient metadata. They do not enter `Family`, biological simulation, rendering inputs, or
+cache records. See
+[PEDIGREE_PIPELINE.md](PEDIGREE_PIPELINE.md) for routing and rollback behavior and
+[PEDIGREE_EVIDENCE.md](PEDIGREE_EVIDENCE.md) for the hypothesis, comparison, and limits.
+
 ## Family construction
 
 Procedural families plan unions and reserved child slots before instantiating people. A constrained

@@ -14,12 +14,22 @@ import pedigree_lib.downward_repair as downward_repair
 import pedigree_lib.ranking as ranking
 import pedigree_lib.sources as sources
 import pedigree_lib.cache as cache
+import pedigree_lib.terminal_frontier as terminal_frontier
 
 
 #============================================
 def generate_candidate(mode: str, rng: random.Random, level: str,
 		matching: bool = False) -> questions.AcceptedCase:
-	"""Resample preset construction choices on rejection, retaining every acceptance gate."""
+	"""Generate one baseline candidate for existing direct callers."""
+	accepted, _ = _generate_candidate_with_receipt(mode, rng, level, matching)
+	return accepted
+
+
+#============================================
+def _generate_candidate_with_receipt(mode: str, rng: random.Random, level: str,
+		matching: bool = False, *,
+		frontier_counts: tuple[int, ...] = ()) -> tuple[questions.AcceptedCase, tuple[str, ...] | None]:
+	"""Resample candidates while retaining optional frontier IDs only in this call."""
 	settings = difficulty.difficulty_settings(level, matching)
 	construction = [(depth, seeds) for depth in settings['generations']
 		for seeds in range(settings['seed_couples'][0], settings['seed_couples'][1] + 1)
@@ -27,29 +37,72 @@ def generate_candidate(mode: str, rng: random.Random, level: str,
 	rejections = collections.Counter()
 	for attempt in range(1, 5001):
 		depth, seeds = rng.choice(construction)
-		case = sources.simulate_case(mode, rng,
-			min_people=settings['people'][0], max_people=settings['people'][1],
-			generations=depth, seed_couples=seeds, couples=settings['couples'],
-			children=settings['children'], root_children=settings['root_children'])
+		designated = None
+		if frontier_counts:
+			frontier_count = rng.choice(frontier_counts)
+			try:
+				family, designated = sources.frontier_family(rng,
+					min_people=settings['people'][0], max_people=settings['people'][1],
+					generations=depth, seed_couples=seeds, couples=settings['couples'],
+					children=settings['children'], root_children=settings['root_children'],
+					frontier_count=frontier_count)
+			except terminal_frontier.Rejected as error:
+				rejections.update((str(error),))
+				continue
+			case = sources.simulate_family(family, mode, rng)
+		else:
+			case = sources.simulate_case(mode, rng,
+				min_people=settings['people'][0], max_people=settings['people'][1],
+				generations=depth, seed_couples=seeds, couples=settings['couples'],
+				children=settings['children'], root_children=settings['root_children'])
 		accepted, reasons = questions.evaluate(case, mirror=rng.choice((False, True)))
 		if accepted is not None:
 			if accepted.assessment.answer == mode:
-				return dataclasses.replace(accepted, attempts=attempt, rejections=dict(rejections))
-			reasons = ('Teaching evidence favors another mode',)
+				if designated is None or terminal_frontier.endpoints_match(accepted.diagram, designated):
+					accepted = dataclasses.replace(accepted, attempts=attempt,
+						rejections=dict(rejections))
+					return accepted, designated
+				reasons = ('Frontier endpoints changed during layout',)
+			else:
+				reasons = ('Teaching evidence favors another mode',)
 		rejections.update(reasons)
 	raise questions.GenerationFailure(f'No suitable {mode} case in {level} after 5000 attempts: '
 		f'{dict(rejections)}')
 
 
 #============================================
+def _frontier_still_matches(case: questions.AcceptedCase,
+		designated: tuple[str, ...] | None) -> bool:
+	"""Check transient frontier endpoints after a topology-changing stage."""
+	if designated is None:
+		return True
+	result = terminal_frontier.endpoints_match(case.diagram, designated)
+	return result
+
+
+#============================================
 def generate_pool(rng: random.Random, level: str, matching: bool = False,
-		count: int = 5000, modes: tuple[str, ...] = inheritance.MODES) -> list[questions.AcceptedCase]:
+		count: int = 5000, modes: tuple[str, ...] = inheritance.MODES, *,
+		question_format: str | None = None) -> list[questions.AcceptedCase]:
 	"""Generate accepted candidates, polish within the preset, then recheck difficulty."""
+	if question_format is None:
+		question_format = 'match' if matching else 'identify'
+	elif question_format not in ('identify', 'select', 'match'):
+		raise ValueError(f'Unknown question format: {question_format}')
+	elif matching != (question_format == 'match'):
+		raise ValueError('Question format conflicts with matching difficulty bounds')
+	frontier_counts = difficulty.frontier_trial_counts(level, question_format)
 	pool = []
 	for _ in range(count):
-		case = generate_candidate(rng.choice(modes), rng, level, matching)
-		case = downward_repair.repair(case, rng)
-		pool.append(polishing.polish(case, rng, level, matching))
+		case, designated = _generate_candidate_with_receipt(rng.choice(modes), rng,
+			level, matching, frontier_counts=frontier_counts)
+		repaired = downward_repair.repair(case, rng)
+		if _frontier_still_matches(repaired, designated):
+			case = repaired
+		polished = polishing.polish(case, rng, level, matching)
+		if _frontier_still_matches(polished, designated):
+			case = polished
+		pool.append(case)
 	# Preset filtering stays independent of aesthetics and uses the existing authority.
 	result = [case for case in pool if difficulty.fits_difficulty(case.case.family, level, matching)]
 	return result
@@ -127,7 +180,8 @@ def build(rng: random.Random, level: str, question_format: str,
 		if needed:
 			print(f'Generating {needed:,} fresh {level} pedigrees...')
 			batch_pool = []
-			for case in generate_pool(rng, level, question_format == 'match', needed, modes):
+			for case in generate_pool(rng, level, question_format == 'match', needed, modes,
+				question_format=question_format):
 				key = cache.record_key(cache.encode(case))
 				if key not in known:
 					known.add(key)

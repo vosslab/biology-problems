@@ -13,7 +13,8 @@ import plantprobabilitylib
 
 BRIGHTNESS = ("no glow", "low brightness", "medium brightness", "high brightness",
 	"very high brightness")
-BACKGROUNDS = ("#ffffff", "#f3edf8", "#e4d6ef", "#ccb3df", "#ae89c7")
+BACKGROUNDS = ("#303030", "#665078", "#9a79b5", "#d5bfe6", "#f7ecff")
+FOREGROUNDS = ("#ffffff", "#ffffff", "#171717", "#202020", "#202020")
 SCENARIOS: list[tuple] = []
 
 
@@ -73,7 +74,7 @@ def build_scenarios() -> list[tuple]:
 def brightness_table() -> str:
 	style = plantprobabilitylib.CELL_STYLE
 	text = plantprobabilitylib.table_start("Flower brightness")
-	text += f"<tr><th scope='col' style='{style}'>Gene <i>A</i> / Gene <i>B</i></th>"
+	text += f"<tr><th scope='col' style='{style}'><i>A</i> / <i>B</i></th>"
 	for b in (2, 1, 0):
 		text += f"<th scope='col' style='{style} color: #245b88;'>"
 		text += plantprobabilitylib.locus_text(b, "B") + "</th>"
@@ -82,8 +83,9 @@ def brightness_table() -> str:
 		text += f"<tr><th scope='row' style='{style} color: #753b71;'>"
 		text += plantprobabilitylib.locus_text(a, "A") + "</th>"
 		for b in (2, 1, 0):
-			text += f"<td style='{style} background-color: {BACKGROUNDS[a + b]};'>"
-			text += BRIGHTNESS[a + b] + "</td>"
+			text += f"<td style='{style} background-color: {BACKGROUNDS[a + b]}; "
+			text += f"color: {FOREGROUNDS[a + b]};'>"
+			text += BRIGHTNESS[a + b].removesuffix(" brightness") + "</td>"
 		text += "</tr>"
 	text += "</table>"
 	return text
@@ -100,23 +102,58 @@ def answer_terms(first: tuple, second: tuple, selected: int, mate: tuple, target
 
 
 #=====================
+def distractor_terms(first: tuple, second: tuple, selected: int, mate: tuple, target: int) -> list:
+	conditional = selected_distribution(first, second, selected)
+	original = plantprobabilitylib.cross_distribution(first, second)
+	contributing = [g for g in sorted(conditional) if target_probability(g, mate, target) > 0]
+	errors = []
+	# Error: use the original cross frequencies without conditioning on the selected phenotype.
+	terms = tuple((original[g], target_probability(g, mate, target)) for g in contributing)
+	errors.append(("ignore_phenotype_selection", terms))
+	# Error: assume compatible genotypes have equal frequencies.
+	terms = tuple((fractions.Fraction(1, len(conditional)), target_probability(g, mate, target))
+		for g in contributing)
+	errors.append(("equal_compatible_genotypes", terms))
+	# Error: assume one compatible genotype is certain, retaining the same displayed routes.
+	for assumed in conditional:
+		terms = tuple((fractions.Fraction(g == assumed), target_probability(g, mate, target))
+			for g in contributing)
+		errors.append((f"assume_genotype_{assumed}", terms))
+	for locus, gene in enumerate(("A", "B")):
+		terms = []
+		for parent in contributing:
+			outcomes = plantprobabilitylib.cross_distribution(parent, mate)
+			# Error: count only one parental route to a heterozygote in the second cross.
+			probability = sum((p / 2 if g[locus] == parent[locus] == mate[locus] == 1 else p)
+				for g, p in outcomes.items() if sum(g) == target)
+			terms.append((conditional[parent], probability))
+		errors.append((f"miss_heterozygote_route_{gene}", tuple(terms)))
+	# Error: condition only on genotypes that can produce the requested second-cross result.
+	weight = sum(conditional[g] for g in contributing)
+	terms = tuple((conditional[g] / weight, target_probability(g, mate, target))
+		for g in contributing)
+	errors.append(("exclude_nonproducing_selected_genotypes", terms))
+	return errors
+
+
+#=====================
 def write_question(N: int, args: argparse.Namespace) -> object | None:
 	if N > len(SCENARIOS):
 		return None
 	first, second, selected, mate, target = SCENARIOS[N - 1]
-	text = "<p>In fictional lantern plants, two genes affect how brightly the flowers glow. "
-	text += "Both genes show incomplete dominance and assort independently. "
-	text += "The table shows flower brightness for each genotype.</p>"
-	text += brightness_table()
-	text += f"<p>Two plants, {plantprobabilitylib.genotype_text(first)} and "
-	text += f"{plantprobabilitylib.genotype_text(second)}, are crossed. "
-	text += f"One of their offspring with <strong>{BRIGHTNESS[selected]}</strong> "
-	text += "is chosen at random. This plant is crossed with a "
-	text += f"{plantprobabilitylib.genotype_text(mate)} plant.</p>"
+	text = brightness_table()
+	text += "<p>In lantern plants, genes <i>A</i> and <i>B</i> assort "
+	text += "independently.</p>"
+	text += f"<p>First cross:<br/>{plantprobabilitylib.genotype_text(first)} &times; "
+	text += f"{plantprobabilitylib.genotype_text(second)}</p>"
+	text += f"<p>One offspring with <strong>{BRIGHTNESS[selected]}</strong> is chosen at random.</p>"
+	text += "<p>Second cross:<br/>Selected plant &times; "
+	text += f"{plantprobabilitylib.genotype_text(mate)}</p>"
 	text += "<p>What is the probability that an offspring from the second cross will have "
 	text += f"<strong>{BRIGHTNESS[target]}</strong>?</p>"
 	choices, answer = plantprobabilitylib.make_choices(
-		answer_terms(first, second, selected, mate, target))
+		answer_terms(first, second, selected, mate, target),
+		distractor_terms(first, second, selected, mate, target))
 	item = bptools.formatBB_MC_Question(N, text, choices, answer)
 	return item
 

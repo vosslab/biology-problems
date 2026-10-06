@@ -30,6 +30,12 @@ MATCHING_SETTINGS = {
 		couples=(4, 5), children=(1, 3), root_children=(2, 4)),
 }
 
+# Measured topology target for fresh bonus identification cases. Cached records
+# and all other levels and question formats keep their current eligibility.
+TERMINAL_FRONTIER_TRIAL_COUNTS = {
+	'bonus': (9, 10),
+}
+
 
 #============================================
 def difficulty_settings(level: str, matching: bool = False) -> dict:
@@ -38,6 +44,17 @@ def difficulty_settings(level: str, matching: bool = False) -> dict:
 	if level not in presets:
 		raise ValueError(f'Unknown difficulty: {level}')
 	result = dict(presets[level])
+	return result
+
+
+#============================================
+def frontier_trial_counts(level: str, question_format: str) -> tuple[int, ...]:
+	"""Return measured frontier sizes for bonus identification construction."""
+	if question_format not in ('identify', 'select', 'match'):
+		raise ValueError(f'Unknown question format: {question_format}')
+	if question_format != 'identify':
+		return ()
+	result = TERMINAL_FRONTIER_TRIAL_COUNTS.get(level, ())
 	return result
 
 
