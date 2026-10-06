@@ -11,7 +11,7 @@ replacement_rules:
   exonuclease polymerase domain: '<span style="color: MediumVioletRed;">exonuclease
     polymerase domain</span>'
   3&prime;&rarr;5&prime;: '<span style="color: #b33000;">3&prime;&rarr;5&prime;</span>'
-  5&prime;&rarr;3&prime;: '<span style="color: #248f24;">primase</span>'
+  5&prime;&rarr;3&prime;: '<span style="color: #248f24;">5&prime;&rarr;3&prime;</span>'
 true_statements:
   truth1: proofreading is designed in a way that requires a primer
   truth2: RNA polymerases do not have proofreading capability

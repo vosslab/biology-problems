@@ -1329,29 +1329,53 @@ def append_clear_font_space_to_list(list_of_text_strings):
 	return new_list_of_text_strings
 
 #=======================
-def applyReplacementRulesToText(text_string, replacement_rule_dict):
-	if not isinstance(text_string, str):
-		raise TypeError(f"value is not string: {text_string}")
+def _compile_replacement_rules(replacement_rule_dict):
+	"""Prepare literal replacements once for a text string or a list of items."""
 	if replacement_rule_dict is None:
 		print("no replacement rules found")
 		replacement_rule_dict = base_replacement_rule_dict
 	else:
-		#replacement_rule_dict = {**base_replacement_rule_dict, **replacement_rule_dict}
 		replacement_rule_dict |= base_replacement_rule_dict
+
+	formatted_replacements = {}
 	for find_text, replace_text in replacement_rule_dict.items():
 		if not replace_text.startswith('<strong>'):
 			replace_text = f'<strong>{replace_text}</strong>'
-		text_string = text_string.replace(find_text, replace_text)
-	return text_string
+		formatted_replacements[find_text] = replace_text
+
+	# Prefer "phenotypes" over "phenotype" when both start at the same position.
+	ordered_keys = sorted(formatted_replacements, key=len, reverse=True)
+	literal_patterns = []
+	for key in ordered_keys:
+		literal_patterns.append(re.escape(key))
+	pattern = re.compile("|".join(literal_patterns))
+	return pattern, formatted_replacements
+
+#=======================
+def _replace_text_once(text_string, pattern, formatted_replacements):
+	"""Replace matches in the original text without rescanning inserted markup."""
+	if not isinstance(text_string, str):
+		raise TypeError(f"value is not string: {text_string}")
+
+	def replacement_for_match(match):
+		original_text = match.group(0)
+		return formatted_replacements[original_text]
+
+	# A callback also preserves literal backslashes in replacement values.
+	replaced_text = pattern.sub(replacement_for_match, text_string)
+	return replaced_text
+
+#=======================
+def applyReplacementRulesToText(text_string, replacement_rule_dict):
+	"""Apply literal rules once; the longest key wins at each original position."""
+	pattern, replacements = _compile_replacement_rules(replacement_rule_dict)
+	replaced_text = _replace_text_once(text_string, pattern, replacements)
+	return replaced_text
 
 #=======================
 def applyReplacementRulesToList(list_of_text_strings, replacement_rule_dict):
-	if replacement_rule_dict is None:
-		print("no replacement rules found")
-		replacement_rule_dict = base_replacement_rule_dict
-	else:
-		#replacement_rule_dict = {**base_replacement_rule_dict, **replacement_rule_dict}
-		replacement_rule_dict |= base_replacement_rule_dict
+	"""Apply one replacement pass to strings or the text fields of item objects."""
+	pattern, replacements = _compile_replacement_rules(replacement_rule_dict)
 	new_list_of_text_strings = []
 	for text_string in list_of_text_strings:
 		if _is_item_cls_like(text_string):
@@ -1366,31 +1390,17 @@ def applyReplacementRulesToList(list_of_text_strings, replacement_rule_dict):
 				if hasattr(text_string, attr_name):
 					attr_value = getattr(text_string, attr_name)
 					if isinstance(attr_value, str):
-						for find_text, replace_text in replacement_rule_dict.items():
-							if not replace_text.startswith('<strong>'):
-								replace_text = f'<strong>{replace_text}</strong>'
-							attr_value = attr_value.replace(find_text, replace_text)
-						setattr(text_string, attr_name, attr_value)
+						new_value = _replace_text_once(attr_value, pattern, replacements)
+						setattr(text_string, attr_name, new_value)
 					elif isinstance(attr_value, list):
 						new_values = []
 						for value in attr_value:
-							if not isinstance(value, str):
-								new_values.append(value)
-								continue
-							new_value = value
-							for find_text, replace_text in replacement_rule_dict.items():
-								if not replace_text.startswith('<strong>'):
-									replace_text = f'<strong>{replace_text}</strong>'
-								new_value = new_value.replace(find_text, replace_text)
-							new_values.append(new_value)
+							if isinstance(value, str):
+								value = _replace_text_once(value, pattern, replacements)
+							new_values.append(value)
 						setattr(text_string, attr_name, new_values)
 			new_list_of_text_strings.append(text_string)
 			continue
-		if not isinstance(text_string, str):
-			raise TypeError(f"value is not string: {text_string}")
-		for find_text, replace_text in replacement_rule_dict.items():
-			if not replace_text.startswith('<strong>'):
-				replace_text = f'<strong>{replace_text}</strong>'
-			text_string = text_string.replace(find_text, replace_text)
-		new_list_of_text_strings.append(text_string)
+		new_value = _replace_text_once(text_string, pattern, replacements)
+		new_list_of_text_strings.append(new_value)
 	return new_list_of_text_strings

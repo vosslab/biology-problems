@@ -38,9 +38,4 @@ replacement_rules:
   lgicZZ: '<span style="color: #598231;">Ligand-gated ion channel (LGIC)</span>' #OLIVE GREEN
   GEF: '<span style="color: #a86739;">guanine nucleotide exchange factor (GEF)</span>' #BROWN ORANGE
   7TM: '<span style="color: #b45918;">7 transmembrane (7TM)</span>' #RUST
-  glycogen: '<span style="color: #d40000;"><strong>glycogen</strong></span>' #RED
-  chitin: '<span style="color: #b74300;"><strong>chitin</strong></span>' #DARK ORANGE
-  cellulose: '<span style="color: #935d00;"><strong>cellulose</strong></span>' #LIGHT ORANGE
-  amylose: '<span style="color: #6c6c00;"><strong>amylose</strong></span>' #DARK YELLOW
-  amylopectin: '<span style="color: #3b7600;"><strong>amylopectin</strong></span>' #LIME GREEN
 dbsubject: Cell Biology

@@ -34,8 +34,8 @@ matching pairs:
   - this enzyme is a ring that tethers certain enzymes to DNA
   - this enzyme prevents certain enzymes from falling off of the DNA
 replacement_rules:
-  single-strand binding protein: '<span style="color: #7b7737;">single-strand binding
-    proteins</span>' #OLIVE BROWN
+  single-strand binding proteins: '<span style="color: #7b7737;">single-strand binding proteins</span>'
+  single-strand binding protein: '<span style="color: #7b7737;">single-strand binding protein</span>' #OLIVE BROWN
   DNA polymerase IV: '<span style="color: #598231;">DNA&nbsp;polymerase&nbsp;&#8547;</span>' #OLIVE GREEN
   DNA polymerase III: '<span style="color: #3E3EC4;">DNA&nbsp;polymerase&nbsp;&#8546;</span>' #INDIGO BLUE
   DNA polymerase II: '<span style="color: #793AAA;">DNA&nbsp;polymerase&nbsp;&#8545;</span>' #VIOLET
@@ -48,6 +48,7 @@ replacement_rules:
   RNA primers: '<span style="color: #b33000;">RNA primers</span>' #BURNT ORANGE
   DNA primers: '<span style="color: #228822;">DNA primers</span>' #FOREST GREEN
   DNA double helix: '<span style="color: #228822;">DNA double helix</span>' #FOREST GREEN
+  DNA strands: '<span style="color: #228822;">DNA strands</span>'
   DNA strand: '<span style="color: #228822;">DNA strand</span>' #FOREST GREEN
   leading strand: '<span style="color: #002699;">leading strand</span>' #DARK BLUE
   lagging strand: '<span style="color: #995c00;">lagging strand</span>' #BROWN

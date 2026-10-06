@@ -4,9 +4,11 @@ keys description: genetic disorders
 value description: description
 values description: descriptions
 replacement_rules:
+  disorders: '<span style="color: #d40000;">disorders</span>'
   disorder: '<span style="color: #d40000;">disorder</span>' #RED
   genetic: '<span style="color: #b74300;">genetic</span>' #DARK ORANGE
   metabolic: '<span style="color: #935d00;">metabolic</span>' #LIGHT ORANGE
+  chromosomes: '<span style="color: #6c6c00;">chromosomes</span>' #DARK YELLOW
   chromosome: '<span style="color: #6c6c00;">chromosome</span>' #DARK YELLOW
 matching pairs:
   Achondroplasia:
@@ -54,7 +56,7 @@ matching pairs:
   - people with the disorder do not have enough of an enzyme called beta-hexosaminidase
   Angelman syndrome:
   - caused by duplications of the UBE3A gene located on chromosome 15
-  - disorder that is due to a extra piece (duplication) of a specific gene on chromosome
+  - disorder that is due to an extra piece (duplication) of a specific gene on chromosome
     15
   Prader-Willi syndrome:
   - a genetic disorder caused by a loss of function of specific genes on chromosome
@@ -62,7 +64,7 @@ matching pairs:
   - disorder that is due to a missing piece (deletion) of a specific part of chromosome
     15
   Cri du chat syndrome:
-  - usually include a high-pitched cat-like cry, mental disability, delayed development,
+  - features usually include a high-pitched cat-like cry, mental disability, delayed development,
     distinctive facial features, widely-spaced eyes
   - disorder that is due to a missing piece (deletion) of a specific part of chromosome
     5
@@ -110,9 +112,9 @@ matching pairs:
   Triple X syndrome:
   - also known as 47,XXX, is a genetic disorder that results in a female that has
     three X chromosomes
-  - a genetic condition in females which there are three copies of the X chromosome
+  - a genetic condition in females in which there are three copies of the X chromosome
   Turner syndrome:
-  - a condition that affects only females, results when one of their X chromosomes
+  - a condition that affects only females and results when one of their X chromosomes
     is missing or partially missing
   - also known as monosomy X, includes a number of typical physical features observed
     such as webbed neck

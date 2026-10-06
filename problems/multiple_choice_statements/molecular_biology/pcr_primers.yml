@@ -5,9 +5,9 @@ replacement_rules:
   nucleotides: '<span style="color: Maroon;">nucleotides</span>'
   complementary: '<span style="color: #b33000;">complementary</span>'
   primers: '<span style="color: #248f24;">primers</span>'
-  'primer ': '<span style="color: #248f24;">primer </span>'
+  primer: '<span style="color: #248f24;">primer</span>'
   sequences: '<span style="color: #002699;">sequences</span>'
-  'sequence ': '<span style="color: #002699;">sequence </span>'
+  sequence: '<span style="color: #002699;">sequence</span>'
   melting temperature: '<span style="color: #995c00;">melting temperature (T<sub>m</sub>)</span>'
 true_statements:
   truth1: the primers are about 18 to 30 nucleotides in length

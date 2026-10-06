@@ -18,8 +18,8 @@ replacement_rules:
   Covalent catalysis: '<span style="color: #a719db;">Covalent catalysis</span>'
   covalent catalysis: '<span style="color: #a719db;">covalent catalysis</span>'
   active site microenvironment: '<span style="color: #c80085;">active site microenvironment</span>'
-  NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>'
 
+  NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>'
 true_statements:
   truth1a: Acid-base catalysis involves amino acid side chains donating or accepting
     protons.

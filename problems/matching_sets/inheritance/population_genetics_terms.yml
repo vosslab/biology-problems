@@ -9,7 +9,7 @@ matching pairs:
   - only process that creates new genetic variations
   genetic drift:
   - a random change in the allele frequencies within a population
-  - stronger in small populations and decrease the overall fitness of that population
+  - stronger in small populations and can cause substantial changes in allele frequencies
   gene flow:
   - movement of alleles between populations
   random mating:
@@ -22,8 +22,6 @@ matching pairs:
   - mating between relatives, such as first cousins
   - type of mating that reduces heterozygotes and increases homozygotes
 replacement_rules:
-  disorder: '<span style="color: #d40000;">disorder</span>' #RED
+  genetically: '<span style="color: #b74300;">genetically</span>'
   genetic: '<span style="color: #b74300;">genetic</span>' #DARK ORANGE
-  metabolic: '<span style="color: #935d00;">metabolic</span>' #LIGHT ORANGE
-  chromosome: '<span style="color: #6c6c00;">chromosome</span>' #DARK YELLOW
 dbsubject: Genetics

@@ -7,12 +7,15 @@ replacement_rules:
   genes: '<span style="color: #d40000;">genes</span>' #RED
   traits: '<span style="color: #b74300;">traits</span>' #DARK ORANGE
   trait: '<span style="color: #b74300;">trait</span>' #DARK ORANGE
+  genotypes: '<span style="color: #935d00;">genotypes</span>' #LIGHT ORANGE
   genotype: '<span style="color: #935d00;">genotype</span>' #LIGHT ORANGE
   alleles: '<span style="color: #6c6c00;">alleles</span>' #DARK YELLOW
   allele: '<span style="color: #6c6c00;">allele</span>' #DARK YELLOW
+  gametes: '<span style="color: #3b7600;">gametes</span>' #LIME GREEN
   gamete: '<span style="color: #3b7600;">gamete</span>' #LIME GREEN
   heterozygous: '<span style="color: #007a00;">heterozygous</span>' #GREEN
   dominant: '<span style="color: #00775f;">dominant</span>' #TEAL
+  phenotypes: '<span style="color: #007576;">phenotypes</span>' #CYAN
   phenotype: '<span style="color: #007576;">phenotype</span>' #CYAN
   characters: '<span style="color: #076dad;">characters</span>' #SKY BLUE
   character: '<span style="color: #076dad;">character</span>' #SKY BLUE
@@ -41,11 +44,11 @@ matching pairs:
   trait:
   - each variant for a character, such as purple or white color for flowers
   - each variant for a character, such as green or yellow color for seeds
-  - each variant for a character, such as round or wrinkled seeds in flowers
+  - each variant for a character, such as round or wrinkled seeds in plants
   - a distinct variant of a character of an organism, such as purple or white color
     for flowers
   - a distinct variant of a character of an organism, such as short or long stems
-    in flowers
+    in plants
   - a single variation in an inherited character
   - a specific form of a heritable feature, like purple color in flowers
   - green or yellow as specific forms of the seed color character
@@ -71,7 +74,7 @@ matching pairs:
   - all observable traits due to how its genes interact with the environment
   - the complete set of observable traits of an organism
   - Mendel referred to this as the <i>"external resemblance"</i> of an organism
-  - all traits that can all be observed in an organism
+  - all traits that can be observed in an organism
   - all observable traits, like eye color or blood type
   - all observable traits such as height or blood type in an individual
   - the manifestation of DNA as all observable traits
@@ -79,7 +82,7 @@ matching pairs:
   - Mendel described this as an organism's "external appearance"
   alleles:
   - different versions of the same gene, such as <strong>A</strong> or <strong>a</strong>
-  - one of two or more versions of DNA sequence at a given genomic location
+  - one of two or more versions of a DNA sequence at a given genomic location
   - one of two or more alternative forms of a gene at the same site in a chromosome
   - alternative forms of a specific gene
   - variants of the gene
@@ -94,7 +97,7 @@ matching pairs:
   - alternative versions of DNA at a gene site
   - different forms at a single gene locus
   gamete:
-  - a haploid reproductive cell having the half number of chromosomes
+  - a haploid reproductive cell having half the number of chromosomes
   - a general term for either male (sperm) or female (egg) germ cells, which unite
     to form the zygote
   - a haploid cell (e.g., sperm or egg) that fuses with another haploid cell during

@@ -6,9 +6,11 @@ values description: descriptions
 replacement_rules:
   Benchmark Z-test: '<span style="color: #d40000;">Benchmark Z-test</span>' #RED
   sample size: '<span style="color: #b74300;">sample size</span>' #DARK ORANGE
+  means: '<span style="color: #935d00;">means</span>'
   mean: '<span style="color: #935d00;">mean</span>' #LIGHT ORANGE
   average: '<span style="color: #935d00;">average</span>' #LIGHT ORANGE
   Benchmark T-test: '<span style="color: #6c6c00;">Benchmark T-test</span>' #DARK YELLOW
+  populations: '<span style="color: #3b7600;">populations</span>'
   population: '<span style="color: #3b7600;">population</span>' #LIME GREEN
   samples: '<span style="color: #007a00;">samples</span>' #GREEN
   Two-Sample T-test: '<span style="color: #00775f;">Two-Sample T-test</span>' #TEAL

@@ -5,7 +5,7 @@ value description: description
 values description: descriptions
 replacement_rules:
   cells: '<span style="color: #d40000;">cells</span>' #RED
-  'cell ': '<span style="color: #b74300;">cell</span> ' #DARK ORANGE
+  cell: '<span style="color: #b74300;">cell</span>' #DARK ORANGE
   Enzymatic Method: '<span style="color: #935d00;">Enzymatic Method</span>' #LIGHT ORANGE
   Bead-beating: '<span style="color: #6c6c00;">Bead-beating</span>' #DARK YELLOW
   Sonication: '<span style="color: #3b7600;">Sonication</span>' #LIME GREEN

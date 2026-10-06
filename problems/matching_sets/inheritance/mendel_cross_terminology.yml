@@ -5,20 +5,20 @@ value description: description
 values description: descriptions
 replacement_rules:
   test&nbsp;cross: '<span style="color: #d40000;">test cross</span>' #RED
-  F<sub>1</sub>: '<span style="color: #b74300;">F<sub>1</sub> generation</span>' #DARK ORANGE
+  F<sub>1</sub>: '<span style="color: #b74300;">F<sub>1</sub></span>' #DARK ORANGE
   inheritance: '<span style="color: #935d00;">inheritance</span>' #LIGHT ORANGE
   homozygous: '<span style="color: #6c6c00;">homozygous</span>' #DARK YELLOW
   backcross: '<span style="color: #3b7600;">backcross</span>' #LIME GREEN
-  F<sub>2</sub>: '<span style="color: #007a00;">F<sub>2</sub> generation</span>' #GREEN
+  F<sub>2</sub>: '<span style="color: #007a00;">F<sub>2</sub></span>' #GREEN
   recessive: '<span style="color: #00775f;">recessive</span>' #TEAL
   hybrid&nbsp;cross: '<span style="color: #007576;">hybrid cross</span>' #CYAN
-  genotypes: '<span style="color: #076dad;">genotype</span>' #SKY BLUE
+  genotypes: '<span style="color: #076dad;">genotypes</span>' #SKY BLUE
   genotype: '<span style="color: #076dad;">genotype</span>' #SKY BLUE
   dominant: '<span style="color: #003fff;">dominant</span>' #BLUE
   parental: '<span style="color: #0067cc;">parental</span>' #NAVY
   reciprocal&nbsp;cross: '<span style="color: #a719db;">reciprocal cross</span>' #PURPLE
   P&num;: '<span style="color: #c80085;">P generation</span>' #MAGENTA
-  phenotypes: '<span style="color: #cc0066;">phenotype</span>' #PINK
+  phenotypes: '<span style="color: #cc0066;">phenotypes</span>' #PINK
   phenotype: '<span style="color: #cc0066;">phenotype</span>' #PINK
 matching pairs:
   test&nbsp;cross:
@@ -28,11 +28,11 @@ matching pairs:
     makeup of another dominant organism
   - a type of cross involving an individual which is homozygous recessive for all
     genes of interest
-  - a type of cross involving an individuals with a dominant phenotype and an unknown
+  - a type of cross involving an individual with a dominant phenotype and an unknown
     genotype, mated with a homozygous recessive individual
   - a type of cross where a test organism showing a dominant trait is crossed with
     one showing all recessive traits
-  - a type of cross between a homozygous recessive individual with an individual of
+  - a type of cross between a homozygous recessive individual and an individual of
     an unknown dominant genotype
   - a type of cross of an individual of dominant phenotype and unknown genotype and
     an individual with a homozygous recessive genotype

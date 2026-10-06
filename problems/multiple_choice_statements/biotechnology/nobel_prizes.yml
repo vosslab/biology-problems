@@ -3,9 +3,7 @@ override_question_true: <strong>BONUS:</strong> Which of the following was a top
   of the 2022 Nobel Prizes awarded this week?
 override_question_false: <strong>BONUS:</strong> Which of the following was NOT a
   topic of the 2022 Nobel Prizes awarded this week??
-replacement_rules:
-  Mitosis II: '<span style="color: OrangeRed;">Mitosis II</span>'
-  Mitosis I: '<span style="color: OrangeRed;">Mitosis I</span>'
+replacement_rules: {}
 connection_words: null
 conflict_rules: null
 true_statements:

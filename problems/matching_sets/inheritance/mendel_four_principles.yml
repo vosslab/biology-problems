@@ -5,16 +5,22 @@ replacement_rules:
   alleles: '<span style="color: #d40000;">alleles</span>' #RED
   allele: '<span style="color: #d40000;">allele</span>' #RED
   Principle_of_Dominance: '<span style="color: #b74300;">Principle of Dominance</span>' #DARK ORANGE
-  genotype: '<span style="color: #935d00;">characters</span>' #LIGHT ORANGE
+  genotypes: '<span style="color: #935d00;">genotypes</span>' #LIGHT ORANGE
+  genotype: '<span style="color: #935d00;">genotype</span>' #LIGHT ORANGE
   dominant: '<span style="color: #6c6c00;">dominant</span>' #DARK YELLOW
   Law_of_Independent_Assortment: '<span style="color: #3b7600;">Law of Independent&nbsp;Assortment</span>' #LIME GREEN
   gametes: '<span style="color: #007a00;">gametes</span>' #GREEN
   gamete: '<span style="color: #007a00;">gamete</span>' #GREEN
   characters: '<span style="color: #00775f;">characters</span>' #TEAL
-  character<: '<span style="color: #00775f;">character</span><' #TEAL
+  characteristic: '<span style="color: #00775f;">characteristic</span>'
+  characteristics: '<span style="color: #00775f;">characteristics</span>'
+  character: '<span style="color: #00775f;">character</span>' #TEAL
+  phenotypes: '<span style="color: #007576;">phenotypes</span>' #CYAN
   phenotype: '<span style="color: #007576;">phenotype</span>' #CYAN
   recessive: '<span style="color: #076dad;">recessive</span>' #SKY BLUE
   Law_of_Segregation: '<span style="color: #003fff;">Law of Segregation</span>' #BLUE
+  separated: '<span style="color: #0067cc;">separated</span>'
+  separately: '<span style="color: #0067cc;">separately</span>'
   separate: '<span style="color: #0067cc;">separate</span>' #NAVY
   factors: '<span style="color: #a719db;">factors</span>' #PURPLE
   different: '<span style="color: #c80085;">different</span>' #MAGENTA
@@ -24,7 +30,7 @@ values description: descriptions
 matching pairs:
   Principle_of_Paired_Factors:
   - Each organism has two alleles that make up the genotype for a given trait.
-  - Character is represented in an organism by two alleles.
+  - Each character is represented in an organism by two alleles.
   - For a given characteristic, each trait consists of two alleles.
   - Each organism has two alleles for each gene.
   - Genotypes for specific traits are determined by two alleles.
@@ -44,10 +50,6 @@ matching pairs:
   Principle_of_Dominance:
   - Out of the two different alleles for the same gene, only one is able to express
     its effect.
-  - For each character there is a dominant allele, the trait is determined by that
-    allele.
-  - For each genotype there is a dominant allele, the phenotype is determined by that
-    allele.
   - Recessive alleles are not expressed in the phenotype of the hybrid organism.
   - Dominant alleles are the ones that determine the phenotype of the hybrid organism.
   - Some alleles are dominant, which means that their phenotype will mask the recessive
@@ -58,7 +60,7 @@ matching pairs:
   - Dominant alleles express their effects even when present in just a single copy.
   - If contrasting alleles are present, the dominant one determines the phenotype.
   - Presence of a dominant allele overrides the expression of the recessive allele.
-  - When different alleles exist, the dominant alleles determines the organism's traits.
+  - When different alleles exist, the dominant allele determines the organism's traits.
   - In a set of differing alleles, one will usually mask the effect of the other.
   - When two different alleles are present, one usually determines the observable
     traits.
@@ -68,13 +70,13 @@ matching pairs:
     allele.
   - When different alleles are present, the effect of one will generally dominate.
   Law_of_Segregation:
-  - Each parent contributes just one of their two alleles to its offspring.
+  - Each parent contributes just one of its two alleles to its offspring.
   - Two factors of a character get randomly distributed to different gametes.
   - When the gametes are formed, the factors separate and are distributed as units
     to each gamete.
   - Allele pairs separate during the formation of gametes.
   - Two alleles for each trait separate during the formation of gametes.
-  - A gamete carries only one allele for a gene but not both the alleles.
+  - A gamete carries only one allele for a gene but not both alleles.
   - Pairs of alleles separate during gamete formation.
   - During gamete formation, allele pairs are separated into individual gametes.
   - Each parent passes a single allele for each trait to the offspring during sexual

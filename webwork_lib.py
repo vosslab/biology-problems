@@ -377,27 +377,27 @@ def build_replacement_pairs(replacement_rules):
 #============================================
 def apply_replacement_pairs_to_text(text_string, replacement_pairs):
 	"""
-	Apply replacement pairs using placeholders to avoid nested replacements.
+	Apply literal replacements once, preferring the longest key at each position.
 	"""
 	if not isinstance(text_string, str):
 		raise TypeError(f"value is not string: {text_string}")
 	if not replacement_pairs:
 		return text_string
-	tokens = []
-	for idx, (find_text, replace_text) in enumerate(replacement_pairs):
-		if find_text not in text_string:
-			continue
-		token = f"@@@REPL_{idx}@@@"
-		if token in text_string:
-			counter = 0
-			while f"{token}_{counter}" in text_string:
-				counter += 1
-			token = f"{token}_{counter}"
-		text_string = text_string.replace(find_text, token)
-		tokens.append((token, replace_text))
-	for token, replace_text in tokens:
-		text_string = text_string.replace(token, replace_text)
-	return text_string
+	# Use the same longest-match semantics as the Blackboard text helpers.
+	replacements = dict(replacement_pairs)
+	ordered_keys = sorted(replacements, key=len, reverse=True)
+	literal_patterns = []
+	for key in ordered_keys:
+		literal_patterns.append(re.escape(key))
+	pattern = re.compile("|".join(literal_patterns))
+
+	def replacement_for_match(match):
+		original_text = match.group(0)
+		return replacements[original_text]
+
+	# The callback inserts final HTML without rescanning it or creating temporary tokens.
+	replaced_text = pattern.sub(replacement_for_match, text_string)
+	return replaced_text
 
 #============================================
 def sanitize_replaced_text(text_string):

@@ -12,10 +12,10 @@ replacement_rules:
   IIIIIIII: '<span style="color: #076dad;">IIIIIIII</span>'
   JJJJJJJJ: '<span style="color: #003fff;">JJJJJJJJ</span>'
   S1 pocket: '<span style="color: #0067cc;">S1 pocket</span>'
+
   LLLLLLLL: '<span style="color: #a719db;">LLLLLLLL</span>'
   MMMMMMMM: '<span style="color: #c80085;">MMMMMMMM</span>'
   NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>'
-
 true_statements:
   truth1a: Chymotrypsin prefers to cleave after large aromatic amino acids.
   truth2a: The shape of the S1 pocket of Chymotrypsin helps determine which residues

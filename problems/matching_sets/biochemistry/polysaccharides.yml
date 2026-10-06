@@ -42,15 +42,15 @@ matching pairs:
   - structural material in plant cell walls
 replacement_rules:
   animals: '<span style="color: #843232;">animals</span>' #DARK RED
-  'animal ': '<span style="color: #843232;">animal</span> ' #DARK RED
+  animal: '<span style="color: #843232;">animal</span>' #DARK RED
   plants: '<span style="color: #598231;">plants</span>' #OLIVE GREEN
-  'plant ': '<span style="color: #598231;">plant</span> ' #OLIVE GREEN
+  plant: '<span style="color: #598231;">plant</span>' #OLIVE GREEN
   structural: '<span style="color: #a86739;">structural</span>' #BROWN ORANGE
   storage: '<span style="color: #693AAA;">storage</span>' #PURPLE
   cell walls: '<span style="color: #b45918;">cell walls</span>' #RUST
-  glycogen: '<span style="color: #d40000;"><strong>glycogen</strong></span>' #RED
-  chitin: '<span style="color: #b74300;"><strong>chitin</strong></span>' #DARK ORANGE
-  cellulose: '<span style="color: #935d00;"><strong>cellulose</strong></span>' #LIGHT ORANGE
-  amylose: '<span style="color: #6c6c00;"><strong>amylose</strong></span>' #DARK YELLOW
-  amylopectin: '<span style="color: #3b7600;"><strong>amylopectin</strong></span>' #LIME GREEN
+  glycogen: '<span style="color: #d40000;">glycogen</span>' #RED
+  chitin: '<span style="color: #b74300;">chitin</span>' #DARK ORANGE
+  cellulose: '<span style="color: #935d00;">cellulose</span>' #LIGHT ORANGE
+  amylose: '<span style="color: #6c6c00;">amylose</span>' #DARK YELLOW
+  amylopectin: '<span style="color: #3b7600;">amylopectin</span>' #LIME GREEN
 dbsubject: Biochemistry

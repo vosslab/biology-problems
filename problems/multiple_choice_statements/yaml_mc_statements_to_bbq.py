@@ -177,6 +177,9 @@ def makeQuestionsFromStatement(main_statement, opposing_statement_nested_list, q
 		print("WARNING: not enough choices for this question, skipping...")
 		return []
 
+	# Format each source field once, before item construction.
+	answer_string = bptools.applyReplacementRulesToText(main_statement, replacement_rules_dict)
+	question_text = bptools.applyReplacementRulesToText(question_text, replacement_rules_dict)
 	question_list = []
 	for j in range(num_duplicates):
 		#get all the possible wrong answers
@@ -187,14 +190,12 @@ def makeQuestionsFromStatement(main_statement, opposing_statement_nested_list, q
 			choice = random.choice(nest_choice_list)
 			choices_list.append(choice)
 		#assign answer, add, and shuffle
-		answer_string = bptools.applyReplacementRulesToText(main_statement, replacement_rules_dict)
-		#choices_list = bptools.applyReplacementRulesToList(choices_list, replacement_rules_dict)
+		choices_list = bptools.applyReplacementRulesToList(choices_list, replacement_rules_dict)
 
 		choices_list.append(answer_string)
 		random.shuffle(choices_list)
 		N = random.randint(1, 999)
 
-		question_text = bptools.applyReplacementRulesToText(question_text, replacement_rules_dict)
 		bbformat = bptools.formatBB_MC_Question(N, question_text, choices_list, answer_string)
 		question_list.append(bbformat)
 
@@ -259,7 +260,6 @@ def sortStatements(yaml_data, notrue=False, nofalse=False, num_choices=5):
 			list_of_complete_questions.extend(question_string_list)
 	else:
 		print("Skipping all of the FALSE statement questions")
-	list_of_complete_questions = bptools.applyReplacementRulesToList(list_of_complete_questions, replacement_rules_dict)
 	return list_of_complete_questions
 
 #===========================================================

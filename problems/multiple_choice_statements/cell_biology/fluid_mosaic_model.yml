@@ -5,6 +5,7 @@ replacement_rules:
   rigid: '<span style="color: #935d00;">rigid</span>'
   liquid: '<span style="color: #6c6c00;">liquid</span>'
   flexible: '<span style="color: #3b7600;">flexible</span>'
+  cells: '<span style="color: #007a00;">cells</span>'
   cell: '<span style="color: #007a00;">cell</span>'
   proteins: '<span style="color: #076dad;">proteins</span>'
   lipids: '<span style="color: #a719db;">lipids</span>'

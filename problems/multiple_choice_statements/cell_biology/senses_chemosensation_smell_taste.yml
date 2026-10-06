@@ -4,6 +4,7 @@ learning_objective: Compare olfaction and taste transduction, including GPCR ver
   ion channel mechanisms.
 source: senses chapter
 replacement_rules:
+  GPCRs: '<strong>GPCRs</strong>'
   GPCR: <strong>GPCR</strong>
   cAMP: <strong>cAMP</strong>
   cGMP: <strong>cGMP</strong>

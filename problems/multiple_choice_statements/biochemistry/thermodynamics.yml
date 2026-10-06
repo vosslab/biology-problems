@@ -4,7 +4,7 @@ replacement_rules:
   kinetics: '<span style="color: #56225d;">kinetics</span>'
   equilibrium: '<span style="color: #478d1b;">equilibrium</span>'
   reaction: '<span style="color: #008a75;">reaction</span>'
-  reaction</span>s: reactions</span>
+  reactions: '<span style="color: #008a75;">reactions</span>'
   enzymes: '<span style="color: #cc2489;">enzymes</span>'
   entropy: '<span style="color: #b77b04;">entropy</span>'
   enthalpy: '<span style="color: #0078a3;">enthalpy</span>'

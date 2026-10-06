@@ -12,10 +12,15 @@ override_question_false: Which one of the following molecular entities cannot be
   as an enzymatic cofactor?
 replacement_rules:
   cannot: '<span style="color: OrangeRed;">CANNOT</span>'
+  enzymes: '<span style="color: DarkBlue;">enzymes</span>'
+  coenzyme: '<span style="color: DarkBlue;">coenzyme</span>'
+  coenzymes: '<span style="color: DarkBlue;">coenzymes</span>'
   enzyme: '<span style="color: DarkBlue;">enzyme</span>'
-  organic molecule: '<span style="color: DarkRed;">organic molecule </span>'
+  organic molecule: '<span style="color: DarkRed;">organic molecule</span>'
+  vitamins: '<span style="color: DarkGreen;">vitamins</span>'
   vitamin: '<span style="color: DarkGreen;">vitamin</span>'
-  ion: '<span style="color: #663300;">ion</span>'
+  'ion,': '<span style="color: #663300;">ion</span>,'
+  corticosteroid: '<span style="color: #6600cc;">corticosteroid</span>'
   steroid: '<span style="color: #6600cc;">steroid</span>'
   adenosine: '<span style="color: #990033;">adenosine</span>'
 connection_words: null

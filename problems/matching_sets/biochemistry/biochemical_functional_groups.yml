@@ -4,7 +4,7 @@ keys description: seven biochemical functional groups
 value description: description
 values description: descriptions
 replacement_rules:
-  Hydroxl: '<span style="color: #d40000;">Hydroxl</span>' #RED
+  Hydroxyl: '<span style="color: #d40000;">Hydroxyl</span>' #RED
   BBBBBBBB: '<span style="color: #b74300;">BBBBBBBB</span>' #DARK ORANGE
   Phosphate: '<span style="color: #935d00;">Phosphate</span>' #LIGHT ORANGE
   Sulfhydryl: '<span style="color: #6c6c00;">Sulfhydryl</span>' #DARK YELLOW
@@ -19,7 +19,7 @@ replacement_rules:
   MMMMMMMM: '<span style="color: #c80085;">MMMMMMMM</span>' #MAGENTA
   Methyl: '<span style="color: #cc0066;">Methyl</span>' #PINK
 matching pairs:
-  Hydroxl:
+  Hydroxyl:
   - 'Compound name: Alcohol'
   - '&mdash;OH'
   - Very common in sugars (e.g., glucose)

@@ -147,6 +147,16 @@ Biology examples:
 ## Replacement Rules (Formatting, Color, Consistency)
 
 `replacement_rules` is a simple "search and replace" table applied after question text and choice lists are constructed.
+Matches use the original text in one pass, with the longest key winning at each position.
+Replacement output is final: it is not searched again, so singular and plural color rules can
+coexist without nested tags. Rules that repair markup from another replacement must instead
+match the original word directly. See [USAGE.md](../../docs/USAGE.md#text-replacement-rules).
+
+Keep palette placeholders such as `EEEEEEEE` for future color additions. Short aliases such
+as `stattest` are also intentional authoring conveniences; retain them and supply their final
+display text directly. Prefer complete singular/plural keys over suffix tokens. Keep a space
+or punctuation guard when a short key would otherwise match inside an unrelated word.
+
 It is commonly used for:
 
 - Highlighting phrases with HTML `<span style="color: ...">...`

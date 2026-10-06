@@ -407,6 +407,33 @@ def test_applyReplacementRulesToList_replaces_and_validates():
 	assert False, "expected TypeError for non-string list element"
 
 
+def test_replacements_choose_longest_literal_without_reprocessing_output() -> None:
+	rules = {
+		"phenotype": '<span style="color: #007576;">phenotype</span>',
+		"phenotypes": '<span style="color: #007576;">phenotypes</span>',
+		"F<sub>1</sub>": "phenotypes",
+		"Ca[2]+": r"calcium\1",
+	}
+	source = "phenotypes / phenotype / F<sub>1</sub> / Ca[2]+ / Ca2"
+	expected = (
+		'<strong><span style="color: #007576;">phenotypes</span></strong> / '
+		'<strong><span style="color: #007576;">phenotype</span></strong> / '
+		'<strong>phenotypes</strong> / <strong>calcium\\1</strong> / Ca2'
+	)
+	assert bptools.applyReplacementRulesToText(source, dict(rules)) == expected
+	assert bptools.applyReplacementRulesToList([source], dict(rules)) == [expected]
+
+
+def test_item_replacements_keep_answer_and_choices_consistent() -> None:
+	rules = {"allele": "allele", "alleles": "alleles"}
+	item = bptools.item_types.MC("Compare alleles", ["allele", "alleles"], "alleles")
+	bptools.applyReplacementRulesToList([item], rules)
+	assert item.question_text == "Compare <strong>alleles</strong>"
+	assert item.answer_text == item.choices_list[1] == "<strong>alleles</strong>"
+	assert item.choices_list[0] == "<strong>allele</strong>"
+	item._validate()
+
+
 @pytest.mark.parametrize("flags", [[], ["--selftest"], ["-O"], ["--open-selftest", "-B"]])
 def test_selftest_export_and_browser_opt_in(tmp_path, monkeypatch, flags):
 	"""Preview flags preserve BBQ output and only launch a browser when requested."""

@@ -4,6 +4,17 @@
 
 ### Fixes and Maintenance
 
+- Audited all 81 YAML replacement-rule mappings. Kept color-palette placeholders and short
+  aliases, replaced obsolete plural/closing-tag workarounds with direct rules, and added full
+  inflected forms so color spans cover complete words. Fixed singular-to-plural substitutions,
+  lost spaces, misspelled labels, and the proofreading direction replaced by "primase".
+  Removed unrelated copied rules and redundant bold wrappers inside color replacements.
+- Corrected grammar and typos across the inheritance matching-set YAML banks. Color rules
+  now preserve plural spellings, avoid duplicated F1/F2 generation labels, and retain the
+  intended genotype and ectopic terminology. Added missing whole-word plural color rules.
+- Addressed wording review by removing two dominance variants that incorrectly assume a
+  dominant allele is always present, defining genetic code in terms of mRNA translation,
+  describing drift through allele-frequency changes, and simplifying chromosome-arm wording.
 - Reduced pedigree polish search work by skipping unions at their configured non-founder child
   cap and generations whose added child cannot improve row progression. Existing shuffle and
   random-draw order, difficulty checks, and acceptance gates remain; configured numeric limits
@@ -13,6 +24,15 @@
 
 ### Behavior or Interface Changes
 
+- WeBWorK replacement pairs now use the same literal, longest-match pass as Blackboard,
+  replacing temporary-token substitution. Short aliases such as `stattest` remain supported,
+  including at the end of a string. Deliberate short-word boundary guards remain where needed.
+- Text replacement helpers now use one literal, longest-match pass over each source string;
+  inserted markup is never matched again. The implementation spells out sorting, escaping,
+  and match lookup. Updated the thermodynamics plural rule to match source text directly.
+  Statement-question generation now formats stems and every choice once before constructing
+  items, preventing repeated tagging across duplicate questions and final output formatting.
+  Existing HTML is still eligible for matching; callers must supply each source field once.
 - Added the matched terminal-frontier interest review to
   [PEDIGREE_EVIDENCE.md](../problems/inheritance-problems/pedigrees/PEDIGREE_EVIDENCE.md).
   Two reviewers found no higher interest; their balance, readability, and usefulness judgments
@@ -20,6 +40,15 @@
 
 ### Developer Tests and Notes
 
+- Replacement audit: 80 focused tests passed; all matching and statement YAML files validated
+  with zero errors and five existing warnings. Across 5,592 strings, Blackboard and WeBWorK
+  replacement output matched exactly, with no nested color spans, partial-word matches, or
+  closing-tag repair rules. All original palette placeholders were checked for preservation.
+  The local WeBWorK renderer was unavailable on port 3000; browser rendering was not validated.
+- Replacement and YAML-generator checks passed (48 tests). A one-time comparison of 3,438
+  source strings across 81 rule-bearing YAML banks found no visible-text changes from the
+  single-pass helper. Regression coverage checks plural precedence, literal keys and values,
+  unmodified replacement output, item answer consistency, and statement-field formatting.
 - Focused pedigree tests passed (148); scoped `pyflakes` passed. All 50 saved inputs retained
   byte-identical results and ending RNG state. Whole-call replay work counts included the final
   endpoint check; paired timings varied without establishing a speed benefit.

@@ -1,15 +1,15 @@
 topic: stattests
 override_question_false: null
 replacement_rules:
-  'reject ': '<span style="color: #d40000;">reject</span> '
+  reject: '<span style="color: #d40000;">reject</span>'
   rejected: '<span style="color: #d40000;">rejected</span>'
   althyp: '<span style="color: #b74300;">alternative hypothesis, H<sub>a</sub></span>'
-  'stattest ': '<span style="color: #935d00;">statistical test</span> '
+  stattest: '<span style="color: #935d00;">statistical test</span>'
   stattests: '<span style="color: #935d00;">statistical tests</span>'
   dof: '<span style="color: #6c6c00;">degrees of freedom</span>'
   EEEEEEEE: '<span style="color: #3b7600;">EEEEEEEE</span>'
   accepted: '<span style="color: #007a00;">accepted</span>'
-  'accept ': '<span style="color: #007a00;">accept</span> '
+  accept: '<span style="color: #007a00;">accept</span>'
   favor: '<span style="color: #007a00;">FAVOR</span>'
   teststat: '<span style="color: #00775f;">test statistic</span>'
   nullhyp: '<span style="color: #007576;">null hypothesis, H<sub>0</sub></span>'
@@ -18,9 +18,9 @@ replacement_rules:
   KKKKKKKK: '<span style="color: #0067cc;">KKKKKKKK</span>'
   losa: '<span style="color: #a719db;">level of significance, &alpha;</span>'
   p-value: '<span style="color: #c80085;">p-value</span>'
+  inside: '<strong>inside</strong>'
+  outside: '<strong>outside</strong>'
   NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>'
-  ' inside ': ' <strong>inside</strong> '
-  ' outside ': ' <strong>outside</strong> '
   more extreme than: <strong>more extreme than</strong>
   less than: <strong>less than</strong>
   larger than: <strong>larger than</strong>

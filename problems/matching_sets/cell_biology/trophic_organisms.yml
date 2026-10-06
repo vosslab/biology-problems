@@ -10,7 +10,7 @@ replacement_rules:
   photolithoautotroph: '<span style="color: #6c6c00;">photolithoautotroph</span>' #DARK YELLOW
   light: '<span style="color: #3b7600;">light</span>' #LIME GREEN
   photoorganoheterotroph: '<span style="color: #007a00;">photoorganoheterotroph</span>' #GREEN
-  ' organic': ' <span style="color: #00775f;">organic</span>' #TEAL
+  organic: '<span style="color: #00775f;">organic</span>' #TEAL
   carbon&nbsp;dioxide: '<span style="color: #007576;">carbon&nbsp;dioxide</span>' #CYAN
   chemolithoheterotroph: '<span style="color: #076dad;">chemolithoheterotroph</span>' #SKY BLUE
   JJJJJJJJ: '<span style="color: #003fff;">JJJJJJJJ</span>' #BLUE

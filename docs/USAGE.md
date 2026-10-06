@@ -35,6 +35,24 @@ saved bank. Use `--selftest` to save without opening; combine either option with
 to also export the Blackboard ZIP. No local web server is needed. If browser launch fails,
 open the printed URL manually.
 
+## Text replacement rules
+
+`bptools.applyReplacementRulesToText()` and `applyReplacementRulesToList()` apply literal
+substring rules in one pass over each original string. At each position, the longest matching
+key wins, so `phenotypes` takes precedence over `phenotype` regardless of YAML order. Inserted
+text and HTML are not scanned again. Regex symbols in keys and backslashes in values are literal.
+
+Write each replacement as its final output; rules cannot depend on another rule's output.
+Use separate singular and plural entries instead of rules that repair generated closing tags.
+Apply the helpers once per source field: they do not skip existing HTML or make repeated calls
+idempotent. Base emphasis rules and automatic `<strong>` wrapping still apply.
+
+The `webwork_lib` text/list and prepared-pair helpers use the same longest-match behavior.
+Palette placeholders are retained for future additions, and short aliases such as `stattest`
+remain supported. Avoid embedded bold tags inside color spans; the helpers supply the outer
+bold wrapper. These are literal substring rules, so retain explicit space or punctuation
+guards when necessary to prevent matches inside unrelated words.
+
 ## Pedigree homework
 
 All three pedigree commands use randomly generated families and retain biological, teaching,

@@ -4,14 +4,15 @@ keys description: alterations to chromosome structure
 value description: description
 values description: descriptions
 replacement_rules:
+  chromosomes: '<span style="color: #008672;">chromosomes</span>' #DARK TEAL
   chromosome: '<span style="color: #008672;">chromosome</span>' #DARK TEAL
-  chromosome</span>s: chromosomes</span>
+  centromeres: '<span style="color: #c1480a;">centromeres</span>' #BURNT ORANGE
   centromere: '<span style="color: #c1480a;">centromere</span>' #BURNT ORANGE
   reversal: '<span style="color: #56225d;">reversal</span>' #DARK PURPLE
+  reversed: '<span style="color: #56225d;">reversed</span>' #DARK PURPLE
   reverse: '<span style="color: #56225d;">reverse</span>' #DARK PURPLE
-  reverse</span>d: reversed</span>
   genes: '<span style="color: #43861a;">genes</span>' #OLIVE GREEN
-  ectopic: '<span style="color: #a16c04;">genes</span>' #OCHRE
+  ectopic: '<span style="color: #a16c04;">ectopic</span>' #OCHRE
 matching pairs:
   non-disjunction:
   - the failure of sister chromatids to separate properly during cell division
@@ -20,12 +21,12 @@ matching pairs:
   - portion of the chromosome is missing
   - a sequence of DNA is left out during DNA replication
   - a part of a chromosome is left out during DNA replication
-  - when a chromosome breaks a part of it is lost
+  - when a chromosome breaks, a part of it is lost
   - can result from ectopic recombination where a part of a chromosome is lost
-  - chromosome in which is missing a group of genes
+  - chromosome that is missing a group of genes
   duplications:
   - portion of the chromosome has been copied, resulting in extra genetic material
-  - portion of the chromosome has been copied, resulting extra copies of a gene
+  - portion of the chromosome has been copied, resulting in extra copies of a gene
   - can result from ectopic recombination where a part of a chromosome is replicated
   - chromosome that has an extra copy of a group of genes
   reciprocal translocation:
@@ -57,7 +58,7 @@ matching pairs:
   pericentric inversion:
   - a pair of homologous chromosomes that both have duplicated genes and missing genes
   - the reversal of the gene order in a chromosome that includes the centromere
-  - two breaks and reversal of the genes occurs on both arms or sides of the centromere
+  - two breaks and reversal of the genes occur on both arms or sides of the centromere
   - centromere is included in the reversed loop that is formed during synapsis
   - reversal of the genes that includes both arms of the chromosome
   - includes the centromere and there is a break point in each arm

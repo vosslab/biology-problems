@@ -153,3 +153,29 @@ def test_yaml_multiple_choice_statements_num_choices_cli_validation(monkeypatch)
 	with pytest.raises(SystemExit) as error:
 		mod.parse_arguments()
 	assert error.value.code == 2
+
+
+def test_statement_questions_format_each_field_once(monkeypatch: pytest.MonkeyPatch) -> None:
+	mod = import_from_repo_path("problems/multiple_choice_statements/yaml_mc_statements_to_bbq.py")
+	monkeypatch.setattr(mod, "random", random.Random(0))
+	yaml_data = {
+		"topic": "alleles",
+		"connection_words": ["about"],
+		"true_statements": {"truth1": "alleles differ"},
+		"false_statements": {
+			"false1": "alleles vanish",
+			"false2": "alleles fly",
+			"false3": "alleles sing",
+			"false4": "alleles sleep",
+			"false5": "alleles dance",
+		},
+		"conflict_rules": {},
+		"replacement_rules": {"allele": "allele", "alleles": "alleles"},
+	}
+	questions = mod.sortStatements(yaml_data, nofalse=True, num_choices=4)
+	assert len(questions) > 1
+	for item in questions:
+		assert item.question_text.count("<strong>alleles</strong>") == 1
+		assert item.answer_text == "<strong>alleles</strong> differ"
+		assert all(choice.startswith("<strong>alleles</strong> ") for choice in item.choices_list)
+		item._validate()

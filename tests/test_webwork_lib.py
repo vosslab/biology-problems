@@ -3,6 +3,23 @@ import pytest
 import webwork_lib
 
 
+def test_replacements_match_longest_literal_once_without_placeholder_collisions() -> None:
+	rules = {
+		"cell": '<span style="color: blue;">cell</span>',
+		"cells": '<span style="color: blue;">cells</span>',
+		"alias": "cells",
+		"Ca[2]+": r"calcium\1",
+		"REPL": "token",
+	}
+	source = "cells alias Ca[2]+ REPL"
+	expected = (
+		'<strong><span style="color: blue;">cells</span></strong> '
+		'<strong>cells</strong> <strong>calcium\\1</strong> <strong>token</strong>'
+	)
+	assert webwork_lib.apply_replacements_to_text(source, rules) == expected
+	assert webwork_lib.apply_replacements_to_list([source], rules) == [expected]
+
+
 def test_contains_html_table_detects_tags():
 	assert webwork_lib.contains_html_table("<table><tr><td>cell</td></tr></table>")
 	assert webwork_lib.contains_html_table("<TR><TD>cell</TD></TR>")

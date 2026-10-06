@@ -5,13 +5,13 @@ value description: definition
 values description: definitions
 replacement_rules:
   homologous chromosomes: '<span style="color: #d40000;">homologous chromosomes</span>' #RED
+  homologous: '<span style="color: #007576;">homologous</span>' #CYAN
   BBBBBBBB: '<span style="color: #b74300;">BBBBBBBB</span>' #DARK ORANGE
   CCCCCCCC: '<span style="color: #935d00;">CCCCCCCC</span>' #LIGHT ORANGE
   DDDDDDDD: '<span style="color: #6c6c00;">DDDDDDDD</span>' #DARK YELLOW
   EEEEEEEE: '<span style="color: #3b7600;">EEEEEEEE</span>' #LIME GREEN
   FFFFFFFF: '<span style="color: #007a00;">FFFFFFFF</span>' #GREEN
   GGGGGGGG: '<span style="color: #00775f;">GGGGGGGG</span>' #TEAL
-  homologousx: '<span style="color: #007576;">homologous</span>' #CYAN
   IIIIIIII: '<span style="color: #076dad;">IIIIIIII</span>' #SKY BLUE
   JJJJJJJJ: '<span style="color: #003fff;">JJJJJJJJ</span>' #BLUE
   KKKKKKKK: '<span style="color: #0067cc;">KKKKKKKK</span>' #NAVY
@@ -30,7 +30,7 @@ matching pairs:
     allelic forms
   - chromosome pairs (one from each parent) that are similar in length, gene position,
     and centromere location
-  homologousx:
+  homologous:
   - not an exact copy but having the same structural features and pattern of genes
   - corresponding or similar in position, value, structure, or function
   - similar in structure and evolutionary origin, though not necessarily in function

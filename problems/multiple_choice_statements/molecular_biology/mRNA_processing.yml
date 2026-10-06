@@ -4,7 +4,7 @@ connection_words: null
 replacement_rules:
   non-coding: '<span style="color: #b30059;">non-coding</span>'
   introns: '<span style="color: #b30059;">introns</span>'
-  ' coding': '<span style="color: #0000b3;"> coding</span>'
+  coding: '<span style="color: #0000b3;">coding</span>'
   exons: '<span style="color: #0000b3;">exons</span>'
   poly-adenine tail: '<span style="color: #00802b;">poly-adenine tail</span>'
   poly-adenylation: '<span style="color: #00802b;">poly-adenylation</span>'

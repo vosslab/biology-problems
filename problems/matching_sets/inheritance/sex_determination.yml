@@ -13,58 +13,58 @@ replacement_rules:
   sex chromosomes: '<span style="color: #00775f;">sex&nbsp;chromosomes</span>' #TEAL
   sex chromosome: '<span style="color: #00775f;">sex chromosome</span>' #TEAL
   sperm: '<span style="color: #007576;">sperm</span>' #CYAN
-  xmales: ' <span style="color: #076dad;">males &male;</span>' #SKY BLUE
-  'xmale ': ' <span style="color: #076dad;">male &male;</span> ' #SKY BLUE
+  males: '<span style="color: #076dad;">males &male;</span>' #SKY BLUE
+  male: '<span style="color: #076dad;">male &male;</span>' #SKY BLUE
   JJJJJJJJ: '<span style="color: #003fff;">JJJJJJJJ</span>' #BLUE
   Z-W system: '<span style="color: #0067cc;">Z-W system</span>' #NAVY
   Haplo-Diploid system: '<span style="color: #a719db;">Haplo-Diploid system</span>' #PURPLE
   egg (ovum): '<span style="color: #c80085;">egg (ovum)</span>' #MAGENTA
-  females: '<span style="color: #cc0066;">females &female;</span> ' #PINK
-  'female ': '<span style="color: #cc0066;">female &female;</span> ' #PINK
+  females: '<span style="color: #cc0066;">females &female;</span>' #PINK
+  female: '<span style="color: #cc0066;">female &female;</span>' #PINK
 matching pairs:
   X-Y system:
-  - xmales are heterogametic and females are homogametic
-  - females are homogametic and xmales are heterogametic
-  - sex is determined by which chromosome is contained in the xmale sperm cell
+  - males are heterogametic and females are homogametic
+  - females are homogametic and males are heterogametic
+  - sex is determined by which chromosome is contained in the male sperm cell
   - found in most mammals, as well as some insects including <i>Drosophila</i>
-  - xmales have two different kinds of sex chromosomes
+  - males have two different kinds of sex chromosomes
   - females have two of the same kind of sex chromosome
-  - sex of an offspring depends on which of two sex chromosomes are contained with
-    the xmale sperm
+  - sex of an offspring depends on which of two sex chromosomes is contained in
+    the male sperm
   X-O system:
-  - xmales are diploid, but only have one sex chromosome
-  - xmales only have one sex chromosome, while females have two
-  - females have two homologous sex chromosomes, xmales have only one
-  - sex is determined on whether or not the xmale sperm contains a sex chromosome
+  - males are diploid, but only have one sex chromosome
+  - males only have one sex chromosome, while females have two
+  - females have two homologous sex chromosomes, males have only one
+  - sex is determined by whether or not the male sperm contains a sex chromosome
   - found in a number of insects, including the grasshoppers, cockroaches, and crickets
   - sex of the offspring depends on whether or not a sex chromosome is present in
-    the xmale sperm
+    the male sperm
   - sex of the offspring depends on whether or not a sex chromosome is present in
-    the xmale gamete
-  - xmale sperm normally contain either one sex chromosome or no sex chromosomes at
+    the male gamete
+  - male sperm normally contain either one sex chromosome or no sex chromosomes at
     all
-  - sex of an offspring depends on if the xmale sperm contains a sex chromosome or
+  - sex of an offspring depends on if the male sperm contains a sex chromosome or
     if it is missing
   Z-W system:
-  - females are heterogametic and xmales are homogametic
-  - xmales are homogametic and females are heterogametic
-  - sex of an offspring depends on which sex chromosome is contained with the female
+  - females are heterogametic and males are homogametic
+  - males are homogametic and females are heterogametic
+  - sex of an offspring depends on which sex chromosome is contained in the female
     egg (ovum)
   - sex is determined by the type of sex chromosome in the egg (ovum)
   - found in most birds, many reptiles, and some insects
   - this system is the reverse of the system found in humans
   - females have two different kinds of sex chromosomes
-  - xmales have two of the same kind of sex chromosomes
-  - xmales have two of the same sex chromosomes
+  - males have two of the same kind of sex chromosomes
+  - males have two of the same sex chromosomes
   Haplo-Diploid system:
-  - xmales develop from unfertilized eggs and thus have no fathers
-  - only system where xmales have no fathers
-  - xmales only have one copy of every chromosome
-  - xmales carry only one copy of each chromosome
+  - males develop from unfertilized eggs and thus have no fathers
+  - only system where males have no fathers
+  - males only have one copy of every chromosome
+  - males carry only one copy of each chromosome
   - found in insects, such as ants and bees
-  - unfertilized eggs develop into xmales
+  - unfertilized eggs develop into males
   - sex is based on whether or not the female egg (ovum) is exposed to sperm
   - there are no sex chromosomes
   - fertilized eggs (with sperm) develop into females, unfertilized eggs develop into
-    xmales
+    males
 dbsubject: Genetics

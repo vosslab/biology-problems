@@ -9,8 +9,6 @@ replacement_rules:
   kinetic energy: '<span style="color: #995c00;">kinetic energy</span>'
   Potential energy: '<span style="color: #002699;">Potential energy</span>'
   potential energy: '<span style="color: #002699;">potential energy</span>'
-  leading strand: '<span style="color: #248f24;">leading strand</span>'
-  lagging strand: '<span style="color: #8f2424;">lagging strand</span>'
 true_statements:
   truth1a: water rushing over Niagara Falls
   truth1b: a river flowing under a bridge

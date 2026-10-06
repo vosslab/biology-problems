@@ -8,7 +8,7 @@ replacement_rules:
   'gene ': '<span style="color: #b74300;">gene</span> ' #DARK ORANGE
   locus: '<span style="color: #935d00;">locus</span>' #LIGHT ORANGE
   genomes: '<span style="color: #6c6c00;">genomes</span>' #DARK YELLOW
-  'genome ': '<span style="color: #6c6c00;">genome</span> ' #DARK YELLOW
+  genome: '<span style="color: #6c6c00;">genome</span>' #DARK YELLOW
   single nucleotide polymorphism (SNP): '<span style="color: #3b7600;">single nucleotide
     polymorphism (SNP)</span>' #LIME GREEN
   genetics: '<span style="color: #007a00;">genetics</span>' #GREEN
@@ -16,19 +16,19 @@ replacement_rules:
   diploid: '<span style="color: #007576;">diploid</span>' #CYAN
   IIIIIIII: '<span style="color: #076dad;">IIIIIIII</span>' #SKY BLUE
   genetic code: '<span style="color: #003fff;">genetic code</span>' #BLUE
+  genetic term: '<span style="color: #a719db;">genetic term</span>' #PURPLE
   KKKKKKKK: '<span style="color: #0067cc;">KKKKKKKK</span>' #NAVY
-  'genetic term ': '<span style="color: #a719db;">genetic term</span> ' #PURPLE
   genetic terms: '<span style="color: #a719db;">genetic terms</span>' #PURPLE
   genomics: '<span style="color: #c80085;">genomics</span>' #MAGENTA
   NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
 matching pairs:
   haploid:
-  - a cell or organism that a single set of chromosomes
+  - a cell or organism that has a single set of chromosomes
   diploid:
   - a cell or organism that has paired chromosomes
   'gene ':
   - the unit of inheritance passed from parents to offspring
-  - the main elements of heredity
+  - the main element of heredity
   genetics:
   - the study of heredity and the variation of inherited characteristics
   - the study of the effect of genetic differences on organisms
@@ -40,14 +40,13 @@ matching pairs:
   - the set of instructions that tell a cell how to make a specific protein
   - the set of rules used by living cells to translate information encoded within
     genetic material into proteins
-  - the set of instructions that converts the sequence of nucleotides into an amino
-    acid sequence in proteins
-  - the code our body uses to convert the instructions contained in our DNA the essential
+  - the rules for translating an mRNA nucleotide sequence into an amino acid sequence
+  - the code our body uses to convert the instructions contained in our DNA into the essential
     materials of life
   genomics:
   - the study of all of the genes in an organism
   - the structure, function, evolution, and mapping of genomes
-  'genome ':
+  genome:
   - an organism's complete set of DNA
   - complete set of DNA in an organism
   - complete set of DNA in a cell or organism
