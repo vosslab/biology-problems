@@ -10,7 +10,7 @@ The focused authorities below own the detailed rules:
 - [PEDIGREE_LAYOUT.md](PEDIGREE_LAYOUT.md): layout geometry and rendering.
 - [PEDIGREE_POLISHING.md](PEDIGREE_POLISHING.md): bounded repair and polishing.
 - [PEDIGREE_RANKING.md](PEDIGREE_RANKING.md): candidate ordering and evidence.
-- [PEDIGREE_PROBABILITY.md](PEDIGREE_PROBABILITY.md): diagnostic-only probability analysis.
+- [PEDIGREE_PROBABILITY.md](PEDIGREE_PROBABILITY.md): exact affected-count filter and joint diagnostic.
 - [PEDIGREE_GRAPH_ANALYSIS.md](PEDIGREE_GRAPH_ANALYSIS.md): similarity and complexity.
 - [PEDIGREE_RUBRIC.md](PEDIGREE_RUBRIC.md): fixed visual-review instructions and score limits.
 - [PEDIGREE_EVIDENCE.md](PEDIGREE_EVIDENCE.md): accumulated ratings, production decisions, and caveats.
@@ -64,8 +64,9 @@ Default/`--use-cache` runs randomly choose eligible entries, then generate a sho
 bypasses the bank for selection, creates a full fresh pool, then appends accepted new entries.
 Fresh accepted and polished families are saved even if not exported. Exact duplicate records are
 omitted; graph-isomorphic but differently encoded cases may remain. Eligibility rechecks current
-biology, teaching, geometry, difficulty, and format-specific limits. Compact records reconstruct a
-compatible genotype witness and recompute layout; they do not preserve original genotypes.
+biology, teaching, affected-count tails, geometry, difficulty, and format-specific limits. Compact
+records preserve original genotypes and recompute layout. Older records without genotypes are
+ineligible; the normal shortage-generation path replenishes the bank.
 
 Identification prepares 20 candidates per requested question; selection and matching prepare 100
 per question, or 40 with `--autosomal`. Cached entries are filtered to the offered inheritance modes
@@ -78,21 +79,23 @@ The highest-ranked eligible entries are used. Choices and selected questions are
 normal bptools export. Collector retries use unused reserve scenarios. Requests larger than the
 available complete scenarios fail explicitly.
 
-Each line stores mode, sex sequence, affected and carrier indexes, and ordered parent-child unions.
+Each line stores mode, sex sequence, affected and carrier indexes, original genotype allele lists
+in person order, and ordered parent-child unions.
 For example, this below-minimum-size family illustrates the compact record shape:
 
 ```json
-{"mode":"AR","sex":"mfmf","affected":[2],"carriers":[0,1],"families":[[0,1,[2,3]]]}
+{"mode":"AR","sex":"mfmf","affected":[2],"carriers":[0,1],"genotypes":[[0,1],[0,1],[1,1],[0,0]],"families":[[0,1,[2,3]]]}
 ```
 
 Person indexes are zero-based positions in `sex`; `m` and `f` mean male and female. The record
-omits full genotypes and geometry. File locks protect concurrent readers, expiry, and appenders on
+omits geometry. Stored genotypes are validated against phenotypes, carrier indexes, and parent-child
+transmissions. File locks protect concurrent readers, expiry, and appenders on
 macOS/Linux; separate runs may select the same reusable case.
 
 ## Preparation flow
 
 For each fresh candidate, the pipeline simulates a family and applies rare-trait, biological,
-teaching, and layout acceptance. Bonus identification pools use the terminal-frontier constructor;
+teaching, affected-count, and layout acceptance. Bonus identification pools use the terminal-frontier constructor;
 easy, other difficulties, and other formats use procedural construction. The public
 `generate_candidate` helper retains baseline construction, while `generate_pool` routes by the
 actual question format. Construction first validates the planned layout before biology is
@@ -143,7 +146,7 @@ dictionaries; new or replaced families validate and cache their own structure.
 | [geometry_features.py](pedigree_lib/geometry_features.py) | Native-space row density and bottom-gap measures |
 | [generation_features.py](pedigree_lib/generation_features.py) | Generation counts, progression, and shrink |
 | [affected_features.py](pedigree_lib/affected_features.py) | Visible affected-reach and region-fill measures |
-| [offspring_probability.py](pedigree_lib/offspring_probability.py) | Fixed-cross probability diagnostic |
+| [offspring_probability.py](pedigree_lib/offspring_probability.py) | Exact affected-count tail and joint fixed-cross diagnostic |
 
 The executable scripts are thin callers of these modules. The old character-grid, graph-string,
 and associated internal interfaces are removed.

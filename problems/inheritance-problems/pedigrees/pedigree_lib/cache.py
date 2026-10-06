@@ -47,6 +47,7 @@ def encode(accepted: questions.AcceptedCase) -> dict:
 		affected=[indices[p.id] for p in case.family.people if case.observations[p.id].affected],
 		carriers=[indices[p.id] for p in case.family.people
 			if mode.endswith('recessive') and case.genotypes[p.id] == (0, 1)],
+		genotypes=[list(case.genotypes[p.id]) for p in case.family.people],
 		families=[[indices[u.father], indices[u.mother], [indices[c] for c in u.children]]
 			for u in case.family.unions])
 	return record
@@ -54,14 +55,18 @@ def encode(accepted: questions.AcceptedCase) -> dict:
 
 #============================================
 def decode(record: dict, level: str, matching: bool | None = None) -> sources.Case | None:
-	"""Validate a compact record and recover a genotype witness, hiding carriers.
+	"""Validate a compact record and restore original genotypes, hiding carriers.
 
 	Malformed records raise ValueError. Biologically incompatible records return None.
-	Carrier lists constrain hidden genotypes, never the student-visible assessment.
+	Legacy records without original genotypes are ineligible and replenished.
+	Hidden genotypes never determine the student-visible answer.
 	"""
-	if not isinstance(record, dict) or set(record) != {
+	if isinstance(record, dict) and set(record) == {
 			'mode', 'sex', 'affected', 'carriers', 'families'}:
-		raise ValueError('Pedigree cache records require mode, sex, affected, carriers, families')
+		return None
+	if not isinstance(record, dict) or set(record) != {
+			'mode', 'sex', 'affected', 'carriers', 'genotypes', 'families'}:
+		raise ValueError('Pedigree cache records require mode, sex, affected, carriers, genotypes, families')
 	if level not in difficulty.DIFFICULTY_SETTINGS or record['mode'] not in MODES:
 		raise ValueError('Unknown pedigree cache level or mode')
 	sex = record['sex']
@@ -97,13 +102,27 @@ def decode(record: dict, level: str, matching: bool | None = None) -> sources.Ca
 	carriers = frozenset(map(str, record['carriers']))
 	if carriers & family_model.later_spouses(family):
 		return None
-	hidden = {pid: family_model.Observation(obs.affected, pid in carriers)
-		for pid, obs in visible.items()}
-	noncarriers = frozenset(pid for pid, obs in visible.items() if not obs.affected and pid not in carriers)
-	witness = inheritance.analyze(family, hidden, mode, noncarrier_ids=noncarriers)
-	if not witness.compatible:
-		return None
-	result = sources.Case(family, visible, witness.witness)
+	# ASVS 1.5.2, 2.2.1: accept plain allele lists with validated types and genotype domains.
+	stored = record['genotypes']
+	if not isinstance(stored, list) or len(stored) != len(people):
+		raise ValueError('Pedigree cache genotypes must identify every person')
+	genotypes = {}
+	for person, alleles in zip(people, stored):
+		if (not isinstance(alleles, list) or any(type(a) is not int for a in alleles)
+				or tuple(alleles) not in inheritance.genotype_domain(mode, person.sex)):
+			raise ValueError(f'Invalid pedigree cache genotype for {person.id}')
+		genotype = tuple(alleles)
+		if inheritance.phenotype(mode, genotype) != visible[person.id].affected:
+			return None
+		if (mode.endswith('recessive') and genotype == (0, 1)) != (person.id in carriers):
+			return None
+		genotypes[person.id] = genotype
+	for union in family.unions:
+		for child in union.children:
+			if genotypes[child] not in inheritance.transmissions(mode,
+					genotypes[union.father], genotypes[union.mother], family.members()[child].sex):
+				return None
+	result = sources.Case(family, visible, genotypes)
 	return result
 
 

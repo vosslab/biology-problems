@@ -21,6 +21,8 @@ def test_cached_biology_round_trip_hides_carriers(mode: str) -> None:
 	accepted, reasons = questions.evaluate(restored)
 	assert accepted is not None, reasons
 	assert cache.encode(accepted) == record
+	assert list(restored.genotypes.values()) == [original.case.genotypes[p.id]
+		for p in original.case.family.people]
 	assert not any(obs.carrier for obs in restored.observations.values())
 
 
@@ -62,7 +64,7 @@ def test_autosomal_pool_reuses_only_autosomal_cases_from_shared_bank(tmp_path: p
 
 def test_impossible_cached_carriers_are_rejected() -> None:
 	record = dict(mode='AR', sex='mfmf', affected=[2], carriers=[],
-		families=[[0, 1, [2, 3]]])
+		genotypes=[[0, 1], [0, 1], [1, 1], [0, 0]], families=[[0, 1, [2, 3]]])
 	assert cache.decode(record, 'easy') is None
 	record['carriers'] = [0, 1]
 	assert cache.decode(record, 'easy') is not None
@@ -70,9 +72,41 @@ def test_impossible_cached_carriers_are_rejected() -> None:
 
 def test_cache_indices_cannot_reference_other_people() -> None:
 	record = dict(mode='AR', sex='mfmf', affected=[-1], carriers=[0, 1],
-		families=[[0, 1, [2, 3]]])
+		genotypes=[[0, 1], [0, 1], [1, 1], [0, 0]], families=[[0, 1, [2, 3]]])
 	with pytest.raises(ValueError, match='affected indices'):
 		cache.decode(record, 'easy')
+
+
+def test_legacy_cache_cannot_substitute_inferred_parental_crosses() -> None:
+	record = dict(mode='AR', sex='mfmf', affected=[2], carriers=[0, 1],
+		families=[[0, 1, [2, 3]]])
+	assert cache.decode(record, 'easy') is None
+
+
+def test_cached_original_genotypes_must_have_possible_transmissions() -> None:
+	# All are unaffected, but AA x AA cannot produce a hidden Aa carrier.
+	record = dict(mode='AR', sex='mfmf', affected=[], carriers=[2],
+		genotypes=[[0, 0], [0, 0], [0, 1], [0, 0]], families=[[0, 1, [2, 3]]])
+	assert cache.decode(record, 'easy') is None
+	record['genotypes'][2] = [False, 1]
+	with pytest.raises(ValueError, match='genotype'):
+		cache.decode(record, 'easy')
+
+
+def test_cache_preserves_homozygous_dominant_parental_cross() -> None:
+	record = dict(mode='AD', sex='mfmf', affected=[0, 1, 2, 3], carriers=[],
+		genotypes=[[0, 1], [1, 1], [1, 1], [0, 1]], families=[[0, 1, [2, 3]]])
+	restored = cache.decode(record, 'easy')
+	assert list(restored.genotypes.values()) == [(0, 1), (1, 1), (1, 1), (0, 1)]
+
+
+def test_cached_extreme_sibship_fails_current_teaching_gate() -> None:
+	record = dict(mode='AR', sex='mfmmff', affected=[2, 3, 4, 5], carriers=[0, 1],
+		genotypes=[[0, 1], [0, 1]] + [[1, 1]] * 4, families=[[0, 1, [2, 3, 4, 5]]])
+	case = cache.decode(record, 'easy')
+	accepted, reasons = questions.evaluate(case)
+	assert accepted is None
+	assert 'affected-count tail' in reasons[0]
 
 
 @pytest.mark.parametrize('age, available', ((86399, True), (86400, False), (86401, False)))

@@ -1,4 +1,28 @@
-# Offspring probability diagnostic
+# Offspring probability checks
+
+## Classroom affected-count filter
+
+The shared acceptance pipeline rejects any sibship whose exact affected-count tail is below 0.05.
+`pedigree_lib.offspring_probability.affected_count_tail()` holds parental genotypes, sibship size,
+and each child's sex fixed. It convolves the Mendelian affected probabilities and sums the
+probabilities of counts at least as far from the expected count as observed, including ties.
+This is the exact two-category Pearson tail; it uses neither Monte Carlo draws nor an asymptotic
+chi-square approximation. Sex-linked children may have different affected probabilities.
+
+For `Aa x Aa`, four affected children out of four have tail `1/256 = 0.00390625` and are rejected.
+Three out of four have tail `13/256 = 0.05078125` and pass this filter. Deterministic crosses pass
+when their affected count is required by inheritance. The cutoff is strictly below 5%, applied to
+each sibship independently without multiple-testing correction. This deliberately selects classroom
+examples; it is not a biological impossibility test or an estimate of population frequencies.
+
+Fresh generation rejects the candidate and continues its bounded random search. Repair/polishing
+proposals also pass through this gate; a failed proposal leaves the prior accepted case in place
+under the existing stage rules. Cache loading rechecks the same gate using stored original
+genotypes; legacy records without them are skipped and shortages generated afresh. Authored library
+examples without sampled genotypes use the visible-evidence compatible witness. Hidden genotypes
+never choose the teaching answer. See [PEDIGREE_BIOLOGY.md](PEDIGREE_BIOLOGY.md).
+
+## Joint diagnostic
 
 `pedigree_lib.offspring_probability.diagnose(family, mode, genotypes, rng)` is a diagnostic for
 fixed parental crosses. It does not reject or rank candidates. The source pedigree workflow and
@@ -25,8 +49,8 @@ statistic; its p-value is not adjusted for searching multiple sibships.
 
 ## Input and use
 
-Original genotypes are required. Compact cache records reconstruct compatible witnesses and cannot
-substitute for original sampled states. The CLI accepts JSON with allele 1 denoting the trait allele:
+Original genotypes are required. Current cache records preserve them; legacy records with inferred
+witnesses cannot substitute for original sampled states. The CLI accepts JSON with allele 1 denoting the trait allele:
 
 ```json
 {
@@ -58,7 +82,9 @@ parents; independent reference draws do not propagate their newly drawn genotype
 Sex assignment, teaching filters, phenotype selection, and ranking condition generated samples.
 Even unpolished accepted cases need not have uniform p-values. Compare paired unpolished/polished
 distributions before attributing a shift to polishing. The diagnostic does not affect acceptance or
-ranking.
+ranking. The separate affected-count filter above controls classroom acceptance; a 1% threshold
+on the joint diagnostic alone would miss the four-affected-child example (joint p is about 0.0156
+with two boys and two girls).
 
 Two historical comparisons illustrate the selection limits. The preserved report for 1,000 paired
 rigorous cases recorded p < 0.05 in 31 cases before and 33 after polishing, and recorded p < 0.01

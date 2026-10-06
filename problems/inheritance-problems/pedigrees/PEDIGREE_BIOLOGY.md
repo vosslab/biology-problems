@@ -82,7 +82,17 @@ At least one visibly affected person must occur in the final or penultimate gene
 every branch to contain affected people or make unaffected relatives biologically useless. Valid
 inheritance examples can fail this deliberate selection rule.
 
-Candidates pass rare-trait, biological, teaching, and layout checks. A different answer, weak or
+## Offspring-count filter
+
+After the visible-evidence answer is established, every sibship must have an exact affected-count
+tail of at least 0.05 under its parental cross, conditional on the children's sexes. Fresh and cached
+procedural cases use original sampled genotypes; authored examples without sampled states use a
+compatible witness. Extreme candidates are rejected and generation continues with random draws.
+Repair and polishing also recheck the filter before accepting a proposal. This classroom policy
+does not force exact Mendelian ratios or declare unusual outcomes biologically impossible.
+See [PEDIGREE_PROBABILITY.md](PEDIGREE_PROBABILITY.md) for the tail definition and examples.
+
+Candidates pass rare-trait, biological, teaching, offspring-count, and layout checks. A different answer, weak or
 tied evidence, hidden-carrier dependency, or ambiguous drawing blocks a question. Bounded search
 reports rejection reasons on exhaustion; invalid inputs and programming errors propagate. Preserve
 the biological and evidence diagnostics when reporting a rejection.

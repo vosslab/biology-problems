@@ -33,6 +33,12 @@
   Statement-question generation now formats stems and every choice once before constructing
   items, preventing repeated tagging across duplicate questions and final output formatting.
   Existing HTML is still eligible for matching; callers must supply each source field once.
+- Added the user-selected 5% exact affected-count teaching filter to shared pedigree acceptance.
+  Each sibship is tested conditional on offspring sexes; extreme candidates are rejected and
+  generation continues randomly. Repair, polishing, and cache reuse share the gate. Four affected
+  offspring from `Aa x Aa` are rejected; three of four remain eligible (tail 0.05078125).
+  Cache records now preserve original genotypes, validate them against observations and inheritance,
+  and skip legacy entries that cannot supply the original parental cross.
 - Added the matched terminal-frontier interest review to
   [PEDIGREE_EVIDENCE.md](../problems/inheritance-problems/pedigrees/PEDIGREE_EVIDENCE.md).
   Two reviewers found no higher interest; their balance, readability, and usefulness judgments
@@ -49,6 +55,20 @@
   source strings across 81 rule-bearing YAML banks found no visible-text changes from the
   single-pass helper. Regression coverage checks plural precedence, literal keys and values,
   unmodified replacement output, item answer consistency, and statement-field formatting.
+- The 5% pedigree filter passed the full suite (5,048 tests; two existing source-length warnings)
+  and scoped `pyflakes`. Independent exhaustive enumeration agreed with the exact-tail helper for
+  all 1,911 sibships in 200 fresh pedigrees across four difficulties; all met the cutoff and retained
+  identical tails after cache round trips. The saved four-of-four case was rejected, and a bank with
+  that case plus a legacy entry replenished successfully. All three CLI formats exported BBQ and
+  HTML self-tests; question-text checks found no issues. Local evidence is under
+  `output_pedigree/probability_filter_20261006/`.
+- Audited the current pedigree generator with the existing probability tool: 200 fresh accepted
+  cases had no impossible transmissions; four had whole-pedigree p < 0.05 and six had a sibship
+  joint sex/phenotype p < 0.05. A separate 1,000-case medium autosomal-recessive probe reproduced
+  one four-of-four affected carrier cross. Its joint p = 0.0146 exceeds 1% despite the affected-count
+  tail being 1/256. Recorded an exact per-sibship phenotype-screen recommendation without changing
+  generation policy; six diagnostic tests passed. See the
+  [pedigree_offspring_probability_20261006.md](active_plans/audits/pedigree_offspring_probability_20261006.md).
 - Focused pedigree tests passed (148); scoped `pyflakes` passed. All 50 saved inputs retained
   byte-identical results and ending RNG state. Whole-call replay work counts included the final
   endpoint check; paired timings varied without establishing a speed benefit.

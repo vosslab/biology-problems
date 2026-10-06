@@ -1,4 +1,4 @@
-"""Diagnostic Pearson tails for fixed parental crosses, never an acceptance gate."""
+"""Exact affected-count tails and a separate joint Pearson diagnostic."""
 
 import numpy
 
@@ -6,6 +6,37 @@ import pedigree_lib.family as family_model
 import pedigree_lib.inheritance as inheritance
 
 CATEGORIES = (('male', False), ('male', True), ('female', False), ('female', True))
+
+
+#============================================
+def affected_count_tail(mode: str, father: tuple, mother: tuple,
+		sexes: tuple[str, ...], affected: int) -> float:
+	"""Exact tail for deviation from the expected affected count, holding sexes fixed.
+
+	Convolve each child's Mendelian affected probability, then sum outcomes at
+	least as far from the expected count as observed, including ties. This is
+	the exact two-category Pearson tail, without a small-sample approximation.
+	Sex-linked children can have different probabilities. Deterministic crosses
+	return one for the required count and zero for an impossible count.
+	"""
+	if type(affected) is not int or not 0 <= affected <= len(sexes):
+		raise ValueError('Affected count must be an integer within the sibship size')
+	distribution = [1.0]
+	expected = 0.0
+	for sex in sexes:
+		outcomes = inheritance.transmissions(mode, father, mother, sex)
+		probability = sum(inheritance.phenotype(mode, g) for g in outcomes) / len(outcomes)
+		expected += probability
+		updated = [0.0] * (len(distribution) + 1)
+		for count, mass in enumerate(distribution):
+			updated[count] += mass * (1 - probability)
+			updated[count + 1] += mass * probability
+		distribution = updated
+	# Mendelian probabilities are binary fractions, so these small-sibship ties are exact.
+	distance = abs(affected - expected)
+	result = sum(mass for count, mass in enumerate(distribution)
+		if abs(count - expected) >= distance)
+	return result
 
 
 #============================================

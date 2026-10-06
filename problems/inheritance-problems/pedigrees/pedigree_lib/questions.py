@@ -13,6 +13,9 @@ import pedigree_lib.sources as sources
 import pedigree_lib.inheritance as inheritance
 import pedigree_lib.graphs as graphs
 import pedigree_lib.family as family_model
+import pedigree_lib.offspring_probability as offspring_probability
+
+MIN_AFFECTED_COUNT_TAIL = 0.05
 
 
 #============================================
@@ -54,6 +57,23 @@ def evaluate(case: sources.Case, mirror: bool = False) -> tuple[AcceptedCase | N
 			return None, ('Unaffected later spouses cannot be carriers: ' + ', '.join(carriers),)
 	if assessment.answer is None:
 		return None, assessment.reasons
+	# Authored examples have no sampled state; use their compatible teaching witness.
+	# Fresh and cached procedural cases retain their original genotypes instead.
+	mode = assessment.answer
+	genotypes = case.genotypes if case.genotypes else assessment.compatibility[mode].witness
+	people = case.family.members()
+	if any(genotypes[p.id] not in inheritance.genotype_domain(mode, p.sex)
+			or inheritance.phenotype(mode, genotypes[p.id]) != case.observations[p.id].affected
+			for p in case.family.people):
+		return None, ('Sampled genotypes disagree with the teaching answer',)
+	for union in case.family.unions:
+		sexes = tuple(people[pid].sex for pid in union.children)
+		affected = sum(case.observations[pid].affected for pid in union.children)
+		pvalue = offspring_probability.affected_count_tail(mode,
+			genotypes[union.father], genotypes[union.mother], sexes, affected)
+		if pvalue < MIN_AFFECTED_COUNT_TAIL:
+			return None, (f'Sibship {union.father}/{union.mother} affected-count tail '
+				f'{pvalue:.6g} is below {MIN_AFFECTED_COUNT_TAIL:g}',)
 	diagram = layout.lay_out(case.family, mirror)
 	errors = layout.layout_errors(diagram)
 	if errors:
