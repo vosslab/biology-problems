@@ -1,0 +1,34 @@
+topic: Z-test and t-test tutorials
+num_choices: 4
+learning_objective: Recall which standard deviation each tutorial used and why Joe switched to the t-test.
+source:
+  - https://docs.google.com/document/d/1ZOLIw-JlNA6Mry1w0t5I5Ffgi7RMiBCSr7VtyNgsdt0/edit
+  - https://docs.google.com/document/d/1lh3EWl4gnyT0dq0rgYzjzC6J1No4zKP2gi5eY3N5uv0/edit
+# Authoring contract: recall steps students completed, with no calculations.
+# Four groups: SD input, unknown population SD, Joe's switch, and sample size minus 1.
+# Keep small-sample claims tied to Joe's tutorial, rather than a universal cutoff rule.
+# Exemplar: short parallel statements; errors swap inputs, test names, or the df step.
+override_question_true: '<p>In the national-average tutorials, which statement is <strong>TRUE</strong>?</p>'
+override_question_false: '<p>In the national-average tutorials, which statement is <strong>FALSE</strong>?</p>'
+replacement_rules: null
+connection_words: null
+true_statements:
+  # The SD used in the formula, not every SD calculated in the spreadsheet.
+  truth1a: the Z-test used the population standard deviation
+  truth1b: the t-test used the sample standard deviation
+  truth2: when the population standard deviation was unknown, Joe used the t-test
+  truth3: for Joe's small sample, he switched from the Z-test to the t-test
+  truth4: for the t-test, degrees of freedom were the sample size minus 1
+false_statements:
+  # Error: swaps the standard-deviation inputs.
+  false1a: the Z-test used the sample standard deviation
+  false1b: the t-test used the population standard deviation
+  # Error: keeps using Z when the population SD is unknown.
+  false2: when the population standard deviation was unknown, Joe used the Z-test
+  # Error: reverses the switch students made between Parts 1 and 2.
+  false3: for Joe's small sample, he switched from the t-test to the Z-test
+  # Error: uses the count itself, or adds rather than subtracts 1.
+  false4a: for the t-test, degrees of freedom were the sample size
+  false4b: for the t-test, degrees of freedom were the sample size plus 1
+conflict_rules: null
+dbsubject: Biostatistics

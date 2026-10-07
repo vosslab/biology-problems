@@ -202,11 +202,28 @@ def makeQuestionsFromStatement(main_statement, opposing_statement_nested_list, q
 	return question_list
 
 #=======================
+def format_truth_words(question_text: str | None) -> str | None:
+	"""Color TRUE/FALSE in stem text, including bold labels and punctuation."""
+	if question_text is None:
+		return None
+	colors = {'TRUE': '#127663', 'FALSE': '#ba372a'}
+	def color_label(match: re.Match[str]) -> str:
+		word = match.group(0)
+		return f'<span style="color: {colors[word]}; font-weight: bold;">{word}</span>'
+
+	# Format text nodes only; leave HTML tags and attribute values intact.
+	parts = re.split(r'(<[^>]+>)', question_text)
+	for index in range(0, len(parts), 2):
+		parts[index] = re.sub(r'\b(TRUE|FALSE)\b', color_label, parts[index])
+	return ''.join(parts)
+
+
+#=======================
 def writeQuestion(yaml_data, question_type):
 	if question_type is True and yaml_data.get('override_question_true', 'default') != 'default':
-		return yaml_data['override_question_true']
+		return format_truth_words(yaml_data['override_question_true'])
 	if question_type is False and yaml_data.get('override_question_false', 'default') != 'default':
-		return yaml_data['override_question_false']
+		return format_truth_words(yaml_data['override_question_false'])
 
 	topic = yaml_data['topic']
 	if yaml_data.get('connection_words', None) is not None:
@@ -223,7 +240,7 @@ def writeQuestion(yaml_data, question_type):
 
 	question_text = ("<p>Which one of the following statements is "
 		+"{0} {1} {2}?</p>".format(question_type_html, random.choice(connection_word_list), topic) )
-	return question_text
+	return format_truth_words(question_text)
 
 
 #=======================

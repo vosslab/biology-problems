@@ -80,8 +80,8 @@ def test_yaml_multiple_choice_statements_writeQuestion_overrides_and_default():
 		"override_question_true": "<p>TRUE OVERRIDE</p>",
 		"override_question_false": "<p>FALSE OVERRIDE</p>",
 	}
-	assert mod.writeQuestion(yaml_data, True) == "<p>TRUE OVERRIDE</p>"
-	assert mod.writeQuestion(yaml_data, False) == "<p>FALSE OVERRIDE</p>"
+	assert 'color: #127663' in mod.writeQuestion(yaml_data, True)
+	assert 'color: #ba372a' in mod.writeQuestion(yaml_data, False)
 
 	yaml_data2 = {
 		"topic": "biology",
@@ -179,3 +179,20 @@ def test_statement_questions_format_each_field_once(monkeypatch: pytest.MonkeyPa
 		assert item.answer_text == "<strong>alleles</strong> differ"
 		assert all(choice.startswith("<strong>alleles</strong> ") for choice in item.choices_list)
 		item._validate()
+
+
+@pytest.mark.parametrize("truth, color", [(True, "#127663"), (False, "#ba372a")])
+def test_truth_labels_are_colored_in_default_and_custom_stems(truth, color):
+	mod = import_from_repo_path("problems/multiple_choice_statements/yaml_mc_statements_to_bbq.py")
+	word = "TRUE" if truth else "FALSE"
+	for stem in (f"<p>Which is {word}?</p>", f"<p>Which is <strong>{word}</strong>?</p>"):
+		data = {"topic": "biology", "override_question_true": stem,
+			"override_question_false": stem}
+		question = mod.writeQuestion(data, truth)
+		assert f'color: {color}; font-weight: bold;' in question
+		assert f'>{word}</span>' in question
+		assert '?' in question
+	question = mod.writeQuestion({"topic": "biology"}, truth)
+	assert f'color: {color}; font-weight: bold;' in question
+	assert mod.writeQuestion({"override_question_true": None}, True) is None
+	assert mod.format_truth_words('<p title="TRUE">TRUE?</p>').startswith('<p title="TRUE">')
