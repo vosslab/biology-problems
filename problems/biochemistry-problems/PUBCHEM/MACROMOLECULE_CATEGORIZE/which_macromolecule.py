@@ -57,7 +57,7 @@ def get_guide_text():
 	ul_header = '<ul style="margin: 3px; font-size: 90%;">'
 
 	html_text = f"""
-	<table style="border-collapse: collapse; border: black solid 1px;">
+	<table style="border-collapse: collapse; border: black solid 1px; color: black; background-color: white;">
 	<tr><th style="background-color: #d3d3d3;">
 	Guide to Identifying the Chemical Structures of Macromolecules
 	</th></tr>

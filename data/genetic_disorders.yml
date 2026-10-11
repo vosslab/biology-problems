@@ -7,6 +7,7 @@ sample:
       complete: False
       abbreviation: null
       short name: null
+      unaffected phenotype: null
       symptoms: null
       caused by: null
       mechanism: null
@@ -21,6 +22,7 @@ autosomal dominant:
       complete: True
       abbreviation: HD
       short name: null
+      unaffected phenotype: the wildtype phenotype for HD
       symptoms: physical abilities that gradually worsen and mental abilities that decline into dementia
       caused by: an increase in trinucleotide repeats in the HTT gene
       mechanism: a mutated Huntington protein that is toxic to certain cell types, particularly brain cells
@@ -32,6 +34,7 @@ autosomal dominant:
       complete: True
       abbreviation: MFS
       short name: null
+      unaffected phenotype: wildtype connective tissue
       symptoms: tall and thin features with serious complications involving the heart and aorta
       caused by: a mutation in FBN1 gene that makes fibrillin protein
       mechanism: weaked connective tissue throughout the body
@@ -43,6 +46,7 @@ autosomal dominant:
       complete: True
       abbreviation: null
       short name: null
+      unaffected phenotype: wildtype height
       symptoms: dwarfism with short arms and legs, an enlarged head, and a prominent forehead
       caused by: a mutation in the FGFR3 gene
       mechanism: a mutated protein that interacts negatively with growth factors leading to complications with bone production
@@ -195,6 +199,7 @@ X-linked recessive:
       complete: True
       abbreviation: null
       short name: color blindness
+      unaffected phenotype: wildtype color vision
       symptoms: decreased ability to see colors in which they are unable distinguish between shades of red and green
       caused by: mutations in the OPN1MW gene
       mechanism: shift in the green retinal receptors toward red wavelength sensitivity
@@ -206,6 +211,7 @@ X-linked recessive:
       complete: True
       abbreviation: HemA
       short name: hemophilia
+      unaffected phenotype: wildtype blood clotting
       symptoms: prolonged bleeding from common injuries
       caused by: a mutation in the HEMA gene
       mechanism:  blood cannot clot properly due to a deficiency of a clotting factor
@@ -229,6 +235,7 @@ X-linked recessive:
       complete: True
       abbreviation: DMD
       short name: null
+      unaffected phenotype: wildtype muscle function
       symptoms: muscle weakness, trouble standing up, which eventually leads to loss of skeletal muscle control, respiratory failure, and death
       caused by: mutations in the DMD gene
       mechanism: dystrophin is responsible for connecting the actin cytoskeleton to the extracellular matrix (ECM) in muscle cells
@@ -285,6 +292,7 @@ X-linked recessive:
       complete: True
       abbreviation: AIS
       short name: null
+      unaffected phenotype: a wildtype androgen response
       symptoms: impaired development of male genitals and male secondary sexual characteristics at puberty
       caused by: a mutation in the AR gene for the human androgen receptor
       mechanism: partial or complete inability of cells to respond to androgens

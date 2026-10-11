@@ -1,5 +1,98 @@
 # Changelog
 
+## 2026-10-10
+
+### Behavior or Interface Changes
+
+- Describe heterozygous females as tortoiseshell without labeling the mechanism
+  as codominance or adding an X-inactivation explanation. State the equal XX/XY
+  sex-ratio assumption used for all-kitten probabilities and keep the orange/black
+  model specific to these cats. Remove redundant "true-breeding"
+  labels from the white-eyed female/red-eyed male fly cross; retain it for the
+  red-eyed female, whose homozygous genotype must be specified.
+- Color eye phenotypes and sex labels in reciprocal X-linked fly crosses, reusing
+  the dark red, gray, blue, and pink from `poisson_flies.py`. Apply the same labels
+  to stems and choices. Color cat coat phenotypes orange and charcoal, alternating
+  orange and charcoal letters in "tortoiseshell," starting with orange. Add sex symbols
+  consistently in both generators and use "an orange" in crosses.
+- Correct daughter-only tortoiseshell keys by translating the requested group
+  "daughters" to the outcome sex "female" before calculating the fraction.
+- Remove the reciprocal fly distractor "All offspring are red-eyed," which was
+  also true for the red-eyed mother/white-eyed father cross.
+- Let students infer the woman's recessive carrier genotype from her wildtype
+  phenotype and affected father. Remove the explicit carrier label and the
+  unnecessary grandmother phenotype from these scenarios.
+- Require both traits to have variable outcomes in the requested offspring group
+  for dominant/X-linked recessive variations. Add 1/8 and 3/8 to the answer ladder
+  and remove 100%. Randomly alternate five ordered choices between 0% through 50%
+  and 12.5% through 75%, independently of the answer. Sample the attainable answers
+  (1/8, 1/4, and 3/8) equally before randomly choosing a compatible scenario.
+- Describe unaffected family members and offspring using disease-specific wildtype
+  traits from the disorder YAML, such as height or androgen response. Italicize
+  "wildtype" and retain the associated disease color. Retain genetic-testing
+  evidence where a non-carrier genotype is specified.
+- Keep disease background paragraphs compact and color only their headings.
+  Add a small gap before the family scenario, group family facts by disease,
+  italicize the reminder, and separate the final question. Inline paragraph
+  margins preserve this prose layout in self-tests.
+- Color gender references blue/pink and X-linked/autosomal disorder names
+  gold/purple in the dominant/X-linked recessive variations generator. Apply
+  the same colors to disease headings, abbreviations, gender symbols, and repeated
+  references in the family story and final question.
+
+### Developer Tests and Notes
+
+- Independently verify both fly crosses and all five distractor subsets per
+  cross: every choice set has exactly one true answer. Check all six cat crosses
+  against hand-worked offspring distributions and verify all 12 denominator cases.
+  The wording revisions preserve choices, keys, and random state for 100 matched
+  seeds per generator. Nine scenario tests and six scoped hygiene checks pass;
+  five-item CLI runs and desktop/mobile previews succeed for both generators.
+- Verify alternating tortoiseshell letters in five native desktop/mobile previews:
+  orange "trossel," charcoal "otiehl," intact spelling, and no horizontal overflow.
+- Verify both reciprocal fly keys and all six cat crosses with both offspring
+  denominators. Add six regression cases for the daughter-only cat bug; nine
+  scenario tests and nine scoped hygiene checks pass. Review five native previews
+  per generator on desktop, plus mobile captures. All six text colors pass the
+  5.5:1 target on white (measured 6.23-15.91:1), including rendered glyph samples.
+  The only text-checker findings are the existing generic fly lead-in.
+- Verify the carrier-inference wording with 100 matched-seed comparisons that
+  preserve answer keys, choices, and random state. Review five native self-test
+  examples and desktop/mobile rendering. Three scenario tests, three scoped
+  hygiene checks, and pyflakes pass; the text checker reports no findings.
+- Independently enumerate gametes to verify the two-trait scenario pool and reject
+  fixed-trait cases. All 56 supported scenarios accept either five-choice ladder.
+  Three scenario tests and six scoped hygiene checks pass. Review five rendered
+  examples plus mobile layout; the text checker reports no findings. The refreshed
+  999-question bank has 345 keys at 1/8, 362 at 1/4, and 292 at 3/8; its lower and
+  upper choice ladders occur 499 and 500 times.
+- Verify all 2,544 disease/scenario combinations with wildtype wording; 100
+  matched-seed comparisons preserve choices, answer keys, and random state.
+  Desktop/mobile previews retain trait colors and wildtype italics without overflow.
+  Six scoped hygiene/YAML checks and pyflakes pass. Regenerate 999 questions and
+  the self-test; 0% and 100% answers account for 5.4% and 5.1%, respectively.
+- Check the final heading-only background colors, 0.75em scenario gap, and italic
+  reminder in desktop/mobile self-tests. Five matched scenarios retain their wording,
+  choices, and keys. Regenerate all 999 questions and the self-test after the layout update.
+- Verify the new blue/pink/gold/purple text at 6.00/6.13/5.54/7.70:1
+  contrast against white, including rendered glyph samples. Desktop and mobile
+  self-tests render without horizontal overflow. Thirty fixed-seed comparisons
+  preserve all wording, choices, and keys; scoped lint and three hygiene checks pass.
+  Regenerate the 999-question bank and self-test with the colored labels.
+- Independently verify all 240 cross/event/group combinations by enumerating gametes.
+  A 999-question export contains 67 zero-percent answers (6.7%) and 48 hundred-percent
+  answers (4.8%); all items have one correct key. The 33 shared-helper tests pass.
+  The question-text advisory flags only the intentional "None"/"All" endpoint labels.
+
+## 2026-10-09
+
+### Fixes and Maintenance
+
+- Pair the fixed light backgrounds in dihybrid/test-cross tables, the macromolecule
+  guide, and PubChem information tables with black text and a white table base.
+  This preserves their existing cell colors while preventing inherited dark-mode
+  foregrounds from making the content unreadable.
+
 ## 2026-10-07
 
 ### Additions and New Features

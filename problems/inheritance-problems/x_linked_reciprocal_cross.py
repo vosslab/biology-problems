@@ -5,13 +5,36 @@ import random
 import bptools
 
 
+# Match the eye and sex colors used in poisson_flies.py.
+TEXT_LABELS = {
+	"red-eyed": ("red-eyed", "#8b0000"),
+	"red eyes": ("red eyes", "#8b0000"),
+	"white-eyed": ("white-eyed", "#595959"),
+	"white eyes": ("white eyes", "#595959"),
+	"female": ("female (&female;)", "#990070"),
+	"daughters": ("daughters (&female;)", "#990070"),
+	"male": ("male (&male;)", "#002499"),
+	"sons": ("sons (&male;)", "#002499"),
+}
+
+
+#=====================
+def color_labels(text):
+	"""Apply the same phenotype and sex labels to the stem and every choice."""
+	replacements = {
+		word: bptools.colorHTMLText(label, color[1:])
+		for word, (label, color) in TEXT_LABELS.items()
+	}
+	colored_text = bptools.applyReplacementRulesToText(text, replacements)
+	return colored_text
+
+
 CHOICE_POOL = [
 	"All daughters are red-eyed (carriers) and all sons are white-eyed.",
 	"All daughters are red-eyed (carriers) and all sons are red-eyed.",
 	"All daughters are white-eyed and all sons are red-eyed.",
 	"Half the daughters are white-eyed and half are red-eyed; all sons are white-eyed.",
 	"All offspring are white-eyed.",
-	"All offspring are red-eyed.",
 	"Half the sons are white-eyed and half are red-eyed; all daughters are red-eyed (carriers).",
 ]
 
@@ -22,7 +45,7 @@ def make_cross():
 	if cross_type == "female_affected":
 		stem = (
 			"<p>In fruit flies, eye color is X-linked with red eyes dominant to white eyes. "
-			"A true-breeding white-eyed female is crossed with a true-breeding red-eyed male.</p>"
+			"A white-eyed female is crossed with a red-eyed male.</p>"
 		)
 		answer = "All daughters are red-eyed (carriers) and all sons are white-eyed."
 	else:
@@ -44,6 +67,9 @@ def write_question(N, args):
 	choices_list.append(answer_text)
 	random.shuffle(choices_list)
 
+	question_text = color_labels(question_text)
+	choices_list = [color_labels(choice) for choice in choices_list]
+	answer_text = color_labels(answer_text)
 	bb_question = bptools.formatBB_MC_Question(N, question_text, choices_list, answer_text)
 	return bb_question
 

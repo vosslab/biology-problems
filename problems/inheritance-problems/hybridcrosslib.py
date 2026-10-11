@@ -383,7 +383,7 @@ def createDiHybridTable(letter1, letter2, assigned_colors, title=None):
 	letter2_upper = letter2.upper()
 	letter2_lower = letter2.lower()
 
-	table = '<table style="border: 1px solid black; border-collapse: collapse; ">'
+	table = '<table style="border: 1px solid black; border-collapse: collapse; color: black; background-color: white;">'
 	table += '<colgroup width="60"></colgroup> '
 	table += '<colgroup width="60"></colgroup> '
 	table += '<colgroup width="80"></colgroup> '
@@ -456,7 +456,7 @@ def createTestCrossTable(letter1, letter2, assigned_colors, title=None):
 	letter2_upper = letter2.upper()
 	letter2_lower = letter2.lower()
 
-	table = '<table style="border: 1px solid black; border-collapse: collapse; ">'
+	table = '<table style="border: 1px solid black; border-collapse: collapse; color: black; background-color: white;">'
 	table += '<colgroup width="60"></colgroup> '
 	table += '<colgroup width="60"></colgroup> '
 	table += '<colgroup width="80"></colgroup> '

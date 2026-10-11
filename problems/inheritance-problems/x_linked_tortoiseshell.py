@@ -6,6 +6,34 @@ from fractions import Fraction
 import bptools
 
 
+TEXT_LABELS = {
+	"orange": ("orange", "#9b4a00"),
+	"black": ("black", "#222222"),
+	"female": ("female (&female;)", "#990070"),
+	"females": ("females (&female;)", "#990070"),
+	"daughters": ("daughters (&female;)", "#990070"),
+	"male": ("male (&male;)", "#002499"),
+}
+
+
+#=====================
+def color_labels(text):
+	"""Give coat phenotypes and sex labels consistent colors and sex symbols."""
+	replacements = {
+		word: bptools.colorHTMLText(label, color[1:])
+		for word, (label, color) in TEXT_LABELS.items()
+	}
+	# Alternate orange and black letters, keeping the mixed-coat label together.
+	coat_colors = (TEXT_LABELS["orange"][1][1:], TEXT_LABELS["black"][1][1:])
+	letters = ''.join(
+		bptools.colorHTMLText(letter, coat_colors[index % 2])
+		for index, letter in enumerate("tortoiseshell")
+	)
+	replacements["tortoiseshell"] = f'<span style="white-space: nowrap;">{letters}</span>'
+	colored_text = bptools.applyReplacementRulesToText(text, replacements)
+	return colored_text
+
+
 CHOICES = {
 	Fraction(0, 1): "None, 0%",
 	Fraction(1, 4): "1/4, 25%",
@@ -76,26 +104,32 @@ def make_cross():
 	target_group = random.choice(("offspring", "daughters"))
 
 	outcomes = offspring_outcomes(female_genotype, male_genotype)
-	answer_fraction = fraction_matching(outcomes, target_group, "tortoiseshell")
+	# The student-facing group "daughters" corresponds to female outcomes.
+	target_sex = "female" if target_group == "daughters" else "offspring"
+	answer_fraction = fraction_matching(outcomes, target_sex, "tortoiseshell")
 	return female_pheno, male_pheno, target_group, answer_fraction
 
 
 #=====================
 def write_question(N, args):
 	female_pheno, male_pheno, target_group, answer_fraction = make_cross()
+	female_article = "An" if female_pheno == "orange" else "A"
+	male_article = "an" if male_pheno == "orange" else "a"
 
 	question_text = (
-		"<p>In cats, coat color is X-linked. The orange (O) and black (B) alleles are codominant, "
-		"so heterozygous females are tortoiseshell.</p>"
+		"<p>In these cats, orange versus black coat color is X-linked. "
+		"Heterozygous females are tortoiseshell. "
+		"Assume equal numbers of female (XX) and male (XY) kittens.</p>"
 	)
 	question_text += (
-		f"<p>A {female_pheno} female (&female;) mates with a {male_pheno} male (&male;).</p>"
+		f"<p>{female_article} {female_pheno} female mates with {male_article} {male_pheno} male.</p>"
 	)
 	if target_group == "offspring":
 		question_text += "<p>What fraction of all kittens are expected to be tortoiseshell?</p>"
 	else:
-		question_text += "<p>What fraction of daughters (&female;) are expected to be tortoiseshell?</p>"
+		question_text += "<p>What fraction of daughters are expected to be tortoiseshell?</p>"
 
+	question_text = color_labels(question_text)
 	answer_text = CHOICES[answer_fraction]
 	choices_list = list(CHOICES.values())
 

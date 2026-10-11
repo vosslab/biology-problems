@@ -296,7 +296,7 @@ class PubChemLib():
 
 		# Start the table with a header
 		html_table = f"""
-		<table style="border-collapse: collapse;">
+		<table style="border-collapse: collapse; color: black; background-color: white;">
 			<tr>
 				<th colspan="2"
 				style="background-color: #806060; color: white; text-align: center; {cell_style}">
