@@ -6,6 +6,8 @@ Keep documentation concise, scannable, and consistent.
 
 ## Standard
 
+- Markdown syntax rules apply to `.md` files. Djot (`.djot`) follows the syntax supported by its
+  renderer; shared writing, naming, and character conventions still apply.
 - Follow the [GitHub Flavored Markdown specification](https://github.github.com/gfm/) for Markdown
   syntax.
 - Use GitHub Flavored Markdown by default.
@@ -65,7 +67,7 @@ Simple table:
 - Links must work when committed and browsed on github.com. GitHub resolves relative URLs against
   the file containing the link, so use a path relative to that file, not the repo root.
 - When linking from the repo root into `docs/`, include `docs/` in both the link text and URL. For
-  example, use ``FORMAT.md``.
+  example, use `[docs/FORMAT.md](docs/FORMAT.md)`.
 - When linking between files in the same folder, use the bare filename in both the link text and
   URL. For example, use `[PYTEST_STYLE.md](PYTEST_STYLE.md)`, not a redundant `docs/` prefix.
 - Link text should match the URL filename so readers see the exact file being referenced.

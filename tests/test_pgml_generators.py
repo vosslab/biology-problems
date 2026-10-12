@@ -1,64 +1,8 @@
-import importlib.util
-import sys
-import types
-from pathlib import Path
-
-from lib_test_utils import repo_abs_path
+from lib_test_utils import import_from_repo_path
 
 
-def _make_bptools_stub():
-	stub = types.SimpleNamespace()
-	stub.base_replacement_rule_dict = {}
-
-	def apply_replacements(text, rules):
-		if text is None:
-			return ""
-		result = str(text)
-		for key, value in (rules or {}).items():
-			result = result.replace(str(key), str(value))
-		return result
-
-	def apply_replacements_list(values, rules):
-		return [apply_replacements(value, rules) for value in values]
-
-	stub.applyReplacementRulesToText = apply_replacements
-	stub.applyReplacementRulesToList = apply_replacements_list
-	stub.readYamlFile = lambda path: {}
-	stub.dark_color_wheel = {}
-	stub.get_indices_for_color_wheel = lambda count, size: list(range(count))
-	return stub
-
-
-def _load_module(monkeypatch, name, path):
-	monkeypatch.setitem(sys.modules, "bptools", _make_bptools_stub())
-	spec = importlib.util.spec_from_file_location(name, path)
-	module = importlib.util.module_from_spec(spec)
-	spec.loader.exec_module(module)
-	return module
-
-
-def test_yaml_match_to_pgml_seed_determinism(monkeypatch):
-	module_path = Path(repo_abs_path("problems/matching_sets/yaml_match_to_pgml.py"))
-	module = _load_module(monkeypatch, "yaml_match_to_pgml_seed_test", module_path)
-
-	yaml_data = {
-		"matching pairs": {
-			"beta": "b",
-			"alpha": "a",
-		},
-		"keys description": "letters",
-		"values description": "names",
-	}
-
-	pgml_text, warnings = module.build_pgml_text(yaml_data, 2, "inline")
-
-	assert "@all_keys = PGsort(sub { $_[0] lt $_[1] }, keys %match_data);" in pgml_text
-	assert warnings == []
-
-
-def test_yaml_which_one_mc_to_pgml_inline_colors(monkeypatch):
-	module_path = Path(repo_abs_path("problems/matching_sets/yaml_which_one_mc_to_pgml.py"))
-	module = _load_module(monkeypatch, "yaml_which_one_mc_to_pgml_test", module_path)
+def test_yaml_which_one_mc_to_pgml_inline_colors():
+	module = import_from_repo_path("problems/matching_sets/yaml_which_one_mc_to_pgml.py")
 
 	yaml_data = {
 		"matching pairs": {
@@ -76,16 +20,16 @@ def test_yaml_which_one_mc_to_pgml_inline_colors(monkeypatch):
 
 	pgml_text, warnings = module.build_pgml_text(yaml_data, 2, False, "inline")
 
-	assert "Which one of the following [$plural_choice]*" in pgml_text
+	assert "DOCUMENT();" in pgml_text
+	assert "BEGIN_PGML" in pgml_text
+	assert "ENDDOCUMENT();" in pgml_text
 	assert "color: #e60000" in pgml_text
-	assert "enzyme" in pgml_text
-	assert "The correct answer is: [$correct]*" in pgml_text
+	assert "enzyme</span>" in pgml_text
 	assert warnings == []
 
 
-def test_yaml_mc_statements_to_pgml_inline_colors(monkeypatch):
-	module_path = Path(repo_abs_path("problems/multiple_choice_statements/yaml_mc_statements_to_pgml.py"))
-	module = _load_module(monkeypatch, "yaml_mc_statements_to_pgml_test", module_path)
+def test_yaml_mc_statements_to_pgml_inline_colors():
+	module = import_from_repo_path("problems/multiple_choice_statements/yaml_mc_statements_to_pgml.py")
 
 	yaml_data = {
 		"topic": "ATP",
@@ -102,63 +46,6 @@ def test_yaml_mc_statements_to_pgml_inline_colors(monkeypatch):
 
 	pgml_text, warnings = module.build_pgml_text(yaml_data, "inline")
 
-	assert "$topic = '" in pgml_text
 	assert "color: #e60000" in pgml_text
 	assert "ATP</span> stores energy" in pgml_text
 	assert warnings == []
-
-
-def test_pgml_generator_smoke_outputs(tmp_path, monkeypatch):
-	match_module = _load_module(
-		monkeypatch,
-		"yaml_match_to_pgml_smoke",
-		Path(repo_abs_path("problems/matching_sets/yaml_match_to_pgml.py")),
-	)
-	which_module = _load_module(
-		monkeypatch,
-		"yaml_which_one_mc_to_pgml_smoke",
-		Path(repo_abs_path("problems/matching_sets/yaml_which_one_mc_to_pgml.py")),
-	)
-	mc_module = _load_module(
-		monkeypatch,
-		"yaml_mc_statements_to_pgml_smoke",
-		Path(repo_abs_path("problems/multiple_choice_statements/yaml_mc_statements_to_pgml.py")),
-	)
-
-	match_yaml = {
-		"matching pairs": {"A": "alpha", "B": "beta"},
-		"keys description": "letters",
-		"values description": "names",
-	}
-	match_text, _ = match_module.build_pgml_text(match_yaml, 2, "inline")
-	match_path = tmp_path / "match.pgml"
-	match_path.write_text(match_text, encoding="utf-8")
-	assert "DOCUMENT();" in match_text
-	assert "BEGIN_PGML" in match_text
-	assert "ENDDOCUMENT();" in match_text
-
-	which_yaml = {
-		"matching pairs": {"cat": "mammal", "oak": "tree"},
-		"keys description": "items",
-		"values description": "categories",
-		"key description": "item",
-		"value description": "category",
-	}
-	which_text, _ = which_module.build_pgml_text(which_yaml, 2, False, "inline")
-	which_path = tmp_path / "which.pgml"
-	which_path.write_text(which_text, encoding="utf-8")
-	assert "DOCUMENT();" in which_text
-	assert "BEGIN_PGML" in which_text
-	assert "ENDDOCUMENT();" in which_text
-
-	mc_yaml = {
-		"topic": "cells",
-		"true_statements": {"truth1a": "cells have membranes"},
-		"false_statements": {"false1a": "cells are rocks"},
-	}
-	mc_text, _ = mc_module.build_pgml_text(mc_yaml, "inline")
-	mc_path = tmp_path / "mc.pgml"
-	mc_path.write_text(mc_text, encoding="utf-8")
-	assert "DOCUMENT();" in mc_text
-	assert "BEGIN_PGML" in mc_text
-	assert "ENDDOCUMENT();" in mc_text

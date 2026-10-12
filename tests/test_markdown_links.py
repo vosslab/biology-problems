@@ -23,6 +23,8 @@ HEADER = "Markdown link errors detected:"
 
 # Inline link and image: optional leading !, [text](url), url ends at ) or space.
 LINK_RE = re.compile(r"!?\[([^\]]*)\]\(\s*([^)\s]+)[^)]*\)")
+REFERENCE_DEFINITION_RE = re.compile(r"^\s*\[([^\]^]+)\]:\s*<?([^\s>]+)>?")
+REFERENCE_LINK_RE = re.compile(r"!?\[([^\]]+)\]\[([^\]]*)\]")
 # Inline code span, used to mask out example links inside backticks.
 INLINE_CODE_RE = re.compile(r"`[^`]*`")
 # Windows absolute path: drive letter then slash or backslash.
@@ -140,6 +142,36 @@ def parse_links(masked_line: str) -> list[tuple[str, str]]:
 		link_text = match.group(1)
 		url = match.group(2).strip()
 		links.append((link_text, url))
+	return links
+
+
+#============================================
+def document_links(text: str) -> list[tuple[int, str, str]]:
+	"""Collect inline and defined reference links outside code regions.
+
+	Both Markdown and Djot support explicit and empty reference labels.
+	Definitions are checked even when unused; missing-label syntax remains the
+	parser's responsibility. This lightweight check is not a renderer.
+	"""
+	lines = strip_code_regions(text)
+	definitions = {}
+	links = []
+	for line_number, line in lines:
+		match = REFERENCE_DEFINITION_RE.match(line)
+		if match:
+			label, url = match.groups()
+			definitions[' '.join(label.split()).casefold()] = url
+			links.append((line_number, '', url))
+	for line_number, line in lines:
+		if REFERENCE_DEFINITION_RE.match(line):
+			continue
+		for label, url in parse_links(line):
+			links.append((line_number, label, url))
+		for match in REFERENCE_LINK_RE.finditer(line):
+			label, reference = match.groups()
+			key = ' '.join((reference or label).split()).casefold()
+			if key in definitions:
+				links.append((line_number, label, definitions[key]))
 	return links
 
 
@@ -266,7 +298,7 @@ def check_path_like_text(
 	# Allow one optional layer of backticks around the visible text.
 	if len(text) > 1 and text.startswith("`") and text.endswith("`"):
 		text = text[1:-1]
-	if ".md" not in text and "/" not in text:
+	if ".md" not in text and ".djot" not in text and "/" not in text:
 		return ""
 	# Normalize trailing slashes so [tests/] vs target `tests` compares equal.
 	text_norm = text.rstrip("/")
@@ -312,7 +344,7 @@ def check_local_link(
 	target = resolve_target(repo_root, file_dir, url_no_anchor)
 	rel_from_root = os.path.relpath(target, repo_root)
 
-	# Repo containment: the target must live inside REPO_ROOT.
+	# ASVS 5.3.2: document-provided paths must remain inside REPO_ROOT.
 	if rel_from_root == ".." or rel_from_root.startswith(".." + os.sep):
 		return (
 			f"local link [{link_text}]({url}) escapes repository "
@@ -388,21 +420,15 @@ def scan_file(
 		text = handle.read()
 
 	issues = []
-	for line_number, masked_line in strip_code_regions(text):
-		for link_text, url in parse_links(masked_line):
-			if classify_url(url) != "local":
-				continue
-			message = check_local_link(
-				repo_root,
-				file_dir,
-				tracked_set,
-				tracked_dirs,
-				recent_untracked_set,
-				link_text,
-				url,
-			)
-			if message:
-				issues.append(f"{md_path}:{line_number}: {message}")
+	for line_number, link_text, url in document_links(text):
+		if classify_url(url) != "local":
+			continue
+		message = check_local_link(
+			repo_root, file_dir, tracked_set, tracked_dirs,
+			recent_untracked_set, link_text, url,
+		)
+		if message:
+			issues.append(f"{md_path}:{line_number}: {message}")
 	return issues
 
 
@@ -504,12 +530,12 @@ def collect_violations(
 SCAN_NOW = time.time()
 RECENT_UNTRACKED_PATHS = recent_untracked_paths(REPO_ROOT, SCAN_NOW)
 TRACKED_MARKDOWN_FILES = file_utils.discover_files(
-	extensions=(".md",), test_key="markdown_links",
+	extensions=(".md", ".djot"), test_key="markdown_links",
 )
 RECENT_MARKDOWN_FILES = [
 	os.path.join(REPO_ROOT, path)
 	for path in RECENT_UNTRACKED_PATHS
-	if os.path.splitext(path)[1].lower() == ".md"
+	if os.path.splitext(path)[1].lower() in (".md", ".djot")
 ]
 FILES = sorted(set(TRACKED_MARKDOWN_FILES + RECENT_MARKDOWN_FILES))
 

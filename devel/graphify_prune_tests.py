@@ -20,6 +20,7 @@ correct, and the Rust grammar already does.
 
 # Standard Library
 import re
+import copy
 import json
 import pathlib
 
@@ -227,3 +228,60 @@ def prune_graph_file(graph_path: pathlib.Path, repo_root: pathlib.Path) -> dict:
 	if summary["removed_nodes"] or summary["removed_links"]:
 		graph_path.write_text(json.dumps(graph_data), encoding="utf-8")
 	return summary
+
+
+# TEMPORARY Cargo normalization: remove this function after the upstream fix.
+#============================================
+
+
+def normalize_cargo_twins(graph_path: pathlib.Path) -> dict[str, str]:
+	"""Reconcile only exact Cargo/AST twins and preserve every link record.
+
+	The adjusted JSON must match Graphify's independently loaded node set. Any
+	unexplained normalization fails before writing; Graphify's own overwrite
+	guard remains enabled for the subsequent cluster-only and label commands.
+	"""
+	data = json.loads(graph_path.read_text(encoding="utf-8"))
+	nodes = data["nodes"]
+	remap = {}
+	for node in nodes:
+		if not node["id"].startswith("crate:"):
+			continue
+		twins = [
+			candidate for candidate in nodes
+			if candidate.get("_origin") == "ast"
+			and candidate.get("type") == "package"
+			and candidate.get("ecosystem") == "cargo"
+			and candidate["source_file"] == node["source_file"]
+			and candidate["label"] == node["label"]
+		]
+		if len(twins) > 1:
+			raise RuntimeError(f"Ambiguous Cargo twin for {node['id']}; graph left unchanged")
+		if twins:
+			remap[node["id"]] = twins[0]["id"]
+	if not remap:
+		return remap
+
+	# Local import: only this temporary correction needs the Graphify loader.
+	import graphify.build
+
+	loaded = graphify.build.build_from_json(
+		copy.deepcopy(data), directed=bool(data.get("directed", False)),
+	)
+	kept = [node for node in nodes if node["id"] not in remap]
+	# ASVS 15.3.5: exact identity comparison, never pad a count or force a write.
+	if {node["id"] for node in kept} != set(loaded) or len(kept) != len(loaded):
+		raise RuntimeError("Unexplained Graphify normalization; graph left unchanged")
+	data["nodes"] = kept
+	for field in ("links", "edges"):
+		for edge in data.get(field, []):
+			for endpoint in ("source", "target"):
+				edge[endpoint] = remap.get(edge[endpoint], edge[endpoint])
+	for container in (data, data.get("graph", {})):
+		for hyperedge in container.get("hyperedges", []):
+			hyperedge["nodes"] = [remap.get(member, member) for member in hyperedge["nodes"]]
+	# Replace atomically so an interrupted write cannot leave half a graph.
+	temporary_path = graph_path.with_suffix(".json.tmp")
+	temporary_path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+	temporary_path.replace(graph_path)
+	return remap

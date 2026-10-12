@@ -12,8 +12,8 @@ import bptools
 bptools.allow_no_click_div = False
 bptools.allow_insert_hidden_terms = False
 
-from treelib import tools
-from treelib import lookup
+from treelib import tl_tools
+from treelib import tl_lookup
 
 debug = True
 
@@ -164,9 +164,9 @@ def add_distance_pair_shifts(distance_dict, ordered_taxa, answer_treecode_cls):
 				if j == k or i == k:
 					continue
 				# i > j > k OR k < j < i
-				max_node_1_2 = tools.find_node_number_for_taxa_pair(answer_code, taxa1, taxa2)
-				max_node_2_3 = tools.find_node_number_for_taxa_pair(answer_code, taxa2, taxa3)
-				max_node_1_3 = tools.find_node_number_for_taxa_pair(answer_code, taxa1, taxa3)
+				max_node_1_2 = tl_tools.find_node_number_for_taxa_pair(answer_code, taxa1, taxa2)
+				max_node_2_3 = tl_tools.find_node_number_for_taxa_pair(answer_code, taxa2, taxa3)
+				max_node_1_3 = tl_tools.find_node_number_for_taxa_pair(answer_code, taxa1, taxa3)
 
 				if max_node_2_3 == max_node_1_3 and max_node_1_2 < max_node_1_3:
 					shift = random.choice(shift_list)
@@ -323,7 +323,7 @@ def generate_html_distance_table(sorted_taxa, distance_dict, answer_treecode_cls
 
 	# Close the table
 	htmL_table += '</table>'
-	tools.is_valid_html(htmL_table)
+	tl_tools.is_valid_html(htmL_table)
 	return htmL_table
 
 #===========================================================
@@ -359,7 +359,7 @@ def get_problem_statement(sorted_taxa, distance_dict, answer_treecode_cls, inclu
 			"<p><i>Hint: taxa with smaller distances are more closely related. "
 			"Look for clusters that best match the smallest distances.</i></p>"
 		)
-	tools.is_valid_html(problem_statement)
+	tl_tools.is_valid_html(problem_statement)
 	return problem_statement
 
 #===========================================================
@@ -385,14 +385,14 @@ def get_multiple_choices(ordered_taxa, num_choices):
 	# GET ALL POSSIBLE GENE TREES
 	#===========================================
 	if debug: print("starting get_multiple_choices()")
-	base_treecode_cls = lookup.get_random_base_tree_code_for_leaf_count(num_leaves)
-	pre_answer_treecode_cls = lookup.get_random_inner_node_permutation_from_tree_code(base_treecode_cls)
+	base_treecode_cls = tl_lookup.get_random_base_tree_code_for_leaf_count(num_leaves)
+	pre_answer_treecode_cls = tl_lookup.get_random_inner_node_permutation_from_tree_code(base_treecode_cls)
 	if debug: pre_answer_treecode_cls.print_ascii_tree()
 
 	global cache_all_treecode_cls_list
 	if len(cache_all_treecode_cls_list) == 0:
 		if debug: print("calculating all_permuted_tree_codes")
-		all_treecode_cls_list = lookup.get_all_taxa_permuted_tree_codes_for_leaf_count(num_leaves)
+		all_treecode_cls_list = tl_lookup.get_all_taxa_permuted_tree_codes_for_leaf_count(num_leaves)
 		if debug: print("shuffling all_permuted_tree_codes")
 		random.shuffle(all_treecode_cls_list)
 		purge_start = time.time()
@@ -406,16 +406,16 @@ def get_multiple_choices(ordered_taxa, num_choices):
 		if debug: print("loading unique_treecode_cls_list")
 		unique_treecode_cls_list = copy.copy(cache_all_treecode_cls_list)
 
-	sorted_treecode_cls_list = lookup.sort_treecodes_by_taxa_distances(unique_treecode_cls_list, pre_answer_treecode_cls)
+	sorted_treecode_cls_list = tl_lookup.sort_treecodes_by_taxa_distances(unique_treecode_cls_list, pre_answer_treecode_cls)
 	if debug: print(f"sorted {len(sorted_treecode_cls_list)} treecodes, down from unique {len(unique_treecode_cls_list)}")
 
 	replaced_treecode_cls_list = []
 	for treecode_cls in sorted_treecode_cls_list[:num_choices-1]:
-		permuted_treecode_cls = lookup.get_random_inner_node_permutation_from_tree_code(treecode_cls)
-		replaced_treecode_cls = lookup.replace_taxa_letters(permuted_treecode_cls, ordered_taxa)
+		permuted_treecode_cls = tl_lookup.get_random_inner_node_permutation_from_tree_code(treecode_cls)
+		replaced_treecode_cls = tl_lookup.replace_taxa_letters(permuted_treecode_cls, ordered_taxa)
 		replaced_treecode_cls_list.append(replaced_treecode_cls)
 
-	answer_treecode_cls = lookup.replace_taxa_letters(pre_answer_treecode_cls, ordered_taxa)
+	answer_treecode_cls = tl_lookup.replace_taxa_letters(pre_answer_treecode_cls, ordered_taxa)
 	if debug:
 		print(f"answer_treecode = {answer_treecode_cls.tree_code_str}")
 		answer_treecode_cls.print_ascii_tree()
@@ -448,7 +448,7 @@ def make_question(N: int, num_leaves: int, num_choices: int, include_hint=False)
 	# FIND A PARTICULAR ORDER FOR THE TAXA
 	#===========================================
 	# Get all permutations of the sorted taxa letters and shuffle them randomly
-	all_taxa_permutations = tools.get_comb_safe_taxa_permutations(sorted_taxa)
+	all_taxa_permutations = tl_tools.get_comb_safe_taxa_permutations(sorted_taxa)
 	random.shuffle(all_taxa_permutations)
 
 	# Select one taxa order for constructing the distance matrix

@@ -35,7 +35,7 @@ Example:
 - Taxa identifiers are unique letters.
 
 ### Base mode
-Base tree codes are the canonical shapes stored in treelib.definitions.
+Base tree codes are the canonical shapes stored in treelib.tl_definitions.
 
 Rules for base mode:
 - Taxa are lowercase letters.
@@ -54,11 +54,11 @@ to a node:
 For any internal node number N, if the immediate left and right characters are
 letters, the left letter must be < the right letter.
 
-tools.sort_alpha_for_gene_tree(tree_code) enforces this local rule.
+tl_tools.sort_alpha_for_gene_tree(tree_code) enforces this local rule.
 
 ## 2) Common names for base codes
 
-treelib.definitions.code_library maps a common name to a base tree_code.
+treelib.tl_definitions.code_library maps a common name to a base tree_code.
 
 Naming convention:
 - Prefix is the number of leaves (for example "5", "6", "7").
@@ -67,8 +67,8 @@ Naming convention:
   (for example "6balanced1", "6balanced2").
 
 Lookup rules:
-- lookup.get_tree_code_from_common_name(name) returns the base tree_code.
-- lookup.get_common_name_from_tree_code(code) normalizes taxa and, for small trees,
+- tl_lookup.get_tree_code_from_common_name(name) returns the base tree_code.
+- tl_lookup.get_common_name_from_tree_code(code) normalizes taxa and, for small trees,
   checks inner-node permutations to find the base name.
 
 Library scope:
@@ -78,7 +78,7 @@ Library scope:
 
 ## 3) Taxa replacement format
 
-tools.replace_taxa_letters(tree_code, ordered_taxa) replaces the default taxa
+tl_tools.replace_taxa_letters(tree_code, ordered_taxa) replaces the default taxa
 letters with a specified ordered list or tuple.
 
 - ordered_taxa must have the same length as the number of leaves.
@@ -101,7 +101,7 @@ parentheses).
 
 ## 4) Distance map semantics
 
-tools.generate_taxa_distance_map(tree_code) returns a dictionary mapping each
+tl_tools.generate_taxa_distance_map(tree_code) returns a dictionary mapping each
 ordered taxon pair to the internal node number that connects them.
 
 - For a pair (taxon1, taxon2), the distance is the highest internal node number

@@ -6,11 +6,11 @@ import numpy
 from collections import defaultdict
 
 try:
-	from treelib import tools
+	from treelib import tl_tools
 except ImportError:
-	import tools
+	import tl_tools
 
-### ONLY ALLOWED TO IMPORT tools NOT OTHER TREELIB FILES
+### ONLY ALLOWED TO IMPORT tl_tools NOT OTHER TREELIB FILES
 
 ### TODO
 # add background colors to gene labels
@@ -146,12 +146,12 @@ class GeneTreeOutput(object):
 		"""
 
 		# Determine the number of leaves (taxa) in the tree and create an empty character array.
-		num_leaves = tools.code_to_number_of_taxa(tree_code)
+		num_leaves = tl_tools.code_to_number_of_taxa(tree_code)
 		self.num_leaves = num_leaves
 		char_tree_array = self.create_empty_char_tree_array(num_leaves)
 
 		# Get the list of taxa (leaves) from the tree_code.
-		char_list = tools.code_to_taxa_list(tree_code)
+		char_list = tl_tools.code_to_taxa_list(tree_code)
 
 		# Initialize mappings:
 		# 1. Taxa to their corresponding row numbers in the array.
@@ -438,7 +438,7 @@ class GeneTreeOutput(object):
 		char_tree_array = self.make_char_tree_array(tree_code)
 		html_tree_array = self.make_html_tree_array(char_tree_array)
 		html_table = self.format_array_into_html_table(html_tree_array, caption_tag)
-		if tools.is_valid_html(html_table) is False:
+		if tl_tools.is_valid_html(html_table) is False:
 			print(html_table)
 			raise ValueError("Generated HTML is not well-formed.")
 		return html_table
@@ -449,8 +449,8 @@ class GeneTreeOutput(object):
 #====================================================================
 if __name__ == '__main__':
 	import random
-	import definitions
-	all_tree_codes = list(definitions.code_library.values())
+	import tl_definitions
+	all_tree_codes = list(tl_definitions.code_library.values())
 	tree_code = random.choice(all_tree_codes)
 	#while len(tree_code) > 12:
 	#	tree_code = random.choice(all_tree_codes)

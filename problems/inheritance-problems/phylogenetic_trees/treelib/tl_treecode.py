@@ -1,15 +1,15 @@
 import math
 
 try:
-	from treelib import tools
-	from treelib import lookup
-	from treelib import output
-	from treelib import sorting
+	from treelib import tl_tools
+	from treelib import tl_lookup
+	from treelib import tl_output
+	from treelib import tl_sorting
 except ImportError:
-	import tools
-	import lookup
-	import output
-	import sorting
+	import tl_tools
+	import tl_lookup
+	import tl_output
+	import tl_sorting
 
 ### ALLOWED TO IMPORT ALL OTHER TREELIB FILES
 
@@ -21,8 +21,8 @@ class TreeCode:
 		Args:
 			tree_code_str (str): The tree_code string.
 		"""
-		self.tree_code_str = tools.sort_alpha_for_gene_tree(tree_code_str)
-		self.num_leaves = tools.code_to_number_of_taxa(self.tree_code_str)
+		self.tree_code_str = tl_tools.sort_alpha_for_gene_tree(tree_code_str)
+		self.num_leaves = tl_tools.code_to_number_of_taxa(self.tree_code_str)
 		if ordered_taxa_tuple is not None:
 			self.taxa_replaced = True
 			if isinstance(ordered_taxa_tuple, list):
@@ -34,18 +34,18 @@ class TreeCode:
 		else:
 			self.taxa_replaced = False
 			self.ordered_taxa_str = 'abcdefghijklm'[:self.num_leaves]
-		self.tree_common_name = lookup.get_common_name_from_tree_code(self.tree_code_str)
-		self.distance_map = tools.generate_taxa_distance_map(self.tree_code_str)
+		self.tree_common_name = tl_lookup.get_common_name_from_tree_code(self.tree_code_str)
+		self.distance_map = tl_tools.generate_taxa_distance_map(self.tree_code_str)
 		#self.frozen_map = frozenset(sorted(self.distance_map.items()))
 		self.frozen_map = frozenset(sorted(self.distance_map.items()))
 		comb_name = f"{self.num_leaves}comb"
-		self.base_comb_tree_code_str = lookup.get_tree_code_from_common_name(comb_name)
+		self.base_comb_tree_code_str = tl_lookup.get_tree_code_from_common_name(comb_name)
 		if self.base_comb_tree_code_str is None:
 			raise ValueError(f"could not find {comb_name} in definitions")
 		if self.taxa_replaced is True:
-			self.base_comb_tree_code_str = tools.replace_taxa_letters(self.base_comb_tree_code_str, self.ordered_taxa_tuple)
+			self.base_comb_tree_code_str = tl_tools.replace_taxa_letters(self.base_comb_tree_code_str, self.ordered_taxa_tuple)
 		self.base_comb_similarity_score = self._compute_similarity_to_base_comb()
-		self.output_cls = output.GeneTreeOutput()
+		self.output_cls = tl_output.GeneTreeOutput()
 
 	def _compute_similarity_to_base_comb(self) -> float:
 		"""
@@ -59,10 +59,10 @@ class TreeCode:
 			return 1.0
 
 		# Compute the distance map for the base comb tree directly
-		base_distance_map = tools.generate_taxa_distance_map(self.base_comb_tree_code_str)
+		base_distance_map = tl_tools.generate_taxa_distance_map(self.base_comb_tree_code_str)
 
 		# Compare the current tree's distance map to the base comb tree's distance map
-		return sorting.compare_taxa_distance_maps(self.distance_map, base_distance_map)
+		return tl_sorting.compare_taxa_distance_maps(self.distance_map, base_distance_map)
 
 	def compare_to(self, other_tree) -> float:
 		"""
@@ -79,7 +79,7 @@ class TreeCode:
 			return 0.0
 		if self.tree_code_str == other_tree.tree_code_str:
 			return 1.0
-		score = sorting.compare_taxa_distance_maps(self.distance_map, other_tree.distance_map)
+		score = tl_sorting.compare_taxa_distance_maps(self.distance_map, other_tree.distance_map)
 		return score
 
 	def __lt__(self, other_tree) -> bool:
@@ -165,9 +165,9 @@ class TreeCode:
 
 if __name__ == '__main__':
 	import random
-	import definitions
+	import tl_definitions
 	# Step 1: Select a random tree_code from the library
-	all_tree_codes = list(definitions.code_library.values())
+	all_tree_codes = list(tl_definitions.code_library.values())
 	tree_code_str = random.choice(all_tree_codes)
 	print(f"Randomly selected tree_code = {tree_code_str}")
 

@@ -582,8 +582,8 @@ assert is_valid_html("<span style='no closing quote>This is a paragraph.</span>"
 #===========================================
 if __name__ == '__main__':
 	import random
-	import definitions
-	all_codes = list(definitions.code_library.values())
+	import tl_definitions
+	all_codes = list(tl_definitions.code_library.values())
 	tree_code = random.choice(all_codes)
 	print(f"tree_code = {tree_code}")
 	num_taxa = code_to_number_of_taxa(tree_code)

@@ -24,7 +24,7 @@ PROGRESS_EVERY = 1
 HEADER = "ASCII compliance errors detected:"
 
 ASCII_EXTENSIONS = {
-	".md",
+	".md", ".djot",
 	".txt",
 	".py",
 	".js",

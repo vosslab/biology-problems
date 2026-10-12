@@ -6,7 +6,7 @@ import bptools
 bptools.allow_no_click_div = False
 bptools.allow_insert_hidden_terms = False
 
-from treelib import lookup
+from treelib import tl_lookup
 
 debug = False
 DISTRACTOR_SAMPLE_SIZE = 1024
@@ -30,13 +30,13 @@ def get_random_taxa_order(taxa) -> tuple:
 #===========================================================
 def get_sampled_labeled_treecodes(num_leaves, sample_size=DISTRACTOR_SAMPLE_SIZE) -> list:
 	"""Sample unique labeled trees from the full topology and taxa-order space."""
-	base_treecodes = lookup.get_all_base_tree_codes_for_leaf_count(num_leaves)
+	base_treecodes = tl_lookup.get_all_base_tree_codes_for_leaf_count(num_leaves)
 	canonical_taxa = tuple('abcdefghijklm'[:num_leaves])
 	sampled_treecodes = set()
 	for _ in range(sample_size):
 		base_treecode = random.choice(base_treecodes)
 		taxa_order = get_random_taxa_order(canonical_taxa)
-		labeled_treecode = lookup.replace_taxa_letters(base_treecode, taxa_order)
+		labeled_treecode = tl_lookup.replace_taxa_letters(base_treecode, taxa_order)
 		sampled_treecodes.add(labeled_treecode)
 	return list(sampled_treecodes)
 
@@ -56,12 +56,12 @@ def generate_treecodes_lists(ordered_taxa, num_choices):
 	# Generate the "same" tree codes list
 	#===========================================
 	# Step 1: Get a random base tree code for the given number of leaves
-	same_base_treecode_cls = lookup.get_random_base_tree_code_for_leaf_count(num_leaves)
+	same_base_treecode_cls = tl_lookup.get_random_base_tree_code_for_leaf_count(num_leaves)
 	if debug:
 		same_base_treecode_cls.print_ascii_tree()
 
 	# Step 2: Generate all inner-node permutations of the base tree code
-	same_treecode_cls_list = lookup.get_all_inner_node_permutations_from_tree_code(same_base_treecode_cls)
+	same_treecode_cls_list = tl_lookup.get_all_inner_node_permutations_from_tree_code(same_base_treecode_cls)
 
 	# Step 3: Limit the list to the desired number of choices
 	same_treecode_cls_list = same_treecode_cls_list[:num_choices]
@@ -74,7 +74,7 @@ def generate_treecodes_lists(ordered_taxa, num_choices):
 	# Step 4: Replace the taxa in each tree code with the ordered taxa
 	same_replaced_treecode_cls_list = []
 	for i, treecode_cls in enumerate(same_treecode_cls_list):
-		replaced_treecode_cls = lookup.replace_taxa_letters(treecode_cls, ordered_taxa)
+		replaced_treecode_cls = tl_lookup.replace_taxa_letters(treecode_cls, ordered_taxa)
 		same_replaced_treecode_cls_list.append(replaced_treecode_cls)
 
 	unique_treecode_cls_list = get_sampled_labeled_treecodes(num_leaves)
@@ -83,7 +83,7 @@ def generate_treecodes_lists(ordered_taxa, num_choices):
 	# Generate the "different" tree codes list
 	#===========================================
 	# Step 1: Sort the unique tree codes by similarity to the base tree code
-	sorted_treecode_cls_list = lookup.sort_treecodes_by_taxa_distances(unique_treecode_cls_list, same_base_treecode_cls)
+	sorted_treecode_cls_list = tl_lookup.sort_treecodes_by_taxa_distances(unique_treecode_cls_list, same_base_treecode_cls)
 	if debug:
 		print(f"sorted {len(sorted_treecode_cls_list)} treecodes, down from unique {len(unique_treecode_cls_list)}")
 
@@ -91,14 +91,14 @@ def generate_treecodes_lists(ordered_taxa, num_choices):
 	diff_replaced_treecode_cls_list = []
 	for i, treecode_cls in enumerate(sorted_treecode_cls_list[:num_choices]):
 		# Generate a random inner-node permutation for the tree code
-		permuted_treecode_cls = lookup.get_random_inner_node_permutation_from_tree_code(treecode_cls)
+		permuted_treecode_cls = tl_lookup.get_random_inner_node_permutation_from_tree_code(treecode_cls)
 
 		# Debug: Print the "different" tree codes
 		if debug:
 			print(f'DIFF {i+1}: {permuted_treecode_cls.tree_code_str}')
 
 		# Replace the taxa with the ordered taxa
-		replaced_treecode_cls = lookup.replace_taxa_letters(permuted_treecode_cls, ordered_taxa)
+		replaced_treecode_cls = tl_lookup.replace_taxa_letters(permuted_treecode_cls, ordered_taxa)
 		diff_replaced_treecode_cls_list.append(replaced_treecode_cls)
 
 	# Return both the "same" and "different" lists

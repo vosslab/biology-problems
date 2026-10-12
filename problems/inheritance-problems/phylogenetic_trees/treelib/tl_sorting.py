@@ -2,11 +2,11 @@
 import math
 
 try:
-	from treelib import tools
+	from treelib import tl_tools
 except ImportError:
-	import tools
+	import tl_tools
 
-### ONLY ALLOWED TO IMPORT tools NOT OTHER TREELIB FILES
+### ONLY ALLOWED TO IMPORT tl_tools NOT OTHER TREELIB FILES
 
 #===========================================================
 #===========================================================
@@ -46,8 +46,8 @@ def compare_taxa_distance_maps(map1: dict, map2: dict) -> float:
 #===========================================================
 #===========================================================
 def compare_tree_codes(tree_code1: str, tree_code2: str) -> float:
-	taxa_distance_map1 = tools.generate_taxa_distance_map(tree_code1)
-	taxa_distance_map2 = tools.generate_taxa_distance_map(tree_code2)
+	taxa_distance_map1 = tl_tools.generate_taxa_distance_map(tree_code1)
+	taxa_distance_map2 = tl_tools.generate_taxa_distance_map(tree_code2)
 	#print(f"taxa_distance_map1 = {taxa_distance_map1}")
 	#print(f"taxa_distance_map2 = {taxa_distance_map2}")
 	score = compare_taxa_distance_maps(taxa_distance_map1, taxa_distance_map2)
@@ -80,12 +80,12 @@ def sort_tree_codes_by_taxa_distances(tree_codes: list, answer_code: str) -> lis
 		list: The tree codes sorted by closeness to the answer code.
 	"""
 	# Generate the distance map for the answer code
-	answer_distance_map = tools.generate_taxa_distance_map(answer_code)
+	answer_distance_map = tl_tools.generate_taxa_distance_map(answer_code)
 
 	# Compute similarity scores for each tree
 	tree_scores = []
 	for tree_code in tree_codes:
-		tree_distance_map = tools.generate_taxa_distance_map(tree_code)
+		tree_distance_map = tl_tools.generate_taxa_distance_map(tree_code)
 		score = compare_taxa_distance_maps(answer_distance_map, tree_distance_map)
 		tree_scores.append((tree_code, score))
 
@@ -100,11 +100,11 @@ def sort_tree_codes_by_taxa_distances(tree_codes: list, answer_code: str) -> lis
 if __name__ == '__main__':
 	import random
 	import pprint
-	import definitions
-	all_codes = list(definitions.code_library.values())
+	import tl_definitions
+	all_codes = list(tl_definitions.code_library.values())
 	tree_code = random.choice(all_codes)
 	print(f"tree_code = {tree_code}")
-	taxa_distance_map = tools.generate_taxa_distance_map(tree_code)
+	taxa_distance_map = tl_tools.generate_taxa_distance_map(tree_code)
 	pprint.pprint(taxa_distance_map)
 	compare_tree_codes('(((a1b)3c)4(d2e))', '(((a2b)3c)4(d1e))')
 	compare_tree_codes('((((a1b)2c)3d)4e)', '(((a2b)3c)4(d1e))')

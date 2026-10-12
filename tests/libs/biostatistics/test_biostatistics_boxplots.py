@@ -1,5 +1,6 @@
 
 import random
+import re
 
 from lib_test_utils import import_from_repo_path
 
@@ -69,12 +70,9 @@ def test_summary_generate_choices_contains_answer():
 def test_summary_question_text_includes_values():
 	mod = import_from_repo_path("problems/biostatistics-problems/boxplot_from_summary.py")
 	summary = {"min": 2, "q1": 4, "median": 6, "q3": 8, "max": 10}
-	text = mod.get_question_text(summary)
-	assert "Minimum" in text
-	assert "Q1" in text
-	assert "Median" in text
-	assert "Q3" in text
-	assert "Maximum" in text
+	text = re.sub(r"<[^>]+>", "", mod.get_question_text(summary))
+	for label, value in (("Minimum", 2), ("Q1", 4), ("Median", 6), ("Q3", 8), ("Maximum", 10)):
+		assert re.search(rf"{label}\s*=\s*{value}\b", text)
 
 
 def test_cdf_quantile_rule():
@@ -102,6 +100,7 @@ def test_cdf_question_text_includes_ranks():
 	mod = import_from_repo_path("problems/biostatistics-problems/boxplot_from_cdf.py")
 	rows = mod.make_cdf_table_from_breaks([2, 4, 6], [10, 10, 20])
 	text = mod.get_question_text(rows)
-	assert "k=10,11" in text
-	assert "k=20,21" in text
-	assert "k=30,31" in text
+	# The stated Tukey-hinge ranks must agree with the 40-observation problem.
+	assert re.findall(r"k\s*=\s*(\d+)\s*,\s*(\d+)", text) == [
+		("10", "11"), ("20", "21"), ("30", "31"),
+	]

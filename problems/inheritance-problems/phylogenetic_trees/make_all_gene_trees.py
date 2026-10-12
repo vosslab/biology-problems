@@ -5,26 +5,26 @@ import time
 import argparse
 import contextlib
 
-from treelib import tools
-from treelib import lookup
-from treelib import permute
-from treelib import treecodeclass
-from treelib import output
+from treelib import tl_tools
+from treelib import tl_lookup
+from treelib import tl_permute
+from treelib import tl_treecode
+from treelib import tl_output
 
 
 #===========================================
 def group_tree_codes_by_common_name(tree_code_str_list: list[str]) -> dict[str, list[str]]:
 	groups: dict[str, list[str]] = {}
 	for tree_code_str in tree_code_str_list:
-		common_name = lookup.get_common_name_from_tree_code(tree_code_str)
+		common_name = tl_lookup.get_common_name_from_tree_code(tree_code_str)
 		if common_name is None:
-			common_name = tools.reset_sort_taxa_in_code(tree_code_str)
+			common_name = tl_tools.reset_sort_taxa_in_code(tree_code_str)
 		groups[common_name] = groups.get(common_name, []) + [tree_code_str]
 	return groups
 
 
 #===========================================
-def render_ascii_tree(tree_code_str: str, renderer: output.GeneTreeOutput) -> str:
+def render_ascii_tree(tree_code_str: str, renderer: tl_output.GeneTreeOutput) -> str:
 	buffer = io.StringIO()
 	with contextlib.redirect_stdout(buffer):
 		renderer.print_ascii_tree(tree_code_str)
@@ -33,7 +33,7 @@ def render_ascii_tree(tree_code_str: str, renderer: output.GeneTreeOutput) -> st
 
 #===========================================
 def write_ascii_gallery(outfile: str, groups: dict[str, list[str]], max_per_group: int):
-	renderer = output.GeneTreeOutput()
+	renderer = tl_output.GeneTreeOutput()
 	renderer.replace_names = False
 	group_names = list(groups.keys())
 	group_names.sort()
@@ -73,7 +73,7 @@ def write_html_gallery(outfile: str, groups: dict[str, list[str]], max_per_group
 		html += f"<h2>{i+1}. {group_name} &mdash; {len(tree_codes)} trees</h2>"
 		count = 0
 		for tree_code_str in tree_codes:
-			treecode_cls = treecodeclass.TreeCode(tree_code_str)
+			treecode_cls = tl_treecode.TreeCode(tree_code_str)
 			html += treecode_cls.get_html_table(caption=False)
 			html += f"<p><code>{tree_code_str}</code></p>"
 			count += 1
@@ -114,9 +114,9 @@ if __name__ == '__main__':
 		raise ValueError("Too many leaves requested (>7). This can be extremely slow and memory-heavy.")
 
 	t0 = time.time()
-	base_treecode_cls_list = lookup.get_all_base_tree_codes_for_leaf_count(args.num_leaves)
+	base_treecode_cls_list = tl_lookup.get_all_base_tree_codes_for_leaf_count(args.num_leaves)
 	base_tree_code_str_list = [t.tree_code_str for t in base_treecode_cls_list]
-	tree_code_str_list = permute.get_all_permuted_tree_codes_from_tree_code_list(base_tree_code_str_list)
+	tree_code_str_list = tl_permute.get_all_permuted_tree_codes_from_tree_code_list(base_tree_code_str_list)
 	tree_code_str_list = list(set(tree_code_str_list))
 	tree_code_str_list.sort()
 

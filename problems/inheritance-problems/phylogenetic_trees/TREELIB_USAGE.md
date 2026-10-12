@@ -8,9 +8,9 @@ phylogenetic tree codes in the inheritance problem generators.
 Create a TreeCode from a base tree code and render it:
 
 ```python
-from treelib import lookup
+from treelib import tl_lookup
 
-treecode_cls = lookup.get_random_base_tree_code_for_leaf_count(5)
+treecode_cls = tl_lookup.get_random_base_tree_code_for_leaf_count(5)
 treecode_cls.print_ascii_tree()
 html_table = treecode_cls.get_html_table()
 ```
@@ -20,11 +20,11 @@ html_table = treecode_cls.get_html_table()
 Replace the default taxa letters with a chosen order:
 
 ```python
-from treelib import lookup
+from treelib import tl_lookup
 
-treecode_cls = lookup.get_random_base_tree_code_for_leaf_count(4)
+treecode_cls = tl_lookup.get_random_base_tree_code_for_leaf_count(4)
 ordered_taxa = ("A", "B", "C", "D")
-replaced = lookup.replace_taxa_letters(treecode_cls, ordered_taxa)
+replaced = tl_lookup.replace_taxa_letters(treecode_cls, ordered_taxa)
 html_table = replaced.get_html_table(caption=False)
 ```
 
@@ -38,28 +38,28 @@ Notes:
 Generate permutations of a base tree:
 
 ```python
-from treelib import lookup
+from treelib import tl_lookup
 
-base = lookup.get_random_base_tree_code_for_leaf_count(5)
-inner_node_perms = lookup.get_all_inner_node_permutations_from_tree_code(base)
-random_perm = lookup.get_random_inner_node_permutation_from_tree_code(base)
+base = tl_lookup.get_random_base_tree_code_for_leaf_count(5)
+inner_node_perms = tl_lookup.get_all_inner_node_permutations_from_tree_code(base)
+random_perm = tl_lookup.get_random_inner_node_permutation_from_tree_code(base)
 ```
 
 Performance notes:
-- lookup.get_all_permuted_tree_codes_for_leaf_count and
-  lookup.get_all_taxa_permuted_tree_codes_for_leaf_count grow quickly.
-- permute.get_all_permutations_from_tree_code raises an error above 8 leaves.
+- tl_lookup.get_all_permuted_tree_codes_for_leaf_count and
+  tl_lookup.get_all_taxa_permuted_tree_codes_for_leaf_count grow quickly.
+- tl_permute.get_all_permutations_from_tree_code raises an error above 8 leaves.
 
 ## Similarity and sorting
 
 Sort candidate trees by similarity to an answer tree:
 
 ```python
-from treelib import lookup
+from treelib import tl_lookup
 
-all_base = lookup.get_all_base_tree_codes_for_leaf_count(5)
+all_base = tl_lookup.get_all_base_tree_codes_for_leaf_count(5)
 answer = all_base[0]
-sorted_list = lookup.sort_treecodes_by_taxa_distances(all_base[1:], answer)
+sorted_list = tl_lookup.sort_treecodes_by_taxa_distances(all_base[1:], answer)
 ```
 
 The similarity score is based on the taxa distance map (see TREELIB_SPEC_v1).
@@ -72,16 +72,16 @@ rejects HTML containing newlines, so do not insert "\n" into the output.
 If you need direct rendering control, use GeneTreeOutput:
 
 ```python
-from treelib import output
+from treelib import tl_output
 
 tree_code_str = "((a1b)2c)"
-renderer = output.GeneTreeOutput()
+renderer = tl_output.GeneTreeOutput()
 html_table = renderer.get_html_from_tree_code(tree_code_str)
 ```
 
 ## Import side effects
 
-Importing treelib.lookup builds the base tree maps and prints a short summary to
+Importing treelib.tl_lookup builds the base tree maps and prints a short summary to
 stdout. If you need a quiet import, delay loading lookup until needed.
 
 ## Generator entry points

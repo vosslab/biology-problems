@@ -3,21 +3,21 @@ import time
 import random
 from collections import defaultdict
 
-# Attempt to import tools and definitions from treelib, fallback to local versions for testing
+# Attempt to import tl_tools and tl_definitions from treelib, fallback to local versions for testing
 try:
-	from treelib import tools
-	from treelib import permute
-	from treelib import sorting
-	from treelib import definitions
-	from treelib import treecodeclass
+	from treelib import tl_tools
+	from treelib import tl_permute
+	from treelib import tl_sorting
+	from treelib import tl_definitions
+	from treelib import tl_treecode
 except ImportError:
-	import tools
-	import permute
-	import sorting
-	import definitions
-	import treecodeclass
+	import tl_tools
+	import tl_permute
+	import tl_sorting
+	import tl_definitions
+	import tl_treecode
 
-### ONLY ALLOWED TO IMPORT definitions, permute, and tools NOT OTHER TREELIB FILES
+### ONLY ALLOWED TO IMPORT tl_definitions, tl_permute, and tl_tools NOT OTHER TREELIB FILES
 
 #==============================
 # Initialization
@@ -29,10 +29,10 @@ tree_code_to_name = {}
 # Counter to track the total number of tree codes processed.
 count = 0
 # Populate the `num_leaves_to_tree_set` and `tree_code_to_name` dictionaries
-# using the tree definitions provided in `definitions.code_library`.
-for name, tree_code in definitions.code_library.items():
+# using the tree definitions provided in `tl_definitions.code_library`.
+for name, tree_code in tl_definitions.code_library.items():
 	# Validate each tree code to ensure it adheres to the expected "base" format.
-	tools.validate_tree_code(tree_code, base=True)
+	tl_tools.validate_tree_code(tree_code, base=True)
 	# Increment the count of processed tree codes.
 	count += 1
 	# Check if the tree code is already mapped to a name.
@@ -43,7 +43,7 @@ for name, tree_code in definitions.code_library.items():
 	# Map the tree code to its common name.
 	tree_code_to_name[tree_code] = name
 	# Determine the number of leaves in the tree code.
-	num_leaves = tools.code_to_number_of_taxa(tree_code)
+	num_leaves = tl_tools.code_to_number_of_taxa(tree_code)
 	# Add the tree code to the list of tree codes for the corresponding leaf count.
 	num_leaves_to_tree_set[num_leaves].append(tree_code)
 # Validate that the number of tree codes matches the expected count for each leaf count.
@@ -53,10 +53,10 @@ for num_leaves in num_leaves_to_tree_set:
 	# Determine the expected number of tree codes.
 	if num_leaves <= 6:
 		# For smaller trees, use the larger expected number of edge-labeled trees.
-		num_expected = tools.expected_number_of_edge_labeled_trees_for_leaf_count(num_leaves)
+		num_expected = tl_tools.expected_number_of_edge_labeled_trees_for_leaf_count(num_leaves)
 	else:
 		# For larger trees, use the smaller expected number of tree types.
-		num_expected = tools.expected_number_of_tree_types_for_leaf_count(num_leaves)
+		num_expected = tl_tools.expected_number_of_tree_types_for_leaf_count(num_leaves)
 	# If the actual and expected counts do not match, raise an error.
 	if num_tree_codes != num_expected:
 		raise ValueError(f"num_leaves={num_leaves}, num_codes={num_tree_codes}, expected_codes={num_expected}")
@@ -74,24 +74,24 @@ def get_common_name_from_tree_code(tree_code) -> str:
 	directly match, it attempts to reset and sort the taxa in the tree code
 	before looking it up.
 	"""
-	if isinstance(tree_code, treecodeclass.TreeCode):
+	if isinstance(tree_code, tl_treecode.TreeCode):
 		tree_code_str = tree_code.tree_code_str
 	elif isinstance(tree_code, str):
 		tree_code_str = tree_code
 	if tree_code in tree_code_to_name:
 		return tree_code_to_name[tree_code_str]
 	# Try resetting and sorting the taxa in the tree code
-	reset_tree_code_str = tools.reset_sort_taxa_in_code(tree_code_str)
+	reset_tree_code_str = tl_tools.reset_sort_taxa_in_code(tree_code_str)
 	if reset_tree_code_str in tree_code_to_name:
 		return tree_code_to_name[reset_tree_code_str]
-	num_leaves = tools.code_to_number_of_taxa(reset_tree_code_str)
+	num_leaves = tl_tools.code_to_number_of_taxa(reset_tree_code_str)
 	if num_leaves < 7:
-		permuted_codes_list = permute.get_all_inner_node_permutations_from_tree_code(reset_tree_code_str)
+		permuted_codes_list = tl_permute.get_all_inner_node_permutations_from_tree_code(reset_tree_code_str)
 		for permuted_code_str in permuted_codes_list:
-			reset_tree_code_str = tools.reset_sort_taxa_in_code(permuted_code_str)
+			reset_tree_code_str = tl_tools.reset_sort_taxa_in_code(permuted_code_str)
 			if reset_tree_code_str in tree_code_to_name:
 				return tree_code_to_name[reset_tree_code_str]
-	if isinstance(tree_code, treecodeclass.TreeCode):
+	if isinstance(tree_code, tl_treecode.TreeCode):
 		# this might be None
 		return tree_code.tree_common_name
 	return None
@@ -101,8 +101,8 @@ def get_tree_code_from_common_name(common_name: str) -> str:
 	"""
 	Returns the tree code associated with a given common name.
 	"""
-	if common_name in definitions.code_library:
-		return definitions.code_library[common_name]
+	if common_name in tl_definitions.code_library:
+		return tl_definitions.code_library[common_name]
 	# Raise an error if no match is found
 	raise ValueError(f"Cannot find a tree code for this common name: {common_name}")
 
@@ -120,7 +120,7 @@ def get_random_base_tree_code_for_leaf_count(num_leaves: int) -> str:
 	sized_tree_codes = num_leaves_to_tree_set[num_leaves]
 	# Return a random choice
 	tree_code_str = random.choice(sized_tree_codes)
-	treecode_cls = treecodeclass.TreeCode(tree_code_str)
+	treecode_cls = tl_treecode.TreeCode(tree_code_str)
 	return treecode_cls
 
 #==================================
@@ -136,7 +136,7 @@ def get_all_base_tree_codes_for_leaf_count(num_leaves: int) -> list:
 	tree_code_str_list = num_leaves_to_tree_set[num_leaves]
 	treecode_cls_list = []
 	for tree_code_str in tree_code_str_list:
-		treecode_cls = treecodeclass.TreeCode(tree_code_str)
+		treecode_cls = tl_treecode.TreeCode(tree_code_str)
 		treecode_cls_list.append(treecode_cls)
 	return treecode_cls_list
 
@@ -154,14 +154,14 @@ def get_all_permuted_tree_codes_for_leaf_count(num_leaves: int) -> list:
 	base_tree_code_str_list = []
 	for base_tree_code_cls in base_tree_code_cls_list:
 		base_tree_code_str_list.append(base_tree_code_cls.tree_code_str)
-	tree_code_str_list = permute.get_all_permuted_tree_codes_from_tree_code_list(base_tree_code_str_list)
+	tree_code_str_list = tl_permute.get_all_permuted_tree_codes_from_tree_code_list(base_tree_code_str_list)
 	start_time = time.time()
 	print(f"converting {len(tree_code_str_list)} tree_codes strings into treecode classes..")
 	treecode_cls_list = []
 	for i, tree_code_str in enumerate(tree_code_str_list):
 		if (i+1) % 100000 == 0:
 			print(f".. {i+1:,d} of {len(tree_code_str_list):,d}")
-		treecode_cls = treecodeclass.TreeCode(tree_code_str)
+		treecode_cls = tl_treecode.TreeCode(tree_code_str)
 		treecode_cls_list.append(treecode_cls)
 	print(f"get_all_permuted_tree_codes_for_leaf_count() took {time.time() - start_time:.6f} seconds.")
 	return treecode_cls_list
@@ -176,59 +176,59 @@ def get_all_taxa_permuted_tree_codes_for_leaf_count(num_leaves: int) -> list:
 	base_tree_code_str_list = []
 	for base_tree_code_cls in base_tree_code_cls_list:
 		base_tree_code_str_list.append(base_tree_code_cls.tree_code_str)
-	tree_code_str_list = permute.get_all_taxa_permuted_tree_codes_from_tree_code_list(base_tree_code_str_list)
+	tree_code_str_list = tl_permute.get_all_taxa_permuted_tree_codes_from_tree_code_list(base_tree_code_str_list)
 	start_time = time.time()
 	print(f"converting {len(tree_code_str_list)} tree_codes strings into treecode classes..")
 	treecode_cls_list = []
 	for i, tree_code_str in enumerate(tree_code_str_list):
 		if (i+1) % 100000 == 0:
 			print(f".. {i+1:,d} of {len(tree_code_str_list):,d}")
-		treecode_cls = treecodeclass.TreeCode(tree_code_str)
+		treecode_cls = tl_treecode.TreeCode(tree_code_str)
 		treecode_cls_list.append(treecode_cls)
 	print(f"get_all_permuted_tree_codes_for_leaf_count() took {time.time() - start_time:.6f} seconds.")
 	return treecode_cls_list
 
 #==================================
 def get_all_alpha_sorted_code_rotation_permutations(tree_code) -> list:
-	if isinstance(tree_code, treecodeclass.TreeCode):
+	if isinstance(tree_code, tl_treecode.TreeCode):
 		tree_code_str = tree_code.tree_code_str
 	elif isinstance(tree_code, str):
 		tree_code_str = tree_code
-	tree_code_str_list = permute.get_all_alpha_sorted_code_rotation_permutations(tree_code_str)
+	tree_code_str_list = tl_permute.get_all_alpha_sorted_code_rotation_permutations(tree_code_str)
 	start_time = time.time()
 	treecode_cls_list = []
 	for tree_code_str in tree_code_str_list:
-		treecode_cls = treecodeclass.TreeCode(tree_code_str)
+		treecode_cls = tl_treecode.TreeCode(tree_code_str)
 		treecode_cls_list.append(treecode_cls)
 	print(f"get_all_alpha_sorted_code_rotation_permutations() took {time.time() - start_time:.6f} seconds.")
 	return treecode_cls_list
 
 #==================================
 def get_all_inner_node_permutations_from_tree_code(tree_code) -> list:
-	if isinstance(tree_code, treecodeclass.TreeCode):
+	if isinstance(tree_code, tl_treecode.TreeCode):
 		tree_code_str = tree_code.tree_code_str
 	elif isinstance(tree_code, str):
 		tree_code_str = tree_code
-	tree_code_str_list = permute.get_all_inner_node_permutations_from_tree_code(tree_code_str)
+	tree_code_str_list = tl_permute.get_all_inner_node_permutations_from_tree_code(tree_code_str)
 	start_time = time.time()
 	treecode_cls_list = []
 	for tree_code_str in tree_code_str_list:
-		treecode_cls = treecodeclass.TreeCode(tree_code_str)
+		treecode_cls = tl_treecode.TreeCode(tree_code_str)
 		treecode_cls_list.append(treecode_cls)
 	print(f"get_all_inner_node_permutations_from_tree_code() took {time.time() - start_time:.6f} seconds.")
 	return treecode_cls_list
 
 #===========================================
 def get_all_permutations_from_tree_code(tree_code) -> list:
-	if isinstance(tree_code, treecodeclass.TreeCode):
+	if isinstance(tree_code, tl_treecode.TreeCode):
 		tree_code_str = tree_code.tree_code_str
 	elif isinstance(tree_code, str):
 		tree_code_str = tree_code
-	tree_code_str_list = permute.get_all_permutations_from_tree_code(tree_code_str)
+	tree_code_str_list = tl_permute.get_all_permutations_from_tree_code(tree_code_str)
 	start_time = time.time()
 	treecode_cls_list = []
 	for tree_code_str in tree_code_str_list:
-		treecode_cls = treecodeclass.TreeCode(tree_code_str)
+		treecode_cls = tl_treecode.TreeCode(tree_code_str)
 		treecode_cls_list.append(treecode_cls)
 	print(f"get_all_permutations_from_tree_code() took {time.time() - start_time:.6f} seconds.")
 	return treecode_cls_list
@@ -239,12 +239,12 @@ def get_all_permutations_from_tree_code(tree_code) -> list:
 
 #==================================
 def get_random_inner_node_permutation_from_tree_code(tree_code):
-	if isinstance(tree_code, treecodeclass.TreeCode):
+	if isinstance(tree_code, tl_treecode.TreeCode):
 		tree_code_str = tree_code.tree_code_str
 	elif isinstance(tree_code, str):
 		tree_code_str = tree_code
-	permute_tree_code_str = permute.get_random_inner_node_permutation_from_tree_code(tree_code_str)
-	permute_treecode_cls = treecodeclass.TreeCode(permute_tree_code_str)
+	permute_tree_code_str = tl_permute.get_random_inner_node_permutation_from_tree_code(tree_code_str)
+	permute_treecode_cls = tl_treecode.TreeCode(permute_tree_code_str)
 	return permute_treecode_cls
 
 #===========================================
@@ -252,13 +252,13 @@ def get_random_inner_node_permutation_from_tree_code(tree_code):
 #===========================================
 
 def replace_taxa_letters(tree_code, ordered_taxa: list):
-	if isinstance(tree_code, treecodeclass.TreeCode):
+	if isinstance(tree_code, tl_treecode.TreeCode):
 		tree_code_str = tree_code.tree_code_str
 	elif isinstance(tree_code, str):
 		tree_code_str = tree_code
-	ordered_tree_str = tools.replace_taxa_letters(tree_code_str, ordered_taxa)
+	ordered_tree_str = tl_tools.replace_taxa_letters(tree_code_str, ordered_taxa)
 	#print(f"replace_taxa_letters {tree_code_str} -> {ordered_tree_str}")
-	ordered_treecode_cls = treecodeclass.TreeCode(ordered_tree_str, ordered_taxa)
+	ordered_treecode_cls = tl_treecode.TreeCode(ordered_tree_str, ordered_taxa)
 	return ordered_treecode_cls
 
 #===========================================
@@ -270,8 +270,8 @@ def sort_treecodes_by_taxa_distances(treecode_cls_list: list, answer_treecode_cl
 	Sorts a list of TreeCode objects by their similarity to an answer TreeCode.
 	"""
 	# Verify the type of the answer_treecode_cls
-	if not isinstance(answer_treecode_cls, treecodeclass.TreeCode):
-		raise TypeError("this function requires treecodeclass.TreeCode")
+	if not isinstance(answer_treecode_cls, tl_treecode.TreeCode):
+		raise TypeError("this function requires tl_treecode.TreeCode")
 	# Get the distance map for the answer tree code
 	answer_distance_map = answer_treecode_cls.distance_map
 	# Initialize a list to store valid TreeCode objects with scores
@@ -279,7 +279,7 @@ def sort_treecodes_by_taxa_distances(treecode_cls_list: list, answer_treecode_cl
 	# Compute similarity scores for each tree in the input list
 	for treecode_cls in treecode_cls_list:
 		# Compare the distance maps of the current tree and the answer tree
-		answer_score = sorting.compare_taxa_distance_maps(answer_distance_map, treecode_cls.distance_map)
+		answer_score = tl_sorting.compare_taxa_distance_maps(answer_distance_map, treecode_cls.distance_map)
 		#print(f"answer_score = {answer_score:.3f} for a={answer_treecode_cls.tree_code_str}, t={treecode_cls.tree_code_str}")
 		# Filter out exact matches (score = 1.0) and non-matches (score = 0.0)
 		if answer_score < 0.999:

@@ -323,6 +323,10 @@ def prune_rust_tests_then_cluster(
 		f"and {summary['removed_links']} links."
 	)
 	print_step("CLUSTERING PRUNED GRAPHIFY CODE MAP")
+	# TEMPORARY: remove this block and normalize_cargo_twins after the upstream fix.
+	remap = graphify_prune_tests.normalize_cargo_twins(graph_path)
+	for alias, canonical in remap.items():
+		print(f"Reconciled Cargo alias {alias} -> {canonical}")
 	run_command([graphify_executable, "cluster-only", ".", "--no-label"], repo_root)
 
 

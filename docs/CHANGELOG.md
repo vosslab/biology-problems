@@ -1,5 +1,37 @@
 # Changelog
 
+## 2026-10-12
+
+### Fixes and Maintenance
+
+- Extend the `tl_` module prefix throughout the tree library: `tl_definitions`,
+  `tl_lookup`, `tl_output`, `tl_permute`, `tl_sorting`, and `tl_treecode`.
+  Update package and standalone imports, all three generator callers, and the
+  library documentation to avoid generic module names in fallback imports.
+- Rename the phylogenetic tree helper from `tools.py` to `tl_tools.py` and update
+  package imports, standalone imports, callers, and tree-library documentation.
+  The specific module name avoids the reserved support-directory import name.
+- Remove the local deleted-file discovery test, which exercises vendored hygiene
+  internals, and the filename-based library import sweep with its separate loader.
+  Remove shallow molecule HTML and hybrid-cross palette smoke tests, the exact
+  Perl-source PGML assertion, redundant PGML marker/file-writing checks, and
+  boxplot wording checks. Retain scientific, data-validation, escaping, and export
+  recovery coverage; leave upstream-owned tests and shared dependencies intact.
+- Synchronized shared style guides, tests, and repository support files from the starter template.
+
+### Developer Tests and Notes
+
+- After prefixing the remaining tree modules, all 5,424 tests pass in 12.32 seconds
+  with the same two warnings. Package and standalone imports, rendering, distances,
+  grouping, and permutations pass with unrelated modules occupying the old generic
+  names in `sys.modules`.
+- Reproduce six failures from the two reported causes before cleanup (5,533 pass).
+  After cleanup, the full `source source_me.sh && pytest tests/` run passes all
+  5,424 collected cases in 11.95 seconds, with the same two source-file-size warnings.
+  Direct checks pass for package and standalone tree imports, distances, grouping,
+  and HTML rendering. Remove four local test modules and four additional test
+  functions (215 lines); shared test helpers and dependencies remain in use.
+
 ## 2026-10-10
 
 ### Behavior or Interface Changes

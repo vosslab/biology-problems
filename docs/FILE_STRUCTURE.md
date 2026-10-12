@@ -130,7 +130,7 @@ Release and changelog tooling (sharing [changelog_lib.py](../devel/changelog_lib
 - [check_ascii_compliance.py](../tests/check_ascii_compliance.py): single-file ASCII/ISO compliance check.
 - [fix_ascii_compliance.py](../tests/fix_ascii_compliance.py): single-file ASCII/ISO fixer.
 - [test_bptools.py](../tests/test_bptools.py): core `bptools` tests.
-- [test_lib_imports.py](../tests/test_lib_imports.py): import integrity checks.
+- [test_lib_imports.py](../tests/test_lib_imports.py): library import checks using shared test helpers.
 - `libs`: library-specific pytest coverage.
 - `yaml`: YAML validation tests.
 

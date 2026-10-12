@@ -13,7 +13,7 @@ import file_utils
 
 # Text-format extensions that the whitespace hygiene check scans.
 EXTENSIONS = (
-	".md", ".txt", ".py", ".sh", ".bash", ".zsh",
+	".md", ".djot", ".txt", ".py", ".sh", ".bash", ".zsh",
 	".yml", ".yaml", ".json", ".toml", ".ini", ".cfg", ".conf",
 	".csv", ".tsv", ".html", ".htm", ".css",
 )

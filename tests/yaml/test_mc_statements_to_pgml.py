@@ -25,4 +25,6 @@ def test_yaml_mc_statements_to_pgml_header():
 	assert "## KEYWORDS(" in pgml_text
 	assert "## DBsubject(" in pgml_text
 	assert "DOCUMENT();" in pgml_text
+	assert "BEGIN_PGML" in pgml_text
+	assert "ENDDOCUMENT();" in pgml_text
 	assert "PGcourse.pl" in pgml_text

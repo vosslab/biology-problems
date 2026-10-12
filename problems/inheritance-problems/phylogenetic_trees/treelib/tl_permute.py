@@ -5,11 +5,11 @@ import time
 import random
 
 try:
-	from treelib import tools
+	from treelib import tl_tools
 except:
-	import tools
+	import tl_tools
 
-### ONLY ALLOWED TO IMPORT tools NOT OTHER TREELIB FILES
+### ONLY ALLOWED TO IMPORT tl_tools NOT OTHER TREELIB FILES
 
 #==================================
 def _flip_tree_code(code: str) -> str:
@@ -118,7 +118,7 @@ def _flip_node_in_code(code: str, node_number: int) -> str:
 #==================================
 def _permute_code_by_node(code: str, node_number=None) -> str:
 	#rotates tree about a single node, but preserves connections
-	max_nodes = tools.code_to_number_of_internal_nodes(code)
+	max_nodes = tl_tools.code_to_number_of_internal_nodes(code)
 	if node_number is None:
 		node_number = random.randint(1, max_nodes)
 	elif node_number == 0:
@@ -130,7 +130,7 @@ def _permute_code_by_node(code: str, node_number=None) -> str:
 
 #==================================
 def _permute_code_by_node_binary(code, node_binary_list: list) -> str:
-	max_nodes = tools.code_to_number_of_internal_nodes(code)
+	max_nodes = tl_tools.code_to_number_of_internal_nodes(code)
 	new_code = copy.copy(code)
 	reverse_binary_list = node_binary_list[::-1]
 	for node_number_index in range(max_nodes):
@@ -166,10 +166,10 @@ def _convert_int_to_binary_list(integer: int) -> list:
 #===========================================
 def get_all_permuted_tree_codes_from_tree_code_list(base_tree_code_str_list: list) -> list:
 	t0 = time.time()
-	sorted_taxa = sorted(tools.code_to_taxa_list(base_tree_code_str_list[0]))
+	sorted_taxa = sorted(tl_tools.code_to_taxa_list(base_tree_code_str_list[0]))
 	num_leaves = len(sorted_taxa)
 	#print(f"__ len(base_tree_code_str_list)= {len(base_tree_code_str_list)}")
-	all_taxa_permutations = tools.get_comb_safe_taxa_permutations(sorted_taxa)
+	all_taxa_permutations = tl_tools.get_comb_safe_taxa_permutations(sorted_taxa)
 	#print(f"__ len(all_taxa_permutations)= {len(all_taxa_permutations)}")
 	#print(f"__ num_leaves = {num_leaves}")
 	if num_leaves > 7:
@@ -188,8 +188,8 @@ def get_all_permuted_tree_codes_from_tree_code_list(base_tree_code_str_list: lis
 		#loop_time = time.time()
 		for permuted_code in all_inner_node_permutated_tree_codes:
 			for permuted_taxa in all_taxa_permutations:
-				final_code = tools.replace_taxa_letters(permuted_code, permuted_taxa)
-				if tools.is_gene_tree_alpha_sorted(final_code) is True:
+				final_code = tl_tools.replace_taxa_letters(permuted_code, permuted_taxa)
+				if tl_tools.is_gene_tree_alpha_sorted(final_code) is True:
 					tree_code_str_list.append(final_code)
 		#print(f"__ current {len(tree_code_str_list)} permuted tree codes loop time {time.time()-loop_time:.6f} seconds.")
 
@@ -202,10 +202,10 @@ def get_all_permuted_tree_codes_from_tree_code_list(base_tree_code_str_list: lis
 #===========================================
 def get_all_taxa_permuted_tree_codes_from_tree_code_list(base_tree_code_str_list: list) -> list:
 	t0 = time.time()
-	sorted_taxa = sorted(tools.code_to_taxa_list(base_tree_code_str_list[0]))
+	sorted_taxa = sorted(tl_tools.code_to_taxa_list(base_tree_code_str_list[0]))
 	num_leaves = len(sorted_taxa)
 	#print(f"__ len(base_tree_code_str_list)= {len(base_tree_code_str_list)}")
-	all_taxa_permutations = tools.get_comb_safe_taxa_permutations(sorted_taxa)
+	all_taxa_permutations = tl_tools.get_comb_safe_taxa_permutations(sorted_taxa)
 	#print(f"__ len(all_taxa_permutations)= {len(all_taxa_permutations)}")
 	#print(f"__ num_leaves = {num_leaves}")
 	if num_leaves > 7:
@@ -216,8 +216,8 @@ def get_all_taxa_permuted_tree_codes_from_tree_code_list(base_tree_code_str_list
 
 	for i, base_tree_code_str in enumerate(base_tree_code_str_list):
 		for permuted_taxa in all_taxa_permutations:
-			final_code = tools.replace_taxa_letters(base_tree_code_str, permuted_taxa)
-			if tools.is_gene_tree_alpha_sorted(final_code) is True:
+			final_code = tl_tools.replace_taxa_letters(base_tree_code_str, permuted_taxa)
+			if tl_tools.is_gene_tree_alpha_sorted(final_code) is True:
 				tree_code_str_list.append(final_code)
 
 	#purge some other duplicates
@@ -233,7 +233,7 @@ def get_all_alpha_sorted_code_rotation_permutations(tree_code_str: str) -> list:
 	original_code_permutations = get_all_permutations_from_tree_code(tree_code_str)
 	alpha_sorted_tree_code_permutations = []
 	for permuted_tree_code_str in original_code_permutations:
-		alpha_sorted_tree_code_str = tools.sort_alpha_for_gene_tree(permuted_tree_code_str)
+		alpha_sorted_tree_code_str = tl_tools.sort_alpha_for_gene_tree(permuted_tree_code_str)
 		alpha_sorted_tree_code_permutations.append(alpha_sorted_tree_code_str)
 	tree_code_permutations_list = list(set(alpha_sorted_tree_code_permutations))
 	return tree_code_permutations_list
@@ -242,7 +242,7 @@ def get_all_alpha_sorted_code_rotation_permutations(tree_code_str: str) -> list:
 def get_all_inner_node_permutations_from_tree_code(tree_code_str: str) -> list:
 	if not isinstance(tree_code_str, str):
 		raise ValueError('permute functions only take string tree_code_str as input')
-	max_nodes = tools.code_to_number_of_internal_nodes(tree_code_str)
+	max_nodes = tl_tools.code_to_number_of_internal_nodes(tree_code_str)
 	alpha_sorted_tree_code_permutations = set()
 	all_tree_code_permutations = []
 	# even numbers only removes the (a1b) -> (b1a) permuation
@@ -252,7 +252,7 @@ def get_all_inner_node_permutations_from_tree_code(tree_code_str: str) -> list:
 		if permuted_tree_code_str in all_tree_code_permutations:
 			raise ValueError
 		all_tree_code_permutations.append(permuted_tree_code_str)
-		alpha_sorted_tree_code_str = tools.sort_alpha_for_gene_tree(permuted_tree_code_str)
+		alpha_sorted_tree_code_str = tl_tools.sort_alpha_for_gene_tree(permuted_tree_code_str)
 		alpha_sorted_tree_code_permutations.add(alpha_sorted_tree_code_str)
 	#print(f"len(all_tree_code_permutations) = {len(all_tree_code_permutations)}")
 	#print(f"len(alpha_sorted_tree_code_permutations) = {len(alpha_sorted_tree_code_permutations)}")
@@ -262,12 +262,12 @@ def get_all_inner_node_permutations_from_tree_code(tree_code_str: str) -> list:
 def get_all_permutations_from_tree_code(tree_code_str: str) -> list:
 	print(f".. .. running get_all_permutations_from_tree_code(tree_code={tree_code_str})")
 	t0 = time.time()
-	num_leaves = tools.code_to_number_of_taxa(tree_code_str)
+	num_leaves = tl_tools.code_to_number_of_taxa(tree_code_str)
 	if num_leaves > 8:
 		print("generating the 71,400 trees for 8 leaves takes ~8 seconds, 9 leaves takes too long")
 		raise ValueError(f"too many leaves requested ({num_leaves}), try a different method for generating trees")
-	sorted_taxa = sorted(tools.code_to_taxa_list(tree_code_str))
-	all_taxa_permutations = tools.get_comb_safe_taxa_permutations(sorted_taxa)
+	sorted_taxa = sorted(tl_tools.code_to_taxa_list(tree_code_str))
+	all_taxa_permutations = tl_tools.get_comb_safe_taxa_permutations(sorted_taxa)
 	print("^^ ^^ len(all_taxa_permutations)=", len(all_taxa_permutations))
 
 	### ASSEMBLE CODE LIST
@@ -279,8 +279,8 @@ def get_all_permutations_from_tree_code(tree_code_str: str) -> list:
 		if (i+1) % 100 == 0:
 			print(f".. {i+1:,d} of {len(all_inner_node_permutated_tree_codes):,d}")
 		for permuted_taxa in all_taxa_permutations:
-			final_code = tools.replace_gene_letters(permuted_tree_code, permuted_taxa)
-			if tools.is_gene_tree_alpha_sorted(final_code) is True:
+			final_code = tl_tools.replace_gene_letters(permuted_tree_code, permuted_taxa)
+			if tl_tools.is_gene_tree_alpha_sorted(final_code) is True:
 				tree_code_str_list.append(final_code)
 	#purge some other duplicates
 	tree_code_str_list = list(set(tree_code_str_list))
@@ -296,16 +296,16 @@ def get_all_permutations_from_tree_code(tree_code_str: str) -> list:
 def get_random_inner_node_permutation_from_tree_code(tree_code_str: str) -> str:
 	if not isinstance(tree_code_str, str):
 		raise ValueError('permute functions only take string tree_code_str as input')
-	max_nodes = tools.code_to_number_of_internal_nodes(tree_code_str)
+	max_nodes = tl_tools.code_to_number_of_internal_nodes(tree_code_str)
 	# even numbers only removes the (a1b) -> (b1a) permuation
 	node_binary = random.randint(0, 2**(max_nodes-1))*2
 	node_binary_list = _convert_int_to_binary_list(node_binary)
 	permuted_tree_code_str = _permute_code_by_node_binary(tree_code_str, node_binary_list)
-	alpha_sorted_tree_code_str = tools.sort_alpha_for_gene_tree(permuted_tree_code_str)
+	alpha_sorted_tree_code_str = tl_tools.sort_alpha_for_gene_tree(permuted_tree_code_str)
 	return alpha_sorted_tree_code_str
 
 if __name__ == '__main__':
-	import definitions
+	import tl_definitions
 
 	def time_function(func, *args, **kwargs):
 		"""
@@ -324,17 +324,17 @@ if __name__ == '__main__':
 		return result
 
 	# Select a random tree code for testing
-	all_tree_code_str_list = list(definitions.code_library.values())
+	all_tree_code_str_list = list(tl_definitions.code_library.values())
 	len_6_tree_codes = []
 	for tree_code_str in all_tree_code_str_list:
-		taxa_list = sorted(tools.code_to_taxa_list(tree_code_str))
+		taxa_list = sorted(tl_tools.code_to_taxa_list(tree_code_str))
 		if len(taxa_list) == 6:
 			len_6_tree_codes.append(tree_code_str)
 	tree_code_str = random.choice(len_6_tree_codes)
-	taxa_list = sorted(tools.code_to_taxa_list(tree_code_str))
+	taxa_list = sorted(tl_tools.code_to_taxa_list(tree_code_str))
 	while len(taxa_list) != 6:
 		tree_code_str = random.choice(len_6_tree_codes)
-		taxa_list = sorted(tools.code_to_taxa_list(tree_code_str))
+		taxa_list = sorted(tl_tools.code_to_taxa_list(tree_code_str))
 
 	print(f"Testing with tree_code_str: {tree_code_str}")
 
