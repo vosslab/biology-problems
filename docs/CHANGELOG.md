@@ -2,6 +2,26 @@
 
 ## 2026-10-12
 
+### Features
+
+- Add `bonus_content/disney_princesses.yml` for the 13 characters on Disney's
+  official Princess roster. The assistant reused nine movie-bank clues and wrote
+  four new clues; add 13 alternatives from another LLM draft pasted by the user.
+  Each princess has two possible clues (26 total); randomly select four princesses
+  per question. Correct the attribution and treat all princess clues as editable
+  drafts subject to the style and length guidance.
+- Add `bonus_content/disney_movies.yml`, preserving 39 author-supplied plot clues
+  for 37 Disney and Pixar movies. Keep both clues for Sleeping Beauty and Beauty
+  and the Beast as alternatives under their movie titles, and preserve supplied
+  wording even when a clue exceeds 100 characters. Use plain straight quotes and
+  apostrophes in place of escaped curly quotes. Replace the Bambi clue with the
+  author's revised wording about losing his mother and befriending a rabbit.
+- Add `bonus_content/mcu_avengers.yml`, a bonus matching bank with eight MCU Avengers
+  and 31 cryptic clues, including the author's original hammer, shield, assassin,
+  and archer clues.
+  Preserve author-supplied wording; style guidance and the 100-character limit
+  apply to agent-authored clues. Questions randomly select four characters and one clue each.
+
 ### Fixes and Maintenance
 
 - Extend the `tl_` module prefix throughout the tree library: `tl_definitions`,

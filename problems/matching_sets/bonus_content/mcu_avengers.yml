@@ -1,0 +1,60 @@
+# Bonus matching bank: identify MCU Avengers from cryptic pop-culture clues.
+# Preserve author-supplied clues as written; they override the guidance below.
+# Keep agent-authored clues within 100 characters, including spaces and punctuation.
+# Ground agent-authored humor in MCU facts; favor indirect references and wordplay.
+topic: MCU Avengers
+items to match per question: 4
+key description: MCU Avenger
+keys description: MCU Avengers
+value description: cryptic clue
+values description: cryptic clues
+question override: >-
+  <p>Bonus: Match each of the following MCU Avengers with their corresponding cryptic clues.</p>
+
+matching pairs:
+  Thor:
+    - Always carries a hammer, but never uses nails.
+    - Got grounded by his dad. The ground was on another planet.
+    - Has a weekday named after him and still has trouble getting people to take him seriously.
+    - Treats sibling rivalry as an interplanetary incident.
+
+  Captain America:
+    - always carries a shield, but never a sword or gun
+    - A World War II veteran wakes up and discovers he missed his date by 70 years.
+    - Took a seventy-year nap and woke up still owing someone a dance.
+    - Keeps a to-do list because most of modern culture happened while he was unavailable.
+    - Went from rejected recruit to recruitment poster after one unusually productive appointment.
+
+  Black Widow:
+    - female assassin whose two best abilities are a leg sweep and massaging male egos
+    - Her attempt to get out of the red has very little to do with accounting.
+    - Lets the interrogator finish bragging before revealing that he was the one being questioned.
+    - Introduced herself as office staff; turned out to have a much broader job description.
+
+  Hawkeye:
+    - often forgotten, this avenger is good at shooting arrows and not much else
+    - Brought an Olympic hobby to a fight that really seemed to call for a defense budget.
+    - Kept a family off the company records while working for a company that spies on everyone.
+    - His coworkers could handle aliens, but needed a moment to process his farmhouse.
+
+  Iron Man:
+    - Named after a ferrous metal that his suit no longer contains.
+    - Turned a kidnapping into a career change, then announced his new job title at a press conference.
+    - A billionaire who tried to automate peace and got an extinction event instead.
+
+  Hulk:
+    - His doctoral degree becomes considerably less useful when he turns green with anger.
+    - His secret to anger management was admitting he had never stopped being angry.
+    - Responded to a lecture about divinity by repeatedly introducing the speaker to the floor.
+
+  Scarlet Witch:
+    - Kidnaps an entire town to live out her fantasy of a happy suburban marriage.
+    - Grieving woman who deals with emotional trauma by rewriting reality.
+    - Turned the five stages of grief into a television programming schedule.
+    - Gave an entire town supporting roles in a relationship nobody else had auditioned for.
+
+  Vision:
+    - A synthetic life form discovers love, marriage, and the dangers of forehead jewelry.
+    - A walking computer who fell in love with a witch.
+    - Literally lost his mind when someone removed a stone from his forehead.
+    - Passed the team's background check by picking up a coworker's belongings.

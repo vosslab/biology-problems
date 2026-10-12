@@ -1,0 +1,124 @@
+# Bonus matching bank: identify Disney and Pixar movies from plot clues.
+# Author-supplied clues may exceed 100 characters; preserve their wording.
+topic: Disney and Pixar movies
+items to match per question: 4
+key description: Disney or Pixar movie
+keys description: Disney and Pixar movies
+value description: plot clue
+values description: plot clues
+question override: >-
+  <p>Bonus: Match each of the following Disney and Pixar movies with their corresponding plot clues.</p>
+
+matching pairs:
+  Snow White and the Seven Dwarfs:
+    - Eats a suspicious apple, falls into a coma, and meets seven roommates.
+
+  Sleeping Beauty:
+    - Pricks her finger, falls into a coma, and gets kissed by a stranger.
+    - A malevolent fairy places a curse on a baby because she was left off the guest list.
+
+  Aladdin:
+    - Finds a lamp with a singing, dancing inhabitant who gives out wishes.
+
+  Alice in Wonderland:
+    - Follows a white rabbit, takes a very wrong turn, and meets the Cheshire Cat.
+
+  Frozen:
+    - An ice queen loses control and makes winter everyone else's problem.
+
+  The Emperor's New Groove:
+    - A potion turns a selfish emperor into a llama, which somehow improves him.
+
+  Cinderella:
+    - Has shoe-sizing issues, and a pumpkin turns into a carriage.
+
+  Beauty and the Beast:
+    - An arrogant prince refuses a rose from a witch and gets sentenced to talking furniture.
+    - A woman takes her father's place as prisoner of a cold-hearted prince with decorating problems.
+
+  The Little Mermaid:
+    - A princess trades her voice for legs and receives life advice from a crab.
+
+  The Jungle Book:
+    - A child is raised in the jungle by wolves and escorted home by a bear and a panther.
+
+  Bambi:
+    - A young "prince" loses his mother to a hunter and befriends a rabbit with restless leg syndrome.
+
+  Dumbo:
+    - A character is mocked for having large ears, then weaponizes them for flight.
+
+  Pinocchio:
+    - A puppet lies, grows a longer nose, and later watches boys turn into donkeys.
+
+  The Sword in the Stone:
+    - A 12-year-old orphan plays with a rock and becomes king by accident.
+
+  Lady and the Tramp:
+    - A sheltered uptown girl and a streetwise downtown boy fall in love as dogs.
+
+  Peter Pan:
+    - A girl and her brothers are whisked away to a magical world by a flying boy with boundary issues.
+
+  Wreck-It Ralph:
+    - A video game villain wants to be a hero and causes problems in multiple games.
+
+  WALL-E:
+    - In the distant future, a trash-collecting robot accidentally becomes humanity's best chance.
+
+  Zootopia:
+    - A rookie bunny cop and a cynical fox con artist uncover a conspiracy.
+
+  Inside Out:
+    - After a young girl moves away from the Midwest, her five emotions argue over how to run her life.
+
+  101 Dalmatians:
+    - A large litter of puppies is abducted so a fashion-obsessed villain can make a coat.
+
+  The Princess and the Frog:
+    - A waitress trying to open a restaurant kisses the wrong frog and becomes one too.
+
+  Up:
+    - A 78-year-old man travels to paradise by attaching balloons to his house.
+
+  Coco:
+    - A boy secretly dreams of becoming a musician and needs a family blessing from the dead.
+
+  Mulan:
+    - young woman disguises herself as a man and has to save all of China.
+
+  Treasure Planet:
+    - Map sends a teenager into space, where pirates are still somehow a problem.
+
+  Lilo &amp; Stitch:
+    - Hawaiian girl adopts a destructive blue alien and calls it family.
+
+  Ratatouille:
+    - tiny chef controls a human by pulling his hair, which is apparently fine in Paris.
+
+  The Incredibles:
+    - family of superheroes tries to act normal and fails, but does so in matching outfits.
+
+  Finding Nemo:
+    - forgetful fish crosses the ocean because a lost child was not stressful enough.
+
+  Luca:
+    - sea monster tries to enjoy one summer on land without anyone noticing
+
+  Moana:
+    - Polynesian girl sails across the ocean to return a stolen rock
+
+  Encanto:
+    - Colombian family has only one daughter without any magical gifts
+
+  Onward:
+    - Two elf brothers bring their dad back for a day, but only get the bottom half.
+
+  Brave:
+    - Scottish princess refuses an arranged marriage and turns her mother into a bear.
+
+  Monsters, Inc.:
+    - In a world of scary creatures, it was found that fear is a terrible energy source.
+
+  Soul:
+    - jazz musician finally gets his big break, but dies and has to deal with the afterlife.

@@ -1,0 +1,68 @@
+# Bonus matching bank: identify official Disney Princess characters from plot clues.
+# Roster checked 2026-10-12; clues refer to the animated films.
+# Initial clues were selected from the movie bank or written by the assistant.
+# Alternate clues came from another LLM draft pasted by the user.
+# All princess clues are editable drafts; keep them within 100 characters.
+# Ground the humor in the films using indirect references and wordplay.
+topic: official Disney Princess characters
+source: https://princess.disney.com/
+items to match per question: 4
+key description: official Disney Princess character
+keys description: official Disney Princess characters
+value description: plot clue
+values description: plot clues
+question override: >-
+  <p>Bonus: Match each of the following official Disney Princess characters with their corresponding plot clues.</p>
+
+matching pairs:
+  Snow White:
+    - Eats a suspicious apple, falls into a coma, and meets seven roommates.
+    - Accepts food from a suspicious stranger despite already having seven roommates looking after her.
+
+  Cinderella:
+    - Has shoe-sizing issues, and a pumpkin turns into a carriage.
+    - Loses a shoe at midnight, forcing an entire kingdom to conduct a footwear investigation.
+
+  Aurora:
+    - Pricks her finger, falls into a coma, and gets kissed by a stranger.
+    - Takes a century-long nap after an unfortunate encounter with sewing equipment.
+
+  Ariel:
+    - A princess trades her voice for legs and receives life advice from a crab.
+    - Gives up her voice for a man she has never spoken to, then takes romantic advice from a crab.
+
+  Belle:
+    - A woman takes her father's place as prisoner of a cold-hearted prince with decorating problems.
+    - Falls in love with her captor despite his anger issues and questionable home furnishings.
+
+  Jasmine:
+    - Keeps a tiger in the palace, yet somehow the royal adviser is the dangerous one.
+    - Falls for a homeless man who lies about his identity and travels on stolen property.
+
+  Pocahontas:
+    - Consults a tree about her love life while the visitors keep looking for gold.
+    - Falls for a foreign invader despite some serious disagreements over real estate.
+
+  Mulan:
+    - young woman disguises herself as a man and has to save all of China.
+    - Joins the military under a false identity and saves China with a fireworks display.
+
+  Tiana:
+    - A waitress trying to open a restaurant kisses the wrong frog and becomes one too.
+    - Kisses a frog hoping to find a prince and ends up with a serious amphibian problem.
+
+  Rapunzel:
+    - Uses a frying pan to negotiate her first vacation with a man on a wanted poster.
+    - Spends 18 years in isolation before discovering that her mother has serious boundary issues.
+
+  Merida:
+    - Scottish princess refuses an arranged marriage and turns her mother into a bear.
+    - Refuses to marry a stranger and accidentally turns her mother into a bear.
+
+  Moana:
+    - Polynesian girl sails across the ocean to return a stolen rock
+    - Steals a boat, kidnaps a demigod, and returns a stolen rock to an angry island.
+
+  Raya:
+    - Travels with the last dragon to repair a gem that nobody could share without breaking the world.
+    - Trusts the wrong person repeatedly while trying to assemble a broken magical rock.
