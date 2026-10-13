@@ -180,6 +180,18 @@ Linear: 16 kb open strand, 4 selected sites, 3 distractor sites.
 Circular: 16 kb circle, 3 selected sites, 2 distractor sites including
 `0 kb`.
 
+## Limited answer banks
+
+`-c N` requests N consecutive positive integer band sizes, including shifted ranges.
+Every correct band must fit inside the range, and the number of distinct correct bands
+must be strictly less than N. Reject unsuitable maps while preserving their difficulty,
+length, and site counts. Do not remove intermediate wrong lengths to fit the answer sheet.
+Without `-c`, each generator keeps its existing answer-bank sizing.
+
+With five choices, the default medium linear fragment has only the correct band set
+{1,2,4,5}, despite varying maps. Medium circular retains {2,4,6} and {3,4,5}.
+Consider this answer-pattern limitation when selecting repeated practice questions.
+
 ## Digest calculations
 
 Calculate each enzyme independently. Sort only that enzyme's cut

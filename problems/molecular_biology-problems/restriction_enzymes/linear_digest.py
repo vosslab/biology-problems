@@ -121,6 +121,15 @@ def split_interleaved_sites(sites: list[int]) -> tuple[list[int], list[int]]:
 
 
 #============================================
+def choose_band_sizes(answers: list[int], num_choices: int | None) -> list[int]:
+	"""Choose a consecutive positive range containing every correct band."""
+	last_answer = max(max(answers) + 1, 5)
+	if num_choices is None:
+		return list(range(1, last_answer + 1))
+	selected = digest_lib.choose_consecutive_band_sizes(answers, num_choices)
+	return selected
+
+
 def write_question(N, args):
 	length = args.length
 	num_sites = args.num_sites
@@ -145,6 +154,11 @@ def write_question(N, args):
 		correct_fragments = digest_lib.digest_fragments(dna_type, length, candidate_selected)
 		if max(correct_fragments) > max_fragment_size:
 			continue
+		if args.num_choices is not None:
+			if len(set(correct_fragments)) >= args.num_choices:
+				continue
+			if max(correct_fragments) - min(correct_fragments) >= args.num_choices:
+				continue
 		sites = candidate_sites
 		selected_sites = candidate_selected
 		break
@@ -199,14 +213,13 @@ def write_question(N, args):
 		)
 	question = (
 		f"<h6><strong>Determine the sizes of the DNA bands</strong> that would appear on an agarose gel "
-		f"after digestion with {enzyme1_html} only.</h6>"
+		f"after digestion with {enzyme1_html} only. Select all that apply.</h6>"
 	)
 	question_text = opening + header + map_html + details + question
 
-	last_answer = max(max(answers) + 1, 5)
 	choices_list = []
 	answers_list = []
-	for answer_size in range(1, last_answer + 1):
+	for answer_size in choose_band_sizes(answers, args.num_choices):
 		choice_str = f"{answer_size:d} kb"
 		choices_list.append(choice_str)
 		if answer_size in answers:
@@ -239,6 +252,7 @@ def apply_difficulty_defaults(args):
 #============================================
 def parse_arguments():
 	parser = digest_lib.make_digest_parser("Generate restriction digest questions.")
+	bptools.add_choice_args(parser, default=None)
 	parser.add_argument(
 		'-s', '--num-sites', '--num_sites', type=int, default=None, dest='num_sites',
 		help='Number of sites in the DNA sequence.'
@@ -263,6 +277,8 @@ def parse_arguments():
 		help='Use full DNA strands'
 	)
 	args = parser.parse_args()
+	if args.num_choices is not None and args.num_choices < 2:
+		parser.error('--num-choices must be at least 2')
 	args = apply_difficulty_defaults(args)
 	if args.max_fragment_size is None:
 		args.max_fragment_size = math.ceil(args.length // 2 + 1)

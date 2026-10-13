@@ -7,6 +7,8 @@
 
 # Import local modules from the project
 # Provides custom functions, such as question formatting and other utilities
+import random
+
 import bptools
 
 
@@ -52,7 +54,7 @@ def get_question_text(N) -> tuple:
 		"Which one of the following Punnett squares represents "
 	)
 
-	context_tuple = PUNNETT_CONTEXTS[N % len(PUNNETT_CONTEXTS)]
+	context_tuple = random.choice(PUNNETT_CONTEXTS)
 	answer_genotypes_key = context_tuple[0]
 	context = context_tuple[1]
 	question_text = f"{MENDEL_INTRO}\n\n{PUNNETT_PROMPT}{context}"
@@ -145,7 +147,27 @@ _ALL_PUNNETT_SQUARES_HTML_DICT = None
 #===========================================================
 #===========================================================
 # This function creates and formats a complete question for output.
-def _format_question(N: int, all_punnett_squares_html_dict: dict) -> str:
+def select_crosses(answer_key: str, num_choices: int) -> list[str]:
+	"""Keep the closest parental-genotype errors, dropping the least plausible crosses."""
+	if not 2 <= num_choices <= 6:
+		raise ValueError('Punnett-square questions require 2 through 6 choices.')
+	keys = sorted({context[0] for context in PUNNETT_CONTEXTS})
+	# Confusing homozygous and heterozygous parents costs one allele change.
+	# Reversing the parents is equivalent, so compare sorted allele counts.
+	answer_counts = sorted(parent.count('A') for parent in answer_key.split(' x '))
+	distractors = [key for key in keys if key != answer_key]
+	random.shuffle(distractors)
+	distractors.sort(key=lambda key: sum(
+		abs(actual - wrong) for actual, wrong in zip(
+			answer_counts, sorted(parent.count('A') for parent in key.split(' x '))
+		)
+	))
+	selected = [answer_key] + distractors[:num_choices - 1]
+	random.shuffle(selected)
+	return selected
+
+
+def _format_question(N: int, all_punnett_squares_html_dict: dict, num_choices: int) -> str:
 	"""
 	Creates a complete formatted question for output.
 
@@ -161,7 +183,8 @@ def _format_question(N: int, all_punnett_squares_html_dict: dict) -> str:
 	question_text, answer_genotypes_key = get_question_text(N)
 
 	# Generate answer choices and the correct answer
-	choices_list = [all_punnett_squares_html_dict[key] for key in sorted(all_punnett_squares_html_dict)]
+	keys = select_crosses(answer_genotypes_key, num_choices)
+	choices_list = [all_punnett_squares_html_dict[key] for key in keys]
 	answer_text = all_punnett_squares_html_dict[answer_genotypes_key]
 
 	# Format the question using a helper function from the bptools module
@@ -176,12 +199,15 @@ def write_question(N: int, args) -> str:
 	global _ALL_PUNNETT_SQUARES_HTML_DICT
 	if _ALL_PUNNETT_SQUARES_HTML_DICT is None:
 		_ALL_PUNNETT_SQUARES_HTML_DICT = generate_choices()
-	return _format_question(N, _ALL_PUNNETT_SQUARES_HTML_DICT)
+	return _format_question(N, _ALL_PUNNETT_SQUARES_HTML_DICT, args.num_choices)
 
 #===========================================================
 def parse_arguments():
 	parser = bptools.make_arg_parser(description="Generate Punnett square questions.")
+	bptools.add_choice_args(parser, default=6)
 	args = parser.parse_args()
+	if not 2 <= args.num_choices <= 6:
+		parser.error('--num-choices must be between 2 and 6')
 	return args
 
 #===========================================================

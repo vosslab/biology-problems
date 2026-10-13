@@ -24,6 +24,26 @@
 
 ### Fixes and Maintenance
 
+- Add circular-digest `-c/--num-choices` support. Sample maps whose correct bands fit
+  a consecutive range with at least one distractor; share range construction with linear
+  digests in digest_lib. Preserve default output when the option is absent.
+- Enumerate existing easy/medium maps before choosing exam difficulty: five consecutive
+  choices retain 34 easy circular maps and 38 medium circular maps. Medium linear fragment
+  fits 76 maps but always yields bands {1,2,4,5}; document this limitation. Retain medium
+  per instructor preference when it fits five choices.
+
+- Replace sparse linear-digest choices with a consecutive positive range containing all
+  correct bands. Allow shifted ranges such as 2-6 kb. Reject maps when the band span does
+  not fit or the distinct correct-band count is not strictly less than the choice count.
+  This supersedes the nearby-length selection described below.
+
+- Refined question voice guidance to allow subtle alternating row shading for readable data lists,
+  while preserving matrix/diagram geometry and distinguishing scientific color from row shading.
+- Add optional `-c/--num-choices` to linear digests, retaining every correct band and nearby
+  length distractors in numeric order. State "Select all that apply" in every mode.
+- Add Punnett-square choice counts (2-6; default 6). Drop the most distant parental-genotype
+  errors first, breaking ties randomly; randomize scenarios and choice order.
+
 - Repair the four BPQ-owned genetics HTML findings: darken shared HTML gel bands
   to `#35558f` while preserving their blurred glow and geometry; reuse a dark
   metabolite-color mapping across the pathway figure, stem, and answers with valid
@@ -57,6 +77,31 @@
 - Synchronized shared style guides, tests, and repository support files from the starter template.
 
 ### Developer Tests and Notes
+
+- Circular five-choice verification: 404 focused checks pass, including 200 easy and
+  200 medium sampled maps with independent modulo-distance wraparound keys. Remove the
+  temporary check after validation. Five easy CLI items pass the advisory text checker
+  without findings. The full medium exam build has zero skips. Rendered example: cuts
+  at 1, 5, 11 on a 12 kb circle give 4, 6, 2 kb, correctly keyed A/C/E in a 2-6 kb bank;
+  3 and 5 kb remain consecutive-length distractors for interval-reading errors.
+
+- Consecutive-bank follow-up: 404 focused checks pass. Temporary independent enumeration
+  covers all 165 three-cut maps for fragment and strand interpretations; verifies complete
+  consecutive banks, preserved keys, rejection of oversized spans and all-correct banks,
+  and the shifted 2-6 kb example. Remove the one-time check after validation.
+
+- Choice-limit verification: 414 focused generator/scenario/lint checks pass. Enumerate
+  all 165 three-cut maps on a 12 kb fragment to check that five-choice selection retains
+  every true interval, and cover all six Punnett crosses at choice counts 2-6.
+- Before: a medium fragment bank could exceed A-E, and Punnett selection always had six
+  squares. After: the rendered exam has five choices for each. Independently read the
+  fragment cuts at 3, 9, 11 kb: bands 3, 6, 2, 1 kb match A/B/C/E; 5 kb is the nearby
+  subtraction-error distractor. Strand cuts at 2, 7, 10 kb give 5 and 3 kb, matching B/D.
+- Rendered Punnett example: AA x aa gives all Aa (B). Distractors AA x AA, Aa x aa,
+  aa x aa, and AA x Aa model misidentifying one or both parental genotypes. The tied
+  two-allele-distance distractor Aa x Aa was omitted. Choice order and scenarios are random;
+  digest lengths remain sorted. Five-item advisory checks: no digest findings; Punnett
+  K4 article warnings are false positives on allele labels such as "A a", not prose.
 
 - Genetics HTML repair: generate 14 fresh questions and inspect Chromium output
   and all seven LibreOffice PDF pages at the normal 150-DPI export cap. Check gels

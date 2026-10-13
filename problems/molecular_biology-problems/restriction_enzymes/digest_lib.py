@@ -1,6 +1,7 @@
 """Shared command-line, enzyme, and digest-evaluation helpers."""
 
 import html
+import random
 
 import bptools
 import restrictlib
@@ -144,3 +145,18 @@ def map_is_acceptable(topology: str, length: int, selected_sites: list[int],
 			return acceptable
 	acceptable = True
 	return acceptable
+
+
+#============================================
+def choose_consecutive_band_sizes(answers: list[int], num_choices: int) -> list[int]:
+	"""Return a consecutive positive bank containing all keys and a distractor."""
+	if len(set(answers)) >= num_choices:
+		raise ValueError('Choice count must leave room for every correct band and a distractor.')
+	first_min = max(1, max(answers) - num_choices + 1)
+	first_max = min(answers)
+	if first_min > first_max:
+		raise ValueError('Correct bands do not fit in a consecutive choice range.')
+	# Vary the range without dropping intermediate lengths a student might choose.
+	first_size = random.randint(first_min, first_max)
+	selected = list(range(first_size, first_size + num_choices))
+	return selected

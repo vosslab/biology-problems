@@ -268,7 +268,8 @@ def _assign_circular_enzymes(nonzero_sites: list[int], selected_count: int
 
 #============================================
 def choose_sites(length: int, selected_count: int, difficulty: str,
-		distractor_count: int = 2) -> tuple[list[int], list[int]]:
+		distractor_count: int = 2, num_choices: int | None = None
+		) -> tuple[list[int], list[int]]:
 	"""Choose mixed sites with the distractor at 0 kb until evaluation accepts."""
 	if selected_count < 2:
 		raise ValueError("The selected enzyme needs at least two sites.")
@@ -284,6 +285,10 @@ def choose_sites(length: int, selected_count: int, difficulty: str,
 	for _ in range(100):
 		picked = _sample_sites(possible_sites, required_nonzero)
 		selected_sites, distractor_sites = _assign_circular_enzymes(picked, selected_count)
+		if num_choices is not None:
+			bands = get_circular_fragment_sizes(length, selected_sites)
+			if len(set(bands)) >= num_choices or max(bands) - min(bands) >= num_choices:
+				continue
 		if digest_lib.map_is_acceptable(
 				'circular', length, selected_sites, distractor_sites, difficulty
 				) is True:
@@ -296,7 +301,7 @@ def write_question(N: int, args):
 	"""Create one circular restriction-digest gel-band question."""
 	enzyme_name, distractor_enzyme_name = digest_lib.choose_distinct_enzyme_names()
 	cut_sites, distractor_sites = choose_sites(
-		args.length, args.sites_per_enzyme, args.difficulty
+		args.length, args.sites_per_enzyme, args.difficulty, num_choices=args.num_choices
 	)
 	band_sizes = get_circular_fragment_sizes(args.length, cut_sites)
 	if len(band_sizes) < 2:
@@ -328,7 +333,10 @@ def write_question(N: int, args):
 		'that apply.</p>'
 	)
 	max_choice = max(max(band_sizes), 5)
-	choices_list = [f'{size} kb' for size in range(1, max_choice + 1)]
+	choice_sizes = list(range(1, max_choice + 1))
+	if args.num_choices is not None:
+		choice_sizes = digest_lib.choose_consecutive_band_sizes(band_sizes, args.num_choices)
+	choices_list = [f'{size} kb' for size in choice_sizes]
 	answers_list = [f'{size} kb' for size in band_sizes]
 	return bptools.formatBB_MA_Question(N, question_text, choices_list, answers_list)
 
@@ -336,11 +344,14 @@ def write_question(N: int, args):
 #============================================
 def parse_arguments():
 	parser = digest_lib.make_digest_parser("Generate circular restriction digest questions.")
+	bptools.add_choice_args(parser, default=None)
 	parser.add_argument(
 		'-s', '--sites-per-enzyme', '--sites_per_enzyme', type=int, default=None,
 		dest='sites_per_enzyme', help='Number of selected-enzyme restriction sites.'
 	)
 	args = parser.parse_args()
+	if args.num_choices is not None and args.num_choices < 3:
+		parser.error('--num-choices must be at least 3 (two correct bands and a distractor)')
 	# Easy uses two selected sites; medium and rigorous use three.
 	presets = {'easy': (10, 2), 'medium': (12, 3), 'rigorous': (16, 3)}
 	default_length, default_sites = presets[args.difficulty]

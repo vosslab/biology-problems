@@ -208,10 +208,13 @@ binomial name plus common name throughout).
 - Use a small set of elements: `p`, `br`, `strong`, `u`, `sub`, `sup`, `table`, and `span` for
   color or monospace. Blackboard may rewrite complex markup; tables are fine because they are
   converted to images before import (`docs/HUMAN_GUIDANCE.md`).
-- Keep tables minimal: a header row and thin borders. Add row fills or captions only when the
-  color is data.
-- Use color only when it carries meaning (a parental chromosome, a contrasted term, a gel band),
-  and pair it with a text label.
+- Match formatting to the table's purpose. For ordinary data lists, use clear headers, thin
+  borders, and compact spacing; prefer subtle alternating row shading when it helps students
+  follow longer rows or lists. Very small tables can stay plain. Preserve the specialized geometry
+  and meaningful colors of matrices and scientific diagrams. Add captions when identification helps.
+- Use restrained color for readability or scientific meaning. Pair scientific color encoding
+  (a parental chromosome, a contrasted term, a gel band) with a text label or symbol; readability
+  shading needs no legend. Keep text legible on every row background and in the final export.
 
 ## Mechanics
 
