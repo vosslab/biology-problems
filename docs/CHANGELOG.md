@@ -4,6 +4,11 @@
 
 ### Behavior or Interface Changes
 
+- Add --random to poisson_flies.py to sample the five distinguishable parental
+  crosses independently of question number. Preserve default cycling. Check 300
+  single-question draws cover all five answers and emitted items retain five choices
+  with one correct key; verify the default cycle and pyflakes.
+
 - Add opt-in --random to both epistasis_test_cross.py directions. Sample the prompt
   ratio independently of question number while retaining even default batch cycling.
   Verify 840 questions across both modes and settings: all nine forward and five inverse

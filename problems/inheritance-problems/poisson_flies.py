@@ -191,6 +191,13 @@ def write_question(N: int, args) -> str:
 		male_genotype = 'w-'
 	else:
 		male_genotype = male_types[(N - 1) % len(male_types)]
+	if args.random_cross:
+		# Sample the five distinguishable answers equally. With a ++ mother,
+		# either paternal genotype produces the same observed phenotypes.
+		female_genotype, male_genotype = random.choice((
+			('++', 'w-'), ('+w', '+-'), ('+w', 'w-'),
+			('ww', '+-'), ('ww', 'w-'),
+		))
 
 	complete_question = build_question(N, female_genotype, male_genotype, progeny_size)
 	return complete_question
@@ -203,6 +210,8 @@ def parse_arguments():
 	Parses command-line arguments for the script.
 	"""
 	parser = bptools.make_arg_parser(description="Generate X-linked fly cross questions.")
+	parser.add_argument('--random', dest='random_cross', action='store_true',
+		help='Sample parental crosses randomly instead of cycling through them.')
 	args = parser.parse_args()
 	return args
 
