@@ -70,14 +70,17 @@ def build_question(N: int, mom_pheno: str, dad_pheno: str) -> str:
 	Returns:
 		str: Formatted question string.
 	"""
+	female = bptools.colorHTMLText('female &female;', '99004d')
+	male = bptools.colorHTMLText('male &male;', '004d99')
 	question_text = ""
 	question_text += (
 		"<p>For the ABO blood group in humans, the i<sup>A</sup> and i<sup>B</sup> alleles are codominant "
 		"and the i allele is recessive.</p>"
 	)
 	question_text += (
-		f"<p>If a female &female; with <u>type {mom_pheno} blood</u> marries a male &male; with "
-		f"<u>type {dad_pheno} blood</u>, which of the following blood types could their children possibly have? "
+		f"<p>If a {female} with <strong>type {mom_pheno} blood</strong> marries a {male} with "
+		f"<strong>type {dad_pheno} blood</strong>, which of the following blood types could "
+		"their children possibly have? "
 		"Check all that apply.</p>"
 	)
 

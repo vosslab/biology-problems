@@ -4,6 +4,7 @@
 # Import built-in Python modules
 import copy
 import random
+import re
 
 # Import local modules from the project
 import bptools
@@ -40,11 +41,14 @@ def addColorToMarkers(marker_set, hex_color):
 	return set(markers_list)
 
 #===============================
-def markersToString(markers):
+def markersToString(markers: set[str]) -> str:
 	"""
 	Returns a comma-separated, alphabetically sorted string of markers.
 	"""
-	return ",".join(sorted(list(markers)))
+	# Sort by the visible marker label, not the chromosome's HTML color.
+	ordered_markers = sorted(markers, key=lambda marker: re.sub(r'<[^>]*>', '', marker))
+	marker_text = ",".join(ordered_markers)
+	return marker_text
 
 
 #===============================

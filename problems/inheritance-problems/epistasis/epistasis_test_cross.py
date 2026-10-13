@@ -239,12 +239,16 @@ def write_question(N: int, args) -> str:
 	if args.direction == 'forward':
 		progeny_ratios = list(forward_epistasis_ratios.keys())
 		progeny_ratio = progeny_ratios[(N - 1) % len(progeny_ratios)]
+		if args.random_interaction:
+			progeny_ratio = random.choice(progeny_ratios)
 		question_text = get_forward_question_text(progeny_ratio, letter1, letter2, color_set)
 		choices_list, answer_text = generate_forward_choices(progeny_ratio, args.num_choices)
 
 	elif args.direction == 'inverse':
 		progeny_ratios = list(inverse_epistasis_ratios.keys())
 		progeny_ratio = progeny_ratios[(N - 1) % len(progeny_ratios)]
+		if args.random_interaction:
+			progeny_ratio = random.choice(progeny_ratios)
 		question_text = get_inverse_question_text(progeny_ratio, letter1, letter2, color_set)
 		choices_list, answer_text = generate_inverse_choices(progeny_ratio, args.num_choices)
 
@@ -271,6 +275,8 @@ def parse_arguments():
 	"""
 	parser = bptools.make_arg_parser(description="Generate epistasis test-cross ratio questions.")
 	parser = bptools.add_choice_args(parser, default=6)
+	parser.add_argument('--random', dest='random_interaction', action='store_true',
+		help='Sample prompt ratios randomly instead of cycling evenly through them.')
 
 	direction_group = parser.add_mutually_exclusive_group(required=False)
 

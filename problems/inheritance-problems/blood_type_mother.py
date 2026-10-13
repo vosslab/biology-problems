@@ -118,7 +118,12 @@ def _format_question(N: int, dad_pheno: str, kid_pheno: str) -> str:
 	Returns:
 		str: Formatted question string.
 	"""
-	offspring = random.choice(('daughter &female;', 'son &male;'))
+	father = bptools.colorHTMLText('father &male;', '004d99')
+	mother = bptools.colorHTMLText('mother &female;', '99004d')
+	offspring = random.choice((
+		bptools.colorHTMLText('daughter &female;', '99004d'),
+		bptools.colorHTMLText('son &male;', '004d99'),
+	))
 
 	question_text = ''
 	question_text += (
@@ -126,11 +131,11 @@ def _format_question(N: int, dad_pheno: str, kid_pheno: str) -> str:
 		"and the i allele is recessive.</p>"
 	)
 	question_text += (
-		f"<p>A father &male; with <u>blood type {dad_pheno}</u> has a {offspring} with "
-		f"<u>blood type {kid_pheno}</u>.</p>"
+		f"<p>A {father} with <strong>type {dad_pheno} blood</strong> has a {offspring} with "
+		f"<strong>type {kid_pheno} blood</strong>.</p>"
 	)
 	question_text += (
-		"<p>Which of the following blood types could the mother &female; possibly have? "
+		f"<p>Which of the following blood types could the {mother} possibly have? "
 		"Check all that apply.</p>"
 	)
 
@@ -141,7 +146,7 @@ def _format_question(N: int, dad_pheno: str, kid_pheno: str) -> str:
 
 	# If no valid types, add "None of the above" as correct
 	none_choice = (
-		"None of the above are possible; the father &male; is not related to his " + offspring
+		f"None of the above are possible; the {father} is not related to his {offspring}"
 	)
 	if not answer_list:
 		answer_list = [none_choice]

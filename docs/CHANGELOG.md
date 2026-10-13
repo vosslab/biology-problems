@@ -1,8 +1,66 @@
 # Changelog
 
+## 2026-10-13
+
+### Behavior or Interface Changes
+
+- Add opt-in --random to both epistasis_test_cross.py directions. Sample the prompt
+  ratio independently of question number while retaining even default batch cycling.
+  Verify 840 questions across both modes and settings: all nine forward and five inverse
+  prompts appear, defaults cycle evenly, five choices contain one valid key, and pyflakes passes.
+
+- Add --random to dihybrid_cross_epistatic_gene_interactions.py so independent
+  single-question runs can sample all seven interactions. Preserve even cycling
+  by default. Verify 140 random question-1 calls cover all seven, a 140-question
+  default batch yields 20 per interaction, and every emitted item has one key.
+  Confirm monohybrid_degrees_of_dominance.py already randomizes all three modes.
+
+- Store each shared-cross parent's name color in a required `name_color` JSON
+  field using `#RRGGBB`. Select colors once when creating a scenario and reuse
+  them in stems and worksheet labels across all four question modes. Existing
+  scenario files need the field added; malformed color values are rejected.
+
+### Fixes and Maintenance
+
+- Restore phenotype color swatches in monohybrid degrees-of-dominance exam text
+  by emitting hex colors instead of CSS color names. Color the names with readable
+  dark shades while retaining the exact Punnett-square colors in the swatches.
+  Verify all 13 colors through exam HTML cleanup and DOCX, all 36 palette/dominance
+  combinations, and a browser preview. Leave scenario randomization unchanged.
+- In both ABO blood-type generators, color male terms and symbols dark blue
+  (`#004d99`) and female terms and symbols dark magenta (`#99004d`). Bold the
+  stated blood types and consistently phrase them as "type A blood", including
+  the corresponding O, B, and AB cases. Verify all 16 phenotype pairs in each
+  question family, both child sexes in mother questions, and the browser preview.
+- Color gametes dark green (`#006400`), genotypes dark blue (`#003366`), and
+  phenotypes dark orange (`#9A4600`) consistently in shared-cross stems, hints,
+  and worksheets. Preserve the blank worksheet cells and existing calculations.
+- Sort HLA choice markers by their visible labels instead of HTML color markup,
+  grouping A alleles before B alleles and C alleles while preserving chromosome colors.
+  For example, `A1,B8,C6,A9,B2,C2` becomes `A1,A9,B2,B8,C2,C6`.
+  Verify ordering and answer keys in 35 generated items covering color and black-and-white
+  output with 2, 3, and 7 markers; pyflakes and the question-text checker pass.
+
+### Developer Tests and Notes
+
+- Shared-cross color checks: two focused tests pass, including enumeration of
+  all 81 two-locus crosses, saved color reuse in all four modes, escaped names,
+  and invalid color rejection. Verify four CLI exports and their colors in local
+  Chromium; term contrast on white ranges from 6.46:1 to 12.61:1. The advisory
+  checker still reports existing choice spacing and optional hint-length cues.
+
 ## 2026-10-12
 
 ### Features
+
+- Consolidate large-cross questions in unique_counts.py and unique_counts_lib.py,
+  retaining the three existing homework paths as thin entry points. Add mutually
+  exclusive --gametes, --genotypes, and --phenotypes flags, with --parent 1/2 for
+  gametes. Save named parental genotypes to JSON once and reuse them across questions;
+  validate matching loci and refuse scenario overwrite. Preserve blank worksheet
+  tables, numeric choice order, and five-choice defaults. Check all 81 two-locus
+  crosses by independent gamete enumeration, JSON round trips, and all four modes
+  through the exam task runner. Focused generator and lint checks: 406 passed.
 
 - Add disjoint five-term halves of genetics_terminology.yml and
   mendelian_genetics_terms.yml for complete exam vocabulary coverage. Preserve original

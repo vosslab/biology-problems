@@ -6,6 +6,20 @@ import random
 import bptools
 
 
+TERM_COLORS = {
+	'gamete': '006400',
+	'genotype': '003366',
+	'phenotype': '9A4600',
+}
+
+
+def color_count_term(term: str) -> str:
+	"""Give each outcome its fixed dark color in stems, hints, and worksheets."""
+	color = TERM_COLORS[term.removesuffix('s')]
+	text = bptools.colorHTMLText(term, color)
+	return text
+
+
 def choose_student_names(count):
 	"""Sample distinct names from the repository list, escaped for HTML text."""
 	with open(bptools.get_repo_data_path('student_names.txt'), encoding='utf-8') as names_file:
@@ -31,23 +45,25 @@ def make_work_table(gene_list1, names, gene_list2=None, last_step='gametes'):
 		table += f'{gene_pair[0].upper()}</th>'
 	table += f'<th scope="col" style="{cell_style} background-color: #c9dcf5;">'
 	table += 'TOTAL</th></tr></thead><tbody>'
-	parents = [(f'{names[0]} genotype', gene_list1)]
+	genotype_label = color_count_term('genotype')
+	parents = [(f'{names[0]} {genotype_label}', gene_list1)]
 	if gene_list2 is not None:
-		parents += [(f'{names[1]} genotype', gene_list2)]
+		parents += [(f'{names[1]} {genotype_label}', gene_list2)]
 	for label, gene_list in parents:
 		table += f'<tr><th scope="row" style="{label_style}">{label}</th>'
 		for gene_pair in gene_list:
 			table += f'<td style="{cell_style} background-color: #e8f0fb; '
 			table += f'font-family: monospace;">{"".join(gene_pair)}</td>'
 		table += blocked + '</tr>'
-	labels = [f'{names[0]} gametes']
+	gametes_label = color_count_term('gametes')
+	labels = [f'{names[0]} {gametes_label}']
 	if gene_list2 is not None:
-		labels = [f'(a) {names[0]} gametes', f'(b) {names[1]} gametes']
+		labels = [f'(a) {names[0]} {gametes_label}', f'(b) {names[1]} {gametes_label}']
 		labels += ['(c) Punnett square size']
 		if last_step in ('genotypes', 'phenotypes'):
-			labels += ['(d) Number of cross genotypes']
+			labels += [f"(d) Number of cross {color_count_term('genotypes')}"]
 		if last_step == 'phenotypes':
-			labels += ['(e) Number of cross phenotypes']
+			labels += [f"(e) Number of cross {color_count_term('phenotypes')}"]
 	for label in labels:
 		table += f'<tr><th scope="row" style="{label_style}">{label}</th>'
 		if label.startswith('(c)'):
@@ -65,7 +81,8 @@ def work_table_instructions(is_cross=False):
 	text = '<p>Use the blank table to organize your work. For each gene, enter the '
 	text += 'number of possibilities, then multiply across the row to find the total.</p>'
 	if is_cross:
-		text += '<p>Work in order: (a) and (b) count the different gametes each person '
+		text += '<p>Work in order: (a) and (b) count the different '
+		text += f"{color_count_term('gametes')} each person "
 		text += 'can produce; (c) give the Punnett square dimensions '
 		text += '(rows &times; columns) and total number of cells; then count the '
 		text += 'different offspring outcomes in the remaining row(s). '

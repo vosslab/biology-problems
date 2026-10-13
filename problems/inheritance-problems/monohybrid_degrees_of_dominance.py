@@ -7,12 +7,29 @@ import random
 import copy
 
 # Import external modules (pip-installed)
-# No external modules are used here currently
+import PIL.ImageColor
 
 # Import local modules from the project
 # Provides custom functions, such as question formatting and other utilities
 import bptools
 import hybridcrosslib
+
+
+# Dark label colors remain readable on white; swatches retain the table colors.
+COLOR_NAME_HEX = {
+	'red': 'b22222',
+	'orange': '9a4600',
+	'yellow': '756000',
+	'blue': '2455a4',
+	'green': '246b32',
+	'brown': '804020',
+	'tan': '805b20',
+	'pink': '9f3d67',
+	'white': '595959',
+	'light blue': '28658a',
+	'redish pink': 'a34334',
+	'purple': '753a80',
+}
 
 
 #===================
@@ -21,9 +38,12 @@ def styled_color(color_name: str) -> str:
 	Returns an HTML-styled version of a color name.
 	"""
 	common_color_name = hybridcrosslib.color_translate.get(color_name, color_name)
+	label = bptools.colorHTMLText(common_color_name, COLOR_NAME_HEX[common_color_name])
+	# Printable exam text preserves hex colors, not CSS color names.
+	swatch_hex = '#{:02x}{:02x}{:02x}'.format(*PIL.ImageColor.getrgb(color_name))
 	return (
-		f'<strong>{common_color_name} '
-		f'(<span style="color: {color_name}; font-size: 1.8em;">&#x25A0;</span>)</strong>'
+		f'<strong>{label} '
+		f'(<span style="color: {swatch_hex}; font-size: 1.8em;">&#x25A0;</span>)</strong>'
 	)
 
 #===================
