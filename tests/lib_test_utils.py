@@ -60,7 +60,8 @@ def import_from_repo_path(rel_path: str):
 	module_dir = os.path.dirname(abs_path)
 	sibling_root = os.path.abspath(os.path.join(root, ".."))
 	extra_paths: list[str] = []
-	for repo_name in ("qti_package_maker",):
+	# Add the checkout root; its Python package inside uses qti_package_maker.
+	for repo_name in ("qti-package-maker",):
 		candidate = os.path.join(sibling_root, repo_name)
 		if os.path.isdir(candidate):
 			extra_paths.append(candidate)

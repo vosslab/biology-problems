@@ -214,7 +214,7 @@ class GelClassHtml(GelClass):
 		for i in range(total_bands):
 			if i in subindex:
 				lane += self.tdBlock()
-				lane += self.tdBlock(band_color="#6495ED")
+				lane += self.tdBlock(band_color="#35558f")
 			else:
 				lane += self.tdBlock()
 				lane += self.tdBlock()

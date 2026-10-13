@@ -14,6 +14,10 @@ origin belongs there too. Rules: [REPO_STYLE.md](REPO_STYLE.md).
 
 ## Working style
 
+- QPM abbreviates QTI Package Maker. Keep the established `qti_package_maker` Python import
+  namespace and distribution; use QPM for Rust, Wasm, and project integration names. Prefer
+  explicit arguments, functions, or defaults over project-specific environment configuration.
+
 ## Restriction digest maps
 
 - I required the non-selected restriction enzyme to be on the 0 kb mark, because

@@ -24,6 +24,21 @@ authoritative code or contract document, rather than a person.
 
 ## Software design
 
+### QPM consumer namespace
+
+**Decision.** Biology Problems preserves the established `qti_package_maker` import and
+`QTIPackageInterface` API. QPM abbreviates QTI Package Maker and names the Rust, Wasm, and
+project integration surfaces; format-specific QTI names remain unchanged.
+
+**Why.** Existing Python consumers rely on the established package API. QPM names newer
+project-owned integration surfaces without breaking it.
+
+**Consequence.** Consumers continue to install the established `qti-package-maker` distribution
+and import `qti_package_maker`; bootstrap code resolves an optional adjacent checkout directly,
+without a project-specific environment setting.
+
+**Owner.** [bptools.py](../bptools.py) and [source_me.sh](../source_me.sh).
+
 ### Restriction-digest cut placement
 
 **Decision.** Restriction-digest questions keep one map-and-gel format.

@@ -10,7 +10,8 @@ import yaml
 def _ensure_qti_package_maker_on_path():
 	repo_root = Path(__file__).resolve().parents[2]
 	sibling_root = repo_root.parent
-	candidate = sibling_root / "qti_package_maker"
+	# Checkout directory spelling differs from the qti_package_maker import.
+	candidate = sibling_root / "qti-package-maker"
 	if candidate.is_dir():
 		sys.path.insert(0, str(candidate))
 

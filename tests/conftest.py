@@ -32,7 +32,8 @@ def _ensure_qti_package_maker_on_path():
 	if importlib.util.find_spec("qti_package_maker") is not None:
 		return
 
-	qti_root = os.path.join(os.path.expanduser("~"), "nsh", "qti_package_maker")
+	qti_root = os.path.join(REPO_ROOT, "..", "qti-package-maker")
+	qti_root = os.path.abspath(qti_root)
 	if not os.path.isdir(qti_root):
 		return
 

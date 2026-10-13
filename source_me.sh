@@ -11,7 +11,6 @@ REPO_TOPLEVEL_DIR="$(git -C "$THIS_SCRIPT_DIR" rev-parse --show-toplevel 2>/dev/
 }
 
 REPO_PARENT_DIR="$(dirname "$REPO_TOPLEVEL_DIR")"
-QTI_PACKAGE_MAKER_DIR="$REPO_PARENT_DIR/qti-package-maker"
 LOCAL_LLM_WRAPPER_DIR="$(dirname "$REPO_PARENT_DIR")/local-llm-wrapper"
 CLEANPATH_PY="$REPO_PARENT_DIR/junk-drawer/cleanpath.py"
 PYTHON_EXE="python3"
@@ -23,11 +22,11 @@ else
   PYTHONPATH_PROPOSED="$THIS_SCRIPT_DIR:$PYTHONPATH_PROPOSED"
 fi
 
-# Add QTI package maker to PYTHONPATH if it exists
-if [[ -d "$QTI_PACKAGE_MAKER_DIR" ]]; then
-  PYTHONPATH_PROPOSED="$QTI_PACKAGE_MAKER_DIR:$PYTHONPATH_PROPOSED"
+# Add the QPM package maker checkout to PYTHONPATH if it exists.
+if [[ -d "$REPO_PARENT_DIR/qti-package-maker" ]]; then
+	PYTHONPATH_PROPOSED="$REPO_PARENT_DIR/qti-package-maker:$PYTHONPATH_PROPOSED"
 else
-  echo "Warning: QTI package maker not found at $QTI_PACKAGE_MAKER_DIR" >&2
+	echo "Warning: QPM package maker not found at $REPO_PARENT_DIR/qti-package-maker" >&2
 fi
 
 # Add local LLM wrapper to PYTHONPATH if it exists

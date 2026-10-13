@@ -24,6 +24,15 @@
 
 ### Fixes and Maintenance
 
+- Repair the four BPQ-owned genetics HTML findings: darken shared HTML gel bands
+  to `#35558f` while preserving their blurred glow and geometry; reuse a dark
+  metabolite-color mapping across the pathway figure, stem, and answers with valid
+  CSS colors; keep the complete binomial model in one presentation table; and
+  darken the shared Table 1 label to `#5d3b00`. Preserve question content, grading,
+  and the original audit evidence. No EF or QPM source changes are included.
+- Preserved the established `qti_package_maker` imports and `QTIPackageInterface` API. QPM
+  abbreviates QTI Package Maker and names Rust, Wasm, and project integration surfaces; QTI
+  format terminology remains unchanged.
 - Add the genetics exam HTML repair audit covering all 54 selected tasks and
   five additional generated variants through the final PDF. Document four BP
   display-repair groups affecting five tasks, with raw examples and PDF crops;
@@ -49,6 +58,17 @@
 
 ### Developer Tests and Notes
 
+- Genetics HTML repair: generate 14 fresh questions and inspect Chromium output
+  and all seven LibreOffice PDF pages at the normal 150-DPI export cap. Check gels
+  in color and grayscale, pathway colors at 3/5/8 metabolites, and binomial models
+  at 4/5/10 offspring. Controlled comparisons preserve gel band membership,
+  pathway nutrient answers (also at 17 metabolites), binomial formulas and keys,
+  and chi-square values and keys for both outcomes and all three error selections.
+  Keep raw records, browser captures, PDF, and logs locally in ignored
+  `output_genetics_html_repair/`; remove temporary verification scripts and add no
+  permanent tests. The full suite reports 5,556 passed and 10 import-policy
+  failures involving the separate `qti_package_maker` rename, with two existing
+  source-size warnings; none of the failures names a repaired source file.
 - After prefixing the remaining tree modules, all 5,424 tests pass in 12.32 seconds
   with the same two warnings. Package and standalone imports, rendering, distances,
   grouping, and permutations pass with unrelated modules occupying the old generic

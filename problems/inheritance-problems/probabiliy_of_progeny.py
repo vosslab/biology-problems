@@ -318,10 +318,10 @@ def get_question_text(male_offspring: int, female_offspring: int,
 	question_text = ""
 
 	# Model badge with symbolic parameters only
-	question_text += "<p style='margin:2px 0;color:#444;'>"
-	question_text += "<strong>Model:</strong> Binomial &rarr; "
-	question_text += f"{makeChoose('n', 'k')}&sdot;p<sup>k</sup>&sdot;q<sup>n-k</sup>"
-	question_text += "</p>"
+	question_text += '<table role="presentation" style="border:0;border-collapse:collapse;">'
+	question_text += '<tr><td><strong>Model:</strong> Binomial &rarr;</td><td>'
+	question_text += makeChoose('n', 'k')
+	question_text += '</td><td>&sdot;p<sup>k</sup>&sdot;q<sup>n-k</sup></td></tr></table>'
 
 	question_text += "<p>"
 	question_text += "In this scenario, assume that each child is born independently "

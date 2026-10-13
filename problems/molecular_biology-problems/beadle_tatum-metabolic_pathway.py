@@ -16,7 +16,7 @@ import bptools
 
 #===========================================================
 #===========================================================
-def enzyme_table(metabolites, color_wheel):
+def enzyme_table(metabolites: str, metabolite_colors: dict[str, str]) -> str:
 	htmltext = ""
 	tdopen_top = '<td align="center" valign="top" >'
 	tdopen_bot = '<td align="center" valign="bottom" >'
@@ -30,8 +30,8 @@ def enzyme_table(metabolites, color_wheel):
 		htmltext += f'<td></td> {tdopen_bot}<span style="font-size: 12px;">enzyme {enzyme_num:d}</span></td> '
 	htmltext += '</tr><tr> '
 	for i,meta in enumerate(metabolites):
-		color = color_wheel[i]
-		htmltext += f'{tdopen_top}<span style="color: {color}; font-size: 20px;"><strong>{meta}</strong></span></td> '
+		meta_text = bptools.colorHTMLText(f'<strong>{meta}</strong>', metabolite_colors[meta])
+		htmltext += f'{tdopen_top}<span style="font-size: 20px;">{meta_text}</span></td> '
 		if i+1 != len(metabolites):
 			htmltext += f'{tdopen_top}<span style="font-size: 16px;">&xrarr;</span></td> '
 	htmltext += '</tr> '
@@ -46,13 +46,15 @@ def write_question(N, args):
 	metabolite_letters_upper = metabolite_letters_lower.upper()
 	#print("metabolite_letters_upper = ", metabolite_letters_upper)
 
-	deg_step = int(round(360./len(metabolite_letters_upper) - 1))
-	color_amount = 240
-	color_wheel = bptools.make_color_wheel(color_amount, 0, 0, deg_step)
+	color_wheel = bptools.default_color_wheel(num_metabolites)
+	metabolite_colors = dict(zip(metabolite_letters_upper, color_wheel))
 
 	question_text = '<p>Look at the metabolic pathway in the table above. '
-	color = color_wheel[len(metabolite_letters_upper)]
-	question_text += f'<strong><span style="color: {color};">Metabolite {metabolite_letters_upper[-1]}</span></strong>'
+	final_metabolite = metabolite_letters_upper[-1]
+	final_metabolite_text = bptools.colorHTMLText(
+		f'Metabolite {final_metabolite}', metabolite_colors[final_metabolite]
+	)
+	question_text += f'<strong>{final_metabolite_text}</strong>'
 	question_text += ' is needed for the bacteria to grow. '
 
 	enzyme_num = random.choice(range(1, len(metabolite_letters_upper)-1))
@@ -62,7 +64,7 @@ def write_question(N, args):
 	question_text += 'Which nutrients, when added to minimal media, will help this bacteria grow? '
 	question_text += '<i>Multiple answers may be correct.</i></p>'
 
-	question_text = enzyme_table(metabolite_letters_upper, color_wheel) + question_text
+	question_text = enzyme_table(metabolite_letters_upper, metabolite_colors) + question_text
 
 	choices_list = []
 	answers_list = []
@@ -73,8 +75,7 @@ def write_question(N, args):
 	indices.sort()
 	#for i in range(len(metabolite_letters_upper)):
 	for i,meta in enumerate(metabolite_letters_upper):
-		color_txt = color_wheel[i]
-		meta_txt = f'<span style="color: {color_txt};"><strong>{meta}</strong></span>'
+		meta_txt = bptools.colorHTMLText(f'<strong>{meta}</strong>', metabolite_colors[meta])
 		choice = "Supplemented with nutrient {0}".format(meta_txt)
 		choices_list.append(choice)
 		if i >= enzyme_num:
