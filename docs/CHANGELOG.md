@@ -24,6 +24,17 @@
 
 ### Fixes and Maintenance
 
+- Preserve even interaction coverage as the default for metabolic epistasis batches.
+  Add opt-in `--random` for independent single-question draws, as requested by the
+  instructor. Verify two occurrences of every interaction in a 14-question default
+  batch and varied interaction ratios across 70 random single-question calls.
+
+- Randomly sample the metabolic epistasis interaction instead of cycling by question
+  number. Single-question assessment runs can now draw any existing homework pathway
+  rather than always returning digenic inheritance. Keep pathway choices unpinned.
+  Validate 70 single-question calls with all seven ratios represented and one correct
+  answer per item; hybrid-cross and lint checks pass (404 tests).
+
 - Add circular-digest `-c/--num-choices` support. Sample maps whose correct bands fit
   a consecutive range with at least one distractor; share range construction with linear
   digests in digest_lib. Preserve default output when the option is absent.

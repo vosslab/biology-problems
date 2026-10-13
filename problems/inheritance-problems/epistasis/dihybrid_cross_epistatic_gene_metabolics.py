@@ -521,6 +521,8 @@ def write_question(N: int, args) -> str:
 	Create a single epistatic gene interaction question.
 	"""
 	gene_id = all_gene_ids[(N - 1) % len(all_gene_ids)]
+	if args.random_interaction:
+		gene_id = random.choice(all_gene_ids)
 	color_set = random.choice(all_color_sets)
 	complete_question = build_question(N, gene_id, color_set, args.num_choices)
 	return complete_question
@@ -535,6 +537,8 @@ def parse_arguments():
 	"""
 	parser = bptools.make_arg_parser(description="Generate epistatic gene interaction questions.")
 	parser = bptools.add_choice_args(parser, default=4)
+	parser.add_argument('--random', dest='random_interaction', action='store_true',
+		help='Sample pathway interactions randomly instead of cycling evenly through them.')
 	args = parser.parse_args()
 	return args
 
