@@ -4,6 +4,10 @@
 
 ### Behavior or Interface Changes
 
+- Allow equal-sized fragments in medium restriction digests while easy forbids
+  co-migration and rigorous requires it. Keep medium linear defaults at 12 kb and
+  three cuts; five consecutive choices now admit eight answer sets instead of one.
+  Include the gel-band co-migration explanation in medium linear questions.
 - Add --random to poisson_flies.py to sample the five distinguishable parental
   crosses independently of question number. Preserve default cycling. Check 300
   single-question draws cover all five answers and emitted items retain five choices
@@ -47,6 +51,10 @@
   output with 2, 3, and 7 markers; pyflakes and the question-text checker pass.
 
 ### Developer Tests and Notes
+
+- Remove the newly added difficulty-policy matrix from permanent digest tests;
+  difficulty settings remain tunable. The map enumeration and 400-question sample
+  are one-time verification evidence, not lasting gates on answer-set counts.
 
 - Shared-cross color checks: two focused tests pass, including enumeration of
   all 81 two-locus crosses, saved color reuse in all four modes, escaped names,

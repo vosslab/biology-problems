@@ -177,7 +177,6 @@ def write_question(N, args):
 		print("end", length)
 
 	answers = sorted(set(digest_lib.digest_fragments(dna_type, length, selected_sites)))
-	rigorous_mode = args.difficulty == 'rigorous'
 
 	map_html = make_linear_map(length, label_dict, dna_type)
 	if dna_type == 'fragment':
@@ -206,7 +205,7 @@ def write_question(N, args):
 			"and outside the visible region. Because this segment is part of a much larger molecule, any uncut or very large fragments "
 			"will not travel into the gel and will appear to be stuck in the well.</p>"
 		)
-	if rigorous_mode:
+	if args.difficulty in ('medium', 'rigorous'):
 		details += (
 			"<p><strong>Gel interpretation:</strong> This is a complete digest. DNA fragments of the same length "
 			"co-migrate and appear as a single band. Select all distinct band lengths.</p>"

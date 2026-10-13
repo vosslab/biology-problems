@@ -132,7 +132,7 @@ def map_is_acceptable(topology: str, length: int, selected_sites: list[int],
 		return acceptable
 	# Co-migration is a selected-enzyme property.
 	co_migration = len(correct_fragments) > len(correct_bands)
-	if difficulty in ('easy', 'medium') and co_migration is True:
+	if difficulty == 'easy' and co_migration is True:
 		acceptable = False
 		return acceptable
 	if difficulty == 'rigorous' and co_migration is False:

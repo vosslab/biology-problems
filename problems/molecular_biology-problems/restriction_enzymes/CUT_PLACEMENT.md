@@ -150,8 +150,8 @@ Circular: 10 kb circle, 2 selected sites, 2 distractor sites including
 
 ### Medium
 
-More intervals than Easy: three selected sites, all selected fragments
-unequal, no co-migration.
+More intervals than Easy: three selected sites. Equal-sized fragments may
+co-migrate; both repeated and all-distinct fragment lengths are allowed.
 
 Example of the shape, not a required key:
 
@@ -188,9 +188,9 @@ must be strictly less than N. Reject unsuitable maps while preserving their diff
 length, and site counts. Do not remove intermediate wrong lengths to fit the answer sheet.
 Without `-c`, each generator keeps its existing answer-bank sizing.
 
-With five choices, the default medium linear fragment has only the correct band set
-{1,2,4,5}, despite varying maps. Medium circular retains {2,4,6} and {3,4,5}.
-Consider this answer-pattern limitation when selecting repeated practice questions.
+With five choices, the default medium linear fragment allows eight correct band sets:
+{1,2,4,5}, {1,3,4}, {1,3,5}, {1,5}, {2,3,4}, {2,3,5}, {2,4}, and {2,6}.
+These contain two, three, or four distinct bands from four physical fragments.
 
 ## Digest calculations
 
