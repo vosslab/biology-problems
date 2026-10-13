@@ -1,0 +1,51 @@
+# Disjoint half of genetics_terminology.yml; keep definitions aligned with the full homework bank.
+items to match per question: 5
+key description: genetic term
+keys description: genetic terms
+value description: definition
+values description: definitions
+replacement_rules:
+  haploid: '<span style="color: #d40000;">haploid</span>'
+  'gene ': '<span style="color: #b74300;">gene</span> '
+  locus: '<span style="color: #935d00;">locus</span>'
+  genomes: '<span style="color: #6c6c00;">genomes</span>'
+  genome: '<span style="color: #6c6c00;">genome</span>'
+  single nucleotide polymorphism (SNP): '<span style="color: #3b7600;">single nucleotide polymorphism
+    (SNP)</span>'
+  genetics: '<span style="color: #007a00;">genetics</span>'
+  homologous chromosomes: '<span style="color: #00775f;">homologous chromosomes</span>'
+  diploid: '<span style="color: #007576;">diploid</span>'
+  IIIIIIII: '<span style="color: #076dad;">IIIIIIII</span>'
+  genetic code: '<span style="color: #003fff;">genetic code</span>'
+  genetic term: '<span style="color: #a719db;">genetic term</span>'
+  KKKKKKKK: '<span style="color: #0067cc;">KKKKKKKK</span>'
+  genetic terms: '<span style="color: #a719db;">genetic terms</span>'
+  genomics: '<span style="color: #c80085;">genomics</span>'
+  NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>'
+matching pairs:
+  genomics:
+  - the study of all of the genes in an organism
+  - the structure, function, evolution, and mapping of genomes
+  genome:
+  - an organism's complete set of DNA
+  - complete set of DNA in an organism
+  - complete set of DNA in a cell or organism
+  locus:
+  - location of a gene on a chromosome
+  - where on a chromosome a specific gene is located
+  - a specific, fixed position on a chromosome of a particular gene
+  - a spot or "address" on a chromosome at which a gene for a particular trait is located
+  - the physical position of a gene within a chromosome
+  single nucleotide polymorphism (SNP):
+  - variation resulting from a single base pair change
+  - most common type of genetic variation among people
+  - a genomic variant at a single base position in the DNA
+  - a substitution of a single nucleotide at a specific position in the genome
+  homologous chromosomes:
+  - two similar but different copies of a chromosome
+  - one chromosome from the mother and one chromosome from the father
+  - two chromosomes which carry the same genes, one from each parental source
+  - chromosomes which contain the same genes in the same order along their chromosomal arms
+  - chromosomes of similar length, gene position, and centromere location
+  - two chromosomes containing identical genetic loci although possibly different allelic forms
+dbsubject: Genetics

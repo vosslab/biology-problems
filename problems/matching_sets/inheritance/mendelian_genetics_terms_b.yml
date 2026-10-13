@@ -1,0 +1,77 @@
+# Disjoint half of mendelian_genetics_terms.yml; keep definitions aligned with the full homework bank.
+items to match per question: 5
+key description: Mendelian genetics term
+keys description: Mendelian genetics terms
+value description: definition
+values description: definitions
+replacement_rules:
+  genes: '<span style="color: #d40000;">genes</span>'
+  traits: '<span style="color: #b74300;">traits</span>'
+  trait: '<span style="color: #b74300;">trait</span>'
+  genotypes: '<span style="color: #935d00;">genotypes</span>'
+  genotype: '<span style="color: #935d00;">genotype</span>'
+  alleles: '<span style="color: #6c6c00;">alleles</span>'
+  allele: '<span style="color: #6c6c00;">allele</span>'
+  gametes: '<span style="color: #3b7600;">gametes</span>'
+  gamete: '<span style="color: #3b7600;">gamete</span>'
+  heterozygous: '<span style="color: #007a00;">heterozygous</span>'
+  dominant: '<span style="color: #00775f;">dominant</span>'
+  phenotypes: '<span style="color: #007576;">phenotypes</span>'
+  phenotype: '<span style="color: #007576;">phenotype</span>'
+  characters: '<span style="color: #076dad;">characters</span>'
+  character: '<span style="color: #076dad;">character</span>'
+  observable: '<span style="color: #003fff;">observable</span>'
+  identical: '<span style="color: #0067cc;">identical</span>'
+  recessive: '<span style="color: #a719db;">recessive</span>'
+  homozygous: '<span style="color: #c80085;">homozygous</span>'
+  NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>'
+matching pairs:
+  gamete:
+  - a haploid reproductive cell having half the number of chromosomes
+  - a general term for either male (sperm) or female (egg) germ cells, which unite to form the zygote
+  - a haploid cell (e.g., sperm or egg) that fuses with another haploid cell during fertilization
+    in organisms
+  - sex, or reproductive, cell containing only one set of dissimilar chromosomes
+  - reproductive cells carrying only one copy of each chromosome in preparation for fertilization
+  - a reproductive cell with half the chromosome number
+  - either a male sperm or female egg cell that forms a zygote upon fusion
+  - haploid cells like sperm or egg that merge during fertilization
+  - reproductive cells with a single set of non-identical chromosomes
+  heterozygous:
+  - when two copies of a gene are different
+  - different alleles at one or more corresponding chromosomal loci
+  - two different alleles of a given gene
+  - different inherited versions of a gene from each biological parent
+  - possession of a pair of differing alleles
+  - presence of two different gene copies
+  - two unalike alleles for a particular gene
+  - two different alleles for a gene
+  homozygous:
+  - the two copies of a gene are identical
+  - identical alleles at one or more corresponding chromosomal loci
+  - two identical alleles of a given gene
+  - identical inherited versions of a gene from each biological parent
+  - possession of a pair of identical alleles
+  - both gene copies are the same
+  - identical forms of a gene at corresponding chromosome locations
+  - two of the same allele for a specific gene
+  - same version of a gene inherited from each parent
+  - identical alleles for a gene
+  dominant:
+  - describes a trait that masks the expression of another trait when both versions of the gene are
+    present
+  - describes a trait that masks the expression of another trait when the alleles for both traits
+    are present
+  - if two copies of a gene are different, this allele will be expressed
+  - an allele that masks another allele in the presence of both alleles
+  - masks another trait's expression when both alleles are present
+  recessive:
+  - describes a trait whose expression is masked by another trait when both versions of the gene
+    are present
+  - describes a trait whose expression is masked by another trait when the alleles for both traits
+    are present
+  - if two copies of a gene are different, this allele will be masked
+  - an allele masked by another allele in the presence of both alleles
+  - this allele is masked if both alleles differ
+  - this allele is hidden by another allele when both alleles are present
+dbsubject: Genetics

@@ -1,0 +1,47 @@
+# Disjoint half of genetics_terminology.yml; keep definitions aligned with the full homework bank.
+items to match per question: 5
+key description: genetic term
+keys description: genetic terms
+value description: definition
+values description: definitions
+replacement_rules:
+  haploid: '<span style="color: #d40000;">haploid</span>'
+  'gene ': '<span style="color: #b74300;">gene</span> '
+  locus: '<span style="color: #935d00;">locus</span>'
+  genomes: '<span style="color: #6c6c00;">genomes</span>'
+  genome: '<span style="color: #6c6c00;">genome</span>'
+  single nucleotide polymorphism (SNP): '<span style="color: #3b7600;">single nucleotide polymorphism
+    (SNP)</span>'
+  genetics: '<span style="color: #007a00;">genetics</span>'
+  homologous chromosomes: '<span style="color: #00775f;">homologous chromosomes</span>'
+  diploid: '<span style="color: #007576;">diploid</span>'
+  IIIIIIII: '<span style="color: #076dad;">IIIIIIII</span>'
+  genetic code: '<span style="color: #003fff;">genetic code</span>'
+  genetic term: '<span style="color: #a719db;">genetic term</span>'
+  KKKKKKKK: '<span style="color: #0067cc;">KKKKKKKK</span>'
+  genetic terms: '<span style="color: #a719db;">genetic terms</span>'
+  genomics: '<span style="color: #c80085;">genomics</span>'
+  NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>'
+matching pairs:
+  haploid:
+  - a cell or organism that has a single set of chromosomes
+  diploid:
+  - a cell or organism that has paired chromosomes
+  'gene ':
+  - the unit of inheritance passed from parents to offspring
+  - the main element of heredity
+  genetics:
+  - the study of heredity and the variation of inherited characteristics
+  - the study of the effect of genetic differences on organisms
+  - study of genes, genetic variation, and heredity in organisms
+  - scientific study of how genes control the characteristics of plants and animals
+  - study of both trait and molecular inheritance mechanisms of genes
+  - the study of heredity and how genes control the inherited characteristics
+  genetic code:
+  - the set of instructions that tell a cell how to make a specific protein
+  - the set of rules used by living cells to translate information encoded within genetic material
+    into proteins
+  - the rules for translating an mRNA nucleotide sequence into an amino acid sequence
+  - the code our body uses to convert the instructions contained in our DNA into the essential materials
+    of life
+dbsubject: Genetics

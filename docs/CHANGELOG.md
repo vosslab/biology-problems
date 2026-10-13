@@ -4,6 +4,11 @@
 
 ### Features
 
+- Add disjoint five-term halves of genetics_terminology.yml and
+  mendelian_genetics_terms.yml for complete exam vocabulary coverage. Preserve original
+  homework banks, all definition variants, and formatting rules. Keep meiosis_terms.yml
+  unsplit; no matching-generator changes.
+
 - Add `bonus_content/disney_princesses.yml` for the 13 characters on Disney's
   official Princess roster. The assistant reused nine movie-bank clues and wrote
   four new clues; add 13 alternatives from another LLM draft pasted by the user.

@@ -1,0 +1,97 @@
+# Disjoint half of mendelian_genetics_terms.yml; keep definitions aligned with the full homework bank.
+items to match per question: 5
+key description: Mendelian genetics term
+keys description: Mendelian genetics terms
+value description: definition
+values description: definitions
+replacement_rules:
+  genes: '<span style="color: #d40000;">genes</span>'
+  traits: '<span style="color: #b74300;">traits</span>'
+  trait: '<span style="color: #b74300;">trait</span>'
+  genotypes: '<span style="color: #935d00;">genotypes</span>'
+  genotype: '<span style="color: #935d00;">genotype</span>'
+  alleles: '<span style="color: #6c6c00;">alleles</span>'
+  allele: '<span style="color: #6c6c00;">allele</span>'
+  gametes: '<span style="color: #3b7600;">gametes</span>'
+  gamete: '<span style="color: #3b7600;">gamete</span>'
+  heterozygous: '<span style="color: #007a00;">heterozygous</span>'
+  dominant: '<span style="color: #00775f;">dominant</span>'
+  phenotypes: '<span style="color: #007576;">phenotypes</span>'
+  phenotype: '<span style="color: #007576;">phenotype</span>'
+  characters: '<span style="color: #076dad;">characters</span>'
+  character: '<span style="color: #076dad;">character</span>'
+  observable: '<span style="color: #003fff;">observable</span>'
+  identical: '<span style="color: #0067cc;">identical</span>'
+  recessive: '<span style="color: #a719db;">recessive</span>'
+  homozygous: '<span style="color: #c80085;">homozygous</span>'
+  NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>'
+matching pairs:
+  character:
+  - a single heritable feature that varies among individuals, such as seed shape
+  - a single heritable feature that varies among individuals, such as seed color
+  - a single heritable feature that varies among individuals, such as flower position
+  - a single heritable feature that varies among individuals, such as stem length
+  - a single heritable feature that varies among individuals, such as eye color
+  - a single feature that can be inherited and varies among organisms, like seed shape
+  - a single feature that can be inherited and varies among organisms, like seed color
+  - a single feature that can be inherited and varies among organisms, like flower position
+  - a single feature that can be inherited and varies among organisms, like stem length
+  - a single feature that can be inherited and varies among organisms, like eye color
+  - one observable feature category of a group of organisms, such as flower color
+  - one observable feature category of a group of organisms, such as hair color
+  - one observable feature category of a group of organisms, such as seed color
+  - a single feature, such as hair color, noticeable in a particular organismal group
+  trait:
+  - each variant for a character, such as purple or white color for flowers
+  - each variant for a character, such as green or yellow color for seeds
+  - each variant for a character, such as round or wrinkled seeds in plants
+  - a distinct variant of a character of an organism, such as purple or white color for flowers
+  - a distinct variant of a character of an organism, such as short or long stems in plants
+  - a single variation in an inherited character
+  - a specific form of a heritable feature, like purple color in flowers
+  - green or yellow as specific forms of the seed color character
+  - examples of a character's form include round or wrinkled seeds in plants
+  - specific expression of a character, such as short or long stem lengths in plants
+  genotype:
+  - the genetic constitution of an organism
+  - combination of alleles that determines a specific trait
+  - genetic content of an organism that contributes to a specific trait
+  - chemical makeup of DNA that factors into a particular phenotype
+  - Mendel referred to this as the <i>"internal nature"</i> of an organism
+  - Mendel labeled this as an organism's "internal makeup"
+  - allele combinations that specify a trait
+  - the genetic makeup contributing to particular traits
+  - DNA composition affecting a certain phenotype
+  phenotype:
+  - all the observable traits of an organism
+  - all the observable traits of an individual, such as eye color and blood type
+  - all the observable traits of an individual, such as height and blood type
+  - all the observable traits of an individual, such as height and eye color
+  - the observable expression of DNA in an organism
+  - all the physical traits of an organism
+  - all observable traits due to how its genes interact with the environment
+  - the complete set of observable traits of an organism
+  - Mendel referred to this as the <i>"external resemblance"</i> of an organism
+  - all traits that can be observed in an organism
+  - all observable traits, like eye color or blood type
+  - all observable traits such as height or blood type in an individual
+  - the manifestation of DNA as all observable traits
+  - the physical expression of an organism's entire genetic content
+  - Mendel described this as an organism's "external appearance"
+  alleles:
+  - different versions of the same gene, such as <strong>A</strong> or <strong>a</strong>
+  - one of two or more versions of a DNA sequence at a given genomic location
+  - one of two or more alternative forms of a gene at the same site in a chromosome
+  - alternative forms of a specific gene
+  - variants of the gene
+  - alternative DNA sequences at a locus
+  - variations at one gene locus
+  - variants at a gene locus that code for specific traits
+  - variants of a gene, for example <strong>A</strong> or <strong>a</strong>
+  - one version among multiple DNA sequences at a locus
+  - different gene forms at the same chromosomal location
+  - alternatives of a specific gene
+  - variants of a specific gene located at a locus
+  - alternative versions of DNA at a gene site
+  - different forms at a single gene locus
+dbsubject: Genetics
