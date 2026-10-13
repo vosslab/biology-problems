@@ -24,6 +24,14 @@
 
 ### Fixes and Maintenance
 
+- Add the genetics exam HTML repair audit covering all 54 selected tasks and
+  five additional generated variants through the final PDF. Document four BP
+  display-repair groups affecting five tasks, with raw examples and PDF crops;
+  distinguish EF choice wrapping from BP source defects. Limit the handoff to
+  demonstrated display problems, excluding lint, style-policy enforcement, and
+  new validation gates. Preserve the gel's intentional blurred edges and glow;
+  recommend darker bands for readability and remove numerical contrast targets.
+  No generator or rendering code is changed.
 - Extend the `tl_` module prefix throughout the tree library: `tl_definitions`,
   `tl_lookup`, `tl_output`, `tl_permute`, `tl_sorting`, and `tl_treecode`.
   Update package and standalone imports, all three generator callers, and the
