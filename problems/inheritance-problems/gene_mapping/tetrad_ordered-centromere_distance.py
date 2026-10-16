@@ -138,7 +138,7 @@ def generate_html_for_pattern(pattern, color_dominant, color_recessive):
 	# Create table cells based on the pattern
 	for char in pattern:
 		bgcolor = color_dominant if char == char.upper() or char == '+' else color_recessive
-		html_output += f'<td width="40" height="40" bgcolor="{bgcolor}" '
+		html_output += f'<td width="40" height="40" bgcolor="#{bgcolor}" '
 		html_output += 'style="border-radius:  15% 50% 30%; '
 		html_output += 'text-align: center; vertical-align: middle; '
 		html_output += 'color: #f0f0f0; font-size: 25px;"> '
@@ -164,14 +164,14 @@ def get_octads_table(asci_count_dict, gene_letter):
 	# Generate and print the HTML for each pattern
 	for i, pattern in enumerate(patterns, start=1):
 		new_pattern = pattern.replace('a', gene_letter)
-		octads_table += '<tr><td style="padding: 10px; spacing: 20px; border: 1px solid gray; '
+		octads_table += '<tr><td style="padding: 10px; border: 1px solid gray; '
 		octads_table += 'border-radius: 30%; background-color: #d2f9d2;">'
 		html_for_pattern = generate_html_for_pattern(new_pattern, color_dominant, color_recessive)
 		octads_table += html_for_pattern
 		octads_table += '</td><td style="padding: 10px; border: 1px solid gray; text-align: right">'
 		octads_table += f'{asci_count_dict[pattern]:,d}&nbsp;'
 		octads_table += '</td></tr>'
-	octads_table += '<tr><td style="padding: 10px; spacing: 20px; border: 1px solid gray; '
+	octads_table += '<tr><td style="padding: 10px; border: 1px solid gray; '
 	octads_table += 'background-color: lightgray; text-align: right;">'
 	octads_table += "<strong>TOTAL</strong>"
 	octads_table += '</td><td style="padding: 10px; border: 1px solid gray; text-align: center">'

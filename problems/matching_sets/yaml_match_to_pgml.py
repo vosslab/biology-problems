@@ -241,11 +241,11 @@ def render_match_data(match_data):
 	text = ""
 	text += "%match_data = (\n"
 	for key, values in match_data.items():
-		key_text = webwork_lib.escape_perl_string(key)
-		text += f"  '{key_text}' => [\n"
+		key_text = webwork_lib.perl_string_literal(key)
+		text += f"  {key_text} => [\n"
 		for value in values:
-			value_text = webwork_lib.escape_perl_string(value)
-			text += f"    '{value_text}',\n"
+			value_text = webwork_lib.perl_string_literal(value)
+			text += f"    {value_text},\n"
 		text += "  ],\n"
 	text += ");\n"
 	return text
@@ -260,9 +260,9 @@ def render_exclude_pairs(exclude_pairs):
 	text = ""
 	text += "@exclude_pairs = (\n"
 	for left, right in exclude_pairs:
-		left_text = webwork_lib.escape_perl_string(left)
-		right_text = webwork_lib.escape_perl_string(right)
-		text += f"  ['{left_text}', '{right_text}'],\n"
+		left_text = webwork_lib.perl_string_literal(left)
+		right_text = webwork_lib.perl_string_literal(right)
+		text += f"  [{left_text}, {right_text}],\n"
 	text += ");\n"
 	return text
 
@@ -443,10 +443,10 @@ def build_statement_text(question_text, note_text, use_answer_html, color_mode,
 	text += "END_STYLE\n"
 	text += "\n"
 	# store question and note text as Perl variables so PGML renders entities
-	escaped_question = webwork_lib.escape_perl_string(question_text)
-	text += f"$question_text = '{escaped_question}';\n"
-	escaped_note = webwork_lib.escape_perl_string(note_text)
-	text += f"$note_text = '{escaped_note}';\n"
+	question_literal = webwork_lib.perl_string_literal(question_text)
+	text += f"$question_text = {question_literal};\n"
+	note_literal = webwork_lib.perl_string_literal(note_text)
+	text += f"$note_text = {note_literal};\n"
 	text += "\n"
 	text += "BEGIN_PGML\n"
 	text += "[$question_text]*\n"

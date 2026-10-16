@@ -3,8 +3,7 @@ import random
 
 #======================================
 def makeEnzymeHTMLTable(enzyme_tree):
-	tc_style = 'align="center" style="vert-align: middle; border: solid black 1px"'
-	#pH_style = 'align="left" style="vert-align: middle; border: solid black 1px"'
+	tc_style = 'align="center" style="vertical-align: middle; border: solid black 1px"'
 	table = '<table border="0" style="border-collapse: collapse; border: white solid 0px; width: 400px;"'
 	table += '>'
 	table += '<tr>'

@@ -410,7 +410,7 @@ class GeneTreeOutput(object):
 				html_tree_array[row_num, col_num//2+1] = td_cell
 		html_tree_array[-1, :] = self.get_td_cell(' ')
 		html_tree_array[1::2, -2] = ' '
-		html_tree_array[:,  0] = '<tr style="height: 25;">'
+		html_tree_array[:,  0] = '<tr style="height: 25px;">'
 		html_tree_array[:, -1] = '</tr>'
 		return html_tree_array
 

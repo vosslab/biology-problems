@@ -1,5 +1,48 @@
 # Changelog
 
+## 2026-10-14
+
+### Fixes and Maintenance
+
+- Rephrase the Genetics terminology genome definition as "all the DNA in an
+  organism" and regenerate both PGML forms in the local output directory.
+
+- Use the existing `perl_string_literal()` helper in both YAML matching PGML
+  generators and shared Perl hash keys. Preserve apostrophes in matching data,
+  exclusions, prompts, notes, and which-one choices without escapes that PG's
+  translator doubles into invalid Perl. Leave the renderer and PLE unchanged.
+
+- Correct CSS at the question generators for QPM conversion: add hexadecimal color
+  prefixes and remove the ignored `spacing` property in ordered tetrad octads,
+  give shared phylogenetic tree row heights pixel units, and use `vertical-align`
+  in shared enzyme tables. Preserve question data and answer selection.
+
+### Developer Tests and Notes
+
+- Complete independent Plan, Test, Style, Docs, Legacy, and Comment audits of
+  the ten-file BPQ change set. Clarify two complete-literal variable names and
+  distinguish final regeneration from earlier render evidence. The independent
+  checks pass 164 YAML tests and 34 shared-helper/PGML tests; the focused ten
+  tests pass again after the naming correction. No permanent tests are added
+  by the audit. Final renderer verification passes for both regenerated Genetics
+  forms at seeds 1 and 1234, with no errors, warnings, or internal diagnostics.
+
+- Regenerate 22 affected matching/which-one files from 11 YAML banks with the
+  existing BPQ CLIs into ignored `output_pgml_escaping/`. All 44 renders (seeds 1
+  and 1234) pass against the clean renderer HEAD image using its existing API
+  lint helper, with no error flags, PG warnings, or internal diagnostics.
+  Verify the original Genetics terminology matching HTML in a browser. These
+  original render receipts preceded the final genome wording edit. Recheck both
+  final PGML forms at seeds 1 and 1234 and refresh their four HTML/JSON receipts.
+  The YAML test
+  suite passes all 164 tests, including apostrophe coverage. Keep website copies
+  unchanged; regenerated PGML and temporary render receipts remain in BPQ output.
+
+- Verify 32 fresh items across 16 parameter variants through Python QPM validation
+  and Rust PLE Native JSON conversion, including both tetrad formats and the already
+  corrected Beadle-Tatum generator. Pyflakes and `git diff --check` pass. Keep existing
+  website banks unchanged; regenerated artifacts need separate acceptance.
+
 ## 2026-10-13
 
 ### Behavior or Interface Changes

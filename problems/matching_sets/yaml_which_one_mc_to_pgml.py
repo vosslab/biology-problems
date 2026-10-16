@@ -284,14 +284,14 @@ def build_setup_text(questions_data):
 
 	for q_data in questions_data:
 		text += "  {\n"
-		text += f"    'item_name' => '{webwork_lib.escape_perl_string(q_data['item_name'])}',\n"
-		text += f"    'plural_choice' => '{webwork_lib.escape_perl_string(q_data['plural_choice_description'])}',\n"
-		text += f"    'singular_item' => '{webwork_lib.escape_perl_string(q_data['singular_item_description'])}',\n"
+		text += f"    'item_name' => {webwork_lib.perl_string_literal(q_data['item_name'])},\n"
+		text += f"    'plural_choice' => {webwork_lib.perl_string_literal(q_data['plural_choice_description'])},\n"
+		text += f"    'singular_item' => {webwork_lib.perl_string_literal(q_data['singular_item_description'])},\n"
 		text += "    'choices' => [\n"
 		for choice in q_data['choices']:
-			text += f"      '{webwork_lib.escape_perl_string(choice)}',\n"
+			text += f"      {webwork_lib.perl_string_literal(choice)},\n"
 		text += "    ],\n"
-		text += f"    'correct' => '{webwork_lib.escape_perl_string(q_data['correct'])}',\n"
+		text += f"    'correct' => {webwork_lib.perl_string_literal(q_data['correct'])},\n"
 		text += "  },\n"
 
 	text += ");\n"

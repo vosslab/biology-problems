@@ -78,10 +78,10 @@ def test_perl_hash_nested():
 	"""
 	data = {
 		"alpha": ["one", "two"],
-		"beta": {"inner": "yes"},
+		"beta's": {"inner's": "yes"},
 	}
 	perl_text = webwork_lib.perl_hash("stuff", data)
 	assert perl_text.startswith("%stuff = (")
 	assert "'alpha' => [" in perl_text
-	assert "'beta' => {" in perl_text
-	assert "'inner' => 'yes'" in perl_text
+	assert "q{beta's} => {" in perl_text
+	assert "q{inner's} => 'yes'" in perl_text

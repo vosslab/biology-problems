@@ -188,9 +188,9 @@ def perl_hash_ref(mapping, indent=""):
 	inner_indent = indent + "  "
 	lines = ["{"]
 	for key, value in mapping.items():
-		key_text = escape_perl_string(str(key))
+		key_text = perl_string_literal(str(key))
 		value_text = perl_literal(value, inner_indent)
-		lines.append(f"{inner_indent}'{key_text}' => {value_text},")
+		lines.append(f"{inner_indent}{key_text} => {value_text},")
 	lines.append(f"{indent}}}")
 	return "\n".join(lines)
 
@@ -215,9 +215,9 @@ def perl_hash(name, mapping):
 	text = ""
 	text += f"%{name} = (\n"
 	for key, value in mapping.items():
-		key_text = escape_perl_string(str(key))
+		key_text = perl_string_literal(str(key))
 		value_text = perl_literal(value, "  ")
-		text += f"  '{key_text}' => {value_text},\n"
+		text += f"  {key_text} => {value_text},\n"
 	text += ");\n"
 	text += "\n"
 	return text
