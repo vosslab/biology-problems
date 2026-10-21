@@ -210,9 +210,17 @@ def format_question_html(
 
 	q = "<p><b>Two-Sample Test of Shannon Diversity: 2014 vs 2024</b></p>"
 	if tails == 1:
-		q += "<p>Use a one tailed Welch two sample t test for H1: mean_2024 &lt; mean_2014.</p>"
+		tail_label = "one-tailed"
+		q += (
+			"<p>Use a <strong>one-tailed Welch two-sample t-test</strong> to test whether "
+			"the population mean Shannon Index is lower in 2024 than in 2014.</p>"
+		)
 	else:
-		q += "<p>Use a two tailed Welch two sample t test for H1: mean_2024 != mean_2014.</p>"
+		tail_label = "two-tailed"
+		q += (
+			"<p>Use a <strong>two-tailed Welch two-sample t-test</strong> to test whether "
+			"the population mean Shannon Index differs between 2014 and 2024.</p>"
+		)
 
 	q += "<p>Assume unequal variances.</p>"
 
@@ -227,9 +235,9 @@ def format_question_html(
 	q += f"<p><span style='font-family: monospace; background-color:#eee;'>{csv_rows}</span></p>"
 
 	# Instructions
-	q += "<p>Compute the p value in Google Sheets using the tutorial: "
+	q += "<p>Compute the p-value in Google Sheets using the tutorial: "
 	q += f"<a href='{tutorial_link}' target='_blank' rel='noopener'>link here</a>.</p>"
-	q += "<p>Enter the p value as a decimal between 0 and 1.</p>"
+	q += f"<p>Enter the <strong>{tail_label} p-value</strong> as a decimal between 0 and 1.</p>"
 	return q
 
 #============================================

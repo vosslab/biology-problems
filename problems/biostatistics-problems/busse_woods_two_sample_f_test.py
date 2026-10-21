@@ -179,9 +179,17 @@ def format_question_html(
 
 	q = "<p><b>F-Test of Variances: 2014 vs 2024</b></p>"
 	if tails == 1:
-		q += "<p>Use a one tailed F test for H1: variance_2024 &lt; variance_2014.</p>"
+		tail_label = "one-tailed"
+		q += (
+			"<p>Use a <strong>one-tailed F-test</strong> to test whether the population "
+			"variance of the Shannon Index is lower in 2024 than in 2014.</p>"
+		)
 	else:
-		q += "<p>Use a two tailed F test for H1: variance_2024 != variance_2014.</p>"
+		tail_label = "two-tailed"
+		q += (
+			"<p>Use a <strong>two-tailed F-test</strong> to test whether the population "
+			"variance of the Shannon Index differs between 2014 and 2024.</p>"
+		)
 
 	q += "<p>Sample Data Table:<br/>"
 	q += "<em>Copy the table rows and use regular paste (Ctrl-V or &#8984;-V) into Google Sheets.</em></p>"
@@ -191,7 +199,7 @@ def format_question_html(
 	q += "<em>Copy this text and use <strong>Data &rarr; Split text to columns &rarr; Comma</strong> in Google Sheets.</em></p>"
 	q += f"<p><span style='font-family: monospace; background-color:#eee;'>{csv_rows}</span></p>"
 
-	q += "<p>Enter the p value as a decimal between 0 and 1.</p>"
+	q += f"<p>Enter the <strong>{tail_label} p-value</strong> as a decimal between 0 and 1.</p>"
 	q += f"<p>Workflow: <a href='{tutorial_link}' target='_blank' rel='noopener'>link here</a>.</p>"
 	return q
 

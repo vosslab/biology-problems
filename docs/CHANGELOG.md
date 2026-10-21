@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-10-21
+
+### Biostatistics question wording
+
+- Make the one-tailed or two-tailed choice prominent in both Busse Woods F-test
+  and Welch t-test questions, including the p-value entry instruction. Express
+  each alternative hypothesis in plain language, preserving calculations and defaults.
+
 ## 2026-10-20
 
 ### Genetics quiz questions
