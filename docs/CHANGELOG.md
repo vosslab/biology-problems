@@ -4,6 +4,8 @@
 
 ### Genetics quiz questions
 
+- Draw all six dice faces with compact HTML pip tables beside their numeric
+  labels in every dice question mode, avoiding dependence on dice-symbol fonts.
 - Replace the turn-taking hypothesis distractor with confusion between sample
   size and expected ratio. Use parallel "enough evidence" / "not enough evidence"
   dice conclusions, and document the four-context limit of the hypothesis banks.

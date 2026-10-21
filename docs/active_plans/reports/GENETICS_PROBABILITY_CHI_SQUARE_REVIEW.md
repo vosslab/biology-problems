@@ -91,6 +91,20 @@ browser, or LMS checks were run for this wording follow-up. Existing task rows
 already select the revised modes. BPW banks were not regenerated in this follow-up;
 the source revisions take effect on the next task-file generation.
 
+## Dice visuals
+
+All six dice modes now show 40 x 40 px HTML dice with 6 px pips beside numeric
+face labels. Each die uses a three-by-three presentation table with explicit
+light surfaces and dark pips; it does not require a Unicode dice font. The
+decorative table is hidden from assistive technology, while the numeric row
+label remains readable. Reference tables for critical values retain their
+ordinary numeric labels.
+
+All six modes generated one sample and standalone HTML successfully. Inspected
+the interpretation sample at a 390 px viewport: all six pip patterns are clear,
+and counts align with their faces. The preview and screenshot are in ignored
+`output_genetics_review/dice_visual/`. No BPW or LMS checks were added.
+
 ## Distractor rationales, including the wording revision
 
 | Family and displayed case | Choice | Source |

@@ -41,6 +41,36 @@ def random_data() -> dict:
 	return data
 
 
+def die_face(face: int) -> str:
+	"""Draw a die with a small layout table; the adjacent number supplies its label."""
+	pips = {
+		1: (4,),
+		2: (0, 8),
+		3: (0, 4, 8),
+		4: (0, 2, 6, 8),
+		5: (0, 2, 4, 6, 8),
+		6: (0, 2, 3, 5, 6, 8),
+	}[face]
+	text = '<table role="presentation" aria-hidden="true" style="display: inline-table; '
+	text += 'vertical-align: middle; width: 40px; height: 40px; table-layout: fixed; '
+	text += 'box-sizing: border-box; border: 2px solid #202020; border-radius: 5px; '
+	text += 'border-collapse: separate; border-spacing: 0; padding: 2px; margin: 0; '
+	text += 'color: #202020; background: #ffffff;">'
+	for row in range(3):
+		text += '<tr>'
+		for column in range(3):
+			text += '<td style="width: 10px; height: 10px; padding: 0; border: 0; '
+			text += 'text-align: center; vertical-align: middle; font-size: 0; '
+			text += 'line-height: 0; background: #ffffff;">'
+			if row * 3 + column in pips:
+				text += '<span style="display: inline-block; width: 6px; height: 6px; '
+				text += 'border-radius: 50%; background: #202020;"></span>'
+			text += '</td>'
+		text += '</tr>'
+	text += f'</table> <span style="vertical-align: middle;">{face}</span>'
+	return text
+
+
 def data_table(headers: list, rows: list) -> str:
 	style = "padding: 4px 8px; border-bottom: 1px solid #b8b8b8; text-align: right;"
 	text = '<table style="border-collapse: collapse; color: #202020; background: #ffffff;">'
@@ -65,7 +95,7 @@ def get_question_text(data: dict, show_expected: bool = True) -> str:
 		headers.append("Expected")
 	rows = []
 	for index, value in enumerate(data["observed"], start=1):
-		row = [index, value]
+		row = [die_face(index), value]
 		if show_expected:
 			row.append(data["expected"])
 		rows.append(row)
