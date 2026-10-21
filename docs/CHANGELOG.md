@@ -8,6 +8,12 @@
   and Welch t-test questions, including the p-value entry instruction. Express
   each alternative hypothesis in plain language, preserving calculations and defaults.
 
+### Fixes and Maintenance
+
+- Label the tail count in both the statement and p-value entry instruction for
+  the Busse Woods one-sample Z/t tests and ANOVA. Specify the right tail for the
+  ANOVA F-test; retain all calculations and defaults.
+
 ## 2026-10-20
 
 ### Genetics quiz questions

@@ -239,18 +239,20 @@ def format_question_html(values: list, mu: float, sigma: float, method: str, tai
 
 	q = "<p><b>Busse Woods Microbial Diversity vs Benchmark</b></p>"
 	if method.lower().startswith('z'):
+		tail_label = "two-tailed"
 		q += "<p style='color:#004d99;'><b>Z-Test Scenario</b></p>"
 		q += "<p>Use a Z test. Population sd is known.</p>"
 		q += f"<p>Fixed values: mu = {mu:.2f}, sigma = {sigma:.2f}.</p>"
 		q += "<p>Alternative H1: diversity is different from the benchmark.</p>"
-		q += "<p>Use a two tailed test.</p>"
+		q += f"<p>Use a <strong>{tail_label} test</strong>.</p>"
 		tutorial_link = z_link
 	else:
+		tail_label = "one-tailed"
 		q += "<p style='color:#009900;'><b>T-Test Scenario</b></p>"
 		q += "<p>Use a one sample t test. Population sd is unknown.</p>"
 		q += f"<p>Fixed value: mu = {mu:.2f}. Estimate sd from the sample.</p>"
 		q += "<p>Alternative H1: diversity is lower than the benchmark.</p>"
-		q += "<p>Use a one tailed test with H1: mean &lt; mu.</p>"
+		q += f"<p>Use a <strong>{tail_label} test</strong> with H1: mean &lt; mu.</p>"
 		tutorial_link = t_link
 
 	q += "<p>Sample Data Table:<br/>"
@@ -261,7 +263,7 @@ def format_question_html(values: list, mu: float, sigma: float, method: str, tai
 	q += "<strong>Data &rarr; Split text to columns &rarr; Comma</strong> in Google Sheets.</em></p>"
 	q += f"<p><span style='font-family: monospace; background-color:#eee;'>{rows}</span></p>"
 	q += f"<p>Follow the workflow in the tutorial: <a href='{tutorial_link}' target='_blank' rel='noopener'>link here</a>.</p>"
-	q += "<p>Enter the p value as a decimal between 0 and 1.</p>"
+	q += f"<p>Enter the <strong>{tail_label} p-value</strong> as a decimal between 0 and 1.</p>"
 	return q
 
 #===========================================================

@@ -205,6 +205,7 @@ def format_question_html(
 
 	q = "<p><b>ANOVA of Shannon Diversity: 1994, 2004, 2009, 2014, 2024</b></p>"
 	q += "<p>Compare microbial diversity across five years using one way ANOVA.</p>"
+	q += "<p>Use a <strong>one-tailed F-test (right tail)</strong> for the ANOVA.</p>"
 
 	q += "<p>Sample Data Table:<br/>"
 	q += "<em>Copy table rows and use regular paste (Ctrl-V or &#8984;-V) into Google Sheets.</em></p>"
@@ -215,10 +216,12 @@ def format_question_html(
 	q += "<strong>Data &rarr; Split text to columns &rarr; Comma</strong> in Google Sheets.</em></p>"
 	q += f"<p><span style='font-family: monospace; background-color:#eee;'>{csv_rows}</span></p>"
 
-	q += "<p>Enter the ANOVA p value as a decimal between 0 and 1.</p>"
-
 	tutorial_link = "https://docs.google.com/document/d/1xkWsWENaOLRHUk6MO50anhL4DEbjmK8_xBmj22k3tts/edit"
 	q += f"<p>Workflow: <a href='{tutorial_link}' target='_blank' rel='noopener'>link here</a>.</p>"
+	q += (
+		"<p>Enter the <strong>one-tailed (right-tail) ANOVA p-value</strong> "
+		"as a decimal between 0 and 1.</p>"
+	)
 
 	return q
 
