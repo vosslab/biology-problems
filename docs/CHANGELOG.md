@@ -1,5 +1,28 @@
 # Changelog
 
+## 2026-10-20
+
+### Genetics quiz questions
+
+- Replace the turn-taking hypothesis distractor with confusion between sample
+  size and expected ratio. Use parallel "enough evidence" / "not enough evidence"
+  dice conclusions, and document the four-context limit of the hypothesis banks.
+- Add four offspring-probability quiz modes (MC, MA, Matching): independence,
+  visible outcomes, supplied probability tables, and calculations with two to four
+  offspring. Supply intermediate arithmetic for unequal probabilities and identify
+  surviving offspring explicitly in the short-tail examples.
+- Add six dice chi-square modes covering expected counts, five degrees of freedom,
+  a missing contribution or sum, interpretation, combined statements, and Matching.
+  Recompute the Bozeman example as 58/6 and use evidence-based conclusions without
+  claiming that failure to reject proves a die fair.
+- Simplify standalone null/alternative choices and lab-partner error analysis.
+  Remove observations from prediction-only questions and the repeated eye-roll
+  opener; retain the paired mode for its existing Biostatistics consumer.
+- Save the approved plan and authoring/review evidence under `docs/active_plans/`.
+  Add two durable tests for independently enumerated probability mass and dice
+  arithmetic/decisions. Independent review led to multiple-key MA outcomes,
+  parallel hypothesis choices, and three distinct Matching pairs.
+
 ## 2026-10-14
 
 ### Fixes and Maintenance

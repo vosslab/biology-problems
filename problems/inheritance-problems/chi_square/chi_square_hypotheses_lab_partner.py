@@ -69,10 +69,10 @@ SCENARIOS = [
 
 
 ERROR_CHOICES = [
-	"They swapped the null and alternative hypotheses.",
-	"They incorrectly wrote the null hypothesis as an exact match (no random variation).",
-	"They used the wrong expected ratio in the hypotheses.",
-	"Nothing is wrong; the hypotheses are stated correctly.",
+	"Switch the labels on the null and alternative hypotheses.",
+	"Allow observed counts to vary from the predicted ratio.",
+	"Use this cross's predicted ratio as the reference in both hypotheses.",
+	"Keep both hypotheses as written for this cross.",
 ]
 
 
@@ -134,28 +134,24 @@ def _make_counts(ratio: str) -> tuple:
 
 #===========================
 def _make_counts_table(labels: list, ratio: str, observed: list, expected: list) -> str:
-	table = '<table style="border: 1px solid black; border-collapse: collapse;">'
-	table += '<colgroup width="220"></colgroup>'
-	table += '<colgroup width="80"></colgroup>'
-	table += '<colgroup width="90"></colgroup>'
-	table += '<colgroup width="90"></colgroup>'
+	table = '<table style="border-collapse: collapse; color: #202020; background: #ffffff;">'
 	table += "<tr>"
-	table += " <th align='center' colspan='4' style='background-color: silver'>Observed data</th> "
+	table += " <th align='center' colspan='4' style='background-color: #e3e8ed; color: #202020'>Observed data</th> "
 	table += "</tr>"
 	table += "<tr>"
-	table += " <th align='center' style='background-color: lightgray'>Category</th> "
-	table += " <th align='center' style='background-color: lightgray'>Ratio</th> "
-	table += " <th align='center' style='background-color: lightgray'>Expected</th> "
-	table += " <th align='center' style='background-color: lightgray'>Observed</th> "
+	table += " <th scope='col' style='padding: 4px; background-color: #e3e8ed; color: #202020;'>Category</th> "
+	table += " <th scope='col' style='padding: 4px; background-color: #e3e8ed; color: #202020;'>Ratio</th> "
+	table += " <th scope='col' style='padding: 4px; background-color: #e3e8ed; color: #202020;'>Expected</th> "
+	table += " <th scope='col' style='padding: 4px; background-color: #e3e8ed; color: #202020;'>Observed</th> "
 	table += "</tr>"
 
 	ratio_bins = ratio.split(":")
 	for i, label in enumerate(labels):
 		table += "<tr>"
-		table += f" <td>&nbsp;{label}</td>"
-		table += f" <td align='center'>{ratio_bins[i]}</td>"
-		table += f" <td align='center'>{_format_expected(expected[i])}</td>"
-		table += f" <td align='center'>{observed[i]}</td>"
+		table += f" <th scope='row' style='padding: 4px; text-align: left; font-weight: normal;'>{label}</th>"
+		table += f" <td style='padding: 4px; text-align: right;'>{ratio_bins[i]}</td>"
+		table += f" <td style='padding: 4px; text-align: right;'>{_format_expected(expected[i])}</td>"
+		table += f" <td style='padding: 4px; text-align: right;'>{observed[i]}</td>"
 		table += "</tr>"
 
 	table += "</table>"
@@ -164,14 +160,8 @@ def _make_counts_table(labels: list, ratio: str, observed: list, expected: list)
 
 #===========================
 def _hypothesis_text(ratio: str) -> tuple:
-	h0 = (
-		f"The offspring proportions are consistent with the expected {ratio} ratio "
-		"(any differences from the expected ratio are due to chance)."
-	)
-	ha = (
-		f"The offspring proportions are not consistent with the expected {ratio} ratio "
-		"(the differences are too large to explain by chance alone)."
-	)
+	h0 = f"The expected offspring ratio for this cross is {ratio}."
+	ha = f"The expected offspring ratio for this cross differs from {ratio}."
 	return h0, ha
 
 
@@ -215,20 +205,18 @@ def make_question(error_type: str, scenario_id: str = None) -> tuple:
 	lab_h0, lab_ha, answer_index = _make_lab_partner_hypotheses(ratio, wrong_ratio, error_type)
 
 	question = ""
-	question += "<p>Your lab partner is trying again (eye roll).</p>"
 	question += scenario["context"]
 	question += f"<p>Total offspring scored: <span style='font-family: monospace;'>{N}</span></p>"
 	question += _make_counts_table(scenario["labels"], ratio, observed, expected)
 	question += "<hr/> "
 	question += (
-		"<p>They are setting up a chi-squared (&chi;<sup>2</sup>) goodness-of-fit test, "
-		"but they wrote the hypotheses below:</p>"
+		"<p>Your lab partner writes these hypotheses for a chi-square test:</p>"
 	)
 	question += "<p>"
-	question += f"<b>H<sub>0</sub></b>: {lab_h0}<br/>"
-	question += f"<b>H<sub>A</sub></b>: {lab_ha}"
+	question += f"<strong>Null</strong>: {lab_h0}<br/>"
+	question += f"<strong>Alternative</strong>: {lab_ha}"
 	question += "</p>"
-	question += "<p><b>What is the main problem with their hypotheses?</b></p>"
+	question += "<p>What should your lab partner change, if anything?</p>"
 
 	choices_list = list(ERROR_CHOICES)
 	answer_text = choices_list[answer_index]
@@ -248,7 +236,7 @@ def write_question(N: int, args) -> str:
 
 #===========================
 def parse_arguments():
-	parser = bptools.make_arg_parser(description="Chi-square hypotheses (dumb lab partner).")
+	parser = bptools.make_arg_parser(description="Review a lab partner's chi-square hypotheses.")
 	parser.add_argument(
 		"-e", "--error-type", dest="error_type", type=str,
 		choices=("random", "swap", "exact", "wrong_ratio", "correct"),

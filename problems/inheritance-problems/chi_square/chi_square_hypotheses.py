@@ -131,28 +131,24 @@ def _make_counts(ratio: str) -> tuple:
 
 #===========================
 def _make_counts_table(labels: list, ratio: str, observed: list, expected: list) -> str:
-	table = '<table style="border: 1px solid black; border-collapse: collapse;">'
-	table += '<colgroup width="220"></colgroup>'
-	table += '<colgroup width="80"></colgroup>'
-	table += '<colgroup width="90"></colgroup>'
-	table += '<colgroup width="90"></colgroup>'
+	table = '<table style="border-collapse: collapse; color: #202020; background: #ffffff;">'
 	table += "<tr>"
-	table += " <th align='center' colspan='4' style='background-color: silver'>Observed data</th> "
+	table += " <th align='center' colspan='4' style='background-color: #e3e8ed; color: #202020'>Observed data</th> "
 	table += "</tr>"
 	table += "<tr>"
-	table += " <th align='center' style='background-color: lightgray'>Category</th> "
-	table += " <th align='center' style='background-color: lightgray'>Ratio</th> "
-	table += " <th align='center' style='background-color: lightgray'>Expected</th> "
-	table += " <th align='center' style='background-color: lightgray'>Observed</th> "
+	table += " <th scope='col' style='padding: 4px; background-color: #e3e8ed; color: #202020;'>Category</th> "
+	table += " <th scope='col' style='padding: 4px; background-color: #e3e8ed; color: #202020;'>Ratio</th> "
+	table += " <th scope='col' style='padding: 4px; background-color: #e3e8ed; color: #202020;'>Expected</th> "
+	table += " <th scope='col' style='padding: 4px; background-color: #e3e8ed; color: #202020;'>Observed</th> "
 	table += "</tr>"
 
 	ratio_bins = ratio.split(":")
 	for i, label in enumerate(labels):
 		table += "<tr>"
-		table += f" <td>&nbsp;{label}</td>"
-		table += f" <td align='center'>{ratio_bins[i]}</td>"
-		table += f" <td align='center'>{_format_expected(expected[i])}</td>"
-		table += f" <td align='center'>{observed[i]}</td>"
+		table += f" <th scope='row' style='padding: 4px; text-align: left; font-weight: normal;'>{label}</th>"
+		table += f" <td style='padding: 4px; text-align: right;'>{ratio_bins[i]}</td>"
+		table += f" <td style='padding: 4px; text-align: right;'>{_format_expected(expected[i])}</td>"
+		table += f" <td style='padding: 4px; text-align: right;'>{observed[i]}</td>"
 		table += "</tr>"
 
 	table += "</table>"
@@ -213,53 +209,33 @@ def _make_pair_choices(ratio: str, wrong_ratio: str) -> tuple:
 
 
 #===========================
-def _make_single_statement_choices(ratio: str, wrong_ratio: str, kind: str) -> tuple:
+def _make_single_statement_choices(ratio: str, kind: str) -> tuple:
 	if kind not in ("null", "alt"):
 		raise ValueError(f"Unknown kind: {kind}")
 
-	h0_consistent = (
-		f"The offspring proportions are consistent with the expected {ratio} ratio "
-		"(any differences from the expected ratio are due to chance)."
-	)
-	h0_not_consistent = (
-		f"The offspring proportions are not consistent with the expected {ratio} ratio "
-		"(the differences are too large to explain by chance alone)."
-	)
-	h0_exact = f"The observed counts are exactly in a {ratio} ratio."
-	h0_wrong_ratio = (
-		f"The offspring proportions are consistent with the expected {wrong_ratio} ratio "
-		"(any differences from the expected ratio are due to chance)."
-	)
-
-	ha_not_consistent = (
-		f"The offspring proportions are not consistent with the expected {ratio} ratio "
-		"(the differences are too large to explain by chance alone)."
-	)
-	ha_consistent = (
-		f"The offspring proportions are consistent with the expected {ratio} ratio "
-		"(any differences from the expected ratio are due to chance)."
-	)
-	ha_exact = f"The observed counts are not exactly in a {ratio} ratio."
-	ha_wrong_ratio = (
-		f"The offspring proportions are not consistent with the expected {wrong_ratio} ratio "
-		"(the differences are too large to explain by chance alone)."
-	)
-
+	null = f"The cross produces offspring with an expected {ratio} ratio."
+	alternative = f"The cross produces offspring with an expected ratio different from {ratio}."
 	if kind == "null":
-		correct = f"<b>H<sub>0</sub></b>: {h0_consistent}"
+		correct = null
 		choices = [
-			f"<b>H<sub>0</sub></b>: {h0_consistent}",
-			f"<b>H<sub>0</sub></b>: {h0_not_consistent}",
-			f"<b>H<sub>0</sub></b>: {h0_exact}",
-			f"<b>H<sub>0</sub></b>: {h0_wrong_ratio}",
+			null,
+			# Error: use the alternative hypothesis.
+			alternative,
+			# Error: require an exact ratio in every finite sample.
+			f"The cross produces offspring with an observed {ratio} ratio in every sample.",
+			# Error: sample size changes expected counts, not the predicted ratio.
+			"The cross produces offspring with an expected ratio that depends on sample size.",
 		]
 	else:
-		correct = f"<b>H<sub>A</sub></b>: {ha_not_consistent}"
+		correct = alternative
 		choices = [
-			f"<b>H<sub>A</sub></b>: {ha_not_consistent}",
-			f"<b>H<sub>A</sub></b>: {ha_consistent}",
-			f"<b>H<sub>A</sub></b>: {ha_exact}",
-			f"<b>H<sub>A</sub></b>: {ha_wrong_ratio}",
+			alternative,
+			# Error: use the null hypothesis.
+			null,
+			# Error: sample size changes expected counts, not the predicted ratio.
+			"The cross produces offspring with an expected ratio that depends on sample size.",
+			# Error: a prediction about the sample is not the general alternative.
+			f"The cross produces offspring with an observed {ratio} ratio in every sample.",
 		]
 
 	random.shuffle(choices)
@@ -279,13 +255,13 @@ def make_question(kind: str, scenario_id: str = None) -> tuple:
 	ratio = scenario["ratio"]
 	wrong_ratio = scenario["wrong_ratio"]
 	labels = scenario["labels"]
-	N, observed, expected = _make_counts(ratio)
-
 	question = ""
 	question += scenario["context"]
-	question += f"<p>Total offspring scored: <span style='font-family: monospace;'>{N}</span></p>"
-	question += _make_counts_table(labels, ratio, observed, expected)
-	question += "<hr/> "
+	if kind == "pair":
+		N, observed, expected = _make_counts(ratio)
+		question += f"<p>Total offspring scored: <span style='font-family: monospace;'>{N}</span></p>"
+		question += _make_counts_table(labels, ratio, observed, expected)
+		question += "<hr/> "
 
 	if kind == "pair":
 		question += (
@@ -295,16 +271,16 @@ def make_question(kind: str, scenario_id: str = None) -> tuple:
 		choices, answer = _make_pair_choices(ratio, wrong_ratio)
 	elif kind == "null":
 		question += (
-			"<p>For a chi-squared (&chi;<sup>2</sup>) goodness-of-fit test, which statement is the "
-			"<b>null hypothesis</b> (H<sub>0</sub>)?</p>"
+			f"<p>You will test the predicted {ratio} ratio with chi-square. "
+			"Which one of the following is the <u>null hypothesis</u>?</p>"
 		)
-		choices, answer = _make_single_statement_choices(ratio, wrong_ratio, "null")
+		choices, answer = _make_single_statement_choices(ratio, "null")
 	elif kind == "alt":
 		question += (
-			"<p>For a chi-squared (&chi;<sup>2</sup>) goodness-of-fit test, which statement is the "
-			"<b>alternative hypothesis</b> (H<sub>A</sub>)?</p>"
+			f"<p>The null hypothesis predicts a {ratio} offspring ratio. "
+			"Which one of the following is the <u>alternative hypothesis</u> for this chi-square test?</p>"
 		)
-		choices, answer = _make_single_statement_choices(ratio, wrong_ratio, "alt")
+		choices, answer = _make_single_statement_choices(ratio, "alt")
 	else:
 		raise ValueError(f"Unknown kind: {kind}")
 
