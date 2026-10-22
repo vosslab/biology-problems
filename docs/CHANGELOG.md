@@ -4,6 +4,14 @@
 
 ### Biostatistics question clarity
 
+- Use explicit `fail2reject` and `doesntsupport` replacement tokens in the
+  decision bank; student-facing phrases remain fully spelled out.
+
+- Align non-numeric test-selection and Z/t tutorial banks with the test colors.
+  Use fail-to-reject and sufficient/insufficient evidence language in decision
+  questions. Simplify hypothesis terminology and remove a misleading sample-size
+  cutoff from test selection.
+
 - Add a brief conclusion prompt to each numeric test question using a significance
   level of 0.05 and the reject/fail-to-reject evidence distinction. Keep the graded
   response as the p-value. Pair hypothesis symbols with their full names throughout

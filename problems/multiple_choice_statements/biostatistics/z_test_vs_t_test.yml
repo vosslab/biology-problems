@@ -10,7 +10,9 @@ source:
 # Exemplar: short parallel statements; errors swap inputs, test names, or the df step.
 override_question_true: '<p>In the national-average tutorials, which statement is <strong>TRUE</strong>?</p>'
 override_question_false: '<p>In the national-average tutorials, which statement is <strong>FALSE</strong>?</p>'
-replacement_rules: null
+replacement_rules:
+  Z-test: '<strong style="color: #003fff;">Z-test</strong>'
+  t-test: '<strong style="color: #007a00;">t-test</strong>'
 connection_words: null
 true_statements:
   # The SD used in the formula, not every SD calculated in the spreadsheet.

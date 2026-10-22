@@ -4,26 +4,25 @@ keys description: hypothesis tests
 value description: description
 values description: descriptions
 replacement_rules:
-  Benchmark Z-test: '<span style="color: #d40000;">Benchmark Z-test</span>' #RED
+  One-sample Z-test: '<strong style="color: #003fff;">One-sample Z-test</strong>'
   sample size: '<span style="color: #b74300;">sample size</span>' #DARK ORANGE
   means: '<span style="color: #935d00;">means</span>'
   mean: '<span style="color: #935d00;">mean</span>' #LIGHT ORANGE
   average: '<span style="color: #935d00;">average</span>' #LIGHT ORANGE
-  Benchmark T-test: '<span style="color: #6c6c00;">Benchmark T-test</span>' #DARK YELLOW
+  One-sample t-test: '<strong style="color: #007a00;">One-sample t-test</strong>'
   populations: '<span style="color: #3b7600;">populations</span>'
   population: '<span style="color: #3b7600;">population</span>' #LIME GREEN
   samples: '<span style="color: #007a00;">samples</span>' #GREEN
-  Two-Sample T-test: '<span style="color: #00775f;">Two-Sample T-test</span>' #TEAL
+  Two-sample t-test: '<strong style="color: #007a00;">Two-sample t-test</strong>'
   standard deviation: '<span style="color: #007576;">standard deviation</span>' #CYAN
   variability: '<span style="color: #076dad;">variability</span>' #SKY BLUE
-  Two-Sample F-test: '<span style="color: #003fff;">Two-Sample F-test</span>' #BLUE
+  Two-sample F-test: '<strong style="color: #c80085;">Two-sample F-test</strong>'
   significantly different: '<span style="color: #0067cc;">significantly different</span>' #NAVY
   unknown: '<span style="color: #a719db;">unknown</span>' #PURPLE
-  Analysis of Variance (ANOVA): '<span style="color: #c80085;">Analysis of Variance
-    (ANOVA)</span>' #MAGENTA
+  Analysis of Variance (ANOVA): '<strong style="color: #935d00;">Analysis of Variance (ANOVA)</strong>'
   variances: '<span style="color: #cc0066;">variances</span>' #PINK
 matching pairs:
-  Benchmark Z-test:
+  One-sample Z-test:
   - Compares the mean of a sample to a known population mean when the population variance
     is known.
   - Used when comparing a sample's mean to a large dataset with a known population
@@ -48,11 +47,11 @@ matching pairs:
     of 1.5&deg;C. You collect n = 35 daily temperature readings from a nearby estuary
     and want to test if the estuary's average temperature differs from the regional
     mean.
-  Benchmark T-test:
+  One-sample t-test:
   - Compares the mean of a sample to a known population mean when the population variance
     is unknown.
-  - Used when the population variance is unknown, and you have a smaller sample size
-    (n &lt; 30).
+  - Compares a sample mean with a reference mean using the sample standard deviation
+    because the population standard deviation is unknown.
   - The population mean resting heart rate is 70 bpm, but the standard deviation is
     unknown. You collect a sample of n = 25 patients on a new drug to test if their
     mean heart rate differs from the population mean.
@@ -71,7 +70,7 @@ matching pairs:
   - The average tree height in a natural forest is 12 meters, but the standard deviation
     is unknown. You collect n = 12 samples from a reforested area to test if the average
     tree height differs from the natural forest.
-  Two-Sample T-test:
+  Two-sample t-test:
   - Compares the means of two independent groups to determine if they are statistically
     different from each other.
   - Used to determine whether the average heights of two different plant species are
@@ -93,7 +92,7 @@ matching pairs:
   - You want to compare the average soil pH between two agricultural fields, one using
     organic fertilizer and one using conventional methods, with n = 30 soil samples
     from each field. You want to test if the means are significantly different.
-  Two-Sample F-test:
+  Two-sample F-test:
   - Compares the variances of two independent groups to test if the variability between
     them is significantly different.
   - Used to test whether two different batches of products have equal variability
@@ -116,8 +115,8 @@ matching pairs:
     with n = 35 measurements from each city. You want to test if the variances in
     pollution levels differ significantly.
   Analysis of Variance (ANOVA):
-  - Compares the means of more than two groups to determine if at least one group's
-    mean is significantly different from the others.
+  - Tests whether the population means of three or more independent groups are all
+    equal or at least one differs.
   - Used to compare the average exam scores across three different classrooms.
   - You want to compare the mean blood glucose levels of patients in four drug groups,
     each group has n = 30 participants. You want to test if at least one group's mean

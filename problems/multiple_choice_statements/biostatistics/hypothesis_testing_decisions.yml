@@ -3,13 +3,13 @@ num_choices: 4
 override_question_true: '<p>Which statement about stattests is <strong>TRUE</strong>?</p>'
 override_question_false: null
 # Four decision rules; wrong choices reverse a decision or its cutoff comparison.
-# Blue marks affirmative decision phrases; red-orange marks negative phrases.
+# Decision colors mark wording, not whether a statement is true.
 # Each color appears in both true and false statements.
 replacement_rules:
   reject: '<span style="color: #17365d;">reject</span>'
-  do not reject: '<span style="color: #9c3b10;">do not reject</span>'
+  fail2reject: '<span style="color: #9c3b10;">fail to reject</span>'
   supports: '<span style="color: #17365d;">supports</span>'
-  does not support: '<span style="color: #9c3b10;">does not support</span>'
+  doesntsupport: '<span style="color: #9c3b10;">does not support</span>'
   althyp: '<span style="color: #b74300;">alternative hypothesis, H<sub>a</sub></span>'
   stattest: '<span style="color: #935d00;">statistical test</span>'
   stattests: '<span style="color: #935d00;">statistical tests</span>'
@@ -27,26 +27,26 @@ replacement_rules:
   greater than: <strong>greater than</strong>
 connection_words: null
 true_statements:
-  truth1a: we do not reject the nullhyp when the teststat is not past the critval
+  truth1a: we fail2reject the nullhyp when the teststat is not past the critval
   truth1b: we reject the nullhyp when the teststat is more extreme than the critval
   truth1c: we reject the nullhyp when the teststat is past the critval
-  truth2a: we do not reject the nullhyp when the p-value is greater than the losa
+  truth2a: we fail2reject the nullhyp when the p-value is greater than the losa
   truth2b: we reject the nullhyp when the p-value is less than the losa
   truth3a: the evidence supports the althyp when the teststat is more extreme than the critval
-  truth3b: the evidence does not support the althyp when the teststat is not past the critval
+  truth3b: the evidence doesntsupport the althyp when the teststat is not past the critval
   truth3c: the evidence supports the althyp when the teststat is past the critval
   truth4a: the evidence supports the althyp when the p-value is less than the losa
-  truth4b: the evidence does not support the althyp when the p-value is greater than the losa
+  truth4b: the evidence doesntsupport the althyp when the p-value is greater than the losa
 false_statements:
   false1a: we reject the nullhyp when the teststat is not past the critval
-  false1b: we do not reject the nullhyp when the teststat is more extreme than the critval
-  false1c: we do not reject the nullhyp when the teststat is past the critval
+  false1b: we fail2reject the nullhyp when the teststat is more extreme than the critval
+  false1c: we fail2reject the nullhyp when the teststat is past the critval
   false2b: we reject the nullhyp when the p-value is greater than the losa
-  false2c: we do not reject the nullhyp when the p-value is less than the losa
+  false2c: we fail2reject the nullhyp when the p-value is less than the losa
   false3a: the evidence supports the althyp when the teststat is not past the critval
-  false3b: the evidence does not support the althyp when the teststat is more extreme than the critval
-  false3c: the evidence does not support the althyp when the teststat is past the critval
+  false3b: the evidence doesntsupport the althyp when the teststat is more extreme than the critval
+  false3c: the evidence doesntsupport the althyp when the teststat is past the critval
   false4a: the evidence supports the althyp when the p-value is greater than the losa
-  false4b: the evidence does not support the althyp when the p-value is less than the losa
+  false4b: the evidence doesntsupport the althyp when the p-value is less than the losa
 conflict_rules: null
 dbsubject: Biostatistics

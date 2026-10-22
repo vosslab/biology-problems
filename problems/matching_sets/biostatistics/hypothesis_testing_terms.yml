@@ -25,9 +25,9 @@ matching pairs:
   - the boundary for how extreme a teststat must be to reject the nullhyp
   - the cutoff used to compare against the observed teststat
   teststat:
-  - a function of the data computed to test the nullhyp
-  - a function of the data designed to measure agreement or disagreement with the
-    null hypothesis
+  - a number calculated from the data to test the nullhyp
+  - a number calculated from the data to measure agreement or disagreement with the
+    nullhyp
   - if this value is large in the direction favoring the althyp, there is stronger
     evidence against the nullhyp
   - the more extreme this value is under the nullhyp, the smaller the p-value
@@ -41,13 +41,13 @@ matching pairs:
   p-value:
   - the probability, under the nullhyp, of obtaining a result at least as extreme
     as the one observed
-  - smaller values give more support for the althyp
+  - smaller values provide stronger evidence against the nullhyp
   - if this value is small, it suggests that the observed data are not consistent
     with the nullhyp
   - smaller values typically correspond to more extreme teststat values
   nullhyp:
   - the hypothesis we attempt to find evidence against in a stattest
-  - the hypothesis we want to reject in a stattest
+  - the starting claim tested against the evidence in a stattest
   - this hypothesis defines the distribution used for comparison in the test
   - defines the distribution used for comparison in the test
   - defines the reference distribution used for comparison
@@ -56,14 +56,7 @@ matching pairs:
   - this hypothesis can sometimes be true even when the test fails to detect it (later
     called a Type II error)
   - can be true even if the test fails to detect it (later called a Type II error)
-  - this hypothesis represents the possibility that the observed effect is real and
-    not random
-  - this hypothesis represents the possibility that the observed effect is not due
-    to random chance
-  - represents the possibility that an observed effect or relationship is real and
-    not random
-  - represents the possibility that an observed effect or relationship is not due
-    to random chance
+  - describes a population difference or relationship that conflicts with the nullhyp
   dof:
   - a parameter based on sample size and estimated parameters or constraints
   - a parameter determined by sample size and the number of parameters
