@@ -171,25 +171,28 @@ def format_question_html(weights: list[float], mu: float, sigma: float | None, t
 	ttest_link = "https://docs.google.com/document/d/1lh3EWl4gnyT0dq0rgYzjzC6J1No4zKP2gi5eY3N5uv0/edit"
 
 	test_label = "z-Test" if test_method.lower().startswith('z') else "t-Test"
-	q = f"<p><b>One-Sample {test_label}: Joe's Hospital vs. National Average</b></p>"
+	test_color = "#003fff" if test_method.lower().startswith('z') else "#007a00"
+	q = f"<p><b><span style='color:{test_color};'>One-Sample {test_label}</span>: Joe's Hospital vs. National Average</b></p>"
 	q += "<p><b>Setup</b></p>"
 	if test_method.lower().startswith('z'):
-		q += "<p>Use a one tailed Z test for H1: mu_hospital > mu.</p>"
+		q += "<p>Use a <strong style='color:#00775f; font-weight:700; font-size:110%;'>one-tailed (right-tail)</strong> Z-test for the alternative hypothesis, H<sub>a</sub>: &mu;<sub>hospital</sub> &gt; &mu;.</p>"
 		q += f"<p>Fixed population values: &mu; = {mu} lbs, &sigma; = {sigma} lbs.</p>"
 		tutorial_link = ztest_link
 	elif test_method.lower().startswith('t'):
-		q += "<p>Use a one tailed one sample t test for H1: mu_hospital > mu.</p>"
+		q += "<p>Use a <strong style='color:#00775f; font-weight:700; font-size:110%;'>one-tailed (right-tail)</strong> one-sample t-test for the alternative hypothesis, H<sub>a</sub>: &mu;<sub>hospital</sub> &gt; &mu;.</p>"
 		q += f"<p>Fixed population values: &mu; = {mu} lbs, Population sd is unknown.</p>"
 		tutorial_link = ttest_link
+	q += "<p>Test whether the population mean birth weight at Joe's hospital is greater than the national average.</p>"
 	q += "<p><b>Sample data</b></p>"
 	q += "<p>Sample weights (lbs):</p>"
 	q += f"<p><span style='font-family: monospace; background-color:#eee;'>{rows}</span></p>"
 	q += "<p><b>Procedure</b></p>"
 	q += "<p>Enter the sample weights into a single column in Google Sheets.</p>"
-	q += "<p>Compute the one-tailed p-value using the tutorial workflow from last week: "
+	q += "<p>Compute the <strong style='color:#00775f; font-weight:700; font-size:110%;'>one-tailed p-value</strong> using the tutorial workflow from last week: "
 	q += f"<a href='{tutorial_link}' target='_blank' rel='noopener'>link here</a>.</p>"
 	q += "<p><b>Result to report</b></p>"
-	q += "<p>Enter your result as a decimal between 0 and 1 (for example, 0.084, not 8.4%).</p>"
+	q += "<p>Enter the <strong style='color:#00775f; font-weight:700; font-size:110%;'>one-tailed (right-tail) p-value</strong> as a decimal between 0 and 1 (for example, 0.084, not 8.4%).</p>"
+	q += "<p><b>Consider your conclusion:</b> Using a significance level of 0.05, would you reject the null hypothesis, H<sub>0</sub> (sufficient evidence to support the alternative hypothesis, H<sub>a</sub>), or fail to reject the null hypothesis, H<sub>0</sub> (insufficient evidence to support the alternative hypothesis, H<sub>a</sub>)? Reject when the p-value is at most 0.05; otherwise, fail to reject. Enter only the p-value above.</p>"
 	return q
 
 #===========================================================

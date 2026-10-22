@@ -40,7 +40,7 @@ SCENARIOS = [
 	},
 	{
 		"id": "two_sample_variance_2014_2024",
-		"title": "Two-sample variance test (F test)",
+		"title": "Two-sample variance test (<span style='color:#c80085;'>F test</span>)",
 		"family": "two_variance",
 		"param1_html": "&sigma;<sub>2014</sub><sup>2</sup>",
 		"param2_html": "&sigma;<sub>2024</sub><sup>2</sup>",
@@ -54,7 +54,7 @@ SCENARIOS = [
 	},
 	{
 		"id": "anova_shannon_by_year",
-		"title": "ANOVA (five years of Shannon diversity)",
+		"title": "<span style='color:#935d00;'>ANOVA</span> (five years of Shannon diversity)",
 		"family": "anova",
 		"group_names": ["1994", "2004", "2009", "2014", "2024"],
 		"measure_text": "Shannon Diversity Index",
@@ -165,9 +165,9 @@ def _mk_pair(scenario: dict, h0: str, ha: str) -> str:
 	ha_words = _hypothesis_in_words(scenario, ha)
 	return (
 		"<p>"
-		f"<b>H<sub>0</sub></b>: {h0}"
+		f"<b>The null hypothesis, H<sub>0</sub></b>: {h0}"
 		f"<br/><span style='font-size: 90%;'>In words: {h0_words}</span>"
-		f"<br/><b>H<sub>A</sub></b>: {ha}"
+		f"<br/><b>The alternative hypothesis, H<sub>a</sub></b>: {ha}"
 		f"<br/><span style='font-size: 90%;'>In words: {ha_words}</span>"
 		"</p>"
 	)
@@ -277,42 +277,42 @@ def _validate_unique_choices(choices: list[str]) -> None:
 def _wrong_single_choices(scenario: dict, tail: str, kind: str) -> tuple[list[str], str]:
 	h0, ha = _hypotheses_for_scenario(scenario, tail)
 	if kind == "null":
-		correct = _mk_statement(scenario, "H<sub>0</sub>", h0)
+		correct = _mk_statement(scenario, "The null hypothesis, H<sub>0</sub>", h0)
 		family = scenario["family"]
-		choices = [correct, _mk_statement(scenario, "H<sub>A</sub>", ha)]
+		choices = [correct, _mk_statement(scenario, "The alternative hypothesis, H<sub>a</sub>", ha)]
 		if family == "anova":
-			choices.append(_mk_statement(scenario, "H<sub>0</sub>", "At least one group mean is different."))
-			choices.append(_mk_statement(scenario, "H<sub>0</sub>", "The sample means are all equal."))
+			choices.append(_mk_statement(scenario, "The null hypothesis, H<sub>0</sub>", "At least one group mean is different."))
+			choices.append(_mk_statement(scenario, "The null hypothesis, H<sub>0</sub>", "The sample means are all equal."))
 		elif family == "one_mean":
 			param = _mk_param(scenario["param_html"], scenario.get("param_text"))
 			v0 = scenario["null_value_html"]
-			choices.append(_mk_statement(scenario, "H<sub>0</sub>", f"{param} &gt; {v0}"))
-			choices.append(_mk_statement(scenario, "H<sub>0</sub>", "The sample mean equals the population mean."))
+			choices.append(_mk_statement(scenario, "The null hypothesis, H<sub>0</sub>", f"{param} &gt; {v0}"))
+			choices.append(_mk_statement(scenario, "The null hypothesis, H<sub>0</sub>", "The sample mean equals the population mean."))
 		else:
 			p1 = _mk_param(scenario["param1_html"], scenario.get("param1_text"))
 			p2 = _mk_param(scenario["param2_html"], scenario.get("param2_text"))
-			choices.append(_mk_statement(scenario, "H<sub>0</sub>", f"{p1} &ne; {p2}"))
-			choices.append(_mk_statement(scenario, "H<sub>0</sub>", "The sample means are equal."))
+			choices.append(_mk_statement(scenario, "The null hypothesis, H<sub>0</sub>", f"{p1} &ne; {p2}"))
+			choices.append(_mk_statement(scenario, "The null hypothesis, H<sub>0</sub>", "The sample means are equal."))
 		_validate_unique_choices(choices)
 		return choices, correct
 
 	if kind == "alt":
-		correct = _mk_statement(scenario, "H<sub>A</sub>", ha)
+		correct = _mk_statement(scenario, "The alternative hypothesis, H<sub>a</sub>", ha)
 		family = scenario["family"]
-		choices = [correct, _mk_statement(scenario, "H<sub>0</sub>", h0)]
+		choices = [correct, _mk_statement(scenario, "The null hypothesis, H<sub>0</sub>", h0)]
 		if family == "anova":
-			choices.append(_mk_statement(scenario, "H<sub>A</sub>", "All group means are equal."))
-			choices.append(_mk_statement(scenario, "H<sub>A</sub>", "The sample means are all equal."))
+			choices.append(_mk_statement(scenario, "The alternative hypothesis, H<sub>a</sub>", "All group means are equal."))
+			choices.append(_mk_statement(scenario, "The alternative hypothesis, H<sub>a</sub>", "The sample means are all equal."))
 		elif family == "one_mean":
 			param = _mk_param(scenario["param_html"], scenario.get("param_text"))
 			v0 = scenario["null_value_html"]
-			choices.append(_mk_statement(scenario, "H<sub>A</sub>", f"{param} = {v0}"))
-			choices.append(_mk_statement(scenario, "H<sub>A</sub>", "The sample mean is not equal to the population mean."))
+			choices.append(_mk_statement(scenario, "The alternative hypothesis, H<sub>a</sub>", f"{param} = {v0}"))
+			choices.append(_mk_statement(scenario, "The alternative hypothesis, H<sub>a</sub>", "The sample mean is not equal to the population mean."))
 		else:
 			p1 = _mk_param(scenario["param1_html"], scenario.get("param1_text"))
 			p2 = _mk_param(scenario["param2_html"], scenario.get("param2_text"))
-			choices.append(_mk_statement(scenario, "H<sub>A</sub>", f"{p1} = {p2}"))
-			choices.append(_mk_statement(scenario, "H<sub>A</sub>", "The sample means are not equal."))
+			choices.append(_mk_statement(scenario, "The alternative hypothesis, H<sub>a</sub>", f"{p1} = {p2}"))
+			choices.append(_mk_statement(scenario, "The alternative hypothesis, H<sub>a</sub>", "The sample means are not equal."))
 		_validate_unique_choices(choices)
 		return choices, correct
 
@@ -341,36 +341,37 @@ def make_question(
 	question += f"<p><b>Hypotheses practice: {scenario['title']}</b></p>"
 	question += scenario["context_html"]
 	question += "<p>Your task is to correctly identify the null hypothesis (H<sub>0</sub>) "
-	question += "and the alternative hypothesis (H<sub>A</sub>).</p>"
+	question += "and the alternative hypothesis (H<sub>a</sub>).</p>"
 	question += "<hr/> "
 
 	if scenario["family"] == "one_mean":
 		v0 = scenario["null_value_html"]
 		unit = scenario["unit_html"]
 		if tail == "greater":
-			question += f"<p>Research question: Is the mean higher than {v0} {unit}?</p>"
+			question += f"<p>Research question: Is the population mean higher than {v0} {unit}?</p>"
 		elif tail == "less":
-			question += f"<p>Research question: Is the mean lower than {v0} {unit}?</p>"
+			question += f"<p>Research question: Is the population mean lower than {v0} {unit}?</p>"
 		else:
-			question += f"<p>Research question: Is the mean different from {v0} {unit}?</p>"
+			question += f"<p>Research question: Does the population mean differ from {v0} {unit} in either direction?</p>"
 	elif scenario["family"] == "anova":
 		question += "<p>Research question: Are any of the group means different?</p>"
 	else:
+		parameter = "variance" if scenario["family"] == "two_variance" else "mean"
 		if tail == "greater":
-			question += "<p>Research question: Is the 2024 value larger than the 2014 value?</p>"
+			question += f"<p>Research question: Is the 2024 population {parameter} larger than the 2014 population {parameter}?</p>"
 		elif tail == "less":
-			question += "<p>Research question: Is the 2024 value smaller than the 2014 value?</p>"
+			question += f"<p>Research question: Is the 2024 population {parameter} smaller than the 2014 population {parameter}?</p>"
 		else:
-			question += "<p>Research question: Are the 2014 and 2024 values different?</p>"
+			question += f"<p>Research question: Do the 2014 and 2024 population {parameter}s differ in either direction?</p>"
 
 	if kind == "pair":
-		question += "<p>Which option correctly states H<sub>0</sub> and H<sub>A</sub>?</p>"
+		question += "<p>Which option correctly states the null hypothesis, H<sub>0</sub>, and the alternative hypothesis, H<sub>a</sub>?</p>"
 		choices_list, answer_text = _wrong_pair_choices(scenario, tail)
 	else:
 		if kind == "null":
 			question += "<p>Which statement is the <b>null hypothesis</b> (H<sub>0</sub>)?</p>"
 		else:
-			question += "<p>Which statement is the <b>alternative hypothesis</b> (H<sub>A</sub>)?</p>"
+			question += "<p>Which statement is the <b>alternative hypothesis</b> (H<sub>a</sub>)?</p>"
 		choices_list, answer_text = _wrong_single_choices(scenario, tail, kind)
 
 	if choice_order is None:

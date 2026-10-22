@@ -39,7 +39,7 @@ SCENARIOS = [
 	},
 	{
 		"id": "two_sample_variance_2014_2024",
-		"title": "Two-sample variance test (F test)",
+		"title": "Two-sample variance test (<span style='color:#c80085;'>F test</span>)",
 		"family": "two_variance",
 		"param1_html": "&sigma;<sub>2014</sub><sup>2</sup>",
 		"param2_html": "&sigma;<sub>2024</sub><sup>2</sup>",
@@ -53,7 +53,7 @@ SCENARIOS = [
 	},
 	{
 		"id": "anova_shannon_by_year",
-		"title": "ANOVA (five years of Shannon diversity)",
+		"title": "<span style='color:#935d00;'>ANOVA</span> (five years of Shannon diversity)",
 		"family": "anova",
 		"group_names": ["1994", "2004", "2009", "2014", "2024"],
 		"measure_text": "Shannon Diversity Index",
@@ -289,20 +289,21 @@ def make_question(error_type: str, scenario_id: str | None = None) -> tuple[str,
 		v0 = scenario["null_value_html"]
 		unit = scenario["unit_html"]
 		if tail == "greater":
-			research = f"Is the mean higher than {v0} {unit}?"
+			research = f"Is the population mean higher than {v0} {unit}?"
 		elif tail == "less":
-			research = f"Is the mean lower than {v0} {unit}?"
+			research = f"Is the population mean lower than {v0} {unit}?"
 		else:
-			research = f"Is the mean different from {v0} {unit}?"
+			research = f"Does the population mean differ from {v0} {unit} in either direction?"
 	elif scenario["family"] == "anova":
 		research = "Are any of the group means different?"
 	else:
+		parameter = "variance" if scenario["family"] == "two_variance" else "mean"
 		if tail == "greater":
-			research = "Is the 2024 value larger than the 2014 value?"
+			research = f"Is the 2024 population {parameter} larger than the 2014 population {parameter}?"
 		elif tail == "less":
-			research = "Is the 2024 value smaller than the 2014 value?"
+			research = f"Is the 2024 population {parameter} smaller than the 2014 population {parameter}?"
 		else:
-			research = "Are the 2014 and 2024 values different?"
+			research = f"Do the 2014 and 2024 population {parameter}s differ in either direction?"
 
 	lab_h0, lab_ha, answer_index = _apply_error_type(scenario, tail, error_type)
 
@@ -314,9 +315,9 @@ def make_question(error_type: str, scenario_id: str | None = None) -> tuple[str,
 	question += "<hr/> "
 	question += "<p>They wrote the hypotheses below:</p>"
 	question += "<p>"
-	question += f"<b>H<sub>0</sub></b>: {lab_h0}"
+	question += f"<b>The null hypothesis, H<sub>0</sub></b>: {lab_h0}"
 	question += f"<br/><span style='font-size: 90%;'>In words: {_hypothesis_in_words(scenario, lab_h0)}</span>"
-	question += f"<br/><b>H<sub>A</sub></b>: {lab_ha}"
+	question += f"<br/><b>The alternative hypothesis, H<sub>a</sub></b>: {lab_ha}"
 	question += f"<br/><span style='font-size: 90%;'>In words: {_hypothesis_in_words(scenario, lab_ha)}</span>"
 	question += "</p>"
 	question += "<p><b>What is the main problem with their hypotheses?</b></p>"

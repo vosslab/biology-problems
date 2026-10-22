@@ -1,5 +1,24 @@
 # Changelog
 
+## 2026-10-22
+
+### Biostatistics question clarity
+
+- Add a brief conclusion prompt to each numeric test question using a significance
+  level of 0.05 and the reject/fail-to-reject evidence distinction. Keep the graded
+  response as the p-value. Pair hypothesis symbols with their full names throughout
+  calculation questions and hypothesis-practice stems and choices.
+
+- Align baby-weight scenarios with their selected alternative hypotheses and repeat
+  the one-tailed or two-tailed requirement in p-value entry instructions.
+- Apply the matching-set template palette to test labels: Z blue (`#003fff`),
+  t green (`#007a00`), F magenta (`#c80085`), and ANOVA gold (`#935d00`).
+  Emphasize tail labels in all numeric test questions with bold, enlarged text:
+  one-tailed teal (`#00775f`) and two-tailed red-orange (`#b74300`). Repeat the
+  styling in p-value prompts while preserving the corrected Busse Woods wording.
+- Name population means and variances explicitly in hypothesis-practice research
+  questions, and clarify that two-sided alternatives include either direction.
+
 ## 2026-10-21
 
 ### Biostatistics question wording

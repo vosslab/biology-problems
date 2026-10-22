@@ -62,7 +62,7 @@ def format_question_html(weights: list[float], tails: int) -> str:
 		sheet_function = "T.DIST.2T"
 		answer_cell = "E12"
 
-	question = "<p><b>One-Sample t-Test: Joe's Hospital vs. National Average</b></p>"
+	question = "<p><b><span style='color:#007a00;'>One-Sample t-Test</span>: Joe's Hospital vs. National Average</b></p>"
 	question += "<p><b>Setup</b></p>"
 	question += (
 		"<p>Joe wants to know whether the mean birth weight at Joe's Hospital of "
@@ -70,7 +70,10 @@ def format_question_html(weights: list[float], tails: int) -> str:
 		"standard deviation is unknown, so use a one-sample t-test with the sample "
 		"standard deviation.</p>"
 	)
-	question += f"<p>H<sub>1</sub>: &mu;<sub>Joe</sub> {hypothesis} 7.5 lb</p>"
+	tail_color = "#00775f" if tails == 1 else "#b74300"
+	question += (f"<p>Use a <strong style='color:{tail_color}; font-weight:700; font-size:110%;'>{test_description} test</strong> "
+		f"({'right tail' if tails == 1 else 'either direction'}).</p>")
+	question += f"<p>the alternative hypothesis, H<sub>a</sub>: &mu;<sub>Joe</sub> {hypothesis} 7.5 lb</p>"
 	question += "<p><b>Sample data</b></p>"
 	question += (
 		f"<p>The sample contains {len(weights)} newborn birth weights (lb):</p>"
@@ -87,9 +90,10 @@ def format_question_html(weights: list[float], tails: int) -> str:
 	)
 	question += "<p><b>Result to report</b></p>"
 	question += (
-		f"<p>Enter the p-value shown in cell {answer_cell} as a decimal between 0 and 1 "
+		f"<p>Enter the <strong style='color:{tail_color}; font-weight:700; font-size:110%;'>{test_description} p-value</strong> shown in cell {answer_cell} as a decimal between 0 and 1 "
 		"(for example, 0.084).</p>"
 	)
+	question += "<p><b>Consider your conclusion:</b> Using a significance level of 0.05, would you reject the null hypothesis, H<sub>0</sub> (sufficient evidence to support the alternative hypothesis, H<sub>a</sub>), or fail to reject the null hypothesis, H<sub>0</sub> (insufficient evidence to support the alternative hypothesis, H<sub>a</sub>)? Reject when the p-value is at most 0.05; otherwise, fail to reject. Enter only the p-value above.</p>"
 	return question
 
 

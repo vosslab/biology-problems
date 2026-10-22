@@ -203,9 +203,9 @@ def format_question_html(
 		csv_rows += f"{site},{cells[0]},{cells[1]},{cells[2]},{cells[3]},{cells[4]}<br/>"
 		i += 1
 
-	q = "<p><b>ANOVA of Shannon Diversity: 1994, 2004, 2009, 2014, 2024</b></p>"
+	q = "<p><b><span style='color:#935d00;'>ANOVA</span> of Shannon Diversity: 1994, 2004, 2009, 2014, 2024</b></p>"
 	q += "<p>Compare microbial diversity across five years using one way ANOVA.</p>"
-	q += "<p>Use a <strong>one-tailed F-test (right tail)</strong> for the ANOVA.</p>"
+	q += "<p>Use a <strong style='color:#00775f; font-weight:700; font-size:110%;'>one-tailed (right-tail)</strong> <strong style='color:#935d00;'>ANOVA F-test</strong> for the ANOVA.</p>"
 
 	q += "<p>Sample Data Table:<br/>"
 	q += "<em>Copy table rows and use regular paste (Ctrl-V or &#8984;-V) into Google Sheets.</em></p>"
@@ -219,10 +219,11 @@ def format_question_html(
 	tutorial_link = "https://docs.google.com/document/d/1xkWsWENaOLRHUk6MO50anhL4DEbjmK8_xBmj22k3tts/edit"
 	q += f"<p>Workflow: <a href='{tutorial_link}' target='_blank' rel='noopener'>link here</a>.</p>"
 	q += (
-		"<p>Enter the <strong>one-tailed (right-tail) ANOVA p-value</strong> "
+		"<p>Enter the <strong style='color:#00775f; font-weight:700; font-size:110%;'>one-tailed (right-tail) p-value</strong> for the ANOVA "
 		"as a decimal between 0 and 1.</p>"
 	)
 
+	q += "<p><b>Consider your conclusion:</b> Using a significance level of 0.05, would you reject the null hypothesis, H<sub>0</sub> (sufficient evidence to support the alternative hypothesis, H<sub>a</sub>), or fail to reject the null hypothesis, H<sub>0</sub> (insufficient evidence to support the alternative hypothesis, H<sub>a</sub>)? Reject when the p-value is at most 0.05; otherwise, fail to reject. Enter only the p-value above.</p>"
 	return q
 
 def _write_one_question(N: int) -> str:

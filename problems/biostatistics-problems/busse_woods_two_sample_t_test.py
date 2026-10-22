@@ -208,17 +208,19 @@ def format_question_html(
 
 	tutorial_link = "https://docs.google.com/document/d/1DiSYMwPhs8tmWQMLqQwLGHBssy12o-pYzyUT1qIoXcU/edit"
 
-	q = "<p><b>Two-Sample Test of Shannon Diversity: 2014 vs 2024</b></p>"
+	q = "<p><b><span style='color:#007a00;'>Two-Sample t-Test</span> of Shannon Diversity: 2014 vs 2024</b></p>"
 	if tails == 1:
 		tail_label = "one-tailed"
+		tail_color = "#00775f"
 		q += (
-			"<p>Use a <strong>one-tailed Welch two-sample t-test</strong> to test whether "
+			"<p>Use a <strong style='color:#00775f; font-weight:700; font-size:110%;'>one-tailed</strong> <strong style='color:#007a00;'>Welch two-sample t-test</strong> to test whether "
 			"the population mean Shannon Index is lower in 2024 than in 2014.</p>"
 		)
 	else:
 		tail_label = "two-tailed"
+		tail_color = "#b74300"
 		q += (
-			"<p>Use a <strong>two-tailed Welch two-sample t-test</strong> to test whether "
+			"<p>Use a <strong style='color:#b74300; font-weight:700; font-size:110%;'>two-tailed</strong> <strong style='color:#007a00;'>Welch two-sample t-test</strong> to test whether "
 			"the population mean Shannon Index differs between 2014 and 2024.</p>"
 		)
 
@@ -237,7 +239,8 @@ def format_question_html(
 	# Instructions
 	q += "<p>Compute the p-value in Google Sheets using the tutorial: "
 	q += f"<a href='{tutorial_link}' target='_blank' rel='noopener'>link here</a>.</p>"
-	q += f"<p>Enter the <strong>{tail_label} p-value</strong> as a decimal between 0 and 1.</p>"
+	q += f"<p>Enter the <strong style='color:{tail_color}; font-weight:700; font-size:110%;'>{tail_label} p-value</strong> as a decimal between 0 and 1.</p>"
+	q += "<p><b>Consider your conclusion:</b> Using a significance level of 0.05, would you reject the null hypothesis, H<sub>0</sub> (sufficient evidence to support the alternative hypothesis, H<sub>a</sub>), or fail to reject the null hypothesis, H<sub>0</sub> (insufficient evidence to support the alternative hypothesis, H<sub>a</sub>)? Reject when the p-value is at most 0.05; otherwise, fail to reject. Enter only the p-value above.</p>"
 	return q
 
 #============================================

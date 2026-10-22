@@ -149,7 +149,7 @@ def format_question_html(group1: list[float], group2: list[float], tails: int) -
 		"https://docs.google.com/document/d/1k5UzUlpu-5wCMyWpop0bFlXBgAWivwTwd020Jgo1EIk/edit"
 	)
 
-	q = "<p><b>Two-Sample t-Test: Joe's Hospital vs. Green Veggies</b></p>"
+	q = "<p><b><span style='color:#007a00;'>Two-Sample t-Test</span>: Joe's Hospital vs. Green Veggies</b></p>"
 	q += "<p><b>Setup</b></p>"
 	q += ("<p>"
 		"Previously, you compared newborn weights at Joe's Hospital of Fried "
@@ -161,16 +161,20 @@ def format_question_html(group1: list[float], group2: list[float], tails: int) -
 	n1 = len(group1)
 	n2 = len(group2)
 	q += (f"<p>Joe's Hospital of Fried Foods (n={n1}) and Green Veggies Health "
-		f"Center (n={n2}) each recorded the weights of newborns this month. "
-		"Joe believes his hospital's babies weigh more on average than those "
-		"from Green Veggies.</p>")
+		f"Center (n={n2}) each recorded the weights of newborns this month.</p>")
 
 	if tails == 1:
-		q += ("<p>Use a one tailed two sample t test for "
-			"H1: &mu;<sub>Joe</sub> &gt; &mu;<sub>Veggies</sub>.</p>")
+		tail_label = "one-tailed (right-tail)"
+		tail_color = "#00775f"
+		q += "<p>Test whether the population mean birth weight at Joe's Hospital is greater than at Green Veggies.</p>"
+		q += ("<p>Use a <strong style='color:#00775f; font-weight:700; font-size:110%;'>one-tailed (right-tail)</strong> two-sample t-test for "
+			"the alternative hypothesis, H<sub>a</sub>: &mu;<sub>Joe</sub> &gt; &mu;<sub>Veggies</sub>.</p>")
 	else:
-		q += ("<p>Use a two tailed two sample t test for "
-			"H1: &mu;<sub>Joe</sub> &ne; &mu;<sub>Veggies</sub>.</p>")
+		tail_label = "two-tailed"
+		tail_color = "#b74300"
+		q += "<p>Test whether the population mean birth weights differ between the hospitals in either direction.</p>"
+		q += ("<p>Use a <strong style='color:#b74300; font-weight:700; font-size:110%;'>two-tailed</strong> two-sample t-test for "
+			"the alternative hypothesis, H<sub>a</sub>: &mu;<sub>Joe</sub> &ne; &mu;<sub>Veggies</sub>.</p>")
 	q += "<p>Assume unequal variances (Welch's t test).</p>"
 	q += "<p><b>Sample data</b></p>"
 	q += "<table style='border-collapse:collapse;'><tr>"
@@ -187,8 +191,9 @@ def format_question_html(group1: list[float], group2: list[float], tails: int) -
 	q += "<p>Compute the p value in Google Sheets using the tutorial:"
 	q += f" <a href='{tutorial_link}' target='_blank' rel='noopener'>link here</a>.</p>"
 	q += "<p><b>Result to report</b></p>"
-	q += "<p>Enter your result as a decimal between 0 and 1 "
+	q += f"<p>Enter the <strong style='color:{tail_color}; font-weight:700; font-size:110%;'>{tail_label} p-value</strong> as a decimal between 0 and 1 "
 	q += "(for example, 0.084, not 8.4%).</p>"
+	q += "<p><b>Consider your conclusion:</b> Using a significance level of 0.05, would you reject the null hypothesis, H<sub>0</sub> (sufficient evidence to support the alternative hypothesis, H<sub>a</sub>), or fail to reject the null hypothesis, H<sub>0</sub> (insufficient evidence to support the alternative hypothesis, H<sub>a</sub>)? Reject when the p-value is at most 0.05; otherwise, fail to reject. Enter only the p-value above.</p>"
 	return q
 
 
