@@ -49,8 +49,8 @@ SCENARIOS = [
 			"Green Wrinkled (yyrr)",
 		],
 		"context": (
-			"<p>You perform a standard dihybrid cross and count the F<sub>2</sub> "
-			"offspring phenotypes.</p>"
+			"<p>You perform a dihybrid cross (AaBb &times; AaBb) and count the F<sub>2</sub> "
+			"offspring phenotypes. Assume independent assortment and complete dominance.</p>"
 		),
 	},
 	{
@@ -66,7 +66,7 @@ SCENARIOS = [
 		],
 		"context": (
 			"<p>You perform a dihybrid testcross (AaBb &times; aabb) and count the "
-			"offspring phenotypes.</p>"
+			"offspring phenotypes. Assume independent assortment and complete dominance.</p>"
 		),
 	},
 ]
@@ -131,27 +131,9 @@ def _make_counts(ratio: str) -> tuple:
 
 #===========================
 def _make_counts_table(labels: list, ratio: str, observed: list, expected: list) -> str:
-	table = '<table style="border-collapse: collapse; color: #202020; background: #ffffff;">'
-	table += "<tr>"
-	table += " <th align='center' colspan='4' style='background-color: #e3e8ed; color: #202020'>Observed data</th> "
-	table += "</tr>"
-	table += "<tr>"
-	table += " <th scope='col' style='padding: 4px; background-color: #e3e8ed; color: #202020;'>Category</th> "
-	table += " <th scope='col' style='padding: 4px; background-color: #e3e8ed; color: #202020;'>Ratio</th> "
-	table += " <th scope='col' style='padding: 4px; background-color: #e3e8ed; color: #202020;'>Expected</th> "
-	table += " <th scope='col' style='padding: 4px; background-color: #e3e8ed; color: #202020;'>Observed</th> "
-	table += "</tr>"
-
-	ratio_bins = ratio.split(":")
-	for i, label in enumerate(labels):
-		table += "<tr>"
-		table += f" <th scope='row' style='padding: 4px; text-align: left; font-weight: normal;'>{label}</th>"
-		table += f" <td style='padding: 4px; text-align: right;'>{ratio_bins[i]}</td>"
-		table += f" <td style='padding: 4px; text-align: right;'>{_format_expected(expected[i])}</td>"
-		table += f" <td style='padding: 4px; text-align: right;'>{observed[i]}</td>"
-		table += "</tr>"
-
-	table += "</table>"
+	rows = [[label, part, _format_expected(exp), obs]
+		for label, part, obs, exp in zip(labels, ratio.split(":"), observed, expected)]
+	table = chisquarelib.render_table(["Category", "Ratio", "Expected", "Observed"], rows, "Observed data")
 	return table
 
 
@@ -159,8 +141,8 @@ def _make_counts_table(labels: list, ratio: str, observed: list, expected: list)
 def _choice_pair(h0: str, ha: str) -> str:
 	choice = ""
 	choice += "<p>"
-	choice += f"<b>H<sub>0</sub></b>: {h0}<br/>"
-	choice += f"<b>H<sub>A</sub></b>: {ha}"
+	choice += f"<b>The null hypothesis, H<sub>0</sub></b>: {h0}<br/>"
+	choice += f"<b>The alternative hypothesis, H<sub>a</sub></b>: {ha}"
 	choice += "</p>"
 	return choice
 
@@ -266,7 +248,7 @@ def make_question(kind: str, scenario_id: str = None) -> tuple:
 	if kind == "pair":
 		question += (
 			"<p>For a chi-squared (&chi;<sup>2</sup>) goodness-of-fit test, which option correctly "
-			"states the null hypothesis (H<sub>0</sub>) and the alternative hypothesis (H<sub>A</sub>)?</p>"
+			"states the null hypothesis (H<sub>0</sub>) and the alternative hypothesis (H<sub>a</sub>)?</p>"
 		)
 		choices, answer = _make_pair_choices(ratio, wrong_ratio)
 	elif kind == "null":

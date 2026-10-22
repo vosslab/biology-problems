@@ -286,7 +286,7 @@ def makeQuestion(error_type: int, desired_result: str) -> tuple:
 	for i, index in enumerate(shuffle_map):
 		stats_list = number_stats[index]
 		new_number_stats.append(stats_list)
-		numbers_table = chisquarelib.create_data_table(stats_list, tables_list[i])
+		numbers_table = chisquarelib.create_data_table(stats_list, tables_list[i], labels=chisquarelib.PEA_PHENOTYPES)
 		shuffled_tables.append(numbers_table)
 
 	# Calculate chi-square result

@@ -2,6 +2,53 @@
 
 ## 2026-10-22
 
+- Shorten baby-weight and Busse Woods conclusion reminders to one optional
+  consider sentence referring to the stated significance level, with hypothesis
+  and significance-level colors matching the terminology bank; remove the incorrect
+  reference to entering a p-value above.
+  Expand lab-partner hypothesis labels and state independent assortment and
+  complete dominance briefly in the dihybrid scenarios.
+
+### Chi-square worked calculations
+
+- Show compact, smaller arithmetic beside bold final answers in dice MC choices
+  for expected counts, degrees of
+  freedom, category contributions, and summing contributions. Assess the choice
+  of calculation without requiring a calculator. Keep calculator-based numeric
+  entry in the existing assignment generator; remove equivalent distractors after
+  rounding and evaluate sums from the displayed numbers.
+
+- Route critical-value reference tables through the same shared renderer, with
+  selectable degrees of freedom and right-tail probabilities. Remove the duplicate
+  Hardy-Weinberg reference table and replace hardcoded dice critical values with
+  library calculations. Finish fail-to-reject wording in the affected prompts and
+  pair symbols with full names in the chi-square paired-hypothesis choices.
+
+- Generalize `chisquarelib.py` table rendering for arbitrary category labels, row
+  counts, and column headings. Reuse it for dice, hypothesis and lab-partner
+  questions, error tables, missing calculations, and Hardy-Weinberg tables. Keep
+  supplied work and totals verbatim, including intentional errors; calculate correct
+  worked examples only through the separate worked-table helper.
+
+- Expand dice interpretation tables to show observed minus expected, its square,
+  each chi-square contribution, and the summed statistic. Show the exact total
+  alongside its rounded value. Keep calculation answers hidden in calculation modes.
+
+### Factorials and binomial reasoning
+
+- Remove the combined dice chi-square MA conclusions and quantity-to-value
+  matching modes and their writers. Retain separate expected-count,
+  degrees-of-freedom, calculation, and interpretation MC modes. Remove the
+  matching task registration; no task row registers the removed MA bank.
+
+- Add four Lecture 07B/07C offspring-practice modes: factorial meaning for labeled
+  seeds, factorial arrangement counts, binomial expression setup, and why repeated
+  phenotypes require division by factorials. Include 0! and surviving-offspring
+  probabilities; require no calculator. Default to binomial setup. Remove the four
+  introductory modes (independence, outcomes, supplied tables, and general
+  calculations), their unused helpers, and the retired distribution test. Retain
+  the original advanced generator.
+
 ### Biostatistics question clarity
 
 - Use explicit `fail2reject` and `doesntsupport` replacement tokens in the

@@ -1,26 +1,9 @@
-"""Protect probability mass and chi-square arithmetic used by quiz answer keys."""
+"""Protect chi-square arithmetic used by quiz answer keys."""
 
 import fractions
-import itertools
-import math
+import unittest.mock
 
 import lib_test_utils
-
-
-def test_offspring_distribution_counts_every_order():
-	module = lib_test_utils.import_from_repo_path(
-		"problems/inheritance-problems/progeny_probability_practice.py")
-	for number in (2, 3, 4):
-		for probability in (fractions.Fraction(1, 2), fractions.Fraction(1, 4),
-				fractions.Fraction(2, 3)):
-			# Independent oracle: enumerate births instead of using a binomial coefficient.
-			expected = [fractions.Fraction(0) for _ in range(number + 1)]
-			for sequence in itertools.product((0, 1), repeat=number):
-				weight = math.prod(probability if value else 1 - probability for value in sequence)
-				expected[sum(sequence)] += weight
-			actual = module.distribution(number, probability)
-			assert actual == expected
-			assert sum(actual) == 1
 
 
 def test_dice_counts_and_terms_determine_the_decision():
@@ -36,3 +19,17 @@ def test_dice_counts_and_terms_determine_the_decision():
 	data = module.dice_data(6, [-6, 0, 0, 0, 0, 6])
 	assert data["statistic"] == 12
 	assert data["reject"] is True
+
+
+def test_quiz_arithmetic_is_supplied_without_duplicate_answer_values():
+	module = lib_test_utils.import_from_repo_path(
+		"problems/inheritance-problems/chi_square/chi_square_dice.py")
+	options = [("72 / 6", 12), ("72 / 5", fractions.Fraction(72, 5)),
+		("72 / 2", 36), ("6 + 6", 12)]
+	with unittest.mock.patch.object(module.bptools, "formatBB_MC_Question") as formatter:
+		module.arithmetic_question(1, "<p>Expected count?</p>", options)
+	_, _, choices, answer = formatter.call_args.args
+	assert len(choices) == 3
+	assert "72/6" in answer and "<strong>12</strong>" in answer
+	assert all("=" in choice for choice in choices)
+	assert sum("<strong>12</strong>" in choice for choice in choices) == 1

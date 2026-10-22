@@ -46,7 +46,8 @@ Domain-specific helper libraries live near the generators that use them.
 
 ### Genetics libraries
 
-- [chisquarelib.py](../problems/inheritance-problems/chi_square/chisquarelib.py): chi-square helpers.
+- [chisquarelib.py](../problems/inheritance-problems/chi_square/chisquarelib.py): chi-square probability helpers and shared tables for arbitrary
+  categories, supplied work (including errors), and calculated worked examples.
 - [deletionlib.py](../problems/inheritance-problems/deletion_mutants/deletionlib.py): deletion mapping helpers.
 - [genemaplib.py](../problems/inheritance-problems/gene_mapping/genemaplib.py): gene mapping utilities.
 - [tetradlib.py](../problems/inheritance-problems/gene_mapping/tetradlib.py): tetrad analysis utilities.

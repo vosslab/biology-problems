@@ -8,6 +8,7 @@ import random
 from scipy.stats.distributions import chi2
 
 import bptools
+import chisquarelib
 
 ### types of errors
 # show only real answer table of chi square calculations
@@ -147,79 +148,13 @@ def normalGoodStats(p, F, N):
 #===================
 #===================
 def createDataTable(stats_list, title=None):
-	numcol = len(stats_list[0])
-	table = '<table style="border: 1px solid black; border-collapse: collapse; ">'
-	table += '<colgroup width="100"></colgroup> '
-	table += '<colgroup width="80"></colgroup> '
-	table += '<colgroup width="80"></colgroup> '
-	table += '<colgroup width="160"></colgroup> '
-	table += '<colgroup width="80"></colgroup> '
-	if title is not None:
-		table += "<tr>"
-		table += " <th align='center' colspan='5' style='background-color: silver'>{0}</th> ".format(title)
-		table += "</tr>"
-	table += "<tr>"
-	table += " <th align='center' style='background-color: lightgray'>Phenotype</th> "
-	table += " <th align='center' style='background-color: lightgray'>Observed</th> "
-	table += " <th align='center' style='background-color: lightgray'>Expected</th> "
-	table += " <th align='center' style='background-color: lightgray'>Calculation</th> "
-	table += " <th align='center' style='background-color: lightgray'>Statistic</th> "
-	table += "</tr>"
-	table += "<tr>"
-	table += " <td>&nbsp;Red Flowers</td>"
-	for j in range(numcol):
-		stat = stats_list[0][j]
-		table += " <td align='center'>{0}</td>".format(stat)
-	table += "</tr>"
-	table += "<tr>"
-	table += " <td>&nbsp;Pink Flowers</td>"
-	for j in range(numcol):
-		stat = stats_list[1][j]
-		table += " <td align='center'>{0}</td>".format(stat)
-	table += "</tr>"
-	table += "<tr>"
-	table += " <td>&nbsp;White Flowers</td>"
-	for j in range(numcol):
-		stat = stats_list[2][j]
-		table += " <td align='center'>{0}</td>".format(stat)
-	table += "</tr>"
-	table += "<tr>"
-	table += " <td colspan='{0}' align='right' style='background-color: lightgray'>(sum) &chi;<sup>2</sup>&nbsp;=&nbsp;</td>".format(numcol)
-	stat = stats_list[3]
-	table += " <td align='center'>{0}</td>".format(stat)
-	table += "</tr>"
-	table += "</table>"
+	table = chisquarelib.create_data_table(stats_list, title,
+		labels=["Red Flowers", "Pink Flowers", "White Flowers"],
+		headers=["Category", "Observed", "Expected", "Calculation", "Statistic"])
 	return table
 
 #===================
 #===================
-def make_chi_square_table():
-	max_df = 4
-	p_values = [0.95, 0.90, 0.75, 0.5, 0.25, 0.1, 0.05, 0.01]
-	table = '<table style="border: 1px solid gray; border-collapse: collapse; ">'
-	table += '<colgroup width="100"></colgroup> '
-	for p in p_values:
-		table += '<colgroup width="60"></colgroup> '
-	table += "<tr>"
-	table += " <th align='center' colspan='{0}' style='background-color: gainsboro'>Table of Chi-Squared (&chi;<sup>2</sup>) Critical Values</th>".format(len(p_values)+1)
-	table += "</tr>"
-	table += "<tr>"
-	table += " <th rowspan='2' align='center' style='background-color: silver'>Degrees of Freedom</th>"
-	table += " <th align='center' colspan='{0}' style='background-color: silver'>Probability</th>".format(len(p_values))
-	table += "</tr>"
-	table += "<tr>"
-	for p in p_values:
-		table += " <th align='center' style='background-color: gainsboro'>{0:.2f}</th>".format(p)
-	table += "</tr>"
-	for df in range(1, max_df+1):
-		table += "<tr>"
-		table += " <th align='center' style='background-color: silver'>{0:d}</th>".format(df)
-		for p in p_values:
-			chisq = get_critical_value(p, df)
-			table += " <td align='center'>{0:.2f}</td>".format(chisq)
-		table += "</tr>"
-	table += "</table>"
-	return table
 
 #===================
 #===================
@@ -229,7 +164,7 @@ def questionContent(p):
 	question += '<p>This lab partner calculated the allele frequencies of p={0:.2f} and q={1:.2f}. '.format(p, 1-p)
 	question += 'Then they did a chi-squared (&chi;<sup>2</sup>) test for your Hardy-Weinberg data.</p>'
 
-	question += "<p>They need you to decide whether you reject or accept "
+	question += "<p>They need you to decide whether you reject or fail to reject "
 	question += "the null hypothesis using the information provided.</p> "
 	return question
 
@@ -256,7 +191,7 @@ def makeQuestion(desired_result):
 		N = get_good_N(F, desired_result)
 	print("p={0:.3f}, F={1:.3f}, N={2:,d}".format(p,F,N))
 
-	chi_square_table = make_chi_square_table()
+	chi_square_table = chisquarelib.make_chi_square_table()
 
 	answer_stats = normalGoodStats(p, F, N)
 	numbers_table = createDataTable(answer_stats, "Table 1")

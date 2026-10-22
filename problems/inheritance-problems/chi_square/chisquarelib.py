@@ -1,5 +1,6 @@
 
 import math
+import fractions
 import random
 from scipy.stats.distributions import chi2
 
@@ -85,76 +86,14 @@ assert get_chi_square_result(3.0, 2, 0.05) == 'accept_null'
 
 #===============
 #===============
-def make_chi_square_table() -> str:
-	"""
-	Create a Chi-Squared table with critical values.
-
-	Returns
-	-------
-	str
-		A string containing the HTML representation of the Chi-Squared table.
-	"""
-
-	# Initialize the maximum degree of freedom for the table
-	max_df = 4
-
-	# Initialize the probability values that will be used in the table
-	p_values = [0.95, 0.90, 0.75, 0.5, 0.25, 0.1, 0.05, 0.01]
-
-	# Start building the HTML table with added CSS styles for better readability and design
-	table = '<table style="border-collapse: collapse; border: 2px solid gray;">'
-
-	# Set column widths for the table
-	table += '<colgroup width="100"></colgroup>'
-	for p in p_values:
-		table += '<colgroup width="60"></colgroup>'
-
-	# Add table title
-	table += f"<tr><th align='center' colspan='{len(p_values)+1}' "
-	table += "style='background-color: gainsboro; border: 1px solid gray; padding: 5px;'>"
-	table += "Table of Chi-Squared (&chi;&sup2;) Critical Values</th></tr>"
-
-
-	# Add row for Degrees of Freedom and Probability headers, bold font and different background color
-	table += "<tr><th rowspan='2' align='center' style='background-color: #D3D3D3; "
-	table += "font-weight: bold; border: 1px solid gray; padding: 5px;'>Degrees of Freedom</th> "
-	table += f"<th align='center' colspan='{len(p_values)}' style='background-color: #D3D3D3; "
-	table += "font-weight: bold; border: 1px solid gray; padding: 5px;'>Probability</th></tr>"
-
-	# Add row for actual probability values, bold font and different background color
-	table += "<tr>"
-	for p in p_values:
-		table += "<th align='center' style='background-color: #F0F0F0; font-weight: bold; "
-		table += f"border: 1px solid gray; padding: 5px;'>{p:.2f}</th>"
-
-	table += "</tr>"
-
-	# Populate the table with chi-squared values
-	for df in range(1, max_df + 1):
-		# Alternate row colors between white and light tan
-		if df % 2 == 1:
-			color = "#FAFAD2"
-		else:
-			color = "#FFFFFF"
-
-		table += f"<tr style='background-color: {color};'>"
-
-		# Add degree of freedom value with bold font
-		table += "<th align='center' style='background-color: #D3D3D3; font-weight: bold; "
-		table += f"border: 1px solid gray; padding: 5px;'>{df}</th>"
-
-		# Loop through each probability value to fill in chi-squared values
-		for p in p_values:
-			chisq = get_critical_value(p, df)
-			table += "<td align='center' style='border: 1px solid gray; padding: 5px;'>"
-			table += f"{chisq:.2f}</td>"
-
-		table += "</tr>"
-
-	# Finalize the table
-	table += "</table>"
-
-	# Return the HTML string
+def make_chi_square_table(degrees_of_freedom: tuple = (1, 2, 3, 4),
+		p_values: tuple = (0.95, 0.90, 0.75, 0.5, 0.25, 0.1, 0.05, 0.01)) -> str:
+	"""Render critical values for the requested degrees of freedom and tail probabilities."""
+	headers = ["Degrees of freedom"] + [f"{p:.2f}" for p in p_values]
+	rows = [[df] + [f"{get_critical_value(p, df):.2f}" for p in p_values]
+		for df in degrees_of_freedom]
+	table = render_table(headers, rows,
+		"Chi-square critical values (probability in the right tail)")
 	return table
 
 
@@ -218,64 +157,90 @@ assert isinstance(result, list) and len(result) == 4
 
 #===============
 #===============
-def create_data_table(stats_list: list, title: str = None) -> str:
-	"""
-	Create an HTML table from a list of statistics.
+PEA_PHENOTYPES = ["Yellow Round (Y&ndash;R&ndash;)", "Yellow Wrinkled (Y&ndash;rr)",
+	"Green Round (yyR&ndash;)", "Green Wrinkled (yyrr)"]
 
-	Parameters
-	----------
-	stats_list : list
-		List of lists containing the statistics for each phenotype.
-	title : str, optional
-		Title for the table.
 
-	Returns
-	-------
-	str
-		The HTML string representing the table.
-	"""
-	# Initialize the number of columns based on the length of the first element in stats_list.
-	numcol = len(stats_list[0])
-
-	# Initialize HTML table structure with border and styles.
-	table = '<table style="border: 1px solid black; border-collapse: collapse; ">'
-
-	# Add column widths.
-	table += '<colgroup width="160"></colgroup> '
-	table += '<colgroup width="80"></colgroup> '
-	table += '<colgroup width="80"></colgroup> '
-	table += '<colgroup width="100"></colgroup> '
-	table += '<colgroup width="80"></colgroup> '
-
-	# Add title to the table if provided.
+def render_table(headers: list, rows: list, title: str = None) -> str:
+	"""Render supplied cells verbatim, including intentional errors and blank work."""
+	style = "padding: 6px 8px; border-bottom: 1px solid #b8b8b8; text-align: right;"
+	text = '<table style="border-collapse: collapse; color: #202020; background: #ffffff;">'
 	if title is not None:
-		table += f"<tr><th align='center' colspan='5' style='background-color: silver'>{title}</th></tr>"
+		text += f'<caption style="text-align: left; font-weight: bold; padding: 6px;">{title}</caption>'
+	text += '<thead><tr style="background: #e3e8ed;">'
+	for index, header in enumerate(headers):
+		alignment = "text-align: left;" if index == 0 else ""
+		text += f'<th scope="col" style="{style} {alignment}">{header}</th>'
+	text += '</tr></thead><tbody>'
+	for index, row in enumerate(rows):
+		if len(row) != len(headers):
+			raise ValueError("Each table row must have one cell per header")
+		background = "#ffffff" if index % 2 == 0 else "#f2f5f7"
+		text += f'<tr style="background: {background};">'
+		text += f'<th scope="row" style="{style} text-align: left; font-weight: normal;">{row[0]}</th>'
+		for value in row[1:]:
+			text += f'<td style="{style}">{value}</td>'
+		text += '</tr>'
+	text += '</tbody></table>'
+	return text
 
-	# Add headers for the table.
-	table += "<tr>"
-	table += "<th align='center' style='background-color: lightgray'>Phenotype</th> "
-	table += "<th align='center' style='background-color: lightgray'>Expected</th> "
-	table += "<th align='center' style='background-color: lightgray'>Observed</th> "
-	table += "<th align='center' style='background-color: lightgray'>Calculation</th> "
-	table += "<th align='center' style='background-color: lightgray'>Statistic</th> "
-	table += "</tr>"
 
-	# Loop through stats_list to populate table rows for each phenotype.
-	phenotypes = ["Yellow Round (Y&ndash;R&ndash;)", "Yellow Wrinkled (Y&ndash;rr)", "Green Round (yyR&ndash;)", "Green Wrinkled (yyrr)"]
-	for i, phenotype in enumerate(phenotypes):
-		table += f"<tr><td>&nbsp;{phenotype}</td>"
-		for j in range(numcol):
-			stat = stats_list[i][j]
-			table += f" <td align='center'>{stat}</td>"
-		table += "</tr>"
+def create_worked_table(labels: list, observed: list, expected: list) -> str:
+	"""Calculate correct chi-square work for any number of labeled categories.
 
-	# Add the sum chi-squared statistic to the last row.
-	table += f"<tr><td colspan='{numcol}' align='right' style='background-color: lightgray'>(sum) &chi;&sup2;&nbsp;=&nbsp;</td>"
-	stat = stats_list[-1]
-	table += f" <td align='center'>{stat}</td></tr>"
+	Use render_table or create_data_table for supplied or intentionally wrong work.
+	Fractions retain exact contributions; decimals are rounded only for display.
+	"""
+	if not labels or len(labels) != len(observed) or len(labels) != len(expected):
+		raise ValueError("Labels, observed counts, and expected counts must have equal nonzero lengths")
+	rows = []
+	terms = []
+	observed_total = fractions.Fraction()
+	expected_total = fractions.Fraction()
+	for label, obs, exp in zip(labels, observed, expected):
+		obs = fractions.Fraction(str(obs))
+		exp = fractions.Fraction(str(exp))
+		if obs < 0 or exp <= 0:
+			raise ValueError("Observed counts must be nonnegative and expected counts positive")
+		observed_total += obs
+		expected_total += exp
+		difference = obs - exp
+		term = difference ** 2 / exp
+		terms.append(term)
+		numerator = str(difference ** 2)
+		denominator = str(exp)
+		if (difference ** 2).denominator != 1:
+			numerator = f"({numerator})"
+		if exp.denominator != 1:
+			denominator = f"({denominator})"
+		rows.append([label, str(obs), str(exp), str(difference), str(difference ** 2),
+			f"{numerator} / {denominator} &asymp; {float(term):.2f}"])
+	total = sum(terms)
+	rows.append(["<strong>Total</strong>", str(observed_total), str(expected_total),
+		"&mdash;", "&mdash;", f"<strong>&chi;<sup>2</sup> = {total} &asymp; {float(total):.2f}</strong>"])
+	headers = ["Category", "Observed", "Expected", "Observed &minus; expected",
+		"(Observed &minus; expected)<sup>2</sup>",
+		"(Observed &minus; expected)<sup>2</sup> / expected"]
+	text = render_table(headers, rows, "Chi-square calculation")
+	return text
 
-	# Close the HTML table tag.
-	table += "</table>"
 
-	# Return the finalized HTML table as a string.
-	return table
+def create_data_table(stats_list: list, title: str = None, labels: list = None,
+		headers: list = None) -> str:
+	"""Display precomputed work without changing its values or supplied total.
+
+	stats_list contains category rows followed by the total. Callers supply category
+	labels and may override columns for other data types or calculation layouts.
+	"""
+	category_rows = stats_list[:-1]
+	if labels is None:
+		labels = [f"Category {index + 1}" for index in range(len(category_rows))]
+	if len(labels) != len(category_rows):
+		raise ValueError("Each category row needs a label")
+	if headers is None:
+		headers = ["Category", "Expected", "Observed", "Calculation", "Statistic"]
+	rows = [[label] + list(values) for label, values in zip(labels, category_rows)]
+	rows.append(["<strong>Total &chi;<sup>2</sup></strong>"]
+		+ ["&mdash;"] * (len(headers) - 2) + [stats_list[-1]])
+	text = render_table(headers, rows, title)
+	return text

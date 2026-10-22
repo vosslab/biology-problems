@@ -93,7 +93,7 @@ def format_question_html(weights: list[float], tails: int) -> str:
 		f"<p>Enter the <strong style='color:{tail_color}; font-weight:700; font-size:110%;'>{test_description} p-value</strong> shown in cell {answer_cell} as a decimal between 0 and 1 "
 		"(for example, 0.084).</p>"
 	)
-	question += "<p><b>Consider your conclusion:</b> Using a significance level of 0.05, would you reject the null hypothesis, H<sub>0</sub> (sufficient evidence to support the alternative hypothesis, H<sub>a</sub>), or fail to reject the null hypothesis, H<sub>0</sub> (insufficient evidence to support the alternative hypothesis, H<sub>a</sub>)? Reject when the p-value is at most 0.05; otherwise, fail to reject. Enter only the p-value above.</p>"
+	question += "<p><em>Consider whether you would reject or fail to reject the <span style='color:#49358c;'>null hypothesis, H<sub>0</sub></span>, at the stated <span style='color:#a719db;'>significance level</span>.</em></p>"
 	return question
 
 

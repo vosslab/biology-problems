@@ -46,8 +46,8 @@ SCENARIOS = [
 			"Green Wrinkled (yyrr)",
 		],
 		"context": (
-			"<p>You perform a standard dihybrid cross and count the F<sub>2</sub> "
-			"offspring phenotypes.</p>"
+			"<p>You perform a dihybrid cross (AaBb &times; AaBb) and count the F<sub>2</sub> "
+			"offspring phenotypes. Assume independent assortment and complete dominance.</p>"
 		),
 	},
 	{
@@ -62,7 +62,7 @@ SCENARIOS = [
 		],
 		"context": (
 			"<p>You perform a dihybrid testcross (AaBb &times; aabb) and count the "
-			"offspring phenotypes.</p>"
+			"offspring phenotypes. Assume independent assortment and complete dominance.</p>"
 		),
 	},
 ]
@@ -134,27 +134,9 @@ def _make_counts(ratio: str) -> tuple:
 
 #===========================
 def _make_counts_table(labels: list, ratio: str, observed: list, expected: list) -> str:
-	table = '<table style="border-collapse: collapse; color: #202020; background: #ffffff;">'
-	table += "<tr>"
-	table += " <th align='center' colspan='4' style='background-color: #e3e8ed; color: #202020'>Observed data</th> "
-	table += "</tr>"
-	table += "<tr>"
-	table += " <th scope='col' style='padding: 4px; background-color: #e3e8ed; color: #202020;'>Category</th> "
-	table += " <th scope='col' style='padding: 4px; background-color: #e3e8ed; color: #202020;'>Ratio</th> "
-	table += " <th scope='col' style='padding: 4px; background-color: #e3e8ed; color: #202020;'>Expected</th> "
-	table += " <th scope='col' style='padding: 4px; background-color: #e3e8ed; color: #202020;'>Observed</th> "
-	table += "</tr>"
-
-	ratio_bins = ratio.split(":")
-	for i, label in enumerate(labels):
-		table += "<tr>"
-		table += f" <th scope='row' style='padding: 4px; text-align: left; font-weight: normal;'>{label}</th>"
-		table += f" <td style='padding: 4px; text-align: right;'>{ratio_bins[i]}</td>"
-		table += f" <td style='padding: 4px; text-align: right;'>{_format_expected(expected[i])}</td>"
-		table += f" <td style='padding: 4px; text-align: right;'>{observed[i]}</td>"
-		table += "</tr>"
-
-	table += "</table>"
+	rows = [[label, part, _format_expected(exp), obs]
+		for label, part, obs, exp in zip(labels, ratio.split(":"), observed, expected)]
+	table = chisquarelib.render_table(["Category", "Ratio", "Expected", "Observed"], rows, "Observed data")
 	return table
 
 
@@ -213,8 +195,8 @@ def make_question(error_type: str, scenario_id: str = None) -> tuple:
 		"<p>Your lab partner writes these hypotheses for a chi-square test:</p>"
 	)
 	question += "<p>"
-	question += f"<strong>Null</strong>: {lab_h0}<br/>"
-	question += f"<strong>Alternative</strong>: {lab_ha}"
+	question += f"<strong>The null hypothesis, H<sub>0</sub></strong>: {lab_h0}<br/>"
+	question += f"<strong>The alternative hypothesis, H<sub>a</sub></strong>: {lab_ha}"
 	question += "</p>"
 	question += "<p>What should your lab partner change, if anything?</p>"
 

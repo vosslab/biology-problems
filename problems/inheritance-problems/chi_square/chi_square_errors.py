@@ -335,7 +335,7 @@ def makeQuestion(error_type):
 		alpha = 0.05
 
 	chisq = float(stats_list[-1])
-	table1 = chisquarelib.create_data_table(stats_list)
+	table1 = chisquarelib.create_data_table(stats_list, labels=chisquarelib.PEA_PHENOTYPES)
 	chi_square_table = chisquarelib.make_chi_square_table()
 	question = questionContent(chisq, df, alpha, flip)
 	complete_question = chi_square_table+"<br/>"+table1+"<br/>"+question

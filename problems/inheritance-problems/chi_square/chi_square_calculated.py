@@ -33,66 +33,9 @@ def normalGoodStats(ratio, observed=None):
 #===================
 #===================
 def createDataTableWithMissing(stats_list, title=None):
-	numcol = len(stats_list[0])
-	table = '<table style="border: 1px solid black; border-collapse: collapse; ">'
-	table += '<colgroup width="200"></colgroup> '
-	table += '<colgroup width="100"></colgroup> '
-	table += '<colgroup width="100"></colgroup> '
-	table += '<colgroup width="100"></colgroup> '
-	table += '<colgroup width="100"></colgroup> '
-	if title is not None:
-		table += "<tr>"
-		table += " <th align='center' colspan='5' style='background-color: silver'>{0}</th> ".format(title)
-		table += "</tr>"
-	table += "<tr>"
-	table += " <th align='center' style='background-color: lightgray'>Phenotype</th> "
-	table += " <th align='center' style='background-color: lightgray'>Expected</th> "
-	table += " <th align='center' style='background-color: lightgray'>Observed</th> "
-	table += " <th align='center' style='background-color: lightgray'>Calculation</th> "
-	table += " <th align='center' style='background-color: lightgray'>Statistic</th> "
-	table += "</tr>"
-	table += "<tr>"
-	table += " <td>&nbsp;Yellow Round (Y&ndash;R&ndash;)</td>"
-	for j in range(numcol):
-		stat = stats_list[0][j]
-		if j <= 1:
-			table += " <td align='center'>{0}</td>".format(stat)
-		else:
-			table += " <td align='center'>__</td>"
-	table += "</tr>"
-	table += "<tr>"
-	table += " <td>&nbsp;Yellow Wrinkled (Y&ndash;rr)</td>"
-	for j in range(numcol):
-		stat = stats_list[1][j]
-		if j <= 1:
-			table += " <td align='center'>{0}</td>".format(stat)
-		else:
-			table += " <td align='center'>__</td>"
-	table += "</tr>"
-	table += "<tr>"
-	table += " <td>&nbsp;Green Round (yyR&ndash;)</td>"
-	for j in range(numcol):
-		stat = stats_list[2][j]
-		if j <= 1:
-			table += " <td align='center'>{0}</td>".format(stat)
-		else:
-			table += " <td align='center'>__</td>"
-	table += "</tr>"
-	table += "<tr>"
-	table += " <td>&nbsp;Green Wrinkled (yyrr)</td>"
-	for j in range(numcol):
-		stat = stats_list[3][j]
-		if j <= 1:
-			table += " <td align='center'>{0}</td>".format(stat)
-		else:
-			table += " <td align='center'>__</td>"
-	table += "</tr>"
-	table += "<tr>"
-	table += " <td colspan='{0}' align='right' style='background-color: lightgray'>(sum) &chi;<sup>2</sup>&nbsp;=&nbsp;</td>".format(numcol)
-	stat = stats_list[4]
-	table += " <td align='center'>__</td>"
-	table += "</tr>"
-	table += "</table>"
+	blank_rows = [[row[0], row[1], "__", "__"] for row in stats_list[:-1]]
+	blank_rows.append("__")
+	table = chisquarelib.create_data_table(blank_rows, title, labels=chisquarelib.PEA_PHENOTYPES)
 	return table
 
 #===================
