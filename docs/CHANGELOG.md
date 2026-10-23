@@ -4,6 +4,21 @@
 
 ### Behavior or Interface Changes
 
+- Remove the unnecessary probability-calculation instruction and zero-factorial reminder
+  from coefficient question stems.
+- Add `binomiallib.binomial_probability(n, k, p, q)` to render the whole worked
+  `C(n,k) p^(n-k) q^k` choice using exact fractions through the calculation. Use
+  `worked=False` for setup-only practice. Remove the older generator's calculation/rendering
+  helpers. Draw distractor `n` and `k` only from the total and two phenotype counts stated
+  in the question, with `k <= n`; use only 1:1 or 1:3/3:1 probabilities for `p` and `q`.
+  Retain results between 1% and 40%, excluding the correct displayed percentage and repeated
+  percentages. Use fewer choices when these mistakes yield too few distinct eligible results.
+  All choices use the same equation with internally consistent arithmetic. Verify 330 results independently
+  by enumerating outcomes, including zero-count and all-one-outcome cases.
+- Render factorial quotients in coefficient choices and coefficient explanations as stacked
+  numerator/denominator fractions with a horizontal bar, including the distractors.
+- Include H0 and Ha with every null/alternative hypothesis mention in the single-hypothesis
+  chi-square question stems, using HTML subscripts consistent with the paired questions.
 - Reuse the offspring-sex generator's stacked binomial coefficient notation in phenotype
   probability expressions, sequence-count factorial choices, and coefficient interpretation
   stems. Move the existing parentheses renderer into `binomiallib.py`; preserve the original
@@ -21,6 +36,13 @@
 
 ### Fixes and Maintenance
 
+- Consolidate offspring binomial notation in `binomiallib.py`: both probability generators
+  use its coefficient, fraction, and expression renderers. Remove the older generator's
+  duplicate fraction renderer and hand-built equation tables; preserve its calculation steps.
+- Size binomial parentheses directly and remove their table's positional offset so expression
+  rows reserve their full height. This removes vertical choice scrollbars caused by transformed
+  parentheses overflowing the layout box. Browser measurements on 20 coefficient choices at
+  390 and 768 pixels confirm no horizontal or vertical overflow.
 - Synchronized shared style guides, tests, and repository support files from the starter template.
 
 ### Developer Tests and Notes

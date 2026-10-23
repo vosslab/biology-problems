@@ -80,7 +80,7 @@ def factorial_question(N: int, scenario: tuple):
 
 def factorial_coefficient(number: int, count: int) -> str:
 	"""Display the factorial ratio without requiring large-number arithmetic."""
-	text = f"{number}! / ({count}! &times; {number - count}!)"
+	text = binomiallib.fraction(f"{number}!", f"{count}! &times; {number - count}!")
 	return text
 
 
@@ -93,15 +93,16 @@ def coefficient_question(N: int, scenario: tuple):
 	text += (f"<p>Consider {number} offspring: exactly {count} are {target} and "
 		f"{number - count} are {other}. Count different phenotype sequences from first "
 		"offspring to last, treating offspring with the same phenotype as interchangeable.</p>"
-		"<p>Which factorial expression counts these sequences? "
-		"Do not calculate the probability. Remember that 0! = 1.</p>")
+		"<p>Which factorial expression counts these sequences?</p>")
 	answer = factorial_coefficient(number, count)
 	# Errors: count individually labeled offspring; ignore one repeated category;
 	# add the denominator factorials instead of multiplying them.
-	candidates = [(f"{number}! / (1! &times; 1!)", math.factorial(number)),
-		(f"{number}! / ({count}! &times; 1!)", fractions.Fraction(math.factorial(number), math.factorial(count))),
-		(f"{number}! / (1! &times; {number - count}!)", fractions.Fraction(math.factorial(number), math.factorial(number - count))),
-		(f"{number}! / ({count}! + {number - count}!)",
+	candidates = [(binomiallib.fraction(f"{number}!", "1! &times; 1!"), math.factorial(number)),
+		(binomiallib.fraction(f"{number}!", f"{count}! &times; 1!"),
+			fractions.Fraction(math.factorial(number), math.factorial(count))),
+		(binomiallib.fraction(f"{number}!", f"1! &times; {number - count}!"),
+			fractions.Fraction(math.factorial(number), math.factorial(number - count))),
+		(binomiallib.fraction(f"{number}!", f"{count}! + {number - count}!"),
 			fractions.Fraction(math.factorial(number), math.factorial(count) + math.factorial(number - count))),
 		(f"{count}! &times; {number - count}!", math.factorial(count) * math.factorial(number - count)),
 		(f"2<sup>{number}</sup>", 2 ** number)]
@@ -124,10 +125,8 @@ def coefficient_question(N: int, scenario: tuple):
 
 def binomial_expression(number: int, count: int, probability: fractions.Fraction) -> str:
 	"""Show arrangement count times the probability of one phenotype order."""
-	powers = (f"({probability})<sup>{count}</sup> &times; "
-		f"({1 - probability})<sup>{number - count}</sup>")
-	text = binomiallib.format_expression([
-		binomiallib.binomial_coefficient(number, count), "&times;", powers])
+	text = binomiallib.binomial_probability(
+		number, count, 1 - probability, probability, worked=False)
 	return text
 
 

@@ -254,13 +254,14 @@ def make_question(kind: str, scenario_id: str = None) -> tuple:
 	elif kind == "null":
 		question += (
 			f"<p>You will test the predicted {ratio} ratio with chi-square. "
-			"Which one of the following is the <u>null hypothesis</u>?</p>"
+			"Which one of the following is the <u>null hypothesis (H<sub>0</sub>)</u>?</p>"
 		)
 		choices, answer = _make_single_statement_choices(ratio, "null")
 	elif kind == "alt":
 		question += (
-			f"<p>The null hypothesis predicts a {ratio} offspring ratio. "
-			"Which one of the following is the <u>alternative hypothesis</u> for this chi-square test?</p>"
+			f"<p>The null hypothesis (H<sub>0</sub>) predicts a {ratio} offspring ratio. "
+			"Which one of the following is the <u>alternative hypothesis (H<sub>a</sub>)</u> "
+			"for this chi-square test?</p>"
 		)
 		choices, answer = _make_single_statement_choices(ratio, "alt")
 	else:

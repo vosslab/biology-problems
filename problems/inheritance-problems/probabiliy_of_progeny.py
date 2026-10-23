@@ -14,17 +14,6 @@ import math
 import bptools
 import binomiallib
 
-#===========================================================
-#===========================================================
-def choose(n, r):
-	f = math.factorial
-	nint = int(n)
-	rint = int(r)
-	c =  f(nint) // (f(rint) * f(nint - rint))
-	return c
-
-#===========================================================
-#===========================================================
 num2txt = {
 	1: 'one',
 	2: 'two',
@@ -40,221 +29,6 @@ num2txt = {
 
 #===========================================================
 #===========================================================
-def makeChooseLong(n, r):
-	numerator = "{0}!".format(n)
-	denominator = "({0}&ndash;{1})!&nbsp;&sdot;&nbsp;{1}!".format(n, r)
-	fraction = makeFraction(numerator, denominator)
-	return fraction
-
-#===========================================================
-#===========================================================
-def makeFraction(numerator, denominator):
-	if numerator == 1:
-		if denominator == 2:
-			return "&frac12;"
-		elif denominator == 3:
-			return "&frac13;"
-		elif denominator == 4:
-			return "&frac14;"
-	elif numerator == 2:
-		if denominator == 3:
-			return "&frac23;"
-	elif numerator == 3:
-		if denominator == 4:
-			return "&frac34;"
-
-	fraction = ""
-	fraction += "<table style='border-collapse: collapse; border: 1px solid white;'>"
-	fraction += "<tr>"
-	fraction += " <td style='text-align: center; vertical-align: middle; border-bottom: 1px solid black;'>"
-	fraction += "&nbsp;"+numerator+"&nbsp;"
-	fraction += " </td>"
-	fraction += "</tr><tr>"
-	fraction += " <td style='text-align: center; vertical-align: middle; border-top: 1px solid black;'>"
-	fraction += "&nbsp;"+denominator+"&nbsp;"
-	fraction += " </td>"
-	fraction += "</tr></table>"
-	return fraction
-
-#===========================================================
-#===========================================================
-def decimal_to_fraction_parts(p):
-	if abs(p - 1/3.) < 1e-4:
-		a = 1
-		b = 3
-	elif abs(p - 2/3.) < 1e-4:
-		a = 2
-		b = 3
-	else:
-		a, b = (p).as_integer_ratio()
-	return a, b
-
-#===========================================================
-#===========================================================
-def combinePowerFractions(p, s, q, t):
-	a, b = decimal_to_fraction_parts(p)
-	c, d = decimal_to_fraction_parts(q)
-	numerator = ""
-	if a > 1:
-		numerator += "{0}<sup>{1}</sup>".format(a, s)
-	if c > 1:
-		numerator += "{0}<sup>{1}</sup>".format(c, t)
-	if a == 1 and c == 1:
-		numerator += "1"
-	denominator = ""
-	if b > 1:
-		denominator += "{0}<sup>{1}</sup>".format(b, s)
-	if d > 1:
-		denominator += "{0}<sup>{1}</sup>".format(d, t)
-	if b == 1 and d == 1:
-		denominator += "1"
-
-	fraction = makeFraction(numerator, denominator)
-	return fraction
-
-#===========================================================
-#===========================================================
-def makeChooseCancelled(n, r):
-	numerator = ""
-	if n == r:
-		numerator += "{0}".format(1)
-	elif n == r+1:
-		numerator += "{0}".format(n)
-	else:
-		for i in range(n, r+1, -1):
-			numerator += "{0}".format(i)
-			numerator += "&sdot;"
-		numerator += "{0}".format(r+1)
-
-	denominator = ""
-	if n == r:
-		denominator += "{0}".format(1)
-	elif n == r+1:
-		denominator += "{0}".format(1)
-	else:
-		for i in range(r, 2, -1):
-			denominator += "{0}".format(i)
-			denominator += "&sdot;"
-		denominator += "{0}".format(2)
-
-	fraction = makeFraction(numerator, denominator)
-	#fraction += "{0}&ndash;{1}".format(n, r)
-	return fraction
-
-#===========================================================
-#===========================================================
-def percent_to_fraction(p):
-	if abs(p - 0.5) < 1e-4:
-		ptxt = "<span style='font-size: large;'>&frac12;</span>"
-	elif abs(p - 0.25) < 1e-4:
-		ptxt = "<span style='font-size: large;'>&frac14;</span>"
-	elif abs(p - 0.75) < 1e-4:
-		ptxt = "<span style='font-size: large;'>&frac34;</span>"
-	elif abs(p - 1/3.) < 1e-4:
-		ptxt = "<span style='font-size: large;'>&#8531;</span>"
-	elif abs(p - 2/3.) < 1e-4:
-		ptxt = "<span style='font-size: large;'>&#8532;</span>"
-	elif abs(p*10.0 - int(p*10)) < 1e-4:
-		ptxt = f"{p:.1f}"
-	else:
-		ptxt = f"{p:.2f}"
-	return ptxt
-
-#===========================================================
-#===========================================================
-def makeFormula(n, s, t, p, q):
-	"""
-	Generate the full HTML formula for the binomial probability calculation.
-
-	Args:
-		n (int): total number of trials.
-		s (int): number of successes.
-		t (int): number of failures.
-		p (float): probability of success.
-		q (float): probability of failure.
-
-	Returns:
-		str: HTML string containing a formatted equation showing the
-		     binomial computation step by step.
-	"""
-	# Calculate the final probability value
-	final_value = choose(n, s) * p**s * q**t
-
-	# Start the HTML table for displaying the full equation
-	formula = "<table style='border-collapse: collapse; border: 1px solid white;'>"
-	formula += "<tr>"
-
-	# First term: choose function C(n, s)
-	formula += " <td>"
-	formula += binomiallib.binomial_coefficient(n, s)
-	formula += "</td><td>"
-
-	# Add p^s and q^t components
-	ptxt = percent_to_fraction(p)
-	formula += f"({ptxt})<sup>{s}</sup>"
-	qtxt = percent_to_fraction(q)
-	formula += f"&sdot;({qtxt})<sup>{t}</sup>"
-
-	# Begin showing expanded equality steps
-	formula += "</td><td>"
-	formula += "&nbsp;=&nbsp;"
-	formula += "</td><td>"
-	formula += makeChooseLong(n, s)
-	formula += "</td><td>"
-
-	# Show power terms depending on whether p and q are equal
-	if abs(p - q) < 1e-4:
-		formula += f"({ptxt})<sup>{n}</sup>"
-	else:
-		formula += f"({ptxt})<sup>{s}</sup>"
-		formula += f"&sdot;({qtxt})<sup>{t}</sup>"
-
-	# Continue equality chain
-	formula += "</td><td>"
-	formula += "&nbsp;=&nbsp;"
-	formula += "</td><td>"
-	formula += makeChooseCancelled(n, s)
-	formula += "</td><td>"
-	formula += "&times;"
-	formula += "</td><td>"
-
-	# Multiply the fraction components
-	if abs(p - q) < 1e-4:
-		formula += combinePowerFractions(p, n, 1, 1)
-	else:
-		formula += combinePowerFractions(p, s, q, t)
-
-	formula += "</td><td>"
-	formula += "&nbsp;=&nbsp;"
-	formula += "</td><td>"
-
-	# Compute numeric combination and fraction breakdown
-	c = choose(n, s)
-	a, b = decimal_to_fraction_parts(p**s * q**t)
-
-	# Display fractions in simplified or raw form
-	if 1 < a < 1000:
-		formula += makeFraction(f"{c}&times;{a}", f"{b}")
-	elif a == 1:
-		formula += makeFraction(f"{c}", f"{b}")
-
-	# Display final numeric and percentage results
-	formula += "</td><td>"
-	formula += "&nbsp;=&nbsp;"
-	formula += "</td><td>"
-	formula += f"{final_value:.4f}"
-	formula += "</td><td>"
-	formula += "<strong>&nbsp;=&nbsp;</strong>"
-	formula += "</td><td>"
-	formula += f"<strong>{final_value * 100:.1f}%</strong>"
-	formula += "</td>"
-	formula += "</tr></table>"
-
-	# Return the complete formula HTML
-	return formula
-
-#============================================================
-#============================================================
 def get_question_text(male_offspring: int, female_offspring: int,
 	total_offspring: int) -> str:
 	"""
@@ -276,10 +50,9 @@ def get_question_text(male_offspring: int, female_offspring: int,
 	question_text = ""
 
 	# Model badge with symbolic parameters only
-	question_text += '<table role="presentation" style="border:0;border-collapse:collapse;">'
-	question_text += '<tr><td><strong>Model:</strong> Binomial &rarr;</td><td>'
-	question_text += binomiallib.binomial_coefficient('n', 'k')
-	question_text += '</td><td>&sdot;p<sup>k</sup>&sdot;q<sup>n-k</sup></td></tr></table>'
+	question_text += binomiallib.format_expression([
+		'<strong>Model:</strong> Binomial &rarr;', binomiallib.binomial_coefficient('n', 'k'),
+		'&sdot;p<sup>n-k</sup>&sdot;q<sup>k</sup>'])
 
 	question_text += "<p>"
 	question_text += "In this scenario, assume that each child is born independently "
@@ -313,27 +86,32 @@ def write_question(N: int, args) -> str:
 	choices_list = []
 
 	# Correct answer: probability with equal 0.5 chance for each sex
-	answer_text = makeFormula(total_offspring, male_offspring, female_offspring, 0.5, 0.5)
+	answer_text = binomiallib.binomial_probability(total_offspring, female_offspring, 0.5, 0.5)
 	choices_list.append(answer_text)
 
-	# Wrong choice: probability assuming 0.75 male, 0.25 female
-	wrong1 = makeFormula(total_offspring, male_offspring, female_offspring, 0.75, 0.25)
-	choices_list.append(wrong1)
-
-	# Wrong choice: probability assuming 0.25 male, 0.75 female
-	wrong2 = makeFormula(total_offspring, male_offspring, female_offspring, 0.25, 0.75)
-	choices_list.append(wrong2)
-
-	# Pick the larger and smaller counts to avoid branching on sex
-	big = max(male_offspring, female_offspring)
-	small = min(male_offspring, female_offspring)
-
-	# Always-generate wrong3; wrong4 only if counts are unequal
-	wrong3 = makeFormula(big, small, big, 0.5, 0.5)
-	choices_list.append(wrong3)
-	if male_offspring != female_offspring:
-		wrong4 = makeFormula(big, big, small, 0.5, 0.5)
-		choices_list.append(wrong4)
+	# Errors: confuse the roles of the given counts, or substitute 3:1 probabilities.
+	counts = {total_offspring, male_offspring, female_offspring}
+	candidates = []
+	for n in counts:
+		for k in counts:
+			if k > n:
+				continue
+			for p, q in ((0.5, 0.5), (0.25, 0.75), (0.75, 0.25)):
+				candidates.append((n, k, p, q))
+	random.shuffle(candidates)
+	correct_value = math.comb(total_offspring, female_offspring) * 0.5 ** total_offspring
+	used = {f"{correct_value * 100:.1f}"}
+	for n, k, p, q in candidates:
+		value = math.comb(n, k) * p ** (n - k) * q ** k
+		if not 0.01 <= value <= 0.40:
+			continue
+		percentage = f"{float(value) * 100:.1f}"
+		if percentage in used:
+			continue
+		choices_list.append(binomiallib.binomial_probability(n, k, p, q))
+		used.add(percentage)
+		if len(choices_list) == 5:
+			break
 
 	# Randomly shuffle the final list of choices
 	random.shuffle(choices_list)
