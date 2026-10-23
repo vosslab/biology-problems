@@ -35,6 +35,35 @@ saved bank. Use `--selftest` to save without opening; combine either option with
 to also export the Blackboard ZIP. No local web server is needed. If browser launch fails,
 open the printed URL manually.
 
+## Binomial notation
+
+The `binomial`, `coefficient`, and `explain` modes of
+[progeny_probability_practice.py](../problems/inheritance-problems/progeny_probability_practice.py)
+use stacked binomial coefficients in parentheses. Probability expressions use the coefficient
+directly; sequence-count choices and interpretation questions pair it with the factorial form.
+
+[binomiallib.py](../problems/inheritance-problems/binomiallib.py) owns the shared notation:
+`binomial_coefficient(n, r)` renders the stack, and `format_expression(parts)` keeps a complete
+expression together for HTML and table-to-image output. The offspring-sex generator uses the
+same coefficient renderer.
+
+## Chi-square table colors
+
+Calculation tables share the headings Category, Expected, Observed, Calculation, and Statistic.
+Worked examples put the substituted formula in Calculation and its numerical contribution in
+Statistic, with the exact and rounded chi-square total below.
+
+The shared renderer in
+[chisquarelib.py](../problems/inheritance-problems/chi_square/chisquarelib.py) accepts an optional
+keyword argument, `color="#004d99"`. Use a dark six-digit hex color: the caption uses that accent
+for its text and top border, while the caption and column headings receive a pale fill mixed
+with 90% white. Body rows keep their neutral styling.
+
+`create_data_table()` and `create_worked_table()` forward the same argument. Omitting it or passing
+`color=None` preserves the neutral appearance. `make_chi_square_table()` defaults to subdued gray
+(`#606060`); pass another color to override it, or `None` for the neutral style. These options
+change presentation only; supplied calculations, totals, and intentional errors remain intact.
+
 ## Text replacement rules
 
 `bptools.applyReplacementRulesToText()` and `applyReplacementRulesToList()` apply literal

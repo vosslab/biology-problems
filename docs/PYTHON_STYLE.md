@@ -25,7 +25,9 @@ AI agents frequently get these wrong. Read the full sections below for details.
 
 ## Python version
 
-* I like using one of the latest versions of python, but not the latest, of python3, currently **3.12** on macOS; 3.13 on debian13, etc. Prefer using the system python, venv only as a last resort.
+* Prefer the latest Python release, following [REPO_STYLE.md](REPO_STYLE.md). Use the
+  repository-configured interpreter for commands until its environment is updated. Prefer the
+  system Python; use a venv only as a last resort.
 * In this repo, run python commands through the bootstrap pattern:
 * `source source_me.sh && python ...`
 
@@ -310,6 +312,7 @@ If you add a new third-party import, add the package to the appropriate requirem
 ### ARGPARSE MINIMALISM
 
 Be conservative. Only add arguments users frequently need to change between runs.
+Apply the **Keep configuration simple** principle in [REPO_STYLE.md](REPO_STYLE.md).
 
 **Good candidates:**
 - Input/output file paths
@@ -378,7 +381,8 @@ def parse_args():
 * YAML favorite, readable, editable
 * CSV spreadsheet input/output
 * JSON good for large, wordy data
-* PNG images, graphics, figures, pixel data
+* WebP at quality 90 for final named screenshots; see [REPO_STYLE.md](REPO_STYLE.md#screenshot-format).
+* Choose other image and scientific pixel-data formats for the artifact's requirements.
 
 ## AVAILABLE MODULES
 

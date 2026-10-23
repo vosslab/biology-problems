@@ -132,8 +132,8 @@ def normalGoodStats(p, F, N):
 		row = []
 		obs = observed[j]
 		exp = expected[j]
-		row.append(obs)
 		row.append(exp)
+		row.append(obs)
 		chirow = (obs-exp)**2/float(exp)
 		calc = "<sup>({0}-{1})<sup>2</sup></sup>&frasl;&nbsp;<sub>{2}</sub>".format(obs, exp, exp)
 		row.append(calc)
@@ -149,8 +149,7 @@ def normalGoodStats(p, F, N):
 #===================
 def createDataTable(stats_list, title=None):
 	table = chisquarelib.create_data_table(stats_list, title,
-		labels=["Red Flowers", "Pink Flowers", "White Flowers"],
-		headers=["Category", "Observed", "Expected", "Calculation", "Statistic"])
+		labels=["Red Flowers", "Pink Flowers", "White Flowers"])
 	return table
 
 #===================

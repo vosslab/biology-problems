@@ -1,4 +1,5 @@
 
+import re
 import math
 import fractions
 import random
@@ -87,13 +88,14 @@ assert get_chi_square_result(3.0, 2, 0.05) == 'accept_null'
 #===============
 #===============
 def make_chi_square_table(degrees_of_freedom: tuple = (1, 2, 3, 4),
-		p_values: tuple = (0.95, 0.90, 0.75, 0.5, 0.25, 0.1, 0.05, 0.01)) -> str:
+		p_values: tuple = (0.95, 0.90, 0.75, 0.5, 0.25, 0.1, 0.05, 0.01), *,
+		color: str | None = "#606060") -> str:
 	"""Render critical values for the requested degrees of freedom and tail probabilities."""
 	headers = ["Degrees of freedom"] + [f"{p:.2f}" for p in p_values]
 	rows = [[df] + [f"{get_critical_value(p, df):.2f}" for p in p_values]
 		for df in degrees_of_freedom]
 	table = render_table(headers, rows,
-		"Chi-square critical values (probability in the right tail)")
+		"Chi-square critical values (probability in the right tail)", color=color)
 	return table
 
 
@@ -159,15 +161,32 @@ assert isinstance(result, list) and len(result) == 4
 #===============
 PEA_PHENOTYPES = ["Yellow Round (Y&ndash;R&ndash;)", "Yellow Wrinkled (Y&ndash;rr)",
 	"Green Round (yyR&ndash;)", "Green Wrinkled (yyrr)"]
+CALCULATION_HEADERS = ["Category", "Expected", "Observed", "Calculation", "Statistic"]
 
 
-def render_table(headers: list, rows: list, title: str = None) -> str:
-	"""Render supplied cells verbatim, including intentional errors and blank work."""
+def render_table(headers: list, rows: list, title: str = None, *,
+		color: str | None = None) -> str:
+	"""Render supplied cells verbatim, including intentional errors and blank work.
+
+	An optional dark #RRGGBB color accents the caption and tints the column headings.
+	None retains the neutral appearance. Body cells are independent of the accent.
+	"""
 	style = "padding: 6px 8px; border-bottom: 1px solid #b8b8b8; text-align: right;"
+	caption_style = "text-align: left; font-weight: bold; padding: 6px;"
+	header_background = "#e3e8ed"
+	if color is not None:
+		if re.fullmatch(r"#[0-9a-fA-F]{6}", color) is None:
+			raise ValueError("Table color must be a #RRGGBB hex color")
+		# Keep the accent readable on a fill mixed with 90 percent white.
+		channels = [round(int(color[index:index + 2], 16) * 0.1 + 255 * 0.9)
+			for index in (1, 3, 5)]
+		header_background = "#" + "".join(f"{channel:02x}" for channel in channels)
+		caption_style += f" color: {color}; background: {header_background};"
+		caption_style += f" border-top: 2px solid {color};"
 	text = '<table style="border-collapse: collapse; color: #202020; background: #ffffff;">'
 	if title is not None:
-		text += f'<caption style="text-align: left; font-weight: bold; padding: 6px;">{title}</caption>'
-	text += '<thead><tr style="background: #e3e8ed;">'
+		text += f'<caption style="{caption_style}">{title}</caption>'
+	text += f'<thead><tr style="background: {header_background};">'
 	for index, header in enumerate(headers):
 		alignment = "text-align: left;" if index == 0 else ""
 		text += f'<th scope="col" style="{style} {alignment}">{header}</th>'
@@ -185,7 +204,8 @@ def render_table(headers: list, rows: list, title: str = None) -> str:
 	return text
 
 
-def create_worked_table(labels: list, observed: list, expected: list) -> str:
+def create_worked_table(labels: list, observed: list, expected: list, *,
+		color: str | None = None) -> str:
 	"""Calculate correct chi-square work for any number of labeled categories.
 
 	Use render_table or create_data_table for supplied or intentionally wrong work.
@@ -213,20 +233,18 @@ def create_worked_table(labels: list, observed: list, expected: list) -> str:
 			numerator = f"({numerator})"
 		if exp.denominator != 1:
 			denominator = f"({denominator})"
-		rows.append([label, str(obs), str(exp), str(difference), str(difference ** 2),
-			f"{numerator} / {denominator} &asymp; {float(term):.2f}"])
+		calculation = f"({obs} &minus; {exp})<sup>2</sup> / {denominator}"
+		calculation += f" = {numerator} / {denominator}"
+		rows.append([label, str(exp), str(obs), calculation, f"{float(term):.2f}"])
 	total = sum(terms)
-	rows.append(["<strong>Total</strong>", str(observed_total), str(expected_total),
-		"&mdash;", "&mdash;", f"<strong>&chi;<sup>2</sup> = {total} &asymp; {float(total):.2f}</strong>"])
-	headers = ["Category", "Observed", "Expected", "Observed &minus; expected",
-		"(Observed &minus; expected)<sup>2</sup>",
-		"(Observed &minus; expected)<sup>2</sup> / expected"]
-	text = render_table(headers, rows, "Chi-square calculation")
+	rows.append(["<strong>Total</strong>", str(expected_total), str(observed_total),
+		"&mdash;", f"<strong>&chi;<sup>2</sup> = {total} &asymp; {float(total):.2f}</strong>"])
+	text = render_table(CALCULATION_HEADERS, rows, "Chi-square calculation", color=color)
 	return text
 
 
 def create_data_table(stats_list: list, title: str = None, labels: list = None,
-		headers: list = None) -> str:
+		headers: list = None, *, color: str | None = None) -> str:
 	"""Display precomputed work without changing its values or supplied total.
 
 	stats_list contains category rows followed by the total. Callers supply category
@@ -238,9 +256,9 @@ def create_data_table(stats_list: list, title: str = None, labels: list = None,
 	if len(labels) != len(category_rows):
 		raise ValueError("Each category row needs a label")
 	if headers is None:
-		headers = ["Category", "Expected", "Observed", "Calculation", "Statistic"]
+		headers = CALCULATION_HEADERS
 	rows = [[label] + list(values) for label, values in zip(labels, category_rows)]
 	rows.append(["<strong>Total &chi;<sup>2</sup></strong>"]
 		+ ["&mdash;"] * (len(headers) - 2) + [stats_list[-1]])
-	text = render_table(headers, rows, title)
+	text = render_table(headers, rows, title, color=color)
 	return text

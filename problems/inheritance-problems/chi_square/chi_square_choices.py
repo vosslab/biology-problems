@@ -30,11 +30,12 @@ error_types = {
 
 accept_str = '<span style="color: #009900;"><strong>FAIL to REJECT</strong></span>' #GREEN
 reject_str = '<span style="color: #e60000;"><strong>REJECT</strong></span>' #RED
+# Share each table's accent with its answer-choice labels.
+TABLE_COLORS = ("#5d3b00", "#004d99", "#b30077")
 tables_list = [
-		'<span style="color: #5d3b00;"><strong>Table 1</strong></span>', #DARK ORANGE
-		'<span style="color: #004d99;"><strong>Table 2</strong></span>', #NAVY BLUE
-		'<span style="color: #b30077;"><strong>Table 3</strong></span>', #MAGENTA
-	]
+	f'<span style="color: {color};"><strong>Table {index + 1}</strong></span>'
+	for index, color in enumerate(TABLE_COLORS)
+]
 
 
 choices_list = [
@@ -286,7 +287,8 @@ def makeQuestion(error_type: int, desired_result: str) -> tuple:
 	for i, index in enumerate(shuffle_map):
 		stats_list = number_stats[index]
 		new_number_stats.append(stats_list)
-		numbers_table = chisquarelib.create_data_table(stats_list, tables_list[i], labels=chisquarelib.PEA_PHENOTYPES)
+		numbers_table = chisquarelib.create_data_table(stats_list, tables_list[i],
+			labels=chisquarelib.PEA_PHENOTYPES, color=TABLE_COLORS[i])
 		shuffled_tables.append(numbers_table)
 
 	# Calculate chi-square result

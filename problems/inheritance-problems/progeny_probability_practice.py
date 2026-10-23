@@ -6,7 +6,7 @@ Exemplars: Rule, case, question; Note that hands over arithmetic.
 The factorial/coefficient/binomial/explain modes follow Lecture 07B/07C:
 apply factorials, count phenotype orders, set up probabilities, and explain repeated labels.
 Distractors omit arrangements, swap probabilities, or count repeated labels as distinct.
-No calculator is needed; all choices retain factorials and powers.
+No calculator is needed; choices use binomial coefficients, factorials, and powers.
 """
 
 import fractions
@@ -14,6 +14,7 @@ import math
 import random
 
 import bptools
+import binomiallib
 
 
 FORMATS = {"factorial": "MC", "coefficient": "MC", "binomial": "MC", "explain": "MC"}
@@ -84,7 +85,7 @@ def factorial_coefficient(number: int, count: int) -> str:
 
 
 def coefficient_question(N: int, scenario: tuple):
-	"""Count phenotype orders using factorials, including the zero-factorial case."""
+	"""Connect binomial notation to factorial counts, including the zero-factorial case."""
 	_, target, other, _ = scenario
 	number = random.randint(5, 9)
 	count = random.choice([0, number] + list(range(2, number - 1)))
@@ -112,6 +113,10 @@ def coefficient_question(N: int, scenario: tuple):
 			used.add(value)
 		if len(choices) == 4:
 			break
+	# Connect the same coefficient notation to each proposed factorial expansion.
+	coefficient = binomiallib.binomial_coefficient(number, count)
+	choices = [binomiallib.format_expression([coefficient, "=", label]) for label in choices]
+	answer = binomiallib.format_expression([coefficient, "=", answer])
 	random.shuffle(choices)
 	item = bptools.formatBB_MC_Question(N, text, choices, answer)
 	return item
@@ -119,9 +124,10 @@ def coefficient_question(N: int, scenario: tuple):
 
 def binomial_expression(number: int, count: int, probability: fractions.Fraction) -> str:
 	"""Show arrangement count times the probability of one phenotype order."""
-	text = (f"[{factorial_coefficient(number, count)}] &times; "
-		f"({probability})<sup>{count}</sup> &times; "
+	powers = (f"({probability})<sup>{count}</sup> &times; "
 		f"({1 - probability})<sup>{number - count}</sup>")
+	text = binomiallib.format_expression([
+		binomiallib.binomial_coefficient(number, count), "&times;", powers])
 	return text
 
 
@@ -135,10 +141,12 @@ def binomial_question(N: int, scenario: tuple):
 		f"of <strong>exactly {count} {target}</strong> and {number - count} {other}, "
 		"in any order? Leave the answer as an expression; no calculator is needed.</p>")
 	answer = binomial_expression(number, count, probability)
-	one_order = f"({probability})<sup>{count}</sup> &times; ({1 - probability})<sup>{number - count}</sup>"
+	one_order = binomiallib.format_expression([
+		f"({probability})<sup>{count}</sup> &times; ({1 - probability})<sup>{number - count}</sup>"])
 	# Errors: omit arrangements, swap phenotype probabilities, omit the other phenotype.
 	choices = [answer, one_order, binomial_expression(number, count, 1 - probability),
-		f"[{factorial_coefficient(number, count)}] &times; ({probability})<sup>{count}</sup>"]
+		binomiallib.format_expression([binomiallib.binomial_coefficient(number, count),
+			"&times;", f"({probability})<sup>{count}</sup>"])]
 	random.shuffle(choices)
 	item = bptools.formatBB_MC_Question(N, text, choices, answer)
 	return item
@@ -150,9 +158,10 @@ def explanation_question(N: int, scenario: tuple):
 	number, count = random.choice([(5, 2), (6, 2), (7, 3), (8, 3)])
 	text = context_table(scenario)
 	text += (f"<p>To count phenotype sequences with {count} {target} and {number - count} "
-		f"{other} offspring, you use {factorial_coefficient(number, count)}, "
-		"the binomial coefficient.</p>"
-		f"<p>Why divide {number}! by {count}! &times; {number - count}!?</p>")
+		f"{other} offspring, you use the binomial coefficient:</p>")
+	text += binomiallib.format_expression([binomiallib.binomial_coefficient(number, count),
+		"=", factorial_coefficient(number, count)])
+	text += f"<p>Why divide {number}! by {count}! &times; {number - count}!?</p>"
 	answer = "Swapping offspring with the same phenotype leaves the phenotype sequence unchanged."
 	choices = [answer,
 		"Swapping offspring with different phenotypes leaves the phenotype sequence unchanged.",

@@ -1,5 +1,44 @@
 # Changelog
 
+## 2026-10-23
+
+### Behavior or Interface Changes
+
+- Reuse the offspring-sex generator's stacked binomial coefficient notation in phenotype
+  probability expressions, sequence-count factorial choices, and coefficient interpretation
+  stems. Move the existing parentheses renderer into `binomiallib.py`; preserve the original
+  sex-count formula output and keep complete new expressions inside presentation tables.
+- Standardize chi-square calculation headings as Category, Expected, Observed, Calculation,
+  and Statistic. Compact the dice worked examples into these five columns, retaining the
+  substitution and squared numerator in Calculation and the contribution in Statistic.
+  Reorder Hardy-Weinberg counts to match; preserve exact totals and grading calculations.
+- Add an optional `color` argument to the shared chi-square table renderer and its helpers.
+  Colored captions regain a full-width pale band and accent border; column headings use the
+  same tint while body rows remain neutral. Keep the default data-table appearance unchanged.
+- Use the lab-partner comparison's existing orange, blue, and magenta for both tables and
+  answer labels. Give critical-value reference tables a subdued gray accent by default.
+  Document the argument in the usage guide.
+
+### Fixes and Maintenance
+
+- Synchronized shared style guides, tests, and repository support files from the starter template.
+
+### Developer Tests and Notes
+
+- Verify binomial notation against the original renderer and sex-count formulas byte for byte.
+  Independently enumerate offspring sequences to check every supported coefficient count and
+  probability setup, including zero-count cases and unique correct answers. Generate five
+  questions per updated mode; text advisories and focused lint pass. Review desktop and
+  narrow-screen self-tests; retain WebP review captures and remove temporary checks.
+- Verify the compact calculation layout with five existing chi-square tests, focused lint,
+  temporary checks of Expected/Observed column mapping and totals, and a fresh five-question
+  dice interpretation bank with desktop and narrow self-test screenshots.
+- Pass five existing chi-square tests, 86 Markdown link checks, and focused pyflakes checks.
+  Temporary comparisons confirm unchanged default markup and unchanged content and answer keys
+  across 18 seeded error/outcome cases. Generate five questions and inspect standalone and
+  self-test screenshots at desktop and 390-pixel widths. Existing narrow-screen table overflow
+  remains unchanged; this update changes color treatment only.
+
 ## 2026-10-22
 
 - Shorten baby-weight and Busse Woods conclusion reminders to one optional

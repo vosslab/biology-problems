@@ -12,6 +12,7 @@ import math
 # Import local modules from the project
 # Provides custom functions, such as question formatting and other utilities
 import bptools
+import binomiallib
 
 #===========================================================
 #===========================================================
@@ -36,49 +37,6 @@ num2txt = {
 	9: 'nine',
 	10: 'ten',
 }
-
-#===========================================================
-#===========================================================
-def makeChoose(n, r):
-	"""
-	Create an inline HTML table representing (n over r) with flattened parentheses.
-
-	- Enlarged and lightened parentheses.
-	- Adds slightly more horizontal spacing (~3/4 character) between parentheses and numbers.
-	- ASCII-safe with HTML numeric entities.
-	"""
-	choose = ""
-	choose += (
-		"<table style='display:inline-table;vertical-align:middle;"
-		"border-collapse:collapse;border:0;position:relative;top:-0.2em;'>"
-	)
-
-	# First row: left paren and top number with wider spacing
-	choose += "<tr>"
-	choose += (
-		" <td rowspan='2' style='text-align:center;vertical-align:middle;padding:0;"
-		"margin-right:0.05em;'>"
-		"<span style='font-size:xx-large;"
-		"transform:scale(1.35);display:inline-block;margin-right:0.05em;'>"
-		"&#10222;</span>&nbsp;</td>"
-	)
-	choose += f" <td style='text-align:center;vertical-align:bottom;padding:0;'>{n}</td>"
-	choose += (
-		" <td rowspan='2' style='text-align:center;vertical-align:middle;padding:0;"
-		"margin-left:0.05em;'>"
-		"&nbsp;<span style='font-size:xx-large;"
-		"transform:scale(1.35);display:inline-block;margin-left:0.05em;'>"
-		"&#10223;</span></td>"
-	)
-	choose += "</tr>"
-
-	# Second row: bottom number with same spacing
-	choose += "<tr>"
-	choose += f" <td style='text-align:center;vertical-align:top;padding:0;'>{r}</td>"
-	choose += "</tr>"
-
-	choose += "</table>"
-	return choose
 
 #===========================================================
 #===========================================================
@@ -228,7 +186,7 @@ def makeFormula(n, s, t, p, q):
 
 	# First term: choose function C(n, s)
 	formula += " <td>"
-	formula += makeChoose(n, s)
+	formula += binomiallib.binomial_coefficient(n, s)
 	formula += "</td><td>"
 
 	# Add p^s and q^t components
@@ -320,7 +278,7 @@ def get_question_text(male_offspring: int, female_offspring: int,
 	# Model badge with symbolic parameters only
 	question_text += '<table role="presentation" style="border:0;border-collapse:collapse;">'
 	question_text += '<tr><td><strong>Model:</strong> Binomial &rarr;</td><td>'
-	question_text += makeChoose('n', 'k')
+	question_text += binomiallib.binomial_coefficient('n', 'k')
 	question_text += '</td><td>&sdot;p<sup>k</sup>&sdot;q<sup>n-k</sup></td></tr></table>'
 
 	question_text += "<p>"
