@@ -33,8 +33,8 @@ error2choice = {
 choices = [
 	'The wrong numbers in the calculation were used for division, you need to divide by a different number.',
 	'The numbers in the calculation have to be squared and they are not squared.',
-	'The wrong rejection criteria was used. the significance level, &alpha; is wrong.',
-	'The expected progeny for the null hypothesis is incorrect. They did the calculation wrong. ',
+	'The wrong rejection criteria was used. the <span style="color: #8601af;">level of significance (&alpha;)</span> is wrong.',
+	'The expected progeny for the <span style="color: #0247fe;">null hypothesis (H<sub>0</sub>)</span> is incorrect. They did the calculation wrong. ',
 	'The degrees of freedom is wrong, it should be a different value.',
 ]
 
@@ -254,11 +254,11 @@ def questionContent(chisq: float, df: int=3, alpha: float=0.05, flip: bool=False
 
 	# Start building the first part of the question string
 	# Now using f-strings for string formatting
-	question += "<p>The final result gives the chi-squared (&chi;&sup2;) test value of "
+	question += "<p>The final result gives the <span style='color: #935d00;'>chi-square statistic (&chi;<sup>2</sup>)</span> of "
 	question += f"{chisq:.2f} with {df} degrees of freedom. "
 
 	# Append information about the critical value and significance level
-	question += "Consulting the Table of &chi;&sup2; Critical Values and a level of significance &alpha;="
+	question += "Consulting the Table of &chi;&sup2; Critical Values and a <span style='color: #8601af;'>level of significance (&alpha;)</span>="
 	question += f"{alpha:.2f}, we obtain a critical value of {critical_value:.2f}.</p>"
 
 
@@ -275,11 +275,11 @@ def questionContent(chisq: float, df: int=3, alpha: float=0.05, flip: bool=False
 
 	# Build the last part of the question string based on the results of the chi-squared test
 	# Complete the question string with chi-squared test results
-	question += f"<p>Since the chi-squared value of {chisq:.2f} is {results[0]} than the "
-	question += f"critical value of {critical_value:.2f}, the null hypothesis has {results[1].upper()}.</p>"
+	question += f"<p>Since the <span style=\"color: #935d00;\">chi-square statistic (&chi;<sup>2</sup>)</span> of {chisq:.2f} is {results[0]} than the "
+	question += f"critical value of {critical_value:.2f}, the <span style=\"color: #0247fe;\">null hypothesis (H<sub>0</sub>)</span> has {results[1].upper()}.</p>"
 
 	# Add a scenario involving a lab partner
-	question += "<p>Your lab partner completed a chi-squared (&chi;&sup2;) test on your lab data (above) "
+	question += "<p>Your lab partner completed a chi-square (&chi;<sup>2</sup>) test on your lab data (above) "
 	question += "for the F<sub>2</sub> generation in a standard dihybrid cross. The goal was to verify if "
 	question += "the observed results matched the expected phenotype ratios.</p>"
 	question += "<p>However, it appears they made an error. <strong>What did they do wrong?</strong></p>"

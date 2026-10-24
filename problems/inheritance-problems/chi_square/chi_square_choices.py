@@ -39,13 +39,13 @@ tables_list = [
 
 
 choices_list = [
-	f'{tables_list[0]} with &chi;&sup2; = XXXX is correct and we {reject_str} the null hypothesis',
-	f'{tables_list[1]} with &chi;&sup2; = XXXX is correct and we {reject_str} the null hypothesis',
-	f'{tables_list[2]} with &chi;&sup2; = XXXX is correct and we {reject_str} the null hypothesis',
+	f'{tables_list[0]} with &chi;&sup2; = XXXX is correct and we {reject_str} the <span style=\"color: #0247fe;\">null hypothesis (H<sub>0</sub>)</span>',
+	f'{tables_list[1]} with &chi;&sup2; = XXXX is correct and we {reject_str} the <span style=\"color: #0247fe;\">null hypothesis (H<sub>0</sub>)</span>',
+	f'{tables_list[2]} with &chi;&sup2; = XXXX is correct and we {reject_str} the <span style=\"color: #0247fe;\">null hypothesis (H<sub>0</sub>)</span>',
 
-	f'{tables_list[0]} with &chi;&sup2; = XXXX is correct and we {accept_str} the null hypothesis',
-	f'{tables_list[1]} with &chi;&sup2; = XXXX is correct and we {accept_str} the null hypothesis',
-	f'{tables_list[2]} with &chi;&sup2; = XXXX is correct and we {accept_str} the null hypothesis',
+	f'{tables_list[0]} with &chi;&sup2; = XXXX is correct and we {accept_str} the <span style=\"color: #0247fe;\">null hypothesis (H<sub>0</sub>)</span>',
+	f'{tables_list[1]} with &chi;&sup2; = XXXX is correct and we {accept_str} the <span style=\"color: #0247fe;\">null hypothesis (H<sub>0</sub>)</span>',
+	f'{tables_list[2]} with &chi;&sup2; = XXXX is correct and we {accept_str} the <span style=\"color: #0247fe;\">null hypothesis (H<sub>0</sub>)</span>',
 ]
 
 
@@ -192,18 +192,18 @@ def normalGoodStats(ratio, observed=None):
 #===================
 def questionContent():
 	question = ''
-	question += "<p>Your lab partner is trying again (eye roll) and did another a chi-squared (&chi;&sup2;) test "
+	question += "<p>Your lab partner is trying again (eye roll) and did another a chi-square (&chi;<sup>2</sup>) test "
 	question += "on the F<sub>2</sub> generation in a dihybid cross based on your lab data (above). "
 	question += "They wanted to know if the results confirm the expected phenotype ratios.</p>"
 
-	question += "<p>You helped them set up the null hypothesis, so you know that part is correct, "
+	question += "<p>You helped them set up the <span style='color: #0247fe;'>null hypothesis (H<sub>0</sub>)</span>, so you know that part is correct, "
 	question += "but they got confused and were unsure about how to calculate the "
-	question += "chi-squared (&chi;&sup2;) value. So much so that "
+	question += "<span style='color: #935d00;'>chi-square statistic (&chi;<sup>2</sup>)</span>. So much so that "
 	question += "they did it three (3) different ways.</p> "
 
 	question += "<p>Before you ask your instructor for a new lab partner, "
 	question += "<b>tell them which table is correct AND whether they can reject or fail to reject "
-	question += "the null hypothesis</b> using the information provided.</p> "
+	question += "the <span style='color: #0247fe;'>null hypothesis (H<sub>0</sub>)</span></b> using the information provided.</p> "
 	return question
 
 """bad_ratios = [

@@ -191,11 +191,11 @@ def make_question(error_type: str, scenario_id: str = None) -> tuple:
 	question += f"<p>Total offspring scored: <span style='font-family: monospace;'>{N}</span></p>"
 	question += _make_counts_table(scenario["labels"], ratio, observed, expected)
 	question += (
-		"<p>Your lab partner writes these hypotheses for a chi-square test:</p>"
+		"<p>Your lab partner writes these hypotheses for a chi-square (&chi;<sup>2</sup>) test:</p>"
 	)
 	question += "<p>"
-	question += f"<strong>The null hypothesis, H<sub>0</sub></strong>: {lab_h0}<br/>"
-	question += f"<strong>The alternative hypothesis, H<sub>a</sub></strong>: {lab_ha}"
+	question += f"<strong>The <span style=\"color: #0247fe;\">null hypothesis (H<sub>0</sub>)</span></strong>: {lab_h0}<br/>"
+	question += f"<strong>The <span style=\"color: #b74300;\">alternative hypothesis (H<sub>a</sub>)</span></strong>: {lab_ha}"
 	question += "</p>"
 	question += "<p>What should your lab partner change, if anything?</p>"
 

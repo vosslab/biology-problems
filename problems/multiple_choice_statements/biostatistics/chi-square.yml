@@ -1,16 +1,16 @@
-topic: chi-square (&chi;&sup2;) tests
+topic: chi-square (&chi;<sup>2</sup>) tests
 override_question_false: null
 replacement_rules:
   yesrej: 'is <span style="color: #d40000;">REJECTED</span>'
   notrej: 'is <span style="color: #007a00;">NOT REJECTED</span>'
   yessupp: 'is <span style="color: #007a00;">SUPPORTED</span>'
   notsupp: 'is <span style="color: #d40000;">NOT SUPPORTED</span>'
-  c2s: '<span style="color: #0067cc;">chi-square (&chi;&sup2;) statistic</span>'
+  c2s: '<span style="color: #935d00;">chi-square statistic (&chi;<sup>2</sup>)</span>'
   p-value: '<span style="color: #3b7600;">p-value</span>'
-  losa: '<span style="color: #b74300;">level of significance, &alpha;</span>'
+  losa: '<span style="color: #8601af;">level of significance (&alpha;)</span>'
   critval: '<span style="color: #935d00;">critical value</span>'
-  nullhyp: '<span style="color: #076dad;">null hypothesis, H<sub>0</sub></span>'
-  althyp: '<span style="color: #c80085;">alternative hypothesis, H<sub>a</sub></span>'
+  nullhyp: '<span style="color: #0247fe;">null hypothesis (H<sub>0</sub>)</span>'
+  althyp: '<span style="color: #b74300;">alternative hypothesis (H<sub>a</sub>)</span>'
   less than: <strong>less than</strong>
   larger than: <strong>larger than</strong>
   EEEEEEEE: '<span style="color: #3b7600;">EEEEEEEE</span>'

@@ -2,6 +2,20 @@
 
 ## 2026-10-23
 
+### Behavior or Interface Changes
+
+- Standardize chi-square terminology across Python generators, MC statements, and
+  matching: blue null hypothesis (H0), orange alternative hypothesis (Ha), violet
+  level of significance (alpha), and amber chi-square statistic (chi-squared symbol).
+  Distinguish the chi-square test procedure from its numeric statistic and use
+  parenthesized symbols consistently.
+
+- Place October 22-23 changelog entries under category headings to resolve orphan-bullet warnings.
+
+- Audit correction: retain paired hypotheses for the active Biostatistics consumer
+  and register its mode explicitly. Clean retired genetics metadata and point the
+  download test at the retained binomial bank. Remove random sampling at library import.
+
 - Remove the unregistered paired-hypothesis mode and its private helpers/data,
   the binomial-only mode selector and unused scenario, and retired generated artifacts.
 
@@ -50,8 +64,6 @@
 
 - Remove the standalone progeny coefficient MC bank and its build registration; retain
   coefficient calculations used by the binomial and explanation questions.
-
-### Behavior or Interface Changes
 
 - Filter binomial-practice distractors to 0.5%-60%, excluding duplicate displayed
   percentages and the correct result. Supplement omission errors with substitutions
@@ -142,6 +154,8 @@
   remains unchanged; this update changes color treatment only.
 
 ## 2026-10-22
+
+### Behavior or Interface Changes
 
 - Shorten baby-weight and Busse Woods conclusion reminders to one optional
   consider sentence referring to the stated significance level, with hypothesis

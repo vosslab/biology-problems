@@ -42,9 +42,9 @@ def createDataTableWithMissing(stats_list, title=None):
 #===================
 def questionContent():
 	question = ''
-	question += "<p>Complete the table and calculate the chi-squared (&chi;<sup>2</sup>) value.</p> "
+	question += "<p>Complete the table and calculate the <span style='color: #935d00;'>chi-square statistic (&chi;<sup>2</sup>)</span>.</p> "
 	question += "<p><i>Even though not part of the question, ask yourself whether you would "
-	question += "reject or fail to reject the null hypothesis</i></p> "
+	question += "reject or fail to reject the <span style='color: #0247fe;'>null hypothesis (H<sub>0</sub>)</span></i></p> "
 
 	return question
 

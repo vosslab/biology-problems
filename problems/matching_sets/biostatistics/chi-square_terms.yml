@@ -7,19 +7,20 @@ replacement_rules:
   f2supp: '<span style="color: #eb1601;">fail to support</span>' #BRIGHT RED
   supported: '<span style="color: #4d8426;">supported</span>' #LEAF GREEN
   support: '<span style="color: #4d8426;">support</span>' #LEAF GREEN
-  chi2: '<span style="color: #aa6701;">chi-square (&chi;&sup2;)</span>' #AMBER
+  c2s: '<span style="color: #935d00;">chi-square statistic (&chi;<sup>2</sup>)</span>'
+  chi2: 'chi-square (&chi;<sup>2</sup>)'
   p-value: '<span style="color: #C21460;">p-value</span>' #RASPBERRY
-  losa: '<span style="color: #8601AF;">level of significance, &alpha;</span>' #VIOLET
+  losa: '<span style="color: #8601af;">level of significance (&alpha;)</span>'
   critval: '<span style="color: #4424D6;">critical value</span>' #VIOLET BLUE
-  nullhyp: '<span style="color: #0247FE;">null hypothesis, H<sub>0</sub></span>' #BRIGHT BLUE
-  althyp: '<span style="color: #cf4b03;">alternative hypothesis, H<sub>a</sub></span>' #ORANGE
+  nullhyp: '<span style="color: #0247fe;">null hypothesis (H<sub>0</sub>)</span>'
+  althyp: '<span style="color: #b74300;">alternative hypothesis (H<sub>a</sub>)</span>'
   dof: '<span style="color: #687f19;">degrees of freedom</span>' #OLIVE
 matching pairs:
   critval:
   - found in a table for a given degrees of freedom and losa
   - the boundary of how extreme a test statistic we need to support the nullhyp
-  - the cutoff used to compare against the observed chi2 test statistic
-  chi2 test statistic:
+  - the cutoff used to compare against the observed c2s
+  c2s:
   - if this value is large, then there is stronger evidence to support the althyp
   - the bigger this number, the smaller the p-value
   - the sum of the normalized square difference between observed and expected data
@@ -35,7 +36,7 @@ matching pairs:
   - the probability of getting a result that is either the same or more extreme than
     the actual observations
   - if this value is small, then there is stronger evidence to support the althyp
-  - the smaller this number, the bigger the chi2 test statistic
+  - the smaller this number, the bigger the c2s
   - a small value suggests the observed data are not consistent with the nullhyp
   nullhyp:
   - we attempt to find evidence against this hypothesis in our chi2 test

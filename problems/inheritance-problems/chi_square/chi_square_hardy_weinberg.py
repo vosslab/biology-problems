@@ -16,22 +16,22 @@ import chisquarelib
 #      and decide whether to accept or to reject the null.
 
 choices = [
-	'the chi-squared (&chi;<sup>2</sup>) sum is '
+	'the <span style="color: #935d00;">chi-square statistic (&chi;<sup>2</sup>)</span> is '
 		+'<span style="color: darkblue; font-weight: bold;">GREATER than</span> '
 		+'the critical value and we '
-		+'<span style="color: darkred; font-weight: bold;">REJECT</span> the null hypothesis',
-	'the chi-squared (&chi;<sup>2</sup>) sum is '
+		+'<span style="color: darkred; font-weight: bold;">REJECT</span> the <span style="color: #0247fe;">null hypothesis (H<sub>0</sub>)</span>',
+	'the <span style="color: #935d00;">chi-square statistic (&chi;<sup>2</sup>)</span> is '
 		+'<span style="color: darkblue; font-weight: bold;">GREATER than</span> '
 		+'the critical value and we '
-		+'<span style="color: darkgreen; font-weight: bold;">ACCEPT</span> the null hypothesis',
-	'the chi-squared (&chi;<sup>2</sup>) sum is '
+		+'<span style="color: darkgreen; font-weight: bold;">ACCEPT</span> the <span style="color: #0247fe;">null hypothesis (H<sub>0</sub>)</span>',
+	'the <span style="color: #935d00;">chi-square statistic (&chi;<sup>2</sup>)</span> is '
 		+'<span style="color: Indigo; font-weight: bold;">LESS than</span> '
 		+'the critical value and we '
-		+'<span style="color: darkred; font-weight: bold;">REJECT</span> the null hypothesis',
-	'the chi-squared (&chi;<sup>2</sup>) sum is '
+		+'<span style="color: darkred; font-weight: bold;">REJECT</span> the <span style="color: #0247fe;">null hypothesis (H<sub>0</sub>)</span>',
+	'the <span style="color: #935d00;">chi-square statistic (&chi;<sup>2</sup>)</span> is '
 		+'<span style="color: Indigo; font-weight: bold;">LESS than</span> '
 		+'the critical value and we '
-		+'<span style="color: darkgreen; font-weight: bold;">ACCEPT</span> the null hypothesis',
+		+'<span style="color: darkgreen; font-weight: bold;">ACCEPT</span> the <span style="color: #0247fe;">null hypothesis (H<sub>0</sub>)</span>',
 ]
 
 letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -161,10 +161,10 @@ def questionContent(p):
 	question = ''
 	question += "<p>You finally have a new competent lab partner that you trust.</p>"
 	question += '<p>This lab partner calculated the allele frequencies of p={0:.2f} and q={1:.2f}. '.format(p, 1-p)
-	question += 'Then they did a chi-squared (&chi;<sup>2</sup>) test for your Hardy-Weinberg data.</p>'
+	question += 'Then they did a chi-square (&chi;<sup>2</sup>) test for your Hardy-Weinberg data.</p>'
 
 	question += "<p>They need you to decide whether you reject or fail to reject "
-	question += "the null hypothesis using the information provided.</p> "
+	question += "the <span style='color: #0247fe;'>null hypothesis (H<sub>0</sub>)</span> using the information provided.</p> "
 	return question
 
 #===================

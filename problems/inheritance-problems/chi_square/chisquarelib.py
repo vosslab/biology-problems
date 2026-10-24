@@ -152,12 +152,6 @@ def create_observed_progeny(N: int = 160, ratio: str = "9:2:4:1") -> list:
 
 	return count_list
 
-# Simple assertion test for the function 'createObservedProgeny'.
-# Note: The test might vary due to the random nature of the function.
-result = create_observed_progeny(160, "9:2:4:1")
-assert isinstance(result, list) and len(result) == 4
-
-
 #===============
 #===============
 PEA_PHENOTYPES = ["<span style='color: #806000; background-color: #ffffff;'>Yellow</span> Round (Y&ndash;R&ndash;)", "<span style='color: #806000; background-color: #ffffff;'>Yellow</span> Wrinkled (Y&ndash;rr)",

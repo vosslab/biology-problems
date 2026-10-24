@@ -93,7 +93,7 @@ def get_question_text(data: dict, show_expected: bool = True, show_calculation: 
 			rows.append(row)
 		text = chisquarelib.render_table(headers, rows)
 	text += f'<p>You roll a six-sided die {data["total"]} times. '
-	text += 'The null hypothesis (H<sub>0</sub>) is that each face has probability 1/6 on every roll.</p>'
+	text += 'The <span style="color: #0247fe;">null hypothesis (H<sub>0</sub>)</span> is that each face has probability 1/6 on every roll.</p>'
 	return text
 
 
@@ -122,7 +122,7 @@ def expected_question(N: int, data: dict):
 	text = get_question_text(data, show_expected=False)
 	face = random.randint(1, 6)
 	text += f"<p>Which calculation gives the expected number of rolls showing face {face} "
-	text += "under the null hypothesis (H<sub>0</sub>)? The arithmetic is shown; no calculator is needed.</p>"
+	text += "under the <span style='color: #0247fe;'>null hypothesis (H<sub>0</sub>)</span>? The arithmetic is shown; no calculator is needed.</p>"
 	total = data["total"]
 	# Errors: divide by df, assume two outcomes, use the total, or use face count.
 	options = [(f"{total} / 6", fractions.Fraction(total, 6)),
@@ -135,7 +135,7 @@ def expected_question(N: int, data: dict):
 
 def df_question(N: int, data: dict):
 	text = get_question_text(data)
-	text += "<p>Which calculation gives the degrees of freedom for this chi-square test? "
+	text += "<p>Which calculation gives the degrees of freedom for this chi-square (&chi;<sup>2</sup>) test? "
 	text += "The arithmetic is shown; no calculator is needed.</p>"
 	# Errors: subtract twice, count every face, or count rolls instead of categories.
 	options = [("6 &minus; 1", 5), ("6 &minus; 2", 4), ("6 &minus; 0", 6),
@@ -183,7 +183,7 @@ def calculation_question(N: int, data: dict):
 		calculation += f" = {numerator} / {denominator}"
 		rows.append([die_face(face), expected, observed, calculation, f"{float(term):.3f}"])
 	text = f'<p>You roll a six-sided die {data["total"]} times. '
-	text += 'The null hypothesis (H<sub>0</sub>) is that each face has probability 1/6 on every roll.</p>'
+	text += 'The <span style="color: #0247fe;">null hypothesis (H<sub>0</sub>)</span> is that each face has probability 1/6 on every roll.</p>'
 	text += '<p>Your lab partner completed the chi-square table below.</p>'
 	text += chisquarelib.render_table(chisquarelib.CALCULATION_HEADERS, rows,
 		footer=(data["total"], sum(terms)))
@@ -206,13 +206,13 @@ def result_text(data: dict) -> str:
 
 def interpretation_question(N: int, data: dict):
 	text = result_text(data)
-	text += "<p>Which one of the following conclusions is supported at &alpha; = 0.05?</p>"
-	reject = "Reject the null hypothesis (H<sub>0</sub>); there is enough evidence that face probabilities differ from 1/6."
-	keep = "Fail to reject the null hypothesis (H<sub>0</sub>); there is not enough evidence that face probabilities differ from 1/6."
+	text += "<p>Which one of the following conclusions is supported at a <span style='color: #8601af;'>level of significance (&alpha;)</span> of 0.05?</p>"
+	reject = "Reject the <span style='color: #0247fe;'>null hypothesis (H<sub>0</sub>)</span>; there is enough evidence that face probabilities differ from 1/6."
+	keep = "Fail to reject the <span style='color: #0247fe;'>null hypothesis (H<sub>0</sub>)</span>; there is not enough evidence that face probabilities differ from 1/6."
 	# Errors: reverse the decision; claim proof of equal chances; demand exact counts.
 	choices = [reject, keep,
-		"The null hypothesis (H<sub>0</sub>) is proven; every face has exactly the same chance on each roll.",
-		"The null hypothesis (H<sub>0</sub>) is disproven; a fair die must give exactly equal counts of all faces."]
+		"The <span style='color: #0247fe;'>null hypothesis (H<sub>0</sub>)</span> is proven; every face has exactly the same chance on each roll.",
+		"The <span style='color: #0247fe;'>null hypothesis (H<sub>0</sub>)</span> is disproven; a fair die must give exactly equal counts of all faces."]
 	answer = reject if data["reject"] else keep
 	random.shuffle(choices)
 	item = bptools.formatBB_MC_Question(N, text, choices, answer)
