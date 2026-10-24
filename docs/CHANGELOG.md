@@ -2,6 +2,22 @@
 
 ## 2026-10-23
 
+- Remove the unregistered paired-hypothesis mode and its private helpers/data,
+  the binomial-only mode selector and unused scenario, and retired generated artifacts.
+
+- Remove standalone factorial and factorial-denominator explanation banks, their
+  generator modes, and build tasks. Retain applied binomial and Pascal practice.
+
+- Finish factorial-practice choices with evaluated numeric results and remove the
+  instruction to leave expressions unevaluated. Show the addition distractor as a
+  sum without falsely equating it to a factorial.
+
+- Simplify the Pascal shoe-family prompt to ask about one randomly selected sex,
+  retaining its colored count and symbol plus inline N choose r notation.
+
+- Remove redundant observed-data and Hardy-Weinberg table captions. Move the
+  chi-square critical-value/right-tail explanation from the caption into prose.
+
 - Center shared chi-square table column headings without changing body-cell alignment.
 
 - Add decorative phenotype-word colors across topic07 probability and chi-square

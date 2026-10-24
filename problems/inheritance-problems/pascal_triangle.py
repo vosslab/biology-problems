@@ -13,14 +13,10 @@ def write_question(N: int, args):
 	number = random.randint(5, 9)
 	count = random.randint(0, number)
 	sex = random.choice(("girls", "boys"))
-	groups = []
-	for group, size, color, symbol in (
-		("boys", count if sex == "boys" else number - count, "#0086b3", "&male;"),
-		("girls", count if sex == "girls" else number - count, "#b30086", "&female;"),
-	):
-		label = group[:-1] if size == 1 else group
-		groups.append(f'<span style="color: {color};"><strong>'
-			f'{bptools.number_to_cardinal(size)} ({size}) {label} {symbol}</strong></span>')
+	color, symbol = ("#0086b3", "&male;") if sex == "boys" else ("#b30086", "&female;")
+	label = sex[:-1] if count == 1 else sex
+	group = (f'<span style="color: {color};"><strong>'
+		f'{bptools.number_to_cardinal(count)} ({count}) {label} {symbol}</strong></span>')
 	row = [math.comb(number, k) for k in range(number + 1)]
 	text = ("<p>The old woman who lived in a shoe had so many children she didn't know what to do. "
 		f"In this version of the rhyme, she has {bptools.number_to_cardinal(number)} ({number}) children.</p>"
@@ -30,11 +26,10 @@ def write_question(N: int, args):
 	for value in row:
 		text += f'<td style="border: 1px solid #767676; padding: 6px 8px; text-align: center;">{value}</td>'
 	text += '</tr></table>'
-	text += (f"<div>To count the birth orders with exactly {groups[0]} and {groups[1]}, "
-		f"use the binomial coefficient <strong>{number} choose {count}</strong>, ")
+	text += f"<p>How many birth orders are possible with exactly {group}?</p>"
+	text += (f"<div>Use Pascal's triangle to find <strong>{number} choose {count}</strong>, ")
 	text += binomiallib.binomial_coefficient(number, count)
 	text += ".</div>"
-	text += "<p>What is the value of this coefficient in the row above?</p>"
 	answer = str(row[count])
 	# Other entries represent choosing the wrong position; symmetric entries share a value.
 	distractors = sorted(set(row) - {row[count]})

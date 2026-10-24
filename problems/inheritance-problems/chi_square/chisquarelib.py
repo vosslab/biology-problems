@@ -95,8 +95,8 @@ def make_chi_square_table(degrees_of_freedom: tuple = (1, 2, 3, 4),
 	headers = ["Degrees of freedom"] + [f"{p:.2f}" for p in p_values]
 	rows = [[df] + [f"{get_critical_value(p, df):.2f}" for p in p_values]
 		for df in degrees_of_freedom]
-	table = render_table(headers, rows,
-		"Chi-square critical values (probability in the right tail)", color=color)
+	table = "<p>The table below gives chi-square critical values for each probability in the right tail.</p>"
+	table += render_table(headers, rows, color=color)
 	return table
 
 

@@ -1,13 +1,5 @@
 #!/usr/bin/env python3
-"""Offspring probability puzzles, factorials, and binomial reasoning.
-
-Lectures 07B/07C: independence, ordered outcomes, and surviving offspring.
-Exemplars: Rule, case, question; Note that hands over arithmetic.
-The factorial/binomial/explain modes follow Lecture 07B/07C:
-apply factorials, count phenotype orders, set up probabilities, and explain repeated labels.
-Distractors omit arrangements, swap probabilities, or count repeated labels as distinct.
-Choices show binomial coefficients, factorials, powers, and their calculated values.
-"""
+"""Worked binomial offspring probabilities for genetic crosses."""
 
 import fractions
 import math
@@ -17,10 +9,7 @@ import bptools
 import binomiallib
 
 
-FORMATS = {"factorial": "MC", "binomial": "MC", "explain": "MC"}
 SCENARIOS = (
-	("<p>You cross a <span style='color: #7030a0; background-color: #ffffff;'>purple</span>-flowered pea plant (Pp) with a <span style='color: #595959; background-color: #ffffff;'>white</span>-flowered plant (pp).</p>",
-		"<span style='color: #7030a0; background-color: #ffffff;'>purple</span>", "<span style='color: #595959; background-color: #ffffff;'>white</span>", fractions.Fraction(1, 2)),
 	("<p>You cross two (2) <span style='color: #7030a0; background-color: #ffffff;'>purple</span>-flowered pea plants (Pp &times; Pp).</p>",
 		"<span style='color: #7030a0; background-color: #ffffff;'>purple</span>", "<span style='color: #595959; background-color: #ffffff;'>white</span>", fractions.Fraction(3, 4)),
 	("<p>You cross two (2) heterozygous mice (Bb &times; Bb). "
@@ -57,30 +46,6 @@ def context_table(scenario: tuple) -> str:
 	text = data_table(["Offspring phenotype", "Probability for one offspring"],
 		[(target, str(probability)), (other, str(1 - probability))])
 	text += context + "<p>Offspring outcomes are independent.</p>"
-	return text
-
-
-def factorial_question(N: int, scenario: tuple):
-	"""Apply factorial notation to distinct biological samples, not phenotype counts."""
-	number = random.randint(3, 6)
-	sample = random.choice(("pea seeds", "bean seedlings", "fruit-fly sample tubes", "mouse DNA samples"))
-	text = (f"<p>You label {number} {sample} so that each can be identified. "
-		"You place them all in a row, one in each position.</p>"
-		"<p>Which expression counts the different orders of these individually labeled items? "
-		"Leave your answer as an expression; no calculator is needed.</p>")
-	answer = f"{number}! = " + " &times; ".join(str(i) for i in range(number, 0, -1))
-	# Errors: factorial as addition, number squared, or two categories per position.
-	choices = [answer, f"{number}! = " + " + ".join(str(i) for i in range(number, 0, -1)),
-		f"{number}<sup>2</sup> = {number} &times; {number}",
-		f"2<sup>{number}</sup> = " + " &times; ".join(["2"] * number)]
-	random.shuffle(choices)
-	item = bptools.formatBB_MC_Question(N, text, choices, answer)
-	return item
-
-
-def factorial_coefficient(number: int, count: int) -> str:
-	"""Display the factorial ratio without requiring large-number arithmetic."""
-	text = binomiallib.fraction(f"{number}!", f"{count}! &times; {number - count}!")
 	return text
 
 
@@ -141,49 +106,21 @@ def binomial_question(N: int, scenario: tuple):
 	return item
 
 
-def explanation_question(N: int, scenario: tuple):
-	"""Explain why repeated phenotype labels require a factorial denominator."""
-	_, target, other, _ = scenario
-	number, count = random.choice([(5, 2), (6, 2), (7, 3), (8, 3)])
-	text = context_table(scenario)
-	text += (f"<p>To count phenotype sequences with {count} {target} and {number - count} "
-		f"{other} offspring, you use the binomial coefficient:</p>")
-	text += binomiallib.format_expression([binomiallib.binomial_coefficient(number, count),
-		"=", factorial_coefficient(number, count)])
-	text += f"<p>Why divide {number}! by {count}! &times; {number - count}!?</p>"
-	answer = "Swapping offspring with the same phenotype leaves the phenotype sequence unchanged."
-	choices = [answer,
-		"Swapping offspring with different phenotypes leaves the phenotype sequence unchanged.",
-		"The division changes the probability of each phenotype to one half.",
-		"The division makes each offspring outcome depend on the preceding offspring."]
-	random.shuffle(choices)
-	item = bptools.formatBB_MC_Question(N, text, choices, answer)
-	return item
-
-
 def write_question(N: int, args):
-	scenarios = SCENARIOS
-	if args.kind == "binomial":
-		# Unequal probabilities make swapping exponents a distinct misconception.
-		scenarios = SCENARIOS[1:] + (SURVIVORS,)
-	scenario = random.choice(scenarios)
-	writers = {"factorial": factorial_question,
-		"binomial": binomial_question, "explain": explanation_question}
-	item = writers[args.kind](N, scenario)
-	return item
+	# Unequal probabilities make swapping exponents a distinct misconception.
+	scenario = random.choice(SCENARIOS + (SURVIVORS,))
+	return binomial_question(N, scenario)
 
 
 def parse_arguments():
-	parser = bptools.make_arg_parser(description="Factorial and binomial reasoning in genetics.")
-	parser.add_argument("-k", "--kind", choices=tuple(FORMATS), default="binomial",
-		help="Skill to practice; each kind has a fixed quiz format.")
+	parser = bptools.make_arg_parser(description="Binomial offspring probabilities.")
 	args = parser.parse_args()
 	return args
 
 
 def main():
 	args = parse_arguments()
-	outfile = bptools.make_outfile(args.kind, FORMATS[args.kind])
+	outfile = bptools.make_outfile("binomial", "MC")
 	bptools.collect_and_write_questions(write_question, args, outfile)
 
 

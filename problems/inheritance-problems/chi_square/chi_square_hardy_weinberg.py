@@ -193,7 +193,7 @@ def makeQuestion(desired_result):
 	chi_square_table = chisquarelib.make_chi_square_table()
 
 	answer_stats = normalGoodStats(p, F, N)
-	numbers_table = createDataTable(answer_stats, "Table 1")
+	numbers_table = createDataTable(answer_stats)
 
 	#use the real values
 	final_chisq = float(answer_stats[-1])

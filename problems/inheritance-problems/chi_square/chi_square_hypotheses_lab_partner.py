@@ -136,7 +136,7 @@ def _make_counts(ratio: str) -> tuple:
 def _make_counts_table(labels: list, ratio: str, observed: list, expected: list) -> str:
 	rows = [[label, part, _format_expected(exp), obs]
 		for label, part, obs, exp in zip(labels, ratio.split(":"), observed, expected)]
-	table = chisquarelib.render_table(["Category", "Ratio", "Expected", "Observed"], rows, "Observed data")
+	table = chisquarelib.render_table(["Category", "Ratio", "Expected", "Observed"], rows)
 	return table
 
 
