@@ -160,8 +160,8 @@ assert isinstance(result, list) and len(result) == 4
 
 #===============
 #===============
-PEA_PHENOTYPES = ["Yellow Round (Y&ndash;R&ndash;)", "Yellow Wrinkled (Y&ndash;rr)",
-	"Green Round (yyR&ndash;)", "Green Wrinkled (yyrr)"]
+PEA_PHENOTYPES = ["<span style='color: #806000; background-color: #ffffff;'>Yellow</span> Round (Y&ndash;R&ndash;)", "<span style='color: #806000; background-color: #ffffff;'>Yellow</span> Wrinkled (Y&ndash;rr)",
+	"<span style='color: #246b36; background-color: #ffffff;'>Green</span> Round (yyR&ndash;)", "<span style='color: #246b36; background-color: #ffffff;'>Green</span> Wrinkled (yyrr)"]
 CALCULATION_HEADERS = ["Category", "Expected", "Observed", "Calculation", "Statistic"]
 
 
@@ -190,9 +190,8 @@ def render_table(headers: list, rows: list, title: str = None, *,
 	if title is not None:
 		text += f'<caption style="{caption_style}">{title}</caption>'
 	text += f'<thead><tr style="background: {header_background}; color: {color};">'
-	for index, header in enumerate(headers):
-		alignment = "text-align: left;" if index == 0 else ""
-		text += f'<th scope="col" style="{style} {alignment}">{header}</th>'
+	for header in headers:
+		text += f'<th scope="col" style="{style} text-align: center;">{header}</th>'
 	text += '</tr></thead><tbody>'
 	for index, row in enumerate(rows):
 		if len(row) != len(headers):
@@ -207,15 +206,15 @@ def render_table(headers: list, rows: list, title: str = None, *,
 	if footer is not None:
 		sample_size, statistic = footer
 		value = "__" if statistic == "__" else f"{float(statistic):.3f}"
-		text += f'<tfoot><tr style="color: {color}; background: {header_background}; font-weight: bold;">'
-		text += f'<td colspan="{len(headers) - 1}" style="{style} text-align: left;">N = {float(sample_size):g}</td>'
-		text += f'<td style="{style}">&chi;<sup>2</sup> = {value}</td></tr></tfoot>'
+		text += '<tfoot><tr>'
+		text += f'<td colspan="{len(headers) - 1}" style="{style} text-align: left; font-style: italic; background: #ffffff;">N = {float(sample_size):g}</td>'
+		text += f'<td style="{style} color: {color}; background: {header_background}; font-weight: bold;">&chi;<sup>2</sup> = {value}</td></tr></tfoot>'
 	text += '</table>'
 	return text
 
 
 def create_worked_table(labels: list, observed: list, expected: list, *,
-		color: str | None = None) -> str:
+		title: str | None = None, color: str | None = None) -> str:
 	"""Calculate correct chi-square work for any number of labeled categories.
 
 	Use render_table or create_data_table for supplied or intentionally wrong work.
@@ -245,7 +244,7 @@ def create_worked_table(labels: list, observed: list, expected: list, *,
 		calculation += f" = {numerator} / {denominator}"
 		rows.append([label, str(exp), str(obs), calculation, f"{float(term):.3f}"])
 	total = sum(terms)
-	text = render_table(CALCULATION_HEADERS, rows, "Chi-square calculation",
+	text = render_table(CALCULATION_HEADERS, rows, title,
 		color=color, footer=(observed_total, total))
 	return text
 

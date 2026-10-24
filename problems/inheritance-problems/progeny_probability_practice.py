@@ -19,12 +19,12 @@ import binomiallib
 
 FORMATS = {"factorial": "MC", "binomial": "MC", "explain": "MC"}
 SCENARIOS = (
-	("<p>You cross a purple-flowered pea plant (Pp) with a white-flowered plant (pp).</p>",
-		"purple", "white", fractions.Fraction(1, 2)),
-	("<p>You cross two (2) purple-flowered pea plants (Pp &times; Pp).</p>",
-		"purple", "white", fractions.Fraction(3, 4)),
+	("<p>You cross a <span style='color: #7030a0; background-color: #ffffff;'>purple</span>-flowered pea plant (Pp) with a <span style='color: #595959; background-color: #ffffff;'>white</span>-flowered plant (pp).</p>",
+		"<span style='color: #7030a0; background-color: #ffffff;'>purple</span>", "<span style='color: #595959; background-color: #ffffff;'>white</span>", fractions.Fraction(1, 2)),
+	("<p>You cross two (2) <span style='color: #7030a0; background-color: #ffffff;'>purple</span>-flowered pea plants (Pp &times; Pp).</p>",
+		"<span style='color: #7030a0; background-color: #ffffff;'>purple</span>", "<span style='color: #595959; background-color: #ffffff;'>white</span>", fractions.Fraction(3, 4)),
 	("<p>You cross two (2) heterozygous mice (Bb &times; Bb). "
-		"Black fur is dominant to brown fur.</p>", "brown", "black", fractions.Fraction(1, 4)),
+		"<span style='color: #202020; background-color: #ffffff;'>Black</span> fur is dominant to <span style='color: #804000; background-color: #ffffff;'>brown</span> fur.</p>", "<span style='color: #804000; background-color: #ffffff;'>brown</span>", "<span style='color: #202020; background-color: #ffffff;'>black</span>", fractions.Fraction(1, 4)),
 )
 SURVIVORS = (
 	"<p>You cross two (2) short-tailed mice (Tt &times; Tt). TT offspring do not survive. "
@@ -55,7 +55,7 @@ def data_table(headers: list, rows: list) -> str:
 def context_table(scenario: tuple) -> str:
 	context, target, other, probability = scenario
 	text = data_table(["Offspring phenotype", "Probability for one offspring"],
-		[(target.capitalize(), str(probability)), (other.capitalize(), str(1 - probability))])
+		[(target, str(probability)), (other, str(1 - probability))])
 	text += context + "<p>Offspring outcomes are independent.</p>"
 	return text
 

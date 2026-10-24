@@ -2,6 +2,26 @@
 
 ## 2026-10-23
 
+- Center shared chi-square table column headings without changing body-cell alignment.
+
+- Add decorative phenotype-word colors across topic07 probability and chi-square
+  generators: purple/white flowers, black/brown coats, red/pink/white flowers, and
+  yellow/green peas. Preserve text labels and use readable dark colors on white.
+
+- Show both boys and girls counts in Pascal shoe-family prompts with number words,
+  numerals, matching offspring-bank colors, and male/female symbols.
+
+- Place Pascal practice binomial notation inline with its N choose r wording.
+
+- Give Pascal triangle rows equal-width cells while retaining borders and modest padding.
+
+- Default worked chi-square tables to no caption and remove redundant dice/calculated
+  captions. Keep N italic on white and restrict the footer accent fill to the chi-square
+  result cell; retain optional captions for labeled table comparisons.
+
+- Rename the calculated chi-square ACCEPT mode and bank to SUPPORT; retain
+  fail-to-reject wording and the existing REJECT generator mode.
+
 - Make Pascal practice connect N choose r and binomial notation to a coefficient
   in a bordered, padded row without index labels. Use distinct numeric row entries
   as choices (three for row 5); remove the probability calculation.

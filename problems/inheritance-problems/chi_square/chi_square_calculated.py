@@ -54,7 +54,7 @@ def makeQuestion( desired_result):
 
 	if desired_result == 'reject':
 		ratio = '8:2:4:2'
-	elif desired_result == 'accept':
+	elif desired_result == 'support':
 		ratio = '9:3:3:1'
 
 	observed = [90, 30, 30, 10]
@@ -64,14 +64,14 @@ def makeQuestion( desired_result):
 	answer_stat_list = normalGoodStats(ratio, observed)
 
 	#take the tables and shuffle them
-	numbers_table = createDataTableWithMissing(answer_stat_list, "Data Table")
+	numbers_table = createDataTableWithMissing(answer_stat_list)
 
 	#use the real values
 	final_chisq = float(answer_stat_list[-1])
 	df = 3
 	alpha = 0.05
 	result = chisquarelib.get_chi_square_result(final_chisq, df, alpha)
-	if not result.startswith(desired_result):
+	if not result.startswith("accept" if desired_result == "support" else "reject"):
 		print("Woah! Unexpected result, it's okay though.")
 		print(desired_result, "!=", result)
 		print(final_chisq)
@@ -106,12 +106,12 @@ def parse_arguments():
 	parser = bptools.make_arg_parser(description='Chi Square Question')
 	question_group = parser.add_mutually_exclusive_group(required=False)
 	question_group.add_argument('--desired_result', dest='desired_result', type=str,
-		choices=('accept', 'reject'), help='Set the question type: accept or reject')
-	question_group.add_argument('-a', '--accept', dest='desired_result', action='store_const',
-		const='accept',)
+		choices=('support', 'reject'), help='Set the question type: support or reject')
+	question_group.add_argument('-s', '--support', dest='desired_result', action='store_const',
+		const='support',)
 	question_group.add_argument('-r', '--reject', dest='desired_result', action='store_const',
 		const='reject',)
-	parser.set_defaults(desired_result='accept')
+	parser.set_defaults(desired_result='support')
 	args = parser.parse_args()
 	return args
 

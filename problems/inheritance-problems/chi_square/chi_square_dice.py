@@ -186,7 +186,7 @@ def calculation_question(N: int, data: dict):
 	text += 'The null hypothesis (H<sub>0</sub>) is that each face has probability 1/6 on every roll.</p>'
 	text += '<p>Your lab partner completed the chi-square table below.</p>'
 	text += chisquarelib.render_table(chisquarelib.CALCULATION_HEADERS, rows,
-		"Lab partner's chi-square calculation", footer=(data["total"], sum(terms)))
+		footer=(data["total"], sum(terms)))
 	text += '<p><strong>Which mistake did your lab partner make in the calculation?</strong></p>'
 	choices = list(choices_by_error.values())
 	random.shuffle(choices)

@@ -13,18 +13,27 @@ def write_question(N: int, args):
 	number = random.randint(5, 9)
 	count = random.randint(0, number)
 	sex = random.choice(("girls", "boys"))
-	label = sex[:-1] if count == 1 else sex
+	groups = []
+	for group, size, color, symbol in (
+		("boys", count if sex == "boys" else number - count, "#0086b3", "&male;"),
+		("girls", count if sex == "girls" else number - count, "#b30086", "&female;"),
+	):
+		label = group[:-1] if size == 1 else group
+		groups.append(f'<span style="color: {color};"><strong>'
+			f'{bptools.number_to_cardinal(size)} ({size}) {label} {symbol}</strong></span>')
 	row = [math.comb(number, k) for k in range(number + 1)]
 	text = ("<p>The old woman who lived in a shoe had so many children she didn't know what to do. "
-		f"In this version of the rhyme, she has {number} children.</p>"
+		f"In this version of the rhyme, she has {bptools.number_to_cardinal(number)} ({number}) children.</p>"
 		f"<p>Row {number} of Pascal's triangle is shown below.</p>")
-	text += '<table role="presentation" style="border-collapse: collapse; color: #202020; background: #ffffff;"><tr>'
+	text += (f'<table role="presentation" style="table-layout: fixed; width: {3 * len(row)}em; '
+		'max-width: 100%; border-collapse: collapse; color: #202020; background: #ffffff;"><tr>')
 	for value in row:
 		text += f'<td style="border: 1px solid #767676; padding: 6px 8px; text-align: center;">{value}</td>'
 	text += '</tr></table>'
-	text += (f"<p>To count the birth orders with exactly {count} {label}, "
-		f"use the binomial coefficient <strong>{number} choose {count}</strong>:</p>")
+	text += (f"<div>To count the birth orders with exactly {groups[0]} and {groups[1]}, "
+		f"use the binomial coefficient <strong>{number} choose {count}</strong>, ")
 	text += binomiallib.binomial_coefficient(number, count)
+	text += ".</div>"
 	text += "<p>What is the value of this coefficient in the row above?</p>"
 	answer = str(row[count])
 	# Other entries represent choosing the wrong position; symmetric entries share a value.

@@ -26,12 +26,12 @@ SCENARIOS = [
 		"ratio": "1:2:1",
 		"wrong_ratio": "1:1:1",
 		"labels": [
-			"Red flowers (RR)",
-			"Pink flowers (Rr)",
-			"White flowers (rr)",
+			"<span style='color: #b02020; background-color: #ffffff;'>Red</span> flowers (RR)",
+			"<span style='color: #ad246f; background-color: #ffffff;'>Pink</span> flowers (Rr)",
+			"<span style='color: #595959; background-color: #ffffff;'>White</span> flowers (rr)",
 		],
 		"context": (
-			"<p>In a plant species with incomplete dominance, you cross two pink "
+			"<p>In a plant species with incomplete dominance, you cross two <span style='color: #ad246f; background-color: #ffffff;'>pink</span> "
 			"individuals (Rr &times; Rr) and score flower color.</p>"
 		),
 	},
@@ -40,10 +40,10 @@ SCENARIOS = [
 		"ratio": "9:3:3:1",
 		"wrong_ratio": "8:2:4:2",
 		"labels": [
-			"Yellow Round (Y&ndash;R&ndash;)",
-			"Yellow Wrinkled (Y&ndash;rr)",
-			"Green Round (yyR&ndash;)",
-			"Green Wrinkled (yyrr)",
+			"<span style='color: #806000; background-color: #ffffff;'>Yellow</span> Round (Y&ndash;R&ndash;)",
+			"<span style='color: #806000; background-color: #ffffff;'>Yellow</span> Wrinkled (Y&ndash;rr)",
+			"<span style='color: #246b36; background-color: #ffffff;'>Green</span> Round (yyR&ndash;)",
+			"<span style='color: #246b36; background-color: #ffffff;'>Green</span> Wrinkled (yyrr)",
 		],
 		"context": (
 			"<p>You perform a dihybrid cross (AaBb &times; AaBb) and count the F<sub>2</sub> "

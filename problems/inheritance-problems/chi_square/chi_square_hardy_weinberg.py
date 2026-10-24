@@ -149,7 +149,7 @@ def normalGoodStats(p, F, N):
 #===================
 def createDataTable(stats_list, title=None):
 	table = chisquarelib.create_data_table(stats_list, title,
-		labels=["Red Flowers", "Pink Flowers", "White Flowers"])
+		labels=["<span style='color: #b02020; background-color: #ffffff;'>Red</span> Flowers", "<span style='color: #ad246f; background-color: #ffffff;'>Pink</span> Flowers", "<span style='color: #595959; background-color: #ffffff;'>White</span> Flowers"])
 	return table
 
 #===================
