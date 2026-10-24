@@ -3,6 +3,7 @@ import re
 import math
 import fractions
 import random
+import bptools
 from scipy.stats.distributions import chi2
 
 #===============
@@ -165,15 +166,17 @@ CALCULATION_HEADERS = ["Category", "Expected", "Observed", "Calculation", "Stati
 
 
 def render_table(headers: list, rows: list, title: str = None, *,
-		color: str | None = None) -> str:
+		color: str | None = None, footer: tuple | None = None) -> str:
 	"""Render supplied cells verbatim, including intentional errors and blank work.
 
 	An optional dark #RRGGBB color accents the caption and tints the column headings.
-	None retains the neutral appearance. Body cells are independent of the accent.
+	Choose a dark color-wheel accent when none is supplied.
+	An optional (sample size, statistic) footer summarizes calculation tables.
 	"""
 	style = "padding: 6px 8px; border-bottom: 1px solid #b8b8b8; text-align: right;"
 	caption_style = "text-align: left; font-weight: bold; padding: 6px;"
-	header_background = "#e3e8ed"
+	if color is None:
+		color = "#" + random.choice(list(bptools.dark_color_wheel.values())).lstrip("#")
 	if color is not None:
 		if re.fullmatch(r"#[0-9a-fA-F]{6}", color) is None:
 			raise ValueError("Table color must be a #RRGGBB hex color")
@@ -186,7 +189,7 @@ def render_table(headers: list, rows: list, title: str = None, *,
 	text = '<table style="border-collapse: collapse; color: #202020; background: #ffffff;">'
 	if title is not None:
 		text += f'<caption style="{caption_style}">{title}</caption>'
-	text += f'<thead><tr style="background: {header_background};">'
+	text += f'<thead><tr style="background: {header_background}; color: {color};">'
 	for index, header in enumerate(headers):
 		alignment = "text-align: left;" if index == 0 else ""
 		text += f'<th scope="col" style="{style} {alignment}">{header}</th>'
@@ -200,7 +203,14 @@ def render_table(headers: list, rows: list, title: str = None, *,
 		for value in row[1:]:
 			text += f'<td style="{style}">{value}</td>'
 		text += '</tr>'
-	text += '</tbody></table>'
+	text += '</tbody>'
+	if footer is not None:
+		sample_size, statistic = footer
+		value = "__" if statistic == "__" else f"{float(statistic):.3f}"
+		text += f'<tfoot><tr style="color: {color}; background: {header_background}; font-weight: bold;">'
+		text += f'<td colspan="{len(headers) - 1}" style="{style} text-align: left;">N = {float(sample_size):g}</td>'
+		text += f'<td style="{style}">&chi;<sup>2</sup> = {value}</td></tr></tfoot>'
+	text += '</table>'
 	return text
 
 
@@ -216,14 +226,12 @@ def create_worked_table(labels: list, observed: list, expected: list, *,
 	rows = []
 	terms = []
 	observed_total = fractions.Fraction()
-	expected_total = fractions.Fraction()
 	for label, obs, exp in zip(labels, observed, expected):
 		obs = fractions.Fraction(str(obs))
 		exp = fractions.Fraction(str(exp))
 		if obs < 0 or exp <= 0:
 			raise ValueError("Observed counts must be nonnegative and expected counts positive")
 		observed_total += obs
-		expected_total += exp
 		difference = obs - exp
 		term = difference ** 2 / exp
 		terms.append(term)
@@ -235,11 +243,10 @@ def create_worked_table(labels: list, observed: list, expected: list, *,
 			denominator = f"({denominator})"
 		calculation = f"({obs} &minus; {exp})<sup>2</sup> / {denominator}"
 		calculation += f" = {numerator} / {denominator}"
-		rows.append([label, str(exp), str(obs), calculation, f"{float(term):.2f}"])
+		rows.append([label, str(exp), str(obs), calculation, f"{float(term):.3f}"])
 	total = sum(terms)
-	rows.append(["<strong>Total</strong>", str(expected_total), str(observed_total),
-		"&mdash;", f"<strong>&chi;<sup>2</sup> = {total} &asymp; {float(total):.2f}</strong>"])
-	text = render_table(CALCULATION_HEADERS, rows, "Chi-square calculation", color=color)
+	text = render_table(CALCULATION_HEADERS, rows, "Chi-square calculation",
+		color=color, footer=(observed_total, total))
 	return text
 
 
@@ -258,7 +265,6 @@ def create_data_table(stats_list: list, title: str = None, labels: list = None,
 	if headers is None:
 		headers = CALCULATION_HEADERS
 	rows = [[label] + list(values) for label, values in zip(labels, category_rows)]
-	rows.append(["<strong>Total &chi;<sup>2</sup></strong>"]
-		+ ["&mdash;"] * (len(headers) - 2) + [stats_list[-1]])
-	text = render_table(headers, rows, title, color=color)
+	text = render_table(headers, rows, title, color=color,
+		footer=(sum(row[1] for row in category_rows), stats_list[-1]))
 	return text

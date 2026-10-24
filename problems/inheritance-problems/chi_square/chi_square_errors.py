@@ -278,9 +278,6 @@ def questionContent(chisq: float, df: int=3, alpha: float=0.05, flip: bool=False
 	question += f"<p>Since the chi-squared value of {chisq:.2f} is {results[0]} than the "
 	question += f"critical value of {critical_value:.2f}, the null hypothesis has {results[1].upper()}.</p>"
 
-	# Separate different sections of the question
-	question += "<hr/> "
-
 	# Add a scenario involving a lab partner
 	question += "<p>Your lab partner completed a chi-squared (&chi;&sup2;) test on your lab data (above) "
 	question += "for the F<sub>2</sub> generation in a standard dihybrid cross. The goal was to verify if "

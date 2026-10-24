@@ -319,7 +319,6 @@ def makeQuestion(error_type: int, desired_result: str) -> tuple:
 	complete_question = f"{chi_square_table} <br/> "
 	for number_table in shuffled_tables:
 		complete_question += f"{number_table} <br/> "
-	complete_question += " <hr/> "
 	complete_question += question
 
 	edit_choices_list = []

@@ -3,10 +3,10 @@
 
 Lectures 07B/07C: independence, ordered outcomes, and surviving offspring.
 Exemplars: Rule, case, question; Note that hands over arithmetic.
-The factorial/coefficient/binomial/explain modes follow Lecture 07B/07C:
+The factorial/binomial/explain modes follow Lecture 07B/07C:
 apply factorials, count phenotype orders, set up probabilities, and explain repeated labels.
 Distractors omit arrangements, swap probabilities, or count repeated labels as distinct.
-No calculator is needed; choices use binomial coefficients, factorials, and powers.
+Choices show binomial coefficients, factorials, powers, and their calculated values.
 """
 
 import fractions
@@ -17,7 +17,7 @@ import bptools
 import binomiallib
 
 
-FORMATS = {"factorial": "MC", "coefficient": "MC", "binomial": "MC", "explain": "MC"}
+FORMATS = {"factorial": "MC", "binomial": "MC", "explain": "MC"}
 SCENARIOS = (
 	("<p>You cross a purple-flowered pea plant (Pp) with a white-flowered plant (pp).</p>",
 		"purple", "white", fractions.Fraction(1, 2)),
@@ -84,68 +84,58 @@ def factorial_coefficient(number: int, count: int) -> str:
 	return text
 
 
-def coefficient_question(N: int, scenario: tuple):
-	"""Connect binomial notation to factorial counts, including the zero-factorial case."""
-	_, target, other, _ = scenario
-	number = random.randint(5, 9)
-	count = random.choice([0, number] + list(range(2, number - 1)))
-	text = context_table(scenario)
-	text += (f"<p>Consider {number} offspring: exactly {count} are {target} and "
-		f"{number - count} are {other}. Count different phenotype sequences from first "
-		"offspring to last, treating offspring with the same phenotype as interchangeable.</p>"
-		"<p>Which factorial expression counts these sequences?</p>")
-	answer = factorial_coefficient(number, count)
-	# Errors: count individually labeled offspring; ignore one repeated category;
-	# add the denominator factorials instead of multiplying them.
-	candidates = [(binomiallib.fraction(f"{number}!", "1! &times; 1!"), math.factorial(number)),
-		(binomiallib.fraction(f"{number}!", f"{count}! &times; 1!"),
-			fractions.Fraction(math.factorial(number), math.factorial(count))),
-		(binomiallib.fraction(f"{number}!", f"1! &times; {number - count}!"),
-			fractions.Fraction(math.factorial(number), math.factorial(number - count))),
-		(binomiallib.fraction(f"{number}!", f"{count}! + {number - count}!"),
-			fractions.Fraction(math.factorial(number), math.factorial(count) + math.factorial(number - count))),
-		(f"{count}! &times; {number - count}!", math.factorial(count) * math.factorial(number - count)),
-		(f"2<sup>{number}</sup>", 2 ** number)]
-	choices = [answer]
-	used = {fractions.Fraction(math.comb(number, count))}
-	for label, value in candidates:
-		if value not in used:
-			choices.append(label)
-			used.add(value)
-		if len(choices) == 4:
-			break
-	# Connect the same coefficient notation to each proposed factorial expansion.
-	coefficient = binomiallib.binomial_coefficient(number, count)
-	choices = [binomiallib.format_expression([coefficient, "=", label]) for label in choices]
-	answer = binomiallib.format_expression([coefficient, "=", answer])
-	random.shuffle(choices)
-	item = bptools.formatBB_MC_Question(N, text, choices, answer)
-	return item
-
-
 def binomial_expression(number: int, count: int, probability: fractions.Fraction) -> str:
 	"""Show arrangement count times the probability of one phenotype order."""
 	text = binomiallib.binomial_probability(
-		number, count, 1 - probability, probability, worked=False)
+		number, count, 1 - probability, probability)
 	return text
 
 
 def binomial_question(N: int, scenario: tuple):
-	"""Set up an exact-count probability; students need not evaluate powers."""
+	"""Choose a worked exact-count probability calculation."""
 	_, target, other, probability = scenario
 	number, count = random.choice([(5, 2), (6, 2), (7, 3), (8, 3), (9, 4)])
 	text = context_table(scenario)
 	surviving = " surviving" if scenario == SURVIVORS else ""
 	text += (f"<p>For {number}{surviving} offspring, which expression gives the probability "
 		f"of <strong>exactly {count} {target}</strong> and {number - count} {other}, "
-		"in any order? Leave the answer as an expression; no calculator is needed.</p>")
+		"in any order?</p>")
 	answer = binomial_expression(number, count, probability)
 	one_order = binomiallib.format_expression([
-		f"({probability})<sup>{count}</sup> &times; ({1 - probability})<sup>{number - count}</sup>"])
-	# Errors: omit arrangements, swap phenotype probabilities, omit the other phenotype.
-	choices = [answer, one_order, binomial_expression(number, count, 1 - probability),
-		binomiallib.format_expression([binomiallib.binomial_coefficient(number, count),
-			"&times;", f"({probability})<sup>{count}</sup>"])]
+		f"({probability})<sup>{count}</sup> &times; ({1 - probability})<sup>{number - count}</sup>",
+		"=", binomiallib.probability_result(probability ** count * (1 - probability) ** (number - count))])
+	# Keep plausible mistakes, but discard implausible final probabilities.
+	correct_value = math.comb(number, count) * probability ** count * (1 - probability) ** (number - count)
+	candidates = [
+		(probability ** count * (1 - probability) ** (number - count), one_order),
+		(math.comb(number, count) * (1 - probability) ** count * probability ** (number - count),
+			binomial_expression(number, count, 1 - probability)),
+		(math.comb(number, count) * probability ** count,
+			binomiallib.format_expression([binomiallib.binomial_coefficient(number, count),
+				"&times;", f"({probability})<sup>{count}</sup>", "=",
+				binomiallib.probability_result(math.comb(number, count) * probability ** count)]))]
+	# Confuse the total with a phenotype count, using only numbers in the stem.
+	counts = sorted({number, count, number - count})
+	for n in counts:
+		for k in counts:
+			if k > n:
+				continue
+			for p in (probability, 1 - probability):
+				value = math.comb(n, k) * p ** k * (1 - p) ** (n - k)
+				candidates.append((value, binomial_expression(n, k, p)))
+	random.shuffle(candidates)
+	choices = [answer]
+	percentages = {f"{float(correct_value) * 100:.1f}"}
+	for value, expression in candidates:
+		percentage = f"{float(value) * 100:.1f}"
+		if not fractions.Fraction(1, 200) <= value <= fractions.Fraction(3, 5):
+			continue
+		if percentage in percentages:
+			continue
+		choices.append(expression)
+		percentages.add(percentage)
+		if len(choices) == 4:
+			break
 	random.shuffle(choices)
 	item = bptools.formatBB_MC_Question(N, text, choices, answer)
 	return item
@@ -177,7 +167,7 @@ def write_question(N: int, args):
 		# Unequal probabilities make swapping exponents a distinct misconception.
 		scenarios = SCENARIOS[1:] + (SURVIVORS,)
 	scenario = random.choice(scenarios)
-	writers = {"factorial": factorial_question, "coefficient": coefficient_question,
+	writers = {"factorial": factorial_question,
 		"binomial": binomial_question, "explain": explanation_question}
 	item = writers[args.kind](N, scenario)
 	return item

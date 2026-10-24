@@ -243,7 +243,6 @@ def make_question(kind: str, scenario_id: str = None) -> tuple:
 		N, observed, expected = _make_counts(ratio)
 		question += f"<p>Total offspring scored: <span style='font-family: monospace;'>{N}</span></p>"
 		question += _make_counts_table(labels, ratio, observed, expected)
-		question += "<hr/> "
 
 	if kind == "pair":
 		question += (

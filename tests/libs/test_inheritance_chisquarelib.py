@@ -39,15 +39,15 @@ def test_worked_tables_sum_exact_contributions_before_rounding():
 	text = chisquarelib.create_worked_table(
 		["One", "Two", "Three", "Four", "Five", "Six"],
 		[2, 4, 8, 9, 3, 10], [6] * 6)
-	# Rounded row contributions add to 9.68, but the correct total rounds to 9.67.
+	# Rounded row contributions add to 9.668, but the exact total rounds to 9.667.
 	assert '16 / 6' in text
-	assert '29/3 &asymp; 9.67' in text
+	assert '&chi;<sup>2</sup> = 9.667' in text
 	assert 'scope="col"' in text and 'scope="row"' in text
 
 	# Fractional expected counts need grouping in the displayed division as well.
 	text = chisquarelib.create_worked_table(["Purple", "White"], [1, 2], [1.5, 1.5])
 	assert '(1/4) / (3/2)' in text
-	assert '1/3 &asymp; 0.33' in text
+	assert '&chi;<sup>2</sup> = 0.333' in text
 
 
 def test_reference_table_supports_requested_degrees_and_tail_probability():

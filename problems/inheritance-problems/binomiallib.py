@@ -90,9 +90,15 @@ def binomial_probability(n: int, k: int, p: fractions.Fraction | float,
 	if one_order.numerator != 1:
 		product += f" &times; {one_order.numerator}"
 	value = coefficient * one_order
-	parts.extend(["=", fraction(product, str(one_order.denominator)), "=",
-		f"{float(value):.4f}", "<strong>=</strong>", f"<strong>{float(value) * 100:.1f}%</strong>"])
+	parts.extend(["=", fraction(product, str(one_order.denominator)), "=", probability_result(value)])
 	text = format_expression(parts)
+	return text
+
+
+#===========================================================
+def probability_result(value: fractions.Fraction) -> str:
+	"""Finish a probability calculation with its decimal and percentage."""
+	text = f"{float(value):.4f} <strong>= {float(value) * 100:.1f}%</strong>"
 	return text
 
 

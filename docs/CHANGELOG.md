@@ -2,8 +2,52 @@
 
 ## 2026-10-23
 
+- Make Pascal practice connect N choose r and binomial notation to a coefficient
+  in a bordered, padded row without index labels. Use distinct numeric row entries
+  as choices (three for row 5); remove the probability calculation.
+
+- Frame Pascal triangle practice around the woman who lived in a shoe: 5-9 children,
+  exactly 0 through N girls or boys, and independent equal probabilities.
+
+- Add standalone `pascal_triangle.py` row-reading MC practice for rows 6-12, using rendered binomial
+  notation and distinct answer values drawn from the supplied row.
+
+- Remove the standalone progeny coefficient MC bank and its build registration; retain
+  coefficient calculations used by the binomial and explanation questions.
+
 ### Behavior or Interface Changes
 
+- Filter binomial-practice distractors to 0.5%-60%, excluding duplicate displayed
+  percentages and the correct result. Supplement omission errors with substitutions
+  using only counts and probabilities from the scenario. Verify four distinct choices
+  across all 15 scenario/count combinations (300 sampled questions).
+- Simplify calculation-table footers to left-aligned N and right-aligned chi-square,
+  removing individual count sums and filler dashes. Match footer and heading accents;
+  choose a random existing dark color-wheel color when no accent is supplied.
+- Standardize calculation-table totals through one shared helper: Total, expected and
+  observed sums, a calculation dash, and chi-square equals the supplied statistic or
+  a blank. Use three decimal places for worked statistics; preserve intentional errors.
+- Show only the decimal chi-square total in shared worked tables, omitting the reduced
+  fraction so the total follows the decimal row contributions.
+- Redraw dice error-analysis datasets when any observed count equals its expected count.
+  Show contributions to three decimals so small nonzero values remain visible; retain the
+  mathematically correct zero total for the deliberately unsquared-differences error.
+- Replace dice calculation choices with error analysis of a lab partner's complete six-row
+  chi-square table and total. Apply one mistake consistently: divide by observed counts,
+  omit squaring, square the expected denominator, or divide by six faces. Avoid undefined
+  divisions and cases where dividing by six is correct. Simulate fair or biased die rolls
+  instead of shuffling fixed deviation templates; vary totals from 30 to 180 in multiples
+  of six. Verify table arithmetic and answer keys for all four errors, check 500 simulated
+  datasets, and review calculation and interpretation samples at narrow and desktop widths.
+- Remove the remaining horizontal rules from chi-square calculation-choice, error-analysis,
+  paired-hypothesis, and lab-partner hypothesis questions; table styling separates the sections.
+- Remove the horizontal rule between the data table and prompt in calculated chi-square
+  questions (shared by ACCEPT and REJECT modes).
+- Remove the horizontal rule immediately before the lab-partner paragraph in Hardy-Weinberg
+  chi-square questions.
+- Finish coefficient choices with their numeric sequence counts and binomial choices with
+  calculated decimal probabilities and percentages. Use the shared worked-binomial renderer
+  and result formatting; remove the instruction to leave binomial answers unevaluated.
 - Remove the unnecessary probability-calculation instruction and zero-factorial reminder
   from coefficient question stems.
 - Add `binomiallib.binomial_probability(n, k, p, q)` to render the whole worked

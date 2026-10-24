@@ -211,7 +211,6 @@ def makeQuestion(desired_result):
 
 	complete_question = chi_square_table+" <br/> "
 	complete_question += numbers_table+" <br/> "
-	complete_question += " <hr/> "
 	complete_question += question
 
 	return complete_question

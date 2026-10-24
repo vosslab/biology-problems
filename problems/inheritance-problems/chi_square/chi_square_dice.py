@@ -32,11 +32,17 @@ def dice_data(expected: int, deviations: list) -> dict:
 
 
 def random_data() -> dict:
-	expected = random.choice((5, 6, 8, 10, 12, 15, 20))
-	# Low, moderate (video), and high deviations cover both sides of the cutoff.
-	deviations = random.choice(([-1, 0, 1, -2, 0, 2], [-4, -2, 2, 3, -3, 4],
-		[-expected, 0, 0, 0, 0, expected]))
-	deviations = random.sample(deviations, len(deviations))
+	# Whole expected counts keep attention on the calculation rather than rounding.
+	expected = random.randint(5, 30)
+	weights = [1] * 6
+	if random.choice((True, False)):
+		weights[random.randrange(6)] = random.choice((2, 3))
+	# Simulate fair or biased rolls, without prescribing the test's conclusion.
+	observed = [expected] * 6
+	while len(set(observed)) == 1:
+		rolls = random.choices(range(6), weights=weights, k=6 * expected)
+		observed = [rolls.count(face) for face in range(6)]
+	deviations = [value - expected for value in observed]
 	data = dice_data(expected, deviations)
 	return data
 
@@ -87,7 +93,7 @@ def get_question_text(data: dict, show_expected: bool = True, show_calculation: 
 			rows.append(row)
 		text = chisquarelib.render_table(headers, rows)
 	text += f'<p>You roll a six-sided die {data["total"]} times. '
-	text += 'The null hypothesis is that each face has probability 1/6 on every roll.</p>'
+	text += 'The null hypothesis (H<sub>0</sub>) is that each face has probability 1/6 on every roll.</p>'
 	return text
 
 
@@ -116,7 +122,7 @@ def expected_question(N: int, data: dict):
 	text = get_question_text(data, show_expected=False)
 	face = random.randint(1, 6)
 	text += f"<p>Which calculation gives the expected number of rolls showing face {face} "
-	text += "under the null hypothesis? The arithmetic is shown; no calculator is needed.</p>"
+	text += "under the null hypothesis (H<sub>0</sub>)? The arithmetic is shown; no calculator is needed.</p>"
 	total = data["total"]
 	# Errors: divide by df, assume two outcomes, use the total, or use face count.
 	options = [(f"{total} / 6", fractions.Fraction(total, 6)),
@@ -139,43 +145,53 @@ def df_question(N: int, data: dict):
 
 
 def calculation_question(N: int, data: dict):
-	index = random.choice([i for i, value in enumerate(data["observed"])
-		if value != data["expected"]])
-	observed = data["observed"][index]
+	"""Identify one consistently applied error in a partner's complete table."""
+	choices_by_error = {
+		"observed": "They divided by the observed count instead of the expected count.",
+		"no_square": "They did not square the difference between observed and expected counts.",
+		"square_expected": "They divided by the square of the expected count instead of the expected count.",
+		"faces": "They divided by the number of faces instead of the expected count.",
+	}
+	errors = list(choices_by_error)
+	if 0 in data["observed"]:
+		errors.remove("observed")
+	if data["expected"] == 6:
+		errors.remove("faces")
+	error = random.choice(errors)
 	expected = data["expected"]
-	difference = observed - expected
-	text = get_question_text(data)
-	text += "<p>Each face contributes (observed &minus; expected)<sup>2</sup> / expected "
-	text += "to &chi;<sup>2</sup>. The arithmetic is shown in each choice; "
-	text += "no calculator is needed.</p>"
-	if random.choice((True, False)):
-		text += f"<p>Which calculation gives the contribution from face {index + 1}?</p>"
-		base = f"({observed} &minus; {expected})"
-		# Errors: omit the square, omit division, or divide by faces instead of expected.
-		options = [(f"{base}<sup>2</sup> / {expected}", data["terms"][index]),
-			(f"{base} / {expected}", fractions.Fraction(difference, expected)),
-			(f"{base}<sup>2</sup>", difference ** 2),
-			(f"{base}<sup>2</sup> / 6", fractions.Fraction(difference ** 2, 6))]
-		# Error: divide by observed count; omit when that denominator is zero.
-		if observed:
-			options.append((f"{base}<sup>2</sup> / {observed}",
-				fractions.Fraction(difference ** 2, observed)))
-	else:
-		# Use the displayed numbers throughout, including the wrong calculations.
-		part = fractions.Fraction(f"{float(data['terms'][index]):.2f}")
-		others = fractions.Fraction(f"{float(data['statistic'] - data['terms'][index]):.2f}")
-		a, b = f"{float(part):.2f}", f"{float(others):.2f}"
-		text += f'<p>The contribution from face {index + 1} is {a}. '
-		text += f"The other faces contribute {b} in total. "
-		text += "Which calculation combines them to give &chi;<sup>2</sup>?</p>"
-		# Errors: omit a term, subtract instead of add, or average the contributions.
-		high, low = max(part, others), min(part, others)
-		options = [(f"{a} + {b}", part + others), (f"{b} + 0", others),
-			(f"{float(high):.2f} &minus; {float(low):.2f}", high - low),
-			(f"({a} + {b}) / 6", (part + others) / 6)]
-	item = arithmetic_question(N, text, options)
+	rows = []
+	terms = []
+	for face, observed in enumerate(data["observed"], 1):
+		difference = observed - expected
+		if error == "no_square":
+			numerator, denominator = difference, expected
+			calculation = f"({observed} &minus; {expected}) / {expected}"
+		else:
+			numerator = difference ** 2
+			if error == "observed":
+				denominator = observed
+				divisor = str(observed)
+			elif error == "square_expected":
+				denominator = expected ** 2
+				divisor = f"{expected}<sup>2</sup>"
+			else:
+				denominator = 6
+				divisor = "6"
+			calculation = f"({observed} &minus; {expected})<sup>2</sup> / {divisor}"
+		term = fractions.Fraction(numerator, denominator)
+		terms.append(term)
+		calculation += f" = {numerator} / {denominator}"
+		rows.append([die_face(face), expected, observed, calculation, f"{float(term):.3f}"])
+	text = f'<p>You roll a six-sided die {data["total"]} times. '
+	text += 'The null hypothesis (H<sub>0</sub>) is that each face has probability 1/6 on every roll.</p>'
+	text += '<p>Your lab partner completed the chi-square table below.</p>'
+	text += chisquarelib.render_table(chisquarelib.CALCULATION_HEADERS, rows,
+		"Lab partner's chi-square calculation", footer=(data["total"], sum(terms)))
+	text += '<p><strong>Which mistake did your lab partner make in the calculation?</strong></p>'
+	choices = list(choices_by_error.values())
+	random.shuffle(choices)
+	item = bptools.formatBB_MC_Question(N, text, choices, choices_by_error[error])
 	return item
-
 
 
 def result_text(data: dict) -> str:
@@ -191,12 +207,12 @@ def result_text(data: dict) -> str:
 def interpretation_question(N: int, data: dict):
 	text = result_text(data)
 	text += "<p>Which one of the following conclusions is supported at &alpha; = 0.05?</p>"
-	reject = "Reject the null hypothesis; there is enough evidence that face probabilities differ from 1/6."
-	keep = "Fail to reject the null hypothesis; there is not enough evidence that face probabilities differ from 1/6."
+	reject = "Reject the null hypothesis (H<sub>0</sub>); there is enough evidence that face probabilities differ from 1/6."
+	keep = "Fail to reject the null hypothesis (H<sub>0</sub>); there is not enough evidence that face probabilities differ from 1/6."
 	# Errors: reverse the decision; claim proof of equal chances; demand exact counts.
 	choices = [reject, keep,
-		"The null hypothesis is proven; every face has exactly the same chance on each roll.",
-		"The null hypothesis is disproven; a fair die must give exactly equal counts of all faces."]
+		"The null hypothesis (H<sub>0</sub>) is proven; every face has exactly the same chance on each roll.",
+		"The null hypothesis (H<sub>0</sub>) is disproven; a fair die must give exactly equal counts of all faces."]
 	answer = reject if data["reject"] else keep
 	random.shuffle(choices)
 	item = bptools.formatBB_MC_Question(N, text, choices, answer)
@@ -205,6 +221,10 @@ def interpretation_question(N: int, data: dict):
 
 def write_question(N: int, args):
 	data = random_data()
+	# Keep every row informative when students inspect a calculation error.
+	if args.kind == "calculate":
+		while data["expected"] in data["observed"]:
+			data = random_data()
 	writers = {"expected": expected_question, "df": df_question,
 		"calculate": calculation_question, "interpret": interpretation_question}
 	item = writers[args.kind](N, data)

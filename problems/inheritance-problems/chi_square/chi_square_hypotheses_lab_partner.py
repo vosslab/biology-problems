@@ -190,7 +190,6 @@ def make_question(error_type: str, scenario_id: str = None) -> tuple:
 	question += scenario["context"]
 	question += f"<p>Total offspring scored: <span style='font-family: monospace;'>{N}</span></p>"
 	question += _make_counts_table(scenario["labels"], ratio, observed, expected)
-	question += "<hr/> "
 	question += (
 		"<p>Your lab partner writes these hypotheses for a chi-square test:</p>"
 	)

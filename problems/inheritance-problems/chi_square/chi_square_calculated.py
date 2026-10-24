@@ -85,7 +85,6 @@ def makeQuestion( desired_result):
 
 	complete_question = ''
 	complete_question += numbers_table+" <br/> "
-	complete_question += " <hr/> "
 	complete_question += question
 
 	return complete_question, final_chisq
