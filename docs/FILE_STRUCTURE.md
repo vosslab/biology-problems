@@ -23,6 +23,7 @@
 - `biochemistry-problems`: biochemistry generators and libraries.
 - `biophysics-problems`: biophysics generators (e.g. FRET color problems).
 - `biostatistics-problems`: statistics and analysis generators.
+- `chi_square`: chi-square generators with descriptive `chi2-` filenames and `chisquarelib.py` helpers.
 - `cell_biology-problems`: cell biology generators.
 - `dna_profiling-problems`: DNA profiling and gel electrophoresis.
 - `inheritance-problems`: genetics and inheritance generators.
@@ -46,7 +47,7 @@ Domain-specific helper libraries live near the generators that use them.
 
 ### Genetics libraries
 
-- [chisquarelib.py](../problems/inheritance-problems/chi_square/chisquarelib.py): chi-square probability helpers and shared tables for arbitrary
+- [chisquarelib.py](../problems/chi_square/chisquarelib.py): chi-square probability helpers and shared tables for arbitrary
   categories, supplied work (including errors), and calculated worked examples.
 - [deletionlib.py](../problems/inheritance-problems/deletion_mutants/deletionlib.py): deletion mapping helpers.
 - [genemaplib.py](../problems/inheritance-problems/gene_mapping/genemaplib.py): gene mapping utilities.

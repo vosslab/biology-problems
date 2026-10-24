@@ -5,7 +5,7 @@ from lib_test_utils import import_from_repo_path
 
 
 def test_chisquarelib_probability_helpers():
-	chisquarelib = import_from_repo_path("problems/inheritance-problems/chi_square/chisquarelib.py")
+	chisquarelib = import_from_repo_path("problems/chi_square/chisquarelib.py")
 	p_value = chisquarelib.get_p_value(7.81472790325, 3)
 	assert abs(p_value - 0.05) < 1e-9
 	critical = chisquarelib.get_critical_value(0.05, 3)
@@ -13,7 +13,7 @@ def test_chisquarelib_probability_helpers():
 
 
 def test_chisquarelib_create_observed_progeny_is_deterministic_with_seed():
-	chisquarelib = import_from_repo_path("problems/inheritance-problems/chi_square/chisquarelib.py")
+	chisquarelib = import_from_repo_path("problems/chi_square/chisquarelib.py")
 	random.seed(0)
 	counts = chisquarelib.create_observed_progeny(20, "9:2:4:1")
 	assert isinstance(counts, list)
@@ -22,7 +22,7 @@ def test_chisquarelib_create_observed_progeny_is_deterministic_with_seed():
 
 
 def test_supplied_tables_preserve_wrong_work_for_any_category_count():
-	chisquarelib = import_from_repo_path("problems/inheritance-problems/chi_square/chisquarelib.py")
+	chisquarelib = import_from_repo_path("problems/chi_square/chisquarelib.py")
 	for count in (2, 3, 6):
 		labels = [f"Biological category {index}" for index in range(count)]
 		# The omitted square and incorrect total are intentional student errors.
@@ -35,7 +35,7 @@ def test_supplied_tables_preserve_wrong_work_for_any_category_count():
 
 
 def test_worked_tables_sum_exact_contributions_before_rounding():
-	chisquarelib = import_from_repo_path("problems/inheritance-problems/chi_square/chisquarelib.py")
+	chisquarelib = import_from_repo_path("problems/chi_square/chisquarelib.py")
 	text = chisquarelib.create_worked_table(
 		["One", "Two", "Three", "Four", "Five", "Six"],
 		[2, 4, 8, 9, 3, 10], [6] * 6)
@@ -51,7 +51,7 @@ def test_worked_tables_sum_exact_contributions_before_rounding():
 
 
 def test_reference_table_supports_requested_degrees_and_tail_probability():
-	chisquarelib = import_from_repo_path("problems/inheritance-problems/chi_square/chisquarelib.py")
+	chisquarelib = import_from_repo_path("problems/chi_square/chisquarelib.py")
 	text = chisquarelib.make_chi_square_table(degrees_of_freedom=(5,), p_values=(0.05,))
 	assert '11.07' in text
 	assert '0.05' in text

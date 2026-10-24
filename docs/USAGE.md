@@ -54,7 +54,7 @@ Worked examples put the substituted formula in Calculation and its numerical con
 Statistic, with the exact and rounded chi-square total below.
 
 The shared renderer in
-[chisquarelib.py](../problems/inheritance-problems/chi_square/chisquarelib.py) accepts an optional
+[chisquarelib.py](../problems/chi_square/chisquarelib.py) accepts an optional
 keyword argument, `color="#004d99"`. Use a dark six-digit hex color: the caption uses that accent
 for its text and top border, while the caption and column headings receive a pale fill mixed
 with 90% white. Body rows keep their neutral styling.

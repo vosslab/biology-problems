@@ -14,6 +14,8 @@ origin belongs there too. Rules: [REPO_STYLE.md](REPO_STYLE.md).
 
 ## Working style
 
+- Executables and libraries should not share too many of the initial characters,
+  because it breaks autocomplete.
 - QPM abbreviates QTI Package Maker. Keep the established `qti_package_maker` Python import
   namespace and distribution; use QPM for Rust, Wasm, and project integration names. Prefer
   explicit arguments, functions, or defaults over project-specific environment configuration.

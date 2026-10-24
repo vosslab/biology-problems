@@ -85,7 +85,7 @@ The main shared visual construction paths are:
 | Large crosses | [cross_table.py](../problems/inheritance-problems/large_crosses/cross_table.py), with [genotypelib.py](../problems/inheritance-problems/genotypelib.py) | Readable tables; T29 has EF choice wrapping |
 | Dominance and epistasis diagrams | [hybridcrosslib.py](../problems/inheritance-problems/hybridcrosslib.py) | Readable diagrams; T34 has EF choice wrapping |
 | Pedigrees | [html_output.py](../problems/inheritance-problems/pedigrees/pedigree_lib/html_output.py) | Readable |
-| Chi-square tables | [chisquarelib.py](../problems/inheritance-problems/chi_square/chisquarelib.py) and caller templates | T48 caller palette needs BP4; other samples readable |
+| Chi-square tables | [chisquarelib.py](../problems/chi_square/chisquarelib.py) and caller templates | T48 caller palette needs BP4; other samples readable |
 
 ## BP1: Gel band readability
 
@@ -225,7 +225,7 @@ numerical contrast targets are outside this repair scope.
 | Task and sample | Owner | Foreground / background | Suggested darker color |
 | --- | --- | --- | --- |
 | T02 `7f88_b659`, p1 Q5 | Pathway palette above | `#b9e710` / white | `#5b7108` |
-| T48 `0d52_0ead`, p20 Q85 | `tables_list` in [chi_square_choices.py](../problems/inheritance-problems/chi_square/chi_square_choices.py) | `#e69100` / `#c0c0c0` | `#5d3b00` |
+| T48 `0d52_0ead`, p20 Q85 | `tables_list` in [chi2-choose_table.py](../problems/chi_square/chi2-choose_table.py) | `#e69100` / `#c0c0c0` | `#5d3b00` |
 
 Raw examples: [t02.txt](audit_evidence/genetics_exam_html/t02.txt) and
 [t48.txt](audit_evidence/genetics_exam_html/t48.txt). Students must be able to
@@ -236,7 +236,7 @@ does not establish a display defect.
 ![chi_square_label_pdf.png](audit_evidence/genetics_exam_html/chi_square_label_pdf.png)
 
 T48's silver background comes from `create_data_table` in
-[chisquarelib.py](../problems/inheritance-problems/chi_square/chisquarelib.py).
+[chisquarelib.py](../problems/chi_square/chisquarelib.py).
 Change the caller's label palette consistently rather than overriding all table
 headings downstream. For T02, keep metabolite colors consistent across contexts.
 The replacements above are concrete darker examples. Check the resulting labels
@@ -328,11 +328,11 @@ the combined local `audit.pdf`. Arguments omit the common diagnostic `-d 1 -x 1`
 | T45 | [yaml_match_to_bbq.py](../problems/matching_sets/yaml_match_to_bbq.py); [meiosis_terms.yml](../problems/matching_sets/inheritance/meiosis_terms.yml) | `--num-choices 4` | `1623_7079` | 19 | OK |
 | T46 | [yaml_match_to_bbq.py](../problems/matching_sets/yaml_match_to_bbq.py); [sex_determination.yml](../problems/matching_sets/inheritance/sex_determination.yml) | `--num-choices 4` | `b9fc_d0cd` | 19 | OK; EF |
 | T47 | [yaml_mc_statements_to_bbq.py](../problems/multiple_choice_statements/yaml_mc_statements_to_bbq.py); [mitosis_and_meiosis.yml](../problems/multiple_choice_statements/cell_biology/mitosis_and_meiosis.yml) | `--num-choices 5` | `2cff_da79` | 19 | OK |
-| T48 | [chi_square_choices.py](../problems/inheritance-problems/chi_square/chi_square_choices.py) | Defaults | `0d52_0ead` | 20 | BP4, Limit |
-| T49 | [chi_square_errors.py](../problems/inheritance-problems/chi_square/chi_square_errors.py) | Defaults | `5149_74ac` | 21 | OK |
-| T50 | [chi_square_hardy_weinberg.py](../problems/inheritance-problems/chi_square/chi_square_hardy_weinberg.py) | Defaults | `c362_9910` | 22 | OK |
-| T51 | [chi_square_hypotheses.py](../problems/inheritance-problems/chi_square/chi_square_hypotheses.py) | Defaults | `c112_d440` | 22 | OK |
-| T52 | [chi_square_hypotheses_lab_partner.py](../problems/inheritance-problems/chi_square/chi_square_hypotheses_lab_partner.py) | Defaults | `fbd5_506b` | 23 | OK |
+| T48 | [chi2-choose_table.py](../problems/chi_square/chi2-choose_table.py) | Defaults | `0d52_0ead` | 20 | BP4, Limit |
+| T49 | [chi2-find_errors.py](../problems/chi_square/chi2-find_errors.py) | Defaults | `5149_74ac` | 21 | OK |
+| T50 | [chi2-test_hardy_weinberg.py](../problems/chi_square/chi2-test_hardy_weinberg.py) | Defaults | `c362_9910` | 22 | OK |
+| T51 | [chi2-select_hypothesis.py](../problems/chi_square/chi2-select_hypothesis.py) | Defaults | `c112_d440` | 22 | OK |
+| T52 | [chi2-review_hypotheses.py](../problems/chi_square/chi2-review_hypotheses.py) | Defaults | `fbd5_506b` | 23 | OK |
 | T53 | [yaml_match_to_bbq.py](../problems/matching_sets/yaml_match_to_bbq.py); [chi-square_terms.yml](../problems/matching_sets/biostatistics/chi-square_terms.yml) | `--num-choices 4` | `b33d_4af4` | 23 | OK |
 | T54 | [yaml_mc_statements_to_bbq.py](../problems/multiple_choice_statements/yaml_mc_statements_to_bbq.py); [chi-square.yml](../problems/multiple_choice_statements/biostatistics/chi-square.yml) | `--num-choices 5` | `4258_fe01` | 23 | OK |
 

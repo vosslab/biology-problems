@@ -1,5 +1,22 @@
 # Changelog
 
+## 2026-10-24
+
+### Behavior or Interface Changes
+
+- Record in [HUMAN_GUIDANCE.md](HUMAN_GUIDANCE.md) that executable and library names
+  should differ near the beginning to support autocomplete.
+- Move chi-square generators into `problems/chi_square/` and use descriptive
+  `chi2-` filenames for calculation, table selection, dice practice, error finding,
+  Hardy-Weinberg testing, hypothesis selection, and lab-partner review.
+- Keep the shared helper named `chisquarelib.py` so autocomplete distinguishes it
+  from the `chi2-` executables. Update test paths, classifier inventory paths, and
+  documentation. Preserve generator executable permissions.
+- Coordinate the new paths with BPW tasks and retain curated title and Bloom metadata
+  for the newly named output banks.
+- Validation: all chi-square task variants generate questions. The full suite passes
+  5677 tests; the unchanged file-discovery deletion test still raises `FileNotFoundError`.
+
 ## 2026-10-23
 
 ### Behavior or Interface Changes

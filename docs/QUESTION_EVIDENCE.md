@@ -204,7 +204,7 @@ rewrites) adds headers, background paragraphs, and some tool-assisted formality.
   progeny classes.
 - Z-score biodiversity (`z_score_table_interp`): "Mid-range Overall with Highest Individual
   Z-score: A distractor with one high individual value".
-- Chi-square error finding (`chi_square_errors`): "However, it appears they made an error. What
+- Chi-square error finding (`chi2-find_errors`): "However, it appears they made an error. What
   did they do wrong?" with choices such as "The numbers in the calculation have to be squared
   and they are not squared."
 - Restriction digests (HUMAN_GUIDANCE): non-selected enzyme placed on the 0 kb mark because

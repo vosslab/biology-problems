@@ -44,7 +44,7 @@ exemplar guides. External LLM feedback informs quality review, not human approva
 ## File scope and interfaces
 
 - New generators: `problems/inheritance-problems/progeny_probability_practice.py`
-   and `problems/inheritance-problems/chi_square/chi_square_dice.py`. Fixed formats
+   and `problems/chi_square/chi2-analyze_dice.py`. Fixed formats
    per `-k/--kind`, standard bptools collection/export flags, kind/type filenames.
 - Edit the two existing chi-square hypothesis generators. Reuse bptools MC/MA/MAT
    and existing chi-square helpers. Keep scenario selection truly random and numeric

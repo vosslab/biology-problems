@@ -8,7 +8,7 @@ import lib_test_utils
 
 def test_dice_counts_and_terms_determine_the_decision():
 	module = lib_test_utils.import_from_repo_path(
-		"problems/inheritance-problems/chi_square/chi_square_dice.py")
+		"problems/chi_square/chi2-analyze_dice.py")
 	# Video example guards against copying its rounded 9.6 or using six df.
 	data = module.dice_data(6, [-4, -2, 2, 3, -3, 4])
 	assert data["observed"] == [2, 4, 8, 9, 3, 10]
@@ -23,7 +23,7 @@ def test_dice_counts_and_terms_determine_the_decision():
 
 def test_quiz_arithmetic_is_supplied_without_duplicate_answer_values():
 	module = lib_test_utils.import_from_repo_path(
-		"problems/inheritance-problems/chi_square/chi_square_dice.py")
+		"problems/chi_square/chi2-analyze_dice.py")
 	options = [("72 / 6", 12), ("72 / 5", fractions.Fraction(72, 5)),
 		("72 / 2", 36), ("6 + 6", 12)]
 	with unittest.mock.patch.object(module.bptools, "formatBB_MC_Question") as formatter:

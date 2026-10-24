@@ -458,7 +458,7 @@ Rule: pedagogy > Names and invented worlds.
 
 ### Error analysis (model)
 
-`chi_square_errors.py`: a worked chi-square table with one deliberate mistake, then "However, it
+`chi2-find_errors.py`: a worked chi-square table with one deliberate mistake, then "However, it
 appears they made an error. What did they do wrong?" Choices name each possible mistake: "The
 numbers in the calculation have to be squared and they are not squared." / "The degrees of
 freedom is wrong, it should be a different value." Rule: pedagogy > Name the reasoning target.

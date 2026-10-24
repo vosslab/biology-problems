@@ -282,9 +282,9 @@
 - Added a cytogenetic band-order question generator in
   [cytogenetic_notation-band_order.py](../problems/inheritance-problems/cytogenetic_notation/cytogenetic_notation-band_order.py).
 - Added a chi-square null/alternative hypothesis question generator in
-  [chi_square_hypotheses.py](../problems/inheritance-problems/chi_square/chi_square_hypotheses.py).
+  [chi2-select_hypothesis.py](../problems/chi_square/chi2-select_hypothesis.py).
 - Added a chi-square "dumb lab partner" hypothesis mistake-spotting generator in
-  [chi_square_hypotheses_lab_partner.py](../problems/inheritance-problems/chi_square/chi_square_hypotheses_lab_partner.py).
+  [chi2-review_hypotheses.py](../problems/chi_square/chi2-review_hypotheses.py).
 - Updated both chi-square hypothesis generators to choose offspring totals that produce integer expected counts.
 - Updated the phylogenetic tree batch script
   [make_all_gene_trees.py](../problems/inheritance-problems/phylogenetic_trees/make_all_gene_trees.py)
@@ -604,7 +604,7 @@
   to use batch helpers with a shared parser and outfile builder.
 - Refactored [probabiliy_of_progeny.py](../problems/inheritance-problems/probabiliy_of_progeny.py)
   to use shared argparse defaults and helper-based question collection.
-- Refactored [chi_square_errors.py](../problems/inheritance-problems/chi_square/chi_square_errors.py)
+- Refactored [chi2-find_errors.py](../problems/chi_square/chi2-find_errors.py)
   to use shared argparse defaults and helper-based question collection.
 - Added a migration note for fixed-grid batch scripts in
   [UNIFICATION_PLAN.md](UNIFICATION_PLAN.md).
@@ -629,7 +629,7 @@
 - Fixed malformed HTML attributes in
   [enhancer_gene_expression.py](../problems/molecular_biology-problems/enhancer_gene_expression.py).
 - Fixed paragraph nesting in
-  [chi_square_hardy_weinberg.py](../problems/inheritance-problems/chi_square/chi_square_hardy_weinberg.py).
+  [chi2-test_hardy_weinberg.py](../problems/chi_square/chi2-test_hardy_weinberg.py).
 - Implemented missing choice generation in
   [cytogenetic_notation-sub-band_notation.py](../problems/inheritance-problems/cytogenetic_notation/cytogenetic_notation-sub-band_notation.py).
 - Fixed HTML entity formatting in
@@ -801,9 +801,9 @@
 - Refactored inheritance scripts to use shared argparse defaults and helper-based
   question collection or batch helpers:
   [blood_type_mother.py](../problems/inheritance-problems/blood_type_mother.py),
-  [chi_square_calculated.py](../problems/inheritance-problems/chi_square/chi_square_calculated.py),
-  [chi_square_choices.py](../problems/inheritance-problems/chi_square/chi_square_choices.py),
-  [chi_square_hardy_weinberg.py](../problems/inheritance-problems/chi_square/chi_square_hardy_weinberg.py),
+  [chi2-calculate_statistic.py](../problems/chi_square/chi2-calculate_statistic.py),
+  [chi2-choose_table.py](../problems/chi_square/chi2-choose_table.py),
+  [chi2-test_hardy_weinberg.py](../problems/chi_square/chi2-test_hardy_weinberg.py),
   [cytogenetic_notation-rearrangements.py](../problems/inheritance-problems/cytogenetic_notation/cytogenetic_notation-rearrangements.py),
   [cytogenetic_notation-sub-band_notation.py](../problems/inheritance-problems/cytogenetic_notation/cytogenetic_notation-sub-band_notation.py),
   [deletion_mutant_random.py](../problems/inheritance-problems/deletion_mutants/deletion_mutant_random.py),
