@@ -202,7 +202,7 @@ def render_table(headers: list, rows: list, title: str = None, *,
 		value = "__" if statistic == "__" else f"{float(statistic):.3f}"
 		text += '<tfoot><tr>'
 		text += f'<td colspan="{len(headers) - 1}" style="{style} text-align: left; font-style: italic; background: #ffffff;">N = {float(sample_size):g}</td>'
-		text += f'<td style="{style} color: {color}; background: {header_background}; font-weight: bold;">&chi;<sup>2</sup> = {value}</td></tr></tfoot>'
+		text += f'<td style="{style} color: #935d00; background: #f4efe6; font-weight: bold;">&chi;<sup>2</sup> = {value}</td></tr></tfoot>'
 	text += '</table>'
 	return text
 

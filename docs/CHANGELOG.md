@@ -4,6 +4,13 @@
 
 ### Behavior or Interface Changes
 
+- Retire paired chi-square hypotheses from Biostatistics as well as Genetics;
+  remove the remaining task, generator mode, and catalog references. This supersedes
+  the earlier audit decision to retain it for Biostatistics.
+
+- Use consistent amber for the chi-square statistic in calculation-table footers,
+  matching statistic labels; keep chi-square test names neutral.
+
 - Standardize chi-square terminology across Python generators, MC statements, and
   matching: blue null hypothesis (H0), orange alternative hypothesis (Ha), violet
   level of significance (alpha), and amber chi-square statistic (chi-squared symbol).
