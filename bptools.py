@@ -1048,6 +1048,27 @@ def export_bbq_to_selftest(outfile: str | os.PathLike, open_browser: bool = Fals
 	return export_path
 
 #==========================
+def _check_image_export(bbexport: bool, html_to_image: bool) -> None:
+	"""Fail before generation or writing when image export cannot launch Chromium."""
+	if not html_to_image:
+		return
+	if not bbexport:
+		raise ValueError("HTML-to-image export requires -B or --bbexport.")
+	from playwright.sync_api import Error, sync_playwright
+	with sync_playwright() as playwright:
+		try:
+			browser = playwright.chromium.launch(headless=True)
+		except Error as error:
+			if "Executable doesn't exist" not in str(error):
+				raise
+			raise RuntimeError(
+				"Image export (-I) requires the Playwright Chromium headless browser.\n"
+				"Install it with:\n"
+				"  python3 -m playwright install --only-shell chromium"
+			) from None
+		browser.close()
+
+#==========================
 def _write_questions_to_file(
 		questions: list,
 		outfile: str | os.PathLike,
@@ -1112,6 +1133,7 @@ def write_questions_to_file(
 
 	Prefer `collect_and_write_questions(...)` in scripts.
 	"""
+	_check_image_export(bbexport, html_to_image)
 	return _write_questions_to_file(
 		questions, outfile, bbexport, html_to_image, selftest, open_selftest)
 
@@ -1129,6 +1151,7 @@ def collect_and_write_questions(write_question, args, outfile, print_histogram_f
 	Returns:
 		list: List of question strings.
 	"""
+	_check_image_export(args.bbexport, getattr(args, 'html_to_image', False))
 	questions = _collect_questions(write_question, args, print_histogram_flag)
 	_write_questions_to_file(
 		questions,

@@ -4,6 +4,10 @@
 
 ### Behavior or Interface Changes
 
+- Check that Playwright Chromium launches before collecting questions with `-I`,
+  or before direct question-file writes. Missing browsers fail immediately with
+  installation instructions instead of failing after the question file is saved.
+
 - Record in [HUMAN_GUIDANCE.md](HUMAN_GUIDANCE.md) that executable and library names
   should differ near the beginning to support autocomplete.
 - Move chi-square generators into `problems/chi_square/` and use descriptive

@@ -3,6 +3,7 @@ import argparse
 import os
 import sys
 import tempfile
+import types
 import zipfile
 
 import pytest
@@ -266,6 +267,8 @@ def test_image_export_browser_failure_preserves_questions(tmp_path, monkeypatch,
 		raise error
 
 	monkeypatch.setattr(bptools.package_interface.QTIPackageInterface, "save_package", fail_save)
+	# A browser that disappears after a successful preflight still preserves the BBQ.
+	monkeypatch.setattr(bptools, "_check_image_export", lambda *args: None)
 	bbq_path = tmp_path / "bbq-image-questions.txt"
 	questions = ["MC\tQuestion?\tNo\tincorrect\tYes\tcorrect\n"]
 	expected_error = SystemExit if missing_browser else Error
@@ -279,6 +282,36 @@ def test_image_export_browser_failure_preserves_questions(tmp_path, monkeypatch,
 	assert "Question?" in bbq_path.read_text()
 	assert not list(tmp_path.glob(".bez-*"))
 	assert not list(tmp_path.glob("*.zip"))
+
+
+@pytest.mark.parametrize("direct_write", [True, False])
+def test_image_export_missing_browser_fails_before_generation_or_writing(
+		tmp_path, monkeypatch, direct_write):
+	import playwright.sync_api
+
+	def fail_launch(**kwargs):
+		raise playwright.sync_api.Error("Executable doesn't exist at /missing/browser")
+
+	class FakePlaywright:
+		def __enter__(self):
+			return types.SimpleNamespace(chromium=types.SimpleNamespace(launch=fail_launch))
+
+		def __exit__(self, *args):
+			return False
+
+	monkeypatch.setattr(playwright.sync_api, "sync_playwright", FakePlaywright)
+	outfile = tmp_path / "questions.txt"
+
+	def write_question(*args):
+		pytest.fail("Question generation must not start without Chromium")
+
+	with pytest.raises(RuntimeError, match="python3 -m playwright install --only-shell chromium"):
+		if direct_write:
+			bptools.write_questions_to_file([], outfile, bbexport=True, html_to_image=True)
+		else:
+			args = argparse.Namespace(bbexport=True, html_to_image=True)
+			bptools.collect_and_write_questions(write_question, args, outfile)
+	assert list(tmp_path.iterdir()) == []
 
 
 def test_add_question_format_args_parses_expected_formats():
