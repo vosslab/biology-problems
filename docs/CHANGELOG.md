@@ -4,6 +4,21 @@
 
 ### Behavior or Interface Changes
 
+- Improve hypothesis selection with observed counts; add `-c/--num-choices` (4 or 5).
+- Add default random mix and exclusive `--null`, `--alt`, and `--mix`; remove `--scenario`.
+- Retire `chi2-review_hypotheses.py` and its registrations in favor of the selection banks.
+
+- Use dice modes `degrees-free`, `expected-count`, and `row-calc` in output filenames. Use
+  plain word-and-number df choices, varied misconception-based expected-count
+  distractors, and worked single-row contributions with slanted fractions and
+  bold decimal results. Randomize the answer's numerical rank while retaining
+  ascending choices; exclude equivalent and rounded duplicate answers.
+- Retire the dice calculation-error and interpretation modes. Keep all six face
+  rows and remove unused critical-value and hypothesis-decision calculations.
+- Put dice `-k/--kind`, `-D/--degrees-free`, `-E/--expected-count`, and
+  `-R/--row-calc` selectors in one mutually exclusive group, retaining
+  expected-count practice as the default.
+
 - Check that Playwright Chromium launches before collecting questions with `-I`,
   or before direct question-file writes. Missing browsers fail immediately with
   installation instructions instead of failing after the question file is saved.

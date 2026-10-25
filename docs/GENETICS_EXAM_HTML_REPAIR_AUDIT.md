@@ -332,7 +332,7 @@ the combined local `audit.pdf`. Arguments omit the common diagnostic `-d 1 -x 1`
 | T49 | [chi2-find_errors.py](../problems/chi_square/chi2-find_errors.py) | Defaults | `5149_74ac` | 21 | OK |
 | T50 | [chi2-test_hardy_weinberg.py](../problems/chi_square/chi2-test_hardy_weinberg.py) | Defaults | `c362_9910` | 22 | OK |
 | T51 | [chi2-select_hypothesis.py](../problems/chi_square/chi2-select_hypothesis.py) | Defaults | `c112_d440` | 22 | OK |
-| T52 | [chi2-review_hypotheses.py](../problems/chi_square/chi2-review_hypotheses.py) | Defaults | `fbd5_506b` | 23 | OK |
+| T52 | Retired: `chi2-review_hypotheses.py` | Defaults | `fbd5_506b` | 23 | OK |
 | T53 | [yaml_match_to_bbq.py](../problems/matching_sets/yaml_match_to_bbq.py); [chi-square_terms.yml](../problems/matching_sets/biostatistics/chi-square_terms.yml) | `--num-choices 4` | `b33d_4af4` | 23 | OK |
 | T54 | [yaml_mc_statements_to_bbq.py](../problems/multiple_choice_statements/yaml_mc_statements_to_bbq.py); [chi-square.yml](../problems/multiple_choice_statements/biostatistics/chi-square.yml) | `--num-choices 5` | `4258_fe01` | 23 | OK |
 

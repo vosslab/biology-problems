@@ -1,37 +1,34 @@
 #!/usr/bin/env python3
-"""Six-face dice practice with one chi-square skill per question.
+"""Apply chi-square setup and row arithmetic to six-outcome dice tables.
 
-The Bozeman video uses 36 rolls: 2, 4, 8, 9, 3, 10. The exact statistic is
-58/6, not its spoken 9.6. Questions use the lecture's 0.05 cutoff and distinguish
-a hypothesis from a conclusion. No decision proves that a die is fair.
+Each item asks for degrees of freedom, an expected count, or one row calculation.
+Distractors model category-count, data-reading, and formula errors. Select
+their numeric ranks randomly, then preserve ascending answer order. Imitate
+the show-the-setup exemplar with compact slanted fractions and bold results.
 """
 
-import fractions
 import random
+import argparse
+import fractions
 
 import bptools
 import chisquarelib
 
 
-FORMATS = {"expected": "MC", "df": "MC", "calculate": "MC",
-	"interpret": "MC"}
+FORMATS = {"expected-count": "MC", "degrees-free": "MC", "row-calc": "MC"}
 
 
 def dice_data(expected: int, deviations: list) -> dict:
-	"""Compute all displayed quantities from the same six observed counts."""
+	"""Keep six observed counts consistent with their total and expected count."""
 	observed = [expected + difference for difference in deviations]
 	if len(observed) != 6 or sum(deviations) != 0 or min(observed) < 0 or expected < 5:
 		raise ValueError("Dice data require six counts, a fixed total, and expected counts >= 5.")
-	terms = [fractions.Fraction((value - expected) ** 2, expected) for value in observed]
-	statistic = sum(terms)
-	critical = chisquarelib.get_critical_value(0.05, 5)
-	data = {"total": 6 * expected, "expected": expected, "observed": observed,
-		"terms": terms, "statistic": statistic, "critical": critical,
-		"reject": float(statistic) > critical}
+	data = {"total": 6 * expected, "expected": expected, "observed": observed}
 	return data
 
 
 def random_data() -> dict:
+	"""Simulate rolls with whole-number expectations under the fair-die model."""
 	# Whole expected counts keep attention on the calculation rather than rounding.
 	expected = random.randint(5, 30)
 	weights = [1] * 6
@@ -77,169 +74,196 @@ def die_face(face: int) -> str:
 	return text
 
 
-def get_question_text(data: dict, show_expected: bool = True, show_calculation: bool = False) -> str:
+def get_question_text(data: dict, show_expected: bool = True) -> str:
 	headers = ["Face", "Observed"]
 	if show_expected:
 		headers.append("Expected")
 	labels = [die_face(index) for index in range(1, 7)]
-	if show_calculation:
-		text = chisquarelib.create_worked_table(labels, data["observed"], [data["expected"]] * 6)
-	else:
-		rows = []
-		for label, value in zip(labels, data["observed"]):
-			row = [label, value]
-			if show_expected:
-				row.append(data["expected"])
-			rows.append(row)
-		text = chisquarelib.render_table(headers, rows)
+	rows = []
+	for label, value in zip(labels, data["observed"]):
+		row = [label, value]
+		if show_expected:
+			row.append(data["expected"])
+		rows.append(row)
+	text = chisquarelib.render_table(headers, rows)
 	text += f'<p>You roll a six-sided die {data["total"]} times. '
-	text += 'The <span style="color: #0247fe;">null hypothesis (H<sub>0</sub>)</span> is that each face has probability 1/6 on every roll.</p>'
+	text += 'The <span style="color: #0247fe;">null hypothesis (H<sub>0</sub>)</span> '
+	text += f'is that each face has probability {slanted_fraction("1", "6")} on every roll.</p>'
 	return text
 
 
-def arithmetic_question(N: int, text: str, options: list):
-	"""Show evaluated arithmetic so MC questions assess the setup, not mental math.
+def slanted_fraction(numerator: str, denominator: str) -> str:
+	"""Match the raised numerator and lowered denominator in lab-partner tables."""
+	text = '<span style="display: inline-block; white-space: nowrap; line-height: 1.8;">'
+	text += f'<sup style="font-size: 90%;">{numerator}</sup>'
+	text += '&frasl;'
+	text += f'<sub style="font-size: 90%;">{denominator}</sub></span>'
+	return text
 
-	The first option is correct. Remove numerically equivalent distractors before
-	sorting by the supplied result, so rounding never produces two correct choices.
+
+def select_options(options: list, num_choices: int) -> list:
+	"""Deduplicate by displayed result and vary the key's rank among valid choices.
+
+	The first option is correct. Choose a feasible number of smaller distractors
+	randomly, rather than allowing a mostly-larger pool to fix the answer's rank.
 	"""
-	choices_by_value = {}
+	unique = {}
 	for expression, value in options:
-		expression = expression.replace(" / ", "/").replace(" + ", "+").replace(" &minus; ", "&minus;")
-		result = f"{float(value):.2f}".rstrip("0").rstrip(".")
-		if result not in choices_by_value:
-			relation = "=" if fractions.Fraction(result) == value else "&asymp;"
-			choices_by_value[result] = (f"<span style='font-size:85%;'>{expression} {relation}</span> "
-				f"<strong>{result}</strong>")
-	answer_value = f"{float(options[0][1]):.2f}".rstrip("0").rstrip(".")
-	answer = choices_by_value[answer_value]
-	choices = [choices_by_value[value] for value in sorted(choices_by_value, key=float)]
+		result = f"{float(value):.2f}"
+		if result not in unique:
+			unique[result] = (expression, value)
+	correct = options[0]
+	lower = [option for option in unique.values() if option[1] < correct[1]]
+	upper = [option for option in unique.values() if option[1] > correct[1]]
+	needed = num_choices - 1
+	minimum = max(0, needed - len(upper))
+	maximum = min(needed, len(lower))
+	if minimum > maximum:
+		raise ValueError("Not enough distinct distractors for the requested choice count.")
+	lower_count = random.choice(list(range(minimum, maximum + 1)))
+	selected = [correct] + random.sample(lower, lower_count)
+	selected += random.sample(upper, needed - lower_count)
+	selected.sort(key=lambda option: option[1])
+	return selected
+
+
+def arithmetic_question(N: int, text: str, options: list, *,
+		fixed_decimals: bool = False) -> object:
+	"""Supply evaluated choices so students judge the setup without a calculator."""
+	selected = select_options(options, 5)
+	choices = []
+	answer = ""
+	for expression, value in selected:
+		result = f"{float(value):.2f}"
+		if not fixed_decimals:
+			result = result.rstrip("0").rstrip(".")
+		relation = "=" if fractions.Fraction(result) == value else "&asymp;"
+		choice = f'{expression} {relation} <strong>{result}</strong>'
+		choices.append(choice)
+		if value == options[0][1]:
+			answer = choice
 	item = bptools.formatBB_MC_Question(N, text, choices, answer)
 	return item
 
 
-def expected_question(N: int, data: dict):
+def expected_count_question(N: int, data: dict) -> object:
 	text = get_question_text(data, show_expected=False)
 	face = random.randint(1, 6)
 	text += f"<p>Which calculation gives the expected number of rolls showing face {face} "
-	text += "under the <span style='color: #0247fe;'>null hypothesis (H<sub>0</sub>)</span>? The arithmetic is shown; no calculator is needed.</p>"
+	text += "under the null hypothesis?</p>"
 	total = data["total"]
-	# Errors: divide by df, assume two outcomes, use the total, or use face count.
-	options = [(f"{total} / 6", fractions.Fraction(total, 6)),
-		(f"{total} / 5", fractions.Fraction(total, 5)),
-		(f"{total} / 2", fractions.Fraction(total, 2)),
-		(f"{total} / 1", total), ("6 / 1", 6)]
+	options = [(slanted_fraction(str(total), "6"), fractions.Fraction(total, 6))]
+	# Errors: use degrees of freedom, carry over four/two categories, or count all rolls.
+	for divisor in (5, 4, 2, 1):
+		options.append((slanted_fraction(str(total), str(divisor)),
+			fractions.Fraction(total, divisor)))
+	# Error: report a probability rather than an expected count.
+	options.append((slanted_fraction("1", "6"), fractions.Fraction(1, 6)))
+	# Error: apply the face probability twice.
+	options.append((slanted_fraction(str(total), "6<sup>2</sup>"),
+		fractions.Fraction(total, 36)))
+	# Error: divide the selected face's observed count instead of the total rolls.
+	observed = data["observed"][face - 1]
+	options.append((slanted_fraction(str(observed), "6"), fractions.Fraction(observed, 6)))
+	# Error: substitute the number of faces for the number of rolls.
+	options.append((slanted_fraction("6", "1"), fractions.Fraction(6)))
 	item = arithmetic_question(N, text, options)
 	return item
 
 
-def df_question(N: int, data: dict):
+def degrees_free_question(N: int, data: dict) -> object:
 	text = get_question_text(data)
-	text += "<p>Which calculation gives the degrees of freedom for this chi-square (&chi;<sup>2</sup>) test? "
-	text += "The arithmetic is shown; no calculator is needed.</p>"
-	# Errors: subtract twice, count every face, or count rolls instead of categories.
-	options = [("6 &minus; 1", 5), ("6 &minus; 2", 4), ("6 &minus; 0", 6),
-		(f"{data['total']} &minus; 1", data["total"] - 1)]
-	item = arithmetic_question(N, text, options)
+	text += "<p>How many degrees of freedom does this chi-square test have?</p>"
+	# Errors: carry over two/four rows, subtract twice, or forget to subtract one.
+	values = [5, 2 - 1, 4 - 1, 6 - 2, 6]
+	# Errors: count both data columns, or count rolls instead of categories.
+	values.extend([2 * 6, data["total"] - 1])
+	options = [(f"{bptools.number_to_cardinal(value)} ({value})", value) for value in values]
+	selected = select_options(options, 4)
+	choices = [expression for expression, value in selected]
+	item = bptools.formatBB_MC_Question(N, text, choices, options[0][0])
 	return item
 
 
-def calculation_question(N: int, data: dict):
-	"""Identify one consistently applied error in a partner's complete table."""
-	choices_by_error = {
-		"observed": "They divided by the observed count instead of the expected count.",
-		"no_square": "They did not square the difference between observed and expected counts.",
-		"square_expected": "They divided by the square of the expected count instead of the expected count.",
-		"faces": "They divided by the number of faces instead of the expected count.",
-	}
-	errors = list(choices_by_error)
-	if 0 in data["observed"]:
-		errors.remove("observed")
-	if data["expected"] == 6:
-		errors.remove("faces")
-	error = random.choice(errors)
+def row_calc_options(data: dict, face: int) -> list:
+	"""Build exact worked calculations from the target row and named mistakes."""
 	expected = data["expected"]
-	rows = []
-	terms = []
-	for face, observed in enumerate(data["observed"], 1):
-		difference = observed - expected
-		if error == "no_square":
-			numerator, denominator = difference, expected
-			calculation = f"({observed} &minus; {expected}) / {expected}"
-		else:
-			numerator = difference ** 2
-			if error == "observed":
-				denominator = observed
-				divisor = str(observed)
-			elif error == "square_expected":
-				denominator = expected ** 2
-				divisor = f"{expected}<sup>2</sup>"
-			else:
-				denominator = 6
-				divisor = "6"
-			calculation = f"({observed} &minus; {expected})<sup>2</sup> / {divisor}"
-		term = fractions.Fraction(numerator, denominator)
-		terms.append(term)
-		calculation += f" = {numerator} / {denominator}"
-		rows.append([die_face(face), expected, observed, calculation, f"{float(term):.3f}"])
-	text = f'<p>You roll a six-sided die {data["total"]} times. '
-	text += 'The <span style="color: #0247fe;">null hypothesis (H<sub>0</sub>)</span> is that each face has probability 1/6 on every roll.</p>'
-	text += '<p>Your lab partner completed the chi-square table below.</p>'
-	text += chisquarelib.render_table(chisquarelib.CALCULATION_HEADERS, rows,
-		footer=(data["total"], sum(terms)))
-	text += '<p><strong>Which mistake did your lab partner make in the calculation?</strong></p>'
-	choices = list(choices_by_error.values())
-	random.shuffle(choices)
-	item = bptools.formatBB_MC_Question(N, text, choices, choices_by_error[error])
+	observed = data["observed"][face - 1]
+	difference = observed - expected
+	if observed <= 0 or abs(difference) < 2:
+		raise ValueError("The target row needs a positive count differing from expected by at least two.")
+	base = f"({observed} &minus; {expected})"
+	squared = f"{base}<sup>2</sup>"
+	# Correct setup, followed by omitting the square and using observed as divisor.
+	calculations = [(squared, str(expected), difference ** 2, expected),
+		(base, str(expected), difference, expected),
+		(squared, str(observed), difference ** 2, observed)]
+	# Errors: square expected, divide by faces, or divide by total rolls.
+	calculations.extend([
+		(squared, f"{expected}<sup>2</sup>", difference ** 2, expected ** 2),
+		(squared, "6", difference ** 2, 6),
+		(squared, str(data["total"]), difference ** 2, data["total"])])
+	# Error: square the individual counts instead of their difference.
+	calculations.append((f"{observed}<sup>2</sup> &minus; {expected}<sup>2</sup>",
+		str(expected), observed ** 2 - expected ** 2, expected))
+	# Error: read the observed count from another row of the six-outcome table.
+	for other_face, other_observed in enumerate(data["observed"], 1):
+		if other_face != face:
+			calculations.append((f"({other_observed} &minus; {expected})<sup>2</sup>",
+				str(expected), (other_observed - expected) ** 2, expected))
+	options = []
+	for numerator_text, denominator_text, numerator, denominator in calculations:
+		expression = slanted_fraction(numerator_text, denominator_text)
+		expression += " = " + slanted_fraction(str(numerator), str(denominator))
+		options.append((expression, fractions.Fraction(numerator, denominator)))
+	return options
+
+
+def target_faces(data: dict) -> list:
+	"""Exclude target rows where zero or a one-count difference collapses errors."""
+	faces = [face for face, observed in enumerate(data["observed"], 1)
+		if observed > 0 and abs(observed - data["expected"]) >= 2]
+	return faces
+
+
+def row_calc_question(N: int, data: dict) -> object:
+	face = random.choice(target_faces(data))
+	text = get_question_text(data)
+	text += f"<p>Which calculation gives the contribution of face {face} "
+	text += "to the <span style='color: #935d00;'>chi-square statistic "
+	text += "(&chi;<sup>2</sup>)</span>?</p>"
+	item = arithmetic_question(N, text, row_calc_options(data, face), fixed_decimals=True)
 	return item
 
 
-def result_text(data: dict) -> str:
-	text = get_question_text(data, show_calculation=True)
-	text += "<p>Subtract expected from observed, square the difference, and divide by expected. "
-	text += "Add the six contributions to get &chi;<sup>2</sup>. "
-	text += "The total uses unrounded contributions.</p>"
-	text += chisquarelib.make_chi_square_table(degrees_of_freedom=(4, 5, 6), p_values=(0.05,))
-	text += f'<p>Calculated &chi;<sup>2</sup> = {float(data["statistic"]):.2f}.</p>'
-	return text
-
-
-def interpretation_question(N: int, data: dict):
-	text = result_text(data)
-	text += "<p>Which one of the following conclusions is supported at a <span style='color: #8601af;'>level of significance (&alpha;)</span> of 0.05?</p>"
-	reject = "Reject the <span style='color: #0247fe;'>null hypothesis (H<sub>0</sub>)</span>; there is enough evidence that face probabilities differ from 1/6."
-	keep = "Fail to reject the <span style='color: #0247fe;'>null hypothesis (H<sub>0</sub>)</span>; there is not enough evidence that face probabilities differ from 1/6."
-	# Errors: reverse the decision; claim proof of equal chances; demand exact counts.
-	choices = [reject, keep,
-		"The <span style='color: #0247fe;'>null hypothesis (H<sub>0</sub>)</span> is proven; every face has exactly the same chance on each roll.",
-		"The <span style='color: #0247fe;'>null hypothesis (H<sub>0</sub>)</span> is disproven; a fair die must give exactly equal counts of all faces."]
-	answer = reject if data["reject"] else keep
-	random.shuffle(choices)
-	item = bptools.formatBB_MC_Question(N, text, choices, answer)
-	return item
-
-
-def write_question(N: int, args):
+def write_question(N: int, args: argparse.Namespace) -> object:
 	data = random_data()
-	# Keep every row informative when students inspect a calculation error.
-	if args.kind == "calculate":
-		while data["expected"] in data["observed"]:
+	if args.kind == "row-calc":
+		while not target_faces(data):
 			data = random_data()
-	writers = {"expected": expected_question, "df": df_question,
-		"calculate": calculation_question, "interpret": interpretation_question}
+	writers = {"expected-count": expected_count_question, "degrees-free": degrees_free_question,
+		"row-calc": row_calc_question}
 	item = writers[args.kind](N, data)
 	return item
 
 
-def parse_arguments():
+def parse_arguments() -> argparse.Namespace:
 	parser = bptools.make_arg_parser(description="Dice chi-square practice with small calculations.")
-	parser.add_argument("-k", "--kind", choices=tuple(FORMATS), default="expected",
+	kind_group = parser.add_mutually_exclusive_group()
+	kind_group.add_argument("-k", "--kind", dest="kind", choices=tuple(FORMATS),
 		help="Skill to practice; each kind has a fixed quiz format.")
+	kind_group.add_argument("-D", "--degrees-free", dest="kind", action="store_const", const="degrees-free",
+		help="Generate degrees-of-freedom questions.")
+	kind_group.add_argument("-E", "--expected-count", dest="kind", action="store_const", const="expected-count",
+		help="Generate expected-count questions.")
+	kind_group.add_argument("-R", "--row-calc", dest="kind", action="store_const", const="row-calc",
+		help="Generate worked row-contribution questions.")
+	parser.set_defaults(kind="expected-count")
 	args = parser.parse_args()
 	return args
 
 
-def main():
+def main() -> None:
 	args = parse_arguments()
 	outfile = bptools.make_outfile(args.kind, FORMATS[args.kind])
 	bptools.collect_and_write_questions(write_question, args, outfile)

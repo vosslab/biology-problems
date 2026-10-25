@@ -87,7 +87,6 @@ generator,problems/chi_square/chi2-choose_table.py
 generator,problems/chi_square/chi2-find_errors.py
 generator,problems/chi_square/chi2-test_hardy_weinberg.py
 generator,problems/chi_square/chi2-select_hypothesis.py
-generator,problems/chi_square/chi2-review_hypotheses.py
 generator,problems/inheritance-problems/cytogenetic_notation/cytogenetic_notation-aneuploidy.py
 generator,problems/inheritance-problems/cytogenetic_notation/cytogenetic_notation-band_order.py
 generator,problems/inheritance-problems/cytogenetic_notation/cytogenetic_notation-disorders.py
