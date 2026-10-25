@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-10-25
+
+### Documentation
+
+- Add [TOPIC_QUESTION_DEVELOPMENT.md](TOPIC_QUESTION_DEVELOPMENT.md) with a reusable workflow
+  for topic scope, coverage gaps, book research, parallel question design, complete review
+  examples, answer checks, and candidate delivery. Link it from the authoring guide.
+
 ## 2026-10-24
 
 ### Behavior or Interface Changes
@@ -35,6 +43,19 @@
   for the newly named output banks.
 - Validation: all chi-square task variants generate questions. The full suite passes
   5677 tests; the unchanged file-discovery deletion test still raises `FileNotFoundError`.
+
+### Documentation
+
+- Refocus the Topic 07 candidate list on chi-square and binomial offspring questions.
+  Separate eight earlier-topic candidates and four optional discussions, add eight explicit
+  binomial examples, and preserve original question numbers for review.
+
+- Revise all 40 Topic 07 candidates in plain language with explicit lettered choices,
+  a marked correct answer, and a separate instructor explanation for each question.
+
+- Add [GENETICS_TOPIC07_QUESTION_CANDIDATES.md](GENETICS_TOPIC07_QUESTION_CANDIDATES.md)
+  with 40 book-informed candidate questions, grouped by parallel learning goals, including
+  original example data, expected reasoning, source passages, and review priorities.
 
 ## 2026-10-23
 

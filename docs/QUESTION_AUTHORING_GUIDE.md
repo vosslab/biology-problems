@@ -8,6 +8,10 @@ argparse setup, and output conventions used across this repo.
 
 ## Student-facing text
 
+For requests to find more questions for an existing topic, start with
+[TOPIC_QUESTION_DEVELOPMENT.md](TOPIC_QUESTION_DEVELOPMENT.md) to establish scope, review
+current coverage, and prepare complete candidates before implementing generators.
+
 Design the puzzle first, then write the thinnest wrapper around it.
 
 - Read [QUESTION_PEDAGOGY_GUIDE.md](QUESTION_PEDAGOGY_GUIDE.md) before writing code: it covers the
