@@ -1,0 +1,23 @@
+topic: methods for changing plant DNA
+num_choices: 4
+source: LECT06/djot/set4_chapter_15.djot, talking points 24-25; basic CRISPR editing added at instructor request
+learning_objective: Recognize how bacteria, gene guns, and CRISPR are used to change plant DNA.
+replacement_rules: {}
+connection_words: null
+conflict_rules: null
+true_statements:
+  truth1a: Agrobacterium is a bacterium used to carry DNA into plant cells
+  truth2a: A gene gun shoots tiny DNA-coated particles into plant cells
+  truth3a: Gold particles are used in gene guns to carry DNA
+  truth4a: CRISPR is used to edit a chosen DNA sequence
+  truth5a: Particle bombardment is another name for the gene gun method
+false_statements:
+  false1a: Agrobacterium is a virus used to carry DNA into plant cells
+  false1b: Agrobacterium is a fungus used to carry DNA into plant cells
+  false2a: A gene gun uses bacteria to carry DNA into plant cells
+  false2b: A gene gun uses viruses to carry DNA into plant cells
+  false3a: Gene guns use pollen grains instead of metal particles to carry DNA
+  false4a: CRISPR is a bacterium used to carry DNA into plant cells
+  false4b: CRISPR is a metal particle used to carry DNA into plant cells
+  false5a: Particle bombardment is another name for the Agrobacterium method
+dbsubject: Biotechnology

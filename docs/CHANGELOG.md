@@ -2,6 +2,37 @@
 
 ## 2026-10-25
 
+- Revise all three algae biofuel challenge choices to focus on extracting oil
+  and separating it from other cell material, following instructor feedback.
+
+- Expand `biofuels.yml` to six descriptions per key: three source descriptions
+  and three challenge descriptions. Keep the four biofuel labels unchanged.
+
+- Merge biofuel sources and challenges into `biofuels.yml`, with two alternate
+  descriptions per type. Use one website task and retain a ten-point selection
+  by assigning culture enrichment two points.
+
+### Question banks
+
+- Clean the plant transgenes bank with the bptools voice checklist and humanizer:
+  remove trait hints from labels, unsupported praise, and unclear source claims.
+  Keep three descriptions per prompt and four pairs per question. Distinguish AVP1
+  from gutD by function, remove the unnamed mangrove gene, and replace vague medical
+  and shelf-life categories with antibody and antisense polygalacturonase examples.
+- Refresh the Nobel bank to 2026, add 2023-2025 topics and move 2022 topics to distractors.
+  Disable NOT questions so students always select a current-year topic. Preserve the
+  short phrase structure and five-choice format; retain older distractor wording.
+  Verified keys against prize sources, passed 12 focused checks, reviewed a browser
+  preview, and found no advisory text issues in eight generated samples.
+- Add topic04 remediation-site, biofuel-source, and biofuel-challenge matching banks using
+  the talking points. Add plain-language glucose MC and Agrobacterium/gene-gun/CRISPR TFMS.
+- Add `--mc` to the 16S survey ordering generator while retaining its original ORDER mode.
+  MC questions use shuffled numbered steps and four possible sequences.
+- Correct DNA-SIP/RNA-SIP and subtraction wording, remove the XNA base-count error, and
+  remove stale "this week" and bonus wording from the historical 2022 Nobel bank.
+- Record the ten-point selection and answer/preview checks in
+  [BIOTECH_TOPIC04.md](BIOTECH_TOPIC04.md).
+
 ### Documentation
 
 - Add [TOPIC_QUESTION_DEVELOPMENT.md](TOPIC_QUESTION_DEVELOPMENT.md) with a reusable workflow

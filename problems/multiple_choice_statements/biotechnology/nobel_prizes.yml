@@ -1,20 +1,53 @@
-topic: topic of a &YEAR; Nobel Prizes awarded this week
-override_question_true: <strong>BONUS:</strong> Which of the following was a topic
-  of the 2022 Nobel Prizes awarded this week?
-override_question_false: <strong>BONUS:</strong> Which of the following was NOT a
-  topic of the 2022 Nobel Prizes awarded this week??
+# Refresh after each year's announcements: move the previous truths into the
+# year-labeled distractors and add the newly announced topics as truths.
+# Always ask students to select a current-year topic, never a prior-year topic.
+# 2026 sources:
+# https://news.ki.se/the-discovery-sheds-light-on-the-brains-mysteries-there-is-a-before-and-an-after
+# https://www.kva.se/en/prizes/nobel-prizes/they-solved-chemistrys-asymmetric-mystery/
+# https://www.kva.se/en/news/the-nobel-prize-in-physics-2026/
+topic: the 2026 Nobel Prizes
+override_question_true: Which of the following was a topic of the 2026 Nobel Prizes?
+override_question_false: null
 replacement_rules: {}
 connection_words: null
 conflict_rules: null
 true_statements:
-  truth1: discoveries concerning the genomes of extinct hominins and human evolution
-  truth2: development of click chemistry in which molecular building blocks snap together
-    quickly and efficiently
-  truth3: development of bioorthogonal chemistry reactions that take place without
-    disrupting the normal chemistry of the cell
-  truth4: establishing the violation of Bell inequalities and pioneering quantum information
-    science using entangled photons
+  truth1: discoveries of light-sensitive ion channels that allow researchers to control
+    nerve-cell activity using light
+  truth2: discovery of nonlinear effects in reactions that favor one mirror-image
+    form of a molecule over the other
+  truth3: discovery of reactions in which a product helps make more of its own
+    mirror-image form
+  truth4: development of the IceCube observatory to detect high-energy neutrinos
+    arriving from distant sources in space
 false_statements:
+  false20251: discoveries of immune controls that prevent the body's defenses from
+    attacking its own healthy tissues
+  false20252: development of metal-organic frameworks with tiny spaces that can trap
+    gases and other molecules
+  false20253: discovery of quantum tunnelling and separate energy levels in an
+    electrical circuit large enough to build in a laboratory
+  false20241: development of computer methods for designing new proteins with
+    structures and functions not found in nature
+  false20242: development of artificial intelligence methods for predicting a
+    protein's three-dimensional structure from its amino acid sequence
+  false20243: discovery of microRNA molecules and their role in controlling gene
+    activity after RNA is made
+  false20244: development of artificial neural networks that allow computers to
+    learn patterns from examples
+  false20231: discoveries of modified RNA bases that made effective mRNA vaccines
+    against COVID-19 possible
+  false20232: discovery and production of quantum dots whose tiny size determines
+    the colors of light they produce
+  false20233: development of extremely short light pulses used to study the movement
+    of electrons in matter
+  false20221: discoveries concerning the genomes of extinct hominins and human evolution
+  false20222: development of click chemistry in which molecular building blocks snap together
+    quickly and efficiently
+  false20223: development of bioorthogonal chemistry reactions that take place without
+    disrupting the normal chemistry of the cell
+  false20224: establishing the violation of Bell inequalities and pioneering quantum information
+    science using entangled photons
   false20211: development of asymmetric organocatalysis tools that revolutionised
     pharmaceutical research and made chemistry greener
   false20212: discoveries of the molecular basis for sensing heat, cold and mechanical

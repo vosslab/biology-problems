@@ -1,0 +1,38 @@
+items to match per question: 4
+key description: site
+keys description: sites
+value description: remediation category
+values description: remediation categories
+question override: <p>Match each site with its remediation category from the talking points.</p>
+source: LECT06/djot/set4_chapter_12.djot, talking points 4-9
+learning_objective: Recognize the type of pollution associated with each site in the slides.
+matching pairs:
+  Exxon Valdez:
+  - Hydrocarbon remediation
+  Deepwater Horizon:
+  - Hydrocarbon remediation
+  Hudson River:
+  - Chemical spill remediation
+  Love Canal:
+  - Chemical spill remediation
+  Kerala:
+  - Pesticide remediation
+  Chernobyl:
+  - Nuclear remediation
+  Fukushima:
+  - Nuclear remediation
+  Hinkley:
+  - Heavy metal remediation
+  Berkeley Pit:
+  - Heavy metal remediation
+  East Metro Twin Cities (Minnesota):
+  - Forever chemical remediation (PFAS)
+  Parkersburg:
+  - Forever chemical remediation (PFAS)
+exclude pairs:
+- [Exxon Valdez, Deepwater Horizon]
+- [Hudson River, Love Canal]
+- [Chernobyl, Fukushima]
+- [Hinkley, Berkeley Pit]
+- [East Metro Twin Cities (Minnesota), Parkersburg]
+dbsubject: Biotechnology

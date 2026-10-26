@@ -1,0 +1,38 @@
+items to match per question: 4
+key description: biofuel type
+keys description: biofuel types
+value description: description
+values description: descriptions
+question override: <p>Match each biofuel type with its description.</p>
+source: LECT06/djot/set4_chapter_13.djot, talking points 14-17
+learning_objective: Recognize the sources and production challenges of four types of biofuel.
+matching pairs:
+  Starch-based Biofuels:
+  - Corn kernels used to make ethanol
+  - Ethanol made from sugars released from corn grain
+  - Fuel made by breaking down grain into sugars and fermenting them
+  - Using edible grain to make ethanol competes with using it for food
+  - Making fuel from corn grain competes with food production
+  - Using grain for fuel leaves less of that grain available for food
+  Cellulose-based Biofuels:
+  - Wood, grasses, or crop stalks used to make ethanol
+  - Ethanol made from sugars released from wood and crop stalks
+  - Fuel made from the tough cell walls of grasses and other plants
+  - Releasing sugars from tough plant cell walls takes extra processing
+  - Tough plant cell walls must be broken down before their sugars can be fermented
+  - Getting usable sugars out of wood and crop stalks requires extra processing
+  Conventional Biodiesel:
+  - Vegetable oils, animal fats, or used cooking oil
+  - Fuel made by chemically processing vegetable oils or animal fats
+  - Used frying oil processed into fuel for diesel engines
+  - Water and free fatty acids in used cooking oil complicate processing
+  - Used frying oil may need treatment to remove water before making fuel
+  - Free fatty acids in used cooking oil can interfere with making the fuel
+  Algae-based Biodiesel:
+  - Oils from microscopic photosynthetic cells grown in ponds or tanks
+  - Fuel made from oils collected from tiny photosynthetic cells grown in water
+  - Oils produced by microscopic pond-grown cells and processed into diesel fuel
+  - Extracting oil from microscopic cells requires separating it from other cell material
+  - Getting oil out of microscopic cells and away from the cell debris is difficult
+  - Oil from microscopic photosynthetic cells must be separated from the rest of the cell contents
+dbsubject: Biotechnology

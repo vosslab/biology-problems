@@ -1,0 +1,21 @@
+topic: measuring glucose without breaking the skin
+num_choices: 4
+override_question_true: Why is it difficult to measure glucose accurately by shining light through intact skin?
+override_question_false: null
+source: LECT06/djot/set4_chapter_14.djot, talking point 22
+learning_objective: Recognize why other substances in the skin can interfere with a glucose reading.
+replacement_rules: {}
+connection_words: null
+conflict_rules: null
+true_statements:
+  truth1: Other substances in the skin also affect the light signal
+false_statements:
+  # Error: assumes glucose has no optical signal.
+  false2: Glucose does not interact with light, so it produces no signal
+  # Error: assumes skin blocks all light.
+  false3: Skin blocks all light from reaching the tissue underneath
+  # Error: confuses dissolved glucose with a substance found only inside cells.
+  false4: Glucose is trapped inside blood cells and is absent from the liquid part of blood
+  # Error: assumes the measurement destroys its target.
+  false5: Shining light through skin breaks down the glucose before it can be measured
+dbsubject: Biotechnology

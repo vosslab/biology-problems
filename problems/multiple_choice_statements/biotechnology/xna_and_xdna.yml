@@ -5,9 +5,8 @@ replacement_rules:
   natural DNA: '<i><span style="color: #000099;">natural DNA</span></i>'
 connection_words: null
 true_statements:
-  truth11a: XNA has more than four nucleobase letters
   truth12a: XNA has a modified sugar backbone
-  truth13a: XNA can base pair with natural DNA
+  truth13a: Some forms of XNA can base pair with natural DNA
   truth14a: XNA stands for Xeno Nucleic Acid
   truth21a: xDNA is wider than natural DNA
   truth22a: xDNA contains an extra benzene ring in its nucleobases
@@ -15,7 +14,6 @@ true_statements:
   truth24a: xDNA stands for expanded DNA because it is larger
   truth25a: xDNA is also known as benzo-homologated DNA
 false_statements:
-  false11a: xDNA has more than four nucleobase letters
   false12a: xDNA has a modified sugar backbone
   false13a: XNA cannot base pair with natural DNA
   false14a: XNA stands for Xylo Nucleic Acid
