@@ -1,6 +1,31 @@
 # Changelog
 
+## 2026-10-26
+
+### Ordering audit
+
+- Complete six independent review passes for YAML ordering. Correct the Topic 04 command
+  and obsolete subset-validation description, clarify the historical glycolysis migration
+  reference, and remove a redundant validation comment. Retain both focused ordering tests.
+- Fresh checks: 180 ordering/YAML/helper tests and 9 website alias tests passed. The YAML
+  date index remains stale because rebuilding it invokes Git, outside the authorized scope.
+  Website artifact regeneration and LMS import remain unverified. See the
+  [audit report](archive/audits/yaml_ordering_audit.md).
+
 ## 2026-10-25
+
+### YAML ordering
+
+- Add keyed ordering banks with per-step wording alternatives, generated topic-based stems,
+  question overrides, and the existing bptools replacement rules. Provide separate native
+  ordering and MC ordering scripts sharing one helper, following MATCH/WOMC.
+- Migrate the 16S survey, model-organism ranks, and glycolysis structures; retire their
+  standalone generators. Every authored step is used, with no count or subset options.
+  Reuse moleculelib and preserve the named-pathway clue. Update website task registrations.
+- Validation: 180 focused bank/helper checks and 9 website task checks pass. All three
+  banks generate both formats, export structurally valid QTI 2.1 packages, and render in
+  Chromium; the text checker reports no findings. Full suite: 5705 passed, 5 failures in
+  unrelated stale documentation links, document size, and the file-discovery deletion test.
 
 - Revise all three algae biofuel challenge choices to focus on extracting oil
   and separating it from other cell material, following instructor feedback.
@@ -31,7 +56,7 @@
 - Correct DNA-SIP/RNA-SIP and subtraction wording, remove the XNA base-count error, and
   remove stale "this week" and bonus wording from the historical 2022 Nobel bank.
 - Record the ten-point selection and answer/preview checks in
-  [BIOTECH_TOPIC04.md](BIOTECH_TOPIC04.md).
+  [BIOTECH_TOPIC04.md](archive/BIOTECH_TOPIC04.md).
 
 ### Documentation
 
@@ -84,7 +109,7 @@
 - Revise all 40 Topic 07 candidates in plain language with explicit lettered choices,
   a marked correct answer, and a separate instructor explanation for each question.
 
-- Add [GENETICS_TOPIC07_QUESTION_CANDIDATES.md](GENETICS_TOPIC07_QUESTION_CANDIDATES.md)
+- Add [GENETICS_TOPIC07_QUESTION_CANDIDATES.md](archive/GENETICS_TOPIC07_QUESTION_CANDIDATES.md)
   with 40 book-informed candidate questions, grouped by parallel learning goals, including
   original example data, expected reasoning, source passages, and review priorities.
 
@@ -846,7 +871,7 @@
   one four-of-four affected carrier cross. Its joint p = 0.0146 exceeds 1% despite the affected-count
   tail being 1/256. Recorded an exact per-sibship phenotype-screen recommendation without changing
   generation policy; six diagnostic tests passed. See the
-  [pedigree_offspring_probability_20261006.md](active_plans/audits/pedigree_offspring_probability_20261006.md).
+  [pedigree_offspring_probability_20261006.md](archive/audits/pedigree_offspring_probability_20261006.md).
 - Focused pedigree tests passed (148); scoped `pyflakes` passed. All 50 saved inputs retained
   byte-identical results and ending RNG state. Whole-call replay work counts included the final
   endpoint check; paired timings varied without establishing a speed benefit.

@@ -70,7 +70,7 @@ fresh randomized runs need not reproduce their values.
 
 The inventory links every selected script and YAML bank. Most generators assemble
 HTML strings locally and pass them to the formatting functions in
-[bptools.py](../bptools.py), which delegate validation and output to Python QPM.
+[bptools.py](../../bptools.py), which delegate validation and output to Python QPM.
 The two YAML converters instead interpolate bank content into their question
 templates before the same bptools export boundary. Neither route makes XML
 well-formedness a guarantee of valid CSS or browser layout.
@@ -79,27 +79,27 @@ The main shared visual construction paths are:
 
 | Selected content | HTML owner | Sample outcome |
 | --- | --- | --- |
-| Complementary and palindrome sequences | [seqlib.py](../problems/molecular_biology-problems/seqlib.py) plus caller templates | Readable |
-| Restriction digest maps | [dna_render_lib.py](../problems/molecular_biology-problems/restriction_enzymes/dna_render_lib.py), with [digest_lib.py](../problems/molecular_biology-problems/restriction_enzymes/digest_lib.py) | Readable; choice-count limits separate |
-| Paternity and crime-scene gels | [gellib.py](../problems/dna_profiling-problems/gellib.py) | Shared BP1 repair |
-| Large crosses | [cross_table.py](../problems/inheritance-problems/large_crosses/cross_table.py), with [genotypelib.py](../problems/inheritance-problems/genotypelib.py) | Readable tables; T29 has EF choice wrapping |
-| Dominance and epistasis diagrams | [hybridcrosslib.py](../problems/inheritance-problems/hybridcrosslib.py) | Readable diagrams; T34 has EF choice wrapping |
-| Pedigrees | [html_output.py](../problems/inheritance-problems/pedigrees/pedigree_lib/html_output.py) | Readable |
-| Chi-square tables | [chisquarelib.py](../problems/chi_square/chisquarelib.py) and caller templates | T48 caller palette needs BP4; other samples readable |
+| Complementary and palindrome sequences | [seqlib.py](../../problems/molecular_biology-problems/seqlib.py) plus caller templates | Readable |
+| Restriction digest maps | [dna_render_lib.py](../../problems/molecular_biology-problems/restriction_enzymes/dna_render_lib.py), with [digest_lib.py](../../problems/molecular_biology-problems/restriction_enzymes/digest_lib.py) | Readable; choice-count limits separate |
+| Paternity and crime-scene gels | [gellib.py](../../problems/dna_profiling-problems/gellib.py) | Shared BP1 repair |
+| Large crosses | [cross_table.py](../../problems/inheritance-problems/large_crosses/cross_table.py), with [genotypelib.py](../../problems/inheritance-problems/genotypelib.py) | Readable tables; T29 has EF choice wrapping |
+| Dominance and epistasis diagrams | [hybridcrosslib.py](../../problems/inheritance-problems/hybridcrosslib.py) | Readable diagrams; T34 has EF choice wrapping |
+| Pedigrees | [html_output.py](../../problems/inheritance-problems/pedigrees/pedigree_lib/html_output.py) | Readable |
+| Chi-square tables | [chisquarelib.py](../../problems/chi_square/chisquarelib.py) and caller templates | T48 caller palette needs BP4; other samples readable |
 
 ## BP1: Gel band readability
 
-**Owner:** [gellib.py](../problems/dna_profiling-problems/gellib.py),
+**Owner:** [gellib.py](../../problems/dna_profiling-problems/gellib.py),
 `GelClassHtml.tdBlock` and `drawLane`. Shared callers:
-[who_father_html.py](../problems/dna_profiling-problems/who_father_html.py) and
-[who_killer_html.py](../problems/dna_profiling-problems/who_killer_html.py), both
+[who_father_html.py](../../problems/dna_profiling-problems/who_father_html.py) and
+[who_killer_html.py](../../problems/dna_profiling-problems/who_killer_html.py), both
 selected with `--medium`.
 
 **Examples:** T17 code `277d_69fa`, PDF page 6, question 23,
-[t17.txt](audit_evidence/genetics_exam_html/t17.txt); T18 code `318e_baf7`,
-page 7, question 24, [t18.txt](audit_evidence/genetics_exam_html/t18.txt).
+[t17.txt](../audit_evidence/genetics_exam_html/t17.txt); T18 code `318e_baf7`,
+page 7, question 24, [t18.txt](../audit_evidence/genetics_exam_html/t18.txt).
 
-![gel_pdf.png](audit_evidence/genetics_exam_html/gel_pdf.png)
+![gel_pdf.png](../audit_evidence/genetics_exam_html/gel_pdf.png)
 
 **Observed:** Gel bands are too pale to distinguish reliably at exam size,
 making DNA patterns difficult to compare. New variants reproduce the problem.
@@ -132,13 +132,13 @@ bands should retain their realistic soft appearance.
 ## BP2: Invalid pathway colors
 
 **Owner:**
-[beadle_tatum-metabolic_pathway.py](../problems/molecular_biology-problems/beadle_tatum-metabolic_pathway.py),
+[beadle_tatum-metabolic_pathway.py](../../problems/molecular_biology-problems/beadle_tatum-metabolic_pathway.py),
 `enzyme_table` and `write_question`.
 
 **Example:** T02 code `7f88_b659`, PDF page 1, question 5,
-[t02.txt](audit_evidence/genetics_exam_html/t02.txt).
+[t02.txt](../audit_evidence/genetics_exam_html/t02.txt).
 
-![pathway_pdf.png](audit_evidence/genetics_exam_html/pathway_pdf.png)
+![pathway_pdf.png](../audit_evidence/genetics_exam_html/pathway_pdf.png)
 
 **Observed:** The pathway figure has black metabolite letters while the surrounding
 stem and answers have colored letters. The final metabolite also has inconsistent
@@ -173,13 +173,13 @@ has one consistent color, and browser and PDF representations agree.
 ## BP3: Fragmented binomial model
 
 **Owner:**
-[probabiliy_of_progeny.py](../problems/inheritance-problems/probabiliy_of_progeny.py),
+[probabiliy_of_progeny.py](../../problems/inheritance-problems/binomial/probabiliy_of_progeny.py),
 `get_question_text` model badge and `makeChoose`.
 
 **Example:** T39 code `d2c1_c91a`, PDF page 17, question 67,
-[t39.txt](audit_evidence/genetics_exam_html/t39.txt).
+[t39.txt](../audit_evidence/genetics_exam_html/t39.txt).
 
-![binomial_pdf.png](audit_evidence/genetics_exam_html/binomial_pdf.png)
+![binomial_pdf.png](../audit_evidence/genetics_exam_html/binomial_pdf.png)
 
 **Observed:** The model appears as three separated parts: label, binomial
 coefficient, then probability powers. Terms remain present, but the formula's
@@ -208,10 +208,10 @@ a cell. The entire expression then forms one visual capture. A source-only
 diagnostic using the identical baseline question confirms this layout survives
 DOCX and LibreOffice PDF conversion:
 
-![binomial_probe_pdf.png](audit_evidence/genetics_exam_html/binomial_probe_pdf.png)
+![binomial_probe_pdf.png](../audit_evidence/genetics_exam_html/binomial_probe_pdf.png)
 
 This image is a proposed-structure probe, not output from a repaired generator.
-The modified record is [t39_probe.txt](audit_evidence/genetics_exam_html/t39_probe.txt);
+The modified record is [t39_probe.txt](../audit_evidence/genetics_exam_html/t39_probe.txt);
 it can be replayed with the same commands as the raw examples. No production
 source was changed. Acceptance should include the smallest and
 largest supported offspring counts, superscripts, and all formula terms.
@@ -225,18 +225,18 @@ numerical contrast targets are outside this repair scope.
 | Task and sample | Owner | Foreground / background | Suggested darker color |
 | --- | --- | --- | --- |
 | T02 `7f88_b659`, p1 Q5 | Pathway palette above | `#b9e710` / white | `#5b7108` |
-| T48 `0d52_0ead`, p20 Q85 | `tables_list` in [chi2-choose_table.py](../problems/chi_square/chi2-choose_table.py) | `#e69100` / `#c0c0c0` | `#5d3b00` |
+| T48 `0d52_0ead`, p20 Q85 | `tables_list` in [chi2-choose_table.py](../../problems/chi_square/chi2-choose_table.py) | `#e69100` / `#c0c0c0` | `#5d3b00` |
 
-Raw examples: [t02.txt](audit_evidence/genetics_exam_html/t02.txt) and
-[t48.txt](audit_evidence/genetics_exam_html/t48.txt). Students must be able to
+Raw examples: [t02.txt](../audit_evidence/genetics_exam_html/t02.txt) and
+[t48.txt](../audit_evidence/genetics_exam_html/t48.txt). Students must be able to
 identify the metabolite letters and the correct table. T11's text remains
 readable and is excluded from the repair inventory; a policy threshold alone
 does not establish a display defect.
 
-![chi_square_label_pdf.png](audit_evidence/genetics_exam_html/chi_square_label_pdf.png)
+![chi_square_label_pdf.png](../audit_evidence/genetics_exam_html/chi_square_label_pdf.png)
 
 T48's silver background comes from `create_data_table` in
-[chisquarelib.py](../problems/chi_square/chisquarelib.py).
+[chisquarelib.py](../../problems/chi_square/chisquarelib.py).
 Change the caller's label palette consistently rather than overriding all table
 headings downstream. For T02, keep metabolite colors consistent across contexts.
 The replacements above are concrete darker examples. Check the resulting labels
@@ -247,7 +247,7 @@ against their actual backgrounds in the final PDF.
 ### EF: Answer choice wrapping
 
 **Example:** T46 code `b9fc_d0cd`, PDF page 19, questions 80-83,
-[t46.txt](audit_evidence/genetics_exam_html/t46.txt). Choice B starts in the right
+[t46.txt](../audit_evidence/genetics_exam_html/t46.txt). Choice B starts in the right
 column but its continuation, including "in the male sperm cell", wraps at the
 left margin beneath choice A. This can associate text with the wrong answer.
 Related wrapping appears in T03, T19, T21, T29, T30, T34, and T44.
@@ -281,60 +281,60 @@ the combined local `audit.pdf`. Arguments omit the common diagnostic `-d 1 -x 1`
 
 | Task | Generator / bank | Selection arguments | Sample code | PDF page | Result |
 | --- | --- | --- | --- | --- | --- |
-| T01 | [yaml_match_to_bbq.py](../problems/matching_sets/yaml_match_to_bbq.py); [genetic_disorders.yml](../problems/matching_sets/inheritance/genetic_disorders.yml) | `--num-choices 4` | `3593_7f7a` | 1 | OK |
-| T02 | [beadle_tatum-metabolic_pathway.py](../problems/molecular_biology-problems/beadle_tatum-metabolic_pathway.py) | Defaults | `7f88_b659` | 1 | BP2, BP4 |
-| T03 | [yaml_mc_statements_to_bbq.py](../problems/multiple_choice_statements/yaml_mc_statements_to_bbq.py); [dna_structure-biol_351.yml](../problems/multiple_choice_statements/biochemistry/dna_structure-biol_351.yml) | `--num-choices 4` | `b9d0_82ca` | 1 | OK; EF |
-| T04 | [yaml_mc_statements_to_bbq.py](../problems/multiple_choice_statements/yaml_mc_statements_to_bbq.py); [nucleotide_components.yml](../problems/multiple_choice_statements/biochemistry/nucleotide_components.yml) | `--num-choices 4` | `e677_66a2` | 1 | OK |
-| T05 | [yaml_mc_statements_to_bbq.py](../problems/multiple_choice_statements/yaml_mc_statements_to_bbq.py); [rna_v_dna.yml](../problems/multiple_choice_statements/biochemistry/rna_v_dna.yml) | `--num-choices 4` | `f3f3_b886` | 1 | OK |
-| T06 | [chargaff_dna_percent.py](../problems/molecular_biology-problems/chargaff_dna_percent.py) | `--num-choices 5` | `e215_58aa` | 2 | OK |
-| T07 | [complementary_sequences.py](../problems/molecular_biology-problems/complementary_sequences.py) | `--mc --prime --num-choices 5` | `e891_6f75` | 2 | OK |
-| T08 | [yaml_mc_statements_to_bbq.py](../problems/multiple_choice_statements/yaml_mc_statements_to_bbq.py); [english_palindromes.yml](../problems/multiple_choice_statements/english_palindromes.yml) | `--num-choices 5` | `8e8b_16e4` | 2 | OK |
-| T09 | [palindrome_sequence_match.py](../problems/molecular_biology-problems/palindrome_sequence_match.py) | Defaults | `92e0_4448` | 2 | OK |
-| T10 | [overhang_sequence.py](../problems/molecular_biology-problems/restriction_enzymes/overhang_sequence.py) | `--mc --num-choices 5` | `ed96_fd5a` | 3 | OK |
-| T11 | [overhang_type.py](../problems/molecular_biology-problems/restriction_enzymes/overhang_type.py) | `--overhang-type` | `c534_abf9` | 3 | OK |
-| T12 | [linear_digest.py](../problems/molecular_biology-problems/restriction_enzymes/linear_digest.py) | `--medium --fragment` | `948f_d1e8` | 3 | OK; Limit |
-| T13 | [linear_digest.py](../problems/molecular_biology-problems/restriction_enzymes/linear_digest.py) | `--medium --strand` | `2d35_6a01` | 4 | OK; Limit |
-| T14 | [circular_digest.py](../problems/molecular_biology-problems/restriction_enzymes/circular_digest.py) | `--medium` | `e85d_d1e8` | 4 | OK; Limit |
-| T15 | [blood_type_agglutination_test.py](../problems/dna_profiling-problems/blood_type_agglutination_test.py) | `--num-choices 4` | `d6ed_1a8f` | 5 | OK |
-| T16 | [hla_genotype.py](../problems/dna_profiling-problems/hla_genotype.py) | `--num-markers 3 --color` | `c803_8f30` | 5 | OK |
-| T17 | [who_father_html.py](../problems/dna_profiling-problems/who_father_html.py) | `--medium` | `277d_69fa` | 6 | BP1 |
-| T18 | [who_killer_html.py](../problems/dna_profiling-problems/who_killer_html.py) | `--medium` | `318e_baf7` | 7 | BP1 |
-| T19 | [yaml_match_to_bbq.py](../problems/matching_sets/yaml_match_to_bbq.py); [genetics_terminology.yml](../problems/matching_sets/inheritance/genetics_terminology.yml) | `--num-choices 4` | `8b22_bd02` | 7 | OK; EF |
-| T20 | [yaml_match_to_bbq.py](../problems/matching_sets/yaml_match_to_bbq.py); [mendel_cross_terminology.yml](../problems/matching_sets/inheritance/mendel_cross_terminology.yml) | `--num-choices 4` | `25e1_66bd` | 7 | OK |
-| T21 | [yaml_match_to_bbq.py](../problems/matching_sets/yaml_match_to_bbq.py); [mendel_four_principles.yml](../problems/matching_sets/inheritance/mendel_four_principles.yml) | `--num-choices 4` | `1a2b_67ca` | 8 | OK; EF |
-| T22 | [yaml_match_to_bbq.py](../problems/matching_sets/yaml_match_to_bbq.py); [mendelian_genetics_terms.yml](../problems/matching_sets/inheritance/mendelian_genetics_terms.yml) | `--num-choices 4` | `c07b_2c62` | 8 | OK |
-| T23 | [yaml_match_to_bbq.py](../problems/matching_sets/yaml_match_to_bbq.py); [monohybrid_cross_genotype.yml](../problems/matching_sets/inheritance/monohybrid_cross_genotype.yml) | `--num-choices 4` | `62d1_fa4c` | 8 | OK |
-| T24 | [monohybrid_genotype_statements.py](../problems/inheritance-problems/monohybrid_genotype_statements.py) | Defaults | `eb07_c859` | 8 | OK |
-| T25 | [punnett_choice.py](../problems/inheritance-problems/punnett_choice.py) | Defaults | `e00b_b34f` | 9 | OK; Limit |
-| T26 | [monohybrid_litter_inference.py](../problems/inheritance-problems/monohybrid_litter_inference.py) | Defaults | `09af_8b57` | 9 | OK |
-| T27 | [unique_gametes.py](../problems/inheritance-problems/large_crosses/unique_gametes.py) | `--hint --num_genes 4` | `283a_4683` | 9 | OK |
-| T28 | [unique_cross_genotypes.py](../problems/inheritance-problems/large_crosses/unique_cross_genotypes.py) | `--hint --num_genes 4 --num-choices 5` | `07fb_d41a` | 10 | OK |
-| T29 | [unique_cross_phenotypes.py](../problems/inheritance-problems/large_crosses/unique_cross_phenotypes.py) | `--hint --num_genes 4 --num-choices 5` | `7a4b_1f80` | 11 | OK; EF |
-| T30 | [lethal_allele_survival.py](../problems/inheritance-problems/lethal_allele_survival.py) | Defaults | `1b73_b4eb` | 11 | OK; EF |
-| T31 | [blood_type_mother.py](../problems/inheritance-problems/blood_type_mother.py) | Defaults | `8516_2b97` | 12 | OK |
-| T32 | [blood_type_offspring.py](../problems/inheritance-problems/blood_type_offspring.py) | Defaults | `e167_72be` | 12 | OK |
-| T33 | [yaml_match_to_bbq.py](../problems/matching_sets/yaml_match_to_bbq.py); [degrees_of_dominance.yml](../problems/matching_sets/inheritance/degrees_of_dominance.yml) | `--num-choices 4` | `b36d_c898` | 12 | OK |
-| T34 | [monohybrid_degrees_of_dominance.py](../problems/inheritance-problems/monohybrid_degrees_of_dominance.py) | Defaults | `554a_89cf` | 12 | OK; EF |
-| T35 | [dihybrid_cross_epistatic_gene_interactions.py](../problems/inheritance-problems/epistasis/dihybrid_cross_epistatic_gene_interactions.py) | Defaults | `38a8_bfa1` | 13 | OK |
-| T36 | [dihybrid_cross_epistatic_gene_metabolics.py](../problems/inheritance-problems/epistasis/dihybrid_cross_epistatic_gene_metabolics.py) | Defaults | `c2b0_9295` | 14 | OK |
-| T37 | [epistasis_test_cross.py](../problems/inheritance-problems/epistasis/epistasis_test_cross.py) | `--forward --num-choices 5` | `4c6f_d45c` | 15 | OK |
-| T38 | [write_pedigree_pattern_matching.py](../problems/inheritance-problems/pedigrees/write_pedigree_pattern_matching.py) | `--medium --random-color` | `0aaf_1393` | 16 | OK |
-| T39 | [probabiliy_of_progeny.py](../problems/inheritance-problems/probabiliy_of_progeny.py) | Defaults | `d2c1_c91a` | 17 | BP3 |
-| T40 | [dominant_and_X-linked_recessive_variations.py](../problems/inheritance-problems/dominant_and_X-linked_recessive_variations.py) | Defaults | `92a9_1c4e` | 17 | OK |
-| T41 | [poisson_flies.py](../problems/inheritance-problems/poisson_flies.py) | Defaults | `6ecc_6b5e` | 18 | OK |
-| T42 | [x_linked_reciprocal_cross.py](../problems/inheritance-problems/x_linked_reciprocal_cross.py) | Defaults | `e3b2_8736` | 18 | OK |
-| T43 | [x_linked_tortoiseshell.py](../problems/inheritance-problems/x_linked_tortoiseshell.py) | Defaults | `2fdd_e69f` | 18 | OK |
-| T44 | [yaml_match_to_bbq.py](../problems/matching_sets/yaml_match_to_bbq.py); [meiosis_prophase_1.yml](../problems/matching_sets/inheritance/meiosis_prophase_1.yml) | `--num-choices 4` | `cf25_6859` | 18 | OK; EF |
-| T45 | [yaml_match_to_bbq.py](../problems/matching_sets/yaml_match_to_bbq.py); [meiosis_terms.yml](../problems/matching_sets/inheritance/meiosis_terms.yml) | `--num-choices 4` | `1623_7079` | 19 | OK |
-| T46 | [yaml_match_to_bbq.py](../problems/matching_sets/yaml_match_to_bbq.py); [sex_determination.yml](../problems/matching_sets/inheritance/sex_determination.yml) | `--num-choices 4` | `b9fc_d0cd` | 19 | OK; EF |
-| T47 | [yaml_mc_statements_to_bbq.py](../problems/multiple_choice_statements/yaml_mc_statements_to_bbq.py); [mitosis_and_meiosis.yml](../problems/multiple_choice_statements/cell_biology/mitosis_and_meiosis.yml) | `--num-choices 5` | `2cff_da79` | 19 | OK |
-| T48 | [chi2-choose_table.py](../problems/chi_square/chi2-choose_table.py) | Defaults | `0d52_0ead` | 20 | BP4, Limit |
-| T49 | [chi2-find_errors.py](../problems/chi_square/chi2-find_errors.py) | Defaults | `5149_74ac` | 21 | OK |
-| T50 | [chi2-test_hardy_weinberg.py](../problems/chi_square/chi2-test_hardy_weinberg.py) | Defaults | `c362_9910` | 22 | OK |
-| T51 | [chi2-select_hypothesis.py](../problems/chi_square/chi2-select_hypothesis.py) | Defaults | `c112_d440` | 22 | OK |
+| T01 | [yaml_match_to_bbq.py](../../problems/matching_sets/yaml_match_to_bbq.py); `genetic_disorders.yml` | `--num-choices 4` | `3593_7f7a` | 1 | OK |
+| T02 | [beadle_tatum-metabolic_pathway.py](../../problems/molecular_biology-problems/beadle_tatum-metabolic_pathway.py) | Defaults | `7f88_b659` | 1 | BP2, BP4 |
+| T03 | [yaml_mc_statements_to_bbq.py](../../problems/multiple_choice_statements/yaml_mc_statements_to_bbq.py); [dna_structure-biol_351.yml](../../problems/multiple_choice_statements/biochemistry/dna_structure-biol_351.yml) | `--num-choices 4` | `b9d0_82ca` | 1 | OK; EF |
+| T04 | [yaml_mc_statements_to_bbq.py](../../problems/multiple_choice_statements/yaml_mc_statements_to_bbq.py); [nucleotide_components.yml](../../problems/multiple_choice_statements/biochemistry/nucleotide_components.yml) | `--num-choices 4` | `e677_66a2` | 1 | OK |
+| T05 | [yaml_mc_statements_to_bbq.py](../../problems/multiple_choice_statements/yaml_mc_statements_to_bbq.py); [rna_v_dna.yml](../../problems/multiple_choice_statements/biochemistry/rna_v_dna.yml) | `--num-choices 4` | `f3f3_b886` | 1 | OK |
+| T06 | [chargaff_dna_percent.py](../../problems/molecular_biology-problems/chargaff_dna_percent.py) | `--num-choices 5` | `e215_58aa` | 2 | OK |
+| T07 | [complementary_sequences.py](../../problems/molecular_biology-problems/complementary_sequences.py) | `--mc --prime --num-choices 5` | `e891_6f75` | 2 | OK |
+| T08 | [yaml_mc_statements_to_bbq.py](../../problems/multiple_choice_statements/yaml_mc_statements_to_bbq.py); [english_palindromes.yml](../../problems/multiple_choice_statements/english_palindromes.yml) | `--num-choices 5` | `8e8b_16e4` | 2 | OK |
+| T09 | [palindrome_sequence_match.py](../../problems/molecular_biology-problems/palindrome_sequence_match.py) | Defaults | `92e0_4448` | 2 | OK |
+| T10 | [overhang_sequence.py](../../problems/molecular_biology-problems/restriction_enzymes/overhang_sequence.py) | `--mc --num-choices 5` | `ed96_fd5a` | 3 | OK |
+| T11 | [overhang_type.py](../../problems/molecular_biology-problems/restriction_enzymes/overhang_type.py) | `--overhang-type` | `c534_abf9` | 3 | OK |
+| T12 | [linear_digest.py](../../problems/molecular_biology-problems/restriction_enzymes/linear_digest.py) | `--medium --fragment` | `948f_d1e8` | 3 | OK; Limit |
+| T13 | [linear_digest.py](../../problems/molecular_biology-problems/restriction_enzymes/linear_digest.py) | `--medium --strand` | `2d35_6a01` | 4 | OK; Limit |
+| T14 | [circular_digest.py](../../problems/molecular_biology-problems/restriction_enzymes/circular_digest.py) | `--medium` | `e85d_d1e8` | 4 | OK; Limit |
+| T15 | [blood_type_agglutination_test.py](../../problems/dna_profiling-problems/blood_type_agglutination_test.py) | `--num-choices 4` | `d6ed_1a8f` | 5 | OK |
+| T16 | [hla_genotype.py](../../problems/dna_profiling-problems/hla_genotype.py) | `--num-markers 3 --color` | `c803_8f30` | 5 | OK |
+| T17 | [who_father_html.py](../../problems/dna_profiling-problems/who_father_html.py) | `--medium` | `277d_69fa` | 6 | BP1 |
+| T18 | [who_killer_html.py](../../problems/dna_profiling-problems/who_killer_html.py) | `--medium` | `318e_baf7` | 7 | BP1 |
+| T19 | [yaml_match_to_bbq.py](../../problems/matching_sets/yaml_match_to_bbq.py); [genetics_terminology.yml](../../problems/matching_sets/inheritance/genetics_terminology.yml) | `--num-choices 4` | `8b22_bd02` | 7 | OK; EF |
+| T20 | [yaml_match_to_bbq.py](../../problems/matching_sets/yaml_match_to_bbq.py); [mendel_cross_terminology.yml](../../problems/matching_sets/inheritance/mendel_cross_terminology.yml) | `--num-choices 4` | `25e1_66bd` | 7 | OK |
+| T21 | [yaml_match_to_bbq.py](../../problems/matching_sets/yaml_match_to_bbq.py); [mendel_four_principles.yml](../../problems/matching_sets/inheritance/mendel_four_principles.yml) | `--num-choices 4` | `1a2b_67ca` | 8 | OK; EF |
+| T22 | [yaml_match_to_bbq.py](../../problems/matching_sets/yaml_match_to_bbq.py); [mendelian_genetics_terms.yml](../../problems/matching_sets/inheritance/mendelian_genetics_terms.yml) | `--num-choices 4` | `c07b_2c62` | 8 | OK |
+| T23 | [yaml_match_to_bbq.py](../../problems/matching_sets/yaml_match_to_bbq.py); [monohybrid_cross_genotype.yml](../../problems/matching_sets/inheritance/monohybrid_cross_genotype.yml) | `--num-choices 4` | `62d1_fa4c` | 8 | OK |
+| T24 | [monohybrid_genotype_statements.py](../../problems/inheritance-problems/monohybrid_genotype_statements.py) | Defaults | `eb07_c859` | 8 | OK |
+| T25 | [punnett_choice.py](../../problems/inheritance-problems/punnett_choice.py) | Defaults | `e00b_b34f` | 9 | OK; Limit |
+| T26 | [monohybrid_litter_inference.py](../../problems/inheritance-problems/monohybrid_litter_inference.py) | Defaults | `09af_8b57` | 9 | OK |
+| T27 | [unique_gametes.py](../../problems/inheritance-problems/large_crosses/unique_gametes.py) | `--hint --num_genes 4` | `283a_4683` | 9 | OK |
+| T28 | [unique_cross_genotypes.py](../../problems/inheritance-problems/large_crosses/unique_cross_genotypes.py) | `--hint --num_genes 4 --num-choices 5` | `07fb_d41a` | 10 | OK |
+| T29 | [unique_cross_phenotypes.py](../../problems/inheritance-problems/large_crosses/unique_cross_phenotypes.py) | `--hint --num_genes 4 --num-choices 5` | `7a4b_1f80` | 11 | OK; EF |
+| T30 | [lethal_allele_survival.py](../../problems/inheritance-problems/lethal_allele_survival.py) | Defaults | `1b73_b4eb` | 11 | OK; EF |
+| T31 | [blood_type_mother.py](../../problems/inheritance-problems/blood_type_mother.py) | Defaults | `8516_2b97` | 12 | OK |
+| T32 | [blood_type_offspring.py](../../problems/inheritance-problems/blood_type_offspring.py) | Defaults | `e167_72be` | 12 | OK |
+| T33 | [yaml_match_to_bbq.py](../../problems/matching_sets/yaml_match_to_bbq.py); [degrees_of_dominance.yml](../../problems/matching_sets/inheritance/degrees_of_dominance.yml) | `--num-choices 4` | `b36d_c898` | 12 | OK |
+| T34 | [monohybrid_degrees_of_dominance.py](../../problems/inheritance-problems/monohybrid_degrees_of_dominance.py) | Defaults | `554a_89cf` | 12 | OK; EF |
+| T35 | [dihybrid_cross_epistatic_gene_interactions.py](../../problems/inheritance-problems/epistasis/dihybrid_cross_epistatic_gene_interactions.py) | Defaults | `38a8_bfa1` | 13 | OK |
+| T36 | [dihybrid_cross_epistatic_gene_metabolics.py](../../problems/inheritance-problems/epistasis/dihybrid_cross_epistatic_gene_metabolics.py) | Defaults | `c2b0_9295` | 14 | OK |
+| T37 | [epistasis_test_cross.py](../../problems/inheritance-problems/epistasis/epistasis_test_cross.py) | `--forward --num-choices 5` | `4c6f_d45c` | 15 | OK |
+| T38 | [write_pedigree_pattern_matching.py](../../problems/inheritance-problems/pedigrees/write_pedigree_pattern_matching.py) | `--medium --random-color` | `0aaf_1393` | 16 | OK |
+| T39 | [probabiliy_of_progeny.py](../../problems/inheritance-problems/binomial/probabiliy_of_progeny.py) | Defaults | `d2c1_c91a` | 17 | BP3 |
+| T40 | [dominant_and_X-linked_recessive_variations.py](../../problems/inheritance-problems/dominant_and_X-linked_recessive_variations.py) | Defaults | `92a9_1c4e` | 17 | OK |
+| T41 | [poisson_flies.py](../../problems/inheritance-problems/poisson_flies.py) | Defaults | `6ecc_6b5e` | 18 | OK |
+| T42 | [x_linked_reciprocal_cross.py](../../problems/inheritance-problems/x_linked_reciprocal_cross.py) | Defaults | `e3b2_8736` | 18 | OK |
+| T43 | [x_linked_tortoiseshell.py](../../problems/inheritance-problems/x_linked_tortoiseshell.py) | Defaults | `2fdd_e69f` | 18 | OK |
+| T44 | [yaml_match_to_bbq.py](../../problems/matching_sets/yaml_match_to_bbq.py); [meiosis_prophase_1.yml](../../problems/matching_sets/inheritance/meiosis_prophase_1.yml) | `--num-choices 4` | `cf25_6859` | 18 | OK; EF |
+| T45 | [yaml_match_to_bbq.py](../../problems/matching_sets/yaml_match_to_bbq.py); [meiosis_terms.yml](../../problems/matching_sets/inheritance/meiosis_terms.yml) | `--num-choices 4` | `1623_7079` | 19 | OK |
+| T46 | [yaml_match_to_bbq.py](../../problems/matching_sets/yaml_match_to_bbq.py); [sex_determination.yml](../../problems/matching_sets/inheritance/sex_determination.yml) | `--num-choices 4` | `b9fc_d0cd` | 19 | OK; EF |
+| T47 | [yaml_mc_statements_to_bbq.py](../../problems/multiple_choice_statements/yaml_mc_statements_to_bbq.py); [mitosis_and_meiosis.yml](../../problems/multiple_choice_statements/cell_biology/mitosis_and_meiosis.yml) | `--num-choices 5` | `2cff_da79` | 19 | OK |
+| T48 | [chi2-choose_table.py](../../problems/chi_square/chi2-choose_table.py) | Defaults | `0d52_0ead` | 20 | BP4, Limit |
+| T49 | [chi2-find_errors.py](../../problems/chi_square/chi2-find_errors.py) | Defaults | `5149_74ac` | 21 | OK |
+| T50 | [chi2-test_hardy_weinberg.py](../../problems/chi_square/chi2-test_hardy_weinberg.py) | Defaults | `c362_9910` | 22 | OK |
+| T51 | [chi2-select_hypothesis.py](../../problems/chi_square/chi2-select_hypothesis.py) | Defaults | `c112_d440` | 22 | OK |
 | T52 | Retired: `chi2-review_hypotheses.py` | Defaults | `fbd5_506b` | 23 | OK |
-| T53 | [yaml_match_to_bbq.py](../problems/matching_sets/yaml_match_to_bbq.py); [chi-square_terms.yml](../problems/matching_sets/biostatistics/chi-square_terms.yml) | `--num-choices 4` | `b33d_4af4` | 23 | OK |
-| T54 | [yaml_mc_statements_to_bbq.py](../problems/multiple_choice_statements/yaml_mc_statements_to_bbq.py); [chi-square.yml](../problems/multiple_choice_statements/biostatistics/chi-square.yml) | `--num-choices 5` | `4258_fe01` | 23 | OK |
+| T53 | [yaml_match_to_bbq.py](../../problems/matching_sets/yaml_match_to_bbq.py); [chi-square_terms.yml](../../problems/matching_sets/biostatistics/chi-square_terms.yml) | `--num-choices 4` | `b33d_4af4` | 23 | OK |
+| T54 | [yaml_mc_statements_to_bbq.py](../../problems/multiple_choice_statements/yaml_mc_statements_to_bbq.py); [chi-square.yml](../../problems/multiple_choice_statements/biostatistics/chi-square.yml) | `--num-choices 5` | `4258_fe01` | 23 | OK |
 
 ## Reproduce retained examples
 

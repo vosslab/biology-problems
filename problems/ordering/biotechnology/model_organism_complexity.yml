@@ -1,0 +1,26 @@
+topic: model organisms
+question override: Arrange the following model organisms from least to most complex.
+replacement_rules: null
+steps:
+  step 1:
+  - Lambda phage (bacteriophage)
+  - Tobacco mosaic virus (plant virus)
+  step 2:
+  - Escherichia coli (bacterium)
+  - Photosynthetic cyanobacteria (bacteria)
+  step 3:
+  - Saccharomyces cerevisiae (yeast)
+  - Tetrahymena thermophila (ciliate)
+  - Chlamydomonas reinhardtii (green alga)
+  step 4:
+  - Caenorhabditis elegans (nematode)
+  step 5:
+  - Drosophila melanogaster (fruit fly)
+  - Danio rerio (zebrafish)
+  step 6:
+  - Mus musculus (mouse)
+  - Rattus norvegicus (rat)
+  - Oryctolagus cuniculus domesticus (rabbit)
+  step 7:
+  - Rhesus macaque (primate)
+dbsubject: Biotechnology

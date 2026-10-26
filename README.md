@@ -79,9 +79,9 @@ Git and can be imported into Blackboard.
 
 ## Find a generator
 
-- [docs/QUESTION_FUNCTION_INDEX.md](docs/QUESTION_FUNCTION_INDEX.md): Browse Python generators by
+- `QUESTION_FUNCTION_INDEX.md`: Browse Python generators by
   subject, script, and question function.
-- [docs/YAML_QUESTION_BANK_INDEX.md](docs/YAML_QUESTION_BANK_INDEX.md): Browse matching sets and
+- `YAML_QUESTION_BANK_INDEX.md`: Browse matching sets and
   statement banks backed by YAML.
 
 Each generator is a standalone command. Run a script with `--help` to see its supported formats and

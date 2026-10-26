@@ -169,7 +169,8 @@
 - Refactored PubChem biochemistry generators to use the shared bptools question framework
   (standard args, outfile helpers, and shared collection utilities):
   [match_amino_acid_structures.py](../problems/biochemistry-problems/PUBCHEM/AMINO_ACIDS/match_amino_acid_structures.py),
-  [order_glycolysis_molecules.py](../problems/biochemistry-problems/PUBCHEM/GLYCOLYSIS/order_glycolysis_molecules.py),
+  `order_glycolysis_molecules.py` (later replaced by
+  [glycolysis.yml](../problems/ordering/biochemistry/glycolysis.yml)),
   [polypeptide_fib_sequence.py](../problems/biochemistry-problems/PUBCHEM/PEPTIDES/polypeptide_fib_sequence.py),
   `which_amino_acid_mc.py`,
   [which_macromolecule.py](../problems/biochemistry-problems/PUBCHEM/MACROMOLECULE_CATEGORIZE/which_macromolecule.py),
@@ -284,7 +285,7 @@
 - Added a chi-square null/alternative hypothesis question generator in
   [chi2-select_hypothesis.py](../problems/chi_square/chi2-select_hypothesis.py).
 - Added a chi-square "dumb lab partner" hypothesis mistake-spotting generator in
-  [chi2-review_hypotheses.py](../problems/chi_square/chi2-review_hypotheses.py).
+  `chi2-review_hypotheses.py`.
 - Updated both chi-square hypothesis generators to choose offspring totals that produce integer expected counts.
 - Updated the phylogenetic tree batch script
   [make_all_gene_trees.py](../problems/inheritance-problems/phylogenetic_trees/make_all_gene_trees.py)
@@ -602,7 +603,7 @@
   [percent_dilution_aliquot_numeric.py](../problems/laboratory-problems/percent_dilution_aliquot_numeric.py).
 - Refactored [blood_type_offspring.py](../problems/inheritance-problems/blood_type_offspring.py)
   to use batch helpers with a shared parser and outfile builder.
-- Refactored [probabiliy_of_progeny.py](../problems/inheritance-problems/probabiliy_of_progeny.py)
+- Refactored [probabiliy_of_progeny.py](../problems/inheritance-problems/binomial/probabiliy_of_progeny.py)
   to use shared argparse defaults and helper-based question collection.
 - Refactored [chi2-find_errors.py](../problems/chi_square/chi2-find_errors.py)
   to use shared argparse defaults and helper-based question collection.

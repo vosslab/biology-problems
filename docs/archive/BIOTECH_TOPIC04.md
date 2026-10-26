@@ -12,7 +12,7 @@ The task CSV selects banks; it does not set assignment point values.
 | Plant transgenes | Matching | `plant_transgenes.yml` |
 | xDNA and XNA | TFMS | `xna_and_xdna.yml` |
 | Current-year Nobel Prize topics (2026) | TFMS | `nobel_prizes.yml` |
-| 16S survey steps | MC | `microbial_16s_rdna_survey_order.py --mc` |
+| 16S survey steps | MC | `python3 problems/ordering/yaml_mc_order_to_bbq.py -y problems/ordering/biotechnology/microbial_16s_survey.yml` |
 | Remediation sites | Matching | `remediation_sites.yml` |
 | Biofuel sources and challenges | Matching | `biofuels.yml` |
 | Glucose measurement through skin | MC | `bloodless_glucose.yml` |
@@ -114,9 +114,10 @@ After: an `MC` record lists shuffled, numbered steps and offers four sequences.
 For displayed steps clustering, extraction, collection, PCR, sequencing, abundance,
 the correct answer is `3 -> 2 -> 4 -> 5 -> 1 -> 6`.
 
-- Independently reconstructed the chronology from displayed text for 400 generated MC
-  questions, spanning 3-6 steps. Each had four distinct choices and exactly one correct
-  sequence. Confirmed the original ORDER mode still works. Temporary check removed afterward.
+- The YAML ordering migration now retains all six steps in every instance. Its focused
+  checks reconstruct the MC key from displayed labels and check four distinct complete
+  sequences. Both native and MC samples passed browser and QTI export checks; see the
+  [implementation evidence](yaml_ordering.md).
 - Ran the four focused matching/statement YAML test modules: 17 tests passed.
 - A separate reader checked all five new banks against the slides. Replaced extra source
   examples with slide wording and corrected the CRISPR source note.

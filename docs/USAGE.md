@@ -38,11 +38,11 @@ open the printed URL manually.
 ## Binomial notation
 
 The `binomial`, `coefficient`, and `explain` modes of
-[progeny_probability_practice.py](../problems/inheritance-problems/progeny_probability_practice.py)
+[progeny_probability_practice.py](../problems/inheritance-problems/binomial/progeny_probability_practice.py)
 use stacked binomial coefficients in parentheses. Probability expressions use the coefficient
 directly; sequence-count choices and interpretation questions pair it with the factorial form.
 
-[binomiallib.py](../problems/inheritance-problems/binomiallib.py) owns the shared notation:
+[binomiallib.py](../problems/inheritance-problems/binomial/binomiallib.py) owns the shared notation:
 `binomial_coefficient(n, r)` renders the stack, and `format_expression(parts)` keeps a complete
 expression together for HTML and table-to-image output. The offspring-sex generator uses the
 same coefficient renderer.
@@ -174,7 +174,7 @@ default off.
 
 This default covers the shared anti-cheat markup only. Authored color, scripts, and table layouts
 can have separate Ultra limitations; see the
-[ultra_classic_showcase_question_catalog.md](active_plans/reports/ultra_classic_showcase_question_catalog.md).
+[ultra_classic_showcase_question_catalog.md](archive/reports/ultra_classic_showcase_question_catalog.md).
 
 ### Blackboard ZIP export
 

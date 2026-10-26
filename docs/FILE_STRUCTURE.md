@@ -30,6 +30,7 @@
 - `laboratory-problems`: lab-focused generators.
 - `molecular_biology-problems`: molecular biology generators.
 - `matching_sets`: YAML banks for matching questions.
+- `ordering`: keyed YAML banks and paired native/MC ordering converters.
 - `multiple_choice_statements`: YAML banks and tools for statement-based MC questions.
 - [TEMPLATE.py](../problems/TEMPLATE.py): generator script template.
 
@@ -162,8 +163,8 @@ All documentation lives in docs/ except for root-level files required by convent
 - [CHANGELOG.md](CHANGELOG.md): chronological user-facing record of changes.
 - [TODO.md](TODO.md): backlog scratchpad for small tasks.
 - [QUESTION_AUTHORING_GUIDE.md](QUESTION_AUTHORING_GUIDE.md): guide for writing new question generators.
-- [QUESTION_FUNCTION_INDEX.md](QUESTION_FUNCTION_INDEX.md): index of question generation functions.
-- [YAML_QUESTION_BANK_INDEX.md](YAML_QUESTION_BANK_INDEX.md): index of YAML question banks.
+- `QUESTION_FUNCTION_INDEX.md`: index of question generation functions.
+- `YAML_QUESTION_BANK_INDEX.md`: index of YAML question banks.
 - [AUTHORS.md](AUTHORS.md): primary maintainers and contributors.
 - [UNIFICATION_PLAN.md](UNIFICATION_PLAN.md): plan for unifying script interfaces.
 

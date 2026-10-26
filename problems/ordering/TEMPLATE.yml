@@ -1,0 +1,31 @@
+# The scripts generate the instructions from this topic.
+topic: a PCR-based environmental 16S survey
+
+# Optional: replace the generated instruction (for example, for a ranking task).
+question override: ~
+
+# Standard bptools replacements; each prose field is processed once.
+replacement_rules:
+  16S rRNA gene: '<span style="color: #007576;">16S rRNA gene</span>'
+
+# Every step is used. Numbers define correct order, not display labels.
+# Each step contains a list, even when it has only one wording.
+steps:
+  step 1:
+    - Collect the environmental sample.
+    - Obtain the environmental sample.
+  step 2:
+    - Extract community DNA.
+    - Isolate DNA from the microbial community.
+  step 3:
+    - Amplify the 16S rRNA gene by PCR.
+    - Use PCR to amplify the 16S rRNA gene.
+  step 4:
+    - Sequence the amplified 16S rRNA gene fragments.
+    - Determine the sequences of the amplified 16S rRNA gene fragments.
+  step 5:
+    - Group and classify the sequences.
+    - Cluster the sequences and assign their taxonomic classifications.
+  step 6:
+    - Analyze relative-abundance results.
+    - Interpret the relative-abundance results.
