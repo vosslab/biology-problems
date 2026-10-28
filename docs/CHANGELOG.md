@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-10-27
+
+- Improve two-point distance MC distractors by prioritizing single parental and recombinant
+  counts before mixed pairs. Deduplicate displayed distances and sort numerically, preventing
+  the correct answer from being the only choice well below 50 cM. Preserve selectable counts
+  and three-point behavior. Limit distractors at or above 49 cM to at most half the
+  distractors. Focused tests and two-/three-point generator smoke checks pass.
+
 ## 2026-10-26
 
 ### Ordering audit

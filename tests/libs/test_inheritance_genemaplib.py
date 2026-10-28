@@ -19,3 +19,26 @@ def test_genemaplib_small_pure_helpers():
 	assert genemaplib.flip_gene_by_letter("+b+d", "b", "abcd") == "+++d"
 	assert genemaplib.flip_gene_by_index("+b+d", 2, "abcd") == "+++d"
 	assert genemaplib.crossover_after_index("++++", 2, "adcb") == "+bc+"
+
+
+def test_two_point_choices_avoid_distance_giveaway():
+	import re
+	gmc = import_from_repo_path("problems/inheritance-problems/gene_mapping/gene_map_class_lib.py")
+	mapping = gmc.GeneMappingClass.__new__(gmc.GeneMappingClass)
+	mapping.num_genes_int = 2
+	mapping.gene_letters_str = "dx"
+	mapping.gene_order_str = "dx"
+	mapping.parental_genotypes_tuple = ("dx", "++")
+	mapping.progeny_count_int = 28000
+	for counts in [(12290, 12322, 1666, 1722), (12290, 12322, 1694, 1694)]:
+		mapping.genotype_counts = dict(zip(("dx", "++", "d+", "+x"), counts))
+		for count in (4, 6, 10):
+			choices, answer = mapping.make_choices(num_choices=count)
+			values = [float(re.search(r"([0-9.]+) cM", choice)[1]) for choice in choices]
+			assert choices.count(answer) == 1
+			assert "12.10 cM" in answer
+			assert values == sorted(set(values))
+			assert min(values) < 12.10 < max(values)
+			assert 2 * sum(v >= 49 for v in values) <= len(values) - 1
+			if count <= 6:
+				assert len(choices) == count

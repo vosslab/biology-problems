@@ -1156,6 +1156,37 @@ class GeneMappingClass:
 		choices_set.add(tuple(sorted(recomb_set)))
 		choices_text_set.add(answer_text)
 
+		if self.num_genes_int == 2:
+			# Singles model counting only one parental or recombinant class.
+			parent_counts = self.get_counts_from_genotype_list(self.parental_genotypes_tuple)
+			random.shuffle(parent_counts)
+			random.shuffle(recomb_counts)
+			singles = [[parent_counts[0]], [recomb_counts[0]]]
+			random.shuffle(singles)
+			remaining_singles = [[parent_counts[1]], [recomb_counts[1]]]
+			random.shuffle(remaining_singles)
+			# Mixed pairs model mistaking one parental class for a recombinant.
+			mixed_pairs = [[p, r] for p in parent_counts for r in recomb_counts]
+			random.shuffle(mixed_pairs)
+			candidates = singles + remaining_singles + mixed_pairs + [parent_counts]
+			answer_distance = f'{100 * sum(recomb_counts) / self.progeny_count_int:.2f}'
+			choices_by_distance = {answer_distance: answer_text}
+			high_distances = []
+			for values in candidates:
+				if len(choices_by_distance) >= num_choices:
+					break
+				distance = f'{100 * sum(values) / self.progeny_count_int:.2f}'
+				if distance not in choices_by_distance:
+					if float(distance) >= 49:
+						if len(high_distances) >= (num_choices - 1) // 2:
+							continue
+						high_distances.append(distance)
+					choices_by_distance[distance] = self.values_to_text(values)
+			# Duplicate counts can leave fewer distinct choices than requested.
+			while 2 * len(high_distances) > len(choices_by_distance) - 1:
+				del choices_by_distance[high_distances.pop()]
+			return [choices_by_distance[d] for d in sorted(choices_by_distance, key=float)], answer_text
+
 		# Calculate the parental fraction and add as an incorrect distractor choice
 		parent_values = self.get_counts_from_genotype_list(self.parental_genotypes_tuple)
 		parent_text = self.values_to_text(parent_values)
@@ -1164,15 +1195,7 @@ class GeneMappingClass:
 		choices_text_set.add(parent_text)
 
 		# Generate random incorrect choices
-		if self.num_genes_int == 2:
-			# All 2-item pairs of genotypes
-			needed_choices = num_choices - len(choices_text_set)
-			choices_text_set |= self.add_combinations(2, choices_set, needed_choices)
-			# If still short, add singles with small fractions
-			if len(choices_text_set) < num_choices:
-				needed_choices = num_choices - len(choices_text_set)
-				choices_text_set |= self.add_combinations(1, choices_set, needed_choices)
-		elif self.num_genes_int == 3:
+		if self.num_genes_int == 3:
 			# All 2-item pairs of genotypes
 			needed_choices = num_choices - len(choices_text_set)
 			choices_text_set |= self.add_combinations(4, choices_set, needed_choices)
