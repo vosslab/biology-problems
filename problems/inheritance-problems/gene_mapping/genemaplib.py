@@ -4,6 +4,8 @@ import sys
 import copy
 import math
 import random
+import itertools
+from functools import lru_cache
 
 import bptools
 
@@ -462,16 +464,38 @@ assert calculate_third_distance(20, 28, (3, 8)) == 41
 
 #====================================
 #====================================
-def calculate_fourth_distance(x: int, y: int, z: int) -> float:
-	# Validate the input constraints: 1 < x < 50, 1 < y < 50, and 0 <= z <= 50
-	if x < 1 or x >= 50 or y < 1 or y >= 50 or z < 1 or z >= 50:
-		raise ValueError("Invalid input values. Make sure 1 < x < 50 and 1 < y < 50 and 1 < z < 50.")
-	t = x + y + z - 2 * (x*y/100 + y*z/100) + 3 * (x*y*z/100/100)
-	if is_almost_integer(t):
-		t = int(round(t))
-	return t
-#assert calculate_fourth_distance(25, 22, (7, 11)) == 43
-#assert calculate_fourth_distance(20, 28, (3, 8)) == 41
+# Exclusive patterns, in the same order as each pool count vector.
+FOUR_GENE_MASKS = ('000', '100', '010', '001', '110', '011', '101', '111')
+
+@lru_cache(maxsize=1)
+def get_four_gene_distance_pool():
+	"""Return exact-tenth distance tuples and compatible counts at N=2000.
+
+	For interval marginals p,q,r, inclusive pair joints u,v,w and triple t,
+	outer recombination is p+q+r-2*(u+v+w)+4*t. Pair joints include t;
+	the exclusive 101 group must also be represented. Integer counts at 2000
+	make all pairwise percentages exact tenths because marginal counts are even.
+	"""
+	pool = {}
+	for x, y, z in itertools.product(range(5, 26), repeat=3):
+		if x >= z or len({x, y, z}) < 3:
+			continue
+		for a, b, c in itertools.product((1, 2, 3), repeat=3):
+			# Coefficients of coincidence 1/4, 1/2, 3/4 vary independently.
+			if a*x*y % 20 or b*y*z % 20 or c*x*z % 20:
+				continue
+			u, v, w = a*x*y//20, b*y*z//20, c*x*z//20
+			for t in range(2, min(u-2, v-2, w-2, x*y*z//500)+1):
+				counts = (2000-20*(x+y+z)+u+v+w-t,
+					20*x-u-w+t, 20*y-u-v+t, 20*z-v-w+t,
+					u-t, v-t, w-t, t)
+				far = (10*(x+y)-u, 10*(y+z)-v,
+					10*(x+y+z)-u-v-w+2*t)
+				key = (10*x, 10*y, 10*z, *far)
+				if min(counts) < 2 or max(far) >= 500 or len(set(key)) < 6:
+					continue
+				pool.setdefault(key, set()).add(counts)
+	return {key: tuple(sorted(vectors)) for key, vectors in pool.items()}
 
 #====================================
 #====================================

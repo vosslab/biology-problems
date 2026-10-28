@@ -259,7 +259,7 @@ class GeneMappingClass:
 						+f'{self.gene_order_str[key[1]-1].upper()} '
 					)
 				else:
-					print(f'  {key}: {value:02d} # parental')
+					print(f'  {key}: {value:02d} # crossover mask or parental')
 			print('}')
 
 		# Print genotype pair lists and counts
@@ -456,7 +456,7 @@ class GeneMappingClass:
 
 		Uses different setups depending on the number of genes (2 to 4). For three genes,
 		calculates a third distance and interference ratio using a helper function. For four genes,
-		sets hardcoded distances and interference ratios.
+		selects exact-tenth distances and compatible crossover counts.
 
 		Raises:
 			NotImplementedError: If `num_genes_int` is 5 or more.
@@ -487,20 +487,13 @@ class GeneMappingClass:
 			self.interference_dict = {(1, 3): interference_tuple}
 
 		elif self.num_genes_int == 4:
-			# Hardcoded distances and interference for four genes
-			self.distances_dict = {
-				(1, 2): 5,
-				(2, 3): 10,
-				(3, 4): 15,
-				(1, 3): 15,
-				(2, 4): 25,
-				(1, 4): 30,
-			}
-			self.interference_dict = {
-				(1, 3): (1, 1),
-				(2, 4): (1, 1),
-				(1, 4): (1, 1),
-			}
+			pool = gml.get_four_gene_distance_pool()
+			key = random.choice(list(pool))
+			self._four_reference_counts = random.choice(pool[key])
+			pairs = ((1, 2), (2, 3), (3, 4), (1, 3), (2, 4), (1, 4))
+			self.distances_dict = dict(zip(pairs, (v / 10 for v in key)))
+			# Four-gene joints are carried by the complete count vector.
+			self.interference_dict = None
 
 		elif self.num_genes_int >= 5:
 			# Not implemented for five or more genes
@@ -561,6 +554,14 @@ class GeneMappingClass:
 		Raises:
 			ValueError: If the calculated progeny count is not an integer.
 		"""
+		if self.num_genes_int == 4:
+			divisor = math.gcd(2000, *self._four_reference_counts)
+			base = 2000 // divisor
+			minimum = max((1000 + base - 1) // base,
+				(2 * divisor + min(self._four_reference_counts) - 1) // min(self._four_reference_counts))
+			self.progeny_count_int = base * random.randint(minimum, 9800 // base)
+			return
+
 		# Progeny count calculation varies by question type
 		if self.question_type == 'mc':
 			# DISTANCES ARE FLOATS
@@ -768,6 +769,11 @@ class GeneMappingClass:
 		- `sx`: The SCO count for the gene pair separated by distance `x`.
 		"""
 
+		if self.num_genes_int == 4:
+			self.progeny_groups_count_dict = dict(zip(gml.FOUR_GENE_MASKS,
+				(n * self.progeny_count_int // 2000 for n in self._four_reference_counts)))
+			return
+
 		# Create a dictionary to categorize gene pairs based on their separation (distance)
 		# This categorization allows us to separately handle triple crossovers (distance of 3),
 		# double crossovers (distance of 2), and single crossovers (distance of 1).
@@ -911,6 +917,23 @@ class GeneMappingClass:
 				'(2,3)': sx,
 			},
 		}"""
+		if self.num_genes_int == 4:
+			while True:
+				self.genotype_counts = {}
+				for mask, count in self.progeny_groups_count_dict.items():
+					genotype = self.parental_genotypes_tuple[0]
+					for index, bit in enumerate(mask, 1):
+						if bit == '1':
+							genotype = gml.crossover_after_index(genotype, index, self.gene_order_str)
+					inverse = gml.invert_genotype(genotype, self.gene_letters_str)
+					left, right = gml.split_number_in_two(count)
+					self.genotype_counts[genotype] = left
+					self.genotype_counts[inverse] = right
+				largest = sorted(self.genotype_counts, key=self.genotype_counts.get, reverse=True)[:2]
+				if min(self.genotype_counts.values()) > 0 and set(largest) == set(self.parental_genotypes_tuple):
+					break
+			return
+
 		self.genotype_counts = {}
 
 		# Split parental count between the two parental genotypes
@@ -1278,12 +1301,17 @@ class GeneMappingClass:
 	#====================================
 	#====================================
 	def get_progeny_html_table(self) -> str:
-		"""
-		Create an HTML table representation of progeny data.
-		"""
-		# Sort all genotype keys
-		all_genotypes = sorted(self.genotype_counts.keys(), reverse=True)
+		genotypes = sorted(self.genotype_counts, reverse=True)
+		if self.num_genes_int != 4:
+			return self._get_progeny_html_panel(genotypes)
+		panels = [self._get_progeny_html_panel(genotypes[:8], False),
+			self._get_progeny_html_panel(genotypes[8:], False)]
+		return ('<table role="presentation" style="border-collapse: collapse;"><tr>'
+			+ ''.join('<td style="vertical-align: top; padding: 0 8px;">' + panel + '</td>' for panel in panels)
+			+ '</tr></table>'
+			+ f'<p>Combined total progeny: {self.progeny_count_int:,d}</p>')
 
+	def _get_progeny_html_panel(self, all_genotypes, show_total=True) -> str:
 		# Define common HTML attributes for table cells
 		th_extra = 'align="center" style="border: 1px solid black; background-color: #cccccc; padding: 10px;"'
 		td_extra = 'align="center" style="border: 1px solid black; background-color: #ffffff; padding: 5px;"'
@@ -1318,9 +1346,10 @@ class GeneMappingClass:
 				table += f'<td {local_td_extra}>{local_span}{allele}</span></td>'
 			table += f'<td {td_extra.replace("center", "right")}>{span}{self.genotype_counts[genotype]:,d}</span></td></tr>'
 
-		# Add total progeny size at the end of the table
-		table += f'<tr><th colspan="{self.num_genes_int+1}" {th_extra.replace("center", "right")}>{span}TOTAL =</span></th>'
-		table += f'<td {td_extra.replace("center", "right")}>{span}{self.progeny_count_int:,d}</span></td></tr>'
+		if show_total:
+			# Add total progeny size at the end of the table
+			table += f'<tr><th colspan="{self.num_genes_int+1}" {th_extra.replace("center", "right")}>{span}TOTAL =</span></th>'
+			table += f'<td {td_extra.replace("center", "right")}>{span}{self.progeny_count_int:,d}</span></td></tr>'
 		table += '</table>'
 		#table += '<p>The resulting phenotypes are summarized in the table above.</p> '
 

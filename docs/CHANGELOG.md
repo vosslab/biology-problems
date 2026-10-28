@@ -2,6 +2,17 @@
 
 ## 2026-10-27
 
+- Complete four-gene test-cross FIB+ questions using a cached pool of 10,183 distinct
+  distance sets with variable interference and positive counts for all 16 genotypes.
+  Adjacent values are whole numbers; all keys use one decimal place. Generate all eight
+  crossover patterns, including first-plus-third crossovers, and independently recover
+  each gene-pair distance and gene order from offspring counts. Accept reverse gene order.
+- Display four-gene progeny as two eight-row tables with one combined total. Preserve
+  two-/three-gene setup and table behavior. Verify every pool count vector, 199 generated
+  questions, and 16 focused inheritance tests; inspect Chromium output at 1280 and 800 px.
+  Text-checker article findings are false positives on allele sequences. Full suite:
+  5,706 passed. LMS import is unverified.
+
 - Improve two-point distance MC distractors by prioritizing single parental and recombinant
   counts before mixed pairs. Deduplicate displayed distances and sort numerically, preventing
   the correct answer from being the only choice well below 50 cM. Preserve selectable counts

@@ -35,6 +35,16 @@ def get_gene_distance(gene_pair: tuple, parental_types: tuple, genotype_counts: 
 #====================================
 #====================================
 def get_gene_order(distances_dict: dict) -> str:
+	if len(distances_dict) == 6:
+		letters = sorted({g for pair in distances_dict for g in pair})
+		def distance(a, b):
+			return distances_dict[tuple(sorted((a, b)))]
+		orders = [order for order in itertools.permutations(letters)
+			if all(distance(a, c) > max(distance(a, b), distance(b, c))
+				for a, b, c in itertools.combinations(order, 3))]
+		if len(orders) != 2 or orders[0] != orders[1][::-1]:
+			raise ValueError('Four-gene distances do not determine a unique order up to reversal')
+		return ''.join(orders[0])
 	sorted_distances = sorted(distances_dict.items(), key=lambda x: x[1], reverse=True)
 	if len(sorted_distances) == 1:
 		return ''.join(sorted(sorted_distances[0][0]))
