@@ -1,6 +1,32 @@
 
 from lib_test_utils import import_from_repo_path
 
+import lxml.etree
+
+
+def test_ascus_table_preserves_genotypes_counts_and_gene_colors():
+	tetradlib = import_from_repo_path('problems/inheritance-problems/gene_mapping/tetradlib.py')
+	colors = ['003FFF', '007A00', 'A719DB']
+	for genes in ('dx', 'dnx'):
+		tetrads = tetradlib.get_all_possible_tetrads(genes)
+		counts = {tetrad: (index + 1) * 100 for index, tetrad in enumerate(tetrads)}
+		total = sum(counts.values())
+		markup = tetradlib.make_progeny_html_table(counts, total, colors[:len(genes)])
+		document = lxml.etree.fromstring(('<root>' + markup + '</root>').encode())
+		rows = document.xpath('./table/tr')[1:-1]
+		assert len(rows) == len(counts)
+		for row, tetrad in zip(rows, sorted(counts)):
+			spores = row.xpath('.//*[@class="spore"]')
+			assert sorted(node.get('data-genotype') for node in spores) == sorted(tetrad)
+			assert ''.join(row[-1].itertext()) == f'{counts[tetrad]:,d}'
+			for spore in spores:
+				features = spore.xpath('.//*[@class="gene-color"]')
+				assert [node.get('data-gene') for node in features] == [
+					allele for allele in spore.get('data-genotype') if allele != '+']
+				for node in features:
+					assert node.get('fill') == '#' + colors[genes.index(node.get('data-gene'))]
+		assert document.xpath('./table/tr[last()]/td')[0].text == f'{total:,d}'
+
 
 def test_tetradlib_ditype_and_tetratype_helpers():
 	tetradlib = import_from_repo_path("problems/inheritance-problems/gene_mapping/tetradlib.py")

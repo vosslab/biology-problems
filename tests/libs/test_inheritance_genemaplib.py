@@ -1,7 +1,30 @@
 
 import random
+import string
+
+import lxml.etree
 
 from lib_test_utils import import_from_repo_path
+
+
+def test_fly_gene_descriptions_use_question_colors_for_all_phenotypes():
+	gml = import_from_repo_path('problems/inheritance-problems/gene_mapping/genemaplib.py')
+	flies = import_from_repo_path('problems/inheritance-problems/gene_mapping/phenotypes_for_flies.py')
+	colors = ['003FFF', '007A00', 'A719DB']
+	for gene in string.ascii_lowercase:
+		portraits = []
+		for color in colors:
+			markup = gml.get_phenotype_info(gene, flies.phenotype_dict, [color])
+			document = lxml.etree.fromstring(('<root>' + markup + '</root>').encode())
+			portrait, = document.xpath('//*[@data-phenotype]')
+			assert portrait.get('data-phenotype') == flies.phenotype_dict[gene]
+			assert portrait.get('data-gene-color') == '#' + color
+			assert flies.phenotype_dict[flies.phenotype_dict[gene]] in ''.join(document.itertext())
+			portraits.append(portrait)
+		heads = [node.xpath('.//*[@class="face"]')[0][0].get('fill') for node in portraits]
+		assert len(set(heads)) == 1
+		wings = [lxml.etree.tostring(node.xpath('.//*[@class="wings"]')[0]) for node in portraits]
+		assert len(set(wings)) == 3
 
 
 def test_genemaplib_small_pure_helpers():

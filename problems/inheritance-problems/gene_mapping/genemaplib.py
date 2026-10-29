@@ -8,6 +8,7 @@ import itertools
 from functools import lru_cache
 
 import bptools
+import genemap_art.individual_phenotypes as individual_phenotypes
 
 debug = False
 
@@ -30,7 +31,11 @@ def get_phenotype_info(gene_letters_str, phenotype_dict, dark_colors=None) -> st
 
 	linking_words = ('linked with', 'associated with', 'related to',
 		'connected with', 'analogous to', 'affiliated with', 'correlated with',)
-	phenotype_info_text += '<p><ul>'
+	illustrate_flies = organism == 'fruit fly'
+	if illustrate_flies:
+		phenotype_info_text += '<table role="presentation" style="border-collapse: separate; border-spacing: 0 4px; width: 100%; max-width: 720px; color: #202020; background: #ffffff;">'
+	else:
+		phenotype_info_text += '<ul>'
 	if dark_colors is None:
 		num_genes_int = len(gene_letters_str)
 		light_colors, dark_colors = bptools.light_and_dark_color_wheel(num_genes_int)
@@ -39,12 +44,21 @@ def get_phenotype_info(gene_letters_str, phenotype_dict, dark_colors=None) -> st
 		phenotype_name = phenotype_dict[gene_letter]
 		phenotype_description = phenotype_dict[phenotype_name]
 		gene_span = f'<span style="color: #{dark_colors[i]};">'
-		phenotype_info_text += f"<li><strong>{gene_span}Gene {gene_letter.upper()}</span></strong> is "
+		if illustrate_flies:
+			portrait = individual_phenotypes.fly_portrait(
+				phenotype_name, size=72, color='#' + dark_colors[i])
+			card_style = 'vertical-align: middle; background: #F7F8FA; border: 1px solid #D6D8DC;'
+			phenotype_info_text += f'<tr><td style="{card_style} width: 108px; padding: 0 4px; border-right: 0; border-radius: 8px 0 0 8px; line-height: 0;">'
+			phenotype_info_text += portrait + f'</td><td style="{card_style} padding: 2px 6px; border-left: 0; border-radius: 0 8px 8px 0;">'
+		else:
+			phenotype_info_text += '<li>'
+		phenotype_info_text += f"<strong>{gene_span}Gene {gene_letter.upper()}</span></strong> is "
 		phenotype_info_text += f'{random.choice(linking_words)} '
 		phenotype_info_text += f"the '{gene_span}<i>{phenotype_name}</i></span>' phenotype. "
 		phenotype_info_text += f'A {organism} that is homozygous recessive for {gene_span}Gene {gene_letter.upper()}</span> '
-		phenotype_info_text += f'{phenotype_description}</li> '
-	phenotype_info_text += '</ul></p>'
+		phenotype_info_text += phenotype_description
+		phenotype_info_text += '</td></tr>' if illustrate_flies else '</li> '
+	phenotype_info_text += '</table>' if illustrate_flies else '</ul>'
 	if is_valid_html(phenotype_info_text) is False:
 		print(phenotype_info_text)
 		raise ValueError

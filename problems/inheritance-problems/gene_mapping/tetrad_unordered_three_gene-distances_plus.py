@@ -174,7 +174,8 @@ def parse_arguments():
 def write_question(N: int, args) -> str | None:
 	gene_letters_str = gml.get_gene_letters(3)
 	question_setup = get_question_setup(gene_letters_str)
-	phenotype_info_str = gml.get_phenotype_info(gene_letters_str, PHENOTYPE_DICT)
+	_, dark_colors = bptools.light_and_dark_color_wheel(len(gene_letters_str))
+	phenotype_info_str = gml.get_phenotype_info(gene_letters_str, PHENOTYPE_DICT, dark_colors)
 
 	gene_order_str = gml.get_random_gene_order(gene_letters_str)
 
@@ -200,7 +201,7 @@ def write_question(N: int, args) -> str | None:
 		ascii_table = tetradlib.get_progeny_ascii_table(3, progeny_tetrads_count_dict, progeny_size)
 		print(ascii_table)
 
-	html_table = tetradlib.make_progeny_html_table(progeny_tetrads_count_dict, progeny_size)
+	html_table = tetradlib.make_progeny_html_table(progeny_tetrads_count_dict, progeny_size, dark_colors)
 	pair_distance_map, solved_gene_order_str, pair_details = (
 		tusl.solve_unordered_tetrad_three_gene(progeny_tetrads_count_dict, gene_letters_str)
 	)

@@ -7,6 +7,13 @@ and a common `argparse` CLI. Follow [INSTALL.md](INSTALL.md) to install
 
 ## Quick start
 
+Gene-mapping testcross questions now include individual fly illustrations beside gene
+descriptions. Unordered-tetrad questions display four labeled spores in each ascus, using
+the same gene colors as their descriptions. The shared renderers and color rules are in
+[genemap_art/README.md](../problems/inheritance-problems/gene_mapping/genemap_art/README.md).
+Use `--selftest` to preview them, or `-B -I` to package the illustrated tables as PNGs for
+Blackboard. Existing generated banks must be regenerated to include the artwork.
+
 - `source source_me.sh`
 - `python3 problems/biochemistry-problems/alpha_helix_h-bonds.py --mc -d 5`
 - Review the generated `bbq-*.txt` output in the repo root.

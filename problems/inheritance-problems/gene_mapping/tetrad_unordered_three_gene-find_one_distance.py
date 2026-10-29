@@ -242,7 +242,8 @@ def parse_arguments():
 #=====================
 def write_question(N: int, args) -> str | None:
 	gene_letters_str = gml.get_gene_letters(3)
-	phenotype_info_str = gml.get_phenotype_info(gene_letters_str, PHENOTYPE_DICT)
+	_, dark_colors = bptools.light_and_dark_color_wheel(len(gene_letters_str))
+	phenotype_info_str = gml.get_phenotype_info(gene_letters_str, PHENOTYPE_DICT, dark_colors)
 
 	gene_order_str = gml.get_random_gene_order(gene_letters_str)
 
@@ -267,7 +268,7 @@ def write_question(N: int, args) -> str | None:
 	if debug:
 		ascii_table = tetradlib.get_progeny_ascii_table(3, progeny_tetrads_count_dict, progeny_size)
 		print(ascii_table)
-	html_table = tetradlib.make_progeny_html_table(progeny_tetrads_count_dict, progeny_size)
+	html_table = tetradlib.make_progeny_html_table(progeny_tetrads_count_dict, progeny_size, dark_colors)
 
 	answer_map = make_answer_map(gene_order_str, distances)
 	gene_pair_str, gene_pair_distances = random.choice(list(answer_map.items()))

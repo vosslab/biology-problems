@@ -8,6 +8,7 @@ import random
 # Local Repository Modules
 import bptools
 import genemaplib as gml
+import genemap_art.asci as asci
 
 # Global debug flag
 debug = True
@@ -40,28 +41,33 @@ def mini_genotype_table(genotype_str):
 
 #===========================================================
 #===========================================================
-def make_progeny_html_table(progeny_tetrads_count_dict, progeny_size):
+def make_progeny_html_table(progeny_tetrads_count_dict, progeny_size, dark_colors=None):
 	list_of_tetrads = sorted(list(progeny_tetrads_count_dict.keys()))
-	td_extra_center = 'align="center" style="border: 1px solid black;"'
-	td_extra_right = 'align="right" style="border: 1px solid black;"'
+	genotypes = [genotype for tetrad in list_of_tetrads for genotype in tetrad]
+	gene_letters = ''.join(next(allele for allele in locus if allele != '+')
+		for locus in zip(*genotypes))
+	if dark_colors is None:
+		_, dark_colors = bptools.light_and_dark_color_wheel(len(gene_letters))
+	colors = tuple('#' + color for color in dark_colors)
+	td_extra_center = 'align="center" style="border: 1px solid #888; padding: 4px 8px;"'
+	td_extra_right = 'align="right" style="border: 1px solid #888; padding: 4px 8px;"'
 	span = '<span style="font-size: medium;">'
-	table = '<table style="border-collapse: collapse; border: 2px solid black; width: 400px; height: 220px;">'
+	table = '<table style="border-collapse: collapse; color: #202020; background: #ffffff;">'
 	table += '<tr>'
-	table += f'  <th {td_extra_center}>Set #</th>'
-	table += f'  <th colspan="4" {td_extra_center}>Tetrad Genotypes</th>'
-	table += f'  <th {td_extra_center}>Progeny<br/>Count</th>'
+	table += f'  <th scope="col" {td_extra_center}>Set #</th>'
+	table += f'  <th scope="col" {td_extra_center}>Tetrad Genotypes</th>'
+	table += f'  <th scope="col" {td_extra_center}>Progeny<br/>Count</th>'
 	table += '</tr>'
 	for i, tetrad_tuple in enumerate(list_of_tetrads):
 		table += '<tr>'
 		table += f' <td {td_extra_center}>{span}{i+1}</span></td>'
-		for genotype_str in tetrad_tuple:
-			genotype_table = mini_genotype_table(genotype_str)
-			table += f' <td {td_extra_center}>{span}{genotype_table}</span></td>'
+		ascus = asci.ascus_svg(tetrad_tuple, gene_letters, colors=colors)
+		table += f' <td {td_extra_center}>{ascus}</td>'
 		counts = progeny_tetrads_count_dict[tetrad_tuple]
 		table += f' <td {td_extra_right}>{span}{counts:,d}</span></td>'
 		table += '</tr>'
 	table += '<tr>'
-	table += f'  <th colspan="5" {td_extra_right}>TOTAL =</th>'
+	table += f'  <th scope="row" colspan="2" {td_extra_right}>TOTAL =</th>'
 	table += f'  <td {td_extra_right}>{progeny_size:,d}</td>'
 	table += '</tr>'
 	table += '</table>'

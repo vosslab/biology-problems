@@ -227,7 +227,8 @@ def generate_question(N: int) -> str:
 	# Get two random gene letters (e.g., 'A' and 'B') and fetch phenotype descriptions for each gene
 	gene_letters_str = gml.get_gene_letters(2)
 	phenotype_dict = phenotypes_for_yeast.phenotype_dict
-	phenotype_info_str = gml.get_phenotype_info(gene_letters_str, phenotype_dict)
+	_, dark_colors = bptools.light_and_dark_color_wheel(len(gene_letters_str))
+	phenotype_info_str = gml.get_phenotype_info(gene_letters_str, phenotype_dict, dark_colors)
 
 	# Determine an appropriate progeny size based on the genetic distance
 	progeny_size_int = gml.get_progeny_size(distance_int)
@@ -253,7 +254,7 @@ def generate_question(N: int) -> str:
 	print(ascii_table)
 
 	# Generate an HTML-formatted table of the progeny tetrads to be included in the question
-	html_table = tetradlib.make_progeny_html_table(progeny_tetrads_count_dict, progeny_size_int)
+	html_table = tetradlib.make_progeny_html_table(progeny_tetrads_count_dict, progeny_size_int, dark_colors)
 
 	# Combine all parts of the question into a single HTML string
 	# This includes the phenotype descriptions, the HTML table, the question setup, and any instructional steps

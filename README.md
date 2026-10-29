@@ -116,3 +116,7 @@ Repository code is available under the
 `LICENSE.LGPL_v3`. Non-code educational content is available
 under the
 [Creative Commons Attribution 4.0 International license](https://creativecommons.org/licenses/by/4.0/).
+
+The side-view fly artwork in the
+[gene-mapping art module](problems/inheritance-problems/gene_mapping/genemap_art/README.md)
+is available under [LICENSE.CC-BY-SA-4.0](LICENSE.CC-BY-SA-4.0); its source credits accompany the SVGs.
