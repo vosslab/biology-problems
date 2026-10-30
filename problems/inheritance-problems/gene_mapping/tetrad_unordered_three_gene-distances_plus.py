@@ -29,7 +29,7 @@ def get_question_header():
 	header += '<p>In this problem, you will use unordered tetrads to determine the order of three genes '
 	header += 'and calculate the distances between them. The yeast <i>Saccharomyces cerevisiae</i> is used in this study. '
 	header += 'A cross has been performed to study the linkage relationships among three genes, '
-	header += 'and the resulting genotypes are summarized in the table below.</p>'
+	header += 'and the resulting genotypes are summarized in the tables below.</p>'
 	if gml.is_valid_html(header) is False:
 		print(header)
 		raise ValueError
@@ -48,7 +48,7 @@ def get_question_setup(gene_letters_str):
 		str: HTML formatted string with the dynamic question setup.
 	"""
 	setup = '<h6>Question</h6> '
-	setup += '<p>Using the table above, determine the order of the genes and the distances between them. '
+	setup += '<p>Using the calculation table above, determine the order of the genes and the distances between them. '
 	setup += 'Once calculated, fill in the following four blanks: </p><ul>'
 	#the gene letters ARE sorted, so this okay since it is not the gene order
 	for gene1, gene2 in itertools.combinations(gene_letters_str.upper(), 2):

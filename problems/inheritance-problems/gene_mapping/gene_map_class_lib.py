@@ -1306,19 +1306,18 @@ class GeneMappingClass:
 			return self._get_progeny_html_panel(genotypes)
 		panels = [self._get_progeny_html_panel(genotypes[:8], False),
 			self._get_progeny_html_panel(genotypes[8:], False)]
-		return ('<table role="presentation" style="border-collapse: collapse;"><tr>'
-			+ ''.join('<td style="vertical-align: top; padding: 0 8px;">' + panel + '</td>' for panel in panels)
-			+ '</tr></table>'
+		return ('<div style="display: flex; flex-wrap: wrap; align-items: flex-start; gap: 16px;">'
+			+ ''.join('<div style="min-width: 0; max-width: 100%;">' + panel + '</div>' for panel in panels)
+			+ '</div>'
 			+ f'<p>Combined total progeny: {self.progeny_count_int:,d}</p>')
 
 	def _get_progeny_html_panel(self, all_genotypes, show_total=True) -> str:
 		# Define common HTML attributes for table cells
-		th_extra = 'align="center" style="border: 1px solid black; background-color: #cccccc; padding: 10px;"'
-		td_extra = 'align="center" style="border: 1px solid black; background-color: #ffffff; padding: 5px;"'
+		th_extra = 'align="center" style="border: 1px solid black; background-color: #cccccc; padding: 4px 6px;"'
+		td_extra = 'align="center" style="border: 1px solid black; background-color: #ffffff; padding: 3px 5px;"'
 		span = '<span style="font-size: medium; color: #000000;">'
 
 		# Initialize the HTML table
-		# width: 460px; height: 280px
 		table = '<table style="border-collapse: collapse; border: 2px solid black;">'
 
 		# Add header row to the table

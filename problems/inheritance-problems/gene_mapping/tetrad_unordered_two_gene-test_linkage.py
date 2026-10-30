@@ -27,7 +27,7 @@ def get_question_text() -> str:
 	question_string = '<h6>Unordered Tetrad Two Gene Determine Linkage</h6>'
 	question_string += '<p>The yeast <i>Saccharomyces cerevisiae</i> has unordered tetrads. '
 	question_string += 'A cross is made to study the linkage relationships among two genes.</p> '
-	question_string += '<p>Using the table above, determine the linkage between the two genes.</p> '
+	question_string += '<p>Using the calculation table above, determine the linkage between the two genes.</p> '
 	if gml.is_valid_html(question_string) is False:
 		print(question_string)
 		raise ValueError

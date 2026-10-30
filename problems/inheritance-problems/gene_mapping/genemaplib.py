@@ -33,7 +33,7 @@ def get_phenotype_info(gene_letters_str, phenotype_dict, dark_colors=None) -> st
 		'connected with', 'analogous to', 'affiliated with', 'correlated with',)
 	illustrate_flies = organism == 'fruit fly'
 	if illustrate_flies:
-		phenotype_info_text += '<table role="presentation" style="border-collapse: separate; border-spacing: 0 4px; width: 100%; max-width: 720px; color: #202020; background: #ffffff;">'
+		phenotype_info_text += '<table role="presentation" style="border-collapse: separate; border-spacing: 0 4px; max-width: 720px; color: #202020; background: #ffffff;">'
 	else:
 		phenotype_info_text += '<ul>'
 	if dark_colors is None:
@@ -48,7 +48,7 @@ def get_phenotype_info(gene_letters_str, phenotype_dict, dark_colors=None) -> st
 			portrait = individual_phenotypes.fly_portrait(
 				phenotype_name, size=72, color='#' + dark_colors[i])
 			card_style = 'vertical-align: middle; background: #F7F8FA; border: 1px solid #D6D8DC;'
-			phenotype_info_text += f'<tr><td style="{card_style} width: 108px; padding: 0 4px; border-right: 0; border-radius: 8px 0 0 8px; line-height: 0;">'
+			phenotype_info_text += f'<tr><td style="{card_style} padding: 0 4px; border-right: 0; border-radius: 8px 0 0 8px; line-height: 0;">'
 			phenotype_info_text += portrait + f'</td><td style="{card_style} padding: 2px 6px; border-left: 0; border-radius: 0 8px 8px 0;">'
 		else:
 			phenotype_info_text += '<li>'

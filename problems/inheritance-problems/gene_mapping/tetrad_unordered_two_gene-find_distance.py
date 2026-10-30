@@ -23,7 +23,7 @@ def get_question_header():
 	header += '<p>In this problem, you will use unordered tetrads to determine the between a single pair of genes '
 	header += 'and calculate the distances between them. The yeast <i>Saccharomyces cerevisiae</i> is used in this study. '
 	header += 'A cross has been performed to study the linkage relationships among two genes, '
-	header += 'and the resulting genotypes are summarized in the table below.</p>'
+	header += 'and the resulting genotypes are summarized in the tables below.</p>'
 	if gml.is_valid_html(header) is False:
 		print(header)
 		raise ValueError

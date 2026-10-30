@@ -41,37 +41,92 @@ def mini_genotype_table(genotype_str):
 
 #===========================================================
 #===========================================================
-def make_progeny_html_table(progeny_tetrads_count_dict, progeny_size, dark_colors=None):
-	list_of_tetrads = sorted(list(progeny_tetrads_count_dict.keys()))
+def _make_visual_panel(rows: list, gene_letters: str, colors: tuple) -> str:
+	td_center = 'align="center" style="border: 1px solid #888; padding: 4px 8px;"'
+	td_right = 'align="right" style="border: 1px solid #888; padding: 4px 8px;"'
+	table = '<table class="tetrad-visual" style="border-collapse: collapse; color: #202020; background: #ffffff;">'
+	table += f'<tr><th scope="col" {td_center}>Set #</th>'
+	table += f'<th scope="col" {td_center}>Tetrad Genotypes</th>'
+	table += f'<th scope="col" {td_center}>Number of<br/>Tetrads</th></tr>'
+	for set_number, tetrad_tuple, count in rows:
+		table += f'<tr><td {td_center}>{set_number}</td>'
+		ascus = asci.ascus_svg(tetrad_tuple, gene_letters, colors=colors)
+		table += f'<td {td_center}>{ascus}</td><td {td_right}>{count:,d}</td></tr>'
+	table += '</table>'
+	return table
+
+#===========================================================
+#===========================================================
+def _gene_span(gene: str, color: str) -> str:
+	span = f'<span style="color: {color}; font-family: monospace; font-weight: bold;">{gene.upper()}</span>'
+	return span
+
+#===========================================================
+#===========================================================
+def _make_calculation_table(rows: list, gene_letters: str, colors: tuple,
+		progeny_size: int) -> str:
+	num_genes = len(gene_letters)
+	pairs = [(i, j) for i in range(num_genes) for j in range(i + 1, num_genes)]
+	cell = 'align="center" style="border: 1px solid #888; min-width: 1.5em; padding: 5px 7px;"'
+	spore_last = 'align="center" style="border-right: 2px solid #666; border-top: 1px solid #888; border-bottom: 1px solid #888; min-width: 1.5em; padding: 5px 7px;"'
+	count = 'align="right" style="border: 1px solid #888; padding: 5px 8px;"'
+	header = 'align="center" style="border: 1px solid #777; background: #e3e8ed; padding: 6px 8px;"'
+	table = '<table class="tetrad-calculation" style="border-collapse: collapse; color: #202020; background: #ffffff;">'
+	table += '<tr>'
+	table += f'<th scope="col" rowspan="2" {header}>Set #</th>'
+	for spore_number in range(1, 5):
+		table += f'<th scope="colgroup" colspan="{num_genes}" {header}>Spore {spore_number}</th>'
+	for i, j in pairs:
+		pair = _gene_span(gene_letters[i], colors[i]) + _gene_span(gene_letters[j], colors[j])
+		table += f'<th scope="col" rowspan="2" {header}>{pair}</th>'
+	table += f'<th scope="col" rowspan="2" {header}>Number of<br/>Tetrads</th></tr><tr>'
+	for spore_number in range(4):
+		for gene_index, gene in enumerate(gene_letters):
+			local_header = header
+			if gene_index == num_genes - 1:
+				local_header = local_header.replace('border: 1px solid #777;', 'border-right: 2px solid #666; border-top: 1px solid #777; border-bottom: 1px solid #777;')
+			table += f'<th scope="col" {local_header}>{_gene_span(gene, colors[gene_index])}</th>'
+	table += '</tr>'
+	for row_index, (set_number, tetrad_tuple, tetrad_count) in enumerate(rows):
+		background = '#ffffff' if row_index % 2 == 0 else '#f5f7f8'
+		table += f'<tr style="background: {background};"><th scope="row" {cell}>{set_number}</th>'
+		for genotype in tetrad_tuple:
+			for gene_index, allele in enumerate(genotype):
+				local_cell = spore_last if gene_index == num_genes - 1 else cell
+				color = colors[gene_index]
+				table += f'<td {local_cell}><span style="color: {color}; font-family: monospace; font-weight: bold;">{allele}</span></td>'
+		for pair in pairs:
+			table += f'<td class="tetrad-classification" data-pair="{gene_letters[pair[0]]}{gene_letters[pair[1]]}" {cell}>&#160;</td>'
+		table += f'<td {count}>{tetrad_count:,d}</td></tr>'
+	label_span = 1 + 4 * num_genes + len(pairs)
+	table += f'<tr><th scope="row" colspan="{label_span}" {count}>TOTAL =</th><td {count}>{progeny_size:,d}</td></tr>'
+	table += '</table>'
+	return table
+
+#===========================================================
+#===========================================================
+def make_progeny_html_table(progeny_tetrads_count_dict: dict, progeny_size: int,
+		dark_colors: list | None = None) -> str:
+	list_of_tetrads = sorted(progeny_tetrads_count_dict)
 	genotypes = [genotype for tetrad in list_of_tetrads for genotype in tetrad]
 	gene_letters = ''.join(next(allele for allele in locus if allele != '+')
 		for locus in zip(*genotypes))
 	if dark_colors is None:
 		_, dark_colors = bptools.light_and_dark_color_wheel(len(gene_letters))
 	colors = tuple('#' + color for color in dark_colors)
-	td_extra_center = 'align="center" style="border: 1px solid #888; padding: 4px 8px;"'
-	td_extra_right = 'align="right" style="border: 1px solid #888; padding: 4px 8px;"'
-	span = '<span style="font-size: medium;">'
-	table = '<table style="border-collapse: collapse; color: #202020; background: #ffffff;">'
-	table += '<tr>'
-	table += f'  <th scope="col" {td_extra_center}>Set #</th>'
-	table += f'  <th scope="col" {td_extra_center}>Tetrad Genotypes</th>'
-	table += f'  <th scope="col" {td_extra_center}>Progeny<br/>Count</th>'
-	table += '</tr>'
-	for i, tetrad_tuple in enumerate(list_of_tetrads):
-		table += '<tr>'
-		table += f' <td {td_extra_center}>{span}{i+1}</span></td>'
-		ascus = asci.ascus_svg(tetrad_tuple, gene_letters, colors=colors)
-		table += f' <td {td_extra_center}>{ascus}</td>'
-		counts = progeny_tetrads_count_dict[tetrad_tuple]
-		table += f' <td {td_extra_right}>{span}{counts:,d}</span></td>'
-		table += '</tr>'
-	table += '<tr>'
-	table += f'  <th scope="row" colspan="2" {td_extra_right}>TOTAL =</th>'
-	table += f'  <td {td_extra_right}>{progeny_size:,d}</td>'
-	table += '</tr>'
-	table += '</table>'
-	table += '<p>The resulting phenotypes are summarized in the table above.</p> '
+	rows = [(index + 1, tetrad, progeny_tetrads_count_dict[tetrad])
+		for index, tetrad in enumerate(list_of_tetrads)]
+	if len(gene_letters) == 3:
+		middle = len(rows) // 2
+		panels = [_make_visual_panel(rows[:middle], gene_letters, colors),
+			_make_visual_panel(rows[middle:], gene_letters, colors)]
+		visuals = '<div style="display: flex; flex-wrap: wrap; align-items: flex-start; gap: 16px;">'
+		visuals += ''.join('<div style="min-width: 0; max-width: 100%;">'
+			+ panel + '</div>' for panel in panels) + '</div>'
+	else:
+		visuals = _make_visual_panel(rows, gene_letters, colors)
+	table = visuals + f'<p>Combined total tetrads: {progeny_size:,d}</p>'
+	table += _make_calculation_table(rows, gene_letters, colors, progeny_size)
 	if gml.is_valid_html(table) is False:
 		print(table)
 		raise ValueError

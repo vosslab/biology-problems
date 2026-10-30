@@ -1,6 +1,26 @@
 # Changelog
 
+## 2026-10-30
+
+### Presentation refinements
+
+- Reduce fly offspring-table header and cell padding. Let fly-description tables size to
+  their content and portrait cells follow the SVG dimensions; retain the prose width cap.
+
+### Removals
+
+- Remove the deprecated `broken-tetrad_unordered_three_gene-distances_plus.py` generator;
+  the active three-gene distances-plus generator already supplies its question format.
+
 ## 2026-10-29
+
+### Additions and New Features
+
+- Add a color-coded calculation worksheet below unordered-tetrad ascus visuals. It aligns each
+  locus beneath every spore, leaves pair classifications blank, and keeps the same set numbers
+  and counts as the visual data.
+- Let split three-gene tetrad and four-point test-cross panels wrap naturally when display space
+  is narrow while retaining side-by-side panels when space permits.
 
 ### Behavior or Interface Changes
 

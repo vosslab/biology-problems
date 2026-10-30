@@ -8,8 +8,8 @@ and a common `argparse` CLI. Follow [INSTALL.md](INSTALL.md) to install
 ## Quick start
 
 Gene-mapping testcross questions now include individual fly illustrations beside gene
-descriptions. Unordered-tetrad questions display four labeled spores in each ascus, using
-the same gene colors as their descriptions. The shared renderers and color rules are in
+descriptions. Unordered-tetrad questions display four labeled spores in each ascus followed by
+a color-coded calculation worksheet with aligned allele columns. The shared renderers and color rules are in
 [genemap_art/README.md](../problems/inheritance-problems/gene_mapping/genemap_art/README.md).
 Use `--selftest` to preview them, or `-B -I` to package the illustrated tables as PNGs for
 Blackboard. Existing generated banks must be regenerated to include the artwork.
