@@ -32,9 +32,12 @@ Names below preserve that source's labels.
 
 Use well-separated colors from the fixed palette in rainbow order for new colored step sequences.
 For six steps, use Red, Dark orange, Dark yellow, Green, Blue, Purple. For four steps, use Red,
-Green, Blue, Purple. Keep each repeated roadmap identical and match step cross-references to its
-own method's colors. Preserve meaningful source colors when converting existing material unless
-recoloring is requested.
+Green, Blue, Purple. For other sequence lengths up to 14, choose evenly spaced entries from the
+14 colors in the standard text palette above, including its first and last entries. Longer
+sequences cycle through that palette. In randomized ordering questions, assign colors after the
+display order is shuffled so colors do not reveal the correct order. Keep each repeated roadmap
+identical and match step cross-references to its own method's colors. Preserve meaningful source
+colors when converting existing material unless recoloring is requested.
 
 ## Three-point testcross pairs
 

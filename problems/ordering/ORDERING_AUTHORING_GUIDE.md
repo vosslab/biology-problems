@@ -32,8 +32,16 @@ python3 problems/ordering/yaml_mc_order_to_bbq.py -y problems/ordering/TEMPLATE.
 Both use the usual bptools generation and preview options, including `--selftest`.
 Native output is `bbq-ORDER-<bank>-<count>_items-questions.txt`; MC output uses `SEQUENCEMC`.
 Native ordering requires at least two steps. MC requires at least three and supplies four
-complete sequences. There is no item-count option: author a separate complete bank when
-a shorter exercise is needed.
+complete sequences. MC labels default to bracketed numbers. Set `-l/--label-style` to
+`bracketed`, `numbers`, `roman`, `roman-lower`, `circled`, `dice`, `greek`, or `words`.
+Circled labels support 20 steps, dice labels six, and lowercase Greek labels 24; larger banks
+fail before generation. Set `-C/--color-mode` to `full` (default), `labels`, or `none`.
+`full` colors each label and its associated prose; `labels` colors only labels; `none` uses no
+generated color. Explicit colors in authored prose remain intact. Label tokens and their colors
+are repeated consistently in all four sequences, and arrows remain neutral. Colors follow the
+shuffled display positions, not the correct answer order. Native ORDER output is unchanged.
+
+There is no item-count option: author a separate complete bank when a shorter exercise is needed.
 
 Native ordering uses the existing Blackboard QTI 2.1 export engine. The shared `-B` option
 creates a Blackboard pool ZIP, which supports MC but not native ordering.
