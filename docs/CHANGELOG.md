@@ -2,8 +2,19 @@
 
 ## 2026-10-30
 
+### Worksheet spacing corrections
+
+- Give blank gene-pair classification cells a 3em minimum writing area while keeping spore cells compact.
+- Arrange ascus visuals four across for two genes and in two rows of three for three genes.
+  Put set numbers at the bottom right of each image cell, with counts below the SVG.
+- Remove forced full-width/fixed-layout nested spore tables and reduce worksheet padding.
+  Keep rounded genotype boxes compact, use white wild-type cells, and retain pale gene-colored
+  recessive cells. Keep symbol slots aligned using monospace metrics rather than fixed column widths.
+
 ### Documentation fixes
 
+- Draft an investigation brief for class checks in Python and Rust QPM, distinguishing PNG
+  rendering inputs from final Blackboard HTML and leaving implementation choices to code findings.
 - Link the SVG-artwork notices directly to the official CC BY-SA 4.0 license page.
   Remove the root `LICENSE.CC-BY-SA-4.0` file and clarify that this license applies only
   to the fly artwork, leaving question-text and code licensing unchanged.
@@ -22,6 +33,8 @@
 
 ### Presentation refinements
 
+- Condense unordered three-gene tetrad final answers into one direct, labeled sentence. Keep
+  the dynamic pair keys, centimorgan units, and gene-order placeholder unchanged.
 - Remove class attributes from generated tetrad artwork and worksheets because Blackboard Ultra
   accepts their inline styles but does not support CSS classes.
 - Group each worksheet spore in a rounded genotype box. Recessive alleles now use larger,

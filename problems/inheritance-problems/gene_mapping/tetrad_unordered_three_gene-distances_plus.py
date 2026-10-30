@@ -48,12 +48,11 @@ def get_question_setup(gene_letters_str):
 		str: HTML formatted string with the dynamic question setup.
 	"""
 	setup = '<h6>Question</h6> '
-	setup += '<p>Using the calculation table above, determine the order of the genes and the distances between them. '
-	setup += 'Once calculated, fill in the following four blanks: </p><ul>'
-	#the gene letters ARE sorted, so this okay since it is not the gene order
-	for gene1, gene2 in itertools.combinations(gene_letters_str.upper(), 2):
-		setup += f'<li>The distance between genes {gene1} and {gene2} is [{gene1}{gene2}] cM ({gene1}{gene2})</li>'
-	setup += '<li>From this, the correct order of the genes is [geneorder] (gene order).</li></ul>'
+	pairs = [f'{gene1}{gene2}'
+		for gene1, gene2 in itertools.combinations(gene_letters_str.upper(), 2)]
+	distances = [f'{pair} = [{pair}] cM' for pair in pairs]
+	setup += '<p>Determine the distances ' + ', '.join(distances[:-1])
+	setup += f', and {distances[-1]}, and the gene order: [geneorder].</p>'
 	if gml.is_valid_html(setup) is False:
 		print(setup)
 		raise ValueError

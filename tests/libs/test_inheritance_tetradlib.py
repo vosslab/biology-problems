@@ -14,15 +14,17 @@ def test_ascus_table_preserves_genotypes_counts_and_gene_colors():
 		markup = tetradlib.make_progeny_html_table(counts, total, colors[:len(genes)])
 		document = lxml.etree.fromstring(('<root>' + markup + '</root>').encode())
 		top_tables = document.xpath('.//table[not(ancestor::table)]')
-		visual_tables = [
-			table for table in top_tables if table.xpath('./tr[1]/th')[1].text == 'Tetrad Genotypes'
-		]
-		rows = [row for table in visual_tables for row in table.xpath('./tr[position() > 1]')]
+		visual, = [table for table in top_tables if table.xpath('.//*[@data-genotype]')]
+		rows = visual.xpath('./tr/td')
+		columns = 4 if len(genes) == 2 else 3
+		assert [len(row) for row in visual.xpath('./tr')] == [
+			min(columns, len(counts) - start) for start in range(0, len(counts), columns)]
 		assert len(rows) == len(counts)
 		for row, tetrad in zip(rows, sorted(counts)):
 			spores = row.xpath('.//*[@data-genotype]')
 			assert sorted(node.get('data-genotype') for node in spores) == sorted(tetrad)
-			assert ''.join(row[-1].itertext()) == f'{counts[tetrad]:,d}'
+			assert row.xpath('./div')[0].text == f'{counts[tetrad]:,d} tetrads'
+			assert row.xpath('./div')[1].text == f'Set {sorted(counts).index(tetrad) + 1}'
 			for spore in spores:
 				features = spore.xpath('.//*[@data-gene]')
 				assert [node.get('data-gene') for node in features] == [
@@ -30,7 +32,7 @@ def test_ascus_table_preserves_genotypes_counts_and_gene_colors():
 				for node in features:
 					assert node.get('fill') == '#' + colors[genes.index(node.get('data-gene'))]
 		calculation, = [
-			table for table in top_tables if table.xpath('./tr[1]/th')[1].text == 'Spore 1'
+			table for table in top_tables if table.xpath('./tr[1]/th[2][text()="Spore 1"]')
 		]
 		assert len(calculation.xpath('./tr')) == len(counts) + 3
 		spore_rows = calculation.xpath('./tr[position() > 2 and position() < last()]')
