@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-29
+
+### Behavior or Interface Changes
+
+- Name YAML sequence multiple-choice banks `bbq-SEQUENCEMC-<bank>-<count>_items-questions.txt`
+  instead of `bbq-MCORDER-`. Preserve MC question records and native ORDER filenames.
+
 ## 2026-10-28
 
 ### Additions and New Features

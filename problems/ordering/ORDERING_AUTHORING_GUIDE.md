@@ -30,7 +30,7 @@ python3 problems/ordering/yaml_mc_order_to_bbq.py -y problems/ordering/TEMPLATE.
 ```
 
 Both use the usual bptools generation and preview options, including `--selftest`.
-Native output is `bbq-ORDER-<bank>-<count>_items-questions.txt`; MC output uses `MCORDER`.
+Native output is `bbq-ORDER-<bank>-<count>_items-questions.txt`; MC output uses `SEQUENCEMC`.
 Native ordering requires at least two steps. MC requires at least three and supplies four
 complete sequences. There is no item-count option: author a separate complete bank when
 a shorter exercise is needed.

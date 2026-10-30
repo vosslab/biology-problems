@@ -140,7 +140,7 @@ def main(mc: bool) -> None:
 		# Preserve the existing molecule generator's anti-cheat setting.
 		bptools.allow_insert_hidden_terms = False
 	bank_name = os.path.splitext(os.path.basename(args.input_yaml_file))[0]
-	question_format = 'MCORDER' if mc else 'ORDER'
+	question_format = 'SEQUENCEMC' if mc else 'ORDER'
 	outfile = f'bbq-{question_format}-{bank_name}-{len(steps)}_items-questions.txt'
 	writer = functools.partial(write_question, bank=bank, steps=steps, mc=mc)
 	bptools.collect_and_write_questions(writer, args, outfile)
