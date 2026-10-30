@@ -119,4 +119,6 @@ under the
 
 The side-view fly artwork in the
 [gene-mapping art module](problems/inheritance-problems/gene_mapping/genemap_art/README.md)
-is available under [LICENSE.CC-BY-SA-4.0](LICENSE.CC-BY-SA-4.0); its source credits accompany the SVGs.
+is available under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/);
+its source credits accompany the SVGs. This artwork-specific license does not change the
+license of the question text or Python code.

@@ -63,23 +63,23 @@ def color_character(root: lxml.etree._Element, trait: str, accent: str) -> str:
 				node.set(attribute, colors[value])
 	# Select anatomical regions explicitly; the same skin color also appears on the face.
 	if trait in {'chummy', 'dewy', 'eery', 'horsey', 'jerky', 'tipsy', 'zippy'}:
-		for body in root.findall('.//*[@class="body"]'):
+		for body in root.findall('.//*[@data-part="body"]'):
 			body[0].set('fill', light)
 			if trait == 'horsey':
 				body[1].set('fill', pale)
 	if trait in {'nerdy', 'rusty', 'xanthic'}:
-		root.find('.//*[@class="thorax"]').set('fill', middle)
-	for wings in root.findall('.//*[@class="wings"]'):
+		root.find('.//*[@data-part="thorax"]').set('fill', middle)
+	for wings in root.findall('.//*[@data-part="wings"]'):
 		wings.set('fill', light)
 		wings.set('stroke', accent)
 	if trait == 'bumpy':
 		# Keep a few warm bumps as material contrast within the colored texture.
-		for bump in root.findall('.//*[@class="bumpy"]/{' + SVG_NS + '}circle')[::3]:
+		for bump in root.findall('.//*[@data-part="bumpy"]/{' + SVG_NS + '}circle')[::3]:
 			bump.set('fill', '#E9B65F')
 	if trait == 'fuzzy':
-		root.find('.//*[@class="fuzzy"]')[0].set('fill', '#FFF1DB')
+		root.find('.//*[@data-part="fuzzy"]')[0].set('fill', '#FFF1DB')
 	if trait == 'quacky':
-		root.find('.//*[@class="face"]')[0].set('fill', '#FFDE48')
+		root.find('.//*[@data-part="face"]')[0].set('fill', '#FFDE48')
 	root.set('data-gene-color', accent)
 	return lxml.etree.tostring(root, encoding='unicode')
 
@@ -97,11 +97,11 @@ def fly_portrait(trait: str, size: int = 72, color: str = None) -> str:
 	if known:
 		return color_character(root, trait, accent)
 	main = root.find('{' + SVG_NS + '}g')
-	body = main.find('.//*[@class="body"]')
-	wings = main.find('.//*[@class="wings"]')
-	legs = main.find('.//*[@class="legs"]')
-	face = main.find('.//*[@class="face"]')
-	thorax = main.find('.//*[@class="thorax"]')
+	body = main.find('.//*[@data-part="body"]')
+	wings = main.find('.//*[@data-part="wings"]')
+	legs = main.find('.//*[@data-part="legs"]')
+	face = main.find('.//*[@data-part="face"]')
+	thorax = main.find('.//*[@data-part="thorax"]')
 	art = ''
 	if trait == 'artsy':
 		wings.clear()
@@ -214,7 +214,7 @@ def fly_portrait(trait: str, size: int = 72, color: str = None) -> str:
 		body.clear()
 		body.extend(fragment('<path fill="#FFF47A" stroke="#B18B00" d="M89 55 C100 54 106 40 123 40 C161 38 169 92 134 102 C112 110 103 89 89 87Z"/><path fill="none" stroke="#B74300" stroke-width="2.5" d="M94 63 L120 59 L123 64 L127 58 L131 64 L135 59 L139 65 L136 78 L132 73 L128 79 L124 73 L120 78 L94 80"/><path fill="none" stroke="#FFF" stroke-width="5" d="M114 48 Q135 42 146 58"/>'))
 		socket = fragment('<path fill="#AAA" stroke="#493215" stroke-width="2" d="M62 57 Q57 70 62 83 H98 Q103 70 98 57Z"/><path fill="none" stroke="#FFF" stroke-width="2.5" d="M66 60 H94"/><path fill="none" stroke="#555" stroke-width="3" d="M66 57 Q73 70 66 83 M74 57 Q81 70 74 83 M82 57 Q89 70 82 83 M90 57 Q97 70 90 83"/><path fill="none" stroke="#493215" stroke-width="2" d="M98 57 Q103 70 98 83"/>')
-		socket.set('class', 'thorax')
+		socket.set('data-part', 'thorax')
 		main.replace(thorax, socket)
 		art = '<g fill="none" stroke="#C6B800" stroke-width="3"><path d="M151 38 L158 30 M162 59 L173 56 M162 83 L172 89 M135 109 L139 117 M115 32 L113 24"/></g>'
 	elif trait == 'yucky':
@@ -230,9 +230,9 @@ def fly_portrait(trait: str, size: int = 72, color: str = None) -> str:
 	else:
 		raise ValueError(f'unknown portrait phenotype: {trait}')
 	for node, name in ((body, 'body'), (wings, 'wings'), (legs, 'legs'), (face, 'face')):
-		node.set('class', name)
+		node.set('data-part', name)
 	feature = fragment(art)
-	feature.set('class', trait)
+	feature.set('data-part', trait)
 	feature.set('data-gene', gene)
 	feature.set('stroke', accent)
 	feature.set('stroke-width', '2.5')

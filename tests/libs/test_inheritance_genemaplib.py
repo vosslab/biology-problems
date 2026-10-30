@@ -21,9 +21,9 @@ def test_fly_gene_descriptions_use_question_colors_for_all_phenotypes():
 			assert portrait.get('data-gene-color') == '#' + color
 			assert flies.phenotype_dict[flies.phenotype_dict[gene]] in ''.join(document.itertext())
 			portraits.append(portrait)
-		heads = [node.xpath('.//*[@class="face"]')[0][0].get('fill') for node in portraits]
+		heads = [node.xpath('.//*[@data-part="face"]')[0][0].get('fill') for node in portraits]
 		assert len(set(heads)) == 1
-		wings = [lxml.etree.tostring(node.xpath('.//*[@class="wings"]')[0]) for node in portraits]
+		wings = [lxml.etree.tostring(node.xpath('.//*[@data-part="wings"]')[0]) for node in portraits]
 		assert len(set(wings)) == 3
 
 

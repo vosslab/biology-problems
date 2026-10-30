@@ -65,13 +65,13 @@ def ascus_svg(genotypes: tuple, genes: str, treatment: str = 'sectors',
 		genotypes = position_spores(genotypes)
 	spores = ''
 	for spore_index, (spore, (x, y)) in enumerate(zip(genotypes, SPORE_POSITIONS)):
-		spores += f'<g class="spore" data-genotype="{esc(spore)}" transform="translate({x} {y})">'
+		spores += f'<g data-genotype="{esc(spore)}" transform="translate({x} {y})">'
 		spores += '<ellipse fill="#ECEBE5" rx="20" ry="18"/>'
 		for index, allele in enumerate(spore):
 			if allele == '+':
 				continue
 			color = colors[index]
-			spores += f'<g class="gene-color" data-gene="{esc(allele)}" fill="{color}" stroke="{color}">'
+			spores += f'<g data-gene="{esc(allele)}" fill="{color}" stroke="{color}">'
 			if treatment == 'sectors':
 				start = -math.pi / 2 + index * 2 * math.pi / len(genes)
 				end = start + 2 * math.pi / len(genes)
@@ -94,10 +94,10 @@ def ascus_svg(genotypes: tuple, genes: str, treatment: str = 'sectors',
 		spores += ''.join(f'<tspan fill="{colors[index] if allele != "+" else "#625B50"}">{esc(allele)}</tspan>' for index, allele in enumerate(spore))
 		spores += '</text></g>'
 	label = 'Unordered ascus: ' + ', '.join(genotypes)
-	svg = f'<svg xmlns="http://www.w3.org/2000/svg" class="ascus" width="156" height="120" viewBox="0 0 122 94" role="img" aria-label="{esc(label)}">'
+	svg = f'<svg xmlns="http://www.w3.org/2000/svg" width="156" height="120" viewBox="0 0 122 94" role="img" aria-label="{esc(label)}">'
 	svg += '<desc>Each recessive allele contributes its own color; plus alleles remain neutral. Slightly overlapping spores are schematic, not observed pigmentation or meiotic order.</desc>'
 	svg += '<metadata>Packed-spore inspiration: https://commons.wikimedia.org/wiki/File:Ascus.gif , public domain micrograph uploaded by Rasbak, originally Pthorpe. New schematic geometry and gene colors.</metadata>'
-	svg += '<path class="ascus-wall" fill="#F8F5E9" stroke="#918775" stroke-width="2" d="M15 47 C10 19 27 9 56 9 C88 5 110 16 111 42 C118 72 99 88 72 88 C42 92 13 80 15 47Z"/>'
+	svg += '<path fill="#F8F5E9" stroke="#918775" stroke-width="2" d="M15 47 C10 19 27 9 56 9 C88 5 110 16 111 42 C118 72 99 88 72 88 C42 92 13 80 15 47Z"/>'
 	svg += '<path fill="none" stroke="#D8D5C8" stroke-width="1.2" d="M19 48 C14 22 31 13 57 13 C86 10 105 19 107 43 C113 68 97 83 72 84 C43 87 17 77 19 48Z"/>' + spores + '</svg>'
 	return svg
 

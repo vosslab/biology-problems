@@ -187,7 +187,7 @@ Student testing, physical print, and actual LMS import remain unverified.
   artwork and detailed venation are not embedded in the sampler.
 
 New fly artwork is licensed under
-[CC BY-SA 4.0](../../../../LICENSE.CC-BY-SA-4.0). This applies to the fly drawings,
+[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/). This applies to the fly drawings,
 including embedded copies; it does not change the license of the question text or Python code.
 Downloaded reference copies are local review inputs in the ignored output directory.
 

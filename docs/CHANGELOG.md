@@ -2,8 +2,30 @@
 
 ## 2026-10-30
 
+### Documentation fixes
+
+- Link the SVG-artwork notices directly to the official CC BY-SA 4.0 license page.
+  Remove the root `LICENSE.CC-BY-SA-4.0` file and clarify that this license applies only
+  to the fly artwork, leaving question-text and code licensing unchanged.
+
+### Developer tests and notes
+
+- Add `BB_ULTRA_STYLE.md` as the canonical Blackboard markup/style guide, with explicit
+  `style`-attribute examples, forbidden classes/stylesheets, compact-table guidance, PGML
+  exceptions, and the source-check command. Link it from agent and question authoring guidance.
+- Add a pytest source guard against class attributes, style blocks, and external stylesheets
+  in Blackboard question generators and banks. Permit PGML and standalone local previews.
+  Failures identify the source location: replace class-based styling with element-local
+  `style` attributes and remove unused marker classes rather than exempting generators.
+- Remove remaining production fly, box-plot, and pedigree marker classes without changing
+  their appearance; use anatomy metadata for internal fly recoloring.
+
 ### Presentation refinements
 
+- Remove class attributes from generated tetrad artwork and worksheets because Blackboard Ultra
+  accepts their inline styles but does not support CSS classes.
+- Group each worksheet spore in a rounded genotype box. Recessive alleles now use larger,
+  bold, gene-colored text on pale matching fills; wild-type symbols stay muted on neutral fills.
 - Reduce fly offspring-table header and cell padding. Let fly-description tables size to
   their content and portrait cells follow the SVG dimensions; retain the prose width cap.
 

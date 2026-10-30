@@ -40,5 +40,13 @@ origin belongs there too. Rules: [REPO_STYLE.md](REPO_STYLE.md).
 
 ## Blackboard HTML
 
+Authoring rules and examples: [BB_ULTRA_STYLE.md](BB_ULTRA_STYLE.md).
+
+- Put CSS declarations directly in the element's `style="..."` attribute. A `class="..."`
+  attribute is not inline CSS and must fail the Blackboard source check, even as a test hook.
+- Blackboard question markup must not contain `<style>` blocks or external stylesheets.
+  SVG presentation attributes such as `fill` and `stroke` remain valid.
+- PGML permits CSS classes, though I discourage them. Standalone local previews are separate
+  from Blackboard question markup.
 - Use as few HTML elements as possible; Blackboard may not render complex markup as expected.
   Tables are an exception because they are converted to images before import.

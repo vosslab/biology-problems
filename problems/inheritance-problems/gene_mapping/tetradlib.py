@@ -44,7 +44,7 @@ def mini_genotype_table(genotype_str):
 def _make_visual_panel(rows: list, gene_letters: str, colors: tuple) -> str:
 	td_center = 'align="center" style="border: 1px solid #888; padding: 4px 8px;"'
 	td_right = 'align="right" style="border: 1px solid #888; padding: 4px 8px;"'
-	table = '<table class="tetrad-visual" style="border-collapse: collapse; color: #202020; background: #ffffff;">'
+	table = '<table style="border-collapse: collapse; color: #202020; background: #ffffff;">'
 	table += f'<tr><th scope="col" {td_center}>Set #</th>'
 	table += f'<th scope="col" {td_center}>Tetrad Genotypes</th>'
 	table += f'<th scope="col" {td_center}>Number of<br/>Tetrads</th></tr>'
@@ -63,42 +63,73 @@ def _gene_span(gene: str, color: str) -> str:
 
 #===========================================================
 #===========================================================
+def _pale_color(color: str) -> str:
+	"""Mix a gene color with white for a quiet allele-cell fill."""
+	channels = [int(color[index:index + 2], 16) for index in (1, 3, 5)]
+	pale_channels = [round(channel * .15 + 255 * .85) for channel in channels]
+	pale = '#' + ''.join(f'{channel:02X}' for channel in pale_channels)
+	return pale
+
+#===========================================================
+#===========================================================
+def _make_genotype_box(genotype: str, colors: tuple,
+		pale_colors: tuple) -> str:
+	"""Render one grouped, aligned spore genotype."""
+	table = '<div style="border: 1px solid #B8BEC5; border-radius: 6px; overflow: hidden;">'
+	table += '<table style="border-collapse: collapse; table-layout: fixed; width: 100%;"><tr>'
+	for gene_index, allele in enumerate(genotype):
+		if allele == '+':
+			style = 'background: #F1F3F5; color: #59636E; font-family: monospace; font-size: 1em; font-weight: normal; padding: 4px 2px;'
+		else:
+			style = f'background: {pale_colors[gene_index]}; color: {colors[gene_index]}; font-family: monospace; font-size: 1.2em; font-weight: bold; padding: 3px 2px;'
+		table += f'<td align="center" style="{style}">{allele}</td>'
+	table += '</tr></table></div>'
+	return table
+
+#===========================================================
+#===========================================================
+def _make_locus_header(gene_letters: str, colors: tuple) -> str:
+	"""Render locus labels with the same columns as a genotype box."""
+	table = '<table style="border-collapse: collapse; table-layout: fixed; width: 100%;"><tr>'
+	for gene, color in zip(gene_letters, colors):
+		table += f'<th scope="col" style="padding: 2px;">{_gene_span(gene, color)}</th>'
+	table += '</tr></table>'
+	return table
+
+#===========================================================
+#===========================================================
 def _make_calculation_table(rows: list, gene_letters: str, colors: tuple,
 		progeny_size: int) -> str:
 	num_genes = len(gene_letters)
 	pairs = [(i, j) for i in range(num_genes) for j in range(i + 1, num_genes)]
-	cell = 'align="center" style="border: 1px solid #888; min-width: 1.5em; padding: 5px 7px;"'
-	spore_last = 'align="center" style="border-right: 2px solid #666; border-top: 1px solid #888; border-bottom: 1px solid #888; min-width: 1.5em; padding: 5px 7px;"'
+	pale_colors = tuple(_pale_color(color) for color in colors)
+	cell = 'align="center" style="border: 1px solid #888; padding: 5px 7px;"'
+	spore_cell = 'align="center" style="border: 1px solid #888; padding: 4px; vertical-align: middle;"'
 	count = 'align="right" style="border: 1px solid #888; padding: 5px 8px;"'
 	header = 'align="center" style="border: 1px solid #777; background: #e3e8ed; padding: 6px 8px;"'
-	table = '<table class="tetrad-calculation" style="border-collapse: collapse; color: #202020; background: #ffffff;">'
+	table = '<table style="border-collapse: collapse; color: #202020; background: #ffffff;">'
 	table += '<tr>'
 	table += f'<th scope="col" rowspan="2" {header}>Set #</th>'
 	for spore_number in range(1, 5):
-		table += f'<th scope="colgroup" colspan="{num_genes}" {header}>Spore {spore_number}</th>'
+		table += f'<th scope="colgroup" {header}>Spore {spore_number}</th>'
 	for i, j in pairs:
 		pair = _gene_span(gene_letters[i], colors[i]) + _gene_span(gene_letters[j], colors[j])
 		table += f'<th scope="col" rowspan="2" {header}>{pair}</th>'
 	table += f'<th scope="col" rowspan="2" {header}>Number of<br/>Tetrads</th></tr><tr>'
+	locus_header = _make_locus_header(gene_letters, colors)
 	for spore_number in range(4):
-		for gene_index, gene in enumerate(gene_letters):
-			local_header = header
-			if gene_index == num_genes - 1:
-				local_header = local_header.replace('border: 1px solid #777;', 'border-right: 2px solid #666; border-top: 1px solid #777; border-bottom: 1px solid #777;')
-			table += f'<th scope="col" {local_header}>{_gene_span(gene, colors[gene_index])}</th>'
+		table += f'<th scope="col" {header}>{locus_header}</th>'
 	table += '</tr>'
 	for row_index, (set_number, tetrad_tuple, tetrad_count) in enumerate(rows):
 		background = '#ffffff' if row_index % 2 == 0 else '#f5f7f8'
 		table += f'<tr style="background: {background};"><th scope="row" {cell}>{set_number}</th>'
 		for genotype in tetrad_tuple:
-			for gene_index, allele in enumerate(genotype):
-				local_cell = spore_last if gene_index == num_genes - 1 else cell
-				color = colors[gene_index]
-				table += f'<td {local_cell}><span style="color: {color}; font-family: monospace; font-weight: bold;">{allele}</span></td>'
+			table += f'<td {spore_cell}>'
+			table += _make_genotype_box(genotype, colors, pale_colors) + '</td>'
 		for pair in pairs:
-			table += f'<td class="tetrad-classification" data-pair="{gene_letters[pair[0]]}{gene_letters[pair[1]]}" {cell}>&#160;</td>'
+				table += f'<td data-pair="{gene_letters[pair[0]]}{gene_letters[pair[1]]}" {cell}>&#160;</td>'
 		table += f'<td {count}>{tetrad_count:,d}</td></tr>'
-	label_span = 1 + 4 * num_genes + len(pairs)
+	label_span = 1 + 4 + len(pairs)
 	table += f'<tr><th scope="row" colspan="{label_span}" {count}>TOTAL =</th><td {count}>{progeny_size:,d}</td></tr>'
 	table += '</table>'
 	return table

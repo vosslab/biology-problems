@@ -215,7 +215,7 @@ p { max-width:82ch; margin:8px 0 16px; } a { color:#076DAD; } code { font: bold 
 .portrait-variants { display:flex; gap:8px; flex-shrink:0; }
 figure { margin:0; padding:14px 10px; background:#FFFDFA; border:1px solid #E6DFD3; border-radius:8px; text-align:center; break-inside:avoid; }
 figure svg { display:block; margin:auto; } figcaption { margin-top:8px; font-size:14px; }
-.ascus { display:block; margin:auto; } .legend { display:flex; flex-wrap:wrap; gap:10px 20px; margin:10px 0 16px; }
+svg[aria-label^="Unordered ascus:"] { display:block; margin:auto; } .legend { display:flex; flex-wrap:wrap; gap:10px 20px; margin:10px 0 16px; }
 .genotype-key { display:inline-flex; align-items:center; gap:7px; } .genotype-key i { width:23px; height:23px; border:1px solid #935D00; border-radius:50%; }
 .cross-vignette { display:flex; align-items:center; gap:18px; padding:16px; width:max-content; max-width:100%; box-sizing:border-box; background:#EEF8F4; border:1px solid #00775F; border-radius:10px; }
 .cross-vignette div { text-align:center; font-size:13px; max-width:120px; } .cross-vignette span { display:block; } .cross-vignette svg { display:block; margin:auto; } .cross-vignette b { font-size:28px; color:#D40000; }
@@ -343,19 +343,19 @@ def check_artifacts(page: str, assets: list) -> None:
 		variants = portrait.xpath('.//*[@data-gene-color]')
 		if [node.get('data-gene-color') for node in variants] != ['#003FFF', '#007A00', '#A719DB']:
 			raise ValueError(f'Missing color variants for {trait}')
-		heads = [tuple(head[0].get('fill') for head in node.xpath('.//*[@class="face"]')) for node in variants]
+		heads = [tuple(head[0].get('fill') for head in node.xpath('.//*[@data-part="face"]')) for node in variants]
 		if not heads[0] or len(set(heads)) != 1:
 			raise ValueError(f'Head base color must stay fixed for {trait}')
-		wings = [tuple(lxml.etree.tostring(wing) for wing in node.xpath('.//*[@class="wings"]')) for node in variants]
+		wings = [tuple(lxml.etree.tostring(wing) for wing in node.xpath('.//*[@data-part="wings"]')) for node in variants]
 		if not wings[0] or len(set(wings)) != 3:
 			raise ValueError(f'Wings must carry each gene color for {trait}')
 	root = lxml.etree.fromstring(phenotype_art.plush_fly({'fuzzy', 'prickly'}, 'layer order').encode())
-	layers = [node.get('class') for node in root.findall('.//*[@class]')]
+	layers = [node.get('data-part') for node in root.findall('.//*[@data-part]')]
 	assert layers.index('wings') < layers.index('prickly') < layers.index('body')
 	assert layers.index('thorax') < layers.index('fuzzy') < layers.index('face')
 	assert layers.index('bristle-tips') < layers.index('body')
 	arrangement = document.xpath('//*[@id="yeast-sectors"]//figure')[4]
-	assert [node.get('data-genotype') for node in arrangement.xpath('.//*[@class="spore"]')] == ['++c', 'a+c', '+b+', 'ab+']
+	assert [node.get('data-genotype') for node in arrangement.xpath('.//*[@data-genotype]')] == ['++c', 'a+c', '+b+', 'ab+']
 	for original, expected in (
 		(('+++', '+bc', 'a++', 'abc'), ('+++', 'a++', '+bc', 'abc')),
 		(('++c', '+b+', 'a+c', 'ab+'), ('++c', 'a+c', '+b+', 'ab+')),
@@ -374,7 +374,7 @@ def check_artifacts(page: str, assets: list) -> None:
 		root = lxml.etree.fromstring(phenotype_art.plush_fly(traits, 'fly & traits').encode('utf-8'))
 		assert root.attrib['aria-label'] == 'fly & traits'
 		for trait, gene in phenotype_art.TRAIT_GENES.items():
-			assert (root.find(f'.//*[@class="{trait}"]') is not None) == (trait in traits)
+			assert (root.find(f'.//*[@data-part="{trait}"]') is not None) == (trait in traits)
 			features = root.findall(f'.//*[@data-gene="{gene}"]')
 			assert bool(features) == (trait in traits)
 			for feature in features:
@@ -387,10 +387,10 @@ def check_artifacts(page: str, assets: list) -> None:
 		for mask in range(8):
 			genotype = ''.join(gene if mask & (1 << index) else '+' for index, gene in enumerate('abc'))
 			root = lxml.etree.fromstring(asci.ascus_svg((genotype,) * 4, 'abc', treatment).encode('utf-8'))
-			spores = root.findall('.//*[@class="spore"]')
+			spores = root.findall('.//*[@data-genotype]')
 			assert len(spores) == 4
 			for spore in spores:
-				features = spore.findall('.//*[@class="gene-color"]')
+				features = spore.findall('.//*[@data-gene]')
 				assert [node.get('data-gene') for node in features] == [allele for allele in genotype if allele != '+']
 				for node in features:
 					assert node.get('fill') == PALETTE['abc'.index(node.get('data-gene'))]

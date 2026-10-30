@@ -76,7 +76,7 @@ def render_boxplot_html(
 	positions = {key: 100 * (value - axis_start) / span for key, value in summary.items()}
 	# A table wrapper lets Blackboard image export capture the entire figure.
 	# Block layout fills the available space without a fixed table width.
-	html = '<table class="boxplot" role="presentation" style="display: block; '
+	html = '<table role="presentation" style="display: block; '
 	html += 'border-collapse: collapse; max-width: 480px; background-color: white; '
 	html += 'color: #172333; margin: 4px 0;">'
 	html += '<tbody style="display: block;"><tr style="display: block;">'

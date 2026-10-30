@@ -150,7 +150,7 @@ def test_question_formats_use_correct_diagrams_and_depths(question_format, level
 	elif question_format == 'select':
 		index = choices.index(answer)
 		assert f'<strong>{captured[index].assessment.answer}</strong>' in prompt
-		assert all(drawing.count('class="pedigree-diagram"') == 1 for drawing in choices)
+		assert all(drawing.count('<table role="presentation"') == 1 for drawing in choices)
 	else:
 		assert answer == [case.assessment.answer for case in captured]
 

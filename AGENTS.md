@@ -21,6 +21,7 @@ items via shared helpers in [bptools.py](bptools.py). For layout and design see
 - Run the test suite with `source source_me.sh && pytest tests/`.
 
 ## Repo-specific rules
+- Blackboard HTML and inline-style rules: [docs/BB_ULTRA_STYLE.md](docs/BB_ULTRA_STYLE.md).
 - For student assessments, prefer true randomness in scenario selection over
   deterministic round-robin/modulo cycling; predictable sequences make cheating easier.
   Use deterministic selection only for debugging, reproducibility, or unit tests.

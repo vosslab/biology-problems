@@ -22,7 +22,7 @@ SVG is inline and self-contained. Both illustrations are inside HTML tables so t
 preview. Raw inline-SVG acceptance by a particular LMS must be checked in that LMS; prefer
 the image export for import. Genotype letters remain visible independently of color.
 
-The fly artwork is covered by [LICENSE.CC-BY-SA-4.0](../../../../LICENSE.CC-BY-SA-4.0).
+The fly artwork is covered by [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
 The [sampler source ledger](../visual_sampler/README.md) records inspiration and drawing
 references. These are humorous hypothetical phenotypes and schematic spores, not scientific
 identification plates. Source code retains the repository's code license.

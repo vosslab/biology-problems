@@ -31,8 +31,8 @@ def render_html(diagram: layout.Diagram, observations: dict, affected_color: str
 	# Two CSS pixels are 1.5 pt; unlike 1 pt borders, browsers do not round below 1 pt.
 	result = '<div role="region" aria-label="Scrollable family pedigree" tabindex="0" '
 	result += 'style="max-width: 100%; overflow-x: auto; margin: 0.75em 0;">'
-	# Material wraps unclassed tables in a scrolling container; this is a drawing.
-	result += '<table class="pedigree-diagram" role="presentation" cellpadding="0" cellspacing="0" style="'
+	# Keep this drawing in its own scrolling region.
+	result += '<table role="presentation" cellpadding="0" cellspacing="0" style="'
 	result += 'display: table; table-layout: fixed; border-collapse: collapse; border-spacing: 0; '
 	result += 'border: 2px solid #aaa; box-sizing: border-box; background: #fff; padding: 0; margin: 0; '
 	result += 'font-size: inherit; '

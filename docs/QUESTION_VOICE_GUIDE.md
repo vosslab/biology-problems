@@ -205,6 +205,8 @@ binomial name plus common name throughout).
 
 (Blackboard BBQ output; PGML follows the webwork skill's whitelist.)
 
+Blackboard markup and element-local CSS rules: [BB_ULTRA_STYLE.md](BB_ULTRA_STYLE.md).
+
 - Use a small set of elements: `p`, `br`, `strong`, `u`, `sub`, `sup`, `table`, and `span` for
   color or monospace. Blackboard may rewrite complex markup; tables are fine because they are
   converted to images before import (`docs/HUMAN_GUIDANCE.md`).
