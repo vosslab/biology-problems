@@ -121,12 +121,15 @@ def fly_portrait(trait: str, size: int = 72, color: str = None) -> str:
 			art += f'<g transform="translate({x} {y}) scale({scale})"><path fill="#BFEFF6" d="M0 -13 C-2 -5 -10 1 -7 7 C-4 15 9 11 8 4 C8 -2 1 -7 0 -13Z"/><path fill="none" stroke="#FFF" stroke-width="3" d="M-3 1 Q-6 6 -2 7"/></g>'
 	elif trait == 'eery':
 		legs.clear()
-		legs.extend(fragment('<path fill="none" stroke="#493215" stroke-width="6" d="M76 77 C39 78 40 111 57 110 C73 109 65 91 56 99 M98 80 L89 100 L111 95 L105 114 M119 77 C163 72 176 101 153 105 C135 109 137 90 150 93"/>'))
+		legs.set('data-part', 'legs')
+		legs.extend(fragment('<path fill="none" stroke="#493215" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" d="M83 57 L70 32 L81 15 L69 11 M113 54 L132 35 L124 16 L139 12"/>'))
 		wings.clear()
-		wings.extend(fragment(f'<path fill="#F0D8FA" stroke="{accent}" d="M95 53 C58 55 53 21 73 24 C93 27 70 45 72 30 C54 11 88 7 96 53Z M104 51 C126 50 160 42 147 26 C134 13 125 34 138 35 C155 52 114 69 104 51Z"/>'))
-		face[1].set('d', 'M43 48 C13 38 22 17 34 27 C47 40 15 43 18 25 M58 46 L68 29 L54 25 L63 13')
+		wings.set('data-part', 'wings')
+		wings.set('fill', light)
+		wings.set('stroke', accent)
+		wings.set('stroke-width', '2')
+		wings.extend(fragment('<path d="M77 76 C58 80 29 100 37 111 C47 124 72 102 77 76Z"/><path d="M86 80 C71 94 62 115 74 117 C87 119 94 95 86 80Z"/><path d="M106 81 C100 99 105 119 117 116 C129 111 117 90 106 81Z"/><path d="M120 77 C129 99 153 118 162 107 C170 95 138 81 120 77Z"/><path fill="none" stroke-width="1" d="M77 76 L42 108 M86 80 L77 112 M106 81 L115 111 M120 77 L157 105"/>'))
 		thorax.set('fill', '#D7C4DA')
-		art = f'<path fill="{accent}" d="M34 23 L37 5 L53 18 L61 22Z"/><circle fill="#FFF" stroke="none" cx="44" cy="17" r="2"/>'
 	elif trait == 'gooey':
 		art = '<ellipse fill="#D9F3D9" stroke="none" cx="116" cy="110" rx="40" ry="5"/><path fill="#B3D66F" d="M83 52 Q105 34 130 51 Q147 60 143 76 L144 101 Q140 115 135 101 L131 78 L124 97 Q117 106 114 94 L112 77 L103 87 Q95 93 94 80 L87 72Z"/><path stroke="#F4FFD6" stroke-width="4" fill="none" d="M96 53 Q111 44 124 54"/>'
 	elif trait == 'horsey':

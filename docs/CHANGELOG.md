@@ -4,6 +4,8 @@
 
 ### Fly phenotype display
 
+- Redraw eery with four lower wings and two bent upper legs in the shared SVG portrait.
+
 - Keep fly artwork licensing in source and documentation instead of emitted SVG
   metadata, and shorten portrait descriptions so image export alt text contains
   phenotype information without license URLs or illustration commentary.
