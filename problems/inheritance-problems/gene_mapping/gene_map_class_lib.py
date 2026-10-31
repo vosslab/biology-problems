@@ -559,7 +559,7 @@ class GeneMappingClass:
 			base = 2000 // divisor
 			minimum = max((1000 + base - 1) // base,
 				(2 * divisor + min(self._four_reference_counts) - 1) // min(self._four_reference_counts))
-			self.progeny_count_int = base * random.randint(minimum, 9800 // base)
+			self.progeny_count_int = base * random.randint(minimum, 100000 // base)
 			return
 
 		# Progeny count calculation varies by question type

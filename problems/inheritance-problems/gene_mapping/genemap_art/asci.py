@@ -15,10 +15,11 @@ def esc(value: object) -> str:
 	return html.escape(str(value))
 
 
-@functools.lru_cache(maxsize=3)
+@functools.lru_cache(maxsize=4)
 def hidden_sector_areas(num_genes: int) -> tuple:
 	"""Estimate fill area covered by later spores on a one-unit sampling grid."""
 	areas = []
+	origin = -3 * math.pi / 4 if num_genes == 4 else -math.pi / 2
 	for position, (x, y) in enumerate(SPORE_POSITIONS):
 		covered = [0] * num_genes
 		for grid_x in range(-20, 20):
@@ -29,7 +30,7 @@ def hidden_sector_areas(num_genes: int) -> tuple:
 				if not any(((x + dx - front_x) / 20) ** 2 + ((y + dy - front_y) / 18) ** 2 <= 1
 					for front_x, front_y in SPORE_POSITIONS[position + 1:]):
 					continue
-				angle = (math.atan2(dy / 18, dx / 20) + math.pi / 2) % (2 * math.pi)
+				angle = (math.atan2(dy / 18, dx / 20) - origin) % (2 * math.pi)
 				sector = int(angle * num_genes / (2 * math.pi))
 				covered[sector] += 1
 		areas.append(tuple(covered))
@@ -52,8 +53,8 @@ def position_spores(genotypes: tuple) -> tuple:
 def ascus_svg(genotypes: tuple, genes: str, treatment: str = 'sectors',
 		colors: tuple = PALETTE) -> str:
 	"""Pack overlapping spores with independent gene colors and small text halos."""
-	if len(genotypes) != 4 or not 1 <= len(genes) <= 3 or len(set(genes)) != len(genes) or '+' in genes:
-		raise ValueError('an ascus needs four spores and one to three distinct gene letters')
+	if len(genotypes) != 4 or not 1 <= len(genes) <= 4 or len(set(genes)) != len(genes) or '+' in genes:
+		raise ValueError('an ascus needs four spores and one to four distinct gene letters')
 	if treatment not in ('sectors', 'bands'):
 		raise ValueError(f'unknown spore treatment: {treatment}')
 	if len(colors) < len(genes):
@@ -73,7 +74,8 @@ def ascus_svg(genotypes: tuple, genes: str, treatment: str = 'sectors',
 			color = colors[index]
 			spores += f'<g data-gene="{esc(allele)}" fill="{color}" stroke="{color}">'
 			if treatment == 'sectors':
-				start = -math.pi / 2 + index * 2 * math.pi / len(genes)
+				origin = -3 * math.pi / 4 if len(genes) == 4 else -math.pi / 2
+				start = origin + index * 2 * math.pi / len(genes)
 				end = start + 2 * math.pi / len(genes)
 				x1, y1 = 20 * math.cos(start), 18 * math.sin(start)
 				x2, y2 = 20 * math.cos(end), 18 * math.sin(end)

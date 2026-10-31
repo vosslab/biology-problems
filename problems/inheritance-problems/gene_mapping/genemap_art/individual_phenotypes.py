@@ -93,7 +93,7 @@ def fly_portrait(trait: str, size: int = 72, color: str = None) -> str:
 	known = {trait} if trait in phenotype_art.TRAIT_GENES else set()
 	root = lxml.etree.fromstring(phenotype_art.plush_fly(known, trait, size, {gene: accent}).encode())
 	root.set('data-phenotype', trait)
-	root.find('{' + SVG_NS + '}desc').text = 'Playful single-trait illustration: ' + trait + '. Props and scenes are visual metaphors; the adjacent gene description defines the phenotype.'
+	root.find('{' + SVG_NS + '}desc').text = f'{trait.capitalize()} fly illustration. '
 	if known:
 		return color_character(root, trait, accent)
 	main = root.find('{' + SVG_NS + '}g')

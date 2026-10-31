@@ -42,7 +42,7 @@ def mini_genotype_table(genotype_str):
 #===========================================================
 #===========================================================
 def _make_visual_panel(rows: list, gene_letters: str, colors: tuple) -> str:
-	columns = 4 if len(gene_letters) == 2 else 3
+	columns = 3 if len(gene_letters) == 3 else 4
 	td_center = 'align="center" style="border: 1px solid #888; padding: 2px;"'
 	table = '<table style="border-collapse: collapse; color: #202020; background: #ffffff;">'
 	for index, (set_number, tetrad_tuple, count) in enumerate(rows):

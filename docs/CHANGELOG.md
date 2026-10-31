@@ -2,6 +2,21 @@
 
 ## 2026-10-31
 
+### Fly phenotype display
+
+- Keep fly artwork licensing in source and documentation instead of emitted SVG
+  metadata, and shorten portrait descriptions so image export alt text contains
+  phenotype information without license URLs or illustration commentary.
+
+### Four-gene tetrad bonus
+
+- Raise the four-gene fly progeny limit to 100,000 while retaining GCF-compatible totals.
+- Add a 16-pattern unordered tetrad bonus using the four-gene distance pool, with
+  six distances and gene order recovered from the displayed counts. Vary totals
+  up to 100,000 using random multiples of counts reduced by their greatest common factor.
+- Extend existing ascus artwork to four locus colors with X-shaped boundaries
+  and arrange the 16 patterns in a four-by-four grid.
+
 ### Gene mapping choices
 
 - Add choice-count options to three-point single-distance and ordered tetrad

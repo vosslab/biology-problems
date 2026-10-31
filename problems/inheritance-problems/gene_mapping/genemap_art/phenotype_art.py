@@ -1,4 +1,8 @@
-"""Shared side-view geometry for gene-mapping fly portraits."""
+"""Shared side-view geometry for gene-mapping fly portraits.
+
+Original phenotype character artwork: CC BY-SA 4.0.
+https://creativecommons.org/licenses/by-sa/4.0/
+"""
 
 import html
 
@@ -14,7 +18,6 @@ def plush_fly(traits: set, label: str, size: int = 54, gene_colors: dict = None)
 	colors = GENE_COLORS if gene_colors is None else gene_colors
 	svg = f'<svg xmlns="http://www.w3.org/2000/svg" width="{round(size * 1.5)}" height="{size}" viewBox="0 0 180 120" role="img" aria-label="{html.escape(label)}">'
 	svg += '<desc>Exaggerated storybook fly. Curly fur, sharp spines, thick rectangular glasses with a taped bridge, and a foaming beer mug represent hypothetical traits.</desc>'
-	svg += '<metadata>Original phenotype character artwork. CC BY-SA 4.0: https://creativecommons.org/licenses/by-sa/4.0/ .</metadata>'
 	svg += '<g stroke="#493215" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">'
 	svg += '<g data-part="legs" fill="none"><path stroke="#9A8055" d="M79 76 L70 94 L58 94 M98 78 L105 96 L114 96 M119 75 L135 92 L145 92"/>'
 	svg += '<path d="M77 79 L66 101 L51 102 M97 83 L95 105 L109 105 M115 81 L129 103 L146 103"/></g>'

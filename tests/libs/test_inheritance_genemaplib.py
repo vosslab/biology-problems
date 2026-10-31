@@ -15,6 +15,8 @@ def test_fly_gene_descriptions_use_question_colors_for_all_phenotypes():
 		portraits = []
 		for color in colors:
 			markup = gml.get_phenotype_info(gene, flies.phenotype_dict, [color])
+			assert '<metadata>' not in markup
+			assert 'creativecommons.org' not in markup
 			document = lxml.etree.fromstring(('<root>' + markup + '</root>').encode())
 			portrait, = document.xpath('//*[@data-phenotype]')
 			assert portrait.get('data-phenotype') == flies.phenotype_dict[gene]
