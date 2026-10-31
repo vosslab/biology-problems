@@ -47,7 +47,6 @@ def parse_arguments():
 		description="Generate two-point test cross distance questions."
 	)
 	parser = bptools.add_choice_args(parser, default=6)
-	parser = bptools.add_hint_args(parser)
 	parser = bptools.add_question_format_args(
 		parser,
 		types_list=['mc', 'num'],
@@ -99,10 +98,8 @@ def main():
 	"""
 	args = parse_arguments()
 
-	hint_mode = 'with_hint' if args.hint else 'no_hint'
 	suffix = f"{args.num_choices}_choices" if args.question_type == "mc" else None
 	outfile = bptools.make_outfile(args.question_type.upper(),
-		hint_mode,
 		suffix
 	)
 	bptools.collect_and_write_questions(generate_question, args, outfile)

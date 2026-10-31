@@ -46,13 +46,6 @@ def parse_arguments():
 	parser = bptools.make_arg_parser(
 		description="Generate two-point test cross cis/trans questions."
 	)
-	parser = bptools.add_hint_args(parser)
-	parser = bptools.add_question_format_args(
-		parser,
-		types_list=['mc'],
-		required=False,
-		default='mc'
-	)
 	args = parser.parse_args()
 	return args
 
@@ -60,10 +53,7 @@ def parse_arguments():
 #====================================
 def main():
 	args = parse_arguments()
-	hint_mode = 'with_hint' if args.hint else 'no_hint'
-	outfile = bptools.make_outfile(args.question_type.upper(),
-		hint_mode
-	)
+	outfile = bptools.make_outfile("MC")
 	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #====================================

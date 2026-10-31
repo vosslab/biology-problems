@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-10-31
+
+### CLI cleanup
+
+- Remove unused hint switches from all three two-point test-cross generators and remove
+  their misleading hint filename labels. Remove the cis/trans generator's format switches
+  because it always emits multiple-choice questions. Real format, choice-count, genotype,
+  and shared export controls remain available.
+
 ## 2026-10-30
 
 ### Worksheet spacing corrections

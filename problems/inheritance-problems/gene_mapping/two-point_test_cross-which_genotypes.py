@@ -50,7 +50,6 @@ def parse_arguments():
 	parser = bptools.make_arg_parser(
 		description="Generate two-point test cross genotype questions."
 	)
-	parser = bptools.add_hint_args(parser)
 
 	# Create a mutually exclusive group for question types
 	question_group = parser.add_mutually_exclusive_group(required=False)
@@ -76,9 +75,7 @@ def parse_arguments():
 #====================================
 def main():
 	args = parse_arguments()
-	hint_mode = 'with_hint' if args.hint else 'no_hint'
 	outfile = bptools.make_outfile("MA",
-		hint_mode,
 		args.genotype_type.upper()
 	)
 	bptools.collect_and_write_questions(write_question, args, outfile)
