@@ -65,3 +65,15 @@ def test_two_point_choices_avoid_distance_giveaway():
 			assert 2 * sum(v >= 49 for v in values) <= len(values) - 1
 			if count <= 6:
 				assert len(choices) == count
+
+
+def test_three_point_distractors_prefer_single_genotype_swaps():
+	gmc = import_from_repo_path('problems/inheritance-problems/gene_mapping/gene_map_class_lib.py')
+	mapping = gmc.GeneMappingClass.__new__(gmc.GeneMappingClass)
+	mapping.genotype_counts = dict(zip('abcdefgh', (1, 2, 4, 8, 16, 32, 64, 128)))
+	mapping.progeny_count_int = 1000
+	preferred = set('abcd')
+	used = {tuple(sorted(preferred))}
+	choices = mapping.add_combinations(4, used, 3, preferred)
+	assert len(choices) == 3
+	assert all(len(set(combo) & preferred) == 3 for combo in used if set(combo) != preferred)

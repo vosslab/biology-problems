@@ -2,6 +2,11 @@
 
 ## 2026-10-31
 
+### Gene mapping choices
+
+- Add choice-count options to three-point single-distance and ordered tetrad
+  centromere-distance questions, retaining their preferred distractors first.
+
 ### CLI cleanup
 
 - Remove unused hint switches from all three two-point test-cross generators and remove

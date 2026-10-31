@@ -213,7 +213,7 @@ def values_to_text(values: tuple, total_count:int):
 
 #=====================
 #=====================
-def make_choices(asci_count_dict):
+def make_choices(asci_count_dict, num_choices=6):
 	choices_set = set()
 
 	total_count = sum(asci_count_dict.values())
@@ -237,7 +237,7 @@ def make_choices(asci_count_dict):
 
 	all_keys = list(asci_count_dict.keys())
 
-	while(len(choices_set) < 6):
+	while(len(choices_set) < num_choices):
 		num_items = random.randint(2, 4)
 		keys_set = set()
 		while(len(keys_set) < num_items):
@@ -254,7 +254,7 @@ def make_choices(asci_count_dict):
 	return list(choices_set), answer_text
 
 #=====================
-def generate_question(N: int, question_type: str) -> str:
+def generate_question(N: int, question_type: str, num_choices: int = 6) -> str:
 	"""Generates a formatted question string based on the question type and question number."""
 	# Set up the genetic distance and calculate asci counts
 	# Set precision step based on question type
@@ -279,7 +279,7 @@ def generate_question(N: int, question_type: str) -> str:
 
 	# Format question based on type
 	if question_type == 'mc':
-		choices_list, answer_text = make_choices(asci_count_dict)
+		choices_list, answer_text = make_choices(asci_count_dict, num_choices)
 		random.shuffle(choices_list)
 		return bptools.formatBB_MC_Question(N, full_question, choices_list, answer_text)
 	else:
@@ -291,8 +291,11 @@ def parse_arguments():
 	parser = bptools.make_arg_parser(
 		description="Generate ordered tetrad gene-centromere distance questions."
 	)
+	parser = bptools.add_choice_args(parser, default=6)
 	parser = bptools.add_question_format_args(parser, types_list=['mc', 'num'], required=False, default='mc')
 	args = parser.parse_args()
+	if not 2 <= args.num_choices <= 6:
+		parser.error('number of choices must be between 2 and 6')
 	return args
 
 
@@ -303,7 +306,7 @@ def main():
 	outfile = bptools.make_outfile(args.question_type.upper())
 
 	bptools.collect_and_write_questions(
-		lambda N, args: generate_question(N, args.question_type),
+		lambda N, args: generate_question(N, args.question_type, args.num_choices),
 		args,
 		outfile,
 	)

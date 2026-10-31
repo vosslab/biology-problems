@@ -1064,7 +1064,7 @@ class GeneMappingClass:
 
 	#=====================
 	#=====================
-	def add_combinations(self, k: int, choices_set: set, max_choices: int = None):
+	def add_combinations(self, k: int, choices_set: set, max_choices: int = None, preferred: set = None):
 		"""
 		Helper for make_choices().
 		Add combinations of genotypes of length k as distractors, preferring
@@ -1096,6 +1096,10 @@ class GeneMappingClass:
 		# Nothing to add
 		if not candidates:
 			return set()
+		if preferred is not None:
+			candidates.sort(key=lambda c: -len(set(c[1]) & preferred))
+			if max_choices is not None:
+				candidates = candidates[:max_choices]
 
 		# If no cap, return all
 		if max_choices is None or max_choices >= len(candidates):
@@ -1215,13 +1219,14 @@ class GeneMappingClass:
 		parent_text = self.values_to_text(parent_values)
 		print(f'parent_text={parent_text}')
 		choices_set.add(tuple(sorted(self.parental_genotypes_tuple)))
-		choices_text_set.add(parent_text)
 
 		# Generate random incorrect choices
 		if self.num_genes_int == 3:
 			# All 2-item pairs of genotypes
 			needed_choices = num_choices - len(choices_text_set)
-			choices_text_set |= self.add_combinations(4, choices_set, needed_choices)
+			choices_text_set |= self.add_combinations(4, choices_set, needed_choices, recomb_set)
+			if len(choices_text_set) < num_choices:
+				choices_text_set.add(parent_text)
 			# If still short, add triples with small fractions
 			if len(choices_text_set) < num_choices:
 				needed_choices = num_choices - len(choices_text_set)

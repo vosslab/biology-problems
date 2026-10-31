@@ -52,8 +52,11 @@ def parse_arguments():
 	parser = bptools.make_arg_parser(
 		description="Generate three-point test cross (one gene-pair distance) questions."
 	)
+	parser = bptools.add_choice_args(parser, default=6)
 	parser = bptools.add_question_format_args(parser, types_list=['mc', 'num'], required=False, default='mc')
 	args = parser.parse_args()
+	if not 2 <= args.num_choices <= 6:
+		parser.error('number of choices must be between 2 and 6')
 	return args
 
 #=====================
@@ -86,7 +89,7 @@ def write_question(N: int, args) -> str | None:
 	if args.question_type == 'num':
 		return bptools.formatBB_NUM_Question(N, full_question, answer_distance, 0.1, tol_message=False)
 
-	choices_list, answer_text = GMC.make_choices(gene_pair)
+	choices_list, answer_text = GMC.make_choices(gene_pair, num_choices=args.num_choices)
 	return bptools.formatBB_MC_Question(N, full_question, choices_list, answer_text)
 
 #=====================
