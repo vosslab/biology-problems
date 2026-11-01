@@ -139,6 +139,30 @@ The new banks include `complementation` in their filenames; default filenames ar
 Existing `-F` / `-N` first-gene hints and word/random-sequence hints still apply. Uncovered
 gene lists are omitted from complementation questions so students must interpret the results.
 
+## Visual letter translocation
+
+[letter_translocation_problem_visual.py](../problems/inheritance-problems/translocation/letter_translocation_problem_visual.py)
+is a parallel version of the original colored-letter translocation question. It places gene
+sequences inside shaded chromosome rods and asks which of five products cannot result from
+the marked breaks. Original chromosomes have solid gray telomere caps and break arrows.
+Caps travel with their original fragment ends when a fragment reverses in an answer;
+the diagrams retain the gene sequences and exchange junctions without centromeres.
+Each question selects four distinct light fills from the instructor's color-wheel tool,
+following [COLOR_PALETTE.md](COLOR_PALETTE.md). Fragment colors stay consistent across
+the originals and answers. Telomeres occupy short, solid gray segments outside the
+gene letters, with rounded outer ends like the deletion-map chromosomes.
+
+```bash
+source source_me.sh
+python3 problems/inheritance-problems/translocation/letter_translocation_problem_visual.py -d 5 -B -I --selftest
+```
+
+The original generator and its output bank remain available. The visual bank uses its own
+`letter_translocation_problem_visual` filename. Both share the fragment model and size controls:
+`-n/--min-chromosome-size` (default 7) and `-f/--min-fragment-size` (default 3).
+The visual generator requires at least three genes per fragment, as required by that model.
+All choices contain fragments from both originals, so color alone does not identify the answer.
+
 ## Genetic code translation
 
 [translate_genetic_code.py](../problems/molecular_biology-problems/translate_genetic_code.py)

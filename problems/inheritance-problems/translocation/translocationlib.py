@@ -1,3 +1,4 @@
+import html
 
 CHROMOSOME_LENGTHS = {
 	1: (125, 124),
@@ -81,28 +82,37 @@ CENTROMERE_STYLE = (
 ARM_EDGE_STYLES = {
 	'left': 'border-right: 0; border-radius: 6px 0 0 6px;',
 	'right': 'border-left: 0; border-radius: 0 6px 6px 0;',
+	'middle': 'border-left: 0; border-right: 0;',
 	'junction': 'border-left: 0; border-right: 0; position: relative;',
 }
 
 
 #======================================
-def _draw_arm(color: str, edge: str, label: str = '') -> str:
-	"""Render a labeled arm cell with a left end, right end, or exchange junction."""
+def _draw_arm(color: str, edge: str, label: str = '', *,
+		mark_junction: bool = False, textured: bool = True) -> str:
+	"""Render a chromosome cell, with optional arm texture and exchange junction."""
 	cell = f'<td style="background-color: {color}; border: 2px solid black; '
 	cell += 'padding: 0; '
-	cell += f'{ARM_EDGE_STYLES[edge]} {CHROMOSOME_ARM_STYLE}" align="center">'
+	if mark_junction:
+		cell += 'position: relative; '
+	cell += ARM_EDGE_STYLES[edge]
+	if textured:
+		cell += ' ' + CHROMOSOME_ARM_STYLE
+	cell += '" align="center">'
 	cell += '<span style="display: block; padding: 0 1px; font-size: small; '
 	cell += 'color: #000; font-weight: bold; '
 	cell += 'text-shadow: -0.5px 0 0 #fff, 0.5px 0 0 #fff, '
 	cell += '0 -0.5px 0 #fff, 0 0.5px 0 #fff; '
-	cell += f'line-height: {CHROMOSOME_HEIGHT - 4}px;">{label}</span>'
-	if edge == 'junction':
+	content = label if label else '<!-- -->'
+	cell += f'line-height: {CHROMOSOME_HEIGHT - 4}px;">{content}</span>'
+	if edge == 'junction' or mark_junction:
 		cell += '<span aria-hidden="true" style="position: absolute; top: 0; bottom: 0; '
 		cell += 'right: -3px; width: 6px; background-color: #fff; z-index: 1; '
 		cell += 'pointer-events: none; clip-path: polygon(50% 0, 100% 16.667%, '
 		cell += '50% 33.333%, 100% 50%, 50% 66.667%, 100% 83.333%, 50% 100%, '
 		cell += '0 100%, 50% 83.333%, 0 66.667%, 50% 50%, 0 33.333%, '
-		cell += '50% 16.667%, 0 0);"></span>'
+		# Nonempty spans retain closing tags when exported markup is serialized as XML.
+		cell += '50% 16.667%, 0 0);"><!-- --></span>'
 	cell += '</td>'
 	return cell
 
@@ -147,14 +157,59 @@ def merge_tables(table_list):
 
 #======================================
 def format_gamete_choice(label: str, chromosomes: list[str]) -> str:
-	"""Group a gamete label and its chromosomes inside one rounded frame."""
+	"""Group chromosomes inside one rounded frame, with a label when supplied."""
 	table = '<table style="border-collapse: separate; border-spacing: 0; '
 	table += 'border: 1px solid #adb5bd; border-radius: 8px; '
 	table += 'color: #000; background-color: #fff;">'
-	for content in [label, *chromosomes]:
+	contents = [label, *chromosomes] if label else chromosomes
+	for content in contents:
 		table += '<tr><td style="border: 0; padding: 4px 8px;">'
 		table += content + '</td></tr>'
 	table += '</table>'
+	return table
+
+
+#======================================
+def draw_sequence_chromosome(left_sequence: str, right_sequence: str,
+		left_color: str, right_color: str, *, source: bool = False,
+		telomeres: tuple[str, str] = ('left', 'right')) -> str:
+	"""Draw gene sequences and separate gray telomere regions, with optional break arrows."""
+	widths = []
+	cells = []
+	break_offset = 0
+	for index, (sequence, color, telomere) in enumerate(zip(
+		(left_sequence, right_sequence), (left_color, right_color), telomeres)):
+		label = '<span style="font-family: monospace; font-size: 15px; white-space: nowrap;">'
+		for gene in sequence:
+			label += '<span style="display: inline-block; width: 18px;">'
+			label += html.escape(gene) + '</span>'
+		label += '</span>'
+		outer_edge = 'left' if index == 0 else 'right'
+		cap_is_outer = telomere == outer_edge
+		arm_edge = 'middle' if cap_is_outer else outer_edge
+		cap_edge = outer_edge if cap_is_outer else 'middle'
+		arm = _draw_arm(color, arm_edge, label,
+			mark_junction=index == 0 and telomere == 'left')
+		cap = _draw_arm('#888', cap_edge, textured=False,
+			mark_junction=index == 0 and telomere == 'right')
+		arm_width = len(sequence) * 18 + 2 + (0 if cap_is_outer else 2)
+		cap_width = 6 + (2 if cap_is_outer else 0)
+		if telomere == 'left':
+			widths.extend((cap_width, arm_width))
+			cells.extend((cap, arm))
+		else:
+			widths.extend((arm_width, cap_width))
+			cells.extend((arm, cap))
+		if index == 0:
+			break_offset = arm_width + cap_width
+	table = _chromosome_table(tuple(widths), tuple(cells))
+	if source:
+		arrow = '<span aria-hidden="true" style="position: absolute; top: 0; '
+		arrow += f'left: {break_offset}px; transform: translateX(-50%); '
+		arrow += 'font-size: 18px; line-height: 18px; color: #555;">&darr;</span>'
+		wrapper = '<div style="display: inline-block; position: relative; padding-top: 18px; '
+		wrapper += 'color: #000; background-color: #fff;">'
+		table = wrapper + arrow + table + '</div>'
 	return table
 
 

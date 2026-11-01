@@ -2,6 +2,33 @@
 
 ## 2026-10-31
 
+### Visual letter translocation
+
+- Place telomeres in short, solid gray table cells outside the gene-letter areas, with
+  rounded outer ends like the deletion-map chromosomes. Keep each cap attached to its
+  original fragment through reversals, with continuous borders and no letter overlap.
+- Keep chromosome decoration spans nonempty so saved HTML and image exports preserve
+  their closing tags and do not nest following content inside clipped junction markers.
+  Refresh saved HTML and exported image previews.
+- Use four varied light fills per question from the instructor's color-wheel tool,
+  following `docs/COLOR_PALETTE.md`. Preserve each fragment's color throughout the item.
+  Use solid gray telomere bands with a defined inner edge for consistent visibility
+  across the palette. Keep the fill opaque so arm texture and shading do not show through.
+- Add a parallel five-choice visual translocation generator using the existing fragment
+  model and shared chromosome artwork. Keep gene letters, fragment proportions, shuffled
+  choices, and the impossible-product task. Use narrow gray telomere caps that travel with
+  original fragment ends, break arrows on source chromosomes, white junctions, and rounded
+  gray answer frames without centromeres. Preserve the original terminal end when a
+  telomere faces the junction in an impossible product.
+- Keep both source chromosomes represented in every choice so color alone cannot reveal
+  the key. Preserve the original generator's presentation and output bank, removing only
+  import-time demonstration checks so its model can be reused without random side effects.
+- Document the separate visual bank and shared size controls, including the model's
+  three-gene minimum fragment size for the new entry point.
+- Protect the single impossible product, displayed gene order, fragment colors, and
+  original telomere positions with focused behavior tests; keep appearance checks as
+  one-time rendered evidence.
+
 ### Deletion complementation evidence
 
 - Add `-e/--evidence-format complementation` to both deletion generators while preserving

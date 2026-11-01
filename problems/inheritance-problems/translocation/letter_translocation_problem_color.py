@@ -255,13 +255,6 @@ class Chromosome:
 		Return HTML string for repr().
 		"""
 		return self.__str__()
-# Simple assertion tests
-a = Fragment('ABC', 'A', 'C')
-d = Fragment('DEF', 'D', 'F')
-proper = Chromosome(a, d)
-improper = Chromosome(a, d, telomere_A_improper=True, telomere_B_improper=True)
-assert '|' in str(proper)
-assert '|' in str(improper)
 
 #===========================================================
 # Fixed color per segment
@@ -293,10 +286,6 @@ def alloc_multinomial(balls: int, buckets: int) -> list:
 		ball_counts[idx] += 1
 	# Return counts per bucket
 	return ball_counts
-
-# Simple assertion test for the function: 'alloc_multinomial'
-_result = alloc_multinomial(9, 5)
-assert len(_result) == 5 and sum(_result) == 9
 
 #====================
 def make_chromosomes(min_chromosome_size: int, min_fragment_size: int):
