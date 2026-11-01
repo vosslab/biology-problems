@@ -15,7 +15,7 @@ def questionText(chromosome1, chromosome2):
 	question += '<span style="color: darkred;">alternate</span> segregation in this individual?</h5>'
 	return question
 
-def blackboardFormat(N, chromosome1, chromosome2):
+def blackboardFormat(N: int, chromosome1: int, chromosome2: int) -> object:
 	question_string = questionText(chromosome1, chromosome2)
 	table1 = ''
 	#A. rob(14; 21)
@@ -41,35 +41,22 @@ def blackboardFormat(N, chromosome1, chromosome2):
 
 	choices = []
 
-	smtab = '<table style="border-collapse: collapse; border: 1px solid silver; '
-	smtab += 'color: #000; background-color: #fff;">'
-	trtd = '<tr><td style="border: 0; padding: 2px;">'
-
-	answer = f'{smtab}{trtd}rob({chromosome1}; {chromosome2})</td></tr>'
-	answer += trtd + table12 + '</td></tr>'
-	answer += '</table><p></p><p></p>'
+	answer = translocationlib.format_gamete_choice(
+		f'rob({chromosome1}; {chromosome2})', [table12])
 	choices.append(answer)
 
-	wrong = f'{smtab}{trtd}rob({chromosome1}; {chromosome2}), +{chromosome1}</td></tr>'
-	wrong += trtd + table12 + '</td></tr>'
-	wrong += trtd + table1 + '</td></tr>'
-	wrong += '</table><p></p><p></p>'
+	wrong = translocationlib.format_gamete_choice(
+		f'rob({chromosome1}; {chromosome2}), +{chromosome1}', [table12, table1])
 	choices.append(wrong)
 
-	wrong = f'{smtab}{trtd}rob({chromosome1}; {chromosome2}), +{chromosome2}</td></tr>'
-	wrong += trtd + table12 + '</td></tr>'
-	wrong += trtd + table2 + '</td></tr>'
-	wrong += '</table><p></p><p></p>'
+	wrong = translocationlib.format_gamete_choice(
+		f'rob({chromosome1}; {chromosome2}), +{chromosome2}', [table12, table2])
 	choices.append(wrong)
 
-	wrong = f'{smtab}{trtd}&ndash;{chromosome1}</td></tr>'
-	wrong += trtd + table2 + '</td></tr>'
-	wrong += '</table><p></p><p></p>'
+	wrong = translocationlib.format_gamete_choice(f'&ndash;{chromosome1}', [table2])
 	choices.append(wrong)
 
-	wrong = f'{smtab}{trtd}&ndash;{chromosome2}</td></tr>'
-	wrong += trtd + table1 + '</td></tr>'
-	wrong += '</table><p></p><p></p>'
+	wrong = translocationlib.format_gamete_choice(f'&ndash;{chromosome2}', [table1])
 	choices.append(wrong)
 
 	random.shuffle(choices)

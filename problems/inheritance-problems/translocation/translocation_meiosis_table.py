@@ -35,7 +35,8 @@ def get_question_statement(segregation_type_index: int, chromosome1: int, chromo
 	return question
 
 
-def get_choices(N, segregation_type_index, chromosome1, chromosome2):
+def get_choices(N: int, segregation_type_index: int, chromosome1: int,
+		chromosome2: int) -> tuple[str, list[str], list[str]]:
 
 	table1 = ''
 
@@ -60,43 +61,29 @@ def get_choices(N, segregation_type_index, chromosome1, chromosome2):
 
 	choices = []
 
-	smtab = '<table style="border-collapse: collapse; border: 1px solid silver;">'
-	trtd = '<tr><td style="border: 0px solid white;">'
-
-	alternate1 = smtab + trtd + 't({0}; {1}), t({1}; {0})</td></tr>'.format(chromosome1, chromosome2)
-	alternate1 += trtd + table12 + '</td></tr>'
-	alternate1 += trtd + table21 + '</td></tr>'
-	alternate1 += '</table><p></p><hr/><p></p>'
+	alternate1 = translocationlib.format_gamete_choice(
+		f't({chromosome1}; {chromosome2}), t({chromosome2}; {chromosome1})',
+		[table12, table21])
 	choices.append(alternate1)
 
-	alternate2 = smtab + trtd + '{0}, {1}</td></tr>'.format(chromosome1, chromosome2)
-	alternate2 += trtd + table1 + '</td></tr>'
-	alternate2 += trtd + table2 + '</td></tr>'
-	alternate2 += '</table><p></p><hr/><p></p>'
+	alternate2 = translocationlib.format_gamete_choice(
+		f'{chromosome1}, {chromosome2}', [table1, table2])
 	choices.append(alternate2)
 
-	adjacent1a = smtab + trtd + 't({0}; {1}), +{1}</td></tr>'.format(chromosome1, chromosome2)
-	adjacent1a += trtd + table12 + '</td></tr>'
-	adjacent1a += trtd + table2 + '</td></tr>'
-	adjacent1a += '</table><p></p><hr/><p></p>'
+	adjacent1a = translocationlib.format_gamete_choice(
+		f't({chromosome1}; {chromosome2}), +{chromosome2}', [table12, table2])
 	choices.append(adjacent1a)
 
-	adjacent1b = smtab + trtd + 't({1}; {0}), +{0}</td></tr>'.format(chromosome1, chromosome2)
-	adjacent1b += trtd + table21 + '</td></tr>'
-	adjacent1b += trtd + table1 + '</td></tr>'
-	adjacent1b += '</table><p></p><hr/><p></p>'
+	adjacent1b = translocationlib.format_gamete_choice(
+		f't({chromosome2}; {chromosome1}), +{chromosome1}', [table21, table1])
 	choices.append(adjacent1b)
 
-	adjacent2a = smtab + trtd + 't({0}; {1}), +{0}</td></tr>'.format(chromosome1, chromosome2)
-	adjacent2a += trtd + table12 + '</td></tr>'
-	adjacent2a += trtd + table1 + '</td></tr>'
-	adjacent2a += '</table><p></p><hr/><p></p>'
+	adjacent2a = translocationlib.format_gamete_choice(
+		f't({chromosome1}; {chromosome2}), +{chromosome1}', [table12, table1])
 	choices.append(adjacent2a)
 
-	adjacent2b = smtab + trtd + 't({1}; {0}), +{1}</td></tr>'.format(chromosome1, chromosome2)
-	adjacent2b += trtd + table21 + '</td></tr>'
-	adjacent2b += trtd + table2 + '</td></tr>'
-	adjacent2b += '</table><p></p><hr/><p></p>'
+	adjacent2b = translocationlib.format_gamete_choice(
+		f't({chromosome2}; {chromosome1}), +{chromosome2}', [table21, table2])
 	choices.append(adjacent2b)
 
 	answers = []

@@ -146,6 +146,19 @@ def merge_tables(table_list):
 
 
 #======================================
+def format_gamete_choice(label: str, chromosomes: list[str]) -> str:
+	"""Group a gamete label and its chromosomes inside one rounded frame."""
+	table = '<table style="border-collapse: separate; border-spacing: 0; '
+	table += 'border: 1px solid #adb5bd; border-radius: 8px; '
+	table += 'color: #000; background-color: #fff;">'
+	for content in [label, *chromosomes]:
+		table += '<tr><td style="border: 0; padding: 4px 8px;">'
+		table += content + '</td></tr>'
+	table += '</table>'
+	return table
+
+
+#======================================
 def draw_meiosis_chromosome(chromosome1: int, color: str = 'red', scale: float = 2.4,
 		centromere_width: int = DEFAULT_CENTROMERE_WIDTH) -> str:
 	distance = CHROMOSOME_LENGTHS[chromosome1]

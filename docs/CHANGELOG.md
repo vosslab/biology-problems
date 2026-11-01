@@ -39,6 +39,10 @@
 
 ### Chromosome and ordered tetrad depth
 
+- Group each balanced and Robertsonian translocation gamete choice in a compact,
+  rounded gray frame using one shared inline-HTML renderer. Remove the balanced
+  choices' horizontal rules and empty spacer paragraphs while preserving labels,
+  chromosome groupings, and answer keys.
 - Give Robertsonian and balanced-translocation chromosome diagrams gently rounded
   outer corners, narrow upper highlights, and darker lower rims using inline styles.
   Preserve chromosome proportions, labels, arm colors, and centromeres.
