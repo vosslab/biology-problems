@@ -1,6 +1,61 @@
 # Changelog
 
+## 2026-11-01
+
+### Fixes
+
+- Remove paragraph wrappers from monoploid/haploid answer choices to avoid extra vertical
+  spacing. Omit fill-in-the-blank answer instructions from deletion-mutant MC questions.
+- Allow gene-list deletion maps to scroll within narrow screens so larger maps remain reachable.
+
+### Behavior or Interface Changes
+
+- Make the word deletion generator's `--medium` mix five- and six-gene questions in one
+  `05-06_genes` bank. Select the size randomly per question, keep the existing word filter,
+  and preserve explicit gene counts. Publish one mixed Medium FiB bank in BPW.
+- Make visual chromosome deletions and inversions span at least three genes, with affected
+  original arms at least five genes long and retained material on both sides. Keep tandem
+  duplications at two genes. Refresh the gallery and the three website banks.
+- Use full, consistently colored alteration names in visual chromosome questions. Add gene-order
+  descriptions with centromeres and breaks to the HTML diagrams and exported PNG alt text.
+- Keep each chromosome independently exportable within its answer frame so text alternatives
+  do not repeat nested-table content. Preserve the existing chromosome artwork.
+
+- Vary original arm lengths in visual chromosome-alteration questions: p has two to
+  five regions, q has four to eleven, and q is longer in each original. Select deletion
+  intervals and terminal exchanges from actual arm lengths. Keep longer diagrams compact
+  with closer letter spacing and clear padding around the junctions.
+- Always show both chromosomes in every matching diagram. Keep the compact single-
+  chromosome presentation and `--always-two` choice for the MC formats.
+- Use consecutive original gene letters and blank shared centromere collars in visual
+  chromosome-alteration questions. Mark deletion joins, tandem-copy joins, both inversion
+  boundaries, and reciprocal exchange joins with the existing white zigzags.
+- Show only the affected chromosome for deletion, duplication, and inversion in MC by default;
+  add `--always-two` to retain both chromosomes and give those banks a distinct suffix.
+  Keep chromosome counts consistent across flipped MC choices, using an unchanged
+  chromosome as the fourth option when only one original is shown.
+
+### Maintenance
+
+- Prune duplicate rendering assertions and the exhaustive MC option combinations from
+  the new chromosome-alteration tests. Retain focused genetics, original-label, chromosome-
+  count, and answer-key contracts. Keep export, screenshot, and mobile-layout checks as
+  one-time implementation evidence.
+
 ## 2026-10-31
+
+### Additions and New Features
+
+- Add a Python generator for matching `del`, `dup`, `inv`, and `t` to gene-labeled
+  chromosome diagrams, plus picture-to-abbreviation MC and the reverse direction with
+  `--mc --flip`. Keep the existing generators and text-based matching YAML unchanged.
+- Derive internal deletion, tandem duplication, within-arm inversion, and reciprocal
+  terminal exchange from one randomized chromosome pair. Preserve gene identities,
+  source colors, centromeres, and telomeres across the three question formats.
+- Reuse shared chromosome styling with a small gene-labeled, numbered-centromere
+  renderer and shared letter formatting. Keep all question CSS inline.
+- Document the three distinct output banks and protect sequence transformations,
+  displayed fragment colors, and answer mappings with focused behavior tests.
 
 ### Visual letter translocation
 

@@ -75,17 +75,17 @@ def write_question(N: int, args) -> str:
 		question += "<p><i>Note: {0}/2 = {3} and {0}/{1} = {2}</i></p>".format(total_chromosomes, ploidy, monoploid, haploid)
 
 	choices = []
-	answer = '<p>monoploid, m = {0} and haploid, h = {1}</p>'.format(monoploid, haploid)
+	answer = 'monoploid, m = {0} and haploid, h = {1}'.format(monoploid, haploid)
 	choices.append(answer)
-	wrong = '<p>monoploid, m = {0} and haploid, h = {1}</p>'.format(haploid, monoploid)
+	wrong = 'monoploid, m = {0} and haploid, h = {1}'.format(haploid, monoploid)
 	choices.append(wrong)
-	wrong = '<p>monoploid, m = {0} and haploid, h = {1}</p>'.format(monoploid, monoploid)
+	wrong = 'monoploid, m = {0} and haploid, h = {1}'.format(monoploid, monoploid)
 	choices.append(wrong)
-	wrong = '<p>monoploid, m = {0} and haploid, h = {1}</p>'.format(haploid, haploid)
+	wrong = 'monoploid, m = {0} and haploid, h = {1}'.format(haploid, haploid)
 	choices.append(wrong)
-	wrong = '<p>monoploid, m = {0} and haploid, h = {1}</p>'.format(total_chromosomes, monoploid)
+	wrong = 'monoploid, m = {0} and haploid, h = {1}'.format(total_chromosomes, monoploid)
 	choices.append(wrong)
-	wrong = '<p>monoploid, m = {0} and haploid, h = {1}</p>'.format(total_chromosomes, haploid)
+	wrong = 'monoploid, m = {0} and haploid, h = {1}'.format(total_chromosomes, haploid)
 	choices.append(wrong)
 
 	random.shuffle(choices)

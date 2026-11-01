@@ -125,7 +125,7 @@ matrix beside the numbered chromosome map, wrapping below it when space is limit
 ```bash
 source source_me.sh
 python3 problems/inheritance-problems/deletion_mutants/deletion_mutant_random.py -g 6 -e complementation --mc -d 5 -B -I --selftest
-python3 problems/inheritance-problems/deletion_mutants/deletion_mutant_words.py -g 6 -e complementation --fib -d 5 --selftest
+python3 problems/inheritance-problems/deletion_mutants/deletion_mutant_words.py --medium -e complementation --fib -d 5 --selftest
 ```
 
 Gene columns are alphabetical. `+` means complementation and a wild-type phenotype;
@@ -135,7 +135,10 @@ of that deletion's color; plus cells remain white, and both symbols stay black. 
 use the same wrapping flex layout as the four-gene testcross problem. Each table exports as a
 separate image, preserving the wrapping layout and independent scaling on narrow screens.
 
-The new banks include `complementation` in their filenames; default filenames are unchanged.
+Complementation banks include `complementation` in their filenames.
+The word generator's `--medium` samples five or six genes independently for each question in
+one bank, using the `05-06_genes` filename suffix. Its existing `--num-genes` option fixes the
+count when supplied. Both sizes keep the existing unique-letter/anagram filter.
 Existing `-F` / `-N` first-gene hints and word/random-sequence hints still apply. Uncovered
 gene lists are omitted from complementation questions so students must interpret the results.
 
@@ -162,6 +165,53 @@ The original generator and its output bank remain available. The visual bank use
 `-n/--min-chromosome-size` (default 7) and `-f/--min-fragment-size` (default 3).
 The visual generator requires at least three genes per fragment, as required by that model.
 All choices contain fragments from both originals, so color alone does not identify the answer.
+
+## Visual chromosome alterations
+
+[chromosome_alterations_visual.py](../problems/inheritance-problems/translocation/chromosome_alterations_visual.py)
+uses one Python sequence model to connect deletion, duplication, inversion, and translocation
+with chromosome diagrams. Full names carry fixed emphasis colors from
+[COLOR_PALETTE.md](COLOR_PALETTE.md); chromosome fills identify source material independently.
+Original arms use consecutive letters so gaps only appear after a deletion. Letters identify
+ordered regions, blank collars mark centromeres, and colors follow exchanged material.
+Arm lengths vary between chromosomes: p is always drawn before the centromere
+and q after it. Original p arms have two to five regions and q arms four to eleven, with q
+longer than p in the originals. The two originals share distinct consecutive A-Z labels.
+The arm used for deletion and inversion has at least five genes. Each deletion or inversion
+spans at least three genes, leaving retained material on both sides; tandem duplication
+repeats two genes to keep the resulting chromosome compact.
+The diagrams show an internal deletion, a tandem duplication, an inversion within one arm,
+or a reciprocal exchange of terminal segments. The shading and stripes are decorative;
+these questions do not require cytoband coordinates.
+
+```bash
+source source_me.sh
+python3 problems/inheritance-problems/translocation/chromosome_alterations_visual.py --matching -d 5 -B -I --selftest
+python3 problems/inheritance-problems/translocation/chromosome_alterations_visual.py --mc -d 5 -B -I --selftest
+python3 problems/inheritance-problems/translocation/chromosome_alterations_visual.py --mc --flip -d 5 -B -I --selftest
+```
+
+Matching is the default, with four name-diagram pairs. `--mc` shows an altered
+chromosome arrangement and asks for its alteration name; `--mc --flip` gives the full name
+and four possible diagrams. Deletion, duplication, and inversion use a single chromosome
+by default in MC; translocation uses two. Matching always shows both chromosomes in every
+original and rearranged diagram.
+
+All choices in a flipped MC question show the same number of chromosomes. For a compact
+single-chromosome question, the fourth diagram is the unchanged original alongside deletion,
+duplication, and inversion. A translocation question shows both chromosomes in every choice.
+Add `--always-two` to retain both chromosomes throughout MC, keeping chromosome
+count from helping identify the event in picture-to-name questions.
+
+White zigzags mark the deletion join, the join between tandem copies, both ends of an
+inverted segment, and the exchanged-segment joins in translocations. The centromeres
+use the shared blank Robertsonian collar style.
+Each diagram has a text alternative listing genes, centromeres, and breaks in reading order,
+such as `H I centromere J K break O`. These descriptions also survive PNG image export.
+
+Output filenames end in `matching`, `which_one`, or `which_one-flipped`; `--mc --always-two`
+adds a `two_chromosomes` suffix. All formats draw fresh scenarios and share the same
+chromosome renderer. The existing text-based chromosome-alterations YAML bank is separate.
 
 ## Genetic code translation
 

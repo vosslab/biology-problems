@@ -399,7 +399,9 @@ def make_deletion_evidence(gene_order: list[str], deletions_list: list[list[str]
 		deletion_colors: dict[str, str], evidence_format: str = 'gene-list') -> str:
 	"""Return the gene-list map or two independently exportable, wrapping evidence panels."""
 	if evidence_format == 'gene-list':
-		return make_html_table(gene_order, deletions_list, deletion_colors)
+		return (DELETION_MAP_LEGEND + '<div style="max-width: 100%; overflow-x: auto;">'
+			+ make_html_table(gene_order, deletions_list, deletion_colors,
+				include_legend=False) + '</div>')
 	map_panel = '<p style="font-size: 15px; font-weight: bold; margin: 0 0 6px;">Deletion map</p>'
 	map_panel += make_html_table(gene_order, deletions_list, deletion_colors, include_legend=False)
 	panels = [map_panel, make_complementation_table(
@@ -532,7 +534,7 @@ def write_question_text(gene_order: list[str], deletions_list: list[list[str]],
 		question += "</ul><br/>"
 
 	# Add the standard requirement
-	if evidence_format == 'gene-list':
+	if question_type == 'fib' and evidence_format == 'gene-list':
 		question += (
 			f"<p><strong>Requirement</strong>: Enter your answer in the blank using only "
 			f"{num_genes_word} letters, or one comma every three (3) letters. Do not include "

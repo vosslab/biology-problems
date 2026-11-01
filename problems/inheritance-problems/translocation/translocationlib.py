@@ -129,14 +129,17 @@ def _draw_centromere(left_color: str, right_color: str, width: int,
 	cell += f'linear-gradient(to right, {left_color} 50%, {right_color} 50%);">'
 	cell += f'<span style="min-width: {width}px; background-color: {fill_color}; '
 	cell += f'{CENTROMERE_STYLE}">'
-	cell += f'{label}</span></td>'
+	content = label if label != '' else '<!-- -->'
+	cell += f'{content}</span></td>'
 	return cell
 
 
 #======================================
-def _chromosome_table(widths: tuple[float, ...], cells: tuple[str, ...]) -> str:
+def _chromosome_table(widths: tuple[float, ...], cells: tuple[str, ...],
+		description: str = '') -> str:
 	"""Assemble ordered chromosome cells using their arm and centromere widths."""
-	table = f'<table style="{CHROMOSOME_TABLE_STYLE}">'
+	accessible_name = f' role="img" aria-label="{html.escape(description)}"' if description else ''
+	table = f'<table{accessible_name} style="{CHROMOSOME_TABLE_STYLE}">'
 	for width in widths:
 		table += f'<colgroup width="{width}"></colgroup>'
 	table += '<tr>' + ''.join(cells) + '</tr></table>'
@@ -170,6 +173,59 @@ def format_gamete_choice(label: str, chromosomes: list[str]) -> str:
 
 
 #======================================
+def _sequence_label(sequence: str, gene_width: int = 18) -> str:
+	"""Keep gene letters equally spaced across the sequence-based diagrams."""
+	label = '<span style="font-family: monospace; font-size: 15px; white-space: nowrap;">'
+	for gene in sequence:
+		label += f'<span style="display: inline-block; width: {gene_width}px;">'
+		label += html.escape(gene) + ' </span>'
+	label += '</span>'
+	return label
+
+
+#======================================
+def _diagram_text(text: str) -> str:
+	"""Keep feature names available to readers and image alt extraction without painting them."""
+	markup = '<span style="position: absolute; width: 1px; height: 1px; padding: 0; '
+	markup += 'overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap;">'
+	markup += html.escape(text) + '</span>'
+	return markup
+
+
+#======================================
+def draw_labeled_chromosome(p_sequence: str, p_color: str,
+		q_genes: tuple[tuple[str, str], ...], junctions: tuple[int, ...] = ()) -> str:
+	"""Draw a blank centromere and joins at the given boundaries between q-arm genes."""
+	# Keep longer alteration diagrams compact without reducing the letter font size.
+	gene_width = 12
+	segments = []
+	for index, (gene, color) in enumerate(q_genes):
+		if segments and segments[-1][1] == color and index not in junctions:
+			segments[-1] = (segments[-1][0] + gene, color)
+		else:
+			segments.append((gene, color))
+	widths = [8, len(p_sequence) * gene_width + 8, DEFAULT_CENTROMERE_WIDTH]
+	description = [*p_sequence, 'centromere']
+	cells = [_draw_arm('#888', 'left', textured=False),
+		_draw_arm(p_color, 'middle', _sequence_label(p_sequence, gene_width)),
+		_draw_centromere(p_color, segments[0][1], DEFAULT_CENTROMERE_WIDTH,
+			_diagram_text(' centromere '))]
+	for index, (sequence, color) in enumerate(segments):
+		widths.append(len(sequence) * gene_width + 8)
+		description.extend(sequence)
+		label = _sequence_label(sequence, gene_width)
+		mark_junction = index < len(segments) - 1
+		if mark_junction:
+			label += _diagram_text(' break ')
+			description.append('break')
+		cells.append(_draw_arm(color, 'middle', label, mark_junction=mark_junction))
+	widths.append(8)
+	cells.append(_draw_arm('#888', 'right', textured=False))
+	table = _chromosome_table(tuple(widths), tuple(cells), ' '.join(description))
+	return table
+
+
+#======================================
 def draw_sequence_chromosome(left_sequence: str, right_sequence: str,
 		left_color: str, right_color: str, *, source: bool = False,
 		telomeres: tuple[str, str] = ('left', 'right')) -> str:
@@ -179,11 +235,7 @@ def draw_sequence_chromosome(left_sequence: str, right_sequence: str,
 	break_offset = 0
 	for index, (sequence, color, telomere) in enumerate(zip(
 		(left_sequence, right_sequence), (left_color, right_color), telomeres)):
-		label = '<span style="font-family: monospace; font-size: 15px; white-space: nowrap;">'
-		for gene in sequence:
-			label += '<span style="display: inline-block; width: 18px;">'
-			label += html.escape(gene) + '</span>'
-		label += '</span>'
+		label = _sequence_label(sequence)
 		outer_edge = 'left' if index == 0 else 'right'
 		cap_is_outer = telomere == outer_edge
 		arm_edge = 'middle' if cap_is_outer else outer_edge

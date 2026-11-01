@@ -303,20 +303,21 @@ def write_question(N: int, args: argparse.Namespace) -> object:
 
 	Args:
 		N (int): The question number.
-		num_genes (int): The total number of genes to work with.
-		num_choices (int): The number of multiple-choice options.
+		args (argparse.Namespace): Gene-count, evidence, and response settings.
 
 	Returns:
 		object: A formatted question ready to be written to the output file.
 	"""
+	# Medium samples size per question; explicit counts stay fixed.
+	num_genes = random.choice((5, 6)) if args.num_genes is None else args.num_genes
 	background = ''
 	steps = ''
 	if args.evidence_format == 'gene-list':
-		background = deletionlib.generate_background_for_deletions(args.num_genes)
+		background = deletionlib.generate_background_for_deletions(num_genes)
 		steps = deletionlib.get_deletion_mutant_steps()
 
 	# Generate the original list of genes and the set of deleted genes
-	answer_gene_order, deletions_list = make_deletions(args.num_genes)
+	answer_gene_order, deletions_list = make_deletions(num_genes)
 
 	# Shuffle the deleted genes randomly for question variability
 	random.shuffle(deletions_list)
@@ -369,7 +370,7 @@ def apply_difficulty_defaults(args):
 			'first_letter': True,
 		},
 		'medium': {
-			'num_genes': 5,
+			'num_genes': None,
 			'num_choices': 5,
 			'first_letter': False,
 		},
@@ -406,7 +407,8 @@ def main() -> None:
 	"""
 	args = parse_arguments()
 	evidence_suffix = 'complementation' if args.evidence_format == 'complementation' else None
-	outfile = bptools.make_outfile(f"{args.num_genes:02d}_genes",
+	gene_count = '05-06_genes' if args.num_genes is None else f'{args.num_genes:02d}_genes'
+	outfile = bptools.make_outfile(gene_count,
 		evidence_suffix, args.question_type.upper()
 	)
 	bptools.collect_and_write_questions(write_question, args, outfile)
@@ -422,7 +424,7 @@ def parse_arguments() -> argparse.Namespace:
 	)
 	parser.add_argument(
 		'-g', '--num-genes', metavar='#', type=int, dest='num_genes',
-		help='number of deleted genes on the chromosome', default=None
+		help='fix the gene count; Medium otherwise mixes five and six genes', default=None
 	)
 	parser.add_argument(
 		'-F', '--first-letter', dest='first_letter', action='store_true',
@@ -442,15 +444,16 @@ def parse_arguments() -> argparse.Namespace:
 	args = parser.parse_args()
 	args = apply_difficulty_defaults(args)
 
-	if args.num_genes < 4:
+	min_num_genes = 5 if args.num_genes is None else args.num_genes
+	if min_num_genes < 4:
 		raise ValueError("Sorry, you must have at least 4 genes for this program")
-	if args.num_genes > 20:
+	if min_num_genes > 20:
 		raise ValueError("Sorry, you can have at most 20 genes for this program")
 
-	max_choices = math.factorial(args.num_genes - 1)
+	max_choices = math.factorial(min_num_genes - 1)
 	if args.num_choices > max_choices:
 		raise ValueError(
-			f"Cannot generate {args.num_choices} choices with {args.num_genes} genes. "
+			f"Cannot generate {args.num_choices} choices with {min_num_genes} genes. "
 			f"Maximum possible is {max_choices}."
 		)
 	return args

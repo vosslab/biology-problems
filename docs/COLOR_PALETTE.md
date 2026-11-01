@@ -28,6 +28,19 @@ Names below preserve that source's labels.
 | Magenta | `#C80085` |
 | Pink | `#CC0066` |
 
+## Chromosome alteration names
+
+Use full alteration names and these fixed text colors in chromosome-alteration questions.
+Chromosome fills continue to identify the source chromosome; these text colors identify the
+type of alteration.
+
+| Alteration | Color role | Hex |
+| --- | --- | --- |
+| Deletion | Magenta-red (Pink) | `#CC0066` |
+| Duplication | Forest green (Green) | `#007A00` |
+| Inversion | Yellow-orange (Light orange) | `#935D00` |
+| Translocation | Navy | `#0067CC` |
+
 ## Procedure sequences
 
 Use well-separated colors from the fixed palette in rainbow order for new colored step sequences.

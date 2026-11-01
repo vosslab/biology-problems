@@ -1,5 +1,9 @@
+import random
+import re
+import sys
 
 import lxml.html
+import pytest
 
 from lib_test_utils import import_from_repo_path
 
@@ -80,3 +84,24 @@ def test_complementation_prompt_retains_hints_without_uncovered_gene_lists() -> 
 	fib = deletionlib.write_question_text(list("FADBEC"), [list("ADF")],
 		{"ADF": "843b62"}, False, evidence_format="complementation", question_type="fib")
 	assert "Enter all six (6) gene letters in order without spaces or commas" in fib
+	mc = deletionlib.write_question_text(list("FADBEC"), [list("ADF")],
+		{"ADF": "843b62"}, False, question_type="mc")
+	assert "Enter your answer in the blank" not in mc
+
+
+def test_medium_word_questions_mix_five_and_six_genes(monkeypatch: pytest.MonkeyPatch) -> None:
+	"""One Medium run must support both sizes with matching evidence and answer keys."""
+	words = import_from_repo_path('problems/inheritance-problems/deletion_mutants/deletion_mutant_words.py')
+	monkeypatch.setattr(sys, 'argv', [words.__file__, '--medium', '--fib', '-e', 'complementation'])
+	args = words.parse_arguments()
+	monkeypatch.setattr(words, 'random', random.Random(0))
+	monkeypatch.setattr(words, 'get_gene_word_bank',
+		lambda length, minimum: ['STONE'] if length == 5 else ['PALEST'])
+	for count in (5, 6):
+		monkeypatch.setattr(words.random, 'choice',
+			lambda values: count if count in values else values[0])
+		item = words.write_question(count, args)
+		assert {len(re.sub('[^A-Z]', '', answer.upper())) for answer in item.answers_list} == {count}
+		root = lxml.html.fragment_fromstring(item.question_text, create_parent=True)
+		columns = root.xpath('.//table')[1].xpath('./tr')[0][1:]
+		assert len(columns) == count

@@ -20,7 +20,7 @@ def test_visual_products_have_one_impossible_orientation(monkeypatch: pytest.Mon
 	sequences = []
 	for candidate in candidates:
 		table = lxml.html.fromstring(visual.draw_chromosome(candidate))
-		left, right = [cell.text_content() for cell in table.xpath('./tr/td')
+		left, right = [''.join(cell.text_content().split()) for cell in table.xpath('./tr/td')
 			if cell.text_content()]
 		assert set(left) <= set('ABCDEF')
 		assert set(right) <= set('JKLOPQ')
@@ -41,9 +41,9 @@ def test_visual_rendering_preserves_reversed_fragment_color_and_telomere() -> No
 		telomere_A_improper=True)
 	table = lxml.html.fromstring(visual.draw_chromosome(chromosome))
 	all_cells = table.xpath('./tr/td')
-	assert [cell.text_content() for cell in all_cells] == ['CBA', '', 'JKL', '']
+	assert [''.join(cell.text_content().split()) for cell in all_cells] == ['CBA', '', 'JKL', '']
 	cells = [cell for cell in all_cells if cell.text_content()]
-	assert [cell.text_content() for cell in cells] == ['CBA', 'JKL']
+	assert [''.join(cell.text_content().split()) for cell in cells] == ['CBA', 'JKL']
 	assert 'background-color: coral;' in cells[0].get('style')
 	assert 'background-color: royalblue;' in cells[1].get('style')
 	# Browser HTML parsing must not nest caps inside self-closing decoration spans.
