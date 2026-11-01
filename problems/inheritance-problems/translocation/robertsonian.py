@@ -41,8 +41,9 @@ def blackboardFormat(N, chromosome1, chromosome2):
 
 	choices = []
 
-	smtab = '<table style="border-collapse: collapse; border: 1px solid silver;">'
-	trtd = '<tr><td style="border: 0px solid white;">'
+	smtab = '<table style="border-collapse: collapse; border: 1px solid silver; '
+	smtab += 'color: #000; background-color: #fff;">'
+	trtd = '<tr><td style="border: 0; padding: 2px;">'
 
 	answer = f'{smtab}{trtd}rob({chromosome1}; {chromosome2})</td></tr>'
 	answer += trtd + table12 + '</td></tr>'

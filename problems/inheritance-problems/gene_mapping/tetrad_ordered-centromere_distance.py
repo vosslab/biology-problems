@@ -121,7 +121,7 @@ def get_asci_counts(distance: float) -> dict:
 
 #=====================
 #=====================
-def generate_html_for_pattern(pattern, color_dominant, color_recessive):
+def generate_html_for_pattern(pattern: str, color_dominant: str, color_recessive: str) -> str:
 	"""
 	Generate an HTML string for a given genetic pattern.
 
@@ -134,16 +134,31 @@ def generate_html_for_pattern(pattern, color_dominant, color_recessive):
 	- str: An HTML string representing the pattern.
 	"""
 	html_output = ''
-	html_output += '<table border="0" style="padding: 10px;"> <tr>'
+	html_output += '<div style="display: inline-block; padding: 7px 18px 9px 38px; '
+	html_output += 'border: 2px solid #737A61; '
+	html_output += 'border-radius: 18% 7% 11% 4% / 76% 35% 65% 24%; '
+	html_output += 'color: #24341D; background-color: #F1F2E5; '
+	html_output += 'background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.8), '
+	html_output += 'rgba(255, 255, 255, 0) 48%, rgba(81, 97, 54, 0.15)); '
+	html_output += 'box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.85), '
+	html_output += 'inset 0 -3px 0 rgba(69, 94, 37, 0.12);">'
+	html_output += '<table border="0" style="border-collapse: separate; '
+	html_output += 'border-spacing: 3px 0; padding: 0;"><tr>'
 	# Create table cells based on the pattern
 	for char in pattern:
 		bgcolor = color_dominant if char == char.upper() or char == '+' else color_recessive
-		html_output += f'<td width="40" height="40" bgcolor="#{bgcolor}" '
-		html_output += 'style="border-radius:  15% 50% 30%; '
+		html_output += '<td width="40" height="40" '
+		html_output += f'style="background-color: #{bgcolor}; min-width: 40px; padding: 0; '
+		html_output += 'border-radius: 15% 50% 30%; border: 1px solid rgba(29, 39, 33, 0.65); '
+		html_output += 'background-image: radial-gradient(ellipse at 32% 22%, '
+		html_output += 'rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 45%), '
+		html_output += 'linear-gradient(to bottom, rgba(255, 255, 255, 0.08), '
+		html_output += 'rgba(255, 255, 255, 0) 45%, rgba(0, 0, 0, 0.14)); '
+		html_output += 'box-shadow: inset -1px -2px 0 rgba(0, 0, 0, 0.18); '
 		html_output += 'text-align: center; vertical-align: middle; '
-		html_output += 'color: #f0f0f0; font-size: 25px;"> '
+		html_output += 'color: #f0f0f0; font-family: monospace; font-size: 22px;"> '
 		html_output += f'{char} </td> '
-	html_output += '</tr></table> '
+	html_output += '</tr></table></div> '
 	bptools.is_valid_html(html_output)
 	return html_output
 
@@ -164,8 +179,8 @@ def get_octads_table(asci_count_dict, gene_letter):
 	# Generate and print the HTML for each pattern
 	for i, pattern in enumerate(patterns, start=1):
 		new_pattern = pattern.replace('a', gene_letter)
-		octads_table += '<tr><td style="padding: 10px; border: 1px solid gray; '
-		octads_table += 'border-radius: 30%; background-color: #d2f9d2;">'
+		octads_table += '<tr><td style="padding: 6px; border: 1px solid gray; '
+		octads_table += 'color: #24341D; background-color: #FFFFFF;">'
 		html_for_pattern = generate_html_for_pattern(new_pattern, color_dominant, color_recessive)
 		octads_table += html_for_pattern
 		octads_table += '</td><td style="padding: 10px; border: 1px solid gray; text-align: right">'

@@ -14,6 +14,17 @@ import argparse
 # Provides custom functions, such as question formatting and other utilities
 import bptools
 
+DELETION_MAP_LEGEND = (
+	'<p style="color: #000; background-color: #fff; margin: 0 0 6px;">'
+	'Colored regions mark deleted DNA; gray regions show DNA that remains.</p>'
+)
+COMPLEMENTATION_LEGEND = (
+	'<p style="color: #000; background-color: #fff; margin: 6px 0;">'
+	'<strong>+</strong> = complementation (wild-type phenotype); '
+	'<strong>&minus;</strong> = failure to complement '
+	'(mutant phenotype; the deletion uncovers the mutation).</p>'
+)
+
 #==========================================================
 #==========================================================
 def ensure_most_alphabetical(itemlist: list[str]) -> list[str]:
@@ -267,21 +278,47 @@ def color_deletion_name(deletion_text: str, deletion_key_str: str, deletion_colo
 
 #==========================================================
 #==========================================================
-def make_html_table(gene_order, deletions_list, deletion_colors):
+def make_html_table(gene_order: list[str], deletions_list: list[list[str]],
+		deletion_colors: dict[str, str], *, include_legend: bool = True) -> str:
 	CELL_W = 60
+	FLANK_W = 18
 	ROW_H = 25
+	columns = [None, *gene_order, None]
+	retained_style = (
+		f'box-sizing: border-box; height: {ROW_H}px; background-color: #b8c0c8; '
+		'border-top: 2px solid #161b20; border-bottom: 2px solid #161b20; '
+		'background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.25), '
+		'rgba(255, 255, 255, 0) 45%, rgba(0, 0, 0, 0.16)), '
+		'linear-gradient(95deg, transparent 0 5px, '
+		'rgba(0, 0, 0, 0.09) 5px 7px, rgba(255, 255, 255, 0.08) 7px 8px, '
+		'transparent 8px 18px, '
+		'rgba(0, 0, 0, 0.09) 18px 21px, rgba(255, 255, 255, 0.08) 21px 22px, '
+		'transparent 22px 29px, '
+		'rgba(0, 0, 0, 0.09) 29px 30px, rgba(255, 255, 255, 0.08) 30px 31px, '
+		'transparent 31px 46px, '
+		'rgba(0, 0, 0, 0.09) 46px 48px, rgba(255, 255, 255, 0.08) 48px 49px, '
+		'transparent 49px 59px, '
+		'rgba(0, 0, 0, 0.09) 59px 62px, rgba(255, 255, 255, 0.08) 62px 63px, '
+		'transparent 63px); background-size: 100% 100%, 79px 100%; '
+		'background-origin: border-box; '
+		'box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.55), '
+		'inset 0 -3px 0 rgba(0, 0, 0, 0.18); '
+	)
+	deleted_style = 'box-sizing: border-box; height: 11px; '
 
-	table = ''
-	table += '<table style="border-collapse: collapse; border: 2px solid black; '
-	#width = CELL_W * (len(gene_order) + 1)
-	#height = ROW_H * (len(deletions_list) + 1)
-	#table += f'width: {width}px; height: {height}px;'
-	table += '">'
-	table += '<tr><th> </th>'
+	table = DELETION_MAP_LEGEND if include_legend else ''
+	table += '<table style="border-collapse: separate; border-spacing: 0; '
+	table += 'border: 1px solid #c9cdd2; color: #000; background-color: #fff;">'
+	table += '<tr><th style="width: 70px; padding: 4px;"></th>'
 
 	# Header for gene labels, gene order is unknown so just numbers
-	for i in range(len(gene_order)):
-		table += f'<th style="text-align: center; width: {CELL_W}px;">Gene {i+1}</th>'
+	for column, gene in enumerate(columns):
+		if gene is None:
+			table += f'<th style="width: {FLANK_W}px; padding: 0; background-color: #f6f7f8;"></th>'
+			continue
+		table += f'<th style="box-sizing: border-box; text-align: center; width: {CELL_W}px; '
+		table += 'padding: 4px 2px; border-right: 1px solid #d7dce1; '
+		table += f'font-size: 14px; white-space: nowrap; background-color: #f6f7f8;">Gene {column}</th>'
 	table += '</tr>'
 
 	# Rows for deletions
@@ -291,20 +328,88 @@ def make_html_table(gene_order, deletions_list, deletion_colors):
 
 		# Row header for each deletion
 		colored_deletion_name = color_deletion_name(f"Del #{i+1}", deletion_key_str, deletion_colors)
-		table += f'<tr><th style="text-align: center;">{colored_deletion_name}</th>'
+		table += '<tr><th style="text-align: center; font-size: 14px; '
+		table += f'padding: 4px 6px; white-space: nowrap;">{colored_deletion_name}</th>'
 
-		for gene in gene_order:
-			bg = deletion_colors[deletion_key_str] if gene in deletion else "EEEEEE"
-			table += (
-				f'<td style="background-color: #{bg}; '
-				f'height: {ROW_H}px; '
-				f'border: 1px solid #ddd;">&nbsp;</td>'
-			)
-			#table += f'<td style="background-color: #{bg}; height: {ROW_H}px;">&nbsp;</td>'
+		for column, gene in enumerate(columns):
+			cell_width = FLANK_W if gene is None else CELL_W
+			if gene in deletion:
+				style = deleted_style + f'background-color: #{deletion_colors[deletion_key_str]}; '
+			else:
+				# Anchor texture to the gene column so retained material matches across rows.
+				offset = 0 if column == 0 else FLANK_W + (column - 1) * CELL_W
+				style = retained_style + f'background-position: 0 0, -{offset}px 0; '
+				if column == 0 or columns[column - 1] in deletion:
+					style += 'border-left: 2px solid #161b20; '
+				if column == len(columns) - 1 or columns[column + 1] in deletion:
+					style += 'border-right: 2px solid #161b20; '
+				if column == 0:
+					style += 'border-radius: 5px 0 0 5px; '
+				elif column == len(columns) - 1:
+					style += 'border-radius: 0 5px 5px 0; '
+			table += f'<td style="width: {cell_width}px; padding: 2px 0; vertical-align: middle; '
+			if gene is None:
+				table += f'min-width: {FLANK_W}px; '
+			else:
+				table += 'border-right: 1px solid #d7dce1; '
+			table += '">'
+			table += f'<div style="{style}"></div></td>'
 
 		table += '</tr>'
 	table += '</table>'
 	return table
+
+#==========================================================
+#==========================================================
+def make_complementation_table(gene_order: list[str], deletions_list: list[list[str]],
+		deletion_colors: dict[str, str], *, include_legend: bool = True) -> str:
+	"""Render alphabetized mutation tests, with minus for genes uncovered by each deletion."""
+	genes = sorted(gene_order)
+	cell_style = 'border: 1px solid #c9cdd2; padding: 5px 12px; text-align: center; '
+	table = '<table style="border-collapse: collapse; color: #000; '
+	table += 'background-color: #fff; font-size: 15px;">'
+	table += '<caption style="text-align: left; padding: 0 0 6px; '
+	table += 'font-weight: bold;">Complementation tests</caption>'
+	table += f'<tr><th scope="col" style="{cell_style}background-color: #f6f7f8;">Deletion</th>'
+	for gene in genes:
+		table += f'<th scope="col" style="{cell_style}background-color: #f6f7f8; '
+		table += f'font-family: monospace;">{gene}</th>'
+	table += '</tr>'
+	for i, deletion in enumerate(deletions_list):
+		key = ''.join(sorted(deletion))
+		label = color_deletion_name(f'Del #{i+1}', key, deletion_colors)
+		red, green, blue = (int(deletion_colors[key][j:j+2], 16) for j in (0, 2, 4))
+		deleted_fill = f'rgba({red}, {green}, {blue}, 0.12)'
+		table += f'<tr><th scope="row" style="{cell_style}white-space: nowrap;">{label}</th>'
+		for gene in genes:
+			# ASCII minus also survives the image exporter's table descriptions.
+			symbol = '-' if gene in deletion else '+'
+			fill = deleted_fill if gene in deletion else '#fff'
+			table += f'<td style="{cell_style}color: #000; background-color: {fill}; '
+			table += f'font-family: monospace; font-weight: bold; font-size: 18px;">{symbol}</td>'
+		table += '</tr>'
+	table += '</table>'
+	if include_legend:
+		table += COMPLEMENTATION_LEGEND
+	return table
+
+#==========================================================
+#==========================================================
+def make_deletion_evidence(gene_order: list[str], deletions_list: list[list[str]],
+		deletion_colors: dict[str, str], evidence_format: str = 'gene-list') -> str:
+	"""Return the gene-list map or two independently exportable, wrapping evidence panels."""
+	if evidence_format == 'gene-list':
+		return make_html_table(gene_order, deletions_list, deletion_colors)
+	map_panel = '<p style="font-size: 15px; font-weight: bold; margin: 0 0 6px;">Deletion map</p>'
+	map_panel += make_html_table(gene_order, deletions_list, deletion_colors, include_legend=False)
+	panels = [map_panel, make_complementation_table(
+		gene_order, deletions_list, deletion_colors, include_legend=False)]
+	return (DELETION_MAP_LEGEND
+		+ '<div style="display: flex; flex-wrap: wrap; align-items: flex-start; '
+		'gap: 16px; color: #000; background-color: #fff;">'
+		+ ''.join('<div style="min-width: 0; max-width: 100%; overflow-x: auto;">'
+			+ panel + '</div>' for panel in panels)
+		+ '</div>' + COMPLEMENTATION_LEGEND)
 
 #==========================================================
 #==========================================================
@@ -373,7 +478,9 @@ def format_choice(gene_list: list[str]) -> str:
 
 #==========================================================
 #==========================================================
-def write_question_text(gene_order, deletions_list, deletion_colors, english_word, first_letter=False):
+def write_question_text(gene_order: list[str], deletions_list: list[list[str]],
+		deletion_colors: dict[str, str], english_word: bool, first_letter: bool = False,
+		evidence_format: str = 'gene-list', question_type: str = 'fib') -> str:
 	"""
 	Writes the question about gene order based on the original list and deletions.
 	"""
@@ -404,31 +511,39 @@ def write_question_text(gene_order, deletions_list, deletion_colors, english_wor
 	)
 	question += (
 		f"In the region, {num_deletions_word} deletions have been identified. "
-		"These deletions uncover recessive alleles of the genes as follows:</p><ul>"
 	)
 
-	# Add details for each deletion
-	for i, deletion in enumerate(deletions_list):
-		# Generate a deletion key string (e.g., "ABC")
-		deletion_key_str = ''.join(sorted(deletion))
-		deletions_word_str = list2text(deletion)
-
-		# Colorize the deletion description
-		colored_deletion = color_deletion_name(
-			f"Deletion #{i+1}: <strong>{deletions_word_str}</strong>",
-			deletion_key_str,
-			deletion_colors
+	if evidence_format == 'complementation':
+		question += (
+			"Each column of the complementation table tests a recessive mutation "
+			"in one gene against each deletion on the homologous chromosome.</p>"
 		)
-		question += f"<li>{colored_deletion}</li>"
-	# Close the deletion list
-	question += "</ul><br/>"
+	else:
+		question += "These deletions uncover recessive alleles of the genes as follows:</p><ul>"
+		for i, deletion in enumerate(deletions_list):
+			deletion_key_str = ''.join(sorted(deletion))
+			deletions_word_str = list2text(deletion)
+			colored_deletion = color_deletion_name(
+				f"Deletion #{i+1}: <strong>{deletions_word_str}</strong>",
+				deletion_key_str,
+				deletion_colors
+			)
+			question += f"<li>{colored_deletion}</li>"
+		question += "</ul><br/>"
 
 	# Add the standard requirement
-	question += (
-		f"<p><strong>Requirement</strong>: Enter your answer in the blank using only "
-		f"{num_genes_word} letters, or one comma every three (3) letters. Do not include "
-		"extra commas or spaces in your answer.</p>"
-	)
+	if evidence_format == 'gene-list':
+		question += (
+			f"<p><strong>Requirement</strong>: Enter your answer in the blank using only "
+			f"{num_genes_word} letters, or one comma every three (3) letters. Do not include "
+			"extra commas or spaces in your answer.</p>"
+		)
+	elif question_type == 'fib':
+		question += (
+			f"<p><strong>Requirement</strong>: Enter all {num_genes_word} gene letters "
+			"in order without spaces or commas. "
+			"For example, enter ABCD for the order A-B-C-D.</p>"
+		)
 
 	# Add the first-letter hint if enabled
 	if first_letter is True:

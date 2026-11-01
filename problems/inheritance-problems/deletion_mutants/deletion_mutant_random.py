@@ -2,6 +2,7 @@
 # ^^ Specifies the Python3 environment to use for script execution
 
 # Import built-in Python modules
+import argparse
 import math
 import time
 import random
@@ -120,7 +121,7 @@ assert a == deletionlib.format_choice(list("ABCDE")), "Expected correct answer n
 
 #==========================================================
 #==========================================================
-def write_question(N: int, args) -> str:
+def write_question(N: int, args: argparse.Namespace) -> object:
 	"""
 	Creates a single formatted question with various answer formats and tables.
 
@@ -130,10 +131,13 @@ def write_question(N: int, args) -> str:
 		num_choices (int): The number of multiple-choice options.
 
 	Returns:
-		str: A formatted question ready to be written to the output file.
+		object: A formatted question ready to be written to the output file.
 	"""
-	background = deletionlib.generate_background_for_deletions(args.num_genes)
-	steps = deletionlib.get_deletion_mutant_steps()
+	background = ''
+	steps = ''
+	if args.evidence_format == 'gene-list':
+		background = deletionlib.generate_background_for_deletions(args.num_genes)
+		steps = deletionlib.get_deletion_mutant_steps()
 
 	# Generate the original list of genes and the set of deleted genes
 	answer_gene_order, deletions_list = make_deletions(args.num_genes)
@@ -153,12 +157,14 @@ def write_question(N: int, args) -> str:
 	deletion_colors = {''.join(deletion): color_wheel[i] for i, deletion in enumerate(deletions_list)}
 
 	print("Making TABLE")
-	table = deletionlib.make_html_table(answer_gene_order, deletions_list, deletion_colors)
+	table = deletionlib.make_deletion_evidence(answer_gene_order, deletions_list,
+		deletion_colors, args.evidence_format)
 
 	# Create the question text based on the original and deleted genes
 	print('write_question_text()')
 	question = deletionlib.write_question_text(answer_gene_order, deletions_list,
-				deletion_colors, False, args.first_letter)
+				deletion_colors, False, args.first_letter,
+				evidence_format=args.evidence_format, question_type=args.question_type)
 
 	# Combine the question and table (if available) into the question text
 	question_text = background + steps + table + question
@@ -224,16 +230,21 @@ def main() -> None:
 	6. Print stats and status.
 	"""
 	args = parse_arguments()
+	evidence_suffix = 'complementation' if args.evidence_format == 'complementation' else None
 	outfile = bptools.make_outfile(f"{args.num_genes:02d}_genes",
-		args.question_type.upper()
+		evidence_suffix, args.question_type.upper()
 	)
 	bptools.collect_and_write_questions(write_question, args, outfile)
 
 #==========================================================
-def parse_arguments():
+def parse_arguments() -> argparse.Namespace:
 	parser = bptools.make_arg_parser(description="Generate deletion mutant questions.")
 	parser = bptools.add_choice_args(parser, default=None)
 	parser = bptools.add_difficulty_args(parser)
+	parser.add_argument(
+		'-e', '--evidence-format', choices=('gene-list', 'complementation'),
+		default='gene-list', help='show uncovered gene lists (default) or complementation results'
+	)
 	parser.add_argument(
 		'-g', '--num-genes', metavar='#', type=int, dest='num_genes',
 		help='number of deleted genes on the chromosome', default=None

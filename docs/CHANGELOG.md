@@ -2,6 +2,70 @@
 
 ## 2026-10-31
 
+### Deletion complementation evidence
+
+- Add `-e/--evidence-format complementation` to both deletion generators while preserving
+  the default gene-list questions and their filenames. Share the new matrix renderer,
+  alphabetize gene columns, and derive every plus/minus result from the same deletion data
+  as the chromosome map. Match deletion label colors and give only minus cells a pale tint
+  of their deletion's color, leaving plus cells white and both symbols black.
+- Explain complementation, wild-type phenotype, and mutant phenotype next to the results,
+  including that failure to complement means the deletion uncovers the mutation. Keep
+  existing first-gene and word/random-sequence hints, omit uncovered-gene lists and worked
+  solution steps in the new mode, and give fill-in questions explicit entry requirements.
+- Use monospace plus/minus cells with ASCII minus signs because the image exporter
+  strips Unicode minus signs from table descriptions. Preserve both outcomes in exported
+  descriptions as well as the visible diagram.
+- Place the chromosome map and complementation matrix side by side by default, using
+  the four-gene testcross's inline flex-wrap pattern. Keep legends outside the flex row,
+  wrap the panels naturally on narrow screens, and export each table independently.
+  Share the layout builder across both generators; preserve the gene-list presentation.
+
+### Deletion diagram depth
+
+- Give retained chromosome regions shaded gray surfaces, consistent irregular banding,
+  dark outlines, and gently rounded outer ends in both Python deletion generators.
+- Keep the original deletion colors and gene-column guides. Draw deleted regions as
+  thin, flat color markers within white breaks, and state explicitly that colored
+  regions mark deleted DNA while gray regions remain. Preserve deletion coverage,
+  numbered headers, color-to-list associations, and grading.
+- Add short, shaded gray flanks outside the numbered genes so terminal gene deletions
+  appear inside the chromosome. Reuse the retained-DNA renderer for both 18px flanks
+  and round only the outer chromosome ends. Refresh smoke exports without adding gene
+  positions or changing coverage, answers, or randomization.
+- Keep permanent tests focused on coverage, label/color associations, complementation
+  results, hints, and entry instructions. Leave tunable fills and layout appearance to
+  one-time rendered checks; document the shared render helpers' contracts.
+
+### Chromosome and ordered tetrad depth
+
+- Give Robertsonian and balanced-translocation chromosome diagrams gently rounded
+  outer corners, narrow upper highlights, and darker lower rims using inline styles.
+  Preserve chromosome proportions, labels, arm colors, and centromeres.
+- Add faint striping with uneven gaps and band widths beneath the cylindrical shading
+  using inline gradients. Reuse one fixed-size texture tile across all arms so repeated
+  chromosomes match in stems and choices. Keep centromere collars smooth and labels clear.
+- Share arm-cell, centromere, and chromosome-table builders across the four chromosome
+  renderers, keeping the arm-length calculations and existing calling interfaces.
+  Add focused coverage for labeled arm order, chromosome colors, and segment proportions.
+- Use the same 32px-wide, 30px-high centromere collars and pale fills in both question
+  types, over continuous chromosome-colored material so rounded corners reveal no gaps.
+  Keep Robertsonian arm labels and bold black balanced-translocation centromere numbers.
+  Share collar sizing, fill selection, shading, highlights, and lower rims. Fix arm line
+  height so host-page text cannot make arms taller than their centromeres, and preserve
+  explicit custom centromere widths.
+- Give Robertsonian gamete choices compact cell padding and explicit foreground and
+  background colors, using the shared chromosome artwork throughout.
+- Use bold black arm labels with a half-pixel white halo to keep small letterforms
+  clear over the chromosome texture. Mark balanced-translocation junctions with a thin white
+  zigzag, keeping chromosome outlines, segment lengths, and centromeres intact. Refresh
+  the smoke-test HTML, screenshots, and quiz exports with the current artwork.
+- Restore the original asymmetric droplet shape and proportions of ordered spores,
+  preserving their pinched attachment corners with restrained highlights, shading,
+  and thin outlines. Draw each ascus as an elongated, tapered sac with a curved basal
+  end, asymmetric rounded tip, and modest wall clearance. Keep spore proportions stable
+  at narrow widths and preserve all eight spores, allele order, colors, counts, and grading.
+
 ### Fly phenotype display
 
 - Redraw eery with four lower wings and two bent upper legs in the shared SVG portrait.

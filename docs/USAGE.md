@@ -114,6 +114,31 @@ The filenames encode pedigree to pattern, pattern to pedigree, and matching in b
 Prebuilt-bank generation and source-selection flags are retired.
 See [PEDIGREE_PIPELINE.md](../problems/inheritance-problems/pedigrees/PEDIGREE_PIPELINE.md).
 
+## Deletion mapping evidence
+
+[deletion_mutant_random.py](../problems/inheritance-problems/deletion_mutants/deletion_mutant_random.py)
+and [deletion_mutant_words.py](../problems/inheritance-problems/deletion_mutants/deletion_mutant_words.py)
+retain their gene-list presentation by default. Add `-e complementation` (or
+`--evidence-format complementation`) to replace uncovered-gene lists with an experimental
+matrix beside the numbered chromosome map, wrapping below it when space is limited:
+
+```bash
+source source_me.sh
+python3 problems/inheritance-problems/deletion_mutants/deletion_mutant_random.py -g 6 -e complementation --mc -d 5 -B -I --selftest
+python3 problems/inheritance-problems/deletion_mutants/deletion_mutant_words.py -g 6 -e complementation --fib -d 5 --selftest
+```
+
+Gene columns are alphabetical. `+` means complementation and a wild-type phenotype;
+the minus sign means failure to complement and a mutant phenotype: the deletion uncovers
+the mutation. Deletion row colors match the chromosome map. Minus cells have a pale tint
+of that deletion's color; plus cells remain white, and both symbols stay black. The map and matrix
+use the same wrapping flex layout as the four-gene testcross problem. Each table exports as a
+separate image, preserving the wrapping layout and independent scaling on narrow screens.
+
+The new banks include `complementation` in their filenames; default filenames are unchanged.
+Existing `-F` / `-N` first-gene hints and word/random-sequence hints still apply. Uncovered
+gene lists are omitted from complementation questions so students must interpret the results.
+
 ## Genetic code translation
 
 [translate_genetic_code.py](../problems/molecular_biology-problems/translate_genetic_code.py)
