@@ -165,7 +165,8 @@ def main():
 	questions = bptools.collect_question_batches(write_question_batch, args)
 	bptools.write_questions_to_file(
 		questions, outfile, args.bbexport, args.html_to_image,
-		selftest=args.selftest, open_selftest=args.open_selftest)
+		selftest=args.selftest, open_selftest=args.open_selftest,
+		image_scale=args.image_scale, image_scale_supplied=args.image_scale_supplied)
 
 
 #===============================

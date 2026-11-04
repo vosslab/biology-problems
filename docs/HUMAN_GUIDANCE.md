@@ -1,5 +1,10 @@
 # Human guidance
 
+- 2026-11-04: Keep explicit image-scale forwarding in generators that render tables or molecules;
+  text-only generators do not need override plumbing.
+
+- 2026-11-04: Prefer a one-letter CLI flag alongside longer argument names.
+
 <!-- VENDORED HEADER: START -->
 Record the durable guidance Neil Voss states, or approves for preservation here, in his own words:
 first person or close paraphrase, one to three lines per bullet. Material he supplies as a source
@@ -50,3 +55,5 @@ Authoring rules and examples: [BB_ULTRA_STYLE.md](BB_ULTRA_STYLE.md).
   from Blackboard question markup.
 - Use as few HTML elements as possible; Blackboard may not render complex markup as expected.
   Tables are an exception because they are converted to images before import.
+- QPM image conversion uses one default: 4x for tables and RDKit canvases. Expose a shared
+  positive integer `--image-scale` option for callers that need a different pixel density.

@@ -1,6 +1,25 @@
 # Changelog
 
+## 2026-11-04
+
+### Additions and New Features
+
+- Add `-Z` as the short alias for `--image-scale`, matching both QPM converters and bptools.
+
+### Fixes and Maintenance
+
+- Remove unnecessary image-scale forwarding from five text-only generators. Retain overrides
+  in the peptide and YAML matching builders that handle molecular drawings or tables.
+
+- Synchronized shared style guides, tests, and repository support files from the starter template.
+
 ## 2026-11-01
+
+### Behavior or Interface Changes
+
+- Add `--image-scale` to bptools Blackboard image exports. PNG conversion now defaults to 4x
+  for tables and RDKit canvases; callers can select another positive integer scale while retaining
+  the rendered image's displayed dimensions.
 
 ### Fixes
 

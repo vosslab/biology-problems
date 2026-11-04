@@ -158,17 +158,41 @@ def test_add_hint_args_default_and_flags():
 	assert args.hint is True
 
 
-def test_shared_parser_retains_legacy_opt_ins():
+@pytest.mark.parametrize("scale_option", ["--image-scale", "-Z"])
+def test_shared_parser_retains_legacy_opt_ins(scale_option):
 	parser = bptools.make_arg_parser()
 	default_args = parser.parse_args([])
-	legacy_args = parser.parse_args(["--hidden-terms", "--noclick-div", "-B", "-I"])
+	legacy_args = parser.parse_args([
+		"--hidden-terms", "--noclick-div", "-B", "-I", scale_option, "2",
+	])
 	assert default_args.html_to_image is False
+	assert default_args.image_scale == 4
+	assert default_args.image_scale_supplied is False
 	assert (
 		legacy_args.hidden_terms,
 		legacy_args.noclick_div,
 		legacy_args.bbexport,
 		legacy_args.html_to_image,
-	) == (True, True, True, True)
+		legacy_args.image_scale,
+	) == (True, True, True, True, 2)
+	assert legacy_args.image_scale_supplied is True
+
+
+@pytest.mark.parametrize("value", ["0", "-1", "not-a-number"])
+def test_image_scale_rejects_invalid_cli_values(value):
+	parser = bptools.make_arg_parser()
+	with pytest.raises(SystemExit):
+		parser.parse_args(["--image-scale", value])
+
+
+def test_explicit_image_scale_requires_image_export_before_generation(tmp_path):
+	parser = bptools.make_arg_parser()
+	args = parser.parse_args(["--image-scale", "4"])
+
+	with pytest.raises(ValueError, match="--image-scale requires -I"):
+		bptools.collect_and_write_questions(
+			lambda *_args: pytest.fail("Question generation must not start"), args,
+			tmp_path / "bbq-image-questions.txt")
 
 
 def test_generator_anticheat_locks_override_legacy_opt_ins(monkeypatch):
@@ -250,9 +274,24 @@ def test_blackboard_export_passes_html_to_image_to_package_maker(tmp_path, monke
 	bbq_path.write_text("MC\tQuestion?\tNo\tincorrect\tYes\tcorrect\n")
 	monkeypatch.setattr(bptools.package_interface, "QTIPackageInterface", FakePacker)
 
-	bptools.export_bbq_to_blackboard(bbq_path, html_to_image=True)
+	bptools.export_bbq_to_blackboard(bbq_path, html_to_image=True, image_scale=2)
 
-	assert FakePacker.save_calls == [("blackboard_export_zip", {"html_to_image": True})]
+	assert FakePacker.save_calls == [(
+		"blackboard_export_zip", {"html_to_image": True, "image_scale": 2},
+	)]
+
+
+@pytest.mark.parametrize("image_scale", [0, -1, True, "4"])
+def test_image_export_rejects_invalid_scale_before_writing(tmp_path, image_scale):
+	with pytest.raises(ValueError, match="positive integer"):
+		bptools.write_questions_to_file(
+			["MC\\tQuestion?\\tNo\\tincorrect\\tYes\\tcorrect\\n"],
+			tmp_path / "bbq-image-questions.txt",
+			bbexport=True,
+			html_to_image=True,
+			image_scale=image_scale,
+		)
+	assert list(tmp_path.iterdir()) == []
 
 
 @pytest.mark.parametrize("missing_browser", [True, False])

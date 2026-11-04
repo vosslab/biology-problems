@@ -125,6 +125,12 @@ def add_bbexport_args(parser: argparse.ArgumentParser) -> argparse.ArgumentParse
 	)
 	parser.set_defaults(html_to_image=False)
 	parser.add_argument(
+		'-Z', '--image-scale', dest='image_scale', action=_ImageScaleAction, type=_positive_image_scale,
+		default=4,
+		help='Render packaged PNGs at this pixel scale (default: 4; requires -I).'
+	)
+	parser.set_defaults(image_scale_supplied=False)
+	parser.add_argument(
 		'--selftest', action='store_true',
 		help='Also save an HTML self-test of one randomly selected question.'
 	)
@@ -133,6 +139,32 @@ def add_bbexport_args(parser: argparse.ArgumentParser) -> argparse.ArgumentParse
 		help='Save an HTML self-test and open it in the default browser.'
 	)
 	return parser
+
+#==========================
+def _positive_image_scale(value: str) -> int:
+	"""Parse the positive raster scale used by HTML-to-image conversion."""
+	try:
+		scale = int(value)
+	except ValueError as error:
+		raise argparse.ArgumentTypeError('image scale must be a positive integer') from error
+	if scale < 1:
+		raise argparse.ArgumentTypeError('image scale must be a positive integer')
+	return scale
+
+#==========================
+class _ImageScaleAction(argparse.Action):
+	"""Record explicit scale selection so it cannot silently do nothing."""
+
+	def __call__(self, parser, namespace, value, option_string=None) -> None:
+		setattr(namespace, self.dest, value)
+		setattr(namespace, 'image_scale_supplied', True)
+
+#==========================
+def _validate_image_scale(image_scale: int) -> None:
+	"""Reject invalid scale values before a PNG render can allocate pixels."""
+	# ASVS 2.2.1: accept only positive integer scale factors at this boundary.
+	if not isinstance(image_scale, int) or isinstance(image_scale, bool) or image_scale < 1:
+		raise ValueError('image scale must be a positive integer')
 
 #==========================
 def _get_git_root(path=None):
@@ -951,7 +983,8 @@ def _validate_blackboard_export_zip(export_path: str) -> None:
 #==========================
 def export_bbq_to_blackboard(
 		outfile: str | os.PathLike,
-		html_to_image: bool = False) -> str:
+		html_to_image: bool = False,
+		*, image_scale: int = 4) -> str:
 	"""
 	Convert a BBQ text file into an adjacent Blackboard pool export ZIP.
 
@@ -959,6 +992,7 @@ def export_bbq_to_blackboard(
 	temporary adjacent path and replaces the destination only after validation.
 	When requested, all HTML tables and RDKit canvases become packaged PNGs.
 	"""
+	_validate_image_scale(image_scale)
 	outfile_path, export_path, package_name = _get_blackboard_export_path(outfile)
 	if os.path.isfile(outfile_path) is False:
 		raise FileNotFoundError(f"BBQ input file not found: {outfile_path}")
@@ -994,7 +1028,10 @@ def export_bbq_to_blackboard(
 	os.close(temporary_fd)
 	# ASVS 16.5.3: publish only after conversion and validation both succeed.
 	try:
-		engine_options = {"html_to_image": True} if html_to_image else None
+		engine_options = (
+			{"html_to_image": True, "image_scale": image_scale}
+			if html_to_image else None
+		)
 		saved_path = qti_packer.save_package(
 			"blackboard_export_zip",
 			temporary_path,
@@ -1048,8 +1085,11 @@ def export_bbq_to_selftest(outfile: str | os.PathLike, open_browser: bool = Fals
 	return export_path
 
 #==========================
-def _check_image_export(bbexport: bool, html_to_image: bool) -> None:
+def _check_image_export(
+		bbexport: bool, html_to_image: bool, image_scale_supplied: bool = False) -> None:
 	"""Fail before generation or writing when image export cannot launch Chromium."""
+	if image_scale_supplied and not html_to_image:
+		raise ValueError('--image-scale requires -I or --html-to-image.')
 	if not html_to_image:
 		return
 	if not bbexport:
@@ -1075,7 +1115,8 @@ def _write_questions_to_file(
 		bbexport: bool = False,
 		html_to_image: bool = False,
 		selftest: bool = False,
-		open_selftest: bool = False) -> None:
+		open_selftest: bool = False,
+		*, image_scale: int = 4, image_scale_supplied: bool = False) -> None:
 	"""
 	Write questions to a file and print status messages.
 
@@ -1084,6 +1125,7 @@ def _write_questions_to_file(
 		outfile (str): Output filename.
 		bbexport (bool): Also create a Blackboard pool export ZIP.
 		html_to_image (bool): Convert all HTML tables and RDKit canvases to packaged PNGs.
+		image_scale (int): Pixel scale for packaged PNGs when html_to_image is enabled.
 		selftest (bool): Also save one random question as an HTML self-test.
 		open_selftest (bool): Save the self-test and open it in the default browser.
 	"""
@@ -1108,7 +1150,7 @@ def _write_questions_to_file(
 		return
 	from playwright.sync_api import Error
 	try:
-		export_bbq_to_blackboard(outfile, html_to_image=True)
+		export_bbq_to_blackboard(outfile, html_to_image=True, image_scale=image_scale)
 	except Error as error:
 		if "Executable doesn't exist" not in str(error):
 			raise
@@ -1127,15 +1169,19 @@ def write_questions_to_file(
 		bbexport: bool = False,
 		html_to_image: bool = False,
 		selftest: bool = False,
-		open_selftest: bool = False) -> None:
+		open_selftest: bool = False,
+		*, image_scale: int = 4, image_scale_supplied: bool = False) -> None:
 	"""
 	Public wrapper for writing questions to a file.
 
 	Prefer `collect_and_write_questions(...)` in scripts.
 	"""
-	_check_image_export(bbexport, html_to_image)
+	if html_to_image:
+		_validate_image_scale(image_scale)
+	_check_image_export(bbexport, html_to_image, image_scale_supplied)
 	return _write_questions_to_file(
-		questions, outfile, bbexport, html_to_image, selftest, open_selftest)
+		questions, outfile, bbexport, html_to_image, selftest, open_selftest,
+		image_scale=image_scale, image_scale_supplied=image_scale_supplied)
 
 #==========================
 def collect_and_write_questions(write_question, args, outfile, print_histogram_flag=True) -> list:
@@ -1151,15 +1197,21 @@ def collect_and_write_questions(write_question, args, outfile, print_histogram_f
 	Returns:
 		list: List of question strings.
 	"""
-	_check_image_export(args.bbexport, getattr(args, 'html_to_image', False))
+	html_to_image = getattr(args, 'html_to_image', False)
+	image_scale = getattr(args, 'image_scale', 4)
+	image_scale_supplied = getattr(args, 'image_scale_supplied', False)
+	if html_to_image:
+		_validate_image_scale(image_scale)
+	_check_image_export(args.bbexport, html_to_image, image_scale_supplied)
 	questions = _collect_questions(write_question, args, print_histogram_flag)
 	_write_questions_to_file(
 		questions,
 		outfile,
 		args.bbexport,
-		getattr(args, 'html_to_image', False),
+		html_to_image,
 		getattr(args, 'selftest', False),
 		getattr(args, 'open_selftest', False),
+		image_scale=image_scale, image_scale_supplied=image_scale_supplied,
 	)
 	return questions
 

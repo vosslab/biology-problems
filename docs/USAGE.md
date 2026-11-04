@@ -30,6 +30,8 @@ Add `-I` when the Blackboard ZIP must convert every HTML table into packaged PNG
 python3 problems/dna_profiling-problems/blood_type_agglutination_test.py -d 5 -B -I
 ```
 
+PNG conversion defaults to 4x resolution. Use `--image-scale 2` when a smaller package is needed.
+
 To test a question immediately in your default browser:
 
 ```bash
@@ -263,6 +265,7 @@ Generators built on `bptools` share a common argument set (see any script's
 - `-O`, `--open-selftest`: save the HTML self-test and open it in your default browser.
 - `-B`, `--bbexport`: also create a Blackboard pool export ZIP.
 - `-I`, `--html-to-image`: convert every HTML table and RDKit canvas to packaged PNGs in a `-B` ZIP.
+- `--image-scale N`: render PNGs at positive integer scale `N` (default: 4; requires `-I`).
 - `--hidden-terms`: enable hidden decoy terms for Blackboard Learn Original.
 - `--noclick-div`: enable the no-click wrapper for Blackboard Learn Original.
 - `-h`, `--help`: show the full flag list for that script.
@@ -294,7 +297,8 @@ manifest and pool data. A failed conversion retains the BBQ text for diagnosis a
 temporary ZIP.
 
 `-I` is opt-in and requires `-B`. It uses `qti-package-maker` to screenshot every HTML table
-and RDKit canvases, then embeds the resulting PNGs in the Blackboard ZIP. It requires the Python
+and RDKit canvas at 4x resolution by default, then embeds the resulting PNGs in the Blackboard ZIP.
+`--image-scale` changes pixel density while preserving the image's displayed dimensions. It requires the Python
 `playwright` package and its Chromium browser; after installing package dependencies, run
 `playwright install chromium`. Nested tables are included in the outer table's image. Missing RDKit only affects banks
 that contain RDKit canvases.
@@ -352,3 +356,5 @@ FiB accepts optional commas every three bases; prime mode also accepts direction
 ## Known gaps
 
 - [ ] Confirm which generators expose a `--dry-run` flag, if any.
+
+Image density also accepts the short option `-Z 2` (equivalent to `--image-scale 2`).
