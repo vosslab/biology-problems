@@ -8,6 +8,9 @@
 
 ### Fixes and Maintenance
 
+- Move the six assessment-specific split banks for hypothesis-testing terms, genetics terminology,
+  and Mendelian genetics terms into exam-formatting-tools under `task_files/matching_sets/`.
+  Retain the full reusable banks here; local copies record their sources for review before reuse.
 - Remove unnecessary image-scale forwarding from five text-only generators. Retain overrides
   in the peptide and YAML matching builders that handle molecular drawings or tables.
 
