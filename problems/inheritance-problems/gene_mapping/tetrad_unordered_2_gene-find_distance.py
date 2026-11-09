@@ -78,7 +78,7 @@ def get_question_footer_steps():
 	return steps
 
 #====================================
-def construct_progeny_counts(distance: int, progeny_size_int: int) -> dict:
+def construct_progeny_counts(distance: float, progeny_size_int: int) -> dict | None:
 	"""
 	Constructs a dictionary with counts of different progeny types (Parental Ditype, Tetratype,
 	and Non-Parental Ditype) based on the given genetic distance.
@@ -88,10 +88,7 @@ def construct_progeny_counts(distance: int, progeny_size_int: int) -> dict:
 		progeny_size_int (int): Total number of progeny (tetrads) to simulate.
 
 	Returns:
-		dict: A dictionary with counts for 'pd' (Parental Ditype), 'tt' (Tetratype), and 'npd' (Non-Parental Ditype).
-
-	Raises:
-		ValueError: If the criteria for gene distances are not met.
+		dict | None: Counts for 'pd', 'tt', and 'npd', or None to request another problem.
 	"""
 	# For "linked" questions, it represents the distance between two genes.
 
@@ -121,7 +118,7 @@ def construct_progeny_counts(distance: int, progeny_size_int: int) -> dict:
 		return None
 
 	if tetratype_count > parental_ditype_count:
-		raise ValueError(f"tetratype_count > parental_ditype_count: {tetratype_count} > {parental_ditype_count}")
+		# Reject this draw so collection can try another problem.
 		return None
 
 	# Return a dictionary with counts for each progeny type.

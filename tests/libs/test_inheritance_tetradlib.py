@@ -66,3 +66,13 @@ def test_tetradlib_all_ditypes_small():
 	tetradlib.debug = False
 	all_ditypes = tetradlib.get_all_ditype_tetrads("ab")
 	assert len(all_ditypes) == 2
+
+
+def test_two_gene_distance_skips_ambiguous_parental_counts() -> None:
+	generator = import_from_repo_path(
+		"problems/inheritance-problems/gene_mapping/tetrad_unordered_2_gene-find_distance.py"
+	)
+	assert generator.construct_progeny_counts(32, 1200) is None
+	counts = generator.construct_progeny_counts(20, 1200)
+	assert sum(counts.values()) == 1200
+	assert (counts['tt'] / 2 + 3 * counts['npd']) * 100 / 1200 == 20

@@ -4,6 +4,9 @@
 
 ### Fixes and Maintenance
 
+- Skip two-gene unordered-tetrad distance draws with more tetratypes than parental ditypes
+  instead of raising an exception. The existing question collector draws a replacement so one
+  unsuitable problem no longer aborts generation or the website build.
 - Refocus the question color guide on concept recognition, selective highlighting, and
   coordinated palettes, retaining explanatory examples and practical palette subsets. Treat
   cross-bank consistency and four-term hue spacing as flexible guidance. Move YAML implementation
