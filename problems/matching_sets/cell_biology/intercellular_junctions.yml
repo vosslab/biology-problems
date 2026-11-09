@@ -41,12 +41,13 @@ matching pairs:
   - connections formed by cells that fuse together so that a relatively impermeable
     barrier is created
 replacement_rules:
-  collection of protein channels: '<span style="color: #7b7737;">collection of protein
-    channels</span>' #OLIVE BROWN
-  between cells: '<span style="color: #598231;">between cells</span>' #OLIVE GREEN
-  two adjacent cells: '<span style="color: #3E3EC4;">two adjacent cells</span>' #INDIGO BLUE
-  membranes: '<span style="color: #793AAA;">membranes</span>' #VIOLET
-  cell walls: '<span style="color: #b45918;">cell walls</span>' #RUST
+  # Original color rules retained for restoration:
+  #   collection of protein channels: '<span style="color: #7b7737;">collection of protein
+  #     channels</span>' #OLIVE BROWN
+  #   between cells: '<span style="color: #598231;">between cells</span>' #OLIVE GREEN
+  #   two adjacent cells: '<span style="color: #3E3EC4;">two adjacent cells</span>' #INDIGO BLUE
+  #   membranes: '<span style="color: #793AAA;">membranes</span>' #VIOLET
+  #   cell walls: '<span style="color: #b45918;">cell walls</span>' #RUST
   desmosome: '<span style="color: #d40000;">desmosome</span>' #RED
   gap junction: '<span style="color: #b74300;">gap junction</span>' #DARK ORANGE
   plasmodesmata: '<span style="color: #935d00;">plasmodesmata</span>' #LIGHT ORANGE

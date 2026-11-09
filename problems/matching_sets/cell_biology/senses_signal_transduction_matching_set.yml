@@ -74,4 +74,21 @@ exclude pairs:
   - cGMP
 - - CNG channel (olfactory)
   - CNG channel (rod outer segment)
+replacement_rules:
+  Olfactory receptor (GPCR): '<span style="color: #A0303A;">Olfactory receptor (GPCR)</span>'
+  G<sub>olf</sub>: '<span style="color: #993E11;">G<sub>olf</sub></span>'
+  Adenylyl cyclase (AC3): '<span style="color: #884E00;">Adenylyl cyclase (AC3)</span>'
+  cAMP: '<span style="color: #775800;">cAMP</span>'
+  CNG channel (olfactory): '<span style="color: #656100;">CNG channel (olfactory)</span>'
+  Gustducin: '<span style="color: #4B6920;">Gustducin</span>'
+  Phospholipase C-&beta;2 (PLC-&beta;2): '<span style="color: #286E3E;">Phospholipase C-&beta;2 (PLC-&beta;2)</span>'
+  IP<sub>3</sub>: '<span style="color: #006E59;">IP<sub>3</sub></span>'
+  TRPM5: '<span style="color: #006B6D;">TRPM5</span>'
+  Rhodopsin: '<span style="color: #00697E;">Rhodopsin</span>'
+  Transducin: '<span style="color: #186490;">Transducin</span>'
+  Phosphodiesterase 6 (PDE6): '<span style="color: #315DA4;">Phosphodiesterase 6 (PDE6)</span>'
+  cGMP: '<span style="color: #4F49C6;">cGMP</span>'
+  CNG channel (rod outer segment): '<span style="color: #7342A6;">CNG channel (rod outer segment)</span>'
+  Tip link (hair cell bundle): '<span style="color: #8E3090;">Tip link (hair cell bundle)</span>'
+  Mechanotransduction channel (hair cell MET channel): '<span style="color: #943864;">Mechanotransduction channel (hair cell MET channel)</span>'
 dbsubject: Cell Biology

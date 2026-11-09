@@ -16,8 +16,8 @@ replacement_rules:
   decrease: '<span style="color: #990000;">decrease</span>'
   reduce: '<span style="color: #990000;">reduce</span>'
   lower: '<span style="color: #990000;">lower</span>'
-  alter: '<span style="color: #000099;">alter</span>'
-  change: '<span style="color: #000099;">change</span>'
+#   alter: '<span style="color: #000099;">alter</span>'
+#   change: '<span style="color: #000099;">change</span>'
 connection_words: null
 true_statements:
   truth2a: enzymes cannot change the standard free energy (&Delta;G&deg;&prime;) of

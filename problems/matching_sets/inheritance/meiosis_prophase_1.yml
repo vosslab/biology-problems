@@ -4,19 +4,20 @@ keys description: stages of meiosis prophase I
 value description: partial description
 values description: partial descriptions
 replacement_rules:
-  AAAAAAAA: '<span style="color: #d40000;">AAAAAAAA</span>' #RED
+  # Original color rules retained for restoration:
+  #   AAAAAAAA: '<span style="color: #d40000;">AAAAAAAA</span>' #RED
+  #   CCCCCCCC: '<span style="color: #935d00;">CCCCCCCC</span>' #LIGHT ORANGE
+  #   DDDDDDDD: '<span style="color: #6c6c00;">DDDDDDDD</span>' #DARK YELLOW
+  #   EEEEEEEE: '<span style="color: #3b7600;">EEEEEEEE</span>' #LIME GREEN
+  #   FFFFFFFF: '<span style="color: #007a00;">FFFFFFFF</span>' #GREEN
+  #   HHHHHHHH: '<span style="color: #007576;">HHHHHHHH</span>' #CYAN
+  #   IIIIIIII: '<span style="color: #076dad;">IIIIIIII</span>' #SKY BLUE
+  #   JJJJJJJJ: '<span style="color: #003fff;">JJJJJJJJ</span>' #BLUE
+  #   LLLLLLLL: '<span style="color: #a719db;">LLLLLLLL</span>' #PURPLE
+  #   MMMMMMMM: '<span style="color: #c80085;">MMMMMMMM</span>' #MAGENTA
   Leptotene: '<span style="color: #b74300;">Leptotene</span>' #DARK ORANGE
-  CCCCCCCC: '<span style="color: #935d00;">CCCCCCCC</span>' #LIGHT ORANGE
-  DDDDDDDD: '<span style="color: #6c6c00;">DDDDDDDD</span>' #DARK YELLOW
-  EEEEEEEE: '<span style="color: #3b7600;">EEEEEEEE</span>' #LIME GREEN
-  FFFFFFFF: '<span style="color: #007a00;">FFFFFFFF</span>' #GREEN
   Zygotene: '<span style="color: #00775f;">Zygotene</span>' #TEAL
-  HHHHHHHH: '<span style="color: #007576;">HHHHHHHH</span>' #CYAN
-  IIIIIIII: '<span style="color: #076dad;">IIIIIIII</span>' #SKY BLUE
-  JJJJJJJJ: '<span style="color: #003fff;">JJJJJJJJ</span>' #BLUE
   Pachytene, early or late: '<span style="color: #0067cc;">Pachytene, early or late</span>' #NAVY
-  LLLLLLLL: '<span style="color: #a719db;">LLLLLLLL</span>' #PURPLE
-  MMMMMMMM: '<span style="color: #c80085;">MMMMMMMM</span>' #MAGENTA
   Diplotene or Diakinesis, combined: '<span style="color: #cc0066;">Diplotene or Diakinesis,
     combined</span>' #PINK
 matching pairs:

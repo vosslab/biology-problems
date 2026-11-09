@@ -23,4 +23,7 @@ matching pairs:
   - studies which enzymes are present and active
   - studies which biological catalysts are present and active
 exclude pairs: null
+replacement_rules:
+  Metabolomics: '<span style="color: #D40000;">Metabolomics</span>'
+  Proteomics: '<span style="color: #003FFF;">Proteomics</span>'
 dbsubject: Biotechnology

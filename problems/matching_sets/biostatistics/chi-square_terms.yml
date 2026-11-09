@@ -4,17 +4,24 @@ keys description: chi2 terms
 value description: definition
 values description: definitions
 replacement_rules:
-  f2supp: '<span style="color: #eb1601;">fail to support</span>' #BRIGHT RED
-  supported: '<span style="color: #4d8426;">supported</span>' #LEAF GREEN
-  support: '<span style="color: #4d8426;">support</span>' #LEAF GREEN
-  c2s: '<span style="color: #935d00;">chi-square statistic (&chi;<sup>2</sup>)</span>'
+  # f2supp: '<span style="color: #eb1601;">fail to support</span>' #BRIGHT RED
+  f2supp: fail to support
+  # supported: '<span style="color: #4d8426;">supported</span>' #LEAF GREEN
+  # support: '<span style="color: #4d8426;">support</span>' #LEAF GREEN
+  # c2s: '<span style="color: #935d00;">chi-square statistic (&chi;<sup>2</sup>)</span>'
+  c2s: '<span style="color: #00775f;">chi-square statistic (&chi;<sup>2</sup>)</span>'
   chi2: 'chi-square (&chi;<sup>2</sup>)'
-  p-value: '<span style="color: #C21460;">p-value</span>' #RASPBERRY
-  losa: '<span style="color: #8601af;">level of significance (&alpha;)</span>'
-  critval: '<span style="color: #4424D6;">critical value</span>' #VIOLET BLUE
-  nullhyp: '<span style="color: #0247fe;">null hypothesis (H<sub>0</sub>)</span>'
+  # p-value: '<span style="color: #C21460;">p-value</span>' #RASPBERRY
+  p-value: '<span style="color: #c80085;">p-value</span>'
+  # losa: '<span style="color: #8601af;">level of significance (&alpha;)</span>'
+  losa: '<span style="color: #a719db;">level of significance (&alpha;)</span>'
+  # critval: '<span style="color: #4424D6;">critical value</span>' #VIOLET BLUE
+  critval: '<span style="color: #003fff;">critical value</span>'
+  # nullhyp: '<span style="color: #0247fe;">null hypothesis (H<sub>0</sub>)</span>'
+  nullhyp: '<span style="color: #49358c;">null hypothesis (H<sub>0</sub>)</span>'
   althyp: '<span style="color: #b74300;">alternative hypothesis (H<sub>a</sub>)</span>'
-  dof: '<span style="color: #687f19;">degrees of freedom</span>' #OLIVE
+  # dof: '<span style="color: #687f19;">degrees of freedom</span>' #OLIVE
+  dof: '<span style="color: #6c6c00;">degrees of freedom</span>'
 matching pairs:
   critval:
   - found in a table for a given degrees of freedom and losa

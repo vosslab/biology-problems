@@ -4,12 +4,41 @@ keys description: genetic disorders
 value description: description
 values description: descriptions
 replacement_rules:
-  disorders: '<span style="color: #d40000;">disorders</span>'
-  disorder: '<span style="color: #d40000;">disorder</span>' #RED
-  genetic: '<span style="color: #b74300;">genetic</span>' #DARK ORANGE
-  metabolic: '<span style="color: #935d00;">metabolic</span>' #LIGHT ORANGE
-  chromosomes: '<span style="color: #6c6c00;">chromosomes</span>' #DARK YELLOW
-  chromosome: '<span style="color: #6c6c00;">chromosome</span>' #DARK YELLOW
+  # Original color rules retained for restoration:
+  #   disorders: '<span style="color: #d40000;">disorders</span>'
+  #   disorder: '<span style="color: #d40000;">disorder</span>' #RED
+  #   genetic: '<span style="color: #b74300;">genetic</span>' #DARK ORANGE
+  #   metabolic: '<span style="color: #935d00;">metabolic</span>' #LIGHT ORANGE
+  #   chromosomes: '<span style="color: #6c6c00;">chromosomes</span>' #DARK YELLOW
+  #   chromosome: '<span style="color: #6c6c00;">chromosome</span>' #DARK YELLOW
+  chromosomes: '<span style="color: #703FB1;">chromosomes</span>'
+  chromosome: '<span style="color: #703FB1;">chromosome</span>'
+  Achondroplasia: '<span style="color: #A0313C;">Achondroplasia</span>'
+  Beta-Thalassemia: '<span style="color: #A1331D;">Beta-Thalassemia</span>'
+  Cystic fibrosis: '<span style="color: #924419;">Cystic fibrosis</span>'
+  Duchenne muscular dystrophy: '<span style="color: #8A4C0A;">Duchenne muscular dystrophy</span>'
+  Fragile X syndrome: '<span style="color: #7D5417;">Fragile X syndrome</span>'
+  Galactosemia: '<span style="color: #775800;">Galactosemia</span>'
+  Hemophilia: '<span style="color: #6C5E02;">Hemophilia</span>'
+  Huntington's disease: '<span style="color: #5F631B;">Huntington''s disease</span>'
+  Maple syrup urine disease: '<span style="color: #4C690D;">Maple syrup urine disease</span>'
+  Marfan syndrome: '<span style="color: #336D26;">Marfan syndrome</span>'
+  Phenylketonuria: '<span style="color: #296D42;">Phenylketonuria</span>'
+  Sickle-cell anemia: '<span style="color: #1F6D53;">Sickle-cell anemia</span>'
+  Tay-Sachs disease: '<span style="color: #166C60;">Tay-Sachs disease</span>'
+  Angelman syndrome: '<span style="color: #006C6C;">Angelman syndrome</span>'
+  Prader-Willi syndrome: '<span style="color: #006A76;">Prader-Willi syndrome</span>'
+  Cri du chat syndrome: '<span style="color: #006882;">Cri du chat syndrome</span>'
+  DiGeorge syndrome: '<span style="color: #00668F;">DiGeorge syndrome</span>'
+  Down syndrome: '<span style="color: #296294;">Down syndrome</span>'
+  Edwards syndrome: '<span style="color: #215BB2;">Edwards syndrome</span>'
+  Klinefelter syndrome: '<span style="color: #4152BA;">Klinefelter syndrome</span>'
+  Patau syndrome: '<span style="color: #5A45C3;">Patau syndrome</span>'
+  Triple X syndrome: '<span style="color: #803A9C;">Triple X syndrome</span>'
+  Turner syndrome: '<span style="color: #8C3588;">Turner syndrome</span>'
+  WAGR syndrome: '<span style="color: #92376F;">WAGR syndrome</span>'
+  Wolf-Hirschhorn syndrome: '<span style="color: #993558;">Wolf-Hirschhorn syndrome</span>'
+  Philadelphia chromosome: '<span style="color: #A22F35;">Philadelphia chromosome</span>'
 matching pairs:
   Achondroplasia:
   - impairs the growth of bone in the limbs and causes abnormal growth in the spine

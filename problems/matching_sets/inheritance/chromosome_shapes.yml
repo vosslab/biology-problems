@@ -4,22 +4,26 @@ keys description: categories of chromosome shape
 value description: shape description
 values description: shape descriptions
 replacement_rules:
-  Acentric: '<span style="color: #d40000;">Acentric</span>' #RED
-  centromeres: '<span style="color: #b74300;">centromeres</span>' #DARK ORANGE
-  centromere: '<span style="color: #b74300;">centromere</span>' #DARK ORANGE
-  CCCCCCCC: '<span style="color: #935d00;">CCCCCCCC</span>' #LIGHT ORANGE
-  DDDDDDDD: '<span style="color: #6c6c00;">DDDDDDDD</span>' #DARK YELLOW
-  EEEEEEEE: '<span style="color: #3b7600;">EEEEEEEE</span>' #LIME GREEN
+  # Original color rules retained for restoration:
+  #   Acentric: '<span style="color: #d40000;">Acentric</span>' #RED
+  #   centromeres: '<span style="color: #b74300;">centromeres</span>' #DARK ORANGE
+  #   centromere: '<span style="color: #b74300;">centromere</span>' #DARK ORANGE
+  #   CCCCCCCC: '<span style="color: #935d00;">CCCCCCCC</span>' #LIGHT ORANGE
+  #   DDDDDDDD: '<span style="color: #6c6c00;">DDDDDDDD</span>' #DARK YELLOW
+  #   EEEEEEEE: '<span style="color: #3b7600;">EEEEEEEE</span>' #LIME GREEN
+  #   GGGGGGGG: '<span style="color: #00775f;">GGGGGGGG</span>' #TEAL
+  #   HHHHHHHH: '<span style="color: #007576;">HHHHHHHH</span>' #CYAN
+  #   KkKKKKKKK: '<span style="color: #003fff;">KkKKKKKKK</span>' #BLUE
+  #   Metacentric: '<span style="color: #0067cc;">Metacentric</span>' #NAVY
+  #   chromosomes: '<span style="color: #a719db;">chromosomes</span>' #PURPLE
+  #   chromosome: '<span style="color: #a719db;">chromosome</span>' #PURPLE
+  #   Submetacentric: '<span style="color: #c80085;">Submetacentric</span>' #MAGENTA
+  #   NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
   Acrocentric: '<span style="color: #007a00;">Acrocentric</span>' #GREEN
-  GGGGGGGG: '<span style="color: #00775f;">GGGGGGGG</span>' #TEAL
-  HHHHHHHH: '<span style="color: #007576;">HHHHHHHH</span>' #CYAN
   Dicentric: '<span style="color: #076dad;">Dicentric</span>' #SKY BLUE
-  KkKKKKKKK: '<span style="color: #003fff;">KkKKKKKKK</span>' #BLUE
-  Metacentric: '<span style="color: #0067cc;">Metacentric</span>' #NAVY
-  chromosomes: '<span style="color: #a719db;">chromosomes</span>' #PURPLE
-  chromosome: '<span style="color: #a719db;">chromosome</span>' #PURPLE
-  Submetacentric: '<span style="color: #c80085;">Submetacentric</span>' #MAGENTA
-  NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
+  Acentric: '<span style="color: #d40000;">Acentric</span>'
+  Metacentric: '<span style="color: #0067cc;">Metacentric</span>'
+  Submetacentric: '<span style="color: #c80085;">Submetacentric</span>'
 matching pairs:
   Acentric:
   - an abnormal chromosome that lacks a centromere

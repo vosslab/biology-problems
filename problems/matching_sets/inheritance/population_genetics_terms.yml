@@ -22,6 +22,14 @@ matching pairs:
   - mating between relatives, such as first cousins
   - type of mating that reduces heterozygotes and increases homozygotes
 replacement_rules:
-  genetically: '<span style="color: #b74300;">genetically</span>'
-  genetic: '<span style="color: #b74300;">genetic</span>' #DARK ORANGE
+  # Original color rules retained for restoration:
+  #   genetically: '<span style="color: #b74300;">genetically</span>'
+  #   genetic: '<span style="color: #b74300;">genetic</span>' #DARK ORANGE
+  genetic: '<span style="color: #076DAD;">genetic</span>'
+  mutation: '<span style="color: #007576;">mutation</span>'
+  genetic drift: '<span style="color: #076DAD;">genetic drift</span>'
+  gene flow: '<span style="color: #003FFF;">gene flow</span>'
+  random mating: '<span style="color: #0067CC;">random mating</span>'
+  assortative mating: '<span style="color: #A719DB;">assortative mating</span>'
+  consanguineous mating: '<span style="color: #C80085;">consanguineous mating</span>'
 dbsubject: Genetics

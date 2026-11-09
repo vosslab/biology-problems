@@ -2,6 +2,12 @@
 topic: model_organism_principles
 learning_objective: Match model-organism research concepts to their descriptions.
 source: Fall 2026 Biotechnology Lecture 02, Overview of Model Organisms
+replacement_rules:
+  Core purpose: '<span style="color: #D40000;">Core purpose</span>'
+  Selection criteria: '<span style="color: #6C6C00;">Selection criteria</span>'
+  Advantages: '<span style="color: #00775F;">Advantages</span>'
+  Limitations: '<span style="color: #003FFF;">Limitations</span>'
+  Industrial applications: '<span style="color: #C80085;">Industrial applications</span>'
 dbsubject: Biotechnology
 
 items to match per question: 5

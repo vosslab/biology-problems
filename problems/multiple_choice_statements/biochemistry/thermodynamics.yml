@@ -1,13 +1,20 @@
 topic: thermodynamics and kinetics
 replacement_rules:
-  thermodynamics: '<span style="color: #bb5d00;">thermodynamics</span>'
+#   thermodynamics: '<span style="color: #bb5d00;">thermodynamics</span>'
+  thermodynamics: '<span style="color: #a55200;">thermodynamics</span>'
   kinetics: '<span style="color: #56225d;">kinetics</span>'
-  equilibrium: '<span style="color: #478d1b;">equilibrium</span>'
-  reaction: '<span style="color: #008a75;">reaction</span>'
-  reactions: '<span style="color: #008a75;">reactions</span>'
-  enzymes: '<span style="color: #cc2489;">enzymes</span>'
-  entropy: '<span style="color: #b77b04;">entropy</span>'
-  enthalpy: '<span style="color: #0078a3;">enthalpy</span>'
+#   equilibrium: '<span style="color: #478d1b;">equilibrium</span>'
+  equilibrium: '<span style="color: #3c7617;">equilibrium</span>'
+#   reaction: '<span style="color: #008a75;">reaction</span>'
+  reaction: '<span style="color: #007664;">reaction</span>'
+#   reactions: '<span style="color: #008a75;">reactions</span>'
+  reactions: '<span style="color: #007664;">reactions</span>'
+#   enzymes: '<span style="color: #cc2489;">enzymes</span>'
+  enzymes: '<span style="color: #c12281;">enzymes</span>'
+#   entropy: '<span style="color: #b77b04;">entropy</span>'
+  entropy: '<span style="color: #8e5f03;">entropy</span>'
+#   enthalpy: '<span style="color: #0078a3;">enthalpy</span>'
+  enthalpy: '<span style="color: #007099;">enthalpy</span>'
 connection_words: null
 true_statements:
   truth1a: Thermodynamics describes the equilibrium point of a reaction.

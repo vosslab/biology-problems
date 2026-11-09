@@ -58,3 +58,12 @@ matching pairs:
     - A walking computer who fell in love with a witch.
     - Literally lost his mind when someone removed a stone from his forehead.
     - Passed the team's background check by picking up a coworker's belongings.
+replacement_rules:
+  Thor: '<span style="color: #007576;">Thor</span>'
+  Captain America: '<span style="color: #003FFF;">Captain America</span>'
+  Black Widow: '<span style="color: #A719DB;">Black Widow</span>'
+  Hawkeye: '<span style="color: #CC0066;">Hawkeye</span>'
+  Iron Man: '<span style="color: #D40000;">Iron Man</span>'
+  Hulk: '<span style="color: #B74300;">Hulk</span>'
+  Scarlet Witch: '<span style="color: #6C6C00;">Scarlet Witch</span>'
+  Vision: '<span style="color: #007A00;">Vision</span>'

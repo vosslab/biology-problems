@@ -35,4 +35,16 @@ exclude pairs:
 - [Chernobyl, Fukushima]
 - [Hinkley, Berkeley Pit]
 - [East Metro Twin Cities (Minnesota), Parkersburg]
+replacement_rules:
+  Exxon Valdez: '<span style="color: #00775F;">Exxon Valdez</span>'
+  Deepwater Horizon: '<span style="color: #007576;">Deepwater Horizon</span>'
+  Hudson River: '<span style="color: #076DAD;">Hudson River</span>'
+  Love Canal: '<span style="color: #003FFF;">Love Canal</span>'
+  Kerala: '<span style="color: #0067CC;">Kerala</span>'
+  Chernobyl: '<span style="color: #A719DB;">Chernobyl</span>'
+  Fukushima: '<span style="color: #C80085;">Fukushima</span>'
+  Hinkley: '<span style="color: #CC0066;">Hinkley</span>'
+  Berkeley Pit: '<span style="color: #D40000;">Berkeley Pit</span>'
+  East Metro Twin Cities (Minnesota): '<span style="color: #B74300;">East Metro Twin Cities (Minnesota)</span>'
+  Parkersburg: '<span style="color: #935D00;">Parkersburg</span>'
 dbsubject: Biotechnology

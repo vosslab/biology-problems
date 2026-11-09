@@ -1,14 +1,14 @@
 topic: the fluid mosaic model of membrane lipid bilayers
 replacement_rules:
   plasma&nbsp;membrane: '<span style="color: #d40000;">plasma&nbsp;membrane</span>'
-  structure: '<span style="color: #b74300;">structure</span>'
+#   structure: '<span style="color: #b74300;">structure</span>'
   rigid: '<span style="color: #935d00;">rigid</span>'
   liquid: '<span style="color: #6c6c00;">liquid</span>'
   flexible: '<span style="color: #3b7600;">flexible</span>'
-  cells: '<span style="color: #007a00;">cells</span>'
-  cell: '<span style="color: #007a00;">cell</span>'
-  proteins: '<span style="color: #076dad;">proteins</span>'
-  lipids: '<span style="color: #a719db;">lipids</span>'
+#   cells: '<span style="color: #007a00;">cells</span>'
+#   cell: '<span style="color: #007a00;">cell</span>'
+#   proteins: '<span style="color: #076dad;">proteins</span>'
+#   lipids: '<span style="color: #a719db;">lipids</span>'
   external&nbsp;environment: '<span style="color: #c80085;">external&nbsp;environment</span>'
 connection_words: null
 true_statements:

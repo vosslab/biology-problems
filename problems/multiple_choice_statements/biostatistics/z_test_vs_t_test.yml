@@ -11,8 +11,10 @@ source:
 override_question_true: '<p>In the national-average tutorials, which statement is <strong>TRUE</strong>?</p>'
 override_question_false: '<p>In the national-average tutorials, which statement is <strong>FALSE</strong>?</p>'
 replacement_rules:
-  Z-test: '<strong style="color: #003fff;">Z-test</strong>'
-  t-test: '<strong style="color: #007a00;">t-test</strong>'
+  # Z-test: '<strong style="color: #003fff;">Z-test</strong>'
+  Z-test: '<span style="color: #003fff;">Z-test</span>'
+  # t-test: '<strong style="color: #007a00;">t-test</strong>'
+  t-test: '<span style="color: #007a00;">t-test</span>'
 connection_words: null
 true_statements:
   # The SD used in the formula, not every SD calculated in the spreadsheet.

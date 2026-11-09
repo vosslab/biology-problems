@@ -3,7 +3,8 @@ override_question_true: Accuracy in translation of mRNA into a polypeptide depen
   on the correct ___.
 override_question_false: null
 replacement_rules:
-  ribosome: '<span style="color: OrangeRed;">ribosome</span>'
+#   ribosome: '<span style="color: OrangeRed;">ribosome</span>'
+  ribosome: '<span style="color: #c23500;">ribosome</span>'
   amino acid: '<span style="color: DarkBlue;">amino acid</span>'
   tRNA anticodon: '<span style="color: DarkRed;">tRNA anticodon</span>'
   mRNA codon: '<span style="color: DarkGreen;">mRNA codon</span>'

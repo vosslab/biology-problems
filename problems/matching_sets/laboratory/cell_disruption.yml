@@ -4,8 +4,11 @@ keys description: cell disruption techniques
 value description: description
 values description: descriptions
 replacement_rules:
-  cells: '<span style="color: #d40000;">cells</span>' #RED
-  cell: '<span style="color: #b74300;">cell</span>' #DARK ORANGE
+  # Original color rules retained for restoration:
+  #   cells: '<span style="color: #d40000;">cells</span>' #RED
+  #   cell: '<span style="color: #b74300;">cell</span>' #DARK ORANGE
+  #   MMMMMMMM: '<span style="color: #c80085;">MMMMMMMM</span>' #MAGENTA
+  #   NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
   Enzymatic Method: '<span style="color: #935d00;">Enzymatic Method</span>' #LIGHT ORANGE
   Bead-beating: '<span style="color: #6c6c00;">Bead-beating</span>' #DARK YELLOW
   Sonication: '<span style="color: #3b7600;">Sonication</span>' #LIME GREEN
@@ -16,8 +19,6 @@ replacement_rules:
   French Press: '<span style="color: #003fff;">French Press</span>' #BLUE
   Microfluidizer: '<span style="color: #0067cc;">Microfluidizer</span>' #NAVY
   High-throughput Homogenizer: '<span style="color: #a719db;">High-throughput Homogenizer</span>' #PURPLE
-  MMMMMMMM: '<span style="color: #c80085;">MMMMMMMM</span>' #MAGENTA
-  NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
 matching pairs:
   Enzymatic Method:
   - Chemical reactions digest the cell wall.

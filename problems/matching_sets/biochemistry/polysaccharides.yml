@@ -41,13 +41,14 @@ matching pairs:
   - carbohydrate polymer that used for structural purposes by plants
   - structural material in plant cell walls
 replacement_rules:
-  animals: '<span style="color: #843232;">animals</span>' #DARK RED
-  animal: '<span style="color: #843232;">animal</span>' #DARK RED
-  plants: '<span style="color: #598231;">plants</span>' #OLIVE GREEN
-  plant: '<span style="color: #598231;">plant</span>' #OLIVE GREEN
-  structural: '<span style="color: #a86739;">structural</span>' #BROWN ORANGE
-  storage: '<span style="color: #693AAA;">storage</span>' #PURPLE
-  cell walls: '<span style="color: #b45918;">cell walls</span>' #RUST
+  # Original color rules retained for restoration:
+  #   animals: '<span style="color: #843232;">animals</span>' #DARK RED
+  #   animal: '<span style="color: #843232;">animal</span>' #DARK RED
+  #   plants: '<span style="color: #598231;">plants</span>' #OLIVE GREEN
+  #   plant: '<span style="color: #598231;">plant</span>' #OLIVE GREEN
+  #   structural: '<span style="color: #a86739;">structural</span>' #BROWN ORANGE
+  #   storage: '<span style="color: #693AAA;">storage</span>' #PURPLE
+  #   cell walls: '<span style="color: #b45918;">cell walls</span>' #RUST
   glycogen: '<span style="color: #d40000;">glycogen</span>' #RED
   chitin: '<span style="color: #b74300;">chitin</span>' #DARK ORANGE
   cellulose: '<span style="color: #935d00;">cellulose</span>' #LIGHT ORANGE

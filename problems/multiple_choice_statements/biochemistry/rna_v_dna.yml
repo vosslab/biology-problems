@@ -1,7 +1,8 @@
 topic: differences between RNA and DNA
 replacement_rules:
   DNA: '<span style="color: MediumBlue;">DNA</span>'
-  RNA: '<span style="color: OrangeRed;">RNA</span>'
+#   RNA: '<span style="color: OrangeRed;">RNA</span>'
+  RNA: '<span style="color: #c23500;">RNA</span>'
 connection_words: null
 true_statements:
   truth1a: DNA is usually double-stranded (duplex), whereas RNA is usually single-stranded

@@ -4,18 +4,41 @@ keys description: amino acids
 value description: description
 values description: descriptions
 replacement_rules:
-  negatively charged amino acid: '<span style="color: #d40000;">negatively charged
-    amino acid</span>' #RED
-  aromatic amino acid: '<span style="color: #b74300;">aromatic amino acid</span>' #DARK ORANGE
-  non-polar branched chain amino acid: '<span style="color: #935d00;">non-polar branched
-    chain amino acid</span>' #LIGHT ORANGE
-  non-polar amino acid: '<span style="color: #6c6c00;">non-polar amino acid</span>' #DARK YELLOW
-  small amino acid: '<span style="color: #3b7600;">small amino acid</span>' #LIME GREEN
-  polar amino acid: '<span style="color: #007a00;">polar amino acid</span>' #GREEN
-  positively charged amino acid: '<span style="color: #076dad;">positively charged
-    amino acid</span>' #SKY BLUE
-  side chain: '<span style="color: #a719db;">side chain</span>' #PURPLE
-  IIIIIII: '<span style="color: #c80085;">IIIIIII</span>' #MAGENTA
+  # Original color rules retained for restoration:
+  #   negatively charged amino acid: '<span style="color: #d40000;">negatively charged
+  #     amino acid</span>' #RED
+  #   aromatic amino acid: '<span style="color: #b74300;">aromatic amino acid</span>' #DARK ORANGE
+  #   non-polar branched chain amino acid: '<span style="color: #935d00;">non-polar branched
+  #     chain amino acid</span>' #LIGHT ORANGE
+  #   non-polar amino acid: '<span style="color: #6c6c00;">non-polar amino acid</span>' #DARK YELLOW
+  #   small amino acid: '<span style="color: #3b7600;">small amino acid</span>' #LIME GREEN
+  #   polar amino acid: '<span style="color: #007a00;">polar amino acid</span>' #GREEN
+  #   positively charged amino acid: '<span style="color: #076dad;">positively charged
+  #     amino acid</span>' #SKY BLUE
+  #   side chain: '<span style="color: #a719db;">side chain</span>' #PURPLE
+  #   IIIIIII: '<span style="color: #c80085;">IIIIIII</span>' #MAGENTA
+  alanine: '<span style="color: #9A3743;">alanine</span>'
+  arginine: '<span style="color: #A0341D;">arginine</span>'
+  asparagine: '<span style="color: #8E481C;">asparagine</span>'
+  aspartate: '<span style="color: #854F0D;">aspartate</span>'
+  aspartic acid: '<span style="color: #854F0D;">aspartic acid</span>'
+  cysteine: '<span style="color: #6F5D00;">cysteine</span>'
+  glutamine: '<span style="color: #606309;">glutamine</span>'
+  glutamate: '<span style="color: #476A02;">glutamate</span>'
+  glutamic acid: '<span style="color: #476A02;">glutamic acid</span>'
+  glycine: '<span style="color: #1D6E4A;">glycine</span>'
+  histidine: '<span style="color: #006E5C;">histidine</span>'
+  isoleucine: '<span style="color: #006C6A;">isoleucine</span>'
+  leucine: '<span style="color: #006A77;">leucine</span>'
+  lysine: '<span style="color: #006884;">lysine</span>'
+  methionine: '<span style="color: #006595;">methionine</span>'
+  phenylalanine: '<span style="color: #315F9A;">phenylalanine</span>'
+  proline: '<span style="color: #4156AD;">proline</span>'
+  serine: '<span style="color: #5A46C0;">serine</span>'
+  threonine: '<span style="color: #7143A6;">threonine</span>'
+  tryptophan: '<span style="color: #843896;">tryptophan</span>'
+  tyrosine: '<span style="color: #8C3A78;">tyrosine</span>'
+  valine: '<span style="color: #98345F;">valine</span>'
 matching pairs:
   alanine:
   - a non-polar amino acid, with a single methyl group (-CH<sub>3</sub>) as its side

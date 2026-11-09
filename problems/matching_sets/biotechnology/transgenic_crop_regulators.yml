@@ -25,4 +25,9 @@ matching pairs:
   - Assesses the environmental effect of a transgenic crop on the animals around the farm.
 distractor only:
   - Center for Disease Control (CDC)
+replacement_rules:
+  Health Inspection Service of the U.S. Department of Agriculture (USDA): '<span style="color: #00775F;">Health Inspection Service of the U.S. Department of Agriculture (USDA)</span>'
+  Food and Drug Administration (FDA): '<span style="color: #003FFF;">Food and Drug Administration (FDA)</span>'
+  National Institute of Health (NIH): '<span style="color: #A719DB;">National Institute of Health (NIH)</span>'
+  Environmental Protection Agency (EPA): '<span style="color: #C80085;">Environmental Protection Agency (EPA)</span>'
 dbsubject: Biotechnology

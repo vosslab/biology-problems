@@ -1,23 +1,26 @@
 topic: DNA replication in bacteria
 connection_words: null
 replacement_rules:
-  single-strand binding proteins: '<span style="color: #7b7737;">single-strand binding
-    proteins</span>'
-  DNA polymerase IV: '<span style="color: #5A8432;">DNA&nbsp;polymerase&nbsp;&#8547;</span>'
+#   single-strand binding proteins: '<span style="color: #7b7737;">single-strand binding
+#     proteins</span>'
+#   DNA polymerase IV: '<span style="color: #5A8432;">DNA&nbsp;polymerase&nbsp;&#8547;</span>'
+  DNA polymerase IV: '<span style="color: #4e732c;">DNA&nbsp;polymerase&nbsp;&#8547;</span>'
   DNA polymerase III: '<span style="color: #3E3EC4;">DNA&nbsp;polymerase&nbsp;&#8546;</span>'
   DNA polymerase II: '<span style="color: #793AAA;">DNA&nbsp;polymerase&nbsp;&#8545;</span>'
   DNA polymerase I: '<span style="color: #b45918;">DNA&nbsp;polymerase&nbsp;&#8544;</span>'
   DNA helicase: '<span style="color: DarkGreen;">DNA&nbsp;helicase</span>'
-  DNA ligase: '<span style="color: MediumVioletRed;">DNA&nbsp;ligase</span>'
+#   DNA ligase: '<span style="color: MediumVioletRed;">DNA&nbsp;ligase</span>'
+  DNA ligase: '<span style="color: #c51584;">DNA&nbsp;ligase</span>'
   DNA topoisomerase: '<span style="color: Indigo;">DNA&nbsp;topoisomerase</span>'
-  primase: '<span style="color: SteelBlue;">primase</span>'
-  Okazaki fragments: '<span style="color: Maroon;">Okazaki fragments</span>'
-  RNA primers: '<span style="color: #b33000;">RNA primers</span>'
-  DNA primers: '<span style="color: #248f24;">DNA primers</span>'
-  DNA double helix: '<span style="color: #248f24;">DNA double helix</span>'
-  DNA strand: '<span style="color: #248f24;">DNA strand</span>'
-  leading strand: '<span style="color: #002699;">leading strand</span>'
-  lagging strand: '<span style="color: #995c00;">lagging strand</span>'
+#   primase: '<span style="color: SteelBlue;">primase</span>'
+  primase: '<span style="color: #3b6d96;">primase</span>'
+#   Okazaki fragments: '<span style="color: Maroon;">Okazaki fragments</span>'
+#   RNA primers: '<span style="color: #b33000;">RNA primers</span>'
+#   DNA primers: '<span style="color: #248f24;">DNA primers</span>'
+#   DNA double helix: '<span style="color: #248f24;">DNA double helix</span>'
+#   DNA strand: '<span style="color: #248f24;">DNA strand</span>'
+#   leading strand: '<span style="color: #002699;">leading strand</span>'
+#   lagging strand: '<span style="color: #995c00;">lagging strand</span>'
 true_statements:
   truth1: the leading strand is replicated continuously, while the lagging strand
     is replicated piecewise

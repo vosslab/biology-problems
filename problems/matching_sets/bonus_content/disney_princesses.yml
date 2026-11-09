@@ -66,3 +66,17 @@ matching pairs:
   Raya:
     - Travels with the last dragon to repair a gem that nobody could share without breaking the world.
     - Trusts the wrong person repeatedly while trying to assemble a broken magical rock.
+replacement_rules:
+  Snow White: '<span style="color: #0067CC;">Snow White</span>'
+  Cinderella: '<span style="color: #A719DB;">Cinderella</span>'
+  Aurora: '<span style="color: #C80085;">Aurora</span>'
+  Ariel: '<span style="color: #CC0066;">Ariel</span>'
+  Belle: '<span style="color: #D40000;">Belle</span>'
+  Jasmine: '<span style="color: #B74300;">Jasmine</span>'
+  Pocahontas: '<span style="color: #935D00;">Pocahontas</span>'
+  Mulan: '<span style="color: #6C6C00;">Mulan</span>'
+  Tiana: '<span style="color: #3B7600;">Tiana</span>'
+  Rapunzel: '<span style="color: #007A00;">Rapunzel</span>'
+  Merida: '<span style="color: #00775F;">Merida</span>'
+  Moana: '<span style="color: #007576;">Moana</span>'
+  Raya: '<span style="color: #076DAD;">Raya</span>'

@@ -46,4 +46,18 @@ matching pairs:
     secrets
   Amanda Seyfried:
   - actress who portrays Holmes in the Hulu TV series, The Dropout
+replacement_rules:
+  Elizabeth Holmes: '<span style="color: #935D00;">Elizabeth Holmes</span>'
+  Ramesh "Sunny" Balwani: '<span style="color: #6C6C00;">Ramesh "Sunny" Balwani</span>'
+  George Shultz: '<span style="color: #3B7600;">George Shultz</span>'
+  Tyler Shultz: '<span style="color: #007A00;">Tyler Shultz</span>'
+  Erika Cheung: '<span style="color: #00775F;">Erika Cheung</span>'
+  David Boies: '<span style="color: #007576;">David Boies</span>'
+  Channing Robertson: '<span style="color: #076DAD;">Channing Robertson</span>'
+  Phyllis Gardner: '<span style="color: #003FFF;">Phyllis Gardner</span>'
+  Rupert Murdoch: '<span style="color: #0067CC;">Rupert Murdoch</span>'
+  Dr. Richard Fuisz, MD: '<span style="color: #A719DB;">Dr. Richard Fuisz, MD</span>'
+  Avie Tevanian: '<span style="color: #C80085;">Avie Tevanian</span>'
+  John Carreyrou: '<span style="color: #CC0066;">John Carreyrou</span>'
+  Amanda Seyfried: '<span style="color: #D40000;">Amanda Seyfried</span>'
 dbsubject: Biotechnology

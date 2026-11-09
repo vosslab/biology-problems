@@ -1,24 +1,34 @@
 topic: chi-square (&chi;<sup>2</sup>) tests
 override_question_false: null
 replacement_rules:
-  yesrej: 'is <span style="color: #d40000;">REJECTED</span>'
-  notrej: 'is <span style="color: #007a00;">NOT REJECTED</span>'
-  yessupp: 'is <span style="color: #007a00;">SUPPORTED</span>'
-  notsupp: 'is <span style="color: #d40000;">NOT SUPPORTED</span>'
-  c2s: '<span style="color: #935d00;">chi-square statistic (&chi;<sup>2</sup>)</span>'
-  p-value: '<span style="color: #3b7600;">p-value</span>'
-  losa: '<span style="color: #8601af;">level of significance (&alpha;)</span>'
-  critval: '<span style="color: #935d00;">critical value</span>'
-  nullhyp: '<span style="color: #0247fe;">null hypothesis (H<sub>0</sub>)</span>'
-  althyp: '<span style="color: #b74300;">alternative hypothesis (H<sub>a</sub>)</span>'
+  # yesrej: 'is <span style="color: #d40000;">REJECTED</span>'
+  yesrej: is REJECTED
+  # notrej: 'is <span style="color: #007a00;">NOT REJECTED</span>'
+  notrej: is NOT REJECTED
+  # yessupp: 'is <span style="color: #007a00;">SUPPORTED</span>'
+  yessupp: is SUPPORTED
+  # notsupp: 'is <span style="color: #d40000;">NOT SUPPORTED</span>'
+  notsupp: is NOT SUPPORTED
+  # c2s: '<span style="color: #935d00;">chi-square statistic (&chi;<sup>2</sup>)</span>'
+  c2s: '<span style="color: #00775f;">chi-square statistic (&chi;<sup>2</sup>)</span>'
+  # p-value: '<span style="color: #3b7600;">p-value</span>'
+  p-value: '<span style="color: #c80085;">p-value</span>'
+  # losa: '<span style="color: #8601af;">level of significance (&alpha;)</span>'
+  losa: '<strong>level of significance (</strong><strong><span style="color: #a719db;">&alpha;</span></strong><strong>)</strong>'
+  # critval: '<span style="color: #935d00;">critical value</span>'
+  critval: '<span style="color: #003fff;">critical value</span>'
+  # nullhyp: '<span style="color: #0247fe;">null hypothesis (H<sub>0</sub>)</span>'
+  nullhyp: '<strong>null hypothesis (</strong><strong><span style="color: #49358c;">H<sub>0</sub></span></strong><strong>)</strong>'
+  # althyp: '<span style="color: #b74300;">alternative hypothesis (H<sub>a</sub>)</span>'
+  althyp: '<strong>alternative hypothesis (</strong><strong><span style="color: #b74300;">H<sub>a</sub></span></strong><strong>)</strong>'
   less than: <strong>less than</strong>
   larger than: <strong>larger than</strong>
-  EEEEEEEE: '<span style="color: #3b7600;">EEEEEEEE</span>'
-  GGGGGGGG: '<span style="color: #00775f;">GGGGGGGG</span>'
-  HHHHHHHH: '<span style="color: #007576;">HHHHHHHH</span>'
-  JJJJJJJJ: '<span style="color: #003fff;">JJJJJJJJ</span>'
-  LLLLLLLL: '<span style="color: #a719db;">LLLLLLLL</span>'
-  NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>'
+  # EEEEEEEE: '<span style="color: #3b7600;">EEEEEEEE</span>'
+  # GGGGGGGG: '<span style="color: #00775f;">GGGGGGGG</span>'
+  # HHHHHHHH: '<span style="color: #007576;">HHHHHHHH</span>'
+  # JJJJJJJJ: '<span style="color: #003fff;">JJJJJJJJ</span>'
+  # LLLLLLLL: '<span style="color: #a719db;">LLLLLLLL</span>'
+  # NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>'
 connection_words: null
 true_statements:
   truth1a: the nullhyp notrej if the c2s is less than the critval

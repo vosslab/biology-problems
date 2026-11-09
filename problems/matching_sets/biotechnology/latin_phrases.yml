@@ -46,4 +46,13 @@ distractor only:
   - in ovum
   - in seed
   - in spawna
+replacement_rules:
+  in silico: '<span style="color: #007576;">in silico</span>'
+  in situ: '<span style="color: #003FFF;">in situ</span>'
+  in vivo: '<span style="color: #A719DB;">in vivo</span>'
+  in vitro: '<span style="color: #CC0066;">in vitro</span>'
+  in natura: '<span style="color: #D40000;">in natura</span>'
+  in ovo: '<span style="color: #B74300;">in ovo</span>'
+  in utero: '<span style="color: #6C6C00;">in utero</span>'
+  ex vivo: '<span style="color: #007A00;">ex vivo</span>'
 dbsubject: Biotechnology

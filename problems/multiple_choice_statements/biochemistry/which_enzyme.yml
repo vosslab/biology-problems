@@ -4,21 +4,21 @@ override_question_true: '<p>Enzymes are biological catalysts that speed up chemi
   likely an enzyme?<br/><i>Hint: enzymes often have a distinct naming pattern that
   can help identify them.</i></p>'
 override_question_false: null
-replacement_rules:
-  AAAAAAAA: '<span style="color: #d40000;">AAAAAAAA</span>'
-  BBBBBBBB: '<span style="color: #b74300;">BBBBBBBB</span>'
-  CCCCCCCC: '<span style="color: #935d00;">CCCCCCCC</span>'
-  DDDDDDDD: '<span style="color: #6c6c00;">DDDDDDDD</span>'
-  EEEEEEEE: '<span style="color: #3b7600;">EEEEEEEE</span>'
-  FFFFFFFF: '<span style="color: #007a00;">FFFFFFFF</span>'
-  GGGGGGGG: '<span style="color: #00775f;">GGGGGGGG</span>'
-  HHHHHHHH: '<span style="color: #007576;">HHHHHHHH</span>'
-  IIIIIIII: '<span style="color: #076dad;">IIIIIIII</span>'
-  JJJJJJJJ: '<span style="color: #003fff;">JJJJJJJJ</span>'
-  KKKKKKKK: '<span style="color: #0067cc;">KKKKKKKK</span>'
-  LLLLLLLL: '<span style="color: #a719db;">LLLLLLLL</span>'
-  MMMMMMMM: '<span style="color: #c80085;">MMMMMMMM</span>'
-  NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>'
+replacement_rules: {}
+#   AAAAAAAA: '<span style="color: #d40000;">AAAAAAAA</span>'
+#   BBBBBBBB: '<span style="color: #b74300;">BBBBBBBB</span>'
+#   CCCCCCCC: '<span style="color: #935d00;">CCCCCCCC</span>'
+#   DDDDDDDD: '<span style="color: #6c6c00;">DDDDDDDD</span>'
+#   EEEEEEEE: '<span style="color: #3b7600;">EEEEEEEE</span>'
+#   FFFFFFFF: '<span style="color: #007a00;">FFFFFFFF</span>'
+#   GGGGGGGG: '<span style="color: #00775f;">GGGGGGGG</span>'
+#   HHHHHHHH: '<span style="color: #007576;">HHHHHHHH</span>'
+#   IIIIIIII: '<span style="color: #076dad;">IIIIIIII</span>'
+#   JJJJJJJJ: '<span style="color: #003fff;">JJJJJJJJ</span>'
+#   KKKKKKKK: '<span style="color: #0067cc;">KKKKKKKK</span>'
+#   LLLLLLLL: '<span style="color: #a719db;">LLLLLLLL</span>'
+#   MMMMMMMM: '<span style="color: #c80085;">MMMMMMMM</span>'
+#   NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>'
 connection_words: null
 true_statements:
   truth11: galactosidase

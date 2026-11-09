@@ -5,8 +5,10 @@ override_question_false: Which one of the following is an example of potential e
   rather than kinetic energy?
 connection_words: null
 replacement_rules:
-  Kinetic energy: '<span style="color: #995c00;">Kinetic energy</span>'
-  kinetic energy: '<span style="color: #995c00;">kinetic energy</span>'
+#   Kinetic energy: '<span style="color: #995c00;">Kinetic energy</span>'
+  Kinetic energy: '<span style="color: #975b00;">Kinetic energy</span>'
+#   kinetic energy: '<span style="color: #995c00;">kinetic energy</span>'
+  kinetic energy: '<span style="color: #975b00;">kinetic energy</span>'
   Potential energy: '<span style="color: #002699;">Potential energy</span>'
   potential energy: '<span style="color: #002699;">potential energy</span>'
 true_statements:

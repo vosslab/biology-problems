@@ -35,4 +35,9 @@ matching pairs:
   - Extracting oil from microscopic cells requires separating it from other cell material
   - Getting oil out of microscopic cells and away from the cell debris is difficult
   - Oil from microscopic photosynthetic cells must be separated from the rest of the cell contents
+replacement_rules:
+  Starch-based Biofuels: '<span style="color: #B74300;">Starch-based Biofuels</span>'
+  Cellulose-based Biofuels: '<span style="color: #3B7600;">Cellulose-based Biofuels</span>'
+  Conventional Biodiesel: '<span style="color: #007576;">Conventional Biodiesel</span>'
+  Algae-based Biodiesel: '<span style="color: #0067CC;">Algae-based Biodiesel</span>'
 dbsubject: Biotechnology

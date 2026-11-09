@@ -146,6 +146,13 @@ Biology examples:
 
 ## Replacement Rules (Formatting, Color, Consistency)
 
+For presentation choices, use [QUESTION_COLOR_GUIDE.md](../../docs/QUESTION_COLOR_GUIDE.md).
+When quieting or replacing a color rule, preserve its original definition as a YAML comment.
+Keep active substitutions for aliases, notation, capitalization, and meaningful markup.
+Use `replacement_rules: {}` when the mapping contains only comments. Existing helpers add bold
+around replacements; for mixed neutral and colored text, separate explicit `strong` segments
+keep the colored spans compatible with the PGML exporter.
+
 `replacement_rules` is a simple "search and replace" table applied after question text and choice lists are constructed.
 Matches use the original text in one pass, with the longest key winning at each position.
 Replacement output is final: it is not searched again, so singular and plural color rules can

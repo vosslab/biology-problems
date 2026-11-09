@@ -17,6 +17,7 @@ Design the puzzle first, then write the thinnest wrapper around it.
 - Read [QUESTION_PEDAGOGY_GUIDE.md](QUESTION_PEDAGOGY_GUIDE.md) before writing code: it covers the
   data, the key, and the error-derived wrong choices.
 - Read [QUESTION_VOICE_GUIDE.md](QUESTION_VOICE_GUIDE.md) before writing the stem and choices.
+- Use [QUESTION_COLOR_GUIDE.md](QUESTION_COLOR_GUIDE.md) for concept colors and selective highlighting.
 - Run [check_question_text.py](../devel/check_question_text.py) on the generated BBQ output. Its
   findings are advisory and point the item to a closer read.
 

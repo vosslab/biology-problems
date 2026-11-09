@@ -2,6 +2,12 @@
 topic: model_organism_generation_time
 learning_objective: Match selected model organisms to their approximate generation times.
 source: Existing Biotechnology model-organism generation-time question
+replacement_rules:
+  Escherichia coli: '<span style="color: #935D00;">Escherichia coli</span>'
+  Saccharomyces cerevisiae: '<span style="color: #007A00;">Saccharomyces cerevisiae</span>'
+  Caenorhabditis elegans: '<span style="color: #076DAD;">Caenorhabditis elegans</span>'
+  Drosophila melanogaster: '<span style="color: #A719DB;">Drosophila melanogaster</span>'
+  Mus musculus: '<span style="color: #C80085;">Mus musculus</span>'
 dbsubject: Biotechnology
 
 items to match per question: 3

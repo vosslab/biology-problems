@@ -1,5 +1,54 @@
 # Changelog
 
+## 2026-11-09
+
+### Fixes and Maintenance
+
+- Refocus the question color guide on concept recognition, selective highlighting, and
+  coordinated palettes, retaining explanatory examples and practical palette subsets. Treat
+  cross-bank consistency and four-term hue spacing as flexible guidance. Move YAML implementation
+  notes to the bank authoring guides and refresh authoring-skill copies.
+
+## 2026-11-08
+
+### Additions and New Features
+
+- Add `docs/QUESTION_COLOR_GUIDE.md` for stable concept colors, coordinated template subsets,
+  selective prose highlighting, and matching questions that require meaning rather than color cues.
+  Link it from the authoring and palette guides; move color policy out of the voice guide and
+  refresh the required authoring-skill snapshots with their direct color references.
+
+### Behavior or Interface Changes
+
+- Refine replacement rules in 62 matching and 27 statement banks after reviewing all 122 YAML
+  banks. Retain useful concept colors, quiet peripheral highlights, and add distinct labels to
+  suitable uncolored matching banks. Preserve disabled/replaced color definitions as comments
+  alongside semantic substitutions, including scientific notation and intentionally authored emphasis.
+- Keep fixed concept assignments across shuffled subsets and related bank variants. Use spaced
+  template subsets for new small sets and explicit CAM16 colors for larger pools; preserve
+  component colors in composite genotype crosses. Both templates, generators, helpers, schemas,
+  question wording, and answer relationships remain unchanged.
+
+### Fixes and Maintenance
+
+- Improve low-contrast active text colors while retaining their hue associations. All 762 active
+  color-rule occurrences meet 4.5:1 on white; the minimum is 4.79:1. Preserve established
+  polymerase-I orange (4.79:1) and recessive-genotype blue (5.44:1) as exceptions to the 5.5:1
+  house target. Archived color rules remain available in comments with their original values.
+
+### Developer Tests and Notes
+
+- One-time source comparison covers 8,203 strings across all 122 banks: visible replacement text
+  and scientific markup are preserved; fields outside replacement rules match the starting data.
+  Representative local Chromium previews cover the three biostats examples, a four-term native
+  match, and PGML-generated HTML fields. Inspect grayscale and severe protan/deutan simulations;
+  sampled orange text against white measures 5.52:1. Preview artifacts live in ignored
+  `output_readability/concept_colors/`; live Blackboard import and student learning remain untested.
+- Run the suite with `source ./source_me.sh && pytest tests/`. The final run reports 6,291 passed
+  and six failures in untouched files: three stale gene-map generator paths, human-guidance format,
+  archived changelog links, and an unused variable in the Graphify helper. Focused YAML and
+  Blackboard inline-style checks pass; formatting-only edits add no permanent tests.
+
 ## 2026-11-04
 
 ### Additions and New Features

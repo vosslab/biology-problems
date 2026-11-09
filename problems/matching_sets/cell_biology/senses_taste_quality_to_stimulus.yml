@@ -14,6 +14,11 @@ replacement_rules:
   NaCl: <strong>NaCl</strong>
   MSG: <strong>MSG</strong>
   L-glutamate: <strong>L-glutamate</strong>
+  Sweet: '<span style="color: #935D00;">Sweet</span>'
+  Umami: '<span style="color: #007A00;">Umami</span>'
+  Sour: '<span style="color: #076DAD;">Sour</span>'
+  Salty: '<span style="color: #A719DB;">Salty</span>'
+  Bitter: '<span style="color: #C80085;">Bitter</span>'
 matching pairs:
   Sweet:
   - a monosaccharide such as glucose, a common fuel for glycolysis

@@ -2,6 +2,25 @@
 topic: model_organisms
 learning_objective: Match model-organism scientific names to familiar common names or groups.
 source: Fall 2026 Biotechnology Lecture 02 model-organism list
+replacement_rules:
+  Lambda phage: '<span style="color: #9B3547;">Lambda phage</span>'
+  Tobacco mosaic virus: '<span style="color: #983D27;">Tobacco mosaic virus</span>'
+  Escherichia coli: '<span style="color: #935D00;">Escherichia coli</span>'
+  Photosynthetic cyanobacteria: '<span style="color: #7E5413;">Photosynthetic cyanobacteria</span>'
+  Saccharomyces cerevisiae: '<span style="color: #007A00;">Saccharomyces cerevisiae</span>'
+  Tetrahymena thermophila: '<span style="color: #60621B;">Tetrahymena thermophila</span>'
+  Caenorhabditis elegans: '<span style="color: #076DAD;">Caenorhabditis elegans</span>'
+  Arabidopsis thaliana: '<span style="color: #296D3D;">Arabidopsis thaliana</span>'
+  Panicum virgatum: '<span style="color: #006E55;">Panicum virgatum</span>'
+  Chlamydomonas reinhardtii: '<span style="color: #006C68;">Chlamydomonas reinhardtii</span>'
+  Drosophila melanogaster: '<span style="color: #A719DB;">Drosophila melanogaster</span>'
+  Danio rerio: '<span style="color: #006789;">Danio rerio</span>'
+  Ambystoma mexicanum: '<span style="color: #30618F;">Ambystoma mexicanum</span>'
+  Xenopus laevis: '<span style="color: #3E5AA4;">Xenopus laevis</span>'
+  Mus musculus: '<span style="color: #C80085;">Mus musculus</span>'
+  Rattus norvegicus: '<span style="color: #7540A5;">Rattus norvegicus</span>'
+  Oryctolagus cuniculus domesticus: '<span style="color: #8B348E;">Oryctolagus cuniculus domesticus</span>'
+  Rhesus macaque: '<span style="color: #94356A;">Rhesus macaque</span>'
 dbsubject: Biotechnology
 
 items to match per question: 8

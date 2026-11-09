@@ -12,4 +12,9 @@ matching pairs:
   - one gene suppresses the effect of another gene that is not its allele
   incomplete dominance:
   - heterozygote appearance is a blended phenotype of both homozygous phenotypes
+replacement_rules:
+  codominance: '<span style="color: #B74300;">codominance</span>'
+  complete dominance: '<span style="color: #3B7600;">complete dominance</span>'
+  epistasis: '<span style="color: #007576;">epistasis</span>'
+  incomplete dominance: '<span style="color: #0067CC;">incomplete dominance</span>'
 dbsubject: Genetics

@@ -22,4 +22,13 @@ matching pairs:
     attached
   Oxford Nanopore sequencing: detects the electrical signal of nucleotides on a single-strand
     of DNA as it is pulled through a membrane protein channel
+replacement_rules:
+  Classical Sanger sequencing: '<span style="color: #D40000;">Classical Sanger sequencing</span>'
+  Terminal-dye Sanger sequencing: '<span style="color: #B74300;">Terminal-dye Sanger sequencing</span>'
+  Roche 454 pyrosequencing: '<span style="color: #6C6C00;">Roche 454 pyrosequencing</span>'
+  ABI solid sequencing: '<span style="color: #007A00;">ABI solid sequencing</span>'
+  Illumina sequencing by synthesis: '<span style="color: #007576;">Illumina sequencing by synthesis</span>'
+  Ion Torrent semiconductor sequencing: '<span style="color: #003FFF;">Ion Torrent semiconductor sequencing</span>'
+  PacBio single molecule real time (SMRT) sequencing: '<span style="color: #A719DB;">PacBio single molecule real time (SMRT) sequencing</span>'
+  Oxford Nanopore sequencing: '<span style="color: #CC0066;">Oxford Nanopore sequencing</span>'
 dbsubject: Biotechnology

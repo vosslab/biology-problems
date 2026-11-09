@@ -31,4 +31,11 @@ matching pairs:
 exclude pairs:
 - - Hearing (audition)
   - Balance (vestibular)
+replacement_rules:
+  Vision: '<span style="color: #D40000;">Vision</span>'
+  Smell (olfaction): '<span style="color: #935D00;">Smell (olfaction)</span>'
+  Taste (gustation): '<span style="color: #00775F;">Taste (gustation)</span>'
+  Hearing (audition): '<span style="color: #003FFF;">Hearing (audition)</span>'
+  Balance (vestibular): '<span style="color: #A719DB;">Balance (vestibular)</span>'
+  Touch (pressure, vibration): '<span style="color: #CC0066;">Touch (pressure, vibration)</span>'
 dbsubject: Cell Biology

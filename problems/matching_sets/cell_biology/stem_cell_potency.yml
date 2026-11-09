@@ -45,4 +45,10 @@ matching pairs:
     cells (placenta)
   - extremely rare cells that have the ability to form an entire human being including
     the trophoblast
+replacement_rules:
+  unipotent: '<span style="color: #B74300;">unipotent</span>'
+  oligopotent: '<span style="color: #3B7600;">oligopotent</span>'
+  multipotent: '<span style="color: #007576;">multipotent</span>'
+  pluripotent: '<span style="color: #0067CC;">pluripotent</span>'
+  totipotent: '<span style="color: #CC0066;">totipotent</span>'
 dbsubject: Cell Biology

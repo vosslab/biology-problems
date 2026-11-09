@@ -4,22 +4,23 @@ keys description: stages in the central dogma of biology
 value description: related terminology
 values description: related terms
 replacement_rules:
+  # Original color rules retained for restoration:
+  #   amino acid: '<span style="color: #935d00;">amino acid</span>' #LIGHT ORANGE
+  #   stranded: '<span style="color: #6c6c00;">stranded</span>'
+  #   strand: '<span style="color: #6c6c00;">strand</span>' #DARK YELLOW
+  #   polymerase: '<span style="color: #3b7600;">polymerase</span>' #LIME GREEN
+  #   introns: '<span style="color: #00775f;">introns</span>' #TEAL
+  #   promoter: '<span style="color: #007576;">promoter</span>' #CYAN
+  #   attachment: '<span style="color: #076dad;">attachment</span>' #SKY BLUE
+  #   terminator: '<span style="color: #003fff;">terminator</span>' #BLUE
+  #   synthetase: '<span style="color: #a719db;">synthetase</span>' #PURPLE
+  #   codons: '<span style="color: #c80085;">codons</span>'
+  #   codon: '<span style="color: #c80085;">codon</span>' #MAGENTA
+  #   translocation: '<span style="color: #cc0066;">translocation</span>' #PINK
   RNA transcription: '<span style="color: #d40000;">RNA transcription</span>' #RED
   tRNA charging: '<span style="color: #b74300;">tRNA charging</span>' #DARK ORANGE
-  amino acid: '<span style="color: #935d00;">amino acid</span>' #LIGHT ORANGE
-  stranded: '<span style="color: #6c6c00;">stranded</span>'
-  strand: '<span style="color: #6c6c00;">strand</span>' #DARK YELLOW
-  polymerase: '<span style="color: #3b7600;">polymerase</span>' #LIME GREEN
   Protein translation: '<span style="color: #007a00;">Protein translation</span>' #GREEN
-  introns: '<span style="color: #00775f;">introns</span>' #TEAL
-  promoter: '<span style="color: #007576;">promoter</span>' #CYAN
-  attachment: '<span style="color: #076dad;">attachment</span>' #SKY BLUE
-  terminator: '<span style="color: #003fff;">terminator</span>' #BLUE
   DNA replication: '<span style="color: #0067cc;">DNA replication</span>' #NAVY
-  synthetase: '<span style="color: #a719db;">synthetase</span>' #PURPLE
-  codons: '<span style="color: #c80085;">codons</span>'
-  codon: '<span style="color: #c80085;">codon</span>' #MAGENTA
-  translocation: '<span style="color: #cc0066;">translocation</span>' #PINK
   mRNA processing: '<span style="color: #cc0066;">mRNA processing</span>' #PINK
 matching pairs:
   DNA replication:

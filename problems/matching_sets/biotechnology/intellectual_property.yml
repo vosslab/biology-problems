@@ -23,4 +23,9 @@ matching pairs:
   - gives its owner the exclusive right to exclude others from making an invention
   - protects a new and useful invention for a limited time
   - lets the inventor stop others from making, using, or selling the invention
+replacement_rules:
+  Trademark: '<span style="color: #00775F;">Trademark</span>'
+  Copyleft: '<span style="color: #003FFF;">Copyleft</span>'
+  Copyright: '<span style="color: #A719DB;">Copyright</span>'
+  Patent: '<span style="color: #C80085;">Patent</span>'
 dbsubject: Biotechnology

@@ -30,4 +30,9 @@ matching pairs:
   Medical Devices:
   - designing a watch to measure blood pressure
   - eye contacts that can measure blood sugar levels from your tears
+replacement_rules:
+  Biotechnology: '<span style="color: #B74300;">Biotechnology</span>'
+  Pharmaceuticals: '<span style="color: #3B7600;">Pharmaceuticals</span>'
+  Engineering: '<span style="color: #007576;">Engineering</span>'
+  Medical Devices: '<span style="color: #0067CC;">Medical Devices</span>'
 dbsubject: Biotechnology

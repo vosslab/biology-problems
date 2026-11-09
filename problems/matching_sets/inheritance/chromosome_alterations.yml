@@ -4,15 +4,24 @@ keys description: alterations to chromosome structure
 value description: description
 values description: descriptions
 replacement_rules:
-  chromosomes: '<span style="color: #008672;">chromosomes</span>' #DARK TEAL
-  chromosome: '<span style="color: #008672;">chromosome</span>' #DARK TEAL
-  centromeres: '<span style="color: #c1480a;">centromeres</span>' #BURNT ORANGE
-  centromere: '<span style="color: #c1480a;">centromere</span>' #BURNT ORANGE
-  reversal: '<span style="color: #56225d;">reversal</span>' #DARK PURPLE
-  reversed: '<span style="color: #56225d;">reversed</span>' #DARK PURPLE
-  reverse: '<span style="color: #56225d;">reverse</span>' #DARK PURPLE
-  genes: '<span style="color: #43861a;">genes</span>' #OLIVE GREEN
-  ectopic: '<span style="color: #a16c04;">ectopic</span>' #OCHRE
+  # Original color rules retained for restoration:
+  #   chromosomes: '<span style="color: #008672;">chromosomes</span>' #DARK TEAL
+  #   chromosome: '<span style="color: #008672;">chromosome</span>' #DARK TEAL
+  #   centromeres: '<span style="color: #c1480a;">centromeres</span>' #BURNT ORANGE
+  #   centromere: '<span style="color: #c1480a;">centromere</span>' #BURNT ORANGE
+  #   reversal: '<span style="color: #56225d;">reversal</span>' #DARK PURPLE
+  #   reversed: '<span style="color: #56225d;">reversed</span>' #DARK PURPLE
+  #   reverse: '<span style="color: #56225d;">reverse</span>' #DARK PURPLE
+  #   genes: '<span style="color: #43861a;">genes</span>' #OLIVE GREEN
+  #   ectopic: '<span style="color: #a16c04;">ectopic</span>' #OCHRE
+  non-disjunction: '<span style="color: #A719DB;">non-disjunction</span>'
+  deletion: '<span style="color: #C80085;">deletion</span>'
+  duplications: '<span style="color: #CC0066;">duplications</span>'
+  reciprocal translocation: '<span style="color: #D40000;">reciprocal translocation</span>'
+  non-reciprocal translocation: '<span style="color: #B74300;">non-reciprocal translocation</span>'
+  paracentric inversion: '<span style="color: #935D00;">paracentric inversion</span>'
+  pericentric inversion: '<span style="color: #6C6C00;">pericentric inversion</span>'
+  Robertsonian translocation: '<span style="color: #3B7600;">Robertsonian translocation</span>'
 matching pairs:
   non-disjunction:
   - the failure of sister chromatids to separate properly during cell division

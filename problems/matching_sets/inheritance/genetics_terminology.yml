@@ -4,23 +4,27 @@ keys description: genetic terms
 value description: definition
 values description: definitions
 replacement_rules:
+  # Original color rules retained for restoration:
+  #   'gene ': '<span style="color: #b74300;">gene</span> '
+  #   genomes: '<span style="color: #6c6c00;">genomes</span>' #DARK YELLOW
+  #   genetics: '<span style="color: #007a00;">genetics</span>' #GREEN
+  #   IIIIIIII: '<span style="color: #076dad;">IIIIIIII</span>' #SKY BLUE
+  #   genetic code: '<span style="color: #003fff;">genetic code</span>' #BLUE
+  #   genetic term: '<span style="color: #a719db;">genetic term</span>' #PURPLE
+  #   KKKKKKKK: '<span style="color: #0067cc;">KKKKKKKK</span>' #NAVY
+  #   genetic terms: '<span style="color: #a719db;">genetic terms</span>' #PURPLE
+  #   NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
   haploid: '<span style="color: #d40000;">haploid</span>' #RED
-  'gene ': '<span style="color: #b74300;">gene</span> ' #DARK ORANGE
   locus: '<span style="color: #935d00;">locus</span>' #LIGHT ORANGE
-  genomes: '<span style="color: #6c6c00;">genomes</span>' #DARK YELLOW
   genome: '<span style="color: #6c6c00;">genome</span>' #DARK YELLOW
   single nucleotide polymorphism (SNP): '<span style="color: #3b7600;">single nucleotide
     polymorphism (SNP)</span>' #LIME GREEN
-  genetics: '<span style="color: #007a00;">genetics</span>' #GREEN
   homologous chromosomes: '<span style="color: #00775f;">homologous chromosomes</span>' #TEAL
   diploid: '<span style="color: #007576;">diploid</span>' #CYAN
-  IIIIIIII: '<span style="color: #076dad;">IIIIIIII</span>' #SKY BLUE
-  genetic code: '<span style="color: #003fff;">genetic code</span>' #BLUE
-  genetic term: '<span style="color: #a719db;">genetic term</span>' #PURPLE
-  KKKKKKKK: '<span style="color: #0067cc;">KKKKKKKK</span>' #NAVY
-  genetic terms: '<span style="color: #a719db;">genetic terms</span>' #PURPLE
   genomics: '<span style="color: #c80085;">genomics</span>' #MAGENTA
-  NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
+  'gene ': '<span style="color: #b74300;">gene </span>'
+  genetics: '<span style="color: #007a00;">genetics</span>'
+  genetic code: '<span style="color: #003fff;">genetic code</span>'
 matching pairs:
   haploid:
   - a cell or organism that has a single set of chromosomes

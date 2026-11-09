@@ -1,13 +1,13 @@
 topic: chemical reactions
 replacement_rules:
-  AAAAAAA: '<span style="color: #d40000;">AAAAAAA</span>'
+#   AAAAAAA: '<span style="color: #d40000;">AAAAAAA</span>'
   exothermic: '<span style="color: #b74300;">exothermic</span>'
-  BBBBBBB: '<span style="color: #935d00;">BBBBBBB</span>'
-  CCCCCCC: '<span style="color: #6c6c00;">CCCCCCC</span>'
+#   BBBBBBB: '<span style="color: #935d00;">BBBBBBB</span>'
+#   CCCCCCC: '<span style="color: #6c6c00;">CCCCCCC</span>'
   physical changes: '<span style="color: #3b7600;">physical changes</span>'
-  energy: '<span style="color: #007a00;">energy</span>'
+#   energy: '<span style="color: #007a00;">energy</span>'
   endothermic: '<span style="color: #076dad;">endothermic</span>'
-  substances: '<span style="color: #a719db;">substances</span>'
+#   substances: '<span style="color: #a719db;">substances</span>'
   Chemical reactions: '<span style="color: #c80085;">Chemical&nbsp;reactions</span>'
   chemical reactions: '<span style="color: #c80085;">chemical&nbsp;reactions</span>'
   chemical reaction.: '<span style="color: #c80085;">chemical&nbsp;reaction</span>.'

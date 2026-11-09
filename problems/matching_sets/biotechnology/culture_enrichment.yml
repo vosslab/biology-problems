@@ -21,4 +21,9 @@ matching pairs:
     or viruses
   - bacteria that are actively growing will take up a nucleotide analog and incorporate
     it into its DNA
+replacement_rules:
+  DNA stable isotope probing (DNA-SIP): '<span style="color: #00775F;">DNA stable isotope probing (DNA-SIP)</span>'
+  RNA stable isotope probing (RNA-SIP): '<span style="color: #003FFF;">RNA stable isotope probing (RNA-SIP)</span>'
+  suppressive subtraction hybridization (SSH): '<span style="color: #A719DB;">suppressive subtraction hybridization (SSH)</span>'
+  BrdU: '<span style="color: #C80085;">BrdU</span>'
 dbsubject: Laboratory Techniques

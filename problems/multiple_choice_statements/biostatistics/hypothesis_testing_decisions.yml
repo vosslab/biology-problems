@@ -3,25 +3,31 @@ num_choices: 4
 override_question_true: '<p>Which statement about stattests is <strong>TRUE</strong>?</p>'
 override_question_false: null
 # Four decision rules; wrong choices reverse a decision or its cutoff comparison.
-# Decision colors mark wording, not whether a statement is true.
-# Each color appears in both true and false statements.
+# Concept colors stay consistent across true and false statements.
 replacement_rules:
-  reject: '<span style="color: #17365d;">reject</span>'
-  fail2reject: '<span style="color: #9c3b10;">fail to reject</span>'
-  supports: '<span style="color: #17365d;">supports</span>'
-  doesntsupport: '<span style="color: #9c3b10;">does not support</span>'
-  althyp: '<span style="color: #b74300;">alternative hypothesis, H<sub>a</sub></span>'
-  stattest: '<span style="color: #935d00;">statistical test</span>'
-  stattests: '<span style="color: #935d00;">statistical tests</span>'
-  EEEEEEEE: '<span style="color: #3b7600;">EEEEEEEE</span>'
+  # reject: '<span style="color: #17365d;">reject</span>'
+  # fail2reject: '<span style="color: #9c3b10;">fail to reject</span>'
+  fail2reject: fail to reject
+  # supports: '<span style="color: #17365d;">supports</span>'
+  # doesntsupport: '<span style="color: #9c3b10;">does not support</span>'
+  doesntsupport: does not support
+  # althyp: '<span style="color: #b74300;">alternative hypothesis, H<sub>a</sub></span>'
+  althyp: '<strong>alternative hypothesis, </strong><strong><span style="color: #b74300;">H<sub>a</sub></span></strong>'
+  # stattest: '<span style="color: #935d00;">statistical test</span>'
+  stattest: statistical test
+  # stattests: '<span style="color: #935d00;">statistical tests</span>'
+  stattests: statistical tests
+  # EEEEEEEE: '<span style="color: #3b7600;">EEEEEEEE</span>'
   teststat: '<span style="color: #00775f;">test statistic</span>'
-  nullhyp: '<span style="color: #49358c;">null hypothesis, H<sub>0</sub></span>'
-  IIIIIIII: '<span style="color: #076dad;">IIIIIIII</span>'
+  # nullhyp: '<span style="color: #49358c;">null hypothesis, H<sub>0</sub></span>'
+  nullhyp: '<strong>null hypothesis, </strong><strong><span style="color: #49358c;">H<sub>0</sub></span></strong>'
+  # IIIIIIII: '<span style="color: #076dad;">IIIIIIII</span>'
   critval: '<span style="color: #003fff;">critical value</span>'
-  KKKKKKKK: '<span style="color: #0067cc;">KKKKKKKK</span>'
-  losa: '<span style="color: #a719db;">significance level, &alpha;</span>'
+  # KKKKKKKK: '<span style="color: #0067cc;">KKKKKKKK</span>'
+  # losa: '<span style="color: #a719db;">significance level, &alpha;</span>'
+  losa: '<strong>significance level, </strong><strong><span style="color: #a719db;">&alpha;</span></strong>'
   p-value: '<span style="color: #c80085;">p-value</span>'
-  NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>'
+  # NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>'
   more extreme than: <strong>more extreme than</strong>
   less than: <strong>less than</strong>
   greater than: <strong>greater than</strong>

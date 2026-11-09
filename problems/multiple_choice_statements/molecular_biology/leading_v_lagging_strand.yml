@@ -4,9 +4,11 @@ connection_words: null
 replacement_rules:
   Okazaki fragments: '<span style="color: Maroon;">Okazaki fragments</span>'
   RNA primers: '<span style="color: #b33000;">RNA primers</span>'
-  DNA primers: '<span style="color: #248f24;">DNA primers</span>'
+#   DNA primers: '<span style="color: #248f24;">DNA primers</span>'
+  DNA primers: '<span style="color: #1f791f;">DNA primers</span>'
   leading strand: '<span style="color: #002699;">leading strand</span>'
-  lagging strand: '<span style="color: #995c00;">lagging strand</span>'
+#   lagging strand: '<span style="color: #995c00;">lagging strand</span>'
+  lagging strand: '<span style="color: #975b00;">lagging strand</span>'
 true_statements:
   truth1a: the leading strand is replicated continuously, while the lagging strand
     is replicated piecewise

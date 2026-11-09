@@ -4,7 +4,12 @@ keys description: Mendelian genetics terms
 value description: definition
 values description: definitions
 replacement_rules:
-  genes: '<span style="color: #d40000;">genes</span>' #RED
+  # Original color rules retained for restoration:
+  #   genes: '<span style="color: #d40000;">genes</span>' #RED
+  #   observable: '<span style="color: #003fff;">observable</span>' #BLUE
+  #   identical: '<span style="color: #0067cc;">identical</span>' #NAVY
+  #   NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
+  genes: '<span style="color: #935d00;">genes</span>'
   traits: '<span style="color: #b74300;">traits</span>' #DARK ORANGE
   trait: '<span style="color: #b74300;">trait</span>' #DARK ORANGE
   genotypes: '<span style="color: #935d00;">genotypes</span>' #LIGHT ORANGE
@@ -19,11 +24,8 @@ replacement_rules:
   phenotype: '<span style="color: #007576;">phenotype</span>' #CYAN
   characters: '<span style="color: #076dad;">characters</span>' #SKY BLUE
   character: '<span style="color: #076dad;">character</span>' #SKY BLUE
-  observable: '<span style="color: #003fff;">observable</span>' #BLUE
-  identical: '<span style="color: #0067cc;">identical</span>' #NAVY
   recessive: '<span style="color: #a719db;">recessive</span>' #PURPLE
   homozygous: '<span style="color: #c80085;">homozygous</span>' #MAGENTA
-  NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
 matching pairs:
   character:
   - a single heritable feature that varies among individuals, such as seed shape

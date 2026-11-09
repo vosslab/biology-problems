@@ -4,20 +4,27 @@ keys description: Meiosis terms
 value description: definition
 values description: definitions
 replacement_rules:
-  homologous chromosomes: '<span style="color: #d40000;">homologous chromosomes</span>' #RED
-  homologous: '<span style="color: #007576;">homologous</span>' #CYAN
-  BBBBBBBB: '<span style="color: #b74300;">BBBBBBBB</span>' #DARK ORANGE
-  CCCCCCCC: '<span style="color: #935d00;">CCCCCCCC</span>' #LIGHT ORANGE
-  DDDDDDDD: '<span style="color: #6c6c00;">DDDDDDDD</span>' #DARK YELLOW
-  EEEEEEEE: '<span style="color: #3b7600;">EEEEEEEE</span>' #LIME GREEN
-  FFFFFFFF: '<span style="color: #007a00;">FFFFFFFF</span>' #GREEN
-  GGGGGGGG: '<span style="color: #00775f;">GGGGGGGG</span>' #TEAL
-  IIIIIIII: '<span style="color: #076dad;">IIIIIIII</span>' #SKY BLUE
-  JJJJJJJJ: '<span style="color: #003fff;">JJJJJJJJ</span>' #BLUE
-  KKKKKKKK: '<span style="color: #0067cc;">KKKKKKKK</span>' #NAVY
-  LLLLLLLL: '<span style="color: #a719db;">LLLLLLLL</span>' #PURPLE
-  MMMMMMMM: '<span style="color: #c80085;">MMMMMMMM</span>' #MAGENTA
-  NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
+  # Original color rules retained for restoration:
+  #   homologous chromosomes: '<span style="color: #d40000;">homologous chromosomes</span>' #RED
+  #   homologous: '<span style="color: #007576;">homologous</span>' #CYAN
+  #   BBBBBBBB: '<span style="color: #b74300;">BBBBBBBB</span>' #DARK ORANGE
+  #   CCCCCCCC: '<span style="color: #935d00;">CCCCCCCC</span>' #LIGHT ORANGE
+  #   DDDDDDDD: '<span style="color: #6c6c00;">DDDDDDDD</span>' #DARK YELLOW
+  #   EEEEEEEE: '<span style="color: #3b7600;">EEEEEEEE</span>' #LIME GREEN
+  #   FFFFFFFF: '<span style="color: #007a00;">FFFFFFFF</span>' #GREEN
+  #   GGGGGGGG: '<span style="color: #00775f;">GGGGGGGG</span>' #TEAL
+  #   IIIIIIII: '<span style="color: #076dad;">IIIIIIII</span>' #SKY BLUE
+  #   JJJJJJJJ: '<span style="color: #003fff;">JJJJJJJJ</span>' #BLUE
+  #   KKKKKKKK: '<span style="color: #0067cc;">KKKKKKKK</span>' #NAVY
+  #   LLLLLLLL: '<span style="color: #a719db;">LLLLLLLL</span>' #PURPLE
+  #   MMMMMMMM: '<span style="color: #c80085;">MMMMMMMM</span>' #MAGENTA
+  #   NNNNNNNN: '<span style="color: #cc0066;">NNNNNNNN</span>' #PINK
+  homologous chromosomes: '<span style="color: #d40000;">homologous chromosomes</span>'
+  homologous: '<span style="color: #007576;">homologous</span>'
+  synapsis: '<span style="color: #CC0066;">synapsis</span>'
+  sister chromatids: '<span style="color: #003FFF;">sister chromatids</span>'
+  crossing over: '<span style="color: #B74300;">crossing over</span>'
+  chiasmata: '<span style="color: #935D00;">chiasmata</span>'
 matching pairs:
   homologous chromosomes:
   - two similar but different copies of a chromosome

@@ -2,6 +2,10 @@
 topic: biotechnology_periods_and_milestones
 learning_objective: Match biotechnology history periods to representative milestones.
 source: Biotechnology LECT02 history slides and historical-period quiz examples
+replacement_rules:
+  Ancient times (before 1800): '<span style="color: #B74300;">Ancient times (before 1800)</span>'
+  Classical times (1800-1945): '<span style="color: #3B7600;">Classical times (1800-1945)</span>'
+  Modern times (1945-present): '<span style="color: #007576;">Modern times (1945-present)</span>'
 dbsubject: Biotechnology
 
 items to match per question: 3
