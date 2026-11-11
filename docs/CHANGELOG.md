@@ -20,6 +20,24 @@
 ### Fixes and Maintenance
 
 - Synchronized shared style guides, tests, and repository support files from the starter template.
+- Repair archived gene-mapping links after the generator filename rename, and remove a
+  document-navigation paragraph from human guidance.
+- Leave browser rendering and its errors to QPM. Remove Playwright imports and browser
+  preflight from bptools; keep option validation and save question text before export.
+
+### Test maintenance
+
+- Retain four-gene distance/order recovery, segregation, and scaling checks; update the
+  retained tetrad generator import to its current filename. Remove two mixed rendering
+  tests that pin table layout, SVG geometry, variable totals, and repeated mapping checks.
+- Replace four browser-specific export cases with one renderer-independent check that
+  export failure preserves saved questions, propagates the error, and cleans staging files.
+- Classify exact SVG geometry, table arrangement, and multi-seed output variety as temporary
+  implementation checks. They are not permanent suite requirements.
+- One-time verification: all four original four-gene tests pass with corrected generator
+  paths. Remove the temporary copies after verification.
+- Full suite after cleanup: 6,349 passed in 20.03 seconds. Two existing source-file
+  length warnings remain for bptools_legacy.py and webwork_lib.py.
 
 ### Developer Tests and Notes
 

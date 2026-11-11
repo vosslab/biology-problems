@@ -1087,26 +1087,13 @@ def export_bbq_to_selftest(outfile: str | os.PathLike, open_browser: bool = Fals
 #==========================
 def _check_image_export(
 		bbexport: bool, html_to_image: bool, image_scale_supplied: bool = False) -> None:
-	"""Fail before generation or writing when image export cannot launch Chromium."""
+	"""Validate image-export options before generation or writing."""
 	if image_scale_supplied and not html_to_image:
 		raise ValueError('--image-scale requires -I or --html-to-image.')
 	if not html_to_image:
 		return
 	if not bbexport:
 		raise ValueError("HTML-to-image export requires -B or --bbexport.")
-	from playwright.sync_api import Error, sync_playwright
-	with sync_playwright() as playwright:
-		try:
-			browser = playwright.chromium.launch(headless=True)
-		except Error as error:
-			if "Executable doesn't exist" not in str(error):
-				raise
-			raise RuntimeError(
-				"Image export (-I) requires the Playwright Chromium headless browser.\n"
-				"Install it with:\n"
-				"  python3 -m playwright install --only-shell chromium"
-			) from None
-		browser.close()
 
 #==========================
 def _write_questions_to_file(
@@ -1148,19 +1135,8 @@ def _write_questions_to_file(
 	if not html_to_image:
 		export_bbq_to_blackboard(outfile)
 		return
-	from playwright.sync_api import Error
-	try:
-		export_bbq_to_blackboard(outfile, html_to_image=True, image_scale=image_scale)
-	except Error as error:
-		if "Executable doesn't exist" not in str(error):
-			raise
-		# ASVS 16.5.3: report failed export without discarding the saved BBQ file.
-		raise SystemExit(
-			"Image export (-I) requires the Playwright Chromium headless browser.\n"
-			"Install it with:\n"
-			"  python3 -m playwright install --only-shell chromium\n"
-			f"Then rerun your generator. Your question file is saved at: {outfile}"
-		) from None
+	# ASVS 16.5.3: propagate export errors after saving the question file.
+	export_bbq_to_blackboard(outfile, html_to_image=True, image_scale=image_scale)
 
 #==========================
 def write_questions_to_file(

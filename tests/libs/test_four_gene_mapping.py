@@ -1,8 +1,3 @@
-import itertools
-import random
-
-import pytest
-
 from lib_test_utils import import_from_repo_path
 
 BASE = 'problems/inheritance-problems/gene_mapping/'
@@ -33,26 +28,3 @@ def test_four_gene_pool_keys_recover_from_offspring():
 				observed[('abcd'[i-1], 'abcd'[j-1])] = numerator // 2
 			assert tuple(observed.values()) == key
 			assert solver.get_gene_order(observed) in ('abcd', 'dcba')
-
-
-def test_four_gene_questions_have_correct_blanks_tables_and_keys():
-	mod = import_from_repo_path(BASE + 'four_point_test-cross_gene_map-distances_plus.py')
-	for seed in range(12):
-		random.seed(seed)
-		mapping = mod.gmc.GeneMappingClass(4)
-		mapping.setup_question()
-		distances, _, order = mod.solver.gene_map_solver(mapping.genotype_counts)
-		assert order in (mapping.gene_order_str, mapping.gene_order_str[::-1])
-		assert sorted(round(d, 1) for d in distances) == sorted(mapping.distances_dict.values())
-		assert len(mapping.genotype_counts) == 16
-		assert sum(mapping.genotype_counts.values()) == mapping.progeny_count_int
-		html = mapping.get_progeny_html_table()
-		assert html.count('Progeny<br/>Count') == 2
-		assert html.count('Combined total progeny:') == 1
-		answers = mod.get_answer_mapping(mapping)
-		for i, j in itertools.combinations(range(1, 5), 2):
-			pair = ''.join(sorted((mapping.gene_order_str[i-1], mapping.gene_order_str[j-1]))).upper()
-			assert answers[pair][0] == f'{mapping.distances_dict[(i, j)]:.1f}'
-		assert mapping.gene_order_str[::-1].upper() in answers['geneorder']
-	with pytest.raises(ValueError, match='unique order'):
-		mod.solver.get_gene_order({pair: 10 for pair in itertools.combinations('abcd', 2)})

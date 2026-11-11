@@ -3,7 +3,6 @@ import argparse
 import os
 import sys
 import tempfile
-import types
 import zipfile
 
 import pytest
@@ -294,63 +293,21 @@ def test_image_export_rejects_invalid_scale_before_writing(tmp_path, image_scale
 	assert list(tmp_path.iterdir()) == []
 
 
-@pytest.mark.parametrize("missing_browser", [True, False])
-def test_image_export_browser_failure_preserves_questions(tmp_path, monkeypatch, missing_browser):
-	from playwright.sync_api import Error
-	message = "BrowserType.launch: Executable doesn't exist at /missing/browser"
-	if not missing_browser:
-		message = "BrowserType.launch: Target page, context or browser has been closed"
-	error = Error(message)
+def test_image_export_failure_preserves_questions(tmp_path, monkeypatch):
+	error = RuntimeError("Image export failed")
 
 	def fail_save(*args, **kwargs):
 		raise error
 
 	monkeypatch.setattr(bptools.package_interface.QTIPackageInterface, "save_package", fail_save)
-	# A browser that disappears after a successful preflight still preserves the BBQ.
-	monkeypatch.setattr(bptools, "_check_image_export", lambda *args: None)
 	bbq_path = tmp_path / "bbq-image-questions.txt"
 	questions = ["MC\tQuestion?\tNo\tincorrect\tYes\tcorrect\n"]
-	expected_error = SystemExit if missing_browser else Error
-	with pytest.raises(expected_error) as caught:
+	with pytest.raises(RuntimeError) as caught:
 		bptools.write_questions_to_file(questions, bbq_path, bbexport=True, html_to_image=True)
-	if missing_browser:
-		assert "python3 -m playwright install --only-shell chromium" in str(caught.value)
-		assert caught.value.code != 0
-	else:
-		assert caught.value is error
+	assert caught.value is error
 	assert "Question?" in bbq_path.read_text()
 	assert not list(tmp_path.glob(".bez-*"))
 	assert not list(tmp_path.glob("*.zip"))
-
-
-@pytest.mark.parametrize("direct_write", [True, False])
-def test_image_export_missing_browser_fails_before_generation_or_writing(
-		tmp_path, monkeypatch, direct_write):
-	import playwright.sync_api
-
-	def fail_launch(**kwargs):
-		raise playwright.sync_api.Error("Executable doesn't exist at /missing/browser")
-
-	class FakePlaywright:
-		def __enter__(self):
-			return types.SimpleNamespace(chromium=types.SimpleNamespace(launch=fail_launch))
-
-		def __exit__(self, *args):
-			return False
-
-	monkeypatch.setattr(playwright.sync_api, "sync_playwright", FakePlaywright)
-	outfile = tmp_path / "questions.txt"
-
-	def write_question(*args):
-		pytest.fail("Question generation must not start without Chromium")
-
-	with pytest.raises(RuntimeError, match="python3 -m playwright install --only-shell chromium"):
-		if direct_write:
-			bptools.write_questions_to_file([], outfile, bbexport=True, html_to_image=True)
-		else:
-			args = argparse.Namespace(bbexport=True, html_to_image=True)
-			bptools.collect_and_write_questions(write_question, args, outfile)
-	assert list(tmp_path.iterdir()) == []
 
 
 def test_add_question_format_args_parses_expected_formats():
