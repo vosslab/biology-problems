@@ -1,5 +1,34 @@
 # Changelog
 
+## 2026-11-11
+
+### Additions and New Features
+
+- Add Dr. Caffeine linear and quadratic numeric R-squared assignments.
+  Each supplies 25 fresh paired observations for the completed tutorial spreadsheet's
+  fixed ranges. Randomize slope direction, curvature sign, and fit strength; grade with
+  absolute tolerance 0.001. Add a biostatistics README describing generator families,
+  tutorial workflows and the distinction between templates and completed sheets.
+- Assess tutorial workflow completion by requesting the R-squared result cell;
+  keep interpretation and model-comparison instruction in the tutorials.
+- Follow existing biostatistics prompts: identify the worksheet and requested result
+  by label, leaving cell ranges and formula instructions to the tutorial.
+- Document numeric-only copyable-data guidance in the biostatistics README: omit
+  irrelevant location labels and use one number per line for single-variable data.
+  Leave existing generators unchanged.
+
+### Developer Tests and Notes
+
+- Five focused mathematical checks pass. Ten temporary completed-workbook samples
+  agree with LibreOffice Calc's E10/I5 results after replacing A2:B26. Sample 1,000
+  draws per model to verify both coefficient signs and varied fit strengths; review
+  local HTML and run the student-text checker with no findings.
+- Full suite: 6,292 passed and 15 failures outside the changed files, covering stale
+  gene-mapping paths, QTI export/browser dependencies, guidance formatting, archived
+  changelog links, and the Graphify helper. The installed QTI package does not provide
+  the shared `html_selftest` engine. Live Google Sheets and Blackboard import remain
+  unverified; the existing tutorial documents and workbook are unchanged.
+
 ## 2026-11-09
 
 ### Fixes and Maintenance
