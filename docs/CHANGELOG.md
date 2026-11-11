@@ -17,6 +17,10 @@
   irrelevant location labels and use one number per line for single-variable data.
   Leave existing generators unchanged.
 
+### Fixes and Maintenance
+
+- Synchronized shared style guides, tests, and repository support files from the starter template.
+
 ### Developer Tests and Notes
 
 - Five focused mathematical checks pass. Ten temporary completed-workbook samples

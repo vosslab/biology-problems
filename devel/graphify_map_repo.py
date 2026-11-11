@@ -194,7 +194,7 @@ def prepare_label_backend(repo_root: pathlib.Path, label_backend: str) -> None:
 	# ASVS 2.2.1: choose only the two documented fresh-build label backends.
 	if label_backend not in (LABEL_BACKEND, OLLAMA_BACKEND):
 		raise ValueError(f"Unsupported Graphify label backend: {label_backend}")
-	backend_executable = require_command(
+	require_command(
 		"ollama" if label_backend == OLLAMA_BACKEND else "claude"
 	)
 

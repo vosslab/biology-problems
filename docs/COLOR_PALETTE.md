@@ -5,9 +5,6 @@ Use explicit hex values in Djot, for example `[Predict]{color=#D40000}`.
 Preserve meaningful color relationships in the original slides; match references to the
 items they identify. Course theme colors and pale background fills serve separate roles.
 
-For question presentation and coordinated concept-color subsets, use
-[QUESTION_COLOR_GUIDE.md](QUESTION_COLOR_GUIDE.md).
-
 ## Standard text palette
 
 These values come from the HTML span styles in `replacement_rules` in

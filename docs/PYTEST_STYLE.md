@@ -78,7 +78,7 @@ The three disk-budget tests are mandatory base-lane exceptions to the no-subproc
 optional or E2E-only checks:
 
 - `tests/test_checkout_disk_budget.py` measures the complete checkout with local `du`.
-- `tests/test_podman_disk_budget.py` measures machine-wide Podman storage in every repository.
+- `tests/test_podman_disk_budget.py` measures machine-wide Podman storage in repositories declaring `podman`.
 - Rust repositories receive `tests/test_target_disk_budget.py`, which measures local `target/`
   build artifacts with `du`.
 

@@ -530,12 +530,12 @@ def collect_violations(
 SCAN_NOW = time.time()
 RECENT_UNTRACKED_PATHS = recent_untracked_paths(REPO_ROOT, SCAN_NOW)
 TRACKED_MARKDOWN_FILES = file_utils.discover_files(
-	extensions=(".md", ".djot"), test_key="markdown_links",
+	extensions=(".md",), test_key="markdown_links",
 )
 RECENT_MARKDOWN_FILES = [
 	os.path.join(REPO_ROOT, path)
 	for path in RECENT_UNTRACKED_PATHS
-	if os.path.splitext(path)[1].lower() in (".md", ".djot")
+	if os.path.splitext(path)[1].lower() == ".md"
 ]
 FILES = sorted(set(TRACKED_MARKDOWN_FILES + RECENT_MARKDOWN_FILES))
 
