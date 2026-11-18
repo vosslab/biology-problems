@@ -513,7 +513,7 @@ def normalize_target_version(entry: dict, new_version: str) -> str:
 	Returns:
 		str: Adjusted version string.
 	"""
-	if entry["kind"] in ("cargo_toml", "cargo_lock"):
+	if entry["kind"] in ("cargo_toml", "cargo_lock", "package_json", "package_lock"):
 		return normalize_cargo_version(new_version)
 	if entry.get("patch_optional") and new_version.endswith(".0"):
 		short_version = new_version.replace(".0", "", 1)
@@ -535,6 +535,8 @@ def entry_matches_target(entry: dict, new_version: str) -> bool:
 	"""
 	target_version = normalize_target_version(entry, new_version)
 	matches = entry["version"] == target_version
+	if entry["kind"] == "package_lock":
+		matches = matches and entry.get("root_package_version") == target_version
 	return matches
 
 #============================================

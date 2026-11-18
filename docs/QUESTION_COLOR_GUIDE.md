@@ -19,9 +19,8 @@ name. In a longer statement, highlighting a compact reference may be enough. For
 coloring H<sub>0</sub> in "null hypothesis, H<sub>0</sub>" can retain the association while leaving
 more of the sentence visually quiet. Preserve meaningful bold, italics, and scientific notation.
 
-Keep repeated references, aliases, and singular/plural forms consistent within a question and
-its shuffled variants. Carry associations into related banks when practical. Different banks
-can use different coordinated palettes when that better suits their concepts.
+Keep repeated references, aliases, and singular/plural forms consistent within a question,
+its shuffled variants, and related banks that use the same concepts.
 
 ## Support the matching task
 
@@ -39,9 +38,9 @@ statements. Color identifies the concept; the words determine whether the statem
 
 ## Choose a coordinated palette
 
-Start with the existing template colors in [COLOR_PALETTE.md](COLOR_PALETTE.md). Preserve
-established assignments where they work well. For new sets, choose colors that look related
-while remaining easy to distinguish. Possible starting subsets include:
+Choose colors from [COLOR_PALETTE.md](COLOR_PALETTE.md). Reuse assignments from
+[REPO_COLOR_PALETTE.md](REPO_COLOR_PALETTE.md) for the materials it covers. For new sets, choose
+colors that remain easy to distinguish. Possible starting subsets include:
 
 - Four terms, cooler palette: teal, blue, purple, magenta.
 - Four terms, warm to cool: dark orange, dark yellow, green, sky blue.
@@ -53,9 +52,8 @@ It leaves more room for differentiation than packing four colors into a narrow a
 existing template colors are fixed choices, so use their appearance rather than exact angle
 calculations. Vary the starting region between banks and keep assignments stable within a bank.
 
-Larger term pools may benefit from broader hue coverage, including the full wheel. Assign
-colors to the full pool: if a question draws five terms from nine, each selected term retains
-its assigned color. Color assignments follow the concepts through randomization.
+For larger term pools, choose from across the fixed palette. Assign colors to the full pool:
+if a question draws five terms from nine, each selected term retains its assigned color.
 
 ## Read it as a student
 

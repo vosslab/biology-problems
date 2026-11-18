@@ -1,6 +1,6 @@
 # This file is vendored. Local changes can and will be overwritten by propagation.
 
-"""Enforce a maintainable line-count limit for tracked source files."""
+"""Enforce source file line counts and Python line lengths."""
 
 # Standard Library
 import os
@@ -15,6 +15,7 @@ import file_utils
 
 
 LINE_LIMIT = 1000
+PYTHON_LINE_LENGTH_LIMIT = 120
 WARNING_MINIMUM = 900
 OVERRIDE_LIST = "tests/source_file_line_limit_overrides.txt"
 
@@ -227,17 +228,30 @@ def warnings_for_line_count(rel: str, line_count: int) -> list[str]:
 #============================================
 def check_file(rel: str) -> list[str]:
 	"""
-	Check one source file against the exclusive line limit.
+	Check one source file for line-count and Python line-length violations.
 
 	Args:
 		rel: Repo-relative POSIX path to check.
 
 	Returns:
-		list[str]: One formatted violation when the file is too long, otherwise empty.
+		list[str]: Formatted violations for the file and its overlong lines.
 	"""
 	abs_path = os.path.join(file_utils.get_repo_root(), rel)
-	line_count = count_file_lines(abs_path)
-	violations = violations_for_line_count(rel, line_count)
+	is_python = rel.lower().endswith(".py")
+	line_count = 0
+	violations = []
+	with open(abs_path, "rb") as handle:
+		for line_count, raw_line in enumerate(handle, start=1):
+			if not is_python:
+				continue
+			line = raw_line.removesuffix(b"\n").removesuffix(b"\r")
+			length = len(line.decode("utf-8", errors="surrogateescape"))
+			if length > PYTHON_LINE_LENGTH_LIMIT:
+				violations.append(
+					f"{rel}:{line_count}: {length} characters (limit {PYTHON_LINE_LENGTH_LIMIT}). "
+					"Wrap this line at logical boundaries."
+				)
+	violations += violations_for_line_count(rel, line_count)
 	return violations
 
 
@@ -277,6 +291,17 @@ def test_source_file_line_limit_boundary(line_count: int, should_fail: bool) -> 
 	"""Pin the requested exclusive boundary: 999 passes and 1000 fails."""
 	violations = violations_for_line_count("sample.py", line_count)
 	assert bool(violations) is should_fail
+
+
+#============================================
+def test_python_source_line_length(tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch) -> None:
+	"""Count literal newline escapes and exclude CRLF from the measured length."""
+	monkeypatch.setattr(file_utils, "get_repo_root", lambda: str(tmp_path))
+	line = b'"' + b"text\\n" * 19 + b'abcd"'
+	(tmp_path / "fixture.py").write_bytes(line + b"\r\n" + b" " + line)
+	violations = check_file("fixture.py")
+	assert len(violations) == 1
+	assert violations[0].startswith("fixture.py:2: 121 characters")
 
 
 #============================================
@@ -349,7 +374,7 @@ def test_source_file_line_limit_document_tree_selection(
 #============================================
 @pytest.mark.parametrize("path", FILES, ids=file_utils.rel_id)
 def test_source_file_line_limit(path: str) -> None:
-	"""Fail when a tracked authored source file contains 1000 or more lines."""
+	"""Fail when a tracked source file exceeds its line count or Python line length."""
 	rel = file_utils.rel_to_root(path)
 	assert rel not in VIOLATIONS_BY_FILE, file_utils.format_violation_assert_message(
 		rel, VIOLATIONS_BY_FILE.get(rel, []), REPORT_NAME

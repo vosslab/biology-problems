@@ -6,6 +6,7 @@
 import os
 import re
 import tomllib
+import json
 
 # local repo modules
 import version_lib
@@ -337,6 +338,59 @@ def parse_version_py(path: str) -> dict | None:
 
 #============================================
 
+def parse_package_json(path: str) -> dict | None:
+	"""Parse the root package manifest version."""
+	with open(path, "r", encoding="utf-8") as handle:
+		data = json.load(handle)
+	version = data.get("version")
+	if not isinstance(version, str) or not version_lib.is_version_candidate(version):
+		return None
+	return {
+		"path": path,
+		"kind": "package_json",
+		"version": version,
+	}
+
+#============================================
+
+def parse_package_lock(path: str) -> dict | None:
+	"""Parse root package metadata without treating dependency versions as local."""
+	with open(path, "r", encoding="utf-8") as handle:
+		data = json.load(handle)
+	root_package = data.get("packages", {}).get("", {})
+	version = data.get("version")
+	root_version = root_package.get("version")
+	if version is None:
+		version = root_version
+	if not isinstance(version, str) or not version_lib.is_version_candidate(version):
+		return None
+	return {
+		"path": path,
+		"kind": "package_lock",
+		"version": version,
+		"root_package_version": root_version,
+	}
+
+#============================================
+
+def root_package_entries(base_dir: str) -> list[dict]:
+	"""Return version entries for the root Node package and its lockfile."""
+	manifest_path = os.path.join(base_dir, "package.json")
+	if not os.path.isfile(manifest_path):
+		return []
+	entries = []
+	manifest_entry = parse_package_json(manifest_path)
+	if manifest_entry:
+		entries.append(manifest_entry)
+	lock_path = os.path.join(base_dir, "package-lock.json")
+	if os.path.isfile(lock_path):
+		lock_entry = parse_package_lock(lock_path)
+		if lock_entry:
+			entries.append(lock_entry)
+	return entries
+
+#============================================
+
 def parse_versions(base_dir: str, max_depth: int) -> list[dict]:
 	"""Scan the repo for version sources.
 
@@ -369,6 +423,7 @@ def parse_versions(base_dir: str, max_depth: int) -> list[dict]:
 			entry = parse_simple_version_file(path, force_update=force_update)
 		if entry:
 			entries.append(entry)
+	entries.extend(root_package_entries(base_dir))
 
 	for path in candidate_paths:
 		if os.path.basename(path) == "Cargo.lock":
@@ -507,6 +562,8 @@ def update_entry(entry: dict, new_version: str, apply: bool) -> dict:
 		)
 	elif entry["kind"] == "version_py":
 		updated_text, changed = version_lib.update_version_py(text, version_value)
+	elif entry["kind"] in ("package_json", "package_lock"):
+		updated_text, changed = update_package_metadata(text, entry["kind"], version_value)
 	else:
 		updated_text, changed = version_lib.update_simple_version(
 			text,
@@ -523,5 +580,27 @@ def update_entry(entry: dict, new_version: str, apply: bool) -> dict:
 		"changed": changed,
 	}
 	return result
+
+#============================================
+
+def update_package_metadata(text: str, kind: str, new_version: str) -> tuple[str, bool]:
+	"""Update root package version metadata while retaining JSON key order and indent."""
+	data = json.loads(text)
+	changed = data.get("version") != new_version
+	data["version"] = new_version
+	if kind == "package_lock" and "" in data.get("packages", {}):
+		root_package = data["packages"][""]
+		changed = changed or root_package.get("version") != new_version
+		root_package["version"] = new_version
+	indent_match = re.search(r"\n(?P<indent>[ \t]+)\"", text)
+	if indent_match:
+		updated_text = json.dumps(
+			data,
+			indent=indent_match.group("indent"),
+			ensure_ascii=False,
+		) + "\n"
+	else:
+		updated_text = json.dumps(data, ensure_ascii=False, separators=(",", ":")) + "\n"
+	return updated_text, changed
 
 #============================================

@@ -152,8 +152,8 @@ sequences inside shaded chromosome rods and asks which of five products cannot r
 the marked breaks. Original chromosomes have solid gray telomere caps and break arrows.
 Caps travel with their original fragment ends when a fragment reverses in an answer;
 the diagrams retain the gene sequences and exchange junctions without centromeres.
-Each question selects four distinct light fills from the instructor's color-wheel tool,
-following [COLOR_PALETTE.md](COLOR_PALETTE.md). Fragment colors stay consistent across
+Each question selects four distinct light fills from the color wheel, as described in
+[REPO_COLOR_PALETTE.md](REPO_COLOR_PALETTE.md). Fragment colors stay consistent across
 the originals and answers. Telomeres occupy short, solid gray segments outside the
 gene letters, with rounded outer ends like the deletion-map chromosomes.
 
@@ -172,8 +172,8 @@ All choices contain fragments from both originals, so color alone does not ident
 
 [chromosome_alterations_visual.py](../problems/inheritance-problems/translocation/chromosome_alterations_visual.py)
 uses one Python sequence model to connect deletion, duplication, inversion, and translocation
-with chromosome diagrams. Full names carry fixed emphasis colors from
-[COLOR_PALETTE.md](COLOR_PALETTE.md); chromosome fills identify source material independently.
+with chromosome diagrams. The name colors identify the alteration, and the fills identify source
+material. See [REPO_COLOR_PALETTE.md](REPO_COLOR_PALETTE.md).
 Original arms use consecutive letters so gaps only appear after a deletion. Letters identify
 ordered regions, blank collars mark centromeres, and colors follow exchanged material.
 Arm lengths vary between chromosomes: p is always drawn before the centromere

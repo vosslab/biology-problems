@@ -1,96 +1,78 @@
-# Preferred slide colors
+# Shared color palette
 
-The instructor's preferred emphasis palette is independent of LibreOffice's named colors.
-Use explicit hex values in Djot, for example `[Predict]{color=#D40000}`.
-Preserve meaningful color relationships in the original slides; match references to the
-items they identify. Course theme colors and pale background fills serve separate roles.
+> This file is vendored. Local changes can and will be overwritten by propagation.
 
-## Standard text palette
+Use the 91 colors below as the source colors for authored diagrams, charts, illustrations,
+slides, question visuals, and visualizations within applications. The published hex values
+define the palette.
 
-These values come from the HTML span styles in `replacement_rules` in
-`~/nsh/PROBLEMS/biology-problems/problems/matching_sets/TEMPLATE.yml`.
-Names below preserve that source's labels.
+## Hue families
 
-| Color | Hex |
+Use Dark for colored text on light surfaces, Light or Pastel for fills under dark labels, and
+Medium for colored marks. Choose Extra light for pale backgrounds and Extra dark for deep
+accents. Check each combination in its actual setting.
+
+| Hue family | Extra light | Light | Medium | Dark | Extra dark | Pastel |
+| --- | --- | --- | --- | --- | --- | --- |
+| Red | `#FFCCCC` | `#FF8080` | `#FF1A1A` | `#D40000` | `#660000` | `#E3BFBF` |
+| Dark orange | `#FFDFCC` | `#FFAE80` | `#FF6E1A` | `#B74300` | `#662500` | `#E3CCBF` |
+| Light orange | `#FFECCC` | `#FFD080` | `#FFAB1A` | `#935D00` | `#603C00` | `#E3D6BF` |
+| Dark yellow | `#FFFFCC` | `#FFFF80` | `#FFFF1A` | `#6C6C00` | `#464600` | `#E3E3BF` |
+| Lime green | `#E6FFCC` | `#BFFF80` | `#8CFF1A` | `#3B7600` | `#264D00` | `#D1E3BF` |
+| Green | `#CCFFCC` | `#80FF80` | `#1AFF1A` | `#007A00` | `#004F00` | `#BFE3BF` |
+| Teal | `#CCFFF5` | `#80FFE5` | `#1AFFD1` | `#00775F` | `#004D3E` | `#BFE3DC` |
+| Cyan | `#CCFFFF` | `#80FEFF` | `#1AFDFF` | `#007576` | `#004C4D` | `#BFE3E3` |
+| Sky blue | `#CEEBFD` | `#84CDFA` | `#22A4F6` | `#076DAD` | `#043E62` | `#C0D5E2` |
+| Blue | `#CCD9FF` | `#809FFF` | `#1A52FF` | `#003FFF` | `#001966` | `#BFC8E3` |
+| Navy | `#CCE6FF` | `#80C0FF` | `#1A8DFF` | `#0067CC` | `#003366` | `#BFD1E3` |
+| Purple | `#EFD1FA` | `#D78DF2` | `#B731E7` | `#A719DB` | `#460A5C` | `#D8C3E0` |
+| Magenta | `#FFCCEE` | `#FF80D4` | `#FF1AB2` | `#C80085` | `#660044` | `#E3BFD7` |
+| Pink | `#FFCCE6` | `#FF80BF` | `#FF1A8C` | `#CC0066` | `#660033` | `#E3BFD1` |
+
+The Dark column preserves the original text accents. The other grades keep each Dark color's
+HSL hue and saturation, with lightness set to 90%, 75%, and 55% for Extra light, Light, and
+Medium. Extra dark uses the smaller of 20% lightness and 65% of the Dark color's lightness.
+Pastel keeps the hue, sets lightness to 82%, and uses 40% of the original saturation. The
+table records the resulting rounded sRGB values for direct use.
+
+## Neutrals
+
+Use neutrals for ordinary text, outlines, axes, gridlines, backgrounds, or subdued details.
+
+| Neutral | Hex |
 | --- | --- |
-| Red | `#D40000` |
-| Dark orange | `#B74300` |
-| Light orange | `#935D00` |
-| Dark yellow | `#6C6C00` |
-| Lime green | `#3B7600` |
-| Green | `#007A00` |
-| Teal | `#00775F` |
-| Cyan | `#007576` |
-| Sky blue | `#076DAD` |
-| Blue | `#003FFF` |
-| Navy | `#0067CC` |
-| Purple | `#A719DB` |
-| Magenta | `#C80085` |
-| Pink | `#CC0066` |
+| Black | `#000000` |
+| Charcoal | `#333333` |
+| Dark gray | `#666666` |
+| Gray | `#999999` |
+| Light gray | `#CCCCCC` |
+| Extra light gray | `#EEEEEE` |
+| White | `#FFFFFF` |
 
-## Chromosome alteration names
+## Use colors together
 
-Use full alteration names and these fixed text colors in chromosome-alteration questions.
-Chromosome fills continue to identify the source chromosome; these text colors identify the
-type of alteration.
+Combine palette colors freely through gradients, transparency, layering, and blending. The
+intermediate colors are rendering results. Choose the source colors for these effects from
+the tables above. For a tinted background, try an Extra light shade, a Pastel, or a palette
+color layered over a neutral surface.
 
-| Alteration | Color role | Hex |
-| --- | --- | --- |
-| Deletion | Magenta-red (Pink) | `#CC0066` |
-| Duplication | Forest green (Green) | `#007A00` |
-| Inversion | Yellow-orange (Light orange) | `#935D00` |
-| Translocation | Navy | `#0067CC` |
+- Use Blue Dark for a label on white and Blue Pastel to echo its hue behind black text.
+- Use Blue Dark and Light orange Dark for two chart series, with distinct markers and labels.
+- Use a White-to-Teal Extra light gradient behind a Charcoal caption.
 
-## Procedure sequences
+Assess contrast and distinguishability for the intended use, background, and audience. Check
+text against the surface it actually appears on, including the result of any layering.
+See [COLOR_CONTRAST_ACCESSIBILITY.md](COLOR_CONTRAST_ACCESSIBILITY.md).
 
-Use well-separated colors from the fixed palette in rainbow order for new colored step sequences.
-For six steps, use Red, Dark orange, Dark yellow, Green, Blue, Purple. For four steps, use Red,
-Green, Blue, Purple. For other sequence lengths up to 14, choose evenly spaced entries from the
-14 colors in the standard text palette above, including its first and last entries. Longer
-sequences cycle through that palette. In randomized ordering questions, assign colors after the
-display order is shuffled so colors do not reveal the correct order. Keep each repeated roadmap
-identical and match step cross-references to its own method's colors. Preserve meaningful source
-colors when converting existing material unless recoloring is requested.
+## Record local assignments
 
-## Three-point testcross pairs
+The shared palette governs color selection. Repository-specific guidance assigns approved
+colors to concepts and roles. Record recurring assignments in `docs/REPO_COLOR_PALETTE.md`
+with the palette family, the shade used for each purpose, and the material where the
+assignment applies. Reuse the assignment across related figures, legends, labels, tables,
+and references.
+When color distinguishes categories, use distinct families and identify them with labels, shapes,
+or patterns as well as color.
 
-Reserve green for the two original parental rows and lime green for other offspring with a
-parental combination for the selected gene pair. Color each pair's recombinant rows, summary
-label/results, and final percentage consistently. The fixed base colors identify the pair;
-lighter fills keep dark table text readable. Keep each role's hue and HSL saturation stable;
-vary lightness between text/line colors and fills. Pair labels also use the base text color
-so a pale background and a saturated map line have a direct visual connection.
-
-| Meaning | Fixed palette base | Table fill |
-| --- | --- | --- |
-| Original parental rows | Green `#007A00` | `#8FFF8F` |
-| Other pairwise parental rows | Lime green `#3B7600` | `#D6FFAD` |
-| CD recombinants/results | Red `#D40000` | `#FF8F8F` |
-| CH recombinants/results | Blue `#003FFF` | `#8FABFF` |
-| DH recombinants/results | Purple `#A719DB` | `#DC9AF4` |
-
-These fills use 78% HSL lightness, except lime at 84% to distinguish it from the original
-parents. Saturation matches the base (100% except purple at approximately 79.5%), within
-8-bit RGB rounding. Repeat these same fills in the allele-comparison diagrams and tables.
-
-Retain gray on the covered gene column, including its intersection with colored rows.
-Unknown classifications/results stay unrevealed. The six-step roadmap retains its own established
-step colors; pair colors track the data through the calculation and summary tables.
-
-## Instructor's color-wheel tool
-
-For additional color sets, use the instructor-developed tool at
-`~/nsh/PROBLEMS/qti-package-maker/qti_package_maker/common/color_wheel.py`.
-Its public `generate_color_wheel(num_colors, backend="cam16", **kwargs)` API generates
-perceptually distinct colors. CAM16 is the default backend; `legacy` is also available.
-The module exposes named `dark_color_wheel`, `light_color_wheel`, and
-`extra_light_color_wheel` dictionaries generated with modes `dark`, `light`, and `xlight`.
-
-Returned hex strings omit the leading `#`; add it when authoring Djot color attributes.
-Generated wheels are an option for additional palettes, not an exact reproduction of the
-fixed template palette above. Keep chosen values explicit in slide sources so rebuilding a
-deck does not depend on a sibling checkout or silently change its colors.
-
-Choose text and background colors for their actual role and check the rendered result.
-Perceptual separation does not by itself guarantee readable text contrast.
-See [HUMAN_GUIDANCE.md](HUMAN_GUIDANCE.md) for the instructor's presentation requirements.
+The QTI Package Maker (QPM) color wheel can help explore hue spacing. Select the final colors
+from the tables above.

@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-11-18
+
+- Document local chromosome, testcross, and procedure color assignments in
+  [REPO_COLOR_PALETTE.md](REPO_COLOR_PALETTE.md).
+
+### Fixes and Maintenance
+
+- Synchronized shared style guides, tests, and repository support files from the starter template.
 ## 2026-11-17
 
 - Give all 30 terms in the eight new Set #5 and #6 matching banks fixed palette

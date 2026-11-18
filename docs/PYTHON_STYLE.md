@@ -44,6 +44,13 @@ AI agents frequently get these wrong. Read the full sections below for details.
 * I use tabs exclusively.
 * Tabs provide flexibility, because I can change the tab size to 2, 3, 4, or 8 spaces depending on the complexity of the code.
 
+## LINE LENGTH
+
+- Prefer lines under 100 characters.
+- `tests/test_source_file_line_limit.py` rejects tracked Python lines over 120 characters and
+  reports the path, line number, and measured length. Wrap expressions at logical boundaries
+  and lay out multiline fixtures across source lines.
+
 ## CODE STRUCTURE
 
 - Use a `def main()` for the backbone of the code, have a `if __name__ == '__main__': main()` to run main
@@ -234,7 +241,6 @@ export PYTHONDONTWRITEBYTECODE=1
 ```
 
 * Use Google style documentation style for functions. https://github.com/google/styleguide
-* I prefer to keep line lengths less than 100 characters
 * Comments should be on a line of their own before the code they are commenting
 * No emoji or special characters in comments, only ascii characters
 
