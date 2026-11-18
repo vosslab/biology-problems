@@ -1,0 +1,32 @@
+topic: treatment routes
+learning_objective: Recognize the basic features of treatment routes.
+source: 'LECT10 Set #5 Djot: set5_gene_therapy_01_04.djot, topics 2-3; set5_genome_editing.djot,
+  topic 18; set5_cancer.djot, topic 31'
+items to match per question: 2
+key description: treatment route
+keys description: treatment routes
+value description: description
+values description: descriptions
+question override: <p>Match each gene therapy route with its description.</p>
+matching pairs:
+  ex vivo:
+  - cells are changed outside the body and then returned to the patient
+  - blood cells are taken from a patient, changed in the lab, and given back
+  - the team can test the changed cells before giving them back to the patient
+  - T cells get a new receptor gene in the lab before the patient receives them
+  - blood stem cells are taken out, changed, checked, and returned
+  - the patient receives cells whose DNA was changed in a lab
+  - in the early ADA-SCID trial, patients got their own T cells back after the cells received a working gene
+  - a lab gives a patient's T cells a way to recognize a tumor, then sends the cells back for treatment
+  in vivo:
+  - the treatment delivers DNA or RNA to cells inside the patient
+  - a carrier is injected into the eye to change cells while they are still there
+  - a carrier travels through the blood to bring DNA or RNA to cells in an organ
+  - an injection delivers a gene to liver cells while they are still in the body
+  - airway cells get a working gene without being taken out of the patient
+  - the treatment changes cells right where they are in the body
+  - the treatment goes straight into the eye and reaches cells in the retina
+replacement_rules:
+  ex vivo: '<span style="color: #007A00;">ex vivo</span>'
+  in vivo: '<span style="color: #A719DB;">in vivo</span>'
+dbsubject: Biotechnology

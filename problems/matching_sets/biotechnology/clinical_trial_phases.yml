@@ -1,27 +1,33 @@
 topic: clinical trial phases
-learning_objective: Match phases 0 through 4 to who is enrolled and to what the phase is trying to learn.
+learning_objective: Match each trial phase with its main question.
 items to match per question: 5
-question override: Match each clinical-trial phase to the correct description.
+question override: Match each clinical trial phase with its main purpose.
 key description: clinical-trial phase
 keys description: clinical-trial phases
 value description: description
 values description: descriptions
 matching pairs:
   Phase 0:
-  - Altruistic volunteers who accept an invasive study that offers no treatment benefit
-  - Give a dose too small to treat disease, only to see what the drug does in the body
+  - uses a very small dose to see how the body handles the drug before regular dose studies
+  - is an optional early study that does not aim to treat the people taking part
+  - may use a dose too small to treat disease in an early test of how the drug moves through the
+    body
   Phase 1:
-  - Healthy volunteers, or terminally ill volunteers when healthy people should avoid the drug
-  - Find the safe dosage range and the earliest side effects
+  - checks early side effects and finds a range of doses people can tolerate
+  - is an early safety study that can include healthy volunteers or patients, depending on the drug
+  - asks how much of the drug people can take before side effects become a problem
   Phase 2:
-  - A few hundred randomized patients chosen with strict eligibility rules
-  - Test whether the drug is effective against the disease and record its side effects
+  - looks for early signs that a drug works in people with the condition
+  - tests how well the drug seems to work and helps pick a dose for a larger study
+  - looks for a useful dose and an early sign of benefit before a larger trial
   Phase 3:
-  - Thousands of patients who have the condition the drug is meant to treat
-  - Compare the drug with other treatments while continuing to monitor side effects
+  - uses larger trials to confirm benefits and collect more safety data before approval
+  - tests whether an early sign of benefit holds up in a larger group before approval
+  - can compare the drug with standard care in a large study to confirm how well it works
   Phase 4:
-  - Patients who are already taking the approved drug
-  - Monitor long-term effects after the drug is already being prescribed
+  - studies a medicine after it has been approved
+  - can look for side effects that only show up after many people start taking the approved drug
+  - may follow people over time to learn about a drug already on the market
 replacement_rules:
   Phase 0: '<span style="color: #B74300;">Phase 0</span>'
   Phase 1: '<span style="color: #3B7600;">Phase 1</span>'
@@ -29,3 +35,4 @@ replacement_rules:
   Phase 3: '<span style="color: #0067CC;">Phase 3</span>'
   Phase 4: '<span style="color: #CC0066;">Phase 4</span>'
 dbsubject: Biotechnology
+source: 'LECT11C Set #6 topic 20, old TP ODP slides 16-18, and annual TP phase staircase. FDA: https://www.fda.gov/patients/drug-development-process/step-3-clinical-research'

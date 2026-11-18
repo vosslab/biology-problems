@@ -1,5 +1,41 @@
 # Changelog
 
+## 2026-11-17
+
+- Give all 30 terms in the eight new Set #5 and #6 matching banks fixed palette
+  colors. Use the same color in matching and multiple choice, including green for
+  ex vivo and purple for in vivo. Keep the clues plain so they can be matched by meaning.
+- Shorten the shared multiple-choice prompt for matching banks. Show the clue first
+  and ask which choice matches it in either direction.
+- Revise Set #5 and #6 clues using the ADA-SCID trial, stem cells from skin,
+  a lab manual, and an insulin patent example. Make patent ownership clear in the
+  agreement bank. Group the Asilomar research pause separately from safety reviews.
+- Keep both PFAS banks. The filter question now asks students to read the treated-water
+  level and identify where some PFAS ended up in the carbon or membrane test.
+- Clarify three open-book homework banks. Use a date or the change each food and drug
+  law introduced, distinguish siRNA by its two strands or RNA interference, and ask
+  what makes a substance a carcinogen.
+- Focus the new Set #6 homework banks on recognizing one course concept at a time.
+  Add questions on PFAS persistence, common uses, and exposure alongside the filter diagram.
+  Keep named laws and the confidence interval in shorter examples and a simpler chart.
+- Add six Set #6 recognition banks from the regulation lecture and older talking points.
+  Cover major food and drug laws, Asilomar and biosafety review, supplement label claims,
+  generic drug exposure ranges, PFAS filtration, and research agreement terms.
+  Add original diagrams for the exposure ranges and PFAS filter questions.
+- Correct the existing crop oversight, clinical trial phase, invention/discovery, and
+  intellectual property banks to match the lecture and use simpler wording.
+- Verify that all ten Set #6 banks generate. Check the keys for 50 questions per visual
+  generator, inspect the Blackboard ZIP images and mobile self-tests, and pass 443 focused tests.
+- Simplify the student-facing wording in all ten medicinal biotechnology banks. Use shorter
+  matching instructions and plain verbs in the descriptions, statements, and cloning steps.
+  Retain the slide examples and the number of variants for each concept.
+- Add lecture-derived recognition variants: early ADA-SCID gene delivery, retinal AAV delivery, CD19/BCMA cancer targets, PD-1/PD-L1 checkpoint signals, stem-cell examples, and sheep SCNT steps from the Dolly topic. Add hormonal carcinogenesis statements and replace generic source labels with specific Djot files and topics.
+- Verification of the variety pass: 444 focused checks pass; all eight banks generate in matching/MC/ordering formats as applicable. Independent source review prompted a precise inner-cell-mass clarification; local rendered samples reviewed.
+- Expand all eight new medicinal biotechnology banks with varied descriptions, examples, and mechanism wording at the same recognition level. Group equivalent statement variants under the same concept IDs; vary SCNT step wording without changing the sequence.
+- Restore all 20 original stem-cell potency wording variants and their examples, retaining targeted factual corrections rather than replacing the bank with uniform definitions.
+- Verification: 444 focused YAML/generator/inline-style tests pass. All ten banks generate in their configured formats; independent source/key review and local HTML sample review completed. Advisory name-length and keyword findings reviewed; live Blackboard import not tested.
+- Add eight recognition-level medicinal biotechnology banks: delivery vectors, RNA medicines, editing tools, delivery routes, stem-cell sources, SCNT ordering, cancer treatments, and mutagens/Ames concepts. Correct gene-addition examples and stem-cell potency descriptions in the two existing banks.
+
 ## 2026-11-11
 
 ### Additions and New Features

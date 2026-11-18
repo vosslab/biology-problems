@@ -1,0 +1,49 @@
+topic: nucleic-acid medicines
+learning_objective: Recognize the basic features of nucleic-acid medicines.
+source: 'LECT10 Set #5 Djot: set5_gene_therapy_05_08.djot, topic 8; set5_gene_therapy_09_12.djot,
+  topics 9 and 11 (Binding Versus Cutting; Beyond Ordinary mRNA)'
+items to match per question: 5
+key description: nucleic-acid medicine
+keys description: nucleic-acid medicines
+value description: description
+values description: descriptions
+question override: <p>Match each nucleic acid medicine with what it does.</p>
+matching pairs:
+  mRNA:
+  - gives cells a message they can read to make a protein
+  - carries an instruction that cells can use for a short time to make a protein
+  - gives ribosomes a template for making a useful protein
+  - lets a cell make a missing protein for a short time without changing its DNA
+  - is the RNA that the cell translates to make the protein it needs
+  siRNA:
+  - can use one of its two short RNA strands to guide a protein to a matching message
+  - uses RNA interference to help a cell break down one kind of messenger RNA
+  - one strand of the RNA pair matches the message the cell will break down
+  - can lower the amount of a harmful protein by using RNA interference to destroy its message
+  - has two RNA strands at first, but only one guides the search for the matching message
+  antisense oligonucleotide:
+  - can bind RNA and change which exons stay in the message
+  - can stick to a matching part of RNA and change how the cell splices it
+  - can bind RNA before splicing so the cell makes a different version of the message
+  - can help a cell keep or skip an exon without changing its DNA
+  - can cover up a splice site by pairing with part of the RNA message
+  aptamer:
+  - is a piece of DNA or RNA that folds into a shape that binds a target molecule
+  - uses the shape it folds into to stick to a protein or another target
+  - is a short piece of DNA or RNA chosen because it binds a target
+  - can guide a drug to a target by folding into a shape that binds it
+  - uses its folded shape to bind a molecule without cutting it
+  - can stick to a molecule on the surface of a cell using its folded shape
+  ribozyme:
+  - is RNA that speeds up a chemical reaction
+  - can bind another RNA and cut it without needing a protein to do the cutting
+  - acts like an enzyme even though it is made of RNA
+  - folds into a shape that helps a chemical reaction take place
+  - is a piece of RNA that can act as a tool for cutting another RNA
+replacement_rules:
+  mRNA: '<span style="color: #CC0066;">mRNA</span>'
+  siRNA: '<span style="color: #003FFF;">siRNA</span>'
+  antisense oligonucleotide: '<span style="color: #935D00;">antisense oligonucleotide</span>'
+  aptamer: '<span style="color: #A719DB;">aptamer</span>'
+  ribozyme: '<span style="color: #00775F;">ribozyme</span>'
+dbsubject: Biotechnology

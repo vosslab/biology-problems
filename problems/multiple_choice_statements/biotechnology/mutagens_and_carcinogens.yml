@@ -1,0 +1,49 @@
+topic: mutagens, carcinogens, and the Ames test
+num_choices: 4
+source: 'LECT10 Set #5 Djot: set5_cancer.djot, topic 34 (DNA Damage and Cancer Risk; Ames Test: A
+  Reversion Experiment)'
+learning_objective: Recognize mutation, cancer risk, and the purpose of the Ames test.
+true_statements:
+  truth1a: a mutagen makes changes in DNA more likely
+  truth1b: more DNA mutations can occur after exposure to a mutagen
+  truth2a: a carcinogen can raise the chance of getting cancer
+  truth2b: exposure to a carcinogen raises cancer risk
+  truth3a: a substance can be both a mutagen and a carcinogen
+  truth3b: the same substance can cause DNA changes and raise cancer risk
+  truth3c: some carcinogens change how cells respond to hormones without changing the DNA sequence
+  truth4a: the Ames test uses bacteria to check if a substance can cause DNA mutations
+  truth4b: if more colonies grow on the treated plate than on the control plate, the substance may be a mutagen
+  truth5a: bacteria with a reverse mutation can grow without the nutrient they usually need
+  truth5b: a change in DNA can let bacteria grow without the missing nutrient
+  truth6a: the Ames test alone cannot tell us how likely people are to get cancer
+  truth6b: bacterial tests for mutations do not measure how many people get cancer
+false_statements:
+  false1a: a mutagen makes changes in DNA less likely
+  false1b: a mutagen is defined by how much protein it makes a cell produce
+  false1c: DNA mutations become less common when cells are exposed to a mutagen
+  false1d: a mutagen changes damaged genes back to their original DNA sequence
+  false2a: a substance is called a carcinogen because it prevents cancer
+  false2c: if one exposed person stays healthy, the substance cannot be a carcinogen
+  false2d: everyone exposed to a carcinogen will get cancer
+  false3a: a mutagen cannot also be a carcinogen
+  false3b: every carcinogen raises cancer risk by directly changing DNA
+  false3c: a substance that causes mutations cannot raise cancer risk
+  false3d: a substance can raise cancer risk only by directly changing the DNA sequence
+  false3e: carcinogens that act through hormones must also change the DNA sequence
+  false3f: a change in hormone signals cannot raise cancer risk unless the DNA sequence changes
+  false4a: the Ames test uses human tumor cells to find out if a substance causes mutations
+  false4b: the Ames test uses bacteria to measure how fast a tumor grows
+  false4c: the Ames test looks for mutations that let human tissue grow again
+  false4d: the Ames test measures how many people get cancer
+  false5a: bacteria with a reverse mutation in the Ames test still need the missing nutrient to grow
+  false5b: the colonies in the Ames test are counted to find out how many tumor cells grew
+  false5c: a reverse mutation in the Ames test makes the bacteria need the missing nutrient again
+  false5d: a colony in the Ames test shows that bacteria have turned into tumor cells
+  false6a: the Ames test tells us the chance of cancer in people at each dose
+  false6b: a negative Ames test proves that a substance cannot cause cancer
+  false6c: more colonies in the Ames test prove that a person exposed to the substance will get cancer
+  false6d: no extra colonies in the Ames test show that a substance is safe at any dose
+replacement_rules: {}
+dbsubject: Biotechnology
+override_question_true: <p>Which statement about mutagens, carcinogens, and the Ames test is TRUE?</p>
+override_question_false: <p>Which statement about mutagens, carcinogens, and the Ames test is FALSE?</p>

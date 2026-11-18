@@ -1,31 +1,32 @@
-topic: types of intellectual property
-learning_objective: Match trademark, copyleft, copyright, and patent to what each one protects.
+topic: intellectual property and licensing
+learning_objective: Match trademark, copyleft, copyright, and patent to what each one does.
 items to match per question: 4
-question override: Match each type of intellectual property to the correct description.
-key description: type of intellectual property
-keys description: types of intellectual property
+question override: Match each term with the right or rule it describes.
+key description: term for intellectual property or licensing
+keys description: terms for intellectual property or licensing
 value description: description
 values description: descriptions
 matching pairs:
   Trademark:
-  - gives its owner the exclusive right to a recognizable insignia, phrase, word, or symbol
+  - protects the brand name on a test kit so buyers can tell who made it
   - protects a brand name or logo that identifies the source of a product
-  - stops another company from using a confusingly similar name or symbol
+  - can stop a rival from using a logo that makes buyers mix up the two brands
   Copyleft:
-  - an arrangement where creative work may be distributed freely and modified such that any derivatives are also free
-  - lets people copy and change a work only if they share their changes under the same free terms
-  - requires that modified versions of a free work stay free for others to use
+  - lets a lab share its changes to a program if it gives others the same freedom to change it
+  - lets people copy and change a work as long as they use the same free terms when they share it
+  - keeps the same freedoms for others when someone shares a changed version of a work
   Copyright:
   - gives its owner the exclusive right to make copies of a creative work, usually for a limited time
-  - protects a book, song, or software from being copied for a limited time
-  - covers the expression of a creative work rather than the underlying idea
+  - protects the words and music a songwriter wrote
+  - protects the drawings in a lab manual while leaving others free to explain the same science
   Patent:
-  - gives its owner the exclusive right to exclude others from making an invention
+  - can keep a rival from using a company's new process for making insulin without permission
   - protects a new and useful invention for a limited time
-  - lets the inventor stop others from making, using, or selling the invention
+  - lets the owner stop others from making, using, or selling the invention
 replacement_rules:
   Trademark: '<span style="color: #00775F;">Trademark</span>'
   Copyleft: '<span style="color: #003FFF;">Copyleft</span>'
   Copyright: '<span style="color: #A719DB;">Copyright</span>'
   Patent: '<span style="color: #C80085;">Patent</span>'
 dbsubject: Biotechnology
+source: 'LECT11C Set #6 topics 26 and 35, and old TP ODP slides 29 and 47.'

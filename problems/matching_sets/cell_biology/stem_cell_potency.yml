@@ -3,48 +3,35 @@ key description: potency of stem cells
 keys description: potencies of stem cells
 value description: description
 values description: descriptions
+question override: <p>Match each term with the range of cells a stem cell can make.</p>
 matching pairs:
   unipotent:
-  - can differentiate into only one type of cell; e.g., skin cells
-  - capable of developing into only one type of cell or tissue; e.g., germ line stem
-    cell
-  - the capacity to develop into only one type of cell or tissue; e.g., epidermal
-    stem cells
-  - a cell that can differentiate along only one lineage; e.g., germ line stem cells
-    that make sperm
-  - in comparison with other types of stem cells, this type has the lowest differentiation
-    potential
+  - can make just one kind of cell, as some stem cells in the outer layer of skin do
+  - can make only one kind of specialized cell, as stem cells that make sperm do
+  - can give rise to only one cell type, as in a stem cell that makes a single kind of skin cell
+  - can follow only one path as it develops, such as the path that leads to sperm
+  - has the smallest range and makes only one kind of specialized cell
   oligopotent:
-  - can differentiate into only a few cells; e.g., lymphoid or myeloid stem cells
-  - have the ability to transform into a small number of types of cells; e.g., plasma
-    cells
-  - myeloid stem cells are this type because they only produce a few types of cells;
-    e.g., neutrophils and eosinophils
+  - can make only a few related kinds of cells, as some early blood cells do
+  - can make B cells, T cells, and NK cells, as an early cell in the lymphoid line can
+  - can make a few closely related cell types, such as a myeloid precursor making neutrophils and
+    eosinophils
   multipotent:
-  - can differentiate into a limited type of cells; e.g., adult and cord blood stem
-    cells
-  - derived from the mesoderm, they are widely found throughout the body and can be
-    easily isolated and cultured
-  - have the ability to turn into a number of different cells in the body; e.g., bone,
-    muscle, cartilage, or fat cells
-  - they are found in most body organs, where they replace diseased or aged cells
-  - these cells develop into multiple specialized cell types present in a specific
-    tissue or organ
+  - can make many related cell types, as blood stem cells do in bone marrow or cord blood
+  - can make a range of related cell types, as mesenchymal stem cells do when they make bone,
+    cartilage, or fat cells
+  - can make cells that form different tissues, such as bone, cartilage, and fat
+  - can make many related cell types to replace old or damaged cells in one tissue
+  - can give rise to many related types of specialized cells within a tissue or organ
   pluripotent:
-  - can differentiate into all three basic body layers; e.g., embryonic stem cells
-  - an undifferentiated cell that has the potential to differentiate into any of the
-    220 cell-types of the human body
-  - cells that can maintain an undifferentiated state indefinitely and can differentiate
-    into most, if not all, cells of the body
+  - can make cells from all three germ layers, as embryonic stem cells do
+  - can give rise to cell types from across the body, including nerve, muscle, and gut cells
+  - can stay unspecialized in the lab and later make cell types from all three germ layers
   totipotent:
-  - can differentiate into all of the cell types of the body as well as placental
-    cells; e.g., first two zygote cells after fertilization
-  - can form all the cell types in a body, as well as the extraembryonic or placental
-    cells
-  - can give rise to any of the 220 cell types found in an embryo as well as extra-embryonic
-    cells (placenta)
-  - extremely rare cells that have the ability to form an entire human being including
-    the trophoblast
+  - can make all the cell types of the body and the placenta, as a fertilized egg can
+  - can form every kind of body cell plus the cells that help support the embryo
+  - can give rise to all the cells in an embryo as well as those in the placenta
+  - can make a whole embryo and the extra tissues it needs to grow
 replacement_rules:
   unipotent: '<span style="color: #B74300;">unipotent</span>'
   oligopotent: '<span style="color: #3B7600;">oligopotent</span>'
@@ -52,3 +39,4 @@ replacement_rules:
   pluripotent: '<span style="color: #0067CC;">pluripotent</span>'
   totipotent: '<span style="color: #CC0066;">totipotent</span>'
 dbsubject: Cell Biology
+source: 'LECT10 Set #5 medicinal biotechnology, supplied PDF/ODP and set5_*.djot, topic 25'

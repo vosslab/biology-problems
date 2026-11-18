@@ -1,0 +1,36 @@
+topic: stem-cell sources
+learning_objective: Recognize the basic features of stem-cell sources.
+source: 'LECT10 Set #5 Djot: set5_stem_cells.djot, topics 25 and 27 (Different Sources, Different
+  Potency; iPSC Products)'
+items to match per question: 3
+key description: stem-cell source
+keys description: stem-cell sources
+value description: description
+values description: descriptions
+question override: <p>Match each type of stem cell with its source.</p>
+matching pairs:
+  embryonic stem cells:
+  - come from the inner cell mass of an early embryo
+  - come from an early embryo and can form cell types from all three germ layers
+  - come from the inner group of cells in a blastocyst
+  - are grown in the lab from cells taken from an early embryo
+  - start as cells from an embryo at an early stage of development
+  adult stem cells:
+  - are found in tissues like bone marrow and help replace old cells
+  - come from a tissue and usually make related cell types for that tissue
+  - include cells in bone marrow that make new blood cells
+  - are found in tissues like skin or intestine, where they help replace lost cells
+  - live in a tissue and make new cells to help keep it working
+  - include stem cells that keep making new blood cells throughout a person's life
+  induced pluripotent stem cells (iPSCs):
+  - are made by resetting specialized cells so they can form cell types from all three germ layers
+  - come from specialized cells that are changed in the lab so they can make many cell types
+  - can start as skin cells that are reset so they can make many kinds of cells
+  - give researchers a way to make pluripotent cells without using an embryo
+  - start as specialized cells, then scientists change which genes are active to reset them
+  - can start as a skin cell and, after a reset in the lab, give rise to heart or nerve cells
+replacement_rules:
+  embryonic stem cells: '<span style="color: #0067CC;">embryonic stem cells</span>'
+  adult stem cells: '<span style="color: #3B7600;">adult stem cells</span>'
+  induced pluripotent stem cells (iPSCs): '<span style="color: #C80085;">induced pluripotent stem cells (iPSCs)</span>'
+dbsubject: Biotechnology

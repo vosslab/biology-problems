@@ -1,0 +1,35 @@
+topic: genome-editing tools
+learning_objective: Recognize the basic features of genome-editing tools.
+source: 'LECT10 Set #5 Djot: set5_genome_editing.djot, topics 14-16 (ZFN: Recognition Plus Cutting;
+  TALEN Architecture; Guide, PAM, Cut, Repair)'
+items to match per question: 3
+key description: genome-editing tool
+keys description: genome-editing tools
+value description: description
+values description: descriptions
+question override: <p>Match each gene-editing tool with its description.</p>
+matching pairs:
+  zinc-finger nuclease (ZFN):
+  - uses a group of small protein fingers to bind DNA and an enzyme to cut it
+  - binds DNA with protein fingers and cuts it with two FokI parts that work together
+  - links a group of DNA-binding fingers to the part of the protein that cuts DNA
+  - can bind a new DNA target if its set of protein fingers is changed
+  - uses several protein fingers together to find the right stretch of DNA
+  TALEN:
+  - uses a protein with repeating parts that each prefer one DNA base
+  - binds DNA with repeats from a bacterial protein and cuts it with paired FokI parts
+  - recognizes DNA one base at a time with a row of repeating protein parts
+  - can bind a new DNA target if the row of repeats is changed to match its bases
+  - uses two proteins, each with a row of repeats that bind DNA next to the cut
+  - uses repeating parts from bacterial proteins that bind plant DNA
+  CRISPR-Cas9:
+  - uses a guide RNA to bring a cutting protein to a matching DNA site
+  - can find a new DNA target when the sequence of its guide RNA changes
+  - needs a guide RNA that matches the target and a short DNA sequence called a PAM next to it
+  - uses an RNA guide to find the target while the same protein does the cutting
+  - pairs a DNA-cutting protein with an RNA that tells it where to go
+replacement_rules:
+  zinc-finger nuclease (ZFN): '<span style="color: #935D00;">zinc-finger nuclease (ZFN)</span>'
+  TALEN: '<span style="color: #007A00;">TALEN</span>'
+  CRISPR-Cas9: '<span style="color: #0067CC;">CRISPR-Cas9</span>'
+dbsubject: Biotechnology

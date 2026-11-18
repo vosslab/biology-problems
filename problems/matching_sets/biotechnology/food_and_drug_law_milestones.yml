@@ -1,0 +1,47 @@
+topic: food and drug laws
+question override: Match each law with the change it introduced.
+items to match per question: 4
+key description: food or drug law
+keys description: food and drug laws
+value description: example
+values description: examples
+source: 'LECT11C Set #6 topics 1-3 and 5-6, old TP ODP slides 12-13, and annual TP presentations.
+  FDA: https://www.fda.gov/about-fda/fda-history/milestones-us-food-and-drug-law'
+matching pairs:
+  Biologics Control Act:
+  - introduced federal inspections for factories that made vaccines
+  - gave inspectors the power to visit the factory where an antitoxin was made
+  - a factory that makes diphtheria antitoxin has to pass an inspection
+  - a factory needs a license to make vaccines for sale
+  - vaccine and antitoxin makers face new checks after contaminated antitoxin kills children
+  Pure Food and Drug Act:
+  - first barred companies from shipping mislabeled foods and drugs across state lines
+  - in 1906, a seller could no longer ship corn syrup to another state and label it honey
+  - in 1906, officials could stop a company from selling flour mixed with chalk across state lines
+  - took aim at misleading labels years before companies had to show that new drugs were safe
+  - first let officials stop a shipment of food sold under the wrong name in another state
+  Food, Drug, and Cosmetic Act:
+  - first required drug makers to show that a new medicine was safe before selling it
+  - after poison in Elixir Sulfanilamide killed people, drug makers had to show new medicines were safe
+  - made safety testing a requirement for new drugs years before companies had to prove they worked
+  - a company must show that a new drug is safe before people can buy it
+  - a company checks for harmful side effects before it can sell a new medicine
+  Kefauver-Harris Amendments:
+  - required proof that a new blood pressure pill actually lowers blood pressure
+  - a team tests whether its new medicine helps stop migraine headaches
+  - a study measures whether people who take a medicine recover sooner
+  - a trial checks whether a new cream helps a rash heal faster
+  - after the thalidomide tragedy, lawmakers required evidence that new drugs work
+  Durham-Humphrey Amendment:
+  - a pharmacist asks for a prescription before handing over certain medicines
+  - a patient needs a new prescription when the old one runs out
+  - the pharmacy keeps some medicines for patients whose doctors have ordered them
+  - a shopper can buy one kind of pain medicine off the shelf but needs a doctor's order for another
+  - a patient needs a prescription to buy amoxicillin tablets at a pharmacy
+replacement_rules:
+  Biologics Control Act: '<span style="color: #935D00;">Biologics Control Act</span>'
+  Pure Food and Drug Act: '<span style="color: #007A00;">Pure Food and Drug Act</span>'
+  Food, Drug, and Cosmetic Act: '<span style="color: #076DAD;">Food, Drug, and Cosmetic Act</span>'
+  Kefauver-Harris Amendments: '<span style="color: #C80085;">Kefauver-Harris Amendments</span>'
+  Durham-Humphrey Amendment: '<span style="color: #A719DB;">Durham-Humphrey Amendment</span>'
+dbsubject: Biotechnology

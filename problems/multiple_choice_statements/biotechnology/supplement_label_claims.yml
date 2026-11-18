@@ -1,0 +1,41 @@
+topic: claims on dietary supplement labels
+source: 'LECT11C Set #6 topic 22, old TP ODP slide 24, and the annual TP supplement label example.
+  FDA: https://www.fda.gov/regulatory-information/search-fda-guidance-documents/small-entity-compliance-guide-structurefunction-claims'
+num_choices: 4
+override_question_true: Which label claim is about how the body normally works?
+override_question_false: Which label claim says the product can help with a disease?
+true_statements:
+  truth1a: helps keep your immune system working
+  truth1b: helps the immune system do its job
+  truth2a: helps maintain healthy bones
+  truth2b: helps the body build strong bones
+  truth3a: helps keep joints moving freely
+  truth3b: supports the tissues that cushion joints
+  truth4a: helps maintain clear vision
+  truth4b: helps your eyes adjust to darkness
+  truth5a: helps the body break down food
+  truth5b: helps food move through the gut
+  truth6a: helps keep gums healthy
+  truth6b: helps keep the tissue around teeth healthy
+  truth7a: helps the heart keep pumping blood
+  truth7b: supports a steady, healthy heartbeat
+  truth8a: helps the lungs move air
+  truth8b: supports the lungs as you breathe during exercise
+false_statements:
+  false1a: lowers your chance of catching a cold
+  false1b: helps you get over the flu faster
+  false2a: helps rebuild bone lost to osteoporosis
+  false2b: helps treat weak bones caused by osteoporosis
+  false3a: helps relieve pain caused by arthritis
+  false3b: helps reduce joint swelling from arthritis
+  false4a: stops cataracts from getting worse
+  false4b: helps clear up an eye infection
+  false5a: helps clear up a stomach infection
+  false5b: helps you recover from the stomach flu
+  false6a: helps clear up a gum infection
+  false6b: lowers your chance of getting gum disease
+  false7a: helps people with heart failure breathe easier
+  false7b: lowers your chance of having a heart attack
+  false8a: helps ease wheezing caused by asthma
+  false8b: lowers your chance of getting pneumonia
+dbsubject: Biotechnology

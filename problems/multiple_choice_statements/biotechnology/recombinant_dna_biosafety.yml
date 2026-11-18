@@ -1,0 +1,34 @@
+topic: Asilomar and biosafety in biotechnology research
+source: 'LECT11C Set #6 topics 8-9 and annual TP presentations. NIH Office of Science Policy: https://osp.od.nih.gov/policies/biosafety-and-biosecurity-policy/'
+num_choices: 4
+connection_words:
+- about
+true_statements:
+  truth1a: at Asilomar, researchers discussed how to work safely with recombinant DNA
+  truth1b: the Asilomar meeting helped shape safety rules for recombinant DNA research
+  truth2a: an institutional biosafety committee can check research plans for risks
+  truth2b: a lab can ask its biosafety committee to review safety plans
+  truth3a: a safety review can find problems before a study starts
+  truth4a: the same organism can pose different risks in different experiments
+  truth4b: the way a lab uses an organism matters for safety
+  truth5a: lab safety can protect people both inside and outside the lab
+  truth5b: a biosafety plan can also help protect nearby plants and animals
+  truth6a: researchers paused some DNA experiments before Asilomar to discuss safety
+  truth6b: before Asilomar, scientists agreed to put some experiments on hold while they discussed the risks
+false_statements:
+  false1a: researchers at Asilomar set the rules for clinical trials
+  false1b: the Asilomar meeting focused on who can patent new lab tools
+  false1c: the Asilomar meeting ended the need for biosafety review
+  false2a: a biosafety committee gives a company permission to sell a new drug
+  false2b: a biosafety committee gives patents to labs that invent new tools
+  false2c: a biosafety committee decides which scientists have earned a degree
+  false3a: a lab should wait for an accident before checking its safety plan
+  false3b: a safety review works best after all the research is done
+  false4a: a reviewer can judge the full risk from the organism name alone
+  false4b: two experiments with the same organism have the same safety risks
+  false4c: the price of the equipment tells you how risky an experiment is
+  false5a: lab safety matters only for the person doing the experiment
+  false5b: someone outside a lab cannot be affected by what happens inside
+  false5c: a lab safety plan can ignore risks to nearby plants and animals
+  false6a: researchers paused all DNA research before Asilomar
+dbsubject: Biotechnology

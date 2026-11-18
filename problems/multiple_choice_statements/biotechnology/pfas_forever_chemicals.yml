@@ -1,0 +1,37 @@
+topic: PFAS, also called forever chemicals
+source: 'LECT11C Set #6 topic 25, A Family, Not One Chemical and Trace Exposure to the Measurement.'
+num_choices: 4
+connection_words:
+- about
+true_statements:
+  truth1a: PFAS are a family of chemicals
+  truth1b: the name PFAS covers many different chemicals
+  truth2a: many PFAS take a long time to break down
+  truth2b: some PFAS stay in the environment for a long time
+  truth2c: the name forever chemicals refers to how slowly many PFAS break down
+  truth3a: some PFAS have been used to make clothing resist water
+  truth3b: some PFAS have helped keep stains from sticking to carpet
+  truth3c: some PFAS have been used in nonstick cookware
+  truth3d: some food wrappers have used PFAS to resist grease
+  truth4a: people can take in PFAS by drinking contaminated water
+  truth4b: eating food that contains PFAS can expose a person to them
+  truth4c: people can come into contact with PFAS at some workplaces
+  truth5a: different PFAS can have different effects on health
+  truth5b: health risks depend partly on which PFAS a person takes in
+false_statements:
+  false1a: PFAS is the name of a single chemical
+  false1b: PFAS is another name for the element fluorine
+  false1c: PFAS is the name of one brand of nonstick coating
+  false2a: PFAS in soil tend to break down within days
+  false2b: PFAS are called forever chemicals because they kill germs
+  false2c: PFAS are called forever chemicals because pans with PFAS last longer
+  false3a: PFAS have been added to rain jackets to soak up water
+  false3b: PFAS have been added to food wrappers to soak up grease
+  false3c: PFAS have been used to make oil stick to pans
+  false4a: exposure to PFAS is limited to workers who make them
+  false4b: PFAS can enter the body through the lungs but not through the gut
+  false4c: a person has to handle a product with PFAS to be exposed
+  false5a: different PFAS have the same health effects
+  false5b: a small amount of a PFAS poses the same risk as a large amount
+  false5c: knowing a chemical is a PFAS tells you exactly how harmful it is
+dbsubject: Biotechnology

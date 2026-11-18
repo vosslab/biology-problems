@@ -1,0 +1,44 @@
+topic: gene-delivery vectors
+learning_objective: Recognize the basic features of gene-delivery vectors.
+source: 'LECT10 Set #5 Djot: set5_gene_therapy_01_04.djot, topic 3 (Early ADA-SCID Gene Addition);
+  set5_gene_therapy_05_08.djot, topics 5-7'
+items to match per question: 4
+key description: gene-delivery vector
+keys description: gene-delivery vectors
+value description: description
+values description: descriptions
+question override: <p>Match each carrier with its description.</p>
+matching pairs:
+  adenoviral vector:
+  - delivers double-stranded DNA and can make cells produce a lot of protein for a short time
+  - carries relatively large pieces of DNA, but an immune response can make repeat doses harder
+  - has a protein coat that can carry a large piece of DNA for strong, short-term expression
+  - can carry a large gene and its control sequences, but the immune response may shorten its effect
+  - can deliver a large DNA payload when the goal is to make a lot of protein briefly
+  AAV vector:
+  - carries a small piece of DNA that can stay outside chromosomes in cells that do not divide
+  - has room for about 4.7 kb of DNA, including the gene and its control sequences
+  - holds so little DNA that both the gene and its promoter must fit in a small space
+  - leaves much of its small DNA payload outside the chromosomes in cells that do not divide
+  - can keep a small gene active for a long time in cells that rarely divide
+  - can carry a small gene to cells in the retina, where the DNA can stay outside chromosomes
+  retroviral vector:
+  - makes a DNA copy of the RNA it carries and inserts the copy into a chromosome
+  - puts a gene into a chromosome so the cell can keep using it
+  - copies RNA into DNA, then joins that DNA to one of the cell's chromosomes
+  - can pass an inserted gene to both daughter cells when a cell divides
+  - can keep a gene active by inserting it into a chromosome, but the insertion can disrupt another
+    gene
+  - was used to add a working ADA gene to T cells in the early ADA-SCID trial
+  lipid nanoparticle:
+  - uses a small particle made of lipids to protect DNA or RNA
+  - packages RNA in a small particle that helps it enter cells without using a virus
+  - carries DNA or RNA in a particle made of lipids instead of a viral coat
+  - protects RNA in a tiny particle made of lipids while it travels to cells
+  - can carry RNA into a cell, but the RNA can get trapped in an endosome
+replacement_rules:
+  adenoviral vector: '<span style="color: #935D00;">adenoviral vector</span>'
+  AAV vector: '<span style="color: #0067CC;">AAV vector</span>'
+  retroviral vector: '<span style="color: #A719DB;">retroviral vector</span>'
+  lipid nanoparticle: '<span style="color: #00775F;">lipid nanoparticle</span>'
+dbsubject: Biotechnology

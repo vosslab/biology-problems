@@ -1,0 +1,40 @@
+topic: what research agreements do
+question override: Match each agreement with an example.
+items to match per question: 4
+key description: kind of agreement
+keys description: kinds of agreement
+value description: example
+values description: examples
+source: 'LECT11C Set #6 topics 26, 29, and 37-38 and old TP ODP slides 64-66. These examples describe
+  what people agree to.'
+matching pairs:
+  Nondisclosure agreement (NDA):
+  - two labs agree to share early results with each other and keep them out of the news
+  - a company shares a formula with a partner who agrees to keep it secret
+  - a lab agrees to keep a partner's unpublished test results within the team
+  - a company lets a visitor see its plans if the visitor agrees to keep them secret
+  - two research teams agree to keep their results between them until both are ready to publish
+  License:
+  - a company lets another lab use its patented test and keeps the patent
+  - a university owns a tool and allows a company to use it
+  - a lab pays to use a program that still belongs to the company that wrote it
+  - an inventor keeps the patent and lets a partner make a device based on it
+  - a company lets a lab use a tool for a year and still owns the rights to it
+  Intellectual property (IP) assignment:
+  - an inventor signs an agreement making a company the new owner of a patent
+  - a company buys a university's patent and becomes its new owner
+  - after a lab sells its patent on a camera design, the buyer owns the patent
+  - a researcher signs over ownership of a new tool design to a university
+  - one company hands over its patent rights to another company
+  Noncompete agreement:
+  - a scientist agrees to wait before taking a job with a rival company
+  - a worker agrees to wait before starting a business that sells the same product
+  - a job agreement limits the kinds of work a scientist can do for a rival after leaving
+  - a lab worker agrees to stay out of a similar job with a rival for six months
+  - a scientist signs a contract that rules out working for a rival lab for a year after this job ends
+replacement_rules:
+  Nondisclosure agreement (NDA): '<span style="color: #00775F;">Nondisclosure agreement (NDA)</span>'
+  License: '<span style="color: #003FFF;">License</span>'
+  Intellectual property (IP) assignment: '<span style="color: #935D00;">Intellectual property (IP) assignment</span>'
+  Noncompete agreement: '<span style="color: #A719DB;">Noncompete agreement</span>'
+dbsubject: Biotechnology

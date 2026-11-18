@@ -1,16 +1,16 @@
 topic: inventions versus discoveries
-learning_objective: Distinguish patentable inventions from discoveries of nature, natural phenomena, and scientific facts.
-override_question_true: Which one of the following is patentable rather than a discovery?
-override_question_false: Which one of the following is a discovery rather than a patentable invention?
+learning_objective: Tell an invention made by people from a discovery about the natural world.
+override_question_true: Which example is an invention?
+override_question_false: Which example is a discovery?
 connection_words: null
 true_statements:
-  truth1: invention
-  truth2: monoclonal antibodies
+  truth1: a process for making human insulin in cells
+  truth2: a new method for making a specific antibody
   truth3: mercury thermometer
-  truth4: PCR amplification method
+  truth4: the PCR method for copying DNA
   truth5: transgenic algae for biofuels
   truth6: newly synthesized drug
-  truth7: atomic nuclear bomb
+  truth7: a lock that opens with a fingerprint
   truth8: the refrigerator
   truth9: the light bulb
   truth10: a vaccine for rabies
@@ -24,30 +24,31 @@ true_statements:
   truth27: a computer
   truth28: the sewing machine
   truth29: a mousetrap
-  truth30: a CRISPR gene-editing method
+  truth30: a gasoline-powered car
 false_statements:
-  false31: discovery
-  false32: breast cancer causing gene
-  false33: deep sea thermophilic bacteria
-  false34: new radioactive element
-  false35: bacteria can cause disease
-  false36: electricity
+  false31: a natural defense that bacteria use against foreign DNA
+  false32: the link between BRCA variants and breast cancer
+  false33: a species of bacterium found living near a deep-sea vent
+  false34: a radioactive element first found in a mineral
+  false35: the role of bacteria in causing disease
+  false36: the electrical discharge in a lightning bolt
   false37: sequence of the human genome
-  false38: atoms are made from electrons and protons
-  false39: X-ray light can see bones
+  false38: electrons inside atoms
+  false39: the different ways soft tissue and bone block X-rays
   false40: structure of DNA
   false41: nitrogen fixation in bacteria
-  false42: mechanism that allows hummingbirds to fly
-  false43: fire
-  false44: gravity
-  false45: photosynthesis
+  false42: how hummingbirds move their wings to hover
+  false43: the link between lightning strikes and forest fires
+  false44: the pull of gravity between objects
+  false45: the use of light to make sugar in plants
   false46: a new species of frog
   false47: the planet Neptune
-  false48: mitochondria
+  false48: the mitochondria inside many cells
   false49: the speed of light
-  false50: water boils at a fixed temperature
+  false50: the lower boiling point of water at high altitude
   false51: a wild soil fungus that makes penicillin
   false52: the genetic code
   false53: evolution by natural selection
 conflict_rules: null
 dbsubject: Biotechnology
+source: 'LECT11C Set #6 topic 26 and old TP ODP slides 34-43, Discovery or Invention Game.'

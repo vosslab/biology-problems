@@ -1,6 +1,6 @@
 items to match per question: 2
-key description: genetic disease treatment method
-keys description: genetic disease treatment methods
+key description: genetic treatment strategy
+keys description: genetic treatment strategies
 value description: description
 values description: descriptions
 replacement_rules:
@@ -10,27 +10,22 @@ replacement_rules:
   #   protein: '<span style="color: #3b7600;">protein</span>' #LIME GREEN
   #   viral: '<span style="color: #007576;">viral</span>' #CYAN
   #   treatment: '<span style="color: #076dad;">treatment</span>' #SKY BLUE
-  gene therapy: '<span style="color: #d40000;">gene&nbsp;therapy</span>' #RED
-  genome editing: '<span style="color: #b74300;">genome&nbsp;editing</span>' #DARK ORANGE
+  gene addition: '<span style="color: #d40000;">gene&nbsp;addition</span>'
+  genome editing: '<span style="color: #b74300;">genome&nbsp;editing</span>'
+question override: <p>Match each treatment approach with what it does.</p>
 matching pairs:
-  gene therapy:
-  - treating cystic fibrosis using adenovirus to introduce a functioning protein channel
-  - engineering virus for injection into a tumor to promote apoptosis
-  - introducing a new gene on a plasmid into a patient to replace a faulty &beta;-thalassemia
-    enzyme
-  - culture and reprogram blood progenitor cells from bone marrow to kill HIV-infected
-    cells
-  - mRNA vaccines express the viral spike proteins to train the immune system to recognize
-    the virus
+  gene addition:
+  - giving airway cells a working copy of CFTR while leaving the old copy in place
+  - giving tumor cells a gene for a protein that helps kill the cells
+  - giving cells a working copy of the beta-globin gene for thalassemia while leaving the inherited
+    copy in place
+  - giving a patient's cells a working ADA gene in the lab
   genome editing:
-  - using CRISPR to change a single nucleotide in sickle-cell allele
-  - deleting the fragments of HIV DNA from the genome of an infected patient
-  - correcting a mutation within the host genome that causes liver disease
-  - using zinc finger nuclease (ZFN) mediated treatment to replace a nucleotide in
-    the diseased &beta;-thalassemia allele
-  - using transcriptor activator-like effector nuclease (TALENs) to correct inherited
-    retinal dystrophy
-  - CRISPR is used to insert a functional micro-dystrophin gene correcting Duchenne
-    muscular dystrophy (DMD)
-  - correct defective DNA elements within a gene
+  - using CRISPR to change one DNA letter at a chosen spot
+  - removing HIV DNA that had become part of a cell's chromosome
+  - fixing a change in a chromosome that causes disease
+  - using a zinc-finger nuclease to change a chosen stretch of DNA
+  - using a TALEN to fix a mutation at a chosen spot in a chromosome
+  - using CRISPR to put a working gene at a chosen spot in a chromosome
 dbsubject: Biotechnology
+source: 'LECT10 Set #5 medicinal biotechnology, supplied PDF/ODP and set5_*.djot, topics 2 and 13'

@@ -1,0 +1,44 @@
+topic: cancer treatments
+learning_objective: Recognize the basic features of cancer treatments.
+source: 'LECT10 Set #5 Djot: set5_cancer.djot, topics 30-31 and 33 (CAR Recognition Design; Immune
+  Evasion Creates Barriers; Enzyme, Prodrug, Cell Death)'
+items to match per question: 4
+key description: cancer treatment
+keys description: cancer treatments
+value description: description
+values description: descriptions
+question override: <p>Match each cancer treatment with how it works.</p>
+matching pairs:
+  CAR-T cells:
+  - are T cells given a new receptor that recognizes a marker on tumor cells
+  - use an added receptor to find a chosen marker on the surface of a cell
+  - are given a receptor in the lab so they can recognize tumor cells
+  - use a new receptor to change which cells they recognize
+  - can recognize CD19 through a receptor added in the lab
+  - can be given a receptor that recognizes BCMA on myeloma cells
+  - can target B cells by using an added receptor that binds to CD19
+  checkpoint blockade:
+  - blocks signals that slow down T cells
+  - blocks a stop signal so T cells that already respond can stay active
+  - blocks signals such as PD-1 and PD-L1 that can slow down immune cells
+  - helps T cells keep attacking a tumor even when it sends a stop signal
+  - lets T cells stay active by blocking a signal from the tumor
+  - can block the signal sent when PD-L1 binds PD-1 on a T cell
+  oncolytic-virus therapy:
+  - uses a virus that makes more copies of itself in tumor cells and kills them
+  - can break open infected tumor cells and release material the immune system can recognize
+  - uses a virus that infects and kills cancer cells
+  - can release tumor antigens when infected cancer cells break open
+  - uses a virus that makes copies of itself more easily in cancer cells than in healthy cells
+  enzyme/prodrug gene therapy:
+  - gives tumor cells a gene for an enzyme that turns a drug into a poison
+  - makes treated cells produce an enzyme that turns on a drug given later
+  - the cells make a new enzyme first, then the patient gets the drug it activates
+  - uses a drug that becomes toxic where tumor cells make the new enzyme
+  - lets a tumor cell turn an inactive drug into a form that kills the cell
+replacement_rules:
+  CAR-T cells: '<span style="color: #00775F;">CAR-T cells</span>'
+  checkpoint blockade: '<span style="color: #003FFF;">checkpoint blockade</span>'
+  oncolytic-virus therapy: '<span style="color: #A719DB;">oncolytic-virus therapy</span>'
+  enzyme/prodrug gene therapy: '<span style="color: #935D00;">enzyme/prodrug gene therapy</span>'
+dbsubject: Biotechnology
